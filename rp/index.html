@@ -1,0 +1,44 @@
+<html>
+<body>
+<p>
+This is a simple tool that lets your 5 year old collect all of the
+words they know on the computer.  Its an introduction to task driven
+computer usage for little ones.
+</p>
+
+<p>
+  To get started, <span id="login">log in</span>.
+</p>
+
+</body>
+<script src="jquery-min.js"></script>
+<script src="http://identity.mozilla.org/jsapi/include.js"></script>
+<script>
+$(document).ready(function() {
+    $("#button").click(function() {
+        navigator.id.getVerifiedEmail(function(assertion) {
+            // assertion at this point is a blob that looks like this:
+            //
+            // {
+            //   audience: "mywords.com",
+            //   valid-until: <format TBD>,
+            //   email: "sophia@hilaiel.coom"
+            // }
+            //
+            // Now we'll send this assertion up to the mywords server for
+            // validation
+
+            $.post(
+                '/login',
+                JSON.stringify(assertion),
+                function(data, textStatus) {
+                    // we've got a response from the server half of the mywords
+                    // application which has validated the assertion
+                    console.log(data);
+                });
+        });
+    });
+});
+</script>
+
+</html>
