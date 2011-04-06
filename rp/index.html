@@ -7,15 +7,15 @@ computer usage for little ones.
 </p>
 
 <p>
-  To get started, <span id="login">log in</span>.
+  To get started, <a href="#" id="login">log in</a>.
 </p>
 
 </body>
 <script src="jquery-min.js"></script>
-<script src="http://identity.mozilla.org/jsapi/include.js"></script>
+<script src="../authority/jsapi/include.js"></script>
 <script>
 $(document).ready(function() {
-    $("#button").click(function() {
+    $("#login").click(function() {
         navigator.id.getVerifiedEmail(function(assertion) {
             // assertion at this point is a blob that looks like this:
             //
