@@ -1,21 +1,76 @@
 <html>
+
+<head>
+  <title>All My Words</title>
+  <style>
+body {
+  background-color: #000055;
+  color: #ccc;
+}
+
+#appcontainer {
+  width: 600px;
+  margin: auto;
+  font: 200 14px/1.2 "League Gothic", Haettenschweiler, sans-serif;
+}
+
+#sitetitle {
+  font-size: 2em;
+  color: #fff;
+  font-weight: bold;
+  margin-left: -2em;
+  margin-top: -200px;
+  padding-bottom: 200px;
+}
+
+a {
+  color: #fff;
+}
+
+#logininstructions {
+  width: 300px;
+  margin: auto;
+}
+
+.content {
+  display: none;
+}
+
+  </style>
+</head>
+
+</style>
+</head>
+  
 <body>
-<p>
+<div id="appcontainer">
+<div id="sitetitle">All My Words</div>
+<p class="content">
 This is a simple tool that lets your 5 year old collect all of the
 words they know on the computer.  Its an introduction to task driven
-computer usage for little ones.
+computer usage for little ones.  It's <i>also</i> (uh, and primarily)
+an example app that uses Mozilla ID for an awesome login experience.
 </p>
 
-<p>
+<p class="content" id="logininstructions">
   To get started, <a href="#" id="login">log in</a>.
 </p>
-
+</div>
 </body>
 <script src="jquery-min.js"></script>
 <script src="http://authority.mozilla.org/jsapi/include.js"></script>
 <script>
   $(document).ready(function() {
+    $(".content").fadeIn(700);
+
+    $("#sitetitle").animate({ "marginTop": "0px", "paddingBottom": "0px" }, "fast");
+    $("#sitetitle").animate({ "marginTop": "-10px", "paddingBottom": "10px" }, "medium");
+    $("#sitetitle").animate({"marginTop": "0px", "paddingBottom": "0px" }, "medium");
+    $("#sitetitle").animate({ "marginTop": "-6px", "paddingBottom": "6px" }, "slow");
+    $("#sitetitle").animate({"marginTop": "0px", "paddingBottom": "0px" }, "slow");
+
     $("#login").click(function() {
+      $("#logininstructions").empty().text("logging you in using mozilla ID...");
       navigator.id.getVerifiedEmail(function(assertion) {
         // assertion at this point is a blob that looks like this:
         //
@@ -27,7 +82,7 @@ computer usage for little ones.
         //
         // Now we'll send this assertion up to the mywords server for
         // validation
-        console.log("got assertion: " + assertion);
+        $("#logininstructions").empty().html($("<p>verifying your identity of <i>" + assertion + "</i></p>"));
 
         $.post(
           '/login',
@@ -35,7 +90,7 @@ computer usage for little ones.
           function(data, textStatus) {
             // we've got a response from the server half of the mywords
             // application which has validated the assertion
-            console.log(data);
+            $("#logininstructions").empty().text("verification complete: " + data);
           });
       }, function(code, msg) {
         alert("something very bad happened! ("+code+"): " + msg); 

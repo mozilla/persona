@@ -30,7 +30,7 @@ chan.bind("getVerifiedEmail", function(trans, s) {
     list.appendChild(li);
   });
 
-  // now let's make the body visible
+  // now make the body visible...
   document.getElementById("body").style.display = "block";
 });
 
