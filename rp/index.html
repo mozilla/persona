@@ -14,31 +14,33 @@ computer usage for little ones.
 <script src="jquery-min.js"></script>
 <script src="http://authority.mozilla.org/jsapi/include.js"></script>
 <script>
-$(document).ready(function() {
+  $(document).ready(function() {
     $("#login").click(function() {
-        navigator.id.getVerifiedEmail(function(assertion) {
-            // assertion at this point is a blob that looks like this:
-            //
-            // {
-            //   audience: "mywords.com",
-            //   valid-until: <format TBD>,
-            //   email: "sophia@hilaiel.coom"
-            // }
-            //
-            // Now we'll send this assertion up to the mywords server for
-            // validation
+      navigator.id.getVerifiedEmail(function(assertion) {
+        // assertion at this point is a blob that looks like this:
+        //
+        // {
+        //   audience: "mywords.com",
+        //   valid-until: <format TBD>,
+        //   email: "sophia@hilaiel.coom"
+        // }
+        //
+        // Now we'll send this assertion up to the mywords server for
+        // validation
 
-            $.post(
-                '/login',
-                JSON.stringify(assertion),
-                function(data, textStatus) {
-                    // we've got a response from the server half of the mywords
-                    // application which has validated the assertion
-                    console.log(data);
-                });
-        });
+        $.post(
+          '/login',
+          JSON.stringify(assertion),
+          function(data, textStatus) {
+            // we've got a response from the server half of the mywords
+            // application which has validated the assertion
+            console.log(data);
+          });
+      }, function(code, msg) {
+        alert("something very bad happened! ("+code+"): " + msg); 
+      });
     });
-});
+  });
 </script>
 
 </html>
