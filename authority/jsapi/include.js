@@ -530,9 +530,11 @@ if (!navigator.id.getVerifiedEmail) {
       method: "getVerifiedEmail",
       success: function(rv) {
         if (onsuccess) onsuccess(rv);
+        w.close();
       },
       error: function(code, msg) {
         if (onerror) onerror(code, msg);
+        w.close();
       }
     });
   };

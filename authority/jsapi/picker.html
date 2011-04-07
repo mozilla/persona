@@ -1,13 +1,16 @@
 <html>
-<body>
-<p>Hi!  Want to log into [sitename]?</p>
+<head>
+  <title> Mozilla ID </title>
+  <style>
+    body { display: none }
+  </style>
+</head>
+<body id="body">
+<p>Hi!  Want to log into <span id="sitename"></span>?</p>
 
 <p> Which ID would you like to use? </p>
 
-<ul>
-  <li> <a href="#">AAA</a>
-  <li> <a href="#">BBB</a>
-  <li> <a href="#">AAA</a>
+<ul id="availableIdentities">
 </ul>
 
 <script src="jschannel.js"></script>
