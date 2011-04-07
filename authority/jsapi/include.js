@@ -522,7 +522,7 @@ if (!navigator.id.getVerifiedEmail) {
 
   navigator.id.getVerifiedEmail = function(onsuccess, onerror) {
     var w = window.open("http://authority.mozilla.org/jsapi/picker.html", "_mozid_picker",
-                        "menubar=no,location=no,resizable=no,scrollbars=no,status=no,dialog=yes,width=420,height=230");
+                        "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");
 
     // XXX: this origin check needs to tighten up
     var chan = Channel.build({window: w, origin: "*", scope: "mozid"});

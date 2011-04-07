@@ -19,15 +19,16 @@ chan.bind("getVerifiedEmail", function(trans, s) {
 
   var list = document.getElementById('availableIdentities');
   [ "foo@bar.com", "baz@bing.com" ].forEach(function(i) {
-    var li = document.createElement("li");
-    var link = document.createElement("a");
-    link.innerText = i;
-    link.href = "#";
-    li.appendChild(link);
-    link.addEventListener("click", function(evt) {
-      trans.complete(this.innerText);
-    });
-    list.appendChild(li);
+    var div = document.createElement("div");
+    var button = document.createElement("input");
+    button.setAttribute('type', 'radio');
+    button.name = "id_selection";
+    button.value = i;
+    div.appendChild(button);
+    var label = document.createElement("div");
+    label.innerText = i;
+    div.appendChild(label);
+    list.appendChild(div);
   });
 
   // now make the body visible...
