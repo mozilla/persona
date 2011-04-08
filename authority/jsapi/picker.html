@@ -76,15 +76,21 @@
         font-weight: bold;
     }
 
-    #availableIdentities > div {
+    #identities > div {
         margin-left: .8em;
         margin-bottom: .5em;
         height: 1.4em;
     }
 
-    #availableIdentities > div > * {
-        float: left; 
+    #identities > div > * {
+        float: left;
+        cursor: pointer;
     }
+
+    button {
+        cursor: pointer;
+    }
+
 
   </style>
 </head>
@@ -93,8 +99,8 @@
 <div id="title"> Sign in with your Email Address </div>
 <div id="content">
 <p>Which email would you like to use to log into <span id="sitename"></span>:</p>
-<div id="availableIdentities">
-</div>
+<form id="identities" name="identities">
+</form>
 </div>
 <div id="bottom-bar">
 <button id="back">Go Back</button>
