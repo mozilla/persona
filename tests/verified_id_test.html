@@ -1,0 +1,134 @@
+<html>
+<head>
+<title>Verified ID Test</title>
+<script type="text/javascript" src="../lib/jwt.js"></script>
+<script type="text/javascript" src="../lib/idassertion.js"></script>
+<script type="text/javascript" src="doctest/doctest.js"></script>
+<link rel="stylesheet" type="text/css" href="doctest/doctest.css" />
+<style type="text/css">
+body {
+  font-family: sans-serif;
+}
+</style>
+<script>
+
+var PRIVATE_KEY = window.atob("LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBeEV5bWpsbVBNVXN2RTVQVStBVFNOd2c0dkxtS2tEMzFTRzI4WkRuN0RoNmMxT0FoCllYL3lFcCs1QlhxOHliQmtScGZDLzdzclJRNCtUeG5uR3NwUHQvZVF5S2ZORjgwbHd5NFRSQS9TYlJDallmK04KVHE2ZTh2M1FIOE05U2NpS01HME9MbXZNbk9nVi9tVFJVd1pTdUxPZXRaTEQxNmdDZ2QxR0cwc01BS0JYYkpaZwoyb3oxdEp1bFBPdGFDWW1ReHU1M2NWSGtmRHZGLzRLMG1LMTIyam8xRnh4UGtBbjNOcU1Db2QzR3hpOFVIaE5iCjBzOHhsVzl6Ynlvc2RmdGJqOWI1VGRCTXBSUzlmRWllc1psQVpxOGtPa1lUUnJVVHJZdjI1d2pYaEhCSGNOeUsKVEhDbjVYZGl2dTdzZFBMZVBEajhuSFJuTGo0cmtTaktwaUZHYXdJREFRQUJBb0lCQVFDZDVib2p6czVyckRwVgoyUmY1MklidlZXR3VET0QwWGFJcmZIbUpkVW9JZFg5WmpGL05lWWxTaWIvZU5IZ2ZGQS9VNk1ZbHhueHJzNlZUCkkxYk9LZVl0NktsQmZoaHZDTWxUVW9DVXd0VlVmWW11amswditTNUo3dmUyVk9tN3E5L2NUQnlZSW9ZWHdHZlEKbFcvN0JKOE5pdzRpcDhkNGRPQnZiWG16QW83SkFNZERBTXdDZlNPTFBwRVprMXdsc1Q5YjBHaHZnMHZsVU5oTwpISGRmSjYzRlRyY2xZUFZETXNuNmU1aEZOSXRCenVQeDlvUjN2eENmQjQyZkY5TVpYRnpIamx0NUd1Q0hqOUN0CkJ4UlJxdENsb1JLR3V1ak9DUkEzM1NaS3p3Snd2KzkzZkxZVkh0anBYOGsvczhjYkpFcFVzdDlxdGxZTmoxSFoKMmc2Q0t0QkJBb0dCQVBEQ0o4R20wYjQ2Y0FiLzY3MXMxeFJJYnRDbjZxSEtwVHFwN1RJT2FxajlOQWJqeDFrYgozTUJ1MUc4OVZzMFRvOWlZejB2M1VZcUMyZ0kzTnd2SEtZZTBReENaVE84Y2kvaVRxa3ZsbXZNbG1XK2ZwQnlRCmhzay8vTXMzQlcvM0VNRVhiUklLNXA3akFMa2ZyemVqY0pIeG5scTkzdlJob2lSZUsrMWVqTEVqQW9HQkFOQzUKK01HNU5wZnJjaUR0akhQelp5YlRUd0t2b0wzVEpvMWNESHJaaE5nWWNUOTgrSkM1bzcwWTIvSXprcHZPUmFuagpiUEIrcEhFM2ZYZ0dHVHFESGNtbyt2RnQ4MkZvRGVMdmRRb0NJblduMzJtTUlvQUthdE8zM3oreUFmcjg2eUZOCjIzdlNQL0JndXBrVEYvZ0ltY3QvK2tlWU12WDB6KzhsUVR6eUpMNFpBb0dBVldhWmthQ3AvODljMDY3T0lXaE4KTnIybXlVNzI5S01jVHgzZHJJYmVvTWtJUG5WbnpoMExCaHVLTVZkUnhmYjBoSzFYd3Z1Y3FnUldicmpGUnVGRAp3d1pYVDdrQlNFUVpCbmppekg5S29uc3czUjZFcVRrL0JuNHpIcWFLd0Rla2NzbnJmNTNzUm1vQlpLbHZqczNqCjdYRUdtZXVGL2F2d1J2UThvcnVLTG44Q2dZQTM0b01yQXpjTngvbGZ2WnFNZFJBYVFodDJnYVdORFpyVjRGNXIKQ2hCYWQzamk0Y2YvbitTcVBaeXVKWWJNZHBjS1hKMFBheWtHTXpCQjBZZ3h0V2RsVmZ3U1pqanl6SlJqUFcvZAp4U0tLMCs2cWFOM1g0SElueTZSWGZvYXZOOGFRdlRMVjNUNUhVdTdEQzJ5d2VVVU1TbkN0ZUorMFlON0hqZmNBCnBXaVhDUUtCZ0N5SDVETTFWb1NNaCtVSXJ6WW5vVVVKY1ZDL3EyWGp0Zkdod3JhVUJhTTZ6OVNXaFg2amZMSGkKNW9qc2ZjSE5vU3h5a0hJQllXNmovQ1ZVSmpoY2NRa0pnR2tHRmoxZkh2cTVpWGZPaTFjMWl6djQxQ0REWGRQKwpKcTNNbHMzaDVXTnJ5RTdhTTQ5S3JaRWpjbytzajVRc3dMMnkwTk1weHdHRE9palpqS0lyCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==")
+var PUBLIC_KEY_PEM = window.atob("LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF4RXltamxtUE1Vc3ZFNVBVK0FUUwpOd2c0dkxtS2tEMzFTRzI4WkRuN0RoNmMxT0FoWVgveUVwKzVCWHE4eWJCa1JwZkMvN3NyUlE0K1R4bm5Hc3BQCnQvZVF5S2ZORjgwbHd5NFRSQS9TYlJDallmK05UcTZlOHYzUUg4TTlTY2lLTUcwT0xtdk1uT2dWL21UUlV3WlMKdUxPZXRaTEQxNmdDZ2QxR0cwc01BS0JYYkpaZzJvejF0SnVsUE90YUNZbVF4dTUzY1ZIa2ZEdkYvNEswbUsxMgoyam8xRnh4UGtBbjNOcU1Db2QzR3hpOFVIaE5iMHM4eGxXOXpieW9zZGZ0Ymo5YjVUZEJNcFJTOWZFaWVzWmxBClpxOGtPa1lUUnJVVHJZdjI1d2pYaEhCSGNOeUtUSENuNVhkaXZ1N3NkUExlUERqOG5IUm5MajRya1NqS3BpRkcKYXdJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==");
+var PUBLIC_KEY_MODULUS = "C44CA68E598F314B2F1393D4F804D2370838BCB98A903DF5486DBC6439FB0E1E9CD4E021617FF2129FB9057ABCC9B0644697C2FFBB2B450E3E4F19E71ACA4FB7F790C8A7CD17CD25C32E13440FD26D10A361FF8D4EAE9EF2FDD01FC33D49C88A306D0E2E6BCC9CE815FE64D1530652B8B39EB592C3D7A80281DD461B4B0C00A0576C9660DA8CF5B49BA53CEB5A098990C6EE777151E47C3BC5FF82B498AD76DA3A35171C4F9009F736A302A1DDC6C62F141E135BD2CF31956F736F2A2C75FB5B8FD6F94DD04CA514BD7C489EB1994066AF243A461346B513AD8BF6E708D784704770DC8A4C70A7E57762BEEEEC74F2DE3C38FC9C74672E3E2B9128CAA621466B";
+var PUBLIC_KEY_EXPONENT = "10001";
+
+function assert(x) 
+{
+  if (!x) throw "AssertionFailure";
+}
+function futureDate()
+{
+  var d = new Date();
+  var future = new Date(d.getTime() + 1000 * 60 * 5);
+  return future;
+}
+function pastDate()
+{
+  var d = new Date();
+  var past = new Date(d.getTime() - 1000 * 60 * 5);
+  return past;
+}
+function makeAssertion(email, validUntil, audience)
+{
+  var payload = {};
+  payload["email"] = email;
+  payload["valid-until"] = validUntil;
+  payload["audience"] = audience;
+  
+  var token = new jwt.WebToken(JSON.stringify(payload), JSON.stringify({alg:"RS256"}));
+  var signed = token.serialize(PRIVATE_KEY);
+  return signed;
+}
+
+Webfinger.simulateNetwork(
+  {
+    "browserid.org": {
+      "/.well-known/host-meta": "<hello/>",
+      "/users?u=joe@browserid.com": "<world/>"      
+    }
+  }
+);
+    
+
+</script>
+</head>
+
+<body class="autodoctest">
+<!-- the autotest class tells doctest to run the tests and fill
+in extra elements automatically -->
+
+<h1>Test Verifier</h1>
+
+
+<!--
+
+<div class="test">
+Missing audience
+<pre class="doctest">
+$ assertion = makeAssertion("joe@browserid.com", futureDate(), undefined);
+$ new IDAssertion(assertion).verify("target.com", Spy('success'), Spy('failure'));
+failure("Payload is missing required audience.")
+</pre>
+</div>
+
+
+
+<div class="test">
+Incorrect audience
+<pre class="doctest">
+$ assertion = makeAssertion("joe@browserid.com", pastDate(), "somewhereelse.com");
+$ new IDAssertion(assertion).verify("target.com", Spy('success'), Spy('failure'));
+failure("Payload audience does not match provided audience.")
+</pre>
+</div>
+
+
+<div class="test">
+Expired
+<pre class="doctest">
+$ assertion = makeAssertion("joe@browserid.com", pastDate(), "target.com");
+$ new IDAssertion(assertion).verify("target.com", Spy('success'), Spy('failure'));
+failure("Payload has expired.")
+</pre>
+</div>
+
+<div class="test">
+Missing email
+<pre class="doctest">
+$ assertion = makeAssertion(undefined, pastDate(), "target.com");
+$ new IDAssertion(assertion).verify("target.com", Spy('success'), Spy('failure'));
+failure("Payload is missing required email.")
+</pre>
+</div>
+
+<div class="test">
+Missing validUntil
+<pre class="doctest">
+$ assertion = makeAssertion("joe@browserid.com", undefined, "target.com");
+$ new IDAssertion(assertion).verify("target.com", Spy('success'), Spy('failure'));
+failure("Payload is missing required valid-until.")
+</pre>
+</div>
+
+-->
+
+<div class="test">
+Validate
+<pre class="doctest">
+$ assertion = makeAssertion("joe@127.0.0.1:56080", futureDate(), "target.com");
+$ var finished;
+$ new IDAssertion(assertion).verify("target.com", Spy('success', {wait:true}), Spy('failure', {wait:true}));
+$ wait(function() { return finished; });
+$ finished = false;
+success("")
+</pre>
+</div>
+
+
+
+</body> </html>
