@@ -8,15 +8,8 @@ var chan = Channel.build(
     scope: "mozid"
   });
 
-chan.bind("getVerifiedEmail", function(trans, s) {
-  trans.delayReturn(true);
-
-  // set the requesting site
-  document.getElementById("sitename").innerText = trans.origin.replace(/^.*:\/\//, "");
-
+function runIDsDialog(cb) {
   // iterate over all of the available identities and add a links to them
-  // XXX -- actually pull these guys outta localStorage
-
   var list = document.getElementById('identities');
 
   var first = true;
@@ -64,5 +57,118 @@ chan.bind("getVerifiedEmail", function(trans, s) {
     trans.error("noSelection", "no id selected by user");
     window.self.close();
   });
-});
+}
 
+function runDefaultDialog(onsuccess, onerror) {
+  $(".dialog").hide();
+
+  $("#back").hide();
+  $("#cancel").show().unbind('click').click(function() {
+    onerror("canceled");
+  });
+  $("#submit").show().unbind('click').click(function() {
+    onerror("notImplemented");
+  }).text("Sign In");
+  $("#default_dialog div.note > a").unbind('click').click(function() {
+    onerror("notImplemented");
+  });
+  $("#default_dialog div.note > a").unbind('click').click(function() {
+    onerror("notImplemented");
+  });
+  $("#default_dialog div.actions div.action").unbind('click').click(function() {
+    runCreateDialog(onsuccess, onerror);
+  });
+  $("#default_dialog").fadeIn(500);
+}
+
+function runCreateDialog(onsuccess, onerror) {
+  $(".dialog").hide();
+
+  $("#back").show().unbind('click').click(function() {
+    runDefaultDialog(onsuccess, onerror);
+  });
+  $("#cancel").show().unbind('click').click(function() {
+    onerror("canceled");
+  });
+  $("#submit").show().unbind('click').click(function() {
+    onerror("notImplemented");
+  }).text("Continue").addClass("disabled");
+
+  function checkInput() {
+    $("#submit").removeClass("disabled");
+
+    // first we should check the email entry 
+    $("#create_dialog div.note:eq(0)").html($('<span class="warning"/>').text("Checking address"));
+    // (XXX)
+
+    // next let's check the password entry
+    var pass = $("#create_dialog input:eq(1)").val();
+    var match = pass === $("#create_dialog input:eq(2)").val();
+    if (!match) {
+      $("#submit").addClass("disabled");
+      $("#create_dialog div.note:eq(1)").html($('<span class="bad"/>').text("Passwords different"));
+    } else {
+      if (!pass) {
+        $("#submit").addClass("disabled");
+        $("#create_dialog div.note:eq(1)").html($('<span class="bad"/>').text("Enter a password"));
+      } else if (pass.length < 5) {
+        $("#submit").addClass("disabled");
+        $("#create_dialog div.note:eq(1)").html($('<span class="bad"/>').text("Password too short"));
+      } else {
+        $("#create_dialog div.note:eq(1)").html($('<span class="good"/>').text("Password OK"))
+      }
+    }
+  }
+
+  // watch input dialogs
+  $("#create_dialog input:first").unbind('keyup').bind('keyup', function() {
+    checkInput();
+  });
+
+  $("#create_dialog input:gt(0)").unbind('keyup').bind('keyup', checkInput);
+
+  $("#create_dialog").fadeIn(500);
+}
+
+runCreateDialog();
+
+function errorOut(trans, code) {
+  function getVerboseMessage(code) {
+    var msgs = {
+      "canceled": "user canceled selection",
+      "notImplemented": "the user tried to invoke behavior that's not yet implemented"
+    };
+    var msg = msgs[code];
+    if (!msg) {
+      alert("need verbose message for " + code); 
+      msg = "unknown error"
+    }
+    return msg;
+  }
+  trans.error(code, getVerboseMessage(code));
+  window.self.close();
+}
+
+chan.bind("getVerifiedEmail", function(trans, s) {
+  trans.delayReturn(true);
+
+  // set the requesting site
+  $(".sitename").text(trans.origin.replace(/^.*:\/\//, ""));
+
+  // XXX: check to see if there's any pubkeys stored in the browser
+  var haveIDs = false;
+
+  if (haveIDs) {
+    runIDs(function(rv) {
+      trans.complete(rv);
+    }, function(error) {
+      errorOut(trans, error);
+    });
+  } else {
+    runDefaultDialog(function(rv) {
+      trans.complete(rv);
+    }, function(error) {
+      errorOut(trans, error);
+    });
+  }
+});
