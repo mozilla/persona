@@ -8,55 +8,21 @@
       scope: "mozid"
     });
 
-  function runIDsDialog(cb) {
-    // iterate over all of the available identities and add a links to them
-    var list = document.getElementById('identities');
+  function runSignInDialog(onsuccess, onerror) {
+    $(".dialog").hide();
 
-    var first = true;
-    [ "foo@bar.com", "baz@bing.com" ].forEach(function(i) {
-      var div = document.createElement("div");
-      var button = document.createElement("input");
-      button.setAttribute('type', 'radio');
-      button.checked = first;
-      first = false;
-      button.name = "id_selection";
-      button.value = i;
-      div.appendChild(button);
-      var label = document.createElement("div");
-      label.innerText = i;
-      label.addEventListener("click", function(evt) {
-        console.log("clicked label: ");
-        this.parentNode.firstChild.checked = true;
-      });
-      div.appendChild(label);
-      list.appendChild(div);
+    $("#back").hide();
+    $("#cancel").show().unbind('click').click(function() {
+      onerror("canceled");
     });
+    $("#submit").show().unbind('click').click(function() {
+      onerror("notImplemented");
+    }).text("Sign In");
 
-    // now make the body visible...
-    document.getElementById("body").style.display = "block";
-
-    document.getElementById('signin').addEventListener("click", function(evt) {
-      var is = document.forms["identities"].elements['id_selection'];
-      var id = undefined;
-      for (var i = 0; i < is.length; i++) {
-        if (is[i].checked) {
-          id = is[i].value;
-          break;
-        }
-      }
-      if (id) {
-        trans.complete(id);
-        window.self.close();
-      } else {
-        trans.error("noSelection", "no id selected by user");
-        window.self.close();
-      }
+    $("#default_dialog div.actions div.action a").unbind('click').click(function() {
+      onerror("notImplemented");
     });
-
-    document.getElementById('cancel').addEventListener("click", function(evt) {
-      trans.error("noSelection", "no id selected by user");
-      window.self.close();
-    });
+    $("#sign_in_dialog").fadeIn(500);
   }
 
   function runDefaultDialog(onsuccess, onerror) {
@@ -130,7 +96,7 @@
       onerror("canceled");
     });
     $("#submit").show().unbind('click').click(function() {
-      runIDsDialog(onsuccess, onerror);
+      runSignInDialog(onsuccess, onerror);
     }).text("Continue");
 
     $("#confirmed_email_dialog").show();
@@ -163,7 +129,7 @@
         var valid = checkedEmails[email];
         if (typeof valid === 'boolean') {
           if (valid) {
-            $("#create_dialog div.note:eq(0)").html($('<span class="good"/>').text("Email is valid"));
+            $("#create_dialog div.note:eq(0)").html($('<span class="good"/>').text("Not registered"));
           } else {
             $("#create_dialog div.note:eq(0)").html($('<span class="bad"/>').text("Email in use"));
             $("#submit").addClass("disabled");
@@ -221,7 +187,6 @@
     $("#create_dialog").fadeIn(500);
   }
 
-  runCreateDialog();
 
   function errorOut(trans, code) {
     function getVerboseMessage(code) {
@@ -250,7 +215,7 @@
     var haveIDs = false;
 
     if (haveIDs) {
-      runIDsDialog(function(rv) {
+      runSignInDialog(function(rv) {
         trans.complete(rv);
       }, function(error) {
         errorOut(trans, error);
@@ -263,4 +228,7 @@
       });
     }
   });
+
+  $(".sitename").text("somesite.com");
+  runSignInDialog();
 })();
