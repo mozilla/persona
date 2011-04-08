@@ -7,14 +7,14 @@ body {
     padding: 0;
     margin: 0;
 }
-.sitename {
+span.sitename, span.email {
     font-weight: bold;
 }
 .title {
     font-size: 2em;
     font-weight: bold;
     margin: auto;
-    margin-top: 2em;
+    margin-top: 1.5em;
     margin-bottom: 1em;
 }
 
@@ -53,8 +53,9 @@ body {
 #bottom-bar button {
     height: 25px;
     border: 1px solid rgb(145, 145, 145);
-    -moz-border-radius: 3px;
+    -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
+    border-radius: 4px;
     background-color: rgb(242, 242, 242);
     padding-left: 2em;
     padding-right: 2em;
@@ -77,13 +78,17 @@ body {
 
 div.actions > div.action {
     float: left;
+}
+
+div.actions > div.action a {
     cursor: pointer;
+    color: rgb(65, 126, 208);
+    text-decoration: none;
 }
 
 div.actions {
     position: fixed;
     bottom: 68px;
-    color: rgb(65, 126, 208);
     font-size: .8em;
     margin-left: 79px;
 }
@@ -174,4 +179,26 @@ span.good {
 
 div.subtle {
     opacity: .7;
+}
+
+div.dialog div.attention, div.dialog div.attention_awesome  {
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    width: 400px;
+    padding:13px;
+    margin: auto;
+    text-align: left;
+}
+
+div.dialog div.attention {
+    border: 1px solid rgb(219,231,238);
+    background-color: rgb(244,247,251);
+}
+
+div.dialog div.attention_awesome {
+    border: 1px solid rgb(0,161,51);
+    background-color: rgb(0,161,51);
+    color: white;
+    font-weight: bold;
 }

@@ -7,10 +7,10 @@
 <div id="default_dialog" class="dialog">
   <div class="title"> Sign in with Firefox ID </div>
   <div class="content">
-    <div class="summary">Enter your email and Firefox ID password to log into <span class="sitename"></span>:</div>
+    <div class="summary">Enter your email and Firefox ID password to log into <span class="sitename bad"></span>:</div>
     <div class="input">
       <div class="label"> Email </div>
-      <div class="input"> <input type="text"></input></div> 
+      <div class="input"> <input type="text"></input></div>
     </div>
     <div class="input">
       <div class="label"> Password </div>
@@ -18,7 +18,7 @@
       <div class="note"> <a href="#">I forgot my password</a> </div>
     </div>
     <div class="actions">
-      <div class="action"> Create Your Firefox ID </div>
+      <div class="action"><a href="#">Create Your Firefox ID</a></div>
     </div>
   </div>
 </div>
@@ -28,7 +28,7 @@
     <div class="summary">Firefox ID makes logging in safer and easier.  To begin, please provide an email address and pick a password:</div>
     <div class="input">
       <div class="label"> Email </div>
-      <div class="input"> <input type="text"></input></div> 
+      <div class="input"> <input type="text"></input></div>
       <div class="note"></div>
     </div>
     <div class="input">
@@ -39,6 +39,27 @@
       <div class="label"> Verify </div>
       <div class="input"> <input type="password"></input></div>
       <div class="note"><span class="bad">Enter a password</span></div>
+    </div>
+  </div>
+</div>
+<div id="confirm_email_dialog" class="dialog">
+  <div class="title"> Confirm Your Email </div>
+  <div class="content">
+    <div class="summary">Welcome, <span class="email good"></span>.  You will receive a <strong>confirmation email</strong> in a few moments.  To activate your Firefox ID, please <strong>visit the link</strong> included in the email.</div>
+    <div class="attention">
+      Waiting for email confirmation... <span class="bad"> THIS ISN'T REAL!  JUST WAIT 5 SECONDS!</span>
+    </div>
+    <div class="actions">
+      <div class="action"> No email yet?  <a href="#">Resend it!</a></div>
+    </div>
+  </div>
+</div>
+<div id="confirmed_email_dialog" class="dialog">
+  <div class="title"> Confirm Your Email </div>
+  <div class="content">
+    <div class="summary">Welcome, <span class="email good"></span>.  You will receive a <strong>confirmation email</strong> in a few moments.  To activate your Firefox ID, please <strong>visit the link</strong> included in the email.</div>
+    <div class="attention_awesome ">
+      Your email has been confirmed and your Firefox ID created! </span>
     </div>
   </div>
 </div>
