@@ -10,12 +10,15 @@ var PRIMARY_HOST = "127.0.0.1";
 
 // all bound webservers stored in this lil' object
 var boundServers = [ ];
-function getWebRootDir(host, port) {
+function getSiteRef(host, port) {
   for (var i = 0; i < boundServers.length; i++) {
     var o = boundServers[i];
     var a = o.server.address();
     if (host === a.address && port === a.port) {
-      return o.path ? o.path : __dirname;
+      return {
+        root: o.path ? o.path : __dirname,
+        handler: o.handler
+      };
     }
   }
   return undefined;
@@ -53,10 +56,10 @@ function createServer(port) {
     }
 
     // get the directory associated with the port hit by client
-    var siteroot = getWebRootDir(host, port);
+    var site = getSiteRef(host, port);
 
     // unknown site?  really?
-    if (!siteroot) return fourOhFour(response, "No site on this port");
+    if (!site.root) return fourOhFour(response, "No site on this port");
 
     var serveFile = function (filename) {
       path.exists(filename, function(exists) {
@@ -94,7 +97,6 @@ function createServer(port) {
             var a = o.server.address();
             var from = o.name + ".mozilla.org";
             var to = a.address + ":" + a.port;
-            console.log("replace: " + from + " with " + to); 
             data = data.replace(from, to);
           }
 
@@ -118,20 +120,25 @@ function createServer(port) {
       });
     }
 
-    var filename = path.join(siteroot, url.parse(request.url).pathname);
-
-    if (siteroot == __dirname) {
-      // We're layering two directories in this case
-      var otherPath = path.join(__dirname, '..', url.parse(request.url).pathname);
-      path.exists(otherPath, function(exists) {
-        if (exists) {
-          serveFileIndex(otherPath);
-        } else {
-          serveFileIndex(filename);
-        }
-      });
+    // if this site has a handler, we'll run that, otherwise serve statically
+    if (site.handler) {
+      site.handler(request, response, serveFile);
     } else {
-      serveFileIndex(filename);
+      var filename = path.join(site.root, url.parse(request.url).pathname);
+
+      if (site.root == __dirname) {
+        // We're layering two directories in this case
+        var otherPath = path.join(__dirname, '..', url.parse(request.url).pathname);
+        path.exists(otherPath, function(exists) {
+          if (exists) {
+            serveFileIndex(otherPath);
+          } else {
+            serveFileIndex(filename);
+          }
+        });
+      } else {
+        serveFileIndex(filename);
+      }
     }
   });
   myserver.listen(port, PRIMARY_HOST);
@@ -161,10 +168,20 @@ function formatLink(nameOrServer, extraPath) {
 console.log("Running test servers:");
 dirs.forEach(function(dirObj) {
   if (!fs.statSync(dirObj.path).isDirectory()) return;
+  // does this server have a js handler for custom request handling?
+  var handlerPath = path.join(dirObj.path, "server", "run.js");
+  var handler = undefined; 
+  try {
+    fs.statSync(handlerPath).isFile();
+    handler = require(handlerPath).handler;
+  } catch(e) {
+  }
+
   boundServers.push({
     path: dirObj.path,
     server: createServer(0),
-    name: dirObj.name
+    name: dirObj.name,
+    handler: handler
   });
   console.log("  " + dirObj.name + ": " + formatLink(dirObj.name));
 });
