@@ -10,7 +10,7 @@ exports.handler = function(request, response, serveFile) {
   var urlpath = url.parse(request.url).pathname;
 
   if (urlpath === '/sign_in') {
-    serveFile(path.join(STATIC_DIR, "dialog", "index.html"));
+    serveFile(path.join(STATIC_DIR, "dialog", "index.html"), response);
   } else if (/^\/wsapi\/\w+$/.test(urlpath)) {
     try {
       var method = path.basename(urlpath);
@@ -22,6 +22,6 @@ exports.handler = function(request, response, serveFile) {
     }
   } else {
     // node.js takes care of sanitizing the request path
-    serveFile(path.join(STATIC_DIR, urlpath));
+    serveFile(path.join(STATIC_DIR, urlpath), response);
   }
 };
