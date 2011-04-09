@@ -90,7 +90,7 @@ function serveFileIndex(filename, response) {
 function createServer(obj) {
   var server = connect.createServer().use(connect.favicon())
     .use(connect.logger({format: ":status :method :remote-addr :response-time :url"}))
-    .use(connect.cookieDecoder())
+    .use(connect.cookieParser())
     .use(connect.session({ secret: "mouse dog" }));
 
   // if this site has a handler, we'll run that, otherwise serve statically
