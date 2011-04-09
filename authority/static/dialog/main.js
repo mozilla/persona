@@ -102,6 +102,21 @@
     $("#confirmed_email_dialog").show();
   }
 
+  function runErrorDialog(code, title, message, onsuccess, onerror) {
+    $(".dialog").hide();
+
+    $("#error_dialog div.title").text(title);
+    $("#error_dialog div.content").text(message);
+
+    $("#back").hide();
+    $("#cancel").hide();
+    $("#submit").show().unbind('click').click(function() {
+      onerror(code);
+    }).text("Close");
+
+    $("#error_dialog").fadeIn(500);
+  }
+
   function runCreateDialog(onsuccess, onerror) {
     $(".dialog").hide();
 
@@ -115,8 +130,29 @@
       // ignore the click if we're disabled
       if ($(this).hasClass('disabled')) return true;
 
-      // user wishes to create a firefox ID!  now let's validate the email flow
-      runConfirmEmailDialog($("#create_dialog input:eq(0)").val(), onsuccess, onerror);
+      // now we need to actually try to stage the creation of this account.
+      var email = $("#create_dialog input:eq(0)").val();
+      var pass = $("#create_dialog input:eq(1)").val();
+
+      // XXX: we should be showing the user a waiting page here
+
+      $.ajax({
+        url: '/wsapi/stage_user?email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(pass),
+        success: function() {
+
+          // account successfully staged, now wait for email confirmation
+          runConfirmEmailDialog(email, onsuccess, onerror);
+        },
+        error: function() {
+          runErrorDialog(
+            "serverError",
+            "Error Creating Account!",
+            "There was a technical problem while trying to create your account.  Yucky.",
+            onsuccess, onerror);
+        }
+      });
+
+
     }).text("Continue").addClass("disabled");
 
 
@@ -131,7 +167,7 @@
         if (typeof valid === 'string') {
           // oh noes.  we tried to check this email, but it failed.  let's just not tell the
           // user anything, cause this is a non-critical issue
-          
+
         } else if (typeof valid === 'boolean') {
           if (valid) {
             $("#create_dialog div.note:eq(0)").html($('<span class="good"/>').text("Not registered"));
@@ -209,7 +245,8 @@
     function getVerboseMessage(code) {
       var msgs = {
         "canceled": "user canceled selection",
-        "notImplemented": "the user tried to invoke behavior that's not yet implemented"
+        "notImplemented": "the user tried to invoke behavior that's not yet implemented",
+        "serverError": "a technical problem was encountered while trying to communicate with FirefoxID servers."
       };
       var msg = msgs[code];
       if (!msg) {
