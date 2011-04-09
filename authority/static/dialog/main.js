@@ -128,7 +128,11 @@
       $("#create_dialog div.note:eq(0)").empty();
       if (typeof email === 'string' && email.length) {
         var valid = checkedEmails[email];
-        if (typeof valid === 'boolean') {
+        if (typeof valid === 'string') {
+          // oh noes.  we tried to check this email, but it failed.  let's just not tell the
+          // user anything, cause this is a non-critical issue
+          
+        } else if (typeof valid === 'boolean') {
           if (valid) {
             $("#create_dialog div.note:eq(0)").html($('<span class="good"/>').text("Not registered"));
           } else {
@@ -143,12 +147,20 @@
               emailCheckState = 'querying';
               var checkingNow = nextEmailToCheck;
               // bounce off the server and enter the 'querying' state
-              $.get('/wsapi/have_email?email=' + encodeURIComponent(checkingNow), null,
-                    function(data, textStatus, jqXHR) {
-                      checkedEmails[checkingNow] = !JSON.parse(data);
-                      emailCheckState = undefined;
-                      checkInput();
-                    });
+              $.ajax({
+                url: '/wsapi/have_email?email=' + encodeURIComponent(checkingNow),
+                success: function(data, textStatus, jqXHR) {
+                  checkedEmails[checkingNow] = !JSON.parse(data);
+                  emailCheckState = undefined;
+                  checkInput();
+                }, error: function(jqXHR, textStatus, errorThrown) {
+                  // some kind of error was encountered.  This is non-critical, we'll simply ignore it
+                  // and mark this email check as failed.
+                  checkedEmails[checkingNow] = "server failed";
+                  emailCheckState = undefined;
+                  checkInput();
+                }
+              });
             }, 700);
           } else {
             $("#create_dialog div.note:eq(0)").html($('<span class="warning"/>').text("Checking address"));
