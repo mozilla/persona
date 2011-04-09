@@ -133,11 +133,12 @@
       // now we need to actually try to stage the creation of this account.
       var email = $("#create_dialog input:eq(0)").val();
       var pass = $("#create_dialog input:eq(1)").val();
+      var keypair = CryptoStubs.genKeyPair();
 
-      // XXX: we should be showing the user a waiting page here
+      // XXX: we should be showing the user a waiting/status page here
 
       $.ajax({
-        url: '/wsapi/stage_user?email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(pass),
+        url: '/wsapi/stage_user?email=' + encodeURIComponent(email) + '&pass=' + encodeURIComponent(pass) + '&pubkey=' + encodeURIComponent(keypair.pub),
         success: function() {
 
           // account successfully staged, now wait for email confirmation

@@ -1,20 +1,9 @@
-console.log("authority handler starting up!");
-
 const path = require('path'),
        url = require('url'),
-     wsapi = require('./wsapi.js');
+     wsapi = require('./wsapi.js'),
+ httputils = require('./httputils.js');
 
 const STATIC_DIR = path.join(path.dirname(__dirname), "static");
-
-function fourOhFour(resp, reason) {
-  resp.writeHead(404, {"Content-Type": "text/plain"});
-  resp.write("404 Not Found");
-  if (reason) {
-    resp.write(": " + reason);
-  }
-  resp.end();
-  return undefined;
-}
 
 exports.handler = function(request, response, serveFile) {
   // dispatch!
@@ -27,8 +16,8 @@ exports.handler = function(request, response, serveFile) {
       var method = path.basename(urlpath);
       wsapi[method](request, response);
     } catch(e) {
-      var errMsg = "oops, no such wsapi method: " + method + " (" + e.toString() +")";
-      fourOhFour(response, errMsg);
+      var errMsg = "oops, error executing wsapi method: " + method + " (" + e.toString() +")";
+      httputils.fourOhFour(response, errMsg);
       console.log(errMsg);
     }
   } else {
@@ -36,5 +25,3 @@ exports.handler = function(request, response, serveFile) {
     serveFile(path.join(STATIC_DIR, urlpath));
   }
 };
-
-console.log("authority handler started!");
