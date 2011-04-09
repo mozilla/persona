@@ -9,8 +9,7 @@ exports.have_email = function(req, resp) {
 
   console.log("have_email for " + email + ": " + haveit);
 
-  // 200 means we have the email, 404 means no
-  resp.writeHead(haveit ? 200 : 404, {"Content-Type": "application/json"});
+  resp.writeHead(200, {"Content-Type": "application/json"});
   resp.write(JSON.stringify(haveit));
   resp.end();
 };

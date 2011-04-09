@@ -125,6 +125,7 @@
 
       // check the email address
       var email = $("#create_dialog input:eq(0)").val();
+      $("#create_dialog div.note:eq(0)").empty();
       if (typeof email === 'string' && email.length) {
         var valid = checkedEmails[email];
         if (typeof valid === 'boolean') {
@@ -139,19 +140,23 @@
           if (emailCheckState !== 'querying') {
             if (emailCheckState) window.clearTimeout(emailCheckState);
             emailCheckState = setTimeout(function() {
-              // XXX: this is where we should actually bounce off the server and enter the 'querying' state
-              // for now, we just call it valid
-              checkedEmails[nextEmailToCheck] = true;
-              emailCheckState = undefined;
-              checkInput();
-            }, 500);
+              emailCheckState = 'querying';
+              var checkingNow = nextEmailToCheck;
+              // bounce off the server and enter the 'querying' state
+              $.get('/wsapi/have_email?email=' + encodeURIComponent(checkingNow), null,
+                    function(data, textStatus, jqXHR) {
+                      checkedEmails[checkingNow] = !JSON.parse(data);
+                      emailCheckState = undefined;
+                      checkInput();
+                    });
+            }, 700);
+          } else {
+            $("#create_dialog div.note:eq(0)").html($('<span class="warning"/>').text("Checking address"));
           }
           nextEmailToCheck = email;
           $("#submit").addClass("disabled");
-          $("#create_dialog div.note:eq(0)").html($('<span class="warning"/>').text("Checking address"));
         }
       } else {
-        $("#create_dialog div.note:eq(0)").empty();
         $("#submit").addClass("disabled");
       }
 
@@ -228,7 +233,4 @@
       });
     }
   });
-
-  $(".sitename").text("somesite.com");
-  runSignInDialog();
 })();
