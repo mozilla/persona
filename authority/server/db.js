@@ -3,13 +3,10 @@ var g_emails = {
 };
 
 // half created user accounts (pending email verification)
-var g_stagedUsers = {
-};
-
+// OR
 // half added emails (pending verification)
-var g_stagedEmails = {
+var g_staged = {
 };
-
 
 exports.haveEmail = function(email) {
   return g_emails.hasOwnProperty(email);
@@ -28,10 +25,24 @@ function generateSecret() {
 exports.stageUser = function(obj) {
   var secret = generateSecret();
   // overwrite previously staged users
-  g_stagedUsers[obj.email] = {
-    secret: secret,
+  g_staged[secret] = {
+    email: obj.email,
     pubkey: obj.pubkey,
     pass: obj.pass
   };
   return secret;
+};
+
+/* invoked when a user clicks on a verification URL in their email */ 
+exports.gotVerificationSecret = function(secret) {
+  if (!g_staged.hasOwnProperty(secret)) return false;
+
+  // simply move from staged over to the emails "database"
+  var o = g_staged[secret];
+  delete g_staged[secret];
+  g_emails[o.email] = {
+    pass: o.pass,
+    pubkey: o.pubkey
+  };
+  return true;
 };
