@@ -46,10 +46,26 @@ exports.stage_user = function(req, resp) {
     var secret = db.stageUser(getArgs);
     httputils.jsonResponse(resp, true);
 
+    // store the email being registered in the session data
+    req.session.pendingRegistration = getArgs.email;
+
     // let's now kick out a verification email!
     email.sendVerificationEmail(getArgs.email, secret);
   } catch(e) {
     // we should differentiate tween' 400 and 500 here.
     httputils.badRequest(resp, e.toString());
+  }
+};
+
+exports.registration_status = function(req, resp) {
+  logRequest("registration_status", req.session);
+
+  var email = req.session.pendingRegistration;
+  if (db.haveEmail(email)) {
+    httputils.jsonResponse(resp, "complete");      
+  } else if (db.isStaged(email)) {
+    httputils.jsonResponse(resp, "pending");      
+  } else {
+    httputils.jsonResponse(resp, "noRegistration");
   }
 };

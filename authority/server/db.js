@@ -12,6 +12,14 @@ exports.haveEmail = function(email) {
   return g_emails.hasOwnProperty(email);
 };
 
+exports.isStaged = function(email) {
+  // XXX: not efficient
+  for (var k in g_staged) {
+    if (g_staged[k].email === email) return true;
+  }
+  return false;
+};
+
 function generateSecret() {
   var str = "";
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

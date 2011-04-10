@@ -11,6 +11,13 @@ exports.fourOhFour = function(resp, reason)
   resp.end();
 };
 
+exports.serverError = function(resp, reason)
+{
+  resp.writeHead(500, {"Content-Type": "text/plain"});
+  if (reason) resp.write(reason);
+  resp.end();
+};
+
 exports.badRequest = function(resp, reason)
 {
   resp.writeHead(400, {"Content-Type": "text/plain"});

@@ -61,18 +61,52 @@
 
     $("span.email").text(email);
 
-    // XXX: till we implement email confirmation, this is a faked up step.  just wait 5s
-    var fakeyTimeout = setTimeout(function() {
-      runConfirmedEmailDialog(email, onsuccess, onerror);
-    }, 5000);
+    // now poll every 3s waiting for the user to complete confirmation
+    function setupRegCheck() {
+      return setTimeout(function() {
+        $.ajax({
+          url: '/wsapi/registration_status',
+          success: function(status, textStatus, jqXHR) {
+            // registration status checks the status of the last initiated registration,
+            // it's possible return values are:
+            //   'complete' - registration has been completed
+            //   'pending'  - a registration is in progress
+            //   'noRegistration' - no registration is in progress  
+            if (status === 'complete') {
+              // XXX: now we need to add all of the pertinent data to local storage
+
+              // and tell the user that everything is really quite awesome.
+              runConfirmedEmailDialog(email, onsuccess, onerror);
+            } else if (status === 'pending') {
+              // try again, what else can we do?
+              pollTimeout = setupRegCheck();              
+            } else {
+              runErrorDialog(
+                "serverError",
+                "Registration Failed",
+                "An error was encountered and the sign up cannot be completed, please try again later.",
+                onsuccess,
+                onerror);
+            }
+            console.log("success");
+            console.log(data);
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            runErrorDialog("serverError", "Registration Failed", jqXHR.responseText, onsuccess, onerror);
+          }
+        });
+      }, 3000);
+    }
+
+    var pollTimeout = setupRegCheck();
 
     $("#back").show().unbind('click').click(function() {
-      window.clearTimeout(fakeyTimeout);
+      window.clearTimeout(pollTimeout);
       runCreateDialog(onsuccess, onerror);
     });
 
     $("#cancel").show().unbind('click').click(function() {
-      window.clearTimeout(fakeyTimeout);
+      window.clearTimeout(pollTimeout);
       onerror("canceled");
     });
     $("#submit").hide();
