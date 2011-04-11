@@ -31,7 +31,7 @@ exports.badRequest = function(resp, reason)
 exports.jsonResponse = function(resp, obj)
 {
   resp.writeHead(200, {"Content-Type": "application/json"});
-  if (obj) resp.write(JSON.stringify(obj));
+  if (obj !== undefined) resp.write(JSON.stringify(obj));
   resp.end();
 };
 

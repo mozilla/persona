@@ -52,7 +52,31 @@
       onerror("canceled");
     });
     $("#submit").show().unbind('click').click(function() {
-      onerror("notImplemented");
+      var email = $("#authenticate_dialog input:eq(0)").val();
+      var pass = $("#authenticate_dialog input:eq(1)").val();
+
+      $.ajax({
+        url: '/wsapi/authenticate_user?email=' + encodeURIComponent(email) + '&pass=' + encodeURIComponent(pass),
+        success: function(status, textStatus, jqXHR) {
+          var authenticated = JSON.parse(status);
+          if (!authenticated) {
+            $("#authenticate_dialog div.attention_lame").hide().fadeIn(400);
+          } else {
+            runWaitingDialog(
+              "Finishing Log In...",
+              "In just a moment you'll be logged into BrowserID (XXX: this will never go away!  write me!",
+              onsuccess, onerror);
+            // XXX: now it's time for the id synchronization process...
+          }
+        },
+        error: function() {
+          runErrorDialog(
+            "serverError",
+            "Error Authenticating!",
+            "There was a technical problem while trying to log you in.  Yucky!",
+            onsuccess, onerror);
+        }
+      });
     }).text("Sign In");
     $("#authenticate_dialog div.note > a").unbind('click').click(function() {
       onerror("notImplemented");
@@ -60,6 +84,9 @@
     $("#authenticate_dialog div.actions div.action").unbind('click').click(function() {
       runCreateDialog(onsuccess, onerror);
     });
+
+    $("#authenticate_dialog div.attention_lame").hide();
+
     $("#authenticate_dialog").fadeIn(500);
   }
 
@@ -365,4 +392,6 @@
       });
     }
   });
+
+  runAuthenticateDialog();
 })();
