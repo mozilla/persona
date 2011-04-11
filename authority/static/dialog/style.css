@@ -93,10 +93,15 @@ div.actions {
     margin-left: 79px;
 }
 
+#identities {
+    width: 450px;
+    margin: auto;
+}
+
 #identities > div {
-    margin-left: .8em;
     margin-bottom: .5em;
     height: 1.4em;
+    font-size: .9em;
 }
 
 #identities > div > * {
@@ -131,20 +136,21 @@ div.input > div.note {
     margin-top: .7em;
 }
 
-div.content > div.input {
+div.content {
     width: 450px;
-    height: 3em;
     margin: auto;
+    text-align: left;
+}
+
+div.content > div.input {
+    height: 3em;
     font-size: .8em;
 }
 
 div.content > div.summary {
     text-align: left;
-    width: 450px;
-    margin: auto;
     margin-bottom: 2em;
 }
-
 
 div.content > div.input > div.label {
     width: 80px;

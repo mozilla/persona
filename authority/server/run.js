@@ -17,8 +17,8 @@ exports.handler = function(request, response, serveFile) {
       wsapi[method](request, response);
     } catch(e) {
       var errMsg = "oops, error executing wsapi method: " + method + " (" + e.toString() +")";
-      httputils.fourOhFour(response, errMsg);
       console.log(errMsg);
+      httputils.fourOhFour(response, errMsg);
     }
   } else {
     // node.js takes care of sanitizing the request path

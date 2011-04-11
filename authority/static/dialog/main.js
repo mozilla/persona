@@ -8,6 +8,8 @@
       scope: "mozid"
     });
 
+  var remoteOrigin = undefined;
+
   function runSignInDialog(onsuccess, onerror) {
     $(".dialog").hide();
 
@@ -16,12 +18,29 @@
       onerror("canceled");
     });
     $("#submit").show().unbind('click').click(function() {
-      onerror("notImplemented");
+      var email = $("#identities input:checked").parent().find("div").text();
+      // yay!  now we need to produce an assertion.
+      var privkey = JSON.parse(window.localStorage.emails)[email].priv;
+      var assertion = CryptoStubs.createAssertion(remoteOrigin, email, privkey);
+      onsuccess(assertion);
     }).text("Sign In");
 
     $("#default_dialog div.actions div.action a").unbind('click').click(function() {
       onerror("notImplemented");
     });
+
+    // now populate the selection list with all available emails
+    // we assume there are identities available, because without them 
+    var emails = JSON.parse(window.localStorage.emails);
+    var first = true; 
+    for (var k in emails) {
+      var id = $("<div />")
+        .append($("<input />").attr('type', 'radio').attr('name', 'identity').attr('checked', first))
+        .append($("<div />").text(k));
+      first = false;
+      id.appendTo($("form#identities"));
+    }
+
     $("#sign_in_dialog").fadeIn(500);
   }
 
@@ -53,10 +72,9 @@
   var nextEmailToCheck = undefined;
   // a set of emails that we've checked for this session
   var checkedEmails = {
-
   };
 
-  function runConfirmEmailDialog(email, onsuccess, onerror) {
+  function runConfirmEmailDialog(email, keypair, onsuccess, onerror) {
     $(".dialog").hide();
 
     $("span.email").text(email);
@@ -73,7 +91,11 @@
             //   'pending'  - a registration is in progress
             //   'noRegistration' - no registration is in progress  
             if (status === 'complete') {
-              // XXX: now we need to add all of the pertinent data to local storage
+              // now we need to add all of the pertinent data to local storage
+              var emails = {};
+              if (window.localStorage.emails) emails = JSON.parse(window.localStorage.emails);
+              emails[email] = keypair;
+              window.localStorage.emails = JSON.stringify(emails);
 
               // and tell the user that everything is really quite awesome.
               runConfirmedEmailDialog(email, onsuccess, onerror);
@@ -88,8 +110,6 @@
                 onsuccess,
                 onerror);
             }
-            console.log("success");
-            console.log(data);
           },
           error: function(jqXHR, textStatus, errorThrown) {
             runErrorDialog("serverError", "Registration Failed", jqXHR.responseText, onsuccess, onerror);
@@ -151,6 +171,21 @@
     $("#error_dialog").fadeIn(500);
   }
 
+  function runWaitingDialog(title, message, onsuccess, onerror) {
+    $(".dialog").hide();
+
+    $("#waiting_dialog div.title").text(title);
+    $("#waiting_dialog div.content").text(message);
+
+    $("#back").hide();
+    $("#submit").hide();
+    $("#cancel").show().unbind('click').click(function() {
+      onerror("canceled");
+    });
+
+    $("#waiting_dialog").fadeIn(500);
+  }
+
   function runCreateDialog(onsuccess, onerror) {
     $(".dialog").hide();
 
@@ -169,14 +204,19 @@
       var pass = $("#create_dialog input:eq(1)").val();
       var keypair = CryptoStubs.genKeyPair();
 
-      // XXX: we should be showing the user a waiting/status page here
+      // kick the user to waiting/status page while we talk to the server.
+      runWaitingDialog(
+        "One Moment Please...",
+        "We're creating your account, this should only take a couple seconds",
+        onsuccess,
+        onerror
+      );
 
       $.ajax({
         url: '/wsapi/stage_user?email=' + encodeURIComponent(email) + '&pass=' + encodeURIComponent(pass) + '&pubkey=' + encodeURIComponent(keypair.pub),
         success: function() {
-
           // account successfully staged, now wait for email confirmation
-          runConfirmEmailDialog(email, onsuccess, onerror);
+          runConfirmEmailDialog(email, keypair, onsuccess, onerror);
         },
         error: function() {
           runErrorDialog(
@@ -186,8 +226,6 @@
             onsuccess, onerror);
         }
       });
-
-
     }).text("Continue").addClass("disabled");
 
 
@@ -297,11 +335,24 @@
   chan.bind("getVerifiedEmail", function(trans, s) {
     trans.delayReturn(true);
 
+    remoteOrigin = trans.origin;
+
     // set the requesting site
     $(".sitename").text(trans.origin.replace(/^.*:\/\//, ""));
 
-    // XXX: check to see if there's any pubkeys stored in the browser
+    // check to see if there's any pubkeys stored in the browser
     var haveIDs = false;
+    try {
+      var emails = JSON.parse(window.localStorage.emails);
+      if (typeof emails !== 'object') throw "emails blob bogus!";
+      for (var k in emails) {
+        if (!emails.hasOwnProperty(k)) continue;
+        haveIDs = true;
+        break;
+      }
+    } catch(e) {
+      window.localStorage.emails = JSON.stringify({});
+    }
 
     if (haveIDs) {
       runSignInDialog(function(rv) {

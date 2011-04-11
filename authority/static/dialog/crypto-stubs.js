@@ -22,7 +22,17 @@ CryptoStubs = (function() {
     };
   }
 
+  function createAssertion(audience, email, privkey) {
+    // XXX: in the future, we need to sign via JWT spec, now let's just glom together and stringify
+    return JSON.stringify({
+      audience: audience,
+      email: email,
+      "valid-until": (new Date()).getTime() + (1000 * 120) // 2 mins from now.
+    });
+  }
+
   return {
-    genKeyPair: genKeyPair
+    genKeyPair: genKeyPair,
+    createAssertion: createAssertion
   };
 })();
