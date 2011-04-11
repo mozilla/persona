@@ -393,5 +393,11 @@
     }
   });
 
-  runAuthenticateDialog();
+  // 'Enter' in any input field triggers a click on the submit button
+  $('input').keypress(function(e){
+    if(e.which == 13) {
+      $('#submit').click();
+      e.preventDefault();
+    }
+  });
 })();
