@@ -44,7 +44,7 @@
     $("#sign_in_dialog").fadeIn(500);
   }
 
-  function runDefaultDialog(onsuccess, onerror) {
+  function runAuthenticateDialog(onsuccess, onerror) {
     $(".dialog").hide();
 
     $("#back").hide();
@@ -54,16 +54,13 @@
     $("#submit").show().unbind('click').click(function() {
       onerror("notImplemented");
     }).text("Sign In");
-    $("#default_dialog div.note > a").unbind('click').click(function() {
+    $("#authenticate_dialog div.note > a").unbind('click').click(function() {
       onerror("notImplemented");
     });
-    $("#default_dialog div.note > a").unbind('click').click(function() {
-      onerror("notImplemented");
-    });
-    $("#default_dialog div.actions div.action").unbind('click').click(function() {
+    $("#authenticate_dialog div.actions div.action").unbind('click').click(function() {
       runCreateDialog(onsuccess, onerror);
     });
-    $("#default_dialog").fadeIn(500);
+    $("#authenticate_dialog").fadeIn(500);
   }
 
   // a handle to a timeout of a running email check
@@ -190,7 +187,7 @@
     $(".dialog").hide();
 
     $("#back").show().unbind('click').click(function() {
-      runDefaultDialog(onsuccess, onerror);
+      runAuthenticateDialog(onsuccess, onerror);
     });
     $("#cancel").show().unbind('click').click(function() {
       onerror("canceled");
@@ -361,7 +358,7 @@
         errorOut(trans, error);
       });
     } else {
-      runDefaultDialog(function(rv) {
+      runAuthenticateDialog(function(rv) {
         trans.complete(rv);
       }, function(error) {
         errorOut(trans, error);
