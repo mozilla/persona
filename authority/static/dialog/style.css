@@ -78,6 +78,7 @@ span.sitename, span.email {
 
 div.actions > div.action {
     float: left;
+    margin-right: 1em;
 }
 
 div.actions > div.action a {

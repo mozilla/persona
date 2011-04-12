@@ -25,14 +25,22 @@
       onsuccess(assertion);
     }).text("Sign In").removeClass("disabled");
 
-    $("#default_dialog div.actions div.action a").unbind('click').click(function() {
-      onerror("notImplemented");
+    $("#sign_in_dialog div.actions div.action:first a").unbind('click').click(function() {
+      runAddNewAddressDialog(onsuccess, onerror);
+    });
+
+    $("#sign_in_dialog div.actions div.action:eq(1) a").unbind('click').click(function() {
+      // not your email addresses?  we'll just purge local storage and click you over
+      // to the login page.
+      window.localStorage.emails = JSON.stringify({});
+      runAuthenticateDialog(undefined, onsuccess, onerror);
     });
 
     // now populate the selection list with all available emails
     // we assume there are identities available, because without them 
     var emails = JSON.parse(window.localStorage.emails);
     var first = true; 
+    $("form#identities").empty();
     for (var k in emails) {
       var id = $("<div />")
         .append($("<input />").attr('type', 'radio').attr('name', 'identity').attr('checked', first))
@@ -153,7 +161,7 @@
               runConfirmedEmailDialog(email, onsuccess, onerror);
             } else if (status === 'pending') {
               // try again, what else can we do?
-              pollTimeout = setupRegCheck();              
+              pollTimeout = setupRegCheck();
             } else {
               runErrorDialog(
                 "serverError",
@@ -236,6 +244,59 @@
     });
 
     $("#waiting_dialog").fadeIn(500);
+  }
+
+  function runAddNewAddressDialog(onsuccess, onerror) {
+    $(".dialog").hide();
+
+    $("#back").show().unbind('click').click(function() {
+      runSignInDialog(onsuccess, onerror);
+    });
+    $("#cancel").show().unbind('click').click(function() {
+      onerror("canceled");
+    });
+    $("#submit").show().unbind('click').click(function() {
+      // ignore the click if we're disabled
+      if ($(this).hasClass('disabled')) return true;
+
+      // now we need to actually try to stage the creation of this account.
+      var email = $("#create_dialog input:eq(0)").val();
+      var keypair = CryptoStubs.genKeyPair();
+
+      // kick the user to waiting/status page while we talk to the server.
+      runWaitingDialog(
+        "One Moment Please...",
+        "We're adding this email to your account, this should only take a couple seconds.",
+        onsuccess,
+        onerror
+      );
+
+      $.ajax({
+        url: '/wsapi/add_email?email=' + encodeURIComponent(email) + '&pubkey=' + encodeURIComponent(keypair.pub),
+        success: function() {
+          // email successfully staged, now wait for email confirmation
+          runConfirmEmailDialog(email, keypair, onsuccess, onerror);
+        },
+        error: function() {
+          runErrorDialog(
+            "serverError",
+            "Error Creating Account!",
+            "There was a technical problem while trying to add this email to your account.  Yucky.",
+            onsuccess, onerror);
+        }
+      });
+    }).text("Add").addClass('disabled');
+
+    $("#add_email_dialog input").unbind('keyup').bind('keyup', function() {
+      var email = $("#add_email_dialog input:eq(0)").val();
+      if (email.length > 0) {
+        $("#submit").removeClass('disabled');
+      } else {
+        $("#submit").addClass('disabled');
+      }
+    });
+
+    $("#add_email_dialog").fadeIn(500);
   }
 
   function runCreateDialog(onsuccess, onerror) {
