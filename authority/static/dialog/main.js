@@ -40,6 +40,9 @@
       first = false;
       id.appendTo($("form#identities"));
     }
+    $("form#identities > div").unbind('click').click(function() {
+      $(this).find(':first').attr('checked', true);
+    });
 
     $("#sign_in_dialog").fadeIn(500);
   }
