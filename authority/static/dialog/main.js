@@ -23,7 +23,7 @@
       var privkey = JSON.parse(window.localStorage.emails)[email].priv;
       var assertion = CryptoStubs.createAssertion(remoteOrigin, email, privkey);
       onsuccess(assertion);
-    }).text("Sign In");
+    }).text("Sign In").removeClass("disabled");;
 
     $("#default_dialog div.actions div.action a").unbind('click').click(function() {
       onerror("notImplemented");
