@@ -4,7 +4,7 @@
   <link href="../dialog/style.css" type="text/css" media="screen" rel="stylesheet"></link>
 </head>
 <body id="body">
-<div id="default_dialog" class="dialog">
+<div id="authenticate_dialog" class="dialog">
   <div class="title"> Sign in with Firefox ID </div>
   <div class="content">
     <div class="summary">Enter your email and Firefox ID password to log into <span class="sitename bad"></span>:</div>
@@ -16,6 +16,9 @@
       <div class="label"> Password </div>
       <div class="input"> <input type="password"></input></div>
       <div class="note"> <a href="#">I forgot my password</a> </div>
+    </div>
+    <div class="attention_lame">
+      No such account exists with that email and/or password
     </div>
     <div class="actions">
       <div class="action"><a href="#">Don't have a Firefox ID yet?</a></div>
@@ -39,6 +42,9 @@
       <div class="label"> Verify </div>
       <div class="input"> <input type="password"></input></div>
       <div class="note"><span class="bad">Enter a password</span></div>
+    </div>
+    <div class="attention_lame">
+      <span id="in_use_email">Email</span> in use, If this email is yours you can <a href="#">log in</a> with it?
     </div>
   </div>
 </div>
@@ -70,8 +76,16 @@
     <form id="identities" name="identities">
     </form>
   </div>
+  <div class="actions">
+    <div class="action"><a href="#">Add a new email address</a></div>
+  </div>
 </div>
 <div id="error_dialog" class="dialog">
+  <div class="title"> Sign in with Firefox ID </div>
+  <div class="content">
+  </div>
+</div>
+<div id="waiting_dialog" class="dialog">
   <div class="title"> Sign in with Firefox ID </div>
   <div class="content">
   </div>

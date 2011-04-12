@@ -8,6 +8,8 @@
       scope: "mozid"
     });
 
+  var remoteOrigin = undefined;
+
   function runSignInDialog(onsuccess, onerror) {
     $(".dialog").hide();
 
@@ -16,35 +18,94 @@
       onerror("canceled");
     });
     $("#submit").show().unbind('click').click(function() {
-      onerror("notImplemented");
+      var email = $("#identities input:checked").parent().find("div").text();
+      // yay!  now we need to produce an assertion.
+      var privkey = JSON.parse(window.localStorage.emails)[email].priv;
+      var assertion = CryptoStubs.createAssertion(remoteOrigin, email, privkey);
+      onsuccess(assertion);
     }).text("Sign In");
 
     $("#default_dialog div.actions div.action a").unbind('click').click(function() {
       onerror("notImplemented");
     });
+
+    // now populate the selection list with all available emails
+    // we assume there are identities available, because without them 
+    var emails = JSON.parse(window.localStorage.emails);
+    var first = true; 
+    for (var k in emails) {
+      var id = $("<div />")
+        .append($("<input />").attr('type', 'radio').attr('name', 'identity').attr('checked', first))
+        .append($("<div />").text(k));
+      first = false;
+      id.appendTo($("form#identities"));
+    }
+    $("form#identities > div").unbind('click').click(function() {
+      $(this).find(':first').attr('checked', true);
+    });
+
     $("#sign_in_dialog").fadeIn(500);
   }
 
-  function runDefaultDialog(onsuccess, onerror) {
+  function runAuthenticateDialog(email, onsuccess, onerror) {
     $(".dialog").hide();
-
     $("#back").hide();
     $("#cancel").show().unbind('click').click(function() {
       onerror("canceled");
     });
     $("#submit").show().unbind('click').click(function() {
-      onerror("notImplemented");
+      var email = $("#authenticate_dialog input:eq(0)").val();
+      var pass = $("#authenticate_dialog input:eq(1)").val();
+
+      $.ajax({
+        url: '/wsapi/authenticate_user?email=' + encodeURIComponent(email) + '&pass=' + encodeURIComponent(pass),
+        success: function(status, textStatus, jqXHR) {
+          var authenticated = JSON.parse(status);
+          if (!authenticated) {
+            $("#authenticate_dialog div.attention_lame").hide().fadeIn(400);
+          } else {
+            runWaitingDialog(
+              "Finishing Log In...",
+              "In just a moment you'll be logged into BrowserID (XXX: this will never go away!  write me!",
+              onsuccess, onerror);
+            // XXX: now it's time for the id synchronization process...
+          }
+        },
+        error: function() {
+          runErrorDialog(
+            "serverError",
+            "Error Authenticating!",
+            "There was a technical problem while trying to log you in.  Yucky!",
+            onsuccess, onerror);
+        }
+      });
     }).text("Sign In");
-    $("#default_dialog div.note > a").unbind('click').click(function() {
+
+    // preseed the email input if whoever triggered us told us to
+    if (email) {
+      $("#authenticate_dialog input:eq(0)").val(email);
+    }
+
+    $("#authenticate_dialog div.note > a").unbind('click').click(function() {
       onerror("notImplemented");
     });
-    $("#default_dialog div.note > a").unbind('click').click(function() {
-      onerror("notImplemented");
-    });
-    $("#default_dialog div.actions div.action").unbind('click').click(function() {
+    $("#authenticate_dialog div.actions div.action").unbind('click').click(function() {
       runCreateDialog(onsuccess, onerror);
     });
-    $("#default_dialog").fadeIn(500);
+
+    $("#authenticate_dialog div.attention_lame").hide();
+
+    $("#authenticate_dialog").fadeIn(
+      500,
+      function() {
+        // where should we put the focus?  On login if empty, else password
+        var email = $("#authenticate_dialog input:eq(0)").val();
+        if (typeof email === 'string' && email.length) {
+          $("#authenticate_dialog input:eq(1)").focus();
+        } else {
+          $("#authenticate_dialog input:eq(0)").focus();
+        }
+      });
   }
 
   // a handle to a timeout of a running email check
@@ -53,10 +114,9 @@
   var nextEmailToCheck = undefined;
   // a set of emails that we've checked for this session
   var checkedEmails = {
-
   };
 
-  function runConfirmEmailDialog(email, onsuccess, onerror) {
+  function runConfirmEmailDialog(email, keypair, onsuccess, onerror) {
     $(".dialog").hide();
 
     $("span.email").text(email);
@@ -73,7 +133,11 @@
             //   'pending'  - a registration is in progress
             //   'noRegistration' - no registration is in progress  
             if (status === 'complete') {
-              // XXX: now we need to add all of the pertinent data to local storage
+              // now we need to add all of the pertinent data to local storage
+              var emails = {};
+              if (window.localStorage.emails) emails = JSON.parse(window.localStorage.emails);
+              emails[email] = keypair;
+              window.localStorage.emails = JSON.stringify(emails);
 
               // and tell the user that everything is really quite awesome.
               runConfirmedEmailDialog(email, onsuccess, onerror);
@@ -88,8 +152,6 @@
                 onsuccess,
                 onerror);
             }
-            console.log("success");
-            console.log(data);
           },
           error: function(jqXHR, textStatus, errorThrown) {
             runErrorDialog("serverError", "Registration Failed", jqXHR.responseText, onsuccess, onerror);
@@ -151,11 +213,26 @@
     $("#error_dialog").fadeIn(500);
   }
 
+  function runWaitingDialog(title, message, onsuccess, onerror) {
+    $(".dialog").hide();
+
+    $("#waiting_dialog div.title").text(title);
+    $("#waiting_dialog div.content").text(message);
+
+    $("#back").hide();
+    $("#submit").hide();
+    $("#cancel").show().unbind('click').click(function() {
+      onerror("canceled");
+    });
+
+    $("#waiting_dialog").fadeIn(500);
+  }
+
   function runCreateDialog(onsuccess, onerror) {
     $(".dialog").hide();
 
     $("#back").show().unbind('click').click(function() {
-      runDefaultDialog(onsuccess, onerror);
+      runAuthenticateDialog(undefined, onsuccess, onerror);
     });
     $("#cancel").show().unbind('click').click(function() {
       onerror("canceled");
@@ -169,14 +246,19 @@
       var pass = $("#create_dialog input:eq(1)").val();
       var keypair = CryptoStubs.genKeyPair();
 
-      // XXX: we should be showing the user a waiting/status page here
+      // kick the user to waiting/status page while we talk to the server.
+      runWaitingDialog(
+        "One Moment Please...",
+        "We're creating your account, this should only take a couple seconds",
+        onsuccess,
+        onerror
+      );
 
       $.ajax({
         url: '/wsapi/stage_user?email=' + encodeURIComponent(email) + '&pass=' + encodeURIComponent(pass) + '&pubkey=' + encodeURIComponent(keypair.pub),
         success: function() {
-
           // account successfully staged, now wait for email confirmation
-          runConfirmEmailDialog(email, onsuccess, onerror);
+          runConfirmEmailDialog(email, keypair, onsuccess, onerror);
         },
         error: function() {
           runErrorDialog(
@@ -186,10 +268,13 @@
             onsuccess, onerror);
         }
       });
-
-
     }).text("Continue").addClass("disabled");
 
+    $("#create_dialog div.attention_lame").hide();
+    $("#create_dialog div.attention_lame a").unbind('click').click(function() {
+      var email = $("#create_dialog input:eq(0)").val();
+      runAuthenticateDialog(email, onsuccess, onerror);
+    });
 
     function checkInput() {
       $("#submit").removeClass("disabled");
@@ -206,8 +291,10 @@
         } else if (typeof valid === 'boolean') {
           if (valid) {
             $("#create_dialog div.note:eq(0)").html($('<span class="good"/>').text("Not registered"));
+            $("#create_dialog div.attention_lame").hide();
           } else {
-            $("#create_dialog div.note:eq(0)").html($('<span class="bad"/>').text("Email in use"));
+            $("#create_dialog div.attention_lame").fadeIn(300);
+            $("#create_dialog div.attention_lame span.email").text(email);
             $("#submit").addClass("disabled");
           }
         } else {
@@ -263,17 +350,15 @@
     }
 
     // watch input dialogs
-    $("#create_dialog input:first").unbind('keyup').bind('keyup', function() {
-      checkInput();
-    });
-
-    $("#create_dialog input:gt(0)").unbind('keyup').bind('keyup', checkInput);
+    $("#create_dialog input").unbind('keyup').bind('keyup', checkInput);
 
     // do a check at load time, in case the user is using the back button (enables the continue button!)
     checkInput();
 
     $("#create_dialog").fadeIn(500);
   }
+
+  runCreateDialog();
 
 
   function errorOut(trans, code) {
@@ -297,11 +382,24 @@
   chan.bind("getVerifiedEmail", function(trans, s) {
     trans.delayReturn(true);
 
+    remoteOrigin = trans.origin;
+
     // set the requesting site
     $(".sitename").text(trans.origin.replace(/^.*:\/\//, ""));
 
-    // XXX: check to see if there's any pubkeys stored in the browser
+    // check to see if there's any pubkeys stored in the browser
     var haveIDs = false;
+    try {
+      var emails = JSON.parse(window.localStorage.emails);
+      if (typeof emails !== 'object') throw "emails blob bogus!";
+      for (var k in emails) {
+        if (!emails.hasOwnProperty(k)) continue;
+        haveIDs = true;
+        break;
+      }
+    } catch(e) {
+      window.localStorage.emails = JSON.stringify({});
+    }
 
     if (haveIDs) {
       runSignInDialog(function(rv) {
@@ -310,11 +408,19 @@
         errorOut(trans, error);
       });
     } else {
-      runDefaultDialog(function(rv) {
+      runAuthenticateDialog(undefined, function(rv) {
         trans.complete(rv);
       }, function(error) {
         errorOut(trans, error);
       });
+    }
+  });
+
+  // 'Enter' in any input field triggers a click on the submit button
+  $('input').keypress(function(e){
+    if(e.which == 13) {
+      $('#submit').click();
+      e.preventDefault();
     }
   });
 })();

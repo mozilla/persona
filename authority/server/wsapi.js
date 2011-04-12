@@ -10,6 +10,20 @@ function logRequest(method, args) {
   console.log("WSAPI ("+method+") " + (args ? JSON.stringify(args) : "")); 
 }
 
+function checkParams(getArgs, resp, params) {
+  try {
+    params.forEach(function(k) {
+      if (!getArgs.hasOwnProperty(k) || typeof getArgs[k] !== 'string') {
+        throw k;
+      }
+    });
+  } catch(e) {
+    httputils.badRequest(resp, "missing '" + e + "' argument");
+    return false;
+  }
+  return true;
+}
+
 /* checks to see if an email address is known to the server
  * takes 'email' as a GET argument */
 exports.have_email = function(req, resp) {
@@ -67,5 +81,18 @@ exports.registration_status = function(req, resp) {
     httputils.jsonResponse(resp, "pending");      
   } else {
     httputils.jsonResponse(resp, "noRegistration");
+  }
+};
+
+exports.authenticate_user = function(req, resp) {
+  var urlobj = url.parse(req.url, true);
+  var getArgs = urlobj.query;
+
+  if (!checkParams(getArgs, resp, [ "email", "pass" ])) return;
+  
+  if (db.checkAuth(getArgs.email, getArgs.pass)) {
+    httputils.jsonResponse(resp, true);      
+  } else {
+    httputils.jsonResponse(resp, false);      
   }
 };

@@ -54,3 +54,10 @@ exports.gotVerificationSecret = function(secret) {
   };
   return true;
 };
+
+/* takes an argument object including email, pass, and pubkey. */
+exports.checkAuth = function(email, pass) {
+  console.log("e: " + email + " p: " + pass);
+  console.log(g_emails);
+  return (g_emails.hasOwnProperty(email) && g_emails[email].pass === pass);
+};
