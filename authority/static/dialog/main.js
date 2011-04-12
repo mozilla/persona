@@ -23,7 +23,7 @@
       var privkey = JSON.parse(window.localStorage.emails)[email].priv;
       var assertion = CryptoStubs.createAssertion(remoteOrigin, email, privkey);
       onsuccess(assertion);
-    }).text("Sign In").removeClass("disabled");;
+    }).text("Sign In").removeClass("disabled");
 
     $("#default_dialog div.actions div.action a").unbind('click').click(function() {
       onerror("notImplemented");
@@ -54,6 +54,8 @@
       onerror("canceled");
     });
     $("#submit").show().unbind('click').click(function() {
+      if ($(this).hasClass('disabled')) return true;
+
       var email = $("#authenticate_dialog input:eq(0)").val();
       var pass = $("#authenticate_dialog input:eq(1)").val();
 
@@ -79,7 +81,7 @@
             onsuccess, onerror);
         }
       });
-    }).text("Sign In");
+    }).text("Sign In").addClass("disabled");;
 
     // preseed the email input if whoever triggered us told us to
     if (email) {
@@ -94,6 +96,14 @@
     });
 
     $("#authenticate_dialog div.attention_lame").hide();
+
+    $("#authenticate_dialog input").unbind('keyup').bind('keyup', function() {
+      var email = $("#authenticate_dialog input:eq(0)").val();
+      var pass = $("#authenticate_dialog input:eq(1)").val();
+      if (email.length > 0 && pass.length > 0) $("#submit").removeClass('disabled');
+      else $("#submit").addClass('disabled');
+    });
+
 
     $("#authenticate_dialog").fadeIn(
       500,
