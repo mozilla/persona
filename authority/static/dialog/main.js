@@ -44,9 +44,8 @@
     $("#sign_in_dialog").fadeIn(500);
   }
 
-  function runAuthenticateDialog(onsuccess, onerror) {
+  function runAuthenticateDialog(email, onsuccess, onerror) {
     $(".dialog").hide();
-
     $("#back").hide();
     $("#cancel").show().unbind('click').click(function() {
       onerror("canceled");
@@ -78,6 +77,12 @@
         }
       });
     }).text("Sign In");
+
+    // preseed the email input if whoever triggered us told us to
+    if (email) {
+      $("#authenticate_dialog input:eq(0)").val(email);
+    }
+
     $("#authenticate_dialog div.note > a").unbind('click').click(function() {
       onerror("notImplemented");
     });
@@ -87,7 +92,17 @@
 
     $("#authenticate_dialog div.attention_lame").hide();
 
-    $("#authenticate_dialog").fadeIn(500);
+    $("#authenticate_dialog").fadeIn(
+      500,
+      function() {
+        // where should we put the focus?  On login if empty, else password
+        var email = $("#authenticate_dialog input:eq(0)").val();
+        if (typeof email === 'string' && email.length) {
+          $("#authenticate_dialog input:eq(1)").focus();
+        } else {
+          $("#authenticate_dialog input:eq(0)").focus();
+        }
+      });
   }
 
   // a handle to a timeout of a running email check
@@ -214,7 +229,7 @@
     $(".dialog").hide();
 
     $("#back").show().unbind('click').click(function() {
-      runAuthenticateDialog(onsuccess, onerror);
+      runAuthenticateDialog(undefined, onsuccess, onerror);
     });
     $("#cancel").show().unbind('click').click(function() {
       onerror("canceled");
@@ -252,6 +267,11 @@
       });
     }).text("Continue").addClass("disabled");
 
+    $("#create_dialog div.attention_lame").hide();
+    $("#create_dialog div.attention_lame a").unbind('click').click(function() {
+      var email = $("#create_dialog input:eq(0)").val();
+      runAuthenticateDialog(email, onsuccess, onerror);
+    });
 
     function checkInput() {
       $("#submit").removeClass("disabled");
@@ -268,8 +288,10 @@
         } else if (typeof valid === 'boolean') {
           if (valid) {
             $("#create_dialog div.note:eq(0)").html($('<span class="good"/>').text("Not registered"));
+            $("#create_dialog div.attention_lame").hide();
           } else {
-            $("#create_dialog div.note:eq(0)").html($('<span class="bad"/>').text("Email in use"));
+            $("#create_dialog div.attention_lame").fadeIn(300);
+            $("#create_dialog div.attention_lame span.email").text(email);
             $("#submit").addClass("disabled");
           }
         } else {
@@ -325,17 +347,15 @@
     }
 
     // watch input dialogs
-    $("#create_dialog input:first").unbind('keyup').bind('keyup', function() {
-      checkInput();
-    });
-
-    $("#create_dialog input:gt(0)").unbind('keyup').bind('keyup', checkInput);
+    $("#create_dialog input").unbind('keyup').bind('keyup', checkInput);
 
     // do a check at load time, in case the user is using the back button (enables the continue button!)
     checkInput();
 
     $("#create_dialog").fadeIn(500);
   }
+
+  runCreateDialog();
 
 
   function errorOut(trans, code) {
@@ -385,7 +405,7 @@
         errorOut(trans, error);
       });
     } else {
-      runAuthenticateDialog(function(rv) {
+      runAuthenticateDialog(undefined, function(rv) {
         trans.complete(rv);
       }, function(error) {
         errorOut(trans, error);
