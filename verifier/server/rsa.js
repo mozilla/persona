@@ -1,3 +1,4 @@
+//SJCL.js
 "use strict";var sjcl={cipher:{},hash:{},mode:{},misc:{},codec:{},exception:{corrupt:function(a){this.toString=function(){return"CORRUPT: "+this.message};this.message=a},invalid:function(a){this.toString=function(){return"INVALID: "+this.message};this.message=a},bug:function(a){this.toString=function(){return"BUG: "+this.message};this.message=a}}};
 sjcl.cipher.aes=function(a){this.h[0][0][0]||this.w();var b,c,d,e,f=this.h[0][4],g=this.h[1];b=a.length;var h=1;if(b!==4&&b!==6&&b!==8)throw new sjcl.exception.invalid("invalid aes key size");this.a=[d=a.slice(0),e=[]];for(a=b;a<4*b+28;a++){c=d[a-1];if(a%b===0||b===8&&a%b===4){c=f[c>>>24]<<24^f[c>>16&255]<<16^f[c>>8&255]<<8^f[c&255];if(a%b===0){c=c<<8^c>>>24^h<<24;h=h<<1^(h>>7)*283}}d[a]=d[a-b]^c}for(b=0;a;b++,a--){c=d[b&3?a:a-4];e[b]=a<=4||b<4?c:g[0][f[c>>>24]]^g[1][f[c>>16&255]]^g[2][f[c>>8&255]]^
 g[3][f[c&255]]}};
@@ -37,6 +38,9 @@ b.ct,b.iv,b.adata,b.tag);e.c(d,b);d.key=a;return sjcl.codec.utf8String.fromBits(
 }}return c+"}"},decode:function(a){a=a.replace(/\s/g,"");if(!a.match(/^\{.*\}$/))throw new sjcl.exception.invalid("json decode: this isn't json!");a=a.replace(/^\{|\}$/g,"").split(/,/);var b={},c,d;for(c=0;c<a.length;c++){if(!(d=a[c].match(/^([a-z][a-z0-9]*):(?:(\d+)|"([a-z0-9+\/%*_.@=\-]*)")$/i)))throw new sjcl.exception.invalid("json decode: this isn't json!");b[d[1]]=d[2]?parseInt(d[2],10):d[1].match(/^(ct|salt|iv)$/)?sjcl.codec.base64.toBits(d[3]):unescape(d[3])}return b},c:function(a,b,c){if(a===
 undefined)a={};if(b===undefined)return a;var d;for(d in b)if(b.hasOwnProperty(d)){if(c&&a[d]!==undefined&&a[d]!==b[d])throw new sjcl.exception.invalid("required parameter overridden");a[d]=b[d]}return a},V:function(a,b){var c={},d;for(d in a)if(a.hasOwnProperty(d)&&a[d]!==b[d])c[d]=a[d];return c},W:function(a,b){var c={},d;for(d=0;d<b.length;d++)if(a[b[d]]!==undefined)c[b[d]]=a[b[d]];return c}};sjcl.encrypt=sjcl.json.encrypt;sjcl.decrypt=sjcl.json.decrypt;sjcl.misc.S={};
 sjcl.misc.cachedPbkdf2=function(a,b){var c=sjcl.misc.S,d;b=b||{};d=b.iter||1E3;c=c[a]=c[a]||{};d=c[d]=c[d]||{firstSalt:b.salt&&b.salt.length?b.salt.slice(0):sjcl.random.randomWords(2,0)};c=b.salt===undefined?d.firstSalt:b.salt;d[c]=d[c]||sjcl.misc.pbkdf2(a,c,b.iter);return{key:d[c].slice(0),salt:c.slice(0)}};
+
+
+//---- base64.js
 var b64map="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 var b64pad="=";
 
@@ -108,6 +112,8 @@ function b64toBA(s) {
   }
   return a;
 }
+
+////---- jsbn.js
 // Copyright (c) 2005  Tom Wu
 // All Rights Reserved.
 // See "LICENSE" for details.
@@ -178,11 +184,11 @@ function am3(i,x,w,j,c,n) {
   return c;
 }
 try {
-  if(j_lm && (navigator && navigator.appName == "Microsoft Internet Explorer")) {
+  if(j_lm && (navigator.appName == "Microsoft Internet Explorer")) {
     BigInteger.prototype.am = am2;
     dbits = 30;
   }
-  else if(j_lm && (navigator && navigator.appName != "Netscape")) {
+  else if(j_lm && (navigator.appName != "Netscape")) {
     BigInteger.prototype.am = am1;
     dbits = 26;
   }
@@ -193,8 +199,8 @@ try {
 } catch (e) {
   BigInteger.prototype.am = am3;
   dbits = 28;
-}
 
+}
 BigInteger.prototype.DB = dbits;
 BigInteger.prototype.DM = ((1<<dbits)-1);
 BigInteger.prototype.DV = (1<<dbits);
@@ -672,6 +678,8 @@ BigInteger.prototype.modPowInt = bnModPowInt;
 // "constants"
 BigInteger.ZERO = nbv(0);
 BigInteger.ONE = nbv(1);
+
+//------ JSBN2.js
 // Copyright (c) 2005-2009  Tom Wu
 // All Rights Reserved.
 // See "LICENSE" for details.
@@ -1320,6 +1328,8 @@ BigInteger.prototype.isProbablePrime = bnIsProbablePrime;
 // int hashCode()
 // long longValue()
 // static BigInteger valueOf(long val)
+
+//----- RSA.js
 // Depends on jsbn.js and rng.js
 
 // Version 1.1: support utf-8 encoding in pkcs1pad2
@@ -1432,6 +1442,8 @@ RSAKey.prototype.doPublic = RSADoPublic;
 RSAKey.prototype.setPublic = RSASetPublic;
 RSAKey.prototype.encrypt = RSAEncrypt;
 //RSAKey.prototype.encrypt_b64 = RSAEncryptB64;
+
+//---- rsa2.js
 // Depends on rsa.js and jsbn2.js
 
 // Version 1.1: support utf-8 decoding in pkcs1unpad2
@@ -1564,7 +1576,10 @@ RSAKey.prototype.setPrivateEx = RSASetPrivateEx;
 RSAKey.prototype.generate = RSAGenerate;
 RSAKey.prototype.decrypt = RSADecrypt;
 //RSAKey.prototype.b64_decrypt = RSAB64Decrypt;
-//
+
+
+
+//-----
 // asn1hex.js - Hexadecimal represented ASN.1 string library
 //
 //
@@ -1687,6 +1702,8 @@ function _asnhex_getPosArrayOfChildren_AtObj(h, pos) {
 
   return a;
 }
+
+//----
 //
 // rsa-pem.js - adding function for reading/writing PKCS#1 PEM private key
 //              to RSAKey class.
@@ -1797,6 +1814,7 @@ function _rsapem_readPublicKeyFromPEMString(keyPEM) {
 
 RSAKey.prototype.readPrivateKeyFromPEMString = _rsapem_readPrivateKeyFromPEMString;
 RSAKey.prototype.readPublicKeyFromPEMString = _rsapem_readPublicKeyFromPEMString;
+//------
 //
 // rsa-sign.js - adding signing functions to RSAKey class.
 //
@@ -1845,6 +1863,9 @@ _RSASIGN_HASHHEXFUNC['sha256'] = function(i) { return sjcl.codec.hex.fromBits(sj
 function _rsasign_getHexPaddedDigestInfoForString(s, keySize, hashAlg) {
   var pmStrLen = keySize / 4;
   var hashFunc = _RSASIGN_HASHHEXFUNC[hashAlg];
+  if (!hashFunc) {
+    console.log("No hash function " + hashAlg);
+  }
   var sHashHex = hashFunc(s);
 
   var sHead = "0001";
@@ -1953,371 +1974,19 @@ RSAKey.prototype.signStringWithSHA256 = _rsasign_signStringWithSHA256;
 RSAKey.prototype.verifyString = _rsasign_verifyString;
 RSAKey.prototype.verifyHexSignatureForMessage = _rsasign_verifyHexSignatureForMessage;
 
-// 
-// x509.js - X509 class to read subject public key from certificate.
-//
-// version: 1.0 (2010-Jun-03)
-//
-// Copyright (c) 2010 Kenji Urushima (kenji.urushima@gmail.com)
-//
-// This software is licensed under the terms of the MIT License.
-// http://www.opensource.org/licenses/mit-license.php
-//
-// The above copyright and license notice shall be 
-// included in all copies or substantial portions of the Software.
-// 
-
-// Depends:
-//   base64.js
-//   rsa.js
-
-function _x509_pemToBase64(sCertPEM) {
-  var s = sCertPEM;
-  s = s.replace("-----BEGIN CERTIFICATE-----", "");
-  s = s.replace("-----END CERTIFICATE-----", "");
-  s = s.replace(/[ \n]+/g, "");
-  return s;
-}
-
-function _x509_pemToHex(sCertPEM) {
-  var b64Cert = _x509_pemToBase64(sCertPEM);
-  var hCert = b64tohex(b64Cert);
-  return hCert;
-}
-
-function _x509_getHexTbsCertificateFromCert(hCert) {
-  var pTbsCert = _asnhex_getStartPosOfV_AtObj(hCert, 0);
-  return pTbsCert;
-}
-
-// NOTE: privateKeyUsagePeriod field of X509v2 not supported.
-// NOTE: v1 and v3 supported
-function _x509_getSubjectPublicKeyInfoPosFromCertHex(hCert) {
-  var pTbsCert = _asnhex_getStartPosOfV_AtObj(hCert, 0);
-  var a = _asnhex_getPosArrayOfChildren_AtObj(hCert, pTbsCert); 
-  if (a.length < 1) return -1;
-  if (hCert.substring(a[0], a[0] + 10) == "a003020102") { // v3
-    if (a.length < 6) return -1;
-    return a[6];
-  } else {
-    if (a.length < 5) return -1;
-    return a[5];
-  }
-}
-
-// NOTE: Without BITSTRING encapsulation.
-function _x509_getSubjectPublicKeyPosFromCertHex(hCert) {
-  var pInfo = _x509_getSubjectPublicKeyInfoPosFromCertHex(hCert);
-  if (pInfo == -1) return -1;    
-  var a = _asnhex_getPosArrayOfChildren_AtObj(hCert, pInfo); 
-  if (a.length != 2) return -1;
-  var pBitString = a[1];
-  if (hCert.substring(pBitString, pBitString + 2) != '03') return -1;
-  var pBitStringV = _asnhex_getStartPosOfV_AtObj(hCert, pBitString);
-
-  if (hCert.substring(pBitStringV, pBitStringV + 2) != '00') return -1;
-  return pBitStringV + 2;
-}
-
-function _x509_getPublicKeyHexArrayFromCertHex(hCert) {
-  var p = _x509_getSubjectPublicKeyPosFromCertHex(hCert);
-  var a = _asnhex_getPosArrayOfChildren_AtObj(hCert, p); 
-  if (a.length != 2) return [];
-  var hN = _asnhex_getHexOfV_AtObj(hCert, a[0]);
-  var hE = _asnhex_getHexOfV_AtObj(hCert, a[1]);
-  if (hN != null && hE != null) {
-    return [hN, hE];
-  } else {
-    return [];
-  }
-}
-
-function _x509_getPublicKeyHexArrayFromCertPEM(sCertPEM) {
-  var hCert = _x509_pemToHex(sCertPEM);
-  var a = _x509_getPublicKeyHexArrayFromCertHex(hCert);
-  return a;
-}
-
-function _x509_readCertPEM(sCertPEM) {
-  var hCert = _x509_pemToHex(sCertPEM);
-  var a = _x509_getPublicKeyHexArrayFromCertHex(hCert);
-  var rsa = new RSAKey();
-  rsa.setPublic(a[0], a[1]);
-  this.subjectPublicKeyRSA = rsa;
-  this.subjectPublicKeyRSA_hN = a[0];
-  this.subjectPublicKeyRSA_hE = a[1];
-}
-
-function _x509_readCertPEMWithoutRSAInit(sCertPEM) {
-  var hCert = _x509_pemToHex(sCertPEM);
-  var a = _x509_getPublicKeyHexArrayFromCertHex(hCert);
-  this.subjectPublicKeyRSA.setPublic(a[0], a[1]);
-  this.subjectPublicKeyRSA_hN = a[0];
-  this.subjectPublicKeyRSA_hE = a[1];
-}
-
-function X509() {
-  this.subjectPublicKeyRSA = null;
-  this.subjectPublicKeyRSA_hN = null;
-  this.subjectPublicKeyRSA_hE = null;
-}
-
-X509.prototype.readCertPEM = _x509_readCertPEM;
-X509.prototype.readCertPEMWithoutRSAInit = _x509_readCertPEMWithoutRSAInit;
-var jwt = {};
-
-var JWTInternals = (function() {
-
-  // convert a base64url string to hex
-  var b64urlmap="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-  function b64urltohex(s) {
-    var ret = ""
-    var i;
-    var k = 0; // b64 state, 0-3
-    var slop;
-    for(i = 0; i < s.length; ++i) {
-      var v = b64urlmap.indexOf(s.charAt(i));
-      if(v < 0) continue;
-      if(k == 0) {
-        ret += int2char(v >> 2);
-        slop = v & 3;
-        k = 1;
-      }
-      else if(k == 1) {
-        ret += int2char((slop << 2) | (v >> 4));
-        slop = v & 0xf;
-        k = 2;
-      }
-      else if(k == 2) {
-        ret += int2char(slop);
-        ret += int2char(v >> 2);
-        slop = v & 3;
-        k = 3;
-      }
-      else {
-        ret += int2char((slop << 2) | (v >> 4));
-        ret += int2char(v & 0xf);
-        k = 0;
-      }
-    }
-    if(k == 1)
-      ret += int2char(slop << 2);
-    return ret;
-  }
+//-----
 
 
 
-  function base64urlencode(arg)
-  {
-    var s = window.btoa(arg); // Standard base64 encoder
-    s = s.split('=')[0]; // Remove any trailing '='s
-    s = s.replace('+', '-', 'g'); // 62nd char of encoding
-    s = s.replace('/', '_', 'g'); // 63rd char of encoding
-    // TODO optimize this; we can do much better
-    return s;
-  }
-
-  function base64urldecode(arg)
-  {
-    var s = arg;
-    s = s.replace('-', '+', 'g'); // 62nd char of encoding
-    s = s.replace('_', '/', 'g'); // 63rd char of encoding
-    switch (s.length % 4) // Pad with trailing '='s
-    {
-      case 0: break; // No pad chars in this case
-      case 2: s += "=="; break; // Two pad chars
-      case 3: s += "="; break; // One pad char
-      default: throw new InputException("Illegal base64url string!");
-    }
-    return window.atob(s); // Standard base64 decoder
-  }
-
-  function NoSuchAlgorithmException(message) {
-    this.message = message;
-    this.toString = function() { return "No such algorithm: "+this.message; };
-  }
-  function NotImplementedException(message) {
-    this.message = message;
-    this.toString = function() { return "Not implemented: "+this.message; };
-  }
-  function MalformedWebTokenException(message) {
-    this.message = message;
-    this.toString = function() { return "Malformed JSON web token: "+this.message; };
-  }
-  function InputException(message) {
-    this.message = message;
-    this.toString = function() { return "Malformed input: "+this.message; };
-  }
-
-  function HMACAlgorithm(hash, key)
-  {
-    if (hash == "sha256") {
-      this.hash = sjcl.hash.sha256;
-    } else {
-      throw new NoSuchAlgorithmException("HMAC does not support hash " + hash);
-    }
-    this.key = sjcl.codec.utf8String.toBits(key);
-  }
-
-  HMACAlgorithm.prototype = 
-  {
-    update: function _update(data)
-    {
-      this.data = data;
-    },
-    
-    finalize: function _finalize()
-    {
-    },
-    
-    sign: function _sign()
-    {
-      var hmac = new sjcl.misc.hmac(this.key, this.hash);
-      var result = hmac.encrypt(this.data);
-      return base64urlencode(window.atob(sjcl.codec.base64.fromBits(result)));
-    },
-    
-    verify: function _verify(sig)
-    {
-      var hmac = new sjcl.misc.hmac(this.key, this.hash);
-      var result = hmac.encrypt(this.data);
-      
-      return base64urlencode(window.atob(sjcl.codec.base64.fromBits(result))) == sig; 
-    }
-  }
-
-  function RSASHAAlgorithm(hash, keyPEM)
-  {
-    if (hash == "sha1") {
-      this.hash = "sha1";
-    } else if (hash == "sha256") {
-      this.hash = "sha256";
-    } else {
-      throw new NoSuchAlgorithmException("JWT algorithm: " + hash);  
-    }
-    this.keyPEM = keyPEM;
-  }
-  RSASHAAlgorithm.prototype =
-  {
-    update: function _update(data)
-    {
-      this.data = data;
-    },
-    finalize: function _finalize()
-    {
-    
-    },
-    sign: function _sign()
-    {
-      var rsa = new RSAKey();
-      rsa.readPrivateKeyFromPEMString(this.keyPEM);
-      var hSig = rsa.signString(this.data, this.hash);
-      
-      var a= base64urlencode(base64urldecode(hex2b64(hSig))); // TODO replace this with hex2b64urlencode!
-      return a;
-    },
-    verify: function _verify(sig)
-    {
-      var result = this.keyPEM.verifyString(this.data, b64urltohex(sig));
-      return result;
-    }
-  }
-
-  function WebToken(objectStr, algorithm)
-  {
-    this.objectStr = objectStr;
-    this.pkAlgorithm = algorithm;
-  }
-
-  var WebTokenParser = {
-
-    parse: function _parse(input)
-    {
-      var parts = input.split(".");
-      if (parts.length != 3) {
-        throw new MalformedWebTokenException("Must have three parts");
-      }
-      var token = new WebToken();
-      token.headerSegment = parts[0];
-      token.payloadSegment = parts[1];
-      token.cryptoSegment = parts[2];
-
-      token.pkAlgorithm = base64urldecode(parts[0]);
-      return token;
-    }
-  }
-
-  function jsonObj(strOrObject)
-  {
-    if (typeof strOrObject == "string") {
-      return JSON.parse(strOrObject);
-    }
-    return strOrObject;
-  }
-
-  function constructAlgorithm(jwtAlgStr, key)
-  {
-    if ("ES256" === jwtAlgStr) {
-      throw new NotImplementedException("ECDSA-SHA256 not yet implemented");
-    } else if ("ES384" === jwtAlgStr) {
-      throw new NotImplementedException("ECDSA-SHA384 not yet implemented");
-    } else if ("ES512" === jwtAlgStr) {
-      throw new NotImplementedException("ECDSA-SHA512 not yet implemented");
-    } else if ("HS256" === jwtAlgStr) {
-      return new HMACAlgorithm("sha256", key);
-    } else if ("HS384" === jwtAlgStr) {
-      throw new NotImplementedException("HMAC-SHA384 not yet implemented");
-    } else if ("HS512" === jwtAlgStr) {
-      throw new NotImplementedException("HMAC-SHA512 not yet implemented");
-    } else if ("RS256" === jwtAlgStr) {
-      return new RSASHAAlgorithm("sha256", key);
-    } else if ("RS384" === jwtAlgStr) {
-      throw new NotImplementedException("RSA-SHA384 not yet implemented");
-    } else if ("RS512" === jwtAlgStr) {
-      throw new NotImplementedException("RSA-SHA512 not yet implemented");
-    } else {
-      throw new NoSuchAlgorithmException("Unknown algorithm: " + jwtAlgStr);
-    }
-  }
-
-  WebToken.prototype =
-  {
-    serialize: function _serialize(key)
-    {
-      var header = jsonObj(this.pkAlgorithm);
-      var jwtAlgStr = header.alg;
-      var algorithm = constructAlgorithm(jwtAlgStr, key);
-      var algBytes = base64urlencode(this.pkAlgorithm);
-      var jsonBytes = base64urlencode(this.objectStr);
-
-      var stringToSign = algBytes + "." + jsonBytes;
-      algorithm.update(stringToSign);
-      var digestValue = algorithm.finalize();
-
-      var signatureValue = algorithm.sign();
-      return algBytes + "." + jsonBytes + "." + signatureValue;
-    },
-    
-    verify: function _verify(key)
-    {
-      var header = jsonObj(this.pkAlgorithm);
-      var jwtAlgStr = header.alg;
-      var algorithm = constructAlgorithm(jwtAlgStr, key);
-      algorithm.update(this.headerSegment + "." + this.payloadSegment);
-      algorithm.finalize();
-      return algorithm.verify(this.cryptoSegment);
-    }
-  }
-  
-  jwt.WebToken = WebToken;
-  jwt.WebTokenParser = WebTokenParser;
-  jwt.base64urlencode = base64urlencode;
-  jwt.base64urldecode = base64urldecode;
-})();
 
 
-if (!exports) exports = {};
-exports.WebToken = jwt.WebToken;
-exports.WebTokenParser = jwt.WebTokenParser;
-exports.base64urlencode = jwt.base64urlencode;
-exports.base64urldecode = jwt.base64urldecode;
+
+
+
+
+
+
+
+
+
+exports.RSAKey = RSAKey;

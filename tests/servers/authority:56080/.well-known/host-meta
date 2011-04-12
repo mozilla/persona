@@ -5,6 +5,7 @@
 
   <hm:Host xmlns='http://host-meta.net/xrd/1.0'>127.0.0.1:56080</hm:Host>
 
-  <Link rel='lrdd' template='http://127.0.0.1:56080/users/{uri}.xml'>
-  </Link>
+  <Link rel='lrdd' template='http://127.0.0.1:56080/users/{uri}.xml'></Link>
+
+  <Link rel='other' value='something-different'></Link>
 </XRD>

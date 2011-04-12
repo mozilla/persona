@@ -5,7 +5,11 @@
 *
 */
 
-//const      jwt = require('./jwt.js');
+const jwt = require('./jwt.js');
+const xml2js = require("xml2js/lib/xml2js");
+const http = require("http");
+const url = require("url");
+const rsa = require("./rsa.js");
 
 var Webfinger = (function() {
 
@@ -16,34 +20,47 @@ var Webfinger = (function() {
   var hostMetaCache = {};
   var NO_HOST_META = "NO";
   
-  function extractLRDDTemplateFromHostMetaDOM(parsedDoc, progressFn)
+  function extractLRDDTemplateFromHostMeta(docBytes, domain)
   {
-    if (parsedDoc.documentElement.nodeName == "parsererror") {
-      throw {
-        error:"Unable to parse host-meta file for " + domain
-      };
-    }
-    var host = parsedDoc.documentElement.getElementsByTagNameNS("http://host-meta.net/xrd/1.0", "Host");
-    if (!host || host.length == 0) {
-      host = parsedDoc.documentElement.getElementsByTagName("Host"); // hm, well, try it without a namespace
-      if (!host || host.length == 0) {
-        throw {error:"Unable to find a Host element in the host-meta file for " + domain};
-      }
-    }
+    var parser =new xml2js.Parser();
+    var retval;
+    parser.addListener('end', function(parsedDoc) {
 
-    var links = parsedDoc.documentElement.getElementsByTagName("Link")
-    var userXRDURL = null;
-    for (var i in links) {
-      var link = links[i];
-      var rel = link.getAttribute("rel");
-      if (rel) {
-        if (rel.toLowerCase() == "lrdd") {
-          var template = link.getAttribute("template");
-          return template;
+      // XX Okay, really need to use a namespace-aware parser here!
+      // This is nasty.
+      var host = parsedDoc["hm:Host"];
+      if (!host) {
+        host = parsedDoc["Host"]; // hm, well, try it without a namespace
+        if (!host) {
+          throw {error:"Unable to find a Host element in the host-meta file for " + domain};
         }
-      }  
-    }	
-    return null;
+      }
+
+      var links = parsedDoc["Link"];
+      if (links instanceof Array) {
+        for (var i in links) {
+          var link = links[i];
+          var rel = link["@"]["rel"];
+          if (rel) {
+            if (rel.toLowerCase() == "lrdd") {
+              var template = link["@"]["template"];
+              retval = template;
+              break;
+            }
+          }  
+        }
+      } else {
+        var rel = links["@"]["rel"];
+        if (rel) {
+          if (rel.toLowerCase() == "lrdd") {
+            var template = links["@"]["template"];
+            retval = template;
+          }
+        }  
+      }	
+    });
+    parser.parseString(docBytes);
+    return retval;
   }
 
   function retrieveTemplateForDomain(domain, continueFn, errorFn)
@@ -54,38 +71,40 @@ var Webfinger = (function() {
         errorFn("NoHostMeta");
       } else {
         console.log("HostMeta cache hit (positive) for " + domain);
-        continueFn(gHostMetaCache[domain]);
+        continueFn(hostMetaCache[domain]);
       }
     }
     else
     {
       var hostmetaURL = "http://" + domain + "/.well-known/host-meta";
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', hostmetaURL, true);
-      console.log("Making hostmeta request to " + hostmetaURL);
-
-      xhr.onreadystatechange = function (aEvt) {
-        console.log("xhr change: " + xhr.readyState);
-        if (xhr.readyState == 4) {
-          try {
-            if (xhr.status != 200) {
-              console.log("Status " + xhr.status + " (" + xhr.statusCode + ") accessing " + hostmetaURL);
-              errorFn(""+domain + " does not support webfinger (error " + xhr.status + " contacting server).");
-              return;
-            }
-            console.log("Loaded hostmeta for " + domain + "\n");
-            var template = extractLRDDTemplateFromHostMetaDOM(xhr.responseXML);
-            hostMetaCache[domain] = template;
-            console.log("Got template for " + domain);
-            continueFn(template);
-          } catch (e) {
-            console.log("Webfinger: "+ e + "; " + e.error);
-            hostMetaCache[domain] = NO_HOST_META;
-            errorFn(e);
-          }
-        }
-      }
-      xhr.send(null);
+      var domainSplit = domain.split(":");
+      var options = {
+        host: domainSplit[0],
+        port: (domainSplit.length > 1) ? domainSplit[1] : 80,
+        path: '/.well-known/host-meta',
+        method: 'GET',
+        headers: { "Host": domain}
+      };
+      var req = http.request(options, function(res) {
+        res.setEncoding('utf8');
+        var buffer = "";
+        var offset = 0;
+        res.on('data', function (chunk) {
+          buffer += chunk;
+          offset += chunk.length;
+        });
+        res.on('end', function() {          
+          var template = extractLRDDTemplateFromHostMeta(buffer, domain);
+          hostMetaCache[domain] = template;
+          continueFn(template);
+        });
+        res.on('error', function(e) {
+          console.log("Webfinger error: "+ e + "; " + e.error);
+          hostMetaCache[domain] = NO_HOST_META;
+          errorFn(e);        
+        });
+      });
+      req.end();
     }
   }
 
@@ -104,50 +123,65 @@ var Webfinger = (function() {
       domain, 
       function gotTemplate(template)
       {
-        console.log("Got template for " + domain);
-      
         var userXRDURL = null;
         if (template) userXRDURL = template.replace("{uri}", encodeURI(addr));
         if (userXRDURL == null) {
           errorCallback({message:"" + domain + " does not support webfinger (no Link with an lrdd rel and template attribute)"});
           return;
         }
-        console.log("Constructed user path " + userXRDURL);
 
-        var xrdLoader = new XMLHttpRequest();
-        xrdLoader.open('GET', userXRDURL, true);
-        xrdLoader.onreadystatechange = function (aEvt) {
-          if (xrdLoader.readyState == 4) {
-            if (xrdLoader.status == 200) {
+        var parsedurl = url.parse(userXRDURL);
+        var options = {
+          host: parsedurl.hostname,
+          port: parsedurl.port,
+          path: parsedurl.pathname,
+          method: 'GET',
+          headers: { "Host": parsedurl.host}
+        };
 
-              console.log("Got user data");
+        var req = http.request(options, function(res) {
+          res.setEncoding('utf8');
+          var buffer = "";
+          var offset = 0;
+          res.on('data', function (chunk) {
+            buffer += chunk;
+            offset += chunk.length;
+          });
+          res.on('end', function() {
+            var parser =new xml2js.Parser();
+            var publicKeys = [];
+            parser.addListener('end', function(parsedDoc) {
 
-              var dom = xrdLoader.responseXML;
-              var linkList = dom.documentElement.getElementsByTagName("Link");
-            
-              var publicKeys = [];
+              var linkList = parsedDoc["Link"];
+              if (!(linkList instanceof Array)) linkList = [linkList];
+
               for (var i=0;i<linkList.length;i++)
               {
                 var link = linkList[i];
-                var rel = link.attributes.rel;
+                var rel = link["@"]["rel"];
                 
-                console.log("Got link " + i + "; rel is " + rel.value);
-                if (rel.value == "public-key") {
-                  var val = link.attributes.value;
-                  var id = link.attributes.id;
+                if (rel == "public-key") {
+                  var val = link["@"]["value"];
+                  var id = link["@"]["id"];
                   if (val) {
-                    var keyObj = { key: window.atob(val.value) };
-                    if (id) keyObj.keyid = link.attributes.id.value;
+                    var keyObj = { key: new Buffer(val, "base64").toString() };
+                    if (id) keyObj.keyid = id;
                     publicKeys.push(keyObj);
                   }
                 }
               }
-            }
-            console.log("Got public keys " + JSON.stringify(publicKeys));
+            });
+            parser.parseString(buffer);
             successCallback(publicKeys);
-          }
-        }
-        xrdLoader.send(null);
+
+          });
+          res.on('error', function(e) {
+            console.log("Unable to retrieve template for domain " + domain);
+            errorCallback({message:"Unable to retrieve the template for the given domain."});
+
+          });
+        });
+        req.end();
       }, 
       function gotError(e) {
         console.log("Unable to retrieve template for domain " + domain);
@@ -192,6 +226,7 @@ IDAssertion.prototype  =
     // {audience: <>, valid-until:<>, email: <>}
     var decoded = jwt.base64urldecode(token.payloadSegment);
     var payload = JSON.parse(decoded);
+
     if (!payload.email) {
       onError("Payload is missing required email.");
       return;
@@ -229,7 +264,8 @@ IDAssertion.prototype  =
         // In the absence of a key identifier, we need to check them all.
         for (var i=0;i<publicKeys.length;i++)
         {
-          var pubKey = new RSAKey();
+          // and now, public key parse fail. :(
+          var pubKey = new rsa.RSAKey();
           pubKey.readPublicKeyFromPEMString(publicKeys[i].key);
           if (token.verify(pubKey)) {
             // success!
@@ -246,5 +282,4 @@ IDAssertion.prototype  =
   }
 }
 
-if (!exports) exports = {};
 exports.IDAssertion = IDAssertion;
