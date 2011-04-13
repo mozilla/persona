@@ -260,7 +260,7 @@
       if ($(this).hasClass('disabled')) return true;
 
       // now we need to actually try to stage the creation of this account.
-      var email = $("#create_dialog input:eq(0)").val();
+      var email = $("#add_email_dialog input:eq(0)").val();
       var keypair = CryptoStubs.genKeyPair();
 
       // kick the user to waiting/status page while we talk to the server.
