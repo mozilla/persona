@@ -82,7 +82,8 @@ exports.gotVerificationSecret = function(secret) {
     }
     g_users.push({
       emails: [ o.email ],
-      keys: [o.pubkey ]
+      keys: [ o.pubkey ],
+      pass: o.pass
     });
   } else if (o.type === 'add_email') {
     exports.addEmailToAccount(o.existing_email, o.email, o.pubkey);
@@ -95,7 +96,7 @@ exports.gotVerificationSecret = function(secret) {
 
 /* takes an argument object including email, pass, and pubkey. */
 exports.checkAuth = function(email, pass) {
-  console.log("e: " + email + " p: " + pass);
-  console.log(g_emails);
-  return (g_emails.hasOwnProperty(email) && g_emails[email].pass === pass);
+  var acct = exports.findByEmail(email);
+  if (acct === undefined) return false;
+  return pass === acct.pass;
 };

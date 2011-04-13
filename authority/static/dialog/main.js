@@ -271,6 +271,8 @@
         onerror
       );
 
+      // first we must see if we're authenticated
+
       $.ajax({
         url: '/wsapi/add_email?email=' + encodeURIComponent(email) + '&pubkey=' + encodeURIComponent(keypair.pub),
         success: function() {
@@ -280,7 +282,7 @@
         error: function() {
           runErrorDialog(
             "serverError",
-            "Error Creating Account!",
+            "Error Adding Address!",
             "There was a technical problem while trying to add this email to your account.  Yucky.",
             onsuccess, onerror);
         }
@@ -428,9 +430,6 @@
 
     $("#create_dialog").fadeIn(500);
   }
-
-  runCreateDialog();
-
 
   function errorOut(trans, code) {
     function getVerboseMessage(code) {
