@@ -1,13 +1,73 @@
-// Registered users.  This is a horribly inefficient data structure
-// which only exists for prototype purposes.
-var g_users = [
-];
+const sqlite = require('sqlite'),
+        path = require('path');
+
+var db = new sqlite.Database();
+
+db.open(path.join(path.dirname(__dirname), "authdb.sqlite"), function (error) {
+  if (error) {
+    console.log("Couldn't open database: " + error);
+    throw error;
+  }
+
+  function createTable(name, sql) {
+    db.execute(sql, function (error, rows) {
+      if (error) {
+        console.log("Couldn't create " + name + " table: " + error);
+        throw error;
+      }
+    });
+  }
+
+  createTable('users',  "CREATE TABLE IF NOT EXISTS users  ( id INTEGER PRIMARY KEY, password TEXT )");
+  createTable('emails', "CREATE TABLE IF NOT EXISTS emails ( id INTEGER PRIMARY KEY, user INTEGER, address TEXT UNIQUE )");
+  createTable('keys',   "CREATE TABLE IF NOT EXISTS keys   ( id INTEGER PRIMARY KEY, email INTEGER, key TEXT, expires INTEGER )");
+});
 
 // half created user accounts (pending email verification)
 // OR
 // half added emails (pending verification)
 var g_staged = {
 };
+
+// an email to secret map for efficient fulfillment of isStaged queries
+var g_stagedEmails = {
+};
+
+function executeTransaction(statements, cb) {
+  function executeTransaction2(statements, cb) {
+    if (statements.length == 0) cb();
+    else {
+      var s = statements.shift();
+      db.execute(s[0], s[1], function(err, rows) {
+        if (err) cb(err);
+        else executeTransaction2(statements, cb);
+      });
+    }
+  }
+
+  db.execute('BEGIN', function(err, rows) {
+    executeTransaction2(statements, function(err) {
+      if (err) cb(err);
+      else db.execute('COMMIT', function(err, rows) {
+        cb(err);
+      });
+    });
+  });
+}
+
+function emailToUserID(email, cb) {
+  db.execute(
+    'SELECT users.id FROM emails, users WHERE emails.address = ? AND users.id == emails.user',
+    [ email ],
+    function (err, rows) {
+      if (rows && rows.length == 1) {
+        cb(rows[0].id);
+      } else {
+        if (err) console.log("database error: " + err);
+        cb(undefined);
+      }
+    });
+}
 
 exports.findByEmail = function(email) {
   for (var i = 0; i < g_users.length; i++) {
@@ -18,12 +78,17 @@ exports.findByEmail = function(email) {
   return undefined;
 };
 
+exports.emailKnown = function(email, cb) {
+  db.execute(
+    "SELECT id FROM emails WHERE address = ?",
+    [ email ],
+    function(error, rows) {
+      cb(rows.length > 0);
+    });
+};
+
 exports.isStaged = function(email) {
-  // XXX: not efficient
-  for (var k in g_staged) {
-    if (g_staged[k].email === email) return true;
-  }
-  return false;
+  return g_stagedEmails.hasOwnProperty(email);
 };
 
 function generateSecret() {
@@ -35,12 +100,48 @@ function generateSecret() {
   return str;
 }
 
-exports.addEmailToAccount = function(existing_email, email, pubkey) {
-  var acct = exports.findByEmail(existing_email);
-  if (acct === undefined) throw "no such email: " + existing_email;
-  if (acct.emails.indexOf(email) == -1) acct.emails.push(email);
-  acct.keys.push(email);
-  return;
+exports.addEmailToAccount = function(existing_email, email, pubkey, cb) {
+  emailToUserID(existing_email, function(userID) {
+    if (userID == undefined) {
+      cb("no such email: " + existing_email, undefined);
+    } else {
+        executeTransaction([
+          [ "INSERT INTO emails (user, address) VALUES(?,?)", [ userID, email ] ],
+          [ "INSERT INTO keys (email, key, expires) VALUES(last_insert_rowid(),?,?)",
+            [ pubkey, ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000)) ]
+          ]
+        ], function (error) {
+          if (error) cb(error);
+          else cb();
+        });
+    }
+  });
+}
+
+exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
+  emailToUserID(existing_email, function(userID) {
+    if (userID == undefined) {
+      cb("no such email: " + existing_email, undefined);
+      return;
+    }
+
+    db.execute("SELECT emails.id FROM emails,users WHERE users.id = ? AND emails.address = ? AND emails.user = users.id",
+               [ userID, email ],
+               function(err, rows) {
+                 if (err || rows.length != 1) {
+                   cb(err);
+                   return;
+                 }
+                 executeTransaction([
+                   [ "INSERT INTO keys (email, key, expires) VALUES(?,?,?)",
+                     [ rows[0].id, pubkey, ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000)) ]
+                   ]
+                 ], function (error) {
+                   if (error) cb(error);
+                   else cb();
+                 });
+               });
+  });
 }
 
 /* takes an argument object including email, pass, and pubkey. */
@@ -53,6 +154,7 @@ exports.stageUser = function(obj) {
     pubkey: obj.pubkey,
     pass: obj.pass
   };
+  g_stagedEmails[obj.email] = secret;
   return secret;
 };
 
@@ -66,39 +168,48 @@ exports.stageEmail = function(existing_email, new_email, pubkey) {
     email: new_email,
     pubkey: pubkey
   };
+  g_stagedEmails[new_email] = secret;
   return secret;
 };
 
 /* invoked when a user clicks on a verification URL in their email */ 
-exports.gotVerificationSecret = function(secret) {
-  if (!g_staged.hasOwnProperty(secret)) return false;
+exports.gotVerificationSecret = function(secret, cb) {
+  if (!g_staged.hasOwnProperty(secret)) cb("unknown secret");
 
   // simply move from staged over to the emails "database"
   var o = g_staged[secret];
   delete g_staged[secret];
+  delete g_stagedEmails[o.email];
   if (o.type === 'add_account') {
-    if (undefined != exports.findByEmail(o.email)) {
-      throw "email already exists!";
-    }
-    g_users.push({
-      emails: [ o.email ],
-      keys: [ o.pubkey ],
-      pass: o.pass
+    exports.emailKnown(o.email, function(known) {
+      if (known) cb("email already exists!");
+      else {
+        executeTransaction([
+          [ "INSERT INTO users (password) VALUES(?)", [ o.pass ] ] ,
+          [ "INSERT INTO emails (user, address) VALUES(last_insert_rowid(),?)", [ o.email ] ],
+          [ "INSERT INTO keys (email, key, expires) VALUES(last_insert_rowid(),?,?)",
+            [ o.pubkey, ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000)) ]
+          ]
+        ], function (error) {
+          if (error) cb(error);
+          else cb();
+        });
+      }
     });
   } else if (o.type === 'add_email') {
-    exports.addEmailToAccount(o.existing_email, o.email, o.pubkey);
+    exports.addEmailToAccount(o.existing_email, o.email, o.pubkey, cb);
   } else {
-    return false;
+    cb("internal error");
   }
-
-  return true;
 };
 
 /* takes an argument object including email, pass, and pubkey. */
-exports.checkAuth = function(email, pass) {
-  var acct = exports.findByEmail(email);
-  if (acct === undefined) return false;
-  return pass === acct.pass;
+exports.checkAuth = function(email, pass, cb) {
+  db.execute("SELECT users.id FROM emails, users WHERE users.id = emails.user AND emails.address = ? AND users.password = ?",
+             [ email, pass ],
+             function (error, rows) {
+               cb(rows.length === 1);
+             });
 };
 
 /* a high level operation that attempts to sync a client's view with that of the
@@ -112,28 +223,57 @@ exports.checkAuth = function(email, pass) {
  * NOTE: it's not neccesary to differentiate between #2 and #3, as the client action
  *       is the same (regen keypair and tell us about it).
  */
-exports.getSyncResponse = function(email, identities) {
+exports.getSyncResponse = function(email, identities, cb) {
   var respBody = {
     unknown_emails: [ ],
     key_refresh: [ ]
   };
 
-  // fetch user acct
-  var acct = exports.findByEmail(email);
+  // get the user id associated with this account 
+  emailToUserID(email, function(userID) {
+    if (userID === undefined) {
+      cb("no such email: " + email);
+      return;
+    }
+    db.execute(
+      'SELECT address FROM emails WHERE ? = user',
+      [ userID ],
+      function (err, rows) {
+        if (err) cb(err);
+        else {
+          var emails = [ ];
+          for (var i = 0; i < rows.length; i++) emails.push(rows[i].address);
 
-  // #1
-  for (var e in identities) {
-    if (acct.emails.indexOf(e) == -1) respBody.unknown_emails.push(e);
-  }
+          // #1
+          for (var e in identities) {
+            if (emails.indexOf(e) == -1) respBody.unknown_emails.push(e);
+          }
 
-  // #2
-  for (var e in acct.emails) {
-    e = acct.emails[e];
-    if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
-  }
+          // #2
+          for (var e in emails) {
+            e = emails[e];
+            if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
+          }
 
-  // #3
-  // XXX todo
+          // #3
+          // XXX todo
 
-  return respBody;
+          cb(undefined, respBody); 
+        }
+      });
+  });
+};
+
+
+exports.pubkeysForEmail = function(identity, cb) {
+  db.execute('SELECT keys.key FROM keys, emails WHERE emails.address = ? AND keys.email = emails.id',
+             [ identity ],
+             function(err, rows) {
+               var keys = undefined;
+               if (!err && rows && rows.length) {
+                 keys = [ ];
+                 for (var i = 0; i < rows.length; i++) keys.push(rows[i].key);
+               }
+               cb(keys);
+             });
 };
