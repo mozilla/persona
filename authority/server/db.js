@@ -119,7 +119,6 @@ exports.addEmailToAccount = function(existing_email, email, pubkey, cb) {
 }
 
 exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
-  console.log("so you want to add a key ("+pubkey+") to " + email);
   emailToUserID(existing_email, function(userID) {
     if (userID == undefined) {
       cb("no such email: " + existing_email, undefined);
