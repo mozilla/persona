@@ -132,10 +132,13 @@ dirs.forEach(function(dirObj) {
   var handlerPath = path.join(dirObj.path, "server", "run.js");
   var handler = undefined; 
   try {
-    fs.statSync(handlerPath).isFile();
-    handler = require(handlerPath).handler;
+    var runJSExists = false;
+    try { runJSExists = fs.statSync(handlerPath).isFile() } catch(e) {};
+    if (runJSExists) {
+      handler = require(handlerPath).handler;
+    }
   } catch(e) {
-    console.log("Error starting up " + dirObj + ": " + e);
+    console.log("Error loading " + handlerPath + ": " + e);
   }
 
   var so = {
