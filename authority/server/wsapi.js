@@ -26,7 +26,7 @@ function checkParams(getArgs, resp, params) {
 
 function isAuthed(req, resp) {
   if (typeof req.session.authenticatedUser !== 'string') {
-   httputils.badRequest(resp, "requires authentication");
+    httputils.badRequest(resp, "requires authentication");
     return false;
   }
   return true;
@@ -92,6 +92,7 @@ exports.authenticate_user = function(req, resp) {
   if (!checkParams(getArgs, resp, [ "email", "pass" ])) return;
 
   if (db.checkAuth(getArgs.email, getArgs.pass)) {
+    req.session.authenticatedUser = getArgs.email;
     httputils.jsonResponse(resp, true);      
   } else {
     httputils.jsonResponse(resp, false);      
@@ -106,7 +107,6 @@ exports.add_email = function (req, resp) {
 
   if (!isAuthed(req, resp)) return;
 
-  console.log(req.session);
   logRequest("add_email", getArgs);
 
   try {
@@ -124,4 +124,38 @@ exports.add_email = function (req, resp) {
     // we should differentiate tween' 400 and 500 here.
     httputils.badRequest(resp, e.toString());
   }
+};
+
+exports.set_key = function (req, resp) {
+  var urlobj = url.parse(req.url, true);
+  var getArgs = urlobj.query;
+  if (!checkParams(getArgs, resp, [ "email", "pubkey" ])) return;
+  if (!isAuthed(req, resp)) return;
+  logRequest("set_key", getArgs);
+  db.addEmailToAccount(req.session.authenticatedUser, getArgs.email, getArgs.pubkey);
+  httputils.jsonResponse(resp, true);
+};
+
+exports.am_authed = function(req,resp) {
+  logRequest("am_authed", req.session);
+  httputils.jsonResponse(resp, (typeof req.session.authenticatedUser === 'string'));
+};
+
+exports.sync_emails = function(req,resp) {
+  if (!isAuthed(req, resp)) return;
+
+  var requestBody = "";
+  req.on('data', function(str) {
+    requestBody += str;
+  });
+  req.on('end', function() {
+    logRequest("sync_emails", requestBody);
+    try {
+      var emails = JSON.parse(requestBody);
+      var syncResponse = db.getSyncResponse(req.session.authenticatedUser, emails);
+      httputils.jsonResponse(resp, syncResponse);
+    } catch(e) {
+      httputils.badRequest(resp, "malformed payload: " + e);
+    }
+  });
 };

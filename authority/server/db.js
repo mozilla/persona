@@ -38,7 +38,7 @@ function generateSecret() {
 exports.addEmailToAccount = function(existing_email, email, pubkey) {
   var acct = exports.findByEmail(existing_email);
   if (acct === undefined) throw "no such email: " + existing_email;
-  acct.emails.push(email);
+  if (acct.emails.indexOf(email) == -1) acct.emails.push(email);
   acct.keys.push(email);
   return;
 }
@@ -99,4 +99,41 @@ exports.checkAuth = function(email, pass) {
   var acct = exports.findByEmail(email);
   if (acct === undefined) return false;
   return pass === acct.pass;
+};
+
+/* a high level operation that attempts to sync a client's view with that of the
+ * server.  email is the identity of the authenticated channel with the user,
+ * identities is a map of email -> pubkey.
+ * We'll return an object that expresses three different types of information:
+ * there are several things we need to express:
+ * 1. emails that the client knows about but we do not
+ * 2. emails that we know about and the client does not
+ * 3. emails that we both know about but who need to be re-keyed
+ * NOTE: it's not neccesary to differentiate between #2 and #3, as the client action
+ *       is the same (regen keypair and tell us about it).
+ */
+exports.getSyncResponse = function(email, identities) {
+  var respBody = {
+    unknown_emails: [ ],
+    key_refresh: [ ]
+  };
+
+  // fetch user acct
+  var acct = exports.findByEmail(email);
+
+  // #1
+  for (var e in identities) {
+    if (acct.emails.indexOf(e) == -1) respBody.unknown_emails.push(e);
+  }
+
+  // #2
+  for (var e in acct.emails) {
+    e = acct.emails[e];
+    if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
+  }
+
+  // #3
+  // XXX todo
+
+  return respBody;
 };

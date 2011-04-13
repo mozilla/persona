@@ -10,6 +10,111 @@
 
   var remoteOrigin = undefined;
 
+  function getLastUsedEmail() {
+    // XXX: really we should keep usage records locally to make this better
+    var emails = JSON.parse(window.localStorage.emails);
+    for (var e in emails) {
+      if (emails.hasOwnProperty(e)) return e;
+    }
+    return undefined;
+  }
+
+  function checkAuthStatus(authcb, notauthcb, onsuccess, onerror) {
+    runWaitingDialog(
+      "Communicating with server",
+      "Just a moment while we talk with the server.",
+      onsuccess, onerror);
+
+    $.ajax({
+      url: '/wsapi/am_authed',
+      success: function(status, textStatus, jqXHR) {
+        var authenticated = JSON.parse(status);
+        if (!authenticated) {
+          notauthcb();
+        } else {
+          authcb();
+        }
+      },
+      error: function() {
+        runErrorDialog(
+          "serverError",
+          "Error Communicating With Server!",
+          "There was a technical problem while trying to log you in.  Yucky!",
+          onsuccess, onerror);
+      }
+    });
+  }
+
+  function syncIdentities(onsuccess, onerror) {
+    // send up all email/pubkey pairs to the server, it will response with a
+    // list of emails that need new keys.  This may include emails in the
+    // sent list, and also may include identities registered on other devices.
+    // we'll go through the list and generate new keypairs
+    var identities = { };
+    var emails = JSON.parse(window.localStorage.emails);
+    for (var e in emails) {
+      if (!emails.hasOwnProperty(e)) continue;
+      identities[e] = emails[e].pub;
+    }
+
+    $.ajax({
+      url: '/wsapi/sync_emails',
+      type: "post",
+      data: JSON.stringify(identities),
+      success: function(resp, textStatus, jqXHR) {
+        // first remove idenitites that the server doesn't know about
+        if (resp.unknown_emails) {
+          for (var i = 0; i < resp.unknown_emails; i++) {
+            if (emails.hasOwnProperty(resp.unknown_emails[i])) {
+              console.log("removed local identity: " + resp.unknown_emails[i]);
+              delete emails[resp.unknown_emails[i]];
+            }
+          }
+        }
+
+        // store changes thus far
+        window.localStorage.emails = JSON.stringify(emails);
+
+        // now let's begin iteratively re-keying the emails mentioned in the server provided list
+        var emailsToAdd = resp.key_refresh;
+
+        function addNextEmail() {
+          if (!emailsToAdd || !emailsToAdd.length) {
+            runSignInDialog(onsuccess, onerror);
+            return;
+          }
+
+          // pop the first email from the list
+          var email = emailsToAdd.shift();
+          var keypair = CryptoStubs.genKeyPair();
+
+          $.ajax({
+            url: '/wsapi/set_key?email=' + encodeURIComponent(email) + '&pubkey=' + encodeURIComponent(keypair.pub),
+            success: function() {
+              // update emails list and commit to local storage, then go do the next email
+              emails[email] = keypair;
+              window.localStorage.emails = JSON.stringify(emails);
+              addNextEmail();
+            },
+            error: function() {
+              runErrorDialog(
+                "serverError",
+                "Error Adding Address!",
+                "There was a technical problem while trying to synchronize your account.  Yucky.",
+                onsuccess, onerror);
+            }
+          });
+        }
+
+        addNextEmail();
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        runErrorDialog("serverError", "Login Failed", jqXHR.responseText, onsuccess, onerror);
+      }
+    });
+
+  }
+
   function runSignInDialog(onsuccess, onerror) {
     $(".dialog").hide();
 
@@ -26,7 +131,16 @@
     }).text("Sign In").removeClass("disabled");
 
     $("#sign_in_dialog div.actions div.action:first a").unbind('click').click(function() {
-      runAddNewAddressDialog(onsuccess, onerror);
+      checkAuthStatus(
+        function() {
+          // the user is authenticated, they can go ahead and try to add a new address
+          runAddNewAddressDialog(onsuccess, onerror);
+        },
+        function() {
+          // the user is not authed, they must enter their email/password
+          runAuthenticateDialog(getLastUsedEmail(), onsuccess, onerror);
+        },
+        onsuccess, onerror);
     });
 
     $("#sign_in_dialog div.actions div.action:eq(1) a").unbind('click').click(function() {
@@ -76,9 +190,10 @@
           } else {
             runWaitingDialog(
               "Finishing Log In...",
-              "In just a moment you'll be logged into BrowserID (XXX: this will never go away!  write me!",
+              "In just a moment you'll be logged into BrowserID.",
               onsuccess, onerror);
-            // XXX: now it's time for the id synchronization process...
+
+            syncIdentities(onsuccess, onerror);
           }
         },
         error: function() {
@@ -111,7 +226,6 @@
       if (email.length > 0 && pass.length > 0) $("#submit").removeClass('disabled');
       else $("#submit").addClass('disabled');
     });
-
 
     $("#authenticate_dialog").fadeIn(
       500,
@@ -271,8 +385,6 @@
         onerror
       );
 
-      // first we must see if we're authenticated
-
       $.ajax({
         url: '/wsapi/add_email?email=' + encodeURIComponent(email) + '&pubkey=' + encodeURIComponent(keypair.pub),
         success: function() {
@@ -297,6 +409,9 @@
         $("#submit").addClass('disabled');
       }
     });
+
+    // clear previous input
+    $("#add_email_dialog input:eq(0)").val("");
 
     $("#add_email_dialog").fadeIn(500);
   }
