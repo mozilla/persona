@@ -134,7 +134,7 @@ exports.set_key = function (req, resp) {
   if (!checkParams(getArgs, resp, [ "email", "pubkey" ])) return;
   if (!isAuthed(req, resp)) return;
   logRequest("set_key", getArgs);
-  db.addEmailToAccount(req.session.authenticatedUser, getArgs.email, getArgs.pubkey, function (rv) {
+  db.addKeyToEmail(req.session.authenticatedUser, getArgs.email, getArgs.pubkey, function (rv) {
     httputils.jsonResponse(resp, rv);
   });
 };

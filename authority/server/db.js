@@ -118,6 +118,33 @@ exports.addEmailToAccount = function(existing_email, email, pubkey, cb) {
   });
 }
 
+exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
+  console.log("so you want to add a key ("+pubkey+") to " + email);
+  emailToUserID(existing_email, function(userID) {
+    if (userID == undefined) {
+      cb("no such email: " + existing_email, undefined);
+      return;
+    }
+
+    db.execute("SELECT emails.id FROM emails,users WHERE users.id = ? AND emails.address = ? AND emails.user = users.id",
+               [ userID, email ],
+               function(err, rows) {
+                 if (err || rows.length != 1) {
+                   cb(err);
+                   return;
+                 }
+                 executeTransaction([
+                   [ "INSERT INTO keys (email, key, expires) VALUES(?,?,?)",
+                     [ rows[0].id, pubkey, ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000)) ]
+                   ]
+                 ], function (error) {
+                   if (error) cb(error);
+                   else cb();
+                 });
+               });
+  });
+}
+
 /* takes an argument object including email, pass, and pubkey. */
 exports.stageUser = function(obj) {
   var secret = generateSecret();
