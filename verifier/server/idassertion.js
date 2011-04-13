@@ -85,26 +85,31 @@ var Webfinger = (function() {
         method: 'GET',
         headers: { "Host": domain}
       };
-      var req = http.request(options, function(res) {
-        res.setEncoding('utf8');
-        var buffer = "";
-        var offset = 0;
-        res.on('data', function (chunk) {
-          buffer += chunk;
-          offset += chunk.length;
+      try {
+        console.log("Requesting host-meta for " + options.host + ":" + options.port + " (" + domain + ")");
+        var req = http.request(options, function(res) {
+          res.setEncoding('utf8');
+          var buffer = "";
+          var offset = 0;
+          res.on('data', function (chunk) {
+            buffer += chunk;
+            offset += chunk.length;
+          });
+          res.on('end', function() {          
+            var template = extractLRDDTemplateFromHostMeta(buffer, domain);
+            hostMetaCache[domain] = template;
+            continueFn(template);
+          });
+          res.on('error', function(e) {
+            console.log("Webfinger error: "+ e + "; " + e.error);
+            hostMetaCache[domain] = NO_HOST_META;
+            errorFn(e);        
+          });
         });
-        res.on('end', function() {          
-          var template = extractLRDDTemplateFromHostMeta(buffer, domain);
-          hostMetaCache[domain] = template;
-          continueFn(template);
-        });
-        res.on('error', function(e) {
-          console.log("Webfinger error: "+ e + "; " + e.error);
-          hostMetaCache[domain] = NO_HOST_META;
-          errorFn(e);        
-        });
-      });
-      req.end();
+        req.end();
+      } catch (e) {
+        errorFn(e);              
+      }
     }
   }
 
@@ -274,7 +279,7 @@ IDAssertion.prototype  =
             return;
           }
         }
-        onError("None of the users public keys verified the signature");
+        onError("None of the user's public keys verified the signature");
       },
       function(error) {
         onError(error);
