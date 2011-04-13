@@ -66,7 +66,7 @@ function serveFile(filename, response) {
         var a = o.server.address();
         var from = o.name + ".mozilla.org";
         var to = a.address + ":" + a.port;
-        data = data.replace(from, to);
+        data = data.replace(new RegExp(from, 'g'), to);
       }
 
       response.writeHead(200, {"Content-Type": mimeType});
