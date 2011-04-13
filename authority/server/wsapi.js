@@ -38,7 +38,9 @@ exports.have_email = function(req, resp) {
   // get inputs from get data!
   var email = url.parse(req.url, true).query['email'];
   logRequest("have_email", {email: email});
-  httputils.jsonResponse(resp, undefined != db.findByEmail(email));
+  db.emailKnown(email, function(known) { 
+    httputils.jsonResponse(resp, known);
+  });
 };
 
 /* First half of account creation.  Stages a user account for creation.
@@ -74,15 +76,17 @@ exports.registration_status = function(req, resp) {
   logRequest("registration_status", req.session);
 
   var email = req.session.pendingRegistration;
-  if (undefined != db.findByEmail(email)) {
-    delete req.session.pendingRegistration;
-    req.session.authenticatedUser = email;
-    httputils.jsonResponse(resp, "complete");
-  } else if (db.isStaged(email)) {
-    httputils.jsonResponse(resp, "pending");
-  } else {
-    httputils.jsonResponse(resp, "noRegistration");
-  }
+  db.emailKnown(email, function(known) {
+    if (known) {
+      delete req.session.pendingRegistration;
+      req.session.authenticatedUser = email;
+      httputils.jsonResponse(resp, "complete");
+    } else if (db.isStaged(email)) {
+      httputils.jsonResponse(resp, "pending");
+    } else {
+      httputils.jsonResponse(resp, "noRegistration");
+    }
+  });
 };
 
 exports.authenticate_user = function(req, resp) {
@@ -91,12 +95,10 @@ exports.authenticate_user = function(req, resp) {
 
   if (!checkParams(getArgs, resp, [ "email", "pass" ])) return;
 
-  if (db.checkAuth(getArgs.email, getArgs.pass)) {
-    req.session.authenticatedUser = getArgs.email;
-    httputils.jsonResponse(resp, true);      
-  } else {
-    httputils.jsonResponse(resp, false);      
-  }
+  db.checkAuth(getArgs.email, getArgs.pass, function(rv) {
+    if (rv) req.session.authenticatedUser = getArgs.email;
+    httputils.jsonResponse(resp, rv);
+  });
 };
 
 exports.add_email = function (req, resp) {
@@ -132,8 +134,9 @@ exports.set_key = function (req, resp) {
   if (!checkParams(getArgs, resp, [ "email", "pubkey" ])) return;
   if (!isAuthed(req, resp)) return;
   logRequest("set_key", getArgs);
-  db.addEmailToAccount(req.session.authenticatedUser, getArgs.email, getArgs.pubkey);
-  httputils.jsonResponse(resp, true);
+  db.addEmailToAccount(req.session.authenticatedUser, getArgs.email, getArgs.pubkey, function (rv) {
+    httputils.jsonResponse(resp, rv);
+  });
 };
 
 exports.am_authed = function(req,resp) {
@@ -152,10 +155,12 @@ exports.sync_emails = function(req,resp) {
     logRequest("sync_emails", requestBody);
     try {
       var emails = JSON.parse(requestBody);
-      var syncResponse = db.getSyncResponse(req.session.authenticatedUser, emails);
-      httputils.jsonResponse(resp, syncResponse);
     } catch(e) {
       httputils.badRequest(resp, "malformed payload: " + e);
     }
+    db.getSyncResponse(req.session.authenticatedUser, emails, function(err, syncResponse) {
+      if (err) httputils.serverError(resp, err);
+      else httputils.jsonResponse(resp, syncResponse);
+    });
   });
 };

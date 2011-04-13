@@ -6,6 +6,10 @@ exports.sendVerificationEmail = function(email, secret) {
   // we'll just wait 5 seconds and manually feed the secret back into the
   // system, as if a user had clicked a link
   setTimeout(function() {
-    db.gotVerificationSecret(secret);
+    db.gotVerificationSecret(secret, function(e) {
+      if (e) {
+        console.log("error completing the verification: " + e);
+      }
+    });
   }, 5000);
 };
