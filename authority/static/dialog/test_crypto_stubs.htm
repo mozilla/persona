@@ -1,0 +1,24 @@
+<!--<script src="prng4.js"></script>
+<script src="rng.js"></script>
+<script src="jwt.js"></script>-->
+<script src="crypto-stubs.js"></script>
+<script>
+
+function runGenKeyPairTest()
+{
+  var start = new Date();
+  var keyPair = CryptoStubs.genKeyPair();
+  var stop = new Date();
+
+  document.getElementById("result").value = keyPair.priv;
+  document.getElementById("timing").innerHTML = (stop -start) + " msec";
+}
+</script>
+
+<button onClick="runGenKeyPairTest()">Test Key Generation</button>
+
+
+<br>
+<textarea style="font:12pt Courier" rows="12" cols="80" id="result"></textarea>
+<br>
+<div id="timing"></div>
