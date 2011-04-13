@@ -237,3 +237,17 @@ exports.getSyncResponse = function(email, identities, cb) {
       });
   });
 };
+
+
+exports.pubkeysForEmail = function(identity, cb) {
+  db.execute('SELECT keys.key FROM keys, emails WHERE emails.address = ? AND keys.email = emails.id',
+             [ identity ],
+             function(err, rows) {
+               var keys = undefined;
+               if (!err && rows && rows.length) {
+                 keys = [ ];
+                 for (var i = 0; i < rows.length; i++) keys.push(rows[i].key);
+               }
+               cb(keys);
+             });
+};

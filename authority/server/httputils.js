@@ -35,6 +35,13 @@ exports.jsonResponse = function(resp, obj)
   resp.end();
 };
 
+exports.xmlResponse = function(resp, doc)
+{
+  resp.writeHead(200, {"Content-Type": "text/xml"});
+  if (doc !== undefined) resp.write(doc);
+  resp.end();
+};
+
 exports.checkGetArgs = function(req, args) {
     [ "email", "pass", "pubkey" ].forEach(function(k) {
       if (!urlobj.hasOwnProperty(k) || typeof urlobj[k] !== 'string') {

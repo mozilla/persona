@@ -2,8 +2,8 @@ const path = require('path'),
        url = require('url'),
      wsapi = require('./wsapi.js'),
  httputils = require('./httputils.js'),
-   connect = require('connect');
-
+   connect = require('connect'),
+ webfinger = require('./webfinger.js');
 
 const STATIC_DIR = path.join(path.dirname(__dirname), "static");
 
@@ -22,6 +22,16 @@ exports.handler = function(request, response, serveFile) {
       console.log(errMsg);
       httputils.fourOhFour(response, errMsg);
     }
+  } else if (/^\/users\/[^\/]+.xml$/.test(urlpath)) {
+    var identity = path.basename(urlpath).replace(/.xml$/, '');
+
+    webfinger.renderUserPage(identity, function (resultDocument) {
+      if (resultDocument === undefined) {
+        httputils.fourOhFour(response, "I don't know anything about: " + identity);
+      } else {
+        httputils.xmlResponse(response, resultDocument);
+      }
+    });
   } else {
     // node.js takes care of sanitizing the request path
     serveFile(path.join(STATIC_DIR, urlpath), response);
