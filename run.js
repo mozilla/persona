@@ -89,9 +89,10 @@ function serveFileIndex(filename, response) {
 
 function createServer(obj) {
   var server = connect.createServer().use(connect.favicon())
-    .use(connect.logger({format: ":status :method :remote-addr :response-time :url"}))
-    .use(connect.cookieParser())
-    .use(connect.session({ secret: "mouse dog" }));
+    .use(connect.logger({format: ":status :method :remote-addr :response-time :url"}));
+
+  // let the specific server interact directly with the connect server to register their middleware 
+  if (obj.setup) obj.setup(server);
 
   // if this site has a handler, we'll run that, otherwise serve statically
   if (obj.handler) {
@@ -130,12 +131,12 @@ dirs.forEach(function(dirObj) {
   if (!fs.statSync(dirObj.path).isDirectory()) return;
   // does this server have a js handler for custom request handling?
   var handlerPath = path.join(dirObj.path, "server", "run.js");
-  var handler = undefined; 
+  var runJS = {};
   try {
     var runJSExists = false;
     try { runJSExists = fs.statSync(handlerPath).isFile() } catch(e) {};
     if (runJSExists) {
-      handler = require(handlerPath).handler;
+      var runJS = require(handlerPath);
     }
   } catch(e) {
     console.log("Error loading " + handlerPath + ": " + e);
@@ -146,7 +147,8 @@ dirs.forEach(function(dirObj) {
     server: undefined,
     port: "0",
     name: dirObj.name,
-    handler: handler
+    handler: runJS.handler,
+    setup: runJS.setup
   };
   so.server = createServer(so)
   boundServers.push(so);

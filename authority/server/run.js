@@ -1,7 +1,9 @@
 const path = require('path'),
        url = require('url'),
      wsapi = require('./wsapi.js'),
- httputils = require('./httputils.js');
+ httputils = require('./httputils.js'),
+   connect = require('connect');
+
 
 const STATIC_DIR = path.join(path.dirname(__dirname), "static");
 
@@ -25,3 +27,9 @@ exports.handler = function(request, response, serveFile) {
     serveFile(path.join(STATIC_DIR, urlpath), response);
   }
 };
+
+exports.setup = function(server) {
+  server
+    .use(connect.cookieParser())
+    .use(connect.session({ secret: "mouse dog" }));
+}
