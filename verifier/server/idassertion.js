@@ -96,9 +96,13 @@ var Webfinger = (function() {
             offset += chunk.length;
           });
           res.on('end', function() {          
-            var template = extractLRDDTemplateFromHostMeta(buffer, domain);
-            hostMetaCache[domain] = template;
-            continueFn(template);
+            try {
+              var template = extractLRDDTemplateFromHostMeta(buffer, domain);
+              hostMetaCache[domain] = template;
+              continueFn(template);
+            } catch(e) {
+              errorFn(e);
+            }
           });
           res.on('error', function(e) {
             console.log("Webfinger error: "+ e + "; " + e.error);
