@@ -1,21 +1,18 @@
-const db = require('./db.js');
+const  db = require('./db.js'),
+       fs = require('fs'),
+ mustache = require('mustache'),
+     path = require('path');
 
-const HEADER = "<?xml version='1.0' encoding='UTF-8'?>\n<XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'\n     xmlns:hm='http://host-meta.net/xrd/1.0'>\n";
-
-const FOOTER ="</XRD>\n";
-const KEYHEADER = "  <Link rel=\"public-key\" value=\"";
-const KEYFOOTER = "\"/>\n";
+const TEMPLATE = fs.readFileSync(path.join(__dirname, "webfinger_template.xml")).toString();
 
 exports.renderUserPage = function(identity, cb) {
   db.pubkeysForEmail(identity, function(keys) {
-    var respDoc = undefined;
-    if (keys && keys.length) {
-      respDoc = HEADER;
-      for (var i = 0; i < keys.length; i++) {
-        respDoc += (KEYHEADER + keys[i] + KEYFOOTER) ;
-      }
-      respDoc += FOOTER;
+    if (!keys || keys.length === 0) cb(undefined);
+    else {
+      cb(mustache.to_html(TEMPLATE, {
+        keys: keys,
+        email: identity
+      }));
     }
-    cb(respDoc);
   });
 };

@@ -23,11 +23,11 @@ exports.handler = function(request, response, serveFile) {
       httputils.fourOhFour(response, errMsg);
     }
   } else if (/^\/users\/[^\/]+.xml$/.test(urlpath)) {
-    var identity = path.basename(urlpath).replace(/.xml$/, '');
+    var identity = path.basename(urlpath).replace(/.xml$/, '').replace(/^acct:/, '');
 
     webfinger.renderUserPage(identity, function (resultDocument) {
       if (resultDocument === undefined) {
-        httputils.fourOhFour(response, "I don't know anything about: " + identity);
+        httputils.fourOhFour(response, "I don't know anything about: " + identity + "\n");
       } else {
         httputils.xmlResponse(response, resultDocument);
       }

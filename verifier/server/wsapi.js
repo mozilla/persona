@@ -16,13 +16,23 @@ function logRequest(method, args) {
  * XX should be POST
  */
 exports.verify = function(req, resp) {
-
   // get inputs from get data!
   var parsed = url.parse(req.url, true);
   var assertion = parsed.query['assertion'];
   var audience = parsed.query['audience'];
 
   logRequest("verify", {assertion: assertion, audience:audience});
+
+  // allow client side XHR to access this WSAPI, see
+  // https://developer.mozilla.org/en/http_access_control
+  // for details
+  resp.setHeader('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') {
+    resp.setHeader('Access-Control-Allow-Methods', 'GET');
+    resp.writeHead(200);
+    resp.end();
+    return;
+  }
 
   try {
     var assertionObj = new idassertion.IDAssertion(assertion);
