@@ -126,7 +126,8 @@
       var email = $("#identities input:checked").parent().find("div").text();
       // yay!  now we need to produce an assertion.
       var privkey = JSON.parse(window.localStorage.emails)[email].priv;
-      var assertion = CryptoStubs.createAssertion(remoteOrigin, email, privkey);
+      var audience = remoteOrigin.replace(/^(http|https):\/\//, '');
+      var assertion = CryptoStubs.createAssertion(audience, email, privkey);
       onsuccess(assertion);
     }).text("Sign In").removeClass("disabled");
 
