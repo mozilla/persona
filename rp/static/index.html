@@ -84,14 +84,18 @@ an example app that uses Mozilla ID for an awesome login experience.
         // validation
         $("#logininstructions").empty().html($("<p>verifying your identity of <i>" + assertion + "</i></p>"));
 
-        $.post(
-          '/login',
-          JSON.stringify(assertion),
-          function(data, textStatus) {
+        $.ajax({
+          url: '/login',
+          data: JSON.stringify(assertion),
+          success: function(data, textStatus, jqXHR) {
             // we've got a response from the server half of the mywords
             // application which has validated the assertion
             $("#logininstructions").empty().text("verification complete: " + data);
-          });
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            $("#logininstructions").empty().text("verification failed: " + jqXHR.responseText);
+          }
+        })
       }, function(code, msg) {
         alert("something very bad happened! ("+code+"): " + msg); 
       });
