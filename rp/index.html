@@ -44,23 +44,23 @@ a:hover { border-bottom: 2px solid black ; }
 
 <div class="step">
   <div class="number">1.</div>
-  <div class="desc">Upon clicking the link above, the webpage will call `navigator.id.getVerifiedEmail()` to indicate to the browser that it would like an identity for the user</div>
+  <div class="desc"><b>Browser Interaction:</b> Upon clicking the link above, the webpage will call <tt>navigator.id.getVerifiedEmail()</tt> to indicate to the browser that it would like an identity for the user</div>
 </div>
 
 <div class="step">
   <div class="number">2.</div>
-  <div class="desc">The browser will spawn a dialog that the user can interact with the select what identity they want to provide to the site </div>
+  <div class="desc"><b>User Interaction:</b> The browser will spawn a dialog that the user can interact with the select what identity they want to provide to the site </div>
 </div>
 
 <div class="step">
   <div class="number">3.</div>
-  <div class="desc">Upon selection of an identity, an <i>assertion</i> will be returned to the webpage via a callback, it looks like this: </div>
+  <div class="desc"><b>Assertion Generation:</b> Upon selection of an identity, an <i>assertion</i> will be returned to the webpage via a callback, it looks like this: </div>
   <div class="output" id="oAssertion">...waiting for party commencement...</div>
 </div>
 
 <div class="step">
   <div class="number">4.</div>
-  <div class="desc">This site can then send that assertion up to a <i>verification server</i> which cryptographically checks that the identity embedded in the verification actually belongs to the browser in use by the monkey at the keyboard.  The request looks like </div>
+  <div class="desc"><b>Assertion Verification:</b> This site can then send that assertion up to a <i>verification server</i> which cryptographically checks that the identity embedded in the verification actually belongs to the browser in use by the monkey at the keyboard.  The request looks like </div>
   <div class="output" id="oVerificationRequest">...waiting for party commencement...</div>
 </div>
 
