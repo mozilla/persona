@@ -1621,7 +1621,8 @@ function RSAPublicKeySerializeASN1() {
 
   function encodeBitString(bits) {
     var bytes=[];
-    bytes.push(0x03); // INTEGER
+    bytes.push(0x03); // BIT STRING
+    bytes.push(bits.length+1);  // #Bytes
     bytes.push(0);// remainder
     return bytes.concat(bits);
   }
