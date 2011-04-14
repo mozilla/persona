@@ -1,100 +1,101 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-  <title>All My Words</title>
-  <style>
-body {
-  background-color: #000055;
+<title>
+BrowserID Relying Party
+</title>
+<link href='http://fonts.googleapis.com/css?family=Permanent+Marker' rel='stylesheet' type='text/css'>
+<style type="text/css">
+
+body { margin: auto; font: 13px/1.5 Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; }
+a:link, a:visited { font-style: italic; text-decoration: none; color: #008; }
+a:hover { border-bottom: 2px solid black ; }
+.number { font-family: 'Permanent Marker', arial, serif; font-size: 4em; float: left; padding: 0; margin: 0; vertical-align: top; width: 1.3em}
+.title { font-size: 2em; font-weight: bold; text-align: center; margin: 1.5em; }
+.intro { font-size: 1.2em; width: 600px; margin: auto; }
+.step { width: 600px; margin: auto; margin-top: 1em;}
+.desc { padding-top: 1.5em; min-height: 4.5em;}
+.output {
+  font-family: 'lucida console', monaco, 'andale mono', 'bitstream vera sans mono', consolas, monospace;
+  word-wrap: break-word;
+  border: 3px solid #666;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  padding: .5em;
+  margin: .5em;
   color: #ccc;
+  background-color: #333;
+  white-space: pre;
+  font-size: .9em;
 }
-
-#appcontainer {
-  width: 600px;
-  margin: auto;
-  font: 200 14px/1.2 "League Gothic", Haettenschweiler, sans-serif;
-}
-
-#sitetitle {
-  font-size: 2em;
-  color: #fff;
-  font-weight: bold;
-  margin-left: -2em;
-  margin-top: -200px;
-  padding-bottom: 200px;
-}
-
-a {
-  color: #fff;
-}
-
-#logininstructions {
-  width: 300px;
-  margin: auto;
-}
-
-.content {
-  display: none;
-}
-
-  </style>
-</head>
 
 </style>
 </head>
-  
 <body>
-<div id="appcontainer">
-<div id="sitetitle">All My Words</div>
-<p class="content">
-This is a simple tool that lets your 5 year old collect all of the
-words they know on the computer.  Its an introduction to task driven
-computer usage for little ones.  It's <i>also</i> (uh, and primarily)
-an example app that uses Mozilla ID for an awesome login experience.
-</p>
-
-<p class="content" id="logininstructions">
-  To get started, <a href="#" id="login">log in</a>.
-</p>
+<div class="title">
+  Example BrowserID Relying Party
 </div>
+<div class="intro">
+  This is the simplest possible (stateless, static, client-only)  BrowserID Relying Party.  It
+  demonstrates the steps required to use BrowserID to verify the identity of a user.
+  <a id="partyStarter" href="#">Click here to kick off the party</a>.  Here's what will happen:
+</div>
+
+<div class="step">
+  <div class="number">1.</div>
+  <div class="desc">Upon clicking the link above, the webpage will call `navigator.id.getVerifiedEmail()` to indicate to the browser that it would like an identity for the user</div>
+</div>
+
+<div class="step">
+  <div class="number">2.</div>
+  <div class="desc">The browser will spawn a dialog that the user can interact with the select what identity they want to provide to the site </div>
+</div>
+
+<div class="step">
+  <div class="number">3.</div>
+  <div class="desc">Upon selection of an identity, an <i>assertion</i> will be returned to the webpage via a callback, it looks like this: </div>
+  <div class="output" id="oAssertion">...waiting for party commencement...</div>
+</div>
+
+<div class="step">
+  <div class="number">4.</div>
+  <div class="desc">This site can then send that assertion up to a <i>verification server</i> which cryptographically checks that the identity embedded in the verification actually belongs to browser in use by the monkey at the keyboard.  The request looks like </div>
+  <div class="output" id="oVerificationRequest">...waiting for party commencement...</div>
+</div>
+
+<div class="step">
+  <div class="number">5.</div>
+  <div class="desc"><b>Verification Response</b>: The verification server responds to the site to tell it whether or not the verification blob is valid:</div>
+  <div class="output" id="oVerificationResponse">...waiting for party commencement...</div>
+</div>
+
+<div class="step">
+  <div class="number">6.</div>
+  <div class="desc"><b>All Done!</b>  The site can now create an account keyed on the users identity (email address), set cookies, etc!  Logging in again is just re-running these same steps.</div>
+</div>
+
 </body>
 <script src="jquery-min.js"></script>
 <script src="http://authority.mozilla.org/include.js"></script>
 <script>
   $(document).ready(function() {
-    $(".content").fadeIn(700);
-
-    $("#sitetitle").animate({ "marginTop": "0px", "paddingBottom": "0px" }, "fast");
-    $("#sitetitle").animate({ "marginTop": "-10px", "paddingBottom": "10px" }, "medium");
-    $("#sitetitle").animate({"marginTop": "0px", "paddingBottom": "0px" }, "medium");
-    $("#sitetitle").animate({ "marginTop": "-6px", "paddingBottom": "6px" }, "slow");
-    $("#sitetitle").animate({"marginTop": "0px", "paddingBottom": "0px" }, "slow");
-
-    $("#login").click(function() {
-      $("#logininstructions").empty().text("logging you in using mozilla ID...");
+    $("#partyStarter").click(function() {
       navigator.id.getVerifiedEmail(function(assertion) {
-        // assertion at this point is a blob that looks like this:
-        //
-        // {
-        //   audience: "mywords.com",
-        //   valid-until: <format TBD>,
-        //   email: "sophia@hilaiel.coom"
-        // }
-        //
-        // Now we'll send this assertion up to the mywords server for
-        // validation
-        $("#logininstructions").empty().html($("<p>verifying your identity of <i>" + assertion + "</i></p>"));
+        // Now we'll send this assertion over to the verification server for validation
+        $("#oAssertion").empty().text(assertion);
+
+        var url = "http://verifier.mozilla.org/wsapi/verify?assertion=" + window.encodeURIComponent(assertion) +
+                  "&audience=" + window.encodeURIComponent("rp.mozilla.org");
+        $("#oVerificationRequest").empty().text(url);
 
         $.ajax({
-          url: 'http://verifier.mozilla.org/wsapi/verify',
-          type: "get",
-          data: { assertion: assertion, audience: 'foo' },
+          url: url,
           success: function(data, textStatus, jqXHR) {
-            // we've got a response from the server half of the mywords
-            // application which has validated the assertion
-            $("#logininstructions").empty().text("verification complete: " + JSON.stringify(data));
+            $("#oVerificationResponse").empty().text(JSON.stringify(data, null, 4));
           },
           error: function(jqXHR, textStatus, errorThrown) {
-            $("#logininstructions").empty().text("verification failed: " + jqXHR.responseText);
+            $("#oVerificationResponse").empty().text(jqXHR.responseText);
           }
         })
       }, function(code, msg) {
