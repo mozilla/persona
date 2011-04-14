@@ -1,6 +1,6 @@
-<!--<script src="prng4.js"></script>
+<script src="prng4.js"></script>
 <script src="rng.js"></script>
-<script src="jwt.js"></script>-->
+<script src="crypto.js"></script>
 <script src="crypto-stubs.js"></script>
 <script>
 
@@ -10,7 +10,8 @@ function runGenKeyPairTest()
   var keyPair = CryptoStubs.genKeyPair();
   var stop = new Date();
 
-  document.getElementById("result").value = keyPair.priv;
+  document.getElementById("private").value = keyPair.priv;
+  document.getElementById("public").value = keyPair.pub;
   document.getElementById("timing").innerHTML = (stop -start) + " msec";
 }
 </script>
@@ -19,6 +20,7 @@ function runGenKeyPairTest()
 
 
 <br>
-<textarea style="font:12pt Courier" rows="12" cols="80" id="result"></textarea>
+<textarea style="font:12pt Courier" rows="12" cols="80" id="private"></textarea>
+<textarea style="font:12pt Courier" rows="12" cols="80" id="public"></textarea>
 <br>
 <div id="timing"></div>

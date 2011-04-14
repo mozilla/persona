@@ -1570,7 +1570,6 @@ function RSAPrivateKeySerializeASN1() {
 
   var actualLength = bytes.length - 4;
   var lenBytes = new BigInteger("" + actualLength, 10).toByteArray();
-  console.log("Actual length is " + actualLength + "; lenBytes is " + lenBytes);
   bytes[2] = lenBytes[0];
   bytes[3] = lenBytes[1];
     
@@ -1591,29 +1590,61 @@ function RSAPrivateKeySerializeASN1() {
 
 // Returns an ASN1-encoded X509 Public Key data structure
 function RSAPublicKeySerializeASN1() {
-  function concatBigInteger(bytes, bigInt) {
+  
+  function encodeSequence(contentObjects) {
+    var len = 0;
+    for (var i=0;i<contentObjects.length;i++) {
+      len += contentObjects[i].length;
+    }
+    var out = [];
+    out.push(0x30); // SEQUENCE, constructed
+    if (len < 128) {
+      out.push(len);
+    } else {
+      var lenBytes = new BigInteger("" + len, 10).toByteArray();
+      out.push(0x80 | lenBytes.length);
+      for (var i=0;i<lenBytes.length;i++) out.push(lenBytes[i]);
+    }
+    for (var i=0;i<contentObjects.length;i++) {
+      out = out.concat(contentObjects[i]);
+    }
+    return out;
+  }
+
+  function encodeBigInteger(bigInt) {
     var bigIntBytes = bigInt.toByteArray();
+    var bytes= [];
     bytes.push(0x02); // INTEGER
     bytes.push(bigIntBytes.length); // #BYTES
-    //  bytes.push(00); // this appears in some encodings, and I don't understand why.  leading zeros?
     return bytes.concat(bigIntBytes);
   }
-  var bytes=[];
 
-  // sequence
-  bytes.push(0x30);
-  bytes.push(0x82);
-  bytes.push(0x01);
-  bytes.push(0x3a);// replace this with actual length...
-  // version (integer 0)
-  bytes.push(0x02); // INTEGER
-  bytes.push(0x01); // #BYTES
-  bytes.push(0x00); // value
-  // modulus (n)
-  bytes = concatBigInteger(bytes, this.n);
-  
-  // publicExponent (e)
-  bytes = concatBigInteger(bytes, new BigInteger(""+this.e, 10));
+  function encodeBitString(bits) {
+    var bytes=[];
+    bytes.push(0x03); // INTEGER
+    bytes.push(0);// remainder
+    return bytes.concat(bits);
+  }
+
+  // construct exponent-modulus sequence:
+  var neSequence = encodeSequence(
+    [
+      encodeBigInteger(this.n),
+      encodeBigInteger(new BigInteger("" + this.e, 10))
+    ]
+  );
+  var neBitString = encodeBitString(neSequence);
+
+  // construct :rsaEncryption sequence:
+  var rsaEncSequence = encodeSequence(
+    [
+      [0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01],
+      [0x05, 0x00],// NULL
+    ]
+  );
+
+  // construct outer sequence
+  var bytes = encodeSequence([rsaEncSequence, neBitString]);
   
   var buffer = "";
   for (var i=0;i<bytes.length;i++) { 
@@ -1671,6 +1702,7 @@ RSAKey.prototype.setPrivateEx = RSASetPrivateEx;
 RSAKey.prototype.generate = RSAGenerate;
 RSAKey.prototype.decrypt = RSADecrypt;
 RSAKey.prototype.serializePrivateASN1 = RSAPrivateKeySerializeASN1;
+RSAKey.prototype.serializePublicASN1 = RSAPublicKeySerializeASN1;
 
 //RSAKey.prototype.b64_decrypt = RSAB64Decrypt;
 //
