@@ -84,7 +84,10 @@ a:hover { border-bottom: 2px solid black ; }
     for (var k in obj) {
       if (obj.hasOwnProperty(k) && typeof obj[k] === 'string') {
         htmlRep += "<b>" + k + ":</b> " + obj[k] + "<br/>";
+      } else if (k === 'valid-until') {
+        htmlRep += "<b>" + k + ":</b> " + (new Date(obj[k])).toString() + "<br/>";
       }
+
     }
     return htmlRep;
   }

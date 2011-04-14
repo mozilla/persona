@@ -534,7 +534,7 @@ if (!navigator.id.getVerifiedEmail) {
       var jwtContents = JSON.parse(window.atob(jwtBlob.split(".")[1]));
       for (var k in obj) {
         if (obj.hasOwnProperty(k) && obj[k] === undefined) {
-          if (typeof jwtContents[k] === 'string') obj[k] = jwtContents[k];
+          if (typeof jwtContents[k] === 'string' || typeof jwtContents[k] === 'number') obj[k] = jwtContents[k];
         }
       }
     } catch(e) {
