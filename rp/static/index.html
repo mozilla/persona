@@ -86,7 +86,8 @@ an example app that uses Mozilla ID for an awesome login experience.
 
         $.ajax({
           url: '/login',
-          data: JSON.stringify(assertion),
+          type: "post",
+          data: assertion,
           success: function(data, textStatus, jqXHR) {
             // we've got a response from the server half of the mywords
             // application which has validated the assertion
