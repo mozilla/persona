@@ -2365,14 +2365,18 @@ var JWTInternals = (function() {
     return ret;
   }
 
-
+  function hex2b64urlencode(arg) {
+    return hex2b64(arg).split('=')[0]
+      .replace(/\+/g, '-')  // 62nd char of encoding
+      .replace(/\//g, '_'); // 63rd char of encoding
+  }
 
   function base64urlencode(arg)
   {
     var s = window.btoa(arg); // Standard base64 encoder
     s = s.split('=')[0]; // Remove any trailing '='s
-    s = s.replace('+', '-', 'g'); // 62nd char of encoding
-    s = s.replace('/', '_', 'g'); // 63rd char of encoding
+    s = s.replace(/\+/g, '-'); // 62nd char of encoding
+    s = s.replace(/\//g, '_'); // 63rd char of encoding
     // TODO optimize this; we can do much better
     return s;
   }
@@ -2380,8 +2384,8 @@ var JWTInternals = (function() {
   function base64urldecode(arg)
   {
     var s = arg;
-    s = s.replace('-', '+', 'g'); // 62nd char of encoding
-    s = s.replace('_', '/', 'g'); // 63rd char of encoding
+    s = s.replace(/-/g, '+'); // 62nd char of encoding
+    s = s.replace(/_/g, '/'); // 63rd char of encoding
     switch (s.length % 4) // Pad with trailing '='s
     {
       case 0: break; // No pad chars in this case
@@ -2472,8 +2476,7 @@ var JWTInternals = (function() {
       var rsa = new RSAKey();
       rsa.readPrivateKeyFromPEMString(this.keyPEM);
       var hSig = rsa.signString(this.data, this.hash);
-      
-      var a= base64urlencode(base64urldecode(hex2b64(hSig))); // TODO replace this with hex2b64urlencode!
+      var a = hex2b64urlencode(hSig);
       return a;
     },
     verify: function _verify(sig)
