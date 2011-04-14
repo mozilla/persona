@@ -173,12 +173,12 @@ var Webfinger = (function() {
               {
                 var link = linkList[i];
                 var rel = link["@"]["rel"];
-                
+
                 if (rel == "public-key") {
                   var val = link["@"]["value"];
                   var id = link["@"]["id"];
                   if (val) {
-                    var keyObj = { key: new Buffer(val, "base64").toString() };
+                    var keyObj = { key: val };
                     if (id) keyObj.keyid = id;
                     publicKeys.push(keyObj);
                   }
