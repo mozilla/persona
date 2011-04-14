@@ -25,6 +25,17 @@ function getSiteRef(host, port) {
   return undefined;
 }
 
+function subHostNames(data) {
+  for (var i = 0; i < boundServers.length; i++) {
+    var o = boundServers[i]
+    var a = o.server.address();
+    var from = o.name + ".mozilla.org";
+    var to = a.address + ":" + a.port;
+    data = data.replace(new RegExp(from, 'g'), to);
+  }
+  return data;
+}
+
 function getServerByName(name) {
   for (var i = 0; i < boundServers.length; i++) {
     if (boundServers[i].name === name) return boundServers[i];
@@ -61,13 +72,7 @@ function serveFile(filename, response) {
       var ext = path.extname(filename);
       var mimeType = exts[ext] || "application/octet-stream";
 
-      for (var i = 0; i < boundServers.length; i++) {
-        var o = boundServers[i]
-        var a = o.server.address();
-        var from = o.name + ".mozilla.org";
-        var to = a.address + ":" + a.port;
-        data = data.replace(new RegExp(from, 'g'), to);
-      }
+      data = subHostNames(data);
 
       response.writeHead(200, {"Content-Type": mimeType});
       response.write(data, "binary");
@@ -97,7 +102,7 @@ function createServer(obj) {
   // if this site has a handler, we'll run that, otherwise serve statically
   if (obj.handler) {
     server.use(function(req, resp, next) {
-      obj.handler(req, resp, serveFile);
+      obj.handler(req, resp, serveFile, subHostNames);
     });
   } else {
     server.use(function(req, resp, next) {

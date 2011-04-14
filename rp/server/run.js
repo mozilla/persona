@@ -3,17 +3,17 @@ const path = require('path'),
      wsapi = require('./wsapi.js'),
  httputils = require('./httputils.js'),
    connect = require('connect'),
-        fs = require('fs');
+        fs = require('fs'),
+    verify = require('./verify.js');
 
 const STATIC_DIR = path.join(path.dirname(__dirname), "static");
 
-exports.handler = function(request, response, serveFile) {
+exports.handler = function(request, response, serveFile, subHostNames) {
   // dispatch!
   var urlpath = url.parse(request.url).pathname;
 
-  if (urlpath === '/authenticate') {
-    // XXX: do something
-    httputils.serverError(response, "notImplemented");
+  if (urlpath === '/login') {
+    verify.performVerfication(subHostNames("http://verifier.mozilla.org"), subHostNames("rp.mozilla.org"), request, response);
   } else {
     // node.js takes care of sanitizing the request path
     // automatically serve index.html if this is a directory
