@@ -129,7 +129,7 @@
       var audience = remoteOrigin.replace(/^(http|https):\/\//, '');
       var assertion = CryptoStubs.createAssertion(audience, email, privkey);
       onsuccess(assertion);
-    }).text("Sign In").removeClass("disabled");
+    }).text("Sign In").removeClass("disabled").focus();
 
     $("#sign_in_dialog div.actions div.action:first a").unbind('click').click(function() {
       checkAuthStatus(
