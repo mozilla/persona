@@ -1,7 +1,7 @@
 // this is the file that the RP includes to shim in the
 // navigator.id.getVerifiedEmail() function
 
-  if (!navigator.id) { navigator.id = {} }
+if (!navigator.id) { navigator.id = {} }
 
 if (!navigator.id.getVerifiedEmail) {
   // local embedded copy of jschannel: http://github.com/mozilla/jschannel 
@@ -520,6 +520,30 @@ if (!navigator.id.getVerifiedEmail) {
     };
   })();
 
+  function JWTWrapper(jwtBlob) {
+    var obj = {
+      jwt: jwtBlob,
+      email: undefined,
+      audience: undefined,
+      issuer: undefined,
+      "valid-until": undefined,
+      toString: function() { return this.jwt; }
+    };
+    // attempt to decode the middle part of the assertion to populate object keys
+    try {
+      var jwtContents = JSON.parse(window.atob(jwtBlob.split(".")[1]));
+      for (var k in obj) {
+        if (obj.hasOwnProperty(k) && obj[k] === undefined) {
+          if (typeof jwtContents[k] === 'string') obj[k] = jwtContents[k];
+        }
+      }
+    } catch(e) {
+      // failure is an option.
+    }
+
+    return obj;
+  }
+
   navigator.id.getVerifiedEmail = function(onsuccess, onerror) {
     var w = window.open("http://authority.mozilla.org/sign_in", "_mozid_signin",
                         "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");
@@ -529,7 +553,10 @@ if (!navigator.id.getVerifiedEmail) {
     chan.call({
       method: "getVerifiedEmail",
       success: function(rv) {
-        if (onsuccess) onsuccess(rv);
+        if (onsuccess) {
+          // wrap the raw JWT with a handy dandy object that exposes everything in a readable form
+          onsuccess(JWTWrapper(rv));
+        }
         w.close();
       },
       error: function(code, msg) {

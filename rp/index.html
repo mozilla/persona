@@ -79,11 +79,21 @@ a:hover { border-bottom: 2px solid black ; }
 <script src="jquery-min.js"></script>
 <script src="http://authority.mozilla.org/include.js"></script>
 <script>
+  function dumpObject(obj) {
+    var htmlRep = "";
+    for (var k in obj) {
+      if (obj.hasOwnProperty(k) && typeof obj[k] === 'string') {
+        htmlRep += "<b>" + k + ":</b> " + obj[k] + "<br/>";
+      }
+    }
+    return htmlRep;
+  }
+
   $(document).ready(function() {
     $("#partyStarter").click(function() {
       navigator.id.getVerifiedEmail(function(assertion) {
         // Now we'll send this assertion over to the verification server for validation
-        $("#oAssertion").empty().text(assertion);
+        $("#oAssertion").empty().html(dumpObject(assertion));
 
         var url = "http://verifier.mozilla.org/wsapi/verify?assertion=" + window.encodeURIComponent(assertion) +
                   "&audience=" + window.encodeURIComponent("rp.mozilla.org");
