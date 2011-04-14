@@ -76,7 +76,7 @@ var Webfinger = (function() {
     }
     else
     {
-      var hostmetaURL = "http://" + domain + "/.well-known/host-meta";
+      var hostmetaURL = domain + "/.well-known/host-meta";
       var domainSplit = domain.split(":");
       var options = {
         host: domainSplit[0],
@@ -117,16 +117,21 @@ var Webfinger = (function() {
     }
   }
 
-  function resolvePublicKeysForAddress(addr, successCallback, errorCallback)
+  function resolvePublicKeysForAddress(addr, issuer, successCallback, errorCallback)
   {
-    var split = addr.split("@");
-    if (split.length != 2) {
-      console.log("Cannot parse " + addr + " as an email address");
-      errorCallback({message:"Cannot parse input as an email address"});
-      return;
-    };
-    var id = split[0];
-    var domain = split[1];
+    var domain = undefined;
+    if (typeof issuer === 'string') {
+      domain = issuer;
+    } else {
+      var split;
+      try { split = addr.split("@"); } catch(e) { }
+      if (split.length != 2) {
+        console.log("Cannot parse " + addr + " as an email address");
+        errorCallback({message:"Cannot parse input as an email address"});
+        return;
+      };
+      domain = split[1];
+    }
 
     retrieveTemplateForDomain(
       domain, 
@@ -262,7 +267,8 @@ IDAssertion.prototype  =
     // but for now we will assume email-based lookup
     
     Webfinger.resolvePublicKeysForAddress(
-      payload.email, 
+      payload.email,
+      payload.issuer,
       function(publicKeys)
       {
         if (publicKeys.length == 0) {
@@ -273,14 +279,17 @@ IDAssertion.prototype  =
         // In the absence of a key identifier, we need to check them all.
         for (var i=0;i<publicKeys.length;i++)
         {
-          // and now, public key parse fail. :(
-          var pubKey = new rsa.RSAKey();
-          pubKey.readPublicKeyFromPEMString(publicKeys[i].key);
-          if (token.verify(pubKey)) {
-            // success!
-            console.log("Token for " +payload.email + " verified successfully.");
-            onSuccess(true);
-            return;
+          try {
+            var pubKey = new rsa.RSAKey();
+            pubKey.readPublicKeyFromPEMString(publicKeys[i].key);
+            if (token.verify(pubKey)) {
+              // success!
+              console.log("Token for " +payload.email + " verified successfully.");
+              onSuccess(true);
+              return;
+            }
+          } catch(e) {
+            console.log("failed to parse public key: " + e);
           }
         }
         onError("None of the user's public keys verified the signature");
