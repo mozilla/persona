@@ -51,7 +51,11 @@
     // sent list, and also may include identities registered on other devices.
     // we'll go through the list and generate new keypairs
     var identities = { };
-    var emails = JSON.parse(window.localStorage.emails);
+    var emails = {};
+    if (window.localStorage.emails) {
+      emails = JSON.parse(window.localStorage.emails);
+    }
+
     for (var e in emails) {
       if (!emails.hasOwnProperty(e)) continue;
       identities[e] = emails[e].pub;

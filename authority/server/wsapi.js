@@ -158,7 +158,7 @@ exports.set_key = function (req, resp) {
 
 exports.am_authed = function(req,resp) {
   logRequest("am_authed", req.session);
-  httputils.jsonResponse(resp, (typeof req.session.authenticatedUser === 'string'));
+  httputils.jsonResponse(resp, isAuthed(req));
 };
 
 exports.sync_emails = function(req,resp) {
