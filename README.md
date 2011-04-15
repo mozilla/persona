@@ -1,5 +1,5 @@
-This is an exploration of the distributed identity system described here:
-https://wiki.mozilla.org/Labs/Identity/VerifiedEmailProtocol
+This is an exploration of the distributed identity system
+[described here](https://wiki.mozilla.org/Labs/Identity/VerifiedEmailProtocol).
 
 ## Required software:
 
