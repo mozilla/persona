@@ -12,6 +12,7 @@ it go.  [npm](http://npmjs.org/) is a good tool to use to acquire the requisite 
 * xml2js (>= 0.1.5)
 * sqlite (>= 1.0.3)
 * mustache (>= 0.3.1)
+* cookie-sessions (>= 0.0.2)
 
 ## Getting started:
 
