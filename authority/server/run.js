@@ -1,9 +1,10 @@
-const path = require('path'),
-       url = require('url'),
-     wsapi = require('./wsapi.js'),
- httputils = require('./httputils.js'),
-   connect = require('connect'),
- webfinger = require('./webfinger.js');
+const        path = require('path'),
+              url = require('url'),
+            wsapi = require('./wsapi.js'),
+        httputils = require('./httputils.js'),
+          connect = require('connect'),
+        webfinger = require('./webfinger.js'),
+         sessions = require('cookie-sessions'); 
 
 const STATIC_DIR = path.join(path.dirname(__dirname), "static");
 
@@ -40,16 +41,9 @@ exports.handler = function(request, response, serveFile) {
 
 exports.setup = function(server) {
   var week = (7 * 24 * 60 * 60 * 1000);
-
-  server
-    .use(connect.cookieParser())
-    .use(connect.session({
-      secret: "mouse dog",
-      cookie: {
-        path: '/wsapi',
-        httpOnly: true,
-        expires:  new Date(Date.now() + week),// a week XXX: think about session security, etc
-        maxAge: week
-      }
-    }));
+  server.use(sessions({
+      secret: 'v3wy s3kr3t',
+      session_key: "browserid_state",
+      path: '/'
+  }));
 }

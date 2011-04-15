@@ -587,18 +587,23 @@
       window.localStorage.emails = JSON.stringify({});
     }
 
+    function onsuccess(rv) {
+      trans.complete(rv);
+    }
+    function onerror(error) {
+      errorOut(trans, error);
+    }
+
+    // wherever shall we start?
     if (haveIDs) {
-      runSignInDialog(function(rv) {
-        trans.complete(rv);
-      }, function(error) {
-        errorOut(trans, error);
-      });
+      runSignInDialog(onsuccess, onerror);
     } else {
-      runAuthenticateDialog(undefined, function(rv) {
-        trans.complete(rv);
-      }, function(error) {
-        errorOut(trans, error);
-      });
+      // do we even need to authenticate?
+      checkAuthStatus(function() {
+        syncIdentities(onsuccess, onerror);
+      }, function() {
+        runAuthenticateDialog(onsuccess, onerror);
+      }, onsuccess, onerror);
     }
   });
 

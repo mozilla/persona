@@ -24,8 +24,12 @@ function checkParams(getArgs, resp, params) {
   return true;
 }
 
-function isAuthed(req, resp) {
-  if (typeof req.session.authenticatedUser !== 'string') {
+function isAuthed(req) {
+  return (req.session && typeof req.session.authenticatedUser === 'string');
+}
+    
+function checkAuthed(req, resp) {
+  if (!isAuthed(req)) {
     httputils.badRequest(resp, "requires authentication");
     return false;
   }
@@ -59,10 +63,12 @@ exports.stage_user = function(req, resp) {
     // upon success, stage_user returns a secret (that'll get baked into a url
     // and given to the user), on failure it throws
     var secret = db.stageUser(getArgs);
-    httputils.jsonResponse(resp, true);
 
     // store the email being registered in the session data
+    if (!req.session) req.session = {};
     req.session.pendingRegistration = getArgs.email;
+
+    httputils.jsonResponse(resp, true);
 
     // let's now kick out a verification email!
     email.sendVerificationEmail(getArgs.email, secret);
@@ -74,6 +80,13 @@ exports.stage_user = function(req, resp) {
 
 exports.registration_status = function(req, resp) {
   logRequest("registration_status", req.session);
+
+  if (!req.session || !typeof req.session.pendingRegistration == 'string') {
+    httputils.badRequest(
+      resp,
+      "api abuse: registration_status called without a pending email for registration");
+    return;
+  }
 
   var email = req.session.pendingRegistration;
   db.emailKnown(email, function(known) {
@@ -96,7 +109,10 @@ exports.authenticate_user = function(req, resp) {
   if (!checkParams(getArgs, resp, [ "email", "pass" ])) return;
 
   db.checkAuth(getArgs.email, getArgs.pass, function(rv) {
-    if (rv) req.session.authenticatedUser = getArgs.email;
+    if (rv) {
+      if (!req.session) req.session = {}; 
+      req.session.authenticatedUser = getArgs.email;
+    }
     httputils.jsonResponse(resp, rv);
   });
 };
@@ -107,7 +123,7 @@ exports.add_email = function (req, resp) {
 
   if (!checkParams(getArgs, resp, [ "email", "pubkey" ])) return;
 
-  if (!isAuthed(req, resp)) return;
+  if (!checkAuthed(req, resp)) return;
 
   logRequest("add_email", getArgs);
 
@@ -115,10 +131,11 @@ exports.add_email = function (req, resp) {
     // upon success, stage_user returns a secret (that'll get baked into a url
     // and given to the user), on failure it throws
     var secret = db.stageEmail(req.session.authenticatedUser, getArgs.email, getArgs.pubkey);
-    httputils.jsonResponse(resp, true);
 
     // store the email being registered in the session data
     req.session.pendingRegistration = getArgs.email;
+
+    httputils.jsonResponse(resp, true);
 
     // let's now kick out a verification email!
     email.sendVerificationEmail(getArgs.email, secret);
@@ -132,7 +149,7 @@ exports.set_key = function (req, resp) {
   var urlobj = url.parse(req.url, true);
   var getArgs = urlobj.query;
   if (!checkParams(getArgs, resp, [ "email", "pubkey" ])) return;
-  if (!isAuthed(req, resp)) return;
+  if (!checkAuthed(req, resp)) return;
   logRequest("set_key", getArgs);
   db.addKeyToEmail(req.session.authenticatedUser, getArgs.email, getArgs.pubkey, function (rv) {
     httputils.jsonResponse(resp, rv);
@@ -145,7 +162,7 @@ exports.am_authed = function(req,resp) {
 };
 
 exports.sync_emails = function(req,resp) {
-  if (!isAuthed(req, resp)) return;
+  if (!checkAuthed(req, resp)) return;
 
   var requestBody = "";
   req.on('data', function(str) {
