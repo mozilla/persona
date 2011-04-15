@@ -1,9 +1,12 @@
 // this is the file that the RP includes to shim in the
 // navigator.id.getVerifiedEmail() function
 
-if (!navigator.id) { navigator.id = {} }
+if (!navigator.id) {
+  navigator.id = {};
+}
 
-if (!navigator.id.getVerifiedEmail) {
+if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
+{
   // local embedded copy of jschannel: http://github.com/mozilla/jschannel 
   var Channel = (function() {
     // current transaction id, start out at a random *odd* number between 1 and a million
@@ -544,12 +547,24 @@ if (!navigator.id.getVerifiedEmail) {
     return obj;
   }
 
-  navigator.id.getVerifiedEmail = function(onsuccess, onerror) {
-    var w = window.open("http://authority.mozilla.org/sign_in", "_mozid_signin",
-                        "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");
+  var chan = undefined;
 
-    // XXX: this origin check needs to tighten up
-    var chan = Channel.build({window: w, origin: "*", scope: "mozid"});
+  navigator.id.getVerifiedEmail = function(onsuccess, onerror) {
+    var ipServer = "http://authority.mozilla.org"
+    var w = window.open(
+      ipServer + "/sign_in", "_mozid_signin",
+      "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");
+
+    // clean up a previous channel that never was reaped
+    if (chan) chan.destroy();
+    chan = Channel.build({window: w, origin: ipServer, scope: "mozid"});
+
+    function cleanup() {
+      chan.destroy();
+      chan = undefined;
+      w.close();
+    }
+
     chan.call({
       method: "getVerifiedEmail",
       success: function(rv) {
@@ -557,12 +572,14 @@ if (!navigator.id.getVerifiedEmail) {
           // wrap the raw JWT with a handy dandy object that exposes everything in a readable form
           onsuccess(JWTWrapper(rv));
         }
-        w.close();
+        cleanup();
       },
       error: function(code, msg) {
         if (onerror) onerror(code, msg);
-        w.close();
+        cleanup();
       }
     });
   };
+
+  navigator.id._getVerifiedEmailIsShimmed = true;
 }
