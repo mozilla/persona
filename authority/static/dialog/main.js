@@ -552,7 +552,7 @@
       var msgs = {
         "canceled": "user canceled selection",
         "notImplemented": "the user tried to invoke behavior that's not yet implemented",
-        "serverError": "a technical problem was encountered while trying to communicate with FirefoxID servers."
+        "serverError": "a technical problem was encountered while trying to communicate with BrowserID servers."
       };
       var msg = msgs[code];
       if (!msg) {
