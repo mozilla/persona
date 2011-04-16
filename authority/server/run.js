@@ -4,9 +4,12 @@ const        path = require('path'),
         httputils = require('./httputils.js'),
           connect = require('connect'),
         webfinger = require('./webfinger.js'),
-         sessions = require('cookie-sessions'); 
+         sessions = require('cookie-sessions'),
+          secrets = require('./secrets.js');
 
 const STATIC_DIR = path.join(path.dirname(__dirname), "static");
+
+const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', __dirname);
 
 exports.handler = function(request, response, serveFile) {
   // dispatch!
@@ -42,7 +45,7 @@ exports.handler = function(request, response, serveFile) {
 exports.setup = function(server) {
   var week = (7 * 24 * 60 * 60 * 1000);
   server.use(sessions({
-      secret: 'v3wy s3kr3t',
+      secret: COOKIE_SECRET,
       session_key: "browserid_state",
       path: '/'
   }));
