@@ -606,7 +606,7 @@
       checkAuthStatus(function() {
         syncIdentities(onsuccess, onerror);
       }, function() {
-        runAuthenticateDialog(onsuccess, onerror);
+        runAuthenticateDialog(undefined, onsuccess, onerror);
       }, onsuccess, onerror);
     }
   });
