@@ -1,0 +1,98 @@
+<html>
+<head>
+  <title>BrowserID Demo Primary</title>
+  <link href="style.css" type="text/css" media="screen" rel="stylesheet"></link>
+</head>
+<body id="body">
+
+<div id="logged_in" class="status">
+<div>You are <b>signed in</b> to PrimaryCo as <span id="username"></span></div>
+
+<div><a id="sign_out" href="#">Sign out</a>.</div>
+</div>
+
+<div id="logged_out" class="status">
+<div>You are <b>not signed in</b> to PrimaryCo.</div>
+
+<div><a id="sign_in" href="#">Sign in now.</a></div>
+</div>
+
+<div id="authenticate_dialog" class="dialog">
+  <div class="title"> Sign in to PrimaryCo </div>
+  <div class="content">
+    <div class="summary">Log in to your PrimaryCo account: <span class="sitename bad"></span>:</div>
+    <div class="input">
+      <div class="label"> Account </div>
+      <div class="input"> <input type="text"></input></div>
+    </div>
+    <div class="input">
+      <div class="label"> Password </div>
+      <div class="input"> <input type="password"></input></div>
+      <div class="note"> <a href="#">I forgot my password</a> </div>
+    </div>
+    <div class="attention_lame">
+      No such account exists with that username and/or password
+    </div>
+    <div class="actions">
+      <div class="action"><a href="#">Don't have a PrimaryCo account yet?</a></div>
+    </div>
+    <div class="bottom-bar">
+      <button id="signin_submit" class="righty action">Sign In</button>
+      <button id="signin_cancel" class="righty">Cancel</button>
+    </div>
+  </div>
+</div>
+<div id="create_dialog" class="dialog">
+  <div class="title"> Create an Account With PrimaryCo. </div>
+  <div class="content">
+    <div class="summary">PrimaryCo provides such valuable services that you want to use it as your identifier online!  Please pick a name - this will become your @primaryco.com address!</div>
+    <div class="input">
+      <div class="label"> Username </div>
+      <div class="input"> <input type="text"></input></div>
+      <div class="note"></div>
+    </div>
+    <div class="input">
+      <div class="label"> Password </div>
+      <div class="input"> <input type="password"></input></div>
+    </div>
+    <div class="input">
+      <div class="label"> Verify </div>
+      <div class="input"> <input type="password"></input></div>
+      <div class="note"><span class="bad">Enter a password</span></div>
+    </div>
+    <div class="attention_lame">
+      <span id="in_use_email">Username</span> is already registered.  Did you already register it?  You can <a href="#">log in</a> if you like.
+    </div>
+    <div class="bottom-bar">
+      <button id="create_submit" class="righty action">Sign In</button>
+      <button id="create_cancel" class="righty">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="welcome_dialog" class="dialog">
+  <div class="title"> Welcome to PrimaryCo!</div>
+  <div class="content">
+    <div class="summary">Your PrimaryCo email address is
+      <div id="welcome_address"></div>
+    </div>
+    <div class="bottom-bar">
+      <button id="create_welcome" class="righty action">Let's Go</button>
+    </div>
+  </div>
+</div>
+
+<div id="error_dialog" class="dialog">
+  <div class="title"></div>
+  <div class="content"></div>
+  <div class="bottom-bar">
+    <button id="error_submit" class="righty action">Rats</button>
+  </div>
+</div>
+
+
+</body>
+<!-- XXX: jquery shouldn't be used, it's too big.  we're using it now cause this is a proof of concept -->
+<script src="jquery-min.js"></script>
+<script src="main.js"></script>
+</html>

@@ -1,0 +1,235 @@
+body {
+    position: absolute;
+    font-family: Helvetica Narrow, sans-serif;
+    font-size: 11pt;
+    width: 598px;
+    height: 398px;
+    padding: 0;
+    margin: 0;
+}
+span.sitename, span.email {
+    font-weight: bold;
+}
+.title {
+    font-size: 2em;
+    font-weight: bold;
+    margin: auto;
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+}
+
+#logo {
+    margin: 0;
+    padding: 0;
+    width: 575px;
+    position: fixed;
+    left: 30px;
+    top: 120px;
+    opacity: .1;
+    -moz-transform: rotate(-25deg);
+    -webkit-transform: rotate(-25deg);
+    transform: rotate(-25deg);
+    z-index: -5;
+}
+
+#logo > img {
+    width: 100%;
+}
+
+.dialog {
+    display: none;
+    position: relative;
+    top: 0;
+    left: 0;
+    width:450px;
+    margin: auto;
+    text-align: center;
+    border: 2px solid rgb(218, 230, 237);    
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+
+.bottom-bar {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    left: 0;
+    top: 300;
+    height: 60px;
+    width: 450px;
+    border-top: 2px solid rgb(218, 230, 237);
+    background-color: rgb(244, 247, 251);
+}
+
+.bottom-bar button {
+    height: 25px;
+    border: 1px solid rgb(145, 145, 145);
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    background-color: rgb(242, 242, 242);
+    padding-left: 2em;
+    padding-right: 2em;
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-top: 16px;
+    z-index: 0;
+}
+
+.bottom-bar button.righty {
+    float: right;
+}
+
+.bottom-bar button.action {
+    background-color: rgb(0,128,211);
+    color: #fff;
+    font-weight: bold;
+}
+
+div.actions > div.action {
+    float: left;
+    margin-right: 1em;
+}
+
+div.actions > div.action a {
+    cursor: pointer;
+    color: rgb(65, 126, 208);
+    text-decoration: none;
+}
+
+div.actions {
+    position: fixed;
+    top: 268px;
+    font-size: .8em;
+    margin-left: 79px;
+}
+
+#identities {
+    width: 450px;
+    margin: auto;
+}
+
+#identities > div {
+    margin-bottom: .5em;
+    height: 1.4em;
+    font-size: .9em;
+}
+
+#identities > div > * {
+    float: left;
+    cursor: pointer;
+}
+
+button {
+    cursor: pointer;
+}
+
+button.disabled {
+    cursor: default;
+    opacity: .3;
+}
+
+div.input > * {
+    float: left;
+}
+
+div.input > div.note {
+    float: right;
+    margin-top: .7em;
+}
+
+div.content {
+    width: 450px;
+    margin: auto;
+    text-align: left;
+}
+
+div.content > div.input {
+    height: 3em;
+    font-size: .8em;
+}
+
+div.content > div.summary {
+    text-align: left;
+    margin-bottom: 2em;
+}
+
+div.content > div.input > div.label {
+    width: 80px;
+    text-align: left;
+    margin-top: .7em;
+}
+
+
+div.input input {
+    border: 1px solid black;
+    width: 240px;
+    height: 2em;
+    padding: .4em;
+}
+
+a {
+    color: rgb(65, 126, 208);
+    text-decoration: none;
+}
+
+span.warning {
+    color: rgb(153,153,84);
+}
+
+span.bad {
+    color: rgb(149,43,9);
+}
+
+span.good {
+    color: rgb(0,161,51);
+}
+
+div.subtle {
+    opacity: .7;
+}
+
+div.dialog div.attention, div.dialog div.attention_awesome, div.dialog div.attention_lame  {
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    width: 400px;
+    padding:13px;
+    margin: auto;
+    text-align: left;
+    margin-top: 1em;
+}
+
+div.dialog div.attention {
+    border: 1px solid rgb(219,231,238);
+    background-color: rgb(244,247,251);
+}
+
+div.dialog div.attention_awesome {
+    border: 1px solid rgb(0,161,51);
+    background-color: rgb(0,161,51);
+    color: white;
+    font-weight: bold;
+}
+
+div.dialog div.attention_lame {
+    border: 1px solid rgb(224,178,139);
+    background-color: rgb(253,239,208);
+    color: rgb(120,43,9);
+    font-size: .8em;
+}
+
+#logged_in {
+  display:none;
+}
+#logged_out {
+  display:none;
+}
+
+.status {
+  margin-left:40px;
+  margin-top:40px;
+}
+.status div {
+  margin-bottom:20px;
+}
