@@ -75,7 +75,8 @@
           if (result) {
             runConfirmationDialog(username);
             try {
-              
+              console.log("About to register verified email.");
+
               navigator.id.registerVerifiedEmail(username + "@primary.mozilla.org", function(publicKey) {
                 $.ajax({
                   url: '/wsapi/add_key?pubkey=' + encodeURIComponent(publicKey),
@@ -91,6 +92,7 @@
                   "There was a technical problem while trying to register your address.  Sorry.");
               
               });
+              
             } catch (e) {
               alert("Whoops, unable to register verified email: " + e);
             }

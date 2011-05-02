@@ -5,7 +5,7 @@
 
   <hm:Host xmlns='http://host-meta.net/xrd/1.0'>authority.mozilla.org</hm:Host>
 
-  <Link rel='lrdd' template='http://authority.mozilla.org/users/{uri}.xml'></Link>
+  <Link rel='lrdd' template='http://primary.mozilla.org/users/{uri}.xml'></Link>
 
   <Link rel='other' value='something-different'></Link>
 </XRD>

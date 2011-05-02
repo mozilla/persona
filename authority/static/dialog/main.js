@@ -650,7 +650,6 @@
 
     var keypair = CryptoStubs.genKeyPair();
     persistAddressAndKeyPair(args.email, keypair);
-    console.log("TRUSTED registerVerifiedEmail done - returning " + keypair.pub);
     return keypair.pub;
   });
 

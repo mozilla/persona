@@ -606,6 +606,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       method: "registerVerifiedEmail",
       params: {email:email},
       success: function(rv) {
+        console.log("registerVerifiedEmail channel returned: rv is " + rv);
         if (onsuccess) {
           onsuccess(rv);
         }

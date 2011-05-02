@@ -154,6 +154,7 @@ var Webfinger = (function() {
           method: 'GET',
           headers: { "Host": parsedurl.host}
         };
+        console.log("Verifier: loading " + JSON.stringify(options));
 
         var req = http.request(options, function(res) {
           res.setEncoding('utf8');

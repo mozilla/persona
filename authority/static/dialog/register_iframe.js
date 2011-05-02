@@ -33,5 +33,6 @@
 
         var keypair = CryptoStubs.genKeyPair();
         persistAddressAndKeyPair(args.email, keypair);
+        return keypair.pub;
     });
 })();

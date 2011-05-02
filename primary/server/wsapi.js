@@ -102,11 +102,18 @@ exports.add_key = function (req, resp) {
   var urlobj = url.parse(req.url, true);
   var getArgs = urlobj.query;
 
-  if (!checkParams(getArgs, resp, [ "pubkey" ])) return;
-  if (!checkAuthed(req, resp)) return;
+  if (!checkParams(getArgs, resp, [ "pubkey" ])) {
+    logRequest("add_key", "Missing required pubkey");
+    return;
+  }
+  if (!checkAuthed(req, resp)) {
+    logRequest("add_key", "Not authed - req.session is " + req.session);
+    return;
+  }
 
-  logRequest("set_key", getArgs);
+  logRequest("add_key", getArgs);
   db.addKeyToAccount(req.session.userid, getArgs.pubkey, function (rv) {
+    logRequest("add_key", "Success");
     httputils.jsonResponse(resp, rv);
   });
 };
