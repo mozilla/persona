@@ -17,6 +17,8 @@ exports.handler = function(request, response, serveFile) {
 
   if (urlpath === '/sign_in') {
     serveFile(path.join(STATIC_DIR, "dialog", "index.html"), response);
+  } else if (urlpath === '/register_iframe') {
+    serveFile(path.join(STATIC_DIR, "dialog", "register_iframe.html"), response);
   } else if (/^\/wsapi\/\w+$/.test(urlpath)) {
     try {
       var method = path.basename(urlpath);

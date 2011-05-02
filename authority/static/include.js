@@ -580,26 +580,26 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       }
     });
   };
-  
+
   navigator.id.registerVerifiedEmail = function(email, onsuccess, onerror) {
 
     // TODO: We really don't need to display a dialog for this.
     // I'm showing one just because it's easier than figuring out
     // how to embed an iframe in this case.
-  
+
     var doc = window.document;
     iframe = document.createElement("iframe");
     var ipServer = "http://authority.mozilla.org"
     iframe.style.display = "none";
     doc.body.appendChild(iframe);
-    iframe.src = ipServer + "/sign_in";
+    iframe.src = ipServer + "/register_iframe";
     if (chan) chan.destroy();
     chan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid"});
 
     function cleanup() {
       chan.destroy();
       chan = undefined;
-      w.close();
+      doc.body.removeChild(iframe);
     }
 
     chan.call({
