@@ -151,10 +151,14 @@
     });
     $("#submit").show().unbind('click').click(function() {
       var email = $("#identities input:checked").parent().find("div").text();
+
       // yay!  now we need to produce an assertion.
-      var privkey = JSON.parse(window.localStorage.emails)[email].priv;
+      var storedID = JSON.parse(window.localStorage.emails)[email];
+      
+      var privkey = storedID.priv;
+      var issuer = storedID.issuer;
       var audience = remoteOrigin.replace(/^(http|https):\/\//, '');
-      var assertion = CryptoStubs.createAssertion(audience, email, privkey);
+      var assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
       onsuccess(assertion);
     }).text("Sign In").removeClass("disabled").focus();
 

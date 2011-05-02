@@ -17,13 +17,15 @@ CryptoStubs = (function() {
     };
   }
 
-  function createAssertion(audience, email, privkey) {
+  function createAssertion(audience, email, privkey, issuer) {
     var assertion = {
       audience: audience,
       email: email,
       "valid-until": (new Date()).getTime() + (1000 * 120), // 2 mins from now.
-      issuer: "authority.mozilla.org"
     };
+    if (issuer) {
+      assertion.issuer = issuer;
+    }
 
     var token = new jwt.WebToken(JSON.stringify(assertion), JSON.stringify({alg:"RS256"}));
     var signed = token.serialize(privkey);

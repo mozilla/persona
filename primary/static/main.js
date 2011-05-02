@@ -43,7 +43,7 @@
   
   function runConfirmationDialog(username) {
     refreshAuthStatus();
-    $("#welcome_address").text(username + "@primaryco.com");
+    $("#welcome_address").text(username + "@primary.mozilla.org");
     $("#welcome_dialog").fadeIn(500);
     $("#create_welcome").show().unbind('click').click(function() {
       $("#welcome_dialog").fadeOut(500);    
@@ -76,7 +76,7 @@
             runConfirmationDialog(username);
             try {
               
-              navigator.id.registerVerifiedEmail(username + "@primaryco.com", function(publicKey) {
+              navigator.id.registerVerifiedEmail(username + "@primary.mozilla.org", function(publicKey) {
                 $.ajax({
                   url: '/wsapi/add_key?pubkey=' + encodeURIComponent(publicKey),
                   success: function() {

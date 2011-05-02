@@ -133,6 +133,8 @@ var Webfinger = (function() {
       domain = split[1];
     }
 
+    console.log("Verifier: resolving public key for address " +addr + "; issuer " + issuer);
+
     retrieveTemplateForDomain(
       domain, 
       function gotTemplate(template)

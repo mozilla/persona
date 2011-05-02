@@ -10,7 +10,7 @@ exports.renderUserPage = function(identity, cb) {
   var idParts = identity.split("@");
   var userpart = idParts[0];
 
-  db.pubkeysForEmail(userpart, function(keys) {
+  db.pubkeysForUsername(userpart, function(keys) {
     if (!keys || keys.length === 0) cb(undefined);
     else {
       cb(mustache.to_html(TEMPLATE, {
