@@ -44,13 +44,35 @@
       }
     });
   }
+  
+  function persistAddressAndKeyPair(email, keypair, issuer)
+  {
+    var emails = {};
+    if (window.localStorage.emails) {
+      emails = JSON.parse(window.localStorage.emails);
+    }
 
+    emails[email] = {
+      created: new Date(),
+      pub: keypair.pub,
+      priv: keypair.priv
+    };
+    if (issuer) {
+      emails[email].issuer = issuer;
+    }
+    
+    window.localStorage.emails = JSON.stringify(emails);
+  }
+  
   function syncIdentities(onsuccess, onerror) {
     // send up all email/pubkey pairs to the server, it will response with a
     // list of emails that need new keys.  This may include emails in the
     // sent list, and also may include identities registered on other devices.
     // we'll go through the list and generate new keypairs
-    var identities = { };
+
+    // identities that don't have an issuer are primary authentications,
+    // and we don't need to worry about rekeying them.
+    var issued_identities = { };
     var emails = {};
     if (window.localStorage.emails) {
       emails = JSON.parse(window.localStorage.emails);
@@ -58,13 +80,15 @@
 
     for (var e in emails) {
       if (!emails.hasOwnProperty(e)) continue;
-      identities[e] = emails[e].pub;
+      if (emails[e].issuer) {
+        issued_identities[e] = emails[e].pub;
+      }
     }
 
     $.ajax({
       url: '/wsapi/sync_emails',
       type: "post",
-      data: JSON.stringify(identities),
+      data: JSON.stringify(issued_identities),
       success: function(resp, textStatus, jqXHR) {
         // first remove idenitites that the server doesn't know about
         if (resp.unknown_emails) {
@@ -96,8 +120,7 @@
             url: '/wsapi/set_key?email=' + encodeURIComponent(email) + '&pubkey=' + encodeURIComponent(keypair.pub),
             success: function() {
               // update emails list and commit to local storage, then go do the next email
-              emails[email] = keypair;
-              window.localStorage.emails = JSON.stringify(emails);
+              persistAddressAndKeyPair(email, keypair);
               addNextEmail();
             },
             error: function() {
@@ -569,6 +592,10 @@
     window.self.close();
   }
 
+  //------------------------------------------------------------------------------------
+  // Begin RPC bindings:
+  //------------------------------------------------------------------------------------
+
   chan.bind("getVerifiedEmail", function(trans, s) {
     trans.delayReturn(true);
 
@@ -610,6 +637,18 @@
       }, onsuccess, onerror);
     }
   });
+  
+
+  chan.bind("registerVerifiedEmail", function(trans, args) {
+    // This is a primary registration - the persisted
+    // identity does not have an issuer because it 
+    // was directly asserted by the controlling domain.
+
+    var keypair = CryptoStubs.genKeyPair();
+    persistAddressAndKeyPair(args.email, keypair);
+  });
+
+  
 
   // 'Enter' in any input field triggers a click on the submit button
   $('input').keypress(function(e){

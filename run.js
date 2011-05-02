@@ -115,7 +115,7 @@ function createServer(obj) {
 };
 
 // start up webservers on ephemeral ports for each subdirectory here.
-var dirs = [ "authority", "rp", "verifier" ].map(function(d) {
+var dirs = [ "authority", "rp", "verifier", "primary" ].map(function(d) {
     return {
         name: d,
         path: path.join(__dirname, d)

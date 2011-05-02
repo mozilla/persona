@@ -74,15 +74,26 @@
           $(".dialog").hide();
           if (result) {
             runConfirmationDialog(username);
-            navigator.id.registerVerifiedAddress(username + "@primaryco.com", function(publicKey) {
-              $.ajax({
-                url: '/wsapi/add_key?pubkey=' + encodeURIComponent(publicKey),
-                success: function() {
-                  // key is saved - we're done?
-                },
-                error: function() {
-                }});
-            });
+            try {
+              
+              navigator.id.registerVerifiedEmail(username + "@primaryco.com", function(publicKey) {
+                $.ajax({
+                  url: '/wsapi/add_key?pubkey=' + encodeURIComponent(publicKey),
+                  success: function() {
+                    // key is saved - we're done?
+                  },
+                  error: function() {
+                  }});
+              }, function(error) {
+                runErrorDialog(
+                  "serverError",
+                  "Error Registering Address!",
+                  "There was a technical problem while trying to register your address.  Sorry.");
+              
+              });
+            } catch (e) {
+              alert("Whoops, unable to register verified email: " + e);
+            }
           } else {
             runErrorDialog(
               "serverError",

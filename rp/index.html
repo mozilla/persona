@@ -17,7 +17,6 @@ a:hover { border-bottom: 2px solid black ; }
 .desc { padding-top: 1.5em; min-height: 4.5em;}
 .output {
   font-family: 'lucida console', monaco, 'andale mono', 'bitstream vera sans mono', consolas, monospace;
-  word-wrap: break-word;
   border: 3px solid #666;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
@@ -26,8 +25,10 @@ a:hover { border-bottom: 2px solid black ; }
   margin: .5em;
   color: #ccc;
   background-color: #333;
-  white-space: pre;
+/*  white-space: pre;*/
   font-size: .9em;
+  width:600px;
+  word-wrap: break-word;
 }
 
 </style>
@@ -36,6 +37,7 @@ a:hover { border-bottom: 2px solid black ; }
 <div class="title">
   Example BrowserID Relying Party
 </div>
+
 <div class="intro">
   This is the simplest possible (stateless, static, client-only)  BrowserID Relying Party.  It
   demonstrates the steps required to use BrowserID to verify the identity of a user.
