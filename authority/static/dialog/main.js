@@ -642,19 +642,6 @@
     }
   });
   
-
-  chan.bind("registerVerifiedEmail", function(trans, args) {
-    // This is a primary registration - the persisted
-    // identity does not have an issuer because it 
-    // was directly asserted by the controlling domain.
-
-    var keypair = CryptoStubs.genKeyPair();
-    persistAddressAndKeyPair(args.email, keypair);
-    return keypair.pub;
-  });
-
-  
-
   // 'Enter' in any input field triggers a click on the submit button
   $('input').keypress(function(e){
     if(e.which == 13) {
