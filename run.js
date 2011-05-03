@@ -34,7 +34,7 @@ function subHostNames(data) {
     data = data.replace(new RegExp(from, 'g'), to);
 
     // now do another replacement to catch bare hostnames sans http(s)
-    from = (from.substr(5) === 'https' ? from.substr(8) : from.substr(7));
+    from = (from.substr(0,5) === 'https' ? from.substr(8) : from.substr(7));
     data = data.replace(new RegExp(from, 'g'), to.substr(7));
   }
   return data;
@@ -121,20 +121,20 @@ function createServer(obj) {
 // start up webservers on ephemeral ports for each subdirectory here.
 var dirs = [
     {
-        name: "https://eyedee.me",
-        path: path.join(__dirname, "authority")
-    },
-    {
-        name: "http://rp.eyedee.me",
-        path: path.join(__dirname, "rp")
-    },
-    {
         name: "http://verifier.eyedee.me",
         path: path.join(__dirname, "verifier")
     },
     {
         name: "http://primary.eyedee.me",
         path: path.join(__dirname, "primary")
+    },
+    {
+        name: "http://rp.eyedee.me",
+        path: path.join(__dirname, "rp")
+    },
+    {
+        name: "https://eyedee.me",
+        path: path.join(__dirname, "authority")
     }
 ];
 
