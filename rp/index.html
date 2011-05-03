@@ -79,7 +79,7 @@ a:hover { border-bottom: 2px solid black ; }
 
 </body>
 <script src="jquery-min.js"></script>
-<script src="http://authority.mozilla.org/include.js"></script>
+<script src="https://eyedee.me/include.js"></script>
 <script>
   function dumpObject(obj) {
     var htmlRep = "";
@@ -100,8 +100,8 @@ a:hover { border-bottom: 2px solid black ; }
         // Now we'll send this assertion over to the verification server for validation
         $("#oAssertion").empty().html(dumpObject(assertion));
 
-        var url = "http://verifier.mozilla.org/wsapi/verify?assertion=" + window.encodeURIComponent(assertion) +
-                  "&audience=" + window.encodeURIComponent("rp.mozilla.org");
+        var url = "http://verifier.eyedee.me/wsapi/verify?assertion=" + window.encodeURIComponent(assertion) +
+                  "&audience=" + window.encodeURIComponent("rp.eyedee.me");
         $("#oVerificationRequest").empty().text(url);
 
         $.ajax({

@@ -11,14 +11,6 @@ var PRIMARY_PORT = 62700;
 var handler = require("./run.js");
 
 function subHostNames(data) {
-    const hostsubmap = {
-        "authority.mozilla.org": "eyedee.me"
-    };
-    for (var k in hostsubmap) {
-        var from = k;
-        var to = hostsubmap[k];
-        data = data.replace(new RegExp(from, 'g'), to);
-    }
     return data;
 }
 

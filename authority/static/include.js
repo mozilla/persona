@@ -550,7 +550,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   var chan = undefined;
 
   navigator.id.getVerifiedEmail = function(onsuccess, onerror) {
-    var ipServer = "http://authority.mozilla.org"
+    var ipServer = "https://eyedee.me"
     var w = window.open(
       ipServer + "/sign_in", "_mozid_signin",
       "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");
@@ -589,7 +589,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 
     var doc = window.document;
     iframe = document.createElement("iframe");
-    var ipServer = "http://authority.mozilla.org"
+    var ipServer = "https://eyedee.me"
     iframe.style.display = "none";
     doc.body.appendChild(iframe);
     iframe.src = ipServer + "/register_iframe";

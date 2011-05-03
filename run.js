@@ -29,9 +29,13 @@ function subHostNames(data) {
   for (var i = 0; i < boundServers.length; i++) {
     var o = boundServers[i]
     var a = o.server.address();
-    var from = o.name + ".mozilla.org";
-    var to = a.address + ":" + a.port;
+    var from = o.name;
+    var to = "http://" + a.address + ":" + a.port;
     data = data.replace(new RegExp(from, 'g'), to);
+
+    // now do another replacement to catch bare hostnames sans http(s)
+    from = (from.substr(5) === 'https' ? from.substr(8) : from.substr(7));
+    data = data.replace(new RegExp(from, 'g'), to.substr(7));
   }
   return data;
 }
@@ -115,12 +119,24 @@ function createServer(obj) {
 };
 
 // start up webservers on ephemeral ports for each subdirectory here.
-var dirs = [ "authority", "rp", "verifier", "primary" ].map(function(d) {
-    return {
-        name: d,
-        path: path.join(__dirname, d)
-    };
-});
+var dirs = [
+    {
+        name: "https://eyedee.me",
+        path: path.join(__dirname, "authority")
+    },
+    {
+        name: "http://rp.eyedee.me",
+        path: path.join(__dirname, "rp")
+    },
+    {
+        name: "http://verifier.eyedee.me",
+        path: path.join(__dirname, "verifier")
+    },
+    {
+        name: "http://primary.eyedee.me",
+        path: path.join(__dirname, "primary")
+    }
+];
 
 function formatLink(server, extraPath) {
   var addr = server.address();
