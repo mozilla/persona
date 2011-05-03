@@ -154,7 +154,7 @@
 
       // yay!  now we need to produce an assertion.
       var storedID = JSON.parse(window.localStorage.emails)[email];
-      
+
       var privkey = storedID.priv;
       var issuer = storedID.issuer;
       var audience = remoteOrigin.replace(/^(http|https):\/\//, '');

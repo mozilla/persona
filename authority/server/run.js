@@ -38,6 +38,9 @@ exports.handler = function(request, response, serveFile) {
         httputils.xmlResponse(response, resultDocument);
       }
     });
+  } else if (urlpath === "/code_update") {
+    console.log("code updated.  shutting down.");
+    require('process').exit();
   } else {
     // node.js takes care of sanitizing the request path
     serveFile(path.join(STATIC_DIR, urlpath), response);
