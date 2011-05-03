@@ -34,8 +34,18 @@ function subHostNames(data) {
     data = data.replace(new RegExp(from, 'g'), to);
 
     // now do another replacement to catch bare hostnames sans http(s)
-    from = (from.substr(0,5) === 'https' ? from.substr(8) : from.substr(7));
-    data = data.replace(new RegExp(from, 'g'), to.substr(7));
+    // and explicit cases where port is appended
+    var fromWithPort;
+    if (from.substr(0,5) === 'https') {
+        from = from.substr(8);
+        fromWithPort = from + ":443";
+    } else {
+        from = from.substr(7);
+        fromWithPort = from + ":80";
+    }
+    to = to.substr(7);
+    data = data.replace(new RegExp(fromWithPort, 'g'), to);
+    data = data.replace(new RegExp(from, 'g'), to);
   }
   return data;
 }
