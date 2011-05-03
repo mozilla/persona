@@ -44,7 +44,7 @@
       }
     });
   }
-  
+
   function persistAddressAndKeyPair(email, keypair, issuer)
   {
     var emails = {};
@@ -60,10 +60,10 @@
     if (issuer) {
       emails[email].issuer = issuer;
     }
-    
+
     window.localStorage.emails = JSON.stringify(emails);
   }
-  
+
   function syncIdentities(onsuccess, onerror) {
     // send up all email/pubkey pairs to the server, it will response with a
     // list of emails that need new keys.  This may include emails in the
@@ -295,13 +295,11 @@
             // it's possible return values are:
             //   'complete' - registration has been completed
             //   'pending'  - a registration is in progress
-            //   'noRegistration' - no registration is in progress  
+            //   'noRegistration' - no registration is in progress
             if (status === 'complete') {
-              // now we need to add all of the pertinent data to local storage
-              var emails = {};
-              if (window.localStorage.emails) emails = JSON.parse(window.localStorage.emails);
-              emails[email] = keypair;
-              window.localStorage.emails = JSON.stringify(emails);
+              // this is a secondary registration from eyedee.me, persist
+              // email, keypair, and that fact
+              persistAddressAndKeyPair(email, keypair, "eyedee.me");
 
               // and tell the user that everything is really quite awesome.
               runConfirmedEmailDialog(email, onsuccess, onerror);
@@ -641,7 +639,7 @@
       }, onsuccess, onerror);
     }
   });
-  
+
   // 'Enter' in any input field triggers a click on the submit button
   $('input').keypress(function(e){
     if(e.which == 13) {
