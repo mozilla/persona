@@ -26,7 +26,7 @@ function checkParams(getArgs, resp, params) {
 function isAuthed(req) {
   return (req.session && typeof req.session.userid === 'number');
 }
-    
+
 function checkAuthed(req, resp) {
   if (!isAuthed(req)) {
     httputils.badRequest(resp, "requires authentication");
@@ -60,7 +60,7 @@ exports.create_user = function(req, resp) {
     db.create_user(getArgs["username"], getArgs["pass"], function(error) {
       if (error) {
         logRequest("create_user", error);
-        httputils.jsonResponse(resp, undefined);      
+        httputils.jsonResponse(resp, undefined);
       } else {
         if (!req.session) req.session = {};
         db.usernameToUserID(getArgs.username, function(userid) {
@@ -132,8 +132,14 @@ exports.current_username = function(req,resp) {
     if (isAuthed(req)) {
       logRequest("current_username", "isAuthed");
       db.userIDToUsername(req.session.userid, function(username) {
-        logRequest("current_username", username);
-        httputils.jsonResponse(resp, username);
+        if (username !== undefined) {
+          logRequest("current_username", username);
+          httputils.jsonResponse(resp, username);
+        } else {
+          logRequest("current_username", "userid doesn't exist: " + req.session.userid);
+          req.session.userid = undefined;
+          httputils.jsonResponse(resp, false);
+        }
       });
     } else {
       logRequest("current_username", "notAuthed");
