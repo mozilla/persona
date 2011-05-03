@@ -5,32 +5,13 @@
 BrowserID Control
 </title>
 <script src="../dialog/jquery-min.js"></script>
-<link href="http://fonts.googleapis.com/css?family=Permanent+Marker" rel="stylesheet" type="text/css">
 <style type="text/css">
 
 body { margin: auto; font: 13px/1.5 Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; }
 a:link, a:visited { font-style: italic; text-decoration: none; color: #008; }
 a:hover { border-bottom: 2px solid black ; }
-.number { font-family: 'Permanent Marker', arial, serif; font-size: 4em; float: left; padding: 0; margin: 0; vertical-align: top; width: 1.3em}
 .title { font-size: 2em; font-weight: bold; text-align: center; margin: 1.5em; }
 .intro { font-size: 1.2em; width: 600px; margin: auto; }
-.step { width: 600px; margin: auto; margin-top: 1em;}
-.desc { padding-top: 1.5em; min-height: 4.5em;}
-.output {
-  font-family: 'lucida console', monaco, 'andale mono', 'bitstream vera sans mono', consolas, monospace;
-  border: 3px solid #666;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  border-radius: 4px;
-  padding: .5em;
-  margin: .5em;
-  color: #ccc;
-  background-color: #333;
-/*  white-space: pre;*/
-  font-size: .9em;
-  width:600px;
-  word-wrap: break-word;
-}
 #emailList {
   font-size: 1.0em; 
   width: 4x00px; 
@@ -84,7 +65,7 @@ function display_saved_ids()
 
       var deauth = $("<button>").text("Sign Out");
       meta.append(deauth);
-      
+
       block.append(e);
       block.append(meta);
       $("#emailList").append(block);
