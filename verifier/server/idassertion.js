@@ -81,7 +81,7 @@ var Webfinger = (function() {
       var domainSplit = domain.split(":");
       var options = {
         host: domainSplit[0],
-        port: (domainSplit.length > 1) ? domainSplit[1] : 80,
+        port: (domainSplit.length > 1) ? parseInt(domainSplit[1]) : 80,
         path: '/.well-known/host-meta',
         method: 'GET',
         headers: { "Host": domain}
@@ -89,7 +89,7 @@ var Webfinger = (function() {
       try {
         console.log("Requesting host-meta for " + options.host + ":" + options.port + " (" + domain + ")");
 
-        var scheme = options.port == "443" ? https : http;
+        var scheme = ((options.port == 443) ? https : http);
         var req = scheme.request(options, function(res) {
           res.setEncoding('utf8');
           var buffer = "";
@@ -157,9 +157,9 @@ var Webfinger = (function() {
           method: 'GET',
           headers: { "Host": parsedurl.host}
         };
-        console.log("Verifier: loading " + JSON.stringify(options));
 
-        var scheme = options.port == "443" ? https : http;
+        var scheme = ((parsedurl.protocol == 'https:') ? https : http);
+
         var req = scheme.request(options, function(res) {
           res.setEncoding('utf8');
           var buffer = "";
@@ -169,6 +169,7 @@ var Webfinger = (function() {
             offset += chunk.length;
           });
           res.on('end', function() {
+
             var parser =new xml2js.Parser();
             var publicKeys = [];
             parser.addListener('end', function(parsedDoc) {
@@ -194,12 +195,10 @@ var Webfinger = (function() {
             });
             parser.parseString(buffer);
             successCallback(publicKeys);
-
           });
           res.on('error', function(e) {
             console.log("Unable to retrieve template for domain " + domain);
             errorCallback({message:"Unable to retrieve the template for the given domain."});
-
           });
         });
         req.end();
