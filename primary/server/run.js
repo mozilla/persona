@@ -38,6 +38,7 @@ exports.handler = function(request, response, serveFile) {
     });
   } else {
     // node.js takes care of sanitizing the request path
+    if (urlpath == "/") urlpath = "/index.html"
     serveFile(path.join(STATIC_DIR, urlpath), response);
   }
 };
