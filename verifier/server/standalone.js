@@ -53,7 +53,10 @@ function serveFile(filename, response) {
 }
 
 var server = connect.createServer().use(connect.favicon())
-    .use(connect.logger({format: ":status :method :remote-addr :response-time :url"}));
+    .use(connect.logger({
+        format: ":status :method :remote-addr :response-time :url",
+        stream: fs.createWriteStream(path.join(__dirname, "server.log"))
+    }));
 
 // let the specific server interact directly with the connect server to register their middleware 
 if (handler.setup) handler.setup(server);
