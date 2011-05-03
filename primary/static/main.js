@@ -6,10 +6,7 @@
     $.ajax({
       url: '/wsapi/current_username',
       success: function(status, textStatus, jqXHR) {
-        console.log(status);
-        console.log("textStatus is " + jqXHR.responseText);
         var currentUsername = JSON.parse(jqXHR.responseText);
-        console.log("parsed as " + currentUsername);
         if (!currentUsername) {
           $("#logged_out").show();
         } else {
@@ -43,7 +40,7 @@
   
   function runConfirmationDialog(username) {
     refreshAuthStatus();
-    $("#welcome_address").text(username + "@primary.mozilla.org");
+    $("#welcome_address").text(username + "@primary.eyedee.me");
     $("#welcome_dialog").fadeIn(500);
     $("#create_welcome").show().unbind('click').click(function() {
       $("#welcome_dialog").fadeOut(500);    
@@ -75,9 +72,7 @@
           if (result) {
             runConfirmationDialog(username);
             try {
-              console.log("About to register verified email.");
-
-              navigator.id.registerVerifiedEmail(username + "@primary.mozilla.org", function(publicKey) {
+              navigator.id.registerVerifiedEmail(username + "@primary.eyedee.me", function(publicKey) {
                 $.ajax({
                   url: '/wsapi/add_key?pubkey=' + encodeURIComponent(publicKey),
                   success: function() {
@@ -226,18 +221,30 @@
       var pass = $("#authenticate_dialog input:eq(1)").val();
 
       $.ajax({
-        url: '/wsapi/authenticate_user?email=' + encodeURIComponent(email) + '&pass=' + encodeURIComponent(pass),
+        url: '/wsapi/authenticate_user?username=' + encodeURIComponent(email) + '&pass=' + encodeURIComponent(pass),
         success: function(status, textStatus, jqXHR) {
-          var authenticated = JSON.parse(status);
+          var authenticated = JSON.parse(jqXHR.responseText);
           if (!authenticated) {
             $("#authenticate_dialog div.attention_lame").hide().fadeIn(400);
           } else {
-            runWaitingDialog(
-              "Finishing Log In...",
-              "In just a moment you'll be logged into BrowserID.",
-              onsuccess, onerror);
+            navigator.id.registerVerifiedEmail(status.username + "@primary.eyedee.me", function(publicKey) {
+              $.ajax({
+                url: '/wsapi/add_key?pubkey=' + encodeURIComponent(publicKey),
+                success: function() {
+                  // key is saved - we're done?
+                },
+                error: function() {
+                }});
+            }, function(error) {
+              runErrorDialog(
+                "serverError",
+                "Error Registering Address!",
+                "There was a technical problem while trying to register your address.  Sorry.");
+            
+            });
 
-            syncIdentities(onsuccess, onerror);
+            $("#authenticate_dialog").hide(500);
+            refreshAuthStatus();
           }
         },
         error: function() {
@@ -270,7 +277,7 @@
       if (email.length > 0 && pass.length > 0) $("#signin_submit").removeClass('disabled');
       else $("#signin_submit").addClass('disabled');
     });
-    $("#authenticate_dialog .bottom-bar button").hide();
+//    $("#authenticate_dialog .bottom-bar button").hide();
     $("#authenticate_dialog").fadeIn(
       500,
       function() {
@@ -305,11 +312,12 @@
   });
   
   $("#sign_out").click(function() {
+    $("#logged_in").hide();
+    $("#logged_out").hide();
     $.ajax({
       url: '/wsapi/signout',
       success: function(status, textStatus, jqXHR) {
-        $("logged_in").hide();
-        $("logged_out").show();
+        refreshAuthStatus();
       },
       error: function() {
         runErrorDialog(

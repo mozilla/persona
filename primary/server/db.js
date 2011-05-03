@@ -113,8 +113,8 @@ exports.create_user = function(username, password, cb) {
 
 /* check username and password; returns true if the password hash matches. */
 exports.checkAuth = function(username, pass, cb) {
-  db.execute("SELECT id FROM users WHERE name = ? AND ?",
-             [ username, password ],
+  db.execute("SELECT id FROM users WHERE name = ? AND password = ?",
+             [ username, pass ],
              function (error, rows) {
                 if (rows.length == 1) {
                   cb(rows[0].id);

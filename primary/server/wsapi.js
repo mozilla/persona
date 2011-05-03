@@ -79,14 +79,17 @@ exports.authenticate_user = function(req, resp) {
   var urlobj = url.parse(req.url, true);
   var getArgs = urlobj.query;
 
+  logRequest("authenticate_user", getArgs);
   if (!checkParams(getArgs, resp, [ "username", "pass" ])) return;
 
   db.checkAuth(getArgs.username, getArgs.pass, function(userid) {
+    logRequest("authenticate_user", "login attempt status: " + userid);
     if (userid) {
       if (!req.session) req.session = {};
       req.session.userid = userid;
     }
-    httputils.jsonResponse(resp, rv);
+    var rp = {username: getArgs.username, status: userid != null};
+    httputils.jsonResponse(resp, rp);
   });
 };
 

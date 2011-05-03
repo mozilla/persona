@@ -44,7 +44,7 @@ span.sitename, span.email {
     width:450px;
     margin: auto;
     text-align: center;
-    border: 2px solid rgb(218, 230, 237);    
+/*    border: 2px solid rgb(218, 230, 237);    */
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
 }
@@ -53,8 +53,8 @@ span.sitename, span.email {
     margin: 0;
     padding: 0;
     border: 0;
-    left: 0;
-    top: 300;
+/*    left: 0;*/
+/*    top: 450px;*/
     height: 60px;
     width: 450px;
     border-top: 2px solid rgb(218, 230, 237);
@@ -98,8 +98,9 @@ div.actions > div.action a {
 }
 
 div.actions {
-    position: fixed;
-    top: 268px;
+/*    position: fixed;
+    top: 268px;*/
+    height: 32px;
     font-size: .8em;
     margin-left: 79px;
 }
