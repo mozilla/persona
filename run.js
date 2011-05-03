@@ -161,7 +161,7 @@ dirs.forEach(function(dirObj) {
     }
   } catch(e) {
     console.log("Error loading " + handlerPath + ": " + e);
-    require('process').exit(1);
+    process.exit(1);
   }
 
   var so = {

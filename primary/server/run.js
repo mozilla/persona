@@ -38,7 +38,7 @@ exports.handler = function(request, response, serveFile) {
     });
   } else if (urlpath === "/code_update") {
       console.log("code updated.  shutting down.");
-      require('process').exit();
+      process.exit();
   } else {
     // node.js takes care of sanitizing the request path
     if (urlpath == "/") urlpath = "/index.html"
