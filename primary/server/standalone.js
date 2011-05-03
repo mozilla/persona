@@ -63,5 +63,3 @@ server.use(function(req, resp, next) {
 });
 
 server.listen(PRIMARY_PORT, PRIMARY_HOST);
-
-console.log("bound to " + PRIMARY_HOST + ":" + PRIMARY_PORT);
