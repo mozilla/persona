@@ -158,7 +158,16 @@ exports.set_key = function (req, resp) {
 
 exports.am_authed = function(req,resp) {
   logRequest("am_authed", req.session);
-  httputils.jsonResponse(resp, isAuthed(req));
+  // if they're authenticated for an email address that we don't know about,
+  // then we should purge the stored cookie
+  if (!isAuthed(req)) {
+    httputils.jsonResponse(resp, false);
+  } else {
+    db.emailKnown(req.session.authenticatedUser, function (known) {
+      if (!known) req.session = {}
+      httputils.jsonResponse(resp, known);
+    });
+  }
 };
 
 exports.sync_emails = function(req,resp) {
