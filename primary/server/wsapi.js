@@ -35,11 +35,16 @@ function checkAuthed(req, resp) {
   return true;
 }
 
+function normalizeUsername(uname) {
+  if (typeof uname === "string") return uname.toLowerCase();
+  return undefined;
+}
+
 /* checks to see if a username address is known to the server
  * takes 'username' as a GET argument */
 exports.username_available = function(req, resp) {
   // get inputs from get data!
-  var username = url.parse(req.url, true).query['username'];
+  var username = normalizeUsername(url.parse(req.url, true).query['username']);
   logRequest("username_available", {username: username});
   db.usernameKnown(username, function(known) { 
     httputils.jsonResponse(resp, known);
@@ -57,15 +62,16 @@ exports.create_user = function(req, resp) {
   logRequest("create_user", getArgs);
 
   try {
-    db.create_user(getArgs["username"], getArgs["pass"], function(error) {
+    var normalized_username = normalizeUsername(getArgs["username"]);
+    db.create_user(normalized_username, getArgs["pass"], function(error) {
       if (error) {
         logRequest("create_user", error);
         httputils.jsonResponse(resp, undefined);
       } else {
         if (!req.session) req.session = {};
-        db.usernameToUserID(getArgs.username, function(userid) {
+        db.usernameToUserID(normalized_username, function(userid) {
           req.session.userid = userid;
-          httputils.jsonResponse(resp, userid);
+          httputils.jsonResponse(resp, {username: normalized_username, id: userid});
         });
       }
     });
@@ -81,14 +87,14 @@ exports.authenticate_user = function(req, resp) {
 
   logRequest("authenticate_user", getArgs);
   if (!checkParams(getArgs, resp, [ "username", "pass" ])) return;
-
-  db.checkAuth(getArgs.username, getArgs.pass, function(userid) {
+  var normalized_username = normalizeUsername(getArgs.username);
+  db.checkAuth(normalized_username, getArgs.pass, function(userid) {
     logRequest("authenticate_user", "login attempt status: " + userid);
     if (userid) {
       if (!req.session) req.session = {};
       req.session.userid = userid;
     }
-    var rp = {username: getArgs.username, status: userid != null};
+    var rp = {username: normalized_username, status: userid != null};
     httputils.jsonResponse(resp, rp);
   });
 };

@@ -22,7 +22,7 @@
       }
     });
   }
-  
+
   function runErrorDialog(code, title, message, onsuccess, onerror) {
     $(".dialog").hide();
 
@@ -37,13 +37,13 @@
 
     $("#error_dialog").fadeIn(500);
   }
-  
+
   function runConfirmationDialog(username) {
     refreshAuthStatus();
     $("#welcome_address").text(username + "@primary.eyedee.me");
     $("#welcome_dialog").fadeIn(500);
     $("#create_welcome").show().unbind('click').click(function() {
-      $("#welcome_dialog").fadeOut(500);    
+      $("#welcome_dialog").fadeOut(500);
     });
   };
 
@@ -67,9 +67,13 @@
       // Go do it...
       $.ajax({
         url: '/wsapi/create_user?username=' + encodeURIComponent(username) + '&pass=' + encodeURIComponent(pass),
-        success: function(result) {        
+        success: function(result) {
           $(".dialog").hide();
           if (result) {
+            // the server may have "normalized" our username, a success payload includes the actual
+            // username registered
+            username = result.username;
+            $("#create_dialog input:eq(0)").val(username);
             runConfirmationDialog(username);
             try {
               navigator.id.registerVerifiedEmail(username + "@primary.eyedee.me", function(publicKey) {
@@ -85,9 +89,7 @@
                   "serverError",
                   "Error Registering Address!",
                   "There was a technical problem while trying to register your address.  Sorry.");
-              
               });
-              
             } catch (e) {
               alert("Whoops, unable to register verified email: " + e);
             }
@@ -204,8 +206,6 @@
   var checkedEmails = {
   };
 
-  
-
   function runAuthenticateDialog(email, onsuccess, onerror) {
     $(".status").hide();
 
@@ -240,7 +240,6 @@
                 "serverError",
                 "Error Registering Address!",
                 "There was a technical problem while trying to register your address.  Sorry.");
-            
             });
 
             $("#authenticate_dialog").hide(500);
