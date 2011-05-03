@@ -120,7 +120,7 @@
             url: '/wsapi/set_key?email=' + encodeURIComponent(email) + '&pubkey=' + encodeURIComponent(keypair.pub),
             success: function() {
               // update emails list and commit to local storage, then go do the next email
-              persistAddressAndKeyPair(email, keypair);
+              persistAddressAndKeyPair(email, keypair, "eyedee.me");
               addNextEmail();
             },
             error: function() {
