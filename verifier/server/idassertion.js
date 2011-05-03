@@ -8,6 +8,7 @@
 const jwt = require('./jwt.js');
 const xml2js = require("xml2js/lib/xml2js");
 const http = require("http");
+const https = require("https");
 const url = require("url");
 const rsa = require("./rsa.js");
 
@@ -87,7 +88,9 @@ var Webfinger = (function() {
       };
       try {
         console.log("Requesting host-meta for " + options.host + ":" + options.port + " (" + domain + ")");
-        var req = http.request(options, function(res) {
+
+        var scheme = options.port == "443" ? https : http;
+        var req = scheme.request(options, function(res) {
           res.setEncoding('utf8');
           var buffer = "";
           var offset = 0;
@@ -156,7 +159,8 @@ var Webfinger = (function() {
         };
         console.log("Verifier: loading " + JSON.stringify(options));
 
-        var req = http.request(options, function(res) {
+        var scheme = options.port == "443" ? https : http;
+        var req = scheme.request(options, function(res) {
           res.setEncoding('utf8');
           var buffer = "";
           var offset = 0;
