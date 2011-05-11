@@ -581,6 +581,74 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     });
   };
 
+  // preauthorize a particular email
+  // FIXME: lots of cut-and-paste code here, need to refactor
+  // not refactoring now because experimenting and don't want to break existing code
+  navigator.id.preauthEmail = function(email, onsuccess, onerror) {
+    var ipServer = "https://eyedee.me"
+    var w = window.open(
+      ipServer + "/sign_in", "_mozid_signin",
+      "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");      
+
+    // clean up a previous channel that never was reaped
+    if (chan) chan.destroy();
+    chan = Channel.build({window: w, origin: ipServer, scope: "mozid"});
+
+    function cleanup() {
+      chan.destroy();
+      chan = undefined;
+      w.close();
+    }
+
+    chan.call({
+      method: "preauthEmail",
+      params: email,
+      success: function(rv) {
+        w.close();
+        onsuccess(rv);
+        cleanup();
+      },
+      error: function(code, msg) {
+        if (onerror) onerror(code, msg);
+        cleanup();
+      }
+    });
+  };
+
+  // get a particular verified email
+  navigator.id.getSpecificVerifiedEmail = function(email, token, onsuccess, onerror) {
+    var ipServer = "https://eyedee.me"
+    var w = window.open(
+      ipServer + "/sign_in", "_mozid_signin",
+      "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");
+
+    // clean up a previous channel that never was reaped
+    if (chan) chan.destroy();
+    chan = Channel.build({window: w, origin: ipServer, scope: "mozid"});
+
+    function cleanup() {
+      chan.destroy();
+      chan = undefined;
+      w.close();
+    }
+
+    chan.call({
+      method: "getSpecificVerifiedEmail",
+      params: [email, token],
+      success: function(rv) {
+        if (onsuccess) {
+          // wrap the raw JWT with a handy dandy object that exposes everything in a readable form
+          onsuccess(JWTWrapper(rv));
+        }
+        cleanup();
+      },
+      error: function(code, msg) {
+        if (onerror) onerror(code, msg);
+        cleanup();
+      }
+    });
+  };
+
   navigator.id.registerVerifiedEmail = function(email, onsuccess, onerror) {
 
     // TODO: We really don't need to display a dialog for this.

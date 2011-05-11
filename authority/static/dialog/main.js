@@ -10,6 +10,10 @@
 
   var remoteOrigin = undefined;
 
+  function isSuperDomain(domain) {
+      return true;
+  }
+
   function getLastUsedEmail() {
     // XXX: really we should keep usage records locally to make this better
     var emails = JSON.parse(window.localStorage.emails);
@@ -597,6 +601,77 @@
   //------------------------------------------------------------------------------------
   // Begin RPC bindings:
   //------------------------------------------------------------------------------------
+
+  // from
+  // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+  function new_guid() {
+      var S4 = function() {
+          return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+      };
+      return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+  }
+  
+  // pre-auth binding (Ben)
+  if (!window.localStorage.PREAUTHS)
+      window.localStorage.PREAUTHS = {};
+  chan.bind("preauthEmail", function(trans, email) {
+          if (!isSuperDomain(trans.origin)) {
+              alert('not a super domain!');
+              return;
+          }
+
+          // only one preauth, since this shouldn't happen in parallel
+          var guid = new_guid();
+          window.localStorage.PREAUTHS[guid] = {'at': new Date(), 'email': email};
+
+          // the guid is returned, it will be necessary
+          return guid;
+      });
+
+  chan.bind("getSpecificVerifiedEmail", function(trans, params) {
+    var email = params[0], guid = params[1];
+    alert(email);
+    alert(guid);
+    trans.delayReturn(true);
+
+    remoteOrigin = trans.origin;
+
+    // set the requesting site
+    $(".sitename").text(trans.origin.replace(/^.*:\/\//, ""));
+
+    // check to see if there's any pubkeys stored in the browser
+    var haveIDs = false;
+    try {
+      var emails = JSON.parse(window.localStorage.emails);
+      if (typeof emails !== 'object') throw "emails blob bogus!";
+      for (var k in emails) {
+        if (!emails.hasOwnProperty(k)) continue;
+        haveIDs = true;
+        break;
+      }
+    } catch(e) {
+      window.localStorage.emails = JSON.stringify({});
+    }
+
+    function onsuccess(rv) {
+      trans.complete(rv);
+    }
+    function onerror(error) {
+      errorOut(trans, error);
+    }
+
+    // wherever shall we start?
+    if (haveIDs) {
+      runSignInDialog(onsuccess, onerror);
+    } else {
+      // do we even need to authenticate?
+      checkAuthStatus(function() {
+        syncIdentities(onsuccess, onerror);
+      }, function() {
+        runAuthenticateDialog(undefined, onsuccess, onerror);
+      }, onsuccess, onerror);
+    }
+      });
 
   chan.bind("getVerifiedEmail", function(trans, s) {
     trans.delayReturn(true);
