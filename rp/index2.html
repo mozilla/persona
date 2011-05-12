@@ -42,6 +42,7 @@ a:hover { border-bottom: 2px solid black ; }
   This is the simplest possible (stateless, static, client-only)  BrowserID Relying Party.  It
   demonstrates the steps required to use BrowserID to verify the identity of a user.<br />
   <a id="tokenGetter" href="#">Click here to preauth</a>. <span id="token"></span><br />
+  <a id="badpartyStarter" href="#">Click here to kick off the bad party</a>.<br />
   <a id="partyStarter" href="#">Click here to kick off the party</a>.<br />  Here's what will happen:
 </div>
 
@@ -95,17 +96,8 @@ a:hover { border-bottom: 2px solid black ; }
     return htmlRep;
   }
 
-  $(document).ready(function() {
-    var GUID = null;
-    $("#tokenGetter").click(function() {
-      navigator.id.preauthEmail("ben@adida.net", function(guid) {      
-        $('#token').html(guid);
-        GUID=guid;
-      });
-    });
-
-    $("#partyStarter").click(function() {
-      navigator.id.getSpecificVerifiedEmail("ben@adida.net", GUID, function(assertion) {
+  function start_the_party(email, token) {
+      navigator.id.getSpecificVerifiedEmail(email, token, function(assertion) {
         // Now we'll send this assertion over to the verification server for validation
         $("#oAssertion").empty().html(dumpObject(assertion));
 
@@ -125,6 +117,23 @@ a:hover { border-bottom: 2px solid black ; }
       }, function(code, msg) {
         alert("something very bad happened! ("+code+"): " + msg); 
       });
+  }
+
+  $(document).ready(function() {
+    var GUID = null;
+    $("#tokenGetter").click(function() {
+      navigator.id.preauthEmail("ben@adida.net", function(guid) {      
+        $('#token').html(guid);
+        GUID=guid;
+      });
+    });
+
+    $("#partyStarter").click(function() {
+      start_the_party('ben@adida.net', GUID);
+    });
+
+    $("#badpartyStarter").click(function() {
+      start_the_party('ben2@adida.net', GUID);
     });
   });
 </script>
