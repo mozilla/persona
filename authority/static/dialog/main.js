@@ -612,26 +612,22 @@
   }
   
   // pre-auth binding (Ben)
-  if (!window.localStorage.PREAUTHS)
-      window.localStorage.PREAUTHS = {};
   chan.bind("preauthEmail", function(trans, email) {
-          if (!isSuperDomain(trans.origin)) {
-              alert('not a super domain!');
-              return;
-          }
-
-          // only one preauth, since this shouldn't happen in parallel
-          var guid = new_guid();
-          window.localStorage.PREAUTHS[guid] = {'at': new Date(), 'email': email};
-
-          // the guid is returned, it will be necessary
-          return guid;
-      });
+      if (!isSuperDomain(trans.origin)) {
+          alert('not a super domain!');
+          return;
+      }
+      
+      // only one preauth, since this shouldn't happen in parallel
+      var guid = new_guid();
+      window.localStorage['PREAUTH_' + guid] = JSON.stringify({'at': new Date(), 'email': email});
+      
+      // the guid is returned, it will be necessary
+      return guid;
+  });
 
   chan.bind("getSpecificVerifiedEmail", function(trans, params) {
-    var email = params[0], guid = params[1];
-    alert(email);
-    alert(guid);
+    var email = params[0], token = params[1];
     trans.delayReturn(true);
 
     remoteOrigin = trans.origin;
@@ -662,7 +658,31 @@
 
     // wherever shall we start?
     if (haveIDs) {
-      runSignInDialog(onsuccess, onerror);
+      // can we pre-approve this?
+      var preauth = null;
+      if (window.localStorage['PREAUTH_' + token]) {
+        preauth = JSON.parse(window.localStorage['PREAUTH_' + token]);
+      }
+      if (token && preauth && (email == preauth.email)) {
+          window.localStorage.PREAUTHS[token] = null;
+          var storedID = JSON.parse(window.localStorage.emails)[email];
+          if (storedID) {
+            // ultimate success, pre-approved for an ID we have!
+            var privkey = storedID.priv;
+            var issuer = storedID.issuer;
+            var audience = remoteOrigin.replace(/^(http|https):\/\//, '');
+            var assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
+            onsuccess(assertion);
+          } else {
+            runErrorDialog(
+              "identityError",
+              "No matching identity.",
+              "The app you requested is expecting you to authenticate as " + email + " but you don't have those creds",
+              onsuccess, onerror);
+          }
+      } else {
+        runSignInDialog(onsuccess, onerror);
+      }
     } else {
       // do we even need to authenticate?
       checkAuthStatus(function() {
