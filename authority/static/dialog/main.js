@@ -10,10 +10,6 @@
 
   var remoteOrigin = undefined;
 
-  function isSuperDomain(domain) {
-      return true;
-  }
-
   function getLastUsedEmail() {
     // XXX: really we should keep usage records locally to make this better
     var emails = JSON.parse(window.localStorage.emails);
@@ -601,30 +597,6 @@
   //------------------------------------------------------------------------------------
   // Begin RPC bindings:
   //------------------------------------------------------------------------------------
-
-  // from
-  // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
-  function new_guid() {
-      var S4 = function() {
-          return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-      };
-      return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
-  }
-  
-  // pre-auth binding (Ben)
-  chan.bind("preauthEmail", function(trans, email) {
-      if (!isSuperDomain(trans.origin)) {
-          alert('not a super domain!');
-          return;
-      }
-      
-      // only one preauth, since this shouldn't happen in parallel
-      var guid = new_guid();
-      window.localStorage['PREAUTH_' + guid] = JSON.stringify({'at': new Date(), 'email': email});
-      
-      // the guid is returned, it will be necessary
-      return guid;
-  });
 
   chan.bind("getSpecificVerifiedEmail", function(trans, params) {
     var email = params[0], token = params[1];

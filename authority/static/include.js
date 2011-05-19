@@ -7,6 +7,8 @@ if (!navigator.id) {
 
 if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 {
+  var ipServer = "https://eyedee.me";    
+
   // local embedded copy of jschannel: http://github.com/mozilla/jschannel 
   var Channel = (function() {
     // current transaction id, start out at a random *odd* number between 1 and a million
@@ -549,11 +551,22 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 
   var chan = undefined;
 
+  function _create_iframe(doc) {
+      var iframe = doc.createElement("iframe");
+      iframe.style.display = "none";
+      doc.body.appendChild(iframe);
+      iframe.src = ipServer + "/register_iframe";
+      return iframe;
+  }
+
+  function _open_window() {
+      return window.open(
+          ipServer + "/sign_in", "_mozid_signin",
+          "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");
+  }
+
   navigator.id.getVerifiedEmail = function(onsuccess, onerror) {
-    var ipServer = "https://eyedee.me"
-    var w = window.open(
-      ipServer + "/sign_in", "_mozid_signin",
-      "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");
+    var w = _open_window();
 
     // clean up a previous channel that never was reaped
     if (chan) chan.destroy();
@@ -585,26 +598,23 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   // FIXME: lots of cut-and-paste code here, need to refactor
   // not refactoring now because experimenting and don't want to break existing code
   navigator.id.preauthEmail = function(email, onsuccess, onerror) {
-    var ipServer = "https://eyedee.me"
-    var w = window.open(
-      ipServer + "/sign_in", "_mozid_signin",
-      "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");      
+    var doc = window.document;
+    var iframe = _create_iframe(doc);
 
     // clean up a previous channel that never was reaped
     if (chan) chan.destroy();
-    chan = Channel.build({window: w, origin: ipServer, scope: "mozid"});
+    chan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid"});
 
     function cleanup() {
       chan.destroy();
       chan = undefined;
-      w.close();
+      doc.body.removeChild(iframe);
     }
 
     chan.call({
       method: "preauthEmail",
       params: email,
       success: function(rv) {
-        w.close();
         onsuccess(rv);
         cleanup();
       },
@@ -617,10 +627,16 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 
   // get a particular verified email
   navigator.id.getSpecificVerifiedEmail = function(email, token, onsuccess, onerror) {
-    var ipServer = "https://eyedee.me"
-    var w = window.open(
-      ipServer + "/sign_in", "_mozid_signin",
-      "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");
+    var doc = window.document;
+
+    // if we have a token, we should not be opening a window, rather we should be 
+    // able to do this entirely through IFRAMEs
+    if (token) {
+        var iframe = _create_iframe(doc);
+        var w = iframe.contentWindow;
+    } else {
+        var w = _open_window();
+    }
 
     // clean up a previous channel that never was reaped
     if (chan) chan.destroy();
@@ -629,7 +645,12 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     function cleanup() {
       chan.destroy();
       chan = undefined;
-      w.close();
+      if (token) {
+          // just remove the IFRAME
+          doc.body.removeChild(iframe);
+      } else {
+          w.close();
+      }
     }
 
     chan.call({
@@ -656,11 +677,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     // how to embed an iframe in this case.
 
     var doc = window.document;
-    iframe = document.createElement("iframe");
-    var ipServer = "https://eyedee.me"
-    iframe.style.display = "none";
-    doc.body.appendChild(iframe);
-    iframe.src = ipServer + "/register_iframe";
+    iframe = _create_iframe(doc);
     if (chan) chan.destroy();
     chan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid"});
 
