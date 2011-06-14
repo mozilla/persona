@@ -44,6 +44,9 @@ function subHostNames(data) {
         fromWithPort = from + ":80";
     }
     to = to.substr(7);
+
+    if (o.subPath) to += o.subPath;
+
     data = data.replace(new RegExp(fromWithPort, 'g'), to);
     data = data.replace(new RegExp(from, 'g'), to);
   }
@@ -130,18 +133,25 @@ function createServer(obj) {
 
 // start up webservers on ephemeral ports for each subdirectory here.
 var dirs = [
+    // the reference verification server.  A version is hosted at
+    // browserid.org and may be used, or the RP may perform their
+    // own verification.
     {
-        name: "http://verifier.eyedee.me",
+        name: "https://browserid.org/verify",
+        subPath: "/",
         path: path.join(__dirname, "verifier")
     },
-    {
-        name: "http://primary.eyedee.me",
-        path: path.join(__dirname, "primary")
-    },
+    // An example relying party.
     {
         name: "http://rp.eyedee.me",
         path: path.join(__dirname, "rp")
     },
+    // A reference primary identity provider.
+    {
+        name: "https://eyedee.me",
+        path: path.join(__dirname, "primary")
+    },
+    // BrowserID: the secondary + ip + more.
     {
         name: "https://browserid.org",
         path: path.join(__dirname, "authority")
@@ -180,7 +190,8 @@ dirs.forEach(function(dirObj) {
     port: "0",
     name: dirObj.name,
     handler: runJS.handler,
-    setup: runJS.setup
+    setup: runJS.setup,
+    subPath: dirObj.subPath
   };
   so.server = createServer(so)
   boundServers.push(so);
