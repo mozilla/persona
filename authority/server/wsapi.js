@@ -27,7 +27,7 @@ function checkParams(getArgs, resp, params) {
 function isAuthed(req) {
   return (req.session && typeof req.session.authenticatedUser === 'string');
 }
-    
+
 function checkAuthed(req, resp) {
   if (!isAuthed(req)) {
     httputils.badRequest(resp, "requires authentication");
@@ -190,3 +190,20 @@ exports.sync_emails = function(req,resp) {
     });
   });
 };
+
+exports.prove_email_ownership = function(req, resp) {
+    var urlobj = url.parse(req.url, true);
+    var getArgs = urlobj.query;
+
+   // validate inputs
+    if (!checkParams(getArgs, resp, [ "token" ])) return;
+
+    db.gotVerificationSecret(getArgs.token, function(e) {
+      if (e) {
+        console.log("error completing the verification: " + e);
+        httputils.jsonResponse(resp, false);
+      } else {
+        httputils.jsonResponse(resp, true);
+      }
+    });
+}
