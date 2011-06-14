@@ -11,19 +11,6 @@ var PRIMARY_HOST = "127.0.0.1";
 
 // all bound webservers stored in this lil' object
 var boundServers = [ ];
-function getSiteRef(host, port) {
-  for (var i = 0; i < boundServers.length; i++) {
-    var o = boundServers[i];
-    var a = o.server.address();
-    if (host === a.address && port === a.port) {
-      return {
-        root: o.path ? o.path : __dirname,
-        handler: o.handler
-      };
-    }
-  }
-  return undefined;
-}
 
 function subHostNames(data) {
   for (var i = 0; i < boundServers.length; i++) {
@@ -51,13 +38,6 @@ function subHostNames(data) {
     data = data.replace(new RegExp(from, 'g'), to);
   }
   return data;
-}
-
-function getServerByName(name) {
-  for (var i = 0; i < boundServers.length; i++) {
-    if (boundServers[i].name === name) return boundServers[i];
-  }
-  return undefined;
 }
 
 function serveFile(filename, response) {
