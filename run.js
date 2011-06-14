@@ -143,7 +143,7 @@ var dirs = [
         path: path.join(__dirname, "rp")
     },
     {
-        name: "https://eyedee.me",
+        name: "https://browserid.org",
         path: path.join(__dirname, "authority")
     }
 ];

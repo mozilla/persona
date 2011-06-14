@@ -51,7 +51,7 @@ exports.setup = function(server) {
   var week = (7 * 24 * 60 * 60 * 1000);
   server.use(sessions({
       secret: COOKIE_SECRET,
-      session_key: "eyedeeme_state",
+      session_key: "browserid_state",
       path: '/'
   }));
 }

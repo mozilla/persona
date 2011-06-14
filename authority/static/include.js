@@ -7,7 +7,7 @@ if (!navigator.id) {
 
 if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 {
-  var ipServer = "https://eyedee.me";    
+  var ipServer = "https://browserid.org";
 
   // local embedded copy of jschannel: http://github.com/mozilla/jschannel 
   var Channel = (function() {

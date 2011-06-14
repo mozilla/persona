@@ -120,7 +120,7 @@
             url: '/wsapi/set_key?email=' + encodeURIComponent(email) + '&pubkey=' + encodeURIComponent(keypair.pub),
             success: function() {
               // update emails list and commit to local storage, then go do the next email
-              persistAddressAndKeyPair(email, keypair, "eyedee.me:443");
+              persistAddressAndKeyPair(email, keypair, "browserid.org:443");
               addNextEmail();
             },
             error: function() {
@@ -297,9 +297,9 @@
             //   'pending'  - a registration is in progress
             //   'noRegistration' - no registration is in progress
             if (status === 'complete') {
-              // this is a secondary registration from eyedee.me, persist
+              // this is a secondary registration from browserid.org, persist
               // email, keypair, and that fact
-              persistAddressAndKeyPair(email, keypair, "eyedee.me:443");
+              persistAddressAndKeyPair(email, keypair, "browserid.org:443");
 
               // and tell the user that everything is really quite awesome.
               runConfirmedEmailDialog(email, onsuccess, onerror);
