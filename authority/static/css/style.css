@@ -28,6 +28,8 @@ body {
     color: #fff;
     padding: 5px 10px 5px 10px;
     -webkit-border-radius: 0 0 10px 10px;
+    -moz-border-radius: 0 0 10px 10px;
+    border-radius: 0 0 10px 10px;
 }
 
 #splash .tophalf {
