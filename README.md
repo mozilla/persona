@@ -11,6 +11,7 @@ All of the servers here are based on node.js, and some number of 3rd party node 
 * sqlite (>= 1.0.3)
 * mustache (>= 0.3.1)
 * cookie-sessions (>= 0.0.2)
+* nodemailer (>= 0.1.18)
 
 ## Getting started:
 
