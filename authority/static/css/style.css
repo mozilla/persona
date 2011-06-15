@@ -36,10 +36,11 @@ body {
     padding: 0;
     margin: 0;
     height: 230px;
+    min-width: 900px;
 }
 
 #splash .bottomhalf {
-    width: 800px;
+    width: 900px;
     margin: auto;
 }
 
@@ -49,14 +50,19 @@ body {
 }
 
 #splash .bottomhalf .why p {
-    border: 1px solid red;
     font-size: 2em;
+    text-align: center;
 }
 
-#splash .bottomhalf .desc {
-    font-size: 2em;
-    padding: 1em;
-    text-align: center;
+#splash .bottomhalf a {
+    color: #666;
+    text-decoration: none;
+    border-bottom: 1px dotted black;
+}
+
+#splash .bottomhalf a:hover {
+    color: #000;
+    opacity: 1;
 }
 
 #splash .tophalf > div {
