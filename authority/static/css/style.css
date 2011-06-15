@@ -43,6 +43,16 @@ body {
     margin: auto;
 }
 
+#splash .bottomhalf .why {
+    height: 130px;
+    padding: 10px 100px 10px 100px;
+}
+
+#splash .bottomhalf .why p {
+    border: 1px solid red;
+    font-size: 2em;
+}
+
 #splash .bottomhalf .desc {
     font-size: 2em;
     padding: 1em;
