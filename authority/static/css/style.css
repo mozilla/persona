@@ -33,7 +33,7 @@ body {
 }
 
 #splash .tophalf {
-    background: #e50;
+    background: #008;
     color: #fff;
     padding: 0;
     margin: 0;
@@ -79,3 +79,42 @@ a {
 a:hover {
     opacity: .6;
 }
+
+#splash .footer {
+    background-color: #F1F1F1;
+    border-top: 2px solid #ddd;
+    margin: 0;
+    margin-top: 100px;
+    padding: 0;
+    height: 200px;
+    font-size: 1.1em;
+}
+
+#splash .footer > div {
+    width: 900px;
+    margin: auto;
+}
+
+#splash .footer > div > div {
+    width: 400px;
+    padding: 10px;
+}
+
+#splash .footer .right {
+    padding-top: 20px;
+    float: right;
+}
+
+#splash .footer a {
+    color: #666;
+}
+
+#splash .footer .right p {
+    text-align: right;
+}
+
+#splash .footer .copyright {
+    font-weight: bold;
+    font-size: .8em;
+}
+
