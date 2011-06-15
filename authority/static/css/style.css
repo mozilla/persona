@@ -1,0 +1,63 @@
+body {
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+    font-family: 'Tenor Sans', arial, serif;
+}
+
+#splash .header {
+    height: 4px;
+    background-color: #333;
+    padding: 0 20% 0 20%;
+}
+
+#splash .title {
+    padding-top: .7em;
+    font-size: 6em;
+    font-weight: bold;
+}
+
+#splash .subtitle {
+    font-family: 'Shadows Into Light', arial, serif;
+    font-size: 3em;
+}
+
+#splash .header .manage {
+    float: right;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px 5px 10px;
+    -webkit-border-radius: 0 0 10px 10px;
+}
+
+#splash .tophalf {
+    background: #e50;
+    color: #fff;
+    padding: 0;
+    margin: 0;
+    height: 230px;
+}
+
+#splash .bottomhalf {
+    width: 800px;
+    margin: auto;
+}
+
+#splash .bottomhalf .desc {
+    font-size: 2em;
+    padding: 1em;
+    text-align: center;
+}
+
+#splash .tophalf > div {
+    text-align: center;
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
+}
+
+a:hover {
+    opacity: .6;
+}
