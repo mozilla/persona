@@ -2,10 +2,13 @@
 <html>
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-  <title>BrowserID: A better way to log in.</title>
+  <title>BrowserID for Developers</title>
   <link href='http://fonts.googleapis.com/css?family=Tenor+Sans' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="css/style.css"  type="text/css">
+  <link rel="stylesheet" href="css/github.css">
+  <script src="js/highlight.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
 <div id="splash">
@@ -20,16 +23,79 @@
   </div>
   <div class="bottomhalf">
     <div class="why">
-      ooga.
+      <p>
+        With BrowserID you can implement <b>simple</b> and <b>sophisticated</b> authentication on your site
+        that your <b>users will love</b>.  All this with just a few lines of code!  Let's get started:
     </div>
-    <div class="why">
-      booga.
+    <div class="step">
+      <div class="number">1.</div>
+      <p><b>Enable BrowserID:</b> First you must include the BrowserID JavaScript library in your site.  Doing so is simple:</p>
+
+      <pre><code>&lt;script src="https://browserid.org/include.js"&gt;&lt;/script&gt;</code></pre>
     </div>
-    <div class="why">
-      ooga.
+    <div class="step">
+      <div class="number">2.</div>
+      <p>
+        <b>Identify the User:</b>
+      Now you'll need to hook up your <i>login</i> and <i>sign-in</i> buttons to BrowserID.  Instead of displaying
+      a form which asks for a <i>username</i> and <i>password</i>, with BrowserID you make a javascript call and
+      the interaction with the user is handled for you.
+      </p>
+<pre><code class="javascript">navigator.id.getVerifiedEmail(function(assertion) {
+    if (assertion) {
+        // This code will be invoked once the user has successfully
+        // selected an email address they control to log in with.
+    } else {
+        // something went wrong!  the user isn't logged in.
+    }
+});
+</code></pre>
+<p>
+Again, the above code should run when a user clicks the
+<i>login</i> button on your site.  Upon a successful login, you'll be
+called back with an <i>assertion</i>, which contains the user's email
+address, along with crytographic proof that the user is who they
+say they are (proof which comes from the email provider).
+</p>
     </div>
-    <div class="why">
-      booga
+    <div class="step">
+      <div class="number">3.</div>
+      <p>
+        <b>Verify the User's Identify:</b>  Next we should check that the user really is who they say they are.
+        The process of doing this is basically checking that their assertion is properly signed, which is something
+        that only their email provider can do.  If we were to omit this step, it would be possible for a user to modify
+        their browser and lie about their email addresses.
+      </p>
+      <p>
+        The easiest way to verify, is to use the <i>verfier</i> service, which is a free web service hosted at BrowserID.
+        to use it, you send a request to  <tt>https://browserid.org/verify</tt> with the assertion as a GET parameter.
+        You <b>should</b> perform this request on your server, but for illustrative purposes, here is how it would
+        look from the client:
+
+        <pre><code>var url = "https://browserid.org/verify?assertion="
+        + window.encodeURIComponent(assertion)
+        + "&audience=" + window.encodeURIComponent(window.location.host);
+
+$.get(url, function(result) {
+    if (result.status === "okay") alert("verification is valid!");
+    else alert("uh oh, bogus verification!");
+});</pre></code>
+      </p>
+    </div>
+    <div class="step">
+      <div class="number">4.</div>
+      <p><b>Complete the log in!</b>  Having completed the steps above, you can trust that the user is really identified
+        by the email stored in the assertion under the <tt>assertion.email</tt> property.  You don't need to perform
+        any additional authentication unless you want to!  From here, you can set session cookies or do whatever you
+        like.
+      </p>
+    </div>
+    <div class="prose">
+      <p>
+        You're done!  Welcome to BrowserID!  For a deeper walk through integration, please have a look at
+        our <a href="http://mozilla.github.com/browserid-rp/">demonstration</a>, and view
+        <a href="https://github.com/mozilla/browserid-rp/">the code</a> behind it.
+      </p>
     </div>
   </div>
   <div class="footer">
