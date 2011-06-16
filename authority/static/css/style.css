@@ -11,15 +11,47 @@ body {
     padding: 0 20% 0 20%;
 }
 
-#splash .title {
+#splash .tophalf, #splash .topquarter {
+    background: #008;
+    color: #fff;
+    padding: 0;
+    margin: 0;
+    height: 230px;
+    min-width: 900px;
+}
+
+#splash .tophalf .title {
     padding-top: .7em;
     font-size: 6em;
     font-weight: bold;
 }
 
-#splash .subtitle {
+#splash .tophalf .subtitle {
     font-family: 'Shadows Into Light', arial, serif;
     font-size: 3em;
+}
+
+#splash .topquarter {
+    height: 50px;
+}
+
+#splash .topquarter > div {
+    width: 900px;
+    margin: auto;
+}
+
+#splash .topquarter .title {
+    padding-top: .2em;
+    font-size: 3em;
+    font-weight: bold;
+    float: left;
+}
+
+#splash .topquarter .subtitle {
+    font-family: 'Shadows Into Light', arial, serif;
+    font-size: 2em;
+    margin: .4em 0 0 .5em;
+    float: left;
 }
 
 #splash .header .manage {
@@ -30,15 +62,6 @@ body {
     -webkit-border-radius: 0 0 10px 10px;
     -moz-border-radius: 0 0 10px 10px;
     border-radius: 0 0 10px 10px;
-}
-
-#splash .tophalf {
-    background: #008;
-    color: #fff;
-    padding: 0;
-    margin: 0;
-    height: 230px;
-    min-width: 900px;
 }
 
 #splash .bottomhalf {
