@@ -17,7 +17,7 @@
   </div>
   <div class="topquarter">
     <div>
-      <div class="title">BrowserID</div>
+      <a href="/"><div class="title">BrowserID</div></a>
       <div class="subtitle">for Developers</div>
     </div>
   </div>
@@ -26,10 +26,11 @@
       <p>
         With BrowserID you can implement <b>simple</b> and <b>sophisticated</b> authentication on your site
         that your <b>users will love</b>.  All this with just a few lines of code!  Let's get started:
+      </p>
     </div>
     <div class="step">
       <div class="number">1.</div>
-      <p><b>Enable BrowserID:</b> First you must include the BrowserID JavaScript library in your site.  Doing so is simple:</p>
+      <p><b>Enable BrowserID:</b> First you must include the BrowserID JavaScript library in your site.  Just add a script tag to your <tt>&lt;head&gt;</tt></p>
 
       <pre><code>&lt;script src="https://browserid.org/include.js"&gt;&lt;/script&gt;</code></pre>
     </div>
@@ -61,16 +62,20 @@ say they are (proof which comes from the email provider).
     <div class="step">
       <div class="number">3.</div>
       <p>
-        <b>Verify the User's Identify:</b>  Next we should check that the user really is who they say they are.
-        The process of doing this is basically checking that their assertion is properly signed, which is something
-        that only their email provider can do.  If we were to omit this step, it would be possible for a user to modify
-        their browser and lie about their email addresses.
+        <b>Verify the User's Identify:</b> Next we should check that
+        the user really is who they <i>say</i> they are.  The process of
+        doing this is basically checking that the assertion is
+        properly signed by their email provider.  Once this is done we can
+        be sure that the email provider agress that the user is actual.
       </p>
       <p>
-        The easiest way to verify, is to use the <i>verfier</i> service, which is a free web service hosted at BrowserID.
-        to use it, you send a request to  <tt>https://browserid.org/verify</tt> with the assertion as a GET parameter.
-        You <b>should</b> perform this request on your server, but for illustrative purposes, here is how it would
-        look from the client:
+        The easiest way to verify is to use the
+        free <i>verfication</i> service provided by BrowserID.  To use
+        it, you send a request
+        to <tt>https://browserid.org/verify</tt> with the assertion as
+        a GET parameter.  You <b>should</b> perform this request from
+        your server, but for illustrative purposes, here's how it
+        might look from the client:
 
         <pre><code>var url = "https://browserid.org/verify?assertion="
         + window.encodeURIComponent(assertion)
@@ -86,13 +91,13 @@ $.get(url, function(result) {
       <div class="number">4.</div>
       <p><b>Complete the log in!</b>  Having completed the steps above, you can trust that the user is really identified
         by the email stored in the assertion under the <tt>assertion.email</tt> property.  You don't need to perform
-        any additional authentication unless you want to!  From here, you can set session cookies or do whatever you
+        any additional authentication unless you want to!  From here, you can set up session cookies and do whatever you
         like.
       </p>
     </div>
-    <div class="prose">
+    <div class="why">
       <p>
-        You're done!  Welcome to BrowserID!  For a deeper walk through integration, please have a look at
+        You're done!  <b>Welcome to BrowserID!</b>  For more details, have a look at
         our <a href="http://mozilla.github.com/browserid-rp/">demonstration</a>, and view
         <a href="https://github.com/mozilla/browserid-rp/">the code</a> behind it.
       </p>
