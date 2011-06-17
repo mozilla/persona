@@ -37,78 +37,54 @@ function subHostNames(data) {
     data = data.replace(new RegExp(fromWithPort, 'g'), to);
     data = data.replace(new RegExp(from, 'g'), to);
   }
+
   return data;
 }
 
-function serveFile(filename, response) {
-  path.exists(filename, function(exists) {
-    if(!exists) {
-      response.writeHead(404, {"Content-Type": "text/plain"});
-      response.write("404 Not Found");
-      response.end();
-      return;
-    }
-
-    fs.readFile(filename, "binary", function(err, data) {
-      if(err) {
-        response.writeHead(500, {"Content-Type": "text/plain"});
-        response.write(err + "\n");
-        response.end();
-        return;
-      }
-
-      var exts = {
-        ".js":   "text/javascript",
-        ".css":  "text/css",
-        ".html": "text/html",
-        ".webapp": "application/x-web-app-manifest+json",
-        ".png": "image/png",
-        ".ico": "image/x-icon"
-      };
-
-      var ext = path.extname(filename);
-      var mimeType = exts[ext] || "application/octet-stream";
-
-      data = subHostNames(data);
-
-      response.writeHead(200, {"Content-Type": mimeType});
-      response.write(data, "binary");
-      response.end();
-    });
-  });
-}
-
-function serveFileIndex(filename, response) {
-  // automatically serve index.html if this is a directory
-  fs.stat(filename, function(err, s) {
-    if (err === null && s.isDirectory()) {
-      serveFile(path.join(filename, "index.html"), response);
-    } else {
-      serveFile(filename, response);
-    }
-  });
-}
-
 function createServer(obj) {
-  var server = connect.createServer().use(connect.favicon())
-    .use(connect.logger({format: ":status :method :remote-addr :response-time :url"}));
+    var server = connect.createServer().use(connect.favicon()).use(connect.logger());
 
-  // let the specific server interact directly with the connect server to register their middleware 
-  if (obj.setup) obj.setup(server);
+    // this file is a *test* harness, to make it go, we'll insert a little handler that
+    // substitutes output, changing production URLs to developement URLs.
+    server.use(function(req, resp, next) {
+        // cache the *real* functions
+        var realWrite = resp.write;
+        var realEnd = resp.end;
 
-  // if this site has a handler, we'll run that, otherwise serve statically
-  if (obj.handler) {
-    server.use(function(req, resp, next) {
-      obj.handler(req, resp, serveFile, subHostNames);
+        var buf = "";
+        var enc = undefined;
+
+        resp.write = function (chunk, encoding) {
+            buf += chunk;
+            enc = encoding;
+        };
+
+        resp.end = function() {
+            buf = subHostNames(buf);
+            try { resp.setHeader('Content-Length', buf.length); } catch(e) { console.log("OOOH: ", e) }
+            if (buf.length) {
+                realWrite.call(resp, buf, enc);
+            }
+            realEnd.call(resp);
+        }
+
+        next();
     });
-  } else {
-    server.use(function(req, resp, next) {
-      var filename = path.join(obj.path, url.parse(req.url).pathname);
-      serveFileIndex(filename, resp);
-    });
-  }
-  server.listen(obj.port, PRIMARY_HOST);
-  return server;
+
+    // let the specific server interact directly with the connect server to register their middleware 
+    if (obj.setup) obj.setup(server);
+
+    // if this site has a handler, we'll run that, otherwise serve statically
+    if (obj.handler) server.use(obj.handler);
+
+    // now set up the static resource servin'
+    var p = obj.path, ps = path.join(p, "static");
+    try { if (fs.statSync(ps).isDirectory()) p = ps; } catch(e) { }
+    server.use(connect.static(p));
+
+    // and listen!
+    server.listen(obj.port, PRIMARY_HOST);
+    return server;
 };
 
 // start up webservers on ephemeral ports for each subdirectory here.
