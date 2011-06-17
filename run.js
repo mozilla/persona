@@ -18,7 +18,7 @@ function subHostNames(data) {
     var a = o.server.address();
     var from = o.name;
     var to = "http://" + a.address + ":" + a.port;
-    data = data.replace(new RegExp(from, 'g'), to);
+    data = data.toString().replace(new RegExp(from, 'g'), to);
 
     // now do another replacement to catch bare hostnames sans http(s)
     // and explicit cases where port is appended
@@ -51,20 +51,23 @@ function createServer(obj) {
         var realWrite = resp.write;
         var realEnd = resp.end;
 
-        var buf = "";
+        var buf = undefined;
         var enc = undefined;
 
         resp.write = function (chunk, encoding) {
-            buf += chunk;
+            if (buf) buf += chunk;
+            else buf = chunk;
             enc = encoding;
         };
 
         resp.end = function() {
-            buf = subHostNames(buf);
-            try { resp.setHeader('Content-Length', buf.length); } catch(e) { console.log("OOOH: ", e) }
-            if (buf.length) {
-                realWrite.call(resp, buf, enc);
+            var ct = resp.getHeader('content-type');
+            if (ct && (ct === "application/javascript" || ct.substr(4) === 'text')) {
+                var l = buf.length;
+                buf = subHostNames(buf);
+                if (l != buf.length) resp.setHeader('Content-Length', buf.length);
             }
+            if (buf && buf.length) realWrite.call(resp, buf, enc ? enc : "binary");
             realEnd.call(resp);
         }
 

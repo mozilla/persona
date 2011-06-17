@@ -1,3 +1,17 @@
+@font-face {
+  font-family: 'Shadows Into Light';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('sil.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Tenor Sans';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Tenor Sans'), local('TenorSans'), url('ts.ttf') format('truetype');
+}
+
 body {
     padding: 0;
     margin: 0;
