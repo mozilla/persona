@@ -1,20 +1,36 @@
+@font-face {
+  font-family: 'Shadows Into Light';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('../css/sil.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Tenor Sans';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Tenor Sans'), local('TenorSans'), url('../css/ts.ttf') format('truetype');
+}
+
 body {
     position: absolute;
-    font-family: Helvetica Narrow, sans-serif;
+    font-family: 'Tenor Sans', Helvetica Narrow, sans-serif;
     font-size: 11pt;
     width: 598px;
     height: 398px;
     padding: 0;
     margin: 0;
 }
+
 span.sitename, span.email {
     font-weight: bold;
 }
-.title {
+
+.dialog .title {
     font-size: 2em;
     font-weight: bold;
     margin: auto;
-    margin-top: 1.5em;
+    margin-top: .5em;
     margin-bottom: 1em;
 }
 
@@ -121,8 +137,10 @@ button.disabled {
 
 .dialog {
     display: none;
-    position: relative;
-    top: 0;
+    position: fixed;
+    top: 40px;
+    right: 0;
+    bottom: 60px;
     left: 0;
     margin: auto;
     text-align: center;
@@ -140,6 +158,7 @@ div.input > div.note {
 div.content {
     width: 450px;
     margin: auto;
+    margin-top: 20px;
     text-align: left;
 }
 
@@ -158,7 +177,6 @@ div.content > div.input > div.label {
     text-align: left;
     margin-top: .7em;
 }
-
 
 div.input input {
     border: 1px solid black;
@@ -218,3 +236,29 @@ div.dialog div.attention_lame {
     font-size: .8em;
 }
 
+#header {
+    position: fixed;
+    padding: 0;
+    border: 0;
+    margin: 0;
+    left: 0;
+    top: 0;
+    height: 40px;
+    width: 100%;
+    background: #008;
+    color: #fff;
+}
+
+#header .title {
+    font-size: 1.7em;
+    font-weight: bold;
+    float: left;
+    margin: 4px 16px 0 16px;
+}
+
+#header .subtitle {
+    size: 1.2em;
+    font-family: 'Shadows into light', arial, serif;
+    float: left;
+    margin-top: .6em;
+}
