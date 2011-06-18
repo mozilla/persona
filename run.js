@@ -63,11 +63,13 @@ function createServer(obj) {
         resp.end = function() {
             var ct = resp.getHeader('content-type');
             if (ct && (ct === "application/javascript" || ct.substr(4) === 'text')) {
-                var l = buf.length;
-                buf = subHostNames(buf);
-                if (l != buf.length) resp.setHeader('Content-Length', buf.length);
+                if (buf) {
+                    var l = buf.length;
+                    buf = subHostNames(buf);
+                    if (l != buf.length) resp.setHeader('Content-Length', buf.length);
+                }
             }
-            if (buf && buf.length) realWrite.call(resp, buf, enc ? enc : "binary");
+            if (buf && buf.length) realWrite.call(resp, buf, enc);
             realEnd.call(resp);
         }
 

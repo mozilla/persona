@@ -97,24 +97,26 @@ a:hover { border-bottom: 2px solid black ; }
   $(document).ready(function() {
     $("#partyStarter").click(function() {
       navigator.id.getVerifiedEmail(function(assertion) {
-        // Now we'll send this assertion over to the verification server for validation
-        $("#oAssertion").empty().html(dumpObject(assertion));
-
-        var url = "http://browserid.org/verify?assertion=" + window.encodeURIComponent(assertion) +
-                  "&audience=" + window.encodeURIComponent("rp.eyedee.me");
-        $("#oVerificationRequest").empty().text(url);
-
-        $.ajax({
-          url: url,
-          success: function(data, textStatus, jqXHR) {
-            $("#oVerificationResponse").empty().text(JSON.stringify(data, null, 4));
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-            $("#oVerificationResponse").empty().text(jqXHR.responseText);
-          }
-        })
-      }, function(code, msg) {
-        alert("something very bad happened! ("+code+"): " + msg); 
+        if (!assertion) {
+          alert("couldn't get the users email address!"); 
+        } else {
+          // Now we'll send this assertion over to the verification server for validation
+          $("#oAssertion").empty().html(dumpObject(assertion));
+  
+          var url = "http://browserid.org/verify?assertion=" + window.encodeURIComponent(assertion) +
+                    "&audience=" + window.encodeURIComponent("rp.eyedee.me");
+          $("#oVerificationRequest").empty().text(url);
+  
+          $.ajax({
+            url: url,
+            success: function(data, textStatus, jqXHR) {
+              $("#oVerificationResponse").empty().text(JSON.stringify(data, null, 4));
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              $("#oVerificationResponse").empty().text(jqXHR.responseText);
+            }
+          })
+        }
       });
     });
   });

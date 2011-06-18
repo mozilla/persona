@@ -565,7 +565,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
           "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");
   }
 
-  navigator.id.getVerifiedEmail = function(onsuccess, onerror) {
+  navigator.id.getVerifiedEmail = function(callback) {
     var w = _open_window();
 
     // clean up a previous channel that never was reaped
@@ -581,14 +581,15 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     chan.call({
       method: "getVerifiedEmail",
       success: function(rv) {
-        if (onsuccess) {
+        if (callback) {
           // wrap the raw JWT with a handy dandy object that exposes everything in a readable form
-          onsuccess(JWTWrapper(rv));
+          callback(JWTWrapper(rv));
         }
         cleanup();
       },
       error: function(code, msg) {
-        if (onerror) onerror(code, msg);
+        // XXX: we don't make the code and msg available to the user.
+        if (callback) callback(null);
         cleanup();
       }
     });
