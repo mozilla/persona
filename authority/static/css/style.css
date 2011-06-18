@@ -186,5 +186,43 @@ pre code {
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px 10px 10px 10px;
+}
 
+#emailList {
+  font-size: 1.0em; 
+  width: 4x00px; 
+  margin: auto; 
+  font-weight:bold;
+  margin-top:32px;
+}
+.email {
+  display:inline-block;
+}
+.emailblock a {
+  font-size:0.7em;
+  color:#405090;
+}
+.emailblock {
+  border: 1px solid #ddd;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  background-color:#f0f0f0;
+  width:500px;
+  padding:8px;
+  min-height:48px;
+  margin:16px auto;
+}
+.meta {
+  display:inline-block;
+  float:right;
+  font:8pt Arial;  
+}
+.meta a {
+  cursor:pointer;
+}
+.keyblock {
+  font:8pt Arial;
+}
+.date {
+  font:8pt Arial;
 }
