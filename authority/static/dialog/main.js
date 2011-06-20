@@ -179,7 +179,9 @@
       // not your email addresses?  we'll just purge local storage and click you over
       // to the login page.
       window.localStorage.emails = JSON.stringify({});
-      runAuthenticateDialog(undefined, onsuccess, onerror);
+      $.get("/wsapi/logout", function() {
+          runAuthenticateDialog(undefined, onsuccess, onerror);
+      });
     });
 
     // now populate the selection list with all available emails

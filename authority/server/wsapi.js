@@ -170,6 +170,11 @@ exports.am_authed = function(req,resp) {
   }
 };
 
+exports.logout = function(req,resp) {
+    req.session = {};
+    httputils.jsonResponse(resp, "ok");
+};
+
 exports.sync_emails = function(req,resp) {
   if (!checkAuthed(req, resp)) return;
 
