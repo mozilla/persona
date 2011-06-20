@@ -37,6 +37,7 @@
 </div>
 </body>
 <script src="dialog/jquery-min.js"></script>
+<script src="dialog/underscore-min.js"></script>
 <script>
 function display_saved_ids()
 {
@@ -46,28 +47,27 @@ function display_saved_ids()
   }
 
   $("#emailList").empty();
-  for (var e in emails)
-  {
-    if (emails.hasOwnProperty(e))
-    {
+  _(emails).each(function(data, e) {
+      debugger;
       var block = $("<div>").addClass("emailblock");
       var label = $("<div>").addClass("email").text(e);
       var meta = $("<div>").addClass("meta");
 
-      var data = emails[e];
-      
-      var priv = $("<div class='keyblock'>").text(data.priv);
+      /* 
+        var priv = $("<div class='keyblock'>").text(data.priv);
+        priv.hide();
+       */
+
       var pub = $("<div class='keyblock'>").text(data.pub);
-      priv.hide();
       pub.hide();
       var linkblock = $("<div>");
       var puba = $("<a>").text("[show public key]");
-      var priva = $("<a>").text("[show private key]");
+      // var priva = $("<a>").text("[show private key]");
       puba.click(function() {pub.show()});
-      priva.click(function() {priv.show()});
+      // priva.click(function() {priv.show()});
       linkblock.append(puba);
-      linkblock.append(" / ");
-      linkblock.append(priva);
+      // linkblock.append(" / ");
+      // linkblock.append(priva);
       
       var deauth = $("<button>").text("Sign Out");
       meta.append(deauth);
@@ -86,12 +86,11 @@ function display_saved_ids()
                   
       block.append(label);
       block.append(meta);
-      block.append(priv);
+      // block.append(priv);
       block.append(pub);
       
       $("#emailList").append(block);
-    }
-  }
+  });
 }
 </script>
 
