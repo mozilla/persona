@@ -179,15 +179,16 @@
       // not your email addresses?  we'll just purge local storage and click you over
       // to the login page.
       window.localStorage.emails = JSON.stringify({});
+      $("input").val("");
       $.get("/wsapi/logout", function() {
           runAuthenticateDialog(undefined, onsuccess, onerror);
       });
     });
 
     // now populate the selection list with all available emails
-    // we assume there are identities available, because without them 
+    // we assume there are identities available, because without them
     var emails = JSON.parse(window.localStorage.emails);
-    var first = true; 
+    var first = true;
     $("form#identities").empty();
     for (var k in emails) {
       var id = $("<div />")
