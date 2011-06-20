@@ -102,11 +102,11 @@ a:hover { border-bottom: 2px solid black ; }
         } else {
           // Now we'll send this assertion over to the verification server for validation
           $("#oAssertion").empty().html(dumpObject(assertion));
-  
+
           var url = "http://browserid.org/verify?assertion=" + window.encodeURIComponent(assertion) +
-                    "&audience=" + window.encodeURIComponent("rp.eyedee.me");
+                    "&audience=" + window.encodeURIComponent(window.location.host);
           $("#oVerificationRequest").empty().text(url);
-  
+
           $.ajax({
             url: url,
             success: function(data, textStatus, jqXHR) {
