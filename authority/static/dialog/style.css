@@ -16,8 +16,8 @@ body {
     position: absolute;
     font-family: 'Tenor Sans', Helvetica Narrow, sans-serif;
     font-size: 11pt;
-    width: 598px;
-    height: 398px;
+    width: 518px;
+    height: 348px;
     padding: 0;
     margin: 0;
 }
@@ -261,4 +261,12 @@ div.dialog div.attention_lame {
     font-family: 'Shadows into light', arial, serif;
     float: left;
     margin-top: .6em;
+}
+
+p.prompt {
+    font-size: 1.1em;
+}
+
+p.prompt .sitename {
+    font-size: 1.1em;
 }

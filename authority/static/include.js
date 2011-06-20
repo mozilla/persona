@@ -562,7 +562,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   function _open_window() {
       return window.open(
           ipServer + "/sign_in", "_mozid_signin",
-          "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=600,height=400");
+          "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=520,height=350");
   }
 
   navigator.id.getVerifiedEmail = function(callback) {
