@@ -62,7 +62,7 @@ function createServer(obj) {
 
         resp.end = function() {
             var ct = resp.getHeader('content-type');
-            if (ct && (ct === "application/javascript" || ct.substr(4) === 'text')) {
+            if (ct && (ct === "application/javascript" || ct.substr(0,4) === 'text')) {
                 if (buf) {
                     var l = buf.length;
                     buf = subHostNames(buf);
