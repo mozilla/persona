@@ -50,9 +50,26 @@ function createServer(obj) {
         // cache the *real* functions
         var realWrite = resp.write;
         var realEnd = resp.end;
+        var realWriteHead = resp.writeHead;
 
         var buf = undefined;
         var enc = undefined;
+        var contentType = undefined;
+
+        resp.writeHead = function (sc, reason, hdrs) {
+            var h = undefined;
+            if (typeof hdrs === 'object') h = hdrs;
+            else if (typeof reason === 'object') h = reason; 
+            for (var k in h) {
+                if (k.toLowerCase() === 'content-type') {
+                    contentType = h[k];
+                    break;
+                }
+            }
+            if (!contentType) contentType = resp.getHeader('content-type');
+            if (!contentType) contentType = "application/unknown";
+            realWriteHead(sc, reason, hdrs);
+        };
 
         resp.write = function (chunk, encoding) {
             if (buf) buf += chunk;
@@ -61,8 +78,10 @@ function createServer(obj) {
         };
 
         resp.end = function() {
-            var ct = resp.getHeader('content-type');
-            if (ct && (ct === "application/javascript" || ct.substr(0,4) === 'text')) {
+            if (!contentType) contentType = resp.getHeader('content-type');
+            if (contentType && (contentType === "application/javascript" ||
+                                contentType.substr(0,4) === 'text'))
+            {
                 if (buf) {
                     var l = buf.length;
                     buf = subHostNames(buf);
