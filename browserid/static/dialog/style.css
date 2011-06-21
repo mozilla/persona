@@ -146,10 +146,6 @@ button.disabled {
     text-align: center;
 }
 
-#forgot_password_dialog {
-    display: inline;
-}
-
 div.input > * {
     float: left;
 }

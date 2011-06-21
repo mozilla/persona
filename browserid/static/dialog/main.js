@@ -247,7 +247,7 @@
     }
 
     $("#authenticate_dialog div.note > a").unbind('click').click(function() {
-      onerror("notImplemented");
+      runForgotDialog(onsuccess, onerror);
     });
     $("#authenticate_dialog div.actions div.action").unbind('click').click(function() {
       runCreateDialog(onsuccess, onerror);
@@ -579,6 +579,44 @@
     $("#create_dialog").fadeIn(500);
   }
 
+  var kindaLikeEmailPat = /^.*\@.*\..*$/;
+
+  function runForgotDialog(onsuccess, onerror) {
+    $(".dialog").hide();
+
+    $("#back").show().unbind('click').click(function() {
+      runAuthenticateDialog(undefined, onsuccess, onerror);
+    });
+    $("#cancel").show().unbind('click').click(function() {
+      onerror("canceled");
+    });
+    $("#submit").show().unbind('click').click(function() {
+        // ignore the click if we're disabled
+        if ($(this).hasClass('disabled')) return true;
+        onerror("notImplemented");
+    }).text("Send Reset Email").addClass('disabled');
+
+    function checkInput() {
+        // check the email address
+        var email = $("#forgot_password_dialog input").val();
+        // if the entered text has a basic resemblance to an email, we'll
+        // unstick the submit button
+        $("#submit").removeClass('disabled')
+        if (!kindaLikeEmailPat.test(email)) $("#submit").addClass('disabled')
+    }
+
+    // watch input dialogs
+    $("#forgot_password_dialog input").unbind('keyup').bind('keyup', checkInput);
+
+    // do a check at load time, in case the user is using the back button (enables the continue button!)
+    checkInput();
+
+    $("#forgot_password_dialog").fadeIn(500);
+
+    $("#forgot_password_dialog input").focus();
+  }
+
+
   function errorOut(trans, code) {
     function getVerboseMessage(code) {
       var msgs = {
@@ -588,8 +626,8 @@
       };
       var msg = msgs[code];
       if (!msg) {
-        alert("need verbose message for " + code); 
-        msg = "unknown error"
+          alert("need verbose message for " + code);
+          msg = "unknown error"
       }
       return msg;
     }
