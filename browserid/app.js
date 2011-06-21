@@ -5,6 +5,7 @@ const        path = require('path'),
         httputils = require('./lib/httputils.js'),
         webfinger = require('./lib/webfinger.js'),
          sessions = require('cookie-sessions'),
+          express = require('express'),
           secrets = require('./lib/secrets.js');
 
 // create the var directory if it doesn't exist
@@ -14,6 +15,8 @@ try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { }
 const STATIC_DIR = path.join(path.dirname(__dirname), "static");
 
 const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', VAR_DIR);
+
+const COOKIE_KEY = 'browserid_state';
 
 function handler(request, response, next) {
     // dispatch!
@@ -56,12 +59,23 @@ function handler(request, response, next) {
 exports.varDir = VAR_DIR;
 
 exports.setup = function(server) {
-    var week = (7 * 24 * 60 * 60 * 1000);
-    server.use(sessions({
+    server.use(express.cookieParser());
+
+    var cookieSessionMiddleware = sessions({
         secret: COOKIE_SECRET,
-        session_key: "browserid_state",
+        session_key: COOKIE_KEY,
         path: '/'
-    }));
+    });
+
+    server.use(function(req, resp, next) {
+        try {
+            cookieSessionMiddleware(req, resp, next);
+        } catch(e) {
+            console.log("invalid cookie found: ignoring");
+            delete req.cookies[COOKIE_KEY];
+            cookieSessionMiddleware(req, resp, next);
+        }
+    });
 
     server.use(handler);
 
