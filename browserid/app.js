@@ -1,15 +1,19 @@
 const        path = require('path'),
               url = require('url'),
-            wsapi = require('./wsapi.js'),
-        httputils = require('./httputils.js'),
-          connect = require('connect'),
-        webfinger = require('./webfinger.js'),
+               fs = require('fs'),
+            wsapi = require('./lib/wsapi.js'),
+        httputils = require('./lib/httputils.js'),
+        webfinger = require('./lib/webfinger.js'),
          sessions = require('cookie-sessions'),
-          secrets = require('./secrets.js');
+          secrets = require('./lib/secrets.js');
+
+// create the var directory if it doesn't exist
+var VAR_DIR = path.join(__dirname, "var");
+try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { }
 
 const STATIC_DIR = path.join(path.dirname(__dirname), "static");
 
-const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', __dirname);
+const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', VAR_DIR);
 
 function handler(request, response, next) {
     // dispatch!
@@ -48,6 +52,8 @@ function handler(request, response, next) {
         next();
     }
 };
+
+exports.varDir = VAR_DIR;
 
 exports.setup = function(server) {
     var week = (7 * 24 * 60 * 60 * 1000);
