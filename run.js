@@ -157,7 +157,7 @@ console.log("Running test servers:");
 dirs.forEach(function(dirObj) {
   if (!fs.statSync(dirObj.path).isDirectory()) return;
   // does this server have a js handler for custom request handling?
-  var handlerPath = path.join(dirObj.path, "server", "app.js");
+  var handlerPath = path.join(dirObj.path, "app.js");
   var runJS = {};
   try {
     var runJSExists = false;

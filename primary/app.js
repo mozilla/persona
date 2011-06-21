@@ -1,21 +1,27 @@
 const        path = require('path'),
+fs = require('fs'),
 url = require('url'),
-wsapi = require('./wsapi.js'),
-httputils = require('./httputils.js'),
-webfinger = require('./webfinger.js'),
+wsapi = require('./lib/wsapi.js'),
+httputils = require('./lib/httputils.js'),
+webfinger = require('./lib/webfinger.js'),
 sessions = require('cookie-sessions'),
-secrets = require('./secrets.js');
+secrets = require('./lib/secrets.js');
 
-const STATIC_DIR = path.join(path.dirname(__dirname), "static");
+// create the var directory if it doesn't exist
+var VAR_DIR = path.join(__dirname, "var");
+try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { }
 
-const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', __dirname);
+const STATIC_DIR = path.join(__dirname, "static");
 
-function handler(request, response, serveFile) {
+const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', VAR_DIR);
+
+function handler(request, response, next) {
     // dispatch!
     var urlpath = url.parse(request.url).pathname;
 
     if (urlpath === '/sign_in') {
-        serveFile(path.join(STATIC_DIR, "dialog", "index.html"), response);
+        request.url = "/dialog/index.html";
+        next();
     } else if (/^\/wsapi\/\w+$/.test(urlpath)) {
         try {
             var method = path.basename(urlpath);
@@ -38,12 +44,10 @@ function handler(request, response, serveFile) {
     } else if (urlpath === "/code_update") {
         console.log("code updated.  shutting down.");
         process.exit();
-    } else {
-        // node.js takes care of sanitizing the request path
-        if (urlpath == "/") urlpath = "/index.html"
-        serveFile(path.join(STATIC_DIR, urlpath), response);
     }
 };
+
+exports.varDir = VAR_DIR;
 
 exports.setup = function(app) {
     var week = (7 * 24 * 60 * 60 * 1000);
