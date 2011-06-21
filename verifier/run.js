@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var   sys = require("sys"),
      path = require("path"),
        fs = require("fs"),
@@ -9,7 +11,7 @@ var PRIMARY_PORT = 62800;
 var handler = require("./app.js");
 
 var app = express.createServer().use(express.logger({
-    stream: fs.createWriteStream(path.join(__dirname, "server.log"))
+    stream: fs.createWriteStream(path.join(handler.varDir, "server.log"))
 }));
 
 // let the specific server interact directly with the express server to register their middleware

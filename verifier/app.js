@@ -1,8 +1,13 @@
 const   path = require('path'),
          url = require('url'),
-   httputils = require('./httputils.js'),
- idassertion = require('./idassertion.js'),
-         jwt = require('./jwt.js');
+          fs = require('fs'),
+   httputils = require('./lib/httputils.js'),
+ idassertion = require('./lib/idassertion.js'),
+         jwt = require('./lib/jwt.js');
+
+// create the var directory if it doesn't exist
+var VAR_DIR = path.join(__dirname, "var");
+try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { }
 
 function handler(req, resp, serveFile) {
     // dispatch!
@@ -67,6 +72,8 @@ function handler(req, resp, serveFile) {
         }
     }
 };
+
+exports.varDir = VAR_DIR;
 
 exports.setup = function(app) {
     app.use(handler);
