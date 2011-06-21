@@ -7,12 +7,11 @@ and should obey roughly the following directory structure:
   * `static/` - files served verbatim without any substitution nor server
              side logic in them
   * `lib/` - javascript modules.
-  * `lib/app.js` application "entry point", exposes a single function `exports.setup`
-    that takes a handle to an express server as an argument and sets up routes
-    or associates middleware to it.
   * `views/` - express views, served before `static/` (if present)
   * `tests/` - tests written using [vows](http://vowsjs.org)
   * `tests/run.js` - a "run all" script to run all tests
+  * `app.js` application "entry point", exposes a single function `exports.setup`
+    that takes a handle to an express server as an argument and sets up routes
+    or associates middleware to it.
   * `run.js` - script to run a standalone (production) node.js server - typically bound
      against a well known localhost port.
-
