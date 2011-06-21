@@ -277,3 +277,19 @@ exports.pubkeysForEmail = function(identity, cb) {
                cb(keys);
              });
 };
+
+
+// FIXME: I'm not sure I'm using this data model properly
+exports.removeEmail = function(authenticated_email, email, cb) {
+    // figure out the user, and remove Email only from addressed
+    // linked to the authenticated email address
+    emailToUserID(authenticated_email, function(user_id) {
+        executeTransaction([
+            [ "delete from emails where emails.address = ? and user = ?", [ email,user_id ] ] ,
+            [ "delete from keys where email in (select address from emails where emails.address = ? and user = ?)", [ email,user_id ] ],
+        ], function (error) {
+            if (error) cb(error);
+            else cb();
+        });
+    });
+};

@@ -117,6 +117,8 @@ exports.authenticate_user = function(req, resp) {
   });
 };
 
+// need CSRF protection
+
 exports.add_email = function (req, resp) {
   var urlobj = url.parse(req.url, true);
   var getArgs = urlobj.query;
@@ -143,6 +145,27 @@ exports.add_email = function (req, resp) {
     // we should differentiate tween' 400 and 500 here.
     httputils.badRequest(resp, e.toString());
   }
+};
+
+exports.remove_email = function(req, resp) {
+    // this should really be POST, but for now I'm having trouble seeing
+    // how to get POST args properly, so it's a GET (Ben).
+    // hmmm, I really want express or some other web framework!
+    var urlobj = url.parse(req.url, true);
+    var getArgs = urlobj.query;
+    
+    if (!checkParams(getArgs, resp, [ "email"])) return;
+    if (!checkAuthed(req, resp)) return;
+    
+    logRequest("remove_email", getArgs);
+    
+    db.removeEmail(req.session.authenticatedUser, getArgs.email, function(error) {
+        if (error) {
+            console.log("error removing email " + getArgs.email);
+            httputils.badRequest(resp, error.toString());
+        } else {
+            httputils.jsonResponse(resp, true);            
+        }});
 };
 
 exports.set_key = function (req, resp) {

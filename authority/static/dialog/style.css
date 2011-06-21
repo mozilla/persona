@@ -146,6 +146,10 @@ button.disabled {
     text-align: center;
 }
 
+#forgot_password_dialog {
+    display: inline;
+}
+
 div.input > * {
     float: left;
 }
@@ -185,6 +189,16 @@ div.input input {
     padding: .4em;
 }
 
+#forgot_password_dialog input {
+    width: 80%;
+    margin: 1em 10% 0 10%;
+    font-size: 1.5em;
+    padding: 1em .5em 1em .5em;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px 4px 4px 4px;
+}
+
 a {
     color: rgb(65, 126, 208);
     text-decoration: none;
@@ -209,7 +223,7 @@ div.subtle {
 div.dialog div.attention, div.dialog div.attention_awesome, div.dialog div.attention_lame  {
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
-    border-radius: 4px;
+    border-radius: 4px 4px 4px 4px;
     width: 400px;
     padding:13px;
     margin: auto;
