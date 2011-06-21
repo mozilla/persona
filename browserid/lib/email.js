@@ -15,6 +15,9 @@ exports.sendVerificationEmail = function(email, secret) {
         subject : "BrowserID: confirm email address - " + email,
         body: mustache.to_html(template, { email: email, link: url })
     }, function(err, success){
-        if(!success) console.log("error sending email: ", err);
+        if(!success) {
+            console.log("error sending email: ", err);
+            console.log("verification URL: ", url);
+        }
     });
 };
