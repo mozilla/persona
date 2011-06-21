@@ -4,8 +4,7 @@ const   path = require('path'),
  idassertion = require('./idassertion.js'),
          jwt = require('./jwt.js');
 
-
-exports.handler = function(req, resp, serveFile) {
+function handler(req, resp, serveFile) {
     // dispatch!
     var parsed = url.parse(req.url, true);
 
@@ -67,4 +66,8 @@ exports.handler = function(req, resp, serveFile) {
             httputils.jsonResponse(resp, {status:"failure", reason:e.toString()});
         }
     }
+};
+
+exports.setup = function(app) {
+    app.use(handler);
 };
