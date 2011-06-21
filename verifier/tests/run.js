@@ -1,6 +1,7 @@
 #!/usr/local/bin/node
-const jwt = require("./jwt.js");
-const idassertion = require("./idassertion.js");
+
+const jwt = require("../lib/jwt.js");
+const idassertion = require("../lib/idassertion.js");
 const vows = require('vows');
 const assert = require('assert');
 
@@ -45,7 +46,6 @@ vows.describe('Assertion creation').addBatch({
 
 
 vows.describe('Assertion validation').addBatch({
-
     'Assertion validation with a valid assertion': {
         topic: 
           function() {
