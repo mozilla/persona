@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // a little node webserver designed to run the unit tests herein
 
 var   sys = require("sys"),
