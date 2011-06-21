@@ -48,8 +48,15 @@ exports.handler = function(req, resp, serveFile) {
             var assertionObj = new idassertion.IDAssertion(assertion);
             assertionObj.verify(
                 audience,
-                function(successObj) {
-                    httputils.jsonResponse(resp, {status:"okay"});
+                function(payload) {
+                    result = {
+                        status : "okay",
+                        email : payload.email,
+                        audience : payload.audience,
+                        "valid-until" : payload["valid-until"],
+                        issuer : payload.issuer
+                    };
+                    httputils.jsonResponse(resp, result);
                 },
                 function(errorObj) {
                     httputils.jsonResponse(resp, {status:"failure", reason:errorObj});

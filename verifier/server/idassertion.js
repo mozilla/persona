@@ -291,7 +291,9 @@ IDAssertion.prototype  =
             if (token.verify(pubKey)) {
               // success!
               console.log("Token for " +payload.email + " verified successfully.");
-              onSuccess(true);
+
+              // send back all the verified data
+              onSuccess(payload);
               return;
             }
           } catch(e) {
