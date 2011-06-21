@@ -48,7 +48,6 @@ function display_saved_ids()
 
   $("#emailList").empty();
   _(emails).each(function(data, e) {
-      debugger;
       var block = $("<div>").addClass("emailblock");
       var label = $("<div>").addClass("email").text(e);
       var meta = $("<div>").addClass("meta");
@@ -69,13 +68,17 @@ function display_saved_ids()
       // linkblock.append(" / ");
       // linkblock.append(priva);
       
-      var deauth = $("<button>").text("Sign Out");
+      var deauth = $("<button>").text("Forget this Email");
       meta.append(deauth);
       deauth.click(function() {
         var t = JSON.parse(window.localStorage.emails);
         delete t[e];
         window.localStorage.emails = JSON.stringify(t);
-        display_saved_ids();
+        // remove email from server
+        $.get("/wsapi/remove_email", {"email" : e}, function(response) {
+                    alert("response is : " +response);
+                    display_saved_ids();
+                    });
       });
       
       var d = new Date(data.created);
