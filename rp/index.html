@@ -69,7 +69,7 @@ a:hover { border-bottom: 2px solid black ; }
 <div class="step">
   <div class="number">5.</div>
   <div class="desc"><b>Verification Response</b>: The verification server responds to the site to tell it whether or not the verification blob is valid:</div>
-  <div class="output" id="oVerificationResponse">...waiting for party commencement...</div>
+  <div class="output" id="oVerificationResponse"><pre>...waiting for party commencement...</pre></div>
 </div>
 
 <div class="step">
@@ -90,19 +90,21 @@ a:hover { border-bottom: 2px solid black ; }
           // Now we'll send this assertion over to the verification server for validation
           $("#oAssertion").empty().text(assertion);
 
-          var url = "http://browserid.org/verify?assertion=" + window.encodeURIComponent(assertion) +
+          var url = "https://browserid.org/verify?assertion=" + window.encodeURIComponent(assertion) +
                     "&audience=" + window.encodeURIComponent(window.location.host);
           $("#oVerificationRequest").empty().text(url);
 
           $.ajax({
             url: url,
+            dataType: "json",
             success: function(data, textStatus, jqXHR) {
-              $("#oVerificationResponse").empty().text(JSON.stringify(data, null, 4));
+              console.log(typeof data);
+              $("#oVerificationResponse > pre").empty().text(JSON.stringify(data, null, 4));
             },
             error: function(jqXHR, textStatus, errorThrown) {
-              $("#oVerificationResponse").empty().text(jqXHR.responseText);
+              $("#oVerificationResponse > pre").empty().text(JSON.stringify(JSON.parse(jqXHR.responseText), null, 4));
             }
-          })
+          });
         }
       });
     });
