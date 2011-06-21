@@ -140,7 +140,7 @@ var dirs = [
     // BrowserID: the secondary + ip + more.
     {
         name: "https://browserid.org",
-        path: path.join(__dirname, "authority")
+        path: path.join(__dirname, "browserid")
     }
 ];
 
