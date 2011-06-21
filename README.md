@@ -6,7 +6,7 @@ This is an exploration of the distributed identity system
 All of the servers here are based on node.js, and some number of 3rd party node modules are required to make them go.  ([npm](http://npmjs.org/) is a good way to get these libraries)
 
 * node.js (>= 0.4.5): http://nodejs.org/
-* connect (>= 1.3.0): http://senchalabs.github.com/connect/
+* express (>= 2.3.11): http://senchalabs.github.com/express/
 * xml2js (>= 0.1.5)
 * sqlite (>= 1.0.3)
 * mustache (>= 0.3.1)

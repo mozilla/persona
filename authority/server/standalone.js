@@ -3,24 +3,23 @@ var   sys = require("sys"),
       url = require("url"),
      path = require("path"),
        fs = require("fs"),
-  connect = require("connect");
+  express = require("express");
 
 var PRIMARY_HOST = "127.0.0.1";
 var PRIMARY_PORT = 62700;
 
-var handler = require("./run.js");
+var handler = require("./app.js");
 
-var server = connect.createServer().use(connect.favicon())
-    .use(connect.logger({
-        stream: fs.createWriteStream(path.join(__dirname, "server.log"))
-    }));
+var app = require('express').createServer();
+
+app.use(express.logger({
+    stream: fs.createWriteStream(path.join(__dirname, "server.log"))
+}));
 
 // let the specific server interact directly with the connect server to register their middleware
-if (handler.setup) handler.setup(server);
-
-server.use(handler.handler);
+if (handler.setup) handler.setup(app);
 
 // use the connect 'static' middleware for serving of static files (cache headers, HTTP range, etc)
-server.use(connect.static(path.join(path.dirname(__dirname), "static")));
+app.use(express.static(path.join(path.dirname(__dirname), "static")));
 
-server.listen(PRIMARY_PORT, PRIMARY_HOST);
+app.listen(PRIMARY_PORT, PRIMARY_HOST);

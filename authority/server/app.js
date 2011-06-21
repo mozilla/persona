@@ -11,7 +11,7 @@ const STATIC_DIR = path.join(path.dirname(__dirname), "static");
 
 const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', __dirname);
 
-exports.handler = function(request, response, next) {
+function handler(request, response, next) {
     // dispatch!
     var urlpath = url.parse(request.url).pathname;
 
@@ -56,4 +56,6 @@ exports.setup = function(server) {
         session_key: "browserid_state",
         path: '/'
     }));
+
+    server.use(handler);
 }
