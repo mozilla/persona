@@ -525,29 +525,6 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     };
   })();
 
-  function JWTWrapper(jwtBlob) {
-    var obj = {
-      jwt: jwtBlob,
-      email: undefined,
-      audience: undefined,
-      issuer: undefined,
-      "valid-until": undefined,
-      toString: function() { return this.jwt; }
-    };
-    // attempt to decode the middle part of the assertion to populate object keys
-    try {
-      var jwtContents = JSON.parse(window.atob(jwtBlob.split(".")[1]));
-      for (var k in obj) {
-        if (obj.hasOwnProperty(k) && obj[k] === undefined) {
-          if (typeof jwtContents[k] === 'string' || typeof jwtContents[k] === 'number') obj[k] = jwtContents[k];
-        }
-      }
-    } catch(e) {
-      // failure is an option.
-    }
-
-    return obj;
-  }
 
   var chan = undefined;
 
@@ -582,8 +559,8 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       method: "getVerifiedEmail",
       success: function(rv) {
         if (callback) {
-          // wrap the raw JWT with a handy dandy object that exposes everything in a readable form
-          callback(JWTWrapper(rv));
+          // return the string representation of the JWT, the client is responsible for unpacking it.
+          callback(rv);
         }
         cleanup();
       },
@@ -659,8 +636,8 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       params: [email, token],
       success: function(rv) {
         if (onsuccess) {
-          // wrap the raw JWT with a handy dandy object that exposes everything in a readable form
-          onsuccess(JWTWrapper(rv));
+          // return the string representation of the JWT, the client is responsible for unpacking it.
+          onsuccess(rv);
         }
         cleanup();
       },

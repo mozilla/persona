@@ -81,19 +81,6 @@ a:hover { border-bottom: 2px solid black ; }
 <script src="jquery-min.js"></script>
 <script src="https://browserid.org/include.js"></script>
 <script>
-  function dumpObject(obj) {
-    var htmlRep = "";
-    for (var k in obj) {
-      if (obj.hasOwnProperty(k) && typeof obj[k] === 'string') {
-        htmlRep += "<b>" + k + ":</b> " + obj[k] + "<br/>";
-      } else if (k === 'valid-until') {
-        htmlRep += "<b>" + k + ":</b> " + (new Date(obj[k])).toString() + "<br/>";
-      }
-
-    }
-    return htmlRep;
-  }
-
   $(document).ready(function() {
     $("#partyStarter").click(function() {
       navigator.id.getVerifiedEmail(function(assertion) {
@@ -101,7 +88,7 @@ a:hover { border-bottom: 2px solid black ; }
           alert("couldn't get the users email address!"); 
         } else {
           // Now we'll send this assertion over to the verification server for validation
-          $("#oAssertion").empty().html(dumpObject(assertion));
+          $("#oAssertion").empty().text(assertion);
 
           var url = "http://browserid.org/verify?assertion=" + window.encodeURIComponent(assertion) +
                     "&audience=" + window.encodeURIComponent(window.location.host);
