@@ -64,4 +64,12 @@ exports.setup = function(server) {
     }));
 
     server.use(handler);
+
+    // a tweak to get the content type of host-meta correct
+    server.use(function(req, resp, next) {
+        if (req.url === '/.well-known/host-meta') {
+            resp.setHeader('content-type', 'text/xml');
+        }
+        next();
+    });
 }
