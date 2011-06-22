@@ -1,13 +1,10 @@
 // a module which implements the authorities web server api.
 // every export is a function which is a WSAPI method handler
 
-const     db = require('./db.js'),
-         url = require('url'),
-   httputils = require('./httputils.js');
-       email = require('./email.js');
-
-function logRequest(method, args) {
-}
+const db = require('./db.js'),
+      url = require('url'),
+      httputils = require('./httputils.js');
+      email = require('./email.js');
 
 function checkParams(getArgs, resp, params) {
   try {
@@ -40,7 +37,6 @@ function checkAuthed(req, resp) {
 exports.have_email = function(req, resp) {
   // get inputs from get data!
   var email = url.parse(req.url, true).query['email'];
-  logRequest("have_email", {email: email});
   db.emailKnown(email, function(known) {
     httputils.jsonResponse(resp, known);
   });
@@ -57,8 +53,6 @@ exports.stage_user = function(req, resp) {
   if (!checkParams(getArgs, resp, [ "email", "pass", "pubkey", "site" ])) {
     return;
   }
-
-  logRequest("stage_user", getArgs);
 
   try {
     // upon success, stage_user returns a secret (that'll get baked into a url
@@ -81,8 +75,6 @@ exports.stage_user = function(req, resp) {
 };
 
 exports.registration_status = function(req, resp) {
-  logRequest("registration_status", req.session);
-
   if (!req.session || !typeof req.session.pendingRegistration == 'string') {
     httputils.badRequest(
       resp,
@@ -129,8 +121,6 @@ exports.add_email = function (req, resp) {
 
   if (!checkAuthed(req, resp)) return;
 
-  logRequest("add_email", getArgs);
-
   try {
     // upon success, stage_user returns a secret (that'll get baked into a url
     // and given to the user), on failure it throws
@@ -150,39 +140,35 @@ exports.add_email = function (req, resp) {
 };
 
 exports.remove_email = function(req, resp) {
-    // this should really be POST, but for now I'm having trouble seeing
-    // how to get POST args properly, so it's a GET (Ben).
-    // hmmm, I really want express or some other web framework!
-    var urlobj = url.parse(req.url, true);
-    var getArgs = urlobj.query;
-    
-    if (!checkParams(getArgs, resp, [ "email"])) return;
-    if (!checkAuthed(req, resp)) return;
-    
-    logRequest("remove_email", getArgs);
-    
-    db.removeEmail(req.session.authenticatedUser, getArgs.email, function(error) {
-        if (error) {
-            console.log("error removing email " + getArgs.email);
-            httputils.badRequest(resp, error.toString());
-        } else {
-            httputils.jsonResponse(resp, true);            
-        }});
+  // this should really be POST, but for now I'm having trouble seeing
+  // how to get POST args properly, so it's a GET (Ben).
+  // hmmm, I really want express or some other web framework!
+  var urlobj = url.parse(req.url, true);
+  var getArgs = urlobj.query;
+
+  if (!checkParams(getArgs, resp, [ "email"])) return;
+  if (!checkAuthed(req, resp)) return;
+
+  db.removeEmail(req.session.authenticatedUser, getArgs.email, function(error) {
+    if (error) {
+      console.log("error removing email " + getArgs.email);
+      httputils.badRequest(resp, error.toString());
+    } else {
+      httputils.jsonResponse(resp, true);
+    }});
 };
 
 exports.account_cancel = function(req, resp) {
-    // this should really be POST
-    if (!checkAuthed(req, resp)) return;
-    
-    logRequest("account_cancel");
-    
-    db.cancelAccount(req.session.authenticatedUser, function(error) {
-        if (error) {
-            console.log("error cancelling account : " + error.toString());
-            httputils.badRequest(resp, error.toString());
-        } else {
-            httputils.jsonResponse(resp, true);            
-        }});
+  // this should really be POST
+  if (!checkAuthed(req, resp)) return;
+
+  db.cancelAccount(req.session.authenticatedUser, function(error) {
+    if (error) {
+      console.log("error cancelling account : " + error.toString());
+      httputils.badRequest(resp, error.toString());
+    } else {
+      httputils.jsonResponse(resp, true);
+    }});
 };
 
 exports.set_key = function (req, resp) {
@@ -190,14 +176,12 @@ exports.set_key = function (req, resp) {
   var getArgs = urlobj.query;
   if (!checkParams(getArgs, resp, [ "email", "pubkey" ])) return;
   if (!checkAuthed(req, resp)) return;
-  logRequest("set_key", getArgs);
   db.addKeyToEmail(req.session.authenticatedUser, getArgs.email, getArgs.pubkey, function (rv) {
     httputils.jsonResponse(resp, rv);
   });
 };
 
 exports.am_authed = function(req,resp) {
-  logRequest("am_authed", req.session);
   // if they're authenticated for an email address that we don't know about,
   // then we should purge the stored cookie
   if (!isAuthed(req)) {
@@ -211,8 +195,8 @@ exports.am_authed = function(req,resp) {
 };
 
 exports.logout = function(req,resp) {
-    req.session = {};
-    httputils.jsonResponse(resp, "ok");
+  req.session = {};
+  httputils.jsonResponse(resp, "ok");
 };
 
 exports.sync_emails = function(req,resp) {
@@ -223,7 +207,6 @@ exports.sync_emails = function(req,resp) {
     requestBody += str;
   });
   req.on('end', function() {
-    logRequest("sync_emails", requestBody);
     try {
       var emails = JSON.parse(requestBody);
     } catch(e) {
@@ -237,18 +220,18 @@ exports.sync_emails = function(req,resp) {
 };
 
 exports.prove_email_ownership = function(req, resp) {
-    var urlobj = url.parse(req.url, true);
-    var getArgs = urlobj.query;
+  var urlobj = url.parse(req.url, true);
+  var getArgs = urlobj.query;
 
-   // validate inputs
-    if (!checkParams(getArgs, resp, [ "token" ])) return;
+  // validate inputs
+  if (!checkParams(getArgs, resp, [ "token" ])) return;
 
-    db.gotVerificationSecret(getArgs.token, function(e) {
-      if (e) {
-        console.log("error completing the verification: " + e);
-        httputils.jsonResponse(resp, false);
-      } else {
-        httputils.jsonResponse(resp, true);
-      }
-    });
+  db.gotVerificationSecret(getArgs.token, function(e) {
+    if (e) {
+      console.log("error completing the verification: " + e);
+      httputils.jsonResponse(resp, false);
+    } else {
+      httputils.jsonResponse(resp, true);
+    }
+  });
 }
