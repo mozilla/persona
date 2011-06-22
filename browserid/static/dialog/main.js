@@ -247,10 +247,10 @@
     }
 
     $("#authenticate_dialog div.note > a").unbind('click').click(function() {
-      runForgotDialog(onsuccess, onerror);
+      runCreateDialog(true, onsuccess, onerror);
     });
     $("#authenticate_dialog div.actions div.action").unbind('click').click(function() {
-      runCreateDialog(onsuccess, onerror);
+      runCreateDialog(false, onsuccess, onerror);
     });
 
     $("#authenticate_dialog div.attention_lame").hide();
@@ -329,7 +329,7 @@
 
     $("#back").show().unbind('click').click(function() {
       window.clearTimeout(pollTimeout);
-      runCreateDialog(onsuccess, onerror);
+      runCreateDialog(false, onsuccess, onerror);
     });
 
     $("#cancel").show().unbind('click').click(function() {
@@ -451,8 +451,12 @@
     $("#add_email_dialog").fadeIn(500);
   }
 
-  function runCreateDialog(onsuccess, onerror) {
+  function runCreateDialog(forgot, onsuccess, onerror) {
     $(".dialog").hide();
+
+    // show the proper summary text
+    $("#create_dialog .content .summary").hide();
+    $("#create_dialog .content " + (forgot ? ".forgot" : ".create")).show();
 
     $("#back").show().unbind('click').click(function() {
       runAuthenticateDialog(undefined, onsuccess, onerror);
@@ -515,13 +519,15 @@
           // user anything, cause this is a non-critical issue
 
         } else if (typeof valid === 'boolean') {
-          if (valid) {
-            $("#create_dialog div.note:eq(0)").html($('<span class="good"/>').text("Not registered"));
-            $("#create_dialog div.attention_lame").hide();
-          } else {
-            $("#create_dialog div.attention_lame").fadeIn(300);
-            $("#create_dialog div.attention_lame span.email").text(email);
-            $("#submit").addClass("disabled");
+          if (!forgot) {
+            if (valid) {
+              $("#create_dialog div.note:eq(0)").html($('<span class="good"/>').text("Not registered"));
+              $("#create_dialog div.attention_lame").hide();
+            } else {
+              $("#create_dialog div.attention_lame").fadeIn(300);
+              $("#create_dialog div.attention_lame span.email").text(email);
+              $("#submit").addClass("disabled");
+            }
           }
         } else {
           // this is an email that needs to be checked!

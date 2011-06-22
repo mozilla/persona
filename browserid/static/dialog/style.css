@@ -185,16 +185,6 @@ div.input input {
     padding: .4em;
 }
 
-#forgot_password_dialog input {
-    width: 80%;
-    margin: 1em 10% 0 10%;
-    font-size: 1.5em;
-    padding: 1em .5em 1em .5em;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px 4px 4px 4px;
-}
-
 a {
     color: rgb(65, 126, 208);
     text-decoration: none;
