@@ -21,6 +21,9 @@
     </div>
     <div id="emailList">
     </div>
+    <div id="cancelaccount">
+      You may, at any time, <a href="#" id="cancellink">cancel your account</a>.
+    </div>
   </div>
   <div class="footer">
     <div>
@@ -45,6 +48,15 @@ function display_saved_ids()
   if (window.localStorage.emails) {
     emails = JSON.parse(window.localStorage.emails);
   }
+
+  $('#cancellink').click(function() {
+    if (confirm('Are you sure you want to cancel your account?')) {
+      $.post("/wsapi/account_cancel", {}, function(result) {
+        window.localStorage.emails = null;
+        document.location="/";
+      });
+    }
+  });
 
   $("#emailList").empty();
   _(emails).each(function(data, e) {

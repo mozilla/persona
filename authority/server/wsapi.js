@@ -168,6 +168,21 @@ exports.remove_email = function(req, resp) {
         }});
 };
 
+exports.account_cancel = function(req, resp) {
+    // this should really be POST
+    if (!checkAuthed(req, resp)) return;
+    
+    logRequest("account_cancel");
+    
+    db.cancelAccount(req.session.authenticatedUser, function(error) {
+        if (error) {
+            console.log("error cancelling account : " + error.toString());
+            httputils.badRequest(resp, error.toString());
+        } else {
+            httputils.jsonResponse(resp, true);            
+        }});
+};
+
 exports.set_key = function (req, resp) {
   var urlobj = url.parse(req.url, true);
   var getArgs = urlobj.query;

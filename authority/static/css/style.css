@@ -195,6 +195,14 @@ pre code {
   font-weight:bold;
   margin-top:32px;
 }
+
+#cancelaccount {
+  font-size: 1.0em; 
+  width: 500px; 
+  margin: auto; 
+  margin-top:35px;
+}
+
 .email {
   display:inline-block;
 }
