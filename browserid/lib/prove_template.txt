@@ -1,13 +1,11 @@
 Hello {{email}},
  
-This message is being sent to you because someone is trying to log
-into a site using this email address.  If you are presently logging
-into a website using BrowserID, then click the link below to complete
-your login:
+This message is being sent to you to complete your log in to
+{{site}}.  To complete your login, click the link below:
  
 {{link}}
  
-If you are NOT trying to log into a website, just delete this email.
+If you are NOT trying to log into {{site}}, please just delete this email. 
  
 Sincerely,
 BrowserID (A better way to login)

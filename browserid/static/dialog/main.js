@@ -476,7 +476,10 @@
       );
 
       $.ajax({
-        url: '/wsapi/stage_user?email=' + encodeURIComponent(email) + '&pass=' + encodeURIComponent(pass) + '&pubkey=' + encodeURIComponent(keypair.pub),
+        url: '/wsapi/stage_user?email=' + encodeURIComponent(email)
+              + '&pass=' + encodeURIComponent(pass)
+              + '&pubkey=' + encodeURIComponent(keypair.pub)
+              + '&site=' + encodeURIComponent(window.location.host),
         success: function() {
           // account successfully staged, now wait for email confirmation
           runConfirmEmailDialog(email, keypair, onsuccess, onerror);

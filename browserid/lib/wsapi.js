@@ -55,7 +55,9 @@ exports.stage_user = function(req, resp) {
   var urlobj = url.parse(req.url, true);
   var getArgs = urlobj.query;
 
-  if (!checkParams(getArgs, resp, [ "email", "pass", "pubkey" ])) return;
+  if (!checkParams(getArgs, resp, [ "email", "pass", "pubkey", "site" ])) {
+    return;
+  }
 
   logRequest("stage_user", getArgs);
 
@@ -71,7 +73,8 @@ exports.stage_user = function(req, resp) {
     httputils.jsonResponse(resp, true);
 
     // let's now kick out a verification email!
-    email.sendVerificationEmail(getArgs.email, secret);
+    email.sendVerificationEmail(getArgs.email, getArgs.site, secret);
+
   } catch(e) {
     // we should differentiate tween' 400 and 500 here.
     httputils.badRequest(resp, e.toString());
