@@ -174,7 +174,7 @@ exports.stageEmail = function(existing_email, new_email, pubkey) {
 
 /* invoked when a user clicks on a verification URL in their email */ 
 exports.gotVerificationSecret = function(secret, cb) {
-  if (!g_staged.hasOwnProperty(secret)) cb("unknown secret");
+  if (!g_staged.hasOwnProperty(secret)) return cb("unknown secret");
 
   // simply move from staged over to the emails "database"
   var o = g_staged[secret];
