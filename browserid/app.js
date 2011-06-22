@@ -1,16 +1,18 @@
-const        path = require('path'),
-              url = require('url'),
-               fs = require('fs'),
+const          fs = require('fs'),
+             path = require('path');
+
+// create the var directory if it doesn't exist
+var VAR_DIR = path.join(__dirname, "var");
+try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { };
+
+const         url = require('url'),
             wsapi = require('./lib/wsapi.js'),
         httputils = require('./lib/httputils.js'),
         webfinger = require('./lib/webfinger.js'),
          sessions = require('cookie-sessions'),
           express = require('express'),
-          secrets = require('./lib/secrets.js');
-
-// create the var directory if it doesn't exist
-var VAR_DIR = path.join(__dirname, "var");
-try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { }
+          secrets = require('./lib/secrets.js'),
+               db = require('./lib/db.js');
 
 const STATIC_DIR = path.join(path.dirname(__dirname), "static");
 

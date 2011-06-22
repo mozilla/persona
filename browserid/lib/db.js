@@ -1,27 +1,39 @@
 const sqlite = require('sqlite'),
         path = require('path');
 
-var db = new sqlite.Database();
+var VAR_DIR = path.join(path.dirname(__dirname), "var");
 
-db.open(path.join(path.dirname(__dirname), "var", "authdb.sqlite"), function (error) {
+var db = new sqlite.Database();
+var dbPath = path.join(VAR_DIR, "authdb.sqlite");
+
+var ready = false;
+var waiting = [];
+
+db.open(dbPath, function (error) {
   if (error) {
     console.log("Couldn't open database: " + error);
     throw error;
   }
-
-  function createTable(name, sql) {
-    db.execute(sql, function (error, rows) {
+  db.executeScript(
+    "CREATE TABLE IF NOT EXISTS users  ( id INTEGER PRIMARY KEY, password TEXT );" +
+    "CREATE TABLE IF NOT EXISTS emails ( id INTEGER PRIMARY KEY, user INTEGER, address TEXT UNIQUE );" +
+    "CREATE TABLE IF NOT EXISTS keys   ( id INTEGER PRIMARY KEY, email INTEGER, key TEXT, expires INTEGER )",
+    function (error) {
       if (error) {
-        console.log("Couldn't create " + name + " table: " + error);
         throw error;
       }
+      ready = true;
+      waiting.forEach(function(f) { f() });
+      waiting = [];
     });
-  }
-
-  createTable('users',  "CREATE TABLE IF NOT EXISTS users  ( id INTEGER PRIMARY KEY, password TEXT )");
-  createTable('emails', "CREATE TABLE IF NOT EXISTS emails ( id INTEGER PRIMARY KEY, user INTEGER, address TEXT UNIQUE )");
-  createTable('keys',   "CREATE TABLE IF NOT EXISTS keys   ( id INTEGER PRIMARY KEY, email INTEGER, key TEXT, expires INTEGER )");
 });
+
+exports.onReady = function(f) {
+  setTimeout(function() {
+    if (ready) f();
+    else waiting.push(f);
+  }, 0);
+};
 
 // half created user accounts (pending email verification)
 // OR
@@ -105,15 +117,15 @@ exports.addEmailToAccount = function(existing_email, email, pubkey, cb) {
     if (userID == undefined) {
       cb("no such email: " + existing_email, undefined);
     } else {
-        executeTransaction([
-          [ "INSERT INTO emails (user, address) VALUES(?,?)", [ userID, email ] ],
-          [ "INSERT INTO keys (email, key, expires) VALUES(last_insert_rowid(),?,?)",
-            [ pubkey, ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000)) ]
-          ]
-        ], function (error) {
-          if (error) cb(error);
-          else cb();
-        });
+      executeTransaction([
+        [ "INSERT INTO emails (user, address) VALUES(?,?)", [ userID, email ] ],
+        [ "INSERT INTO keys (email, key, expires) VALUES(last_insert_rowid(),?,?)",
+          [ pubkey, ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000)) ]
+        ]
+      ], function (error) {
+        if (error) cb(error);
+        else cb();
+      });
     }
   });
 }
@@ -281,19 +293,18 @@ exports.pubkeysForEmail = function(identity, cb) {
 
 // FIXME: I'm not sure I'm using this data model properly
 exports.removeEmail = function(authenticated_email, email, cb) {
-    // figure out the user, and remove Email only from addressed
-    // linked to the authenticated email address
-    emailToUserID(authenticated_email, function(user_id) {
-        executeTransaction([
-            [ "delete from emails where emails.address = ? and user = ?", [ email,user_id ] ] ,
-            [ "delete from keys where email in (select address from emails where emails.address = ? and user = ?)", [ email,user_id ] ],
-        ], function (error) {
-            if (error) cb(error);
-            else cb();
-        });
+  // figure out the user, and remove Email only from addressed
+  // linked to the authenticated email address
+  emailToUserID(authenticated_email, function(user_id) {
+    executeTransaction([
+      [ "delete from emails where emails.address = ? and user = ?", [ email,user_id ] ] ,
+      [ "delete from keys where email in (select address from emails where emails.address = ? and user = ?)", [ email,user_id ] ],
+    ], function (error) {
+      if (error) cb(error);
+      else cb();
     });
+  });
 };
-
 exports.cancelAccount = function(authenticated_email, cb) {
     emailToUserID(authenticated_email, function(user_id) {
         executeTransaction([
