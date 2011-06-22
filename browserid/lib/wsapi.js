@@ -7,7 +7,6 @@ const     db = require('./db.js'),
        email = require('./email.js');
 
 function logRequest(method, args) {
-  console.log("WSAPI ("+method+") " + (args ? JSON.stringify(args) : "")); 
 }
 
 function checkParams(getArgs, resp, params) {
@@ -42,7 +41,7 @@ exports.have_email = function(req, resp) {
   // get inputs from get data!
   var email = url.parse(req.url, true).query['email'];
   logRequest("have_email", {email: email});
-  db.emailKnown(email, function(known) { 
+  db.emailKnown(email, function(known) {
     httputils.jsonResponse(resp, known);
   });
 };

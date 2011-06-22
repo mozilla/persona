@@ -14,11 +14,10 @@ exports.hydrateSecret = function(name, dir) {
   var p = path.join(dir, name + ".sekret");
   var fileExists = false;
   var secret = undefined;
-    
+
   try{ secret = fs.readFileSync(p).toString(); } catch(e) {};
 
   if (secret === undefined) {
-    console.log("Generating server secret ("+name+")...");
     secret = generateSecret();
     fs.writeFileSync(p, secret);
   }
