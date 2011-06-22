@@ -13,6 +13,18 @@ var PRIMARY_HOST = "127.0.0.1";
 
 var boundServers = [ ];
 
+//
+// this is the test harness, don't send emails, dump them to stdout
+//
+var nodemailer = require('nodemailer');
+nodemailer.EmailMessage.prototype.send = function(callback) {
+    this.prepareVariables();
+    var headers = this.generateHeaders(),
+        body = this.generateBody();
+    console.log(headers);
+    console.log(body);
+};
+
 // given a buffer, find and replace all production hostnames
 // with development URLs
 function subHostNames(data) {

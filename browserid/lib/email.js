@@ -6,9 +6,6 @@ mustache = require('mustache');
 
 const template = fs.readFileSync(path.join(__dirname, "prove_template.txt")).toString();
 
-// config for mail server
-emailconfig = require('./emailconfig')
-
 exports.sendVerificationEmail = function(email, site, secret) {
     var url = "https://browserid.org/prove.html?token=" + secret;
 
