@@ -247,10 +247,10 @@
     }
 
     $("#authenticate_dialog div.note > a").unbind('click').click(function() {
-      onerror("notImplemented");
+      runCreateDialog(true, onsuccess, onerror);
     });
     $("#authenticate_dialog div.actions div.action").unbind('click').click(function() {
-      runCreateDialog(onsuccess, onerror);
+      runCreateDialog(false, onsuccess, onerror);
     });
 
     $("#authenticate_dialog div.attention_lame").hide();
@@ -329,7 +329,7 @@
 
     $("#back").show().unbind('click').click(function() {
       window.clearTimeout(pollTimeout);
-      runCreateDialog(onsuccess, onerror);
+      runCreateDialog(false, onsuccess, onerror);
     });
 
     $("#cancel").show().unbind('click').click(function() {
@@ -419,7 +419,9 @@
       );
 
       $.ajax({
-        url: '/wsapi/add_email?email=' + encodeURIComponent(email) + '&pubkey=' + encodeURIComponent(keypair.pub),
+        url: '/wsapi/add_email?email=' + encodeURIComponent(email)
+              + '&pubkey=' + encodeURIComponent(keypair.pub)
+              + '&site=' + encodeURIComponent(remoteOrigin.replace(/^(http|https):\/\//, '')),
         success: function() {
           // email successfully staged, now wait for email confirmation
           runConfirmEmailDialog(email, keypair, onsuccess, onerror);
@@ -449,8 +451,12 @@
     $("#add_email_dialog").fadeIn(500);
   }
 
-  function runCreateDialog(onsuccess, onerror) {
+  function runCreateDialog(forgot, onsuccess, onerror) {
     $(".dialog").hide();
+
+    // show the proper summary text
+    $("#create_dialog .content .summary").hide();
+    $("#create_dialog .content " + (forgot ? ".forgot" : ".create")).show();
 
     $("#back").show().unbind('click').click(function() {
       runAuthenticateDialog(undefined, onsuccess, onerror);
@@ -476,7 +482,10 @@
       );
 
       $.ajax({
-        url: '/wsapi/stage_user?email=' + encodeURIComponent(email) + '&pass=' + encodeURIComponent(pass) + '&pubkey=' + encodeURIComponent(keypair.pub),
+        url: '/wsapi/stage_user?email=' + encodeURIComponent(email)
+              + '&pass=' + encodeURIComponent(pass)
+              + '&pubkey=' + encodeURIComponent(keypair.pub)
+              + '&site=' + encodeURIComponent(remoteOrigin.replace(/^(http|https):\/\//, '')),
         success: function() {
           // account successfully staged, now wait for email confirmation
           runConfirmEmailDialog(email, keypair, onsuccess, onerror);
@@ -510,13 +519,15 @@
           // user anything, cause this is a non-critical issue
 
         } else if (typeof valid === 'boolean') {
-          if (valid) {
-            $("#create_dialog div.note:eq(0)").html($('<span class="good"/>').text("Not registered"));
-            $("#create_dialog div.attention_lame").hide();
-          } else {
-            $("#create_dialog div.attention_lame").fadeIn(300);
-            $("#create_dialog div.attention_lame span.email").text(email);
-            $("#submit").addClass("disabled");
+          if (!forgot) {
+            if (valid) {
+              $("#create_dialog div.note:eq(0)").html($('<span class="good"/>').text("Not registered"));
+              $("#create_dialog div.attention_lame").hide();
+            } else {
+              $("#create_dialog div.attention_lame").fadeIn(300);
+              $("#create_dialog div.attention_lame span.email").text(email);
+              $("#submit").addClass("disabled");
+            }
           }
         } else {
           // this is an email that needs to be checked!
@@ -579,6 +590,44 @@
     $("#create_dialog").fadeIn(500);
   }
 
+  var kindaLikeEmailPat = /^.*\@.*\..*$/;
+
+  function runForgotDialog(onsuccess, onerror) {
+    $(".dialog").hide();
+
+    $("#back").show().unbind('click').click(function() {
+      runAuthenticateDialog(undefined, onsuccess, onerror);
+    });
+    $("#cancel").show().unbind('click').click(function() {
+      onerror("canceled");
+    });
+    $("#submit").show().unbind('click').click(function() {
+        // ignore the click if we're disabled
+        if ($(this).hasClass('disabled')) return true;
+        onerror("notImplemented");
+    }).text("Send Reset Email").addClass('disabled');
+
+    function checkInput() {
+        // check the email address
+        var email = $("#forgot_password_dialog input").val();
+        // if the entered text has a basic resemblance to an email, we'll
+        // unstick the submit button
+        $("#submit").removeClass('disabled')
+        if (!kindaLikeEmailPat.test(email)) $("#submit").addClass('disabled')
+    }
+
+    // watch input dialogs
+    $("#forgot_password_dialog input").unbind('keyup').bind('keyup', checkInput);
+
+    // do a check at load time, in case the user is using the back button (enables the continue button!)
+    checkInput();
+
+    $("#forgot_password_dialog").fadeIn(500);
+
+    $("#forgot_password_dialog input").focus();
+  }
+
+
   function errorOut(trans, code) {
     function getVerboseMessage(code) {
       var msgs = {
@@ -588,8 +637,8 @@
       };
       var msg = msgs[code];
       if (!msg) {
-        alert("need verbose message for " + code); 
-        msg = "unknown error"
+          alert("need verbose message for " + code);
+          msg = "unknown error"
       }
       return msg;
     }

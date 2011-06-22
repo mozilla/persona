@@ -69,7 +69,7 @@ a:hover { border-bottom: 2px solid black ; }
 <div class="step">
   <div class="number">5.</div>
   <div class="desc"><b>Verification Response</b>: The verification server responds to the site to tell it whether or not the verification blob is valid:</div>
-  <div class="output" id="oVerificationResponse">...waiting for party commencement...</div>
+  <div class="output" id="oVerificationResponse"><pre>...waiting for party commencement...</pre></div>
 </div>
 
 <div class="step">
@@ -81,19 +81,6 @@ a:hover { border-bottom: 2px solid black ; }
 <script src="jquery-min.js"></script>
 <script src="https://browserid.org/include.js"></script>
 <script>
-  function dumpObject(obj) {
-    var htmlRep = "";
-    for (var k in obj) {
-      if (obj.hasOwnProperty(k) && typeof obj[k] === 'string') {
-        htmlRep += "<b>" + k + ":</b> " + obj[k] + "<br/>";
-      } else if (k === 'valid-until') {
-        htmlRep += "<b>" + k + ":</b> " + (new Date(obj[k])).toString() + "<br/>";
-      }
-
-    }
-    return htmlRep;
-  }
-
   $(document).ready(function() {
     $("#partyStarter").click(function() {
       navigator.id.getVerifiedEmail(function(assertion) {
@@ -101,21 +88,22 @@ a:hover { border-bottom: 2px solid black ; }
           alert("couldn't get the users email address!"); 
         } else {
           // Now we'll send this assertion over to the verification server for validation
-          $("#oAssertion").empty().html(dumpObject(assertion));
+          $("#oAssertion").empty().text(assertion);
 
-          var url = "http://browserid.org/verify?assertion=" + window.encodeURIComponent(assertion) +
+          var url = "https://browserid.org/verify?assertion=" + window.encodeURIComponent(assertion) +
                     "&audience=" + window.encodeURIComponent(window.location.host);
           $("#oVerificationRequest").empty().text(url);
 
           $.ajax({
             url: url,
+            dataType: "json",
             success: function(data, textStatus, jqXHR) {
-              $("#oVerificationResponse").empty().text(JSON.stringify(data, null, 4));
+              $("#oVerificationResponse > pre").empty().text(JSON.stringify(data, null, 4));
             },
             error: function(jqXHR, textStatus, errorThrown) {
-              $("#oVerificationResponse").empty().text(jqXHR.responseText);
+              $("#oVerificationResponse > pre").empty().text(JSON.stringify(JSON.parse(jqXHR.responseText), null, 4));
             }
-          })
+          });
         }
       });
     });

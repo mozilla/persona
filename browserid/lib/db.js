@@ -3,7 +3,7 @@ const sqlite = require('sqlite'),
 
 var db = new sqlite.Database();
 
-db.open(path.join(path.dirname(__dirname), "authdb.sqlite"), function (error) {
+db.open(path.join(path.dirname(__dirname), "var", "authdb.sqlite"), function (error) {
   if (error) {
     console.log("Couldn't open database: " + error);
     throw error;

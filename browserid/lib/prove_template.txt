@@ -1,0 +1,12 @@
+Hi {{email}},
+ 
+This message is being sent to you to complete your login to
+{{site}}.  Click the link below to continue:
+ 
+{{link}}
+ 
+If you are NOT trying to log into {{site}}, just ignore this email. 
+ 
+Thanks,
+BrowserID
+(A better way to login)

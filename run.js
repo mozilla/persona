@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // a little node webserver designed to run the unit tests herein
 
 var   sys = require("sys"),
@@ -5,13 +7,14 @@ var   sys = require("sys"),
       url = require("url"),
      path = require("path"),
        fs = require("fs"),
-  connect = require("connect");
+  express = require("express");
 
 var PRIMARY_HOST = "127.0.0.1";
 
-// all bound webservers stored in this lil' object
 var boundServers = [ ];
 
+// given a buffer, find and replace all production hostnames
+// with development URLs
 function subHostNames(data) {
   for (var i = 0; i < boundServers.length; i++) {
     var o = boundServers[i]
@@ -41,74 +44,77 @@ function subHostNames(data) {
   return data;
 }
 
+// Middleware that intercepts outbound textual responses and substitutes
+// in development hostnames
+function substitutionMiddleware(req, resp, next) {
+    // cache the *real* functions
+    var realWrite = resp.write;
+    var realEnd = resp.end;
+    var realWriteHead = resp.writeHead;
+
+    var buf = undefined;
+    var enc = undefined;
+    var contentType = undefined;
+
+    resp.writeHead = function (sc, reason, hdrs) {
+        var h = undefined;
+        if (typeof hdrs === 'object') h = hdrs;
+        else if (typeof reason === 'object') h = reason; 
+        for (var k in h) {
+            if (k.toLowerCase() === 'content-type') {
+                contentType = h[k];
+                break;
+            }
+        }
+        if (!contentType) contentType = resp.getHeader('content-type');
+        if (!contentType) contentType = "application/unknown";
+        realWriteHead(sc, reason, hdrs);
+    };
+
+    resp.write = function (chunk, encoding) {
+        if (buf) buf += chunk;
+        else buf = chunk;
+        enc = encoding;
+    };
+
+    resp.end = function() {
+        if (!contentType) contentType = resp.getHeader('content-type');
+        if (contentType && (contentType === "application/javascript" ||
+                            contentType.substr(0,4) === 'text'))
+        {
+            if (buf) {
+                var l = buf.length;
+                buf = subHostNames(buf);
+                if (l != buf.length) resp.setHeader('Content-Length', buf.length);
+            }
+        }
+        if (buf && buf.length) realWrite.call(resp, buf, enc);
+        realEnd.call(resp);
+    }
+
+    next();
+};
+
 function createServer(obj) {
-    var server = connect.createServer().use(connect.favicon()).use(connect.logger());
+    var app = express.createServer();
+    app.use(express.logger());
 
     // this file is a *test* harness, to make it go, we'll insert a little handler that
     // substitutes output, changing production URLs to developement URLs.
-    server.use(function(req, resp, next) {
-        // cache the *real* functions
-        var realWrite = resp.write;
-        var realEnd = resp.end;
-        var realWriteHead = resp.writeHead;
+    app.use(substitutionMiddleware);
 
-        var buf = undefined;
-        var enc = undefined;
-        var contentType = undefined;
-
-        resp.writeHead = function (sc, reason, hdrs) {
-            var h = undefined;
-            if (typeof hdrs === 'object') h = hdrs;
-            else if (typeof reason === 'object') h = reason; 
-            for (var k in h) {
-                if (k.toLowerCase() === 'content-type') {
-                    contentType = h[k];
-                    break;
-                }
-            }
-            if (!contentType) contentType = resp.getHeader('content-type');
-            if (!contentType) contentType = "application/unknown";
-            realWriteHead(sc, reason, hdrs);
-        };
-
-        resp.write = function (chunk, encoding) {
-            if (buf) buf += chunk;
-            else buf = chunk;
-            enc = encoding;
-        };
-
-        resp.end = function() {
-            if (!contentType) contentType = resp.getHeader('content-type');
-            if (contentType && (contentType === "application/javascript" ||
-                                contentType.substr(0,4) === 'text'))
-            {
-                if (buf) {
-                    var l = buf.length;
-                    buf = subHostNames(buf);
-                    if (l != buf.length) resp.setHeader('Content-Length', buf.length);
-                }
-            }
-            if (buf && buf.length) realWrite.call(resp, buf, enc);
-            realEnd.call(resp);
-        }
-
-        next();
-    });
-
-    // let the specific server interact directly with the connect server to register their middleware 
-    if (obj.setup) obj.setup(server);
-
-    // if this site has a handler, we'll run that, otherwise serve statically
-    if (obj.handler) server.use(obj.handler);
+    // let the specific server interact directly with the express server to register their middleware,
+    // routes, etc...
+    if (obj.setup) obj.setup(app);
 
     // now set up the static resource servin'
     var p = obj.path, ps = path.join(p, "static");
     try { if (fs.statSync(ps).isDirectory()) p = ps; } catch(e) { }
-    server.use(connect.static(p));
+    app.use(express.static(p));
 
     // and listen!
-    server.listen(obj.port, PRIMARY_HOST);
-    return server;
+    app.listen(obj.port, PRIMARY_HOST);
+    return app;
 };
 
 // start up webservers on ephemeral ports for each subdirectory here.
@@ -134,7 +140,7 @@ var dirs = [
     // BrowserID: the secondary + ip + more.
     {
         name: "https://browserid.org",
-        path: path.join(__dirname, "authority")
+        path: path.join(__dirname, "browserid")
     }
 ];
 
@@ -151,7 +157,7 @@ console.log("Running test servers:");
 dirs.forEach(function(dirObj) {
   if (!fs.statSync(dirObj.path).isDirectory()) return;
   // does this server have a js handler for custom request handling?
-  var handlerPath = path.join(dirObj.path, "server", "run.js");
+  var handlerPath = path.join(dirObj.path, "app.js");
   var runJS = {};
   try {
     var runJSExists = false;
