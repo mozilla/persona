@@ -4,7 +4,16 @@
 const db = require('./db.js'),
       url = require('url'),
       httputils = require('./httputils.js');
-      email = require('./email.js');
+      email = require('./email.js'),
+      crypto = require('crypto');   
+
+// md5 is used to obfuscate passwords simply so we don't store
+// users passwords in plaintext anywhere
+function obfuscatePassword(pass) {
+  var hash = crypto.createHash('sha256');
+  hash.update(pass);
+  return hash.digest('base64');
+}
 
 function checkParams(getArgs, resp, params) {
   try {
@@ -53,6 +62,8 @@ exports.stage_user = function(req, resp) {
   if (!checkParams(getArgs, resp, [ "email", "pass", "pubkey", "site" ])) {
     return;
   }
+   
+  getArgs.pass = obfuscatePassword(getArgs.pass);
 
   try {
     // upon success, stage_user returns a secret (that'll get baked into a url
@@ -101,6 +112,8 @@ exports.authenticate_user = function(req, resp) {
   var getArgs = urlobj.query;
 
   if (!checkParams(getArgs, resp, [ "email", "pass" ])) return;
+
+  getArgs.pass = obfuscatePassword(getArgs.pass);
 
   db.checkAuth(getArgs.email, getArgs.pass, function(rv) {
     if (rv) {
