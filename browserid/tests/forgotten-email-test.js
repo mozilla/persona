@@ -3,22 +3,78 @@
 const assert = require('assert'),
       vows = require('vows'),
       fs = require('fs'),
-      path = require('path');
+      path = require('path'),
+      http = require('http');
 
 const amMain = (process.argv[1] === __filename);
 const varPath = path.join(path.dirname(__dirname), "var");
 
-function removeServerData() {
+var suite = vows.describe('forgotten-email');
+
+function removeVarDir() {
+  try {
     fs.readdirSync(varPath).forEach(function(f) {
         fs.unlinkSync(path.join(varPath, f));
     });
+    fs.rmdirSync(varPath);
+  } catch(e) {}
 }
 
-// 10. remove the user database
-removeServerData()
+suite.addBatch({
+  "remove the user database": {
+    topic: function() {
+      removeVarDir();
+      fs.mkdirSync(varPath, 0755);
+      return true;
+    },
+    "directory should exist": function(x) {
+      assert.ok(fs.statSync(varPath).isDirectory());
+    }
+  }
+});
 
-// 20. run the server
-require("../run.js").runServer();
+suite.addBatch({
+  "run the server": {
+    topic: function() {
+      const server = require("../run.js");
+      server.runServer();
+      return true;
+    },
+    "server should be running": {
+      topic: function() {
+        var cb = this.callback;
+        http.get({
+          host: '127.0.0.1',
+          port: '62700',
+          path: '/ping.txt'
+        }, function(res) {
+          cb(true);
+        }).on('error', function (e) {
+          cb(false);
+        });
+      },
+      "server is running": function (r) {
+        assert.notStrictEqual(r, false);
+      }
+    }
+  }
+});
+
+
+suite.addBatch({
+  "wait for readiness": {
+    topic: function() {
+      var cb = this.callback;
+      require("../lib/db.js").onReady(function() { cb(true) });
+    },
+    "readiness has arrived": function(v) {
+      assert.ok(v);
+    }
+  }
+});
+
+
+
 
 // create a new account via the api with (first address)
 
@@ -34,9 +90,32 @@ require("../run.js").runServer();
 
 // try to log into the first email with newpassword
 
-
 // stop the server
-require("../run.js").stopServer();
+suite.addBatch({
+  "stop the server": {
+    topic: function() {
+      const server = require("../run.js");
+      var cb = this.callback;
+      server.stopServer(function() { cb(true); });
+    },
+    "stopped": function(x) {
+      assert.strictEqual(x, true);
+    }
+  }
+});
+
 
 // clean up
-removeServerData();
+suite.addBatch({
+  "clean up": {
+    topic: function() {
+      removeVarDir();
+      return true;
+    },
+    "directory should not exist": function(x) {
+      assert.throws(function(){ fs.statSync(varPath) });
+    }
+  }
+});
+
+suite.run();
