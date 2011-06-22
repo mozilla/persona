@@ -1,11 +1,12 @@
-Hello {{email}},
+Hi {{email}},
  
-This message is being sent to you to complete your log in to
-{{site}}.  To complete your login, click the link below:
+This message is being sent to you to complete your login to
+{{site}}.  Click the link below to continue:
  
 {{link}}
  
-If you are NOT trying to log into {{site}}, please just delete this email. 
+If you are NOT trying to log into {{site}}, just ignore this email. 
  
-Sincerely,
-BrowserID (A better way to login)
+Thanks,
+BrowserID
+(A better way to login)

@@ -12,9 +12,8 @@ exports.sendVerificationEmail = function(email, site, secret) {
     emailer.send_mail({
         sender: "noreply@browserid.org",
         to: email,
-        site: site,
         subject : "Complete Login to " + site + " using BrowserID",
-        body: mustache.to_html(template, { email: email, link: url })
+        body: mustache.to_html(template, { email: email, link: url, site: site })
     }, function(err, success){
         if(!success) {
             console.log("error sending email: ", err);

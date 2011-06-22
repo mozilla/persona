@@ -419,7 +419,9 @@
       );
 
       $.ajax({
-        url: '/wsapi/add_email?email=' + encodeURIComponent(email) + '&pubkey=' + encodeURIComponent(keypair.pub),
+        url: '/wsapi/add_email?email=' + encodeURIComponent(email)
+              + '&pubkey=' + encodeURIComponent(keypair.pub)
+              + '&site=' + encodeURIComponent(remoteOrigin.replace(/^(http|https):\/\//, '')),
         success: function() {
           // email successfully staged, now wait for email confirmation
           runConfirmEmailDialog(email, keypair, onsuccess, onerror);
@@ -479,7 +481,7 @@
         url: '/wsapi/stage_user?email=' + encodeURIComponent(email)
               + '&pass=' + encodeURIComponent(pass)
               + '&pubkey=' + encodeURIComponent(keypair.pub)
-              + '&site=' + encodeURIComponent(window.location.host),
+              + '&site=' + encodeURIComponent(remoteOrigin.replace(/^(http|https):\/\//, '')),
         success: function() {
           // account successfully staged, now wait for email confirmation
           runConfirmEmailDialog(email, keypair, onsuccess, onerror);
