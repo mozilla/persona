@@ -108,13 +108,15 @@ suite.addBatch({
   }
 });
 
-var lastEmailBody = undefined;
 // let's kludge our way into nodemailer to intercept outbound emails
+var lastEmailBody = undefined;
 const nodeMailer = require('nodemailer');
 nodeMailer.EmailMessage.prototype.send = function(callback) {
   lastEmailBody = this.body;
 };
 
+// a global variable that will be populated with the latest verification
+// token
 var token = undefined;
 
 // create a new account via the api with (first address)
@@ -211,8 +213,29 @@ suite.addBatch({
   }
 });
 
-// run the "forgot_email" flow with first address
-// XXX
+// Run the "forgot_email" flow with first address.  This is really
+// just re-registering the user.
+suite.addBatch({
+  "re-stage first account": {
+    topic: wsapi.get('/wsapi/stage_user', {
+      email: 'first@fakeemail.com',
+      pass: 'secondfakepass',
+      pubkey: 'fakepubkey2',
+      site:'otherfakesite.com'
+    }),
+    "caused an email to be sent": function (r, err) {
+      assert.equal(r.code, 200);
+      var m = /token=([a-zA-Z0-9]+)/.exec(lastEmailBody);
+      token = m[1];
+    },
+    "the token is sane": function(r, err) {
+      assert.strictEqual('string', typeof token);
+    }
+  }
+});
+
+// verify that the old email address + password combinations are still
+// valid (*until* someone clicks through)
 
 // try to log into the first email address with oldpassword
 // XXX
