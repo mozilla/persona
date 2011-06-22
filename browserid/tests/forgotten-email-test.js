@@ -278,10 +278,10 @@ suite.addBatch({
       assert.strictEqual(JSON.parse(r.body), true);
     }
   },
-  "second email, first pass bad": {
+  "second email, first pass good": {
     topic: wsapi.get('/wsapi/authenticate_user', { email: 'second@fakeemail.com', pass: 'firstfakepass' }),
-    "shouldn't work": function(r, err) {
-      assert.strictEqual(JSON.parse(r.body), false);
+    "should work": function(r, err) {
+      assert.strictEqual(JSON.parse(r.body), true);
     }
   },
   "second email, second pass bad": {

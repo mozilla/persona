@@ -194,8 +194,7 @@ exports.gotVerificationSecret = function(secret, cb) {
   delete g_stagedEmails[o.email];
   if (o.type === 'add_account') {
     exports.emailKnown(o.email, function(known) {
-      if (known) cb("email already exists!");
-      else {
+      function createAccount() {
         executeTransaction([
           [ "INSERT INTO users (password) VALUES(?)", [ o.pass ] ] ,
           [ "INSERT INTO emails (user, address) VALUES(last_insert_rowid(),?)", [ o.email ] ],
@@ -206,6 +205,21 @@ exports.gotVerificationSecret = function(secret, cb) {
           if (error) cb(error);
           else cb();
         });
+      }
+
+      // if this email address is known and a user has completed a re-verification of this email
+      // address, remove the email from the old account that it was associated with, and then
+      // create a brand new account with only this email.
+      // NOTE: this might be sub-optimal, but it's a dead simple approach that mitigates many attacks
+      // and gives us reasonable behavior (without explicitly supporting) in the face of shared email
+      // addresses.
+      if (known) {
+        exports.removeEmail(o.email, o.email, function (err) {
+          if (err) cb(err);
+          else createAccount();
+        });
+      } else {
+        createAccount();
       }
     });
   } else if (o.type === 'add_email') {
@@ -305,6 +319,7 @@ exports.removeEmail = function(authenticated_email, email, cb) {
     });
   });
 };
+
 exports.cancelAccount = function(authenticated_email, cb) {
     emailToUserID(authenticated_email, function(user_id) {
         executeTransaction([
