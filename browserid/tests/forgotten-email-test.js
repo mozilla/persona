@@ -2,10 +2,6 @@
 
 const assert = require('assert'),
       vows = require('vows'),
-      fs = require('fs'),
-      path = require('path'),
-      http = require('http'),
-      querystring = require('querystring'),
       start_stop = require('./lib/start-stop.js'),
       wsapi = require('./lib/wsapi.js');
 

@@ -3,7 +3,7 @@ const assert = require('assert'),
       path = require('path'),
       wsapi = require('./wsapi.js');
 
-const varPath = path.join(path.dirname(__dirname), "var");
+const varPath = path.join(path.dirname(path.dirname(__dirname)), "var");
 
 function removeVarDir() {
   try {
