@@ -5,7 +5,7 @@ const db = require('./db.js'),
       url = require('url'),
       httputils = require('./httputils.js');
       email = require('./email.js'),
-      crypto = require('crypto');   
+      crypto = require('crypto');
 
 // md5 is used to obfuscate passwords simply so we don't store
 // users passwords in plaintext anywhere
@@ -72,7 +72,14 @@ exports.stage_user = function(req, resp) {
 
     // store the email being registered in the session data
     if (!req.session) req.session = {};
-    req.session.pendingRegistration = getArgs.email;
+
+    // store inside the session the details of this pending verification
+    req.session.pendingVerification = {
+      email: getArgs.email,
+      pass: getArgs.pass // that's an obfuscated password now stored in encrypted session data.
+                         // we must store both email and password to handle the case where
+                         // a user re-creates an account
+    };
 
     httputils.jsonResponse(resp, true);
 
@@ -86,25 +93,51 @@ exports.stage_user = function(req, resp) {
 };
 
 exports.registration_status = function(req, resp) {
-  if (!req.session || !(typeof req.session.pendingRegistration === 'string')) {
+  if (!req.session ||
+      (!(typeof req.session.pendingVerification === 'object') &&
+       !(typeof req.session.pendingAddition === 'string')))
+  {
     httputils.badRequest(
       resp,
-      "api abuse: registration_status called without a pending email for registration");
+      "api abuse: registration_status called without a pending email addition/verification");
     return;
   }
 
-  var email = req.session.pendingRegistration;
-  db.emailKnown(email, function(known) {
-    if (known) {
-      delete req.session.pendingRegistration;
-      req.session.authenticatedUser = email;
-      httputils.jsonResponse(resp, "complete");
-    } else if (db.isStaged(email)) {
-      httputils.jsonResponse(resp, "pending");
-    } else {
-      httputils.jsonResponse(resp, "noRegistration");
-    }
-  });
+  // Is the current session trying to add an email, or register a new one?
+  if (req.session.pendingAddition) {
+    // this is a pending email addition, it requires authentication
+    if (!checkAuthed(req, resp)) return;
+
+    // check if the currently authenticated user has the email stored under pendingAddition
+    // in their acct.
+    db.emailsBelongToSameAccount(
+      req.session.pendingAddition, req.session.authenticatedUser,
+      function(registered)
+      {
+        if (registered) {
+          delete req.session.pendingAddition;
+          httputils.jsonResponse(resp, "complete");
+        } else {
+          httputils.jsonResponse(resp, "pending");
+        }
+      });
+  }
+  else
+  {
+    // this is a pending registration, let's check if the creds stored on the
+    // session are good yet.
+
+    var v = req.session.pendingVerification;
+    db.checkAuth(v.email, v.pass, function(authed) {
+      if (authed) {
+        delete req.session.pendingVerification;
+        req.session.authenticatedUser = v.email;
+        httputils.jsonResponse(resp, "complete");
+      } else {
+        httputils.jsonResponse(resp, "pending");
+      }
+    });
+  }
 };
 
 exports.authenticate_user = function(req, resp) {
@@ -139,8 +172,8 @@ exports.add_email = function (req, resp) {
     // and given to the user), on failure it throws
     var secret = db.stageEmail(req.session.authenticatedUser, getArgs.email, getArgs.pubkey);
 
-    // store the email being registered in the session data
-    req.session.pendingRegistration = getArgs.email;
+    // store the email being added in session data
+    req.session.pendingAddition = getArgs.email;
 
     httputils.jsonResponse(resp, true);
 

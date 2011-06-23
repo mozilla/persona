@@ -130,6 +130,18 @@ exports.addEmailToAccount = function(existing_email, email, pubkey, cb) {
   });
 }
 
+exports.emailsBelongToSameAccount = function(lhs, rhs, cb) {
+  emailToUserID(lhs, function(lhs_uid) {
+    emailToUserID(rhs, function(rhs_uid) {
+      cb(lhs_uid === rhs_uid);
+    }, function (error) {
+      cb(false);
+    });
+  }, function (error) {
+    cb(false);
+  });
+};
+
 exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
   emailToUserID(existing_email, function(userID) {
     if (userID == undefined) {
