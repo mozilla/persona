@@ -28,17 +28,16 @@
     </div>
     <div class="step">
       <div class="number">1.</div>
-      <p><b>Enable BrowserID:</b> First you must include the BrowserID JavaScript library in your site.  Just add a script tag to your <tt>&lt;head&gt;</tt></p>
+      <p><b>Enable BrowserID:</b> Include the BrowserID JavaScript library in your site by adding a script tag to your <tt>&lt;head&gt;</tt></p>
 
       <pre><code>&lt;script src="https://browserid.org/include.js"&gt;&lt;/script&gt;</code></pre>
     </div>
     <div class="step">
       <div class="number">2.</div>
       <p>
-        <b>Identify the User:</b>
-      Now you'll need to hook up your <i>login</i> and <i>sign-in</i> buttons to BrowserID.  Instead of displaying
-      a form which asks for a <i>username</i> and <i>password</i>, with BrowserID you make a javascript call and
-      the interaction with the user is handled for you.
+        <b>Identify the User:</b> Instead of displaying a form on your
+        site which takes a username and password, use the BrowserID
+        JavaScript API when the user clicks your login button:
       </p>
 <pre><code class="javascript">navigator.id.getVerifiedEmail(function(assertion) {
     if (assertion) {
@@ -50,47 +49,52 @@
 });
 </code></pre>
 <p>
-Again, the above code should run when a user clicks the
-<i>login</i> button on your site.  Upon a successful login, you'll be
-called back with an <i>assertion</i>, which contains the user's email
-address, along with crytographic proof that the user is who they
-say they are (proof which comes from the email provider).
+
+Upon a successful login, you'll be called back with
+an <i>assertion</i>, a string containing a signed claim that proves
+the user is who they say they are.
+
 </p>
     </div>
     <div class="step">
       <div class="number">3.</div>
       <p>
-        <b>Verify the User's Identify:</b> Next we should check that
-        the user really is who they <i>say</i> they are.  The process of
-        doing this is basically checking that the assertion is
-        properly signed by their email provider.  Once this is done we can
-        be sure that the email provider agress that the user is actual.
+        <b>Verify the User's Identify:</b> You must verify the <i>assertion</i>
+        is authentic, and extract the user's email address from it.
+        The easiest way to do these is to use the
+        free verification service provided by BrowserID.
+      </p><p>
+        To use it, you send a request
+        to <tt>https://browserid.org/verify</tt> with the assertion as
+        a GET parameter.
+
+        <pre><code>$ curl "https://browserid.org/verify?assertion=&lt;ASSERTION&gt;&audience=mysite.com"
+{
+    "status": "okay",
+    "email": "lloyd@mozilla.com",
+    "audience": "mysite.com",
+    "valid-until": 1308859352261,
+    "issuer": "browserid.org:443"
+}
+</pre></code>
       </p>
       <p>
-        The easiest way to verify is to use the
-        free <i>verfication</i> service provided by BrowserID.  To use
-        it, you send a request
-        to <tt>https://browserid.org/verify</tt> with the assertion as
-        a GET parameter.  You <b>should</b> perform this request from
-        your server, but for illustrative purposes, here's how it
-        might look from the client:
-
-        <pre><code>var url = "https://browserid.org/verify?assertion="
-        + window.encodeURIComponent(assertion)
-        + "&audience=" + window.encodeURIComponent(window.location.host);
-
-$.get(url, function(result) {
-    if (result.status === "okay") alert("verification is valid!");
-    else alert("uh oh, bogus verification!");
-});</pre></code>
+        <b>NOTE:</b> You may choose to validate assertions on your own
+        server.  While a bit more complicated you can reduce your
+        dependencies on others.  Refer
+        to <a href="https://wiki.mozilla.org/Identity/Verified_Email_Protocol">the
+        specification</a> and the <a href="https://github.com/mozilla/browserid/tree/master/verifier">source for the reference
+        validator</a>.
       </p>
     </div>
     <div class="step">
       <div class="number">4.</div>
-      <p><b>Complete the log in!</b>  Having completed the steps above, you can trust that the user is really identified
-        by the email stored in the assertion under the <tt>assertion.email</tt> property.  You don't need to perform
-        any additional authentication unless you want to!  From here, you can set up session cookies and do whatever you
-        like.
+      <p><b>Complete the log in!</b>  Having completed the steps
+        above, you can trust that the present user really owns the
+        email address returned by the verifier.  You don't need to
+        perform any additional authentication unless you want to!
+        From here, you can perform whatever post-authentication steps
+        you like.
       </p>
     </div>
     <div class="why">
