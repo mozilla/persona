@@ -4,6 +4,8 @@ const http = require('http'),
 // wsapi abstractions trivial cookie jar
 var cookieJar = {};
 
+exports.clearCookies = function() { cookieJar = {}; };
+
 // A macro for wsapi requests
 exports.get = function (path, getArgs) {
   return function () {
