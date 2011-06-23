@@ -238,7 +238,19 @@ exports.gotVerificationSecret = function(secret, cb) {
       }
     });
   } else if (o.type === 'add_email') {
-    exports.addEmailToAccount(o.existing_email, o.email, o.pubkey, cb);
+    exports.emailKnown(o.email, function(known) {
+      function addIt() {
+        exports.addEmailToAccount(o.existing_email, o.email, o.pubkey, cb);
+      }
+      if (known) {
+        exports.removeEmail(o.email, o.email, function (err) {
+          if (err) cb(err);
+          else addIt();
+        });
+      } else {
+        addIt();
+      }
+    });
   } else {
     cb("internal error");
   }
