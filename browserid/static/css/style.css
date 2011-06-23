@@ -35,8 +35,7 @@ body {
 }
 
 #splash .tophalf .title {
-    padding-top: .7em;
-    font-size: 6em;
+    padding-top: 60px;
     font-weight: bold;
 }
 
@@ -64,7 +63,7 @@ body {
 #splash .topquarter .subtitle {
     font-family: 'Shadows Into Light', arial, serif;
     font-size: 2em;
-    margin: .4em 0 0 .5em;
+    margin: .2em 0 0 .5em;
     float: left;
 }
 
@@ -138,8 +137,12 @@ a:hover {
 }
 
 #splash .footer .right {
-    padding-top: 20px;
+    padding-top: 13px;
     float: right;
+}
+
+#splash .footer .right img {
+    margin-bottom: -5px;
 }
 
 #splash .footer a {
