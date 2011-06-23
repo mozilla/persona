@@ -16,5 +16,6 @@ start_stop.addStartupBatches(suite);
 // shut the server down and cleanup
 start_stop.addShutdownBatches(suite);
 
-// kick off the tests!
-suite.run();
+// run or export the suite.
+if (process.argv[1] === __filename) suite.run();
+else suite.export(module);

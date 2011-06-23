@@ -5,8 +5,6 @@ const assert = require('assert'),
       start_stop = require('./lib/start-stop.js'),
       wsapi = require('./lib/wsapi.js');
 
-const amMain = (process.argv[1] === __filename);
-
 var suite = vows.describe('forgotten-email');
 
 start_stop.addStartupBatches(suite);
@@ -197,4 +195,6 @@ suite.addBatch({
 
 start_stop.addShutdownBatches(suite);
 
-suite.run();
+// run or export the suite.
+if (process.argv[1] === __filename) suite.run();
+else suite.export(module);
