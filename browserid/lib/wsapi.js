@@ -86,7 +86,7 @@ exports.stage_user = function(req, resp) {
 };
 
 exports.registration_status = function(req, resp) {
-  if (!req.session || !typeof req.session.pendingRegistration == 'string') {
+  if (!req.session || !(typeof req.session.pendingRegistration === 'string')) {
     httputils.badRequest(
       resp,
       "api abuse: registration_status called without a pending email for registration");
@@ -117,7 +117,7 @@ exports.authenticate_user = function(req, resp) {
 
   db.checkAuth(getArgs.email, getArgs.pass, function(rv) {
     if (rv) {
-      if (!req.session) req.session = {}; 
+      if (!req.session) req.session = {};
       req.session.authenticatedUser = getArgs.email;
     }
     httputils.jsonResponse(resp, rv);
