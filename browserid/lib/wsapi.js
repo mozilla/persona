@@ -62,7 +62,7 @@ exports.stage_user = function(req, resp) {
   if (!checkParams(getArgs, resp, [ "email", "pass", "pubkey", "site" ])) {
     return;
   }
-   
+
   getArgs.pass = obfuscatePassword(getArgs.pass);
 
   try {

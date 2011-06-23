@@ -5,108 +5,15 @@ const assert = require('assert'),
       fs = require('fs'),
       path = require('path'),
       http = require('http'),
-      querystring = require('querystring');
+      querystring = require('querystring'),
+      start_stop = require('./lib/start-stop.js'),
+      wsapi = require('./lib/wsapi.js');
 
 const amMain = (process.argv[1] === __filename);
-const varPath = path.join(path.dirname(__dirname), "var");
 
 var suite = vows.describe('forgotten-email');
 
-function removeVarDir() {
-  try {
-    fs.readdirSync(varPath).forEach(function(f) {
-        fs.unlinkSync(path.join(varPath, f));
-    });
-    fs.rmdirSync(varPath);
-  } catch(e) {}
-}
-
-// wsapi abstractions trivial cookie jar
-var cookieJar = {};
-
-// A macro for wsapi requests
-var wsapi = {
-  get: function (path, getArgs) {
-    return function () {
-      var cb = this.callback;
-      if (typeof getArgs === 'object')
-        path += "?" + querystring.stringify(getArgs);
-
-      var headers = {};
-      if (Object.keys(cookieJar).length) {
-        headers['Cookie'] = "";
-        for (var k in cookieJar) {
-          headers['Cookie'] += k + "=" + cookieJar[k];
-        }
-      }
-      http.get({
-        host: '127.0.0.1',
-        port: '62700',
-        path: path,
-        headers: headers
-      }, function(res) {
-        // see if there are any set-cookies that we should honor
-        if (res.headers['set-cookie']) {
-          res.headers['set-cookie'].forEach(function(cookie) {
-            var m = /^([^;]+)(?:;.*)$/.exec(cookie);
-            if (m) {
-              var x = m[1].split('=');
-              cookieJar[x[0]] = x[1];
-            }
-          });
-        }
-        var body = '';
-        res.on('data', function(chunk) { body += chunk; })
-          .on('end', function() {
-            cb({code: res.statusCode, headers: res.headers, body: body});
-          });
-      }).on('error', function (e) {
-        cb();
-      });
-    };
-  }
-};
-
-suite.addBatch({
-  "remove the user database": {
-    topic: function() {
-      removeVarDir();
-      fs.mkdirSync(varPath, 0755);
-      return true;
-    },
-    "directory should exist": function(x) {
-      assert.ok(fs.statSync(varPath).isDirectory());
-    }
-  }
-});
-
-suite.addBatch({
-  "run the server": {
-    topic: function() {
-      const server = require("../run.js");
-      server.runServer();
-      return true;
-    },
-    "server should be running": {
-      topic: wsapi.get('/ping.txt'),
-      "server is running": function (r, err) {
-        assert.equal(r.code, 200);
-      }
-    }
-  }
-});
-
-suite.addBatch({
-  "wait for readiness": {
-    topic: function() {
-      var cb = this.callback;
-      require("../lib/db.js").onReady(function() { cb(true) });
-    },
-    "readiness has arrived": function(v) {
-      assert.ok(v);
-    }
-  }
-});
+start_stop.addStartupBatches(suite);
 
 // let's kludge our way into nodemailer to intercept outbound emails
 var lastEmailBody = undefined;
@@ -292,32 +199,6 @@ suite.addBatch({
   },
 });
 
-// stop the server
-suite.addBatch({
-  "stop the server": {
-    topic: function() {
-      const server = require("../run.js");
-      var cb = this.callback;
-      server.stopServer(function() { cb(true); });
-    },
-    "stopped": function(x) {
-      assert.strictEqual(x, true);
-    }
-  }
-});
-
-
-// clean up
-suite.addBatch({
-  "clean up": {
-    topic: function() {
-      removeVarDir();
-      return true;
-    },
-    "directory should not exist": function(x) {
-      assert.throws(function(){ fs.statSync(varPath) });
-    }
-  }
-});
+start_stop.addShutdownBatches(suite);
 
 suite.run();
