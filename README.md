@@ -13,6 +13,7 @@ All of the servers here are based on node.js, and some number of 3rd party node 
 * cookie-sessions (>= 0.0.2)
 * nodemailer (>= 0.1.18)
 * emavows (>= 0.5.8)
+* bcrypt (>= 0.2.3)
 
 ## Getting started:
 

@@ -5,15 +5,7 @@ const db = require('./db.js'),
       url = require('url'),
       httputils = require('./httputils.js');
       email = require('./email.js'),
-      crypto = require('crypto');
-
-// md5 is used to obfuscate passwords simply so we don't store
-// users passwords in plaintext anywhere
-function obfuscatePassword(pass) {
-  var hash = crypto.createHash('sha256');
-  hash.update(pass);
-  return hash.digest('base64');
-}
+      bcrypt = require('bcrypt');
 
 function checkParams(getArgs, resp, params) {
   try {
@@ -63,7 +55,8 @@ exports.stage_user = function(req, resp) {
     return;
   }
 
-  getArgs.pass = obfuscatePassword(getArgs.pass);
+  // bcrypt the password
+  getArgs.hash = bcrypt.encrypt_sync(getArgs.pass, bcrypt.gen_salt_sync(4))
 
   try {
     // upon success, stage_user returns a secret (that'll get baked into a url
@@ -76,9 +69,12 @@ exports.stage_user = function(req, resp) {
     // store inside the session the details of this pending verification
     req.session.pendingVerification = {
       email: getArgs.email,
-      pass: getArgs.pass // that's an obfuscated password now stored in encrypted session data.
-                         // we must store both email and password to handle the case where
-                         // a user re-creates an account
+      hash: getArgs.hash // we must store both email and password to handle the case where
+                         // a user re-creates an account - specifically, registration status
+                         // must ensure the new credentials work to properly verify that
+                         // the user has clicked throught the email link. note, this salted, bcrypted
+                         // representation of a user's password will get thrust into an encrypted cookie
+                         // served over an encrypted (SSL) session.  guten, yah.
     };
 
     httputils.jsonResponse(resp, true);
@@ -128,7 +124,7 @@ exports.registration_status = function(req, resp) {
     // session are good yet.
 
     var v = req.session.pendingVerification;
-    db.checkAuth(v.email, v.pass, function(authed) {
+    db.checkAuthHash(v.email, v.hash, function(authed) {
       if (authed) {
         delete req.session.pendingVerification;
         req.session.authenticatedUser = v.email;
@@ -145,8 +141,6 @@ exports.authenticate_user = function(req, resp) {
   var getArgs = urlobj.query;
 
   if (!checkParams(getArgs, resp, [ "email", "pass" ])) return;
-
-  getArgs.pass = obfuscatePassword(getArgs.pass);
 
   db.checkAuth(getArgs.email, getArgs.pass, function(rv) {
     if (rv) {

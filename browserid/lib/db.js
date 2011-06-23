@@ -1,5 +1,6 @@
 const sqlite = require('sqlite'),
-        path = require('path');
+      path = require('path'),
+      bcrypt = require('bcrypt');
 
 var VAR_DIR = path.join(path.dirname(__dirname), "var");
 
@@ -106,7 +107,7 @@ exports.isStaged = function(email) {
 function generateSecret() {
   var str = "";
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i=0; i < 32; i++) {
+  for (var i=0; i < 48; i++) {
     str += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
   }
   return str;
@@ -168,16 +169,18 @@ exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
   });
 }
 
-/* takes an argument object including email, pass, and pubkey. */
+/* takes an argument object including email, password hash, and pubkey. */
 exports.stageUser = function(obj) {
   var secret = generateSecret();
+
   // overwrite previously staged users
   g_staged[secret] = {
     type: "add_account",
     email: obj.email,
     pubkey: obj.pubkey,
-    pass: obj.pass
+    pass: obj.hash
   };
+
   g_stagedEmails[obj.email] = secret;
   return secret;
 };
@@ -241,14 +244,22 @@ exports.gotVerificationSecret = function(secret, cb) {
   }
 };
 
-/* takes an argument object including email, pass, and pubkey. */
 exports.checkAuth = function(email, pass, cb) {
-  db.execute("SELECT users.id FROM emails, users WHERE users.id = emails.user AND emails.address = ? AND users.password = ?",
-             [ email, pass ],
+  db.execute("SELECT users.password FROM emails, users WHERE users.id = emails.user AND emails.address = ?",
+             [ email ],
+             function (error, rows) {
+               cb(rows.length === 1 && bcrypt.compare_sync(pass, rows[0].password));
+             });
+};
+
+exports.checkAuthHash = function(email, hash, cb) {
+  db.execute("SELECT users.password FROM emails, users WHERE users.id = emails.user AND emails.address = ? AND users.password = ?",
+             [ email, hash ],
              function (error, rows) {
                cb(rows.length === 1);
              });
 };
+
 
 /* a high level operation that attempts to sync a client's view with that of the
  * server.  email is the identity of the authenticated channel with the user,
