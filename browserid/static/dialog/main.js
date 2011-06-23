@@ -49,8 +49,14 @@
   {
     var emails = {};
     if (window.localStorage.emails) {
-      emails = JSON.parse(window.localStorage.emails);
+      try {
+        emails = JSON.parse(window.localStorage.emails);
+      } catch(e) {
+        // if somehow window.localStorage.emails is populated with bogus
+        // JSON, we'll just purge it.
+      }
     }
+    if (emails === null || typeof emails !== 'object') emails = {};
 
     emails[email] = {
       created: new Date(),
