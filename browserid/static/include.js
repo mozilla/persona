@@ -649,11 +649,6 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   };
 
   navigator.id.registerVerifiedEmail = function(email, onsuccess, onerror) {
-
-    // TODO: We really don't need to display a dialog for this.
-    // I'm showing one just because it's easier than figuring out
-    // how to embed an iframe in this case.
-
     var doc = window.document;
     iframe = _create_iframe(doc);
     if (chan) chan.destroy();
