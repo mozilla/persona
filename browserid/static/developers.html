@@ -22,8 +22,9 @@
   <div class="bottomhalf">
     <div class="why">
       <p>
-        With BrowserID you can implement <b>simple</b> and <b>sophisticated</b> authentication on your site
-        that your <b>users will love</b>.  All this with just a few lines of code!  Let's get started:
+        BrowserID provides a <b>simple</b> and <b>sophisticated</b>
+        login process that your <b>users will love</b>.  It can be
+        integrated in three easy steps:
       </p>
     </div>
     <div class="step">
@@ -48,13 +49,23 @@
     }
 });
 </code></pre>
-<p>
-
-Upon a successful login, you'll be called back with
-an <i>assertion</i>, a string containing a signed claim that proves
-the user is who they say they are.
-
-</p>
+      <p>
+        Upon a successful login, you'll be called back with
+        an <i>assertion</i>, a string containing a signed claim that proves
+        the user is who they say they are.
+      </p>
+      <p>
+        <b>NOTE:</b> While completely optional, you might consider
+        replacing your login/signin button with a pretty browserid button:
+        
+        <div class="buttonbox">
+          <div><img src="i/sign_in_red.png"></div>
+          <div><img src="i/sign_in_blue.png"></div>
+          <div><img src="i/sign_in_orange.png"></div>
+          <div><img src="i/sign_in_green.png"></div>
+          <div><img src="i/sign_in_grey.png"></div>
+        </div>
+      </p>
     </div>
     <div class="step">
       <div class="number">3.</div>
@@ -88,7 +99,6 @@ the user is who they say they are.
       </p>
     </div>
     <div class="step">
-      <div class="number">4.</div>
       <p><b>Complete the log in!</b>  Having completed the steps
         above, you can trust that the present user really owns the
         email address returned by the verifier.  You don't need to

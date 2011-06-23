@@ -31,7 +31,7 @@ body {
     padding: 0;
     margin: 0;
     height: 230px;
-    min-width: 900px;
+    min-width: 800px;
 }
 
 #splash .tophalf .title {
@@ -49,7 +49,7 @@ body {
 }
 
 #splash .topquarter > div {
-    width: 900px;
+    width: 800px;
     margin: auto;
 }
 
@@ -78,7 +78,7 @@ body {
 }
 
 #splash .bottomhalf {
-    width: 900px;
+    width: 800px;
     margin: auto;
 }
 
@@ -127,7 +127,7 @@ a:hover {
 }
 
 #splash .footer > div {
-    width: 900px;
+    width: 800px;
     margin: auto;
 }
 
@@ -187,10 +187,9 @@ a:hover {
     font-size: 1.2em;
 }
 
-pre code {
-    padding: 30px;
-    margin: 1em 100px 1em 100px;
-
+.bottomhalf pre code {
+    padding: 10px 15px 10px 15px;
+    margin: 1em 60px 1em 60px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px 10px 10px 10px;
@@ -241,4 +240,14 @@ pre code {
 }
 .date {
   font:8pt Arial;
+}
+
+.buttonbox {
+    height: 25px;
+    width: 460px;
+    margin: auto;
+}
+.buttonbox > div {
+    float: left;
+    margin-right: 10px;
 }
