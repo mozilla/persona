@@ -27,12 +27,12 @@ function isAuthed(req) {
   return (req.session && typeof req.session.authenticatedUser === 'string');
 }
 
-function checkAuthed(req, resp) {
-  if (!isAuthed(req)) {
-    httputils.badRequest(resp, "requires authentication");
-    return false;
-  }
-  return true;
+// turned this into a proper middleware
+function checkAuthed(req, resp, next) {
+  if (!isAuthed(req))
+    return httputils.badRequest(resp, "requires authentication");
+
+  next();
 }
 
 function setup(app) {
@@ -103,7 +103,9 @@ function setup(app) {
       // Is the current session trying to add an email, or register a new one?
       if (req.session.pendingAddition) {
         // this is a pending email addition, it requires authentication
-        if (!checkAuthed(req, resp)) return;
+        if (!isAuthed(req, resp)) {
+          return httputils.badRequest(resp, "requires authentication");
+        }
         
         // check if the currently authenticated user has the email stored under pendingAddition
         // in their acct.
@@ -151,13 +153,11 @@ function setup(app) {
     });
     
   // FIXME: need CSRF protection
-  app.get('/wsapi/add_email', function (req, resp) {
+  app.get('/wsapi/add_email', checkAuthed, function (req, resp) {
       var urlobj = url.parse(req.url, true);
       var getArgs = urlobj.query;
       
       if (!checkParams(getArgs, resp, [ "email", "pubkey", "site" ])) return;
-      
-      if (!checkAuthed(req, resp)) return;
       
       try {
         // upon success, stage_user returns a secret (that'll get baked into a url
@@ -177,7 +177,7 @@ function setup(app) {
       }
     });
 
-  app.get('/wsapi/remove_email', function(req, resp) {
+  app.get('/wsapi/remove_email', checkAuthed, function(req, resp) {
       // this should really be POST, but for now I'm having trouble seeing
       // how to get POST args properly, so it's a GET (Ben).
       // hmmm, I really want express or some other web framework!
@@ -185,7 +185,6 @@ function setup(app) {
       var getArgs = urlobj.query;
       
       if (!checkParams(getArgs, resp, [ "email"])) return;
-      if (!checkAuthed(req, resp)) return;
       
       db.removeEmail(req.session.authenticatedUser, getArgs.email, function(error) {
           if (error) {
@@ -196,9 +195,8 @@ function setup(app) {
           }});
     });
 
-  app.get('/wsapi/account_cancel', function(req, resp) {
-      // this should really be POST
-      if (!checkAuthed(req, resp)) return;
+  app.get('/wsapi/account_cancel', checkAuthed, function(req, resp) {
+      // FIXME: this should really be POST
       
       db.cancelAccount(req.session.authenticatedUser, function(error) {
           if (error) {
@@ -209,11 +207,10 @@ function setup(app) {
           }});
     });
 
-  app.get('/wsapi/set_key', function (req, resp) {
+  app.get('/wsapi/set_key', checkAuthed, function (req, resp) {
       var urlobj = url.parse(req.url, true);
       var getArgs = urlobj.query;
       if (!checkParams(getArgs, resp, [ "email", "pubkey" ])) return;
-      if (!checkAuthed(req, resp)) return;
       db.addKeyToEmail(req.session.authenticatedUser, getArgs.email, getArgs.pubkey, function (rv) {
           httputils.jsonResponse(resp, rv);
         });
@@ -237,9 +234,7 @@ function setup(app) {
       httputils.jsonResponse(resp, "ok");
     });
 
-  app.post('/wsapi/sync_emails', function(req,resp) {
-      if (!checkAuthed(req, resp)) return;
-      
+  app.post('/wsapi/sync_emails', checkAuthed, function(req,resp) {
       var requestBody = "";
       req.on('data', function(str) {
           requestBody += str;
