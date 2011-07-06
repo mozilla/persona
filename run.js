@@ -166,6 +166,8 @@ function formatLink(server, extraPath) {
 }
 
 console.log("Running test servers:");
+
+var port_num=10000;
 dirs.forEach(function(dirObj) {
   if (!fs.statSync(dirObj.path).isDirectory()) return;
   // does this server have a js handler for custom request handling?
@@ -185,7 +187,7 @@ dirs.forEach(function(dirObj) {
   var so = {
     path: dirObj.path,
     server: undefined,
-    port: "0",
+    port: port_num++,
     name: dirObj.name,
     handler: runJS.handler,
     setup: runJS.setup,
