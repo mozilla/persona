@@ -33,17 +33,10 @@ function router(app) {
   app.get('/sign_in', internal_redirector('/dialog/index.html'));
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
 
-  app.all('/wsapi/:method', function(req, resp, next) {
-      try {
-        wsapi[req.params.method](req, resp);
-      } catch (e) {
-        var errMsg = "oops, error executing wsapi method: " + method + " (" + e.toString() +")";
-        console.log(errMsg);
-        httputils.fourOhFour(response, errMsg);
-      }
-    });
+  // register all the WSAPI handlers
+  wsapi.setup(app);
 
-  app.get('/users/acct\::identity.xml', function(req, resp, next) {
+  app.get('/users/:identity.xml', function(req, resp, next) {
       webfinger.renderUserPage(req.params.identity, function (resultDocument) {
           if (resultDocument === undefined) {
             httputils.fourOhFour(resp, "I don't know anything about: " + req.params.identity + "\n");
@@ -80,9 +73,6 @@ exports.setup = function(server) {
     }
   });
 
-  // add the methods
-  router(server);
-
   // a tweak to get the content type of host-meta correct
   server.use(function(req, resp, next) {
     if (req.url === '/.well-known/host-meta') {
@@ -90,4 +80,7 @@ exports.setup = function(server) {
     }
     next();
   });
+
+  // add the actual URL handlers other than static
+  router(server);
 }

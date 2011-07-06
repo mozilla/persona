@@ -20,3 +20,13 @@ All of the servers here are based on node.js, and some number of 3rd party node 
 1. install required software
 2. run the top level *run.js* script: `node ./run.js`
 3. visit the demo application ('rp') in your web browser (url output on the console at runtime)␁
+
+## Testing
+
+We should start using this:
+
+  https://github.com/LearnBoost/tobi
+
+for integration testing
+
+and straight Vows for unit testing

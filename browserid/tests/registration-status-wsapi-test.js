@@ -8,6 +8,9 @@ const assert = require('assert'),
 
 var suite = vows.describe('registration-status-wsapi');
 
+// FIXME: these tests are probably going to fail after Ben
+// revamps wsapi to be more express-like.
+
 // ever time a new token is sent out, let's update the global
 // var 'token'
 var token = undefined;
