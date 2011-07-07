@@ -43,6 +43,18 @@ function router(app) {
       res.render('users.ejs', {title: 'for Users', fullpage: false});
     });
 
+  app.get('/developers', function(req,res) {
+      res.render('developers.ejs', {title: 'for Developers', fullpage: false});
+    });
+
+  app.get('/primaries', function(req,res) {
+      res.render('primaries.ejs', {title: 'for Primary Authorities', fullpage: false});
+    });
+
+  app.get('/manage', function(req,res) {
+      res.render('manage.ejs', {title: 'My Account', fullpage: false});
+    });
+
   app.get('/privacy', function(req, res) {
       res.render('privacy.ejs', {title: 'Privacy and Terms of Service', fullpage: false});
     });

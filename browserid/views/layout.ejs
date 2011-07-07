@@ -4,45 +4,16 @@
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
   <title><%- title %></title>
   <link rel="stylesheet" href="/css/style.css"  type="text/css">
-</head>
-<body>
-<div id="splash">
-  <% if (fullpage) { %>
-  <div class="header">
-    <div class="manage"><a id="manageLink" href="manage.html">manage my logins</a></div>
-  </div>
-  <div class="tophalf">
-    <div class="title"><img src="i/browserid_logo.png"></div>
-    <div class="subtitle">A better way to log in.</div>
-  </div>
-  <% } else { %>
-  <div class="topquarter">
-    <div>
-      <a href="/"><div class="title"><img src="i/browserid_logo_lil.png"></div></a>
-      <div class="subtitle"><%- title %></div>
-    </div>
-  </div>
-  <% } %>
-  <div class="bottomhalf">
-    <%- body %>
-  </div>
-  <div class="footer">
-    <div>
-      <div class="right">
-        <p><img src="i/browserid_logo_sm.png"> is an <b>open source experiment</b> into improving identity and authentication on the web, by
-          <a href="https://mozillalabs.com">mozilla labs</a>.</p>
-      </div>
-      <div class="left">
-        <p> <a href="https://github.com/mozilla/browserid">Source Code</a>&nbsp;&nbsp;&nbsp;<a href="https://wiki.mozilla.org/Identity/Verified_Email_Protocol">Specification</a>&nbsp;&nbsp;&nbsp;<a href="http://groups.google.com/group/mozilla-labs">Mailing list</a>&nbsp;&nbsp;&nbsp;<a href="/privacy">Privacy</a>  </p>
-        <p class="copyright">Copyright © 2011 Mozilla.  All rights reserved. </p>
-      </div>
-    </div>
-  </div>
-</div>
-</body>
-<script src="dialog/jquery-min.js"></script>
-<script src="dialog/underscore-min.js"></script>
+  <link rel="stylesheet" href="css/github.css">
+  <script src="dialog/jquery-min.js"></script>
+  <script src="dialog/underscore-min.js"></script>
 <script>
+$(document).ready(function() {
+  if ($('#emailList')) {
+    display_saved_ids();
+  }
+});
+
 function display_saved_ids()
 {
   var emails = {};
@@ -85,11 +56,11 @@ function display_saved_ids()
       meta.append(deauth);
       deauth.click(function() {
         var t = JSON.parse(window.localStorage.emails);
-        delete t[e];
-        window.localStorage.emails = JSON.stringify(t);
         // remove email from server
         $.post("/wsapi/remove_email", {"email" : e}, function(response) {
-                    alert("response is : " +response);
+                    // we delete from store only once we got response
+                    delete t[e];
+                    window.localStorage.emails = JSON.stringify(t);
                     display_saved_ids();
                     });
       });
@@ -109,5 +80,40 @@ function display_saved_ids()
   });
 }
 </script>
-
+</head>
+<body>
+<div id="splash">
+  <div class="header">
+    <div class="manage"><a id="manageLink" href="manage">manage my logins</a></div>
+  </div>
+  <% if (fullpage) { %>
+  <div class="tophalf">
+    <div class="title"><img src="i/browserid_logo.png"></div>
+    <div class="subtitle">A better way to log in.</div>
+  </div>
+  <% } else { %>
+  <div class="topquarter">
+    <div>
+      <a href="/"><div class="title"><img src="i/browserid_logo_lil.png"></div></a>
+      <div class="subtitle"><%- title %></div>
+    </div>
+  </div>
+  <% } %>
+  <div class="bottomhalf">
+    <%- body %>
+  </div>
+  <div class="footer">
+    <div>
+      <div class="right">
+        <p><img src="i/browserid_logo_sm.png"> is an <b>open source experiment</b> into improving identity and authentication on the web, by
+          <a href="https://mozillalabs.com">mozilla labs</a>.</p>
+      </div>
+      <div class="left">
+        <p> <a href="https://github.com/mozilla/browserid">Source Code</a>&nbsp;&nbsp;&nbsp;<a href="https://wiki.mozilla.org/Identity/Verified_Email_Protocol">Specification</a>&nbsp;&nbsp;&nbsp;<a href="http://groups.google.com/group/mozilla-labs">Mailing list</a>&nbsp;&nbsp;&nbsp;<a href="/privacy">Privacy</a>  </p>
+        <p class="copyright">Copyright © 2011 Mozilla.  All rights reserved. </p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
 </html>
