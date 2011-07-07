@@ -73,6 +73,8 @@ exports.setup = function(server) {
     }
   });
 
+  server.use(express.bodyParser());
+
   // a tweak to get the content type of host-meta correct
   server.use(function(req, resp, next) {
     if (req.url === '/.well-known/host-meta') {

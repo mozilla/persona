@@ -11,24 +11,26 @@ const db = require('./db.js'),
 
 function checkParams(params) {
   return function(req, resp, next) {
-    var urlobj = url.parse(req.url, true);
-    var getArgs = urlobj.query;
-    req.get = getArgs;
-
+    var params_in_request=null;
+    if (req.method === "POST") {
+      params_in_request = req.body;
+    } else {
+      var getArgs = req.query;
+      req.get = getArgs;
+      params_in_request = getArgs;
+    }
+    
     try {
       params.forEach(function(k) {
-          if (!getArgs.hasOwnProperty(k) || typeof getArgs[k] !== 'string') {
+          if (!params_in_request.hasOwnProperty(k) || typeof params_in_request[k] !== 'string') {
             throw k;
           }
         });
     } catch(e) {
       console.log("error : " + e.toString());
-      console.log(getArgs);
       return httputils.badRequest(resp, "missing '" + e + "' argument");
     }
-    console.log("about to call next");
     next();
-    console.log("done calling next");
   };
 }
 
@@ -64,7 +66,7 @@ function setup(app) {
       var getArgs = req.get;
       
       // bcrypt the password
-      getArgs.hash = bcrypt.encrypt_sync(getArgs.pass, bcrypt.gen_salt_sync(4));
+      getArgs.hash = bcrypt.encrypt_sync(getArgs.pass, bcrypt.gen_salt_sync(10));
         
       try {
         // upon success, stage_user returns a secret (that'll get baked into a url
@@ -175,15 +177,12 @@ function setup(app) {
       }
     });
 
-  app.get('/wsapi/remove_email', checkAuthed, checkParams(["email"]), function(req, resp) {
-      // this should really be POST, but for now I'm having trouble seeing
-      // how to get POST args properly, so it's a GET (Ben).
-      // hmmm, I really want express or some other web framework!
-      var getArgs = req.get;
+  app.post('/wsapi/remove_email', checkAuthed, checkParams(["email"]), function(req, resp) {
+      var email = req.body.email;
       
-      db.removeEmail(req.session.authenticatedUser, getArgs.email, function(error) {
+      db.removeEmail(req.session.authenticatedUser, email, function(error) {
           if (error) {
-            console.log("error removing email " + getArgs.email);
+            console.log("error removing email " + email);
             httputils.badRequest(resp, error.toString());
           } else {
             httputils.jsonResponse(resp, true);
@@ -228,20 +227,11 @@ function setup(app) {
     });
 
   app.post('/wsapi/sync_emails', checkAuthed, function(req,resp) {
-      var requestBody = "";
-      req.on('data', function(str) {
-          requestBody += str;
-        });
-      req.on('end', function() {
-          try {
-            var emails = JSON.parse(requestBody);
-          } catch(e) {
-            httputils.badRequest(resp, "malformed payload: " + e);
-          }
-          db.getSyncResponse(req.session.authenticatedUser, emails, function(err, syncResponse) {
-              if (err) httputils.serverError(resp, err);
-              else httputils.jsonResponse(resp, syncResponse);
-            });
+      var emails = req.body;
+
+      db.getSyncResponse(req.session.authenticatedUser, emails, function(err, syncResponse) {
+          if (err) httputils.serverError(resp, err);
+          else httputils.jsonResponse(resp, syncResponse);
         });
     });
 

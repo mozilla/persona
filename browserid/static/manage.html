@@ -87,7 +87,7 @@ function display_saved_ids()
         delete t[e];
         window.localStorage.emails = JSON.stringify(t);
         // remove email from server
-        $.get("/wsapi/remove_email", {"email" : e}, function(response) {
+        $.post("/wsapi/remove_email", {"email" : e}, function(response) {
                     alert("response is : " +response);
                     display_saved_ids();
                     });
