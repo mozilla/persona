@@ -32,6 +32,7 @@ function router(app) {
   // simple redirects (internal for now)
   app.get('/sign_in', internal_redirector('/dialog/index.html'));
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
+  app.get('/privacy', internal_redirector('/privacy.html'));
 
   // register all the WSAPI handlers
   wsapi.setup(app);

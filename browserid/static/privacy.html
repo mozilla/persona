@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <title>BrowserID - Privacy and Terms of Service</title>
+  <link rel="stylesheet" href="css/style.css"  type="text/css">
+</head>
+<body onload="display_saved_ids()">
+<div id="splash">
+  <div class="topquarter">
+    <div>
+      <a href="/"><div class="title"><img src="i/browserid_logo_lil.png"></div></a>
+      <div class="subtitle">Privacy and Terms of Service</div>
+    </div>
+  </div>
+  <div class="bottomhalf">
+    <div class="why">
+      <p>
+        Privacy Policy and Terms of Service
+      </p>
+    </div>
+    <div>
+      to be filled in soon
+    </div>
+  </div>
+  <div class="footer">
+    <div>
+      <div class="right">
+        <p><img src="i/browserid_logo_sm.png"> is an <b>open source experiment</b> into improving identity and authentication on the web, by
+          <a href="https://mozillalabs.com">mozilla labs</a>.</p>
+      </div>
+      <div class="left">
+        <p> <a href="https://github.com/mozilla/browserid">Source Code</a>&nbsp;&nbsp;&nbsp;<a href="https://wiki.mozilla.org/Identity/Verified_Email_Protocol">Specification</a>&nbsp;&nbsp;&nbsp;<a href="http://groups.google.com/group/mozilla-labs">Mailing list</a> </p>
+        <p class="copyright">Copyright © 2011 Mozilla.  All rights reserved. </p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+<script src="dialog/jquery-min.js"></script>
+<script src="dialog/underscore-min.js"></script>
+<script>
+function display_saved_ids()
+{
+  var emails = {};
+  if (window.localStorage.emails) {
+    emails = JSON.parse(window.localStorage.emails);
+  }
+
+  $('#cancellink').click(function() {
+    if (confirm('Are you sure you want to cancel your account?')) {
+      $.post("/wsapi/account_cancel", {}, function(result) {
+        window.localStorage.emails = null;
+        document.location="/";
+      });
+    }
+  });
+
+  $("#emailList").empty();
+  _(emails).each(function(data, e) {
+      var block = $("<div>").addClass("emailblock");
+      var label = $("<div>").addClass("email").text(e);
+      var meta = $("<div>").addClass("meta");
+
+      /* 
+        var priv = $("<div class='keyblock'>").text(data.priv);
+        priv.hide();
+       */
+
+      var pub = $("<div class='keyblock'>").text(data.pub);
+      pub.hide();
+      var linkblock = $("<div>");
+      var puba = $("<a>").text("[show public key]");
+      // var priva = $("<a>").text("[show private key]");
+      puba.click(function() {pub.show()});
+      // priva.click(function() {priv.show()});
+      linkblock.append(puba);
+      // linkblock.append(" / ");
+      // linkblock.append(priva);
+      
+      var deauth = $("<button>").text("Forget this Email");
+      meta.append(deauth);
+      deauth.click(function() {
+        var t = JSON.parse(window.localStorage.emails);
+        delete t[e];
+        window.localStorage.emails = JSON.stringify(t);
+        // remove email from server
+        $.post("/wsapi/remove_email", {"email" : e}, function(response) {
+                    alert("response is : " +response);
+                    display_saved_ids();
+                    });
+      });
+      
+      var d = new Date(data.created);
+      var datestamp = $("<div class='date'>").text("Logged in at " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ", " + d.getMonth() + "/" + d.getDay() + "/" + d.getUTCFullYear());
+
+      meta.append(datestamp);
+      meta.append(linkblock);
+                  
+      block.append(label);
+      block.append(meta);
+      // block.append(priv);
+      block.append(pub);
+      
+      $("#emailList").append(block);
+  });
+}
+</script>
+
+</html>

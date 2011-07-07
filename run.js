@@ -144,11 +144,15 @@ var dirs = [
         name: "http://rp.eyedee.me",
         path: path.join(__dirname, "rp")
     },
-    // A reference primary identity provider.
+
+    // disabled primary for now since it's not in working
+    // order.
+    /*    // A reference primary identity provider.
     {
         name: "https://eyedee.me",
         path: path.join(__dirname, "primary")
-    },
+        }, */
+
     // BrowserID: the secondary + ip + more.
     {
         name: "https://browserid.org",
