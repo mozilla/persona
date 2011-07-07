@@ -9,18 +9,27 @@ const db = require('./db.js'),
       email = require('./email.js'),
       bcrypt = require('bcrypt');
 
-function checkParams(getArgs, resp, params) {
-  try {
-    params.forEach(function(k) {
-      if (!getArgs.hasOwnProperty(k) || typeof getArgs[k] !== 'string') {
-        throw k;
-      }
-    });
-  } catch(e) {
-    httputils.badRequest(resp, "missing '" + e + "' argument");
-    return false;
-  }
-  return true;
+function checkParams(params) {
+  return function(req, resp, next) {
+    var urlobj = url.parse(req.url, true);
+    var getArgs = urlobj.query;
+    req.get = getArgs;
+
+    try {
+      params.forEach(function(k) {
+          if (!getArgs.hasOwnProperty(k) || typeof getArgs[k] !== 'string') {
+            throw k;
+          }
+        });
+    } catch(e) {
+      console.log("error : " + e.toString());
+      console.log(getArgs);
+      return httputils.badRequest(resp, "missing '" + e + "' argument");
+    }
+    console.log("about to call next");
+    next();
+    console.log("done calling next");
+  };
 }
 
 function isAuthed(req) {
@@ -29,8 +38,9 @@ function isAuthed(req) {
 
 // turned this into a proper middleware
 function checkAuthed(req, resp, next) {
-  if (!isAuthed(req))
+  if (!isAuthed(req)) {
     return httputils.badRequest(resp, "requires authentication");
+  }
 
   next();
 }
@@ -50,14 +60,9 @@ function setup(app) {
    * this involves creating a secret url that must be delivered to the
    * user via their claimed email address.  Upon timeout expiry OR clickthrough
    * the staged user account transitions to a valid user account */
-  app.get('/wsapi/stage_user', function(req, resp) {
-      var urlobj = url.parse(req.url, true);
-      var getArgs = urlobj.query;
+  app.get('/wsapi/stage_user', checkParams([ "email", "pass", "pubkey", "site" ]), function(req, resp) {
+      var getArgs = req.get;
       
-      if (!checkParams(getArgs, resp, [ "email", "pass", "pubkey", "site" ])) {
-        return;
-      }
-
       // bcrypt the password
       getArgs.hash = bcrypt.encrypt_sync(getArgs.pass, bcrypt.gen_salt_sync(4));
         
@@ -137,12 +142,8 @@ function setup(app) {
     });
   
   
-  app.get('/wsapi/authenticate_user', function(req, resp) {
-      var urlobj = url.parse(req.url, true);
-      var getArgs = urlobj.query;
-      
-      if (!checkParams(getArgs, resp, [ "email", "pass" ])) return;
-      
+  app.get('/wsapi/authenticate_user', checkParams(["email", "pass"]), function(req, resp) {
+      var getArgs = req.get;
       db.checkAuth(getArgs.email, getArgs.pass, function(rv) {
           if (rv) {
             if (!req.session) req.session = {};
@@ -153,11 +154,8 @@ function setup(app) {
     });
     
   // FIXME: need CSRF protection
-  app.get('/wsapi/add_email', checkAuthed, function (req, resp) {
-      var urlobj = url.parse(req.url, true);
-      var getArgs = urlobj.query;
-      
-      if (!checkParams(getArgs, resp, [ "email", "pubkey", "site" ])) return;
+  app.get('/wsapi/add_email', checkAuthed, checkParams(["email", "pubkey", "site"]), function (req, resp) {
+      var getArgs = req.get;
       
       try {
         // upon success, stage_user returns a secret (that'll get baked into a url
@@ -177,14 +175,11 @@ function setup(app) {
       }
     });
 
-  app.get('/wsapi/remove_email', checkAuthed, function(req, resp) {
+  app.get('/wsapi/remove_email', checkAuthed, checkParams(["email"]), function(req, resp) {
       // this should really be POST, but for now I'm having trouble seeing
       // how to get POST args properly, so it's a GET (Ben).
       // hmmm, I really want express or some other web framework!
-      var urlobj = url.parse(req.url, true);
-      var getArgs = urlobj.query;
-      
-      if (!checkParams(getArgs, resp, [ "email"])) return;
+      var getArgs = req.get;
       
       db.removeEmail(req.session.authenticatedUser, getArgs.email, function(error) {
           if (error) {
@@ -207,10 +202,8 @@ function setup(app) {
           }});
     });
 
-  app.get('/wsapi/set_key', checkAuthed, function (req, resp) {
-      var urlobj = url.parse(req.url, true);
-      var getArgs = urlobj.query;
-      if (!checkParams(getArgs, resp, [ "email", "pubkey" ])) return;
+  app.get('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
+      var getArgs = req.get;
       db.addKeyToEmail(req.session.authenticatedUser, getArgs.email, getArgs.pubkey, function (rv) {
           httputils.jsonResponse(resp, rv);
         });
@@ -252,12 +245,8 @@ function setup(app) {
         });
     });
 
-  app.get('/wsapi/prove_email_ownership', function(req, resp) {
-      var urlobj = url.parse(req.url, true);
-      var getArgs = urlobj.query;
-      
-      // validate inputs
-      if (!checkParams(getArgs, resp, [ "token" ])) return;
+  app.get('/wsapi/prove_email_ownership', checkParams(["token"]), function(req, resp) {
+      var getArgs = req.get;
       
       db.gotVerificationSecret(getArgs.token, function(e) {
           if (e) {
