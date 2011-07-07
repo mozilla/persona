@@ -15,9 +15,7 @@ function checkParams(params) {
     if (req.method === "POST") {
       params_in_request = req.body;
     } else {
-      var getArgs = req.query;
-      req.get = getArgs;
-      params_in_request = getArgs;
+      params_in_request = req.query;
     }
     
     try {
@@ -63,23 +61,24 @@ function setup(app) {
    * user via their claimed email address.  Upon timeout expiry OR clickthrough
    * the staged user account transitions to a valid user account */
   app.get('/wsapi/stage_user', checkParams([ "email", "pass", "pubkey", "site" ]), function(req, resp) {
-      var getArgs = req.get;
       
       // bcrypt the password
-      getArgs.hash = bcrypt.encrypt_sync(getArgs.pass, bcrypt.gen_salt_sync(10));
+      // we should be cloning this object here.
+      var stageParams = req.query;
+      stageParams['hash'] = bcrypt.encrypt_sync(req.query.pass, bcrypt.gen_salt_sync(10));
         
       try {
         // upon success, stage_user returns a secret (that'll get baked into a url
         // and given to the user), on failure it throws
-        var secret = db.stageUser(getArgs);
+        var secret = db.stageUser(stageParams);
         
         // store the email being registered in the session data
         if (!req.session) req.session = {};
         
         // store inside the session the details of this pending verification
         req.session.pendingVerification = {
-          email: getArgs.email,
-          hash: getArgs.hash // we must store both email and password to handle the case where
+          email: stageParams.email,
+          hash: stageParams.hash // we must store both email and password to handle the case where
           // a user re-creates an account - specifically, registration status
           // must ensure the new credentials work to properly verify that
           // the user has clicked throught the email link. note, this salted, bcrypted
@@ -90,7 +89,7 @@ function setup(app) {
         httputils.jsonResponse(resp, true);
         
         // let's now kick out a verification email!
-        email.sendVerificationEmail(getArgs.email, getArgs.site, secret);
+        email.sendVerificationEmail(stageParams.email, stageParams.site, secret);
         
       } catch(e) {
         // we should differentiate tween' 400 and 500 here.
@@ -145,11 +144,10 @@ function setup(app) {
   
   
   app.get('/wsapi/authenticate_user', checkParams(["email", "pass"]), function(req, resp) {
-      var getArgs = req.get;
-      db.checkAuth(getArgs.email, getArgs.pass, function(rv) {
+      db.checkAuth(req.query.email, req.query.pass, function(rv) {
           if (rv) {
             if (!req.session) req.session = {};
-            req.session.authenticatedUser = getArgs.email;
+            req.session.authenticatedUser = req.query.email;
           }
           httputils.jsonResponse(resp, rv);
         });
@@ -157,20 +155,18 @@ function setup(app) {
     
   // FIXME: need CSRF protection
   app.get('/wsapi/add_email', checkAuthed, checkParams(["email", "pubkey", "site"]), function (req, resp) {
-      var getArgs = req.get;
-      
       try {
         // upon success, stage_user returns a secret (that'll get baked into a url
         // and given to the user), on failure it throws
-        var secret = db.stageEmail(req.session.authenticatedUser, getArgs.email, getArgs.pubkey);
+        var secret = db.stageEmail(req.session.authenticatedUser, req.query.email, req.query.pubkey);
         
         // store the email being added in session data
-        req.session.pendingAddition = getArgs.email;
+        req.session.pendingAddition = req.query.email;
         
         httputils.jsonResponse(resp, true);
         
         // let's now kick out a verification email!
-        email.sendVerificationEmail(getArgs.email, getArgs.site, secret);
+        email.sendVerificationEmail(req.query.email, req.query.site, secret);
       } catch(e) {
         // we should differentiate tween' 400 and 500 here.
         httputils.badRequest(resp, e.toString());
@@ -202,8 +198,7 @@ function setup(app) {
     });
 
   app.get('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
-      var getArgs = req.get;
-      db.addKeyToEmail(req.session.authenticatedUser, getArgs.email, getArgs.pubkey, function (rv) {
+      db.addKeyToEmail(req.session.authenticatedUser, req.query.email, req.query.pubkey, function (rv) {
           httputils.jsonResponse(resp, rv);
         });
     });
@@ -236,9 +231,7 @@ function setup(app) {
     });
 
   app.get('/wsapi/prove_email_ownership', checkParams(["token"]), function(req, resp) {
-      var getArgs = req.get;
-      
-      db.gotVerificationSecret(getArgs.token, function(e) {
+      db.gotVerificationSecret(req.query.token, function(e) {
           if (e) {
             console.log("error completing the verification: " + e);
             httputils.jsonResponse(resp, false);
