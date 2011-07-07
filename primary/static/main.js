@@ -217,7 +217,9 @@
     $("#signin_submit").show().unbind('click').click(function() {
       if ($(this).hasClass('disabled')) return true;
 
-      var email = $("#authenticate_dialog input:eq(0)").val();
+      // make sure email is in lowercase, some mobile browsers like
+      // mobile Safari, start with capitalizing the first letter.
+      var email = $("#authenticate_dialog input:eq(0)").val().toLowerCase();
       var pass = $("#authenticate_dialog input:eq(1)").val();
 
       $.ajax({
@@ -309,7 +311,7 @@
   $("#sign_in").click(function() {
     runAuthenticateDialog(undefined);
   });
-  
+
   $("#sign_out").click(function() {
     $("#logged_in").hide();
     $("#logged_out").hide();
@@ -327,7 +329,7 @@
       }
     });
   });
-  
+
   refreshAuthStatus();
 
 /*  // 'Enter' in any input field triggers a click on the submit button
@@ -337,5 +339,5 @@
       e.preventDefault();
     }
   });
-  */      
+  */
 })();
