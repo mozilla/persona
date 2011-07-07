@@ -9,48 +9,50 @@ const   path = require('path'),
 var VAR_DIR = path.join(__dirname, "var");
 try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { }
 
-function handler(req, resp, next) {
-    // dispatch!
-    var parsed = url.parse(req.url, true);
+function router(app) {
+  app.get('/', function(req, resp, next) {
+      var assertion = req.query.assertion;
+      var audience = req.query.audience;
 
-    var urlpath = parsed.pathname;
-
-    var assertion = parsed.query['assertion'];
-    var audience = parsed.query['audience'];
-
-    // allow client side XHR to access this WSAPI, see
-    // https://developer.mozilla.org/en/http_access_control
-    // for details
-    resp.setHeader('Access-Control-Allow-Origin', '*');
-    if (req.method === 'OPTIONS') {
+      if (!(assertion && audience))
+        return httputils.jsonResponse(resp, {status:"failure", reason:"need assertion and audience"});
+        
+      // allow client side XHR to access this WSAPI, see
+      // https://developer.mozilla.org/en/http_access_control
+      // for details
+      // FIXME: should we really allow this? It might encourage the wrong behavior
+      resp.setHeader('Access-Control-Allow-Origin', '*');
+      if (req.method === 'OPTIONS') {
         resp.setHeader('Access-Control-Allow-Methods', 'GET');
         resp.writeHead(200);
         resp.end();
         return;
-    }
-    
-    try {
+      }
+      
+      try {
         var assertionObj = new idassertion.IDAssertion(assertion);
-        assertionObj.verify(
-            audience,
-            function(payload) {
-                result = {
-                    status : "okay",
-                    email : payload.email,
-                    audience : payload.audience,
-                    "valid-until" : payload["valid-until"],
-                    issuer : payload.issuer
-                };
-                httputils.jsonResponse(resp, result);
-            },
-            function(errorObj) {
-                httputils.jsonResponse(resp, {status:"failure", reason:errorObj});
-            }
-        );
-    } catch (e) {
+        assertionObj
+          .verify(
+                  audience,
+                  function(payload) {
+                    result = {
+                      status : "okay",
+                      email : payload.email,
+                      audience : payload.audience,
+                      "valid-until" : payload["valid-until"],
+                      issuer : payload.issuer
+                    };
+                    httputils.jsonResponse(resp, result);
+                  },
+                  function(errorObj) {
+                    httputils.jsonResponse(resp, {status:"failure", reason:errorObj});
+                  }
+                  );
+      } catch (e) {
         console.log(e.stack);
         httputils.jsonResponse(resp, {status:"failure", reason:e.toString()});
-    }
+      }
+    });
 };
 
 exports.varDir = VAR_DIR;
@@ -71,5 +73,5 @@ exports.setup = function(app) {
         resp.end();
     });
 
-    app.use(handler);
+    router(app);
 };
