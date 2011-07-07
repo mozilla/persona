@@ -29,10 +29,23 @@ function internal_redirector(new_url) {
 }
 
 function router(app) {
+  app.set("views", __dirname + '/views'); 
+
   // simple redirects (internal for now)
   app.get('/sign_in', internal_redirector('/dialog/index.html'));
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
-  app.get('/privacy', internal_redirector('/privacy.html'));
+
+  app.get('/', function(req,res) {
+      res.render('index.ejs', {title: 'A Better Way to Log In', fullpage: true});
+    });
+
+  app.get('/users', function(req,res) {
+      res.render('users.ejs', {title: 'for Users', fullpage: false});
+    });
+
+  app.get('/privacy', function(req, res) {
+      res.render('privacy.ejs', {title: 'Privacy and Terms of Service', fullpage: false});
+    });
 
   // register all the WSAPI handlers
   wsapi.setup(app);

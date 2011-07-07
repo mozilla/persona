@@ -63,6 +63,7 @@ function substitutionMiddleware(req, resp, next) {
     var realWrite = resp.write;
     var realEnd = resp.end;
     var realWriteHead = resp.writeHead;
+    var realSend = resp.send;
 
     var buf = undefined;
     var enc = undefined;
@@ -80,13 +81,18 @@ function substitutionMiddleware(req, resp, next) {
         }
         if (!contentType) contentType = resp.getHeader('content-type');
         if (!contentType) contentType = "application/unknown";
-        realWriteHead(sc, reason, hdrs);
+        realWriteHead.call(resp, sc, reason, hdrs);
     };
 
     resp.write = function (chunk, encoding) {
         if (buf) buf += chunk;
         else buf = chunk;
         enc = encoding;
+    };
+
+    resp.send = function(stuff) {
+      buf = stuff;
+      realSend.call(resp,stuff);
     };
 
     resp.end = function() {
@@ -100,7 +106,9 @@ function substitutionMiddleware(req, resp, next) {
                 if (l != buf.length) resp.setHeader('Content-Length', buf.length);
             }
         }
-        if (buf && buf.length) realWrite.call(resp, buf, enc);
+        if (buf && buf.length) {
+          realWrite.call(resp, buf, enc);
+        }
         realEnd.call(resp);
     }
 
