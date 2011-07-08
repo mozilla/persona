@@ -2,14 +2,18 @@
 <head>
   <title> BrowserID </title>
   <link href="../dialog/style.css" type="text/css" media="screen" rel="stylesheet"></link>
-</head>
-<body id="body">
-<div id="header">
-  <div class="title"><img src="../i/browserid_logo_lil.png"></div><div class="subtitle">A better way to log in.</div>
-</div>
-<div id="authenticate_dialog" class="dialog">
+  <!-- XXX: jquery shouldn't be used, it's too big.  we're using it now cause this is a proof of concept -->
+  <script src="../dialog/jquery-min.js"></script>
+  <script src="../dialog/underscore-min.js"></script>
+  <script src="../dialog/backbone-min.js"></script>
+  <script src="../dialog/ICanHaz.min.js"></script>
+  <script src="../dialog/jschannel.js"></script>
+  <script src="../dialog/crypto-stubs.js"></script>
+  <script src="../dialog/main.js"></script>
+
+<script id="authenticate_dialog" type="text/html">
   <div class="content">
-    <p class="prompt">Logging into <span class="sitename bad"></span>:</p>
+    <p class="prompt">Logging into <span class="sitename bad">{{sitename}}</span>:</p>
     <div class="input">
       <div class="label"> Email </div>
       <div class="input"> <input type="text"></input></div>
@@ -26,8 +30,13 @@
       <div class="action"><a href="#">Don't have a BrowserID yet?</a></div>
     </div>
   </div>
+<div id="bottom-bar">
+  <button id="back">Go Back</button>
+  <button id="submit" class="righty action">Sign In</button>
+  <button id="cancel" class="righty">Cancel</button>
 </div>
-<div id="create_dialog" class="dialog">
+</script>
+<script id="create_dialog" type="text/html">
   <div class="content">
     <div class="summary create">BrowserID makes logging in <b>safer and easier</b>.  To begin, please provide an email address and pick a password:</div>
     <div class="summary forgot"><b>Forgot your password?</b>  No problem!  Enter your email address, pick a new password, and we'll get you set up again!</div>
@@ -49,11 +58,11 @@
       <span id="in_use_email">Email</span> in use, If this email is yours you can <a href="#">log in</a> with it?
     </div>
   </div>
-</div>
-<div id="confirm_email_dialog" class="dialog">
+</script>
+<script id="confirm_email_dialog" type="text/html">
   <div class="title"> Confirm Your Email </div>
   <div class="content">
-    <div class="summary">Welcome, <span class="email good"></span>.  You will receive a <strong>confirmation email</strong> in a few moments.  To activate your BrowserID, please <strong>visit the link</strong> included in the email.</div>
+    <div class="summary">Welcome, <span class="email good">{{email}}</span>.  You will receive a <strong>confirmation email</strong> in a few moments.  To activate your BrowserID, please <strong>visit the link</strong> included in the email.</div>
     <div class="attention">
       Waiting for email confirmation...
     </div>
@@ -61,17 +70,17 @@
       <div class="action"> No email yet?  <a href="#">Resend it!</a></div>
     </div>
   </div>
-</div>
-<div id="confirmed_email_dialog" class="dialog">
+</script>
+<script id="confirmed_email_dialog" type="text/html">
   <div class="title"> Confirm Your Email </div>
   <div class="content">
-    <div class="summary">Welcome, <span class="email good"></span>.  You will receive a <strong>confirmation email</strong> in a few moments.  To prove that this is your email address, please <strong>visit the link</strong> included in the email.</div>
+    <div class="summary">Welcome, <span class="email good">{{email}}</span>.  You will receive a <strong>confirmation email</strong> in a few moments.  To prove that this is your email address, please <strong>visit the link</strong> included in the email.</div>
     <div class="attention_awesome ">
       Your email has been confirmed! </span>
     </div>
   </div>
-</div>
-<div id="add_email_dialog" class="dialog">
+</script>
+<script id="add_email_dialog" type="text/html">
   <div class="title"> Add a new email address </div>
   <div class="content">
     <div class="summary">Setting up a up a new email address is easy, tell us what it is and we'll get started:</div>
@@ -81,37 +90,36 @@
       <div class="note"></div>
     </div>
   </div>
-</div>
-<div id="sign_in_dialog" class="dialog">
+</script>
+<script id="sign_in_dialog" type="text/html">
   <div class="content">
-    <p class="prompt">What email address would you like to use to log into <span class="sitename bad"></span>?</p>
+    <p class="prompt">What email address would you like to use to log into <span class="sitename bad">{{sitename}}</span>?</p>
     <form id="identities" name="identities">
+      <!-- add identities form -->
     </form>
   </div>
   <div class="actions">
     <div class="action"><a href="#">Add a new email address</a></div>
     <div class="action"><a href="#">This is not me.</a></div>
   </div>
-</div>
-<div id="error_dialog" class="dialog">
+</script>
+<script id="error_dialog" type="text/html">
   <div class="title"> Sign in with BrowserID </div>
   <div class="content">
   </div>
-</div>
-<div id="waiting_dialog" class="dialog">
+</script>
+<script id="waiting_dialog" type="text/html">
   <div class="title"> Sign in with BrowserID </div>
   <div class="content">
   </div>
+</script>
+
+</head>
+<body id="body">
+<div id="header">
+  <div class="title"><img src="../i/browserid_logo_lil.png"></div><div class="subtitle">A better way to log in.</div>
 </div>
-<div id="bottom-bar">
-  <button id="back">Go Back</button>
-  <button id="submit" class="righty action">Sign In</button>
-  <button id="cancel" class="righty">Cancel</button>
+<div id="main" class="dialog">
 </div>
 </body>
-<!-- XXX: jquery shouldn't be used, it's too big.  we're using it now cause this is a proof of concept -->
-<script src="../dialog/jquery-min.js"></script>
-<script src="../dialog/jschannel.js"></script>
-<script src="../dialog/crypto-stubs.js"></script>
-<script src="../dialog/main.js"></script>
 </html>
