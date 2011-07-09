@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+		<title>Browser ID</title>
+		<script type='text/javascript' src='../steal/steal.js?dialog,development'></script>
+    <script>
+      $(document).ready(function() {
+         $('#signin').signin().hide();
+         $('#authenticate').authenticate().hide();
+         $('#waiting').waiting().hide();
+         $('#addemail').add_email().hide();
+         $('#error').error_message().hide();
+      });
+    </script>
+	</head>
+	<body>
+<div id="header">
+  <div class="title"><img src="/i/browserid_logo_lil.png"></div><div class="subtitle">A better way to log in.</div>
+</div>
+
+<div id="signin" class="dialog">
+</div>
+
+<div id="authenticate" class="dialog">
+</div>
+
+<div id="addemail" class="dialog">
+</div>
+
+<div id="error" class="dialog">
+</div>
+
+<div id="waiting" class="dialog">
+</div>
+	</body>
+</html>

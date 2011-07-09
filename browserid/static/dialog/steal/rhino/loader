@@ -1,0 +1,16 @@
+#!/bin/sh
+# This script is the common JS loader
+
+ARGS=[
+for arg
+do
+  ARGS=$ARGS"'$arg'",
+done
+ARGS=$ARGS]
+
+#if [ $LOADPATH == "" ]
+#then
+#  LOADPATH=$BASE$1
+#fi
+
+java -Xmx170m -Xss1024k -cp $CP -Dbasepath=$BASE -Dcmd=$CMD org.mozilla.javascript.tools.shell.Main -opt -1 -e _args="$ARGS" -e 'load('"'"$LOADPATH"'"')'

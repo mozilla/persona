@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+		<title>drag</title>
+        <style type='text/css'>
+            body {font-family: verdana}
+            .error {border: solid 1px red;}
+            .error_text { color: red; font-size: 10px;}
+            td {padding: 3px;}
+			.handle {
+				width: 300px;
+				height: 40px;
+				border: dashed 1px red;
+				cursor : pointer;
+			}
+			#internal .handle {
+				border-color: green;
+			}
+			#internal {
+				border: solid 3px green;
+				padding: 5px;
+				margin-top: 50px;
+			}
+			#ondoc {
+				border: solid 5px red;
+				padding: 20px;
+				height: 300px;
+				width: 600px;
+				margin: 10px;
+			}
+        </style>
+	</head>
+	<body>
+
+		
+		<div id="ondoc">
+	    	<div class='handle'>handle</div>
+			<div class='handle'>handle</div>
+	    </div>
+		<script type='text/javascript' 
+                src='../../../../steal/steal.js?steal[app]=jquery/event/drag/step&steal[env]=development'
+                package='main.js'
+                compress='false'>   
+        </script>
+		<script type='text/javascript'>
+			$("#ondoc .handle").live("draginit", function(ev, drag){
+				drag.step(40,$("#ondoc"))
+			})
+			
+			
+		</script>
+		
+		
+	</body>
+</html>

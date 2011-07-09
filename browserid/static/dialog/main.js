@@ -19,35 +19,6 @@
     return undefined;
   }
 
-  function showDialog(name, args) {
-    // there must be a better way to do this
-    $('#main').show();
-    $('#main').html(DIALOGS[name].render(args).el.innerHTML);
-  }
-
-  var DIALOGS = {};
-  
-  var AuthenticateView = Backbone.View.extend({
-      tagName: 'div',
-      className: 'dialog',
-      render : function() {
-        $(this.el).html(ich.authenticate_dialog());
-        return this;
-      }
-    });
-
-  DIALOGS['authenticate'] = new AuthenticateView();
-
-  var SigninView = Backbone.View.extend({
-      className: 'dialog',
-      render: function(args) {
-        $(this.el).html(ich.sign_in_dialog(args));
-        return this;
-      }
-    });
-
-  DIALOGS['signin'] = new SigninView();
-
   function checkAuthStatus(authcb, notauthcb, onsuccess, onerror) {
     runWaitingDialog(
       "Communicating with server",
@@ -178,8 +149,6 @@
   }
 
   function runSignInDialog(onsuccess, onerror) {
-    return showDialog('signin', {sitename: remoteOrigin});
-
     $(".dialog").hide();
 
     $("#back").hide();
