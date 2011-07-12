@@ -230,8 +230,8 @@
             $("#authenticate_dialog div.attention_lame").hide().fadeIn(400);
           } else {
             runWaitingDialog(
-              "Finishing Log In...",
-              "In just a moment you'll be logged into BrowserID.",
+              "Finishing Sign In...",
+              "In just a moment you'll be signed into BrowserID.",
               onsuccess, onerror);
 
             syncIdentities(onsuccess, onerror);
