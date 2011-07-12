@@ -1,6 +1,6 @@
 // this is the picker code!  it runs in the identity provider's domain, and
 // fiddles the dom expressed by picker.html
-(function() {
+var run = function() {
   var chan = Channel.build(
     {
       window: window.opener,
@@ -213,6 +213,8 @@
   }
 
   function runAuthenticateDialog(email, onsuccess, onerror) {
+    return;
+
     $(".dialog").hide();
     $("#back").hide();
     $("#cancel").show().unbind('click').click(function() {
@@ -775,4 +777,6 @@
       e.preventDefault();
     }
   });
-})();
+};
+
+$(document).ready(run);

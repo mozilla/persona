@@ -2,14 +2,14 @@
   font-family: 'Shadows Into Light';
   font-style: normal;
   font-weight: normal;
-  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('../css/sil.ttf') format('truetype');
+  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('../../css/sil.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'Tenor Sans';
   font-style: normal;
   font-weight: normal;
-  src: local('Tenor Sans'), local('TenorSans'), url('../css/ts.ttf') format('truetype');
+  src: local('Tenor Sans'), local('TenorSans'), url('../../css/ts.ttf') format('truetype');
 }
 
 body {
@@ -78,7 +78,6 @@ span.sitename, span.email {
     margin-left: 1em;
     margin-right: 1em;
     margin-top: 16px;
-    display: none;
     z-index: 0;
 }
 
