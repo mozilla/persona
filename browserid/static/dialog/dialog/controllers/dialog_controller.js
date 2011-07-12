@@ -55,9 +55,56 @@ $.Controller("Dialog", {}, {
       var assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
       this.onsuccess(assertion);
     },
+
+    "#addemail click": function(event) {
+      this.doNewEmail();
+    },
+
+    "#addemail_button click": function(event) {
+      // add the actual email
+      // now we need to actually try to stage the creation of this account.
+      var email = $("#email_input").val();
+      var keypair = CryptoStubs.genKeyPair();
+
+      var self = this;
+
+      // kick the user to waiting/status page while we talk to the server.
+      this.doWait(
+        "One Moment Please...",
+        "We're adding this email to your account, this should only take a couple seconds."
+      );
+
+      $.ajax({
+        url: '/wsapi/add_email?email=' + encodeURIComponent(email)
+              + '&pubkey=' + encodeURIComponent(keypair.pub)
+              + '&site=' + encodeURIComponent(this.remoteOrigin.replace(/^(http|https):\/\//, '')),
+        success: function() {
+          // email successfully staged, now wait for email confirmation
+          self.doConfirmEmail(email, keypair);
+        },
+        error: function() {
+          runErrorDialog(
+            "serverError",
+            "Error Adding Address!",
+            "There was a technical problem while trying to add this email to your account.  Yucky.");
+        }
+      });
+    },
+
+    "#notme click": function(event) {
+      clearEmails();
+      var self = this;
+      $.get("/wsapi/logout", function() {
+          self.doAuthenticate();
+      });
+    },
             
     "#cancel click": function(event) {
       this.onerror("canceled");
+    },
+
+    "#continue_button click": function(event) {
+      this.doSignIn();
     },
 
     getVerifiedEmail: function(remoteOrigin, onsuccess, onerror) {
@@ -96,6 +143,59 @@ $.Controller("Dialog", {}, {
 
     doWait: function(title, message) {
       $('#dialog').html("views/wait.ejs", {title: title, message: message});
+    },
+
+    doNewEmail: function() {
+      $('#dialog').html("views/addemail.ejs", {});
+      $('#bottom-bar').html("views/bottom-addemail.ejs", {});
+    },
+
+    doConfirmEmail: function(email, keypair) {
+      $('#dialog').html("views/confirmemail.ejs", {email:email});
+      $('#bottom-bar').html("");
+
+      var self = this;
+
+      // now poll every 3s waiting for the user to complete confirmation
+      function setupRegCheck() {
+        return setTimeout(function() {
+            $.ajax({
+                url: '/wsapi/registration_status',
+                  success: function(status, textStatus, jqXHR) {
+                  // registration status checks the status of the last initiated registration,
+                  // it's possible return values are:
+                  //   'complete' - registration has been completed
+                  //   'pending'  - a registration is in progress
+                  //   'noRegistration' - no registration is in progress
+                  if (status === 'complete') {
+                    // this is a secondary registration from browserid.org, persist
+                    // email, keypair, and that fact
+                    self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
+                    
+                    // and tell the user that everything is really quite awesome.
+                    self.find("#waiting_confirmation").hide();
+                    self.find("#confirmed_notice").show();
+                    self.find('#bottom-bar').html("views/bottom-confirmemail.ejs", {});
+                  } else if (status === 'pending') {
+                    // try again, what else can we do?
+                    pollTimeout = setupRegCheck();
+                  } else {
+                    runErrorDialog("serverError",
+                                   "Registration Failed",
+                                   "An error was encountered and the sign up cannot be completed, please try again later.");
+                  }
+                },
+                  error: function(jqXHR, textStatus, errorThrown) {
+                  runErrorDialog("serverError", "Registration Failed", jqXHR.responseText);
+                }
+              });
+          }, 3000);
+      }
+      
+      // setup the timeout
+      this.pollTimeout = setupRegCheck();
+
+      // FIXME cancel this timeout appropriately on cancel
     },
 
     persistAddressAndKeyPair: function(email, keypair, issuer) {
@@ -145,7 +245,7 @@ $.Controller("Dialog", {}, {
             
             function addNextEmail() {
               if (!emailsToAdd || !emailsToAdd.length) {
-                doSignIn();
+                self.doSignIn();
                 return;
               }
 
