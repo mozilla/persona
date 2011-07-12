@@ -5,7 +5,7 @@ This message is being sent to you to complete your login to
  
 {{link}}
  
-If you are NOT trying to log into {{site}}, just ignore this email. 
+If you are NOT trying to sign into {{site}}, just ignore this email. 
  
 Thanks,
 BrowserID
