@@ -10,9 +10,17 @@ $.Controller("Dialog", {}, {
       this.element.show();
 
       // keep track of where we are and what we do on success and error
-      this.state = null;
       this.onsuccess = null;
       this.onerror = null;
+
+    },
+      
+      // this is not working yet
+    "#body keypress": function(e){
+      if(e.which == 13) {
+        $('.submit').click();
+        e.preventDefault();
+      }
     },
 
     "#signin click": function(event) {
@@ -98,23 +106,68 @@ $.Controller("Dialog", {}, {
           self.doAuthenticate();
       });
     },
+      
+    "#create click": function(event) {
+      this.doCreate();
+    },
+
+    "#forgotpassword click": function(event) {
+      this.doForgotPassword();
+    },
             
     "#cancel click": function(event) {
       this.onerror("canceled");
+    },
+
+    "#back click": function(event) {
+      this.doStart();
     },
 
     "#continue_button click": function(event) {
       this.doSignIn();
     },
 
-    getVerifiedEmail: function(remoteOrigin, onsuccess, onerror) {
-      // check to see if there's any pubkeys stored in the browser
-      var haveIDs = _.keys(getEmails()).length > 0;
+    "#create_continue click": function(event) {
+      // now we need to actually try to stage the creation of this account.
+      var email = this.find("#email_input").val();
+      var pass = this.find("#password_input").val();
+      var keypair = CryptoStubs.genKeyPair();
+
+      this.doWait(
+        "One Moment Please...",
+        "We're creating your account, this should only take a couple seconds");
+
       var self = this;
 
+      $.ajax({
+          url: '/wsapi/stage_user?email=' + encodeURIComponent(email)
+            + '&pass=' + encodeURIComponent(pass)
+            + '&pubkey=' + encodeURIComponent(keypair.pub)
+            + '&site=' + encodeURIComponent(this.remoteOrigin.replace(/^(http|https):\/\//, '')),
+            success: function() {
+            // account successfully staged, now wait for email confirmation
+            self.doConfirmEmail(email, keypair);
+          },
+            error: function() {
+            runErrorDialog(
+                           "serverError",
+                           "Error Creating Account!",
+                           "There was a technical problem while trying to create your account.  Yucky.");
+          }
+        });
+    },
+
+    getVerifiedEmail: function(remoteOrigin, onsuccess, onerror) {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
       this.remoteOrigin = remoteOrigin;
+      this.doStart();
+    },
+
+    doStart: function() {
+      // check to see if there's any pubkeys stored in the browser
+      var haveIDs = _.keys(getEmails()).length > 0;
+      var self = this;
 
       // wherever shall we start?
       if (haveIDs) {
@@ -125,20 +178,31 @@ $.Controller("Dialog", {}, {
             self.syncIdentities();
           }, function() {
             self.doAuthenticate();
-          }, onsuccess, onerror);
+          });
       }
     },
       
     doSignIn: function() {
-      this.state = "signin";
       $('#dialog').html("views/signin.ejs", {sitename: this.remoteOrigin, identities: getEmails()});
       $('#bottom-bar').html("views/bottom-pickemail.ejs", {});
+
+      // select the first option
+      this.find('input:first').attr('checked', true);
     },
 
     doAuthenticate: function() {
-      this.state = "authenticate";
       $('#dialog').html("views/authenticate.ejs", {sitename: this.remoteOrigin});
       $('#bottom-bar').html("views/bottom-signin.ejs", {});
+    },
+      
+    doCreate: function() {
+      $('#dialog').html("views/create.ejs", {});
+      $('#bottom-bar').html("views/bottom-continue.ejs", {});      
+    },
+      
+    doForgotPassword: function() {
+      $('#dialog').html("views/forgotpassword.ejs", {});
+      $('#bottom-bar').html("views/bottom-continue.ejs", {});
     },
 
     doWait: function(title, message) {
@@ -152,7 +216,7 @@ $.Controller("Dialog", {}, {
 
     doConfirmEmail: function(email, keypair) {
       $('#dialog').html("views/confirmemail.ejs", {email:email});
-      $('#bottom-bar').html("");
+      $('#bottom-bar').html("views/bottom-confirmemail.ejs", {});
 
       var self = this;
 
