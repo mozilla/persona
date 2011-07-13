@@ -31,11 +31,13 @@ function internal_redirector(new_url) {
 function router(app) {
   app.set("views", __dirname + '/views'); 
 
-  // simple redirects (internal for now)
+  // this should probably be an internal redirect
+  // as soon as relative paths are figured out.
   app.get('/sign_in', function(req, resp, next ){
       resp.redirect('/dialog/dialog.html');
     });
 
+  // simple redirects (internal for now)
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
 
   app.get('/', function(req,res) {
