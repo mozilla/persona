@@ -32,7 +32,10 @@ function router(app) {
   app.set("views", __dirname + '/views'); 
 
   // simple redirects (internal for now)
-  app.get('/sign_in', internal_redirector('/dialog/index.html'));
+  app.get('/sign_in', function(req, resp, next ){
+      resp.redirect('/dialog/dialog.html');
+    });
+
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
 
   app.get('/', function(req,res) {
