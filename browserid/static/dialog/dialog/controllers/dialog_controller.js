@@ -16,7 +16,7 @@ $.Controller("Dialog", {}, {
     },
       
       // this is not working yet
-    "#body keypress": function(e){
+    "input keyup": function(e){
       if(e.which == 13) {
         $('.submit').click();
         e.preventDefault();

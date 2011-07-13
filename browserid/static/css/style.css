@@ -251,3 +251,21 @@ a:hover {
     float: left;
     margin-right: 10px;
 }
+
+.legal {
+   font-size: 1.3em;
+}
+
+.legal li {
+  margin-bottom: 7px;
+}
+
+.legal h5 {
+  margin-bottom: 1px;
+  padding-bottom: 1px;
+  line-height: 100%;
+}
+
+.legal p {
+    margin-top : 1px;
+}

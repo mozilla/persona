@@ -55,8 +55,12 @@ function router(app) {
       res.render('manage.ejs', {title: 'My Account', fullpage: false});
     });
 
+  app.get('/tos', function(req, res) {
+      res.render('tos.ejs', {title: 'Terms of Service', fullpage: false});
+    });
+
   app.get('/privacy', function(req, res) {
-      res.render('privacy.ejs', {title: 'Privacy and Terms of Service', fullpage: false});
+      res.render('privacy.ejs', {title: 'Privacy Policy', fullpage: false});
     });
 
   // register all the WSAPI handlers
