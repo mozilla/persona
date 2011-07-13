@@ -238,6 +238,7 @@ $.Controller("Dialog", {}, {
                     
                     // and tell the user that everything is really quite awesome.
                     self.find("#waiting_confirmation").hide();
+                    self.find("#resendit_action").hide();
                     self.find("#confirmed_notice").show();
                     self.find('#bottom-bar').html("views/bottom-confirmemail.ejs", {});
                   } else if (status === 'pending') {
