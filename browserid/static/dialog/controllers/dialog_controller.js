@@ -15,14 +15,24 @@ $.Controller("Dialog", {}, {
 
     },
       
+<<<<<<< Updated upstream
     // this is not working yet
     "input keyup": function(e){
       if(e.which == 13) {
         $('.submit').click();
         e.preventDefault();
       }
+=======
+    setupEnterKey: function() {
+      $("input").keyup(function(e) {
+          if(e.which == 13) {
+            $('.submit').click();
+            e.preventDefault();
+          }
+        });
+>>>>>>> Stashed changes
     },
-
+      
     "#signin click": function(event) {
       var email = $("#email_input").val();
       var pass = $("#password_input").val();
