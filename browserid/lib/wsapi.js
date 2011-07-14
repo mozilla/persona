@@ -185,9 +185,7 @@ function setup(app) {
           }});
     });
 
-  app.get('/wsapi/account_cancel', checkAuthed, function(req, resp) {
-      // FIXME: this should really be POST
-      
+  app.post('/wsapi/account_cancel', checkAuthed, function(req, resp) {
       db.cancelAccount(req.session.authenticatedUser, function(error) {
           if (error) {
             console.log("error cancelling account : " + error.toString());
