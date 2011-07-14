@@ -44,6 +44,10 @@ function router(app) {
       res.render('index.ejs', {title: 'A Better Way to Log In', fullpage: true});
     });
 
+  app.get('/prove', function(req,res) {
+      res.render('prove.ejs', {title: 'Verify Email Address', fullpage: false});
+    });
+
   app.get('/users', function(req,res) {
       res.render('users.ejs', {title: 'for Users', fullpage: false});
     });
