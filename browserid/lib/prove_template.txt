@@ -1,6 +1,6 @@
 Hi {{email}},
  
-This message is being sent to you to complete your login to
+This message is being sent to you to complete your sign-in to
 {{site}}.  Click the link below to continue:
  
 {{link}}
@@ -9,4 +9,4 @@ If you are NOT trying to sign into {{site}}, just ignore this email.
  
 Thanks,
 BrowserID
-(A better way to login)
+(A better way to sign in)

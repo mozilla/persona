@@ -3,7 +3,7 @@
     <div class="why">
       <p>
         BrowserID provides a <b>simple</b> and <b>sophisticated</b>
-        login process that your <b>users will love</b>.  It can be
+        sign-in process that your <b>users will love</b>.  It can be
         integrated in three easy steps:
       </p>
     </div>
@@ -18,7 +18,7 @@
       <p>
         <b>Identify the User:</b> Instead of displaying a form on your
         site which takes a username and password, use the BrowserID
-        JavaScript API when the user clicks your login button:
+        JavaScript API when the user clicks your sign-in button:
       </p>
 <pre><code class="javascript">navigator.id.getVerifiedEmail(function(assertion) {
     if (assertion) {
@@ -30,13 +30,13 @@
 });
 </code></pre>
       <p>
-        Upon a successful login, you'll be called back with
+        Upon a successful sign-in, you'll be called back with
         an <i>assertion</i>, a string containing a signed claim that proves
         the user is who they say they are.
       </p>
       <p>
         <b>NOTE:</b> While completely optional, you might consider
-        replacing your login/signin button with a pretty BrowserID button:
+        replacing your sign-in button with a pretty BrowserID button:
         
         <div class="buttonbox">
           <div><img src="i/sign_in_red.png"></div>
