@@ -12,9 +12,8 @@ $.Controller("Dialog", {}, {
       // keep track of where we are and what we do on success and error
       this.onsuccess = null;
       this.onerror = null;
-
     },
-      
+
     setupEnterKey: function() {
       $("input").keyup(function(e) {
           if(e.which == 13) {
@@ -196,11 +195,15 @@ $.Controller("Dialog", {}, {
     doAuthenticate: function() {
       $('#dialog').html("views/authenticate.ejs", {sitename: this.remoteOrigin});
       $('#bottom-bar').html("views/bottom-signin.ejs", {});
+
+      this.setupEnterKey();
     },
       
     doCreate: function() {
       $('#dialog').html("views/create.ejs", {});
       $('#bottom-bar').html("views/bottom-continue.ejs", {});
+
+      this.setupEnterKey();
       
       var checkedEmails = {};
       var emailCheckState = null;
@@ -283,6 +286,8 @@ $.Controller("Dialog", {}, {
       $('#dialog').html("views/forgotpassword.ejs", {});
       $('#bottom-bar').html("views/bottom-continue.ejs", {});
 
+      this.setupEnterKey();
+
       var self=this;
       function checkInput() {
         var pass = $("#password_input").val();
@@ -315,6 +320,8 @@ $.Controller("Dialog", {}, {
     doNewEmail: function() {
       $('#dialog').html("views/addemail.ejs", {});
       $('#bottom-bar').html("views/bottom-addemail.ejs", {});
+
+      this.setupEnterKey();
     },
 
     doConfirmEmail: function(email, keypair) {
