@@ -279,6 +279,30 @@ $.Controller("Dialog", {}, {
     doForgotPassword: function() {
       $('#dialog').html("views/forgotpassword.ejs", {});
       $('#bottom-bar').html("views/bottom-continue.ejs", {});
+
+      var self=this;
+      function checkInput() {
+        var pass = $("#password_input").val();
+        var match = pass === $("#password_verify_input").val();
+        self.find('.passwordnote').hide();
+        if (!match) {
+          self.find('#passwords_different').show();
+        } else {
+          if (!pass) {
+            self.find('#enter_a_password').show();
+          } else if (pass.length < 5) {
+            self.find('#password_too_short').show();
+          } else {
+            self.find('#password_ok').show();
+          }
+        }
+      }
+      
+      // watch input dialogs
+      self.find("input").unbind('keyup').bind('keyup', checkInput);
+      
+      // do a check at load time, in case the user is using the back button (enables the continue button!)
+      checkInput();
     },
 
     doWait: function(title, message) {
