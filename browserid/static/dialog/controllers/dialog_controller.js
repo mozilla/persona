@@ -22,6 +22,14 @@ $.Controller("Dialog", {}, {
           }
         });
     },
+
+    renderTemplates: function(body, body_vars, footer, footer_vars) {
+      if (body)
+        $('#dialog').html(body, body_vars).hide().fadeIn(300);
+
+      if (footer)
+        $('#bottom-bar').html(footer, footer_vars);
+    },
     
     "#suggest_signin click": function(event) {
       this.doAuthenticate();
@@ -189,23 +197,23 @@ $.Controller("Dialog", {}, {
     },
       
     doSignIn: function() {
-      $('#dialog').html("views/signin.ejs", {sitename: this.remoteOrigin, identities: getEmails()});
-      $('#bottom-bar').html("views/bottom-pickemail.ejs", {});
+      this.renderTemplates("views/signin.ejs", {sitename: this.remoteOrigin, identities: getEmails()},
+                           "views/bottom-pickemail.ejs", {});
 
       // select the first option
       this.find('input:first').attr('checked', true);
     },
 
     doAuthenticate: function() {
-      $('#dialog').html("views/authenticate.ejs", {sitename: this.remoteOrigin});
-      $('#bottom-bar').html("views/bottom-signin.ejs", {});
+      this.renderTemplates("views/authenticate.ejs", {sitename: this.remoteOrigin},
+                           "views/bottom-signin.ejs", {});
 
       this.setupEnterKey();
     },
       
     doCreate: function() {
-      $('#dialog').html("views/create.ejs", {});
-      $('#bottom-bar').html("views/bottom-continue.ejs", {});
+      this.renderTemplates("views/create.ejs", {},
+                           "views/bottom-continue.ejs", {});
 
       var checkedEmails = {};
       var emailCheckState = null;
@@ -287,8 +295,8 @@ $.Controller("Dialog", {}, {
     },
       
     doForgotPassword: function() {
-      $('#dialog').html("views/forgotpassword.ejs", {});
-      $('#bottom-bar').html("views/bottom-continue.ejs", {});
+      this.renderTemplates("views/forgotpassword.ejs", {},
+                           "views/bottom-continue.ejs", {});
 
       var self=this;
       function checkInput() {
@@ -317,19 +325,20 @@ $.Controller("Dialog", {}, {
     },
 
     doWait: function(title, message) {
-      $('#dialog').html("views/wait.ejs", {title: title, message: message});
+      this.renderTemplates("views/wait.ejs", {title: title, message: message});
     },
 
     doNewEmail: function() {
-      $('#dialog').html("views/addemail.ejs", {});
-      $('#bottom-bar').html("views/bottom-addemail.ejs", {});
+      this.renderTemplates("views/addemail.ejs", {},
+                           "views/bottom-addemail.ejs", {});
 
       this.setupEnterKey();
     },
 
     doConfirmEmail: function(email, keypair) {
-      $('#dialog').html("views/confirmemail.ejs", {email:email});
-      $('#bottom-bar').html("views/bottom-confirmemail.ejs", {});
+      this.renderTemplates("views/confirmemail.ejs", {email:email},
+                           "views/bottom-confirmemail.ejs", {});
+
       $('#continue_button').addClass('disabled');
 
       var self = this;
