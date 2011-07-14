@@ -197,7 +197,83 @@ $.Controller("Dialog", {}, {
       
     doCreate: function() {
       $('#dialog').html("views/create.ejs", {});
-      $('#bottom-bar').html("views/bottom-continue.ejs", {});      
+      $('#bottom-bar').html("views/bottom-continue.ejs", {});
+      
+      var checkedEmails = {};
+      var emailCheckState = null;
+      var nextEmailToCheck = null;
+      var self = this;
+
+      function checkInput() {
+        // check the email address
+        var email = self.find("#email_input").val();
+        if (typeof email === 'string' && email.length) {
+          var valid = checkedEmails[email];
+          if (typeof valid === 'string') {
+            // oh noes.  we tried to check this email, but it failed.  let's just not tell the
+            // user anything, cause this is a non-critical issue
+          } else if (typeof valid === 'boolean') {
+            if (valid) {
+              self.find("#email_input_note").show();
+              self.find("#emailinuse_message").hide();
+            } else {
+              $("#emailinuse_message").fadeIn(300);
+              $("#in_use_email").text(email);
+            }
+          } else {
+            // this is an email that needs to be checked!
+            if (emailCheckState !== 'querying') {
+              if (emailCheckState) window.clearTimeout(emailCheckState);
+              emailCheckState = setTimeout(function() {
+                  emailCheckState = 'querying';
+                  var checkingNow = nextEmailToCheck;
+                  // bounce off the server and enter the 'querying' state
+                  $.ajax({
+                      url: '/wsapi/have_email?email=' + encodeURIComponent(checkingNow),
+                        success: function(data, textStatus, jqXHR) {
+                        checkedEmails[checkingNow] = !JSON.parse(data);
+                        emailCheckState = undefined;
+                        checkInput();
+                      }, error: function(jqXHR, textStatus, errorThrown) {
+                        // some kind of error was encountered.  This is non-critical, we'll simply ignore it
+                        // and mark this email check as failed.
+                        checkedEmails[checkingNow] = "server failed";
+                        emailCheckState = undefined;
+                        checkInput();
+                      }
+                    });
+                }, 700);
+            } else {
+              // FIXME: not sure when this comes up, not refactored
+              // $("#create_dialog div.note:eq(0)").html($('<span class="warning"/>').text("Checking address"));
+            }
+          }
+          nextEmailToCheck = email;
+          //$("#submit").addClass("disabled");
+        }
+      
+        // next let's check the password entry
+        var pass = $("#password_input").val();
+        var match = pass === $("#password_verify_input").val();
+        self.find('.note').hide();
+        if (!match) {
+          self.find('#passwords_different').show();
+        } else {
+          if (!pass) {
+            self.find('#enter_a_password').show();
+          } else if (pass.length < 5) {
+            self.find('#password_too_short').show();
+          } else {
+            self.find('#password_ok').show();
+          }
+        }
+      }
+      
+      // watch input dialogs
+      self.find("input").unbind('keyup').bind('keyup', checkInput);
+      
+      // do a check at load time, in case the user is using the back button (enables the continue button!)
+      checkInput();
     },
       
     doForgotPassword: function() {

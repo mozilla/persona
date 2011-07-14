@@ -3,7 +3,7 @@
     <div class="input">
       <div class="label"> Email </div>
       <div class="input"> <input id="email_input" type="text"></input></div>
-      <div class="note"></div>
+      <div class="note" id="email_input_note" style="display:none;">Not registered</div>
     </div>
     <div class="input">
       <div class="label"> Password </div>
@@ -12,9 +12,12 @@
     <div class="input">
       <div class="label"> Verify </div>
       <div class="input"> <input id="password_verify_input" type="password"></input></div>
-      <div class="note"><span class="bad">Enter a password</span></div>
+      <div class="note" id="enter_a_password"><span class="bad">Enter a password</span></div>
+      <div class="note" id="passwords_different" style="display:none;"><span class="bad">Passwords different</span></div>
+      <div class="note" id="password_too_short" style="display:none;"><span class="bad">Password too short</span></div>
+      <div class="note" id="password_ok" style="display:none;"><span class="good">Password OK</span></div>
     </div>
-    <div class="attention_lame" style="display:none;">
+    <div class="attention_lame" style="display:none;" id="emailinuse_message">
       <span id="in_use_email">Email</span> in use, If this email is yours you can <a href="#">sign in</a> with it?
     </div>
   </div>
