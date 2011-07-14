@@ -255,7 +255,7 @@ $.Controller("Dialog", {}, {
         // next let's check the password entry
         var pass = $("#password_input").val();
         var match = pass === $("#password_verify_input").val();
-        self.find('.note').hide();
+        self.find('.passwordnote').hide();
         if (!match) {
           self.find('#passwords_different').show();
         } else {
