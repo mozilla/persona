@@ -22,6 +22,10 @@ $.Controller("Dialog", {}, {
           }
         });
     },
+    
+    "#suggest_signin click": function(event) {
+      this.doAuthenticate();
+    },
       
     "#signin click": function(event) {
       var email = $("#email_input").val();
@@ -222,6 +226,7 @@ $.Controller("Dialog", {}, {
               self.find("#emailinuse_message").hide();
             } else {
               $("#emailinuse_message").fadeIn(300);
+              self.find("#email_input_note").hide();
               $("#in_use_email").text(email);
             }
           } else {
