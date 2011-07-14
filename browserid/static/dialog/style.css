@@ -59,12 +59,24 @@ span.sitename, span.email {
     position: fixed;
     left: 0;
     bottom: 0;
-    height: 60px;
+    height: 70px;
     width: 100%;
     border-top: 2px solid rgb(218, 230, 237);
     background-color: rgb(244, 247, 251);
 }
 
+#terms {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 20px;
+    width: 100%;
+    background-color: rgb(244, 247, 251);
+    font-size: .7em;
+}
 
 #bottom-bar button {
     height: 25px;
@@ -104,7 +116,7 @@ div.actions > div.action a {
 
 div.actions {
     position: fixed;
-    bottom: 68px;
+    bottom: 78px;
     font-size: .8em;
     margin-left: 79px;
 }
@@ -138,7 +150,7 @@ button.disabled {
     position: fixed;
     top: 40px;
     right: 0;
-    bottom: 60px;
+    bottom: 80px;
     left: 0;
     margin: auto;
     text-align: center;
