@@ -144,7 +144,7 @@ suite.addBatch({
   }
 });
 
-// now we should be able to log into the first email address with the second
+// now we should be able to sign into the first email address with the second
 // password, and all other combinations should fail
 suite.addBatch({
   "first email, first pass bad": {

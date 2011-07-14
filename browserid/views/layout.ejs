@@ -66,7 +66,7 @@ function display_saved_ids()
       });
       
       var d = new Date(data.created);
-      var datestamp = $("<div class='date'>").text("Logged in at " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ", " + d.getMonth() + "/" + d.getDay() + "/" + d.getUTCFullYear());
+      var datestamp = $("<div class='date'>").text("Signed in at " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ", " + d.getMonth() + "/" + d.getDay() + "/" + d.getUTCFullYear());
 
       meta.append(datestamp);
       meta.append(linkblock);
@@ -84,12 +84,12 @@ function display_saved_ids()
 <body>
 <div id="splash">
   <div class="header">
-    <div class="manage"><a id="manageLink" href="manage">manage my logins</a></div>
+    <div class="manage"><a id="manageLink" href="manage">my account</a></div>
   </div>
   <% if (fullpage) { %>
   <div class="tophalf">
     <div class="title"><img src="i/browserid_logo.png"></div>
-    <div class="subtitle">A better way to log in.</div>
+    <div class="subtitle">A better way to sign in.</div>
   </div>
   <% } else { %>
   <div class="topquarter">

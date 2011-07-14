@@ -1,5 +1,5 @@
   <div class="content">
-    <p class="prompt">What email address would you like to use to log into <span class="sitename bad"><%= sitename %></span>?</p>
+    <p class="prompt">What email address would you like to use to sign into <span class="sitename bad"><%= sitename %></span>?</p>
     <form id="identities" name="identities">
     <% _.each(identities, function(email_obj, email_address) { %>
     <div><input type="radio" name="identity" value="<%=email_address%>" /> <%= email_address %></div>

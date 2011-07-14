@@ -39,7 +39,7 @@ var run = function() {
         runErrorDialog(
           "serverError",
           "Error Communicating With Server!",
-          "There was a technical problem while trying to log you in.  Yucky!",
+          "There was a technical problem while trying to sign you in.  Yucky!",
           onsuccess, onerror);
       }
     });
@@ -100,7 +100,6 @@ var run = function() {
         if (resp.unknown_emails) {
           for (var i = 0; i < resp.unknown_emails; i++) {
             if (emails.hasOwnProperty(resp.unknown_emails[i])) {
-              console.log("removed local identity: " + resp.unknown_emails[i]);
               delete emails[resp.unknown_emails[i]];
             }
           }
@@ -142,7 +141,7 @@ var run = function() {
         addNextEmail();
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        runErrorDialog("serverError", "Login Failed", jqXHR.responseText, onsuccess, onerror);
+        runErrorDialog("serverError", "Signin Failed", jqXHR.responseText, onsuccess, onerror);
       }
     });
 
@@ -235,7 +234,7 @@ var run = function() {
           } else {
             runWaitingDialog(
               "Finishing Log In...",
-              "In just a moment you'll be logged into BrowserID.",
+              "In just a moment you'll be signed into BrowserID.",
               onsuccess, onerror);
 
             syncIdentities(onsuccess, onerror);
@@ -245,7 +244,7 @@ var run = function() {
           runErrorDialog(
             "serverError",
             "Error Authenticating!",
-            "There was a technical problem while trying to log you in.  Yucky!",
+            "There was a technical problem while trying to sign you in.  Yucky!",
             onsuccess, onerror);
         }
       });
