@@ -15,7 +15,7 @@ $.Controller("Dialog", {}, {
 
     },
       
-      // this is not working yet
+    // this is not working yet
     "input keyup": function(e){
       if(e.which == 13) {
         $('.submit').click();
@@ -124,7 +124,9 @@ $.Controller("Dialog", {}, {
     },
 
     "#continue_button click": function(event) {
-      this.doSignIn();
+      if (!$("#continue_button").hasClass('disabled')) {
+        this.doSignIn();
+      }
     },
 
     "#create_continue click": function(event) {
@@ -317,6 +319,7 @@ $.Controller("Dialog", {}, {
     doConfirmEmail: function(email, keypair) {
       $('#dialog').html("views/confirmemail.ejs", {email:email});
       $('#bottom-bar').html("views/bottom-confirmemail.ejs", {});
+      $('#continue_button').addClass('disabled');
 
       var self = this;
 
@@ -340,7 +343,10 @@ $.Controller("Dialog", {}, {
                     self.find("#waiting_confirmation").hide();
                     self.find("#resendit_action").hide();
                     self.find("#confirmed_notice").show();
-                    self.find('#bottom-bar').html("views/bottom-confirmemail.ejs", {});
+
+                    // enable button
+                    $('#continue_button').enabledClass('disabled');
+
                   } else if (status === 'pending') {
                     // try again, what else can we do?
                     pollTimeout = setupRegCheck();
