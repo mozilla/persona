@@ -346,7 +346,7 @@ $.Controller("Dialog", {}, {
                     self.find("#confirmed_notice").show();
 
                     // enable button
-                    $('#continue_button').enabledClass('disabled');
+                    $('#continue_button').removeClass('disabled');
 
                   } else if (status === 'pending') {
                     // try again, what else can we do?
