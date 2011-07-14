@@ -203,8 +203,6 @@ $.Controller("Dialog", {}, {
       $('#dialog').html("views/create.ejs", {});
       $('#bottom-bar').html("views/bottom-continue.ejs", {});
 
-      this.setupEnterKey();
-      
       var checkedEmails = {};
       var emailCheckState = null;
       var nextEmailToCheck = null;
@@ -277,7 +275,8 @@ $.Controller("Dialog", {}, {
       
       // watch input dialogs
       self.find("input").unbind('keyup').bind('keyup', checkInput);
-      
+      this.setupEnterKey();
+            
       // do a check at load time, in case the user is using the back button (enables the continue button!)
       checkInput();
     },
@@ -285,8 +284,6 @@ $.Controller("Dialog", {}, {
     doForgotPassword: function() {
       $('#dialog').html("views/forgotpassword.ejs", {});
       $('#bottom-bar').html("views/bottom-continue.ejs", {});
-
-      this.setupEnterKey();
 
       var self=this;
       function checkInput() {
@@ -308,6 +305,7 @@ $.Controller("Dialog", {}, {
       
       // watch input dialogs
       self.find("input").unbind('keyup').bind('keyup', checkInput);
+      this.setupEnterKey();
       
       // do a check at load time, in case the user is using the back button (enables the continue button!)
       checkInput();
