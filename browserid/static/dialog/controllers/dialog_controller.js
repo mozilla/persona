@@ -171,10 +171,10 @@ $.Controller("Dialog", {}, {
         });
     },
 
-    getVerifiedEmail: function(remoteOrigin, onsuccess, onerror) {
+    getVerifiedEmail: function(origin_url, onsuccess, onerror) {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
-      this.remoteOrigin = remoteOrigin;
+      this.remoteOrigin = origin_url.replace(/^.*:\/\//, "");
       this.doStart();
     },
 

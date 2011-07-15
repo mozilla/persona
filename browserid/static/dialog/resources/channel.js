@@ -42,8 +42,6 @@ var setupHTMLChannel = function(controller) {
   chan.bind("getVerifiedEmail", function(trans, s) {
     trans.delayReturn(true);
 
-    var remoteOrigin = trans.origin.replace(/^.*:\/\//, "");
-
     function onsuccess(rv) {
       trans.complete(rv);
     }
@@ -52,7 +50,7 @@ var setupHTMLChannel = function(controller) {
       errorOut(trans, error);
     }
 
-    controller.getVerifiedEmail(remoteOrigin, onsuccess, onerror);
+    controller.getVerifiedEmail(trans.origin, onsuccess, onerror);
   });
 
   return chan;
