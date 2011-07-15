@@ -4,14 +4,13 @@
 
 $.Controller("Dialog", {}, {
     init: function(el) {
-      var chan = setupChannel(this);
-      
       this.element.html("views/body.ejs", {});
       this.element.show();
 
       // keep track of where we are and what we do on success and error
       this.onsuccess = null;
       this.onerror = null;
+      var chan = setupChannel(this);      
     },
 
     setupEnterKey: function() {
