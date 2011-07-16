@@ -1,3 +1,4 @@
+/*global console: true, postMessage: true */
 /**
  * js_channel is a very lightweight abstraction on top of
  * postMessage which defines message formats and semantics
@@ -187,7 +188,7 @@
                     try { if (typeof m !== 'string') m = JSON.stringify(m); } catch(e) { }
                     console.log("["+chanId+"] " + m);
                 }
-            }
+            };
 
             /* browser capabilities check */
             if (!window.postMessage) throw("jschannel cannot run this browser, no postMessage");
@@ -221,7 +222,7 @@
 
             if (typeof cfg.scope !== 'undefined') {
                 if (typeof cfg.scope !== 'string') throw 'scope, when specified, must be a string';
-                if (cfg.scope.split('::').length > 1) throw "scope may not contain double colons: '::'"
+                if (cfg.scope.split('::').length > 1) throw "scope may not contain double colons: '::'";
             }
 
             /* private variables */
@@ -290,7 +291,7 @@
                         return completed;
                     }
                 };
-            }
+            };
 
             var onMessage = function(origin, method, m) {
                 // if an observer was specified at allocation time, invoke it
@@ -330,7 +331,7 @@
                                         return function(params) {
                                             return trans.invoke(cbName, params);
                                         }
-                                    })();
+                                    }());
                                 }
                             }
                             var resp = regTbl[method](trans, m.params);

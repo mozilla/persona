@@ -1,3 +1,4 @@
+/*global CryptoStubs:true */
 // This file is the cryptographic routines that are required for
 // BrowserID's HTML5 implementation
 

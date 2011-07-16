@@ -1,4 +1,4 @@
-
+/*global alert:true, setupNativeChannel:true, setupHTMLChannel:true, Channel:true */
 function errorOut(trans, code) {
   function getVerboseMessage(code) {
     var msgs = {
@@ -9,7 +9,7 @@ function errorOut(trans, code) {
     var msg = msgs[code];
     if (!msg) {
       alert("need verbose message for " + code);
-      msg = "unknown error"
+      msg = "unknown error";
         }
     return msg;
   }
@@ -23,11 +23,11 @@ var setupChannel = function(controller) {
     setupNativeChannel(controller);
   else
     setupHTMLChannel(controller);
-}
+};
 
 var setupNativeChannel = function(controller) {
   navigator.id.channel.registerController(controller);
-}
+};
 
 var setupHTMLChannel = function(controller) {
   var chan = Channel.build(
@@ -37,7 +37,7 @@ var setupHTMLChannel = function(controller) {
       scope: "mozid"
     });
 
-  var remoteOrigin = undefined;
+  var remoteOrigin;
 
   chan.bind("getVerifiedEmail", function(trans, s) {
     trans.delayReturn(true);
