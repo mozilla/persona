@@ -1,3 +1,5 @@
+/*globals steal
+ */
 steal.plugins(	
 	'jquery/controller',			// a widget factory
 	'jquery/controller/subscribe',	// subscribe to OpenAjax.hub
@@ -17,4 +19,18 @@ steal.plugins(
 
 	.controllers('dialog')					// loads files in controllers folder
 
-	.views('authenticate.ejs');						// adds views to be added to build
+	.views('authenticate.ejs',
+            'addemail.ejs',
+            'body.ejs',
+            'bottom-addemail.ejs',
+            'bottom-confirmemail.ejs',
+            'bottom-continue.ejs',
+            'bottom-pickemail.ejs',
+            'bottom-signin.ejs',
+            'bottom.ejs',
+            'confirmemail.ejs',
+            'create.ejs',
+            'forgotpassword.ejs',
+            'signin.ejs',
+            'wait.ejs'
+            );						// adds views to be added to build

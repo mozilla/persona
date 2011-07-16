@@ -1,3 +1,6 @@
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, runErrorDialog: true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true */
+
 //
 // a JMVC controller for the browserid dialog
 //

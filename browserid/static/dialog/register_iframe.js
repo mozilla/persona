@@ -1,3 +1,6 @@
+/*jshint browser:true, jQuery: true, forin: true */
+/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true */
+ 
 // this is the picker code!  it runs in the identity provider's domain, and
 // fiddles the dom expressed by picker.html
 (function() {
