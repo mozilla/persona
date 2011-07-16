@@ -41,7 +41,7 @@ function router(app) {
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
 
   app.get('/', function(req,res) {
-      res.render('index.ejs', {title: 'A Better Way to Log In', fullpage: true});
+      res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});
     });
 
   app.get('/prove', function(req,res) {

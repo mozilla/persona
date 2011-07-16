@@ -35,8 +35,15 @@ body {
 }
 
 #splash .tophalf .title {
-    padding-top: 60px;
+    padding-top: 30px;
     font-weight: bold;
+}
+
+#splash .tophalf .labslogo > div {
+    width: 600px;
+    margin: auto;
+    text-align: left;
+    padding: 10px;
 }
 
 #splash .tophalf .subtitle {

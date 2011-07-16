@@ -7,14 +7,13 @@
 
 $.Controller("Dialog", {}, {
     init: function(el) {
-      var chan = setupChannel(this);
-      
       this.element.html("views/body.ejs", {});
       this.element.show();
 
       // keep track of where we are and what we do on success and error
       this.onsuccess = null;
       this.onerror = null;
+      var chan = setupChannel(this);      
     },
 
     setupEnterKey: function() {
@@ -51,8 +50,8 @@ $.Controller("Dialog", {}, {
             if (!authenticated) {
               self.find("#nosuchaccount").hide().fadeIn(400);
             } else {
-              self.doWait("Finishing Log In...",
-                          "In just a moment you'll be logged into BrowserID.");
+              self.doWait("Finishing Sign In...",
+                          "In just a moment you'll be signed into BrowserID.");
               
               self.syncIdentities();
             }
@@ -466,7 +465,7 @@ $.Controller("Dialog", {}, {
             addNextEmail();
           },
             error: function(jqXHR, textStatus, errorThrown) {
-            runErrorDialog("serverError", "Login Failed", jqXHR.responseText);
+            runErrorDialog("serverError", "Signin Failed", jqXHR.responseText);
           }
         });
 
