@@ -58,7 +58,13 @@ $.Controller("Dialog", {}, {
       var self = this;
 
       $.ajax({
-          url: '/wsapi/authenticate_user?email=' + encodeURIComponent(email) + '&pass=' + encodeURIComponent(pass),
+          type: "POST",
+          url: '/wsapi/authenticate_user',
+          data: {
+            email: email,
+            pass: pass,
+            csrf: this.csrf
+          },
             success: function(status, textStatus, jqXHR) {
             var authenticated = JSON.parse(status);
             if (!authenticated) {

@@ -146,11 +146,11 @@ function setup(app) {
     });
   
   
-  app.get('/wsapi/authenticate_user', checkParams(["email", "pass"]), function(req, resp) {
-      db.checkAuth(req.query.email, req.query.pass, function(rv) {
+  app.post('/wsapi/authenticate_user', checkParams(["email", "pass"]), function(req, resp) {
+      db.checkAuth(req.body.email, req.body.pass, function(rv) {
           if (rv) {
             if (!req.session) req.session = {};
-            req.session.authenticatedUser = req.query.email;
+            req.session.authenticatedUser = req.body.email;
           }
           httputils.jsonResponse(resp, rv);
         });

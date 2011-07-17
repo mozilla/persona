@@ -170,7 +170,7 @@ suite.addBatch({
 
 suite.addBatch({
   "after re-registration, authenticating with new credetials": {
-    topic: wsapi.get('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
+    topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
     "works as you might expect": function (r, err) {
       assert.strictEqual(true, JSON.parse(r.body));
     }
