@@ -24,7 +24,7 @@ function display_saved_ids()
 
   $('#cancellink').click(function() {
     if (confirm('Are you sure you want to cancel your account?')) {
-      $.post("/wsapi/account_cancel", {}, function(result) {
+      $.post("/wsapi/account_cancel", {csrf: window.csrf}, function(result) {
         window.localStorage.emails = null;
         document.location="/";
       });
@@ -58,7 +58,7 @@ function display_saved_ids()
       deauth.click(function() {
         var t = JSON.parse(window.localStorage.emails);
         // remove email from server
-        $.post("/wsapi/remove_email", {"email" : e}, function(response) {
+        $.post("/wsapi/remove_email", {"email" : e, "csrf": window.csrf}, function(response) {
                     // we delete from store only once we got response
                     delete t[e];
                     window.localStorage.emails = JSON.stringify(t);

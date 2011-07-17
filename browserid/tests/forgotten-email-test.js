@@ -13,7 +13,7 @@ start_stop.addStartupBatches(suite);
 // ever time a new token is sent out, let's update the global
 // var 'token'
 var token = undefined;
-interceptor.onEmail = function(newtok) { token = newtok; }
+interceptor.onEmail = function(newtok) { token = newtok; };
 
 // create a new account via the api with (first address)
 suite.addBatch({
@@ -54,7 +54,7 @@ suite.addBatch({
 // add a new email address to the account (second address)
 suite.addBatch({
   "add a new email address to our account": {
-    topic: wsapi.get('/wsapi/add_email', {
+    topic: wsapi.post('/wsapi/add_email', {
       email: 'second@fakeemail.com',
       pubkey: 'fakepubkey',
       site:'fakesite.com'
@@ -159,9 +159,17 @@ suite.addBatch({
       assert.strictEqual(JSON.parse(r.body), true);
     }
   },
+  "sync emails": {
+    topic: wsapi.post('/wsapi/sync_emails', {'emails': '{}'}),
+      "should work" : function(r, err) {
+      var parsed_body = JSON.parse(r.body);
+      assert.equal(typeof parsed_body.unknown_emails, "object");
+      assert.equal(typeof parsed_body.key_refresh, "object");
+    }
+  },
   "logout": {
     topic: wsapi.post('/wsapi/logout', {}),
-    "should work": function(r, err) {
+      "should work": function(r, err) {
       assert.strictEqual(JSON.parse(r.body), "ok");
     }
   },

@@ -7,13 +7,27 @@
 
 $.Controller("Dialog", {}, {
     init: function(el) {
+      // FIXME: there's a small chance the CSRF token doesn't come back in time.
+      this.csrf = null;
+      this._getCSRF();
+
       this.element.html("views/body.ejs", {});
       this.element.show();
 
       // keep track of where we are and what we do on success and error
       this.onsuccess = null;
       this.onerror = null;
-      var chan = setupChannel(this);      
+      var chan = setupChannel(this);
+    },
+      
+    _getCSRF: function(cb) {
+      // go get CSRF token
+      var self = this;
+      $.get('/csrf', {}, function(result) {
+          self.csrf = result;
+          if (cb)
+            cb();
+        });
     },
 
     setupEnterKey: function() {
@@ -97,9 +111,14 @@ $.Controller("Dialog", {}, {
       );
 
       $.ajax({
-        url: '/wsapi/add_email?email=' + encodeURIComponent(email)
-              + '&pubkey=' + encodeURIComponent(keypair.pub)
-              + '&site=' + encodeURIComponent(this.remoteOrigin.replace(/^(http|https):\/\//, '')),
+        type: 'POST',
+        url: '/wsapi/add_email',
+        data: {
+            email: email,
+            pubkey: keypair.pub,
+            site: this.remoteOrigin.replace(/^(http|https):\/\//, ''),
+            csrf: this.csrf
+         },
         success: function() {
           // email successfully staged, now wait for email confirmation
           self.doConfirmEmail(email, keypair);
@@ -116,8 +135,10 @@ $.Controller("Dialog", {}, {
     "#notme click": function(event) {
       clearEmails();
       var self = this;
-      $.post("/wsapi/logout", function() {
-          self.doAuthenticate();
+      $.post("/wsapi/logout", {csrf: this.csrf}, function() {
+          self._getCSRF(function() {
+              self.doAuthenticate();
+            });
       });
     },
       
@@ -435,7 +456,8 @@ $.Controller("Dialog", {}, {
       $.ajax({
           url: '/wsapi/sync_emails',
             type: "post",
-            data: JSON.stringify(issued_identities),
+            data: {'emails': JSON.stringify(issued_identities),
+              'csrf': this.csrf},
             success: function(resp, textStatus, jqXHR) {
             // first remove idenitites that the server doesn't know about
             if (resp.unknown_emails) {

@@ -7,14 +7,14 @@ try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { };
 
 const
   url = require('url'),
+  crypto = require('crypto'),
   wsapi = require('./lib/wsapi.js'),
   httputils = require('./lib/httputils.js'),
   webfinger = require('./lib/webfinger.js'),
   sessions = require('cookie-sessions'),
   express = require('express'),
   secrets = require('./lib/secrets.js'),
-  db = require('./lib/db.js'),
-  csrf = require('express-csrf');
+  db = require('./lib/db.js')
 
 // looks unused, see run.js
 // const STATIC_DIR = path.join(path.dirname(__dirname), "static");
@@ -42,8 +42,16 @@ function router(app) {
   // simple redirects (internal for now)
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
 
+  // return the CSRF token
+  // IMPORTANT: this should be safe because it's only readable by same-origin code
+  // but we must be careful that this is never a JSON structure that could be hijacked
+  // by a third party
+  app.get('/csrf', function(req, res) {
+      res.write(req.session.csrf);
+      res.end();
+    });
+
   app.get('/', function(req,res) {
-      console.log("CSRF: " + req.session.csrf);
       res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});
     });
 
@@ -64,7 +72,7 @@ function router(app) {
     });
 
   app.get('/manage', function(req,res) {
-      res.render('manage.ejs', {title: 'My Account', fullpage: false});
+      res.render('manage.ejs', {title: 'My Account', fullpage: false, csrf: req.session.csrf});
     });
 
   app.get('/tos', function(req, res) {
@@ -121,6 +129,13 @@ exports.setup = function(server) {
   server.use(function(req, resp, next) {
       if (typeof req.session == 'undefined')
         req.session = {};
+
+      if (typeof req.session.csrf == 'undefined') {
+        // FIXME: using express-csrf's approach for generating randomness
+        // not awesome, but probably sufficient for now.
+        req.session.csrf = crypto.createHash('md5').update('' + new Date().getTime()).digest('hex');
+      }
+        
       next();
     });
 
@@ -138,13 +153,18 @@ exports.setup = function(server) {
       next();
     });
 
-  // setup CSRF protection
-  //server.use(csrf.check());
+  // check CSRF token
+  server.use(function(req, resp, next) {
+      // only on POSTs
+      if (req.method == "POST") {
+        if (req.body.csrf != req.session.csrf) {
+          // error, problem with CSRF
+          throw new Error("CSRF violation - " + req.body.csrf + '/' + req.session.csrf);
+        }
+      }
 
-  server.dynamicHelpers({
-      csrf: csrf.token
-        });
-  
+      next();        
+    });
   // add the actual URL handlers other than static
   router(server);
 }

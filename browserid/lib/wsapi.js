@@ -33,7 +33,10 @@ function checkParams(params) {
 }
 
 function isAuthed(req) {
-  return (req.session && typeof req.session.authenticatedUser === 'string');
+  var result= (req.session && typeof req.session.authenticatedUser === 'string');
+  if (!result && req.session)
+    console.log("AUTH" + req.session.authenticatedUser);
+  return result;
 }
 
 // turned this into a proper middleware
@@ -153,20 +156,19 @@ function setup(app) {
         });
     });
     
-  // FIXME: need CSRF protection
-  app.get('/wsapi/add_email', checkAuthed, checkParams(["email", "pubkey", "site"]), function (req, resp) {
+  app.post('/wsapi/add_email', checkAuthed, checkParams(["email", "pubkey", "site"]), function (req, resp) {
       try {
         // upon success, stage_user returns a secret (that'll get baked into a url
         // and given to the user), on failure it throws
-        var secret = db.stageEmail(req.session.authenticatedUser, req.query.email, req.query.pubkey);
+        var secret = db.stageEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey);
         
         // store the email being added in session data
-        req.session.pendingAddition = req.query.email;
+        req.session.pendingAddition = req.body.email;
         
         httputils.jsonResponse(resp, true);
         
         // let's now kick out a verification email!
-        email.sendVerificationEmail(req.query.email, req.query.site, secret);
+        email.sendVerificationEmail(req.body.email, req.body.site, secret);
       } catch(e) {
         // we should differentiate tween' 400 and 500 here.
         httputils.badRequest(resp, e.toString());
@@ -220,7 +222,7 @@ function setup(app) {
     });
 
   app.post('/wsapi/sync_emails', checkAuthed, function(req,resp) {
-      var emails = req.body;
+      var emails = req.body.emails;
 
       db.getSyncResponse(req.session.authenticatedUser, emails, function(err, syncResponse) {
           if (err) httputils.serverError(resp, err);
