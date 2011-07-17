@@ -481,8 +481,13 @@ $.Controller("Dialog", {}, {
               var keypair = CryptoStubs.genKeyPair();
 
               $.ajax({
-                  url: '/wsapi/set_key?email=' + encodeURIComponent(email) + '&pubkey=' + encodeURIComponent(keypair.pub),
-                    success: function() {
+                  type: 'POST',
+                  url: '/wsapi/set_key',
+                  data: {
+                    email: email,
+                    pubkey: keypair.pub,
+                    csrf: self.csrf},
+                  success: function() {
                     // update emails list and commit to local storage, then go do the next email
                     self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
                     addNextEmail();

@@ -62,6 +62,15 @@ suite.addBatch({
     "the token is sane": function(r, err) {
       assert.strictEqual('string', typeof token);
     }
+  },
+  "set the key again": {
+    topic: wsapi.post('/wsapi/set_key', {
+      email: 'second@fakeemail.com',
+      pubkey: 'fakepubkey2'
+    }),
+    "the token is sane": function(r, err) {
+      assert.strictEqual('string', typeof token);
+    }
   }
 });
 

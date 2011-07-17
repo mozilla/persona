@@ -197,8 +197,8 @@ function setup(app) {
           }});
     });
 
-  app.get('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
-      db.addKeyToEmail(req.session.authenticatedUser, req.query.email, req.query.pubkey, function (rv) {
+  app.post('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
+      db.addKeyToEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function (rv) {
           httputils.jsonResponse(resp, rv);
         });
     });
