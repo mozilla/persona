@@ -122,6 +122,12 @@ exports.setup = function(server) {
     next();
   });
 
+  // prevent framing
+  server.use(function(req, resp, next) {
+      resp.setHeader('x-frame-options', 'DENY');
+      next();
+    });
+
   // add the actual URL handlers other than static
   router(server);
 }
