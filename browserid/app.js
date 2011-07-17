@@ -5,14 +5,16 @@ const          fs = require('fs'),
 var VAR_DIR = path.join(__dirname, "var");
 try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { };
 
-const         url = require('url'),
-            wsapi = require('./lib/wsapi.js'),
-        httputils = require('./lib/httputils.js'),
-        webfinger = require('./lib/webfinger.js'),
-         sessions = require('cookie-sessions'),
-          express = require('express'),
-          secrets = require('./lib/secrets.js'),
-               db = require('./lib/db.js');
+const
+  url = require('url'),
+  wsapi = require('./lib/wsapi.js'),
+  httputils = require('./lib/httputils.js'),
+  webfinger = require('./lib/webfinger.js'),
+  sessions = require('cookie-sessions'),
+  express = require('express'),
+  secrets = require('./lib/secrets.js'),
+  db = require('./lib/db.js'),
+  csrf = require('express-csrf');
 
 // looks unused, see run.js
 // const STATIC_DIR = path.join(path.dirname(__dirname), "static");
@@ -41,6 +43,7 @@ function router(app) {
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
 
   app.get('/', function(req,res) {
+      console.log("CSRF: " + req.session.csrf);
       res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});
     });
 
@@ -114,6 +117,13 @@ exports.setup = function(server) {
 
   server.use(express.bodyParser());
 
+  // we make sure that everyone has a session, otherwise we can't do CSRF properly
+  server.use(function(req, resp, next) {
+      if (typeof req.session == 'undefined')
+        req.session = {};
+      next();
+    });
+
   // a tweak to get the content type of host-meta correct
   server.use(function(req, resp, next) {
     if (req.url === '/.well-known/host-meta') {
@@ -128,6 +138,13 @@ exports.setup = function(server) {
       next();
     });
 
+  // setup CSRF protection
+  //server.use(csrf.check());
+
+  server.dynamicHelpers({
+      csrf: csrf.token
+        });
+  
   // add the actual URL handlers other than static
   router(server);
 }

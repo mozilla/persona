@@ -116,7 +116,7 @@ $.Controller("Dialog", {}, {
     "#notme click": function(event) {
       clearEmails();
       var self = this;
-      $.get("/wsapi/logout", function() {
+      $.post("/wsapi/logout", function() {
           self.doAuthenticate();
       });
     },

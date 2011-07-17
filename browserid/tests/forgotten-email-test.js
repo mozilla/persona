@@ -159,6 +159,12 @@ suite.addBatch({
       assert.strictEqual(JSON.parse(r.body), true);
     }
   },
+  "logout": {
+    topic: wsapi.post('/wsapi/logout', {}),
+    "should work": function(r, err) {
+      assert.strictEqual(JSON.parse(r.body), "ok");
+    }
+  },
   "second email, first pass good": {
     topic: wsapi.get('/wsapi/authenticate_user', { email: 'second@fakeemail.com', pass: 'firstfakepass' }),
     "should work": function(r, err) {

@@ -214,7 +214,7 @@ function setup(app) {
       }
     });
 
-  app.get('/wsapi/logout', function(req,resp) {
+  app.post('/wsapi/logout', function(req,resp) {
       req.session = {};
       httputils.jsonResponse(resp, "ok");
     });
