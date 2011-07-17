@@ -144,6 +144,9 @@ $.Controller("Dialog", {}, {
     },
 
     "#create_continue click": function(event) {
+      if ($('#create_continue').hasClass('disabled'))
+        return;
+
       // now we need to actually try to stage the creation of this account.
       var email = this.find("#email_input").val();
       var pass = this.find("#password_input").val();
@@ -217,6 +220,8 @@ $.Controller("Dialog", {}, {
       this.renderTemplates("views/create.ejs", {},
                            "views/bottom-continue.ejs", {});
 
+      $('#create_continue').addClass('disabled');
+
       var checkedEmails = {};
       var emailCheckState = null;
       var nextEmailToCheck = null;
@@ -275,8 +280,10 @@ $.Controller("Dialog", {}, {
         var pass = $("#password_input").val();
         var match = pass === $("#password_verify_input").val();
         self.find('.passwordnote').hide();
+        $('#create_continue').addClass('disabled');
         if (!match) {
           self.find('#passwords_different').show();
+          self.find
         } else {
           if (!pass) {
             self.find('#enter_a_password').show();
@@ -284,6 +291,7 @@ $.Controller("Dialog", {}, {
             self.find('#password_too_short').show();
           } else {
             self.find('#password_ok').show();
+            $('#create_continue').removeClass('disabled');
           }
         }
       }
@@ -300,11 +308,14 @@ $.Controller("Dialog", {}, {
       this.renderTemplates("views/forgotpassword.ejs", {},
                            "views/bottom-continue.ejs", {});
 
+      $('#create_continue').addClass('disabled');
+
       var self=this;
       function checkInput() {
         var pass = $("#password_input").val();
         var match = pass === $("#password_verify_input").val();
         self.find('.passwordnote').hide();
+        $('#create_continue').addClass('disabled');
         if (!match) {
           self.find('#passwords_different').show();
         } else {
@@ -314,6 +325,7 @@ $.Controller("Dialog", {}, {
             self.find('#password_too_short').show();
           } else {
             self.find('#password_ok').show();
+            $('#create_continue').removeClass('disabled');
           }
         }
       }
