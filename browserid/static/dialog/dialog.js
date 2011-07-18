@@ -6,7 +6,7 @@ steal.plugins(
 	'jquery/view/ejs',				// client side templates
 	'jquery/controller/view')		// lookup views with the controller's name
 
-	.css()	// loads styles
+	.css("style")	// loads styles
 
 	.resources('jschannel',
              'underscore-min',
