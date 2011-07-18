@@ -150,6 +150,10 @@ steal(function( steal ) {
 
 				return outBaos.toString();
 			};
-		}
+		},
+        concatOnly: function() {
+			steal.print("steal.compress - Not compressing resources, only concatenating");
+            return function( src ) { return src; }
+        }
 	};
 });
