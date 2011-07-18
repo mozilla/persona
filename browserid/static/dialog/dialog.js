@@ -1,17 +1,17 @@
 /*globals steal
  */
-steal.plugins(	
+steal.plugins(
 	'jquery/controller',			// a widget factory
 	'jquery/controller/subscribe',	// subscribe to OpenAjax.hub
 	'jquery/view/ejs',				// client side templates
 	'jquery/controller/view')		// lookup views with the controller's name
-	
+
 	.css()	// loads styles
 
 	.resources('jschannel',
              'underscore-min',
              'crypto',
-             'crypto-stubs',
+             'crypto-api',
              'channel',
              'storage')					// 3rd party script's (like jQueryUI), in resources folder
 
