@@ -2,14 +2,14 @@
   font-family: 'Shadows Into Light';
   font-style: normal;
   font-weight: normal;
-  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('../../css/sil.ttf') format('truetype');
+  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('/css/sil.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'Tenor Sans';
   font-style: normal;
   font-weight: normal;
-  src: local('Tenor Sans'), local('TenorSans'), url('../../css/ts.ttf') format('truetype');
+  src: local('Tenor Sans'), local('TenorSans'), url('/css/ts.ttf') format('truetype');
 }
 
 body {
@@ -273,6 +273,12 @@ div.dialog div.attention_lame {
     margin-top: .6em;
 }
 
+#header .labs_logo {
+    position: fixed;
+    top: 9px;
+    right: 10px;
+}
+
 p.prompt {
     font-size: 1.1em;
 }
@@ -280,3 +286,4 @@ p.prompt {
 p.prompt .sitename {
     font-size: 1.1em;
 }
+
