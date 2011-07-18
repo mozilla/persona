@@ -283,7 +283,6 @@ $.Controller("Dialog", {}, {
         $('#create_continue').addClass('disabled');
         if (!match) {
           self.find('#passwords_different').show();
-          self.find
         } else {
           if (!pass) {
             self.find('#enter_a_password').show();
