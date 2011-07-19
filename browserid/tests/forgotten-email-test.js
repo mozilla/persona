@@ -18,7 +18,7 @@ interceptor.onEmail = function(newtok) { token = newtok; };
 // create a new account via the api with (first address)
 suite.addBatch({
   "stage first account": {
-    topic: wsapi.get('/wsapi/stage_user', {
+    topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
       pass: 'firstfakepass',
       pubkey: 'fakepubkey',
@@ -112,7 +112,7 @@ suite.addBatch({
 // just re-registering the user.
 suite.addBatch({
   "re-stage first account": {
-    topic: wsapi.get('/wsapi/stage_user', {
+    topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
       pass: 'secondfakepass',
       pubkey: 'fakepubkey2',
