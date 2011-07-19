@@ -174,20 +174,38 @@ footer .copyright {
     font-size: .8em;
 }
 
-.step .number {
-    font-family: 'Shadows Into Light', arial, serif;
-    font-size: 4em;
-    float: left;
-    font-weight: bold;
-    margin-top : -.4em;
-
-    width: 50px;
+#steps {
+    list-style: none;
+    width: 800px;
+    margin: 0 auto;
+    padding: 0;
 }
 
 .step  {
-    margin: 1em auto 2em auto;
+    margin: 1em 0 2em 0;
+    padding: 0 0 0 50px;
     font-size: 14px;
-    width: 800px;
+    position: relative;
+}
+
+.step .number {
+    position: absolute;
+    top: -5px;
+    left: 0;
+    font-family: 'Shadows Into Light', arial, serif;
+    font-size: 4em;
+    font-weight: bold;
+    line-height: 1em;
+}
+
+.step > h3 {
+    font-size: 1em;
+    margin: 0;
+    display: inline;
+}
+
+.step > pre {
+    clear: both;
 }
 
 .step > p,  .step > ol {
@@ -205,10 +223,11 @@ footer .copyright {
 
  pre code {
     padding: 10px 15px 10px 15px;
-    margin: 1em 60px 1em 60px;
+    margin: .75em;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px 10px 10px 10px;
+    width: 650px;
 }
 
 #emailList {
