@@ -168,7 +168,7 @@ div.input input {
     border: 1px solid black;
     width: 240px;
     height: 2em;
-    padding: .4em;
+    padding: 0 .4em 0 .4em;
 }
 
 a {
