@@ -63,12 +63,12 @@ function setup(app) {
    * this involves creating a secret url that must be delivered to the
    * user via their claimed email address.  Upon timeout expiry OR clickthrough
    * the staged user account transitions to a valid user account */
-  app.get('/wsapi/stage_user', checkParams([ "email", "pass", "pubkey", "site" ]), function(req, resp) {
+  app.post('/wsapi/stage_user', checkParams([ "email", "pass", "pubkey", "site" ]), function(req, resp) {
       
       // bcrypt the password
       // we should be cloning this object here.
-      var stageParams = req.query;
-      stageParams['hash'] = bcrypt.encrypt_sync(req.query.pass, bcrypt.gen_salt_sync(10));
+      var stageParams = req.body;
+      stageParams['hash'] = bcrypt.encrypt_sync(stageParams.pass, bcrypt.gen_salt_sync(10));
         
       try {
         // upon success, stage_user returns a secret (that'll get baked into a url

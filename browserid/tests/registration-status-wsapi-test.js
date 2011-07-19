@@ -31,7 +31,7 @@ suite.addBatch({
 // now start a registration
 suite.addBatch({
   "start registration": {
-    topic: wsapi.get('/wsapi/stage_user', {
+    topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
       pass: 'firstfakepass',
       pubkey: 'fakepubkey',
@@ -112,7 +112,7 @@ suite.addBatch({
 
 suite.addBatch({
   "re-registering an existing email": {
-    topic: wsapi.get('/wsapi/stage_user', {
+    topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
       pass: 'secondfakepass',
       pubkey: 'secondfakepubkey',

@@ -191,11 +191,14 @@ $.Controller("Dialog", {}, {
       var self = this;
 
       $.ajax({
-          url: '/wsapi/stage_user?email=' + encodeURIComponent(email)
-            + '&pass=' + encodeURIComponent(pass)
-            + '&pubkey=' + encodeURIComponent(keypair.pub)
-            + '&site=' + encodeURIComponent(this.remoteOrigin.replace(/^(http|https):\/\//, '')),
-            success: function() {
+          type: "post",
+          url: '/wsapi/stage_user',
+          data: {email: email,
+              pass: pass,
+              pubkey : keypair.pub,
+              site : this.remoteOrigin.replace(/^(http|https):\/\//, ''),
+              csrf : self.csrf},
+          success: function() {
             // account successfully staged, now wait for email confirmation
             self.doConfirmEmail(email, keypair);
           },
