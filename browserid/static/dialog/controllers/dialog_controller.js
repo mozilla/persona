@@ -11,7 +11,8 @@ $.Controller("Dialog", {}, {
       this.csrf = null;
       this._getCSRF();
 
-      this.element.html("views/body.ejs", {});
+      var html = $.View("//dialog/views/body.ejs", {});
+      this.element.html(html);
       this.element.show();
 
       // keep track of where we are and what we do on success and error
@@ -40,11 +41,15 @@ $.Controller("Dialog", {}, {
     },
 
     renderTemplates: function(body, body_vars, footer, footer_vars) {
-      if (body)
-        $('#dialog').html(body, body_vars).hide().fadeIn(300);
+      if (body) {
+        var bodyHtml = $.View("//dialog/views/" + body, body_vars);
+        $('#dialog').html(bodyHtml).hide().fadeIn(300);
+      }
 
-      if (footer)
-        $('#bottom-bar').html(footer, footer_vars);
+      if (footer) {
+        var footerHtml = $.View("//dialog/views/" + footer, footer_vars);
+        $('#bottom-bar').html(footerHtml);
+      }
     },
     
     "#suggest_signin click": function(event) {
@@ -229,23 +234,23 @@ $.Controller("Dialog", {}, {
     },
       
     doSignIn: function() {
-      this.renderTemplates("views/signin.ejs", {sitename: this.remoteOrigin, identities: getEmails()},
-                           "views/bottom-pickemail.ejs", {});
+      this.renderTemplates("signin.ejs", {sitename: this.remoteOrigin, identities: getEmails()},
+                           "bottom-pickemail.ejs", {});
 
       // select the first option
       this.find('input:first').attr('checked', true);
     },
 
     doAuthenticate: function() {
-      this.renderTemplates("views/authenticate.ejs", {sitename: this.remoteOrigin},
-                           "views/bottom-signin.ejs", {});
+      this.renderTemplates("authenticate.ejs", {sitename: this.remoteOrigin},
+                           "bottom-signin.ejs", {});
 
       this.setupEnterKey();
     },
       
     doCreate: function() {
-      this.renderTemplates("views/create.ejs", {},
-                           "views/bottom-continue.ejs", {});
+      this.renderTemplates("create.ejs", {},
+                           "bottom-continue.ejs", {});
 
       $('#create_continue').addClass('disabled');
 
@@ -310,7 +315,6 @@ $.Controller("Dialog", {}, {
         $('#create_continue').addClass('disabled');
         if (!match) {
           self.find('#passwords_different').show();
-          self.find
         } else {
           if (!pass) {
             self.find('#enter_a_password').show();
@@ -332,8 +336,8 @@ $.Controller("Dialog", {}, {
     },
       
     doForgotPassword: function() {
-      this.renderTemplates("views/forgotpassword.ejs", {},
-                           "views/bottom-continue.ejs", {});
+      this.renderTemplates("forgotpassword.ejs", {},
+                           "bottom-continue.ejs", {});
 
       $('#create_continue').addClass('disabled');
 
@@ -366,19 +370,19 @@ $.Controller("Dialog", {}, {
     },
 
     doWait: function(title, message) {
-      this.renderTemplates("views/wait.ejs", {title: title, message: message});
+      this.renderTemplates("wait.ejs", {title: title, message: message});
     },
 
     doNewEmail: function() {
-      this.renderTemplates("views/addemail.ejs", {},
-                           "views/bottom-addemail.ejs", {});
+      this.renderTemplates("addemail.ejs", {},
+                           "bottom-addemail.ejs", {});
 
       this.setupEnterKey();
     },
 
     doConfirmEmail: function(email, keypair) {
-      this.renderTemplates("views/confirmemail.ejs", {email:email},
-                           "views/bottom-confirmemail.ejs", {});
+      this.renderTemplates("confirmemail.ejs", {email:email},
+                           "bottom-confirmemail.ejs", {});
 
       $('#continue_button').addClass('disabled');
 

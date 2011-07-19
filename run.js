@@ -190,6 +190,8 @@ dirs.forEach(function(dirObj) {
     try { runJSExists = fs.statSync(handlerPath).isFile() } catch(e) {};
     if (runJSExists) {
       var runJS = require(handlerPath);
+      // set to development mode
+      runJS.production = false;
     }
   } catch(e) {
     console.log("Error loading " + handlerPath + ": " + e);

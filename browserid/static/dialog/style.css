@@ -1,15 +1,9 @@
-@font-face {
-  font-family: 'Shadows Into Light';
-  font-style: normal;
-  font-weight: normal;
-  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('../../css/sil.ttf') format('truetype');
-}
 
 @font-face {
   font-family: 'Tenor Sans';
   font-style: normal;
   font-weight: normal;
-  src: local('Tenor Sans'), local('TenorSans'), url('../../css/ts.ttf') format('truetype');
+  src: local('Tenor Sans'), local('TenorSans'), url('/css/ts.ttf') format('truetype');
 }
 
 body {
@@ -32,24 +26,6 @@ span.sitename, span.email {
     margin: auto;
     margin-top: .5em;
     margin-bottom: 1em;
-}
-
-#logo {
-    margin: 0;
-    padding: 0;
-    width: 575px;
-    position: fixed;
-    left: 30px;
-    top: 120px;
-    opacity: .1;
-    -moz-transform: rotate(-25deg);
-    -webkit-transform: rotate(-25deg);
-    transform: rotate(-25deg);
-    z-index: -5;
-}
-
-#logo > img {
-    width: 100%;
 }
 
 #bottom-bar {
@@ -192,7 +168,7 @@ div.input input {
     border: 1px solid black;
     width: 240px;
     height: 2em;
-    padding: .4em;
+    padding: 0 .4em 0 .4em;
 }
 
 a {
@@ -246,6 +222,10 @@ div.dialog div.attention_lame {
     font-size: .8em;
 }
 
+.sprite {
+    background: url('/i/sprite.png') no-repeat 0 0;
+}
+
 #header {
     position: fixed;
     padding: 0;
@@ -259,18 +239,31 @@ div.dialog div.attention_lame {
     color: #fff;
 }
 
-#header .title {
-    font-size: 1.7em;
-    font-weight: bold;
+#logo {
+    background-position: 0 -26px;;
+    color: transparent;
+    width: 135px;
+    height: 35px;
+    margin: 2px 16px 0 16px;
     float: left;
-    margin: 4px 16px 0 16px;
 }
 
-#header .subtitle {
-    size: 1.2em;
-    font-family: 'Shadows into light', arial, serif;
+#subtitle {
+    margin: 8px 0 0;
+    color: transparent;
+    background-position: 0 0;
+    width: 146px;
+    height: 25px;
     float: left;
-    margin-top: .6em;
+}
+
+#labs_logo {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    background-position: 0 -62px;
+    width: 97px;
+    height: 20px;
 }
 
 p.prompt {
@@ -280,3 +273,4 @@ p.prompt {
 p.prompt .sitename {
     font-size: 1.1em;
 }
+
