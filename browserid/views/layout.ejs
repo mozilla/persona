@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <meta charset=utf-8">
   <title><%- title %></title>
-  <link rel="stylesheet" href="/css/style.css"  type="text/css">
   <link rel="stylesheet" href="/css/github.css">
+  <link rel="stylesheet" href="/css/style.css"  type="text/css">
   <!-- FIXME: minimize jquery for this -->
   <script src="/js/jquery-1.6.2.min.js"></script>
   <script src="/dialog/resources/underscore-min.js"></script>
 <script>
-$(document).ready(function() {
+$(function() {
   if ($('#emailList')) {
     display_saved_ids();
   }
@@ -83,28 +83,21 @@ function display_saved_ids()
 </script>
 </head>
 <body>
-<div id="splash">
-  <div class="header">
-    <div class="manage"><a id="manageLink" href="manage">my account</a></div>
-  </div>
+    <header class="<% if(fullpage) { %> half <% } else { %> quarter <% } %>">
+    <a id="manageLink" href="manage">my account</a>
+      <hgroup>
   <% if (fullpage) { %>
-  <div class="tophalf">
-    <div class="labslogo"><div><img src="i/labs-logo.png"></div></div>
-    <div class="title"><img src="i/browserid_logo.png"></div>
-    <div class="subtitle">A better way to sign in.</div>
-  </div>
+        <span id="labslogo">Mozilla Labs</span>
+        <h1>BrowserID</h1>
+        <h2>A better way to sign in.</h2>
   <% } else { %>
-  <div class="topquarter">
-    <div>
-      <a href="/"><div class="title"><img src="i/browserid_logo_lil.png"></div></a>
-      <div class="subtitle"><%- title %></div>
-    </div>
-  </div>
+        <h1><a href="/"><img src="i/browserid_logo_lil.png">BrowserID</a></h1>
+        <h2><%- title %></h2>
   <% } %>
-  <div class="bottomhalf">
+      </hgroup>
+  </header>
     <%- body %>
-  </div>
-  <div class="footer">
+  <footer>
     <div>
       <div class="right">
         <p><img src="i/browserid_logo_sm.png"> is an <b>open source experiment</b><br />from the <a href="http://identity.mozilla.com">Identity Team</a> at
@@ -115,7 +108,6 @@ function display_saved_ids()
         <p class="copyright">Copyright © 2011 Mozilla.  All rights reserved. </p>
       </div>
     </div>
-  </div>
-</div>
+  </footer>
 </body>
 </html>
