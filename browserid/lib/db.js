@@ -5,29 +5,36 @@ const sqlite = require('sqlite'),
 var VAR_DIR = path.join(path.dirname(__dirname), "var");
 
 var db = new sqlite.Database();
-var dbPath = path.join(VAR_DIR, "authdb.sqlite");
+
+// a configurable parameter if set immediately after require() of db.js
+exports.dbPath = path.join(VAR_DIR, "authdb.sqlite");
 
 var ready = false;
 var waiting = [];
 
-db.open(dbPath, function (error) {
-  if (error) {
-    console.log("Couldn't open database: " + error);
-    throw error;
-  }
-  db.executeScript(
-    "CREATE TABLE IF NOT EXISTS users  ( id INTEGER PRIMARY KEY, password TEXT );" +
-    "CREATE TABLE IF NOT EXISTS emails ( id INTEGER PRIMARY KEY, user INTEGER, address TEXT UNIQUE );" +
-    "CREATE TABLE IF NOT EXISTS keys   ( id INTEGER PRIMARY KEY, email INTEGER, key TEXT, expires INTEGER )",
-    function (error) {
-      if (error) {
-        throw error;
-      }
-      ready = true;
-      waiting.forEach(function(f) { f() });
-      waiting = [];
-    });
-});
+// async break allow database path to be configured by calling code
+// a touch tricky cause client must set dbPath before releasing 
+// control of the runloop
+setTimeout(function() {
+  db.open(exports.dbPath, function (error) {
+    if (error) {
+      console.log("Couldn't open database: " + error);
+      throw error;
+    }
+    db.executeScript(
+      "CREATE TABLE IF NOT EXISTS users  ( id INTEGER PRIMARY KEY, password TEXT );" +
+        "CREATE TABLE IF NOT EXISTS emails ( id INTEGER PRIMARY KEY, user INTEGER, address TEXT UNIQUE );" +
+        "CREATE TABLE IF NOT EXISTS keys   ( id INTEGER PRIMARY KEY, email INTEGER, key TEXT, expires INTEGER )",
+      function (error) {
+        if (error) {
+          throw error;
+        }
+        ready = true;
+        waiting.forEach(function(f) { f() });
+        waiting = [];
+      });
+  });
+}, 0);
 
 exports.onReady = function(f) {
   setTimeout(function() {
