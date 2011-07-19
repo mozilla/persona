@@ -31,6 +31,8 @@ function internal_redirector(new_url) {
 function router(app) {
   app.set("views", __dirname + '/views'); 
 
+  app.set('view options', { production: exports.production });
+
   // this should probably be an internal redirect
   // as soon as relative paths are figured out.
   app.get('/sign_in', function(req, res, next ){
