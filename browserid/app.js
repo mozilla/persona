@@ -33,9 +33,13 @@ function router(app) {
 
   // this should probably be an internal redirect
   // as soon as relative paths are figured out.
-  app.get('/sign_in', function(req, resp, next ){
-      resp.redirect('/dialog/dialog.html');
-    });
+  app.get('/sign_in', function(req, res, next ){
+      res.render('dialog.ejs', {
+          title: 'A Better Way to Sign In',
+          layout: false,
+          production: exports.production
+      });
+  });
 
   // simple redirects (internal for now)
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
@@ -92,6 +96,8 @@ function router(app) {
 };
 
 exports.varDir = VAR_DIR;
+
+exports.production = true;
 
 exports.setup = function(server) {
   server.use(express.cookieParser());
