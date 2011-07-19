@@ -24,6 +24,106 @@ suite.addBatch({
 
 // XXX: add exhaustive tests of the db API here
 
+var secret = undefined;
+
+suite.addBatch({
+  "an email address is not reported as staged before it is": {
+    topic: function() {
+      return db.isStaged('lloyd@nowhe.re');
+    },
+    "isStaged returns false": function (e, r) {
+      assert.strictEqual(r, false);
+    }
+  },
+  "an email address is not reported as known before it is": {
+    topic: function() {
+      db.emailKnown('lloyd@nowhe.re', this.callback);
+    },
+    "emailKnown returns false": function (e, r) {
+      assert.strictEqual(r, false);
+    }
+  }
+});
+
+suite.addBatch({
+  "stage a user for creation pending verification": {
+    topic: function() {
+      return secret = db.stageUser({
+        email: 'lloyd@nowhe.re',
+        pubkey: 'fakepublickey',
+        pass: 'fakepasswordhash'
+      });
+    },
+    "staging returns a valid secret": function(e, r) {
+      assert.isString(secret);
+      assert.strictEqual(secret.length, 48);
+    }
+  }
+});
+
+suite.addBatch({
+  "an email address is reported": {
+    topic: function() {
+      return db.isStaged('lloyd@nowhe.re');
+    },
+    " as staged after it is": function (e, r) {
+      assert.strictEqual(r, true);
+    }
+  },
+  "an email address is not reported": {
+    topic: function() {
+      db.emailKnown('lloyd@nowhe.re', this.callback);
+    },
+    " as known when it is only staged": function (e, r) {
+      assert.strictEqual(r, false);
+    }
+  }
+});
+
+suite.addBatch({
+  "upon receipt of a secret": {
+    topic: function() {
+      db.gotVerificationSecret(secret, this.callback);
+    },
+    "gotVerificationSecret completes without error": function (e, r) {
+      assert.strictEqual(r, undefined);
+    }
+  }
+});
+
+suite.addBatch({
+  "an email address is not reported": {
+    topic: function() {
+      return db.isStaged('lloyd@nowhe.re');
+    },
+    "as staged immediately after its verified": function (e, r) {
+      assert.strictEqual(r, false);
+    }
+  },
+  "an email address is known": {
+    topic: function() {
+      db.emailKnown('lloyd@nowhe.re', this.callback);
+    },
+    "when it is": function (e, r) {
+      assert.strictEqual(r, true);
+    }
+  }
+});
+
+// XXX: remaining APIs to test 
+// exports.findByEmail
+// exports.addEmailToAccount
+// exports.addKeyToEmail
+// exports.cancelAccount
+// exports.checkAuth
+// exports.checkAuthHash
+// exports.emailsBelongToSameAccount
+// exports.getSyncResponse
+// exports.pubkeysForEmail
+// exports.removeEmail
+// exports.stageEmail
+
+
 suite.addBatch({
   "remove the database file": {
     topic: function() {

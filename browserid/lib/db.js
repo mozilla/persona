@@ -36,6 +36,9 @@ setTimeout(function() {
   });
 }, 0);
 
+// accepts a function that will be invoked once the database is ready for transactions.
+// this hook is important to pause the rest of application startup until async database
+// connection establishment is complete.
 exports.onReady = function(f) {
   setTimeout(function() {
     if (ready) f();
