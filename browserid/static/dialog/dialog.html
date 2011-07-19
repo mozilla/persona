@@ -4,12 +4,15 @@
 	<head>
 		<title>Browser ID</title>
 		<script type='text/javascript' src='../steal/steal.production.js?dialog'></script>
-    <script>
-      $(function() {
-         $('#body').dialog().show();
-      });
-    </script>
+        <!--[if lt IE 9]>
+        <script src="/dialog/html5shim.js"></script>
+        <![endif]-->
+        <script>
+            $(function() {
+                $('body').dialog().show();
+            });
+        </script>
 	</head>
-    <body id="body">
+    <body>
 	</body>
 </html>
