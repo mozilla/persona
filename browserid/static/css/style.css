@@ -217,7 +217,8 @@ footer .copyright {
 }
 
 .status {
-    margin: 0 100px 0 100px;
+    margin: 0 auto;
+    width: 600px;
     font-size: 1.2em;
 }
 
@@ -289,6 +290,8 @@ footer .copyright {
 
 .legal {
    font-size: 1.3em;
+   width: 800px;
+   margin: 0 auto;
 }
 
 .legal li {
