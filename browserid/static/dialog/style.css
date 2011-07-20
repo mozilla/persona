@@ -100,17 +100,22 @@ div.actions {
 #identities {
     width: 450px;
     margin: auto;
+    list-style: none;
 }
 
-#identities > div {
-    margin-bottom: .5em;
-    height: 1.4em;
-    font-size: .9em;
+#identities > ul, #identities > ul > li {
+  list-style: none;
 }
 
-#identities > div > * {
-    float: left;
-    cursor: pointer;
+#identities > ul > li {
+  margin-bottom: .5em;
+  height: 1.4em;
+  font-size: .9em;
+  line-height: 18px;
+}
+
+input[type=radio], input[type=radio] + label {
+  cursor: pointer;
 }
 
 button {
