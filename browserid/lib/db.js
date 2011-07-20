@@ -329,16 +329,20 @@ exports.getSyncResponse = function(email, identities, cb) {
 
           // #3 -- yes, this is sub-optimal in terms of performance.  when we
           // move away from public keys this will be unnec.
-          var checked = 0;
-          keysToCheck.forEach(function(e) {
-            emailHasPubkey(e, identities[e], function(v) {
-              checked++;
-              if (!v) respBody.key_refresh.push(e);
-              if (checked === keysToCheck.length) {
-                cb(undefined, respBody);
-              }
+          if (keysToCheck.length) {
+            var checked = 0;
+            keysToCheck.forEach(function(e) {
+              emailHasPubkey(e, identities[e], function(v) {
+                checked++;
+                if (!v) respBody.key_refresh.push(e);
+                if (checked === keysToCheck.length) {
+                  cb(undefined, respBody);
+                }
+              });
             });
-          });
+          } else {
+            cb(undefined, respBody);
+          }
         }
       });
   });
