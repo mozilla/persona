@@ -1,6 +1,7 @@
-const sqlite = require('sqlite'),
-      path = require('path'),
-      bcrypt = require('bcrypt');
+const
+sqlite = require('sqlite'),
+path = require('path'),
+bcrypt = require('bcrypt');
 
 var VAR_DIR = path.join(path.dirname(__dirname), "var");
 
@@ -17,8 +18,8 @@ db.open(dbPath, function (error) {
   }
   db.executeScript(
     "CREATE TABLE IF NOT EXISTS users  ( id INTEGER PRIMARY KEY, password TEXT );" +
-    "CREATE TABLE IF NOT EXISTS emails ( id INTEGER PRIMARY KEY, user INTEGER, address TEXT UNIQUE );" +
-    "CREATE TABLE IF NOT EXISTS keys   ( id INTEGER PRIMARY KEY, email INTEGER, key TEXT, expires INTEGER )",
+      "CREATE TABLE IF NOT EXISTS emails ( id INTEGER PRIMARY KEY, user INTEGER, address TEXT UNIQUE );" +
+      "CREATE TABLE IF NOT EXISTS keys   ( id INTEGER PRIMARY KEY, email INTEGER, key TEXT, expires INTEGER )",
     function (error) {
       if (error) {
         throw error;
@@ -356,14 +357,14 @@ exports.removeEmail = function(authenticated_email, email, cb) {
 };
 
 exports.cancelAccount = function(authenticated_email, cb) {
-    emailToUserID(authenticated_email, function(user_id) {
-        executeTransaction([
-            [ "delete from emails where user = ?", [ user_id ] ] ,
-            [ "delete from keys where email in (select address from emails where user = ?)", [ user_id ] ],
-            [ "delete from users where id = ?", [ user_id ] ],
-        ], function (error) {
-            if (error) cb(error);
-            else cb();
-        });
+  emailToUserID(authenticated_email, function(user_id) {
+    executeTransaction([
+      [ "delete from emails where user = ?", [ user_id ] ] ,
+      [ "delete from keys where email in (select address from emails where user = ?)", [ user_id ] ],
+      [ "delete from users where id = ?", [ user_id ] ],
+    ], function (error) {
+      if (error) cb(error);
+      else cb();
     });
+  });
 };

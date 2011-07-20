@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 var  path = require("path"),
-     fs = require("fs"),
-     express = require("express");
+fs = require("fs"),
+express = require("express");
 
 const amMain = (process.argv[1] === __filename);
 
