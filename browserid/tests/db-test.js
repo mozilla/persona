@@ -142,10 +142,9 @@ suite.addBatch({
       assert.strictEqual(r.length, 3);
     }
   }
-});    
+});
 
-
-// XXX: remaining APIs to test 
+// XXX: remaining APIs to test
 // exports.addEmailToAccount
 // exports.cancelAccount
 // exports.checkAuth

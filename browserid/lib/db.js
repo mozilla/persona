@@ -1,6 +1,5 @@
 const sqlite = require('sqlite'),
-      path = require('path'),
-      bcrypt = require('bcrypt');
+      path = require('path');
 
 var VAR_DIR = path.join(path.dirname(__dirname), "var");
 
@@ -13,7 +12,7 @@ var ready = false;
 var waiting = [];
 
 // async break allow database path to be configured by calling code
-// a touch tricky cause client must set dbPath before releasing 
+// a touch tricky cause client must set dbPath before releasing
 // control of the runloop
 setTimeout(function() {
   db.open(exports.dbPath, function (error) {
@@ -200,7 +199,7 @@ exports.stageEmail = function(existing_email, new_email, pubkey) {
   return secret;
 };
 
-/* invoked when a user clicks on a verification URL in their email */ 
+/* invoked when a user clicks on a verification URL in their email */
 exports.gotVerificationSecret = function(secret, cb) {
   if (!g_staged.hasOwnProperty(secret)) return cb("unknown secret");
 
@@ -257,22 +256,16 @@ exports.gotVerificationSecret = function(secret, cb) {
   }
 };
 
-exports.checkAuth = function(email, pass, cb) {
+// check authentication credentials for a given email address.  This will invoke the
+// users callback with the authentication (password/hash/whatever - the database layer
+// doesn't care).  callback will be passed undefined if email cannot be found
+exports.checkAuth = function(email, cb) {
   db.execute("SELECT users.password FROM emails, users WHERE users.id = emails.user AND emails.address = ?",
              [ email ],
              function (error, rows) {
-               cb(rows.length === 1 && bcrypt.compare_sync(pass, rows[0].password));
+                 cb(rows.length !== 1 ? undefined : rows[0].password);
              });
 };
-
-exports.checkAuthHash = function(email, hash, cb) {
-  db.execute("SELECT users.password FROM emails, users WHERE users.id = emails.user AND emails.address = ? AND users.password = ?",
-             [ email, hash ],
-             function (error, rows) {
-               cb(rows.length === 1);
-             });
-};
-
 
 /* a high level operation that attempts to sync a client's view with that of the
  * server.  email is the identity of the authenticated channel with the user,
@@ -291,7 +284,7 @@ exports.getSyncResponse = function(email, identities, cb) {
     key_refresh: [ ]
   };
 
-  // get the user id associated with this account 
+  // get the user id associated with this account
   emailToUserID(email, function(userID) {
     if (userID === undefined) {
       cb("no such email: " + email);
@@ -320,7 +313,7 @@ exports.getSyncResponse = function(email, identities, cb) {
           // #3
           // XXX todo
 
-          cb(undefined, respBody); 
+          cb(undefined, respBody);
         }
       });
   });
