@@ -5,7 +5,7 @@ echo '****Building dialog HTML, CSS, and JS****'
 echo ''
 
 cd static
-#steal/js dialog/scripts/build.js
+steal/js dialog/scripts/build.js
 
 echo ''
 echo '****Building BrowserID.org HTML, CSS, and JS****'
