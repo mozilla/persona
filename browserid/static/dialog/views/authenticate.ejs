@@ -2,11 +2,11 @@
     <p class="prompt">Signing into <span class="sitename bad"><%= sitename %></span>:</p>
     <div class="formRow">
       <label for="email_input"> Email </label>
-      <input type="email" id="email_input" />
+      <input type="email" id="email_input" required />
     </div>
     <div class="formRow">
       <label for="password_input"> Password </label>
-      <input type="password" id="password_input" />
+      <input type="password" id="password_input" pattern=".{5,}" required/>
       <a href="#" id="forgotpassword">I forgot my password</a>
     </div>
     <div class="attention_lame" id="nosuchaccount" style="display:none;">
