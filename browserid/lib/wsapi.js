@@ -33,7 +33,10 @@ function checkParams(params) {
 }
 
 function isAuthed(req) {
-  return (req.session && typeof req.session.authenticatedUser === 'string');
+  var result= (req.session && typeof req.session.authenticatedUser === 'string');
+  if (!result && req.session)
+    console.log("AUTH" + req.session.authenticatedUser);
+  return result;
 }
 
 // turned this into a proper middleware
@@ -60,12 +63,12 @@ function setup(app) {
    * this involves creating a secret url that must be delivered to the
    * user via their claimed email address.  Upon timeout expiry OR clickthrough
    * the staged user account transitions to a valid user account */
-  app.get('/wsapi/stage_user', checkParams([ "email", "pass", "pubkey", "site" ]), function(req, resp) {
+  app.post('/wsapi/stage_user', checkParams([ "email", "pass", "pubkey", "site" ]), function(req, resp) {
       
       // bcrypt the password
       // we should be cloning this object here.
-      var stageParams = req.query;
-      stageParams['hash'] = bcrypt.encrypt_sync(req.query.pass, bcrypt.gen_salt_sync(10));
+      var stageParams = req.body;
+      stageParams['hash'] = bcrypt.encrypt_sync(stageParams.pass, bcrypt.gen_salt_sync(10));
         
       try {
         // upon success, stage_user returns a secret (that'll get baked into a url
@@ -143,32 +146,31 @@ function setup(app) {
     });
 
 
-  app.get('/wsapi/authenticate_user', checkParams(["email", "pass"]), function(req, resp) {
-      db.checkAuth(req.query.email, function(hash) {
-          var success = bcrypt.compare_sync(req.query.pass, hash);
+  app.post('/wsapi/authenticate_user', checkParams(["email", "pass"]), function(req, resp) {
+      db.checkAuth(req.body.email, function(hash) {
+          var success = bcrypt.compare_sync(req.body.pass, hash);
 
           if (success) {
             if (!req.session) req.session = {};
-            req.session.authenticatedUser = req.query.email;
+            req.session.authenticatedUser = req.body.email;
           }
           httputils.jsonResponse(resp, success);
         });
     });
-
-  // FIXME: need CSRF protection
-  app.get('/wsapi/add_email', checkAuthed, checkParams(["email", "pubkey", "site"]), function (req, resp) {
+    
+  app.post('/wsapi/add_email', checkAuthed, checkParams(["email", "pubkey", "site"]), function (req, resp) {
       try {
         // upon success, stage_user returns a secret (that'll get baked into a url
         // and given to the user), on failure it throws
-        var secret = db.stageEmail(req.session.authenticatedUser, req.query.email, req.query.pubkey);
-
+        var secret = db.stageEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey);
+        
         // store the email being added in session data
-        req.session.pendingAddition = req.query.email;
-
+        req.session.pendingAddition = req.body.email;
+        
         httputils.jsonResponse(resp, true);
         
         // let's now kick out a verification email!
-        email.sendVerificationEmail(req.query.email, req.query.site, secret);
+        email.sendVerificationEmail(req.body.email, req.body.site, secret);
       } catch(e) {
         // we should differentiate tween' 400 and 500 here.
         httputils.badRequest(resp, e.toString());
@@ -197,8 +199,8 @@ function setup(app) {
           }});
     });
 
-  app.get('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
-      db.addKeyToEmail(req.session.authenticatedUser, req.query.email, req.query.pubkey, function (rv) {
+  app.post('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
+      db.addKeyToEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function (rv) {
           httputils.jsonResponse(resp, rv);
         });
     });
@@ -216,13 +218,13 @@ function setup(app) {
       }
     });
 
-  app.get('/wsapi/logout', function(req,resp) {
+  app.post('/wsapi/logout', function(req,resp) {
       req.session = {};
       httputils.jsonResponse(resp, "ok");
     });
 
   app.post('/wsapi/sync_emails', checkAuthed, function(req,resp) {
-      var emails = req.body;
+      var emails = req.body.emails;
 
       db.getSyncResponse(req.session.authenticatedUser, emails, function(err, syncResponse) {
           if (err) httputils.serverError(resp, err);
