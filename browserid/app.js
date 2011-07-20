@@ -40,7 +40,7 @@ function router(app) {
       res.render('dialog.ejs', {
           title: 'A Better Way to Sign In',
           layout: false,
-          production: PRODUCTION
+          production: exports.production 
       });
   });
 
