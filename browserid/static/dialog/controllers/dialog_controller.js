@@ -43,7 +43,9 @@ $.Controller("Dialog", {}, {
     renderTemplates: function(body, body_vars, footer, footer_vars) {
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
-        $('#dialog').html(bodyHtml).hide().fadeIn(300);
+        $('#dialog').html(bodyHtml).hide().fadeIn(300, function() {
+          $('#dialog input').eq(0).focus(); 
+        });
       }
 
       if (footer) {
