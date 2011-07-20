@@ -117,7 +117,7 @@ function generateSecret() {
   return str;
 }
 
-exports.addEmailToAccount = function(existing_email, email, pubkey, cb) {
+function addEmailToAccount(existing_email, email, pubkey, cb) {
   emailToUserID(existing_email, function(userID) {
     if (userID == undefined) {
       cb("no such email: " + existing_email, undefined);
@@ -245,7 +245,7 @@ exports.gotVerificationSecret = function(secret, cb) {
   } else if (o.type === 'add_email') {
     exports.emailKnown(o.email, function(known) {
       function addIt() {
-        exports.addEmailToAccount(o.existing_email, o.email, o.pubkey, cb);
+        addEmailToAccount(o.existing_email, o.email, o.pubkey, cb);
       }
       if (known) {
         exports.removeEmail(o.email, o.email, function (err) {
