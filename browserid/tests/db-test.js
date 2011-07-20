@@ -22,8 +22,7 @@ suite.addBatch({
   }
 });
 
-// XXX: add exhaustive tests of the db API here
-
+// caching of secrets between test batches.
 var secret = undefined;
 
 suite.addBatch({
@@ -111,7 +110,6 @@ suite.addBatch({
 });
 
 // XXX: remaining APIs to test 
-// exports.findByEmail
 // exports.addEmailToAccount
 // exports.addKeyToEmail
 // exports.cancelAccount

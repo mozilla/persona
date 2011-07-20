@@ -92,15 +92,6 @@ function emailToUserID(email, cb) {
     });
 }
 
-exports.findByEmail = function(email) {
-  for (var i = 0; i < g_users.length; i++) {
-    for (var j = 0; j < g_users[i].emails.length; j++) {
-      if (email === g_users[i].emails[j]) return g_users[i];
-    }
-  }
-  return undefined;
-};
-
 exports.emailKnown = function(email, cb) {
   db.execute(
     "SELECT id FROM emails WHERE address = ?",
