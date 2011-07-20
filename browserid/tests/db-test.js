@@ -4,7 +4,8 @@ const assert = require('assert'),
         vows = require('vows'),
           db = require('../lib/db.js'),
         temp = require('temp'),
-          fs = require('fs');
+          fs = require('fs'),
+        path = require('path');
 
 var suite = vows.describe('db');
 
@@ -16,7 +17,7 @@ suite.addBatch({
       var cb = this.callback;
       db.onReady(function() { cb(true) });
     },
-    "the database is ready": function(err, r) {
+    "the database is ready": function(r) {
       assert.strictEqual(r, true);
     }
   }
@@ -30,7 +31,7 @@ suite.addBatch({
     topic: function() {
       return db.isStaged('lloyd@nowhe.re');
     },
-    "isStaged returns false": function (e, r) {
+    "isStaged returns false": function (r) {
       assert.strictEqual(r, false);
     }
   },
@@ -38,7 +39,7 @@ suite.addBatch({
     topic: function() {
       db.emailKnown('lloyd@nowhe.re', this.callback);
     },
-    "emailKnown returns false": function (e, r) {
+    "emailKnown returns false": function (r) {
       assert.strictEqual(r, false);
     }
   }
@@ -53,7 +54,7 @@ suite.addBatch({
         pass: 'fakepasswordhash'
       });
     },
-    "staging returns a valid secret": function(e, r) {
+    "staging returns a valid secret": function(r) {
       assert.isString(secret);
       assert.strictEqual(secret.length, 48);
     }
@@ -65,7 +66,7 @@ suite.addBatch({
     topic: function() {
       return db.isStaged('lloyd@nowhe.re');
     },
-    " as staged after it is": function (e, r) {
+    " as staged after it is": function (r) {
       assert.strictEqual(r, true);
     }
   },
@@ -73,7 +74,7 @@ suite.addBatch({
     topic: function() {
       db.emailKnown('lloyd@nowhe.re', this.callback);
     },
-    " as known when it is only staged": function (e, r) {
+    " as known when it is only staged": function (r) {
       assert.strictEqual(r, false);
     }
   }
@@ -84,7 +85,7 @@ suite.addBatch({
     topic: function() {
       db.gotVerificationSecret(secret, this.callback);
     },
-    "gotVerificationSecret completes without error": function (e, r) {
+    "gotVerificationSecret completes without error": function (r) {
       assert.strictEqual(r, undefined);
     }
   }
@@ -95,7 +96,7 @@ suite.addBatch({
     topic: function() {
       return db.isStaged('lloyd@nowhe.re');
     },
-    "as staged immediately after its verified": function (e, r) {
+    "as staged immediately after its verified": function (r) {
       assert.strictEqual(r, false);
     }
   },
@@ -103,32 +104,72 @@ suite.addBatch({
     topic: function() {
       db.emailKnown('lloyd@nowhe.re', this.callback);
     },
-    "when it is": function (e, r) {
+    "when it is": function (r) {
       assert.strictEqual(r, true);
     }
   }
 });
 
+suite.addBatch({
+  "adding keys to email": {
+    topic: function() {
+      db.addKeyToEmail('lloyd@nowhe.re', 'lloyd@nowhe.re', 'fakepublickey2', this.callback);
+    },
+    "works": function(r) {
+      assert.isUndefined(r);
+    }
+  }
+});
+
+suite.addBatch({
+  "adding multiple keys to email": {
+    topic: function() {
+      db.addKeyToEmail('lloyd@nowhe.re', 'lloyd@nowhe.re', 'fakepublickey3', this.callback);
+    },
+    "works too": function(r) {
+      assert.isUndefined(r);
+    }
+  }
+});
+
+suite.addBatch({
+  "pubkeysForEmail": {
+    topic: function() {
+      db.pubkeysForEmail('lloyd@nowhe.re', this.callback);
+    },
+    "returns all public keys properly": function(r, e) {
+      assert.isArray(r);
+      assert.strictEqual(r.length, 3);
+    }
+  }
+});    
+
+
 // XXX: remaining APIs to test 
 // exports.addEmailToAccount
-// exports.addKeyToEmail
 // exports.cancelAccount
 // exports.checkAuth
 // exports.checkAuthHash
 // exports.emailsBelongToSameAccount
 // exports.getSyncResponse
-// exports.pubkeysForEmail
 // exports.removeEmail
 // exports.stageEmail
-
 
 suite.addBatch({
   "remove the database file": {
     topic: function() {
       fs.unlink(db.dbPath, this.callback);
     },
-    "file is toast": function(err, exception) {
-      assert.strictEqual(exception, undefined);
+    "and unlink should not error": function(err) {
+      assert.strictEqual(err, undefined);
+     },
+    "and the file": {
+      topic: function() {
+        path.exists(db.dbPath, this.callback);
+      },
+      "should be missing": function(r) {
+        assert.isFalse(r);
+      }
     }
   }
 });

@@ -326,18 +326,19 @@ exports.getSyncResponse = function(email, identities, cb) {
   });
 };
 
-
+// get all public keys associated with an email address
 exports.pubkeysForEmail = function(identity, cb) {
-  db.execute('SELECT keys.key FROM keys, emails WHERE emails.address = ? AND keys.email = emails.id',
-             [ identity ],
-             function(err, rows) {
-               var keys = undefined;
-               if (!err && rows && rows.length) {
-                 keys = [ ];
-                 for (var i = 0; i < rows.length; i++) keys.push(rows[i].key);
-               }
-               cb(keys);
-             });
+  db.execute(
+    'SELECT keys.key FROM keys, emails WHERE emails.address = ? AND keys.email = emails.id',
+    [ identity ],
+    function(err, rows) {
+      var keys = undefined;
+      if (!err && rows && rows.length) {
+        keys = [ ];
+        for (var i = 0; i < rows.length; i++) keys.push(rows[i].key);
+      }
+      cb(keys);
+    });
 };
 
 
