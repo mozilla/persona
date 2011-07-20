@@ -20,8 +20,9 @@ const
 // const STATIC_DIR = path.join(path.dirname(__dirname), "static");
 
 const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', VAR_DIR);
-
 const COOKIE_KEY = 'browserid_state';
+
+const PRODUCTION = true;
 
 function internal_redirector(new_url) {
   return function(req, resp, next) {
@@ -33,7 +34,7 @@ function internal_redirector(new_url) {
 function router(app) {
   app.set("views", __dirname + '/views'); 
 
-  app.set('view options', { production: exports.production });
+  app.set('view options', { production: PRODUCTION });
 
   // this should probably be an internal redirect
   // as soon as relative paths are figured out.
@@ -41,7 +42,7 @@ function router(app) {
       res.render('dialog.ejs', {
           title: 'A Better Way to Sign In',
           layout: false,
-          production: exports.production
+          production: PRODUCTION
       });
   });
 
@@ -109,8 +110,9 @@ function router(app) {
 };
 
 exports.varDir = VAR_DIR;
+exports.production = PRODUCTION;
 
-exports.production = true;
+
 
 exports.setup = function(server) {
   server.use(express.cookieParser());

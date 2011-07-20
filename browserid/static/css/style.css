@@ -19,99 +19,108 @@ body {
     font-family: 'Tenor Sans', arial, serif;
 }
 
-#splash .header {
-    height: 4px;
+header {
+    border-top: 4px solid #333;
     background-color: #333;
     padding: 0 20% 0 20%;
-}
-
-#splash .tophalf, #splash .topquarter {
-    background: #008;
-    color: #fff;
-    padding: 0;
     margin: 0;
+    background: #008;
     height: 230px;
+    color #fff;
     min-width: 800px;
 }
 
-#splash .tophalf .title {
-    padding-top: 30px;
-    font-weight: bold;
-}
-
-#splash .tophalf .labslogo > div {
-    width: 600px;
-    margin: auto;
-    text-align: left;
-    padding: 10px;
-}
-
-#splash .tophalf .subtitle {
-    font-family: 'Shadows Into Light', arial, serif;
-    font-size: 3em;
-}
-
-#splash .topquarter {
+header.quarter {
     height: 50px;
 }
 
-#splash .topquarter > div {
-    width: 800px;
+#labslogo  {
     margin: auto;
+    text-align: left;
+    background: url("/i/labs-logo.png") 0 0 no-repeat;
+    width: 161px;
+    height: 34px;
+    margin: 10px 0 0 110px;
+    color: transparent;
+    display: inline-block;
 }
 
-#splash .topquarter .title {
+.half h1 {
     padding-top: .2em;
     font-size: 3em;
     font-weight: bold;
-    float: left;
+    background: url("/i/browserid_logo.png") 0 0 no-repeat;
+    width: 366px;
+    height: 72px;
+    margin: 43px auto 0 auto;
+    clear: left;
+    color: transparent;
 }
 
-#splash .topquarter .subtitle {
+.quarter h1 {
+    float: left;
+    width: 135px;
+    height: 35px;
+    margin: 7px 0 0 10px;
+}
+
+.quarter h1 > a {
+    color: transparent;
+}
+
+
+h2 {
     font-family: 'Shadows Into Light', arial, serif;
+    font-size: 3em;
+    font-weight: normal;
+    color: #fff;
+    margin: -4px auto 0 auto;
+    text-align: center;
+}
+
+.quarter h2 {
     font-size: 2em;
     margin: .2em 0 0 .5em;
     float: left;
 }
 
-#splash .header .manage {
+
+header > #manageLink {
     float: right;
     background-color: #333;
     color: #fff;
-    padding: 5px 10px 5px 10px;
+    padding: 1px 10px 5px 10px;
     -webkit-border-radius: 0 0 10px 10px;
     -moz-border-radius: 0 0 10px 10px;
     border-radius: 0 0 10px 10px;
 }
 
-#splash .bottomhalf {
-    width: 800px;
-    margin: auto;
+header > #manageLink:hover {
+    opacity:1;
+    color: #AAA;
 }
 
-#splash .bottomhalf .why {
+.why {
+    width: 600px;
     height: 130px;
-    padding: 10px 100px 10px 100px;
+    padding: 10px 0;
+    margin: 0 auto;
 }
 
-#splash .bottomhalf .why p {
+.why p {
     font-size: 2em;
     text-align: center;
 }
 
-#splash .bottomhalf a {
+.why a, #cancellink {
     color: #666;
     text-decoration: none;
     border-bottom: 1px dotted black;
 }
 
-#splash .bottomhalf a:hover {
+.why a:hover {
     color: #000;
     opacity: 1;
-}
-
-#splash .tophalf > div {
-    text-align: center;
 }
 
 a {
@@ -123,7 +132,7 @@ a:hover {
     opacity: .6;
 }
 
-#splash .footer {
+footer {
     background-color: #F1F1F1;
     border-top: 2px solid #ddd;
     margin: 0;
@@ -133,73 +142,93 @@ a:hover {
     font-size: 1.1em;
 }
 
-#splash .footer > div {
+footer > div {
     width: 800px;
     margin: auto;
 }
 
-#splash .footer > div > div {
+footer > div > div {
     width: 400px;
     padding: 10px;
 }
 
-#splash .footer .right {
+footer .right {
     padding-top: 13px;
     float: right;
 }
 
-#splash .footer .right img {
+footer .right img {
     margin-bottom: -5px;
 }
 
-#splash .footer a {
+footer a {
     color: #666;
 }
 
-#splash .footer .right p {
+footer .right p {
     text-align: right;
 }
 
-#splash .footer .copyright {
+footer .copyright {
     font-weight: bold;
     font-size: .8em;
 }
 
-.bottomhalf .step .number {
+#steps {
+    list-style: none;
+    width: 800px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.step  {
+    margin: 1em 0 2em 0;
+    padding: 0 0 0 50px;
+    font-size: 14px;
+    position: relative;
+}
+
+.step .number {
+    position: absolute;
+    top: -5px;
+    left: 0;
     font-family: 'Shadows Into Light', arial, serif;
     font-size: 4em;
-    float: left;
     font-weight: bold;
-    margin-top : -.4em;
-
-    width: 50px;
+    line-height: 1em;
 }
 
-.bottomhalf .step  {
-    margin-top: 1em;
-    margin-bottom: 2em;
-    font-size: 14px;
+.step > h3 {
+    font-size: 1em;
+    margin: 0;
+    display: inline;
 }
 
-.bottomhalf .step > p, .bottomhalf .step > ol {
+.step > pre {
+    clear: both;
+}
+
+.step > p,  .step > ol {
     margin-left: 50px;
 }
 
-.bottomhalf .prose {
+.prose {
     font-size: 1.5em;
 }
 
-.bottomhalf .status {
-    margin: 0 100px 0 100px;
+.status {
+    margin: 0 auto;
+    width: 600px;
     font-size: 1.2em;
 }
 
-.bottomhalf pre code {
+ pre code {
     padding: 10px 15px 10px 15px;
-    margin: 1em 60px 1em 60px;
+    margin: .75em;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px 10px 10px 10px;
+    width: 650px;
 }
 
 #emailList {
@@ -261,6 +290,8 @@ a:hover {
 
 .legal {
    font-size: 1.3em;
+   width: 800px;
+   margin: 0 auto;
 }
 
 .legal li {

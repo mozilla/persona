@@ -1,110 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <meta charset=utf-8">
   <title><%- title %></title>
-  <link rel="stylesheet" href="/css/style.css"  type="text/css">
-  <link rel="stylesheet" href="/css/github.css">
-  <!-- FIXME: minimize jquery for this -->
-  <script src="/js/jquery-1.6.2.min.js"></script>
-  <script src="/dialog/resources/underscore-min.js"></script>
-<script>
-$(document).ready(function() {
-  if ($('#emailList')) {
-    display_saved_ids();
-  }
-});
-
-function display_saved_ids()
-{
-  var emails = {};
-  if (window.localStorage.emails) {
-    emails = JSON.parse(window.localStorage.emails);
-  }
-
-  $('#cancellink').click(function() {
-    if (confirm('Are you sure you want to cancel your account?')) {
-      $.post("/wsapi/account_cancel", {csrf: window.csrf}, function(result) {
-        window.localStorage.emails = null;
-        document.location="/";
-      });
-    }
-  });
-
-  $("#emailList").empty();
-  _(emails).each(function(data, e) {
-      var block = $("<div>").addClass("emailblock");
-      var label = $("<div>").addClass("email").text(e);
-      var meta = $("<div>").addClass("meta");
-
-      /* 
-        var priv = $("<div class='keyblock'>").text(data.priv);
-        priv.hide();
-       */
-
-      var pub = $("<div class='keyblock'>").text(data.pub);
-      pub.hide();
-      var linkblock = $("<div>");
-      var puba = $("<a>").text("[show public key]");
-      // var priva = $("<a>").text("[show private key]");
-      puba.click(function() {pub.show()});
-      // priva.click(function() {priv.show()});
-      linkblock.append(puba);
-      // linkblock.append(" / ");
-      // linkblock.append(priva);
-      
-      var deauth = $("<button>").text("Forget this Email");
-      meta.append(deauth);
-      deauth.click(function() {
-        var t = JSON.parse(window.localStorage.emails);
-        // remove email from server
-        $.post("/wsapi/remove_email", {"email" : e, "csrf": window.csrf}, function(response) {
-                    // we delete from store only once we got response
-                    delete t[e];
-                    window.localStorage.emails = JSON.stringify(t);
-                    display_saved_ids();
-                    });
-      });
-      
-      var d = new Date(data.created);
-      var datestamp = $("<div class='date'>").text("Signed in at " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ", " + d.getMonth() + "/" + d.getDay() + "/" + d.getUTCFullYear());
-
-      meta.append(datestamp);
-      meta.append(linkblock);
-                  
-      block.append(label);
-      block.append(meta);
-      // block.append(priv);
-      block.append(pub);
-      
-      $("#emailList").append(block);
-  });
-}
-</script>
+  <% if (production) { %>
+      <link rel="stylesheet" type="text/css" href="/css/browserid.min.css">
+      <script src="/js/lib.min.js" type="text/javascript"></script>
+  <% } else { %>
+      <link rel="stylesheet" type="text/css" href="/css/github.css">
+      <link rel="stylesheet" type="text/css" href="/css/style.css">
+      <script src="/js/jquery-1.6.2.min.js" type="text/javascript"></script>
+      <script src="/dialog/resources/underscore-min.js" type="text/javascript"></script>
+      <script src="/js/browserid.js" type="text/javascript"></script>
+  <% } %>
 </head>
 <body>
-<div id="splash">
-  <div class="header">
-    <div class="manage"><a id="manageLink" href="manage">my account</a></div>
-  </div>
+    <header class="<% if(fullpage) { %> half <% } else { %> quarter <% } %>">
+    <a id="manageLink" href="manage">my account</a>
+      <hgroup>
   <% if (fullpage) { %>
-  <div class="tophalf">
-    <div class="labslogo"><div><img src="i/labs-logo.png"></div></div>
-    <div class="title"><img src="i/browserid_logo.png"></div>
-    <div class="subtitle">A better way to sign in.</div>
-  </div>
+        <span id="labslogo">Mozilla Labs</span>
+        <h1>BrowserID</h1>
+        <h2>A better way to sign in.</h2>
   <% } else { %>
-  <div class="topquarter">
-    <div>
-      <a href="/"><div class="title"><img src="i/browserid_logo_lil.png"></div></a>
-      <div class="subtitle"><%- title %></div>
-    </div>
-  </div>
+        <h1><a href="/"><img src="i/browserid_logo_lil.png">BrowserID</a></h1>
+        <h2><%- title %></h2>
   <% } %>
-  <div class="bottomhalf">
+      </hgroup>
+  </header>
     <%- body %>
-  </div>
-  <div class="footer">
+  <footer>
     <div>
       <div class="right">
         <p><img src="i/browserid_logo_sm.png"> is an <b>open source experiment</b><br />from the <a href="http://identity.mozilla.com">Identity Team</a> at
@@ -115,7 +40,6 @@ function display_saved_ids()
         <p class="copyright">Copyright © 2011 Mozilla.  All rights reserved. </p>
       </div>
     </div>
-  </div>
-</div>
+  </footer>
 </body>
 </html>
