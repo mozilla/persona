@@ -52,6 +52,7 @@ $.Controller("Dialog", {}, {
         var footerHtml = $.View("//dialog/views/" + footer, footer_vars);
         $('#bottom-bar').html(footerHtml);
       }
+      this.setupEnterKey();
     },
     
     "#suggest_signin click": function(event) {
@@ -250,7 +251,6 @@ $.Controller("Dialog", {}, {
       this.renderTemplates("authenticate.ejs", {sitename: this.remoteOrigin},
                            "bottom-signin.ejs", {});
 
-      this.setupEnterKey();
     },
       
     doCreate: function() {
