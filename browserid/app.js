@@ -22,8 +22,6 @@ const
 const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', VAR_DIR);
 const COOKIE_KEY = 'browserid_state';
 
-const PRODUCTION = true;
-
 function internal_redirector(new_url) {
   return function(req, resp, next) {
     req.url = new_url;
@@ -34,7 +32,7 @@ function internal_redirector(new_url) {
 function router(app) {
   app.set("views", __dirname + '/views'); 
 
-  app.set('view options', { production: PRODUCTION });
+  app.set('view options', { production: exports.production });
 
   // this should probably be an internal redirect
   // as soon as relative paths are figured out.
@@ -110,7 +108,7 @@ function router(app) {
 };
 
 exports.varDir = VAR_DIR;
-exports.production = PRODUCTION;
+exports.production = true;
 
 
 
