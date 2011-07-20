@@ -1,7 +1,8 @@
-const  db = require('./db.js'),
-       fs = require('fs'),
- mustache = require('mustache'),
-     path = require('path');
+const
+db = require('./db.js'),
+fs = require('fs'),
+mustache = require('mustache'),
+path = require('path');
 
 const TEMPLATE = fs.readFileSync(path.join(__dirname, "webfinger_template.xml")).toString();
 

@@ -1,5 +1,6 @@
-const sqlite = require('sqlite'),
-      path = require('path');
+const
+sqlite = require('sqlite'),
+path = require('path');
 
 var VAR_DIR = path.join(path.dirname(__dirname), "var");
 
@@ -351,14 +352,14 @@ exports.removeEmail = function(authenticated_email, email, cb) {
 };
 
 exports.cancelAccount = function(authenticated_email, cb) {
-    emailToUserID(authenticated_email, function(user_id) {
-        executeTransaction([
-            [ "delete from emails where user = ?", [ user_id ] ] ,
-            [ "delete from keys where email in (select address from emails where user = ?)", [ user_id ] ],
-            [ "delete from users where id = ?", [ user_id ] ],
-        ], function (error) {
-            if (error) cb(error);
-            else cb();
-        });
+  emailToUserID(authenticated_email, function(user_id) {
+    executeTransaction([
+      [ "delete from emails where user = ?", [ user_id ] ] ,
+      [ "delete from keys where email in (select address from emails where user = ?)", [ user_id ] ],
+      [ "delete from users where id = ?", [ user_id ] ],
+    ], function (error) {
+      if (error) cb(error);
+      else cb();
     });
+  });
 };

@@ -1,20 +1,21 @@
-const          fs = require('fs'),
-             path = require('path');
+const
+fs = require('fs'),
+path = require('path');
 
 // create the var directory if it doesn't exist
 var VAR_DIR = path.join(__dirname, "var");
 try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { };
 
 const
-  url = require('url'),
-  crypto = require('crypto'),
-  wsapi = require('./lib/wsapi.js'),
-  httputils = require('./lib/httputils.js'),
-  webfinger = require('./lib/webfinger.js'),
-  sessions = require('cookie-sessions'),
-  express = require('express'),
-  secrets = require('./lib/secrets.js'),
-  db = require('./lib/db.js')
+url = require('url'),
+crypto = require('crypto'),
+wsapi = require('./lib/wsapi.js'),
+httputils = require('./lib/httputils.js'),
+webfinger = require('./lib/webfinger.js'),
+sessions = require('cookie-sessions'),
+express = require('express'),
+secrets = require('./lib/secrets.js'),
+db = require('./lib/db.js')
 
 // looks unused, see run.js
 // const STATIC_DIR = path.join(path.dirname(__dirname), "static");
@@ -37,11 +38,11 @@ function router(app) {
   // this should probably be an internal redirect
   // as soon as relative paths are figured out.
   app.get('/sign_in', function(req, res, next ){
-      res.render('dialog.ejs', {
-          title: 'A Better Way to Sign In',
-          layout: false,
-          production: exports.production 
-      });
+    res.render('dialog.ejs', {
+      title: 'A Better Way to Sign In',
+      layout: false,
+      production: exports.production 
+    });
   });
 
   // simple redirects (internal for now)
@@ -52,9 +53,9 @@ function router(app) {
   // but we must be careful that this is never a JSON structure that could be hijacked
   // by a third party
   app.get('/csrf', function(req, res) {
-      res.write(req.session.csrf);
-      res.end();
-    });
+    res.write(req.session.csrf);
+    res.end();
+  });
 
   app.get('/', function(req,res) {
     res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});
@@ -92,19 +93,19 @@ function router(app) {
   wsapi.setup(app);
 
   app.get('/users/:identity.xml', function(req, resp, next) {
-      webfinger.renderUserPage(req.params.identity, function (resultDocument) {
-          if (resultDocument === undefined) {
-            httputils.fourOhFour(resp, "I don't know anything about: " + req.params.identity + "\n");
-          } else {
-            httputils.xmlResponse(resp, resultDocument);
-          }
-        });
+    webfinger.renderUserPage(req.params.identity, function (resultDocument) {
+      if (resultDocument === undefined) {
+        httputils.fourOhFour(resp, "I don't know anything about: " + req.params.identity + "\n");
+      } else {
+        httputils.xmlResponse(resp, resultDocument);
+      }
     });
+  });
 
   app.get('/code_update', function(req, resp, next) {
-      console.log("code updated.  shutting down.");
-      process.exit();
-    });
+    console.log("code updated.  shutting down.");
+    process.exit();
+  });
 };
 
 exports.varDir = VAR_DIR;
@@ -135,17 +136,17 @@ exports.setup = function(server) {
 
   // we make sure that everyone has a session, otherwise we can't do CSRF properly
   server.use(function(req, resp, next) {
-      if (typeof req.session == 'undefined')
-        req.session = {};
+    if (typeof req.session == 'undefined')
+      req.session = {};
 
-      if (typeof req.session.csrf == 'undefined') {
-        // FIXME: using express-csrf's approach for generating randomness
-        // not awesome, but probably sufficient for now.
-        req.session.csrf = crypto.createHash('md5').update('' + new Date().getTime()).digest('hex');
-      }
-        
-      next();
-    });
+    if (typeof req.session.csrf == 'undefined') {
+      // FIXME: using express-csrf's approach for generating randomness
+      // not awesome, but probably sufficient for now.
+      req.session.csrf = crypto.createHash('md5').update('' + new Date().getTime()).digest('hex');
+    }
+    
+    next();
+  });
 
   // a tweak to get the content type of host-meta correct
   server.use(function(req, resp, next) {
@@ -157,22 +158,22 @@ exports.setup = function(server) {
 
   // prevent framing
   server.use(function(req, resp, next) {
-      resp.setHeader('x-frame-options', 'DENY');
-      next();
-    });
+    resp.setHeader('x-frame-options', 'DENY');
+    next();
+  });
 
   // check CSRF token
   server.use(function(req, resp, next) {
-      // only on POSTs
-      if (req.method == "POST") {
-        if (req.body.csrf != req.session.csrf) {
-          // error, problem with CSRF
-          throw new Error("CSRF violation - " + req.body.csrf + '/' + req.session.csrf);
-        }
+    // only on POSTs
+    if (req.method == "POST") {
+      if (req.body.csrf != req.session.csrf) {
+        // error, problem with CSRF
+        throw new Error("CSRF violation - " + req.body.csrf + '/' + req.session.csrf);
       }
+    }
 
-      next();        
-    });
+    next();        
+  });
   // add the actual URL handlers other than static
   router(server);
 }
