@@ -46,6 +46,8 @@ exports.onReady = function(f) {
   }, 0);
 };
 
+// XXX: g_staged and g_stagedEmails should be moved into persistent/fast storage.
+
 // half created user accounts (pending email verification)
 // OR
 // half added emails (pending verification)
@@ -101,6 +103,7 @@ exports.emailKnown = function(email, cb) {
     });
 };
 
+// XXX: should be moved to async.
 exports.isStaged = function(email) {
   return g_stagedEmails.hasOwnProperty(email);
 };
@@ -187,6 +190,7 @@ exports.stageUser = function(obj) {
 };
 
 /* takes an argument object including email, pass, and pubkey. */
+// XXX: change to async
 exports.stageEmail = function(existing_email, new_email, pubkey) {
   var secret = generateSecret();
   // overwrite previously staged users
@@ -264,7 +268,7 @@ exports.checkAuth = function(email, cb) {
   db.execute("SELECT users.password FROM emails, users WHERE users.id = emails.user AND emails.address = ?",
              [ email ],
              function (error, rows) {
-                 cb(rows.length !== 1 ? undefined : rows[0].password);
+               cb(rows.length !== 1 ? undefined : rows[0].password);
              });
 };
 

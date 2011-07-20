@@ -1,5 +1,6 @@
-const http = require('http'),
-      querystring = require('querystring');
+const
+http = require('http'),
+querystring = require('querystring');
 
 // wsapi abstractions trivial cookie jar
 var cookieJar = {};
