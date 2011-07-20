@@ -1,41 +1,52 @@
 const
 sqlite = require('sqlite'),
-path = require('path'),
-bcrypt = require('bcrypt');
+path = require('path');
 
 var VAR_DIR = path.join(path.dirname(__dirname), "var");
 
 var db = new sqlite.Database();
-var dbPath = path.join(VAR_DIR, "authdb.sqlite");
+
+// a configurable parameter if set immediately after require() of db.js
+exports.dbPath = path.join(VAR_DIR, "authdb.sqlite");
 
 var ready = false;
 var waiting = [];
 
-db.open(dbPath, function (error) {
-  if (error) {
-    console.log("Couldn't open database: " + error);
-    throw error;
-  }
-  db.executeScript(
-    "CREATE TABLE IF NOT EXISTS users  ( id INTEGER PRIMARY KEY, password TEXT );" +
-      "CREATE TABLE IF NOT EXISTS emails ( id INTEGER PRIMARY KEY, user INTEGER, address TEXT UNIQUE );" +
-      "CREATE TABLE IF NOT EXISTS keys   ( id INTEGER PRIMARY KEY, email INTEGER, key TEXT, expires INTEGER )",
-    function (error) {
-      if (error) {
-        throw error;
-      }
-      ready = true;
-      waiting.forEach(function(f) { f() });
-      waiting = [];
-    });
-});
+// async break allow database path to be configured by calling code
+// a touch tricky cause client must set dbPath before releasing
+// control of the runloop
+setTimeout(function() {
+  db.open(exports.dbPath, function (error) {
+    if (error) {
+      console.log("Couldn't open database: " + error);
+      throw error;
+    }
+    db.executeScript(
+      "CREATE TABLE IF NOT EXISTS users  ( id INTEGER PRIMARY KEY, password TEXT );" +
+        "CREATE TABLE IF NOT EXISTS emails ( id INTEGER PRIMARY KEY, user INTEGER, address TEXT UNIQUE );" +
+        "CREATE TABLE IF NOT EXISTS keys   ( id INTEGER PRIMARY KEY, email INTEGER, key TEXT, expires INTEGER )",
+      function (error) {
+        if (error) {
+          throw error;
+        }
+        ready = true;
+        waiting.forEach(function(f) { f() });
+        waiting = [];
+      });
+  });
+}, 0);
 
+// accepts a function that will be invoked once the database is ready for transactions.
+// this hook is important to pause the rest of application startup until async database
+// connection establishment is complete.
 exports.onReady = function(f) {
   setTimeout(function() {
     if (ready) f();
     else waiting.push(f);
   }, 0);
 };
+
+// XXX: g_staged and g_stagedEmails should be moved into persistent/fast storage.
 
 // half created user accounts (pending email verification)
 // OR
@@ -83,15 +94,6 @@ function emailToUserID(email, cb) {
     });
 }
 
-exports.findByEmail = function(email) {
-  for (var i = 0; i < g_users.length; i++) {
-    for (var j = 0; j < g_users[i].emails.length; j++) {
-      if (email === g_users[i].emails[j]) return g_users[i];
-    }
-  }
-  return undefined;
-};
-
 exports.emailKnown = function(email, cb) {
   db.execute(
     "SELECT id FROM emails WHERE address = ?",
@@ -101,6 +103,7 @@ exports.emailKnown = function(email, cb) {
     });
 };
 
+// XXX: should be moved to async.
 exports.isStaged = function(email) {
   return g_stagedEmails.hasOwnProperty(email);
 };
@@ -114,7 +117,7 @@ function generateSecret() {
   return str;
 }
 
-exports.addEmailToAccount = function(existing_email, email, pubkey, cb) {
+function addEmailToAccount(existing_email, email, pubkey, cb) {
   emailToUserID(existing_email, function(userID) {
     if (userID == undefined) {
       cb("no such email: " + existing_email, undefined);
@@ -187,6 +190,7 @@ exports.stageUser = function(obj) {
 };
 
 /* takes an argument object including email, pass, and pubkey. */
+// XXX: change to async
 exports.stageEmail = function(existing_email, new_email, pubkey) {
   var secret = generateSecret();
   // overwrite previously staged users
@@ -200,7 +204,7 @@ exports.stageEmail = function(existing_email, new_email, pubkey) {
   return secret;
 };
 
-/* invoked when a user clicks on a verification URL in their email */ 
+/* invoked when a user clicks on a verification URL in their email */
 exports.gotVerificationSecret = function(secret, cb) {
   if (!g_staged.hasOwnProperty(secret)) return cb("unknown secret");
 
@@ -241,7 +245,7 @@ exports.gotVerificationSecret = function(secret, cb) {
   } else if (o.type === 'add_email') {
     exports.emailKnown(o.email, function(known) {
       function addIt() {
-        exports.addEmailToAccount(o.existing_email, o.email, o.pubkey, cb);
+        addEmailToAccount(o.existing_email, o.email, o.pubkey, cb);
       }
       if (known) {
         exports.removeEmail(o.email, o.email, function (err) {
@@ -257,22 +261,25 @@ exports.gotVerificationSecret = function(secret, cb) {
   }
 };
 
-exports.checkAuth = function(email, pass, cb) {
+// check authentication credentials for a given email address.  This will invoke the
+// users callback with the authentication (password/hash/whatever - the database layer
+// doesn't care).  callback will be passed undefined if email cannot be found
+exports.checkAuth = function(email, cb) {
   db.execute("SELECT users.password FROM emails, users WHERE users.id = emails.user AND emails.address = ?",
              [ email ],
              function (error, rows) {
-               cb(rows.length === 1 && bcrypt.compare_sync(pass, rows[0].password));
+               cb(rows.length !== 1 ? undefined : rows[0].password);
              });
 };
 
-exports.checkAuthHash = function(email, hash, cb) {
-  db.execute("SELECT users.password FROM emails, users WHERE users.id = emails.user AND emails.address = ? AND users.password = ?",
-             [ email, hash ],
-             function (error, rows) {
-               cb(rows.length === 1);
-             });
-};
-
+function emailHasPubkey(email, pubkey, cb) {
+  db.execute(
+    'SELECT keys.key FROM keys, emails WHERE emails.address = ? AND keys.email = emails.id AND keys.key = ?',
+    [ email, pubkey ],
+    function(err, rows) {
+      cb(rows.length === 1);
+    });
+}
 
 /* a high level operation that attempts to sync a client's view with that of the
  * server.  email is the identity of the authenticated channel with the user,
@@ -291,7 +298,7 @@ exports.getSyncResponse = function(email, identities, cb) {
     key_refresh: [ ]
   };
 
-  // get the user id associated with this account 
+  // get the user id associated with this account
   emailToUserID(email, function(userID) {
     if (userID === undefined) {
       cb("no such email: " + email);
@@ -304,44 +311,58 @@ exports.getSyncResponse = function(email, identities, cb) {
         if (err) cb(err);
         else {
           var emails = [ ];
+          var keysToCheck = [ ];
           for (var i = 0; i < rows.length; i++) emails.push(rows[i].address);
 
           // #1
           for (var e in identities) {
             if (emails.indexOf(e) == -1) respBody.unknown_emails.push(e);
+            else keysToCheck.push(e);
           }
 
           // #2
           for (var e in emails) {
             e = emails[e];
             if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
+            
           }
 
-          // #3
-          // XXX todo
-
-          cb(undefined, respBody); 
+          // #3 -- yes, this is sub-optimal in terms of performance.  when we
+          // move away from public keys this will be unnec.
+          if (keysToCheck.length) {
+            var checked = 0;
+            keysToCheck.forEach(function(e) {
+              emailHasPubkey(e, identities[e], function(v) {
+                checked++;
+                if (!v) respBody.key_refresh.push(e);
+                if (checked === keysToCheck.length) {
+                  cb(undefined, respBody);
+                }
+              });
+            });
+          } else {
+            cb(undefined, respBody);
+          }
         }
       });
   });
 };
 
-
+// get all public keys associated with an email address
 exports.pubkeysForEmail = function(identity, cb) {
-  db.execute('SELECT keys.key FROM keys, emails WHERE emails.address = ? AND keys.email = emails.id',
-             [ identity ],
-             function(err, rows) {
-               var keys = undefined;
-               if (!err && rows && rows.length) {
-                 keys = [ ];
-                 for (var i = 0; i < rows.length; i++) keys.push(rows[i].key);
-               }
-               cb(keys);
-             });
+  db.execute(
+    'SELECT keys.key FROM keys, emails WHERE emails.address = ? AND keys.email = emails.id',
+    [ identity ],
+    function(err, rows) {
+      var keys = undefined;
+      if (!err && rows && rows.length) {
+        keys = [ ];
+        for (var i = 0; i < rows.length; i++) keys.push(rows[i].key);
+      }
+      cb(keys);
+    });
 };
 
-
-// FIXME: I'm not sure I'm using this data model properly
 exports.removeEmail = function(authenticated_email, email, cb) {
   // figure out the user, and remove Email only from addressed
   // linked to the authenticated email address
