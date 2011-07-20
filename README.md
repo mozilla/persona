@@ -15,6 +15,7 @@ All of the servers here are based on node.js, and some number of 3rd party node 
 * vows (>= 0.5.8)
 * bcrypt (>= 0.2.3)
 * ejs (>= 0.4.3)
+* temp (>= 0.2.0)
 * express-csrf (>= 0.3.2)
 * uglify (>= 1.0.6)
 
