@@ -48,31 +48,31 @@ function router(app) {
     res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});
   });
 
-  app.get(/^\/prove(\.html)?/, function(req,res) {
+  app.get(/^\/prove(\.html)?$/, function(req,res) {
     res.render('prove.ejs', {title: 'Verify Email Address', fullpage: false});
   });
 
-  app.get(/^\/users(\.html)?/, function(req,res) {
+  app.get(/^\/users(\.html)?$/, function(req,res) {
     res.render('users.ejs', {title: 'for Users', fullpage: false});
   });
 
-  app.get(/^\/developers(\.html)?/, function(req,res) {
+  app.get(/^\/developers(\.html)?$/, function(req,res) {
     res.render('developers.ejs', {title: 'for Developers', fullpage: false});
   });
 
-  app.get(/^\/primaries(\.html)?/, function(req,res) {
+  app.get(/^\/primaries(\.html)?$/, function(req,res) {
     res.render('primaries.ejs', {title: 'for Primary Authorities', fullpage: false});
   });
 
-  app.get(/^\/manage(\.html)?/, function(req,res) {
+  app.get(/^\/manage(\.html)?$/, function(req,res) {
     res.render('manage.ejs', {title: 'My Account', fullpage: false});
   });
 
-  app.get(/^\/tos(\.html)?/, function(req, res) {
+  app.get(/^\/tos(\.html)?$/, function(req, res) {
     res.render('tos.ejs', {title: 'Terms of Service', fullpage: false});
   });
 
-  app.get(/^\/privacy(\.html)?/, function(req, res) {
+  app.get(/^\/privacy(\.html)?$/, function(req, res) {
     res.render('privacy.ejs', {title: 'Privacy Policy', fullpage: false});
   });
 
