@@ -272,6 +272,15 @@ exports.checkAuth = function(email, cb) {
              });
 };
 
+function emailHasPubkey(email, pubkey, cb) {
+  db.execute(
+    'SELECT keys.key FROM keys, emails WHERE emails.address = ? AND keys.email = emails.id AND keys.key = ?',
+    [ email, pubkey ],
+    function(err, rows) {
+      cb(rows.length === 1);
+    });
+}
+
 /* a high level operation that attempts to sync a client's view with that of the
  * server.  email is the identity of the authenticated channel with the user,
  * identities is a map of email -> pubkey.
@@ -302,23 +311,34 @@ exports.getSyncResponse = function(email, identities, cb) {
         if (err) cb(err);
         else {
           var emails = [ ];
+          var keysToCheck = [ ];
           for (var i = 0; i < rows.length; i++) emails.push(rows[i].address);
 
           // #1
           for (var e in identities) {
             if (emails.indexOf(e) == -1) respBody.unknown_emails.push(e);
+            else keysToCheck.push(e);
           }
 
           // #2
           for (var e in emails) {
             e = emails[e];
             if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
+            
           }
 
-          // #3
-          // XXX todo
-
-          cb(undefined, respBody);
+          // #3 -- yes, this is sub-optimal in terms of performance.  when we
+          // move away from public keys this will be unnec.
+          var checked = 0;
+          keysToCheck.forEach(function(e) {
+            emailHasPubkey(e, identities[e], function(v) {
+              checked++;
+              if (!v) respBody.key_refresh.push(e);
+              if (checked === keysToCheck.length) {
+                cb(undefined, respBody);
+              }
+            });
+          });
         }
       });
   });
@@ -339,8 +359,6 @@ exports.pubkeysForEmail = function(identity, cb) {
     });
 };
 
-
-// FIXME: I'm not sure I'm using this data model properly
 exports.removeEmail = function(authenticated_email, email, cb) {
   // figure out the user, and remove Email only from addressed
   // linked to the authenticated email address
