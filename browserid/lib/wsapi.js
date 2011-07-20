@@ -35,8 +35,6 @@ function checkParams(params) {
 
 function isAuthed(req) {
   var result= (req.session && typeof req.session.authenticatedUser === 'string');
-  if (!result && req.session)
-    console.log("AUTH" + req.session.authenticatedUser);
   return result;
 }
 
