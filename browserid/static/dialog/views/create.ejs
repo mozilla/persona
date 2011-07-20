@@ -1,21 +1,23 @@
   <div class="content">
     <div class="summary">BrowserID makes signing in <b>safer and easier</b>.  To begin, please provide an email address and pick a password:</div>
-    <div class="input">
-      <div class="label"> Email </div>
-      <div class="input"> <input id="email_input" type="text"></input></div>
-      <div class="note" id="email_input_note" style="display:none;"><span class="good">Not registered</span></div>
+    <div class="formRow">
+      <label for="email_input"> Email </label>
+      <input id="email_input" type="email"/>
+      <span class="note" id="email_input_note" style="display:none;">
+        <span class="good">Not registered</span>
+      </span>
     </div>
-    <div class="input">
-      <div class="label"> Password </div>
-      <div class="input"> <input id="password_input" type="password"></input></div>
+    <div class="formRow">
+      <label for="password_input"> Password </label>
+      <input id="password_input" type="password"/>
     </div>
-    <div class="input">
-      <div class="label"> Verify </div>
-      <div class="input"> <input id="password_verify_input" type="password"></input></div>
-      <div class="note passwordnote" id="enter_a_password"><span class="bad">Enter a password</span></div>
-      <div class="note passwordnote" id="passwords_different" style="display:none;"><span class="bad">Passwords different</span></div>
-      <div class="note passwordnote" id="password_too_short" style="display:none;"><span class="bad">Password too short</span></div>
-      <div class="note passwordnote" id="password_ok" style="display:none;"><span class="good">Password OK</span></div>
+    <div class="formRow">
+      <label for="password_verify_text"> Verify </label>
+      <input id="password_verify_input" type="password"/>
+      <span class="note passwordnote" id="enter_a_password"><span class="bad">Enter a password</span></span>
+      <span class="note passwordnote" id="passwords_different" style="display:none;"><span class="bad">Passwords different</span></span>
+      <span class="note passwordnote" id="password_too_short" style="display:none;"><span class="bad">Password too short</span></span>
+      <span class="note passwordnote" id="password_ok" style="display:none;"><span class="good">Password OK</span></span>
     </div>
     <div class="attention_lame" style="display:none;" id="emailinuse_message">
       <span id="in_use_email">Email</span> in use, If this email is yours you can <a href="#" id="suggest_signin">sign in</a> with it?

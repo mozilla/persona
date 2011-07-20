@@ -20,7 +20,7 @@ span.sitename, span.email {
     font-weight: bold;
 }
 
-.dialog .title {
+.dialog h2 {
     font-size: 2em;
     font-weight: bold;
     margin: auto;
@@ -141,9 +141,8 @@ div.input > * {
     float: left;
 }
 
-div.input > div.note {
-    float: right;
-    margin-top: .7em;
+div.note {
+    display: inline
 }
 
 div.content {
@@ -153,7 +152,7 @@ div.content {
     text-align: left;
 }
 
-div.content > div.input {
+div.content > div.input, .formRow {
     height: 3em;
     font-size: .8em;
 }
@@ -163,13 +162,13 @@ div.content > div.summary {
     margin-bottom: 2em;
 }
 
-div.content > div.input > div.label {
+.formRow > label {
     width: 80px;
     text-align: left;
-    margin-top: .7em;
+    display: inline-block;
 }
 
-div.input input {
+.formRow input {
     border: 1px solid black;
     width: 240px;
     height: 2em;
