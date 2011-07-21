@@ -90,13 +90,19 @@ a:hover { border-bottom: 2px solid black ; }
           // Now we'll send this assertion over to the verification server for validation
           $("#oAssertion").empty().text(assertion);
 
-          var url = "https://browserid.org/verify?assertion=" + window.encodeURIComponent(assertion) +
-                    "&audience=" + window.encodeURIComponent(window.location.host);
-          $("#oVerificationRequest").empty().text(url);
+          var url = "https://browserid.org/verify"
+          var data = {
+            assertion: assertion,
+            audience: window.location.host
+          };
+
+          $("#oVerificationRequest").empty().text("POST " + url + "\n" + JSON.stringify(data));
 
           $.ajax({
-            url: url,
+            url: "https://browserid.org/verify",
+            type: "POST",
             dataType: "json",
+            data: data,
             success: function(data, textStatus, jqXHR) {
               $("#oVerificationResponse > pre").empty().text(JSON.stringify(data, null, 4));
             },
