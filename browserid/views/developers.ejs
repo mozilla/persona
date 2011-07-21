@@ -56,7 +56,7 @@
         free verification service provided by BrowserID.
       </p><p>
         To use it, you send a request
-        to <tt>https://browserid.org/verify</tt> with two GET parameters:
+        to <tt>https://browserid.org/verify</tt> with two POST parameters:
       </p>
         <ol>
           <li> <tt>assertion</tt>: The encoded assertion
@@ -66,7 +66,7 @@
         The verifier will check the the assertion was meant for your site and
         is valid, here's an example:
       </p>
-        <pre><code>$ curl "https://browserid.org/verify?assertion=&lt;ASSERTION&gt;&audience=mysite.com"
+        <pre><code>$ curl -d "assertion=&lt;ASSERTION&gt;&audience=mysite.com" "https://browserid.org/verify"
 {
     "status": "okay",
     "email": "lloyd@mozilla.com",

@@ -3,31 +3,32 @@ const   path = require('path'),
           fs = require('fs'),
    httputils = require('./lib/httputils.js'),
  idassertion = require('./lib/idassertion.js'),
-         jwt = require('./lib/jwt.js');
+         jwt = require('./lib/jwt.js'),
+     express = require('express');
 
 // create the var directory if it doesn't exist
 var VAR_DIR = path.join(__dirname, "var");
 try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { }
 
 function doVerify(req, resp, next) {
-  var assertion = req.query.assertion;
-  var audience = req.query.audience;
+  var assertion = (req.query && req.query.assertion) ? req.query.assertion : req.body.assertion;
+  var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
 
   if (!(assertion && audience))
     return httputils.jsonResponse(resp, {status:"failure", reason:"need assertion and audience"});
-  
+
   // allow client side XHR to access this WSAPI, see
   // https://developer.mozilla.org/en/http_access_control
   // for details
   // FIXME: should we really allow this? It might encourage the wrong behavior
   resp.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method === 'OPTIONS') {
-    resp.setHeader('Access-Control-Allow-Methods', 'GET');
+    resp.setHeader('Access-Control-Allow-Methods', 'POST, GET');
     resp.writeHead(200);
     resp.end();
     return;
   }
-  
+
   try {
     var assertionObj = new idassertion.IDAssertion(assertion);
     assertionObj
@@ -56,6 +57,8 @@ function doVerify(req, resp, next) {
 exports.varDir = VAR_DIR;
 
 exports.setup = function(app) {
+  app.use(express.bodyParser());
+
   // code_update is an internal api that causes the node server to
   // shut down.  This should never be externally accessible and
   // is used during the dead simple deployment procedure.
@@ -73,4 +76,7 @@ exports.setup = function(app) {
 
   app.get('/', doVerify);
   app.get('/verify', doVerify);
+
+  app.post('/', doVerify);
+  app.post('/verify', doVerify);
 };
