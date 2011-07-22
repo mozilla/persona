@@ -12,16 +12,27 @@ var suite = vows.describe('db');
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
-db.dbPath = temp.path({suffix: '.sqlite'});
+var dbPath = temp.path({suffix: '.sqlite'});
 
 suite.addBatch({
-  "waiting for the database to become ready": {
+  "onReady": {
+    topic: function() { db.onReady(this.callback); },
+    "works": function(r) { }
+  },
+  "onReady still": {
+    topic: function() { db.onReady(this.callback); },
+    "works for more than one caller": function(r) { }
+  },
+  "opening the database": {
     topic: function() {
-      var cb = this.callback;
-      db.onReady(function() { cb(true) });
+      db.open({ path: dbPath }, this.callback);
     },
-    "the database is ready": function(r) {
-      assert.strictEqual(r, true);
+    "and its ready": function(r) {
+      assert.isUndefined(r);
+    },
+    "doesn't prevent onReady": {
+      topic: function() { db.onReady(this.callback); },
+      "from working": function(r) { }
     }
   }
 });
@@ -35,7 +46,7 @@ suite.addBatch({
       db.isStaged('lloyd@nowhe.re', this.callback);
     },
     "isStaged returns false": function (r) {
-      assert.strictEqual(r, false);
+      assert.isFalse(r);
     }
   },
   "an email address is not reported as known before it is": {
@@ -43,7 +54,7 @@ suite.addBatch({
       db.emailKnown('lloyd@nowhe.re', this.callback);
     },
     "emailKnown returns false": function (r) {
-      assert.strictEqual(r, false);
+      assert.isFalse(r);
     }
   }
 });
@@ -358,14 +369,14 @@ suite.addBatch({
 suite.addBatch({
   "remove the database file": {
     topic: function() {
-      fs.unlink(db.dbPath, this.callback);
+      fs.unlink(dbPath, this.callback);
     },
     "and unlink should not error": function(err) {
       assert.isNull(err);
     },
     "and the file": {
       topic: function() {
-        path.exists(db.dbPath, this.callback);
+        path.exists(dbPath, this.callback);
       },
       "should be missing": function(r) {
         assert.isFalse(r);

@@ -6,19 +6,23 @@ var VAR_DIR = path.join(path.dirname(__dirname), "var");
 
 var db = new sqlite.Database();
 
-// a configurable parameter if set immediately after require() of db.js
-exports.dbPath = path.join(VAR_DIR, "authdb.sqlite");
+var dbPath = path.join(VAR_DIR, "authdb.sqlite");
 
 var ready = false;
 var waiting = [];
 
+function checkReady() {
+  if (!ready) throw "database not ready.  did you call open()?";
+}
+
 // async break allow database path to be configured by calling code
 // a touch tricky cause client must set dbPath before releasing
 // control of the runloop
-setTimeout(function() {
-  db.open(exports.dbPath, function (error) {
+exports.open = function(cfg, cb) {
+  if (cfg && cfg.path) dbPath = cfg.path;
+  db.open(dbPath, function (error) {
     if (error) {
-      console.log("Couldn't open database: " + error);
+      if (cb) cb("Couldn't open database: " + error);
       throw error;
     }
     db.executeScript(
@@ -27,14 +31,24 @@ setTimeout(function() {
         "CREATE TABLE IF NOT EXISTS keys   ( id INTEGER PRIMARY KEY, email INTEGER, key TEXT, expires INTEGER )",
       function (error) {
         if (error) {
-          throw error;
+          if (cb) cb(error);
+          else console.log("ERROR:" + error);
+        } else {
+          ready = true;
+          waiting.forEach(function(f) { f() });
+          waiting = [];
+          if (cb) cb();
         }
-        ready = true;
-        waiting.forEach(function(f) { f() });
-        waiting = [];
       });
   });
-}, 0);
+};
+
+exports.close = function(cb) {
+  db.close(function(err) {
+    ready = false;
+    cb(err);
+  });
+};
 
 // accepts a function that will be invoked once the database is ready for transactions.
 // this hook is important to pause the rest of application startup until async database
@@ -95,6 +109,7 @@ function emailToUserID(email, cb) {
 }
 
 exports.emailKnown = function(email, cb) {
+  checkReady();
   db.execute(
     "SELECT id FROM emails WHERE address = ?",
     [ email ],
@@ -104,6 +119,7 @@ exports.emailKnown = function(email, cb) {
 };
 
 exports.isStaged = function(email, cb) {
+  checkReady();
   if (cb) {
     setTimeout(function() {
       cb(g_stagedEmails.hasOwnProperty(email));
@@ -139,6 +155,7 @@ function addEmailToAccount(existing_email, email, pubkey, cb) {
 }
 
 exports.emailsBelongToSameAccount = function(lhs, rhs, cb) {
+  checkReady();
   emailToUserID(lhs, function(lhs_uid) {
     emailToUserID(rhs, function(rhs_uid) {
       cb(lhs_uid === rhs_uid);
@@ -151,6 +168,7 @@ exports.emailsBelongToSameAccount = function(lhs, rhs, cb) {
 };
 
 exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
+  checkReady();
   emailToUserID(existing_email, function(userID) {
     if (userID == undefined) {
       cb("no such email: " + existing_email, undefined);
@@ -178,6 +196,7 @@ exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
 
 /* takes an argument object including email, password hash, and pubkey. */
 exports.stageUser = function(obj, cb) {
+  checkReady();
   var secret = generateSecret();
 
   // overwrite previously staged users
@@ -194,6 +213,7 @@ exports.stageUser = function(obj, cb) {
 
 /* takes an argument object including email, pass, and pubkey. */
 exports.stageEmail = function(existing_email, new_email, pubkey, cb) {
+  checkReady();
   var secret = generateSecret();
   // overwrite previously staged users
   g_staged[secret] = {
@@ -208,6 +228,7 @@ exports.stageEmail = function(existing_email, new_email, pubkey, cb) {
 
 /* invoked when a user clicks on a verification URL in their email */
 exports.gotVerificationSecret = function(secret, cb) {
+  checkReady();
   if (!g_staged.hasOwnProperty(secret)) return cb("unknown secret");
 
   // simply move from staged over to the emails "database"
@@ -267,6 +288,7 @@ exports.gotVerificationSecret = function(secret, cb) {
 // users callback with the authentication (password/hash/whatever - the database layer
 // doesn't care).  callback will be passed undefined if email cannot be found
 exports.checkAuth = function(email, cb) {
+  checkReady();
   db.execute("SELECT users.password FROM emails, users WHERE users.id = emails.user AND emails.address = ?",
              [ email ],
              function (error, rows) {
@@ -295,6 +317,7 @@ function emailHasPubkey(email, pubkey, cb) {
  *       is the same (regen keypair and tell us about it).
  */
 exports.getSyncResponse = function(email, identities, cb) {
+  checkReady();
   var respBody = {
     unknown_emails: [ ],
     key_refresh: [ ]
@@ -352,6 +375,7 @@ exports.getSyncResponse = function(email, identities, cb) {
 
 // get all public keys associated with an email address
 exports.pubkeysForEmail = function(identity, cb) {
+  checkReady();
   db.execute(
     'SELECT keys.key FROM keys, emails WHERE emails.address = ? AND keys.email = emails.id',
     [ identity ],
@@ -366,6 +390,7 @@ exports.pubkeysForEmail = function(identity, cb) {
 };
 
 exports.removeEmail = function(authenticated_email, email, cb) {
+  checkReady();
   // figure out the user, and remove Email only from addressed
   // linked to the authenticated email address
   emailToUserID(authenticated_email, function(user_id) {
@@ -380,6 +405,7 @@ exports.removeEmail = function(authenticated_email, email, cb) {
 };
 
 exports.cancelAccount = function(authenticated_email, cb) {
+  checkReady();
   emailToUserID(authenticated_email, function(user_id) {
     executeTransaction([
       [ "delete from emails where user = ?", [ user_id ] ] ,

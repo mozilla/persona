@@ -17,6 +17,9 @@ express = require('express'),
 secrets = require('./lib/secrets.js'),
 db = require('./lib/db.js')
 
+// open the databse
+db.open();
+
 // looks unused, see run.js
 // const STATIC_DIR = path.join(path.dirname(__dirname), "static");
 
@@ -31,7 +34,7 @@ function internal_redirector(new_url) {
 }
 
 function router(app) {
-  app.set("views", __dirname + '/views'); 
+  app.set("views", __dirname + '/views');
 
   app.set('view options', { production: exports.production });
 
@@ -111,8 +114,6 @@ function router(app) {
 exports.varDir = VAR_DIR;
 exports.production = true;
 
-
-
 exports.setup = function(server) {
   server.use(express.cookieParser());
 
@@ -144,7 +145,7 @@ exports.setup = function(server) {
       // not awesome, but probably sufficient for now.
       req.session.csrf = crypto.createHash('md5').update('' + new Date().getTime()).digest('hex');
     }
-    
+
     next();
   });
 
@@ -172,7 +173,7 @@ exports.setup = function(server) {
       }
     }
 
-    next();        
+    next();
   });
   // add the actual URL handlers other than static
   router(server);
