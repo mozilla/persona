@@ -15,7 +15,7 @@ function doVerify(req, resp, next) {
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
 
   if (!(assertion && audience))
-    return httputils.jsonResponse(resp, {status:"failure", reason:"need assertion and audience"});
+    return resp.json({ status: "failure", reason: "need assertion and audience" });
 
   // allow client side XHR to access this WSAPI, see
   // https://developer.mozilla.org/en/http_access_control
@@ -42,15 +42,15 @@ function doVerify(req, resp, next) {
             "valid-until" : payload["valid-until"],
             issuer : payload.issuer
           };
-          httputils.jsonResponse(resp, result);
+          resp.json(result);
         },
         function(errorObj) {
-          httputils.jsonResponse(resp, {status:"failure", reason:errorObj});
+          resp.json({ status: "failure", reason: errorObj });
         }
       );
   } catch (e) {
     console.log(e.stack);
-    httputils.jsonResponse(resp, {status:"failure", reason:e.toString()});
+    resp.json({ status: "failure", reason: e.toString() });
   }
 }
 
