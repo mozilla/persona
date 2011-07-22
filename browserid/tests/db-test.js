@@ -363,9 +363,6 @@ suite.addBatch({
   }
 });
 
-// exports.cancelAccount
-// exports.removeEmail
-
 suite.addBatch({
   "remove the database file": {
     topic: function() {
