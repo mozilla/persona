@@ -54,7 +54,7 @@ function setup(app) {
     // get inputs from get data!
     var email = url.parse(req.url, true).query['email'];
     db.emailKnown(email, function(known) {
-      httputils.jsonResponse(resp, known);
+      resp.json(known);
     });
   });
 
@@ -88,9 +88,7 @@ function setup(app) {
         // served over an encrypted (SSL) session.  guten, yah.
       };
 
-      httputils.jsonResponse(resp, true);
-
-      // let's now kick out a verification email!
+      resp.json(true);
       email.sendVerificationEmail(stageParams.email, stageParams.site, secret);
 
     } catch(e) {
@@ -122,9 +120,9 @@ function setup(app) {
                                    function(registered) {
                                      if (registered) {
                                        delete req.session.pendingAddition;
-                                       httputils.jsonResponse(resp, "complete");
+                                       resp.json('complete');
                                      } else {
-                                       httputils.jsonResponse(resp, "pending");
+                                       resp.json('pending');
                                      }
                                    });
     } else {
@@ -136,9 +134,9 @@ function setup(app) {
         if (hash === v.hash) {
           delete req.session.pendingVerification;
           req.session.authenticatedUser = v.email;
-          httputils.jsonResponse(resp, "complete");
+          resp.json('complete');
         } else {
-          httputils.jsonResponse(resp, "pending");
+          resp.json('pending');
         }
       });
     }
@@ -156,7 +154,8 @@ function setup(app) {
         if (!req.session) req.session = {};
         req.session.authenticatedUser = req.body.email;
       }
-      httputils.jsonResponse(resp, success);
+
+      resp.json(success);
     });
   });
 
@@ -169,7 +168,7 @@ function setup(app) {
       // store the email being added in session data
       req.session.pendingAddition = req.body.email;
 
-      httputils.jsonResponse(resp, true);
+      resp.json(true);
 
       // let's now kick out a verification email!
       email.sendVerificationEmail(req.body.email, req.body.site, secret);
@@ -187,7 +186,7 @@ function setup(app) {
         console.log("error removing email " + email);
         httputils.badRequest(resp, error.toString());
       } else {
-        httputils.jsonResponse(resp, true);
+        resp.json(true);
       }});
   });
 
@@ -197,13 +196,13 @@ function setup(app) {
         console.log("error cancelling account : " + error.toString());
         httputils.badRequest(resp, error.toString());
       } else {
-        httputils.jsonResponse(resp, true);
+        resp.json(true);
       }});
   });
 
   app.post('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
     db.addKeyToEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function (rv) {
-      httputils.jsonResponse(resp, rv);
+      resp.json(rv);
     });
   });
 
@@ -211,18 +210,18 @@ function setup(app) {
     // if they're authenticated for an email address that we don't know about,
     // then we should purge the stored cookie
     if (!isAuthed(req)) {
-      httputils.jsonResponse(resp, false);
+      resp.json(false);
     } else {
       db.emailKnown(req.session.authenticatedUser, function (known) {
         if (!known) req.session = {}
-        httputils.jsonResponse(resp, known);
+        resp.json(known);
       });
     }
   });
 
   app.post('/wsapi/logout', function(req,resp) {
     req.session = {};
-    httputils.jsonResponse(resp, "ok");
+    resp.json('ok');
   });
 
   app.post('/wsapi/sync_emails', checkAuthed, function(req,resp) {
@@ -230,7 +229,7 @@ function setup(app) {
 
     db.getSyncResponse(req.session.authenticatedUser, emails, function(err, syncResponse) {
       if (err) httputils.serverError(resp, err);
-      else httputils.jsonResponse(resp, syncResponse);
+      else resp.json(syncResponse);
     });
   });
 
@@ -238,9 +237,9 @@ function setup(app) {
     db.gotVerificationSecret(req.query.token, function(e) {
       if (e) {
         console.log("error completing the verification: " + e);
-        httputils.jsonResponse(resp, false);
+        resp.json(false);
       } else {
-        httputils.jsonResponse(resp, true);
+        resp.json(true);
       }
     });
   });
