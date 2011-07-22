@@ -19,7 +19,7 @@ exports.hydrateSecret = function(name, dir) {
   try{ secret = fs.readFileSync(p).toString(); } catch(e) {};
 
   if (secret === undefined) {
-    secret = exports.generateSecret(128);
+    secret = exports.generate(128);
     fs.writeFileSync(p, secret);
   }
   return secret;
