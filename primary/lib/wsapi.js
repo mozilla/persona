@@ -47,7 +47,7 @@ exports.username_available = function(req, resp) {
   var username = normalizeUsername(url.parse(req.url, true).query['username']);
   logRequest("username_available", {username: username});
   db.usernameKnown(username, function(known) { 
-    httputils.jsonResponse(resp, known);
+    resp.json(known);
   });
 };
 
@@ -66,12 +66,12 @@ exports.create_user = function(req, resp) {
     db.create_user(normalized_username, getArgs["pass"], function(error) {
       if (error) {
         logRequest("create_user", error);
-        httputils.jsonResponse(resp, undefined);
+        resp.json(undefined);
       } else {
         if (!req.session) req.session = {};
         db.usernameToUserID(normalized_username, function(userid) {
           req.session.userid = userid;
-          httputils.jsonResponse(resp, {username: normalized_username, id: userid});
+          resp.json({ username: normalized_username, id: userid });
         });
       }
     });
@@ -95,7 +95,7 @@ exports.authenticate_user = function(req, resp) {
       req.session.userid = userid;
     }
     var rp = {username: normalized_username, status: userid != null};
-    httputils.jsonResponse(resp, rp);
+    resp.json(rp);
   });
 };
 
@@ -104,7 +104,7 @@ exports.signout = function(req, resp) {
   if (req.session) {
     req.session.userid = undefined;// can I reference undefined safely like this?
   }
-  httputils.jsonResponse(resp, {});
+  resp.json({});
 };
 
 exports.add_key = function (req, resp) {
@@ -123,13 +123,13 @@ exports.add_key = function (req, resp) {
   logRequest("add_key", getArgs);
   db.addKeyToAccount(req.session.userid, getArgs.pubkey, function (rv) {
     logRequest("add_key", "Success");
-    httputils.jsonResponse(resp, rv);
+    resp.json(rv);
   });
 };
 
 exports.am_authed = function(req,resp) {
   logRequest("am_authed", req.session);
-  httputils.jsonResponse(resp, isAuthed(req));
+  resp.json(isAuthed(req));
 };
 
 exports.current_username = function(req,resp) {
@@ -140,16 +140,16 @@ exports.current_username = function(req,resp) {
       db.userIDToUsername(req.session.userid, function(username) {
         if (username !== undefined) {
           logRequest("current_username", username);
-          httputils.jsonResponse(resp, username);
+          resp.json(username);
         } else {
           logRequest("current_username", "userid doesn't exist: " + req.session.userid);
           req.session.userid = undefined;
-          httputils.jsonResponse(resp, false);
+          resp.json(false);
         }
       });
     } else {
       logRequest("current_username", "notAuthed");
-      httputils.jsonResponse(resp, false);
+      resp.json(false);
     }
   } catch (e) {
     console.log(e);
