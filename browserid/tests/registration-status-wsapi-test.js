@@ -28,6 +28,15 @@ suite.addBatch({
   }
 });
 
+suite.addBatch({
+  "authentication as an unknown user": {
+    topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
+    "fails": function (r, err) {
+      assert.isFalse(JSON.parse(r.body));
+    }
+  }
+});
+
 // now start a registration
 suite.addBatch({
   "start registration": {

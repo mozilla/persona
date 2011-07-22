@@ -147,7 +147,10 @@ function setup(app) {
 
   app.post('/wsapi/authenticate_user', checkParams(["email", "pass"]), function(req, resp) {
     db.checkAuth(req.body.email, function(hash) {
-      var success = bcrypt.compare_sync(req.body.pass, hash);
+      var success =
+        (typeof hash === 'string' &&
+         typeof req.body.pass === 'string' && 
+         bcrypt.compare_sync(req.body.pass, hash));
 
       if (success) {
         if (!req.session) req.session = {};
