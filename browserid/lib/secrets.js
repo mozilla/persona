@@ -2,10 +2,10 @@ const
 path = require('path'),
 fs = require('fs');
 
-function generateSecret() {
+exports.generate = function(chars) {
   var str = "";
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i=0; i < 128; i++) {
+  for (var i=0; i < chars; i++) {
     str += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
   }
   return str;
@@ -19,7 +19,7 @@ exports.hydrateSecret = function(name, dir) {
   try{ secret = fs.readFileSync(p).toString(); } catch(e) {};
 
   if (secret === undefined) {
-    secret = generateSecret();
+    secret = exports.generateSecret(128);
     fs.writeFileSync(p, secret);
   }
   return secret;
