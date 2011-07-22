@@ -101,9 +101,10 @@ function substitutionMiddleware(req, resp, next) {
                             contentType.substr(0,4) === 'text'))
         {
             if (buf) {
-                var l = buf.length;
+                if (Buffer.isBuffer(buf)) buf = buf.toString('utf8');
+                var l = Buffer.byteLength(buf);
                 buf = subHostNames(buf);
-                if (l != buf.length) resp.setHeader('Content-Length', buf.length);
+                if (l != Buffer.byteLength(buf)) resp.setHeader('Content-Length', Buffer.byteLength(buf));
             }
         }
         if (buf && buf.length) {
