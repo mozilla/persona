@@ -32,7 +32,7 @@ var secret = undefined;
 suite.addBatch({
   "an email address is not reported as staged before it is": {
     topic: function() {
-      return db.isStaged('lloyd@nowhe.re');
+      db.isStaged('lloyd@nowhe.re', this.callback);
     },
     "isStaged returns false": function (r) {
       assert.strictEqual(r, false);
@@ -51,13 +51,14 @@ suite.addBatch({
 suite.addBatch({
   "stage a user for creation pending verification": {
     topic: function() {
-      return secret = db.stageUser({
+      db.stageUser({
         email: 'lloyd@nowhe.re',
         pubkey: 'fakepubkey',
         hash: 'fakepasswordhash'
-      });
+      }, this.callback);
     },
     "staging returns a valid secret": function(r) {
+      secret = r;
       assert.isString(secret);
       assert.strictEqual(secret.length, 48);
     }
@@ -67,7 +68,7 @@ suite.addBatch({
 suite.addBatch({
   "an email address is reported": {
     topic: function() {
-      return db.isStaged('lloyd@nowhe.re');
+      db.isStaged('lloyd@nowhe.re', this.callback);
     },
     " as staged after it is": function (r) {
       assert.strictEqual(r, true);
@@ -97,7 +98,7 @@ suite.addBatch({
 suite.addBatch({
   "an email address is not reported": {
     topic: function() {
-      return db.isStaged('lloyd@nowhe.re');
+      db.isStaged('lloyd@nowhe.re', this.callback);
     },
     "as staged immediately after its verified": function (r) {
       assert.strictEqual(r, false);
@@ -161,30 +162,33 @@ suite.addBatch({
 suite.addBatch({
   "staging an email": {
     topic: function() {
-      return db.stageEmail('lloyd@nowhe.re', 'lloyd@somewhe.re', 'fakepubkey4');
+      db.stageEmail('lloyd@nowhe.re', 'lloyd@somewhe.re', 'fakepubkey4', this.callback);
     },
     "yields a valid secret": function(secret) {
       assert.isString(secret);
       assert.strictEqual(secret.length, 48);
     },
-    "makes email addr via isStaged": {
-      topic: function() { return db.isStaged('lloyd@somewhe.re'); },
-      "visible": function(r) { assert.isTrue(r); }
-    },
-    "and verifying it": {
+    "then": {
       topic: function(secret) {
-        db.gotVerificationSecret(secret, this.callback);
+        var cb = this.callback;
+        db.isStaged('lloyd@somewhe.re', function(r) { cb(secret, r); });
       },
-      "returns no error": function(r) {
-        assert.isUndefined(r);
-      },
-      "makes email addr via knownEmail": {
-        topic: function() { db.emailKnown('lloyd@somewhe.re', this.callback); },
-        "visible": function(r) { assert.isTrue(r); }
-      },
-      "makes email addr via isStaged": {
-        topic: function() { return db.isStaged('lloyd@somewhe.re'); },
-        "not visible": function(r) { assert.isFalse(r); }
+      "makes it visible via isStaged": function(sekret, r) { assert.isTrue(r); },
+      "and lets you verify it": {
+        topic: function(secret, r) {
+          db.gotVerificationSecret(secret, this.callback);
+        },
+        "successfully": function(r) {
+          assert.isUndefined(r);
+        },
+        "and knownEmail": {
+          topic: function() { db.emailKnown('lloyd@somewhe.re', this.callback); },
+          "returns true": function(r) { assert.isTrue(r); }
+        },
+        "and isStaged": {
+          topic: function() { db.isStaged('lloyd@somewhe.re', this.callback); },
+          "returns false": function(r) { assert.isFalse(r); }
+        }
       }
     }
   }

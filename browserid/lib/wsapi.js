@@ -72,27 +72,26 @@ function setup(app) {
     try {
       // upon success, stage_user returns a secret (that'll get baked into a url
       // and given to the user), on failure it throws
-      var secret = db.stageUser(stageParams);
+      db.stageUser(stageParams, function(secret) {
+        // store the email being registered in the session data
+        if (!req.session) req.session = {};
 
-      // store the email being registered in the session data
-      if (!req.session) req.session = {};
+        // store inside the session the details of this pending verification
+        req.session.pendingVerification = {
+          email: stageParams.email,
+          hash: stageParams.hash // we must store both email and password to handle the case where
+          // a user re-creates an account - specifically, registration status
+          // must ensure the new credentials work to properly verify that
+          // the user has clicked throught the email link. note, this salted, bcrypted
+          // representation of a user's password will get thrust into an encrypted cookie
+          // served over an encrypted (SSL) session.  guten, yah.
+        };
 
-      // store inside the session the details of this pending verification
-      req.session.pendingVerification = {
-        email: stageParams.email,
-        hash: stageParams.hash // we must store both email and password to handle the case where
-        // a user re-creates an account - specifically, registration status
-        // must ensure the new credentials work to properly verify that
-        // the user has clicked throught the email link. note, this salted, bcrypted
-        // representation of a user's password will get thrust into an encrypted cookie
-        // served over an encrypted (SSL) session.  guten, yah.
-      };
+        httputils.jsonResponse(resp, true);
 
-      httputils.jsonResponse(resp, true);
-
-      // let's now kick out a verification email!
-      email.sendVerificationEmail(stageParams.email, stageParams.site, secret);
-
+        // let's now kick out a verification email!
+        email.sendVerificationEmail(stageParams.email, stageParams.site, secret);
+      });
     } catch(e) {
       // we should differentiate tween' 400 and 500 here.
       httputils.badRequest(resp, e.toString());
@@ -130,7 +129,6 @@ function setup(app) {
     } else {
       // this is a pending registration, let's check if the creds stored on the
       // session are good yet.
-
       var v = req.session.pendingVerification;
       db.checkAuth(v.email, function(hash) {
         if (hash === v.hash) {
@@ -162,17 +160,17 @@ function setup(app) {
 
   app.post('/wsapi/add_email', checkAuthed, checkParams(["email", "pubkey", "site"]), function (req, resp) {
     try {
-      // upon success, stage_user returns a secret (that'll get baked into a url
-      // and given to the user), on failure it throws
-      var secret = db.stageEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey);
+      // on failure stageEmail may throw
+      db.stageEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function(secret) {
 
-      // store the email being added in session data
-      req.session.pendingAddition = req.body.email;
+        // store the email being added in session data
+        req.session.pendingAddition = req.body.email;
 
-      httputils.jsonResponse(resp, true);
+        httputils.jsonResponse(resp, true);
 
-      // let's now kick out a verification email!
-      email.sendVerificationEmail(req.body.email, req.body.site, secret);
+        // let's now kick out a verification email!
+        email.sendVerificationEmail(req.body.email, req.body.site, secret);
+      });
     } catch(e) {
       // we should differentiate tween' 400 and 500 here.
       httputils.badRequest(resp, e.toString());

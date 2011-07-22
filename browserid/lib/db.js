@@ -103,9 +103,12 @@ exports.emailKnown = function(email, cb) {
     });
 };
 
-// XXX: should be moved to async.
-exports.isStaged = function(email) {
-  return g_stagedEmails.hasOwnProperty(email);
+exports.isStaged = function(email, cb) {
+  if (cb) {
+    setTimeout(function() {
+      cb(g_stagedEmails.hasOwnProperty(email));
+    }, 0);
+  }
 };
 
 function generateSecret() {
@@ -174,7 +177,7 @@ exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
 }
 
 /* takes an argument object including email, password hash, and pubkey. */
-exports.stageUser = function(obj) {
+exports.stageUser = function(obj, cb) {
   var secret = generateSecret();
 
   // overwrite previously staged users
@@ -186,12 +189,11 @@ exports.stageUser = function(obj) {
   };
 
   g_stagedEmails[obj.email] = secret;
-  return secret;
+  setTimeout(function() { cb(secret); }, 0);
 };
 
 /* takes an argument object including email, pass, and pubkey. */
-// XXX: change to async
-exports.stageEmail = function(existing_email, new_email, pubkey) {
+exports.stageEmail = function(existing_email, new_email, pubkey, cb) {
   var secret = generateSecret();
   // overwrite previously staged users
   g_staged[secret] = {
@@ -201,7 +203,7 @@ exports.stageEmail = function(existing_email, new_email, pubkey) {
     pubkey: pubkey
   };
   g_stagedEmails[new_email] = secret;
-  return secret;
+  setTimeout(function() { cb(secret); }, 0);
 };
 
 /* invoked when a user clicks on a verification URL in their email */
