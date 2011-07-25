@@ -67,6 +67,8 @@ exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
       return;
     }
 
+    if (db[userID].emails
+
     db.execute("SELECT emails.id FROM emails,users WHERE users.id = ? AND emails.address = ? AND emails.user = users.id",
                [ userID, email ],
                function(err, rows) {
@@ -124,16 +126,19 @@ exports.gotVerificationSecret = function(secret, cb) {
   if (o.type === 'add_account') {
     exports.emailKnown(o.email, function(known) {
       function createAccount() {
-        executeTransaction([
-          [ "INSERT INTO users (password) VALUES(?)", [ o.pass ] ] ,
-          [ "INSERT INTO emails (user, address) VALUES(last_insert_rowid(),?)", [ o.email ] ],
-          [ "INSERT INTO keys (email, key, expires) VALUES(last_insert_rowid(),?,?)",
-            [ o.pubkey, ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000)) ]
+        db.push({
+          password: o.pass,
+          emails: [
+            {
+              address: o.email,
+              keys: [ {
+                key: o.pubkey,
+                expires: ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000)) 
+              } ]
+            }
           ]
-        ], function (error) {
-          if (error) cb(error);
-          else cb();
         });
+        cb();
       }
 
       // if this email address is known and a user has completed a re-verification of this email
@@ -142,6 +147,7 @@ exports.gotVerificationSecret = function(secret, cb) {
       // NOTE: this might be sub-optimal, but it's a dead simple approach that mitigates many attacks
       // and gives us reasonable behavior (without explicitly supporting) in the face of shared email
       // addresses.
+
       if (known) {
         exports.removeEmail(o.email, o.email, function (err) {
           if (err) cb(err);
@@ -177,6 +183,22 @@ exports.checkAuth = function(email, cb) {
                cb(rows.length !== 1 ? undefined : rows[0].password);
              });
 };
+
+function emailToUserID(email, cb) {
+  var id = undefined;
+  
+  for (var i = 0; i < db.length; i++) {
+    for (var j = 0; j < db[i].emails.length; j++) {
+      if (db[i].emails[j].address === email) {
+        id = i;
+        break;
+      }
+    }
+    if (id !== undefined) break;
+  }
+
+  setTimeout(function() { cb(id); }, 0);
+}
 
 exports.getSyncResponse = function(email, identities, cb) {
   var respBody = {

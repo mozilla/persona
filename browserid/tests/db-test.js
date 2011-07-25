@@ -25,7 +25,7 @@ suite.addBatch({
   },
   "opening the database": {
     topic: function() {
-      db.open({ /* driver: 'json', */ path: dbPath }, this.callback);
+      db.open({ driver: 'json', path: dbPath }, this.callback);
     },
     "and its ready": function(r) {
       assert.isUndefined(r);
