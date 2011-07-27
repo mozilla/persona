@@ -219,6 +219,9 @@ $.Controller("Dialog", {}, {
       this.onerror = onerror;
       this.remoteOrigin = origin_url.replace(/^.*:\/\//, "");
       this.doStart();
+      $(window).bind('unload', function() {
+        onerror("canceled");
+      });
     },
 
     doStart: function() {
@@ -550,3 +553,5 @@ $.Controller("Dialog", {}, {
   }
 
   });
+
+
