@@ -108,6 +108,7 @@ First, [do this] to add a blank executable post-update hook.
 Now, here's a full sample script that you can start with in that 
 post update hook, annotated to help you follow along:
 
+<pre>
     #!/bin/bash
 
     # only run these commands if it's the browserid repo bein' pushed
@@ -144,6 +145,7 @@ post update hook, annotated to help you follow along:
         ln -s /home/browserid/node_modules /home/browserid/code/node_modules
         cd /home/browserid/code && npm install && cd -
     fi
+</pre>
 
 ### 5. get node servers running
 
@@ -163,36 +165,44 @@ Now let's set up [monit] to restart the node.js servers:
   2. enable monit by editing `/etc/default/monit`
   3. configure monit.  make `/etc/monit/monitrc` look like this:
 
-    set daemon 10
-    set logfile /var/log/monit.log
-    include /etc/monit.d/*
+<pre>
+set daemon 10
+set logfile /var/log/monit.log
+include /etc/monit.d/*
+</pre>
 
   4. Add a little utility script (`chmod +x`) to run the node servers at `/etc/monit/start_node_server`:
 
-    #!/bin/bash
-    /usr/local/bin/node $1 > $(dirname $1)/error.log 2>&1 &    
+<pre>
+#!/bin/bash
+/usr/local/bin/node $1 > $(dirname $1)/error.log 2>&1 &    
+</pre>
 
   5. create a file to run the verifier at `/etc/monit.d/verifier`:
 
-    check host verifier with address 127.0.0.1
-        start program = "/etc/monit/start_node_server /home/browserid/code/verifier/run.js"
-            as uid "www-data" and gid "www-data"
-        stop program  = "/usr/bin/pkill -f '/usr/local/bin/node /home/browserid/code/verifier/run.js'"
-        if failed port 62800 protocol HTTP
-            request /ping.txt
-            with timeout 10 seconds
-            then restart
+<pre>
+check host verifier with address 127.0.0.1
+    start program = "/etc/monit/start_node_server /home/browserid/code/verifier/run.js"
+        as uid "www-data" and gid "www-data"
+    stop program  = "/usr/bin/pkill -f '/usr/local/bin/node /home/browserid/code/verifier/run.js'"
+    if failed port 62800 protocol HTTP
+        request /ping.txt
+        with timeout 10 seconds
+        then restart
+</pre>
 
   5. create a file to run the browserid server at `/etc/monit.d/browserid`:
 
-    check host browserid.org with address 127.0.0.1
-        start program = "/etc/monit/start_node_server /home/browserid/code/browserid/run.js"
-            as uid "www-data" and gid "www-data"
-        stop program  = "/usr/bin/pkill -f '/usr/local/bin/node /home/browserid/code/browserid/run.js'"
-        if failed port 62700 protocol HTTP
-            request /ping.txt
-            with timeout 10 seconds
-            then restart
+<pre>
+check host browserid.org with address 127.0.0.1
+    start program = "/etc/monit/start_node_server /home/browserid/code/browserid/run.js"
+        as uid "www-data" and gid "www-data"
+    stop program  = "/usr/bin/pkill -f '/usr/local/bin/node /home/browserid/code/browserid/run.js'"
+    if failed port 62700 protocol HTTP
+        request /ping.txt
+        with timeout 10 seconds
+        then restart
+</pre>
 
   6. verify servers are running!  check `/var/log/monit.log`, curl ports 62700 and 62800, and verify servers are restarted at 10s if you kill em!
 
@@ -204,58 +214,62 @@ At this point we've got automatic server restart, simple git based code publishi
   2. install nginx: `sudo apt-get install nginx`
   3. configure nginx, make `/etc/nginx/nginx.conf` look like this:
 
-    user www-data;
-    worker_processes  1;
-    
-    error_log  /var/log/nginx/error.log;
-    pid        /var/run/nginx.pid;
-    
-    events {
-        worker_connections  1024;
-        # multi_accept on;                                                                                                                                                               
-    }
-    
-    http {
-        include       /etc/nginx/mime.types;
-        default_type  application/octet-stream;
-        access_log    /var/log/nginx/access.log;
-        sendfile        on;
-    
-        keepalive_timeout  65;
-        tcp_nodelay        on;
-    
-        gzip  on;
-        gzip_disable "MSIE [1-6]\.(?!.*SV1)";
-        gzip_proxied any;
-        gzip_types text/html application/json application/javascript text/css application/x-font-ttf application/atom+xml;
-    
-        include /etc/nginx/conf.d/*.conf;
-        include /etc/nginx/sites-enabled/*;
-    } 
+<pre>
+user www-data;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  1024;
+    # multi_accept on;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+    access_log    /var/log/nginx/access.log;
+    sendfile        on;
+
+    keepalive_timeout  65;
+    tcp_nodelay        on;
+
+    gzip  on;
+    gzip_disable "MSIE [1-6]\.(?!.*SV1)";
+    gzip_proxied any;
+    gzip_types text/html application/json application/javascript text/css application/x-font-ttf application/atom+xml;
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+} 
+</pre>
 
   4. and how about configuring the webserver:
 
-    server {
-        listen       80 default;
-        server_name  browserid.org;
-    
-        # disallow external server restart.
-        location = /code_update {
-            internal;
-        }
-    
-        # pass /verify invocations to the verifier
-        location /verify {
-            proxy_pass        http://127.0.0.1:62800;
-            proxy_set_header  X-Real-IP  $remote_addr;
-        }
-    
-        # pass everything else the browserid server
-        location / {
-            proxy_pass        http://127.0.0.1:62700;
-            proxy_set_header  X-Real-IP  $remote_addr;
-        }
+<pre>
+server {
+    listen       80 default;
+    server_name  browserid.org;
+
+    # disallow external server restart.
+    location = /code_update {
+        internal;
     }
+
+    # pass /verify invocations to the verifier
+    location /verify {
+        proxy_pass        http://127.0.0.1:62800;
+        proxy_set_header  X-Real-IP  $remote_addr;
+    }
+
+    # pass everything else the browserid server
+    location / {
+        proxy_pass        http://127.0.0.1:62700;
+        proxy_set_header  X-Real-IP  $remote_addr;
+    }
+}
+</pre>
 
   5. restart your webserver and you're all done: `sudo /etc/init.d/nginx restart
 
