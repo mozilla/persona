@@ -103,6 +103,10 @@ $.Controller("Dialog", {}, {
       var issuer = storedID.issuer;
       var audience = this.remoteOrigin.replace(/^(http|https):\/\//, '');
       var assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
+      // Clear onerror before the call to onsuccess - the code to onsuccess 
+      // calls window.close, which would trigger the onerror callback if we 
+      // tried this afterwards.
+      this.onerror = null;
       this.onsuccess(assertion);
     },
 
@@ -219,8 +223,13 @@ $.Controller("Dialog", {}, {
       this.onerror = onerror;
       this.remoteOrigin = origin_url.replace(/^.*:\/\//, "");
       this.doStart();
-      $(window).bind('unload', function() {
-        onerror("canceled");
+      var me=this;
+      $(window).bind("unload", function() {
+        // In the success case, me.onerror will have been cleared before unload 
+        // is triggered.
+        if (me.onerror) {
+          me.onerror("canceled");
+        }
       });
     },
 
