@@ -1,27 +1,40 @@
-This is an exploration of the distributed identity system
-[described here](https://wiki.mozilla.org/Labs/Identity/VerifiedEmailProtocol).
+Here lives the [BrowserID] implementation.  BrowserID is an implementation of the 
+[verified email protocol].
 
-## Required software:
+  [BrowserID]:https://browserid.org
+  [verified email protocol]:https://wiki.mozilla.org/Labs/Identity/VerifiedEmailProtocol
+
+This repository contains several distinct things related to BrowserID:
+
+  * **the browserid server** - a node.js server which implements a web services api, stores a record of users, the email addresses they've verified, a bcrypted password, outstanding verification tokens, etc
+  * **the verifier** - a stateless node.js server which does cryptographic verification of assertions. This thing is hosted on browserid.org as a convenience, but people using browserid can choose to relocated it if they want to their own servers.
+  * **sample and test code** - to test the above
+  * **the browserid.org website** - the templates, css, and javascript that make up the visible part of browserid.org
+  * **the javascript/HTML dialog & include library** - this is include.js and the code that it includes, the bit that someone using browserid will include.
+
+## Dependencies
 
 All of the servers here are based on node.js, and some number of 3rd party node modules are required to make them go.  ([npm](http://npmjs.org/) is a good way to get these libraries)
 
 * node.js (>= 0.4.5): http://nodejs.org/
-* Several node.js 3rd party libraries - check `package.json` for details
-
+* npm: http://npmjs.org/
+* Several node.js 3rd party libraries - see `package.json` for details
 
 ## Getting started:
 
 1. install node
 2. run `npm install` to installed 3rd party libraries into `node_modules`
 3. run the top level *run.js* script: `node ./run.js`
-4. visit the demo application ('rp') in your web browser (url output on the console at runtime)␁
+4. visit the demo application ('rp') in your web browser (url output on the console at runtime)
 
 ## Testing
 
-We should start using this:
+Unit tests are under `browserid/tests/`, and you should run them often.  Like before committing code.
 
-  https://github.com/LearnBoost/tobi
+## Development model
 
-for integration testing
+**branching & release model** - You'll notice some funky branching conventions, like the default branch is named `dev` rather than `master` as you might expect.  We're using gitflow: the approach is described in a [blog post](http://lloyd.io/applying-gitflow).
 
-and straight Vows for unit testing
+**contributions** - please issue pull requests targeted at the `dev` branch
+
+
