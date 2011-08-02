@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
 const assert = require('assert'),
-      vows = require('vows'),
-      start_stop = require('./lib/start-stop.js'),
-      wsapi = require('./lib/wsapi.js'),
-      interceptor = require('./lib/email-interceptor.js');
+vows = require('vows'),
+start_stop = require('./lib/start-stop.js'),
+wsapi = require('./lib/wsapi.js'),
+interceptor = require('./lib/email-interceptor.js');
 
 var suite = vows.describe('forgotten-email');
+
+// disable vows (often flakey?) async error behavior
+suite.options.error = false;
 
 start_stop.addStartupBatches(suite);
 

@@ -7,7 +7,7 @@ if [ ! -x "$UGLIFY" ]; then
 fi
 
 JAVA=`which java 2> /dev/null`
-if [ ! -x "$UGLIFY" ]; then
+if [ ! -x "$JAVA" ]; then
     echo "java not found in your path.  can't create production resources.  disaster."
     exit 1
 fi
