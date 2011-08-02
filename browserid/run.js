@@ -42,3 +42,4 @@ exports.stopServer = function(cb) {
 
 // when directly invoked from the command line, we'll start the server
 if (amMain) exports.runServer();
+

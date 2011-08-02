@@ -15,11 +15,12 @@ webfinger = require('./lib/webfinger.js'),
 sessions = require('cookie-sessions'),
 express = require('express'),
 secrets = require('./lib/secrets.js'),
-db = require('./lib/db.js')
+db = require('./lib/db.js'),
+environment = require('../libs/environment.js'),
+substitution = require('../libs/substitute.js');
 
 // looks unused, see run.js
 // const STATIC_DIR = path.join(path.dirname(__dirname), "static");
-
 const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', VAR_DIR);
 const COOKIE_KEY = 'browserid_state';
 
@@ -33,7 +34,9 @@ function internal_redirector(new_url) {
 function router(app) {
   app.set("views", __dirname + '/views'); 
 
-  app.set('view options', { production: exports.production });
+  app.set('view options', {
+    production: app.enabled('use_minified_resources')
+  });
 
   // this should probably be an internal redirect
   // as soon as relative paths are figured out.
@@ -41,7 +44,7 @@ function router(app) {
     res.render('dialog.ejs', {
       title: 'A Better Way to Sign In',
       layout: false,
-      production: exports.production 
+      production: app.enabled('use_minified_resources')
     });
   });
 
@@ -109,9 +112,6 @@ function router(app) {
 };
 
 exports.varDir = VAR_DIR;
-exports.production = true;
-
-
 
 exports.setup = function(server) {
   server.use(express.cookieParser());
@@ -144,7 +144,7 @@ exports.setup = function(server) {
       // not awesome, but probably sufficient for now.
       req.session.csrf = crypto.createHash('md5').update('' + new Date().getTime()).digest('hex');
     }
-    
+
     next();
   });
 
@@ -172,8 +172,15 @@ exports.setup = function(server) {
       }
     }
 
-    next();        
+    next();
   });
+
+  // configure environment variables based on the deployment target ('NODE_ENV');
+  environment.configure(server);
+
+  // add middleware to re-write urls if needed
+  environment.performSubstitution(server);
+
   // add the actual URL handlers other than static
   router(server);
 }
