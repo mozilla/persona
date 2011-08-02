@@ -8,7 +8,8 @@ var      sys = require("sys"),
         path = require("path"),
           fs = require("fs"),
      express = require("express"),
-substitution = require('./libs/substitute.js');
+substitution = require('./libs/substitute.js'),
+ environment = require('./libs/environment.js');
 
 var PRIMARY_HOST = "127.0.0.1";
 
@@ -58,58 +59,54 @@ function substitutionMiddleware(req, resp, next) {
   (substitution.substitute(subs))(req, resp, next);
 }
 
-
 function createServer(obj) {
-    var app = express.createServer();
-    app.use(express.logger());
+  var app = express.createServer();
 
-    // this file is a *test* harness, to make it go, we'll insert a little handler that
-    // substitutes output, changing production URLs to developement URLs.
-    app.use(substitutionMiddleware);
+  // configure the server based on the environment (NODE_ENV).
+  environment.configure(app);
 
-    // let the specific server interact directly with the express server to register their middleware,
-    // routes, etc...
-    if (obj.setup) obj.setup(app);
+  app.use(express.logger());
 
-    // now set up the static resource servin'
-    var p = obj.path, ps = path.join(p, "static");
-    try { if (fs.statSync(ps).isDirectory()) p = ps; } catch(e) { }
-    app.use(express.static(p));
+  // this file is a *test* harness, to make it go, we'll insert a little
+  // handler that substitutes output, changing production URLs to
+  // developement URLs.
+  app.use(substitutionMiddleware);
 
-    // and listen!
-    app.listen(obj.port, PRIMARY_HOST);
-    return app;
+  // let the specific server interact directly with the express server to
+  // register their middleware, routes, etc...
+  if (obj.setup) obj.setup(app);
+
+  // now set up the static resource servin'
+  var p = obj.path, ps = path.join(p, "static");
+  try { if (fs.statSync(ps).isDirectory()) p = ps; } catch(e) { }
+  app.use(express.static(p));
+
+  // and listen!
+  app.listen(obj.port, PRIMARY_HOST);
+  return app;
 };
 
 // start up webservers on ephemeral ports for each subdirectory here.
 var dirs = [
-    // the reference verification server.  A version is hosted at
-    // browserid.org and may be used, or the RP may perform their
-    // own verification.
-    {
-        name: "https://browserid.org/verify",
-        subPath: "/",
-        path: path.join(__dirname, "verifier")
-    },
-    // An example relying party.
-    {
-        name: "http://rp.eyedee.me",
-        path: path.join(__dirname, "rp")
-    },
+  // the reference verification server.  A version is hosted at
+  // browserid.org and may be used, or the RP may perform their
+  // own verification.
+  {
+    name: "https://browserid.org/verify",
+    subPath: "/",
+    path: path.join(__dirname, "verifier")
+  },
+  // An example relying party.
+  {
+    name: "http://rp.eyedee.me",
+    path: path.join(__dirname, "rp")
+  },
 
-    // disabled primary for now since it's not in working
-    // order.
-    /*    // A reference primary identity provider.
-    {
-        name: "https://eyedee.me",
-        path: path.join(__dirname, "primary")
-        }, */
-
-    // BrowserID: the secondary + ip + more.
-    {
-        name: "https://browserid.org",
-        path: path.join(__dirname, "browserid")
-    }
+  // BrowserID: the secondary + ip + more.
+  {
+    name: "https://browserid.org",
+    path: path.join(__dirname, "browserid")
+  }
 ];
 
 function formatLink(server, extraPath) {
@@ -132,11 +129,7 @@ dirs.forEach(function(dirObj) {
   try {
     var runJSExists = false;
     try { runJSExists = fs.statSync(handlerPath).isFile() } catch(e) {};
-    if (runJSExists) {
-      var runJS = require(handlerPath);
-      // set to development mode
-      runJS.production = false;
-    }
+    if (runJSExists) runJS = require(handlerPath);
   } catch(e) {
     console.log("Error loading " + handlerPath + ": " + e);
     process.exit(1);
