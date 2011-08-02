@@ -14,7 +14,7 @@ This repository contains several distinct things related to BrowserID:
 
 ## Dependencies
 
-All of the servers here are based on node.js, and some number of 3rd party node modules are required to make them go.  ([npm](http://npmjs.org/) is a good way to get these libraries)
+Here's the software you'll need installed:
 
 * node.js (>= 0.4.5): http://nodejs.org/
 * npm: http://npmjs.org/
