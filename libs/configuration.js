@@ -25,25 +25,29 @@ const g_configs = {
     hostname: 'browserid.org',
     port: '443',
     scheme: 'https',
-    use_minified_resources: true
+    use_minified_resources: true,
+    log_path: '/home/browserid/var/'
   },
   development: {
     hostname: 'dev.diresworb.org',
     port: '443',
     scheme: 'https',
-    use_minified_resources: true
+    use_minified_resources: true,
+    log_path: '/home/browserid/var/'
   },
   beta: {
     hostname: 'diresworb.org',
     port: '443',
     scheme: 'https',
-    use_minified_resources: true
+    use_minified_resources: true,
+    log_path: '/home/browserid/var/'
   },
   local: {
     hostname: '127.0.0.1',
     port: '10002',
     scheme: 'http',
-    use_minified_resources: false
+    use_minified_resources: false,
+    log_path: './'
   }
 };
 
