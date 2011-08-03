@@ -1,18 +1,51 @@
+/* db_json is a json database driver.  It is designed for use in
+ * local development, is intended to be extremely easy to maintain,
+ * have minimal dependencies on 3rd party libraries, and we could
+ * care less if it performs well with more than 10 or so users.
+ */
 const
 path = require('path'),
 fs = require('fs'),
-secrets = require('./secrets');
+secrets = require('./secrets'),
+jsel = require('JSONSelect');
+
+// a little alias for stringify
+const ESC = JSON.stringify;
 
 var VAR_DIR = path.join(path.dirname(__dirname), "var");
 
 var dbPath = path.join(VAR_DIR, "authdb.json");
+
+/* The JSON database. The structure is thus:
+ *  [
+ *    {
+ *      password: "somepass",
+ *      emails: [
+ *        {
+ *          address: "lloyd@hilaiel.com",
+ *          keys: [
+ *            {
+ *              key: "SOMESTRINGOFTEXT",
+ *              expires: 1231541615125
+ *            }
+ *          ]
+ *        }
+ *      ]
+ *    }
+ *  ]
+ */
 
 var db = [];
 var stagedEmails = { };
 var staged = { };
 
 function flush() {
-  fs.writeFileSync(JSON.stringify(db));
+  fs.writeFileSync(dbPath, JSON.stringify(db));
+}
+
+// when should a key created right now expire?
+function getExpiryTime() {
+  return ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000));
 }
 
 exports.open = function(cfg, cb) {
@@ -31,13 +64,8 @@ exports.close = function(cb) {
 };
 
 exports.emailKnown = function(email, cb) {
-  for (var i = 0; i < db.length; i++) {
-    if (db[i].emails.hasOwnProperty(email)) {
-      setTimeout(function() { cb(true) }, 0);
-      return;
-    }
-  }
-  setTimeout(function() { cb(false) }, 0);
+  var m = jsel.match(".address:val(" + ESC(email) + ")", db);
+  setTimeout(function() { cb(m.length > 0) }, 0);
 };
 
 exports.isStaged = function(email, cb) {
@@ -60,6 +88,26 @@ exports.emailsBelongToSameAccount = function(lhs, rhs, cb) {
   });
 };
 
+function addEmailToAccount(existing_email, email, pubkey, cb) {
+  emailToUserID(existing_email, function(userID) {
+    if (userID == undefined) {
+      cb("no such email: " + existing_email, undefined);
+    } else {
+      db[userID].emails.push({
+        address: email,
+        keys: [
+          {
+            key: pubkey,
+            expires: getExpiryTime()
+          }
+        ]
+      });
+      flush();
+      cb();
+    }
+  });
+}
+
 exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
   emailToUserID(existing_email, function(userID) {
     if (userID == undefined) {
@@ -67,24 +115,28 @@ exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
       return;
     }
 
-    if (db[userID].emails
+    if (!(db[userID].emails)) {
+      db[userID].emails = [ ];
+    }
 
-    db.execute("SELECT emails.id FROM emails,users WHERE users.id = ? AND emails.address = ? AND emails.user = users.id",
-               [ userID, email ],
-               function(err, rows) {
-                 if (err || rows.length != 1) {
-                   cb(err);
-                   return;
-                 }
-                 executeTransaction([
-                   [ "INSERT INTO keys (email, key, expires) VALUES(?,?,?)",
-                     [ rows[0].id, pubkey, ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000)) ]
-                   ]
-                 ], function (error) {
-                   if (error) cb(error);
-                   else cb();
-                 });
-               });
+    var m = jsel.match("object:has(.address:val(" + ESC(email) + ")) > .keys", db[userID].emails);
+
+    var kobj = {
+      key: pubkey,
+      expires: getExpiryTime()
+    };
+
+    if (m.length) {
+      m[0].push(kobj);
+    } else {
+      db[userID].emails.push({
+        address: email,
+        keys: [ kobj ]
+      });
+    }
+
+    flush();
+    if (cb) setTimeout(function() { cb(); }, 0);
   });
 }
 
@@ -133,11 +185,12 @@ exports.gotVerificationSecret = function(secret, cb) {
               address: o.email,
               keys: [ {
                 key: o.pubkey,
-                expires: ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000)) 
+                expires: getExpiryTime(),
               } ]
             }
           ]
         });
+        flush();
         cb();
       }
 
@@ -177,22 +230,19 @@ exports.gotVerificationSecret = function(secret, cb) {
 };
 
 exports.checkAuth = function(email, cb) {
-  db.execute("SELECT users.password FROM emails, users WHERE users.id = emails.user AND emails.address = ?",
-             [ email ],
-             function (error, rows) {
-               cb(rows.length !== 1 ? undefined : rows[0].password);
-             });
+  var m = jsel.match(":root > object:has(.address:val(" + ESC(email) + ")) > .password", db);
+  if (m.length === 0) m = undefined;
+  else m = m[0];
+  setTimeout(function() { cb(m) }, 0);
 };
 
 function emailToUserID(email, cb) {
   var id = undefined;
-  
+
   for (var i = 0; i < db.length; i++) {
-    for (var j = 0; j < db[i].emails.length; j++) {
-      if (db[i].emails[j].address === email) {
-        id = i;
-        break;
-      }
+    if (jsel.match(".address:val(" + JSON.stringify(email) + ")", db[i]).length) {
+      id = i;
+      break;
     }
     if (id !== undefined) break;
   }
@@ -212,86 +262,61 @@ exports.getSyncResponse = function(email, identities, cb) {
       cb("no such email: " + email);
       return;
     }
-    db.execute(
-      'SELECT address FROM emails WHERE ? = user',
-      [ userID ],
-      function (err, rows) {
-        if (err) cb(err);
-        else {
-          var emails = [ ];
-          var keysToCheck = [ ];
-          for (var i = 0; i < rows.length; i++) emails.push(rows[i].address);
+    var emails = jsel.match(".address", db[userID]);
+    var keysToCheck = [ ];
 
-          // #1
-          for (var e in identities) {
-            if (emails.indexOf(e) == -1) respBody.unknown_emails.push(e);
-            else keysToCheck.push(e);
-          }
+    // #1 emails that the client knows about but we do not
+    for (var e in identities) {
+      if (emails.indexOf(e) == -1) respBody.unknown_emails.push(e);
+      else keysToCheck.push(e);
+    }
 
-          // #2
-          for (var e in emails) {
-            e = emails[e];
-            if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
-          }
+    // #2 emails that we know about and the client does not
+    for (var e in emails) {
+      e = emails[e];
+      if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
+    }
 
-          // #3 -- yes, this is sub-optimal in terms of performance.  when we
-          // move away from public keys this will be unnec.
-          if (keysToCheck.length) {
-            var checked = 0;
-            keysToCheck.forEach(function(e) {
-              emailHasPubkey(e, identities[e], function(v) {
-                checked++;
-                if (!v) respBody.key_refresh.push(e);
-                if (checked === keysToCheck.length) {
-                  cb(undefined, respBody);
-                }
-              });
-            });
-          } else {
-            cb(undefined, respBody);
-          }
-        }
+    // #3 emails that we both know about but who need to be re-keyed
+    if (keysToCheck.length) {
+      var checked = 0;
+      keysToCheck.forEach(function(e) {
+        if (!jsel.match(".key:val(" + ESC(identities[e]) + ")", db[userID]).length)
+          respBody.key_refresh.push(e);
+        checked++;
+        if (checked === keysToCheck.length) cb(undefined, respBody);
       });
+    } else {
+      cb(undefined, respBody);
+    }
   });
 };
 
 exports.pubkeysForEmail = function(identity, cb) {
-  db.execute(
-    'SELECT keys.key FROM keys, emails WHERE emails.address = ? AND keys.email = emails.id',
-    [ identity ],
-    function(err, rows) {
-      var keys = undefined;
-      if (!err && rows && rows.length) {
-        keys = [ ];
-        for (var i = 0; i < rows.length; i++) keys.push(rows[i].key);
-      }
-      cb(keys);
-    });
+  var m = jsel.match(".emails object:has(.address:val(" + ESC(identity)+ ")) .key", db);
+  setTimeout(function() { cb(m); }, 0);
 };
 
 exports.removeEmail = function(authenticated_email, email, cb) {
-  // figure out the user, and remove Email only from addressed
-  // linked to the authenticated email address
-  emailToUserID(authenticated_email, function(user_id) {
-    executeTransaction([
-      [ "delete from emails where emails.address = ? and user = ?", [ email,user_id ] ] ,
-      [ "delete from keys where email in (select address from emails where emails.address = ? and user = ?)", [ email,user_id ] ],
-    ], function (error) {
-      if (error) cb(error);
-      else cb();
-    });
-  });
+  var m = jsel.match(":root > object:has(.address:val("+ESC(authenticated_email)+")):has(.address:val("+ESC(email)+")) .emails", db);
+
+  if (m.length) {
+    var emails = m[0];
+    for (var i = 0; i < emails.length; i++) {
+      if (emails[i].address === email) {
+        emails.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  setTimeout(function() { cb(); }, 0);
 };
 
 exports.cancelAccount = function(authenticated_email, cb) {
   emailToUserID(authenticated_email, function(user_id) {
-    executeTransaction([
-      [ "delete from emails where user = ?", [ user_id ] ] ,
-      [ "delete from keys where email in (select address from emails where user = ?)", [ user_id ] ],
-      [ "delete from users where id = ?", [ user_id ] ],
-    ], function (error) {
-      if (error) cb(error);
-      else cb();
-    });
+    db.splice(user_id, 1);
+    flush();
+    cb();
   });
 };

@@ -12,7 +12,7 @@ var suite = vows.describe('db');
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
-var dbPath = temp.path({suffix: '.sqlite'});
+var dbPath = temp.path({suffix: '.db'});
 
 suite.addBatch({
   "onReady": {
