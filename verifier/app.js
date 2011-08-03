@@ -37,7 +37,7 @@ function doVerify(req, resp, next) {
         audience,
         function(payload) {
           // log it!
-          logging.log({
+          logging.log('verifier', {
               type: 'verify',
                 result: 'success',
                 rp: payload.audience
@@ -53,7 +53,7 @@ function doVerify(req, resp, next) {
           resp.json(result);
         },
         function(errorObj) {
-          logging.log({
+          logging.log('verifier', {
               type: 'verify',
                 result: 'failure',
                 rp: audience
@@ -63,7 +63,7 @@ function doVerify(req, resp, next) {
       );
   } catch (e) {
     console.log(e.stack);
-    logging.log({
+    logging.log('verifier', {
         type: 'verify',
           result: 'failure',
           rp: audience

@@ -42,7 +42,7 @@ function router(app) {
   // this should probably be an internal redirect
   // as soon as relative paths are figured out.
   app.get('/sign_in', function(req, res, next ) {
-    logging.userEntry(req);
+    logging.userEntry('browserid', req);
     res.render('dialog.ejs', {
       title: 'A Better Way to Sign In',
       layout: false,
