@@ -18,6 +18,7 @@ secrets = require('./lib/secrets.js'),
 db = require('./lib/db.js'),
 configuration = require('../libs/configuration.js'),
 substitution = require('../libs/substitute.js');
+logging = require("../libs/logging.js");
 
 // looks unused, see run.js
 // const STATIC_DIR = path.join(path.dirname(__dirname), "static");
