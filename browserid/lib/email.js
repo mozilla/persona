@@ -3,12 +3,13 @@ db = require('./db'),
 emailer = require('nodemailer'),
 fs = require('fs'),
 path = require('path'),
-mustache = require('mustache');
+mustache = require('mustache'),
+config = require('../../libs/configuration.js');
 
 const template = fs.readFileSync(path.join(__dirname, "prove_template.txt")).toString();
 
 exports.sendVerificationEmail = function(email, site, secret) {
-  var url = "https://browserid.org/prove?token=" + encodeURIComponent(secret);
+  var url = config.get('URL') + "/prove?token=" + encodeURIComponent(secret);
 
   emailer.send_mail({
     sender: "noreply@browserid.org",
