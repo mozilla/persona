@@ -19,8 +19,9 @@ exports.log = function(entry) {
   if (!entry.type)
     throw new Error("every log entry needs a type");
 
-  // FIXME: add timestamp
-
+  // timestamp
+  entry.at = new Date().toUTCString();
+  
   // if no logger, go to console (FIXME: do we really want to log to console?)
   if (LOGGER)
     LOGGER.info(JSON.stringify(entry));
@@ -34,8 +35,8 @@ exports.userEntry = function(req) {
       type: 'signin',
       browser: req.headers['user-agent'],
       rp: req.headers['referer'],
-      // FIXME: make sure we know where IP is: what header?
-      ip: ""
+      // IP address (this probably needs to be replaced with the X-forwarded-for value
+      ip: req.connection.remoteAddress
     });
   console.log(JSON.stringify(req.headers));
 };
