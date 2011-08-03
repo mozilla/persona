@@ -9,7 +9,7 @@ var      sys = require("sys"),
           fs = require("fs"),
      express = require("express"),
 substitution = require('./libs/substitute.js'),
- environment = require('./libs/environment.js');
+configuration = require('./libs/configuration.js');
 
 var PRIMARY_HOST = "127.0.0.1";
 
@@ -61,9 +61,6 @@ function substitutionMiddleware(req, resp, next) {
 
 function createServer(obj) {
   var app = express.createServer();
-
-  // configure the server based on the environment (NODE_ENV).
-  environment.configure(app);
 
   app.use(express.logger());
 

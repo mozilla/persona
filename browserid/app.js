@@ -16,7 +16,7 @@ sessions = require('cookie-sessions'),
 express = require('express'),
 secrets = require('./lib/secrets.js'),
 db = require('./lib/db.js'),
-environment = require('../libs/environment.js'),
+configuration = require('../libs/configuration.js'),
 substitution = require('../libs/substitute.js');
 
 // looks unused, see run.js
@@ -35,7 +35,7 @@ function router(app) {
   app.set("views", __dirname + '/views'); 
 
   app.set('view options', {
-    production: app.enabled('use_minified_resources')
+    production: configuration.get('use_minified_resources')
   });
 
   // this should probably be an internal redirect
@@ -175,11 +175,8 @@ exports.setup = function(server) {
     next();
   });
 
-  // configure environment variables based on the deployment target ('NODE_ENV');
-  environment.configure(server);
-
   // add middleware to re-write urls if needed
-  environment.performSubstitution(server);
+  configuration.performSubstitution(server);
 
   // add the actual URL handlers other than static
   router(server);
