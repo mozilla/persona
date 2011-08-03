@@ -44,7 +44,7 @@ function router(app) {
     res.render('dialog.ejs', {
       title: 'A Better Way to Sign In',
       layout: false,
-      production: app.enabled('use_minified_resources')
+      production: configuration.get('use_minified_resources')
     });
   });
 
