@@ -43,7 +43,8 @@ const g_configs = {
     hostname: '127.0.0.1',
     port: '10002',
     scheme: 'http',
-    use_minified_resources: false
+    use_minified_resources: false,
+    log_path: 'log.txt'
   }
 };
 

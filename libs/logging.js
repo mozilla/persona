@@ -19,6 +19,8 @@ exports.log = function(entry) {
   if (!entry.type)
     throw new Error("every log entry needs a type");
 
+  // FIXME: add timestamp
+
   // if no logger, go to console (FIXME: do we really want to log to console?)
   if (LOGGER)
     LOGGER.info(JSON.stringify(entry));
@@ -26,3 +28,14 @@ exports.log = function(entry) {
     winston.info(JSON.stringify(entry));
 };
 
+// utility function to log a bunch of stuff at user entry point
+exports.userEntry = function(req) {
+  exports.log({
+      type: 'signin',
+      browser: req.headers['user-agent'],
+      rp: req.headers['referer'],
+      // FIXME: make sure we know where IP is: what header?
+      ip: ""
+    });
+  console.log(JSON.stringify(req.headers));
+};

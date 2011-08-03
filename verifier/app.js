@@ -5,6 +5,7 @@ const   path = require('path'),
  idassertion = require('./lib/idassertion.js'),
          jwt = require('./lib/jwt.js'),
      express = require('express');
+     logging = require('../libs/logging.js');
 
 // create the var directory if it doesn't exist
 var VAR_DIR = path.join(__dirname, "var");
@@ -35,6 +36,13 @@ function doVerify(req, resp, next) {
       .verify(
         audience,
         function(payload) {
+          // log it!
+          logging.log({
+              type: 'verify',
+                result: 'success',
+                rp: payload.audience
+            });
+          
           result = {
             status : "okay",
             email : payload.email,
@@ -45,11 +53,21 @@ function doVerify(req, resp, next) {
           resp.json(result);
         },
         function(errorObj) {
+          logging.log({
+              type: 'verify',
+                result: 'failure',
+                rp: audience
+            });
           resp.json({ status: "failure", reason: errorObj });
         }
       );
   } catch (e) {
     console.log(e.stack);
+    logging.log({
+        type: 'verify',
+          result: 'failure',
+          rp: audience
+          });
     resp.json({ status: "failure", reason: e.toString() });
   }
 }
