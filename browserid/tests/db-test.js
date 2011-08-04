@@ -396,14 +396,14 @@ function addTestsForDriver(driver) {
 }
 
 // test all available drivers
-fs.readdir(path.join(__dirname, "..", "lib"), function(err, files) {
-  files.forEach(function(f) {
-    var m = /^db_(.+)\.js$/.exec(f);
-    if (m) addTestsForDriver(m[1]);
-  });
+files = fs.readdirSync(path.join(__dirname, "..", "lib"));
 
-  // run or export the suite.
-  if (process.argv[1] === __filename) suite.run();
-  else suite.export(module);
+files.forEach(function(f) {
+  var m = /^db_(.+)\.js$/.exec(f);
+  if (m) addTestsForDriver(m[1]);
 });
+
+// run or export the suite.
+if (process.argv[1] === __filename) suite.run();
+else suite.export(module);
 
