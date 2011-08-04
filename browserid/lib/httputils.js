@@ -43,10 +43,10 @@ exports.xmlResponse = function(resp, doc)
 };
 
 exports.checkGetArgs = function(req, args) {
-    [ "email", "pass", "pubkey" ].forEach(function(k) {
-      if (!urlobj.hasOwnProperty(k) || typeof urlobj[k] !== 'string') {
-        throw k;
-      }
-    });
+  [ "email", "pass", "pubkey" ].forEach(function(k) {
+    if (!urlobj.hasOwnProperty(k) || typeof urlobj[k] !== 'string') {
+      throw k;
+    }
+  });
 
 };

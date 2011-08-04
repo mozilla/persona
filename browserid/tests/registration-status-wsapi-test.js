@@ -28,10 +28,19 @@ suite.addBatch({
   }
 });
 
+suite.addBatch({
+  "authentication as an unknown user": {
+    topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
+    "fails": function (r, err) {
+      assert.isFalse(JSON.parse(r.body));
+    }
+  }
+});
+
 // now start a registration
 suite.addBatch({
   "start registration": {
-    topic: wsapi.get('/wsapi/stage_user', {
+    topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
       pass: 'firstfakepass',
       pubkey: 'fakepubkey',
@@ -112,7 +121,7 @@ suite.addBatch({
 
 suite.addBatch({
   "re-registering an existing email": {
-    topic: wsapi.get('/wsapi/stage_user', {
+    topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
       pass: 'secondfakepass',
       pubkey: 'secondfakepubkey',
@@ -170,7 +179,7 @@ suite.addBatch({
 
 suite.addBatch({
   "after re-registration, authenticating with new credetials": {
-    topic: wsapi.get('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
+    topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
     "works as you might expect": function (r, err) {
       assert.strictEqual(true, JSON.parse(r.body));
     }

@@ -7,6 +7,10 @@
 
 $.Controller("Dialog", {}, {
     init: function(el) {
+      // FIXME: there's a small chance the CSRF token doesn't come back in time.
+      this.csrf = null;
+      this._getCSRF();
+
       var html = $.View("//dialog/views/body.ejs", {});
       this.element.html(html);
       this.element.show();
@@ -14,7 +18,17 @@ $.Controller("Dialog", {}, {
       // keep track of where we are and what we do on success and error
       this.onsuccess = null;
       this.onerror = null;
-      var chan = setupChannel(this);      
+      var chan = setupChannel(this);
+    },
+      
+    _getCSRF: function(cb) {
+      // go get CSRF token
+      var self = this;
+      $.get('/csrf', {}, function(result) {
+          self.csrf = result;
+          if (cb)
+            cb();
+        });
     },
 
     setupEnterKey: function() {
@@ -29,13 +43,16 @@ $.Controller("Dialog", {}, {
     renderTemplates: function(body, body_vars, footer, footer_vars) {
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
-        $('#dialog').html(bodyHtml).hide().fadeIn(300);
+        $('#dialog').html(bodyHtml).hide().fadeIn(300, function() {
+          $('#dialog input').eq(0).focus(); 
+        });
       }
 
       if (footer) {
         var footerHtml = $.View("//dialog/views/" + footer, footer_vars);
         $('#bottom-bar').html(footerHtml);
       }
+      this.setupEnterKey();
     },
     
     "#suggest_signin click": function(event) {
@@ -49,7 +66,13 @@ $.Controller("Dialog", {}, {
       var self = this;
 
       $.ajax({
-          url: '/wsapi/authenticate_user?email=' + encodeURIComponent(email) + '&pass=' + encodeURIComponent(pass),
+          type: "POST",
+          url: '/wsapi/authenticate_user',
+          data: {
+            email: email,
+            pass: pass,
+            csrf: this.csrf
+          },
             success: function(status, textStatus, jqXHR) {
             var authenticated = JSON.parse(status);
             if (!authenticated) {
@@ -102,9 +125,14 @@ $.Controller("Dialog", {}, {
       );
 
       $.ajax({
-        url: '/wsapi/add_email?email=' + encodeURIComponent(email)
-              + '&pubkey=' + encodeURIComponent(keypair.pub)
-              + '&site=' + encodeURIComponent(this.remoteOrigin.replace(/^(http|https):\/\//, '')),
+        type: 'POST',
+        url: '/wsapi/add_email',
+        data: {
+            email: email,
+            pubkey: keypair.pub,
+            site: this.remoteOrigin.replace(/^(http|https):\/\//, ''),
+            csrf: this.csrf
+         },
         success: function() {
           // email successfully staged, now wait for email confirmation
           self.doConfirmEmail(email, keypair);
@@ -121,8 +149,10 @@ $.Controller("Dialog", {}, {
     "#notme click": function(event) {
       clearEmails();
       var self = this;
-      $.get("/wsapi/logout", function() {
-          self.doAuthenticate();
+      $.post("/wsapi/logout", {csrf: this.csrf}, function() {
+          self._getCSRF(function() {
+              self.doAuthenticate();
+            });
       });
     },
       
@@ -164,11 +194,14 @@ $.Controller("Dialog", {}, {
       var self = this;
 
       $.ajax({
-          url: '/wsapi/stage_user?email=' + encodeURIComponent(email)
-            + '&pass=' + encodeURIComponent(pass)
-            + '&pubkey=' + encodeURIComponent(keypair.pub)
-            + '&site=' + encodeURIComponent(this.remoteOrigin.replace(/^(http|https):\/\//, '')),
-            success: function() {
+          type: "post",
+          url: '/wsapi/stage_user',
+          data: {email: email,
+              pass: pass,
+              pubkey : keypair.pub,
+              site : this.remoteOrigin.replace(/^(http|https):\/\//, ''),
+              csrf : self.csrf},
+          success: function() {
             // account successfully staged, now wait for email confirmation
             self.doConfirmEmail(email, keypair);
           },
@@ -218,7 +251,6 @@ $.Controller("Dialog", {}, {
       this.renderTemplates("authenticate.ejs", {sitename: this.remoteOrigin},
                            "bottom-signin.ejs", {});
 
-      this.setupEnterKey();
     },
       
     doCreate: function() {
@@ -439,7 +471,8 @@ $.Controller("Dialog", {}, {
       $.ajax({
           url: '/wsapi/sync_emails',
             type: "post",
-            data: JSON.stringify(issued_identities),
+            data: {'emails': JSON.stringify(issued_identities),
+              'csrf': this.csrf},
             success: function(resp, textStatus, jqXHR) {
             // first remove idenitites that the server doesn't know about
             if (resp.unknown_emails) {
@@ -463,8 +496,13 @@ $.Controller("Dialog", {}, {
               var keypair = CryptoStubs.genKeyPair();
 
               $.ajax({
-                  url: '/wsapi/set_key?email=' + encodeURIComponent(email) + '&pubkey=' + encodeURIComponent(keypair.pub),
-                    success: function() {
+                  type: 'POST',
+                  url: '/wsapi/set_key',
+                  data: {
+                    email: email,
+                    pubkey: keypair.pub,
+                    csrf: self.csrf},
+                  success: function() {
                     // update emails list and commit to local storage, then go do the next email
                     self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
                     addNextEmail();

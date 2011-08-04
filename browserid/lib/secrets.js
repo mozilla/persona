@@ -1,5 +1,6 @@
-const path = require('path'),
-        fs = require('fs');
+const
+path = require('path'),
+fs = require('fs');
 
 function generateSecret() {
   var str = "";

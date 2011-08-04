@@ -3,6 +3,7 @@
 load("steal/rhino/steal.js");
 steal.plugins('steal/build','steal/build/scripts','steal/build/styles',function() {
 	steal.build('../static/dialog/scripts/build.html',{
-        to: '../static/dialog'
+        to: '../static/dialog',
+        compressor: 'concatOnly'
     });
 });
