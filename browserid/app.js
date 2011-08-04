@@ -18,6 +18,7 @@ secrets = require('./lib/secrets.js'),
 db = require('./lib/db.js'),
 configuration = require('../libs/configuration.js'),
 substitution = require('../libs/substitute.js');
+logging = require("../libs/logging.js");
 
 // open the databse
 db.open();
@@ -43,7 +44,8 @@ function router(app) {
 
   // this should probably be an internal redirect
   // as soon as relative paths are figured out.
-  app.get('/sign_in', function(req, res, next ){
+  app.get('/sign_in', function(req, res, next ) {
+    logging.userEntry('browserid', req);
     res.render('dialog.ejs', {
       title: 'A Better Way to Sign In',
       layout: false,

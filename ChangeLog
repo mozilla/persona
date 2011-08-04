@@ -1,2 +1,12 @@
+train-2011.08.04:
+  * when user closes dialog without clicking "cancel", properly return 'null' to the webpage (via getVerifiedEmail callback) - issue #107
+  * improve checks to warn developer that prerequisite software is missing. issue #110
+  * parameterize software to support multiple deployment environments (dev/beta/prod) issues #102 & #52
+  * documentation updates.
+  * improved logging (using the winston logging framework for node.js)
+  * [website] fixed inclusion of youtube video (now over https to keep browsers from getting scared about mixed mode resource inclusion)
+
 train-1:
-  * beginning of time, everything is new.  
+  * beginning of time, everything is new.
+  * (2011.08.03) include youtube video embedding over https (issue #112)
+  * (2011.08.04) fix mozillalabs.com link in dialog (issue #116)
