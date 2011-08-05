@@ -11,7 +11,7 @@ function checkReady() {
 // a touch tricky cause client must set dbPath before releasing
 // control of the runloop
 exports.open = function(cfg, cb) {
-  var driverName = "sqlite";
+  var driverName = "json";
   if (cfg && cfg.driver) driverName = cfg.driver;
   try {
     driver = require('./db_' + driverName + '.js');
