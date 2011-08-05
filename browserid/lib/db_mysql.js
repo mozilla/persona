@@ -65,7 +65,7 @@ exports.open = function(cfg, cb) {
   };
 
   Object.keys(defParams).forEach(function(param) {
-    client[param] = cfg[param] ? cfg.param : defParams[param];
+    client[param] = cfg[param] ? cfg[param] : defParams[param];
   });
 
   // let's figure out the database name
