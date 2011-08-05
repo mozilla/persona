@@ -116,6 +116,9 @@ function router(app) {
 exports.varDir = VAR_DIR;
 
 exports.setup = function(server) {
+  // over SSL?
+  var overSSL = (configuration.get('scheme') == 'https');
+  
   server.use(express.cookieParser());
 
   var cookieSessionMiddleware = sessions({
@@ -124,6 +127,7 @@ exports.setup = function(server) {
     path: '/'
   });
 
+  // cookie sessions
   server.use(function(req, resp, next) {
     try {
       cookieSessionMiddleware(req, resp, next);
@@ -157,6 +161,15 @@ exports.setup = function(server) {
     }
     next();
   });
+
+  // Strict Transport Security
+  server.use(function(req, resp, next) {
+      if (overSSL) {
+        // expires in 30 days, include subdomains like www
+        resp.setHeader("Strict-Transport-Security", "max-age=2592000; includeSubdomains");
+      }
+      next();
+    });
 
   // prevent framing
   server.use(function(req, resp, next) {
