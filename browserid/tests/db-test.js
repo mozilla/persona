@@ -25,7 +25,7 @@ function addTestsForDriver(driver) {
         topic: function() { db.open({driver: driver, unit_test: true}, this.callback) },
         "accepting connections": function(err) {
           if (err) {
-            console.log("SKIPPING MYSQL TESTING: I cannot connect to the mysql database (" + err.message + ")");
+            console.log("MYSQL TESTS WILL FAIL cause cannot connect to a local mysql database (" + err.message + ")");
           }
         },
         "connection closes": {
