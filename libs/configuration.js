@@ -19,6 +19,12 @@ exports.get = function(val) {
   return g_config[val];
 }
 
+var defaultHostedDatabaseConfig = {
+  driver: "mysql",
+  user: 'browserid',
+  password: 'browserid'
+};
+
 // various deployment configurations
 const g_configs = {
   production: {
@@ -27,7 +33,7 @@ const g_configs = {
     scheme: 'https',
     use_minified_resources: true,
     log_path: '/home/browserid/var/',
-    database: { driver: "mysql" }
+    database: defaultHostedDatabaseConfig
   },
   development: {
     hostname: 'dev.diresworb.org',
@@ -35,7 +41,7 @@ const g_configs = {
     scheme: 'https',
     use_minified_resources: true,
     log_path: '/home/browserid/var/',
-    database: { driver: "mysql" }
+    database: defaultHostedDatabaseConfig
   },
   beta: {
     hostname: 'diresworb.org',
@@ -43,7 +49,7 @@ const g_configs = {
     scheme: 'https',
     use_minified_resources: true,
     log_path: '/home/browserid/var/',
-    database: { driver: "mysql" }
+    database: defaultHostedDatabaseConfig
   },
   local: {
     hostname: '127.0.0.1',
