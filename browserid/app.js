@@ -12,7 +12,8 @@ crypto = require('crypto'),
 wsapi = require('./lib/wsapi.js'),
 httputils = require('./lib/httputils.js'),
 webfinger = require('./lib/webfinger.js'),
-sessions = require('cookie-sessions'),
+//sessions = require('cookie-sessions'),
+sessions = require('connect-cookie-session'),
 express = require('express'),
 secrets = require('./lib/secrets.js'),
 db = require('./lib/db.js'),
@@ -123,8 +124,14 @@ exports.setup = function(server) {
 
   var cookieSessionMiddleware = sessions({
     secret: COOKIE_SECRET,
-    session_key: COOKIE_KEY,
-    path: '/'
+    //    session_key: COOKIE_KEY,
+    key: COOKIE_KEY,
+    cookie: {
+        path: '/',
+        httpOnly: true,
+        maxAge: 14400000,
+        secure: overSSL
+      }
   });
 
   // cookie sessions
