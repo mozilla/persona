@@ -133,12 +133,18 @@ exports.setup = function(server) {
         path: '/',
         httpOnly: true,
         maxAge: 14400000,
-        //secure: overSSL
+        secure: overSSL
       }
   });
 
   // cookie sessions
   server.use(function(req, resp, next) {
+    // we set this parameter so the connect-cookie-session
+    // sends the cookie even though the local connection is HTTP
+    // (the load balancer does SSL)
+    if (overSSL)
+      req.connection.proxySecure = true;
+
     try {
       cookieSessionMiddleware(req, resp, next);
     } catch(e) {
