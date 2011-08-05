@@ -35,7 +35,7 @@ exports.log = function(category, entry) {
 
   // timestamp
   entry.at = new Date().toUTCString();
-  
+
   // if no logger, go to console (FIXME: do we really want to log to console?)
   LOGGERS[category].info(JSON.stringify(entry));
 };
