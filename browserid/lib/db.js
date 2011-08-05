@@ -70,6 +70,7 @@ exports.onReady = function(f) {
   'cancelAccount'
 ].forEach(function(fn) {
   exports[fn] = function() {
+    console.log(fn);
     checkReady();
     driver[fn].apply(undefined, arguments);
   };

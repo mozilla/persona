@@ -8,13 +8,21 @@
  *
  *    +--- user ------+       +--- email ----+        +----- key ------+
  *    |*int id        | <-\   |*int id       | <-\    |*int id         |
- *    | text password |    \- |*int user     |    \-- |*int email      |
- *    +---------------+       | text address |        | text key       |
+ *    | string passwd |    \- |*int user     |    \-- |*int email      |
+ *    +---------------+       |*string address        | string pubkey  |
  *                            +--------------+        | int expires    |
  *                                                    +----------------+
  *
  *
- *
+ *    +------ staged ----------+
+ *    |*string secret          |
+ *    | bool new_acct          |
+ *    | string existing        |
+ *    | string email           |
+ *    | string pubkey          |
+ *    | string passwd          |
+ *    | timestamp ts           |
+ *    +------------------------+
  */
 
 const
@@ -27,9 +35,10 @@ var client = undefined;
 var drop_on_close = undefined;
 
 const schemas = [
-  "CREATE TABLE IF NOT EXISTS user   ( id INTEGER PRIMARY KEY, password TEXT );",
-  "CREATE TABLE IF NOT EXISTS email  ( id INTEGER PRIMARY KEY, user INTEGER, address VARCHAR(255) UNIQUE );",
-  "CREATE TABLE IF NOT EXISTS pubkey ( id INTEGER PRIMARY KEY, email INTEGER, content TEXT, expiry INTEGER );"
+  "CREATE TABLE IF NOT EXISTS user   ( id INTEGER PRIMARY KEY, passwd VARCHAR(64) );",
+  "CREATE TABLE IF NOT EXISTS email  ( id INTEGER PRIMARY KEY, user INTEGER, address VARCHAR(255) UNIQUE, INDEX(address) );",
+  "CREATE TABLE IF NOT EXISTS pubkey ( id INTEGER PRIMARY KEY, email INTEGER, content TEXT, expiry INTEGER );",
+  "CREATE TABLE IF NOT EXISTS staged ( secret VARCHAR(48) PRIMARY KEY, new_acct BOOL, existing VARCHAR(255), email VARCHAR(255) UNIQUE, INDEX(email), pubkey TEXT, passwd VARCHAR(64), ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
 ];
 
 // open & create the mysql database
@@ -108,12 +117,22 @@ exports.close = function(cb) {
   }
 };
 
-exports.emailKnown = function() {
-  throw "not implemented";
+exports.emailKnown = function(email, cb) {
+  client.query(
+    "SELECT COUNT(*) as N FROM email WHERE address = ?", [ email ],
+    function(err, results, fields) {
+      cb(results['N'] > 0);
+    }
+  );
 }
 
-exports.isStaged = function() {
-  throw "not implemented";
+exports.isStaged = function(email, cb) {
+  client.query(
+    "SELECT COUNT(*) as N FROM staged WHERE email = ?", [ email ],
+    function(err, results, fields) {
+      cb(results['N'] > 0);
+    }
+  );
 }
 
 exports.emailsBelongToSameAccount = function() {
@@ -124,16 +143,39 @@ exports.addKeyToEmail = function() {
   throw "not implemented";
 }
 
-exports.stageUser = function() {
-  throw "not implemented";
+exports.stageUser = function(obj, cb) {
+  var secret = secrets.generate(48);
+  // overwrite previously staged users
+  client.query('INSERT INTO staged (secret, new_acct, email, pubkey, passwd) VALUES(?,TRUE,?,?,?) ' +
+               'ON DUPLICATE KEY UPDATE secret=?, existing="", new_acct=TRUE, pubkey=?, passwd=?',
+               [ secret, obj.email, obj.pubkey, obj.hash, secret, obj.pubkey, obj.hash],
+               function(err) {
+                 if (err) cb(undefined, err);
+                 else cb(secret);
+               });
 }
 
 exports.stageEmail = function() {
   throw "not implemented";
 }
 
-exports.gotVerificationSecret = function() {
-  throw "not implemented";
+exports.gotVerificationSecret = function(secret, cb) {
+  client.query(
+    "SELECT * FROM staged WHERE secret = ?", [ secret ],
+    function(err, rows) {
+      if (err) cb(err);
+      else if (rows.length === 0) cb("unknown secret");
+      else {
+        var o = rows[0];
+
+        // delete the record
+        client.query("DELETE LOW_PRIORITY FROM staged WHERE secret = ?", [ secret ]);
+
+        // XXX: perform add acct or email depending on value of new_acct BOOL
+        console.log(o);
+      }
+    }
+  );
 }
 
 exports.checkAuth = function() {
