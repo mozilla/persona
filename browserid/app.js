@@ -133,7 +133,7 @@ exports.setup = function(server) {
         path: '/',
         httpOnly: true,
         maxAge: 14400000,
-        secure: overSSL
+        //secure: overSSL
       }
   });
 
