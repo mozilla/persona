@@ -22,7 +22,7 @@ function addTestsForDriver(driver) {
     // set up mysql.
     suite.addBatch({
       "mysql server": {
-        topic: function() { db.open({driver: driver}, this.callback) },
+        topic: function() { db.open({driver: driver, unit_test: true}, this.callback) },
         "accepting connections": function(err) {
           if (err) {
             console.log("SKIPPING MYSQL TESTING: I cannot connect to the mysql database (" + err.message + ")");
@@ -49,7 +49,7 @@ function addTestsForDriver(driver) {
     },
     "opening the database": {
       topic: function() {
-        db.open({ driver: driver, path: dbPath }, this.callback);
+        db.open({ driver: driver, unit_test: true, path: dbPath }, this.callback);
       },
       "and its ready": function(r) {
         assert.isUndefined(r);

@@ -18,9 +18,13 @@
  */
 
 const
-mysql = require('mysql');
+mysql = require('mysql'),
+secrets = require('./secrets');
 
-var client = new mysql.Client();
+var client = undefined;
+
+// may get defined at open() time causing a database to be dropped upon connection closing.
+var drop_on_close = undefined;
 
 const schemas = [
   "CREATE TABLE IF NOT EXISTS user   ( id INTEGER PRIMARY KEY, password TEXT );",
@@ -30,19 +34,28 @@ const schemas = [
 
 // open & create the mysql database
 exports.open = function(cfg, cb) {
+  if (client) throw "database is already open!";
+  client = new mysql.Client();
   // mysql config requires
   const defParams = {
     host: '127.0.0.1',
     port: "3306",
     user: 'test',
-    password: 'pass'
+    password: 'pass',
+    unit_test: false
   };
 
   Object.keys(defParams).forEach(function(param) {
-    client[param] = cfg[param] ? config.param : defParams[param];
+    client[param] = cfg[param] ? cfg.param : defParams[param];
   });
 
-  var database = cfg.database ? cfg.database : 'browserid';
+  // let's figure out the database name
+  var database = cfg.database;
+  if (!database) database = "browserid";
+  if (cfg.unit_test) {
+    database += "_" + secrets.generate(8);
+    drop_on_close = database;
+  }
 
   client.connect(function(error) {
     if (error) cb(error);
@@ -78,9 +91,21 @@ exports.open = function(cfg, cb) {
 };
 
 exports.close = function(cb) {
-  client.end(function(err) {
-    if (cb) cb(err);
-  });
+  function endConn() {
+    client.end(function(err) {
+      client = undefined;
+      if (cb) cb(err);
+    });
+  }
+  // when unit_test is specified at open time, we use a temporary database,
+  // and clean it up upon close.
+  if (drop_on_close) {
+    client.query("DROP DATABASE " + drop_on_close, function() {
+      endConn();
+    });
+  } else {
+    endConn();
+  }
 };
 
 exports.emailKnown = function() {
