@@ -1,11 +1,52 @@
+/* This is a mysql driver for the browserid server.  It maps the data
+ * storage requirements of browserid onto a relational schema.  This
+ * driver is intended to be fast and scalable.
+ */
 
+/*
+ * The Schema:
+ *
+ *    +--- user ------+       +--- email ----+        +----- key ------+
+ *    |*int id        | <-\   |*int id       | <-\    |*int id         |
+ *    | text password |    \- |*int user     |    \-- |*int email      |
+ *    +---------------+       | text address |        | text key       |
+ *                            +--------------+        | int expires    |
+ *                                                    +----------------+
+ *
+ *
+ *
+ */
 
-exports.open = function() {
-  throw "not implemented";
+const
+mysql = require('mysql');
+
+var client = new mysql.Client();
+
+// open & create the mysql database
+exports.open = function(cfg, cb) {
+  // mysql config requires
+  const defParams = {
+    host: '127.0.0.1',
+    port: "3306",
+    user: 'test',
+    password: 'pass'
+  };
+
+  Object.keys(defParams).forEach(function(param) {
+    client[param] = cfg[param] ? config.param : defParams[param];
+  });
+
+  var database = cfg.database ? cfg.database : 'browserid';
+
+  client.connect(function(error) {
+    cb(error);
+  });
 };
 
-exports.close = function() {
-  throw "not implemented";
+exports.close = function(cb) {
+  client.end(function(err) {
+    if (cb) cb(err);
+  });
 };
 
 exports.emailKnown = function() {

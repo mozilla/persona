@@ -15,6 +15,29 @@ suite.options.error = false;
 function addTestsForDriver(driver) {
   var dbPath = temp.path({suffix: '.db'});
 
+  if (driver === 'mysql') {
+    // let's check to see if we can connect and render a nice
+    // error message if not.  For community members making casual
+    // contributions, we should expect that they might not want to
+    // set up mysql.
+    suite.addBatch({
+      "mysql server": {
+        topic: function() { db.open({driver: driver}, this.callback) },
+        "accepting connections": function(err) {
+          if (err) {
+            console.log("SKIPPING MYSQL TESTING: I cannot connect to the mysql database (" + err.message + ")");
+          }
+        },
+        "connection closes": {
+          topic: function() { db.close(this.callback); },
+          "without error": function(err) {
+            assert.isNull(err);
+          }
+        }
+      }
+    });
+  }
+
   suite.addBatch({
     "onReady": {
       topic: function() { db.onReady(this.callback); },
@@ -400,7 +423,9 @@ files = fs.readdirSync(path.join(__dirname, "..", "lib"));
 
 files.forEach(function(f) {
   var m = /^db_(.+)\.js$/.exec(f);
-  if (m) addTestsForDriver(m[1]);
+  if (m) {
+    addTestsForDriver(m[1]);
+  }
 });
 
 // run or export the suite.
