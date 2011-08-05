@@ -317,7 +317,6 @@ exports.getSyncResponse = function(email, identities, cb) {
           for (var e in emails) {
             e = emails[e];
             if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
-            
           }
 
           // #3 -- yes, this is sub-optimal in terms of performance.  when we

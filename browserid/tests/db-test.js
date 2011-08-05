@@ -31,7 +31,7 @@ function addTestsForDriver(driver) {
         "connection closes": {
           topic: function() { db.close(this.callback); },
           "without error": function(err) {
-            assert.isNull(err);
+            assert.isUndefined(err);
           }
         }
       }
@@ -398,24 +398,26 @@ function addTestsForDriver(driver) {
     }
   });
 
-  suite.addBatch({
-    "remove the database file": {
-      topic: function() {
-        fs.unlink(dbPath, this.callback);
-      },
-      "and unlink should not error": function(err) {
-        assert.isNull(err);
-      },
-      "and the file": {
+  if (driver !== 'mysql') {
+    suite.addBatch({
+      "remove the database file": {
         topic: function() {
-          path.exists(dbPath, this.callback);
+          fs.unlink(dbPath, this.callback);
         },
-        "should be missing": function(r) {
-          assert.isFalse(r);
+        "and unlink should not error": function(err) {
+          assert.isNull(err);
+        },
+        "and the file": {
+          topic: function() {
+            path.exists(dbPath, this.callback);
+          },
+          "should be missing": function(r) {
+            assert.isFalse(r);
+          }
         }
       }
-    }
-  });
+    });
+  }
 }
 
 // test all available drivers

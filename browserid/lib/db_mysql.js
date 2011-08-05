@@ -139,8 +139,9 @@ exports.close = function(cb) {
 exports.emailKnown = function(email, cb) {
   client.query(
     "SELECT COUNT(*) as N FROM email WHERE address = ?", [ email ],
-    function(err, results, fields) {
-      cb(results['N'] > 0);
+    function(err, rows) {
+      if (err) logUnexpectedError(err);
+      cb(rows && rows.length > 0 && rows[0].N > 0);
     }
   );
 }
@@ -148,8 +149,9 @@ exports.emailKnown = function(email, cb) {
 exports.isStaged = function(email, cb) {
   client.query(
     "SELECT COUNT(*) as N FROM staged WHERE email = ?", [ email ],
-    function(err, results, fields) {
-      cb(results['N'] > 0);
+    function(err, rows) {
+      if (err) logUnexpectedError(err);
+      cb(rows && rows.length > 0 && rows[0].N > 0);
     }
   );
 }
@@ -236,7 +238,8 @@ function addKeyToEmailRecord(emailId, pubkey, cb) {
     [ emailId, pubkey ],
     function(err, info) {
       if (err) logUnexpectedError(err);
-      cb(err);
+      // smash null into undefined.
+      cb(err ? err : undefined);
     });
 }
 
@@ -246,7 +249,10 @@ exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
   // the code paths that result in us concluding that a user owns an email address
   // is a Good Thing.
   exports.emailsBelongToSameAccount(existing_email, email, function(ok) {
-    if (!ok) { cb("authenticated user doesn't have permission to add a public key to " + email); return; }
+    if (!ok) {
+      cb("authenticated user doesn't have permission to add a public key to " + email);
+      return;
+    }
 
     // now we know that the user has permission to add a key.
     client.query(
@@ -286,9 +292,75 @@ exports.checkAuth = function(email, cb) {
     });
 }
 
-exports.getSyncResponse = function() {
-  throw "not implemented";
+function emailHasPubkey(email, pubkey, cb) {
+  client.query(
+    'SELECT pubkey.content FROM pubkey, email WHERE email.address = ? AND pubkey.email = email.id AND pubkey.content = ?',
+    [ email, pubkey ],
+    function(err, rows) {
+      if (err) logUnexpectedError(err);
+      cb(rows && rows.length === 1);
+    });
 }
+
+/* a high level operation that attempts to sync a client's view with that of the
+ * server.  email is the identity of the authenticated channel with the user,
+ * identities is a map of email -> pubkey.
+ * We'll return an object that expresses three different types of information:
+ * there are several things we need to express:
+ * 1. emails that the client knows about but we do not
+ * 2. emails that we know about and the client does not
+ * 3. emails that we both know about but who need to be re-keyed
+ * NOTE: it's not neccesary to differentiate between #2 and #3, as the client action
+ *       is the same (regen keypair and tell us about it).
+ */
+exports.getSyncResponse = function(email, identities, cb) {
+  var respBody = {
+    unknown_emails: [ ],
+    key_refresh: [ ]
+  };
+
+  client.query(
+    'SELECT address FROM email WHERE user = ( SELECT user FROM email WHERE address = ? ) ',
+      [ email ],
+      function (err, rows) {
+        if (err) cb(err);
+        else {
+          var emails = [ ];
+          var keysToCheck = [ ];
+          for (var i = 0; i < rows.length; i++) emails.push(rows[i].address);
+
+          // #1
+          for (var e in identities) {
+            if (emails.indexOf(e) == -1) respBody.unknown_emails.push(e);
+            else keysToCheck.push(e);
+          }
+
+          // #2
+          for (var e in emails) {
+            e = emails[e];
+            if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
+          }
+
+          // #3 -- yes, this is sub-optimal in terms of performance.  when we
+          // move away from public keys this will be unnec.
+          if (keysToCheck.length) {
+            var checked = 0;
+            keysToCheck.forEach(function(e) {
+              emailHasPubkey(e, identities[e], function(v) {
+                checked++;
+                if (!v) respBody.key_refresh.push(e);
+                if (checked === keysToCheck.length) {
+                  cb(undefined, respBody);
+                }
+              });
+            });
+          } else {
+            cb(undefined, respBody);
+          }
+        }
+      });
+};
+
 
 exports.pubkeysForEmail = function(email, cb) {
   client.query(
@@ -302,10 +374,49 @@ exports.pubkeysForEmail = function(email, cb) {
     });
 }
 
-exports.removeEmail = function() {
-  throw "not implemented";
+exports.removeEmail = function(authenticated_email, email, cb) {
+  exports.emailsBelongToSameAccount(authenticated_email, email, function(ok) {
+    if (!ok) {
+      logger.log('security', authenticated_email + ' attempted to delete an email that doesn\'t belong to her: ' + email);
+      cb("authenticated user doesn't have permission to remove specified email " + email);
+      return;
+    }
+
+    client.query(
+      'DELETE FROM pubkey WHERE email = ( SELECT id FROM email WHERE address = ? )',
+      [ email ],
+      function (err, info) {
+        if (err) {
+          logUnexpectedError(err);
+          cb(err);
+        } else {
+          client.query(
+            'DELETE FROM email WHERE address = ?',
+            [ email ],
+            function(err, info) {
+              if (err) logUnexpectedError(err);
+              // smash null into undefined
+              cb(err ? err : undefined);
+            });
+        }
+      });
+  });
 }
 
-exports.cancelAccount = function() {
-  throw "not implemented";
+exports.cancelAccount = function(email, cb) {
+  function reportErr(err) { if (err) logUnexpectedError(err); }
+  client.query(
+    "SELECT user FROM email WHERE address = ?", [ email ],
+    function (err, rows) {
+      if (err) {
+        logUnexpectedError(err)
+        cb(err);
+        return
+      }
+      var uid = rows[0].user;
+      client.query("DELETE LOW_PRIORITY FROM pubkey WHERE email in ( SELECT id FROM email WHERE user = ? )", [ uid ], reportErr);
+      client.query("DELETE LOW_PRIORITY FROM email WHERE user = ?", [ uid ], reportErr);
+      client.query("DELETE LOW_PRIORITY FROM user WHERE id = ?", [ uid ], reportErr);
+      cb();
+    });
 }
