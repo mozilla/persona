@@ -161,8 +161,10 @@ exports.stageUser = function(obj, cb) {
                'ON DUPLICATE KEY UPDATE secret=?, existing="", new_acct=TRUE, pubkey=?, passwd=?',
                [ secret, obj.email, obj.pubkey, obj.hash, secret, obj.pubkey, obj.hash],
                function(err) {
-                 if (err) cb(undefined, err);
-                 else cb(secret);
+                 if (err) {
+                   logUnexpectedError(err);
+                   cb(undefined, err);
+                 } else cb(secret);
                });
 }
 
@@ -259,8 +261,19 @@ exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
   });
 }
 
-exports.stageEmail = function() {
-  throw "not implemented";
+exports.stageEmail = function(existing_email, new_email, pubkey, cb) {
+  var secret = secrets.generate(48);
+  // overwrite previously staged users
+  client.query('INSERT INTO staged (secret, new_acct, existing, email, pubkey) VALUES(?,FALSE,?,?,?) ' +
+               'ON DUPLICATE KEY UPDATE secret=?, existing=?, new_acct=FALSE, pubkey=?, passwd=""',
+               [ secret, existing_email, new_email, pubkey, secret, existing_email, pubkey],
+               function(err) {
+                 if (err) {
+                   logUnexpectedError(err);
+                   cb(undefined, err);
+                 }
+                 else cb(secret);
+               });
 }
 
 exports.checkAuth = function(email, cb) {
