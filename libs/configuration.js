@@ -7,7 +7,9 @@
  *   exports.configure(app);
  */
 
-const substitution = require('./substitute.js');
+const
+substitution = require('./substitute.js'),
+path = require('path');
 
 var g_config = {
 };
@@ -56,7 +58,7 @@ const g_configs = {
     port: '10002',
     scheme: 'http',
     use_minified_resources: false,
-    log_path: './',
+    log_path: path.join(__dirname, "..", "var", "logs"),
     database: { driver: "json" }
   }
 };

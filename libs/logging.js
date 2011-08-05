@@ -1,7 +1,8 @@
 const
 winston = require("winston"),
 configuration = require("./configuration"),
-path = require('path');
+path = require('path'),
+fs = require('fs');
 
 // go through the configuration and determine log location
 // for now we only log to one place
@@ -10,9 +11,21 @@ path = require('path');
 var log_path = configuration.get('log_path');
 var LOGGERS = [];
 
+// simple inline function for creation of dirs
+function mkdir_p(p) {
+  if (!path.existsSync(p)) {
+    mkdir_p(path.dirname(p));
+    console.log("mkdir", p);
+    fs.mkdirSync(p, "0755");
+  }
+}
+
 function setupLogger(category) {
   if (!log_path)
     return console.log("no log path! Not logging!");
+  else
+    mkdir_p(log_path);
+
 
   // don't create the logger if it already exists
   if (LOGGERS[category])
