@@ -46,7 +46,7 @@ const schemas = [
 function logUnexpectedError(detail) {
   // first, get line number of callee
   var where;
-  try { dne; } catch (e) { where = e.stack.split('\n')[2]; };
+  try { dne; } catch (e) { where = e.stack.split('\n')[2].trim(); };
   // now log it!
   logger.log('db', { type: "unexpected", message: "unexpected database failure", detail: detail, where: where });
 }
@@ -77,16 +77,20 @@ exports.open = function(cfg, cb) {
   }
 
   client.connect(function(error) {
-    if (error) cb(error);
-    else {
+    if (error) {
+      logUnexpectedError(error);
+      cb(error);
+    } else {
       // now create the databse
       client.query("CREATE DATABASE IF NOT EXISTS " + database, function(err) {
         if (err) {
+          logUnexpectedError(err);
           cb(err);
           return;
         }
         client.useDatabase(database, function(err) {
           if (err) {
+            logUnexpectedError(err);
             cb(err);
             return;
           }
@@ -95,8 +99,12 @@ exports.open = function(cfg, cb) {
           function createNextTable(i) {
             if (i < schemas.length) {
               client.query(schemas[i], function(err) {
-                if (err) cb(err);
-                else createNextTable(i+1);
+                if (err) {
+                  logUnexpectedError(err);
+                  cb(err);
+                } else {
+                  createNextTable(i+1);
+                }
               });
             } else {
               cb();
@@ -113,6 +121,7 @@ exports.close = function(cb) {
   function endConn() {
     client.end(function(err) {
       client = undefined;
+      if (err) logUnexpectedError(err);
       if (cb) cb(err);
     });
   }
@@ -161,8 +170,10 @@ exports.gotVerificationSecret = function(secret, cb) {
   client.query(
     "SELECT * FROM staged WHERE secret = ?", [ secret ],
     function(err, rows) {
-      if (err) cb(err);
-      else if (rows.length === 0) cb("unknown secret");
+      if (err) {
+        logUnexpectedError(err);
+        cb(err);
+      } else if (rows.length === 0) cb("unknown secret");
       else {
         var o = rows[0];
 
@@ -171,7 +182,7 @@ exports.gotVerificationSecret = function(secret, cb) {
             "INSERT INTO email(user, address) VALUES(?, ?)",
             [ userID, o.email ],
             function(err, info) {
-              if (err) { cb(err); return; }
+              if (err) { logUnexpectedError(err); cb(err); return; }
               addKeyToEmailRecord(info.insertId, o.pubkey, cb);
             });
         }
@@ -185,7 +196,7 @@ exports.gotVerificationSecret = function(secret, cb) {
             "INSERT INTO user(passwd) VALUES(?)",
             [ o.passwd ],
             function(err, info) {
-              if (err) { cb(err); return; }
+              if (err) { logUnexpectedError(err); cb(err); return; }
               addEmailAndPubkey(info.insertId);
             });
         } else {
@@ -194,7 +205,7 @@ exports.gotVerificationSecret = function(secret, cb) {
           client.query(
             "SELECT user FROM email WHERE address = ?", [ o.existing ],
             function(err, rows) {
-              if (err) cb(err);
+              if (err) { logUnexpectedError(err); cb(err); }
               else if (rows.length === 0) cb("cannot find email address: " + o.existing);
               else {
                 addEmailAndPubkey(rows[0].user);
@@ -222,6 +233,7 @@ function addKeyToEmailRecord(emailId, pubkey, cb) {
     "INSERT INTO pubkey(email, content, expiry) VALUES(?, ?, DATE_ADD(NOW(), INTERVAL 2 WEEK))",
     [ emailId, pubkey ],
     function(err, info) {
+      if (err) logUnexpectedError(err);
       cb(err);
     });
 }
@@ -238,7 +250,7 @@ exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
     client.query(
       "SELECT id FROM email WHERE address = ?", [ email ],
       function(err, rows) {
-        if (err) cb(err);
+        if (err) { logUnexpectedError(err); cb(err); }
         else if (rows.length === 0) cb("cannot find email address: " + email);
         else {
           addKeyToEmailRecord(rows[0].id, pubkey, cb);
