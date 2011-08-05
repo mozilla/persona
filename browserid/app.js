@@ -21,7 +21,7 @@ substitution = require('../libs/substitute.js');
 logging = require("../libs/logging.js");
 
 // open the databse
-db.open();
+db.open(configuration.get('database'));
 
 // looks unused, see run.js
 // const STATIC_DIR = path.join(path.dirname(__dirname), "static");
