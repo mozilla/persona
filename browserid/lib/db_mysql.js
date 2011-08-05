@@ -22,6 +22,12 @@ mysql = require('mysql');
 
 var client = new mysql.Client();
 
+const schemas = [
+  "CREATE TABLE IF NOT EXISTS user   ( id INTEGER PRIMARY KEY, password TEXT );",
+  "CREATE TABLE IF NOT EXISTS email  ( id INTEGER PRIMARY KEY, user INTEGER, address VARCHAR(255) UNIQUE );",
+  "CREATE TABLE IF NOT EXISTS pubkey ( id INTEGER PRIMARY KEY, email INTEGER, content TEXT, expiry INTEGER );"
+];
+
 // open & create the mysql database
 exports.open = function(cfg, cb) {
   // mysql config requires
@@ -39,7 +45,35 @@ exports.open = function(cfg, cb) {
   var database = cfg.database ? cfg.database : 'browserid';
 
   client.connect(function(error) {
-    cb(error);
+    if (error) cb(error);
+    else {
+      // now create the databse
+      client.query("CREATE DATABASE IF NOT EXISTS " + database, function(err) {
+        if (err) {
+          cb(err);
+          return;
+        }
+        client.useDatabase(database, function(err) {
+          if (err) {
+            cb(err);
+            return;
+          }
+
+          // now create tables
+          function createNextTable(i) {
+            if (i < schemas.length) {
+              client.query(schemas[i], function(err) {
+                if (err) cb(err);
+                else createNextTable(i+1);
+              });
+            } else {
+              cb();
+            }
+          }
+          createNextTable(0);
+        });
+      });
+    }
   });
 };
 
