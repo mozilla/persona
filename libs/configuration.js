@@ -26,28 +26,32 @@ const g_configs = {
     port: '443',
     scheme: 'https',
     use_minified_resources: true,
-    log_path: '/home/browserid/var/'
+    log_path: '/home/browserid/var/',
+    database: { driver: "mysql" }
   },
   development: {
     hostname: 'dev.diresworb.org',
     port: '443',
     scheme: 'https',
     use_minified_resources: true,
-    log_path: '/home/browserid/var/'
+    log_path: '/home/browserid/var/',
+    database: { driver: "mysql" }
   },
   beta: {
     hostname: 'diresworb.org',
     port: '443',
     scheme: 'https',
     use_minified_resources: true,
-    log_path: '/home/browserid/var/'
+    log_path: '/home/browserid/var/',
+    database: { driver: "mysql" }
   },
   local: {
     hostname: '127.0.0.1',
     port: '10002',
     scheme: 'http',
     use_minified_resources: false,
-    log_path: './'
+    log_path: './',
+    database: { driver: "json" }
   }
 };
 

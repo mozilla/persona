@@ -85,7 +85,6 @@ Subsequent steps use different software which you might need to install.
 
   * **curl** - used to iniate http requests from the cmd line (to kick the browserid server)
   * **java** - used to minify css
-  * **libsqlite3-dev** - database libraries 
 
 ### 4. Set up post-update hook
 

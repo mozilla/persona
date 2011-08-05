@@ -21,6 +21,9 @@ configuration = require('../libs/configuration.js'),
 substitution = require('../libs/substitute.js');
 logging = require("../libs/logging.js");
 
+// open the databse
+db.open(configuration.get('database'));
+
 // looks unused, see run.js
 // const STATIC_DIR = path.join(path.dirname(__dirname), "static");
 const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', VAR_DIR);
@@ -34,7 +37,7 @@ function internal_redirector(new_url) {
 }
 
 function router(app) {
-  app.set("views", __dirname + '/views'); 
+  app.set("views", __dirname + '/views');
 
   app.set('view options', {
     production: configuration.get('use_minified_resources')
