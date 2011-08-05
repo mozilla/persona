@@ -1,5 +1,7 @@
-const winston = require("winston");
-const configuration = require("./configuration");
+const
+winston = require("winston"),
+configuration = require("./configuration"),
+path = require('path');
 
 // go through the configuration and determine log location
 // for now we only log to one place
@@ -16,8 +18,7 @@ function setupLogger(category) {
   if (LOGGERS[category])
     return;
 
-  // FIXME: check if log_path is properly terminated
-  var filename = log_path + category + "-log.txt";
+  var filename = path.join(log_path, category + "-log.txt");
 
   LOGGERS[category] = new (winston.Logger)({
       transports: [new (winston.transports.File)({filename: filename})]
