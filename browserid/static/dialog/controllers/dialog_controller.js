@@ -1,9 +1,11 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, runErrorDialog: true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true */
+/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true */
 
 //
 // a JMVC controller for the browserid dialog
 //
+
+(function() {
 
 $.Controller("Dialog", {}, {
     init: function(el) {
@@ -84,7 +86,7 @@ $.Controller("Dialog", {}, {
 
       var privkey = storedID.priv;
       var issuer = storedID.issuer;
-      var audience = BrowserIDNetwork.origin.replace(/^(http|https):\/\//, '');
+      var audience = BrowserIDNetwork.origin;
       var assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
       // Clear onerror before the call to onsuccess - the code to onsuccess 
       // calls window.close, which would trigger the onerror callback if we 
@@ -471,4 +473,21 @@ $.Controller("Dialog", {}, {
 
   });
 
+  function runErrorDialog(code, title, message, onsuccess, onerror) {
+    $(".dialog").hide();
 
+    $("#error_dialog div.title").text(title);
+    $("#error_dialog div.content").text(message);
+
+    $("#back").hide();
+    $("#cancel").hide();
+    $("#submit").show().unbind('click').click(function() {
+      if(onerror) {
+        onerror(code);
+      }
+    }).text("Close");
+
+    $("#error_dialog").fadeIn(500);
+  }
+
+}());
