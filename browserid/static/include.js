@@ -8,8 +8,9 @@ if (!navigator.id) {
 if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 {
   var ipServer = "https://browserid.org";
+  var isMobile = navigator.userAgent.indexOf('Fennec/') != -1;
 
-  // local embedded copy of jschannel: http://github.com/mozilla/jschannel 
+  // local embedded copy of jschannel: http://github.com/mozilla/jschannel
   var Channel = (function() {
     // current transaction id, start out at a random *odd* number between 1 and a million
     // There is one current transaction counter id per page, and it's shared between
@@ -538,9 +539,8 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 
   function _open_window() {
       return window.open(
-                         //ipServer + "/dialog/dialog/dialog.html", "_mozid_signin",
-                         ipServer + "/sign_in", "_mozid_signin",
-          "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=520,height=350");
+          ipServer + "/sign_in", "_mozid_signin",
+          isMobile ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=520,height=350");
   }
 
   navigator.id.getVerifiedEmail = function(callback) {
@@ -608,7 +608,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   navigator.id.getSpecificVerifiedEmail = function(email, token, onsuccess, onerror) {
     var doc = window.document;
 
-    // if we have a token, we should not be opening a window, rather we should be 
+    // if we have a token, we should not be opening a window, rather we should be
     // able to do this entirely through IFRAMEs
     if (token) {
         var iframe = _create_iframe(doc);
@@ -676,7 +676,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
         cleanup();
       }
     });
-  };  
+  };
 
   navigator.id._getVerifiedEmailIsShimmed = true;
 }
