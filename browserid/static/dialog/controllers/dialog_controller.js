@@ -84,7 +84,7 @@ $.Controller("Dialog", {}, {
 
       var privkey = storedID.priv;
       var issuer = storedID.issuer;
-      var audience = this.remoteOrigin.replace(/^(http|https):\/\//, '');
+      var audience = BrowserIDNetwork.origin.replace(/^(http|https):\/\//, '');
       var assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
       // Clear onerror before the call to onsuccess - the code to onsuccess 
       // calls window.close, which would trigger the onerror callback if we 
@@ -111,8 +111,7 @@ $.Controller("Dialog", {}, {
         "We're adding this email to your account, this should only take a couple seconds."
       );
 
-      BrowserIDNetwork.addEmail(email, keypair, this.remoteOrigin,
-        function() {
+      BrowserIDNetwork.addEmail(email, keypair, function() {
           // email successfully staged, now wait for email confirmation
           self.doConfirmEmail(email, keypair);
         },
@@ -126,7 +125,7 @@ $.Controller("Dialog", {}, {
 
     "#notme click": function(event) {
       clearEmails();
-      BrowserIDNetwork.logout(this.doAuthenticate);
+      BrowserIDNetwork.logout(this.doAuthenticate.bind(this));
     },
       
     "#create click": function(event) {
@@ -165,32 +164,22 @@ $.Controller("Dialog", {}, {
         "We're creating your account, this should only take a couple seconds");
 
       var self = this;
+      BrowserIDNetwork.stageUser(email, pass, keypair, function() {
+          self.doConfirmEmail(email, keypair);
+        },
+        function() {
+          runErrorDialog(
+                         "serverError",
+                         "Error Creating Account!",
+                         "There was a technical problem while trying to create your account.  Yucky.");
 
-      $.ajax({
-          type: "post",
-          url: '/wsapi/stage_user',
-          data: {email: email,
-              pass: pass,
-              pubkey : keypair.pub,
-              site : this.remoteOrigin.replace(/^(http|https):\/\//, ''),
-              csrf : BrowserIDNetwork.csrf_token},
-          success: function() {
-            // account successfully staged, now wait for email confirmation
-            self.doConfirmEmail(email, keypair);
-          },
-            error: function() {
-            runErrorDialog(
-                           "serverError",
-                           "Error Creating Account!",
-                           "There was a technical problem while trying to create your account.  Yucky.");
-          }
         });
     },
 
     getVerifiedEmail: function(origin_url, onsuccess, onerror) {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
-      this.remoteOrigin = origin_url.replace(/^.*:\/\//, "");
+      BrowserIDNetwork.setOrigin(origin_url);
       this.doStart();
       var me=this;
       $(window).bind("unload", function() {
@@ -221,7 +210,7 @@ $.Controller("Dialog", {}, {
     },
       
     doSignIn: function() {
-      this.renderTemplates("signin.ejs", {sitename: this.remoteOrigin, identities: getEmails()},
+      this.renderTemplates("signin.ejs", {sitename: BrowserIDNetwork.origin, identities: getEmails()},
                            "bottom-pickemail.ejs", {});
 
       // select the first option
@@ -229,7 +218,7 @@ $.Controller("Dialog", {}, {
     },
 
     doAuthenticate: function() {
-      this.renderTemplates("authenticate.ejs", {sitename: this.remoteOrigin},
+      this.renderTemplates("authenticate.ejs", {sitename: BrowserIDNetwork.origin},
                            "bottom-signin.ejs", {});
 
     },
@@ -270,20 +259,18 @@ $.Controller("Dialog", {}, {
                   emailCheckState = 'querying';
                   var checkingNow = nextEmailToCheck;
                   // bounce off the server and enter the 'querying' state
-                  $.ajax({
-                      url: '/wsapi/have_email?email=' + encodeURIComponent(checkingNow),
-                        success: function(data, textStatus, jqXHR) {
-                        checkedEmails[checkingNow] = !JSON.parse(data);
+                  BrowserIDNetwork.haveEmail(checkingNow, function(success) {
+                        checkedEmails[checkingNow] = success;
                         emailCheckState = undefined;
                         checkInput();
-                      }, error: function(jqXHR, textStatus, errorThrown) {
+                      },function() {
                         // some kind of error was encountered.  This is non-critical, we'll simply ignore it
                         // and mark this email check as failed.
                         checkedEmails[checkingNow] = "server failed";
                         emailCheckState = undefined;
                         checkInput();
                       }
-                    });
+                    );
                 }, 700);
             } else {
               // FIXME: not sure when this comes up, not refactored
@@ -377,41 +364,38 @@ $.Controller("Dialog", {}, {
       // now poll every 3s waiting for the user to complete confirmation
       function setupRegCheck() {
         return setTimeout(function() {
-            $.ajax({
-                url: '/wsapi/registration_status',
-                  success: function(status, textStatus, jqXHR) {
-                  // registration status checks the status of the last initiated registration,
-                  // it's possible return values are:
-                  //   'complete' - registration has been completed
-                  //   'pending'  - a registration is in progress
-                  //   'noRegistration' - no registration is in progress
-                  if (status === 'complete') {
-                    // this is a secondary registration from browserid.org, persist
-                    // email, keypair, and that fact
-                    self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
-                    
-                    // and tell the user that everything is really quite awesome.
-                    self.find("#waiting_confirmation").hide();
-                    self.find("#resendit_action").hide();
-                    self.find("#confirmed_notice").show();
+          BrowserIDNetwork.checkRegistration(function(status) {
+            // registration status checks the status of the last initiated registration,
+            // it's possible return values are:
+            //   'complete' - registration has been completed
+            //   'pending'  - a registration is in progress
+            //   'noRegistration' - no registration is in progress
+            if (status === 'complete') {
+              // this is a secondary registration from browserid.org, persist
+              // email, keypair, and that fact
+              self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
+              
+              // and tell the user that everything is really quite awesome.
+              self.find("#waiting_confirmation").hide();
+              self.find("#resendit_action").hide();
+              self.find("#confirmed_notice").show();
 
-                    // enable button
-                    $('#continue_button').removeClass('disabled');
+              // enable button
+              $('#continue_button').removeClass('disabled');
 
-                  } else if (status === 'pending') {
-                    // try again, what else can we do?
-                    pollTimeout = setupRegCheck();
-                  } else {
-                    runErrorDialog("serverError",
-                                   "Registration Failed",
-                                   "An error was encountered and the sign up cannot be completed, please try again later.");
-                  }
-                },
-                  error: function(jqXHR, textStatus, errorThrown) {
-                  runErrorDialog("serverError", "Registration Failed", jqXHR.responseText);
-                }
-              });
-          }, 3000);
+            } else if (status === 'pending') {
+              // try again, what else can we do?
+              pollTimeout = setupRegCheck();
+            } else {
+              runErrorDialog("serverError",
+                             "Registration Failed",
+                             "An error was encountered and the sign up cannot be completed, please try again later.");
+            }
+          },
+            function(jqXHR, textStatus, errorThrown) {
+            runErrorDialog("serverError", "Registration Failed", jqXHR.responseText);
+          });
+        }, 3000);
       }
       
       // setup the timeout
@@ -448,86 +432,41 @@ $.Controller("Dialog", {}, {
         });
       
       var self = this;
-
-      $.ajax({
-          url: '/wsapi/sync_emails',
-            type: "post",
-            data: {'emails': JSON.stringify(issued_identities),
-              'csrf': BrowserIDNetwork.csrf_token},
-            success: function(resp, textStatus, jqXHR) {
-            // first remove idenitites that the server doesn't know about
-            if (resp.unknown_emails) {
-              _(resp.unknown_emails).each(function(email_address) {
-                  console.log("removed local identity: " + email_address);
-                  removeEmail(email_address);
-                });
-            }
-
-            // now let's begin iteratively re-keying the emails mentioned in the server provided list
-            var emailsToAdd = resp.key_refresh;
-            
-            function addNextEmail() {
-              if (!emailsToAdd || !emailsToAdd.length) {
-                self.doSignIn();
-                return;
-              }
-
-              // pop the first email from the list
-              var email = emailsToAdd.shift();
-              var keypair = CryptoStubs.genKeyPair();
-
-              $.ajax({
-                  type: 'POST',
-                  url: '/wsapi/set_key',
-                  data: {
-                    email: email,
-                    pubkey: keypair.pub,
-                    csrf: BrowserIDNetwork.csrf_token},
-                  success: function() {
-                    // update emails list and commit to local storage, then go do the next email
-                    self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
-                    addNextEmail();
-                  },
-                    error: function() {
-                    runErrorDialog(
-                                   "serverError",
-                                   "Error Adding Address!",
-                                   "There was a technical problem while trying to synchronize your account.  Yucky.");
-                  }
-                });
-            }
-
-            addNextEmail();
-          },
-            error: function(jqXHR, textStatus, errorThrown) {
+      BrowserIDNetwork.syncEmails(issued_identities, 
+        function onKeySyncSuccess(email, keypair) {
+          self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
+        },
+        function onKeySyncFailure() {
+          runErrorDialog(
+             "serverError",
+             "Error Adding Address!",
+             "There was a technical problem while trying to synchronize your account.  Yucky.");
+        },
+        function onSuccess() {
+          self.doSignIn();
+        },
+        function onFailure(jqXHR, textStatus, errorThrown) {
             runErrorDialog("serverError", "Signin Failed", jqXHR.responseText);
-          }
-        });
+      });
 
-      
     },
 
     checkAuth: function(authcb, notauthcb) {
       this.doWait("Communicating with server",
              "Just a moment while we talk with the server.");
       
-      $.ajax({
-          url: '/wsapi/am_authed',
-            success: function(status, textStatus, jqXHR) {
-            var authenticated = JSON.parse(status);
-            if (!authenticated) {
-              notauthcb();
-            } else {
-              authcb();
-            }
-          },
-            error: function() {
-            runErrorDialog(
-                           "serverError",
-                           "Error Communicating With Server!",
-                           "There was a technical problem while trying to log you in.  Yucky!");
-          }
-        });
+      BrowserIDNetwork.checkAuth(function(authenticated) {
+        if (!authenticated) {
+          notauthcb();
+        } else {
+          authcb();
+        }
+      }, function() {
+        runErrorDialog(
+                       "serverError",
+                       "Error Communicating With Server!",
+                       "There was a technical problem while trying to log you in.  Yucky!");
+      });
   }
 
   });
