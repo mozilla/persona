@@ -14,7 +14,8 @@ steal.plugins(
                'crypto-api',
                'channel',
                'storage',
-               'browserid-network')					// 3rd party script's (like jQueryUI), in resources folder
+               'browserid-network',
+               'browserid-errors')					// 3rd party script's (like jQueryUI), in resources folder
 
 	.models()						// loads files in models folder 
 

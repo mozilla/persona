@@ -72,10 +72,7 @@ $.Controller("Dialog", {}, {
           self.syncIdentities();
         }
       }, function(resp) {
-        runErrorDialog(
-                       "serverError",
-                       "Error Authenticating!",
-                       "There was a technical problem while trying to log you in.  Yucky!");
+        runErrorDialog(BrowserIDErrors.authentication);
       });
     },
 
@@ -119,10 +116,7 @@ $.Controller("Dialog", {}, {
           self.doConfirmEmail(email, keypair);
         },
         function() {
-          runErrorDialog(
-            "serverError",
-            "Error Adding Address!",
-            "There was a technical problem while trying to add this email to your account.  Yucky.");
+          runErrorDialog(BrowserIDErrors.addEmail);
         });
     },
 
@@ -171,11 +165,7 @@ $.Controller("Dialog", {}, {
           self.doConfirmEmail(email, keypair);
         },
         function() {
-          runErrorDialog(
-                         "serverError",
-                         "Error Creating Account!",
-                         "There was a technical problem while trying to create your account.  Yucky.");
-
+          runErrorDialog(BrowserIDErrors.createAccount);
         });
     },
 
@@ -390,13 +380,11 @@ $.Controller("Dialog", {}, {
               // try again, what else can we do?
               pollTimeout = setupRegCheck();
             } else {
-              runErrorDialog("serverError",
-                             "Registration Failed",
-                             "An error was encountered and the sign up cannot be completed, please try again later.");
+              runErrorDialog(BrowserIDErrors.registration);
             }
           },
-            function(jqXHR, textStatus, errorThrown) {
-            runErrorDialog("serverError", "Registration Failed", jqXHR.responseText);
+          function(jqXHR, textStatus, errorThrown) {
+              runErrorDialog(BrowserIDErrors.registration);
           });
         }, 3000);
       }
@@ -440,16 +428,13 @@ $.Controller("Dialog", {}, {
           self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
         },
         function onKeySyncFailure() {
-          runErrorDialog(
-             "serverError",
-             "Error Adding Address!",
-             "There was a technical problem while trying to synchronize your account.  Yucky.");
+          runErrorDialog(BrowserIDErrors.syncAddress);
         },
         function onSuccess() {
           self.doSignIn();
         },
         function onFailure(jqXHR, textStatus, errorThrown) {
-            runErrorDialog("serverError", "Signin Failed", jqXHR.responseText);
+            runErrorDialog(BrowserIDErrors.signIn);
       });
 
     },
@@ -465,27 +450,21 @@ $.Controller("Dialog", {}, {
           authcb();
         }
       }, function() {
-        runErrorDialog(
-                       "serverError",
-                       "Error Communicating With Server!",
-                       "There was a technical problem while trying to log you in.  Yucky!");
+        runErrorDialog(BrowserIDErrors.checkAuthentication);
       });
   }
 
   });
 
-  function runErrorDialog(code, title, message, onsuccess, onerror) {
+  function runErrorDialog(info) {
     $(".dialog").hide();
 
-    $("#error_dialog div.title").text(title);
-    $("#error_dialog div.content").text(message);
+    $("#error_dialog div.title").text(info.message);
+    $("#error_dialog div.content").text(info.description);
 
     $("#back").hide();
     $("#cancel").hide();
     $("#submit").show().unbind('click').click(function() {
-      if(onerror) {
-        onerror(code);
-      }
     }).text("Close");
 
     $("#error_dialog").fadeIn(500);
