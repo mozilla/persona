@@ -66,9 +66,7 @@ $.Controller("Dialog", {}, {
         if (!authenticated) {
           self.find("#nosuchaccount").hide().fadeIn(400);
         } else {
-          self.doWait("Finishing Sign In...",
-                      "In just a moment you'll be signed into BrowserID.");
-          
+          self.doWait(BrowserIDWait.authentication);
           self.syncIdentities();
         }
       }, function(resp) {
@@ -106,10 +104,7 @@ $.Controller("Dialog", {}, {
       var self = this;
 
       // kick the user to waiting/status page while we talk to the server.
-      this.doWait(
-        "One Moment Please...",
-        "We're adding this email to your account, this should only take a couple seconds."
-      );
+      this.doWait(BrowserIDWait.addEmail);
 
       BrowserIDNetwork.addEmail(email, keypair, function() {
           // email successfully staged, now wait for email confirmation
@@ -156,9 +151,7 @@ $.Controller("Dialog", {}, {
       var pass = this.find("#password_input").val();
       var keypair = CryptoStubs.genKeyPair();
 
-      this.doWait(
-        "One Moment Please...",
-        "We're creating your account, this should only take a couple seconds");
+      this.doWait(BrowserIDWait.createAccount);
 
       var self = this;
       BrowserIDNetwork.stageUser(email, pass, keypair, function() {
@@ -335,8 +328,8 @@ $.Controller("Dialog", {}, {
       checkInput();
     },
 
-    doWait: function(title, message) {
-      this.renderTemplates("wait.ejs", {title: title, message: message});
+    doWait: function(info) {
+      this.renderTemplates("wait.ejs", {title: info.message, message: info.description});
     },
 
     doNewEmail: function() {
@@ -440,8 +433,7 @@ $.Controller("Dialog", {}, {
     },
 
     checkAuth: function(authcb, notauthcb) {
-      this.doWait("Communicating with server",
-             "Just a moment while we talk with the server.");
+      this.doWait(BrowserIDWait.checkAuth);
       
       BrowserIDNetwork.checkAuth(function(authenticated) {
         if (!authenticated) {

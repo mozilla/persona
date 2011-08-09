@@ -15,7 +15,8 @@ steal.plugins(
                'channel',
                'storage',
                'browserid-network',
-               'browserid-errors')					// 3rd party script's (like jQueryUI), in resources folder
+               'browserid-errors',
+               'browserid-wait')					// 3rd party script's (like jQueryUI), in resources folder
 
 	.models()						// loads files in models folder 
 
