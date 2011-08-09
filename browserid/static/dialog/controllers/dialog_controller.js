@@ -8,7 +8,6 @@
 $.Controller("Dialog", {}, {
     init: function(el) {
       // FIXME: there's a small chance the CSRF token doesn't come back in time.
-      this.csrf = null;
       this._getCSRF();
 
       var html = $.View("//dialog/views/body.ejs", {});
@@ -23,12 +22,7 @@ $.Controller("Dialog", {}, {
       
     _getCSRF: function(cb) {
       // go get CSRF token
-      var self = this;
-      $.get('/csrf', {}, function(result) {
-          self.csrf = result;
-          if (cb)
-            cb();
-        });
+      BrowserIDNetwork.csrf(cb);
     },
 
     setupEnterKey: function() {
@@ -65,32 +59,21 @@ $.Controller("Dialog", {}, {
 
       var self = this;
 
-      $.ajax({
-          type: "POST",
-          url: '/wsapi/authenticate_user',
-          data: {
-            email: email,
-            pass: pass,
-            csrf: this.csrf
-          },
-            success: function(status, textStatus, jqXHR) {
-            var authenticated = JSON.parse(status);
-            if (!authenticated) {
-              self.find("#nosuchaccount").hide().fadeIn(400);
-            } else {
-              self.doWait("Finishing Sign In...",
-                          "In just a moment you'll be signed into BrowserID.");
-              
-              self.syncIdentities();
-            }
-          },
-            error: function() {
-            runErrorDialog(
-                           "serverError",
-                           "Error Authenticating!",
-                           "There was a technical problem while trying to log you in.  Yucky!");
-          }
-        });
+      BrowserIDNetwork.authenticate(email, pass, function(authenticated) {
+        if (!authenticated) {
+          self.find("#nosuchaccount").hide().fadeIn(400);
+        } else {
+          self.doWait("Finishing Sign In...",
+                      "In just a moment you'll be signed into BrowserID.");
+          
+          self.syncIdentities();
+        }
+      }, function(resp) {
+        runErrorDialog(
+                       "serverError",
+                       "Error Authenticating!",
+                       "There was a technical problem while trying to log you in.  Yucky!");
+      });
     },
 
     "#pickemail click": function(event) {
@@ -128,36 +111,22 @@ $.Controller("Dialog", {}, {
         "We're adding this email to your account, this should only take a couple seconds."
       );
 
-      $.ajax({
-        type: 'POST',
-        url: '/wsapi/add_email',
-        data: {
-            email: email,
-            pubkey: keypair.pub,
-            site: this.remoteOrigin.replace(/^(http|https):\/\//, ''),
-            csrf: this.csrf
-         },
-        success: function() {
+      BrowserIDNetwork.addEmail(email, keypair, this.remoteOrigin,
+        function() {
           // email successfully staged, now wait for email confirmation
           self.doConfirmEmail(email, keypair);
         },
-        error: function() {
+        function() {
           runErrorDialog(
             "serverError",
             "Error Adding Address!",
             "There was a technical problem while trying to add this email to your account.  Yucky.");
-        }
-      });
+        });
     },
 
     "#notme click": function(event) {
       clearEmails();
-      var self = this;
-      $.post("/wsapi/logout", {csrf: this.csrf}, function() {
-          self._getCSRF(function() {
-              self.doAuthenticate();
-            });
-      });
+      BrowserIDNetwork.logout(this.doAuthenticate);
     },
       
     "#create click": function(event) {
@@ -204,7 +173,7 @@ $.Controller("Dialog", {}, {
               pass: pass,
               pubkey : keypair.pub,
               site : this.remoteOrigin.replace(/^(http|https):\/\//, ''),
-              csrf : self.csrf},
+              csrf : BrowserIDNetwork.csrf_token},
           success: function() {
             // account successfully staged, now wait for email confirmation
             self.doConfirmEmail(email, keypair);
@@ -484,7 +453,7 @@ $.Controller("Dialog", {}, {
           url: '/wsapi/sync_emails',
             type: "post",
             data: {'emails': JSON.stringify(issued_identities),
-              'csrf': this.csrf},
+              'csrf': BrowserIDNetwork.csrf_token},
             success: function(resp, textStatus, jqXHR) {
             // first remove idenitites that the server doesn't know about
             if (resp.unknown_emails) {
@@ -513,7 +482,7 @@ $.Controller("Dialog", {}, {
                   data: {
                     email: email,
                     pubkey: keypair.pub,
-                    csrf: self.csrf},
+                    csrf: BrowserIDNetwork.csrf_token},
                   success: function() {
                     // update emails list and commit to local storage, then go do the next email
                     self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
