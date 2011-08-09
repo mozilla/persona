@@ -6,6 +6,7 @@
 //
 
 (function() {
+"use strict";
 
 $.Controller("Dialog", {}, {
     init: function(el) {

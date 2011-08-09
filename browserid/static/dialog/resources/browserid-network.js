@@ -1,5 +1,6 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
 /*global _: true, console: true, addEmail: true, removeEmail: true, CryptoStubs: true */
+"use strict";
 var BrowserIDNetwork = (function() {
   var Network = {
     csrf: function(onSuccess) {
