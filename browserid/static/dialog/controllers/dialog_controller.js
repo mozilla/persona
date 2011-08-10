@@ -168,14 +168,13 @@ $.Controller("Dialog", {}, {
     },
 
     doAuthenticate: function() {
-      var el = this.element, self=this;
-      el.authenticate();
+      var el = this.element.authenticate(), self=this;
       OpenAjax.hub.subscribe("authenticate:authenticated", function() {
-        el.authenticate('destroy');
+        self.doWait(BrowserIDWait.authentication);
         self.syncIdentities();
       });
       OpenAjax.hub.subscribe("cancel", function() {
-        el.authenticate('destroy');
+        // cancel
       });
     },
       

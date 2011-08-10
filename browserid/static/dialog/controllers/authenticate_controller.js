@@ -29,14 +29,12 @@
           if (!authenticated) {
             self.find("#nosuchaccount").hide().fadeIn(400);
           } else {
-              self.doWait(BrowserIDWait.authentication);
-              self.publish("authenticate:authenticated");
+            self.close("authenticate:authenticated");
           }
         }, function(resp) {
           self.runErrorDialog(BrowserIDErrors.authentication);
-          self.publish("cancel");
+          self.close("cancel");
         });
-        
       }
   });
 

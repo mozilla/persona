@@ -54,6 +54,13 @@
       this.renderTemplates("wait.ejs", {title: info.message, message: info.description});
     },
 
+    close: function(message) {
+      if(message) {
+        this.publish(message);
+      }
+      this.destroy();
+    },
+
     runErrorDialog: function(info) {
       $(".dialog").hide();
 
@@ -69,7 +76,7 @@
     },
 
     "#cancel click": function() {
-      this.publish("cancel");
+      this.close("cancel");
     }
 
   });
