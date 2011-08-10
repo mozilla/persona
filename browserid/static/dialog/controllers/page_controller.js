@@ -16,20 +16,26 @@
       var footerVars = options.footerVars;
 
       this.renderTemplates(bodyTemplate, bodyVars, footerTemplate, footerVars);
-      $('form').bind("submit", this.onSubmit.bind(this));
+      $("form").bind("submit", this.onSubmit.bind(this));
+    },
+
+    destroy: function() {
+      $("form").unbind("submit");
+      $("input").unbind("keyup");
+      this._super();
     },
 
     renderTemplates: function(body, body_vars, footer, footer_vars) {
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
-        $('#dialog').html(bodyHtml).hide().fadeIn(300, function() {
-          $('#dialog input').eq(0).focus(); 
+        $("#dialog").html(bodyHtml).hide().fadeIn(300, function() {
+          $("#dialog input").eq(0).focus(); 
         });
       }
 
       if (footer) {
         var footerHtml = $.View("//dialog/views/" + footer, footer_vars);
-        $('#bottom-bar').html(footerHtml);
+        $("#bottom-bar").html(footerHtml);
       }
       setupEnterKey();
     },
@@ -40,6 +46,7 @@
       if(this.validate()) {
         this.submit();
       }
+      return false;
     },
 
     validate: function() {
@@ -47,7 +54,7 @@
     },
 
     submit: function() {
-      this.publish("submit");
+      this.close("submit");
     },
 
     doWait: function(info) {
@@ -55,10 +62,10 @@
     },
 
     close: function(message, data) {
+      this.destroy();
       if(message) {
         this.publish(message, data);
       }
-      this.destroy();
     },
 
     runErrorDialog: function(info) {
@@ -69,7 +76,7 @@
 
       $("#back").hide();
       $("#cancel").hide();
-      $("#submit").show().unbind('click').click(function() {
+      $("#submit").show().unbind("click").click(function() {
       }).text("Close");
 
       $("#error_dialog").fadeIn(500);
@@ -85,7 +92,7 @@
     $("input").keyup(function(e) {
       if(e.which == 13) {
         e.preventDefault();
-        $('.submit').click();
+        $(".submit").click();
       }
     });
   }
