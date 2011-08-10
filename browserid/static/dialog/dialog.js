@@ -20,7 +20,9 @@ steal.plugins(
 
 	.models()						// loads files in models folder 
 
-	.controllers('dialog')					// loads files in controllers folder
+	.controllers('dialog',
+               'page',
+               'authenticate')					// loads files in controllers folder
 
 	.views('authenticate.ejs',
            'addemail.ejs',

@@ -37,24 +37,6 @@ $.Controller("Dialog", {}, {
     "#suggest_signin click": function(event) {
       this.doAuthenticate();
     },
-      
-    "#signin click": function(event) {
-      var email = $("#email_input").val();
-      var pass = $("#password_input").val();
-
-      var self = this;
-
-      BrowserIDNetwork.authenticate(email, pass, function(authenticated) {
-        if (!authenticated) {
-          self.find("#nosuchaccount").hide().fadeIn(400);
-        } else {
-          self.doWait(BrowserIDWait.authentication);
-          self.syncIdentities();
-        }
-      }, function(resp) {
-        runErrorDialog(BrowserIDErrors.authentication);
-      });
-    },
 
     "#pickemail click": function(event) {
       var email = $("#identities input:checked").val();
@@ -186,9 +168,15 @@ $.Controller("Dialog", {}, {
     },
 
     doAuthenticate: function() {
-      this.renderTemplates("authenticate.ejs", {sitename: BrowserIDNetwork.origin},
-                           "bottom-signin.ejs", {});
-
+      var el = this.element, self=this;
+      el.authenticate();
+      OpenAjax.hub.subscribe("authenticate:authenticated", function() {
+        el.authenticate('destroy');
+        self.syncIdentities();
+      });
+      OpenAjax.hub.subscribe("cancel", function() {
+        el.authenticate('destroy');
+      });
     },
       
     doCreate: function() {
