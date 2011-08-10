@@ -100,14 +100,13 @@ div.actions {
 #identities {
     width: 450px;
     margin: auto;
+}
+
+#identities, #identities > li {
     list-style: none;
 }
 
-#identities > ul, #identities > ul > li {
-  list-style: none;
-}
-
-#identities > ul > li {
+#identities > li {
   margin-bottom: .5em;
   height: 1.4em;
   font-size: .9em;
