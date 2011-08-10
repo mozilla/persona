@@ -20,8 +20,8 @@ steal.plugins(
 
 	.models()						// loads files in models folder 
 
-	.controllers('dialog',
-               'page',
+	.controllers('page',
+               'dialog',
                'authenticate',
                'createaccount',
                'checkregistration',

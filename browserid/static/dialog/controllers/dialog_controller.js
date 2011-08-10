@@ -7,7 +7,7 @@
 (function() {
 "use strict";
 
-$.Controller("Dialog", {}, {
+PageController.extend("Dialog", {}, {
     init: function(el) {
       var html = $.View("//dialog/views/body.ejs", {});
       this.element.html(html);
@@ -20,21 +20,6 @@ $.Controller("Dialog", {}, {
       this.stateMachine();
     },
       
-    renderTemplates: function(body, body_vars, footer, footer_vars) {
-      if (body) {
-        var bodyHtml = $.View("//dialog/views/" + body, body_vars);
-        $('#dialog').html(bodyHtml).hide().fadeIn(300, function() {
-          $('#dialog input').eq(0).focus(); 
-        });
-      }
-
-      if (footer) {
-        var footerHtml = $.View("//dialog/views/" + footer, footer_vars);
-        $('#bottom-bar').html(footerHtml);
-      }
-      setupEnterKey();
-    },
-    
     "#suggest_signin click": function(event) {
       this.doAuthenticate();
     },
@@ -76,7 +61,7 @@ $.Controller("Dialog", {}, {
           self.doConfirmEmail(email, keypair);
         },
         function() {
-          runErrorDialog(BrowserIDErrors.addEmail);
+          self.runErrorDialog(BrowserIDErrors.addEmail);
         });
     },
 
@@ -111,6 +96,7 @@ $.Controller("Dialog", {}, {
 
     stateMachine: function() {
       var self=this, hub = OpenAjax.hub, el = this.element;
+
       hub.subscribe("createaccount:created", function(info) {
         self.doConfirmEmail(info.email, info.keypair);
       });
@@ -127,7 +113,6 @@ $.Controller("Dialog", {}, {
         self.doForgotPassword();
       });
 
-
       hub.subscribe("checkregistration:confirmed", function() {
         // this is a secondary registration from browserid.org, persist
         // email, keypair, and that fact
@@ -136,7 +121,7 @@ $.Controller("Dialog", {}, {
         self.syncidentities();
       });
 
-      hub.subscribe("checkregistration:confirmed", function() {
+      hub.subscribe("checkregistration:complete", function() {
         self.doSignIn();
       });
 
@@ -237,14 +222,15 @@ $.Controller("Dialog", {}, {
           self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
         },
         function onKeySyncFailure() {
-          runErrorDialog(BrowserIDErrors.syncAddress);
+          self.runErrorDialog(BrowserIDErrors.syncAddress);
         },
         function onSuccess() {
           self.doSignIn();
         },
         function onFailure(jqXHR, textStatus, errorThrown) {
-            runErrorDialog(BrowserIDErrors.signIn);
-      });
+          self.runErrorDialog(BrowserIDErrors.signIn);
+        }
+      );
 
     },
 
@@ -258,35 +244,11 @@ $.Controller("Dialog", {}, {
           authcb();
         }
       }, function() {
-        runErrorDialog(BrowserIDErrors.checkAuthentication);
+        self.runErrorDialog(BrowserIDErrors.checkAuthentication);
       });
   }
 
   });
-
-  function runErrorDialog(info) {
-    $(".dialog").hide();
-
-    $("#error_dialog div.title").text(info.message);
-    $("#error_dialog div.content").text(info.description);
-
-    $("#back").hide();
-    $("#cancel").hide();
-    $("#submit").show().unbind('click').click(function() {
-    }).text("Close");
-
-    $("#error_dialog").fadeIn(500);
-  }
-
-  function setupEnterKey() {
-    $("input").keyup(function(e) {
-        if(e.which == 13) {
-          $('.submit').click();
-          e.preventDefault();
-        }
-      });
-  }
-
 
 
 }());
