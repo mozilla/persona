@@ -20,10 +20,6 @@ PageController.extend("Dialog", {}, {
       this.stateMachine();
     },
       
-    "#suggest_signin click": function(event) {
-      this.doAuthenticate();
-    },
-
     getVerifiedEmail: function(origin_url, onsuccess, onerror) {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
@@ -44,6 +40,10 @@ PageController.extend("Dialog", {}, {
 
       hub.subscribe("createaccount:created", function(msg, info) {
         self.doConfirmEmail(info.email, info.keypair);
+      });
+
+      hub.subscribe("createaccount:signin", function() {
+        self.doAuthenticate();
       });
 
       hub.subscribe("authenticate:authenticated", function() {
