@@ -220,7 +220,7 @@ PageController.extend("Dialog", {}, {
 
     doCheckAuth: function() {
       this.doWait(BrowserIDWait.checkAuth);
-      
+      var self=this;
       BrowserIDNetwork.checkAuth(function(authenticated) {
         if (authenticated) {
           self.syncIdentities();
