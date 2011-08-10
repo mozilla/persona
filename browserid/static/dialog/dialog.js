@@ -26,7 +26,8 @@ steal.plugins(
                'createaccount',
                'checkregistration',
                'forgotpassword',
-               'chooseemail')					// loads files in controllers folder
+               'chooseemail',
+               'addemail')					// loads files in controllers folder
 
 	.views('authenticate.ejs',
            'addemail.ejs',

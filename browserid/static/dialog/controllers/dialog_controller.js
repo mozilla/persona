@@ -24,26 +24,6 @@ PageController.extend("Dialog", {}, {
       this.doAuthenticate();
     },
 
-    "#addemail_button click": function(event) {
-      // add the actual email
-      // now we need to actually try to stage the creation of this account.
-      var email = $("#email_input").val();
-      var keypair = CryptoStubs.genKeyPair();
-
-      var self = this;
-
-      // kick the user to waiting/status page while we talk to the server.
-      this.doWait(BrowserIDWait.addEmail);
-
-      BrowserIDNetwork.addEmail(email, keypair, function() {
-          // email successfully staged, now wait for email confirmation
-          self.doConfirmEmail(email, keypair);
-        },
-        function() {
-          self.runErrorDialog(BrowserIDErrors.addEmail);
-        });
-    },
-
     getVerifiedEmail: function(origin_url, onsuccess, onerror) {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
@@ -91,11 +71,15 @@ PageController.extend("Dialog", {}, {
       });
 
       hub.subscribe("chooseemail:addemail", function() {
-        self.doNewEmail();
+        self.doAddEmail();
       });
 
       hub.subscribe("chooseemail:notme", function() {
         self.doNotMe();
+      });
+
+      hub.subscribe("addemail:complete", function(msg, info) {
+        self.doConfirmEmail(info.email, info.keypair);
       });
 
       hub.subscribe("start", function() {
@@ -146,14 +130,8 @@ PageController.extend("Dialog", {}, {
       this.element.forgotpassword();
     },
 
-    doWait: function(info) {
-      this.renderTemplates("wait.ejs", {title: info.message, message: info.description});
-    },
-
-    doNewEmail: function() {
-      this.renderTemplates("addemail.ejs", {},
-                           "bottom-addemail.ejs", {});
-
+    doAddEmail: function() {
+      this.element.addemail();
     },
 
     doConfirmEmail: function(email, keypair) {
