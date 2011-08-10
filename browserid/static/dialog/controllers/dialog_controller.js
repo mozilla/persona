@@ -1,6 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true */
-
+/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, runErrorDialog:true */ 
 //
 // a JMVC controller for the browserid dialog
 //
@@ -28,15 +27,6 @@ $.Controller("Dialog", {}, {
       BrowserIDNetwork.csrf(cb);
     },
 
-    setupEnterKey: function() {
-      $("input").keyup(function(e) {
-          if(e.which == 13) {
-            $('.submit').click();
-            e.preventDefault();
-          }
-        });
-    },
-
     renderTemplates: function(body, body_vars, footer, footer_vars) {
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
@@ -49,7 +39,7 @@ $.Controller("Dialog", {}, {
         var footerHtml = $.View("//dialog/views/" + footer, footer_vars);
         $('#bottom-bar').html(footerHtml);
       }
-      this.setupEnterKey();
+      setupEnterKey();
     },
     
     "#suggest_signin click": function(event) {
@@ -288,7 +278,6 @@ $.Controller("Dialog", {}, {
       
       // watch input dialogs
       self.find("input").unbind('keyup').bind('keyup', checkInput);
-      this.setupEnterKey();
             
       // do a check at load time, in case the user is using the back button (enables the continue button!)
       checkInput();
@@ -322,7 +311,6 @@ $.Controller("Dialog", {}, {
       
       // watch input dialogs
       self.find("input").unbind('keyup').bind('keyup', checkInput);
-      this.setupEnterKey();
       
       // do a check at load time, in case the user is using the back button (enables the continue button!)
       checkInput();
@@ -336,7 +324,6 @@ $.Controller("Dialog", {}, {
       this.renderTemplates("addemail.ejs", {},
                            "bottom-addemail.ejs", {});
 
-      this.setupEnterKey();
     },
 
     doConfirmEmail: function(email, keypair) {
@@ -461,5 +448,16 @@ $.Controller("Dialog", {}, {
 
     $("#error_dialog").fadeIn(500);
   }
+
+  function setupEnterKey() {
+    $("input").keyup(function(e) {
+        if(e.which == 13) {
+          $('.submit').click();
+          e.preventDefault();
+        }
+      });
+  }
+
+
 
 }());
