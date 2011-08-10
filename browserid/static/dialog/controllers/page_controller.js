@@ -37,13 +37,12 @@
         var footerHtml = $.View("//dialog/views/" + footer, footer_vars);
         $("#bottom-bar").html(footerHtml);
       }
-      setupEnterKey();
     },
 
     onSubmit: function(event) {
       event.stopPropagation();
       event.preventDefault();
-      if(this.validate()) {
+      if (this.validate()) {
         this.submit();
       }
       return false;
@@ -63,7 +62,7 @@
 
     close: function(message, data) {
       this.destroy();
-      if(message) {
+      if (message) {
         this.publish(message, data);
       }
     },
@@ -93,14 +92,5 @@
 
 
   });
-
-  function setupEnterKey() {
-    $("input").keyup(function(e) {
-      if(e.which == 13) {
-        e.preventDefault();
-        $(".submit").click();
-      }
-    });
-  }
 
 }());
