@@ -19,11 +19,6 @@ $.Controller("Dialog", {}, {
       var chan = setupChannel(this);
     },
       
-    _getCSRF: function(cb) {
-      // go get CSRF token
-      BrowserIDNetwork.csrf(cb);
-    },
-
     renderTemplates: function(body, body_vars, footer, footer_vars) {
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
