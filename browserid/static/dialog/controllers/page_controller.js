@@ -54,9 +54,9 @@
       this.renderTemplates("wait.ejs", {title: info.message, message: info.description});
     },
 
-    close: function(message) {
+    close: function(message, data) {
       if(message) {
-        this.publish(message);
+        this.publish(message, data);
       }
       this.destroy();
     },
