@@ -24,27 +24,6 @@ PageController.extend("Dialog", {}, {
       this.doAuthenticate();
     },
 
-    "#pickemail click": function(event) {
-      var email = $("#identities input:checked").val();
-
-      // yay!  now we need to produce an assertion.
-      var storedID = getEmails()[email];
-
-      var privkey = storedID.priv;
-      var issuer = storedID.issuer;
-      var audience = BrowserIDNetwork.origin;
-      var assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
-      // Clear onerror before the call to onsuccess - the code to onsuccess 
-      // calls window.close, which would trigger the onerror callback if we 
-      // tried this afterwards.
-      this.onerror = null;
-      this.onsuccess(assertion);
-    },
-
-    "#addemail click": function(event) {
-      this.doNewEmail();
-    },
-
     "#addemail_button click": function(event) {
       // add the actual email
       // now we need to actually try to stage the creation of this account.
@@ -65,11 +44,6 @@ PageController.extend("Dialog", {}, {
         });
     },
 
-    "#notme click": function(event) {
-      clearEmails();
-      BrowserIDNetwork.logout(this.doAuthenticate.bind(this));
-    },
-      
     "#cancel click": function(event) {
       this.onerror("canceled");
     },
@@ -97,7 +71,7 @@ PageController.extend("Dialog", {}, {
     stateMachine: function() {
       var self=this, hub = OpenAjax.hub, el = this.element;
 
-      hub.subscribe("createaccount:created", function(info) {
+      hub.subscribe("createaccount:created", function(msg, info) {
         self.doConfirmEmail(info.email, info.keypair);
       });
 
@@ -114,15 +88,23 @@ PageController.extend("Dialog", {}, {
       });
 
       hub.subscribe("checkregistration:confirmed", function() {
-        // this is a secondary registration from browserid.org, persist
-        // email, keypair, and that fact
-        self.persistAddressAndKeyPair(self.confirmEmail, 
-          self.confirmKeypair, "browserid.org:443");
-        self.syncidentities();
+        self.doRegistrationConfirmed();
       });
 
       hub.subscribe("checkregistration:complete", function() {
         self.doSignIn();
+      });
+
+      hub.subscribe("chooseemail:complete", function(msg, info) {
+        self.doEmailSelected(info.email);
+      });
+
+      hub.subscribe("chooseemail:addemail", function() {
+        self.doNewEmail();
+      });
+
+      hub.subscribe("chooseemail:notme", function() {
+        self.doNotMe();
       });
 
       hub.subscribe("cancel", function() {
@@ -153,11 +135,7 @@ PageController.extend("Dialog", {}, {
     },
       
     doSignIn: function() {
-      this.renderTemplates("signin.ejs", {sitename: BrowserIDNetwork.origin, identities: getEmails()},
-                           "bottom-pickemail.ejs", {});
-
-      // select the first option
-      this.find('input:first').attr('checked', true);
+      this.element.chooseemail();
     },
 
     doAuthenticate: function() {
@@ -187,6 +165,37 @@ PageController.extend("Dialog", {}, {
       this.confirmKeypair = keypair;
 
       this.element.checkregistration({email: email});
+    },
+
+    doRegistrationConfirmed: function() {
+        var self = this;
+        // this is a secondary registration from browserid.org, persist
+        // email, keypair, and that fact
+        self.persistAddressAndKeyPair(self.confirmEmail, 
+          self.confirmKeypair, "browserid.org:443");
+        self.syncidentities();
+
+    },
+
+    doEmailSelected: function(email) {
+      var self=this,
+          // yay!  now we need to produce an assertion.
+          storedID = getEmails()[email],
+          privkey = storedID.priv,
+          issuer = storedID.issuer,
+          audience = BrowserIDNetwork.origin,
+          assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
+
+      // Clear onerror before the call to onsuccess - the code to onsuccess 
+      // calls window.close, which would trigger the onerror callback if we 
+      // tried this afterwards.
+      self.onerror = null;
+      self.onsuccess(assertion);
+    },
+
+    doNotMe: function() {
+      clearEmails();
+      BrowserIDNetwork.logout(this.doAuthenticate.bind(this));
     },
 
     persistAddressAndKeyPair: function(email, keypair, issuer) {
