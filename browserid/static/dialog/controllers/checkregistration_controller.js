@@ -34,9 +34,6 @@
             //   'pending'  - a registration is in progress
             //   'noRegistration' - no registration is in progress
             if (status === 'complete') {
-              // this is a secondary registration from browserid.org, persist
-              // email, keypair, and that fact
-              
               // and tell the user that everything is really quite awesome.
               self.find("#waiting_confirmation").hide();
               self.find("#resendit_action").hide();
@@ -46,7 +43,6 @@
               $('#continue_button').removeClass('disabled');
 
               self.publish("checkregistration:confirmed");
-
             } else if (status === 'pending') {
               // try again, what else can we do?
               self.setupRegCheck();
@@ -66,13 +62,14 @@
     },
 
     validate: function() {
-      return !$("#continue_button").hasClass("disabled");
+      var valid = !$("#continue_button").hasClass("disabled");
+      return valid;
     },
 
     submit: function() {
       var self=this;
-      self._super();      
       self.publish("checkregistration:confirmed");
+      self._super();      
     }
 
   });

@@ -13,6 +13,14 @@
       });
     },
 
+    "#forgotpassword click": function(event) {
+      this.close("authenticate:forgotpassword");
+    },
+            
+    "#create click": function(event) {
+      this.close("authenticate:createuser");
+    },
+
     validate: function() {
       var email = $("#email_input").val();
       var pass = $("#password_input").val();

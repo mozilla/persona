@@ -13,7 +13,7 @@
         $('#create_continue').addClass('disabled');
 
         // watch input dialogs
-        this.checkEmail();      
+        this.setupWatchers();      
       },
 
       validate: function() {
@@ -45,7 +45,7 @@
         
       },
 
-      checkEmail: function() {
+      setupWatchers: function() {
         var checkedEmails = {};
         var emailCheckState = null;
         var nextEmailToCheck = null;

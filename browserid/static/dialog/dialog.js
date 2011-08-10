@@ -24,7 +24,8 @@ steal.plugins(
                'page',
                'authenticate',
                'createaccount',
-               'checkregistration')					// loads files in controllers folder
+               'checkregistration',
+               'forgotpassword')					// loads files in controllers folder
 
 	.views('authenticate.ejs',
            'addemail.ejs',

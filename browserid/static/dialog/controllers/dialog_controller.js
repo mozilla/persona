@@ -1,4 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
 /*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, runErrorDialog:true */ 
 //
 // a JMVC controller for the browserid dialog
@@ -85,6 +85,7 @@ $.Controller("Dialog", {}, {
       BrowserIDNetwork.logout(this.doAuthenticate.bind(this));
     },
       
+    /*
     "#create click": function(event) {
       this.doCreate();
     },
@@ -92,7 +93,7 @@ $.Controller("Dialog", {}, {
     "#forgotpassword click": function(event) {
       this.doForgotPassword();
     },
-            
+      */      
     "#cancel click": function(event) {
       this.onerror("canceled");
     },
@@ -101,13 +102,6 @@ $.Controller("Dialog", {}, {
       this.doStart();
     },
 
-    /*
-    "#continue_button click": function(event) {
-      if (!$("#continue_button").hasClass('disabled')) {
-        this.doSignIn();
-      }
-    },
-*/
     getVerifiedEmail: function(origin_url, onsuccess, onerror) {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
@@ -134,7 +128,18 @@ $.Controller("Dialog", {}, {
         self.syncIdentities();
       });
 
+      hub.subscribe("authenticate:createuser", function() {
+        self.doCreate();
+      });
+
+      hub.subscribe("authenticate:forgotpassword", function() {
+        self.doForgotPassword();
+      });
+
+
       hub.subscribe("checkregistration:confirmed", function() {
+        // this is a secondary registration from browserid.org, persist
+        // email, keypair, and that fact
         self.persistAddressAndKeyPair(self.confirmEmail, 
           self.confirmKeypair, "browserid.org:443");
         self.syncidentities();
@@ -188,6 +193,8 @@ $.Controller("Dialog", {}, {
     },
       
     doForgotPassword: function() {
+      this.element.forgotpassword();
+/*
       this.renderTemplates("forgotpassword.ejs", {},
                            "bottom-continue.ejs", {});
 
@@ -218,6 +225,7 @@ $.Controller("Dialog", {}, {
       
       // do a check at load time, in case the user is using the back button (enables the continue button!)
       checkInput();
+      */
     },
 
     doWait: function(info) {
