@@ -26,10 +26,11 @@
 
         var self = this;
         BrowserIDNetwork.authenticate(email, pass, function(authenticated) {
-          if (!authenticated) {
-            self.find("#nosuchaccount").hide().fadeIn(400);
-          } else {
+          if (authenticated) {
+            self.doWait(BrowserIDWait.authentication);
             self.close("authenticate:authenticated");
+          } else {
+            self.find("#nosuchaccount").hide().fadeIn(400);
           }
         }, function(resp) {
           self.runErrorDialog(BrowserIDErrors.authentication);

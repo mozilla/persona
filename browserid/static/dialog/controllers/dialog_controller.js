@@ -170,7 +170,6 @@ $.Controller("Dialog", {}, {
     doAuthenticate: function() {
       var el = this.element.authenticate(), self=this;
       OpenAjax.hub.subscribe("authenticate:authenticated", function() {
-        self.doWait(BrowserIDWait.authentication);
         self.syncIdentities();
       });
       OpenAjax.hub.subscribe("cancel", function() {
