@@ -108,10 +108,7 @@ PageController.extend("Dialog", {}, {
       
     doCancel: function() {
       var self=this;
-      // cancel
-      if(self.onerror) {
-        self.onerror("cancelled");
-      }
+      self.onsuccess && self.onsuccess(null);
     },
 
     doSignIn: function() {
