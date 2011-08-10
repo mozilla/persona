@@ -44,26 +44,17 @@ PageController.extend("Dialog", {}, {
         });
     },
 
-    "#cancel click": function(event) {
-      this.onerror("canceled");
-    },
-
-    "#back click": function(event) {
-      this.doStart();
-    },
-
     getVerifiedEmail: function(origin_url, onsuccess, onerror) {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
+
       BrowserIDNetwork.setOrigin(origin_url);
+
       this.doStart();
-      var me=this;
+
+      var self=this;
       $(window).bind("unload", function() {
-        // In the success case, me.onerror will have been cleared before unload 
-        // is triggered.
-        if (me.onerror) {
-          me.onerror("canceled");
-        }
+        self.doCancel();
       });
     },
 
@@ -107,11 +98,12 @@ PageController.extend("Dialog", {}, {
         self.doNotMe();
       });
 
+      hub.subscribe("start", function() {
+        self.doStart();
+      });
+
       hub.subscribe("cancel", function() {
-        // cancel
-        if(self.onerror) {
-          self.onerror("cancelled");
-        }
+        self.doCancel();
       });
 
     },
@@ -126,14 +118,18 @@ PageController.extend("Dialog", {}, {
         this.doSignIn();
       } else {
         // do we even need to authenticate?
-        this.checkAuth(function() {
-            self.syncIdentities();
-          }, function() {
-            self.doAuthenticate();
-          });
+        this.doCheckAuth();
       }
     },
       
+    doCancel: function() {
+      var self=this;
+      // cancel
+      if(self.onerror) {
+        self.onerror("cancelled");
+      }
+    },
+
     doSignIn: function() {
       this.element.chooseemail();
     },
@@ -243,14 +239,15 @@ PageController.extend("Dialog", {}, {
 
     },
 
-    checkAuth: function(authcb, notauthcb) {
+
+    doCheckAuth: function() {
       this.doWait(BrowserIDWait.checkAuth);
       
       BrowserIDNetwork.checkAuth(function(authenticated) {
-        if (!authenticated) {
-          notauthcb();
+        if (authenticated) {
+          self.syncIdentities();
         } else {
-          authcb();
+          self.doAuthenticate();
         }
       }, function() {
         self.runErrorDialog(BrowserIDErrors.checkAuthentication);

@@ -84,7 +84,13 @@
 
     "#cancel click": function() {
       this.close("cancel");
+    },
+
+    "#back click": function(event) {
+      this.close("start");
     }
+
+
 
   });
 
