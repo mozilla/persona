@@ -9,9 +9,6 @@
 
 $.Controller("Dialog", {}, {
     init: function(el) {
-      // FIXME: there's a small chance the CSRF token doesn't come back in time.
-      this._getCSRF();
-
       var html = $.View("//dialog/views/body.ejs", {});
       this.element.html(html);
       this.element.show();

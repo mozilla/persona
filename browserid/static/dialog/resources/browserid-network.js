@@ -175,6 +175,7 @@ var BrowserIDNetwork = (function() {
     }
   };
 
+  Network.csrf();
   return Network;
 
   function filterOrigin(origin) {
