@@ -85,15 +85,6 @@ $.Controller("Dialog", {}, {
       BrowserIDNetwork.logout(this.doAuthenticate.bind(this));
     },
       
-    /*
-    "#create click": function(event) {
-      this.doCreate();
-    },
-
-    "#forgotpassword click": function(event) {
-      this.doForgotPassword();
-    },
-      */      
     "#cancel click": function(event) {
       this.onerror("canceled");
     },
@@ -194,38 +185,6 @@ $.Controller("Dialog", {}, {
       
     doForgotPassword: function() {
       this.element.forgotpassword();
-/*
-      this.renderTemplates("forgotpassword.ejs", {},
-                           "bottom-continue.ejs", {});
-
-      $('#create_continue').addClass('disabled');
-
-      var self=this;
-      function checkInput() {
-        var pass = $("#password_input").val();
-        var match = pass === $("#password_verify_input").val();
-        self.find('.passwordnote').hide();
-        $('#create_continue').addClass('disabled');
-        if (!match) {
-          self.find('#passwords_different').show();
-        } else {
-          if (!pass) {
-            self.find('#enter_a_password').show();
-          } else if (pass.length < 5) {
-            self.find('#password_too_short').show();
-          } else {
-            self.find('#password_ok').show();
-            $('#create_continue').removeClass('disabled');
-          }
-        }
-      }
-      
-      // watch input dialogs
-      self.find("input").unbind('keyup').bind('keyup', checkInput);
-      
-      // do a check at load time, in case the user is using the back button (enables the continue button!)
-      checkInput();
-      */
     },
 
     doWait: function(info) {
