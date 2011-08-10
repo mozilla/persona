@@ -101,12 +101,13 @@ $.Controller("Dialog", {}, {
       this.doStart();
     },
 
+    /*
     "#continue_button click": function(event) {
       if (!$("#continue_button").hasClass('disabled')) {
         this.doSignIn();
       }
     },
-
+*/
     getVerifiedEmail: function(origin_url, onsuccess, onerror) {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
@@ -131,6 +132,16 @@ $.Controller("Dialog", {}, {
 
       hub.subscribe("authenticate:authenticated", function() {
         self.syncIdentities();
+      });
+
+      hub.subscribe("checkregistration:confirmed", function() {
+        self.persistAddressAndKeyPair(self.confirmEmail, 
+          self.confirmKeypair, "browserid.org:443");
+        self.syncidentities();
+      });
+
+      hub.subscribe("checkregistration:confirmed", function() {
+        self.doSignIn();
       });
 
       hub.subscribe("cancel", function() {
@@ -220,52 +231,10 @@ $.Controller("Dialog", {}, {
     },
 
     doConfirmEmail: function(email, keypair) {
-      this.renderTemplates("confirmemail.ejs", {email:email},
-                           "bottom-confirmemail.ejs", {});
+      this.confirmEmail = email;
+      this.confirmKeypair = keypair;
 
-      $('#continue_button').addClass('disabled');
-
-      var self = this;
-
-      // now poll every 3s waiting for the user to complete confirmation
-      function setupRegCheck() {
-        return setTimeout(function() {
-          BrowserIDNetwork.checkRegistration(function(status) {
-            // registration status checks the status of the last initiated registration,
-            // it's possible return values are:
-            //   'complete' - registration has been completed
-            //   'pending'  - a registration is in progress
-            //   'noRegistration' - no registration is in progress
-            if (status === 'complete') {
-              // this is a secondary registration from browserid.org, persist
-              // email, keypair, and that fact
-              self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
-              
-              // and tell the user that everything is really quite awesome.
-              self.find("#waiting_confirmation").hide();
-              self.find("#resendit_action").hide();
-              self.find("#confirmed_notice").show();
-
-              // enable button
-              $('#continue_button').removeClass('disabled');
-
-            } else if (status === 'pending') {
-              // try again, what else can we do?
-              pollTimeout = setupRegCheck();
-            } else {
-              runErrorDialog(BrowserIDErrors.registration);
-            }
-          },
-          function(jqXHR, textStatus, errorThrown) {
-              runErrorDialog(BrowserIDErrors.registration);
-          });
-        }, 3000);
-      }
-      
-      // setup the timeout
-      this.pollTimeout = setupRegCheck();
-
-      // FIXME cancel this timeout appropriately on cancel
+      this.element.checkregistration({email: email});
     },
 
     persistAddressAndKeyPair: function(email, keypair, issuer) {

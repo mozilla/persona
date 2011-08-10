@@ -118,11 +118,11 @@ input[type=radio], input[type=radio] + label {
   cursor: pointer;
 }
 
-button {
+button, input[type=submit] {
     cursor: pointer;
 }
 
-button.disabled {
+button.disabled, input[type=submit].disabled {
     cursor: default;
     opacity: .3;
 }
