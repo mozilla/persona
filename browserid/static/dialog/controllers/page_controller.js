@@ -17,11 +17,15 @@
 
       this.renderTemplates(bodyTemplate, bodyVars, footerTemplate, footerVars);
       $("form").bind("submit", this.onSubmit.bind(this));
+      $("#cancel").click(this.onCancel.bind(this));
+      $("#back").click(this.onBack.bind(this));
     },
 
     destroy: function() {
       $("form").unbind("submit");
       $("input").unbind("keyup");
+      $("#cancel").unbind("click");
+      $("#back").unbind("click");
       this._super();
     },
 
@@ -81,16 +85,17 @@
       $("#error_dialog").fadeIn(500);
     },
 
-    "#cancel click": function() {
+    onCancel: function(event) {
+      event.preventDefault();
+      event.stopPropagation();
       this.close("cancel");
     },
 
-    "#back click": function(event) {
+    onBack: function(event) {
+      event.preventDefault();
+      event.stopPropagation();
       this.close("start");
     }
-
-
-
   });
 
 }());
