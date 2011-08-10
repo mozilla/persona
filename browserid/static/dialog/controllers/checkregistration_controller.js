@@ -68,7 +68,7 @@
 
     submit: function() {
       var self=this;
-      self.publish("checkregistration:confirmed");
+      self.publish("checkregistration:complete");
       self._super();      
     }
 
