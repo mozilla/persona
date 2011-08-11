@@ -1,3 +1,38 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Mozilla BrowserID.
+ *
+ * The Initial Developer of the Original Code is Mozilla.
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
 const
 fs = require('fs'),
 path = require('path');
@@ -12,12 +47,17 @@ crypto = require('crypto'),
 wsapi = require('./lib/wsapi.js'),
 httputils = require('./lib/httputils.js'),
 webfinger = require('./lib/webfinger.js'),
-sessions = require('cookie-sessions'),
+//sessions = require('cookie-sessions'),
+sessions = require('connect-cookie-session'),
 express = require('express'),
 secrets = require('./lib/secrets.js'),
 db = require('./lib/db.js'),
 configuration = require('../libs/configuration.js'),
 substitution = require('../libs/substitute.js');
+logging = require("../libs/logging.js");
+
+// open the databse
+db.open(configuration.get('database'));
 
 // looks unused, see run.js
 // const STATIC_DIR = path.join(path.dirname(__dirname), "static");
@@ -32,7 +72,7 @@ function internal_redirector(new_url) {
 }
 
 function router(app) {
-  app.set("views", __dirname + '/views'); 
+  app.set("views", __dirname + '/views');
 
   app.set('view options', {
     production: configuration.get('use_minified_resources')
@@ -40,7 +80,8 @@ function router(app) {
 
   // this should probably be an internal redirect
   // as soon as relative paths are figured out.
-  app.get('/sign_in', function(req, res, next ){
+  app.get('/sign_in', function(req, res, next ) {
+    logging.userEntry('browserid', req);
     res.render('dialog.ejs', {
       title: 'A Better Way to Sign In',
       layout: false,
@@ -114,15 +155,31 @@ function router(app) {
 exports.varDir = VAR_DIR;
 
 exports.setup = function(server) {
+  // over SSL?
+  var overSSL = (configuration.get('scheme') == 'https');
+  
   server.use(express.cookieParser());
 
   var cookieSessionMiddleware = sessions({
     secret: COOKIE_SECRET,
-    session_key: COOKIE_KEY,
-    path: '/'
+    //    session_key: COOKIE_KEY,
+    key: COOKIE_KEY,
+    cookie: {
+        path: '/',
+        httpOnly: true,
+        maxAge: 14400000,
+        secure: overSSL
+      }
   });
 
+  // cookie sessions
   server.use(function(req, resp, next) {
+    // we set this parameter so the connect-cookie-session
+    // sends the cookie even though the local connection is HTTP
+    // (the load balancer does SSL)
+    if (overSSL)
+      req.connection.proxySecure = true;
+
     try {
       cookieSessionMiddleware(req, resp, next);
     } catch(e) {
@@ -155,6 +212,15 @@ exports.setup = function(server) {
     }
     next();
   });
+
+  // Strict Transport Security
+  server.use(function(req, resp, next) {
+      if (overSSL) {
+        // expires in 30 days, include subdomains like www
+        resp.setHeader("Strict-Transport-Security", "max-age=2592000; includeSubdomains");
+      }
+      next();
+    });
 
   // prevent framing
   server.use(function(req, resp, next) {

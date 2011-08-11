@@ -5,7 +5,6 @@
   , "dependencies": {
       "express": "2.4.3"
     , "xml2js": "0.1.5"
-    , "sqlite": "1.0.3"
     , "nodemailer": "0.1.18"
     , "mustache": "0.3.1-dev"
     , "cookie-sessions": "0.0.2"
@@ -15,5 +14,9 @@
     , "temp": "0.2.0"
     , "express-csrf": "0.3.2"
     , "uglify-js": "1.0.6"
+    , "JSONSelect": "0.2.1"
+    , "winston" : "0.3.3"
+    , "connect-cookie-session" : "0.0.1"
+    , "mysql" : "0.9.1"
   }
 }
