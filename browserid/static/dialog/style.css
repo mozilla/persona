@@ -67,6 +67,7 @@ span.sitename, span.email {
     margin-right: 1em;
     margin-top: 16px;
     z-index: 0;
+    float: left;
 }
 
 #bottom-bar button.righty, #bottom-bar input[type=submit].righty {
