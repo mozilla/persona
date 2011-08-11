@@ -1,3 +1,5 @@
+/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -32,36 +34,53 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+(function() {
+  "use strict";
 
-var getEmails = function() {
-  try {
-    var emails = JSON.parse(window.localStorage.emails);
-    if (emails != null)
-      return emails;
-  } catch(e) {
-  }
-  
-  // if we had a problem parsing or the emails are null
-  clearEmails();
-  return {};
-};
+  PageController.extend("Authenticate", {}, {
+    init: function() {
+      this._super({
+        bodyTemplate: "authenticate.ejs",
+        bodyVars: {
+          sitename: BrowserIDNetwork.origin
+        },
+        footerTemplate: "bottom-signin.ejs",
+        footerVars: {}
+      });
+    },
 
-var _storeEmails = function(emails) {
-  window.localStorage.emails = JSON.stringify(emails);
-};
+    "#forgotpassword click": function(event) {
+      this.close("authenticate:forgotpassword");
+    },
+            
+    "#create click": function(event) {
+      this.close("authenticate:createuser");
+    },
 
-var addEmail = function(email, obj) {
-  var emails = getEmails();
-  emails[email] = obj;
-  _storeEmails(emails);
-};
+    validate: function() {
+      var email = $("#email_input").val();
+      var pass = $("#password_input").val();
 
-var removeEmail = function(email) {
-  var emails = getEmails();
-  delete emails[email];
-  _storeEmails(emails);
-};
+      return true;
+    },
 
-var clearEmails = function() {
-  _storeEmails({});
-};
+    submit: function() {
+      var email = $("#email_input").val();
+      var pass = $("#password_input").val();
+
+      var self = this;
+      BrowserIDNetwork.authenticate(email, pass, function(authenticated) {
+        if (authenticated) {
+          self.doWait(BrowserIDWait.authentication);
+          self.close("authenticate:authenticated");
+        } else {
+          self.find("#nosuchaccount").hide().fadeIn(400);
+        }
+      }, function(resp) {
+        self.runErrorDialog(BrowserIDErrors.authentication);
+        self.close("cancel");
+      });
+    }
+  });
+
+}());

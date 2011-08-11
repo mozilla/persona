@@ -32,36 +32,33 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+var BrowserIDWait = (function(){
+  "use strict";
 
-var getEmails = function() {
-  try {
-    var emails = JSON.parse(window.localStorage.emails);
-    if (emails != null)
-      return emails;
-  } catch(e) {
-  }
-  
-  // if we had a problem parsing or the emails are null
-  clearEmails();
-  return {};
-};
+  var Wait = {
+    authentication: {
+      message: "Finishing Sign In...",
+      description: "In just a moment you'll be signed into BrowserID."
+    },
 
-var _storeEmails = function(emails) {
-  window.localStorage.emails = JSON.stringify(emails);
-};
+    addEmail: {
+      message: "One Moment Please...",
+      description: "We're adding this email to your account, this should only take a couple of seconds."
+    },
 
-var addEmail = function(email, obj) {
-  var emails = getEmails();
-  emails[email] = obj;
-  _storeEmails(emails);
-};
+    checkAuth: {
+      message: "Communicating with server",
+      description: "Just a moment while we talk with the server."
+    },
 
-var removeEmail = function(email) {
-  var emails = getEmails();
-  delete emails[email];
-  _storeEmails(emails);
-};
+    createAccount: {
+      message: "One Moment Please...",
+      description: "We're creating your account, this should only take a couple of seconds."
+    }
+  };
 
-var clearEmails = function() {
-  _storeEmails({});
-};
+
+  return Wait;
+}());
+
+

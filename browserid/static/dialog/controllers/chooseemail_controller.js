@@ -1,3 +1,5 @@
+/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -32,36 +34,38 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+(function() {
+  "use strict";
 
-var getEmails = function() {
-  try {
-    var emails = JSON.parse(window.localStorage.emails);
-    if (emails != null)
-      return emails;
-  } catch(e) {
-  }
-  
-  // if we had a problem parsing or the emails are null
-  clearEmails();
-  return {};
-};
+  PageController.extend("Chooseemail", {}, {
+    init: function(options) {
+      this._super({
+        bodyTemplate: "signin.ejs",
+        bodyVars: {
+          sitename: BrowserIDNetwork.origin,
+          identities: getEmails()
+        },
+        footerTemplate: "bottom-pickemail.ejs",
+        footerVars: {}
+      });
+      // select the first option
+      this.find('input:first').attr('checked', true);
+    },
 
-var _storeEmails = function(emails) {
-  window.localStorage.emails = JSON.stringify(emails);
-};
+    submit: function() {
+      var email = $("#identities input:checked").val();
+      this.close("chooseemail:complete", {
+        email: email
+      });
+    },
 
-var addEmail = function(email, obj) {
-  var emails = getEmails();
-  emails[email] = obj;
-  _storeEmails(emails);
-};
+    "#addemail click": function(event) {
+      this.close("chooseemail:addemail");
+    },
 
-var removeEmail = function(email) {
-  var emails = getEmails();
-  delete emails[email];
-  _storeEmails(emails);
-};
+    "#notme click": function(event) {
+      this.close("chooseemail:notme");
+    }
+  });
 
-var clearEmails = function() {
-  _storeEmails({});
-};
+}());

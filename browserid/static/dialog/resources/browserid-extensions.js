@@ -33,35 +33,26 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var getEmails = function() {
-  try {
-    var emails = JSON.parse(window.localStorage.emails);
-    if (emails != null)
-      return emails;
-  } catch(e) {
-  }
-  
-  // if we had a problem parsing or the emails are null
-  clearEmails();
-  return {};
-};
+if (!Function.prototype.bind) {
 
-var _storeEmails = function(emails) {
-  window.localStorage.emails = JSON.stringify(emails);
-};
+  Function.prototype.bind = function (oThis) {
 
-var addEmail = function(email, obj) {
-  var emails = getEmails();
-  emails[email] = obj;
-  _storeEmails(emails);
-};
+    if (typeof this !== "function") // closest thing possible to the ECMAScript 5 internal IsCallable function
+      throw new TypeError("Function.prototype.bind - what is trying to be fBound is not callable");
 
-var removeEmail = function(email) {
-  var emails = getEmails();
-  delete emails[email];
-  _storeEmails(emails);
-};
+    var aArgs = Array.prototype.slice.call(arguments, 1), 
+    fToBind = this, 
+    fNOP = function () {},
+    fBound = function () {
+      return fToBind.apply(this instanceof fNOP ? this : oThis || window, aArgs.concat(Array.prototype.slice.call(arguments)));    
+    };
 
-var clearEmails = function() {
-  _storeEmails({});
-};
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+
+    return fBound;
+
+  };
+
+}
+

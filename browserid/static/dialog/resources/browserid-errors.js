@@ -32,36 +32,56 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+var BrowserIDErrors = (function(){
+  "use strict";
 
-var getEmails = function() {
-  try {
-    var emails = JSON.parse(window.localStorage.emails);
-    if (emails != null)
-      return emails;
-  } catch(e) {
-  }
-  
-  // if we had a problem parsing or the emails are null
-  clearEmails();
-  return {};
-};
+  var Errors = {
+    authentication: {
+      type: "serverError",
+      message: "Error Authenticating",
+      description: "There was a technical problem while trying to log you in.  Yucky!"
+    },
 
-var _storeEmails = function(emails) {
-  window.localStorage.emails = JSON.stringify(emails);
-};
+    addEmail: {
+      type: "serverError",
+      message: "Error Adding Address",
+      description: "There was a technical problem while trying to add this email to your account.  Yucky!"
+    },
 
-var addEmail = function(email, obj) {
-  var emails = getEmails();
-  emails[email] = obj;
-  _storeEmails(emails);
-};
+    checkAuthentication: {
+      type: "serverError",
+      message: "Error Checking Authentication",
+      description: "There was a tenical problem while trying to log you in.  Yucky!"
+    },
 
-var removeEmail = function(email) {
-  var emails = getEmails();
-  delete emails[email];
-  _storeEmails(emails);
-};
+    createAccount: {
+      type: "serverError",
+      message: "Error Creating Account",
+      description: "There was a technical problem while trying to create your account.  Yucky!"
+    },
 
-var clearEmails = function() {
-  _storeEmails({});
-};
+    registration: {
+      type: "serverError",
+      message: "Registration Failed",
+      description: "An error was encountered and the signup cannot be completed.  Yucky!"
+    },
+
+    signIn: {
+      type: "serverError",
+      message: "Signin Failed",
+      description: "There was an error signing in. Yucky!"
+    },
+
+    syncAddress: {
+      type: "serverError",
+      message: "Error Syncing Address",
+      description: "There was a technical problem while trying to synchronize your account.  Yucky!"
+    }
+
+  };
+
+
+  return Errors;
+}());
+
+

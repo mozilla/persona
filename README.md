@@ -18,7 +18,6 @@ Here's the software you'll need installed:
 
 * node.js (>= 0.4.5): http://nodejs.org/
 * npm: http://npmjs.org/
-* sqlite (3) development libraries: http://www.sqlite.org/
 * Several node.js 3rd party libraries - see `package.json` for details
 
 ## Getting started:
