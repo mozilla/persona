@@ -49,6 +49,7 @@ steal.plugins(
                'crypto-api',
                'channel',
                'storage',
+               'browserid-extensions',
                'browserid-network',
                'browserid-errors',
                'browserid-wait')					// 3rd party script's (like jQueryUI), in resources folder
