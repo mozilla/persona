@@ -56,6 +56,8 @@
         clearTimeout(this.pollTimeout);
         this.pollTimeout = null;
       }
+
+      this._super.apply(this, arguments);
     },
 
     setupRegCheck: function() {
