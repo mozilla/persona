@@ -52,6 +52,11 @@
       this.find('input:first').attr('checked', true);
     },
 
+    validate: function() {
+      var email = $("#email_input").val();
+      return /^[\w.!#$%&'*+\-/=?\^`{|}~]+@[a-z0-9-]+(\.[a-z0-9-]+)*$/.test(email);
+    },
+
     submit: function() {
       // add the actual email
       // now we need to actually try to stage the creation of this account.
