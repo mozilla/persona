@@ -209,7 +209,9 @@ var BrowserIDNetwork = (function() {
     }
   };
 
-  Network.csrf();
+  $(function() {
+    Network.csrf();
+  });
   return Network;
 
   function filterOrigin(origin) {
