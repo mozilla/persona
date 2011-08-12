@@ -127,7 +127,7 @@ button.disabled, input[type=submit].disabled {
     opacity: .3;
 }
 
-.dialog {
+.dialog, #error_dialog {
     position: fixed;
     top: 40px;
     right: 0;
@@ -135,6 +135,10 @@ button.disabled, input[type=submit].disabled {
     left: 0;
     margin: auto;
     text-align: center;
+}
+
+#error_dialog {
+    display: none;
 }
 
 div.input > * {

@@ -106,15 +106,15 @@
     },
 
     runErrorDialog: function(info) {
-      $(".dialog").hide();
+      $("#dialog").hide();
 
-      $("#error_dialog div.title").text(info.message);
-      $("#error_dialog div.content").text(info.description);
+      $("#error_dialog .title").text(info.message);
+      $("#error_dialog .content").text(info.description);
 
       $("#back").hide();
-      $("#cancel").hide();
-      $("#submit").show().unbind("click").click(function() {
-      }).text("Close");
+      $("input[type=submit]").hide();
+
+      $("#cancel").text("Close").addClass("action");
 
       $("#error_dialog").fadeIn(500);
     },
