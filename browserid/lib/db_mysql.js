@@ -111,44 +111,37 @@ exports.open = function(cfg, cb) {
     drop_on_close = database;
   }
 
-  client.connect(function(error) {
-    if (error) {
-      logUnexpectedError(error);
-      cb(error);
-    } else {
-      // now create the databse
-      client.query("CREATE DATABASE IF NOT EXISTS " + database, function(err) {
-        if (err) {
-          logUnexpectedError(err);
-          cb(err);
-          return;
-        }
-        client.useDatabase(database, function(err) {
-          if (err) {
-            logUnexpectedError(err);
-            cb(err);
-            return;
-          }
-
-          // now create tables
-          function createNextTable(i) {
-            if (i < schemas.length) {
-              client.query(schemas[i], function(err) {
-                if (err) {
-                  logUnexpectedError(err);
-                  cb(err);
-                } else {
-                  createNextTable(i+1);
-                }
-              });
-            } else {
-              cb();
-            }
-          }
-          createNextTable(0);
-        });
-      });
+  // now create the databse
+  client.query("CREATE DATABASE IF NOT EXISTS " + database, function(err) {
+    if (err) {
+      logUnexpectedError(err);
+      cb(err);
+      return;
     }
+    client.useDatabase(database, function(err) {
+      if (err) {
+        logUnexpectedError(err);
+        cb(err);
+        return;
+      }
+
+      // now create tables
+      function createNextTable(i) {
+        if (i < schemas.length) {
+          client.query(schemas[i], function(err) {
+            if (err) {
+              logUnexpectedError(err);
+              cb(err);
+            } else {
+              createNextTable(i+1);
+            }
+          });
+        } else {
+          cb();
+        }
+      }
+      createNextTable(0);
+    });
   });
 };
 
