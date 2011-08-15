@@ -94,13 +94,13 @@ exports.open = function(cfg, cb) {
   const defParams = {
     host: '127.0.0.1',
     port: "3306",
-    user: 'test',
-    password: 'pass',
+    user: undefined,
+    password: undefined,
     unit_test: false
   };
 
   Object.keys(defParams).forEach(function(param) {
-    client[param] = cfg[param] ? cfg[param] : defParams[param];
+    client[param] = cfg[param] !== undefined ? cfg[param] : defParams[param];
   });
 
   // let's figure out the database name

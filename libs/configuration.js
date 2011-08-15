@@ -58,8 +58,7 @@ exports.get = function(val) {
 
 var defaultHostedDatabaseConfig = {
   driver: "mysql",
-  user: 'browserid',
-  password: 'browserid'
+  user: 'browserid'
 };
 
 // various deployment configurations
