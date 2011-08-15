@@ -23,36 +23,27 @@ client['host'] = '127.0.0.1';
 client['port'] = "3306";
 client['user'] = "browserid";
 client['password'] = "";
+client['database'] = "browserid";
 
 function fatal(err) {
   console.log("ERROR:", err.toString()); 
   process.exit(1);
 }
 
-client.connect(function(error) {
-  if (error) {
-    fatal(error);
-  } else {
-    // now create the databse                                                 
-    client.useDatabase("browserid", function(err) {
-      if (err) fatal(err);
-      function createNextTable(i) {
-        if (i < schemas.length) {
-          client.query(schemas[i], function(err) {
-            if (err) {
-              fatal(err);
-            } else {
-              createNextTable(i+1);
-            }
-          });
-        } else {
-          onMysqlReady();
-        }
+function createNextTable(i) {
+  if (i < schemas.length) {
+    client.query(schemas[i], function(err) {
+      if (err) {
+        fatal(err);
+      } else {
+        createNextTable(i+1);
       }
-      createNextTable(0);
     });
+  } else {
+    onMysqlReady();
   }
-});
+}
+createNextTable(0);
 
 var sqlitedb;
 

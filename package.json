@@ -17,6 +17,6 @@
     , "JSONSelect": "0.2.1"
     , "winston" : "0.3.3"
     , "connect-cookie-session" : "0.0.1"
-    , "mysql" : "0.9.1"
+    , "mysql" : "0.9.2"
   }
 }
