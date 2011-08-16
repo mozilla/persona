@@ -17,5 +17,6 @@
     , "winston" : "0.3.3"
     , "connect-cookie-session" : "0.0.1"
     , "mysql" : "0.9.2"
+    , "optimist" : "0.2.6"
   }
 }
