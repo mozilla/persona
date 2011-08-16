@@ -35,11 +35,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const assert = require('assert'),
-      vows = require('vows'),
-      start_stop = require('./lib/start-stop.js'),
-      wsapi = require('./lib/wsapi.js'),
-      interceptor = require('./lib/email-interceptor.js');
+const
+assert = require('assert'),
+vows = require('vows'),
+start_stop = require('./lib/start-stop.js'),
+wsapi = require('./lib/wsapi.js'),
+email = require('../lib/email.js');
 
 var suite = vows.describe('registration-status-wsapi');
 
@@ -49,7 +50,7 @@ var suite = vows.describe('registration-status-wsapi');
 // ever time a new token is sent out, let's update the global
 // var 'token'
 var token = undefined;
-interceptor.onEmail = function(newtok) { token = newtok; }
+email.setInterceptor(function(email, site, secret) { token = secret; });
 
 // start up a pristine server
 start_stop.addStartupBatches(suite);

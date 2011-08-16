@@ -91,6 +91,7 @@ const g_configs = {
     hostname: '127.0.0.1',
     port: '10002',
     scheme: 'http',
+    email_to_console: true, // don't send email, just dump verification URLs to console.
     use_minified_resources: false,
     log_path: path.join(__dirname, "..", "var", "logs"),
     database: { driver: "json" }

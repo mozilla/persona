@@ -35,11 +35,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const assert = require('assert'),
+const assert =
+require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-interceptor = require('./lib/email-interceptor.js');
+email = require('../lib/email.js');
 
 var suite = vows.describe('password-length');
 
@@ -48,10 +49,8 @@ suite.options.error = false;
 
 start_stop.addStartupBatches(suite);
 
-// ever time a new token is sent out, let's update the global
-// var 'token'
-var token = undefined;
-interceptor.onEmail = function(newtok) { token = newtok; };
+// surpress console output of emails with a noop email interceptor
+email.setInterceptor(function(email, site, secret) { });
 
 // create a new account via the api with (first address)
 suite.addBatch({

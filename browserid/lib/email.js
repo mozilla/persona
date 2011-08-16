@@ -43,18 +43,42 @@ config = require('../../libs/configuration.js');
 
 const template = fs.readFileSync(path.join(__dirname, "prove_template.txt")).toString();
 
+var interceptor = undefined;
+
+/**
+ * allow clients to intercept email messages programatically for local
+ * testing. The `interceptor` is a function which accepts three arguments,
+ *
+ *   * `email` - the email that is being verified
+ *   * `site` - the RP
+ *   * `secret` - the verification secret (usually embedded into a url)
+ *
+ * Limitations: only a single interceptor may be set, generalize
+ * as needed.
+ */
+exports.setInterceptor = function(callback) {
+  interceptor = callback;
+};
+
 exports.sendVerificationEmail = function(email, site, secret) {
   var url = config.get('URL') + "/prove?token=" + encodeURIComponent(secret);
 
-  emailer.send_mail({
-    sender: "noreply@browserid.org",
-    to: email,
-    subject : "Complete Login to " + site + " using BrowserID",
-    body: mustache.to_html(template, { email: email, link: url, site: site })
-  }, function(err, success){
-    if(!success) {
-      console.log("error sending email: ", err);
-      console.log("verification URL: ", url);
-    }
-  });
+  if (interceptor) {
+    interceptor(email, site, secret);
+  } else if (config.get('email_to_console')) {
+    // log verification email to console separated by whitespace.
+    console.log("\n", "VERIFICATION URL:", url, "\n");
+  } else {
+    emailer.send_mail({
+      sender: "noreply@browserid.org",
+      to: email,
+      subject : "Complete Login to " + site + " using BrowserID",
+      body: mustache.to_html(template, { email: email, link: url, site: site })
+    }, function(err, success){
+      if(!success) {
+        console.log("error sending email: ", err);
+        console.log("verification URL: ", url);
+      }
+    });
+  };
 };

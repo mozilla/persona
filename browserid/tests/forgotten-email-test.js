@@ -39,7 +39,7 @@ const assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-interceptor = require('./lib/email-interceptor.js');
+email = require('../lib/email.js');
 
 var suite = vows.describe('forgotten-email');
 
@@ -51,7 +51,7 @@ start_stop.addStartupBatches(suite);
 // ever time a new token is sent out, let's update the global
 // var 'token'
 var token = undefined;
-interceptor.onEmail = function(newtok) { token = newtok; };
+email.setInterceptor(function(email, site, secret) { token = secret; });
 
 // create a new account via the api with (first address)
 suite.addBatch({
