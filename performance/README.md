@@ -28,7 +28,7 @@ The final bit of assumption is growth rate, what percentage of active
 users in a unit of time are using browserid for the first time.  This
 is interesting as different types of requests (with different costs)
 are made during initial user signup.  We start by assuming a 20/80 split
-of new to returning users.
+of new to returning users per month.
 
 The next bit of guesswork required is to explain the behaviors of these
 sites (RPs) that a user visits.  The average RP will set authentication
