@@ -146,8 +146,10 @@
         } else {
           if (!pass) {
             self.find('#enter_a_password').show();
-          } else if (pass.length < 5) {
+          } else if (pass.length < 8) {
             self.find('#password_too_short').show();
+          } else if (pass.length > 80) {
+            self.find('#password_too_long').show();
           } else {
             self.find('#password_ok').show();
             $('#create_continue').removeClass('disabled');

@@ -99,9 +99,16 @@ function setup(app) {
    * the staged user account transitions to a valid user account */
   app.post('/wsapi/stage_user', checkParams([ "email", "pass", "pubkey", "site" ]), function(req, resp) {
 
-    // bcrypt the password
     // we should be cloning this object here.
     var stageParams = req.body;
+
+    // issue #155, valid password length is between 8 and 80 chars.
+    if (stageParams.pass.length < 8 || stageParams.pass.length > 80) {
+      httputils.badRequest(resp, "valid passwords are between 8 and 80 chars");
+      return;
+    }
+
+    // bcrypt the password
     stageParams['hash'] = bcrypt.encrypt_sync(stageParams.pass, bcrypt.gen_salt_sync(10));
 
     try {
