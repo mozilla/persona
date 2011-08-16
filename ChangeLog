@@ -1,3 +1,7 @@
+train-2011.08.18:
+  * upon clickthrough of the email link, don't have the browser window close itself: issue #162
+  * passwords must be between 8 and 80 chars: issue #155
+
 train-2011.08.12:
   * massive zero-user-visibile refactoring of dialog javascript.
   * fix cancel button in "waiting for verification state" (issue #147)
