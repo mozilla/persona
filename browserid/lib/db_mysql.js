@@ -408,7 +408,7 @@ exports.pubkeysForEmail = function(email, cb) {
 exports.removeEmail = function(authenticated_email, email, cb) {
   exports.emailsBelongToSameAccount(authenticated_email, email, function(ok) {
     if (!ok) {
-      logger.log('security', authenticated_email + ' attempted to delete an email that doesn\'t belong to her: ' + email);
+      logger.log('security', { type: 'security', msg: authenticated_email + ' attempted to delete an email that doesn\'t belong to her: ' + email });
       cb("authenticated user doesn't have permission to remove specified email " + email);
       return;
     }
