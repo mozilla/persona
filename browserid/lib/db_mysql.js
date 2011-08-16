@@ -89,9 +89,8 @@ function logUnexpectedError(detail) {
 // open & create the mysql database
 exports.open = function(cfg, cb) {
   if (client) throw "database is already open!";
-  client = new mysql.Client();
   // mysql config requires
-  const defParams = {
+  var options = {
     host: '127.0.0.1',
     port: "3306",
     user: undefined,
@@ -99,9 +98,13 @@ exports.open = function(cfg, cb) {
     unit_test: false
   };
 
-  Object.keys(defParams).forEach(function(param) {
-    client[param] = cfg[param] !== undefined ? cfg[param] : defParams[param];
+  Object.keys(options).forEach(function(param) {
+    options[param] = (cfg[param] !== undefined ? cfg[param] : options[param]);
+    if (options[param] === undefined) delete options[param];
   });
+
+  // create the client
+  client = mysql.createClient(options);
 
   // let's figure out the database name
   var database = cfg.database;

@@ -50,6 +50,13 @@ suite.options.error = false;
 function addTestsForDriver(driver) {
   var dbPath = temp.path({suffix: '.db'});
 
+  const dbCfg = {
+    driver: driver,
+    user: "test",      // only pertinent for mysql
+    unit_test: "true", // causes mysql driver to use an ephemeral database and to delete on close
+    path: dbPath       // only pertinent for JSON
+  };
+
   if (driver === 'mysql') {
     // let's check to see if we can connect and render a nice
     // error message if not.  For community members making casual
@@ -57,7 +64,9 @@ function addTestsForDriver(driver) {
     // set up mysql.
     suite.addBatch({
       "mysql server": {
-        topic: function() { db.open({driver: driver, unit_test: true}, this.callback) },
+        topic: function() {
+          db.open(dbCfg, this.callback);
+        },
         "accepting connections": function(err) {
           if (err) {
             console.log("MYSQL TESTS WILL FAIL cause cannot connect to a local mysql database (" + err.message + ")");
@@ -84,7 +93,7 @@ function addTestsForDriver(driver) {
     },
     "opening the database": {
       topic: function() {
-        db.open({ driver: driver, unit_test: true, path: dbPath }, this.callback);
+        db.open(dbCfg, this.callback);
       },
       "and its ready": function(r) {
         assert.isUndefined(r);
@@ -468,4 +477,3 @@ files.forEach(function(f) {
 // run or export the suite.
 if (process.argv[1] === __filename) suite.run();
 else suite.export(module);
-
