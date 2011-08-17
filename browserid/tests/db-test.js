@@ -57,7 +57,7 @@ function addTestsForDriver(driver) {
     // set up mysql.
     suite.addBatch({
       "mysql server": {
-        topic: function() { db.open({driver: driver, unit_test: true}, this.callback) },
+        topic: function() { db.open({user: "test", driver: driver, unit_test: true}, this.callback) },
         "accepting connections": function(err) {
           if (err) {
             console.log("MYSQL TESTS WILL FAIL cause cannot connect to a local mysql database (" + err.message + ")");
@@ -84,7 +84,7 @@ function addTestsForDriver(driver) {
     },
     "opening the database": {
       topic: function() {
-        db.open({ driver: driver, unit_test: true, path: dbPath }, this.callback);
+        db.open({ user: "test", driver: driver, unit_test: true, path: dbPath }, this.callback);
       },
       "and its ready": function(r) {
         assert.isUndefined(r);
