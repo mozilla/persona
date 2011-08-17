@@ -61,7 +61,7 @@ fs = require('fs');
 // FIXME: separate logs depending on purpose?
 
 var log_path = configuration.get('log_path');
-var LOGGERS = [];
+var LOGGER;
 
 // simple inline function for creation of dirs
 function mkdir_p(p) {
@@ -71,20 +71,18 @@ function mkdir_p(p) {
   }
 }
 
-function setupLogger(category) {
+function setupLogger() {
+  // don't create the logger if it already exists
+  if (LOGGER) return;
+
   if (!log_path)
     return console.log("no log path! Not logging!");
   else
     mkdir_p(log_path);
 
+  var filename = path.join(log_path, "metrics.json");
 
-  // don't create the logger if it already exists
-  if (LOGGERS[category])
-    return;
-
-  var filename = path.join(log_path, category + "-log.txt");
-
-  LOGGERS[category] = new (winston.Logger)({
+  LOGGER = new (winston.Logger)({
       transports: [new (winston.transports.File)({filename: filename})]
     });
 }
@@ -96,22 +94,22 @@ exports.report = function(category, entry) {
     throw new Error("every log entry needs a type");
 
   // setup the logger if need be
-  setupLogger(category);
+  setupLogger();
 
   // timestamp
   entry.at = new Date().toUTCString();
 
   // if no logger, go to console (FIXME: do we really want to log to console?)
-  LOGGERS[category].info(JSON.stringify(entry));
+  LOGGER.info(JSON.stringify(entry));
 };
 
 // utility function to log a bunch of stuff at user entry point
 exports.userEntry = function(category, req) {
   exports.report(category, {
-      type: 'signin',
-      browser: req.headers['user-agent'],
-      rp: req.headers['referer'],
-      // IP address (this probably needs to be replaced with the X-forwarded-for value
-      ip: req.connection.remoteAddress
-    });
+    type: 'signin',
+    browser: req.headers['user-agent'],
+    rp: req.headers['referer'],
+    // IP address (this probably needs to be replaced with the X-forwarded-for value
+    ip: req.connection.remoteAddress
+  });
 };
