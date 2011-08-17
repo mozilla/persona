@@ -50,7 +50,6 @@ var LOGGERS = [];
 function mkdir_p(p) {
   if (!path.existsSync(p)) {
     mkdir_p(path.dirname(p));
-    console.log("mkdir", p);
     fs.mkdirSync(p, "0755");
   }
 }
@@ -74,7 +73,7 @@ function setupLogger(category) {
 }
 
 // entry is an object that will get JSON'ified
-exports.log = function(category, entry) {
+exports.report = function(category, entry) {
   // entry must have at least a type
   if (!entry.type)
     throw new Error("every log entry needs a type");
@@ -91,7 +90,7 @@ exports.log = function(category, entry) {
 
 // utility function to log a bunch of stuff at user entry point
 exports.userEntry = function(category, req) {
-  exports.log(category, {
+  exports.report(category, {
       type: 'signin',
       browser: req.headers['user-agent'],
       rp: req.headers['referer'],
