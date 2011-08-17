@@ -80,7 +80,7 @@ function setupLogger() {
   else
     mkdir_p(log_path);
 
-  var filename = path.join(log_path, "metrics.json");
+  var filename = path.join(log_path, configuration.get('process_type') + "-metrics.json");
 
   LOGGER = new (winston.Logger)({
       transports: [new (winston.transports.File)({filename: filename})]
