@@ -18,6 +18,8 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Ben Adida <ben@adida.net>
+ *   Lloyd Hilaiel <lloyd@hilaiel.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -32,6 +34,21 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+/*
+ * The metrics module is designed to report interesting events to a file.
+ * Metrics files from different production servers can then be aggregated
+ * and post processed to get an idea of the degree and ways that browserid is
+ * being used by the world, to facilitate capacity planning and changes
+ * to the software.
+ *
+ * NOTE: This is *not* a generic logging mechanism for low level events
+ * interesting only to debug or assess the health of a server.
+ *
+ * DOUBLE NOTE: Sensitive information shouldn't be
+ * reported through this mechanism, and it isn't necesary to do so given
+ * we're after general trends, not specifics.
+ */
 
 const
 winston = require("winston"),
