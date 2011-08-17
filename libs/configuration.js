@@ -56,46 +56,42 @@ exports.get = function(val) {
   return g_config[val];
 }
 
-var defaultHostedDatabaseConfig = {
-  driver: "mysql",
-  user: 'browserid'
+// *** the various deployment configurations ***
+const g_configs = { };
+
+// production is the configuration that runs on our
+// public service (browserid.org)
+g_configs.production = {
+  hostname: 'browserid.org',
+  port: '443',
+  scheme: 'https',
+  use_minified_resources: true,
+  log_path: '/home/browserid/var/',
+  database: {
+    driver: "mysql",
+    user: 'browserid'
+  }
 };
 
-// various deployment configurations
-const g_configs = {
-  production: {
-    hostname: 'browserid.org',
-    port: '443',
-    scheme: 'https',
-    use_minified_resources: true,
-    log_path: '/home/browserid/var/',
-    database: defaultHostedDatabaseConfig
-  },
-  development: {
-    hostname: 'dev.diresworb.org',
-    port: '443',
-    scheme: 'https',
-    use_minified_resources: true,
-    log_path: '/home/browserid/var/',
-    database: defaultHostedDatabaseConfig
-  },
-  beta: {
-    hostname: 'diresworb.org',
-    port: '443',
-    scheme: 'https',
-    use_minified_resources: true,
-    log_path: '/home/browserid/var/',
-    database: defaultHostedDatabaseConfig
-  },
-  local: {
-    hostname: '127.0.0.1',
-    port: '10002',
-    scheme: 'http',
-    email_to_console: true, // don't send email, just dump verification URLs to console.
-    use_minified_resources: false,
-    log_path: path.join(__dirname, "..", "var", "logs"),
-    database: { driver: "json" }
-  }
+// beta (diresworb.org) the only difference from production 
+// is the hostname
+g_configs.beta = JSON.parse(JSON.stringify(g_configs.production));
+g_configs.beta.hostname = 'diresworb.org';
+
+// development (dev.diresworb.org) the only difference from production 
+// is, again, the hostname
+g_configs.dev = JSON.parse(JSON.stringify(g_configs.production));
+g_configs.dev.hostname = 'dev.diresworb.org';
+
+// local development configuration
+g_configs.local =  {
+  hostname: '127.0.0.1',
+  port: '10002',
+  scheme: 'http',
+  email_to_console: true, // don't send email, just dump verification URLs to console.
+  use_minified_resources: false,
+  log_path: path.join(__dirname, "..", "var", "logs"),
+  database: { driver: "json" }
 };
 
 // default deployment is local
