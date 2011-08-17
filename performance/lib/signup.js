@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* this file is the "sighup" activity, which simulates the process of a new user
+/* this file is the "signup" activity, which simulates the process of a new user
  * signing up for browserid. */
 
 exports.startFunc = function(cfg, cb) {
