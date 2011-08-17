@@ -80,8 +80,8 @@ g_configs.beta.hostname = 'diresworb.org';
 
 // development (dev.diresworb.org) the only difference from production 
 // is, again, the hostname
-g_configs.dev = JSON.parse(JSON.stringify(g_configs.production));
-g_configs.dev.hostname = 'dev.diresworb.org';
+g_configs.development = JSON.parse(JSON.stringify(g_configs.production));
+g_configs.development.hostname = 'dev.diresworb.org';
 
 // local development configuration
 g_configs.local =  {
