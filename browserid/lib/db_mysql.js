@@ -63,7 +63,7 @@
 const
 mysql = require('mysql'),
 secrets = require('./secrets'),
-metrics = require('../../libs/metrics.js');
+logger = require('../../libs/logging.js').logger;
 
 var client = undefined;
 
@@ -83,7 +83,7 @@ function logUnexpectedError(detail) {
   var where;
   try { dne; } catch (e) { where = e.stack.split('\n')[2].trim(); };
   // now log it!
-  metrics.report('unexpected', { message: "unexpected database failure", detail: detail, where: where });
+  logger.error("unexpected database failure: " + detail + " -- " + where);
 }
 
 // open & create the mysql database
@@ -426,7 +426,7 @@ exports.pubkeysForEmail = function(email, cb) {
 exports.removeEmail = function(authenticated_email, email, cb) {
   exports.emailsBelongToSameAccount(authenticated_email, email, function(ok) {
     if (!ok) {
-      metrics.report('security', { msg: authenticated_email + ' attempted to delete an email that doesn\'t belong to her: ' + email });
+      logger.warn(authenticated_email + ' attempted to delete an email that doesn\'t belong to her: ' + email);
       cb("authenticated user doesn't have permission to remove specified email " + email);
       return;
     }
