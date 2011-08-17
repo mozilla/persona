@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -20,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Lloyd Hilaiel <lloyd@hilaiel.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,19 +34,45 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var   sys = require("sys"),
-     path = require("path"),
-       fs = require("fs"),
-  express = require("express");
+/*
+ * A very thin wrapper around winston for general server logging.
+ * Exports a winston Logger instance in exports.logger with several functions
+ * corresponding to different log levels.  use it like this:
+ * 
+ *     const logger = require('../libs/logging.js').logger;
+ *     logger.debug("you can probably ignore this.  just for debugging.");
+ *     logger.info("something happened, here's info about it!");
+ *     logger.warn("this isn't good.  it's not a fatal error, but needs attention");
+ *     logger.error("this isn't good at all.  I will probably crash soon.");
+ */
 
-var PRIMARY_HOST = "127.0.0.1";
-var PRIMARY_PORT = 62800;
+const
+winston = require("winston"),
+configuration = require("./configuration"),
+path = require('path'),
+fs = require('fs');
 
-var handler = require("./app.js");
+// go through the configuration and determine log location
+var log_path = configuration.get('log_path');
 
-var app = express.createServer();
+// simple inline function for creation of dirs
+function mkdir_p(p) {
+  if (!path.existsSync(p)) {
+    mkdir_p(path.dirname(p));
+    fs.mkdirSync(p, "0755");
+  }
+}
 
-// let the specific server interact directly with the express server to register their middleware
-if (handler.setup) handler.setup(app);
+mkdir_p(log_path);
 
-app.listen(PRIMARY_PORT, PRIMARY_HOST);
+var filename = path.join(log_path, configuration.get('process_type') + ".log");
+
+exports.logger = new (winston.Logger)({
+  transports: [new (winston.transports.File)({
+    filename: filename,
+    colorize: true
+  })]
+});
+
+exports.logger.emitErrs = false;
+

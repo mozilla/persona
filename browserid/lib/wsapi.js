@@ -43,7 +43,8 @@ db = require('./db.js'),
 url = require('url'),
 httputils = require('./httputils.js');
 email = require('./email.js'),
-bcrypt = require('bcrypt');
+bcrypt = require('bcrypt'),
+logger = require('../../libs/logging.js').logger;
 
 function checkParams(params) {
   return function(req, resp, next) {
@@ -61,7 +62,7 @@ function checkParams(params) {
         }
       });
     } catch(e) {
-      console.log("error : " + e.toString());
+      logger.error(e.toString());
       return httputils.badRequest(resp, "missing '" + e + "' argument");
     }
     next();
@@ -225,7 +226,7 @@ function setup(app) {
 
     db.removeEmail(req.session.authenticatedUser, email, function(error) {
       if (error) {
-        console.log("error removing email " + email);
+        logger.error("error removing email " + email);
         httputils.badRequest(resp, error.toString());
       } else {
         resp.json(true);
@@ -235,7 +236,7 @@ function setup(app) {
   app.post('/wsapi/account_cancel', checkAuthed, function(req, resp) {
     db.cancelAccount(req.session.authenticatedUser, function(error) {
       if (error) {
-        console.log("error cancelling account : " + error.toString());
+        logger.error("error cancelling account : " + error.toString());
         httputils.badRequest(resp, error.toString());
       } else {
         resp.json(true);
@@ -278,7 +279,7 @@ function setup(app) {
   app.get('/wsapi/prove_email_ownership', checkParams(["token"]), function(req, resp) {
     db.gotVerificationSecret(req.query.token, function(e) {
       if (e) {
-        console.log("error completing the verification: " + e);
+        logger.error("error completing the verification: " + e);
         resp.json(false);
       } else {
         resp.json(true);

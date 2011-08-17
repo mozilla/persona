@@ -43,24 +43,18 @@ var      sys = require("sys"),
         path = require("path"),
           fs = require("fs"),
      express = require("express"),
-substitution = require('./libs/substitute.js'),
-configuration = require('./libs/configuration.js');
+substitution = require('./libs/substitute.js');
+
+// when running under the harness, let's also output log messages to the terminal
+require('./libs/logging.js').logger.on('log', function(transport, level, msg, meta) {
+  console.log(level + ":", msg);
+});
+
+var configuration = require('./libs/configuration.js');
 
 var PRIMARY_HOST = "127.0.0.1";
 
 var boundServers = [ ];
-
-//
-// this is the test harness, don't send emails, dump them to stdout
-//
-var nodemailer = require('nodemailer');
-nodemailer.EmailMessage.prototype.send = function(callback) {
-  this.prepareVariables();
-  var headers = this.generateHeaders(),
-    body = this.generateBody();
-  console.log(headers);
-  console.log(body);
-};
 
 var subs = undefined;
 function substitutionMiddleware(req, resp, next) {
@@ -96,8 +90,6 @@ function substitutionMiddleware(req, resp, next) {
 
 function createServer(obj) {
   var app = express.createServer();
-
-  app.use(express.logger());
 
   // this file is a *test* harness, to make it go, we'll insert a little
   // handler that substitutes output, changing production URLs to
@@ -180,3 +172,4 @@ dirs.forEach(function(dirObj) {
   boundServers.push(so);
   console.log("  " + dirObj.name + ": " + formatLink(so.server));
 });
+

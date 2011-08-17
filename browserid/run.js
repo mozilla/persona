@@ -37,7 +37,8 @@
 
 var  path = require("path"),
 fs = require("fs"),
-express = require("express");
+express = require("express"),
+logger = require("../libs/logging.js").logger;
 
 const amMain = (process.argv[1] === __filename);
 

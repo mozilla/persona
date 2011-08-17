@@ -141,3 +141,7 @@ if (process.argv[1] == path.join(__dirname, "..", "browserid", "run.js")) {
   g_config['process_type'] = 'ephemeral';
 }
 
+// log the process_type
+setTimeout(function() {
+  require("./logging.js").logger.info("process type is " + g_config["process_type"]);
+}, 0);
