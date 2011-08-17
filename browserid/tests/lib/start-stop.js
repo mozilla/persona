@@ -107,6 +107,17 @@ exports.addShutdownBatches = function(suite) {
     }
   });
 
+  // stop the database
+  suite.addBatch({
+    "stop the database": {
+      topic: function() {
+        require("../../lib/db.js").close(this.callback);
+      },
+      "stopped": function(x) {
+        assert.isUndefined(x);
+      }
+    }
+  });
 
   // clean up
   suite.addBatch({
