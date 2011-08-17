@@ -72,11 +72,10 @@ function doVerify(req, resp, next) {
         audience,
         function(payload) {
           // log it!
-          metrics.report('verifier', {
-              type: 'verify',
-                result: 'success',
-                rp: payload.audience
-            });
+          metrics.report('verify', {
+            result: 'success',
+            rp: payload.audience
+          });
           
           result = {
             status : "okay",
@@ -88,21 +87,19 @@ function doVerify(req, resp, next) {
           resp.json(result);
         },
         function(errorObj) {
-          metrics.report('verifier', {
-              type: 'verify',
-                result: 'failure',
-                rp: audience
-            });
+          metrics.report('verify', {
+            result: 'failure',
+            rp: audience
+          });
           resp.json({ status: "failure", reason: errorObj });
         }
       );
   } catch (e) {
     console.log(e.stack);
-    metrics.report('verifier', {
-        type: 'verify',
-          result: 'failure',
-          rp: audience
-          });
+    metrics.report('verify', {
+      result: 'failure',
+      rp: audience
+    });
     resp.json({ status: "failure", reason: e.toString() });
   }
 }

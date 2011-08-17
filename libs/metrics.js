@@ -88,15 +88,18 @@ function setupLogger() {
 }
 
 // entry is an object that will get JSON'ified
-exports.report = function(category, entry) {
-  // entry must have at least a type
-  if (!entry.type)
-    throw new Error("every log entry needs a type");
-
+exports.report = function(type, entry) {
   // setup the logger if need be
   setupLogger();
 
+  // allow convenient reporting of atoms by converting
+  // atoms into objects
+  if (entry === null || typeof entry !== 'object') entry = { msg: entry };
+  if (entry.type) throw "reported metrics may not have a `type` property, that's reserved";
+  entry.type = type;
+
   // timestamp
+  if (entry.at) throw "reported metrics may not have an `at` property, that's reserved";
   entry.at = new Date().toUTCString();
 
   // if no logger, go to console (FIXME: do we really want to log to console?)
@@ -104,9 +107,8 @@ exports.report = function(category, entry) {
 };
 
 // utility function to log a bunch of stuff at user entry point
-exports.userEntry = function(category, req) {
-  exports.report(category, {
-    type: 'signin',
+exports.userEntry = function(req) {
+  exports.report('signin', {
     browser: req.headers['user-agent'],
     rp: req.headers['referer'],
     // IP address (this probably needs to be replaced with the X-forwarded-for value
