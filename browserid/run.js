@@ -54,10 +54,6 @@ exports.runServer = function() {
 
   app = express.createServer();
 
-  app.use(express.logger({
-    stream: fs.createWriteStream(path.join(handler.varDir, "server.log"))
-  }));
-
   // let the specific server interact directly with the connect server to register their middleware
   if (handler.setup) handler.setup(app);
 
