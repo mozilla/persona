@@ -18,6 +18,8 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Ben Adida <ben@adida.net>
+ *   Lloyd Hilaiel <lloyd@hilaiel.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -33,6 +35,21 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/*
+ * The metrics module is designed to report interesting events to a file.
+ * Metrics files from different production servers can then be aggregated
+ * and post processed to get an idea of the degree and ways that browserid is
+ * being used by the world, to facilitate capacity planning and changes
+ * to the software.
+ *
+ * NOTE: This is *not* a generic logging mechanism for low level events
+ * interesting only to debug or assess the health of a server.
+ *
+ * DOUBLE NOTE: Sensitive information shouldn't be
+ * reported through this mechanism, and it isn't necesary to do so given
+ * we're after general trends, not specifics.
+ */
+
 const
 winston = require("winston"),
 configuration = require("./configuration"),
@@ -44,58 +61,57 @@ fs = require('fs');
 // FIXME: separate logs depending on purpose?
 
 var log_path = configuration.get('log_path');
-var LOGGERS = [];
+var LOGGER;
 
 // simple inline function for creation of dirs
 function mkdir_p(p) {
   if (!path.existsSync(p)) {
     mkdir_p(path.dirname(p));
-    console.log("mkdir", p);
     fs.mkdirSync(p, "0755");
   }
 }
 
-function setupLogger(category) {
+function setupLogger() {
+  // don't create the logger if it already exists
+  if (LOGGER) return;
+
   if (!log_path)
     return console.log("no log path! Not logging!");
   else
     mkdir_p(log_path);
 
+  var filename = path.join(log_path, "metrics.json");
 
-  // don't create the logger if it already exists
-  if (LOGGERS[category])
-    return;
-
-  var filename = path.join(log_path, category + "-log.txt");
-
-  LOGGERS[category] = new (winston.Logger)({
+  LOGGER = new (winston.Logger)({
       transports: [new (winston.transports.File)({filename: filename})]
     });
 }
 
 // entry is an object that will get JSON'ified
-exports.log = function(category, entry) {
-  // entry must have at least a type
-  if (!entry.type)
-    throw new Error("every log entry needs a type");
-
+exports.report = function(type, entry) {
   // setup the logger if need be
-  setupLogger(category);
+  setupLogger();
+
+  // allow convenient reporting of atoms by converting
+  // atoms into objects
+  if (entry === null || typeof entry !== 'object') entry = { msg: entry };
+  if (entry.type) throw "reported metrics may not have a `type` property, that's reserved";
+  entry.type = type;
 
   // timestamp
+  if (entry.at) throw "reported metrics may not have an `at` property, that's reserved";
   entry.at = new Date().toUTCString();
 
   // if no logger, go to console (FIXME: do we really want to log to console?)
-  LOGGERS[category].info(JSON.stringify(entry));
+  LOGGER.info(JSON.stringify(entry));
 };
 
 // utility function to log a bunch of stuff at user entry point
-exports.userEntry = function(category, req) {
-  exports.log(category, {
-      type: 'signin',
-      browser: req.headers['user-agent'],
-      rp: req.headers['referer'],
-      // IP address (this probably needs to be replaced with the X-forwarded-for value
-      ip: req.connection.remoteAddress
-    });
+exports.userEntry = function(req) {
+  exports.report('signin', {
+    browser: req.headers['user-agent'],
+    rp: req.headers['referer'],
+    // IP address (this probably needs to be replaced with the X-forwarded-for value
+    ip: req.connection.remoteAddress
+  });
 };
