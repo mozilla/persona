@@ -75,6 +75,7 @@ suite.addBatch({
     },
     "account created": function(r, err) {
       assert.equal(r.code, 200);
+      assert.strictEqual(true, JSON.parse(r.body));
     }
   }
 });
@@ -120,6 +121,7 @@ suite.addBatch({
     },
     "account created": function(r, err) {
       assert.equal(r.code, 200);
+      assert.strictEqual(true, JSON.parse(r.body));
     }
   }
 });
@@ -187,6 +189,7 @@ suite.addBatch({
     },
     "account created": function(r, err) {
       assert.equal(r.code, 200);
+      assert.strictEqual(true, JSON.parse(r.body));
     }
   }
 });

@@ -213,12 +213,30 @@ exports.gotVerificationSecret = function(secret, cb) {
         var o = rows[0];
 
         function addEmailAndPubkey(userID) {
+          // issue #170 - delete any old records with the same
+          // email address.  this is necessary because
+          // gotVerificationSecret is invoked both for 
+          // forgotten password flows and for new user signups.
+          // We could add an `ON DUPLICATE KEY` clause, however
+          // We actually want to invalidate all old public keys.
+          //
+          // XXX: periodic database cleanup should remove old expired
+          // keys, but this is moot once we move to certs as the
+          // server won't know about old keys 
           client.query(
-            "INSERT INTO email(user, address) VALUES(?, ?)",
-            [ userID, o.email ],
+            "DELETE FROM email WHERE address = ?",
+            [ o.email ],
             function(err, info) {
               if (err) { logUnexpectedError(err); cb(err); return; }
-              addKeyToEmailRecord(info.insertId, o.pubkey, cb);
+              else {
+                client.query(
+                  "INSERT INTO email(user, address) VALUES(?, ?)",
+                  [ userID, o.email ],
+                  function(err, info) {
+                    if (err) { logUnexpectedError(err); cb(err); return; }
+                    addKeyToEmailRecord(info.insertId, o.pubkey, cb);
+                  });
+              }
             });
         }
 
