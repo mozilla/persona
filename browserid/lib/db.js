@@ -33,6 +33,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var logger = require('../../libs/logging.js').logger;
+
 var driver;
 
 var ready = false;
@@ -60,7 +62,7 @@ exports.open = function(cfg, cb) {
     if (error) {
       if (cb) cb(error);
       else {
-        console.log("ERROR:" + error);
+        logger.error(error);
         process.exit(1);
       }
     } else {

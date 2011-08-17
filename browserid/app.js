@@ -54,7 +54,10 @@ secrets = require('./lib/secrets.js'),
 db = require('./lib/db.js'),
 configuration = require('../libs/configuration.js'),
 substitution = require('../libs/substitute.js');
-metrics = require("../libs/metrics.js");
+metrics = require("../libs/metrics.js"),
+logger = require("../libs/logging.js").logger;
+
+logger.info("browserid server starting up");
 
 // open the databse
 db.open(configuration.get('database'));
@@ -147,7 +150,7 @@ function router(app) {
   });
 
   app.get('/code_update', function(req, resp, next) {
-    console.log("code updated.  shutting down.");
+    logger.warn("code updated.  shutting down.");
     process.exit();
   });
 };
@@ -155,6 +158,16 @@ function router(app) {
 exports.varDir = VAR_DIR;
 
 exports.setup = function(server) {
+  // request to logger, dev formatted which omits personal data in the requests
+  server.use(express.logger({
+    format: 'dev',
+    stream: {
+      write: function(x) {
+        logger.info(typeof x === 'string' ? x.trim() : x);
+      }
+    }
+  }));
+
   // over SSL?
   var overSSL = (configuration.get('scheme') == 'https');
   
@@ -183,7 +196,7 @@ exports.setup = function(server) {
     try {
       cookieSessionMiddleware(req, resp, next);
     } catch(e) {
-      console.log("invalid cookie found: ignoring");
+      logger.info("invalid cookie found: ignoring");
       delete req.cookies[COOKIE_KEY];
       cookieSessionMiddleware(req, resp, next);
     }

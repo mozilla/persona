@@ -39,7 +39,8 @@ emailer = require('nodemailer'),
 fs = require('fs'),
 path = require('path'),
 mustache = require('mustache'),
-config = require('../../libs/configuration.js');
+config = require('../../libs/configuration.js'),
+logger = require('../../libs/logging.js').logger;
 
 const template = fs.readFileSync(path.join(__dirname, "prove_template.txt")).toString();
 
@@ -76,8 +77,8 @@ exports.sendVerificationEmail = function(email, site, secret) {
       body: mustache.to_html(template, { email: email, link: url, site: site })
     }, function(err, success){
       if(!success) {
-        console.log("error sending email: ", err);
-        console.log("verification URL: ", url);
+        logger.error("error sending email: " + err);
+        logger.error("verification URL: " + url);
       }
     });
   };

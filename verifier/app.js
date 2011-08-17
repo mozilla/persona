@@ -40,7 +40,10 @@ const   path = require('path'),
  idassertion = require('./lib/idassertion.js'),
          jwt = require('./lib/jwt.js'),
      express = require('express');
-     metrics = require('../libs/metrics.js');
+     metrics = require('../libs/metrics.js'),
+     logger = require('../libs/logging.js').logger;
+
+logger.info("verifier server starting up");
 
 // create the var directory if it doesn't exist
 var VAR_DIR = path.join(__dirname, "var");
@@ -95,7 +98,8 @@ function doVerify(req, resp, next) {
         }
       );
   } catch (e) {
-    console.log(e.stack);
+    // XXX: is this really a warning, or is it just informational
+    logger.warn(e.stack);
     metrics.report('verify', {
       result: 'failure',
       rp: audience
@@ -107,13 +111,24 @@ function doVerify(req, resp, next) {
 exports.varDir = VAR_DIR;
 
 exports.setup = function(app) {
+  // request to logger, dev formatted which omits personal data in the requests
+
+  app.use(express.logger({
+    format: 'dev',
+    stream: {
+      write: function(x) {
+        logger.info(typeof x === 'string' ? x.trim() : x);
+      }
+    }
+  }));
+
   app.use(express.bodyParser());
 
   // code_update is an internal api that causes the node server to
   // shut down.  This should never be externally accessible and
   // is used during the dead simple deployment procedure.
   app.get("/code_update", function (req, resp) {
-    console.log("code updated.  shutting down.");
+    logger.warn("code updated.  shutting down.");
     process.exit();
   });
 

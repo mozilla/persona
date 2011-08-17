@@ -130,3 +130,18 @@ exports.performSubstitution = function(app) {
   }
 };
 
+// At the time this file is required, we'll determine the "process name" for this proc
+// if we can determine what type of process it is (browserid or verifier) based
+// on the path, we'll use that, otherwise we'll name it 'ephemeral'.  
+if (process.argv[1] == path.join(__dirname, "..", "browserid", "run.js")) {
+  g_config['process_type'] = 'browserid';
+} else if (process.argv[1] == path.join(__dirname, "..", "verifier", "run.js")) {
+  g_config['process_type'] = 'verifier';
+} else {
+  g_config['process_type'] = 'ephemeral';
+}
+
+// log the process_type
+setTimeout(function() {
+  require("./logging.js").logger.info("process type is " + g_config["process_type"]);
+}, 0);
