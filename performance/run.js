@@ -48,9 +48,7 @@ var argv = require('optimist')
 .describe('h', 'display this usage message')
 .alias('m', 'max')
 .describe('m', 'maximum active users to simulate (0 == infinite)')
-.default('m', 1000)
-.describe('o', 'maximum *outstanding* activities to allow')
-.default('o', 100)
+.default('m', 10000)
 .alias('s', 'server')
 .describe('s', 'base URL to browserid server')
 .demand('s')
@@ -80,9 +78,15 @@ var averages = [
   0.0
 ];
 
+// outstanding incomplete activites
+var outstanding = 0;
+
 // activities complete since the last poll
 var completed = {
 };
+
+// how many activies does an active user undertake per second
+const activitiesPerUserPerSecond = (40.0 / ( 24 * 60 * 60 )); 
 
 // activities
 var activity = { 
@@ -144,6 +148,9 @@ Object.keys(activity).forEach(function(k) {
   }
 })();
 
+// a global count of how many poll iterations have been completed
+var iterations = 0;
+
 function poll() {
   function startNewActivity() {
     // what type of activity is this?
@@ -156,22 +163,95 @@ function poll() {
       }
     }
     // start the activity!
+    outstanding++;
     activity[act].startFunc(configuration, function() {
-      console.log(act, "complete");
+      outstanding--;
+      if (undefined === completed[act]) completed[act] = 0;
+      completed[act]++;
     });
   }
 
-  // XXX: next work to be done is here.  upon each call to poll we must:
-  // 1. update running averages based on activites completed while we
-  //    were sleeping.
-  // 2. 
-  // 3. determine how many activities to start based on throttling,
-  //    current outstanding, and current active users being simulated
-  // 4. start those activities
-  // 5. schedule another poll 1s from the time the last was started
+  function updateAverages(elapsed) {
+    if (!iterations) return;
 
-  // XXX: test...
-  for (var i = 0; i < 100; i++) startNewActivity();
+    var numActCompleted = 0;
+    Object.keys(completed).forEach(function(k) { numActCompleted += completed[k]; });
+    completed = { };
+    var avgUsersThisPeriod = (numActCompleted / activitiesPerUserPerSecond) * (elapsed / 1000);
+
+    // the 1s average is a goldfish.
+    averages[0] = avgUsersThisPeriod;
+
+    // for 5s and 60s averages, a little special logic to handle cases
+    // where we don't have enough history to dampen based on past performance
+    var i = 5 > iterations ? iterations * 1.0 : 5.0;
+    averages[1] = ((i-1) * averages[1] + avgUsersThisPeriod) / i;
+    var i = 60 > iterations ? iterations * 1.0 : 60.0;
+    averages[2] = ((i-1) * averages[2] + avgUsersThisPeriod) / i;
+  }
+
+  function outputAverages() {
+    console.log("\t", averages[0].toFixed(2),
+                "\t", averages[1].toFixed(2),
+                "\t", averages[2].toFixed(2));
+  }
+
+  // ** how much time has elapsed since the last poll?
+  var elapsed;
+  {
+    var now = new Date();
+    elapsed = now - lastPoll;
+    lastPoll = now;
+  }
+
+  // ** update running averages **
+  updateAverages(elapsed);
+
+  // ** determine how many activities to start **
+
+  // how many active users would we like to simulate
+  var targetActive = args.m;
+  
+  // if we're not throttled, then we'll trying 150% as many as
+  // we're simulating right now.  If we're not simulating at least
+  // 10000 active users, that shall be our lower bound
+  if (!targetActive) {
+    if (averages[0] > 10000) targetActive = averages[0] * 1.5; 
+    else targetActive = 10000;
+  }
+
+  // now how many new activities do we want to start?
+  var newAct = activitiesPerUserPerSecond * targetActive;
+
+  // scale based on how much time has elapsed since the last poll
+  // on every iteration except the first
+  if (iterations) newAct *= (elapsed / 1000);
+
+  // probabilistic rounding
+  {
+    var add = (newAct % 1.0) < Math.random() ? 0 : 1;
+    newAct = Math.floor(newAct) + add;
+  }
+
+  // ** start activities **
+
+  // start the new activites until they're all started, or until we've
+  // got twice as many outstanding as would be required by the target we
+  // want to hit (which means the server can't keep up). 
+  while (newAct >= 1.0 && outstanding < (activitiesPerUserPerSecond * targetActive * 2)) {
+    startNewActivity();
+    newAct--;
+  }
+
+  // ** schedule another wake up
+  var wakeUpIn = 1000 - (new Date() - lastPoll);
+  setTimeout(poll, wakeUpIn);
+
+  // display averages
+  outputAverages();
+
+  iterations++;
 }
 
-poll();
+console.log("Average active users simulated over the last 1s/5s/60s:");
+setTimeout(poll, 1);
