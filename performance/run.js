@@ -64,8 +64,8 @@ if (args.h) {
 
 // global configuration
 const configuration = {
-  verifier: argv.v ? argv.v : argv.s + "/verify",
-  browserid: argv.s
+  verifier: args.v ? args.v : args.s + "/verify",
+  browserid: args.s
 };
 
 // last time we updated stats and added work if necc.
@@ -164,18 +164,23 @@ function poll() {
     }
     // start the activity!
     outstanding++;
-    activity[act].startFunc(configuration, function() {
+    activity[act].startFunc(configuration, function(success) {
       outstanding--;
-      if (undefined === completed[act]) completed[act] = 0;
-      completed[act]++;
+      if (undefined === completed[act]) completed[act] = [ 0, 0 ];
+      completed[act][success ? 0 : 1]++;
     });
   }
+
+  var numErrors = 0;
 
   function updateAverages(elapsed) {
     if (!iterations) return;
 
     var numActCompleted = 0;
-    Object.keys(completed).forEach(function(k) { numActCompleted += completed[k]; });
+    Object.keys(completed).forEach(function(k) {
+      numActCompleted += completed[k][0];
+      numErrors += completed[k][1];
+    });
     completed = { };
     var avgUsersThisPeriod = (numActCompleted / activitiesPerUserPerSecond) * (elapsed / 1000);
 
@@ -193,7 +198,8 @@ function poll() {
   function outputAverages() {
     console.log("\t", averages[0].toFixed(2),
                 "\t", averages[1].toFixed(2),
-                "\t", averages[2].toFixed(2));
+                "\t", averages[2].toFixed(2),
+                "\t", numErrors ? "(" + numErrors + " ERRORS!)" : "");
   }
 
   // ** how much time has elapsed since the last poll?
