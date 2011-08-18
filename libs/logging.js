@@ -76,3 +76,6 @@ exports.logger = new (winston.Logger)({
 
 exports.logger.emitErrs = false;
 
+exports.enableConsoleLogging = function() {
+  exports.logger.add(winston.transports.Console, { colorize: true });
+};

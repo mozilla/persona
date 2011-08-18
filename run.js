@@ -46,9 +46,7 @@ var      sys = require("sys"),
 substitution = require('./libs/substitute.js');
 
 // when running under the harness, let's also output log messages to the terminal
-require('./libs/logging.js').logger.on('log', function(transport, level, msg, meta) {
-  console.log(level + ":", msg);
-});
+require('./libs/logging.js').enableConsoleLogging();
 
 var configuration = require('./libs/configuration.js');
 
