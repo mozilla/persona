@@ -68,7 +68,7 @@ exports.sendVerificationEmail = function(email, site, secret) {
     interceptor(email, site, secret);
   } else if (config.get('email_to_console')) {
     // log verification email to console separated by whitespace.
-    console.log("\n", "VERIFICATION URL:", url, "\n");
+    console.log("\nVERIFICATION URL:\n" + url + "\n");
   } else {
     emailer.send_mail({
       sender: "noreply@browserid.org",
