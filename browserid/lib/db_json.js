@@ -42,14 +42,14 @@ const
 path = require('path'),
 fs = require('fs'),
 secrets = require('./secrets'),
-jsel = require('JSONSelect');
+jsel = require('JSONSelect'),
+logger = require('../../libs/logging.js').logger,
+configuration = require('../../libs/configuration.js');
 
 // a little alias for stringify
 const ESC = JSON.stringify;
 
-var VAR_DIR = path.join(path.dirname(__dirname), "var");
-
-var dbPath = path.join(VAR_DIR, "authdb.json");
+var dbPath = path.join(configuration.get('var_path'), "authdb.json");
 
 /* The JSON database. The structure is thus:
  *  [
@@ -75,7 +75,11 @@ var stagedEmails = { };
 var staged = { };
 
 function flush() {
-  fs.writeFileSync(dbPath, JSON.stringify(db));
+  try {
+    var e = fs.writeFileSync(dbPath, JSON.stringify(db));
+  } catch (e) {
+    logger.error("Cannot save database to " + dbPath);
+  }
 }
 
 // when should a key created right now expire?
