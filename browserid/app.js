@@ -37,7 +37,6 @@ const
 fs = require('fs'),
 path = require('path'),
 url = require('url'),
-crypto = require('crypto'),
 wsapi = require('./lib/wsapi.js'),
 httputils = require('./lib/httputils.js'),
 webfinger = require('./lib/webfinger.js'),
@@ -86,15 +85,6 @@ function router(app) {
   // simple redirects (internal for now)
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
 
-  // return the CSRF token
-  // IMPORTANT: this should be safe because it's only readable by same-origin code
-  // but we must be careful that this is never a JSON structure that could be hijacked
-  // by a third party
-  app.get('/csrf', function(req, res) {
-    res.write(req.session.csrf);
-    res.end();
-  });
-
   app.get('/', function(req,res) {
     res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});
   });
@@ -116,7 +106,7 @@ function router(app) {
   });
 
   app.get(/^\/manage(\.html)?$/, function(req,res) {
-    res.render('manage.ejs', {title: 'My Account', fullpage: false, csrf: req.session.csrf});
+    res.render('manage.ejs', {title: 'My Account', fullpage: false});
   });
 
   app.get(/^\/tos(\.html)?$/, function(req, res) {
@@ -166,7 +156,7 @@ exports.setup = function(server) {
     secret: COOKIE_SECRET,
     key: COOKIE_KEY,
     cookie: {
-      path: '/',
+      path: '/wsapi',
       httpOnly: true,
       // IMPORTANT: we allow users to go 1 weeks on the same device
       // without entering their password again
@@ -177,29 +167,43 @@ exports.setup = function(server) {
 
   // cookie sessions
   server.use(function(req, resp, next) {
-    // we set this parameter so the connect-cookie-session
-    // sends the cookie even though the local connection is HTTP
-    // (the load balancer does SSL)
-    if (overSSL)
-      req.connection.proxySecure = true;
+    // cookie sessions are only applied to calls to /wsapi
+    // as all other resources can be aggressively cached
+    // by layers higher up based on cache control headers.
+    // the fallout is that all code that interacts with sessions
+    // should be under /wsapi
+    if (/^\/wsapi/.test(req.url)) {
+      // we set this parameter so the connect-cookie-session
+      // sends the cookie even though the local connection is HTTP
+      // (the load balancer does SSL)
+      if (overSSL)
+        req.connection.proxySecure = true;
 
-    return cookieSessionMiddleware(req, resp, next);
+      return cookieSessionMiddleware(req, resp, next);
+
+    } else {
+      return next();
+    }
   });
 
   server.use(express.bodyParser());
 
-  // we make sure that everyone has a session, otherwise we can't do CSRF properly
+  // Check CSRF token early.  POST requests are only allowed to
+  // /wsapi and they always must have a valid csrf token
   server.use(function(req, resp, next) {
-    if (typeof req.session == 'undefined')
-      req.session = {};
-
-    if (typeof req.session.csrf == 'undefined') {
-      // FIXME: using express-csrf's approach for generating randomness
-      // not awesome, but probably sufficient for now.
-      req.session.csrf = crypto.createHash('md5').update('' + new Date().getTime()).digest('hex');
+    // only on POSTs
+    if (req.method == "POST") {
+      if (!/^\/wsapi/.test(req.url) || // post requests only allowed to /wsapi
+          req.session === undefined || // there must be a session
+          typeof req.session.csrf !== 'string' || // the session must have a csrf token
+          req.body.csrf != req.session.csrf) // and the token must match what is sent in the post body
+      {
+        // if any of these things are false, then we'll block the request
+        logger.warn("CSRF validation failure.");
+        return httputils.badRequest(resp, "CSRF violation");
+      }
     }
-
-    next();
+    return next();
   });
 
   // a tweak to get the content type of host-meta correct
@@ -222,19 +226,6 @@ exports.setup = function(server) {
   // prevent framing
   server.use(function(req, resp, next) {
     resp.setHeader('x-frame-options', 'DENY');
-    next();
-  });
-
-  // check CSRF token
-  server.use(function(req, resp, next) {
-    // only on POSTs
-    if (req.method == "POST") {
-      if (req.body.csrf != req.session.csrf) {
-        // error, problem with CSRF
-        throw new Error("CSRF violation - " + req.body.csrf + '/' + req.session.csrf);
-      }
-    }
-
     next();
   });
 

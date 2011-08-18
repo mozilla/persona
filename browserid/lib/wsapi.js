@@ -44,6 +44,7 @@ url = require('url'),
 httputils = require('./httputils.js');
 email = require('./email.js'),
 bcrypt = require('bcrypt'),
+crypto = require('crypto'),
 logger = require('../../libs/logging.js').logger;
 
 function checkParams(params) {
@@ -84,6 +85,27 @@ function checkAuthed(req, resp, next) {
 }
 
 function setup(app) {
+  // return the CSRF token
+  // IMPORTANT: this should be safe because it's only readable by same-origin code
+  // but we must be careful that this is never a JSON structure that could be hijacked
+  // by a third party
+  app.get('/wsapi/csrf', function(req, res) {
+    if (typeof req.session == 'undefined') {
+      req.session = {};
+    }
+
+    if (typeof req.session.csrf == 'undefined') {
+      // FIXME: using express-csrf's approach for generating randomness
+      // not awesome, but probably sufficient for now.
+      req.session.csrf = crypto.createHash('md5').update('' + new Date().getTime()).digest('hex');
+      logger.debug("NEW csrf token created: " + req.session.csrf);
+    }
+
+    res.write(req.session.csrf);
+    res.end();
+  });
+
+
   /* checks to see if an email address is known to the server
    * takes 'email' as a GET argument */
   app.get('/wsapi/have_email', function(req, resp) {
