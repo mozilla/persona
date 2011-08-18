@@ -43,11 +43,10 @@ var csrf = undefined;
 // execute a function with a csrf token, fetching it if required
 function withCSRF(cb) {
   if (csrf === undefined) {
-    $.get("/wsapi/csrf", function(result) {
-      alert(result);
-      csrf = result.body;
+    $.get("/wsapi/csrf", {}, function(result) {
+      csrf = result;
       cb();
-    });
+    }, 'html');
   } else {
     setTimeout(cb, 0);
   }
