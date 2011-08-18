@@ -41,7 +41,6 @@ crypto = require('crypto'),
 wsapi = require('./lib/wsapi.js'),
 httputils = require('./lib/httputils.js'),
 webfinger = require('./lib/webfinger.js'),
-//sessions = require('cookie-sessions'),
 sessions = require('connect-cookie-session'),
 express = require('express'),
 secrets = require('./lib/secrets.js'),
@@ -182,13 +181,7 @@ exports.setup = function(server) {
     if (overSSL)
       req.connection.proxySecure = true;
 
-    try {
-      cookieSessionMiddleware(req, resp, next);
-    } catch(e) {
-      logger.info("invalid cookie found: ignoring");
-      delete req.cookies[COOKIE_KEY];
-      cookieSessionMiddleware(req, resp, next);
-    }
+    return cookieSessionMiddleware(req, resp, next);
   });
 
   server.use(express.bodyParser());
