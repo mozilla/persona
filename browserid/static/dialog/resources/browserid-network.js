@@ -168,7 +168,7 @@ var BrowserIDNetwork = (function() {
         type: "POST",
         url: '/wsapi/sync_emails',
         data: {
-          emails: JSON.stringify(issued_identities),
+          emails: issued_identities,
           csrf: BrowserIDNetwork.csrf_token
         },
         success: function(resp, textStatus, jqXHR) {
