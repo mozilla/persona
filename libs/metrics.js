@@ -60,7 +60,7 @@ fs = require('fs');
 // for now we only log to one place
 // FIXME: separate logs depending on purpose?
 
-var log_path = configuration.get('log_path');
+var log_path = path.join(configuration.get('var_path'), 'log');
 var LOGGER;
 
 // simple inline function for creation of dirs
