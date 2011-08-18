@@ -132,13 +132,12 @@ PageController.extend("Dialog", {}, {
       var haveIDs = _.keys(getEmails()).length > 0;
       var self = this;
 
-      // wherever shall we start?
-      if (haveIDs) {
-        this.doSignIn();
-      } else {
-        // do we even need to authenticate?
-        this.doCheckAuth();
-      }
+      // we should always check to see whether we're authenticated
+      // at dialog start. issue #74.
+      //
+      // (lth) XXX: we could include both csrf token and auth status
+      // in the intial resource serving to reduce network requests.
+      this.doCheckAuth();
     },
       
     doCancel: function() {

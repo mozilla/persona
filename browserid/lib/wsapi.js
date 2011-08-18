@@ -253,10 +253,16 @@ function setup(app) {
     // if they're authenticated for an email address that we don't know about,
     // then we should purge the stored cookie
     if (!isAuthed(req)) {
+      logger.debug("user is not authenticated");
       resp.json(false);
     } else {
       db.emailKnown(req.session.authenticatedUser, function (known) {
-        if (!known) req.session = {}
+        if (!known) {
+          logger.debug("user is authenticated with an email that doesn't exist in the database");
+          req.session = {};
+        } else {
+          logger.debug("user is authenticated");
+        }
         resp.json(known);
       });
     }
