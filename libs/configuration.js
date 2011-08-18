@@ -94,6 +94,13 @@ g_configs.local =  {
   database: { driver: "json" }
 };
 
+// test environments are variations on local
+g_configs.test_json = JSON.parse(JSON.stringify(g_configs.local));
+g_configs.test_json.database = { driver: "json", unit_test: true }; 
+
+g_configs.test_mysql = JSON.parse(JSON.stringify(g_configs.local));
+g_configs.test_mysql.database = { driver: "mysql", user: "test", unit_test: true }; 
+
 // default deployment is local
 if (undefined === process.env['NODE_ENV']) {
   process.env['NODE_ENV'] = 'local';
