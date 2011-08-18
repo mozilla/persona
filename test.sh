@@ -8,11 +8,16 @@ fi
 
 for env in test_json test_mysql ; do
   export NODE_ENV=$env
-  echo "Testing with NODE_ENV=$env"
-  for file in browserid/tests/*.js ; do
-      vows $file
-      if [[ $? != 0 ]] ; then
-          exit 1
-      fi
-  done
+  ./scripts/test_db_connectivity.js
+  if [ $? = 0 ] ; then 
+      echo "Testing with NODE_ENV=$env"
+      for file in browserid/tests/*.js ; do
+          vows $file
+          if [[ $? != 0 ]] ; then
+              exit 1
+          fi
+      done
+  else
+      echo "CANNOT TEST '$env' ENVIRONMENT: can't connect to the database"
+  fi
 done
