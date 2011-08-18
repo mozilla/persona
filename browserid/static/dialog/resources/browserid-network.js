@@ -36,36 +36,40 @@
  * ***** END LICENSE BLOCK ***** */
 "use strict";
 var BrowserIDNetwork = (function() {
-  var Network = {
-    csrf: function(onSuccess) {
+  var csrf_token = undefined;
+  function withCSRF(cb) {
+    if (csrf_token) setTimeout(cb, 0);
+    else {
       $.get('/wsapi/csrf', {}, function(result) {
-        BrowserIDNetwork.csrf_token = result;
-        if(onSuccess) {
-          onSuccess();
-        }
+        csrf_token = result;
+        cb();
       });
-    },
+    }
+  }
 
+  var Network = {
     setOrigin: function(origin) {
       BrowserIDNetwork.origin = filterOrigin(origin);
     },
 
     authenticate: function(email, password, onSuccess, onFailure) {
-      $.ajax({
-        type: "POST",
-        url: '/wsapi/authenticate_user',
-        data: {
-          email: email,
-          pass: password,
-          csrf: BrowserIDNetwork.csrf_token
-        },
-        success: function(status, textStatus, jqXHR) {
-          if(onSuccess) {
-            var authenticated = JSON.parse(status);
-            onSuccess(authenticated);
-          }
-        },
-        error: onFailure
+      withCSRF(function() { 
+        $.ajax({
+          type: "POST",
+          url: '/wsapi/authenticate_user',
+          data: {
+            email: email,
+            pass: password,
+            csrf: csrf_token
+          },
+          success: function(status, textStatus, jqXHR) {
+            if(onSuccess) {
+              var authenticated = JSON.parse(status);
+              onSuccess(authenticated);
+            }
+          },
+          error: onFailure
+        });
       });
     },
 
@@ -82,17 +86,19 @@ var BrowserIDNetwork = (function() {
     },
 
     logout: function(onSuccess) {
-      $.post("/wsapi/logout", {
-        csrf: BrowserIDNetwork.csrf_token
-      }, 
-      function() {
-        BrowserIDNetwork.csrf();
-        onSuccess();
+      withCSRF(function() { 
+        $.post("/wsapi/logout", {
+          csrf: csrf_token
+        }, 
+        function() {
+          onSuccess();
+        });
       });
     },
 
     stageUser: function(email, password, keypair, onSuccess, onFailure) {
-      $.ajax({
+      withCSRF(function() { 
+        $.ajax({
           type: "post",
           url: '/wsapi/stage_user',
           data: {
@@ -100,26 +106,28 @@ var BrowserIDNetwork = (function() {
             pass: password,
             pubkey : keypair.pub,
             site : BrowserIDNetwork.origin,
-            csrf : BrowserIDNetwork.csrf_token
+            csrf : csrf_token
           },
           success: onSuccess,
           error: onFailure
         });
-
+      });
     },
 
     addEmail: function(email, keypair, onSuccess, onFailure) {
-      $.ajax({
-        type: 'POST',
-        url: '/wsapi/add_email',
-        data: {
-          email: email,
-          pubkey: keypair.pub,
-          site: BrowserIDNetwork.origin,
-          csrf: BrowserIDNetwork.csrf_token
-        },
-        success: onSuccess,
-        error: onFailure
+      withCSRF(function() { 
+        $.ajax({
+          type: 'POST',
+          url: '/wsapi/add_email',
+          data: {
+            email: email,
+            pubkey: keypair.pub,
+            site: BrowserIDNetwork.origin,
+            csrf: csrf_token
+          },
+          success: onSuccess,
+          error: onFailure
+        });
       });
     },
 
@@ -149,69 +157,66 @@ var BrowserIDNetwork = (function() {
     },
 
     setKey: function(email, keypair, onSuccess, onError) {
-      $.ajax({
-        type: 'POST',
-        url: '/wsapi/set_key',
-        data: {
-          email: email,
-          pubkey: keypair.pub,
-          csrf: BrowserIDNetwork.csrf_token
-        },
-        success: onSuccess,
-        error: onError
+      withCSRF(function() { 
+        $.ajax({
+          type: 'POST',
+          url: '/wsapi/set_key',
+          data: {
+            email: email,
+            pubkey: keypair.pub,
+            csrf: csrf_token
+          },
+          success: onSuccess,
+          error: onError
+        });
       });
-
     },
 
     syncEmails: function(issued_identities, onKeySyncSuccess, onKeySyncFailure, onSuccess, onFailure) {
-      $.ajax({
-        type: "POST",
-        url: '/wsapi/sync_emails',
-        data: {
-          emails: issued_identities,
-          csrf: BrowserIDNetwork.csrf_token
-        },
-        success: function(resp, textStatus, jqXHR) {
-          // first remove idenitites that the server doesn't know about
-          if (resp.unknown_emails) {
-            _(resp.unknown_emails).each(function(email_address) {
+      withCSRF(function() { 
+        $.ajax({
+          type: "POST",
+          url: '/wsapi/sync_emails',
+          data: {
+            emails: issued_identities,
+            csrf: csrf_token
+          },
+          success: function(resp, textStatus, jqXHR) {
+            // first remove idenitites that the server doesn't know about
+            if (resp.unknown_emails) {
+              _(resp.unknown_emails).each(function(email_address) {
                 removeEmail(email_address);
               });
-          }
-
-          // now let's begin iteratively re-keying the emails mentioned in the server provided list
-          var emailsToAdd = resp.key_refresh;
-          
-          function addNextEmail() {
-            if (!emailsToAdd || !emailsToAdd.length) {
-              onSuccess();
-              return;
             }
 
-            // pop the first email from the list
-            var email = emailsToAdd.shift();
-            var keypair = CryptoStubs.genKeyPair();
+            // now let's begin iteratively re-keying the emails mentioned in the server provided list
+            var emailsToAdd = resp.key_refresh;
+            
+            function addNextEmail() {
+              if (!emailsToAdd || !emailsToAdd.length) {
+                onSuccess();
+                return;
+              }
 
-            BrowserIDNetwork.setKey(email, keypair, function() {
-              // update emails list and commit to local storage, then go do the next email
-              onKeySyncSuccess(email, keypair);
-              addNextEmail();
-            }, onKeySyncFailure);
-          }
+              // pop the first email from the list
+              var email = emailsToAdd.shift();
+              var keypair = CryptoStubs.genKeyPair();
 
-          addNextEmail();
-        },
-        error: onFailure
-      }
-    );
+              BrowserIDNetwork.setKey(email, keypair, function() {
+                // update emails list and commit to local storage, then go do the next email
+                onKeySyncSuccess(email, keypair);
+                addNextEmail();
+              }, onKeySyncFailure);
+            }
 
-
+            addNextEmail();
+          },
+          error: onFailure
+        });
+      });
     }
   };
 
-  $(function() {
-    Network.csrf();
-  });
   return Network;
 
   function filterOrigin(origin) {
