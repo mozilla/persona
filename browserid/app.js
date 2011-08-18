@@ -197,6 +197,7 @@ exports.setup = function(server) {
       // FIXME: using express-csrf's approach for generating randomness
       // not awesome, but probably sufficient for now.
       req.session.csrf = crypto.createHash('md5').update('' + new Date().getTime()).digest('hex');
+      logger.debug("NEW csrf token created: " + req.session.csrf);
     }
 
     next();
@@ -228,14 +229,13 @@ exports.setup = function(server) {
   // check CSRF token
   server.use(function(req, resp, next) {
     // only on POSTs
-    if (req.method == "POST") {
-      if (req.body.csrf != req.session.csrf) {
-        // error, problem with CSRF
-        throw new Error("CSRF violation - " + req.body.csrf + '/' + req.session.csrf);
-      }
+    if (req.method == "POST" && req.body.csrf != req.session.csrf) {
+      // error, problem with CSRF
+      logger.warn("CSRF token mismatch.  got:" + req.body.csrf + " wanted:" + req.session.csrf);
+      httputils.badRequest(resp, "CSRF violation");
+    } else {
+      next();
     }
-
-    next();
   });
 
   // add middleware to re-write urls if needed
