@@ -38,7 +38,7 @@
 var BrowserIDNetwork = (function() {
   var Network = {
     csrf: function(onSuccess) {
-      $.get('/csrf', {}, function(result) {
+      $.get('/wsapi/csrf', {}, function(result) {
         BrowserIDNetwork.csrf_token = result;
         if(onSuccess) {
           onSuccess();
