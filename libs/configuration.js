@@ -66,7 +66,7 @@ g_configs.production = {
   port: '443',
   scheme: 'https',
   use_minified_resources: true,
-  log_path: '/home/browserid/var/',
+  var_path: '/home/browserid/var/',
   database: {
     driver: "mysql",
     user: 'browserid'
@@ -90,7 +90,7 @@ g_configs.local =  {
   scheme: 'http',
   email_to_console: true, // don't send email, just dump verification URLs to console.
   use_minified_resources: false,
-  log_path: path.join(__dirname, "..", "var", "logs"),
+  var_path: path.join(__dirname, "..", "var"),
   database: { driver: "json" }
 };
 

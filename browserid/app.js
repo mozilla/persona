@@ -35,13 +35,7 @@
 
 const
 fs = require('fs'),
-path = require('path');
-
-// create the var directory if it doesn't exist
-var VAR_DIR = path.join(__dirname, "var");
-try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { };
-
-const
+path = require('path'),
 url = require('url'),
 crypto = require('crypto'),
 wsapi = require('./lib/wsapi.js'),
@@ -62,9 +56,7 @@ logger.info("browserid server starting up");
 // open the databse
 db.open(configuration.get('database'));
 
-// looks unused, see run.js
-// const STATIC_DIR = path.join(path.dirname(__dirname), "static");
-const COOKIE_SECRET = secrets.hydrateSecret('cookie_secret', VAR_DIR);
+const COOKIE_SECRET = secrets.hydrateSecret('browserid_cookie', configuration.get('var_path'));
 const COOKIE_KEY = 'browserid_state';
 
 function internal_redirector(new_url) {
@@ -155,8 +147,6 @@ function router(app) {
   });
 };
 
-exports.varDir = VAR_DIR;
-
 exports.setup = function(server) {
   // request to logger, dev formatted which omits personal data in the requests
   server.use(express.logger({
@@ -175,7 +165,6 @@ exports.setup = function(server) {
 
   var cookieSessionMiddleware = sessions({
     secret: COOKIE_SECRET,
-    //    session_key: COOKIE_KEY,
     key: COOKIE_KEY,
     cookie: {
         path: '/',

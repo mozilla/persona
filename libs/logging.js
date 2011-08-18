@@ -53,7 +53,7 @@ path = require('path'),
 fs = require('fs');
 
 // go through the configuration and determine log location
-var log_path = configuration.get('log_path');
+var log_path = path.join(configuration.get('var_path'), 'log');
 
 // simple inline function for creation of dirs
 function mkdir_p(p) {

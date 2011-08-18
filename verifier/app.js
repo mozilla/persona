@@ -45,10 +45,6 @@ const   path = require('path'),
 
 logger.info("verifier server starting up");
 
-// create the var directory if it doesn't exist
-var VAR_DIR = path.join(__dirname, "var");
-try { fs.mkdirSync(VAR_DIR, 0755); } catch(e) { }
-
 function doVerify(req, resp, next) {
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req.body.assertion;
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
@@ -107,8 +103,6 @@ function doVerify(req, resp, next) {
     resp.json({ status: "failure", reason: e.toString() });
   }
 }
-
-exports.varDir = VAR_DIR;
 
 exports.setup = function(app) {
   // request to logger, dev formatted which omits personal data in the requests
