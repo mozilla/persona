@@ -166,11 +166,13 @@ exports.setup = function(server) {
     secret: COOKIE_SECRET,
     key: COOKIE_KEY,
     cookie: {
-        path: '/',
-        httpOnly: true,
-        maxAge: 14400000,
-        secure: overSSL
-      }
+      path: '/',
+      httpOnly: true,
+      // IMPORTANT: we allow users to go 1 weeks on the same device
+      // without entering their password again
+      maxAge: (7 * 24 * 60 * 60 * 1000), 
+      secure: overSSL
+    }
   });
 
   // cookie sessions
