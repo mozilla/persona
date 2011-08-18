@@ -44,7 +44,8 @@ fs = require('fs'),
 secrets = require('./secrets'),
 jsel = require('JSONSelect'),
 logger = require('../../libs/logging.js').logger,
-configuration = require('../../libs/configuration.js');
+configuration = require('../../libs/configuration.js'),
+temp = require('temp');
 
 // a little alias for stringify
 const ESC = JSON.stringify;
@@ -87,8 +88,23 @@ function getExpiryTime() {
   return ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000));
 }
 
+// when unit_test is set in configuration, database should be
+// ephemeral.  which simply means we use a temp file and delete
+// on close;
+var delete_on_close = false;
+
 exports.open = function(cfg, cb) {
-  if (cfg && cfg.path) dbPath = cfg.path;
+  delete_on_close = false;
+
+  if (cfg) {
+    if (cfg.unit_test) {
+      dbPath = temp.path({suffix: '.db'});
+      delete_on_close = true;
+    } else if (cfg.path) {
+      dbPath = cfg.path;
+    }
+  }
+
   try {
     db = JSON.parse(fs.readFileSync(dbPath));
   } catch(e) {
@@ -100,6 +116,10 @@ exports.open = function(cfg, cb) {
 exports.close = function(cb) {
   flush();
   setTimeout(cb, 0);
+  if (delete_on_close) {
+    delete_on_close = false;
+    fs.unlink(dbPath, function(err) { });
+  };
 };
 
 exports.emailKnown = function(email, cb) {

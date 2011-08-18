@@ -35,6 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+require('./lib/test_env.js');
+
 const assert =
 require('assert'),
 vows = require('vows'),
