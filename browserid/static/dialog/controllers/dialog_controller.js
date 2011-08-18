@@ -128,10 +128,6 @@ PageController.extend("Dialog", {}, {
     },
 
     doStart: function() {
-      // check to see if there's any pubkeys stored in the browser
-      var haveIDs = _.keys(getEmails()).length > 0;
-      var self = this;
-
       // we should always check to see whether we're authenticated
       // at dialog start. issue #74.
       //
