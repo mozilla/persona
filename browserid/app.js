@@ -188,6 +188,24 @@ exports.setup = function(server) {
 
   server.use(express.bodyParser());
 
+  // Check CSRF token early.  POST requests are only allowed to
+  // /wsapi and they always must have a valid csrf token
+  server.use(function(req, resp, next) {
+    // only on POSTs
+    if (req.method == "POST") {
+      if (!/^\/wsapi/.test(req.url) || // post requests only allowed to /wsapi
+          req.session === undefined || // there must be a session
+          typeof req.session.csrf !== 'string' || // the session must have a csrf token
+          req.body.csrf != req.session.csrf) // and the token must match what is sent in the post body
+      {
+        // if any of these things are false, then we'll block the request
+        logger.warn("CSRF validation failure.");
+        return httputils.badRequest(resp, "CSRF violation");
+      }
+    }
+    return next();
+  });
+
   // a tweak to get the content type of host-meta correct
   server.use(function(req, resp, next) {
     if (req.url === '/.well-known/host-meta') {

@@ -85,19 +85,6 @@ function checkAuthed(req, resp, next) {
 }
 
 function setup(app) {
-  // check CSRF token before routing the request to the proper handler
-  // (iff the request is to /wsapi AND it's a post)
-  app.use(function(req, resp, next) {
-    // only on POSTs to /wsapi
-    if (req.method == "POST" && /^\/wsapi/.test(req.url) && req.body.csrf != req.session.csrf) {
-      // error, problem with CSRF
-      logger.warn("CSRF token mismatch.  got:" + req.body.csrf + " wanted:" + req.session.csrf);
-      httputils.badRequest(resp, "CSRF violation");
-    } else {
-      next();
-    }
-  });
-
   // return the CSRF token
   // IMPORTANT: this should be safe because it's only readable by same-origin code
   // but we must be careful that this is never a JSON structure that could be hijacked
