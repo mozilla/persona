@@ -46,11 +46,9 @@ const http = require("http");
 const https = require("https");
 const url = require("url");
 const rsa = require("./rsa.js");
+const logger = require("../../libs/logging.js").logger;
 
 var Webfinger = (function() {
-
-  if (!console) console = {};
-  if (!console.log) console.log=function(x) {}
 
   // contains domain to template string
   var hostMetaCache = {};
@@ -103,10 +101,10 @@ var Webfinger = (function() {
   {
     if (hostMetaCache[domain]) {
       if (hostMetaCache[domain] == NO_HOST_META) {
-        console.log("HostMeta cache hit (negative) for " + domain);
+        logger.info("HostMeta cache hit (negative) for " + domain);
         errorFn("NoHostMeta");
       } else {
-        console.log("HostMeta cache hit (positive) for " + domain);
+        logger.info("HostMeta cache hit (positive) for " + domain);
         continueFn(hostMetaCache[domain]);
       }
     }
@@ -122,7 +120,7 @@ var Webfinger = (function() {
         headers: { "Host": domain}
       };
       try {
-        console.log("Requesting host-meta for " + options.host + ":" + options.port + " (" + domain + ")");
+        logger.info("Requesting host-meta for " + options.host + ":" + options.port + " (" + domain + ")");
 
         var scheme = ((options.port == 443) ? https : http);
         var req = scheme.request(options, function(res) {
@@ -143,7 +141,7 @@ var Webfinger = (function() {
             }
           });
           res.on('error', function(e) {
-            console.log("Webfinger error: "+ e + "; " + e.error);
+            logger.warn("Webfinger error: "+ e + "; " + e.error);
             hostMetaCache[domain] = NO_HOST_META;
             errorFn(e);        
           });
@@ -164,14 +162,14 @@ var Webfinger = (function() {
       var split;
       try { split = addr.split("@"); } catch(e) { }
       if (split.length != 2) {
-        console.log("Cannot parse " + addr + " as an email address");
+        logger.warn("Cannot parse " + addr + " as an email address");
         errorCallback({message:"Cannot parse input as an email address"});
         return;
       };
       domain = split[1];
     }
 
-    console.log("Verifier: resolving public key for address " +addr + "; issuer " + issuer);
+    logger.info("Verifier: resolving public key for address " +addr + "; issuer " + issuer);
 
     retrieveTemplateForDomain(
       domain, 
@@ -232,14 +230,14 @@ var Webfinger = (function() {
             successCallback(publicKeys);
           });
           res.on('error', function(e) {
-            console.log("Unable to retrieve template for domain " + domain);
+            logger.warn("Unable to retrieve template for domain " + domain);
             errorCallback({message:"Unable to retrieve the template for the given domain."});
           });
         });
         req.end();
       }, 
       function gotError(e) {
-        console.log("Unable to retrieve template for domain " + domain);
+        logger.warn("Unable to retrieve template for domain " + domain);
         errorCallback({message:"Unable to retrieve the template for the given domain."});
       });
   }
@@ -269,8 +267,15 @@ function IDAssertion(assertion)
 
 IDAssertion.prototype  =
 {
-  verify: function(forAudience, onSuccess, onError)
+  verify: function(forAudience, onSuccess, errorCallback)
   {
+    function onError(msg) {
+      // log at info level here, assertion failure is somewhat common
+      // and not necessarily a bug.
+      logger.info("verification failed: " + msg);
+      errorCallback(msg);
+    }
+
     // Assertion should be a JWT.
     var token = jwt.WebTokenParser.parse(this.assertion);
     
@@ -325,21 +330,19 @@ IDAssertion.prototype  =
             pubKey.readPublicKeyFromPEMString(publicKeys[i].key);
             if (token.verify(pubKey)) {
               // success!
-              console.log("Token for " +payload.email + " verified successfully.");
+              logger.info("Token for " +payload.email + " verified successfully.");
 
               // send back all the verified data
               onSuccess(payload);
               return;
             }
           } catch(e) {
-            console.log("failed to parse public key: " + e);
+            logger.warn("failed to parse public key: " + e);
           }
         }
         onError("None of the user's public keys verified the signature");
       },
-      function(error) {
-        onError(error);
-      });
+      onError);
   }
 }
 
