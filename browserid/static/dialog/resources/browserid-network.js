@@ -120,7 +120,14 @@ var BrowserIDNetwork = (function() {
       withCSRF(function() { 
         $.post("/wsapi/logout", {
           csrf: csrf_token
-        }, onSuccess );
+        }, function() {
+          csrf_token = undefined;
+          withCSRF(function() {
+            if(onSuccess) {
+              onSuccess();
+            }
+          });
+        } );
       });
     },
 
@@ -282,8 +289,11 @@ var BrowserIDNetwork = (function() {
     /**
      * Sync emails
      * @method syncEmails
+     * @param {object} issued_identities - Identities to check against.
+     * @param {function} [onSuccess] - Called with response when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
      */
-    syncEmails: function(issued_identities, onKeySyncSuccess, onKeySyncFailure, onSuccess, onFailure) {
+    syncEmails: function(issued_identities, onSuccess, onFailure) {
       withCSRF(function() { 
         $.ajax({
           type: "POST",
@@ -292,36 +302,7 @@ var BrowserIDNetwork = (function() {
             emails: issued_identities,
             csrf: csrf_token
           },
-          success: function(resp, textStatus, jqXHR) {
-            // first remove idenitites that the server doesn't know about
-            if (resp.unknown_emails) {
-              _(resp.unknown_emails).each(function(email_address) {
-                removeEmail(email_address);
-              });
-            }
-
-            // now let's begin iteratively re-keying the emails mentioned in the server provided list
-            var emailsToAdd = resp.key_refresh;
-            
-            function addNextEmail() {
-              if (!emailsToAdd || !emailsToAdd.length) {
-                onSuccess();
-                return;
-              }
-
-              // pop the first email from the list
-              var email = emailsToAdd.shift();
-              var keypair = CryptoStubs.genKeyPair();
-
-              BrowserIDNetwork.setKey(email, keypair, function() {
-                // update emails list and commit to local storage, then go do the next email
-                onKeySyncSuccess(email, keypair);
-                addNextEmail();
-              }, onKeySyncFailure);
-            }
-
-            addNextEmail();
-          },
+          success: onSuccess,
           error: onFailure
         });
       });

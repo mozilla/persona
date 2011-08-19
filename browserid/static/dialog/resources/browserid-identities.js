@@ -35,43 +35,107 @@
  *
  * ***** END LICENSE BLOCK ***** */
 "use strict";
-var BrowserIDIdentities = {
-  
-  syncIdentities: function(onSuccess, onFailure, onKeySyncFailure) {
-    // send up all email/pubkey pairs to the server, it will response with a
-    // list of emails that need new keys.  This may include emails in the
-    // sent list, and also may include identities registered on other devices.
-    // we'll go through the list and generate new keypairs
-    
-    // identities that don't have an issuer are primary authentications,
-    // and we don't need to worry about rekeying them.
-    var emails = getEmails();
-    var issued_identities = {};
-    _(emails).each(function(email_obj, email_address) {
+var BrowserIDIdentities = (function() {
+  function getIssuedIdentities() {
+      var emails = getEmails();
+      var issued_identities = {};
+      _(emails).each(function(email_obj, email_address) {
         issued_identities[email_address] = email_obj.pub;
       });
-    
-    var self = this;
-    BrowserIDNetwork.syncEmails(issued_identities, 
-      function onKeySyncSuccess(email, keypair) {
-        self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
-      },
-      onKeySyncFailure, onSuccess, onFailure);
-  },
 
-  persistAddressAndKeyPair: function(email, keypair, issuer) {
-    var new_email_obj= {
-      created: new Date(),
-      pub: keypair.pub,
-      priv: keypair.priv
-    };
+      return issued_identities;
+  }
 
-    if (issuer) {
-      new_email_obj.issuer = issuer;
+  function removeUnknownIdentities(unknown_emails) {
+    // first remove idenitites that the server doesn't know about
+    if (unknown_emails) {
+      _(unknown_emails).each(function(email_address) {
+        removeEmail(email_address);
+      });
     }
-    
-    addEmail(email, new_email_obj);
-  },
+  }
+
+  var Identities = {
+    syncIdentities: function(onSuccess, onFailure, onKeySyncFailure) {
+      var issued_identities = getIssuedIdentities();
+
+      // send up all email/pubkey pairs to the server, it will response with a
+      // list of emails that need new keys.  This may include emails in the
+      // sent list, and also may include identities registered on other devices.
+      // we'll go through the list and generate new keypairs
+      
+      // identities that don't have an issuer are primary authentications,
+      // and we don't need to worry about rekeying them.
+
+      var self = this;
+      BrowserIDNetwork.syncEmails(issued_identities, function(resp) {
+        removeUnknownIdentities(resp.unknown_emails);
+
+        // now let's begin iteratively re-keying the emails mentioned in the server provided list
+        var emailsToAdd = resp.key_refresh;
+        
+        function addNextEmail() {
+          if (!emailsToAdd || !emailsToAdd.length) {
+            onSuccess();
+            return;
+          }
+
+          // pop the first email from the list
+          var email = emailsToAdd.shift();
+          var keypair = CryptoStubs.genKeyPair();
+
+          BrowserIDNetwork.setKey(email, keypair, function() {
+            // update emails list and commit to local storage, then go do the next email
+            self.addIdentity(email, keypair, "browserid.org:443");
+            addNextEmail();
+          }, onKeySyncFailure);
+        }
+
+        addNextEmail();
+      }, onFailure);
+    },
+
+    /**
+     * Persist an address and key pair.
+     * @method addIdentity
+     * @param {string} email - Email address.
+     * @param {object} keypair - Keypair for email address
+     * @param {string} [issuer] - Issuer of keypair
+     */
+    addIdentity: function(email, keypair, issuer) {
+      var new_email_obj= {
+        created: new Date(),
+        pub: keypair.pub,
+        priv: keypair.priv
+      };
+
+      if (issuer) {
+        new_email_obj.issuer = issuer;
+      }
+      
+      addEmail(email, new_email_obj);
+    },
+
+    /**
+     * Remove an email address.
+     * @method removeIdentity
+     * @param {string} email - Email address to remove.
+     */
+    removeIdentity: function(email) {
+      removeEmail(email);
+    },
+
+    /**
+     * Get the current list of stored identities.
+     * @method getIdentities
+     * @return {object} identities.
+     */
+    getIdentities: function() {
+      return getEmails();
+    }
 
 
-};
+  };
+
+  return Identities;
+}());
