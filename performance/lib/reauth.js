@@ -45,5 +45,7 @@ exports.startFunc = function(cfg, cb) {
   // 3. in page javascript calls CSRF to get a CSRF token
   // 4. the RP will call /verify to verify a generated assertion
 
+  // XXX: implementing this will require actual crypto.
+
   setTimeout(function() { cb(true); }, 10); 
 };

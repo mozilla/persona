@@ -43,7 +43,7 @@ var secrets = require('../../libs/secrets.js');
 // the grandiose database
 var users = [ ];
 
-exports.numUsers = function() { return users.length; }
+exports.num = function() { return users.length; }
 
 function genEmail() {
   return secrets.generate(8) + "@" + secrets.generate(8) + "." + secrets.generate(3);

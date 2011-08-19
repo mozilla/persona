@@ -36,12 +36,9 @@
 
 /* this file is the "signin" activity, which simulates the process of a user
  * who has used browserid before signing into browserid inside the dialog and
- * picking an idenity */
+ * picking an identity */
 
 exports.startFunc = function(cfg, cb) {
-  // A new user signing up for browserid looks like this in terms of
-  // network transactions:
-  //
   // 1. RP includes include.js 
   // 2. users' browser loads all code associated with dialog
   // 3. in page javascript calls CSRF to get a CSRF token

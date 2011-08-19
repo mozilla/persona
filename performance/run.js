@@ -259,5 +259,23 @@ function poll() {
   iterations++;
 }
 
-console.log("Average active users simulated over the last 1s/5s/60s:");
-setTimeout(poll, 1);
+// always start out by creating a bunch of users
+var NUM_INITIAL_USERS = 50;
+
+console.log("To start, let's create " + NUM_INITIAL_USERS + " users.  A moment please.");
+
+const userdb = require("./lib/user_db.js");
+var createUser = require("./lib/signup.js").startFunc;
+var created = 0;
+for (var i = 0; i < NUM_INITIAL_USERS; i++) {
+  createUser(configuration, function(rv) {
+    if (!rv) {
+      console.log("failed to create initial users! tragedy!  run away!");
+      process.exit(1);
+    }
+    if (++created == NUM_INITIAL_USERS) {
+      console.log("Average active users simulated over the last 1s/5s/60s:");
+      poll();
+    }
+  });
+}
