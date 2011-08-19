@@ -29,7 +29,11 @@ Here's the software you'll need installed:
 
 ## Testing
 
-Unit tests are under `browserid/tests/`, and you should run them often.  Like before committing code.
+Unit tests can be run by invoking `test.sh` at the top level, and you
+should run them often.  Like before committing code.  To fully test
+the code you should install mysql and have a well permissions `test`
+user (can create and drop databases).  If you don't have mysql installed,
+code testing is still possible (it just uses a little json database).
 
 ## Development model
 
