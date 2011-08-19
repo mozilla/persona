@@ -70,6 +70,26 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
   test("stageUser", function() {
-    ok(true, "yar");
+    ok(true, "stageUser");
+  });
+
+  test("haveEmail", function() {
+    ok(true, "haveEmail");
+  });
+
+  test("removeEmail", function() {
+    ok(true, "removeEmail");
+  });
+
+  test("checkRegistration", function() {
+    ok(true, "checkRegistration");
+  });
+
+  test("setKey", function() {
+    ok(true, "setKey");
+  });
+
+  test("syncEmails", function() {
+    ok(true, "syncEmails");
   });
 });
