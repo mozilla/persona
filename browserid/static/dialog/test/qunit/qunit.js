@@ -1,3 +1,3 @@
 steal
-  .plugins("funcunit/qunit", "/web/browserid/browserid/static/dialog/dialog")
-  .then("dialog_test");
+  .plugins("funcunit/qunit")
+  .then("browserid-network_test");
