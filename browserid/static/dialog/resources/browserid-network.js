@@ -132,7 +132,8 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
-     * Create a new user.  Reset a current user's password.
+     * Create a new user or reset a current user's password.  Requires a user 
+     * to verify identity.
      * @method stageUser
      * @param {string} email - Email address to prepare.
      * @param {string} password - Password for user.
@@ -149,7 +150,7 @@ var BrowserIDNetwork = (function() {
             email: email,
             pass: password,
             pubkey : keypair.pub,
-            site : BrowserIDNetwork.origin,
+            site : BrowserIDNetwork.origin || document.location.host,
             csrf : csrf_token
           },
           success: onSuccess,
