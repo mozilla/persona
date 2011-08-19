@@ -90,7 +90,8 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
-     * Persist an address and key pair.
+     * Add an identity.  Creates and stores with the server and locally 
+     * a keypair for an email address.
      * @method addIdentity
      * @param {string} email - Email address.
      * @param {string} [issuer] - Issuer of keypair.
@@ -100,22 +101,31 @@ var BrowserIDIdentities = (function() {
     addIdentity: function(email, issuer, onSuccess, onFailure) {
       var keypair = CryptoStubs.genKeyPair();
       BrowserIDNetwork.setKey(email, keypair, function() {
-        var new_email_obj= {
-          created: new Date(),
-          pub: keypair.pub,
-          priv: keypair.priv
-        };
-
-        if (issuer) {
-          new_email_obj.issuer = issuer;
-        }
-        
-        addEmail(email, new_email_obj);
-
+        Identities.persistIdentity(email, keypair, issuer);
         if(onSuccess) {
           onSuccess(keypair);
         }
       }, onFailure);
+    },
+
+    /** 
+     * Persist an address and key pair.
+     * @method persistIdentity
+     * @param {string} email - Email address to persist.
+     * @param {object} keypair - Key pair to save
+     */
+    persistIdentity: function(email, keypair, issuer) {
+      var new_email_obj= {
+        created: new Date(),
+        pub: keypair.pub,
+        priv: keypair.priv
+      };
+
+      if (issuer) {
+        new_email_obj.issuer = issuer;
+      }
+      
+      addEmail(email, new_email_obj);
     },
 
     /**

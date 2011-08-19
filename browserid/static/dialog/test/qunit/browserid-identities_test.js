@@ -81,6 +81,12 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
+  test("persistIdentity", function() {
+    BrowserIDIdentities.persistIdentity("testemail2@testemail.com", { pub: "pub", priv: "priv" });
+    var identities = BrowserIDIdentities.getStoredIdentities();
+    ok("testemail2@testemail.com" in identities, "Our new email is added");
+  });
+
   test("removeIdentity that we add", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
       BrowserIDIdentities.addIdentity("testemail@testemail.com", "issuer", function(keypair) {
