@@ -192,6 +192,15 @@ var BrowserIDNetwork = (function() {
       });
     },
 
+    /**
+     * Check whether the email is already registered.
+     * @method haveEmail
+     * @param {string} email - Email address to check.
+     * @param {function} [onSuccess] - Called with one boolean parameter when 
+     * complete.  Parameter is true if `email` is already registered, false 
+     * otw.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
     haveEmail: function(email, onSuccess, onFailure) {
       $.ajax({
         url: '/wsapi/have_email?email=' + encodeURIComponent(email),
@@ -205,24 +214,39 @@ var BrowserIDNetwork = (function() {
       });
     },
 
+    /**
+     * Remove an email address from the current user.
+     * @method removeEmail
+     * @param {string} email - Email address to remove.
+     * @param {function} [onSuccess] - Called whenever complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
     removeEmail: function(email, onSuccess, onFailure) {
-      $.ajax({
-        type: 'POST',
-        url: '/wsapi/remove_email',
-        data: {
-          email: email,
-          csrf: BrowserIDNetwork.csrf_token
-        },
-        success: function() {
-          removeEmail(email);
-          if(onSuccess) {
-            onSuccess();
-          }
-        },
-        failure: onFailure
+      withCSRF(function() { 
+        $.ajax({
+          type: 'POST',
+          url: '/wsapi/remove_email',
+          data: {
+            email: email,
+            csrf: csrf_token
+          },
+          success: function() {
+            removeEmail(email);
+            if(onSuccess) {
+              onSuccess();
+            }
+          },
+          failure: onFailure
+        });
       });
     },
 
+    /**
+     * Check the current user's registration status
+     * @method checkRegistration
+     * @param {function} [onSuccess] - Called when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
     checkRegistration: function(onSuccess, onFailure) {
       $.ajax({
           url: '/wsapi/registration_status',
@@ -235,6 +259,10 @@ var BrowserIDNetwork = (function() {
       });
     },
 
+    /**
+     * Set the public key for the email address.
+     * @method setKey
+     */
     setKey: function(email, keypair, onSuccess, onError) {
       withCSRF(function() { 
         $.ajax({
@@ -251,6 +279,10 @@ var BrowserIDNetwork = (function() {
       });
     },
 
+    /**
+     * Sync emails
+     * @method syncEmails
+     */
     syncEmails: function(issued_identities, onKeySyncSuccess, onKeySyncFailure, onSuccess, onFailure) {
       withCSRF(function() { 
         $.ajax({
