@@ -105,7 +105,13 @@
       }
     },
 
-    runErrorDialog: function(info) {
+    /**
+     * Immediately show the error dialog
+     * @method errorDialog
+     * @param {object} info - info to use for the error dialog.  Should have 
+     * two fields, message, description.
+     */
+    errorDialog: function(info) {
       $("#dialog").hide();
 
       $("#error_dialog .title").text(info.message);
@@ -117,6 +123,17 @@
       $("#cancel").text("Close").addClass("action");
 
       $("#error_dialog").fadeIn(500);
+    },
+
+    /**
+     * Get a curried function to an error dialog.
+     * @method getErrorDialog
+     * @method {object} info - info to use for the error dialog.  Should have 
+     * two fields, message, description.
+     */
+    getErrorDialog: function(info) {
+      var self=this;
+      return self.errorDialog.bind(self, info);
     },
 
     onCancel: function(event) {

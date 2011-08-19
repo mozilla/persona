@@ -102,11 +102,7 @@
               email: email,
               keypair: keypair
             });
-          },
-          function() {
-            self.runErrorDialog(BrowserIDErrors.createAccount);
-          }
-        );
+          }, self.getErrorDialog(BrowserIDErrors.createAccount));
       }
 
   });
