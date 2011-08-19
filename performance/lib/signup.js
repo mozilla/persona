@@ -34,6 +34,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+const
+wcli = require("./wsapi_client.js"),
+userdb = require("./user_db.js");
+
 /* this file is the "signup" activity, which simulates the process of a new user
  * signing up for browserid. */
 exports.startFunc = function(cfg, cb) {
@@ -62,7 +66,33 @@ exports.startFunc = function(cfg, cb) {
   //    and instead, the server will be asked to sign the user's public key.)
   // 11.  the RP will call /verify to verify a generated assertion
 
-  // XXX: write me
+  // XXX: for now this is *api only*,  that is we omit steps above that would just be
+  // the serving of static pages.  it is unknown to me whether static page simulation
+  // is useful.
 
-  setTimeout(function() { cb(true); }, 10); 
+  // get a user
+  var user = userdb.getNewUser();
+
+  // give them a public key
+  userdb.addKeyToUserCtx(user.ctxs[0]);
+
+  // stage them
+  wcli.post(cfg, '/wsapi/stage_user', user.ctxs[0], {
+    email: user.emails[0],
+    pass: user.password,
+    pubkey: user.ctxs[0].keys[0].pub,
+    site: user.sites[0]
+  }, function (r) {
+    // now get the verification secret
+    wcli.get(cfg, '/wsapi/fake_verification', user.ctxs[0], {
+      email: user.emails[0]
+    }, function (r) {
+      // and simulate clickthrough
+      wcli.get(cfg, '/wsapi/prove_email_ownership', user.ctxs[0], {
+        token: r.body
+      }, function (r) {
+        cb(r.body);
+      });
+    });
+  });
 };

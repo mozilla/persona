@@ -44,7 +44,7 @@ url = require('url'),
 client = require('./wsapi_client.js');
 
 exports.startFunc = function(cfg, cb) {
-  client.get(cfg, '/include.js', {}, function(r) {
+  client.get(cfg, '/include.js', {}, undefined, function(r) {
     if (r.code != 200) {
       cb(false);
     } else {
