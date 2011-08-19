@@ -80,17 +80,9 @@ var BrowserIDIdentities = (function() {
             return;
           }
 
-          // pop the first email from the list
           var email = emailsToAdd.shift();
-          var keypair = CryptoStubs.genKeyPair();
 
-          self.addIdentity(email, keypair, "browserid.org:443", addNextEmail, onFailure);
-          /*BrowserIDNetwork.setKey(email, keypair, function() {
-            // update emails list and commit to local storage, then go do the next email
-            self.addIdentity(email, keypair, "browserid.org:443");
-            addNextEmail();
-          }, onFailure);
-          */
+          self.addIdentity(email, "browserid.org:443", addNextEmail, onFailure);
         }
 
         addNextEmail();
@@ -101,12 +93,12 @@ var BrowserIDIdentities = (function() {
      * Persist an address and key pair.
      * @method addIdentity
      * @param {string} email - Email address.
-     * @param {object} keypair - Keypair for email address.
      * @param {string} [issuer] - Issuer of keypair.
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
-    addIdentity: function(email, keypair, issuer, onSuccess, onFailure) {
+    addIdentity: function(email, issuer, onSuccess, onFailure) {
+      var keypair = CryptoStubs.genKeyPair();
       BrowserIDNetwork.setKey(email, keypair, function() {
         var new_email_obj= {
           created: new Date(),
@@ -119,8 +111,9 @@ var BrowserIDIdentities = (function() {
         }
         
         addEmail(email, new_email_obj);
+
         if(onSuccess) {
-          onSuccess();
+          onSuccess(keypair);
         }
       }, onFailure);
     },
