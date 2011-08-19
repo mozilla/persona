@@ -238,10 +238,7 @@ PageController.extend("Dialog", {}, {
         },
         function onSuccess() {
           self.doSignIn();
-        },
-        function onFailure(jqXHR, textStatus, errorThrown) {
-          self.runErrorDialog(BrowserIDErrors.signIn);
-        }
+        }, self.getErrorDialog(BrowserIDErrors.signIn)
       );
 
     },

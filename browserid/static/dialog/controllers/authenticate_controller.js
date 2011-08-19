@@ -76,10 +76,7 @@
         } else {
           self.find("#nosuchaccount").hide().fadeIn(400);
         }
-      }, function(resp) {
-        self.runErrorDialog(BrowserIDErrors.authentication);
-        self.close("cancel");
-      });
+      }, self.getErrorDialog(BrowserIDErrors.authentication));
     }
   });
 
