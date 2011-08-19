@@ -85,6 +85,13 @@ function checkAuthed(req, resp, next) {
 }
 
 function setup(app) {
+  // log a user out, clearing everything from their session except the csrf token
+  function clearAuthenticatedUser(session) {
+    Object.keys(session).forEach(function(k) {
+      if (k !== 'csrf') delete session[k];
+    });
+  }
+
   // return the CSRF token
   // IMPORTANT: this should be safe because it's only readable by same-origin code
   // but we must be careful that this is never a JSON structure that could be hijacked
@@ -281,7 +288,7 @@ function setup(app) {
       db.emailKnown(req.session.authenticatedUser, function (known) {
         if (!known) {
           logger.debug("user is authenticated with an email that doesn't exist in the database");
-          req.session = {};
+          clearAuthenticatedUser(req.session);
         } else {
           logger.debug("user is authenticated");
         }
@@ -290,8 +297,8 @@ function setup(app) {
     }
   });
 
-  app.post('/wsapi/logout', function(req,resp) {
-    req.session = {};
+  app.post('/wsapi/logout', function(req, resp) {
+    clearAuthenticatedUser(req.session);
     resp.json('ok');
   });
 
@@ -314,6 +321,13 @@ function setup(app) {
       }
     });
   });
+
+  // if the BROWSERID_FAKE_VERIFICATION env var is defined, we'll include
+  // fake_verification.js.  This is used during testing only and should
+  // never be included in a production deployment
+  if (process.env['BROWSERID_FAKE_VERIFICATION']) {
+    require('./fake_verification.js').addVerificationWSAPI(app);
+  }
 }
 
 exports.setup = setup;

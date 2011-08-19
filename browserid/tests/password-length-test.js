@@ -54,6 +54,15 @@ start_stop.addStartupBatches(suite);
 // surpress console output of emails with a noop email interceptor
 email.setInterceptor(function(email, site, secret) { });
 
+suite.addBatch({
+  "get csrf token": {
+    topic: wsapi.get('/wsapi/csrf'),
+    "works": function (r, err) {
+      assert.equal(typeof r.body, 'string');
+    }
+  }
+});
+
 // create a new account via the api with (first address)
 suite.addBatch({
   "a password that is too short": {

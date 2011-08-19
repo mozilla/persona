@@ -42,7 +42,7 @@ httputils = require('./lib/httputils.js'),
 webfinger = require('./lib/webfinger.js'),
 sessions = require('connect-cookie-session'),
 express = require('express'),
-secrets = require('./lib/secrets.js'),
+secrets = require('../libs/secrets.js'),
 db = require('./lib/db.js'),
 configuration = require('../libs/configuration.js'),
 substitution = require('../libs/substitute.js');
@@ -193,15 +193,32 @@ exports.setup = function(server) {
   server.use(function(req, resp, next) {
     // only on POSTs
     if (req.method == "POST") {
-      if (!/^\/wsapi/.test(req.url) || // post requests only allowed to /wsapi
-          req.session === undefined || // there must be a session
-          typeof req.session.csrf !== 'string' || // the session must have a csrf token
-          req.body.csrf != req.session.csrf) // and the token must match what is sent in the post body
-      {
-        // if any of these things are false, then we'll block the request
-        logger.warn("CSRF validation failure.");
-        return httputils.badRequest(resp, "CSRF violation");
+      var denied = false;
+      if (!/^\/wsapi/.test(req.url)) { // post requests only allowed to /wsapi
+        denied = true;
+        logger.warn("CSRF validation failure: POST only allowed to /wsapi urls.  not '" + req.url + "'");        
       }
+
+      if (req.session === undefined) { // there must be a session
+        denied = true;
+        logger.warn("CSRF validation failure: POST calls to /wsapi require an active session");        
+      }
+      
+      // the session must have a csrf token
+      if (typeof req.session.csrf !== 'string') {
+        denied = true;
+        logger.warn("CSRF validation failure: POST calls to /wsapi require an csrf token to be set");
+      }
+
+      // and the token must match what is sent in the post body
+      if (req.body.csrf != req.session.csrf) {
+        denied = true;
+        // if any of these things are false, then we'll block the request
+        logger.warn("CSRF validation failure, token mismatch. got:" + req.body.csrf + " want:" + req.session.csrf);
+      }
+
+      if (denied) return httputils.badRequest(resp, "CSRF violation");
+
     }
     return next();
   });
