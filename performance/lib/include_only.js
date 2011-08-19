@@ -40,31 +40,16 @@
 var
 http = require('http'),
 https = require('https'),
-url = require('url');
+url = require('url'),
+client = require('./wsapi_client.js');
 
 exports.startFunc = function(cfg, cb) {
-  var uObj;
-  var meth;
-  try {
-    uObj = url.parse(cfg.browserid);
-    meth = uObj.protocol === 'http:' ? http : https;
-  } catch(e) {
-    cb(false);
-    return;
-  }
-
-  meth.get({
-    host: uObj.hostname,
-    port: uObj.port,
-    path: '/include.js'
-  }, function (res) {
-    if (res.statusCode != 200) {
+  client.get(cfg, '/include.js', {}, function(r) {
+    if (r.code != 200) {
       cb(false);
     } else {
       // XXX: check the checksum of body?
       cb(true);
     }
-  }).on('error', function(e) {
-    cb(false);
   });
 };
