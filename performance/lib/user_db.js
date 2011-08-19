@@ -63,8 +63,18 @@ exports.getNewUser = function() {
       secrets.generate(8) + "." + secrets.generate(3),
       secrets.generate(8) + "." + secrets.generate(3)
     ],
-    // and no public keys (XXX: beware the cometh of certs)
-    pubkeys: [
+    // and their device contexts (they have 2 devices on average)
+    // key material is device specific
+    ctxs: [
+      {
+        // and no public keys (XXX: beware the cometh of certs)
+        keys: [
+        ]
+      },
+      {
+        keys: [
+        ]
+      }
     ]
   };
   users.push(user);
@@ -82,8 +92,13 @@ exports.addEmailToUser = function(user) {
   return email;
 };
 
-exports.addKeyToUser = function(user) {
-  var key = secrets.generate(128);
-  user.pubkeys.push(key);
-  return key;
+exports.addKeyToUserCtx = function(ctx) {
+  // this is simulated.  it will need to be real to apply load to
+  // the verifier, but that in turn will drastically increase the
+  // cost of the application of load.  ho hum.
+  var pub = secrets.generate(128);
+  var priv = secrets.generate(128);
+  var k = {pub: pub, priv: priv}
+  ctx.keys.push(k);
+  return k;
 }
