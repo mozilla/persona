@@ -41,7 +41,7 @@
 const
 path = require('path'),
 fs = require('fs'),
-secrets = require('./secrets'),
+secrets = require('../../libs/secrets'),
 jsel = require('JSONSelect'),
 logger = require('../../libs/logging.js').logger,
 configuration = require('../../libs/configuration.js'),
