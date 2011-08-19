@@ -44,7 +44,8 @@
 const
 http = require('http'),
 https = require('https'),
-url = require('url');
+url = require('url'),
+querystring = require('querystring');
 
 function injectCookies(ctx, headers) {
   if (ctx.cookieJar && Object.keys(ctx.cookieJar).length) {
@@ -101,17 +102,17 @@ exports.get = function(cfg, path, context, cb) {
 };
 
 function withCSRF(cfg, context, cb) {
-  if (context.csrf) cb();
+  if (context.csrf) cb(context.csrf);
   else {
     exports.get(cfg, '/wsapi/csrf', context, function(r) {
       context.csrf = r.body;
-      cb();
+      cb(context.csrf);
     });
   }
 }
 
 exports.post = function(cfg, path, context, postArgs, cb) {
-  withCSRF(cfg, context, function() {
+  withCSRF(cfg, context, function(csrf) {
     // parse the server URL (cfg.browserid)
     var uObj;
     var meth;
@@ -128,7 +129,7 @@ exports.post = function(cfg, path, context, postArgs, cb) {
     injectCookies(context, headers);
 
     if (typeof postArgs === 'object') {
-      postArgs['csrf'] = g_csrf;
+      postArgs['csrf'] = csrf;
       body = querystring.stringify(postArgs);
     }
 
