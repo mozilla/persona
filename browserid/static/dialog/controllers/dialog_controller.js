@@ -203,12 +203,9 @@ PageController.extend("Dialog", {}, {
 
     syncIdentities: function() {
       var self = this;
-      BrowserIDIdentities.syncIdentities(function onSuccess() {
-        self.doSignIn();    
-      }, function onFailure(xhr, textStatus, errorThrown) {
+      BrowserIDIdentities.syncIdentities(self.doSignIn.bind(self), 
+      function onFailure(xhr, textStatus, errorThrown) {
         self.runErrorDialog(BrowserIDErrors.signIn); 
-      }, function onKeySyncFailure() {
-        self.runErrorDialog(BrowserIDErrors.syncAddress);
       });
     },
 
