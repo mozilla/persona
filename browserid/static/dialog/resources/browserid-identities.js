@@ -1,3 +1,5 @@
+/*jshint browsers:true, forin: true, laxbreak: true */
+/*global _: true, console: true, addEmail: true, removeEmail: true, CryptoStubs: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -32,52 +34,44 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+"use strict";
+var BrowserIDIdentities = {
+  
+  syncIdentities: function(onSuccess, onFailure, onKeySyncFailure) {
+    // send up all email/pubkey pairs to the server, it will response with a
+    // list of emails that need new keys.  This may include emails in the
+    // sent list, and also may include identities registered on other devices.
+    // we'll go through the list and generate new keypairs
+    
+    // identities that don't have an issuer are primary authentications,
+    // and we don't need to worry about rekeying them.
+    var emails = getEmails();
+    var issued_identities = {};
+    _(emails).each(function(email_obj, email_address) {
+        issued_identities[email_address] = email_obj.pub;
+      });
+    
+    var self = this;
+    BrowserIDNetwork.syncEmails(issued_identities, 
+      function onKeySyncSuccess(email, keypair) {
+        self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
+      },
+      onKeySyncFailure, onSuccess, onFailure);
+  },
 
-/*globals steal
- */
-steal.plugins(
-	'jquery/controller',			// a widget factory
-	'jquery/controller/subscribe',	// subscribe to OpenAjax.hub
-	'jquery/view/ejs',				// client side templates
-	'jquery/controller/view')		// lookup views with the controller's name
+  persistAddressAndKeyPair: function(email, keypair, issuer) {
+    var new_email_obj= {
+      created: new Date(),
+      pub: keypair.pub,
+      priv: keypair.priv
+    };
 
-	.css("style")	// loads styles
+    if (issuer) {
+      new_email_obj.issuer = issuer;
+    }
+    
+    addEmail(email, new_email_obj);
+  },
 
-	.resources('jschannel',
-               'underscore-min',
-               'crypto',
-               'crypto-api',
-               'channel',
-               'storage',
-               'browserid-extensions',
-               'browserid-network',
-               'browserid-identities',
-               'browserid-errors',
-               'browserid-wait')					// 3rd party script's (like jQueryUI), in resources folder
 
-	.models()						// loads files in models folder 
-
-	.controllers('page',
-               'dialog',
-               'authenticate',
-               'createaccount',
-               'checkregistration',
-               'forgotpassword',
-               'chooseemail',
-               'addemail')					// loads files in controllers folder
-
-	.views('authenticate.ejs',
-           'addemail.ejs',
-           'body.ejs',
-           'bottom-addemail.ejs',
-           'bottom-confirmemail.ejs',
-           'bottom-continue.ejs',
-           'bottom-pickemail.ejs',
-           'bottom-signin.ejs',
-           'bottom.ejs',
-           'confirmemail.ejs',
-           'create.ejs',
-           'forgotpassword.ejs',
-           'signin.ejs',
-           'wait.ejs'
-          );						// adds views to be added to build
+};

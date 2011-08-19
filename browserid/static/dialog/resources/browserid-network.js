@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global _: true, console: true, addEmail: true, removeEmail: true, CryptoStubs: true */
+/*global _: true, console: true, addEmail: true, removeEmail: true, clearEmails: true, CryptoStubs: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -114,6 +114,15 @@ var BrowserIDNetwork = (function() {
       });
     },
 
+    cancelUser: function(onSuccess) {
+      $.post("/wsapi/account_cancel", {"csrf": BrowserIDNetwork.csrf_token}, function(result) {
+        clearEmails();
+        if(onSuccess) {
+          onSuccess();
+        }
+      });
+    },
+
     addEmail: function(email, keypair, onSuccess, onFailure) {
       withCSRF(function() { 
         $.ajax({
@@ -141,6 +150,24 @@ var BrowserIDNetwork = (function() {
           }
         },
         error: onFailure
+      });
+    },
+
+    removeEmail: function(email, onSuccess, onFailure) {
+      $.ajax({
+        type: 'POST',
+        url: '/wsapi/remove_email',
+        data: {
+          email: email,
+          csrf: BrowserIDNetwork.csrf_token
+        },
+        success: function() {
+          removeEmail(email);
+          if(onSuccess) {
+            onSuccess();
+          }
+        },
+        failure: onFailure
       });
     },
 
@@ -215,6 +242,7 @@ var BrowserIDNetwork = (function() {
         });
       });
     }
+
   };
 
   return Network;

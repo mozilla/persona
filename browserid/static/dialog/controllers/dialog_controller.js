@@ -174,7 +174,7 @@ PageController.extend("Dialog", {}, {
         var self = this;
         // this is a secondary registration from browserid.org, persist
         // email, keypair, and that fact
-        self.persistAddressAndKeyPair(self.confirmEmail, 
+        BrowserIDIdentities.persistAddressAndKeyPair(self.confirmEmail, 
           self.confirmKeypair, "browserid.org:443");
         self.syncIdentities();
 
@@ -201,49 +201,15 @@ PageController.extend("Dialog", {}, {
       BrowserIDNetwork.logout(this.doAuthenticate.bind(this));
     },
 
-    persistAddressAndKeyPair: function(email, keypair, issuer) {
-      var new_email_obj= {
-        created: new Date(),
-        pub: keypair.pub,
-        priv: keypair.priv
-      };
-      if (issuer) {
-        new_email_obj.issuer = issuer;
-      }
-      
-      addEmail(email, new_email_obj);
-    },
-
     syncIdentities: function() {
-      // send up all email/pubkey pairs to the server, it will response with a
-      // list of emails that need new keys.  This may include emails in the
-      // sent list, and also may include identities registered on other devices.
-      // we'll go through the list and generate new keypairs
-      
-      // identities that don't have an issuer are primary authentications,
-      // and we don't need to worry about rekeying them.
-      var emails = getEmails();
-      var issued_identities = {};
-      _(emails).each(function(email_obj, email_address) {
-          issued_identities[email_address] = email_obj.pub;
-        });
-      
       var self = this;
-      BrowserIDNetwork.syncEmails(issued_identities, 
-        function onKeySyncSuccess(email, keypair) {
-          self.persistAddressAndKeyPair(email, keypair, "browserid.org:443");
-        },
-        function onKeySyncFailure() {
-          self.runErrorDialog(BrowserIDErrors.syncAddress);
-        },
-        function onSuccess() {
-          self.doSignIn();
-        },
-        function onFailure(jqXHR, textStatus, errorThrown) {
-          self.runErrorDialog(BrowserIDErrors.signIn);
-        }
-      );
-
+      BrowserIDIdentities.syncIdentities(function onSuccess() {
+        self.doSignIn();    
+      }, function onFailure(xhr, textStatus, errorThrown) {
+        self.runErrorDialog(BrowserIDErrors.signIn); 
+      }, function onKeySyncFailure() {
+        self.runErrorDialog(BrowserIDErrors.syncAddress);
+      });
     },
 
 
