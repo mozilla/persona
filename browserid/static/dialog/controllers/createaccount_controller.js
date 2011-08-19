@@ -62,12 +62,11 @@
       // now we need to actually try to stage the creation of this account.
       var email = this.find("#email_input").val();
       var pass = this.find("#password_input").val();
-      var keypair = CryptoStubs.genKeyPair();
 
       this.doWait(BrowserIDWait.createAccount);
 
       var self = this;
-      BrowserIDNetwork.stageUser(email, pass, keypair, function() {
+      BrowserIDIdentities.stageIdentity(email, pass, function(keypair) {
           self.close("createaccount:created", {
             email: email,
             keypair: keypair

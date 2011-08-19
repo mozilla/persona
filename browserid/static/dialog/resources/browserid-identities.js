@@ -90,6 +90,22 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
+     * Stage an identity - this creates an identity that must be verified.
+     * @method stageIdentity
+     * @param {string} email - Email address.
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
+     */
+    stageIdentity: function(email, password, onSuccess, onFailure) {
+      var keypair = CryptoStubs.genKeyPair();
+      BrowserIDNetwork.stageUser(email, password, keypair, function() {
+        if(onSuccess) {
+          onSuccess(keypair);
+        }
+      }, onFailure);
+    },
+
+    /**
      * Add an identity.  Creates and stores with the server and locally 
      * a keypair for an email address.
      * @method addIdentity

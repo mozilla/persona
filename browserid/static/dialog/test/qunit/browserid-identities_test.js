@@ -66,6 +66,14 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     equal(0, count, "after clearing, there are no identities");
   });
 
+  test("stageIdentity", function() {
+    BrowserIDIdentities.stageIdentity("testuser@testuser.com", "testuser", function(keypair) {
+      equal("object", typeof keypair, "We have a key pair");
+      start();
+    }, failure("stageIdentity failure"));
+    stop();
+  });
+
   test("addIdentity", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
       BrowserIDIdentities.addIdentity("testemail@testemail.com", "issuer", function(keypair) {
