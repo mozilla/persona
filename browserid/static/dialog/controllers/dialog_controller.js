@@ -174,7 +174,7 @@ PageController.extend("Dialog", {}, {
         var self = this;
         // this is a secondary registration from browserid.org, persist
         // email, keypair, and that fact
-        BrowserIDIdentities.persistAddressAndKeyPair(self.confirmEmail, 
+        BrowserIDIdentities.persistIdentity(self.confirmEmail, 
           self.confirmKeypair, "browserid.org:443");
         self.syncIdentities();
 
