@@ -68,10 +68,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("addIdentity", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.addIdentity("testemail@testemail.com", {
-        pub: "pub",
-        priv: "priv"
-      }, "issuer", function() {
+      BrowserIDIdentities.addIdentity("testemail@testemail.com", "issuer", function(keypair) {
+        equal("object", typeof keypair, "we have a keypair");
+
         var identities = BrowserIDIdentities.getStoredIdentities();
         ok("testemail@testemail.com" in identities, "Our new email is added");
 
@@ -84,7 +83,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("removeIdentity that we add", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.addIdentity("testemail@testemail.com", { pub: "pub", priv: "priv" }, "issuer", function() {
+      BrowserIDIdentities.addIdentity("testemail@testemail.com", "issuer", function(keypair) {
         BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
           var identities = BrowserIDIdentities.getStoredIdentities();
           equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
