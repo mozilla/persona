@@ -321,6 +321,13 @@ function setup(app) {
       }
     });
   });
+
+  // if the BROWSERID_FAKE_VERIFICATION env var is defined, we'll include
+  // fake_verification.js.  This is used during testing only and should
+  // never be included in a production deployment
+  if (process.env['BROWSERID_FAKE_VERIFICATION']) {
+    require('./fake_verification.js').addVerificationWSAPI(app);
+  }
 }
 
 exports.setup = setup;

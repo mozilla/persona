@@ -62,7 +62,7 @@
 
 const
 mysql = require('mysql'),
-secrets = require('./secrets'),
+secrets = require('../../libs/secrets'),
 logger = require('../../libs/logging.js').logger;
 
 var client = undefined;
