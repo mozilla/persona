@@ -34,9 +34,11 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-"use strict";
 var BrowserIDNetwork = (function() {
+  "use strict";
+
   var csrf_token = undefined;
+
   function withCSRF(cb) {
     if (csrf_token) setTimeout(cb, 0);
     else {
@@ -47,11 +49,28 @@ var BrowserIDNetwork = (function() {
     }
   }
 
+  function filterOrigin(origin) {
+    return origin.replace(/^.*:\/\//, '');
+  }
+
   var Network = {
+    /**
+     * Set the origin of the current host being logged in to.
+     * @method setOrigin
+     * @param {string} origin
+     */
     setOrigin: function(origin) {
       BrowserIDNetwork.origin = filterOrigin(origin);
     },
 
+    /**
+     * Authenticate the current user
+     * @method authenticate
+     * @param {string} email - address to authenticate
+     * @param {string} password - password.
+     * @param {function} [onSuccess] - callback to call for success
+     * @param {function} [onFailure] - called on XHR failure
+     */
     authenticate: function(email, password, onSuccess, onFailure) {
       withCSRF(function() { 
         $.ajax({
@@ -73,6 +92,13 @@ var BrowserIDNetwork = (function() {
       });
     },
 
+    /**
+     * Check whether a user is currently logged in.
+     * @method checkAuth
+     * @param {function} [onSuccess] - Success callback, called with one 
+     * boolean parameter, whether the user is authenticated.
+     * @param {function} [onFailure] - called on XHR failure.
+     */
     checkAuth: function(onSuccess, onFailure) {
       $.ajax({
         url: '/wsapi/am_authed',
@@ -85,17 +111,28 @@ var BrowserIDNetwork = (function() {
 
     },
 
+    /**
+     * Log the authenticated user out
+     * @method logout
+     * @param {function} [onSuccess] - called on completion
+     */
     logout: function(onSuccess) {
       withCSRF(function() { 
         $.post("/wsapi/logout", {
           csrf: csrf_token
-        }, 
-        function() {
-          onSuccess();
-        });
+        }, onSuccess );
       });
     },
 
+    /**
+     * Create a new user.  Reset a current user's password.
+     * @method stageUser
+     * @param {string} email - Email address to prepare.
+     * @param {string} password - Password for user.
+     * @param {object} keypair - User's public/private key pair.
+     * @param {function} [onSuccess] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
     stageUser: function(email, password, keypair, onSuccess, onFailure) {
       withCSRF(function() { 
         $.ajax({
@@ -114,15 +151,30 @@ var BrowserIDNetwork = (function() {
       });
     },
 
+    /**
+     * Cancel the current user's account.
+     * @method cancelUser
+     * @param {function} [onSuccess] - called whenever complete.
+     */
     cancelUser: function(onSuccess) {
-      $.post("/wsapi/account_cancel", {"csrf": BrowserIDNetwork.csrf_token}, function(result) {
-        clearEmails();
-        if(onSuccess) {
-          onSuccess();
-        }
+      withCSRF(function() {
+        $.post("/wsapi/account_cancel", {"csrf": csrf_token}, function(result) {
+          clearEmails();
+          if(onSuccess) {
+            onSuccess();
+          }
+        });
       });
     },
 
+    /**
+     * Add an email to the current user's account.
+     * @method addEmail
+     * @param {string} email - Email address to add.
+     * @param {object} keypair - Email's public/private key pair.
+     * @param {function} [onSuccess] - Called when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
     addEmail: function(email, keypair, onSuccess, onFailure) {
       withCSRF(function() { 
         $.ajax({
@@ -247,7 +299,4 @@ var BrowserIDNetwork = (function() {
 
   return Network;
 
-  function filterOrigin(origin) {
-    return origin.replace(/^.*:\/\//, '');
-  }
 }());
