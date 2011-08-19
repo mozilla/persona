@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserIDNetwork: true */
+/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, clearEmails: true, BrowserIDNetwork: true , BrowserIDIdentities: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -41,31 +41,59 @@
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-identities", function() {
   module("browserid-identities");
 
-  test("getIdentities", function() {
-    var identities = BrowserIDIdentities.getIdentities();
+  function failure(message) {
+    return function() {
+      ok(false, message);
+      start();
+    };
+  }
+
+  test("getStoredIdentities", function() {
+    var identities = BrowserIDIdentities.getStoredIdentities();
     equal("object", typeof identities, "we have some identities");
   });
 
-  test("addIdentity", function() {
-    BrowserIDIdentities.addIdentity("testemail@testemail.com", {
-      pub: "pub",
-      priv: "priv"
-    }, "issuer");
+  test("clearStoredIdentities", function() {
+    BrowserIDIdentities.clearStoredIdentities();
+    var identities = BrowserIDIdentities.getStoredIdentities();
+    var count = 0;
+    for(var key in identities) { 
+      if(identities.hasOwnProperty(key)) {
+        count++; 
+      }
+    }
 
-    var identities = BrowserIDIdentities.getIdentities();
-    ok("testemail@testemail.com" in identities, "Our new email is added");
+    equal(0, count, "after clearing, there are no identities");
   });
 
-  test("removeIdentity", function() {
-    BrowserIDIdentities.addIdentity("testemail@testemail.com", {
-      pub: "pub",
-      priv: "priv"
-    }, "issuer");
+  test("addIdentity", function() {
+    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
+      BrowserIDIdentities.addIdentity("testemail@testemail.com", {
+        pub: "pub",
+        priv: "priv"
+      }, "issuer", function() {
+        var identities = BrowserIDIdentities.getStoredIdentities();
+        ok("testemail@testemail.com" in identities, "Our new email is added");
 
-    BrowserIDIdentities.removeIdentity("testemail@testemail.com");
+        start();
+      }, failure("addIdentity failure"));
+    }, failure("Authentication failure"));
 
-    var identities = BrowserIDIdentities.getIdentities();
-    equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
+    stop();
+  });
+
+  test("removeIdentity that we add", function() {
+    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
+      BrowserIDIdentities.addIdentity("testemail@testemail.com", { pub: "pub", priv: "priv" }, "issuer", function() {
+        BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
+          var identities = BrowserIDIdentities.getStoredIdentities();
+          equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
+          start();
+        }, failure("removeIdentity failure"));
+      }, failure("addIdentity failure"));
+    }, failure("Authentication failure"));
+
+    stop();
   });
   
   test("syncIdentities with no identities", function() {
@@ -74,14 +102,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       BrowserIDIdentities.syncIdentities(function onSuccess() {
         ok(true, "we have synced identities");
         start();
-      }, function onFailure() {
-        ok(false, "identity sync failure");
-        start();
-      });
-    }, function() {
-      ok(false, "Authentication failure");
-      start();
-    });
+      }, failure("identity sync failure"));
+    }, failure("Authentication failure"));
+
     stop();
   });
 
@@ -90,16 +113,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       BrowserIDIdentities.syncIdentities(function onSuccess() {
         ok(true, "we have synced identities");
         start();
-      }, function onFailure() {
-        ok(false, "identity sync failure");
-        start();
-      });
-    }, function() {
-      ok(false, "Authentication failure");
-      start();
-    });
+      }, failure("identity sync failure"));
+    }, failure("Authentication failure"));
+
     stop();
   });
-
 
 });
