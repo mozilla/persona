@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global _: true, console: true, addEmail: true, removeEmail: true, CryptoStubs: true */
+/*global _: true, BrowserIDNetwork: true, addEmail: true, removeEmail: true, clearEmails: true, getEmails: true, CryptoStubs: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,8 +34,8 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-"use strict";
 var BrowserIDIdentities = (function() {
+  "use strict";
   function getIssuedIdentities() {
       var emails = getEmails();
       var issued_identities = {};
@@ -84,12 +84,13 @@ var BrowserIDIdentities = (function() {
           var email = emailsToAdd.shift();
           var keypair = CryptoStubs.genKeyPair();
 
-          BrowserIDNetwork.setKey(email, keypair, function() {
+          self.addIdentity(email, keypair, "browserid.org:443", addNextEmail, onFailure);
+          /*BrowserIDNetwork.setKey(email, keypair, function() {
             // update emails list and commit to local storage, then go do the next email
             self.addIdentity(email, keypair, "browserid.org:443");
             addNextEmail();
           }, onFailure);
-
+          */
         }
 
         addNextEmail();
@@ -100,21 +101,28 @@ var BrowserIDIdentities = (function() {
      * Persist an address and key pair.
      * @method addIdentity
      * @param {string} email - Email address.
-     * @param {object} keypair - Keypair for email address
-     * @param {string} [issuer] - Issuer of keypair
+     * @param {object} keypair - Keypair for email address.
+     * @param {string} [issuer] - Issuer of keypair.
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
      */
-    addIdentity: function(email, keypair, issuer) {
-      var new_email_obj= {
-        created: new Date(),
-        pub: keypair.pub,
-        priv: keypair.priv
-      };
+    addIdentity: function(email, keypair, issuer, onSuccess, onFailure) {
+      BrowserIDNetwork.setKey(email, keypair, function() {
+        var new_email_obj= {
+          created: new Date(),
+          pub: keypair.pub,
+          priv: keypair.priv
+        };
 
-      if (issuer) {
-        new_email_obj.issuer = issuer;
-      }
-      
-      addEmail(email, new_email_obj);
+        if (issuer) {
+          new_email_obj.issuer = issuer;
+        }
+        
+        addEmail(email, new_email_obj);
+        if(onSuccess) {
+          onSuccess();
+        }
+      }, onFailure);
     },
 
     /**
@@ -122,17 +130,30 @@ var BrowserIDIdentities = (function() {
      * @method removeIdentity
      * @param {string} email - Email address to remove.
      */
-    removeIdentity: function(email) {
-      removeEmail(email);
+    removeIdentity: function(email, onSuccess, onFailure) {
+      BrowserIDNetwork.removeEmail(email, function() {
+        removeEmail(email);
+        if(onSuccess) {
+          onSuccess();
+        }
+      }, onFailure);
     },
 
     /**
-     * Get the current list of stored identities.
-     * @method getIdentities
+     * Get the list of identities stored locally.
+     * @method getStoredIdentities
      * @return {object} identities.
      */
-    getIdentities: function() {
+    getStoredIdentities: function() {
       return getEmails();
+    },
+
+    /**
+     * Clear the list of identities stored locally.
+     * @method clearStoredIdentities
+     */
+    clearStoredIdentities: function() {
+      clearEmails();
     }
 
 

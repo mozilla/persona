@@ -166,6 +166,8 @@ var BrowserIDNetwork = (function() {
     cancelUser: function(onSuccess) {
       withCSRF(function() {
         $.post("/wsapi/account_cancel", {"csrf": csrf_token}, function(result) {
+          // XXX move this out of here, we now have 
+          // BrowserIDIdentities.clearStoredIdentities
           clearEmails();
           if(onSuccess) {
             onSuccess();
@@ -237,12 +239,7 @@ var BrowserIDNetwork = (function() {
             email: email,
             csrf: csrf_token
           },
-          success: function() {
-            removeEmail(email);
-            if(onSuccess) {
-              onSuccess();
-            }
-          },
+          success: onSuccess,
           failure: onFailure
         });
       });
