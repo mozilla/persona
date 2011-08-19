@@ -56,7 +56,7 @@ var BrowserIDIdentities = (function() {
   }
 
   var Identities = {
-    syncIdentities: function(onSuccess, onFailure, onKeySyncFailure) {
+    syncIdentities: function(onSuccess, onFailure) {
       var issued_identities = getIssuedIdentities();
 
       // send up all email/pubkey pairs to the server, it will response with a
@@ -88,7 +88,8 @@ var BrowserIDIdentities = (function() {
             // update emails list and commit to local storage, then go do the next email
             self.addIdentity(email, keypair, "browserid.org:443");
             addNextEmail();
-          }, onKeySyncFailure);
+          }, onFailure);
+
         }
 
         addNextEmail();

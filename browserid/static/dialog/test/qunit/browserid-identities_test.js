@@ -77,11 +77,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       }, function onFailure() {
         ok(false, "identity sync failure");
         start();
-      }, function onKeySyncFailure() {
-        ok(false, "identity key sync failure");
-        start();
       });
-
     }, function() {
       ok(false, "Authentication failure");
       start();
@@ -97,11 +93,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       }, function onFailure() {
         ok(false, "identity sync failure");
         start();
-      }, function onKeySyncFailure() {
-        ok(false, "identity key sync failure");
-        start();
       });
-
     }, function() {
       ok(false, "Authentication failure");
       start();
