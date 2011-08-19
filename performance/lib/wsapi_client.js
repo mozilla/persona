@@ -69,7 +69,7 @@ function extractCookies(ctx, res) {
   }
 }
 
-exports.get = function(cfg, path, context, cb) {
+exports.get = function(cfg, path, context, getArgs, cb) {
   // parse the server URL (cfg.browserid)
   var uObj;
   var meth;
@@ -83,6 +83,9 @@ exports.get = function(cfg, path, context, cb) {
   
   var headers = { };
   injectCookies(context, headers);
+
+  if (typeof getArgs === 'object')
+    path += "?" + querystring.stringify(getArgs);
 
   meth.get({
     host: uObj.hostname,
@@ -104,7 +107,7 @@ exports.get = function(cfg, path, context, cb) {
 function withCSRF(cfg, context, cb) {
   if (context.csrf) cb(context.csrf);
   else {
-    exports.get(cfg, '/wsapi/csrf', context, function(r) {
+    exports.get(cfg, '/wsapi/csrf', context, undefined, function(r) {
       context.csrf = r.body;
       cb(context.csrf);
     });

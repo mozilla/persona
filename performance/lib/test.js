@@ -15,5 +15,10 @@ wcli.post(cfg, '/wsapi/stage_user', ctx, {
   pubkey: 'fakepubkey',
   site:'fakesite.com'
 }, function (r) {
-  console.log(r.body);
+  // now get the verification secret
+  wcli.get(cfg, '/wsapi/fake_verification', ctx, {
+    email: "first@fakeemail.com"
+  }, function (r) {
+    console.log(r);
+  });
 });
