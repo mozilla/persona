@@ -139,7 +139,7 @@ var BrowserIDIdentities = (function() {
      * identities.
      * @method checkAuthentication
      */
-    checkAuthentication: function(onSuccess, onFailure) {
+    checkAuthenticationAndSync: function(onSuccess, onFailure) {
       var self=this;
       BrowserIDNetwork.checkAuth(function(authenticated) {
         if (authenticated) {
