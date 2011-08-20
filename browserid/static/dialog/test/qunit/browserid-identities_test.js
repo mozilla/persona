@@ -196,4 +196,45 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
+  test("syncIdentity without first validating email", function() {
+    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
+      // First, force removal that way we know it is not part of our list.
+      BrowserIDIdentities.removeIdentity("unvalidated@unvalidated.com", function() {
+
+        clearEmails();
+        BrowserIDIdentities.syncIdentities(function onSuccess() {
+
+          var identities = BrowserIDIdentities.getStoredIdentities();
+          // Make sure the server has forgotten about this email address.
+          equal("unvalidated@unvalidated.com" in identities, false, "The removed email should not be on the list.");
+
+          // This next call will call /wsapi/set_key on a 
+          // key that has not been validated.
+          BrowserIDIdentities.syncIdentity("unvalidated@unvalidated.com", "issuer", function(keypair) {
+            // Clear all the local emails, then refetch the list from the server
+            // just to be sure we are seeing what the server sees.
+            clearEmails();
+            BrowserIDIdentities.syncIdentities(function onSuccess() {
+
+              var identities = BrowserIDIdentities.getStoredIdentities();
+              // woah.  Things just went wrong.
+              equal("unvalidated@unvalidated.com" in identities, false, "The unvalidated email should not be added just through calling sync_key");
+              start();
+            }, failure("syncIdentities failure"));
+          }, failure("syncIdentity failure"));
+
+
+
+
+        }, failure("syncIdentities failure"));
+
+
+
+
+      }, failure("removeEmail failure"));
+    }, failure("Authentication failure"));
+
+    stop();
+  });
+
 });
