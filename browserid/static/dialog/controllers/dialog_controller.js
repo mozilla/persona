@@ -74,7 +74,7 @@ PageController.extend("Dialog", {}, {
       var self=this, hub = OpenAjax.hub, el = this.element;
 
       hub.subscribe("createaccount:created", function(msg, info) {
-        self.doConfirmEmail(info.email, info.keypair);
+        self.doConfirmEmail(info.email);
       });
 
       hub.subscribe("createaccount:signin", function() {
@@ -114,7 +114,7 @@ PageController.extend("Dialog", {}, {
       });
 
       hub.subscribe("addemail:complete", function(msg, info) {
-        self.doConfirmEmail(info.email, info.keypair);
+        self.doConfirmEmail(info.email);
       });
 
       hub.subscribe("start", function() {
@@ -163,9 +163,8 @@ PageController.extend("Dialog", {}, {
       this.element.addemail();
     },
 
-    doConfirmEmail: function(email, keypair) {
+    doConfirmEmail: function(email) {
       this.confirmEmail = email;
-      this.confirmKeypair = keypair;
 
       this.element.checkregistration({email: email});
     },
@@ -174,9 +173,8 @@ PageController.extend("Dialog", {}, {
         var self = this;
         // this is a secondary registration from browserid.org, persist
         // email, keypair, and that fact
-        BrowserIDIdentities.persistIdentity(self.confirmEmail, 
-          self.confirmKeypair, "browserid.org:443");
-        self.syncIdentities();
+        BrowserIDIdentities.confirmIdentity(self.confirmEmail,
+          self.doSignIn.bind(self));
     },
 
     doEmailSelected: function(email) {

@@ -56,6 +56,12 @@ var BrowserIDIdentities = (function() {
   }
 
   var Identities = {
+    /**
+     * Sync local identities with browserid.org
+     * @method syncIdentities
+     * @param {function} [onSuccess] - Called whenever complete.
+     * @param {function} [onFailure] - Called on failure.
+     */
     syncIdentities: function(onSuccess, onFailure) {
       var issued_identities = getIssuedIdentities();
 
@@ -97,12 +103,35 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     stageIdentity: function(email, password, onSuccess, onFailure) {
-      var keypair = CryptoStubs.genKeyPair();
+      var self=this,
+          keypair = CryptoStubs.genKeyPair();
+
+      self.stagedEmail = email;
+      self.stagedKeypair = keypair;
+
       BrowserIDNetwork.stageUser(email, password, keypair, function() {
         if(onSuccess) {
           onSuccess(keypair);
         }
       }, onFailure);
+    },
+
+    /**
+     * Signifies that an identity has been confirmed
+     * @method confirmIdentity
+     * @param {string} email - Email address.
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
+     */
+    confirmIdentity: function(email, onSuccess, onFailure) {
+      var self = this;
+      if(email === self.stagedEmail) {
+        self.persistIdentity(self.stagedEmail, self.stagedKeypair, "browserid.org:443");
+        self.syncIdentities(onSuccess, onFailure);
+      }
+      else if(onFailure) {
+        onFailure();
+      }
     },
 
     /**

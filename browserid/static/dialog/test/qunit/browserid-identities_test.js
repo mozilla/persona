@@ -71,7 +71,17 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       equal("object", typeof keypair, "We have a key pair");
       start();
     }, failure("stageIdentity failure"));
+
     stop();
+  });
+
+  test("confirmIdentity", function() {
+  /*  BrowserIDIdentities.confirmIdentity("testuser@testuser.com", function() {
+      start();
+    });
+
+    stop();
+    */
   });
 
   test("addIdentity", function() {
