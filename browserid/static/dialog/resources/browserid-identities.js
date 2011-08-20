@@ -135,6 +135,56 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
+     * Check whether the current user is authenticated.  If authenticated, sync 
+     * identities.
+     * @method checkAuthentication
+     */
+    checkAuthentication: function(onSuccess, onFailure) {
+      var self=this;
+      BrowserIDNetwork.checkAuth(function(authenticated) {
+        if (authenticated) {
+          self.syncIdentities(function() {
+            if (onSuccess) {
+              onSuccess(authenticated);
+            }
+          }, onFailure);
+        }
+        else {
+          onSuccess(authenticated);
+        }
+      }, onFailure);
+    },
+
+    /**
+     * Authenticate the user with the given email and password, if 
+     * authentication successful, sync addresses with server.
+     * @method authenticateAndSync
+     * @param {string} email - Email address to authenticate.
+     * @param {string} password - Password.
+     * @param {function} [onSuccess] - Called whenever authentication succeeds 
+     * but before sync starts.  Useful for displaying status messages about the 
+     * sync taking a moment.
+     * @param {function} [onComplete] - Called on sync completion.
+     * @param {function} [onFailure] - Called on failure.
+     */
+    authenticateAndSync: function(email, password, onSuccess, onComplete, onFailure) {
+      var self=this;
+      BrowserIDNetwork.authenticate(email, password, function(authenticated) {
+        if (authenticated) {
+          self.syncIdentities(function() {
+            if (onComplete) {
+              onComplete(authenticated);
+            }
+          }, onFailure);
+        }
+
+        if (onSuccess) {
+          onSuccess(authenticated);
+        }
+      }, onFailure);
+    },
+
+    /**
      * Add an identity.  Creates and stores with the server and locally 
      * a keypair for an email address.
      * @method addIdentity

@@ -84,6 +84,32 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     */
   });
 
+  test("authenticateAndSync", function() {
+    clearEmails();
+    BrowserIDIdentities.authenticateAndSync("testuser@testuser.com", "testuser", function() {
+    }, function() {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      ok("testuser@testuser.com" in identities, "checkAuthentication syncs email addresses");
+      start();
+    }, failure("Authentication failure"));
+
+    stop();
+
+  });
+
+  test("checkAuthentication", function() {
+    clearEmails();
+    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
+      BrowserIDIdentities.checkAuthentication(function() {
+        var identities = BrowserIDIdentities.getStoredIdentities();
+        ok("testuser@testuser.com" in identities, "checkAuthentication syncs email addresses");
+        start();
+      });
+    }, failure("Authentication failure"));
+
+    stop();
+  });
+
   test("addIdentity", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
       BrowserIDIdentities.addIdentity("testemail@testemail.com", "issuer", function(keypair) {
