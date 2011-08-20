@@ -159,6 +159,26 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
+     * Get an assertion for an identity
+     * @method getIdentityAssertion
+     * @param {string} email - Email to get assertion for.
+     * @param {function} [onSuccess] - function to call with assertion.
+     * @param {function} [onFailure] - function to call on failure.
+     */
+    getIdentityAssertion: function(email, onSuccess, onFailure) {
+      var storedID = getEmails()[email],
+          privkey = storedID.priv,
+          issuer = storedID.issuer,
+          audience = BrowserIDNetwork.origin,
+          assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
+      
+      if(onSuccess) {
+        onSuccess(assertion);
+      }
+
+    },
+
+    /**
      * Get the list of identities stored locally.
      * @method getStoredIdentities
      * @return {object} identities.

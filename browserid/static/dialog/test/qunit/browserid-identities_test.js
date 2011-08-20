@@ -132,4 +132,15 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
+  test("getIdentityAssertion", function() {
+    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
+      BrowserIDIdentities.getIdentityAssertion("testuser@testuser.com", function(assertion) {
+        equal("string", typeof assertion, "we have an assertion!");
+        start();
+      });
+    }, failure("Authentication failure"));
+
+    stop();
+  });
+
 });

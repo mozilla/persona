@@ -177,23 +177,18 @@ PageController.extend("Dialog", {}, {
         BrowserIDIdentities.persistIdentity(self.confirmEmail, 
           self.confirmKeypair, "browserid.org:443");
         self.syncIdentities();
-
     },
 
     doEmailSelected: function(email) {
-      var self=this,
-          // yay!  now we need to produce an assertion.
-          storedID = getEmails()[email],
-          privkey = storedID.priv,
-          issuer = storedID.issuer,
-          audience = BrowserIDNetwork.origin,
-          assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
-
-      // Clear onerror before the call to onsuccess - the code to onsuccess 
-      // calls window.close, which would trigger the onerror callback if we 
-      // tried this afterwards.
-      self.onerror = null;
-      self.onsuccess(assertion);
+      var self=this;
+      // yay!  now we need to produce an assertion.
+      BrowserIDIdentities.getIdentityAssertion(email, function(assertion) {
+        // Clear onerror before the call to onsuccess - the code to onsuccess 
+        // calls window.close, which would trigger the onerror callback if we 
+        // tried this afterwards.
+        self.onerror = null;
+        self.onsuccess(assertion);
+      });
     },
 
     doNotMe: function() {
@@ -204,9 +199,7 @@ PageController.extend("Dialog", {}, {
     syncIdentities: function() {
       var self = this;
       BrowserIDIdentities.syncIdentities(self.doSignIn.bind(self), 
-      function onFailure(xhr, textStatus, errorThrown) {
-        self.runErrorDialog(BrowserIDErrors.signIn); 
-      });
+        self.getErrorDialog(BrowserIDErrors.signIn));
     },
 
 
@@ -219,9 +212,7 @@ PageController.extend("Dialog", {}, {
         } else {
           self.doAuthenticate();
         }
-      }, function() {
-        self.runErrorDialog(BrowserIDErrors.checkAuthentication);
-      });
+      }, self.getErrorDialog(BrowserIDErrors.checkAuthentication));
   }
 
   });

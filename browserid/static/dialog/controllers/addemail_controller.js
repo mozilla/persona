@@ -72,10 +72,7 @@
             email: email,
             keypair: keypair
           });
-        },
-        function() {
-          self.runErrorDialog(BrowserIDErrors.addEmail);
-        });
+        }, self.getErrorDialog(BrowserIDErrors.addEmail));
     }
   });
 
