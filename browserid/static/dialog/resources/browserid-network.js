@@ -193,7 +193,7 @@ var BrowserIDNetwork = (function() {
           data: {
             email: email,
             pubkey: keypair.pub,
-            site: BrowserIDNetwork.origin,
+            site: BrowserIDNetwork.origin || document.location.host,
             csrf: csrf_token
           },
           success: onSuccess,

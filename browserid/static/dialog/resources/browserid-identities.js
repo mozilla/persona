@@ -88,7 +88,7 @@ var BrowserIDIdentities = (function() {
 
           var email = emailsToAdd.shift();
 
-          self.addIdentity(email, "browserid.org:443", addNextEmail, onFailure);
+          self.syncIdentity(email, "browserid.org:443", addNextEmail, onFailure);
         }
 
         addNextEmail();
@@ -185,15 +185,15 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
-     * Add an identity.  Creates and stores with the server and locally 
-     * a keypair for an email address.
-     * @method addIdentity
+     * Sync an identity with the server.  Creates and stores locally and on the 
+     * server a keypair for the given email address.
+     * @method syncIdentity
      * @param {string} email - Email address.
      * @param {string} [issuer] - Issuer of keypair.
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
-    addIdentity: function(email, issuer, onSuccess, onFailure) {
+    syncIdentity: function(email, issuer, onSuccess, onFailure) {
       var keypair = CryptoStubs.genKeyPair();
       BrowserIDNetwork.setKey(email, keypair, function() {
         Identities.persistIdentity(email, keypair, issuer);
@@ -203,8 +203,27 @@ var BrowserIDIdentities = (function() {
       }, onFailure);
     },
 
+    /**
+     * Add an identity to an already created account.  Sends address and 
+     * keypair to the server, user then needs to verify account ownership. This 
+     * does not add the new email address/keypair to the local 
+     * list of valid identities.
+     * @method addIdentity
+     * @param {string} email - Email address.
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
+     */
+    addIdentity: function(email, onSuccess, onFailure) {
+      var keypair = CryptoStubs.genKeyPair();
+      BrowserIDNetwork.addEmail(email, keypair, function() {
+        if(onSuccess) {
+          onSuccess(keypair);
+        }
+      }, onFailure);
+    },
+
     /** 
-     * Persist an address and key pair.
+     * Persist an address and key pair locally.
      * @method persistIdentity
      * @param {string} email - Email address to persist.
      * @param {object} keypair - Key pair to save
@@ -227,6 +246,8 @@ var BrowserIDIdentities = (function() {
      * Remove an email address.
      * @method removeIdentity
      * @param {string} email - Email address to remove.
+     * @param {function} [onSuccess] - Called when complete.
+     * @param {function} [onFailure] - Called on failure.
      */
     removeIdentity: function(email, onSuccess, onFailure) {
       BrowserIDNetwork.removeEmail(email, function() {
@@ -241,8 +262,8 @@ var BrowserIDIdentities = (function() {
      * Get an assertion for an identity
      * @method getIdentityAssertion
      * @param {string} email - Email to get assertion for.
-     * @param {function} [onSuccess] - function to call with assertion.
-     * @param {function} [onFailure] - function to call on failure.
+     * @param {function} [onSuccess] - Called with assertion on success.
+     * @param {function} [onFailure] - Called on failure.
      */
     getIdentityAssertion: function(email, onSuccess, onFailure) {
       var storedID = getEmails()[email],

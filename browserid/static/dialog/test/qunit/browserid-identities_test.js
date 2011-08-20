@@ -98,8 +98,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("checkAuthenticationAndSync", function() {
-    clearEmails();
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
+      clearEmails();
       BrowserIDIdentities.checkAuthenticationAndSync(function() {
         var identities = BrowserIDIdentities.getStoredIdentities();
         ok("testuser@testuser.com" in identities, "checkAuthenticationAndSync syncs email addresses");
@@ -112,14 +112,31 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("addIdentity", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.addIdentity("testemail@testemail.com", "issuer", function(keypair) {
+      BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
+        BrowserIDIdentities.addIdentity("testemail@testemail.com", function(keypair) {
+          equal("object", typeof keypair, "we have a keypair");
+
+          var identities = BrowserIDIdentities.getStoredIdentities();
+          equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
+
+          start();
+        }, failure("addIdentity failure"));
+      }, failure("removeIdentity failure"));
+    }, failure("Authentication failure"));
+
+    stop();
+  });
+
+  test("syncIdentity", function() {
+    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
+      BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
         equal("object", typeof keypair, "we have a keypair");
 
         var identities = BrowserIDIdentities.getStoredIdentities();
         ok("testemail@testemail.com" in identities, "Our new email is added");
 
         start();
-      }, failure("addIdentity failure"));
+      }, failure("syncIdentity failure"));
     }, failure("Authentication failure"));
 
     stop();
@@ -133,13 +150,13 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("removeIdentity that we add", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.addIdentity("testemail@testemail.com", "issuer", function(keypair) {
+      BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
         BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
           var identities = BrowserIDIdentities.getStoredIdentities();
           equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
           start();
         }, failure("removeIdentity failure"));
-      }, failure("addIdentity failure"));
+      }, failure("syncIdentity failure"));
     }, failure("Authentication failure"));
 
     stop();

@@ -66,7 +66,7 @@
       this.doWait(BrowserIDWait.addEmail);
 
       var self = this;
-      BrowserIDIdentities.addIdentity(email, undefined, function(keypair) {
+      BrowserIDIdentities.addIdentity(email, function(keypair) {
           // email successfully staged, now wait for email confirmation
           self.close("addemail:complete", {
             email: email,
