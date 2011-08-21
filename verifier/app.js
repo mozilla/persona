@@ -39,13 +39,14 @@ const   path = require('path'),
    httputils = require('./lib/httputils.js'),
  idassertion = require('./lib/idassertion.js'),
          jwt = require('./lib/jwt.js'),
-     express = require('express');
+     express = require('express'),
      metrics = require('../libs/metrics.js'),
      logger = require('../libs/logging.js').logger;
 
 logger.info("verifier server starting up");
 
 function doVerify(req, resp, next) {
+  req.body = req.body || {}
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req.body.assertion;
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
 
