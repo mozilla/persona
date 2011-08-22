@@ -43,9 +43,12 @@ $(function() {
 function display_saved_ids()
 {
   var emails = {};
-  BrowserIDIdentities.syncIdentities(function() {
-    emails = getEmails();
-    displayEmails();
+  BrowserIDIdentities.checkAuthenticationAndSync(function(authenticated) {
+    if (authenticated) {
+      $("body").addClass("authenticated");
+      emails = getEmails();
+      displayEmails();
+    }
   });
 
 

@@ -93,6 +93,11 @@ header > #manageLink {
     -webkit-border-radius: 0 0 10px 10px;
     -moz-border-radius: 0 0 10px 10px;
     border-radius: 0 0 10px 10px;
+    display: none;
+}
+
+.authenticated header > #manageLink {
+    display: block;
 }
 
 header > #manageLink:hover {
