@@ -327,6 +327,7 @@ function setup(app) {
                                   "post argument");
     }
 
+    logger.debug('sync emails called.  client provides: ' + JSON.stringify(Object.keys(req.body.emails))); 
     db.getSyncResponse(req.session.authenticatedUser, req.body.emails, function(err, syncResponse) {
       if (err) httputils.serverError(resp, err);
       else resp.json(syncResponse);
