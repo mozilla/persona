@@ -87,6 +87,7 @@ exports.getNewUser = function() {
       }
     ]
   };
+  numLockedUsers++;
   users.push(user);
   return user;
 };
