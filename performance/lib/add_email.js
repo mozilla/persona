@@ -61,6 +61,11 @@ exports.startFunc = function(cfg, cb) {
   // first let's get an existing user
   var user = userdb.getExistingUser();
 
+  if (!user) {
+    winston.warn("can't achieve desired concurrency!  not enough users!");
+    return cb(false);
+  }
+
   // user will be "released" once we're done with her.
   cb = (function() {
     var _cb = cb;

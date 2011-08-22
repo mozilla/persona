@@ -45,7 +45,7 @@ winston = require('winston');
 
 function syncEmails(cfg, context, cb) {
 
-  function keyRefresh(email) {
+  function keyRefresh(email, cb) {
     var keypair = userdb.addKeyToUserCtx(context, email);
     wcli.post(cfg, '/wsapi/set_key', context, {
       email: email,
@@ -102,6 +102,11 @@ exports.startFunc = function(cfg, cb) {
   
   // first let's get an existing user
   var user = userdb.getExistingUser();
+
+  if (!user) {
+    winston.warn("can't achieve desired concurrency!  not enough users!");
+    return cb(false);
+  }
 
   // user will be "released" once we're done with her.
   cb = (function() {
