@@ -110,7 +110,7 @@ exports.startFunc = function(cfg, cb) {
       wcli.get(cfg, '/wsapi/prove_email_ownership', context, {
         token: r.body
       }, function (r) {
-        if (r.code !== 200 || r.body !== 'true') cb(false);
+        if (r.code !== 200 || r.body !== 'true') return cb(false);
         // and now we should call registration status to complete the
         // process
         wcli.get(cfg, '/wsapi/registration_status', context, {
