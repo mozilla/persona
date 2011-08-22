@@ -127,20 +127,22 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
-  test("syncIdentity", function() {
+  /*
+  test("syncIdentity on confirmed email address", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
-        equal("object", typeof keypair, "we have a keypair");
+      BrowserIDIdentities.removeIdentity("testemail@testemail.com", "issuer", function() {
+        // XXX verify the identity here 
+        BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
+          ok(false, "Syncing a non-verified identity should fail");
 
-        var identities = BrowserIDIdentities.getStoredIdentities();
-        ok("testemail@testemail.com" in identities, "Our new email is added");
-
-        start();
-      }, failure("syncIdentity failure"));
+          start();
+        }, failure("syncIdentity failure"));
+      }, failure("removeIdentity failure"));
     }, failure("Authentication failure"));
 
     stop();
   });
+*/
 
   test("persistIdentity", function() {
     BrowserIDIdentities.persistIdentity("testemail2@testemail.com", { pub: "pub", priv: "priv" });
@@ -148,6 +150,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     ok("testemail2@testemail.com" in identities, "Our new email is added");
   });
 
+  /*
   test("removeIdentity that we add", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
       BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
@@ -161,7 +164,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     stop();
   });
-  
+  */
   test("syncIdentities with no identities", function() {
     clearEmails();
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
@@ -196,6 +199,29 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
+  /*
+  test("syncIdentity on non-confirmed email address", function() {
+    clearEmails();
+    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
+      BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
+        BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
+          ok(false, "Syncing a non-verified identity should fail");
+
+          start();
+        }, function() {
+          ok(true, "trying to sync an identity that is not yet verified should fail");
+
+          var identities = BrowserIDIdentities.getStoredIdentities();
+          equal("testemail@testemail.com" in identities, false, "Our new email is added");
+
+          start();
+        });
+      }, failure("removeIdentity failure"));
+    }, failure("Authentication failure"));
+
+    stop();
+  });
+
   test("syncIdentity without first validating email", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
       // First, force removal that way we know it is not part of our list.
@@ -221,20 +247,14 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
               equal("unvalidated@unvalidated.com" in identities, false, "The unvalidated email should not be added just through calling sync_key");
               start();
             }, failure("syncIdentities failure"));
-          }, failure("syncIdentity failure"));
-
-
-
-
+          }, function() {
+            ok(true, "We expect syncIdentity to fail on an address we cannot confirm");
+          });
         }, failure("syncIdentities failure"));
-
-
-
-
       }, failure("removeEmail failure"));
     }, failure("Authentication failure"));
 
     stop();
   });
-
+*/
 });
