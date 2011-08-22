@@ -35,20 +35,22 @@
  * ***** END LICENSE BLOCK ***** */
 
 $(function() {
-  if ($('#emailList')) {
-    display_saved_ids();
-  }
+  BrowserIDNetwork.checkAuth(function(authenticated) {
+    if (authenticated) {
+      $("body").addClass("authenticated");
+      if ($('#emailList').length) {
+        display_saved_ids();
+      }
+    }
+  });
 });
 
 function display_saved_ids()
 {
   var emails = {};
-  BrowserIDIdentities.checkAuthenticationAndSync(function(authenticated) {
-    if (authenticated) {
-      $("body").addClass("authenticated");
-      emails = getEmails();
-      displayEmails();
-    }
+  BrowserIDIdentities.syncIdentities(function() {
+    emails = getEmails();
+    displayEmails();
   });
 
 
