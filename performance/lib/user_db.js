@@ -49,9 +49,19 @@ function genEmail() {
   return secrets.generate(8) + "@" + secrets.generate(8) + "." + secrets.generate(3);
 }
 
+// a little utilitiy function to get any one of an array of items
+exports.any = function (a) {
+  if (!Array.isArray(a)) throw "any may only be called on arrays";
+  return a[Math.floor(Math.random() * a.length)];
+}
+
 exports.getNewUser = function() {
   // create and return a new user record
   var user = {
+    // all users are "locked" upon creation to keep simultaneous
+    // and conflicting activities from being performed on the
+    // same user
+    locked: true,
     // all users start with a single email address
     emails: [ genEmail() ],
     // a password of 10 chars
@@ -68,22 +78,42 @@ exports.getNewUser = function() {
     ctxs: [
       {
         // and no public keys (XXX: beware the cometh of certs)
-        keys: [
-        ]
+        keys: {
+        }
       },
       {
-        keys: [
-        ]
+        keys: {
+        }
       }
     ]
   };
+  numLockedUsers++;
   users.push(user);
   return user;
 };
 
+var numLockedUsers = 0;
+
 exports.getExistingUser = function() {
   if (!users.length) throw "can't get an existing user. there aren't any.  call getNewUser first.";
-  return users[Math.floor(Math.random()*users.length)];
+  if (users.length === numLockedUsers) {
+    console.log("all users are locked!");
+    return undefined;
+  }
+  while (true) {
+    var u = exports.any(users);
+    if (!u.locked) {
+      u.locked = true;
+      numLockedUsers++;
+      return u;
+    }
+  }
+};
+
+exports.releaseUser = function(user) {
+  if (!user.locked) throw "you can't release a user that's not in use!";
+  delete user.locked;
+  numLockedUsers--;
 };
 
 exports.addEmailToUser = function(user) {
@@ -92,13 +122,13 @@ exports.addEmailToUser = function(user) {
   return email;
 };
 
-exports.addKeyToUserCtx = function(ctx) {
+exports.addKeyToUserCtx = function(ctx, email) {
   // this is simulated.  it will need to be real to apply load to
   // the verifier, but that in turn will drastically increase the
   // cost of the application of load.  ho hum.
   var pub = secrets.generate(128);
   var priv = secrets.generate(128);
   var k = {pub: pub, priv: priv}
-  ctx.keys.push(k);
+  ctx.keys[email] = k;
   return k;
 }

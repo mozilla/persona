@@ -69,6 +69,11 @@ function extractCookies(ctx, res) {
   }
 }
 
+exports.clearCookies = function(ctx) {
+  if (ctx && ctx.cookieJar) delete ctx.cookieJar;
+  if (ctx && ctx.csrf) delete ctx.csrf;
+};
+
 exports.get = function(cfg, path, context, getArgs, cb) {
   // parse the server URL (cfg.browserid)
   var uObj;
@@ -108,7 +113,8 @@ function withCSRF(cfg, context, cb) {
   if (context.csrf) cb(context.csrf);
   else {
     exports.get(cfg, '/wsapi/csrf', context, undefined, function(r) {
-      context.csrf = r.body;
+      if (r.code === 200 && typeof r.body === 'string')
+        context.csrf = r.body;
       cb(context.csrf);
     });
   }

@@ -35,8 +35,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 const
-wcli = require("./wsapi_client.js"),
-userdb = require("./user_db.js");
+wcli = require("../../libs/wsapi_client.js"),
+userdb = require("./user_db.js"),
+winston = require('winston');
 
 /* this file is the "signup" activity, which simulates the process of a new user
  * signing up for browserid. */
@@ -73,25 +74,51 @@ exports.startFunc = function(cfg, cb) {
   // get a user
   var user = userdb.getNewUser();
 
-  // give them a public key
-  userdb.addKeyToUserCtx(user.ctxs[0]);
+  // unlock the user when we're done with them
+  cb = (function() {
+    var _cb = cb;
+    return function(x) {
+      userdb.releaseUser(user);
+      _cb(x);
+    };
+  })();
+
+  // pick a device context at random
+  var context = userdb.any(user.ctxs);
+
+  // pick an email address to operate on (there should really be
+  // only one at this point
+  var email = userdb.any(user.emails);
+
+  // add a key for the specified email to their device context 
+  var keypair = userdb.addKeyToUserCtx(context, email);
 
   // stage them
-  wcli.post(cfg, '/wsapi/stage_user', user.ctxs[0], {
-    email: user.emails[0],
+  wcli.post(cfg, '/wsapi/stage_user', context, {
+    email: email,
     pass: user.password,
-    pubkey: user.ctxs[0].keys[0].pub,
-    site: user.sites[0]
+    pubkey: keypair.pub,
+    site: userdb.any(user.sites)
   }, function (r) {
+    if (r.code !== 200) return cb(false);
     // now get the verification secret
-    wcli.get(cfg, '/wsapi/fake_verification', user.ctxs[0], {
-      email: user.emails[0]
+    wcli.get(cfg, '/wsapi/fake_verification', context, {
+      email: email
     }, function (r) {
+      if (r.code !== 200) return cb(false);
       // and simulate clickthrough
-      wcli.get(cfg, '/wsapi/prove_email_ownership', user.ctxs[0], {
+      wcli.get(cfg, '/wsapi/prove_email_ownership', context, {
         token: r.body
       }, function (r) {
-        cb(r.body);
+        if (r.code !== 200 || r.body !== 'true') return cb(false);
+        // and now we should call registration status to complete the
+        // process
+        wcli.get(cfg, '/wsapi/registration_status', context, {
+        }, function(r) {
+          var rv = (r.code === 200 && r.body === '"complete"');
+          if (!rv) winston.error("registration_status failed during signup: " + JSON.stringify(r));
+          cb(rv);
+        });
       });
     });
   });

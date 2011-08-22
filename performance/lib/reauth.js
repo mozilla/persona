@@ -35,15 +35,11 @@
  * ***** END LICENSE BLOCK ***** */
 
 /* this file is the "reauth" activity, which simulates the process of a user
- * browserid who is logged into browserid with an authenticated session
- * using browserid at an RP to log in */
+ * who an existing browserid account, but no active browserid session logging
+ * into browserid. */
 
 exports.startFunc = function(cfg, cb) {
 
-  // 1. RP includes include.js 
-  // 2. users' browser loads all code associated with dialog
-  // 3. in page javascript calls CSRF to get a CSRF token
-  // 4. the RP will call /verify to verify a generated assertion
 
   // XXX: implementing this will require actual crypto.
 

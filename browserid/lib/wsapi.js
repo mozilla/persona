@@ -273,8 +273,16 @@ function setup(app) {
   });
 
   app.post('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
-    db.addKeyToEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function (rv) {
-      resp.json(rv);
+    db.emailsBelongToSameAccount(req.session.authenticatedUser, req.body.email, function(sameAccount) {
+      // not same account? big fat error
+      if (!sameAccount) return httputils.badRequest(resp, "that email does not belong to you");
+
+      // same account, we add the key
+      db.addKeyToEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function (rv) {
+        // addKeyToEmail returns errors as strings, and undefined on success.
+        if (rv) logger.warn("set_key WSAPI call failed to add key: " + rv.toString());
+        resp.json(rv === undefined);
+      });
     });
   });
 
@@ -303,9 +311,24 @@ function setup(app) {
   });
 
   app.post('/wsapi/sync_emails', checkAuthed, function(req,resp) {
-    var emails = req.body.emails;
+    // validate that the post body contains an object with an .emails
+    // property that is an array of strings.
+    var valid = true;
+    try {
+      req.body.emails = JSON.parse(req.body.emails);
+      Object.keys(req.body.emails).forEach(function(k) {
+        if (typeof req.body.emails[k] !== 'string') {
+          throw "bogus value for key " + k;
+        }
+      });
+    } catch (e) {
+      logger.warn("invalid request to sync_emails: " + e);
+      return httputils.badRequest(resp, "sync_emails requires a JSON formatted 'emails' " +
+                                  "post argument");
+    }
 
-    db.getSyncResponse(req.session.authenticatedUser, emails, function(err, syncResponse) {
+    logger.debug('sync emails called.  client provides: ' + JSON.stringify(Object.keys(req.body.emails))); 
+    db.getSyncResponse(req.session.authenticatedUser, req.body.emails, function(err, syncResponse) {
       if (err) httputils.serverError(resp, err);
       else resp.json(syncResponse);
     });
