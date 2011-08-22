@@ -83,15 +83,17 @@ exports.startFunc = function(cfg, cb) {
     pubkey: user.ctxs[0].keys[0].pub,
     site: user.sites[0]
   }, function (r) {
+    if (r.code !== 200) return cb(false);
     // now get the verification secret
     wcli.get(cfg, '/wsapi/fake_verification', user.ctxs[0], {
       email: user.emails[0]
     }, function (r) {
+      if (r.code !== 200) return cb(false);
       // and simulate clickthrough
       wcli.get(cfg, '/wsapi/prove_email_ownership', user.ctxs[0], {
         token: r.body
       }, function (r) {
-        cb(r.body);
+        cb(r.code === 200 && r.body);
       });
     });
   });
