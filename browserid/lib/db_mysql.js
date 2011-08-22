@@ -282,13 +282,26 @@ exports.emailsBelongToSameAccount = function(lhs, rhs, cb) {
 
 function addKeyToEmailRecord(emailId, pubkey, cb) {
   client.query(
-    // XXX: 2 weeks is wrong, but then so is keypairs.
-    "INSERT INTO pubkey(email, content, expiry) VALUES(?, ?, DATE_ADD(NOW(), INTERVAL 2 WEEK))",
+    "SELECT COUNT(*) AS n FROM pubkey WHERE email = ? AND content = ?",
     [ emailId, pubkey ],
-    function(err, info) {
-      if (err) logUnexpectedError(err);
-      // smash null into undefined.
-      cb(err ? err : undefined);
+    function(err, rows) {
+      if (err) {
+        logUnexpectedError(err);
+        return cb(err);
+      }
+      if (rows[0].n > 0) {
+        return cb("cannot set a key that is already known");
+      }
+      
+      client.query(
+        // XXX: 2 weeks is wrong, but then so is keypairs.
+        "INSERT INTO pubkey(email, content, expiry) VALUES(?, ?, DATE_ADD(NOW(), INTERVAL 2 WEEK))",
+        [ emailId, pubkey ],
+        function(err, info) {
+          if (err) logUnexpectedError(err);
+          // smash null into undefined.
+          cb(err ? err : undefined);
+        });
     });
 }
 
