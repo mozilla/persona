@@ -109,7 +109,7 @@ function display_saved_ids()
       });
       
       var d = new Date(data.created);
-      var datestamp = $("<div class='date'>").text("Signed in at " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ", " + d.getMonth() + "/" + d.getDay() + "/" + d.getUTCFullYear());
+      var datestamp = $("<div class='date'>").text("Signed in at " + d.toLocaleString());
 
       meta.append(datestamp);
       meta.append(linkblock);
