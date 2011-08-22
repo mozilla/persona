@@ -69,6 +69,11 @@ function extractCookies(ctx, res) {
   }
 }
 
+exports.clearCookies = function(ctx) {
+  if (ctx && ctx.cookieJar) delete ctx.cookieJar;
+  if (ctx && ctx.csrf) delete ctx.csrf;
+};
+
 exports.get = function(cfg, path, context, getArgs, cb) {
   // parse the server URL (cfg.browserid)
   var uObj;
