@@ -61,13 +61,12 @@
       // add the actual email
       // now we need to actually try to stage the creation of this account.
       var email = $("#email_input").val();
-      var keypair = CryptoStubs.genKeyPair();
 
       // kick the user to waiting/status page while we talk to the server.
       this.doWait(BrowserIDWait.addEmail);
 
       var self = this;
-      BrowserIDNetwork.addEmail(email, keypair, function() {
+      BrowserIDIdentities.addIdentity(email, function(keypair) {
           // email successfully staged, now wait for email confirmation
           self.close("addemail:complete", {
             email: email,

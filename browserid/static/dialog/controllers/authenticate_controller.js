@@ -69,12 +69,16 @@
       var pass = $("#password_input").val();
 
       var self = this;
-      BrowserIDNetwork.authenticate(email, pass, function(authenticated) {
+      BrowserIDIdentities.authenticateAndSync(email, pass, function(authenticated) {
         if (authenticated) {
           self.doWait(BrowserIDWait.authentication);
-          self.close("authenticate:authenticated");
         } else {
           self.find("#nosuchaccount").hide().fadeIn(400);
+        }
+      },
+      function(authenticated) {
+        if (authenticated) {
+          self.close("authenticate:authenticated");
         }
       }, self.getErrorDialog(BrowserIDErrors.authentication));
     }
