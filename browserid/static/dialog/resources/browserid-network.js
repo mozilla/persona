@@ -45,7 +45,7 @@ var BrowserIDNetwork = (function() {
       $.get('/wsapi/csrf', {}, function(result) {
         csrf_token = result;
         cb();
-      });
+      }, 'html');
     }
   }
 
