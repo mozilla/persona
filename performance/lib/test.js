@@ -1,5 +1,5 @@
 const
-wcli = require("./wsapi_client.js"),
+wcli = require("../../libs/wsapi_client.js"),
 userdb = require("./user_db.js");
 
 // lets create a user!
