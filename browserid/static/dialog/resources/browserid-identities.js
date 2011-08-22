@@ -214,7 +214,12 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     addIdentity: function(email, onSuccess, onFailure) {
-      var keypair = CryptoStubs.genKeyPair();
+      var self=this, 
+          keypair = CryptoStubs.genKeyPair();
+
+      self.stagedEmail = email;
+      self.stagedKeypair = keypair;
+
       BrowserIDNetwork.addEmail(email, keypair, function() {
         if(onSuccess) {
           onSuccess(keypair);
