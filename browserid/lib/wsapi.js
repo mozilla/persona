@@ -273,8 +273,16 @@ function setup(app) {
   });
 
   app.post('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
-    db.addKeyToEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function (rv) {
-      resp.json(rv);
+    db.emailsBelongToSameAccount(req.session.authenticatedUser, req.body.email, function(sameAccount) {
+      // not same account? big fat error
+      if (!sameAccount) {
+        httputils.badRequest(resp, "that email does not belong to you");
+      } else {
+        // same account, we add the key
+        db.addKeyToEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function (rv) {
+          resp.json(rv);
+        });
+      }
     });
   });
 
