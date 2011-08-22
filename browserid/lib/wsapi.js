@@ -311,9 +311,23 @@ function setup(app) {
   });
 
   app.post('/wsapi/sync_emails', checkAuthed, function(req,resp) {
-    var emails = req.body.emails;
+    // validate that the post body contains an object with an .emails
+    // property that is an array of strings.
+    var valid = true;
+    try {
+      req.body.emails = JSON.parse(req.body.emails);
+      Object.keys(req.body.emails).forEach(function(k) {
+        if (typeof req.body.emails[k] !== 'string') {
+          throw "bogus value for key " + k;
+        }
+      });
+    } catch (e) {
+      logger.warn("invalid request to sync_emails: " + e);
+      return httputils.badRequest(resp, "sync_emails requires a JSON formatted 'emails' " +
+                                  "post argument");
+    }
 
-    db.getSyncResponse(req.session.authenticatedUser, emails, function(err, syncResponse) {
+    db.getSyncResponse(req.session.authenticatedUser, req.body.emails, function(err, syncResponse) {
       if (err) httputils.serverError(resp, err);
       else resp.json(syncResponse);
     });
