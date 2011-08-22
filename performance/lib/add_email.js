@@ -52,7 +52,7 @@ exports.startFunc = function(cfg, cb) {
   //    user's public key for this new email (XXX: this will go away when we migrate to certificates
   //    and instead, the server will be asked to sign the user's public key.)
   // 9. the RP calls /verify to verify a generated assertion
-  
+
   // XXX: write me
   setTimeout(function() { cb(true); }, 10); 
 };
