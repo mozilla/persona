@@ -69,7 +69,8 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
-     * Sync local identities with browserid.org
+     * Sync local identities with browserid.org.  Generally should not need to 
+     * be called.
      * @method syncIdentities
      * @param {function} [onSuccess] - Called whenever complete.
      * @param {function} [onFailure] - Called on failure.
@@ -108,7 +109,9 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
-     * Stage an identity - this creates an identity that must be verified.
+     * Stage an identity - this creates an identity that must be verified.  
+     * Used when creating a new account or resetting the password of an 
+     * existing account.
      * @method stageIdentity
      * @param {string} email - Email address.
      * @param {function} [onSuccess] - Called on successful completion. 
@@ -139,8 +142,9 @@ var BrowserIDIdentities = (function() {
       var self = this;
       if (email === self.stagedEmail) {
         self.stagedEmail = null;
-        self.persistIdentity(self.stagedEmail, self.stagedKeypair, "browserid.org:443");
-        self.syncIdentities(onSuccess, onFailure);
+        self.persistIdentity(self.stagedEmail, self.stagedKeypair, "browserid.org:443", function() {
+          self.syncIdentities(onSuccess, onFailure);
+        }, onFailure);
       }
       else if (onFailure) {
         onFailure();
@@ -151,19 +155,28 @@ var BrowserIDIdentities = (function() {
      * Check whether the current user is authenticated.  If authenticated, sync 
      * identities.
      * @method checkAuthenticationAndSync
+     * @param {function} [onSuccess] - Called if authentication check succeeds 
+     * but before sync starts.  Useful for displaying status messages about the 
+     * sync taking a moment.
+     * @param {function} [onComplete] - Called on sync completion.
+     * @param {function} [onFailure] - Called on failure.
      */
-    checkAuthenticationAndSync: function(onSuccess, onFailure) {
+    checkAuthenticationAndSync: function(onSuccess, onComplete, onFailure) {
       var self=this;
       network.checkAuth(function(authenticated) {
         if (authenticated) {
+          if (onSuccess) {
+            onSuccess(authenticated);
+          }
+
           self.syncIdentities(function() {
-            if (onSuccess) {
-              onSuccess(authenticated);
+            if (onComplete) {
+              onComplete(authenticated);
             }
           }, onFailure);
         }
         else {
-          onSuccess(authenticated);
+          onComplete(authenticated);
         }
       }, onFailure);
     },

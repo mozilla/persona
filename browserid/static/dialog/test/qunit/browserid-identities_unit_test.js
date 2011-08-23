@@ -205,7 +205,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("checkAuthenticationAndSync with valid authentication", function() {
     credentialsValid = true;
-    BrowserIDIdentities.checkAuthenticationAndSync(function(authenticated) {
+    BrowserIDIdentities.checkAuthenticationAndSync(function onSuccess() {},
+    function onComplete(authenticated) {
       ok(authenticated, true, "We are authenticated!");
       start();
     });
@@ -217,14 +218,16 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("checkAuthenticationAndSync with invalid authentication", function() {
     credentialsValid = false;
-    BrowserIDIdentities.checkAuthenticationAndSync(function(authenticated) {
+    BrowserIDIdentities.checkAuthenticationAndSync(function onSuccess() {
+        ok(false, "We are not authenticated!");
+        start();
+      }, function onComplete(authenticated) {
       equal(authenticated, false, "We are not authenticated!");
       start();
     });
 
     stop();
   });
-
 
 
   test("authenticateAndSync with valid authentication", function() {
