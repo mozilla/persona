@@ -164,6 +164,7 @@ dirs.forEach(function(dirObj) {
     name: dirObj.name,
     handler: runJS.handler,
     setup: runJS.setup,
+    shutdown: runJS.shutdown,
     subPath: dirObj.subPath
   };
   so.server = createServer(so)
@@ -171,3 +172,18 @@ dirs.forEach(function(dirObj) {
   console.log("  " + dirObj.name + ": " + formatLink(so.server));
 });
 
+process.on('SIGINT', function () {
+  console.log('\nSIGINT recieved! trying to shut down gracefully...');
+  boundServers.forEach(function(bs) {
+    if (bs.shutdown) bs.shutdown();
+    bs.server.on('close', function() {
+      console.log("server shutdown,", bs.server.connections, "connections still open...");
+    });
+    bs.server.close();
+  });
+  // exit more harshly in 700ms
+  setTimeout(function() {
+    console.log("exiting...");
+    process.exit(0);
+  }, 700);
+});

@@ -252,3 +252,7 @@ exports.setup = function(server) {
   // add the actual URL handlers other than static
   router(server);
 }
+
+exports.shutdown = function() {
+  db.close();
+};
