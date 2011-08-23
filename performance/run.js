@@ -111,7 +111,7 @@ var activity = {
   },
   "signin": {
     // users sign in using existing authentication material
-    // 8 times a day (once ever six hours per device)
+    // 8 times a day (once every six hours per device)
     probability: (8 / 40.0)
   },
   
@@ -150,6 +150,19 @@ Object.keys(activity).forEach(function(k) {
 
 // a global count of how many poll iterations have been completed
 var iterations = 0;
+
+// output a textual summary of how many activites per second are
+// associated with the given number of active users
+function outputActiveUserSummary(activeUsers) {
+  console.log("with", activeUsers, "active users there will be:");
+  for (var i = 0; i < probs.length; i++) {
+    var p = probs[i][0];
+    if (i !== 0) p -= probs[i-1][0];
+    var n = p * activeUsers * activitiesPerUserPerSecond;
+    console.log(" ", n.toFixed(2), probs[i][1], "activites per second");
+  }
+}
+
 
 function poll() {
   function startNewActivity() {
@@ -261,6 +274,10 @@ function poll() {
 
 // always start out by creating a bunch of users
 var NUM_INITIAL_USERS = 50;
+
+// if an explicit target was specified, let's output what that means
+// in understandable terms
+if (args.m) outputActiveUserSummary(args.m);
 
 console.log("To start, let's create " + NUM_INITIAL_USERS + " users.  A moment please.");
 
