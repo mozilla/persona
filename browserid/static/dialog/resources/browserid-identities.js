@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global _: true, BrowserIDNetwork: true, addEmail: true, removeEmail: true, clearEmails: true, getEmails: true, CryptoStubs: true */
+/*global _: true, network: true, addEmail: true, removeEmail: true, clearEmails: true, getEmails: true, CryptoStubs: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -55,9 +55,22 @@ var BrowserIDIdentities = (function() {
     }
   }
 
+  var network = BrowserIDNetwork;
+
   var Identities = {
     /**
-     * Sync local identities with browserid.org
+     * Set the interface to use for networking.  Used for unit testing.
+     * @method setNetwork
+     * @param {BrowserIDNetwork} networkInterface - BrowserIDNetwork interface 
+     * to use.
+     */
+    setNetwork: function(networkInterface) {
+      network = networkInterface;
+    },
+
+    /**
+     * Sync local identities with browserid.org.  Generally should not need to 
+     * be called.
      * @method syncIdentities
      * @param {function} [onSuccess] - Called whenever complete.
      * @param {function} [onFailure] - Called on failure.
@@ -74,7 +87,7 @@ var BrowserIDIdentities = (function() {
       // and we don't need to worry about rekeying them.
 
       var self = this;
-      BrowserIDNetwork.syncEmails(issued_identities, function(resp) {
+      network.syncEmails(issued_identities, function(resp) {
         removeUnknownIdentities(resp.unknown_emails);
 
         // now let's begin iteratively re-keying the emails mentioned in the server provided list
@@ -96,7 +109,9 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
-     * Stage an identity - this creates an identity that must be verified.
+     * Stage an identity - this creates an identity that must be verified.  
+     * Used when creating a new account or resetting the password of an 
+     * existing account.
      * @method stageIdentity
      * @param {string} email - Email address.
      * @param {function} [onSuccess] - Called on successful completion. 
@@ -109,15 +124,15 @@ var BrowserIDIdentities = (function() {
       self.stagedEmail = email;
       self.stagedKeypair = keypair;
 
-      BrowserIDNetwork.stageUser(email, password, keypair, function() {
-        if(onSuccess) {
+      network.stageUser(email, password, keypair, function() {
+        if (onSuccess) {
           onSuccess(keypair);
         }
       }, onFailure);
     },
 
     /**
-     * Signifies that an identity has been confirmed
+     * Signifies that an identity has been confirmed.
      * @method confirmIdentity
      * @param {string} email - Email address.
      * @param {function} [onSuccess] - Called on successful completion. 
@@ -125,11 +140,13 @@ var BrowserIDIdentities = (function() {
      */
     confirmIdentity: function(email, onSuccess, onFailure) {
       var self = this;
-      if(email === self.stagedEmail) {
-        self.persistIdentity(self.stagedEmail, self.stagedKeypair, "browserid.org:443");
-        self.syncIdentities(onSuccess, onFailure);
+      if (email === self.stagedEmail) {
+        self.stagedEmail = null;
+        self.persistIdentity(self.stagedEmail, self.stagedKeypair, "browserid.org:443", function() {
+          self.syncIdentities(onSuccess, onFailure);
+        }, onFailure);
       }
-      else if(onFailure) {
+      else if (onFailure) {
         onFailure();
       }
     },
@@ -137,20 +154,29 @@ var BrowserIDIdentities = (function() {
     /**
      * Check whether the current user is authenticated.  If authenticated, sync 
      * identities.
-     * @method checkAuthentication
+     * @method checkAuthenticationAndSync
+     * @param {function} [onSuccess] - Called if authentication check succeeds 
+     * but before sync starts.  Useful for displaying status messages about the 
+     * sync taking a moment.
+     * @param {function} [onComplete] - Called on sync completion.
+     * @param {function} [onFailure] - Called on failure.
      */
-    checkAuthenticationAndSync: function(onSuccess, onFailure) {
+    checkAuthenticationAndSync: function(onSuccess, onComplete, onFailure) {
       var self=this;
-      BrowserIDNetwork.checkAuth(function(authenticated) {
+      network.checkAuth(function(authenticated) {
         if (authenticated) {
+          if (onSuccess) {
+            onSuccess(authenticated);
+          }
+
           self.syncIdentities(function() {
-            if (onSuccess) {
-              onSuccess(authenticated);
+            if (onComplete) {
+              onComplete(authenticated);
             }
           }, onFailure);
         }
         else {
-          onSuccess(authenticated);
+          onComplete(authenticated);
         }
       }, onFailure);
     },
@@ -169,17 +195,20 @@ var BrowserIDIdentities = (function() {
      */
     authenticateAndSync: function(email, password, onSuccess, onComplete, onFailure) {
       var self=this;
-      BrowserIDNetwork.authenticate(email, password, function(authenticated) {
+      network.authenticate(email, password, function(authenticated) {
         if (authenticated) {
+          if (onSuccess) {
+            onSuccess(authenticated);
+          }
+
           self.syncIdentities(function() {
             if (onComplete) {
               onComplete(authenticated);
             }
           }, onFailure);
-        }
-
-        if (onSuccess) {
-          onSuccess(authenticated);
+        } else if (onComplete) {
+          // If not authenticated, we have to complete still.
+          onComplete(authenticated);
         }
       }, onFailure);
     },
@@ -195,19 +224,20 @@ var BrowserIDIdentities = (function() {
      */
     syncIdentity: function(email, issuer, onSuccess, onFailure) {
       var keypair = CryptoStubs.genKeyPair();
-      BrowserIDNetwork.setKey(email, keypair, function() {
-        Identities.persistIdentity(email, keypair, issuer);
-        if(onSuccess) {
-          onSuccess(keypair);
-        }
+      network.setKey(email, keypair, function() {
+        Identities.persistIdentity(email, keypair, issuer, function() {
+          if (onSuccess) {
+            onSuccess(keypair);
+          }
+        }, onFailure);
       }, onFailure);
     },
 
     /**
      * Add an identity to an already created account.  Sends address and 
      * keypair to the server, user then needs to verify account ownership. This 
-     * does not add the new email address/keypair to the local 
-     * list of valid identities.
+     * does not add the new email address/keypair to the local list of 
+     * valid identities.
      * @method addIdentity
      * @param {string} email - Email address.
      * @param {function} [onSuccess] - Called on successful completion. 
@@ -220,8 +250,8 @@ var BrowserIDIdentities = (function() {
       self.stagedEmail = email;
       self.stagedKeypair = keypair;
 
-      BrowserIDNetwork.addEmail(email, keypair, function() {
-        if(onSuccess) {
+      network.addEmail(email, keypair, function() {
+        if (onSuccess) {
           onSuccess(keypair);
         }
       }, onFailure);
@@ -232,8 +262,10 @@ var BrowserIDIdentities = (function() {
      * @method persistIdentity
      * @param {string} email - Email address to persist.
      * @param {object} keypair - Key pair to save
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
      */
-    persistIdentity: function(email, keypair, issuer) {
+    persistIdentity: function(email, keypair, issuer, onSuccess, onFailure) {
       var new_email_obj= {
         created: new Date(),
         pub: keypair.pub,
@@ -245,6 +277,10 @@ var BrowserIDIdentities = (function() {
       }
       
       addEmail(email, new_email_obj);
+
+      if (onSuccess) {
+        onSuccess();
+      }
     },
 
     /**
@@ -255,9 +291,9 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on failure.
      */
     removeIdentity: function(email, onSuccess, onFailure) {
-      BrowserIDNetwork.removeEmail(email, function() {
+      network.removeEmail(email, function() {
         removeEmail(email);
-        if(onSuccess) {
+        if (onSuccess) {
           onSuccess();
         }
       }, onFailure);
@@ -272,12 +308,13 @@ var BrowserIDIdentities = (function() {
      */
     getIdentityAssertion: function(email, onSuccess, onFailure) {
       var storedID = getEmails()[email],
-          privkey = storedID.priv,
-          issuer = storedID.issuer,
-          audience = BrowserIDNetwork.origin,
-          assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
-      
-      if(onSuccess) {
+          assertion;
+
+      if (storedID) {
+          assertion = CryptoStubs.createAssertion(network.origin, email, storedID.priv, storedID.issuer);
+      }
+
+      if (onSuccess) {
         onSuccess(assertion);
       }
 
