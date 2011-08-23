@@ -4,4 +4,5 @@ steal("/dialog/resources/storage.js",
       "/dialog/resources/crypto.js")
   .plugins("funcunit/qunit")
   .then("browserid-network_test")
-  .then("browserid-identities_test");
+  .then("browserid-identities_unit_test")
+//  .then("browserid-identities_functional_test");

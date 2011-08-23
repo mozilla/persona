@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global _: true, BrowserIDNetwork: true, addEmail: true, removeEmail: true, clearEmails: true, getEmails: true, CryptoStubs: true */
+/*global _: true, network: true, addEmail: true, removeEmail: true, clearEmails: true, getEmails: true, CryptoStubs: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -55,7 +55,19 @@ var BrowserIDIdentities = (function() {
     }
   }
 
+  var network = BrowserIDNetwork;
+
   var Identities = {
+    /**
+     * Set the interface to use for networking.  Used for unit testing.
+     * @method setNetwork
+     * @param {BrowserIDNetwork} networkInterface - BrowserIDNetwork interface 
+     * to use.
+     */
+    setNetwork: function(networkInterface) {
+      network = networkInterface;
+    },
+
     /**
      * Sync local identities with browserid.org
      * @method syncIdentities
@@ -74,7 +86,7 @@ var BrowserIDIdentities = (function() {
       // and we don't need to worry about rekeying them.
 
       var self = this;
-      BrowserIDNetwork.syncEmails(issued_identities, function(resp) {
+      network.syncEmails(issued_identities, function(resp) {
         removeUnknownIdentities(resp.unknown_emails);
 
         // now let's begin iteratively re-keying the emails mentioned in the server provided list
@@ -109,7 +121,7 @@ var BrowserIDIdentities = (function() {
       self.stagedEmail = email;
       self.stagedKeypair = keypair;
 
-      BrowserIDNetwork.stageUser(email, password, keypair, function() {
+      network.stageUser(email, password, keypair, function() {
         if(onSuccess) {
           onSuccess(keypair);
         }
@@ -141,7 +153,7 @@ var BrowserIDIdentities = (function() {
      */
     checkAuthenticationAndSync: function(onSuccess, onFailure) {
       var self=this;
-      BrowserIDNetwork.checkAuth(function(authenticated) {
+      network.checkAuth(function(authenticated) {
         if (authenticated) {
           self.syncIdentities(function() {
             if (onSuccess) {
@@ -169,17 +181,20 @@ var BrowserIDIdentities = (function() {
      */
     authenticateAndSync: function(email, password, onSuccess, onComplete, onFailure) {
       var self=this;
-      BrowserIDNetwork.authenticate(email, password, function(authenticated) {
+      network.authenticate(email, password, function(authenticated) {
         if (authenticated) {
+          if (onSuccess) {
+            onSuccess(authenticated);
+          }
+
           self.syncIdentities(function() {
             if (onComplete) {
               onComplete(authenticated);
             }
           }, onFailure);
-        }
-
-        if (onSuccess) {
-          onSuccess(authenticated);
+        } else if (onComplete) {
+          // If not authenticated, we have to complete still.
+          onComplete(authenticated);
         }
       }, onFailure);
     },
@@ -195,7 +210,7 @@ var BrowserIDIdentities = (function() {
      */
     syncIdentity: function(email, issuer, onSuccess, onFailure) {
       var keypair = CryptoStubs.genKeyPair();
-      BrowserIDNetwork.setKey(email, keypair, function() {
+      network.setKey(email, keypair, function() {
         Identities.persistIdentity(email, keypair, issuer);
         if(onSuccess) {
           onSuccess(keypair);
@@ -220,7 +235,7 @@ var BrowserIDIdentities = (function() {
       self.stagedEmail = email;
       self.stagedKeypair = keypair;
 
-      BrowserIDNetwork.addEmail(email, keypair, function() {
+      network.addEmail(email, keypair, function() {
         if(onSuccess) {
           onSuccess(keypair);
         }
@@ -255,7 +270,7 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on failure.
      */
     removeIdentity: function(email, onSuccess, onFailure) {
-      BrowserIDNetwork.removeEmail(email, function() {
+      network.removeEmail(email, function() {
         removeEmail(email);
         if(onSuccess) {
           onSuccess();
@@ -274,7 +289,7 @@ var BrowserIDIdentities = (function() {
       var storedID = getEmails()[email],
           privkey = storedID.priv,
           issuer = storedID.issuer,
-          audience = BrowserIDNetwork.origin,
+          audience = network.origin,
           assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
       
       if(onSuccess) {
