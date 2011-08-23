@@ -280,7 +280,7 @@ function poll() {
 }
 
 // always start out by creating a bunch of users
-var NUM_INITIAL_USERS = 50;
+var NUM_INITIAL_USERS = 100;
 
 // if an explicit target was specified, let's output what that means
 // in understandable terms

@@ -139,35 +139,49 @@ function setup(app) {
     }
 
     // bcrypt the password
-    stageParams['hash'] = bcrypt.encrypt_sync(stageParams.pass, bcrypt.gen_salt_sync(10));
+    bcrypt.gen_salt(10, function (err, salt) {
+      if (err) {
+        winston.error("error generating salt with bcrypt: " + err);
+        return resp.json(false);
+      }
 
-    try {
-      // upon success, stage_user returns a secret (that'll get baked into a url
-      // and given to the user), on failure it throws
-      db.stageUser(stageParams, function(secret) {
-        // store the email being registered in the session data
-        if (!req.session) req.session = {};
+      bcrypt.encrypt(stageParams.pass, salt, function(err, hash) {
+        if (err) {
+          winston.error("error generating password hash with bcrypt: " + err);
+          return resp.json(false);
+        }
 
-        // store inside the session the details of this pending verification
-        req.session.pendingVerification = {
-          email: stageParams.email,
-          hash: stageParams.hash // we must store both email and password to handle the case where
-          // a user re-creates an account - specifically, registration status
-          // must ensure the new credentials work to properly verify that
-          // the user has clicked throught the email link. note, this salted, bcrypted
-          // representation of a user's password will get thrust into an encrypted cookie
-          // served over an encrypted (SSL) session.  guten, yah.
-        };
+        stageParams['hash'] = hash;
 
-        resp.json(true);
+        try {
+          // upon success, stage_user returns a secret (that'll get baked into a url
+          // and given to the user), on failure it throws
+          db.stageUser(stageParams, function(secret) {
+            // store the email being registered in the session data
+            if (!req.session) req.session = {};
 
-        // let's now kick out a verification email!
-        email.sendVerificationEmail(stageParams.email, stageParams.site, secret);
+            // store inside the session the details of this pending verification
+            req.session.pendingVerification = {
+              email: stageParams.email,
+              hash: stageParams.hash // we must store both email and password to handle the case where
+              // a user re-creates an account - specifically, registration status
+              // must ensure the new credentials work to properly verify that
+              // the user has clicked throught the email link. note, this salted, bcrypted
+              // representation of a user's password will get thrust into an encrypted cookie
+              // served over an encrypted (SSL) session.  guten, yah.
+            };
+
+            resp.json(true);
+
+            // let's now kick out a verification email!
+            email.sendVerificationEmail(stageParams.email, stageParams.site, secret);
+          });
+        } catch(e) {
+          // we should differentiate tween' 400 and 500 here.
+          httputils.badRequest(resp, e.toString());
+        }
       });
-    } catch(e) {
-      // we should differentiate tween' 400 and 500 here.
-      httputils.badRequest(resp, e.toString());
-    }
+    });
   });
 
   app.get('/wsapi/registration_status', function(req, resp) {
@@ -217,17 +231,23 @@ function setup(app) {
 
   app.post('/wsapi/authenticate_user', checkParams(["email", "pass"]), function(req, resp) {
     db.checkAuth(req.body.email, function(hash) {
-      var success =
-        (typeof hash === 'string' &&
-         typeof req.body.pass === 'string' && 
-         bcrypt.compare_sync(req.body.pass, hash));
-
-      if (success) {
-        if (!req.session) req.session = {};
-        req.session.authenticatedUser = req.body.email;
+      if (typeof hash !== 'string' ||
+          typeof req.body.pass !== 'string')
+      {
+        return resp.json(false);
       }
 
-      resp.json(success);
+      bcrypt.compare(req.body.pass, hash, function (err, success) {
+        if (err) {
+          winston.warn("error comparing passwords with bcrypt: " + err);
+          success = false;
+        }
+        if (success) {
+          if (!req.session) req.session = {};
+          req.session.authenticatedUser = req.body.email;
+        }
+        resp.json(success);
+      });
     });
   });
 
