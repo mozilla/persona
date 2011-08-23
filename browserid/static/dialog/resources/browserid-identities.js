@@ -122,14 +122,14 @@ var BrowserIDIdentities = (function() {
       self.stagedKeypair = keypair;
 
       network.stageUser(email, password, keypair, function() {
-        if(onSuccess) {
+        if (onSuccess) {
           onSuccess(keypair);
         }
       }, onFailure);
     },
 
     /**
-     * Signifies that an identity has been confirmed
+     * Signifies that an identity has been confirmed.
      * @method confirmIdentity
      * @param {string} email - Email address.
      * @param {function} [onSuccess] - Called on successful completion. 
@@ -137,11 +137,12 @@ var BrowserIDIdentities = (function() {
      */
     confirmIdentity: function(email, onSuccess, onFailure) {
       var self = this;
-      if(email === self.stagedEmail) {
+      if (email === self.stagedEmail) {
+        self.stagedEmail = null;
         self.persistIdentity(self.stagedEmail, self.stagedKeypair, "browserid.org:443");
         self.syncIdentities(onSuccess, onFailure);
       }
-      else if(onFailure) {
+      else if (onFailure) {
         onFailure();
       }
     },
@@ -149,7 +150,7 @@ var BrowserIDIdentities = (function() {
     /**
      * Check whether the current user is authenticated.  If authenticated, sync 
      * identities.
-     * @method checkAuthentication
+     * @method checkAuthenticationAndSync
      */
     checkAuthenticationAndSync: function(onSuccess, onFailure) {
       var self=this;
@@ -211,18 +212,19 @@ var BrowserIDIdentities = (function() {
     syncIdentity: function(email, issuer, onSuccess, onFailure) {
       var keypair = CryptoStubs.genKeyPair();
       network.setKey(email, keypair, function() {
-        Identities.persistIdentity(email, keypair, issuer);
-        if(onSuccess) {
-          onSuccess(keypair);
-        }
+        Identities.persistIdentity(email, keypair, issuer, function() {
+          if (onSuccess) {
+            onSuccess(keypair);
+          }
+        }, onFailure);
       }, onFailure);
     },
 
     /**
      * Add an identity to an already created account.  Sends address and 
      * keypair to the server, user then needs to verify account ownership. This 
-     * does not add the new email address/keypair to the local 
-     * list of valid identities.
+     * does not add the new email address/keypair to the local list of 
+     * valid identities.
      * @method addIdentity
      * @param {string} email - Email address.
      * @param {function} [onSuccess] - Called on successful completion. 
@@ -236,7 +238,7 @@ var BrowserIDIdentities = (function() {
       self.stagedKeypair = keypair;
 
       network.addEmail(email, keypair, function() {
-        if(onSuccess) {
+        if (onSuccess) {
           onSuccess(keypair);
         }
       }, onFailure);
@@ -278,7 +280,7 @@ var BrowserIDIdentities = (function() {
     removeIdentity: function(email, onSuccess, onFailure) {
       network.removeEmail(email, function() {
         removeEmail(email);
-        if(onSuccess) {
+        if (onSuccess) {
           onSuccess();
         }
       }, onFailure);

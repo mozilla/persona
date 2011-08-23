@@ -39,19 +39,32 @@
  * "testuser@testuser.com" with the password "testuser"
  */
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-identities", function() {
-  var credentialsValid, unknownEmails, keyRefresh;
+  var credentialsValid, unknownEmails, keyRefresh, syncValid;
   var netStub = {
     reset: function() {
-      credentialsValid = true;
+      credentialsValid = syncValid = true;
       unknownEmails = [];
       keyRefresh = [];
     },
+
     stageUser: function(email, password, keypair, onSuccess) {
       onSuccess();
     },
 
     authenticate: function(email, password, onSuccess, onFailure) {
       onSuccess(credentialsValid);
+    },
+
+    checkAuth: function(onSuccess, onFailure) {
+      onSuccess(credentialsValid);
+    },
+
+    addEmail: function(email, keypair, onSuccess, onFailure) {
+      onSuccess();
+    },
+
+    removeEmail: function(email, onSuccess, onFailure) {
+      onSuccess();
     },
 
     syncEmails: function(issued_identities, onSuccess, onFailure) {
@@ -61,9 +74,12 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       });
     },
 
-    setKey: function(email, keypair, onSuccess, onError) {
-      if (onSuccess) {
+    setKey: function(email, keypair, onSuccess, onFailure) {
+      if (syncValid) {
         onSuccess();
+      }
+      else {
+        onFailure();
       }
     }
   };
@@ -113,14 +129,51 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
-  test("confirmIdentity", function() {
-  /*  BrowserIDIdentities.confirmIdentity("testuser@testuser.com", function() {
-      start();
-    });
+
+  test("confirmIdentity on staged identity", function() {
+    BrowserIDIdentities.stageIdentity("testuser@testuser.com", "testuser", function(keypair) {
+      BrowserIDIdentities.confirmIdentity("testuser@testuser.com", function() {
+        ok(true, "confirming staged identity");
+        start();
+      });
+    }, failure("stageIdentity failure"));
 
     stop();
-    */
   });
+
+
+  test("confirmIdentity on non staged identity", function() {
+    BrowserIDIdentities.stageIdentity("testuser@testuser.com", "testuser", function(keypair) {
+      BrowserIDIdentities.confirmIdentity("testuser2@testuser.com", function onSuccess() {
+        ok(false, "confirming unstaged identity");
+        start();
+      }, function onFailure() {
+        ok(true, "confirming unstaged identity should fail");
+        start();
+      });
+    }, failure("stageIdentity failure"));
+
+    stop();
+  });
+
+
+  test("confirmIdentity on previously confirmed identity", function() {
+    BrowserIDIdentities.stageIdentity("testuser@testuser.com", "testuser", function(keypair) {
+      BrowserIDIdentities.confirmIdentity("testuser@testuser.com", function() {
+        BrowserIDIdentities.confirmIdentity("testuser@testuser.com", function() {
+          ok(false, "confirming previously confirmed identity should fail");
+          start();
+        }, function onFailure() {
+          ok(true, "confirming previously confirmed identity should fail");  
+          start();
+        });
+      });
+    }, failure("stageIdentity failure"));
+
+    stop();
+  });
+
+
 
   test("authenticateAndSync with valid credentials", function() {
     BrowserIDIdentities.authenticateAndSync("testuser@testuser.com", "testuser", function() {
@@ -132,6 +185,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
 
   });
+
+
 
   test("authenticateAndSync with invalid credentials", function() {
     credentialsValid = false;
@@ -145,53 +200,117 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
 
   });
-/*
-  test("checkAuthenticationAndSync", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      clearEmails();
-      BrowserIDIdentities.checkAuthenticationAndSync(function() {
-        var identities = BrowserIDIdentities.getStoredIdentities();
-        ok("testuser@testuser.com" in identities, "checkAuthenticationAndSync syncs email addresses");
-        start();
-      });
-    }, failure("Authentication failure"));
+
+
+
+  test("checkAuthenticationAndSync with valid authentication", function() {
+    credentialsValid = true;
+    BrowserIDIdentities.checkAuthenticationAndSync(function(authenticated) {
+      ok(authenticated, true, "We are authenticated!");
+      start();
+    });
 
     stop();
   });
+
+
+
+  test("checkAuthenticationAndSync with invalid authentication", function() {
+    credentialsValid = false;
+    BrowserIDIdentities.checkAuthenticationAndSync(function(authenticated) {
+      equal(authenticated, false, "We are not authenticated!");
+      start();
+    });
+
+    stop();
+  });
+
+
+
+  test("authenticateAndSync with valid authentication", function() {
+    credentialsValid = true;
+    keyRefresh = ["testuser@testuser.com"]; 
+    clearEmails();
+
+    BrowserIDIdentities.authenticateAndSync("testuser@testuser.com", "testuser", function() {
+    }, function(authenticated) {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      ok("testuser@testuser.com" in identities, "authenticateAndSync syncs email addresses");
+      ok(authenticated, "we are authenticated")
+      start();
+    });
+
+    stop();
+  });
+
+
+
+  test("authenticateAndSync with invalid authentication", function() {
+    credentialsValid = false;
+    keyRefresh = ["testuser@testuser.com"]; 
+    clearEmails();
+
+    BrowserIDIdentities.authenticateAndSync("testuser@testuser.com", "testuser", function() {
+    }, function(authenticated) {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      equal("testuser@testuser.com" in identities, false, "authenticateAndSync does not sync if authentication is invalid");
+      equal(authenticated, false, "not authenticated");
+      start();
+    });
+
+    stop();
+  });
+
+
 
   test("addIdentity", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
-        BrowserIDIdentities.addIdentity("testemail@testemail.com", function(keypair) {
-          equal("object", typeof keypair, "we have a keypair");
+    BrowserIDIdentities.addIdentity("testemail@testemail.com", function(keypair) {
+      equal("object", typeof keypair, "we have a keypair");
 
-          var identities = BrowserIDIdentities.getStoredIdentities();
-          equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
 
-          start();
-        }, failure("addIdentity failure"));
-      }, failure("removeIdentity failure"));
-    }, failure("Authentication failure"));
+      start();
+    }, failure("addIdentity failure"));
 
     stop();
   });
 
-  /*
-  test("syncIdentity on confirmed email address", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.removeIdentity("testemail@testemail.com", "issuer", function() {
-        // XXX verify the identity here 
-        BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
-          ok(false, "Syncing a non-verified identity should fail");
 
-          start();
-        }, failure("syncIdentity failure"));
-      }, failure("removeIdentity failure"));
-    }, failure("Authentication failure"));
+
+  test("syncIdentity with successful sync", function() {
+    clearEmails();
+
+    syncValid = true;
+    BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      ok("testemail@testemail.com" in identities, "Valid email is synced");
+
+      start();
+    }, failure("syncIdentity failure"));
 
     stop();
   });
-*/
+
+
+  test("syncIdentity with invalid sync", function() {
+    clearEmails();
+
+    syncValid = false;
+    BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
+      ok(false, "sync was invalid, this should have failed");
+      start();
+    }, function() {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      equal("testemail@testemail.com" in identities, false, "Invalid email is not synced");
+
+      start();      
+    });
+
+    stop();
+  });
+
+
 
   test("persistIdentity", function() {
     BrowserIDIdentities.persistIdentity("testemail2@testemail.com", { pub: "pub", priv: "priv" }, undefined, function onSuccess() {
@@ -203,21 +322,36 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
-  /*
-  test("removeIdentity that we add", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
-        BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
-          var identities = BrowserIDIdentities.getStoredIdentities();
-          equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
-          start();
-        }, failure("removeIdentity failure"));
-      }, failure("syncIdentity failure"));
-    }, failure("Authentication failure"));
+
+
+  test("removeIdentity that is added", function() {
+    addEmail("testemail@testemail.com", {pub: "pub", priv: "priv"});
+
+    BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
+      start();
+    }, failure("removeIdentity failure"));
 
     stop();
   });
-  */
+
+
+
+  test("removeIdentity that is not added", function() {
+    clearEmails();
+
+    BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
+      start();
+    }, failure("removeIdentity failure"));
+
+    stop();
+  });
+
+
+
   test("syncIdentities with no pre-loaded identities and no identities to add", function() {
     clearEmails();
     BrowserIDIdentities.syncIdentities(function onSuccess() {
@@ -319,62 +453,5 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     stop();
   });
-  /*
-  test("syncIdentity on non-confirmed email address", function() {
-    clearEmails();
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
-        BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
-          ok(false, "Syncing a non-verified identity should fail");
 
-          start();
-        }, function() {
-          ok(true, "trying to sync an identity that is not yet verified should fail");
-
-          var identities = BrowserIDIdentities.getStoredIdentities();
-          equal("testemail@testemail.com" in identities, false, "Our new email is added");
-
-          start();
-        });
-      }, failure("removeIdentity failure"));
-    }, failure("Authentication failure"));
-
-    stop();
-  });
-
-  test("syncIdentity without first validating email", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      // First, force removal that way we know it is not part of our list.
-      BrowserIDIdentities.removeIdentity("unvalidated@unvalidated.com", function() {
-
-        clearEmails();
-        BrowserIDIdentities.syncIdentities(function onSuccess() {
-
-          var identities = BrowserIDIdentities.getStoredIdentities();
-          // Make sure the server has forgotten about this email address.
-          equal("unvalidated@unvalidated.com" in identities, false, "The removed email should not be on the list.");
-
-          // This next call will call /wsapi/set_key on a 
-          // key that has not been validated.
-          BrowserIDIdentities.syncIdentity("unvalidated@unvalidated.com", "issuer", function(keypair) {
-            // Clear all the local emails, then refetch the list from the server
-            // just to be sure we are seeing what the server sees.
-            clearEmails();
-            BrowserIDIdentities.syncIdentities(function onSuccess() {
-
-              var identities = BrowserIDIdentities.getStoredIdentities();
-              // woah.  Things just went wrong.
-              equal("unvalidated@unvalidated.com" in identities, false, "The unvalidated email should not be added just through calling sync_key");
-              start();
-            }, failure("syncIdentities failure"));
-          }, function() {
-            ok(true, "We expect syncIdentity to fail on an address we cannot confirm");
-          });
-        }, failure("syncIdentities failure"));
-      }, failure("removeEmail failure"));
-    }, failure("Authentication failure"));
-
-    stop();
-  });
-*/
 });
