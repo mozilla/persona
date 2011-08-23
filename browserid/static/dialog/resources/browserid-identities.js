@@ -247,8 +247,10 @@ var BrowserIDIdentities = (function() {
      * @method persistIdentity
      * @param {string} email - Email address to persist.
      * @param {object} keypair - Key pair to save
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
      */
-    persistIdentity: function(email, keypair, issuer) {
+    persistIdentity: function(email, keypair, issuer, onSuccess, onFailure) {
       var new_email_obj= {
         created: new Date(),
         pub: keypair.pub,
@@ -260,6 +262,10 @@ var BrowserIDIdentities = (function() {
       }
       
       addEmail(email, new_email_obj);
+
+      if (onSuccess) {
+        onSuccess();
+      }
     },
 
     /**
@@ -287,12 +293,13 @@ var BrowserIDIdentities = (function() {
      */
     getIdentityAssertion: function(email, onSuccess, onFailure) {
       var storedID = getEmails()[email],
-          privkey = storedID.priv,
-          issuer = storedID.issuer,
-          audience = network.origin,
-          assertion = CryptoStubs.createAssertion(audience, email, privkey, issuer);
-      
-      if(onSuccess) {
+          assertion;
+
+      if (storedID) {
+          assertion = CryptoStubs.createAssertion(network.origin, email, storedID.priv, storedID.issuer);
+      }
+
+      if (onSuccess) {
         onSuccess(assertion);
       }
 

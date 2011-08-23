@@ -39,10 +39,12 @@
  * "testuser@testuser.com" with the password "testuser"
  */
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-identities", function() {
-  var credentialsValid = true;
+  var credentialsValid, unknownEmails, keyRefresh;
   var netStub = {
     reset: function() {
       credentialsValid = true;
+      unknownEmails = [];
+      keyRefresh = [];
     },
     stageUser: function(email, password, keypair, onSuccess) {
       onSuccess();
@@ -52,10 +54,17 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       onSuccess(credentialsValid);
     },
 
-    syncEmails: function(isueed_identities, onSuccess, onFailure) {
+    syncEmails: function(issued_identities, onSuccess, onFailure) {
       onSuccess({
-        unknown_emails: []
+        unknown_emails: unknownEmails,
+        key_refresh: keyRefresh
       });
+    },
+
+    setKey: function(email, keypair, onSuccess, onError) {
+      if (onSuccess) {
+        onSuccess();
+      }
     }
   };
 
@@ -185,9 +194,13 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 */
 
   test("persistIdentity", function() {
-    BrowserIDIdentities.persistIdentity("testemail2@testemail.com", { pub: "pub", priv: "priv" });
-    var identities = BrowserIDIdentities.getStoredIdentities();
-    ok("testemail2@testemail.com" in identities, "Our new email is added");
+    BrowserIDIdentities.persistIdentity("testemail2@testemail.com", { pub: "pub", priv: "priv" }, undefined, function onSuccess() {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      ok("testemail2@testemail.com" in identities, "Our new email is added");
+      start(); 
+    });
+
+    stop();
   });
 
   /*
@@ -205,40 +218,107 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
   */
-  test("syncIdentities with no identities", function() {
+  test("syncIdentities with no pre-loaded identities and no identities to add", function() {
     clearEmails();
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.syncIdentities(function onSuccess() {
-        ok(true, "we have synced identities");
-        start();
-      }, failure("identity sync failure"));
-    }, failure("Authentication failure"));
+    BrowserIDIdentities.syncIdentities(function onSuccess() {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      ok(true, "we have synced identities");
+      equal(_.size(identities), 0, "there are no identities");
+      start();
+    }, failure("identity sync failure"));
 
     stop();
   });
 
-  test("syncIdentities with identities preloaded", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.syncIdentities(function onSuccess() {
-        ok(true, "we have synced identities");
-        start();
-      }, failure("identity sync failure"));
-    }, failure("Authentication failure"));
+  test("syncIdentities with no pre-loaded identities and identities to add", function() {
+    clearEmails();
+    keyRefresh = ["testuser@testuser.com"];
+    BrowserIDIdentities.syncIdentities(function onSuccess() {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      ok("testuser@testuser.com" in identities, "Our new email is added");
+      equal(_.size(identities), 1, "there is one identity");
+      start(); 
+    }, failure("identity sync failure"));
 
     stop();
   });
 
-  test("getIdentityAssertion", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      BrowserIDIdentities.getIdentityAssertion("testuser@testuser.com", function(assertion) {
-        equal("string", typeof assertion, "we have an assertion!");
-        start();
-      });
-    }, failure("Authentication failure"));
+  test("syncIdentities with identities preloaded and none to add", function() {
+    clearEmails();
+    addEmail("testuser@testuser.com", {});
+
+    BrowserIDIdentities.syncIdentities(function onSuccess() {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      ok("testuser@testuser.com" in identities, "Our new email is added");
+      equal(_.size(identities), 1, "there is one identity");
+      start();
+    }, failure("identity sync failure"));
 
     stop();
   });
 
+
+  test("syncIdentities with identities preloaded and one to add", function() {
+    clearEmails();
+    addEmail("testuser@testuser.com", {});
+    keyRefresh = ["testuser2@testuser.com"];
+
+    BrowserIDIdentities.syncIdentities(function onSuccess() {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      ok("testuser@testuser.com" in identities, "Our old email address is still there");
+      ok("testuser2@testuser.com" in identities, "Our new email is added");
+      equal(_.size(identities), 2, "there are two identities");
+      start();
+    }, failure("identity sync failure"));
+
+    stop();
+  });
+
+
+  test("syncIdentities with identities preloaded and one to remove", function() {
+    clearEmails();
+    addEmail("testuser@testuser.com", {});
+    addEmail("testuser2@testuser.com", {});
+    unknownEmails = ["testuser2@testuser.com"];
+
+    BrowserIDIdentities.syncIdentities(function onSuccess() {
+      var identities = BrowserIDIdentities.getStoredIdentities();
+      ok("testuser@testuser.com" in identities, "Our old email address is still there");
+      equal("testuser2@testuser.com" in identities, false, "Our unknown email is removed");
+      equal(_.size(identities), 1, "there is one identity");
+      start();
+    }, failure("identity sync failure"));
+
+    stop();
+  });
+
+
+  test("getIdentityAssertion with known email", function() {
+    clearEmails();
+    var keypair = CryptoStubs.genKeyPair();
+    addEmail("testuser@testuser.com", { priv: keypair.priv, issuer: "issuer" });
+
+    BrowserIDIdentities.getIdentityAssertion("testuser@testuser.com", function onSuccess(assertion) {
+      equal("string", typeof assertion, "we have an assertion!");
+      start();
+    });
+
+    stop();
+  });
+
+
+  test("getIdentityAssertion with unknown email", function() {
+    clearEmails();
+    var keypair = CryptoStubs.genKeyPair();
+    addEmail("testuser@testuser.com", { priv: keypair.priv, issuer: "issuer" });
+
+    BrowserIDIdentities.getIdentityAssertion("testuser2@testuser.com", function onSuccess(assertion) {
+      equal("undefined", typeof assertion, "email was unknown, we do not have an assertion");
+      start();
+    });
+
+    stop();
+  });
   /*
   test("syncIdentity on non-confirmed email address", function() {
     clearEmails();
