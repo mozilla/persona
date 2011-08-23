@@ -42,6 +42,23 @@ wcli = require("../../libs/wsapi_client.js"),
 userdb = require("./user_db.js"),
 winston = require('winston');
 
+function authenticated(cfg, context, email, password, cb) {
+  wcli.get(cfg, '/wsapi/am_authed', context, {}, function(r) {
+    if (r.body === 'true') cb();
+    else {
+      wcli.post(
+        cfg, '/wsapi/authenticate_user', context,
+        { email: email, pass: password },
+        function(r) {
+          if (r.code != 200 || r.body !== "true") {
+            winston.error('authentication failure: ' + r.code + "/" + r.body);
+          }
+          cb();
+        });
+    }
+  });
+}
+
 exports.startFunc = function(cfg, cb) {
   // 1. RP includes include.js 
   // 2. users' browser loads all code associated with dialog
@@ -83,30 +100,43 @@ exports.startFunc = function(cfg, cb) {
 
   var keypair = userdb.addKeyToUserCtx(context, email);
 
-  // stage them
-  wcli.post(cfg, '/wsapi/add_email', context, {
-    email: email,
-    pubkey: keypair.pub,
-    site: userdb.any(user.sites)
-  }, function (r) {
-    if (r.code !== 200) return cb(false);
-    // now get the verification secret
-    wcli.get(cfg, '/wsapi/fake_verification', context, {
-      email: email
+  authenticated(cfg, context, user.emails[0], user.password, function() {
+    // stage them
+    wcli.post(cfg, '/wsapi/add_email', context, {
+      email: email,
+      pubkey: keypair.pub,
+      site: userdb.any(user.sites)
     }, function (r) {
-      if (r.code !== 200) return cb(false);
-      // and simulate clickthrough
-      wcli.get(cfg, '/wsapi/prove_email_ownership', context, {
-        token: r.body
+      if (r.code !== 200) {
+        winston.error('failed to add email: ' + email + ' to existing user ' + user.emails[0]);
+        console.log(r);
+        return cb(false);
+      }
+      // now get the verification secret
+      wcli.get(cfg, '/wsapi/fake_verification', context, {
+        email: email
       }, function (r) {
-        if (r.code !== 200 || r.body !== 'true') return cb(false);
-        // and now we should call registration status to complete the
-        // process
-        wcli.get(cfg, '/wsapi/registration_status', context, {
-        }, function(r) {
-          var rv = (r.code === 200 && r.body === '"complete"');
-          if (!rv) winston.error("registration_status failed during signup: " + JSON.stringify(r));
-          cb(rv);
+        if (r.code !== 200) {
+          winston.error('failed to fetch verification token for email: ' + email);
+          return cb(false);
+        }
+        var token = r.body;
+        // and simulate clickthrough
+        wcli.get(cfg, '/wsapi/prove_email_ownership', context, {
+          token: token
+        }, function (r) {
+          if (r.code !== 200 || r.body !== 'true') {
+            winston.error('failed to prove email owndership for: ' + email + ' (' + token + ')');
+            return cb(false);
+          }
+          // and now we should call registration status to complete the
+          // process
+          wcli.get(cfg, '/wsapi/registration_status', context, {
+          }, function(r) {
+            var rv = (r.code === 200 && r.body === '"complete"');
+            if (!rv) winston.error("registration_status failed during signup: " + JSON.stringify(r));
+            cb(rv);
+          });
         });
       });
     });
