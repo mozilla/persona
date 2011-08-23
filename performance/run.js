@@ -49,6 +49,9 @@ var argv = require('optimist')
 .alias('m', 'max')
 .describe('m', 'maximum active users to simulate (0 == infinite)')
 .default('m', 10000)
+.alias('o', 'omit-static')
+.describe('o', 'when enabled, only dynamic WSAPI calls will be simulated, not static resource requests')
+.default('o', false)
 .alias('s', 'server')
 .describe('s', 'base URL to browserid server')
 .demand('s')
@@ -114,7 +117,6 @@ var activity = {
     // 8 times a day (once every six hours per device)
     probability: (8 / 40.0)
   },
-  
   "include_only": {
     // most of the time, users are already authenticated to their
     // RPs, so the hit on our servers is simply resource (include.js)
@@ -163,7 +165,6 @@ function outputActiveUserSummary(activeUsers) {
   }
 }
 
-
 function poll() {
   function startNewActivity() {
     // what type of activity is this?
@@ -175,13 +176,19 @@ function poll() {
         break;
       }
     }
-    // start the activity!
-    outstanding++;
-    activity[act].startFunc(configuration, function(success) {
-      outstanding--;
+    // start the activity! (except if it's an include_only and we're
+    // in 'omit static' mode
+    if (!args.o || act !== 'include_only') {
+      outstanding++;
+      activity[act].startFunc(configuration, function(success) {
+        outstanding--;
+        if (undefined === completed[act]) completed[act] = [ 0, 0 ];
+        completed[act][success ? 0 : 1]++;
+      });
+    } else {
       if (undefined === completed[act]) completed[act] = [ 0, 0 ];
-      completed[act][success ? 0 : 1]++;
-    });
+      completed[act][0]++;
+    }
   }
 
   var numErrors = 0;
