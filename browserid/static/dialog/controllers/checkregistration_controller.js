@@ -80,7 +80,7 @@
               // enable button
               $('#continue_button').removeClass('disabled');
 
-              self.publish("checkregistration:confirmed");
+              self.close("checkregistration:confirmed");
             } else if (status === 'pending') {
               // try again, what else can we do?
               self.setupRegCheck();
