@@ -12,6 +12,9 @@ const https = require("https");
 const url = require("url");
 const rsa = require("./rsa.js");
 
+// configuration information to check the issuer
+const config = require("../../libs/configuration.js");
+
 var Webfinger = (function() {
 
   if (!console) console = {};
@@ -269,6 +272,14 @@ IDAssertion.prototype  =
       return;
     }
 
+    // check that the issuer is just US for now, no other issuer
+    // FIXME: this will need to change for certs
+    var expected_issuer = config.get('hostname') + ':' + config.get('port');
+    if (payload.issuer != expected_issuer) {
+      onError("Issuer can only be ourselves for now, it should be: " + expected_issuer);
+      return;
+    }
+    
     // (if there was a certificate, we could verify it here)
     // but for now we will assume email-based lookup
     
