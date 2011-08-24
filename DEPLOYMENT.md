@@ -140,8 +140,6 @@ post update hook, annotated to help you follow along:
         rm -rf /home/browserid/code.old
         mv /home/browserid/code{,.old}
         mv $NEWCODE /home/browserid/code
-        ln -s /home/browserid/var_browserid /home/browserid/code/browserid/var
-        ln -s /home/browserid/var_verifier /home/browserid/code/verifier/var
     
         echo "fixing permissions"
         find /home/browserid/code -exec chgrp www-data {} \; > /dev/null 2>&1
