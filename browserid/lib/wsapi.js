@@ -41,11 +41,12 @@
 const
 db = require('./db.js'),
 url = require('url'),
-httputils = require('./httputils.js');
+httputils = require('./httputils.js'),
 email = require('./email.js'),
 bcrypt = require('bcrypt'),
 crypto = require('crypto'),
-logger = require('../../libs/logging.js').logger;
+logger = require('../../libs/logging.js').logger,
+ca = require('./ca.js');
 
 function checkParams(params) {
   return function(req, resp, next) {
@@ -292,6 +293,17 @@ function setup(app) {
       }});
   });
 
+  app.post('/wsapi/cert_key', checkAuthed, checkParams(["email", "pubkey"]), function(req, resp) {
+    db.emailsBelongToSameAccount(req.session.authenticatedUser, req.body.email, function(sameAccount) {
+      // not same account? big fat error
+      if (!sameAccount) return httputils.badRequest(resp, "that email does not belong to you");
+
+      // same account, we certify the key
+      var cert = ca.certify(email, pubkey);
+      resp.json(cert);
+    });
+  });
+  
   app.post('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
     db.emailsBelongToSameAccount(req.session.authenticatedUser, req.body.email, function(sameAccount) {
       // not same account? big fat error
