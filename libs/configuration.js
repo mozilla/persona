@@ -1,3 +1,38 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Mozilla BrowserID.
+ *
+ * The Initial Developer of the Original Code is Mozilla.
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
 /*
  * An abstraction which contains various pre-set deployment
  * environments and adjusts runtime configuration appropriate for
@@ -7,7 +42,9 @@
  *   exports.configure(app);
  */
 
-const substitution = require('./substitute.js');
+const
+substitution = require('./substitute.js'),
+path = require('path');
 
 var g_config = {
 };
@@ -19,37 +56,50 @@ exports.get = function(val) {
   return g_config[val];
 }
 
-// various deployment configurations
-const g_configs = {
-  production: {
-    hostname: 'browserid.org',
-    port: '443',
-    scheme: 'https',
-    use_minified_resources: true,
-    log_path: '/home/browserid/var/'
-  },
-  development: {
-    hostname: 'dev.diresworb.org',
-    port: '443',
-    scheme: 'https',
-    use_minified_resources: true,
-    log_path: '/home/browserid/var/'
-  },
-  beta: {
-    hostname: 'diresworb.org',
-    port: '443',
-    scheme: 'https',
-    use_minified_resources: true,
-    log_path: '/home/browserid/var/'
-  },
-  local: {
-    hostname: '127.0.0.1',
-    port: '10002',
-    scheme: 'http',
-    use_minified_resources: false,
-    log_path: './'
+// *** the various deployment configurations ***
+const g_configs = { };
+
+// production is the configuration that runs on our
+// public service (browserid.org)
+g_configs.production = {
+  hostname: 'browserid.org',
+  port: '443',
+  scheme: 'https',
+  use_minified_resources: true,
+  var_path: '/home/browserid/var/',
+  database: {
+    driver: "mysql",
+    user: 'browserid'
   }
 };
+
+// beta (diresworb.org) the only difference from production 
+// is the hostname
+g_configs.beta = JSON.parse(JSON.stringify(g_configs.production));
+g_configs.beta.hostname = 'diresworb.org';
+
+// development (dev.diresworb.org) the only difference from production 
+// is, again, the hostname
+g_configs.development = JSON.parse(JSON.stringify(g_configs.production));
+g_configs.development.hostname = 'dev.diresworb.org';
+
+// local development configuration
+g_configs.local =  {
+  hostname: '127.0.0.1',
+  port: '10002',
+  scheme: 'http',
+  email_to_console: true, // don't send email, just dump verification URLs to console.
+  use_minified_resources: false,
+  var_path: path.join(__dirname, "..", "var"),
+  database: { driver: "json" }
+};
+
+// test environments are variations on local
+g_configs.test_json = JSON.parse(JSON.stringify(g_configs.local));
+g_configs.test_json.database = { driver: "json", unit_test: true }; 
+
+g_configs.test_mysql = JSON.parse(JSON.stringify(g_configs.local));
+g_configs.test_mysql.database = { driver: "mysql", user: "test", unit_test: true }; 
 
 // default deployment is local
 if (undefined === process.env['NODE_ENV']) {
@@ -87,3 +137,18 @@ exports.performSubstitution = function(app) {
   }
 };
 
+// At the time this file is required, we'll determine the "process name" for this proc
+// if we can determine what type of process it is (browserid or verifier) based
+// on the path, we'll use that, otherwise we'll name it 'ephemeral'.  
+if (process.argv[1] == path.join(__dirname, "..", "browserid", "run.js")) {
+  g_config['process_type'] = 'browserid';
+} else if (process.argv[1] == path.join(__dirname, "..", "verifier", "run.js")) {
+  g_config['process_type'] = 'verifier';
+} else {
+  g_config['process_type'] = 'ephemeral';
+}
+
+// log the process_type
+setTimeout(function() {
+  require("./logging.js").logger.info("process type is " + g_config["process_type"]);
+}, 0);

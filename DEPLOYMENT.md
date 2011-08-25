@@ -85,9 +85,17 @@ Subsequent steps use different software which you might need to install.
 
   * **curl** - used to iniate http requests from the cmd line (to kick the browserid server)
   * **java** - used to minify css
-  * **libsqlite3-dev** - database libraries 
+  * **mysql 5.1+** - the preferred persistence backend
 
-### 4. Set up post-update hook
+### 4. Set up mysql
+
+  0. ensure you can connect via TCP - localhost:3306 (like, make sure skip-networking is off in my.cnf)
+  1. connect to the database as user root
+  2. `CREATE USER 'browserid'@'localhost' IDENTIFIED BY 'browserid';`
+  3. `CREATE DATABASE browserid;`
+  4. `GRANT CREATE, DELETE, INDEX, INSERT, LOCK TABLES, SELECT, UPDATE ON browserid.* TO 'browserid'@'localhost';`
+
+### 5. Set up post-update hook
 
 *This step is optional* - if you want to manually update code you
  probably skipped step #1, you can skip this one as well.  All you need

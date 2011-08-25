@@ -1,27 +1,75 @@
 #!/usr/bin/env node
 
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Mozilla BrowserID.
+ *
+ * The Initial Developer of the Original Code is Mozilla.
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+require('./lib/test_env.js');
+
 const
 assert = require('assert'),
 vows = require('vows'),
 db = require('../lib/db.js'),
-temp = require('temp'),
 fs = require('fs'),
-path = require('path');
+path = require('path'),
+configuration = require('../../libs/configuration.js');
 
 var suite = vows.describe('db');
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
-db.dbPath = temp.path({suffix: '.sqlite'});
+var dbCfg = configuration.get('database');
 
 suite.addBatch({
-  "waiting for the database to become ready": {
+  "onReady": {
+    topic: function() { db.onReady(this.callback); },
+    "works": function(r) { }
+  },
+  "onReady still": {
+    topic: function() { db.onReady(this.callback); },
+    "works for more than one caller": function(r) { }
+  },
+  "opening the database": {
     topic: function() {
-      var cb = this.callback;
-      db.onReady(function() { cb(true) });
+      db.open(dbCfg, this.callback);
     },
-    "the database is ready": function(r) {
-      assert.strictEqual(r, true);
+    "and its ready": function(r) {
+      assert.isUndefined(r);
+    },
+    "doesn't prevent onReady": {
+      topic: function() { db.onReady(this.callback); },
+      "from working": function(r) { }
     }
   }
 });
@@ -32,10 +80,10 @@ var secret = undefined;
 suite.addBatch({
   "an email address is not reported as staged before it is": {
     topic: function() {
-      return db.isStaged('lloyd@nowhe.re');
+      db.isStaged('lloyd@nowhe.re', this.callback);
     },
     "isStaged returns false": function (r) {
-      assert.strictEqual(r, false);
+      assert.isFalse(r);
     }
   },
   "an email address is not reported as known before it is": {
@@ -43,7 +91,7 @@ suite.addBatch({
       db.emailKnown('lloyd@nowhe.re', this.callback);
     },
     "emailKnown returns false": function (r) {
-      assert.strictEqual(r, false);
+      assert.isFalse(r);
     }
   }
 });
@@ -51,13 +99,14 @@ suite.addBatch({
 suite.addBatch({
   "stage a user for creation pending verification": {
     topic: function() {
-      return secret = db.stageUser({
+      db.stageUser({
         email: 'lloyd@nowhe.re',
         pubkey: 'fakepubkey',
         hash: 'fakepasswordhash'
-      });
+      }, this.callback);
     },
     "staging returns a valid secret": function(r) {
+      secret = r;
       assert.isString(secret);
       assert.strictEqual(secret.length, 48);
     }
@@ -67,7 +116,7 @@ suite.addBatch({
 suite.addBatch({
   "an email address is reported": {
     topic: function() {
-      return db.isStaged('lloyd@nowhe.re');
+      db.isStaged('lloyd@nowhe.re', this.callback);
     },
     " as staged after it is": function (r) {
       assert.strictEqual(r, true);
@@ -97,7 +146,7 @@ suite.addBatch({
 suite.addBatch({
   "an email address is not reported": {
     topic: function() {
-      return db.isStaged('lloyd@nowhe.re');
+      db.isStaged('lloyd@nowhe.re', this.callback);
     },
     "as staged immediately after its verified": function (r) {
       assert.strictEqual(r, false);
@@ -161,30 +210,33 @@ suite.addBatch({
 suite.addBatch({
   "staging an email": {
     topic: function() {
-      return db.stageEmail('lloyd@nowhe.re', 'lloyd@somewhe.re', 'fakepubkey4');
+      db.stageEmail('lloyd@nowhe.re', 'lloyd@somewhe.re', 'fakepubkey4', this.callback);
     },
     "yields a valid secret": function(secret) {
       assert.isString(secret);
       assert.strictEqual(secret.length, 48);
     },
-    "makes email addr via isStaged": {
-      topic: function() { return db.isStaged('lloyd@somewhe.re'); },
-      "visible": function(r) { assert.isTrue(r); }
-    },
-    "and verifying it": {
+    "then": {
       topic: function(secret) {
-        db.gotVerificationSecret(secret, this.callback);
+        var cb = this.callback;
+        db.isStaged('lloyd@somewhe.re', function(r) { cb(secret, r); });
       },
-      "returns no error": function(r) {
-        assert.isUndefined(r);
-      },
-      "makes email addr via knownEmail": {
-        topic: function() { db.emailKnown('lloyd@somewhe.re', this.callback); },
-        "visible": function(r) { assert.isTrue(r); }
-      },
-      "makes email addr via isStaged": {
-        topic: function() { return db.isStaged('lloyd@somewhe.re'); },
-        "not visible": function(r) { assert.isFalse(r); }
+      "makes it visible via isStaged": function(sekret, r) { assert.isTrue(r); },
+      "and lets you verify it": {
+        topic: function(secret, r) {
+          db.gotVerificationSecret(secret, this.callback);
+        },
+        "successfully": function(r) {
+          assert.isUndefined(r);
+        },
+        "and knownEmail": {
+          topic: function() { db.emailKnown('lloyd@somewhe.re', this.callback); },
+          "returns true": function(r) { assert.isTrue(r); }
+        },
+        "and isStaged": {
+          topic: function() { db.isStaged('lloyd@somewhe.re', this.callback); },
+          "returns false": function(r) { assert.isFalse(r); }
+        }
       }
     }
   }
@@ -348,24 +400,13 @@ suite.addBatch({
   }
 });
 
-// exports.cancelAccount
-// exports.removeEmail
-
 suite.addBatch({
-  "remove the database file": {
+  "closing the database": {
     topic: function() {
-      fs.unlink(db.dbPath, this.callback);
+      db.close(this.callback);
     },
-    "and unlink should not error": function(err) {
-      assert.isNull(err);
-    },
-    "and the file": {
-      topic: function() {
-        path.exists(db.dbPath, this.callback);
-      },
-      "should be missing": function(r) {
-        assert.isFalse(r);
-      }
+    "should work": function(err) {
+      assert.isUndefined(err);
     }
   }
 });

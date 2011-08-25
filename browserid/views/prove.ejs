@@ -23,9 +23,6 @@ function success() {
   $("div.status").text("Address confirmed!");
   setTimeout(function() {
     $("body").fadeOut(1500, function() {
-      // ideally we'll just be able to close this window.  shucks.  works on the iphone.
-      try { window.close(); } catch(e) {}
-
       // if the close didn't work, then let's redirect the the management page where they'll
       // get to see the ids that they've created.
       document.location = '/manage';

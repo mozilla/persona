@@ -1,3 +1,27 @@
+train-2011.08.18:
+  * upon clickthrough of the email link, don't have the browser window close itself: #162
+  * passwords must be between 8 and 80 chars: #155
+  * improved handling of emailing & verification urls during local development & testing: #88
+  * language changes in dialog: #150
+  * many improvements to unit tests: #171
+  * forgotten password flow was broken with port to mysql, fixed: #170
+  * improved metrics reporting abstraction: #168
+  * moved all server logging into a single file: #169
+  * all files created at execution time are now in one location:  #172	
+  * developer ergonomics - improved colorized logging with terse webserver output to console
+  * always require a user to authenticate if they don't have an active session: #74
+  * improved CSRF protection to fix race conditions in previous train: #173
+		
+train-2011.08.12:
+  * massive zero-user-visibile refactoring of dialog javascript.
+  * fix cancel button in "waiting for verification state" (issue #147)
+  * all browserid source is now tri-licensed (MPL1.1/GPL/LGPL). (issue #141)
+  * fixes for mobile firefox (fennec).  (issue #140)
+  * mysql support implemented for browserid (default persistence production) (issue #71)
+  * json persistence support added - a standalone dead simple persistence layer which is the default for local development and requires no external software.
+  * email secrets are now persisted in the database, so upon server restart outstanding verification links are no longer invalidated (issue #91)
+  * (website) styling changes - like fix issues where links on dev page were being displayed white on white.
+	
 train-2011.08.04:
   * when user closes dialog without clicking "cancel", properly return 'null' to the webpage (via getVerifiedEmail callback) - issue #107
   * improve checks to warn developer that prerequisite software is missing. issue #110

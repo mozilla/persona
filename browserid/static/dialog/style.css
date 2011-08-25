@@ -54,7 +54,7 @@ span.sitename, span.email {
     font-size: .7em;
 }
 
-#bottom-bar button {
+#bottom-bar button, #bottom-bar input[type=submit] {
     height: 25px;
     border: 1px solid rgb(145, 145, 145);
     -moz-border-radius: 4px;
@@ -67,13 +67,14 @@ span.sitename, span.email {
     margin-right: 1em;
     margin-top: 16px;
     z-index: 0;
+    float: left;
 }
 
-#bottom-bar button.righty {
+#bottom-bar button.righty, #bottom-bar input[type=submit].righty {
     float: right;
 }
 
-#bottom-bar button.action {
+#bottom-bar button.action, #bottom-bar input[type=submit] {
     background-color: rgb(0,128,211);
     color: #fff;
     font-weight: bold;
@@ -100,14 +101,13 @@ div.actions {
 #identities {
     width: 450px;
     margin: auto;
+}
+
+#identities, #identities > li {
     list-style: none;
 }
 
-#identities > ul, #identities > ul > li {
-  list-style: none;
-}
-
-#identities > ul > li {
+#identities > li {
   margin-bottom: .5em;
   height: 1.4em;
   font-size: .9em;
@@ -118,16 +118,16 @@ input[type=radio], input[type=radio] + label {
   cursor: pointer;
 }
 
-button {
+button, input[type=submit] {
     cursor: pointer;
 }
 
-button.disabled {
+button.disabled, input[type=submit].disabled {
     cursor: default;
     opacity: .3;
 }
 
-.dialog {
+.dialog, #error_dialog {
     position: fixed;
     top: 40px;
     right: 0;
@@ -135,6 +135,10 @@ button.disabled {
     left: 0;
     margin: auto;
     text-align: center;
+}
+
+#error_dialog {
+    display: none;
 }
 
 div.input > * {

@@ -181,6 +181,12 @@ footer .copyright {
     padding: 0;
 }
 
+#steps a {
+    color: #666;
+    text-decoration: none;
+    border-bottom: 1px dotted #666;
+}
+
 .step  {
     margin: 1em 0 2em 0;
     padding: 0 0 0 50px;
@@ -222,7 +228,7 @@ footer .copyright {
     font-size: 1.2em;
 }
 
- pre code {
+pre code {
     padding: 10px 15px 10px 15px;
     margin: .75em;
     -webkit-border-radius: 10px;
