@@ -11,7 +11,7 @@ git fetch origin
 TRAIN=`git branch -a | grep remotes/origin/train | sed -e 's/^.*train-\(.*\)$/\1/' | sort -n | tail -1`
 echo "Merging train ($TRAIN) into production" 
 
-git checkout prod
+git checkout remotes/origin/prod
 git merge --no-ff remotes/origin/train-$TRAIN -m "integrating train $TRAIN"
 git branch -D train-$TRAIN
 git tag train-$TRAIN
