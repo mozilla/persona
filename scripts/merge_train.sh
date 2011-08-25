@@ -11,9 +11,16 @@ git fetch origin
 TRAIN=`git branch -a | grep remotes/origin/train | sed -e 's/^.*train-\(.*\)$/\1/' | sort -n | tail -1`
 echo "Merging train ($TRAIN) into production" 
 
-git checkout remotes/origin/prod
+git checkout -B prod remotes/origin/prod
 git merge --no-ff remotes/origin/train-$TRAIN -m "integrating train $TRAIN"
-git branch -D train-$TRAIN
+
+# now delete the local train branch if it exists
+LOCAL_TRAIN_BRANCH=`git branch | fgrep train-$TRAIN`
+if [ "x${LOCAL_TRAIN_BRANCH}" == "xtrain-${TRAIN}" ] ; then
+    echo "deleting local branch: train-$TRAIN"
+    git branch -D train-$TRAIN
+fi
+
 git tag train-$TRAIN
 
 echo "All done!  Now you should delete the remote train, and push your changes"
