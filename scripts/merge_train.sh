@@ -5,7 +5,7 @@
 
 # get up to date!
 echo "Getting up to date:"
-get fetch origin
+git fetch origin
 
 # first, let's identify the train
 TRAIN=`git branch -a | grep remotes/origin/train | sed -e 's/^.*train-\(.*\)$/\1/' | sort -n | tail -1`
