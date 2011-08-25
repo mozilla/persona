@@ -105,6 +105,25 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     stop();
   });
 
+
+  test("prove_email_ownership with valid login cookie but invalid token", function() {
+    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
+      var token = "badtoken";
+      BrowserIDNetwork.proveEmailOwnership(token, function onSuccess(proven) {
+        equal(proven, false, "bad token could not be proved");
+        start(); 
+      }, function onFailure() {
+        start();
+      });
+    });
+
+    stop();
+  });
+
+  test("prove_email_ownership without valid login cookie", function() {
+
+  });
+
   test("stageUser", function() {
     ok(true, "stageUser");
   });

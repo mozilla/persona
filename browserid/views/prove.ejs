@@ -31,23 +31,20 @@ function success() {
 }
 
 function failure(why) {
-  $("div.status").text("Error encountered while attempting to confirm your address.  please try again.  (error message: " + why + ")");
+  $("div.status").text("Error encountered while attempting to confirm your address.  Have you previously verified this address?");
 }
 
-$(document).ready(function() {
-    $.ajax({
-      url: '/wsapi/prove_email_ownership?token=' + getParameterByName('token'),
-      success: function(status, textStatus, jqXHR) {
-        var obj = JSON.parse(status);
-        if (obj) {
+$(function() {
+    var token = getParameterByName("token");
+    BrowserIDNetwork.proveEmailOwnership(token, function onSuccess(valid) {
+        if (valid) {
           success();
         } else {
           failure("unknown");
         }
-      },
-      error: function() {
+
+    }, function onFailure() {
         failure("Error Communicating With Server!");
-      }
     });
 });
 

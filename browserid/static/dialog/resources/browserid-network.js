@@ -160,6 +160,30 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
+     * Call with a token to prove an email address ownership.
+     * @method proveEmailOwnership
+     * @param {string} token - token proving email ownership.
+     * @param {function} [onSuccess] - Callback to call when complete.  Called 
+     * with one boolean parameter that specifies the validity of the token.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    proveEmailOwnership: function(token, onSuccess, onFailure) {
+      $.ajax({
+        url: '/wsapi/prove_email_ownership',
+        data: {
+          token: token
+        },
+        success: function(status, textStatus, jqXHR) {
+          if (onSuccess) {
+            var valid = JSON.parse(status);
+            onSuccess(valid);
+          }
+        },
+        error: onFailure
+      });
+    },
+
+    /**
      * Cancel the current user's account.
      * @method cancelUser
      * @param {function} [onSuccess] - called whenever complete.
