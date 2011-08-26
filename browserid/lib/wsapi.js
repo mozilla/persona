@@ -280,7 +280,7 @@ function setup(app) {
       } else {
         // same account, we add the key
         db.addKeyToEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function (rv) {
-          resp.json(rv);
+          resp.json(rv === undefined);
         });
       }
     });
