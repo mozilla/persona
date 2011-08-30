@@ -68,7 +68,11 @@ steal.plugins()
                   errorOut(transaction, error);
                 }
                 else {
-                  transaction.complete(status);
+                  try {
+                    transaction.complete(status);
+                  } catch(e) {
+
+                  }
                 }
             }
 
