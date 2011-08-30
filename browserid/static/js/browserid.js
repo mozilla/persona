@@ -35,14 +35,104 @@
  * ***** END LICENSE BLOCK ***** */
 
 $(function() {
+
+  if ($('#vAlign').length) {
+    $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
+  }
+
   BrowserIDNetwork.checkAuth(function(authenticated) {
     if (authenticated) {
-      $("body").addClass("authenticated");
+      //$("body").addClass("authenticated");
       if ($('#emailList').length) {
         display_saved_ids();
       }
     }
   });
+
+  _.mixin({
+    relative: function(date) {
+      var diff = (((new Date()).getTime() - date.getTime()) / 1000),
+          day_diff = Math.floor(diff / 86400),
+          dObj = { "friendly" : date.toLocaleDateString(),
+                  "additional" : date.toLocaleTimeString(),
+                  "utc" : date.toUTCString(),
+                  "locale" : date.toLocaleString() };
+
+      /* some kind of error */
+      if (day_diff < 0) {
+          dObj.friendly = "in the future!?!";
+          return dObj;
+      } else if (isNaN(day_diff)) {
+          dObj.friendly = dObj.additional = "unknown";
+          return dObj;
+      }
+
+      if (day_diff === 0) {
+          if (diff < 60) {
+              dObj.friendly = "just now";
+              return dObj;
+          }
+          if (diff < 120 + 30) { /* 1 minute plus some fuzz */
+              dObj.friendly = "a minute ago";
+              return dObj;
+          }
+          if (diff < 3600) {
+              dObj.friendly = Math.floor(diff / 60) + " minutes ago";
+              return dObj;
+          }
+          if (diff < (60 * 60) * 2) {
+              dObj.friendly = "1 hour ago";
+              return dObj;
+          }
+          if (diff < 24 * 60 * 60) {
+              dObj.friendly = Math.floor(diff / 3600) + " hours ago";
+              return dObj;
+          }
+      }
+      if (day_diff === 1) {
+          dObj.friendly = "yesterday";
+          return dObj;
+      }
+      if (day_diff < 7) {
+          dObj.friendly = day_diff + " days ago";
+          return dObj;
+      }
+      if (day_diff < 8) {
+          dObj.friendly = "last week";
+          return dObj;
+      }
+      /* for this scope: we want day of week and the date
+           plus the month (if different) */
+      if (day_diff < 31) {
+          dObj.friendly = Math.ceil(day_diff / 7) + " weeks ago";
+          return dObj;
+      }
+
+      /* for this scope: we want month + date */
+      if (day_diff < 62) {
+          dObj.friendly = "a month ago";
+          return dObj;
+      }
+      if (day_diff < 365) {
+          dObj.friendly = Math.ceil(day_diff / 31) + " months ago";
+          return dObj;
+      }
+
+      /* for this scope: we want month + year */
+      if (day_diff >= 365 && day_diff < 730) {
+          dObj.additional = date.toLocaleDateString();
+          dObj.friendly = "a year ago";
+          return dObj;
+      }
+      if (day_diff >= 365) {
+          dObj.additional = date.toLocaleDateString();
+          dObj.friendly = Math.ceil(day_diff / 365) + " years ago";
+          return dObj;
+      }
+      return dObj;
+    }
+  });
+
 });
 
 function display_saved_ids()
@@ -50,11 +140,19 @@ function display_saved_ids()
   var emails = {};
   BrowserIDIdentities.syncIdentities(function() {
     emails = getEmails();
-    displayEmails();
+    if (_.isEmpty(emails)) {
+      console.log(emails);
+      $("#content").hide();
+      $("#vAlign").show();
+    } else {
+      $("#content").show();
+      $("#vAlign").hide();
+      displayEmails();
+    }
   });
 
-
   function displayEmails() {
+    // XXX: this is currently not displayed
     $('#cancellink').click(function() {
       if (confirm('Are you sure you want to cancel your account?')) {
         BrowserIDNetwork.cancelUser(function() {
@@ -63,42 +161,35 @@ function display_saved_ids()
       }
     });
 
+    $('#manageAccounts').click(function() {
+        $('#emailList').addClass('remove');
+        $(this).hide();
+        $("#cancelManage").show();
+    });
+    
+    $('#cancelManage').click(function() {
+        $('#emailList').removeClass('remove');
+        $(this).hide();
+        $("#manageAccounts").show();
+    });
+
     $("#emailList").empty();
       _(emails).each(function(data, e) {
-        var block = $("<div>").addClass("emailblock");
-        var label = $("<div>").addClass("email").text(e);
-        var meta = $("<div>").addClass("meta");
+       var date = _.relative(new Date(data.created));
 
-        var pub = $("<div class='keyblock'>").text(data.pub);
-        pub.hide();
-        var linkblock = $("<div>");
-        var puba = $("<a>").text("[show public key]");
-        // var priva = $("<a>").text("[show private key]");
-        puba.click(function() {pub.show()});
-        // priva.click(function() {priv.show()});
-        linkblock.append(puba);
-        // linkblock.append(" / ");
-        // linkblock.append(priva);
-        
-        var deauth = $("<button>").text("Forget this Email");
-        meta.append(deauth);
-        deauth.click(function() {
-          // remove email from server
-          BrowserIDNetwork.removeEmail(e, display_saved_ids);
-        });
-      
-        var d = new Date(data.created);
-        var datestamp = $("<div class='date'>").text("Signed in at " + d.toLocaleString());
-
-        meta.append(datestamp);
-        meta.append(linkblock);
-                    
-        block.append(label);
-        block.append(meta);
-        // block.append(priv);
-        block.append(pub);
-        
-        $("#emailList").append(block);
+       $("<li class='identity cf'/>").append(
+            _.template("<div class='email'><%= email %></div>", { email : e }),
+           $("<div class='activity cf'/>").append(
+             $("<button class='delete'>remove</button>").click(function() {
+               if (confirm("Remove " + e + " from your BrowserID?")) {
+                 // XXX this callback is not working as expected
+                 BrowserIDNetwork.removeEmail(e, display_saved_ids);
+               }
+             }),
+             _.template("<abbr class='status' title='Registered: <%= created %>'>Registered <%= relative %></abbr>",
+                       { relative: date.friendly, created : date.locale } )
+           )
+       ).appendTo($("#emailList"));
     });
   }
 }
