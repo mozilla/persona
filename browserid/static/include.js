@@ -40,6 +40,14 @@ if (!navigator.id) {
   navigator.id = {};
 }
 
+// XXX take this out when Lloyd is back!  It is to fix dev.myfavoritebeer.org 
+// until he can change the uses of addEventListener.
+if(!document.addEventListener && document.attachEvent) {
+  document.addEventListener = function(name, callback, bubbles) {
+    document.attachEvent(name, callback); 
+  }
+}
+
 if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 {
   var ipServer = "https://browserid.org";
