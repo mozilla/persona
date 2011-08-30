@@ -1,0 +1,38 @@
+<div id="vAlign">
+    <div id="signUpFormWrap">
+        <!-- XXX this form submits to nowhere -->
+        <form id="signUpForm" class="cf">
+            <h1 class="serif">Sign In</h1>
+            <ul class="inputs">
+                <li>
+                    <label class="serif" for="email">Email Address</label>
+                    <input class="sans" id="email" placeholder="Your Email" type="text">
+                </li>
+                <li>
+                    <label class="serif half" for="password">Password</label>
+                    <div class="half right">
+                        <!-- XXX: this needs to be fixed -->
+                        <a class="forgot" href="/signup">forgot your password?</a>
+                    </div>
+                    <input class="sans" id="password" placeholder="Your Password" type="text">
+                </li>
+            </ul>
+            <div class="submit cf">
+                <div class="remember cf">
+                    <div class="checkAlign">
+                        <input id="memorize" type="checkbox">
+                    </div>
+                    <label for="memorize">remember me</label>
+                </div>
+                <input type="submit" class="create" value="Sign In"/>
+            </div>
+        </form>
+        <a class="signUpIn space" href="/signup">New to BrowserID? Sign up today.</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('form input:visible:first').focus();
+  });
+</script>

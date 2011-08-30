@@ -1,3 +1,4 @@
+<div id="content">
     <div class="why">
       <p>
         Email Verification
@@ -6,6 +7,7 @@
     <div class="status">
       One moment while we attempt to confirm your email address...
     </div>
+</div>
 <script>
 function getParameterByName( name )
 {
@@ -21,13 +23,11 @@ function getParameterByName( name )
 
 function success() {
   $("div.status").text("Address confirmed!");
-  setTimeout(function() {
-    $("body").fadeOut(1500, function() {
-      // if the close didn't work, then let's redirect the the management page where they'll
-      // get to see the ids that they've created.
-      document.location = '/manage';
-    });
-  }, 1000);
+  $("body").delay(1000).fadeOut(1500, function() {
+    // if the close didn't work, then let's redirect the the main page where they'll
+    // get to see the ids that they've created.
+    document.location = '/';
+  });
 }
 
 function failure(why) {

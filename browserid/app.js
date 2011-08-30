@@ -104,20 +104,16 @@ function router(app) {
     res.render('prove.ejs', {title: 'Verify Email Address', fullpage: false});
   });
 
-  app.get(/^\/users(\.html)?$/, function(req,res) {
-    res.render('users.ejs', {title: 'for Users', fullpage: false});
+  app.get(/^\/signup(\.html)?$/, function(req, res) {
+    res.render('signup.ejs', {title: 'Sign Up', fullpage: false});
   });
 
-  app.get(/^\/developers(\.html)?$/, function(req,res) {
-    res.render('developers.ejs', {title: 'for Developers', fullpage: false});
+  app.get(/^\/signin(\.html)?$/, function(req, res) {
+    res.render('signin.ejs', {title: 'Sign In', fullpage: false});
   });
 
-  app.get(/^\/primaries(\.html)?$/, function(req,res) {
-    res.render('primaries.ejs', {title: 'for Primary Authorities', fullpage: false});
-  });
-
-  app.get(/^\/manage(\.html)?$/, function(req,res) {
-    res.render('manage.ejs', {title: 'My Account', fullpage: false});
+  app.get(/^\/about(\.html)?$/, function(req, res) {
+    res.render('about.ejs', {title: 'About', fullpage: false});
   });
 
   app.get(/^\/tos(\.html)?$/, function(req, res) {
