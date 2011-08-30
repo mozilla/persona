@@ -587,8 +587,8 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   }
 
   navigator.id.getVerifiedEmail = function(callback) {
-    var w = _open_window();
     var doc = window.document;
+    var w = _open_window();
     var iframe = _open_relay_frame(doc);
 
     // clean up a previous channel that never was reaped
