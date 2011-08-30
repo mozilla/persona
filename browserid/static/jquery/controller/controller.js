@@ -3,26 +3,30 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 	// ------- helpers  ------
 	// Binds an element, returns a function that unbinds
 	var bind = function( el, ev, callback ) {
-		var wrappedCallback;
+		var wrappedCallback,
+			binder = el.bind && el.unbind ? el : $(isFunction(el) ? [el] : el);
 		//this is for events like >click.
 		if ( ev.indexOf(">") === 0 ) {
 			ev = ev.substr(1);
 			wrappedCallback = function( event ) {
 				if ( event.target === el ) {
 					callback.apply(this, arguments);
-				} else {
-					event.handled = null;
-				}
+				} 
 			};
 		}
-		$(el).bind(ev, wrappedCallback || callback);
+		binder.bind(ev, wrappedCallback || callback);
 		// if ev name has >, change the name and bind
 		// in the wrapped callback, check that the element matches the actual element
 		return function() {
-			$(el).unbind(ev, wrappedCallback || callback);
+			binder.unbind(ev, wrappedCallback || callback);
 			el = ev = callback = wrappedCallback = null;
 		};
 	},
+		makeArray = $.makeArray,
+		isArray = $.isArray,
+		isFunction = $.isFunction,
+		extend = $.extend,
+		Str = $.String,
 		// Binds an element, returns a function that unbinds
 		delegate = function( el, selector, ev, callback ) {
 			$(el).delegate(selector, ev, callback);
@@ -39,7 +43,7 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 		 */
 		shifter = function shifter(cb) {
 			return function() {
-				return cb.apply(null, [$(this)].concat(Array.prototype.slice.call(arguments, 0)));
+				return cb.apply(null, [this.nodeName ? $(this) : this].concat(Array.prototype.slice.call(arguments, 0)));
 			};
 		},
 		// matches dots
@@ -48,17 +52,19 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 		controllersReg = /_?controllers?/ig,
 		//used to remove the controller from the name
 		underscoreAndRemoveController = function( className ) {
-			return $.String.underscore(className.replace("jQuery.", "").replace(dotsReg, '_').replace(controllersReg, ""));
+			return Str.underscore(className.replace("jQuery.", "").replace(dotsReg, '_').replace(controllersReg, ""));
 		},
 		// checks if it looks like an action
 		actionMatcher = /[^\w]/,
-		// gets jus the event
-		eventCleaner = /^(>?default\.)|(>)/,
 		// handles parameterized action names
 		parameterReplacer = /\{([^\}]+)\}/g,
 		breaker = /^(?:(.*?)\s)?([\w\.\:>]+)$/,
-		basicProcessor;
+		basicProcessor,
+		data = function(el, data){
+			return $.data(el, "controllers", data)
+		};
 	/**
+	 * @class jQuery.Controller
 	 * @tag core
 	 * @plugin jquery/controller
 	 * @download  http://jmvcsite.heroku.com/pluginify?plugins[]=jquery/controller/controller.js
@@ -293,7 +299,7 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 	 * $(".special").foo("bar","something I want to pass")
 	 * @codeend
 	 */
-	$.Class.extend("jQuery.Controller",
+	$.Class("jQuery.Controller",
 	/** 
 	 * @Static
 	 */
@@ -328,13 +334,13 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 			if (!$.fn[pluginname] ) {
 				$.fn[pluginname] = function( options ) {
 
-					var args = $.makeArray(arguments),
+					var args = makeArray(arguments),
 						//if the arg is a method on this controller
-						isMethod = typeof options == "string" && $.isFunction(controller.prototype[options]),
+						isMethod = typeof options == "string" && isFunction(controller.prototype[options]),
 						meth = args[0];
-					this.each(function() {
+					return this.each(function() {
 						//check if created
-						var controllers = $.data(this, "controllers"),
+						var controllers = data(this),
 							//plugin is actually the controller instance
 							plugin = controllers && controllers[pluginname];
 
@@ -352,14 +358,12 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 							controller.newInstance.apply(controller, [this].concat(args));
 						}
 					});
-					//always return the element
-					return this;
 				};
 			}
 
 			// make sure listensTo is an array
 			//@steal-remove-start
-			if (!$.isArray(this.listensTo) ) {
+			if (!isArray(this.listensTo) ) {
 				throw "listensTo is not an array in " + this.fullName;
 			}
 			//@steal-remove-end
@@ -367,13 +371,11 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 			this.actions = {};
 
 			for ( funcName in this.prototype ) {
-				if ( this.prototype.hasOwnProperty(funcName) ) {
-					if (!$.isFunction(this.prototype[funcName]) ) {
-						continue;
-					}
-					if ( this._isAction(funcName) ) {
-						this.actions[funcName] = this._getAction(funcName);
-					}
+				if (funcName == 'constructor' || !isFunction(this.prototype[funcName]) ) {
+					continue;
+				}
+				if ( this._isAction(funcName) ) {
+					this.actions[funcName] = this._action(funcName);
 				}
 			}
 
@@ -398,8 +400,7 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 			if ( actionMatcher.test(methodName) ) {
 				return true;
 			} else {
-				var cleanedEvent = methodName.replace(eventCleaner, "");
-				return $.inArray(cleanedEvent, this.listensTo) > -1 || $.event.special[cleanedEvent] || $.Controller.processors[cleanedEvent];
+				return $.inArray(methodName, this.listensTo) > -1 || $.event.special[methodName] || processors[methodName];
 			}
 
 		},
@@ -410,19 +411,21 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 		 * @return {Object} null or the processor and pre-split parts.  
 		 * The processor is what does the binding/subscribing.
 		 */
-		_getAction: function( methodName, options ) {
+		_action: function( methodName, options ) {
 			//if we don't have a controller instance, we'll break this guy up later
 			parameterReplacer.lastIndex = 0;
 			if (!options && parameterReplacer.test(methodName) ) {
 				return null;
 			}
-			var convertedName = options ? $.String.sub(methodName, options) : methodName,
-				parts = convertedName.match(breaker),
+			var convertedName = options ? Str.sub(methodName, [options, window]) : methodName,
+				arr = isArray(convertedName),
+				parts = (arr ? convertedName[1] : convertedName).match(breaker),
 				event = parts[2],
-				processor = this.processors[event] || basicProcessor;
+				processor = processors[event] || basicProcessor;
 			return {
 				processor: processor,
-				parts: parts
+				parts: parts,
+				delegate : arr ? convertedName[0] : undefined
 			};
 		},
 		/**
@@ -444,12 +447,64 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 		 * The processor must return a function that when called, 
 		 * unbinds the event handler.
 		 * 
+		 * Controller already has processors for the following events:
+		 * 
+		 *   - change 
+		 *   - click 
+		 *   - contextmenu 
+		 *   - dblclick 
+		 *   - focusin
+		 *   - focusout
+		 *   - keydown 
+		 *   - keyup 
+		 *   - keypress 
+		 *   - mousedown 
+		 *   - mouseenter
+		 *   - mouseleave
+		 *   - mousemove 
+		 *   - mouseout 
+		 *   - mouseover 
+		 *   - mouseup 
+		 *   - reset 
+		 *   - resize 
+		 *   - scroll 
+		 *   - select 
+		 *   - submit  
+		 * 
+		 * The following processors always listen on the window or document:
+		 * 
+		 *   - windowresize
+		 *   - windowscroll
+		 *   - load
+		 *   - unload
+		 *   - hashchange
+		 *   - ready
+		 *   
+		 * Which means anytime the window is resized, the following controller will listen to it:
+		 *  
+		 *     $.Controller('Sized',{
+		 *       windowresize : function(){
+		 *         this.element.width(this.element.parent().width() / 2);
+		 *       }
+		 *     });
+		 *     
+		 *     $('.foo').sized();
 		 */
 		processors: {},
 		/**
 		 * @attribute listensTo
 		 * A list of special events this controller listens too.  You only need to add event names that
 		 * are whole words (ie have no special characters).
+		 * 
+		 *     $.Controller('TabPanel',{
+		 *       listensTo : ['show']
+		 *     },{
+		 *       'show' : function(){
+		 *         this.element.show();
+		 *       }
+		 *     })
+		 *     
+		 *     $('.foo').tab_panel().trigger("show");
 		 */
 		listensTo: [],
 		/**
@@ -518,7 +573,7 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 			this.element = $(element).addClass(cls._fullName);
 
 			//set in data
-			($.data(element, "controllers") || $.data(element, "controllers", {}))[cls._fullName] = this;
+			(data(element) || data(element, {}))[cls._fullName] = this;
 
 			//adds bindings
 			this._bindings = [];
@@ -547,14 +602,14 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 			 *     
 			 *  
 			 */
-			this.options = $.extend($.extend(true, {}, cls.defaults), options);
+			this.options = extend( extend(true, {}, cls.defaults), options);
 
 			//go through the cached list of actions and use the processor to bind
 			for ( funcName in cls.actions ) {
 				if ( cls.actions.hasOwnProperty(funcName) ) {
-					ready = cls.actions[funcName] || cls._getAction(funcName, this.options);
+					ready = cls.actions[funcName] || cls._action(funcName, this.options);
 					this._bindings.push(
-					ready.processor(element, ready.parts[2], ready.parts[1], this.callback(funcName), this));
+					ready.processor(ready.delegate || element, ready.parts[2], ready.parts[1], this.callback(funcName), this));
 				}
 			}
 
@@ -572,7 +627,7 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 			var destroyCB = shifter(this.callback("destroy"));
 			this.element.bind("destroyed", destroyCB);
 			this._bindings.push(function( el ) {
-				destroyCB.removed = true;
+				//destroyCB.removed = true;
 				$(element).unbind("destroyed", destroyCB);
 			});
 
@@ -712,7 +767,7 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 		 * @param {Object} options
 		 */
 		update: function( options ) {
-			$.extend(this.options, options);
+			extend(this.options, options);
 		},
 		/**
 		 * Destroy unbinds and undelegates all event handlers on this controller, 
@@ -748,18 +803,13 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 			this.element.removeClass(fname);
 
 			$.each(this._bindings, function( key, value ) {
-				if ( $.isFunction(value) ) {
-					value(self.element[0]);
-				}
+				value(self.element[0]);
 			});
 
 			delete this._actions;
 
-
-			controllers = this.element.data("controllers");
-			if ( controllers && controllers[fname] ) {
-				delete controllers[fname];
-			}
+			delete this.element.data("controllers")[fname];
+			
 			$(this).triggerHandler("destroyed"); //in case we want to know if the controller is removed
 			this.element = null;
 		},
@@ -780,6 +830,7 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 		_set_called: true
 	});
 
+	var processors = $.Controller.processors,
 
 	//------------- PROCESSSORS -----------------------------
 	//processors do the binding.  They return a function that
@@ -789,45 +840,23 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 		var c = controller.Class;
 
 		// document controllers use their name as an ID prefix.
-		if ( c.onDocument && !/^Main(Controller)?$/.test(c.shortName) ) { //prepend underscore name if necessary
+		if ( c.onDocument && !/^Main(Controller)?$/.test(c.shortName) && el === controller.element[0]) { //prepend underscore name if necessary
 			selector = selector ? "#" + c._shortName + " " + selector : "#" + c._shortName;
 		}
 		return binder(el, event, shifter(cb), selector);
 	};
 
-	var processors = $.Controller.processors,
 
-		//a window event only happens on the window
-		windowEvent = function( el, event, selector, cb ) {
-			return binder(window, event.replace(/window/, ""), shifter(cb));
-		};
+
 
 	//set commong events to be processed as a basicProcessor
-	$.each("change click contextmenu dblclick keydown keyup keypress mousedown mousemove mouseout mouseover mouseup reset windowresize resize windowscroll scroll select submit dblclick focusin focusout load unload ready hashchange mouseenter mouseleave".split(" "), function( i, v ) {
+	$.each("change click contextmenu dblclick keydown keyup keypress mousedown mousemove mouseout mouseover mouseup reset resize scroll select submit focusin focusout mouseenter mouseleave".split(" "), function( i, v ) {
 		processors[v] = basicProcessor;
 	});
-	$.each(["windowresize", "windowscroll", "load", "ready", "unload", "hashchange"], function( i, v ) {
-		processors[v] = windowEvent;
-	});
-	//the ready processor happens on the document
-	processors.ready = function( el, event, selector, cb ) {
-		$(shifter(cb)); //cant really unbind
-	};
 	/**
 	 *  @add jQuery.fn
 	 */
 
-	$.fn.mixin = function() {
-		//create a bunch of controllers
-		var controllers = $.makeArray(arguments),
-			forLint;
-		return this.each(function() {
-			for ( var i = 0; i < controllers.length; i++ ) {
-				forLint = new controllers[i](this);
-			}
-
-		});
-	};
 	//used to determine if a controller instance is one of controllers
 	//controllers can be strings or classes
 	var i, isAControllerOf = function( instance, controllers ) {
@@ -845,17 +874,13 @@ steal.plugins('jquery/class', 'jquery/lang', 'jquery/event/destroyed').then(func
 	 * @return {Array} an array of controller instances.
 	 */
 	$.fn.controllers = function() {
-		var controllerNames = $.makeArray(arguments),
+		var controllerNames = makeArray(arguments),
 			instances = [],
-			controllers;
+			controllers, c, cname;
 		//check if arguments
 		this.each(function() {
-			var c, cname;
 
 			controllers = $.data(this, "controllers");
-			if (!controllers ) {
-				return;
-			}
 			for ( cname in controllers ) {
 				if ( controllers.hasOwnProperty(cname) ) {
 					c = controllers[cname];
