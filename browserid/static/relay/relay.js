@@ -39,56 +39,37 @@ window.console = window.console || {
   log: function() {}
 };
 
-steal.plugins(
-	'jquery/controller',			// a widget factory
-	'jquery/controller/subscribe',	// subscribe to OpenAjax.hub
-	'jquery/view/ejs',				// client side templates
-	'jquery/controller/view')		// lookup views with the controller's name
+steal.plugins()
 
-	.css("style")	// loads styles
+	.resources('../../dialog/resources/jschannel',
+               '../../dialog/resources/base64',
+               '../../dialog/resources/channel')
 
-	.resources('jschannel',
-               'base64',
-               'underscore-min',
-               'crypto',
-               'crypto-api',
-               'channel',
-               'storage',
-               'browserid-extensions',
-               'browserid-network',
-               'browserid-identities',
-               'browserid-errors',
-               'browserid-wait')					// 3rd party script's (like jQueryUI), in resources folder
+          .then(function() {
+            var ipServer = "https://browserid.org";
 
-	.models()						// loads files in models folder
+            var chan = Channel.build( {
+              window: window.parent,
+              origin: "*",
+              scope: "mozid"
+            } );
 
-	.controllers('page',
-               'dialog',
-               'authenticate',
-               'createaccount',
-               'checkregistration',
-               'forgotpassword',
-               'chooseemail',
-               'addemail')					// loads files in controllers folder
+            var transaction;
 
-	.views('authenticate.ejs',
-           'addemail.ejs',
-           'body.ejs',
-           'bottom-addemail.ejs',
-           'bottom-confirmemail.ejs',
-           'bottom-continue.ejs',
-           'bottom-pickemail.ejs',
-           'bottom-signin.ejs',
-           'bottom.ejs',
-           'confirmemail.ejs',
-           'create.ejs',
-           'forgotpassword.ejs',
-           'signin.ejs',
-           'wait.ejs'
-          ).
+            chan.bind("getVerifiedEmail", function(trans, s) {
+              trans.delayReturn(true);
 
-          then(function() {
-            $(function() {
-              $('body').dialog().show();
+              transaction = trans;
             });
+
+            window.browserid_relay = function(status, error) {
+                console.log("relay being called");
+                if(error) {
+                  errorOut(transaction, error);
+                }
+                else {
+                  transaction.complete(status);
+                }
+            }
+
           });						// adds views to be added to build
