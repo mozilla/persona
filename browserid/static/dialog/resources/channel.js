@@ -65,28 +65,20 @@ var setupNativeChannel = function(controller) {
 };
 
 var setupHTMLChannel = function(controller) {
-  var chan = Channel.build(
-    {
-      window: window.opener,
-      origin: "*",
-      scope: "mozid"
-    });
+  var origin = "http://localhost:10001";
 
-  var remoteOrigin;
-
-  chan.bind("getVerifiedEmail", function(trans, s) {
-    trans.delayReturn(true);
-
-    function onsuccess(rv) {
-      trans.complete(rv);
+  function onsuccess(rv) {
+    var frameWindow = window.opener.frames['browserid_relay'];
+    if(frameWindow.browserid_relay) {
+      frameWindow.browserid_relay(rv, null);
     }
+  }
 
-    function onerror(error) {
-      errorOut(trans, error);
+  function onerror(error) {
+    if(frameWindow.browserid_relay) {
+      frameWindow.browserid_relay(null, error);
     }
+  }
 
-    controller.getVerifiedEmail(trans.origin, onsuccess, onerror);
-  });
-
-  return chan;
+  controller.getVerifiedEmail(origin, onsuccess, onerror);
 };
