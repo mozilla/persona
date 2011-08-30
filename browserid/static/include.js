@@ -576,6 +576,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       var iframe = doc.createElement("iframe");
       iframe.setAttribute('name', 'browserid_relay');
       iframe.setAttribute('src', ipServer + "/relay");
+      iframe.style.display = "none";
       doc.body.appendChild(iframe);
       return iframe;
   }
