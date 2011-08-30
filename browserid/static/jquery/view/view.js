@@ -20,9 +20,10 @@ steal.plugins("jquery").then(function( $ ) {
 	 * 
 	 *  - Use views with jQuery extensions [jQuery.fn.after after], [jQuery.fn.append append],
 	 *   [jQuery.fn.before before], [jQuery.fn.html html], [jQuery.fn.prepend prepend],
-	 *      [jQuery.fn.replace replace], [jQuery.fn.replaceWith replaceWith], [jQuery.fn.text text].
+	 *   [jQuery.fn.replaceWith replaceWith], [jQuery.fn.text text].
 	 *  - Template loading from html elements and external files.
 	 *  - Synchronous and asynchronous template loading.
+	 *  - Deferred Rendering.
 	 *  - Template caching.
 	 *  - Bundling of processed templates in production builds.
 	 *  - Hookup jquery plugins directly in the template.
@@ -57,7 +58,6 @@ steal.plugins("jquery").then(function( $ ) {
 	 * <tr><td>[jQuery.fn.after before] </td><td> <code>$('#bar').before('temp.jaml',{});</code></td></tr>
 	 * <tr><td>[jQuery.fn.after html] </td><td> <code>$('#bar').html('temp.jaml',{});</code></td></tr>
 	 * <tr><td>[jQuery.fn.after prepend] </td><td> <code>$('#bar').prepend('temp.jaml',{});</code></td></tr>
-	 * <tr><td>[jQuery.fn.after replace] </td><td> <code>$('#bar').replace('temp.jaml',{});</code></td></tr>
 	 * <tr><td>[jQuery.fn.after replaceWith] </td><td> <code>$('#bar').replaceWidth('temp.jaml',{});</code></td></tr>
 	 * <tr><td>[jQuery.fn.after text] </td><td> <code>$('#bar').text('temp.jaml',{});</code></td></tr>
 	 * </table>
@@ -134,6 +134,19 @@ steal.plugins("jquery").then(function( $ ) {
 	 * The callback function will be called with the result of the 
 	 * rendered template and 'this' will be set to the original jQuery object.
 	 * 
+	 * ## Deferreds (3.0.6)
+	 * 
+	 * If you pass deferreds to $.View or any of the jQuery 
+	 * modifiers, the view will wait until all deferreds resolve before 
+	 * rendering the view.  This makes it a one-liner to make a request and 
+	 * use the result to render a template. 
+	 * 
+	 * The following makes a request for todos in parallel with the 
+	 * todos.ejs template.  Once todos and template have been loaded, it with
+	 * render the view with the todos.
+	 * 
+	 *     $('#todos').html("todos.ejs",Todo.findAll());
+	 * 
 	 * ## Just Render Templates
 	 * 
 	 * Sometimes, you just want to get the result of a rendered 
@@ -145,7 +158,7 @@ steal.plugins("jquery").then(function( $ ) {
 	 * 
 	 * You can preload templates asynchronously like:
 	 * 
-	 *     $.View('path/to/template.jaml',{}, function(){});
+	 *     $.get('path/to/template.jaml',{},function(){},'view');
 	 * 
 	 * ## Supported Template Engines
 	 * 
@@ -200,27 +213,145 @@ steal.plugins("jquery").then(function( $ ) {
 	 * @param {Object} [callback] Optional callback function.  If present, the template is 
 	 * retrieved asynchronously.  This is a good idea if you aren't compressing the templates
 	 * into your view.
-	 * @return {String} The rendered result of the view.
+	 * @return {String} The rendered result of the view or if deferreds are passed, a deferred that will contain
+	 * the rendered result of the view.
 	 */
 
-	var $view, render, checkText, get;
+	var $view, render, checkText, get, getRenderer
+		isDeferred = function(obj){
+			return obj && $.isFunction(obj.always) // check if obj is a $.Deferred
+		},
+		// gets an array of deferreds from an object
+		// this only goes one level deep
+		getDeferreds =  function(data){
+			var deferreds = [];
+		
+			// pull out deferreds
+			if(isDeferred(data)){
+				return [data]
+			}else{
+				for(var prop in data) {
+					if(isDeferred(data[prop])) {
+						deferreds.push(data[prop]);
+					}
+				}
+			}
+			return deferreds;
+		},
+		// gets the useful part of deferred
+		// this is for Models and $.ajax that give arrays
+		usefulPart = function(resolved){
+			return $.isArray(resolved) && 
+					resolved.length ===3 && 
+					resolved[1] === 'success' ?
+						resolved[0] : resolved
+		};
 
 	$view = $.View = function( view, data, helpers, callback ) {
-		var suffix = view.match(/\.[\w\d]+$/),
-			type, el, id, renderer, url = view;
-                // if we have an inline template, derive the suffix from the 'text/???' part
-                // this only supports '<script></script>' tags
-                if ( el = document.getElementById(view)) {
-                  suffix = el.type.match(/\/[\d\w]+$/)[0].replace(/^\//, '.');
-                }
 		if ( typeof helpers === 'function' ) {
 			callback = helpers;
 			helpers = undefined;
 		}
+		
+		// see if we got passed any deferreds
+		var deferreds = getDeferreds(data);
+		
+		
+		if(deferreds.length) { // does data contain any deferreds?
+			
+			// the deferred that resolves into the rendered content ...
+			var deferred = $.Deferred();
+			
+			// add the view request to the list of deferreds
+			deferreds.push(get(view, true))
+			
+			// wait for the view and all deferreds to finish
+			$.when.apply($, deferreds).then(function(resolved) {
+				var objs = $.makeArray(arguments),
+					renderer = objs.pop()[0],
+					result; //get the view render function
+				
+				// make data look like the resolved deferreds
+				if (isDeferred(data)) {
+					data = usefulPart(resolved);
+				}
+				else {
+					for (var prop in data) {
+						if (isDeferred(data[prop])) {
+							data[prop] = usefulPart(objs.shift());
+						}
+					}
+				}
+				result = renderer(data, helpers);
+				
+				//resolve with the rendered view
+				deferred.resolve( result ); // this does not work as is...
+				callback && callback(result);
+			});
+			// return the deferred ....
+			return deferred.promise();
+		}
+		else {
+
+			var response,
+				async = typeof callback === "function",
+				deferred = get(view, async);
+			
+			if(async){
+				response = deferred;
+				deferred.done(function(renderer){
+					callback(renderer(data, helpers))
+				})
+			} else {
+				deferred.done(function(renderer){
+					response = renderer(data, helpers);
+				});
+			}
+			
+			return response;
+		}
+	};
+	// makes sure there's a template
+	checkText = function( text, url ) {
+		if (!text.match(/[^\s]/) ) {
+			steal.dev.log("There is no template or an empty template at " + url)
+			throw "$.View ERROR: There is no template or an empty template at " + url;
+		}
+	};
+	get = function(url , async){
+		return $.ajax({
+				url: url,
+				dataType : "view",
+				async : async
+		});
+	};
+	
+	// you can request a view renderer (a function you pass data to and get html)
+	$.ajaxTransport("view", function(options, orig){
+		var view = orig.url,
+			suffix = view.match(/\.[\w\d]+$/),
+			type, el, id, renderer, url = view,
+			jqXHR,
+			response = function(text){
+				var func = type.renderer(id, text);
+				if ( $view.cache ) {
+					$view.cached[id] = func;
+				}
+				return {
+					view: func
+				};
+			};
+			
+        // if we have an inline template, derive the suffix from the 'text/???' part
+        // this only supports '<script></script>' tags
+        if ( el = document.getElementById(view)) {
+          suffix = el.type.match(/\/[\d\w]+$/)[0].replace(/^\//, '.');
+        }
+		
 		//if there is no suffix, add one
 		if (!suffix ) {
-			suffix = $.View.ext;
-			url = url + $.View.ext;
+			suffix = $view.ext;
+			url = url + $view.ext;
 		}
 
 		//convert to a unique and valid id
@@ -228,70 +359,45 @@ steal.plugins("jquery").then(function( $ ) {
 
 		//if a absolute path, use steal to get it
 		if ( url.match(/^\/\//) ) {
-			url = steal.root.join(url.substr(2)); //can steal be removed?
+			if (typeof steal === "undefined") {
+				url = "/"+url.substr(2);
+			}
+			else {
+				url = steal.root.join(url.substr(2));
+			}
 		}
 
 		//get the template engine
-		type = $.View.types[suffix];
+		type = $view.types[suffix];
 
-		//get the renderer function
-		renderer =
-		$.View.cached[id] ? // is it cached?
-		$.View.cached[id] : // use the cached version
-		((el = document.getElementById(view)) ? //is it in the document?
-		type.renderer(id, el.innerHTML) : //use the innerHTML of the elemnt
-		get(type, id, url, data, helpers, callback) //do an ajax request for it
-		);
-		// we won't always get a renderer (if async ajax)
-		return renderer && render(renderer, type, id, data, helpers, callback);
-	};
-	// caches the template, renders the content, and calls back if it should
-	render = function( renderer, type, id, data, helpers, callback ) {
-		var res, stub;
-		if ( $.View.cache ) {
-			$.View.cached[id] = renderer;
-		}
-		res = renderer.call(type, data, helpers);
-		stub = callback && callback(res);
-		return res;
-	};
-	// makes sure there's a template
-	checkText = function( text, url ) {
-		if (!text.match(/[^\s]/) ) {
-			throw "$.View ERROR: There is no template or an empty template at " + url;
-		}
-	};
-	// gets a template, if there's a callback, renders and calls back its;ef
-	get = function( type, id, url, data, helpers, callback ) {
-		if ( callback ) {
-			$.ajax({
-				url: url,
-				dataType: "text",
-				error: function() {
-					checkText("", url);
-				},
-				success: function( text ) {
-					checkText(text, url);
-					render(type.renderer(id, text), type, id, data, helpers, callback);
+		return {
+			send : function(headers, callback){
+				if($view.cached[id]){
+					return callback( 200, "success", {view: $view.cached[id]} );
+				} else if( el  ) {
+					callback( 200, "success", response(el.innerHTML) );
+				} else {
+					jqXHR = $.ajax({
+						async : orig.async,
+						url: url,
+						dataType: "text",
+						error: function() {
+							checkText("", url);
+							callback(404);
+						},
+						success: function( text ) {
+							checkText(text, url);
+							callback(200, "success", response(text) )
+						}
+					});
 				}
-			});
-		} else {
-			var text = $.ajax({
-				async: false,
-				url: url,
-				dataType: "text",
-				error: function() {
-					checkText("", url);
-				}
-			}).responseText;
-			checkText(text, url);
-			return type.renderer(id, text);
+			},
+			abort : function(){
+				jqXHR && jqXHR.abort();
+			}
 		}
-
-	};
-
-
-	$.extend($.View, {
+	})
+	$.extend($view, {
 		/**
 		 * @attribute hookups
 		 * @hide
@@ -300,7 +406,17 @@ steal.plugins("jquery").then(function( $ ) {
 		hookups: {},
 		/**
 		 * @function hookup
-		 * Registers a hookup function to be called back after the html is put on the page
+		 * Registers a hookup function that can be called back after the html is 
+		 * put on the page.  Typically this is handled by the template engine.  Currently
+		 * only EJS supports this functionality.
+		 * 
+		 *     var id = $.View.hookup(function(el){
+		 *            //do something with el
+		 *         }),
+		 *         html = "<div data-view-id='"+id+"'>"
+		 *     $('.foo').html(html);
+		 * 
+		 * 
 		 * @param {Function} cb a callback function to be called with the element
 		 * @param {Number} the hookup number
 		 */
@@ -378,7 +494,7 @@ steal.plugins("jquery").then(function( $ ) {
 		 * @param {Object} src
 		 */
 		registerScript: function( type, id, src ) {
-			return "$.View.preload('" + id + "'," + $.View.types["." + type].script(id, src) + ");";
+			return "$.View.preload('" + id + "'," + $view.types["." + type].script(id, src) + ");";
 		},
 		/**
 		 * @hide
@@ -388,7 +504,7 @@ steal.plugins("jquery").then(function( $ ) {
 		 * @param {Function} renderer
 		 */
 		preload: function( id, renderer ) {
-			$.View.cached[id] = function( data, helpers ) {
+			$view.cached[id] = function( data, helpers ) {
 				return renderer.call(data, data, helpers);
 			};
 		}
@@ -405,7 +521,10 @@ steal.plugins("jquery").then(function( $ ) {
 
 		$.fn[func_name] = function() {
 			var args = $.makeArray(arguments),
-				callbackNum, callback, self = this;
+				callbackNum, 
+				callback, 
+				self = this,
+				result;
 
 			//check if a template
 			if ( isTemplate(args) ) {
@@ -417,12 +536,20 @@ steal.plugins("jquery").then(function( $ ) {
 						modify.call(self, [result], old);
 						callback.call(self, result);
 					};
-					$.View.apply($.View, args);
+					$view.apply($view, args);
 					return this;
 				}
-
+				result = $view.apply($view, args);
+				if(!isDeferred( result ) ){
+					args = [result];
+				}else{
+					result.done(function(res){
+						modify.call(self, [res], old);
+					})
+					return this;
+				}
 				//otherwise do the template now
-				args = [$.View.apply($.View, args)];
+				
 			}
 
 			return modify.call(this, args, old);
@@ -433,14 +560,14 @@ steal.plugins("jquery").then(function( $ ) {
 		var res, stub, hooks;
 
 		//check if there are new hookups
-		for ( var hasHookups in jQuery.View.hookups ) {
+		for ( var hasHookups in $view.hookups ) {
 			break;
 		}
 
 		//if there are hookups, get jQuery object
 		if ( hasHookups ) {
-			hooks = $.View.hookups;
-			$.View.hookups = {};
+			hooks = $view.hookups;
+			$view.hookups = {};
 			args[0] = $(args[0]);
 		}
 		res = old.apply(this, args);
@@ -482,7 +609,7 @@ steal.plugins("jquery").then(function( $ ) {
 			}
 		}
 		//copy remaining hooks back
-		$.extend($.View.hookups, hooks);
+		$.extend($view.hookups, hooks);
 	};
 
 	/**
@@ -514,12 +641,6 @@ steal.plugins("jquery").then(function( $ ) {
 	 */
 	"before",
 	/**
-	 *  @function replace
-	 *  @parent jQuery.View
-	 *  abc
-	 */
-	"replace",
-	/**
 	 *  @function text
 	 *  @parent jQuery.View
 	 *  abc
@@ -536,7 +657,8 @@ steal.plugins("jquery").then(function( $ ) {
 	 *  @parent jQuery.View
 	 *  abc
 	 */
-	"replaceWith"];
+	"replaceWith", 
+	"val"];
 
 	//go through helper funcs and convert
 	for ( var i = 0; i < funcs.length; i++ ) {

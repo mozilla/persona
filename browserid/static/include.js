@@ -575,7 +575,6 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   function _open_relay_frame(doc) {
       var iframe = doc.createElement("iframe");
       iframe.setAttribute('name', 'browserid_relay');
-//      iframe.style.display = "none";
       iframe.setAttribute('src', ipServer + "/relay");
       doc.body.appendChild(iframe);
       return iframe;
@@ -583,13 +582,13 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 
   function _open_window() {
       return window.open(
-          ipServer + "/sign_in", "_mozid_signin",
+          ipServer + "/sign_in#host=" + document.location.host, "_mozid_signin",
           isMobile ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=520,height=350");
   }
 
   navigator.id.getVerifiedEmail = function(callback) {
-    var w = _open_window();
     var doc = window.document;
+    var w = _open_window();
     var iframe = _open_relay_frame(doc);
 
     // clean up a previous channel that never was reaped
@@ -600,6 +599,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       chan.destroy();
       chan = undefined;
       w.close();
+      iframe.parentNode.removeChild(iframe);
     }
 
     chan.call({

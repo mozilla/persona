@@ -1,3 +1,4 @@
+/*global alert:true, setupNativeChannel:true, setupIFrameChannel:true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,52 +34,97 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/*global alert:true, setupNativeChannel:true, setupHTMLChannel:true, Channel:true */
-function errorOut(trans, code) {
-  function getVerboseMessage(code) {
-    var msgs = {
-      "canceled": "user canceled selection",
-      "notImplemented": "the user tried to invoke behavior that's not yet implemented",
-      "serverError": "a technical problem was encountered while trying to communicate with BrowserID servers."
-    };
-    var msg = msgs[code];
-    if (!msg) {
-      alert("need verbose message for " + code);
-      msg = "unknown error";
-        }
-    return msg;
+// The way this works, when the dialog is opened from a web page, it opens
+// the window with a #host=<requesting_host_name> parameter in its URL.
+// window.setupChannel is called automatically when the dialog is opened. We
+// assume that navigator.id.getVerifiedEmail was the function called, we will
+// keep this assumption until we start experimenting.  Since IE has some
+// serious problems iwth postMessage from a window to a child window, we are now
+// communicating not directly with the calling window, but with an iframe
+// on the same domain as us that we place into the calling window.  We use a
+// function within this iframe to relay messages back to the calling window.
+// We do so by searching for the frame within the calling window, and then
+// getting a reference to the proxy function.  When getVerifiedEmail is
+// complete, it calls the proxy function in the iframe, which then sends a
+// message back to the calling window.
+
+
+
+(function() {
+  // Read a page's GET URL variables and return them as an associative array.
+  function getUrlVars() {
+    var hashes = {},
+        hash,
+        pairs = window.location.href.slice(window.location.href.indexOf('#') + 1).split('&');
+
+    for(var i = 0, pair; pair=pairs[i]; ++i) {
+      hash = pair.split('=');
+      hashes[hash[0]] = hash[1];
+    }
+    return hashes;
   }
-  trans.error(code, getVerboseMessage(code));
-  window.self.close();
-}
 
-
-var setupChannel = function(controller) {
-  if (navigator.id && navigator.id.channel)
-    setupNativeChannel(controller);
-  else
-    setupHTMLChannel(controller);
-};
-
-var setupNativeChannel = function(controller) {
-  navigator.id.channel.registerController(controller);
-};
-
-var setupHTMLChannel = function(controller) {
-  var origin = "http://localhost:10001";
-
-  function onsuccess(rv) {
+  function getRelay() {
     var frameWindow = window.opener.frames['browserid_relay'];
-    if(frameWindow.browserid_relay) {
-      frameWindow.browserid_relay(rv, null);
-    }
+    return frameWindow && frameWindow['browserid_relay'];
   }
 
-  function onerror(error) {
-    if(frameWindow.browserid_relay) {
-      frameWindow.browserid_relay(null, error);
+
+  function errorOut(trans, code) {
+    function getVerboseMessage(code) {
+      var msgs = {
+        "canceled": "user canceled selection",
+        "notImplemented": "the user tried to invoke behavior that's not yet implemented",
+        "serverError": "a technical problem was encountered while trying to communicate with BrowserID servers."
+      };
+      var msg = msgs[code];
+      if (!msg) {
+        alert("need verbose message for " + code);
+        msg = "unknown error";
+          }
+      return msg;
     }
+    trans.error(code, getVerboseMessage(code));
+    window.self.close();
   }
 
-  controller.getVerifiedEmail(origin, onsuccess, onerror);
-};
+
+  window.setupChannel = function(controller) {
+    if (navigator.id && navigator.id.channel)
+      setupNativeChannel(controller);
+    else
+      setupIFrameChannel(controller);
+  };
+
+  var setupNativeChannel = function(controller) {
+    navigator.id.channel.registerController(controller);
+  };
+
+  var setupIFrameChannel = function(controller) {
+    var hash = getUrlVars();
+    var origin = hash['host'];
+
+    // TODO - Add a check for whether the dialog was opened by another window
+    // (has window.opener) as well as whether the relay function exists.
+    // If these conditions are not met, then print an appropriate message.
+
+    function onsuccess(rv) {
+      // Get the relay here so that we ensure that the calling window is still
+      // open and we aren't causing a problem.
+      var relay = getRelay();
+      if(relay) {
+        relay(rv, null);
+      }
+    }
+
+    function onerror(error) {
+      var relay = getRelay();
+      if(relay) {
+        relay(null, error);
+      }
+    }
+
+    controller.getVerifiedEmail(origin, onsuccess, onerror);
+  };
+
+}());
