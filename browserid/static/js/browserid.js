@@ -46,6 +46,8 @@ $(function() {
       if ($('#emailList').length) {
         display_saved_ids();
       }
+    } else {
+      $("#vAlign").fadeIn("slow");
     }
   });
 
@@ -143,7 +145,6 @@ function display_saved_ids()
     if (_.isEmpty(emails)) {
       console.log(emails);
       $("#content").hide();
-      $("#vAlign").show();
     } else {
       $("#content").show();
       $("#vAlign").hide();
