@@ -20,6 +20,7 @@ steal.plugins('steal/build').then('//steal/clean/beautify','//steal/clean/jslint
 					   Math.min(error.character+25, line.length)).replace(/^\s+/,"")
 					
 					)
+				print("    "+error.reason);
 				print(" ")
 			}
 		}

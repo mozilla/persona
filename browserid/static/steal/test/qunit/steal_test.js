@@ -203,5 +203,14 @@ test("File.normalize", function() {
 test("css", function(){
 	document.getElementById("qunit-test-area").innerHTML = ("<div id='makeBlue'>Blue</div><div id='makeGreen'>Green</div>");
 	equals(document.getElementById("makeBlue").clientWidth, 100, "relative in loaded");
-	equals(document.getElementById("makeGreen").clientWidth, 50, "relative up loaded")
+	equals(document.getElementById("makeGreen").clientWidth, 50, "relative up loaded");
+	
+	var els = document.getElementsByTagName('link'),
+		count = 0;
+	for(var i =0; i< els.length; i++){
+		if(els[i].href.indexOf('one.css') > -1){
+			count++;
+		}
+	}
+	equals(count, 1, "only one one.css loaded")
 })

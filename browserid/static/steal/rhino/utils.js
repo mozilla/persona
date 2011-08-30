@@ -8,6 +8,10 @@
 		basePath = java.lang.System.getProperty("basepath");
 	
 	var pathFromRoot = function(path){
+		if(!basePath){
+			return path;
+		}
+		
 		if (!/^\/\//.test(path) && !/^\w\:\\/.test(path) && !/^http/.test(path) && basePath) {
 			path = basePath + "../" + path
 		}
@@ -32,4 +36,4 @@
 	readFile = function( path ) {
 		return oldReadFile(pathFromRoot(path))
 	}
-})()
+})();
