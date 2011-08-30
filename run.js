@@ -50,7 +50,7 @@ require('./libs/logging.js').enableConsoleLogging();
 
 var configuration = require('./libs/configuration.js');
 
-var PRIMARY_HOST = "10.250.7.119";
+var PRIMARY_HOST = "10.250.6.161";
 
 var boundServers = [ ];
 
@@ -76,9 +76,9 @@ function substitutionMiddleware(req, resp, next) {
         fromWithPort = from + ":80";
       }
       to = to.substr(7);
-      
+
       if (o.subPath) to += o.subPath;
-      
+
       subs[fromWithPort] = to;
       subs[from] = to;
     }
