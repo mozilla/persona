@@ -41,9 +41,7 @@ window.console = window.console || {
 
 steal.plugins()
 
-	.resources('../../dialog/resources/jschannel',
-               '../../dialog/resources/base64',
-               '../../dialog/resources/channel')
+	.resources('../../dialog/resources/jschannel')
 
           .then(function() {
             var ipServer = "https://browserid.org";
@@ -63,7 +61,6 @@ steal.plugins()
             });
 
             window.browserid_relay = function(status, error) {
-                console.log("relay being called");
                 if(error) {
                   errorOut(transaction, error);
                 }
@@ -71,7 +68,8 @@ steal.plugins()
                   try {
                     transaction.complete(status);
                   } catch(e) {
-
+                    // The relay function is called a second time after the 
+                    // initial success, when the window is closing.
                   }
                 }
             }
