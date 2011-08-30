@@ -43,35 +43,38 @@ steal.plugins()
 
 	.resources('../../dialog/resources/jschannel')
 
-          .then(function() {
-            var ipServer = "https://browserid.org";
+          .then(function($) {
+            // XXX get rid of this setTimeout.  It is in so that the build 
+            // script can do its thing without creating the channel
+            setTimeout(function() {
+              var ipServer = "https://browserid.org";
 
-            var chan = Channel.build( {
-              window: window.parent,
-              origin: "*",
-              scope: "mozid"
-            } );
+              var chan = Channel.build( {
+                window: window.parent,
+                origin: "*",
+                scope: "mozid"
+              } );
 
-            var transaction;
+              var transaction;
 
-            chan.bind("getVerifiedEmail", function(trans, s) {
-              trans.delayReturn(true);
+              chan.bind("getVerifiedEmail", function(trans, s) {
+                trans.delayReturn(true);
 
-              transaction = trans;
-            });
+                transaction = trans;
+              });
 
-            window.browserid_relay = function(status, error) {
-                if(error) {
-                  errorOut(transaction, error);
-                }
-                else {
-                  try {
-                    transaction.complete(status);
-                  } catch(e) {
-                    // The relay function is called a second time after the 
-                    // initial success, when the window is closing.
+              window.browserid_relay = function(status, error) {
+                  if(error) {
+                    errorOut(transaction, error);
                   }
-                }
-            }
-
+                  else {
+                    try {
+                      transaction.complete(status);
+                    } catch(e) {
+                      // The relay function is called a second time after the 
+                      // initial success, when the window is closing.
+                    }
+                  }
+              }
+            }, 100);
           });						// adds views to be added to build
