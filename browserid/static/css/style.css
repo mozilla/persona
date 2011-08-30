@@ -2,14 +2,16 @@
   font-family: 'Shadows Into Light';
   font-style: normal;
   font-weight: normal;
-  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('sil.ttf') format('truetype');
+/*  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('sil.ttf')
+ *  format('truetype');*/
 }
 
 @font-face {
   font-family: 'Tenor Sans';
   font-style: normal;
   font-weight: normal;
-  src: local('Tenor Sans'), local('TenorSans'), url('ts.ttf') format('truetype');
+ /* src: local('Tenor Sans'), local('TenorSans'), url('ts.ttf')
+  * format('truetype');*/
 }
 
 body {
@@ -243,17 +245,17 @@ pre code {
 }
 
 #emailList {
-  font-size: 1.0em; 
-  width: 4x00px; 
-  margin: auto; 
+  font-size: 1.0em;
+  width: 4x00px;
+  margin: auto;
   font-weight:bold;
   margin-top:32px;
 }
 
 #cancelaccount {
-  font-size: 1.0em; 
-  width: 500px; 
-  margin: auto; 
+  font-size: 1.0em;
+  width: 500px;
+  margin: auto;
   margin-top:35px;
 }
 
@@ -277,7 +279,7 @@ pre code {
 .meta {
   display:inline-block;
   float:right;
-  font:8pt Arial;  
+  font:8pt Arial;
 }
 .meta a {
   cursor:pointer;

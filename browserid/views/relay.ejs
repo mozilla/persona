@@ -3,8 +3,16 @@
 <head>
 	<head>
 		<title>Browser ID</title>
-      <script type='text/javascript' src='steal/steal<%= production ? ".production" : "" %>.js?dialog'></script>
+	</head>
+    <body>
+      Relay iframe.  Woohoo!
       <script type="text/javascript">
+        function check() {
+
+        if(!window.$) {
+            setTimeout(check, 100);
+            return;
+        }
         var ipServer = "https://browserid.org";
 
         var chan = Channel.build( {
@@ -21,7 +29,7 @@
           transaction = trans;
         });
 
-        function browserid_relay(status, error) {
+        window.browserid_relay = function(status, error) {
             console.log("relay being called");
             if(error) {
               errorOut(transaction, error);
@@ -30,9 +38,10 @@
               transaction.complete(status);
             }
         }
+        }
+
+        check();
     </script>
-	</head>
-    <body>
-      Relay iframe.  Woohoo!
 	</body>
+  <script type='text/javascript' src='steal/steal<%= production ? ".production" : "" %>.js?dialog'></script>
 </html>
