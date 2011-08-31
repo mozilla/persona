@@ -41,9 +41,11 @@ const assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-email = require('../lib/email.js');
+email = require('../lib/email.js'),
+ca = require('../lib/ca.js'),
+jwcert = require('../../lib/jwcrypto/jwcert');
 
-var suite = vows.describe('forgotten-email');
+var suite = vows.describe('cert-emails');
 
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
@@ -55,11 +57,14 @@ start_stop.addStartupBatches(suite);
 var token = undefined;
 email.setInterceptor(function(email, site, secret) { token = secret; });
 
+// INFO: some of these tests are repeat of sync-emails... to set
+// things up properly for key certification
+
 // create a new account via the api with (first address)
 suite.addBatch({
   "stage an account": {
     topic: wsapi.post('/wsapi/stage_user', {
-      email: 'setkeyabuser@somehost.com',
+      email: 'syncer@somehost.com',
       pass: 'fakepass',
       pubkey: 'fakekey',
       site:'fakesite.com'
@@ -94,26 +99,35 @@ suite.addBatch({
   }
 });
 
+var cert_key_url = "/wsapi/cert_key";
+
 suite.addBatch({
-  "setting a key that is already set": {
-    topic: wsapi.post('/wsapi/set_key', {
-      email: 'setkeyabuser@somehost.com',
-      pubkey: 'fakekey'
-    }),
-    "fails with a false return" : function(r, err) {
-      assert.strictEqual(r.code, 200);
-      assert.strictEqual(r.body, 'false');
-    }
-  },
-  "setting a key that belongs to an email you do not own": {
-    topic: wsapi.post('/wsapi/set_key', {
-      email: 'unowned@somehost.com',
-      pubkey: 'newfakekey'
-    }),
-    "fails with a HTTP 400 code" : function(r, err) {
+  "cert key with no parameters": {
+    topic: wsapi.post(cert_key_url, {}),
+    "fails with HTTP 400" : function(r, err) {
       assert.strictEqual(r.code, 400);
     }
+  },
+  "cert key invoked with just an email": {  
+    topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com' }),
+    "returns a 400" : function(r, err) {
+      assert.strictEqual(r.code, 400);
+    }
+  },
+  "cert key invoked with proper argument": {  
+    topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com', pubkey: 'fakepubkey' }),
+    "returns a response with a proper content-type" : function(r, err) {
+      assert.strictEqual(r.code, 200);
+      assert.isTrue(r.headers['content-type'].indexOf('application/json; charset=utf-8') > -1);
+    },
+    "returns a proper cert": function(r, err) {
+      var cert = new jwcert.JWCert();
+      cert.parse(r.body);
+
+      assert.isTrue(ca.verifyChain([cert], 'fakepubkey'));
+    }
   }
+  // NOTE: db-test has more thorough tests of the algorithm behind the sync_emails API
 });
 
 start_stop.addShutdownBatches(suite);

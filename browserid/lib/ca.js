@@ -18,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *     Ben Adida <benadida@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -33,31 +34,61 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const
-path = require('path'),
-fs = require('fs'),
-jws = require('../lib/jwcrypto/jws');
+// certificate authority
 
-exports.generate = function(chars) {
-  var str = "";
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i=0; i < chars; i++) {
-    str += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-  }
-  return str;
-}
+var jwcert = require('../../lib/jwcrypto/jwcert'),
+    jws = require('../../lib/jwcrypto/jws'),
+    configuration = require('../../libs/configuration'),
+    path = require("path"),
+    fs = require("fs");
 
-exports.hydrateSecret = function(name, dir) {
-  var p = path.join(dir, name + ".sekret");
+function loadSecretKey(name, dir) {
+  var p = path.join(dir, name + ".secretkey");
   var fileExists = false;
   var secret = undefined;
 
   try{ secret = fs.readFileSync(p).toString(); } catch(e) {};
 
   if (secret === undefined) {
-    secret = exports.generate(128);
-    fs.writeFileSync(p, secret);
+    return null;
   }
-  return secret;
-};
 
+  // parse it
+  // it should be a JSON structure with alg and serialized key
+  // {alg: <ALG>, value: <SERIALIZED_KEY>}
+  var key = JSON.parse(secret);
+  return jws.getByAlg(key.alg).SecretKey.deserialize(key.value);
+}
+
+function loadPublicKey(name, dir) {
+  var p = path.join(dir, name + ".publickey");
+  var fileExists = false;
+  var secret = undefined;
+
+  try{ secret = fs.readFileSync(p).toString(); } catch(e) {};
+
+  if (secret === undefined) {
+    return null;
+  }
+
+  // parse it
+  // it should be a JSON structure with alg and serialized key
+  // {alg: <ALG>, value: <SERIALIZED_KEY>}
+  var key = JSON.parse(secret);
+  return jws.getByAlg(key.alg).PublicKey.deserialize(key.value);
+}
+
+var SECRET_KEY = loadSecretKey('root', configuration.get('var_path'));
+var PUBLIC_KEY = loadPublicKey('root', configuration.get('var_path'));
+
+function certify(email, serializedPublicKey) {
+  return "cert";
+}
+
+function verifyChain(certChain, serializedPublicKey) {
+  return true;
+}
+
+// exports, not the key stuff
+exports.certify = certify;
+exports.verifyChain = verifyChain;

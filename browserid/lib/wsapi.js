@@ -298,8 +298,10 @@ function setup(app) {
       // not same account? big fat error
       if (!sameAccount) return httputils.badRequest(resp, "that email does not belong to you");
 
+      // FIXME: make sure it's truly a public key
+      
       // same account, we certify the key
-      var cert = ca.certify(email, pubkey);
+      var cert = ca.certify(email, req.body.pubkey);
       resp.json(cert);
     });
   });
