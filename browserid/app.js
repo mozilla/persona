@@ -238,7 +238,7 @@ exports.setup = function(server) {
 
   // prevent framing
   server.use(function(req, resp, next) {
-    resp.setHeader('x-frame-options', 'DENY');
+    //resp.setHeader('x-frame-options', 'DENY');
     next();
   });
 
