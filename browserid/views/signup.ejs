@@ -29,6 +29,25 @@
 
 <script type="text/javascript">
   $(document).ready(function () {
-    $('form input:visible:first').focus();
+    $("form input:visible:first").focus();
+
+    $("#signUpForm").bind("submit", function(event) {
+      event.preventDefault();
+
+      var email = $("#email").val(),
+          password = $("#password").val();
+      
+      BrowserIDIdentities.stageIdentity(email, password, function onSuccess(authenticated) {
+        if (authenticated) {
+          document.location = "/";
+        }
+        else {
+          // bad authentication
+        }
+      }, function onFailure() {
+        // Wah wah.  Network error
+      });
+    });
+
   });
 </script>
