@@ -1,5 +1,6 @@
 steal.plugins('jquery/controller/subscribe',
-	'jquery/event/hashchange').then(function($){
+	'jquery/event/hashchange',
+	'jquery/lang/deparam').then(function($){
 
 /**
  * @page jquery.controller.history History Events
@@ -7,6 +8,8 @@ steal.plugins('jquery/controller/subscribe',
  * @plugin jquery/controller/history
  * The jquery/controller/history plugin adds 
  * browser hash (#) based history support.
+ * 
+ * It allows you to listen to hashchange events with OpenAjax.hub.  
  * 
  * Typically you subscribe to a history event in your controllers:
  * 
@@ -16,40 +19,61 @@ steal.plugins('jquery/controller/subscribe',
  *       }
  *     })
  * 
+ * ## Event Names
+ * 
+ * When a history event happens, an OpenAjax message is produced that 
+ * starts with "history.".  The remainder of the message name depends on the 
+ * value of the "hash".  
+ * 
  * The following shows hash values and 
  * the corresponding published message and data.
  * 
  *     "#foo=bar" -> "history.index" {foo: bar}
  *     "#foo/bar" -> "history.foo.bar" {}
  *     "#foo&bar=baz" -> "history.foo" {bar: baz}
- *     
+ * 
+ * Essentially, if the hash starts with something like #foo/bar, this gets
+ * added to the message name as "foo.bar".  Once "&" is found, it adds the remainder
+ * as name-value pairs to the message data.
+ * 
+ * ## Controller Helper Functions
+ * 
+ * The methods on the left are added to Controller.prototype and make it easier to 
+ * make changes to history.
+ * 
  */
 
 var keyBreaker = /([^\[\]]+)|(\[\])/g;
 
 $.Controller.History = {
 	/**
-	 * 
+	 * @hide
 	 * returns the pathname part
 	 * 
-	 * @codestart
-	 * "#foo/bar&foo=bar" ->  'foo/bar'
-	 * @codeend
+	 *     // if the url is "#foo/bar&foo=bar"
+	 *     $.Controller.History.pathname() ->  'foo/bar'
+	 * 
 	 */
 	pathname : function(path) {
 		var parts =  path.match(/#([^&]*)/);
 		return parts ? parts[1] : null
 	},
 	/**
+	 * @hide
 	 * returns the search part, but without the first &
-	 * @codestart
-	 * "#foo/bar&foo=bar" ->  'foo=barr'
-	 * @codeend
+	 * 
+	 *     // if the url is "#foo/bar&foo=bar"
+	 *     $.Controller.History.search() ->  'foo=bar'
 	 */
 	search : function(path) {
 		var parts =  path.match(/#[^&]*&(.*)/);
 		return parts ? parts[1] : null
 	},
+	/**
+	 * @hide
+	 * Returns the data
+	 * @param {Object} path
+	 */
 	getData: function(path) {
 		var search = $.Controller.History.search(path),
 			digitTest = /^\d+$/;
@@ -60,39 +84,7 @@ $.Controller.History = {
 		// Support the legacy format that used MVC.Object.to_query_string that used %20 for
 		// spaces and not the '+' sign;
 		search = search.replace(/\+/g,"%20")
-	   
-		var data = {},
-			pairs = search.split('&'),
-			current;
-			
-		for(var i=0; i < pairs.length; i++){
-			current = data;
-			var pair = pairs[i].split('=');
-			
-			// if we find foo=1+1=2
-			if(pair.length != 2) { 
-				pair = [pair[0], pair.slice(1).join("=")]
-			}
-			
-			var key = decodeURIComponent(pair[0]), 
-				value = decodeURIComponent(pair[1]),
-				parts = key.match(keyBreaker);
-	
-			for ( var j = 0; j < parts.length - 1; j++ ) {
-				var part = parts[j];
-				if (!current[part] ) {
-					current[part] = digitTest.test(part) || parts[j+1] == "[]" ? [] : {}
-				}
-				current = current[part];
-			}
-			lastPart = parts[parts.length - 1];
-			if(lastPart == "[]"){
-				current.push(value)
-			}else{
-				current[lastPart] = value;
-			}
-		}
-		return data;
+	    return $.String.deparam(search);
 	}
 };
 
@@ -117,10 +109,13 @@ jQuery(function($) {
 		$(window).trigger('hashchange')
 	},1) //immediately after ready
 })
-   
+/**
+ * @add jQuery.Controller.prototype
+ */
    
 $.extend($.Controller.prototype, {
    /**
+	* @parent jquery.controller.history
 	* Redirects to another page.
 	* @plugin 'dom/history'
 	* @param {Object} options an object that will turned into a url like #controller/action&param1=value1
@@ -130,6 +125,7 @@ $.extend($.Controller.prototype, {
 		location.hash = point;
    },
    /**
+	* @parent jquery.controller.history
 	* Redirects to another page by replacing current URL with the given one.  This
 	* call will not create a new entry in the history.
 	* @plugin 'dom/history'
@@ -140,6 +136,7 @@ $.extend($.Controller.prototype, {
 		location.replace(location.href.split('#')[0] + point);
    },
    /**
+	* @parent jquery.controller.history
 	* Adds history point to browser history.
 	* @plugin 'dom/history'
 	* @param {Object} options an object that will turned into a url like #controller/action&param1=value1
@@ -150,6 +147,8 @@ $.extend($.Controller.prototype, {
 	  location.hash = point;
    },
    /**
+	* @hide
+	* @parent jquery.controller.history
 	* Creates a history point from given options. Resultant history point is like #controller/action&param1=value1
 	* @plugin 'dom/history'
 	* @param {Object} options an object that will turned into history point
@@ -172,6 +171,7 @@ $.extend($.Controller.prototype, {
    },
 
    /**
+	* @parent jquery.controller.history
 	* Provides current window.location parameters as object properties.
 	* @plugin 'dom/history'
 	*/

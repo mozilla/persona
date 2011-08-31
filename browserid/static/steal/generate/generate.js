@@ -175,7 +175,8 @@ steal("//steal/generate/ejs", '//steal/generate/inflector', '//steal/rhino/promp
 			colons: /::/,
 			words: /([A-Z]+)([A-Z][a-z])/g,
 			lowerUpper: /([a-z\d])([A-Z])/g,
-			dash: /([a-z\d])([A-Z])/g
+			dash: /([a-z\d])([A-Z])/g,
+			undHash: /_|-/
 		},
 		underscore: function( s ) {
 			var regs = this.regexps;
@@ -185,6 +186,19 @@ steal("//steal/generate/ejs", '//steal/generate/inflector', '//steal/rhino/promp
 				.replace(regs.dash, '_').toLowerCase();
 		},
 		//converts a name to a bunch of useful things
+		
+		/**
+		 * @hide
+		 * FooBar.ZedTed ->
+		 * {
+		 *   appName : "foobar",
+		 *   className : "ZedTed",
+		 *   fullName : "FooBar.ZedTed",
+		 *   name : "FooBar.ZedTed",
+		 *   path : foo_bar,
+		 *   underscore : "zed_ted"
+		 * }
+		 */
 		convert: function( name ) {
 			var className = name.match(/[^\.]*$/)[0]; //Customer
 			var appName = name.split(".")[0]; //Customer
@@ -195,7 +209,7 @@ steal("//steal/generate/ejs", '//steal/generate/inflector', '//steal/rhino/promp
 				fullName: name,
 				className: className,
 				plural: steal.Inflector.pluralize(generate.underscore(className)),
-				appName: appName.toLowerCase()
+				appName: generate.underscore(appName)
 			};
 		},
 		render: render

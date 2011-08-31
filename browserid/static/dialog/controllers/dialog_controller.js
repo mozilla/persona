@@ -204,7 +204,8 @@ PageController.extend("Dialog", {}, {
     doCheckAuth: function() {
       this.doWait(BrowserIDWait.checkAuth);
       var self=this;
-      BrowserIDIdentities.checkAuthenticationAndSync(function(authenticated) {
+      BrowserIDIdentities.checkAuthenticationAndSync(function onSuccess() {}, 
+      function onComplete(authenticated) {
         if (authenticated) {
           self.doSignIn();
         } else {

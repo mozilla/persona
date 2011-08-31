@@ -12,20 +12,32 @@ if [ ! -x "$JAVA" ]; then
     exit 1
 fi
 
-
-
 YUI_LOCATION='../../static/steal/build/scripts/yui.jar'
+
+echo ''
+echo '****Compressing include.js****'
+echo ''
+
+cd static
+mv include.js include.orig.js
+$UGLIFY -nc include.orig.js > include.js
 
 echo ''
 echo '****Building dialog HTML, CSS, and JS****'
 echo ''
 
-cd static
 steal/js dialog/scripts/build.js
 
 cd dialog
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
+
+cd ..
+steal/js relay/scripts/build.js
+cd relay
+$UGLIFY < production.js > production.min.js
+mv production.min.js production.js
+
 
 echo ''
 echo '****Building BrowserID.org HTML, CSS, and JS****'

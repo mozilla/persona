@@ -61,9 +61,9 @@ steal.plugins('jquery/event').then(function() {
 		return handlers;
 	};
 	/**
-	 * Finds 
-	 * @param {HTMLElement} el
-	 * @param {Array} types
+	 * Finds all events.  Group by selector.
+	 * @param {HTMLElement} el the element
+	 * @param {Array} types event types
 	 */
 	event.findBySelector = function( el, types ) {
 		var events = $.data(el, "events"),
@@ -91,6 +91,8 @@ steal.plugins('jquery/event').then(function() {
 
 		return selectors;
 	};
+	event.supportTouch = "ontouchend" in document;
+	
 	$.fn.respondsTo = function( events ) {
 		if (!this.length ) {
 			return false;

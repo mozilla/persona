@@ -21,6 +21,7 @@
 		for ( var i = 0; i < arguments.length; i++ ) {
 			var inc = arguments[i];
 			if ( typeof inc == 'string' ) {
+				// print(inc + "/" + inc.match(/\w+$/)[0] + ".js")
 				load(inc + "/" + inc.match(/\w+$/)[0] + ".js")
 			} else {
 				inc(steal)

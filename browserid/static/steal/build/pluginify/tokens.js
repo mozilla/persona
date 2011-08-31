@@ -262,12 +262,16 @@ String.prototype.tokens = function (prefix, suffix) {
 // comment.
 		
         } else if (c === '/' && this.charAt(i + 1) === '*') {
-            i += 1;
+            var str = c;
+			i += 1;
             for (;;) {
                 c = this.charAt(i);
+				str += c;
                 if (c === '*' && this.charAt(i+1) == "/") {
 					i += 1;
 					i += 1;
+					str+= "/";
+					result.push(make('comment', str));
                     break;
                 }
                 i += 1;
