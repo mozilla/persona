@@ -115,7 +115,7 @@ suite.addBatch({
     }
   },
   "cert key invoked with proper argument": {  
-    topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com', pubkey: 'fakepubkey' }),
+    topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com', pubkey: '-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMKlDDHBs5/B0uHDF3AZqOqzavAvpESI\nxEy2/6/p0gOhlUhkj/fWnQWyhM4lU3Ts5+aCzCoQvlWDGePphk8H9FMCAwEAAQ==\n-----END PUBLIC KEY-----\n' }),
     "returns a response with a proper content-type" : function(r, err) {
       assert.strictEqual(r.code, 200);
       assert.isTrue(r.headers['content-type'].indexOf('application/json; charset=utf-8') > -1);
@@ -124,7 +124,7 @@ suite.addBatch({
       var cert = new jwcert.JWCert();
       cert.parse(r.body);
 
-      assert.isTrue(ca.verifyChain([cert], 'fakepubkey'));
+      assert.isTrue(ca.verifyChain([cert], '-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMKlDDHBs5/B0uHDF3AZqOqzavAvpESI\nxEy2/6/p0gOhlUhkj/fWnQWyhM4lU3Ts5+aCzCoQvlWDGePphk8H9FMCAwEAAQ==\n-----END PUBLIC KEY-----\n'));
     }
   }
   // NOTE: db-test has more thorough tests of the algorithm behind the sync_emails API

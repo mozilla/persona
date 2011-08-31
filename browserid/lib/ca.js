@@ -82,11 +82,32 @@ var SECRET_KEY = loadSecretKey('root', configuration.get('var_path'));
 var PUBLIC_KEY = loadPublicKey('root', configuration.get('var_path'));
 
 function certify(email, serializedPublicKey) {
-  return "cert";
+  var pk = jws.getByAlg("RS").PublicKey.deserialize(serializedPublicKey);
+
+  return new jwcert.JWCert("browserid.org", new Date(), pk, {email: email}).sign(SECRET_KEY);
 }
 
-function verifyChain(certChain, serializedPublicKey) {
-  return true;
+function verifyChain(certChain, publicKey) {
+  // the certChain is expected to be ordered
+  // first cert signed root, next cert signed by first, ...
+  // last cert should contain the expected public key
+  var currentPublicKey = PUBLIC_KEY;
+  for (var i =0; i < certChain.length; i++) {
+    var cert = certChain[i];
+    if (!cert.verify(currentPublicKey)) {
+      console.log("bad cert");
+      console.log(cert);
+      return false;
+    }
+
+    // the public key for the next verification is..
+    currentPublicKey = cert.pk;
+  }
+
+  console.log("chain works");
+  
+  // pk matches?
+  return currentPublicKey.serialize() == publicKey.serialize();
 }
 
 // exports, not the key stuff
