@@ -135,26 +135,6 @@ $(function() {
     }
   });
 
-  // This is for the signup page
-  $("#signUpForm").bind("submit", function(event) {
-    event.preventDefault();
-
-    var email = $("#email").val(),
-        password = $("#password").val();
-    
-    BrowserIDNetwork.authenticate(email, password, function onSuccess(authenticated) {
-      if (authenticated) {
-        document.location = '/';
-      }
-      else {
-        // bad authentication
-      }
-    }, function onFailure() {
-      // Wah wah.  Network error
-    });
-  });
-
-
 });
 
 function display_saved_ids()
