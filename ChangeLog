@@ -1,3 +1,21 @@
+train-2011.08.25:
+  * created command line load generation tool and performance analysis work: #125
+  * beginning unit/functional tests for front end: #183
+  * front end refactor to facilitate unit/functional tests and UX iteration: #183
+  * error messages are shown on front end: #184
+  * users must now verify account ownership before attempting a key sync.
+  * manage page date format: #191
+  * manage page button only displayed if user is currently authenticated: #195
+  * manage page emails are synced on page open: #181
+  * wsapi_client created for clients needing programatic access to wsapi.
+  * harden set_key against duplicate keys.
+  * fix new email addresses added not being synced on client: #199
+  * upgrade to bcrypt 0.2.4.
+  * minify include.js by default: #206
+  * more than one email address can be added per dialog lifespan: #215
+  * verifyier no longer verifies assertions issued by another server.
+  * (2011.08.31) no error message displayed if you try to authenticate with an invalid u/p: #222
+	
 train-2011.08.18:
   * upon clickthrough of the email link, don't have the browser window close itself: #162
   * passwords must be between 8 and 80 chars: #155

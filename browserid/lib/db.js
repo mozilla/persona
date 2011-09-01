@@ -78,7 +78,7 @@ exports.open = function(cfg, cb) {
 exports.close = function(cb) {
   driver.close(function(err) {
     ready = false;
-    cb(err);
+    if (cb) cb(err);
   });
 };
 

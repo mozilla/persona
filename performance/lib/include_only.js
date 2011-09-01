@@ -1,5 +1,3 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -20,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Lloyd Hilaiel <lloyd@hilaiel.com> 
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -34,46 +33,23 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-(function() {
-  "use strict";
 
-  PageController.extend("addemail", {}, {
-    init: function(options) {
-      this._super({
-        bodyTemplate: "addemail.ejs",
-        bodyVars: {
-          sitename: BrowserIDNetwork.origin,
-          identities: getEmails()
-        },
-        footerTemplate: "bottom-addemail.ejs",
-        footerVars: {}
-      });
-      // select the first option
-      this.find('input:first').attr('checked', true);
-    },
+/* this file is the "include_only" activity, which simulates the load
+ * of an RP including include.js. */
 
-    validate: function() {
-      var email = $("#email_input").val();
-      return /^[\w.!#$%&'*+\-/=?\^`{|}~]+@[a-z0-9-]+(\.[a-z0-9-]+)*$/.test(email);
-    },
+var
+http = require('http'),
+https = require('https'),
+url = require('url'),
+client = require('../../libs/wsapi_client.js');
 
-    submit: function() {
-      // add the actual email
-      // now we need to actually try to stage the creation of this account.
-      var email = $("#email_input").val();
-
-      // kick the user to waiting/status page while we talk to the server.
-      this.doWait(BrowserIDWait.addEmail);
-
-      var self = this;
-      BrowserIDIdentities.addIdentity(email, function(keypair) {
-          // email successfully staged, now wait for email confirmation
-          self.close("addemail:complete", {
-            email: email,
-            keypair: keypair
-          });
-        }, self.getErrorDialog(BrowserIDErrors.addEmail));
+exports.startFunc = function(cfg, cb) {
+  client.get(cfg, '/include.js', {}, undefined, function(r) {
+    if (r.code != 200) {
+      cb(false);
+    } else {
+      // XXX: check the checksum of body?
+      cb(true);
     }
   });
-
-}());
+};

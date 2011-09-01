@@ -51,6 +51,7 @@ steal.plugins(
                'storage',
                'browserid-extensions',
                'browserid-network',
+               'browserid-identities',
                'browserid-errors',
                'browserid-wait')					// 3rd party script's (like jQueryUI), in resources folder
 

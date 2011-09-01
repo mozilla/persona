@@ -62,7 +62,7 @@
 
 const
 mysql = require('mysql'),
-secrets = require('./secrets'),
+secrets = require('../../libs/secrets'),
 logger = require('../../libs/logging.js').logger;
 
 var client = undefined;
@@ -282,38 +282,40 @@ exports.emailsBelongToSameAccount = function(lhs, rhs, cb) {
 
 function addKeyToEmailRecord(emailId, pubkey, cb) {
   client.query(
-    // XXX: 2 weeks is wrong, but then so is keypairs.
-    "INSERT INTO pubkey(email, content, expiry) VALUES(?, ?, DATE_ADD(NOW(), INTERVAL 2 WEEK))",
+    "SELECT COUNT(*) AS n FROM pubkey WHERE email = ? AND content = ?",
     [ emailId, pubkey ],
-    function(err, info) {
-      if (err) logUnexpectedError(err);
-      // smash null into undefined.
-      cb(err ? err : undefined);
+    function(err, rows) {
+      if (err) {
+        logUnexpectedError(err);
+        return cb(err);
+      }
+      if (rows[0].n > 0) {
+        return cb("cannot set a key that is already known");
+      }
+      
+      client.query(
+        // XXX: 2 weeks is wrong, but then so is keypairs.
+        "INSERT INTO pubkey(email, content, expiry) VALUES(?, ?, DATE_ADD(NOW(), INTERVAL 2 WEEK))",
+        [ emailId, pubkey ],
+        function(err, info) {
+          if (err) logUnexpectedError(err);
+          // smash null into undefined.
+          cb(err ? err : undefined);
+        });
     });
 }
 
 exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
-  // this function will NOT add a new email address to a user record.  The only
-  // way that happens is when a verification secret is provided to us.  Limiting
-  // the code paths that result in us concluding that a user owns an email address
-  // is a Good Thing.
-  exports.emailsBelongToSameAccount(existing_email, email, function(ok) {
-    if (!ok) {
-      cb("authenticated user doesn't have permission to add a public key to " + email);
-      return;
-    }
-
-    // now we know that the user has permission to add a key.
-    client.query(
-      "SELECT id FROM email WHERE address = ?", [ email ],
-      function(err, rows) {
-        if (err) { logUnexpectedError(err); cb(err); }
-        else if (rows.length === 0) cb("cannot find email address: " + email);
-        else {
-          addKeyToEmailRecord(rows[0].id, pubkey, cb);
-        }
-      });
-  });
+  // now we know that the user has permission to add a key.
+  client.query(
+    "SELECT id FROM email WHERE address = ?", [ email ],
+    function(err, rows) {
+      if (err) { logUnexpectedError(err); cb(err); }
+      else if (rows.length === 0) cb("cannot find email address: " + email);
+      else {
+        addKeyToEmailRecord(rows[0].id, pubkey, cb);
+      }
+    });
 }
 
 exports.stageEmail = function(existing_email, new_email, pubkey, cb) {

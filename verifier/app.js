@@ -18,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Brian J Brennan <brian@nyhacker.org>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,13 +40,14 @@ const   path = require('path'),
    httputils = require('./lib/httputils.js'),
  idassertion = require('./lib/idassertion.js'),
          jwt = require('./lib/jwt.js'),
-     express = require('express');
+     express = require('express'),
      metrics = require('../libs/metrics.js'),
      logger = require('../libs/logging.js').logger;
 
 logger.info("verifier server starting up");
 
 function doVerify(req, resp, next) {
+  req.body = req.body || {}
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req.body.assertion;
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
 

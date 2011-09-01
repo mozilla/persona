@@ -1,5 +1,5 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */ 
+/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
+/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -52,7 +52,7 @@
     "#forgotpassword click": function(event) {
       this.close("authenticate:forgotpassword");
     },
-            
+
     "#create click": function(event) {
       this.close("authenticate:createuser");
     },
@@ -69,17 +69,18 @@
       var pass = $("#password_input").val();
 
       var self = this;
-      BrowserIDNetwork.authenticate(email, pass, function(authenticated) {
+      BrowserIDIdentities.authenticateAndSync(email, pass, function(authenticated) {
         if (authenticated) {
           self.doWait(BrowserIDWait.authentication);
+        }
+      },
+      function(authenticated) {
+        if (authenticated) {
           self.close("authenticate:authenticated");
         } else {
           self.find("#nosuchaccount").hide().fadeIn(400);
         }
-      }, function(resp) {
-        self.runErrorDialog(BrowserIDErrors.authentication);
-        self.close("cancel");
-      });
+      }, self.getErrorDialog(BrowserIDErrors.authentication));
     }
   });
 

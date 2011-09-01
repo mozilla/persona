@@ -1,5 +1,3 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -20,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *  Lloyd Hilaiel <lloyd@hilaiel.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -34,46 +33,46 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-(function() {
-  "use strict";
 
-  PageController.extend("addemail", {}, {
-    init: function(options) {
-      this._super({
-        bodyTemplate: "addemail.ejs",
-        bodyVars: {
-          sitename: BrowserIDNetwork.origin,
-          identities: getEmails()
-        },
-        footerTemplate: "bottom-addemail.ejs",
-        footerVars: {}
-      });
-      // select the first option
-      this.find('input:first').attr('checked', true);
-    },
+/* This little module will, when included, hook the email verification system
+ * and instead of sending emails will make verification tokens available
+ * via the WSAPI.  This is *highly* insecure and should only be used when
+ * testing (performance or otherwise).
+ */
 
-    validate: function() {
-      var email = $("#email_input").val();
-      return /^[\w.!#$%&'*+\-/=?\^`{|}~]+@[a-z0-9-]+(\.[a-z0-9-]+)*$/.test(email);
-    },
+const
+email = require('./email.js'),
+configuration = require('../../libs/configuration.js'),
+url = require('url');
 
-    submit: function() {
-      // add the actual email
-      // now we need to actually try to stage the creation of this account.
-      var email = $("#email_input").val();
+// a paranoid check of the configuration.  This module should only
+// be included when in a testing environment
+var c = configuration.get('env');
+if (!/^test_/.test(c)) {
+  console.log("FATAL ERROR: you're using fake verification in a configuration that you shouldn't");
+  console.log("stop including fake_verification.js.  it's not safe here.");
+  process.exit(1);
+} else {
+  console.log("HEAR YE: Fake verfication enabled, aceess via /wsapi/fake_verification?email=foo@bar.com");
+}
 
-      // kick the user to waiting/status page while we talk to the server.
-      this.doWait(BrowserIDWait.addEmail);
+// we store outstanding tokens in memory, folks.  
+var tokens = { };
 
-      var self = this;
-      BrowserIDIdentities.addIdentity(email, function(keypair) {
-          // email successfully staged, now wait for email confirmation
-          self.close("addemail:complete", {
-            email: email,
-            keypair: keypair
-          });
-        }, self.getErrorDialog(BrowserIDErrors.addEmail));
+// set up an interceptor
+email.setInterceptor(function(email, site, secret) {
+  tokens[email] = secret;
+});
+
+exports.addVerificationWSAPI = function(app) {
+  app.get('/wsapi/fake_verification', function(req, res) {
+    var email = url.parse(req.url, true).query['email'];
+    if (tokens.hasOwnProperty(email)) {
+      res.write(tokens[email]);
+      delete tokens[email];
+    } else {
+      res.writeHead(400, {"Content-Type": "text/plain"});
     }
+    res.end();
   });
-
-}());
+};

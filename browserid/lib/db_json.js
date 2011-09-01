@@ -41,7 +41,7 @@
 const
 path = require('path'),
 fs = require('fs'),
-secrets = require('./secrets'),
+secrets = require('../../libs/secrets'),
 jsel = require('JSONSelect'),
 logger = require('../../libs/logging.js').logger,
 configuration = require('../../libs/configuration.js'),
@@ -179,6 +179,10 @@ exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
     }
 
     var m = jsel.match("object:has(.address:val(" + ESC(email) + ")) > .keys", db[userID].emails);
+    
+    if (jsel.match(".key:val(" + ESC(pubkey) + ")", m).length > 0) {
+      return cb("cannot set a key that is already known");
+    }
 
     var kobj = {
       key: pubkey,

@@ -42,7 +42,7 @@ httputils = require('./lib/httputils.js'),
 webfinger = require('./lib/webfinger.js'),
 sessions = require('connect-cookie-session'),
 express = require('express'),
-secrets = require('./lib/secrets.js'),
+secrets = require('../libs/secrets.js'),
 db = require('./lib/db.js'),
 configuration = require('../libs/configuration.js'),
 substitution = require('../libs/substitute.js');
@@ -252,3 +252,7 @@ exports.setup = function(server) {
   // add the actual URL handlers other than static
   router(server);
 }
+
+exports.shutdown = function() {
+  db.close();
+};

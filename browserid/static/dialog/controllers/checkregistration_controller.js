@@ -87,10 +87,7 @@
             } else {
               self.runErrorDialog(BrowserIDErrors.registration);
             }
-          },
-          function(jqXHR, textStatus, errorThrown) {
-              self.runErrorDialog(BrowserIDErrors.registration);
-          });
+          }, self.getErrorDialog(BrowserIDErrors.registration));
         }, 3000);
       }
       
