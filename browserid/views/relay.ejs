@@ -1,12 +1,11 @@
 <!doctype html>
 <html>
 <head>
-	<head>
-		<title>Browser ID</title>
-	</head>
-    <body>
+  <meta charset="utf-8"> 
+  <title>Browser ID</title>
+</head>
+  <body>
       Relay iframe.  Woohoo!
+  <script type='text/javascript' src='https://browserid.org/steal/steal<%= production ? ".production" : "" %>.js?relay'></script>
 	</body>
-  <script type='text/javascript' src='/steal/steal<%= production ? ".production"
-  : "" %>.js?relay'></script>
 </html>
