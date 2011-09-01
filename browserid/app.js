@@ -86,7 +86,7 @@ function router(app) {
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
 
   // Used for a relay page for communication.
-  app.get('/relay', function(req, res, next ) {
+  app.get(/^\/relay(\.html)?$/, function(req,res, next) {
     // Allow the relay to be run within a frame
     res.removeHeader('x-frame-options');
     res.render('relay.ejs', {
