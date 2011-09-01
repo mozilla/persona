@@ -42,7 +42,6 @@ $(function() {
 
   BrowserIDNetwork.checkAuth(function(authenticated) {
     if (authenticated) {
-      //$("body").addClass("authenticated");
       if ($('#emailList').length) {
         display_saved_ids();
       }
@@ -137,8 +136,7 @@ $(function() {
 
 });
 
-function display_saved_ids()
-{
+function display_saved_ids() {
   var emails = {};
   BrowserIDIdentities.syncIdentities(function() {
     emails = getEmails();
@@ -162,35 +160,51 @@ function display_saved_ids()
       }
     });
 
-    $('#manageAccounts').click(function() {
+    $('#manageAccounts').click(function(event) {
+        event.preventDefault();
+
         $('#emailList').addClass('remove');
         $(this).hide();
         $("#cancelManage").show();
     });
     
-    $('#cancelManage').click(function() {
+    $('#cancelManage').click(function(event) {
+        event.preventDefault();
+
         $('#emailList').removeClass('remove');
         $(this).hide();
         $("#manageAccounts").show();
     });
 
-    $("#emailList").empty();
-      _(emails).each(function(data, e) {
-       var date = _.relative(new Date(data.created));
+    var list = $("#emailList").empty();
 
-       $("<li class='identity cf'/>").append(
-            _.template("<div class='email'><%= email %></div>", { email : e }),
-           $("<div class='activity cf'/>").append(
-             $("<button class='delete'>remove</button>").click(function() {
-               if (confirm("Remove " + e + " from your BrowserID?")) {
-                 // XXX this callback is not working as expected
-                 BrowserIDNetwork.removeEmail(e, display_saved_ids);
-               }
-             }),
-             _.template("<abbr class='status' title='Registered: <%= created %>'>Registered <%= relative %></abbr>",
-                       { relative: date.friendly, created : date.locale } )
-           )
-       ).appendTo($("#emailList"));
+    // Set up to use mustache style templating, the normal Django style blows 
+    // up the node templates
+    _.templateSettings = {
+        interpolate : /\{\{(.+?)\}\}/g
+    };
+    var template = $('#templateUser').html();
+
+    _(emails).each(function(data, e) {
+      var date = _.relative(new Date(data.created));
+
+      var identity = _.template(template, {
+        email: e,
+        relative: date.friendly,
+        created: date.locale
+      });
+
+      var idEl = $(identity).appendTo(list);
+      idEl.find('.delete').click(onRemoveEmail.bind(null, e));
     });
+
+    function onRemoveEmail(email, event) {
+      event.preventDefault();
+
+      if (confirm("Remove " + email + " from your BrowserID?")) {
+        BrowserIDIdentities.removeIdentity(email, display_saved_ids);
+      }
+    }
   }
 }
+
