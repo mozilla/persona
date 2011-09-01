@@ -575,8 +575,8 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   function _open_relay_frame(doc) {
       var iframe = doc.createElement("iframe");
       iframe.setAttribute('name', 'browserid_relay');
-      iframe.setAttribute('src', ipServer + "/relay");
-      iframe.style.display = "none";
+      iframe.setAttribute('src', ipServer + "/relay.html");
+      //iframe.style.display = "none";
       doc.body.appendChild(iframe);
       return iframe;
   }
