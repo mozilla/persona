@@ -4,8 +4,8 @@
             <div class="edit cf">
                 <strong>Your Accounts</strong>
 
-                <a id="manageAccounts" href="javascript:void(0);">edit</a>
-                <a id="cancelManage" href="javascript:void(0);">done</a>
+                <a id="manageAccounts" href="#">edit</a>
+                <a id="cancelManage" href="#">done</a>
             </div>
             <ul id="emailList">
                 <li class="cf">
@@ -38,21 +38,32 @@
         </div>
     </div>
 
-<script type="text/javascript">
-$(document).ready(function () {
-    $('.granted').hover(function() {
-        $('#card').toggleClass('insert');
-        $('#status').delay(400).toggleClass('green');
-    });
-
-    $('.create').hover(function() {
-        $('#hint').addClass('signUp').removeClass('info');
-    }).click(function () {
-        document.location = '/signup';
-    });
-
-    $('.info').hover(function() {
-        $('#hint').removeClass('signUp').addClass('info');
-    });
-});
+<script type="text/html" id="templateUser">
+  <li class="identity cf">
+    <div class="email">{{ email }}</div>
+    <div class="activity cf">
+      <button class="delete">remove</button>
+      <abbr title="Registered: {{ created }}" class="status">Registered {{ relative }} minutes ago</abbr>
+    </div>
+  </li>
 </script>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+      $('.granted').hover(function() {
+          $('#card').toggleClass('insert');
+          $('#status').delay(400).toggleClass('green');
+      });
+
+      $('.create').hover(function() {
+          $('#hint').addClass('signUp').removeClass('info');
+      }).click(function () {
+          document.location = '/signup';
+      });
+
+      $('.info').hover(function() {
+          $('#hint').removeClass('signUp').addClass('info');
+      });
+  });
+</script>
+
