@@ -130,9 +130,15 @@ header > #manageLink:hover {
     opacity: 1;
 }
 
-a {
+header a {
     color: #fff;
     text-decoration: none;
+}
+
+a {
+    color: #666;
+    text-decoration: none;
+    border-bottom: 1px dotted #666;
 }
 
 a:hover {
@@ -168,9 +174,6 @@ footer .right img {
     margin-bottom: -5px;
 }
 
-footer a {
-    color: #666;
-}
 
 footer .right p {
     text-align: right;
@@ -186,12 +189,6 @@ footer .copyright {
     width: 800px;
     margin: 0 auto;
     padding: 0;
-}
-
-#steps a {
-    color: #666;
-    text-decoration: none;
-    border-bottom: 1px dotted #666;
 }
 
 .step  {
