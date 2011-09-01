@@ -1,3 +1,9 @@
+train-2011.09.01:
+  * /ws_api/set_key always returns returns value instead of HTTP 204 response: #219
+  * update javascript mvc to 3.1.0.
+  * major interframe/window communication change using a hidden relay iframe to facilitate IE: #97(still open)
+  * link colors on browserid.org are consistent: #227
+
 train-2011.08.25:
   * created command line load generation tool and performance analysis work: #125
   * beginning unit/functional tests for front end: #183
@@ -14,7 +20,8 @@ train-2011.08.25:
   * minify include.js by default: #206
   * more than one email address can be added per dialog lifespan: #215
   * verifyier no longer verifies assertions issued by another server.
-
+  * (2011.08.31) no error message displayed if you try to authenticate with an invalid u/p: #222
+	
 train-2011.08.18:
   * upon clickthrough of the email link, don't have the browser window close itself: #162
   * passwords must be between 8 and 80 chars: #155
