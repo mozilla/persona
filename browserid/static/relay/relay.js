@@ -39,9 +39,7 @@ window.console = window.console || {
   log: function() {}
 };
 
-steal.plugins()
-
-	.resources('../../dialog/resources/jschannel')
+steal.resources('../../dialog/resources/jschannel')
 
           .then(function($) {
             // XXX get rid of this setTimeout.  It is in so that the build 
