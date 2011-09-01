@@ -88,7 +88,7 @@ function router(app) {
   // Used for a relay page for communication.
   app.get('/relay', function(req, res, next ) {
     // Allow the relay to be run within a frame
-    //res.removeHeader('x-frame-options');
+    res.removeHeader('x-frame-options');
     res.render('relay.ejs', {
       layout: false,
       production: configuration.get('use_minified_resources')
@@ -253,7 +253,7 @@ exports.setup = function(server) {
 
   // prevent framing
   server.use(function(req, resp, next) {
-    //resp.setHeader('x-frame-options', 'DENY');
+    resp.setHeader('x-frame-options', 'DENY');
     next();
   });
 
