@@ -95,8 +95,6 @@ function verifyChain(certChain, publicKey) {
   for (var i =0; i < certChain.length; i++) {
     var cert = certChain[i];
     if (!cert.verify(currentPublicKey)) {
-      console.log("bad cert");
-      console.log(cert);
       return false;
     }
 
@@ -104,8 +102,6 @@ function verifyChain(certChain, publicKey) {
     currentPublicKey = cert.pk;
   }
 
-  console.log("chain works");
-  
   // pk matches?
   return currentPublicKey.serialize() == publicKey.serialize();
 }

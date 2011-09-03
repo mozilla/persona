@@ -43,7 +43,8 @@ start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 email = require('../lib/email.js'),
 ca = require('../lib/ca.js'),
-jwcert = require('../../lib/jwcrypto/jwcert');
+jwcert = require('../../lib/jwcrypto/jwcert'),
+jws = require('../../lib/jwcrypto/jws');
 
 var suite = vows.describe('cert-emails');
 
@@ -101,6 +102,9 @@ suite.addBatch({
 
 var cert_key_url = "/wsapi/cert_key";
 
+var pubkey = '-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMKlDDHBs5/B0uHDF3AZqOqzavAvpESI\nxEy2/6/p0gOhlUhkj/fWnQWyhM4lU3Ts5+aCzCoQvlWDGePphk8H9FMCAwEAAQ==\n-----END PUBLIC KEY-----\n';
+var pk_obj = jws.getByAlg("RS").PublicKey.deserialize(pubkey);
+
 suite.addBatch({
   "cert key with no parameters": {
     topic: wsapi.post(cert_key_url, {}),
@@ -115,16 +119,16 @@ suite.addBatch({
     }
   },
   "cert key invoked with proper argument": {  
-    topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com', pubkey: '-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMKlDDHBs5/B0uHDF3AZqOqzavAvpESI\nxEy2/6/p0gOhlUhkj/fWnQWyhM4lU3Ts5+aCzCoQvlWDGePphk8H9FMCAwEAAQ==\n-----END PUBLIC KEY-----\n' }),
+    topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com', pubkey: pubkey }),
     "returns a response with a proper content-type" : function(r, err) {
       assert.strictEqual(r.code, 200);
       assert.isTrue(r.headers['content-type'].indexOf('application/json; charset=utf-8') > -1);
     },
     "returns a proper cert": function(r, err) {
       var cert = new jwcert.JWCert();
-      cert.parse(r.body);
+      cert.parse(JSON.parse(r.body));
 
-      assert.isTrue(ca.verifyChain([cert], '-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMKlDDHBs5/B0uHDF3AZqOqzavAvpESI\nxEy2/6/p0gOhlUhkj/fWnQWyhM4lU3Ts5+aCzCoQvlWDGePphk8H9FMCAwEAAQ==\n-----END PUBLIC KEY-----\n'));
+      assert.isTrue(ca.verifyChain([cert], pk_obj));
     }
   }
   // NOTE: db-test has more thorough tests of the algorithm behind the sync_emails API
