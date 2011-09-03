@@ -131,8 +131,16 @@ suite.addBatch({
 
       assert.isTrue(ca.verifyChain([cert]).equals(kp.publicKey));
     }
+  },
+  "cert key invoked proper arguments but incorrect email address": {  
+    topic: wsapi.post(cert_key_url, { email: 'syncer2@somehost.com', pubkey: kp.publicKey.serialize() }),
+    "returns a response with a proper error content-type" : function(r, err) {
+      assert.strictEqual(r.code, 400);
+    }
   }
-  // NOTE: db-test has more thorough tests of the algorithm behind the sync_emails API
+
+
+  // NOTE: db-test has more thorough tests of the algorithm behind the sync_emails API  
 });
 
 start_stop.addShutdownBatches(suite);
