@@ -95,10 +95,10 @@ function certify(email, publicKey, expiration) {
   return new jwcert.JWCert("browserid.org", new Date(), publicKey, {email: email}).sign(SECRET_KEY);
 }
 
-function verifyChain(certChain, publicKey) {
+function verifyChain(certChain) {
   // the certChain is expected to be ordered
   // first cert signed root, next cert signed by first, ...
-  // last cert should contain the expected public key
+  // returns the last certified public key
   var currentPublicKey = PUBLIC_KEY;
   for (var i =0; i < certChain.length; i++) {
     var cert = certChain[i];
@@ -110,8 +110,8 @@ function verifyChain(certChain, publicKey) {
     currentPublicKey = cert.pk;
   }
 
-  // pk matches?
-  return currentPublicKey.serialize() == publicKey.serialize();
+  // return last certified public key
+  return currentPublicKey;
 }
 
 // exports, not the key stuff
