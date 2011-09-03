@@ -59,10 +59,13 @@ var email_addr = "foo@foo.com";
 // create a new account via the api with (first address)
 suite.addBatch({
   "certify a public key": {
-    topic: ca.certify(email_addr, kp.publicKey.serialize()),
+    topic: ca.certify(email_addr, kp.publicKey),
+    "parses" : function(r, err) {
+      var cert = ca.parseCert(r);
+      assert.notEqual(cert, null);
+    },
     "verifies": function(r, err) {
-      var cert = new jwcert.JWCert();
-      cert.parse(r);
+      var cert = ca.parseCert(r);
       assert.isTrue(ca.verifyChain([cert], kp.publicKey));
     }
   }

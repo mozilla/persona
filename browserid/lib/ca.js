@@ -81,10 +81,18 @@ function loadPublicKey(name, dir) {
 var SECRET_KEY = loadSecretKey('root', configuration.get('var_path'));
 var PUBLIC_KEY = loadPublicKey('root', configuration.get('var_path'));
 
-function certify(email, serializedPublicKey) {
-  var pk = jws.getByAlg("RS").PublicKey.deserialize(serializedPublicKey);
+function parsePublicKey(serializedPK) {
+  return jws.getByAlg("RS").PublicKey.deserialize(serializedPK);
+}
 
-  return new jwcert.JWCert("browserid.org", new Date(), pk, {email: email}).sign(SECRET_KEY);
+function parseCert(serializedCert) {
+  var cert = new jwcert.JWCert();
+  cert.parse(serializedCert);
+  return cert;
+}
+
+function certify(email, publicKey, expiration) {
+  return new jwcert.JWCert("browserid.org", new Date(), publicKey, {email: email}).sign(SECRET_KEY);
 }
 
 function verifyChain(certChain, publicKey) {
@@ -109,3 +117,5 @@ function verifyChain(certChain, publicKey) {
 // exports, not the key stuff
 exports.certify = certify;
 exports.verifyChain = verifyChain;
+exports.parsePublicKey = parsePublicKey;
+exports.parseCert = parseCert;

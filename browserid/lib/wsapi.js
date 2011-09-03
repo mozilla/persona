@@ -298,10 +298,11 @@ function setup(app) {
       // not same account? big fat error
       if (!sameAccount) return httputils.badRequest(resp, "that email does not belong to you");
 
-      // pubkey is checked in ca.certify
+      // parse the pubkey
+      var pk = ca.parsePublicKey(req.body.pubkey);
       
       // same account, we certify the key
-      var cert = ca.certify(req.body.email, req.body.pubkey);
+      var cert = ca.certify(req.body.email, pk);
       resp.json(cert);
     });
   });
