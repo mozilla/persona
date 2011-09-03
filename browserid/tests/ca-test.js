@@ -68,6 +68,8 @@ suite.addBatch({
       var cert = ca.parseCert(r);
       assert.isTrue(ca.verifyChain([cert], kp.publicKey));
     }
+  },
+  "certify a chain of keys": {
   }
 });
 
