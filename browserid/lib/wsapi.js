@@ -303,7 +303,8 @@ function setup(app) {
       
       // same account, we certify the key
       var cert = ca.certify(req.body.email, pk);
-      resp.json(cert);
+      resp.write(cert);
+      resp.end();
     });
   });
   

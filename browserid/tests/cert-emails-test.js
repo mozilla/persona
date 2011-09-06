@@ -45,7 +45,8 @@ email = require('../lib/email.js'),
 ca = require('../lib/ca.js'),
 jwcert = require('../../lib/jwcrypto/jwcert'),
 jwk = require('../../lib/jwcrypto/jwk'),
-jws = require('../../lib/jwcrypto/jws');
+jws = require('../../lib/jwcrypto/jws'),
+jwt = require('../../lib/jwcrypto/jwt');
 
 var suite = vows.describe('cert-emails');
 
@@ -124,13 +125,34 @@ suite.addBatch({
     topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com', pubkey: kp.publicKey.serialize() }),
     "returns a response with a proper content-type" : function(r, err) {
       assert.strictEqual(r.code, 200);
-      assert.isTrue(r.headers['content-type'].indexOf('application/json; charset=utf-8') > -1);
     },
     "returns a proper cert": function(r, err) {
       var cert = new jwcert.JWCert();
-      cert.parse(JSON.parse(r.body));
+      cert.parse(r.body);
 
       assert.isTrue(ca.verifyChain([cert]).equals(kp.publicKey));
+    },
+    "generate an assertion": {
+      topic: function(r) {
+        var serializedCert = r.body.toString();
+        var assertion = new jwt.JWT(null, new Date(), "rp.com");
+        var full_assertion = {
+          certificates: [serializedCert],
+          assertion: assertion.sign(kp.secretKey)
+        };
+
+        return full_assertion;
+      },
+      "full assertion looks good": function(full_assertion) {
+        assert.equal(full_assertion.certificates[0].split(".").length, 3);
+        assert.equal(full_assertion.assertion.split(".").length, 3);
+      },
+      "assertion verifies": {
+        topic: function(full_assertion) {return wsapi.get(cert_key_url, { assertion: full_assertion, audience: "rp.com" })();},
+        "verifies": function(result) {
+          assert.isTrue(result);
+        }
+      }
     }
   },
   "cert key invoked proper arguments but incorrect email address": {  
