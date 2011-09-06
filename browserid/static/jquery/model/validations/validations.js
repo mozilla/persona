@@ -1,7 +1,7 @@
 steal.plugins('jquery/model').then(function($){
 /**
 @page jquery.model.validations Validations
-@plugin jquery/mode/validations
+@plugin jquery/model/validations
 @download  http://jmvcsite.heroku.com/pluginify?plugins[]=jquery/model/validations/validations.js
 @test jquery/model/validations/qunit.html
 @parent jQuery.Model
@@ -60,7 +60,7 @@ var validate = function(attrNames, options, proc) {
 		}
 		self.validations[attrName].push(function(){
 			var res = proc.call(this, this[attrName]);
-			return  options.message || res;
+			return res === undefined ? undefined : (options.message || res);
 		})
 	});
    

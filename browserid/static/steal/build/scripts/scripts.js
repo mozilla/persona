@@ -2,8 +2,13 @@ steal(function( steal ) {
 
 	/**
 	 * Builds JavaScripts
+	 *
 	 * @param {Object} opener the result of a steal.build.open
 	 * @param {Object} options options passed to the build script
+	 * 
+	 *   * __to__  - which folder the production.css files should be put in
+	 *   * __quite__  - tell the compressor to be less abnoxious about sending errors
+	 *   * __all__ - compress all scripts
 	 */
 	var scripts = (steal.build.builders.scripts = function( opener, options ) {
 		steal.print("\nBUILDING SCRIPTS --------------- ");
@@ -151,9 +156,39 @@ steal(function( steal ) {
 				return outBaos.toString();
 			};
 		},
-        concatOnly: function() {
-			steal.print("steal.compress - Not compressing resources, only concatenating");
-            return function( src ) { return src; }
-        }
+		yui: function() {
+			// needs yuicompressor.jar at steal/build/scripts/yuicompressor.jar
+			steal.print("steal.compress - Using YUI compressor");
+
+			return function( src ) {
+				var rnd = Math.floor(Math.random() * 1000000 + 1),
+					filename = "tmp" + rnd + ".js",
+					tmpFile = new steal.File(filename);
+
+				tmpFile.save(src);
+
+				var outBaos = new java.io.ByteArrayOutputStream(),
+					output = new java.io.PrintStream(outBaos);
+					
+				runCommand(
+					"java", 
+					"-jar", 
+					"steal/build/scripts/yuicompressor.jar", 
+					"--charset",
+					"utf-8",
+					filename, 
+					{ output: output }
+				);
+			
+				tmpFile.remove();
+
+				return outBaos.toString();
+			};
+		},
+
+    concatOnly: function() {
+        steal.print("steal.compress - Not compressing resources, only concatenating");
+        return function( src ) { return src; }
+    }
 	};
 });

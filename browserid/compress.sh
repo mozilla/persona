@@ -32,6 +32,13 @@ cd dialog
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
 
+cd ..
+steal/js relay/scripts/build.js
+cd relay
+$UGLIFY < production.js > production.min.js
+mv production.min.js production.js
+
+
 echo ''
 echo '****Building BrowserID.org HTML, CSS, and JS****'
 echo ''

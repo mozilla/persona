@@ -81,11 +81,12 @@ a:hover { border-bottom: 2px solid black ; }
 <script src="jquery-min.js"></script>
 <script src="https://browserid.org/include.js"></script>
 <script>
-  $(document).ready(function() {
-    $("#partyStarter").click(function() {
+  $(function() {
+    $("#partyStarter").click(function(event) {
+      event.preventDefault();
       navigator.id.getVerifiedEmail(function(assertion) {
         if (!assertion) {
-          alert("couldn't get the users email address!"); 
+          alert("couldn't get the users email address!");
         } else {
           // Now we'll send this assertion over to the verification server for validation
           $("#oAssertion").empty().text(assertion);
@@ -100,14 +101,17 @@ a:hover { border-bottom: 2px solid black ; }
 
           $.ajax({
             url: "https://browserid.org/verify",
-            type: "POST",
+            type: "post",
             dataType: "json",
             data: data,
             success: function(data, textStatus, jqXHR) {
               $("#oVerificationResponse > pre").empty().text(JSON.stringify(data, null, 4));
             },
             error: function(jqXHR, textStatus, errorThrown) {
-              $("#oVerificationResponse > pre").empty().text(JSON.stringify(JSON.parse(jqXHR.responseText), null, 4));
+              var statusEl = $("#oVerificationResponse > pre").empty();
+              var resp = jqXHR.responseText ?
+                JSON.stringify(JSON.parse(jqXHR.responseText), null, 4) : errorThrown;
+              statusEl.text(resp);
             }
           });
         }

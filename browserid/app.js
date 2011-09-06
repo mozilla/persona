@@ -85,6 +85,17 @@ function router(app) {
   // simple redirects (internal for now)
   app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
 
+  // Used for a relay page for communication.
+  app.get(/^\/relay(\.html)?$/, function(req,res, next) {
+    // Allow the relay to be run within a frame
+    res.removeHeader('x-frame-options');
+    res.render('relay.ejs', {
+      layout: false,
+      production: configuration.get('use_minified_resources')
+    });
+  });
+
+
   app.get('/', function(req,res) {
     res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});
   });
