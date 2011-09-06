@@ -93,22 +93,14 @@ function certify(email, publicKey, expiration) {
 }
 
 function verifyChain(certChain) {
-  // the certChain is expected to be ordered
-  // first cert signed root, next cert signed by first, ...
-  // returns the last certified public key
-  var currentPublicKey = PUBLIC_KEY;
-  for (var i =0; i < certChain.length; i++) {
-    var cert = certChain[i];
-    if (!cert.verify(currentPublicKey)) {
-      return false;
-    }
+  // raw certs
+  return jwcert.JWCert.verifyChain(certChain, function(issuer) {
+    // for now we only do browserid.org issued keys
+    if (issuer != "browserid2.org")
+      return null;
 
-    // the public key for the next verification is..
-    currentPublicKey = cert.pk;
-  }
-
-  // return last certified public key
-  return currentPublicKey;
+    return PUBLIC_KEY;
+  });
 }
 
 // exports, not the key stuff

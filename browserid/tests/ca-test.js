@@ -61,13 +61,12 @@ var email_addr = "foo@foo.com";
 suite.addBatch({
   "certify a public key": {
     topic: ca.certify(email_addr, kp.publicKey),
-    "parses" : function(r, err) {
-      var cert = ca.parseCert(r);
+    "parses" : function(cert_raw, err) {
+      var cert = ca.parseCert(cert_raw);
       assert.notEqual(cert, null);
     },
-    "verifies": function(r, err) {
-      var cert = ca.parseCert(r);
-      assert.isTrue(ca.verifyChain([cert]).equals(kp.publicKey));
+    "verifies": function(cert_raw, err) {
+      assert.isTrue(kp.publicKey.equals(ca.verifyChain([cert_raw])));
     }
   },
   "certify a chain of keys": {

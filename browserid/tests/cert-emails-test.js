@@ -148,7 +148,19 @@ suite.addBatch({
         assert.equal(full_assertion.assertion.split(".").length, 3);
       },
       "assertion verifies": {
-        topic: function(full_assertion) {return wsapi.get(cert_key_url, { assertion: full_assertion, audience: "rp.com" })();},
+        topic: function(full_assertion) {
+          // check that the assertion is verified by the public key in the chain cert
+          var cert_chain = [];
+          for (var i=0; i<full_assertion.certificates.length; i++) {
+            var cert = new jwcert.JWCert();
+            cert.parse(full_assertion.certificates[i]);
+            cert_chain[cert_chain.length] = cert;
+          }
+
+          // extract public key at the tail of the chain
+          var pk = ca.verifyChain(cert_chain);
+          
+        },
         "verifies": function(result) {
           assert.isTrue(result);
         }
