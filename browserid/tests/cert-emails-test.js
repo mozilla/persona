@@ -44,6 +44,7 @@ wsapi = require('./lib/wsapi.js'),
 email = require('../lib/email.js'),
 ca = require('../lib/ca.js'),
 jwcert = require('../../lib/jwcrypto/jwcert'),
+jwk = require('../../lib/jwcrypto/jwk'),
 jws = require('../../lib/jwcrypto/jws');
 
 var suite = vows.describe('cert-emails');
@@ -104,7 +105,7 @@ var cert_key_url = "/wsapi/cert_key";
 
 // generate a keypair, we'll use this to sign assertions, as if
 // this keypair is stored in the browser localStorage
-var kp = jws.getByAlg("RS").KeyPair.generate(64);
+var kp = jwk.KeyPair.generate("RS",64);
 
 suite.addBatch({
   "cert key with no parameters": {

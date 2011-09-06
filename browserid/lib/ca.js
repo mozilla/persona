@@ -37,6 +37,7 @@
 // certificate authority
 
 var jwcert = require('../../lib/jwcrypto/jwcert'),
+    jwk = require('../../lib/jwcrypto/jwk'),
     jws = require('../../lib/jwcrypto/jws'),
     configuration = require('../../libs/configuration'),
     path = require("path"),
@@ -54,10 +55,7 @@ function loadSecretKey(name, dir) {
   }
 
   // parse it
-  // it should be a JSON structure with alg and serialized key
-  // {alg: <ALG>, value: <SERIALIZED_KEY>}
-  var key = JSON.parse(secret);
-  return jws.getByAlg(key.alg).SecretKey.deserialize(key.value);
+  return jwk.SecretKey.deserialize(secret);
 }
 
 function loadPublicKey(name, dir) {
@@ -74,15 +72,14 @@ function loadPublicKey(name, dir) {
   // parse it
   // it should be a JSON structure with alg and serialized key
   // {alg: <ALG>, value: <SERIALIZED_KEY>}
-  var key = JSON.parse(secret);
-  return jws.getByAlg(key.alg).PublicKey.deserialize(key.value);
+  return jwk.PublicKey.deserialize(secret);
 }
 
 var SECRET_KEY = loadSecretKey('root', configuration.get('var_path'));
 var PUBLIC_KEY = loadPublicKey('root', configuration.get('var_path'));
 
 function parsePublicKey(serializedPK) {
-  return jws.getByAlg("RS").PublicKey.deserialize(serializedPK);
+  return jwk.PublicKey.deserialize(serializedPK);
 }
 
 function parseCert(serializedCert) {
