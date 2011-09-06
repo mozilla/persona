@@ -147,10 +147,17 @@ suite.addBatch({
       "assertion verifies": {
         topic: function(full_assertion) {
           // extract public key at the tail of the chain
-          return ca.verifyChain(full_assertion.certificates);
+          var pk = ca.verifyChain(full_assertion.certificates);
+
+          if (!pk)
+            return false;
+          
+          var assertion = new jwt.JWT();
+          assertion.parse(full_assertion.assertion);
+          return assertion.verify(pk);
         },
         "verifies": function(result) {
-          assert.notEqual(result, null);
+          assert.isTrue(result);
         }
       }
     }
