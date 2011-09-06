@@ -96,7 +96,7 @@ function verifyChain(certChain) {
   // raw certs
   return jwcert.JWCert.verifyChain(certChain, function(issuer) {
     // for now we only do browserid.org issued keys
-    if (issuer != "browserid2.org")
+    if (issuer != "browserid.org")
       return null;
 
     return PUBLIC_KEY;

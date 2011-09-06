@@ -127,10 +127,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns a proper cert": function(r, err) {
-      var cert = new jwcert.JWCert();
-      cert.parse(r.body);
-
-      assert.isTrue(ca.verifyChain([cert]).equals(kp.publicKey));
+      assert.isTrue(kp.publicKey.equals(ca.verifyChain([r.body])));
     },
     "generate an assertion": {
       topic: function(r) {
@@ -149,20 +146,11 @@ suite.addBatch({
       },
       "assertion verifies": {
         topic: function(full_assertion) {
-          // check that the assertion is verified by the public key in the chain cert
-          var cert_chain = [];
-          for (var i=0; i<full_assertion.certificates.length; i++) {
-            var cert = new jwcert.JWCert();
-            cert.parse(full_assertion.certificates[i]);
-            cert_chain[cert_chain.length] = cert;
-          }
-
           // extract public key at the tail of the chain
-          var pk = ca.verifyChain(cert_chain);
-          
+          return ca.verifyChain(full_assertion.certificates);
         },
         "verifies": function(result) {
-          assert.isTrue(result);
+          assert.notEqual(result, null);
         }
       }
     }
