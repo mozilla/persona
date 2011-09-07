@@ -40,6 +40,7 @@ var vows = require("vows"),
     jwk = require("../../lib/jwcrypto/jwk"),
     jwt = require("../../lib/jwcrypto/jwt"),
     jwcert = require("../../lib/jwcrypto/jwcert"),
+    vep = require("../../lib/jwcrypto/vep"),
     events = require("events");
 
 vows.describe('certassertion').addBatch({
@@ -51,13 +52,14 @@ vows.describe('certassertion').addBatch({
       var cert = new jwcert.JWCert("fakeroot.com", new Date(), user_kp.publicKey, {email:"user@fakeroot.com"}).sign(root_kp.secretKey);
       var assertion = new jwt.JWT(null, new Date(), "rp.com").sign(user_kp.secretKey);
 
-      var cb = this.callback;
+      var self = this;
+      var bundle = vep.bundleCertsAndAssertion([cert],assertion);
       
       // verify it
       certassertion.verify(
-        [cert], assertion, "rp.com",
+        bundle, "rp.com",
         function(email, audience, expires) {
-          cb({email:email, audience: audience, expires:expires});
+          self.callback({email:email, audience: audience, expires:expires});
         },
         function(msg) {},
         function(issuer, next) {

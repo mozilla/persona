@@ -40,7 +40,6 @@ const   path = require('path'),
    httputils = require('./lib/httputils.js'),
  idassertion = require('./lib/idassertion.js'),
 certassertion = require('./lib/certassertion.js'),
-         jwt = require('./lib/jwt.js'),
      express = require('express'),
      metrics = require('../libs/metrics.js'),
      logger = require('../libs/logging.js').logger;
@@ -54,18 +53,15 @@ logger.info("verifier server starting up");
 function doVerify(req, resp, next) {
   req.body = req.body || {}
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req.body.assertion;
-  var certificates = (req.query && req.query.certificates) ? req.query.certificates : req.body.certificates;
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
 
-  if (!(assertion && audience && certificates))
-    return resp.json({ status: "failure", reason: "need assertion, certificates audience" });
+  if (!(assertion && audience))
+    return resp.json({ status: "failure", reason: "need assertion and audience" });
 
   // removed CORS support, encourages wrong implementation approach
 
-  var cert_list = certificates.split(",");
-
   certassertion.verify(
-    cert_list, assertion, audience,
+    assertion, audience,
     function(email, audience, expires) {
       resp.json({
         status : "okay",

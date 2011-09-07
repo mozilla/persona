@@ -44,6 +44,7 @@ url = require("url"),
 jwk = require("../../lib/jwcrypto/jwk"),
 jwt = require("../../lib/jwcrypto/jwt"),
 jwcert = require("../../lib/jwcrypto/jwcert"),
+vep = require("../../lib/jwcrypto/vep"),
 logger = require("../../libs/logging.js").logger;
 
 // configuration information to check the issuer
@@ -122,14 +123,16 @@ function retrieveHostPublicKey(host, successCB, errorCB) {
 
 // verify the tuple certList, assertion, audience
 //
-// certList is an array of serialized certs (strings)
-// assertion is a serialized jwt (string)
+// assertion is a bundle of the underlying assertion and the cert list
 // audience is a web origin, e.g. https://foo.com or http://foo.org:81
 //
 // pkRetriever should be sent in only by code that really understands
 // what it's doing, e.g. testing code.
-function verify(certList, assertion, audience, successCB, errorCB, pkRetriever) {
-  jwcert.JWCert.verifyChain(certList, function(issuer, next) {
+function verify(assertion, audience, successCB, errorCB, pkRetriever) {
+  // assertion is bundle
+  var bundle = vep.unbundleCertsAndAssertion(assertion);
+  
+  jwcert.JWCert.verifyChain(bundle.certificates, function(issuer, next) {
     // for now, only support the browserid.org issuer
     if (issuer != "browserid.org") {
       // allow other retrievers for now for testing
@@ -148,7 +151,7 @@ function verify(certList, assertion, audience, successCB, errorCB, pkRetriever) 
     retrieveHostPublicKey(issuer, next);
   }, function(pk, principal) {
     var tok = new jwt.JWT();
-    tok.parse(assertion);
+    tok.parse(bundle.assertion);
 
     // audience must match!
     if (tok.audience != audience)
