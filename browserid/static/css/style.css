@@ -30,6 +30,7 @@ header {
     height: 230px;
     color #fff;
     min-width: 800px;
+    display: block;
 }
 
 header.quarter {
@@ -153,6 +154,7 @@ footer {
     padding: 0;
     height: 200px;
     font-size: 1.1em;
+    display: block;
 }
 
 footer > div {
