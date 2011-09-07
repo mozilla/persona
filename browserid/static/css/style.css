@@ -43,7 +43,7 @@ header.quarter {
     width: 161px;
     height: 34px;
     margin: 10px 0 0 110px;
-    color: transparent;
+    font-size: 0px;
     display: inline-block;
 }
 
@@ -56,7 +56,7 @@ header.quarter {
     height: 72px;
     margin: 43px auto 0 auto;
     clear: left;
-    color: transparent;
+    font-size: 0px;
 }
 
 .quarter h1 {
@@ -67,7 +67,7 @@ header.quarter {
 }
 
 .quarter h1 > a {
-    color: transparent;
+    font-size: 0px;
 }
 
 
