@@ -1,0 +1,451 @@
+/*
+
+github.com style (c) Vasily Polovnyov <vast@whiteants.net>
+
+*/
+
+pre code {
+  display: block; padding: 0.5em;
+  color: #000;
+  background: #f1f1f1;
+}
+
+pre .comment,
+pre .template_comment,
+pre .diff .header,
+pre .javadoc {
+  color: #998;
+  font-style: italic
+}
+
+pre .keyword,
+pre .css .rule .keyword,
+pre .winutils,
+pre .javascript .title,
+pre .lisp .title,
+pre .subst {
+  color: #000;
+  font-weight: bold
+}
+
+pre .number,
+pre .hexcolor {
+  color: #40a070
+}
+
+pre .string,
+pre .tag .value,
+pre .phpdoc,
+pre .tex .formula {
+  color: #d14
+}
+
+pre .title,
+pre .id {
+  color: #900;
+  font-weight: bold
+}
+
+pre .javascript .title,
+pre .lisp .title,
+pre .subst {
+  font-weight: normal
+}
+
+pre .class .title,
+pre .haskell .label,
+pre .tex .command {
+  color: #458;
+  font-weight: bold
+}
+
+pre .tag,
+pre .tag .title,
+pre .rules .property,
+pre .django .tag .keyword {
+  color: #000080;
+  font-weight: normal
+}
+
+pre .attribute,
+pre .variable,
+pre .instancevar,
+pre .lisp .body {
+  color: #008080
+}
+
+pre .regexp {
+  color: #009926
+}
+
+pre .class {
+  color: #458;
+  font-weight: bold
+}
+
+pre .symbol,
+pre .ruby .symbol .string,
+pre .ruby .symbol .keyword,
+pre .ruby .symbol .keymethods,
+pre .lisp .keyword,
+pre .tex .special,
+pre .input_number {
+  color: #990073
+}
+
+pre .builtin,
+pre .built_in,
+pre .lisp .title {
+  color: #0086b3
+}
+
+pre .preprocessor,
+pre .pi,
+pre .doctype,
+pre .shebang,
+pre .cdata {
+  color: #999;
+  font-weight: bold
+}
+
+pre .deletion {
+  background: #fdd
+}
+
+pre .addition {
+  background: #dfd
+}
+
+pre .diff .change {
+  background: #0086b3
+}
+
+pre .chunk {
+  color: #aaa
+}
+
+pre .tex .formula {
+  opacity: 0.5;
+}
+@font-face {
+  font-family: 'Shadows Into Light';
+  font-style: normal;
+  font-weight: normal;
+/*  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('sil.ttf')
+ *  format('truetype');*/
+}
+
+@font-face {
+  font-family: 'Tenor Sans';
+  font-style: normal;
+  font-weight: normal;
+ /* src: local('Tenor Sans'), local('TenorSans'), url('ts.ttf')
+  * format('truetype');*/
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+    font-family: 'Tenor Sans', arial, serif;
+}
+
+header {
+    border-top: 4px solid #333;
+    background-color: #333;
+    padding: 0 20% 0 20%;
+    margin: 0;
+    background: #008;
+    height: 230px;
+    color #fff;
+    min-width: 800px;
+}
+
+header.quarter {
+    height: 50px;
+}
+
+#labslogo  {
+    margin: auto;
+    text-align: left;
+    background: url("/i/labs-logo.png") 0 0 no-repeat;
+    width: 161px;
+    height: 34px;
+    margin: 10px 0 0 110px;
+    font-size: 0px;
+    display: inline-block;
+}
+
+.half h1 {
+    padding-top: .2em;
+    font-size: 3em;
+    font-weight: bold;
+    background: url("/i/browserid_logo.png") 0 0 no-repeat;
+    width: 366px;
+    height: 72px;
+    margin: 43px auto 0 auto;
+    clear: left;
+    font-size: 0px;
+}
+
+.quarter h1 {
+    float: left;
+    width: 135px;
+    height: 35px;
+    margin: 7px 0 0 10px;
+}
+
+.quarter h1 > a {
+    font-size: 0px;
+}
+
+
+h2 {
+    font-family: 'Shadows Into Light', arial, serif;
+    font-size: 3em;
+    font-weight: normal;
+    color: #fff;
+    margin: -4px auto 0 auto;
+    text-align: center;
+}
+
+.quarter h2 {
+    font-size: 2em;
+    margin: .2em 0 0 .5em;
+    float: left;
+}
+
+
+header > #manageLink {
+    float: right;
+    background-color: #333;
+    color: #fff;
+    padding: 1px 10px 5px 10px;
+    -webkit-border-radius: 0 0 10px 10px;
+    -moz-border-radius: 0 0 10px 10px;
+    border-radius: 0 0 10px 10px;
+    display: none;
+}
+
+.authenticated header > #manageLink {
+    display: block;
+}
+
+header > #manageLink:hover {
+    opacity:1;
+    color: #AAA;
+}
+
+.why {
+    width: 600px;
+    height: 130px;
+    padding: 10px 0;
+    margin: 0 auto;
+}
+
+.why p {
+    font-size: 2em;
+    text-align: center;
+}
+
+.why a, #cancellink {
+    color: #666;
+    text-decoration: none;
+    border-bottom: 1px dotted black;
+}
+
+.why a:hover {
+    color: #000;
+    opacity: 1;
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
+}
+
+a:hover {
+    opacity: .6;
+}
+
+footer {
+    background-color: #F1F1F1;
+    border-top: 2px solid #ddd;
+    margin: 0;
+    margin-top: 100px;
+    padding: 0;
+    height: 200px;
+    font-size: 1.1em;
+}
+
+footer > div {
+    width: 800px;
+    margin: auto;
+}
+
+footer > div > div {
+    width: 400px;
+    padding: 10px;
+}
+
+footer .right {
+    padding-top: 13px;
+    float: right;
+}
+
+footer .right img {
+    margin-bottom: -5px;
+}
+
+footer a {
+    color: #666;
+}
+
+footer .right p {
+    text-align: right;
+}
+
+footer .copyright {
+    font-weight: bold;
+    font-size: .8em;
+}
+
+#steps {
+    list-style: none;
+    width: 800px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+#steps a {
+    color: #666;
+    text-decoration: none;
+    border-bottom: 1px dotted #666;
+}
+
+.step  {
+    margin: 1em 0 2em 0;
+    padding: 0 0 0 50px;
+    font-size: 14px;
+    position: relative;
+}
+
+.step .number {
+    position: absolute;
+    top: -5px;
+    left: 0;
+    font-family: 'Shadows Into Light', arial, serif;
+    font-size: 4em;
+    font-weight: bold;
+    line-height: 1em;
+}
+
+.step > h3 {
+    font-size: 1em;
+    margin: 0;
+    display: inline;
+}
+
+.step > pre {
+    clear: both;
+}
+
+.step > p,  .step > ol {
+    margin-left: 50px;
+}
+
+.prose {
+    font-size: 1.5em;
+}
+
+.status {
+    margin: 0 auto;
+    width: 600px;
+    font-size: 1.2em;
+}
+
+pre code {
+    padding: 10px 15px 10px 15px;
+    margin: .75em;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px 10px 10px 10px;
+    width: 650px;
+}
+
+#emailList {
+  font-size: 1.0em;
+  width: 4x00px;
+  margin: auto;
+  font-weight:bold;
+  margin-top:32px;
+}
+
+#cancelaccount {
+  font-size: 1.0em;
+  width: 500px;
+  margin: auto;
+  margin-top:35px;
+}
+
+.email {
+  display:inline-block;
+}
+.emailblock a {
+  font-size:0.7em;
+  color:#405090;
+}
+.emailblock {
+  border: 1px solid #ddd;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  background-color:#f0f0f0;
+  width:500px;
+  padding:8px;
+  min-height:48px;
+  margin:16px auto;
+}
+.meta {
+  display:inline-block;
+  float:right;
+  font:8pt Arial;
+}
+.meta a {
+  cursor:pointer;
+}
+.keyblock {
+  font:8pt Arial;
+}
+.date {
+  font:8pt Arial;
+}
+
+.buttonbox {
+    height: 25px;
+    width: 460px;
+    margin: auto;
+}
+.buttonbox > div {
+    float: left;
+    margin-right: 10px;
+}
+
+.legal {
+   font-size: 1.3em;
+   width: 800px;
+   margin: 0 auto;
+}
+
+.legal li {
+  margin-bottom: 7px;
+}
+
+.legal h5 {
+  margin-bottom: 1px;
+  padding-bottom: 1px;
+  line-height: 100%;
+}
+
+.legal p {
+    margin-top : 1px;
+}
