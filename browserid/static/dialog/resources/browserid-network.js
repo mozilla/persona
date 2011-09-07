@@ -309,6 +309,26 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
+     * Certify the public key for the email address.
+     * @method certKey
+     */
+    certKey: function(email, pubkey, onSuccess, onError) {
+      withCSRF(function() { 
+        $.ajax({
+          type: 'POST',
+          url: '/wsapi/cert_key',
+          data: {
+            email: email,
+            pubkey: pubkey,
+            csrf: csrf_token
+          },
+          success: onSuccess,
+          error: onError
+        });
+      });
+    },
+
+    /**
      * Sync emails
      * @method syncEmails
      * @param {object} issued_identities - Identities to check against.

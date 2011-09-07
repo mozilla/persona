@@ -137,6 +137,21 @@ function router(app) {
     res.json(ca.PUBLIC_KEY.toSimpleObject());
   });
 
+  // vep bundle of JavaScript
+  app.get("/vepbundle", function(req, res) {
+    fs.readFile(__dirname + "/../lib/jwcrypto/vepbundle.js", function(error, content) {
+      if (error) {
+        res.writeHead(500);
+        res.end("oops");
+        console.log(error);
+      } else {
+        res.writeHead(200, {'Content-Type': 'text/javascript'});
+        res.write(content);
+        res.end();
+      }
+    });
+  });
+
   // FIXME: remove this call
   app.get('/users/:identity.xml', function(req, resp, next) {
     webfinger.renderUserPage(req.params.identity, function (resultDocument) {

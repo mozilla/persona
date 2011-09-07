@@ -34,6 +34,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+var jwk = require("./jwk");
+var vep = require("./vep");
+
 var BrowserIDIdentities = (function() {
   "use strict";
   function getIssuedIdentities() {
@@ -142,6 +146,8 @@ var BrowserIDIdentities = (function() {
       var self = this;
       if (email === self.stagedEmail) {
         self.stagedEmail = null;
+
+        // FIXME for certs, maybe call certKey here?
         self.persistIdentity(self.stagedEmail, self.stagedKeypair, "browserid.org:443", function() {
           self.syncIdentities(onSuccess, onFailure);
         }, onFailure);
@@ -223,9 +229,11 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     syncIdentity: function(email, issuer, onSuccess, onFailure) {
-      var keypair = CryptoStubs.genKeyPair();
-      network.setKey(email, keypair, function() {
-        Identities.persistIdentity(email, keypair, issuer, function() {
+      // var keypair = CryptoStubs.genKeyPair();
+      var keypair = jwk.KeyPair.generate(vep.params.algorithm, vep.params.keysize);
+//      network.setKey(email, keypair, function() {
+      network.certKey(email, keypair.publicKey, function(cert) {
+        Identities.persistIdentity(email, keypair, cert, issuer, function() {
           if (onSuccess) {
             onSuccess(keypair);
           }
@@ -265,11 +273,12 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
-    persistIdentity: function(email, keypair, issuer, onSuccess, onFailure) {
+    persistIdentity: function(email, keypair, cert, issuer, onSuccess, onFailure) {
       var new_email_obj= {
         created: new Date(),
-        pub: keypair.pub,
-        priv: keypair.priv
+        pub: keypair.publicKey,
+        priv: keypair.secretKey,
+        cert: cert
       };
 
       if (issuer) {

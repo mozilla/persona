@@ -127,8 +127,10 @@ function setup(app) {
   /* First half of account creation.  Stages a user account for creation.
    * this involves creating a secret url that must be delivered to the
    * user via their claimed email address.  Upon timeout expiry OR clickthrough
-   * the staged user account transitions to a valid user account */
-  app.post('/wsapi/stage_user', checkParams([ "email", "pass", "pubkey", "site" ]), function(req, resp) {
+   * the staged user account transitions to a valid user account
+   * MODIFICATIONS for Certs: no more pubkey in params. Null is passed to DB layer for now.
+   */
+  app.post('/wsapi/stage_user', checkParams([ "email", "pass", "site" ]), function(req, resp) {
 
     // we should be cloning this object here.
     var stageParams = req.body;
@@ -252,10 +254,11 @@ function setup(app) {
     });
   });
 
-  app.post('/wsapi/add_email', checkAuthed, checkParams(["email", "pubkey", "site"]), function (req, resp) {
+  // MODIFICATIONS for cert: remove pubkey
+  app.post('/wsapi/add_email', checkAuthed, checkParams(["email", "site"]), function (req, resp) {
     try {
-      // on failure stageEmail may throw
-      db.stageEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function(secret) {
+      // on failure stageEmail may throw, null pubkey
+      db.stageEmail(req.session.authenticatedUser, req.body.email, null, function(secret) {
 
         // store the email being added in session data
         req.session.pendingAddition = req.body.email;
