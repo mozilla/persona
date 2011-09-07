@@ -92,15 +92,15 @@ function certify(email, publicKey, expiration) {
   return new jwcert.JWCert("browserid.org", new Date(), publicKey, {email: email}).sign(SECRET_KEY);
 }
 
-function verifyChain(certChain) {
+function verifyChain(certChain, cb) {
   // raw certs
-  return jwcert.JWCert.verifyChain(certChain, function(issuer) {
+  return jwcert.JWCert.verifyChain(certChain, function(issuer, next) {
     // for now we only do browserid.org issued keys
     if (issuer != "browserid.org")
-      return null;
+      return next(null);
 
-    return PUBLIC_KEY;
-  });
+    next(PUBLIC_KEY);
+  }, cb);
 }
 
 // exports, not the key stuff

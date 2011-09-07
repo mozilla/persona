@@ -39,6 +39,7 @@ const   path = require('path'),
           fs = require('fs'),
    httputils = require('./lib/httputils.js'),
  idassertion = require('./lib/idassertion.js'),
+certassertion = require('./lib/certassertion.js'),
          jwt = require('./lib/jwt.js'),
      express = require('express'),
      metrics = require('../libs/metrics.js'),
@@ -46,26 +47,49 @@ const   path = require('path'),
 
 logger.info("verifier server starting up");
 
+// updating this call for certs now (Ben - 2011-09-06)
+// assertion is the single assertion of email
+// audience is the intended audience
+// certificates is the list of chained certificates, CSV-style
 function doVerify(req, resp, next) {
   req.body = req.body || {}
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req.body.assertion;
+  var certificates = (req.query && req.query.certificates) ? req.query.certificates : req.body.certificates;
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
 
-  if (!(assertion && audience))
-    return resp.json({ status: "failure", reason: "need assertion and audience" });
+  if (!(assertion && audience && certificates))
+    return resp.json({ status: "failure", reason: "need assertion, certificates audience" });
 
-  // allow client side XHR to access this WSAPI, see
-  // https://developer.mozilla.org/en/http_access_control
-  // for details
-  // FIXME: should we really allow this? It might encourage the wrong behavior
-  resp.setHeader('Access-Control-Allow-Origin', '*');
-  if (req.method === 'OPTIONS') {
-    resp.setHeader('Access-Control-Allow-Methods', 'POST, GET');
-    resp.writeHead(200);
-    resp.end();
-    return;
-  }
+  // removed CORS support, encourages wrong implementation approach
 
+  var cert_list = certificates.split(",");
+
+  certassertion.verify(
+    cert_list, assertion, audience,
+    function(email, audience, expires) {
+      resp.json({
+        status : "okay",
+        email : email,
+        audience : audience,
+        expires : expires
+      });
+      
+      metrics.report('verify', {
+        result: 'success',
+        rp: audience
+      });
+    },
+    function(error) {
+      resp.json({"status":"failure"});
+      metrics.report('verify', {
+        result: 'failure',
+        rp: audience
+      });
+    });
+  
+  // old verification code. Still here in case we want to enable backwards compatibility
+  // for some period of time (doubt it.)
+  /*
   try {
     var assertionObj = new idassertion.IDAssertion(assertion);
     assertionObj
@@ -103,7 +127,7 @@ function doVerify(req, resp, next) {
       rp: audience
     });
     resp.json({ status: "failure", reason: e.toString() });
-  }
+  } */
 }
 
 exports.setup = function(app) {

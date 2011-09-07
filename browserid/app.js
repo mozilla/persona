@@ -131,6 +131,12 @@ function router(app) {
   // register all the WSAPI handlers
   wsapi.setup(app);
 
+  // the public key
+  app.get("/pk", function(req, res) {
+    
+  });
+
+  // FIXME: remove this call
   app.get('/users/:identity.xml', function(req, resp, next) {
     webfinger.renderUserPage(req.params.identity, function (resultDocument) {
       if (resultDocument === undefined) {

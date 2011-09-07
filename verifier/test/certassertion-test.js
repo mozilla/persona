@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -20,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *     Ben Adida <benadida@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,51 +34,41 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-require('./lib/test_env.js');
+var vows = require("vows"),
+    assert = require("assert"),
+    certassertion = require("../lib/certassertion"),
+    jwk = require("../../lib/jwcrypto/jwk"),
+    jwt = require("../../lib/jwcrypto/jwt"),
+    jwcert = require("../../lib/jwcrypto/jwcert"),
+    events = require("events");
 
-const assert = require('assert'),
-vows = require('vows'),
-start_stop = require('./lib/start-stop.js'),
-wsapi = require('./lib/wsapi.js'),
-email = require('../lib/email.js'),
-ca = require('../lib/ca.js'),
-jwcert = require('../../lib/jwcrypto/jwcert'),
-jwk = require('../../lib/jwcrypto/jwk'),
-jws = require('../../lib/jwcrypto/jws');
-
-var suite = vows.describe('ca');
-
-// disable vows (often flakey?) async error behavior
-suite.options.error = false;
-
-// generate a public key
-var kp = jwk.KeyPair.generate("RS",64);
-
-var email_addr = "foo@foo.com";
-
-// create a new account via the api with (first address)
-suite.addBatch({
-  "certify a public key": {
+vows.describe('certassertion').addBatch({
+  "generate and certify key + assertion" : {
     topic: function() {
-      return ca.certify(email_addr, kp.publicKey);
-    },
-    "parses" : function(cert_raw, err) {
-      var cert = ca.parseCert(cert_raw);
-      assert.notEqual(cert, null);
-    },
-    "verifies": function(cert_raw, err) {
-      // FIXME we might want to turn this into a true async test
-      // rather than one that is assumed to be synchronous although
-      // it has an async structure
-      ca.verifyChain([cert_raw], function(pk) {
-        assert.isTrue(kp.publicKey.equals(pk));
-      });
-    }
-  },
-  "certify a chain of keys": {
-  }
-});
+      // generate a key
+      var root_kp = jwk.KeyPair.generate("RS", 64);
+      var user_kp = jwk.KeyPair.generate("RS", 64);
+      var cert = new jwcert.JWCert("fakeroot.com", new Date(), user_kp.publicKey, {email:"user@fakeroot.com"}).sign(root_kp.secretKey);
+      var assertion = new jwt.JWT(null, new Date(), "rp.com").sign(user_kp.secretKey);
 
-// run or export the suite.
-if (process.argv[1] === __filename) suite.run();
-else suite.export(module);
+      var cb = this.callback;
+      
+      // verify it
+      certassertion.verify(
+        [cert], assertion, "rp.com",
+        function(email, audience, expires) {
+          cb({email:email, audience: audience, expires:expires});
+        },
+        function(msg) {},
+        function(issuer, next) {
+          if (issuer == "fakeroot.com")
+            next(root_kp.publicKey);
+          else
+            next(null);
+        });
+    },
+    "is successful": function(res, err) {
+      assert.notEqual(res.email, null);
+    }
+  }
+}).export(module);
