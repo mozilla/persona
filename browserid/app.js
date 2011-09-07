@@ -38,6 +38,7 @@ fs = require('fs'),
 path = require('path'),
 url = require('url'),
 wsapi = require('./lib/wsapi.js'),
+ca = require('./lib/ca.js'),
 httputils = require('./lib/httputils.js'),
 webfinger = require('./lib/webfinger.js'),
 sessions = require('connect-cookie-session'),
@@ -133,7 +134,7 @@ function router(app) {
 
   // the public key
   app.get("/pk", function(req, res) {
-    
+    res.json(ca.PUBLIC_KEY.toSimpleObject());
   });
 
   // FIXME: remove this call

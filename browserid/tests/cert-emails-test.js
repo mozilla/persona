@@ -109,6 +109,16 @@ var cert_key_url = "/wsapi/cert_key";
 var kp = jwk.KeyPair.generate("RS",64);
 
 suite.addBatch({
+  "check the public key": {
+    topic: wsapi.get("/pk"),
+    "returns a 200": function(r, err) {
+      assert.strictEqual(r.code, 200);
+    },
+    "returns the right public key": function(r, err) {
+      var pk = jwk.PublicKey.deserialize(r.body);
+      assert.ok(pk);
+    }
+  },
   "cert key with no parameters": {
     topic: wsapi.post(cert_key_url, {}),
     "fails with HTTP 400" : function(r, err) {

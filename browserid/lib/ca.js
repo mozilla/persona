@@ -108,3 +108,4 @@ exports.certify = certify;
 exports.verifyChain = verifyChain;
 exports.parsePublicKey = parsePublicKey;
 exports.parseCert = parseCert;
+exports.PUBLIC_KEY = PUBLIC_KEY;
