@@ -77,6 +77,7 @@ var storeTemporaryKeypair = function(keypair) {
 
 var retrieveTemporaryKeypair = function() {
   var raw_kp = JSON.parse(window.localStorage.tempKeypair);
+  window.localStorage.tempKeypair = null;
   if (raw_kp) {
     var kp = new jwk.KeyPair();
     kp.publicKey = jwk.PublicKey.fromSimpleObject(raw_kp.publicKey);

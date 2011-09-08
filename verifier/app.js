@@ -52,7 +52,6 @@ logger.info("verifier server starting up");
 // certificates is the list of chained certificates, CSV-style
 function doVerify(req, resp, next) {
   req.body = req.body || {}
-  console.log("doing verif " + req.body);
   
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req.body.assertion;
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
@@ -60,7 +59,14 @@ function doVerify(req, resp, next) {
   if (!(assertion && audience))
     return resp.json({ status: "failure", reason: "need assertion and audience" });
 
-  // removed CORS support, encourages wrong implementation approach
+  // FIXME: remove this eventually
+  resp.setHeader('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') {
+    resp.setHeader('Access-Control-Allow-Methods', 'POST, GET');
+    resp.writeHead(200);
+    resp.end();
+    return;
+  }
 
   certassertion.verify(
     assertion, audience,
@@ -78,7 +84,7 @@ function doVerify(req, resp, next) {
       });
     },
     function(error) {
-      resp.json({"status":"failure"});
+      resp.json({"status":"failure", reason: error.toString()});
       metrics.report('verify', {
         result: 'failure',
         rp: audience

@@ -40,43 +40,10 @@ var jwcert = require('../../lib/jwcrypto/jwcert'),
     jwk = require('../../lib/jwcrypto/jwk'),
     jws = require('../../lib/jwcrypto/jws'),
     configuration = require('../../libs/configuration'),
+    secrets = require('../../libs/secrets'),
     path = require("path"),
     fs = require("fs");
 
-function loadSecretKey(name, dir) {
-  var p = path.join(dir, name + ".secretkey");
-  var fileExists = false;
-  var secret = undefined;
-
-  try{ secret = fs.readFileSync(p).toString(); } catch(e) {};
-
-  if (secret === undefined) {
-    return null;
-  }
-
-  // parse it
-  return jwk.SecretKey.deserialize(secret);
-}
-
-function loadPublicKey(name, dir) {
-  var p = path.join(dir, name + ".publickey");
-  var fileExists = false;
-  var secret = undefined;
-
-  try{ secret = fs.readFileSync(p).toString(); } catch(e) {};
-
-  if (secret === undefined) {
-    return null;
-  }
-
-  // parse it
-  // it should be a JSON structure with alg and serialized key
-  // {alg: <ALG>, value: <SERIALIZED_KEY>}
-  return jwk.PublicKey.deserialize(secret);
-}
-
-var SECRET_KEY = loadSecretKey('root', configuration.get('var_path'));
-var PUBLIC_KEY = loadPublicKey('root', configuration.get('var_path'));
 var HOSTNAME = configuration.get('hostname');
 
 function parsePublicKey(serializedPK) {
@@ -90,7 +57,7 @@ function parseCert(serializedCert) {
 }
 
 function certify(email, publicKey, expiration) {
-  return new jwcert.JWCert(HOSTNAME, new Date(), publicKey, {email: email}).sign(SECRET_KEY);
+  return new jwcert.JWCert(HOSTNAME, new Date(), publicKey, {email: email}).sign(secrets.SECRET_KEY);
 }
 
 function verifyChain(certChain, cb) {
@@ -100,7 +67,7 @@ function verifyChain(certChain, cb) {
     if (issuer != HOSTNAME)
       return next(null);
 
-    next(PUBLIC_KEY);
+    next(secrets.PUBLIC_KEY);
   }, cb);
 }
 
@@ -109,4 +76,4 @@ exports.certify = certify;
 exports.verifyChain = verifyChain;
 exports.parsePublicKey = parsePublicKey;
 exports.parseCert = parseCert;
-exports.PUBLIC_KEY = PUBLIC_KEY;
+exports.PUBLIC_KEY = secrets.PUBLIC_KEY;

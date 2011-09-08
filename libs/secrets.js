@@ -36,7 +36,8 @@
 const
 path = require('path'),
 fs = require('fs'),
-jws = require('../lib/jwcrypto/jws');
+jwk = require('../lib/jwcrypto/jwk'),
+configuration = require("./configuration");
 
 exports.generate = function(chars) {
   var str = "";
@@ -61,3 +62,37 @@ exports.hydrateSecret = function(name, dir) {
   return secret;
 };
 
+function loadSecretKey(name, dir) {
+  var p = path.join(dir, name + ".secretkey");
+  var fileExists = false;
+  var secret = undefined;
+
+  try{ secret = fs.readFileSync(p).toString(); } catch(e) {};
+
+  if (secret === undefined) {
+    return null;
+  }
+
+  // parse it
+  return jwk.SecretKey.deserialize(secret);
+}
+
+function loadPublicKey(name, dir) {
+  var p = path.join(dir, name + ".publickey");
+  var fileExists = false;
+  var secret = undefined;
+
+  try{ secret = fs.readFileSync(p).toString(); } catch(e) {};
+
+  if (secret === undefined) {
+    return null;
+  }
+
+  // parse it
+  // it should be a JSON structure with alg and serialized key
+  // {alg: <ALG>, value: <SERIALIZED_KEY>}
+  return jwk.PublicKey.deserialize(secret);
+}
+
+exports.SECRET_KEY = loadSecretKey('root', configuration.get('var_path'));
+exports.PUBLIC_KEY = loadPublicKey('root', configuration.get('var_path'));

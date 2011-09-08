@@ -46,6 +46,7 @@ jwt = require("../../lib/jwcrypto/jwt"),
 jwcert = require("../../lib/jwcrypto/jwcert"),
 vep = require("../../lib/jwcrypto/vep"),
 configuration = require('../../libs/configuration'),
+secrets = require('../../libs/secrets'),
 logger = require("../../libs/logging.js").logger;
 
 // configuration information to check the issuer
@@ -54,6 +55,9 @@ const config = require("../../libs/configuration.js");
 const HOSTMETA_URL = "/.well-known/host-meta";
 
 var publicKeys = {};
+
+// set up some default public keys
+publicKeys[configuration.get('hostname')] = secrets.PUBLIC_KEY;
 
 function https_complete_get(host, url, successCB, errorCB) {
   https.get({host: host,path: url}, function(res) {
@@ -67,6 +71,7 @@ function https_complete_get(host, url, successCB, errorCB) {
     });
     
   }).on('error', function(e) {
+    console.log(e.toString());
     errorCB(e);
   });
 }
@@ -134,6 +139,7 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
   var bundle = vep.unbundleCertsAndAssertion(assertion);
   
   jwcert.JWCert.verifyChain(bundle.certificates, function(issuer, next) {
+    console.log("ISSUER is " + issuer);
     // for now, only support the browserid.org issuer
     if (issuer != configuration.get('hostname')) {
       // allow other retrievers for now for testing
