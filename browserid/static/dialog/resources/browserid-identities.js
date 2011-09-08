@@ -108,7 +108,11 @@ var BrowserIDIdentities = (function() {
         var emails_to_remove = _.difference(client_emails, server_emails);
         
         // remove emails
-        _.each(emails_to_remove, function(email) {removeEmail(email);});
+        _.each(emails_to_remove, function(email) {
+          // if it's not a primary
+          if (!issued_identities[email].isPrimary)
+            removeEmail(email);
+        });
 
         // keygen for new emails
         // asynchronous
@@ -266,10 +270,9 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     syncIdentity: function(email, issuer, onSuccess, onFailure) {
-      // var keypair = CryptoStubs.genKeyPair();
+      // FIXME use true key sizes
       //var keypair = jwk.KeyPair.generate(vep.params.algorithm, vep.params.keysize);
       var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
-//      network.setKey(email, keypair, function() {
       network.certKey(email, keypair.publicKey, function(cert) {
         Identities.persistIdentity(email, keypair, cert, issuer, function() {
           if (onSuccess) {

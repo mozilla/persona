@@ -58,8 +58,11 @@ db.open(configuration.get('database'));
 const COOKIE_SECRET = secrets.hydrateSecret('browserid_cookie', configuration.get('var_path'));
 const COOKIE_KEY = 'browserid_state';
 
-function internal_redirector(new_url) {
+function internal_redirector(new_url, suppress_noframes) {
   return function(req, resp, next) {
+    if (suppress_noframes)
+      resp.removeHeader('x-frame-options');
+    
     req.url = new_url;
     return next();
   };
@@ -84,10 +87,10 @@ function router(app) {
   });
 
   // simple redirects (internal for now)
-  app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
+  app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html',true));
 
   // Used for a relay page for communication.
-  app.get(/^\/relay(\.html)?$/, function(req,res, next) {
+  app.get("/relay", function(req,res, next) {
     // Allow the relay to be run within a frame
     res.removeHeader('x-frame-options');
     res.render('relay.ejs', {

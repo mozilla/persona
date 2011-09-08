@@ -35,6 +35,11 @@
 
 // this is the picker code!  it runs in the identity provider's domain, and
 // fiddles the dom expressed by picker.html
+
+var jwk = require("./jwk"),
+    jwcert = require("./jwcert"),
+    vep = require("./vep");
+
 (function() {
   var chan = Channel.build(
     {
@@ -42,35 +47,50 @@
       origin: "*",
       scope: "mozid"
     });
+  
+  // primary requests a keygen to certify  
+  chan.bind("generateKey", function(trans, args) {
+    // keygen
+    var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
 
-    function persistAddressAndKeyPair(email, keypair, issuer)
-    {
-        var emails = {};
-        if (window.localStorage.emails) {
-            emails = JSON.parse(window.localStorage.emails);
-        }
+    // save it in a special place for now
+    storeTemporaryKeypair(keypair);
+    
+    // serialize and return
+    return keypair.publicKey.serialize();
+  });
 
-        emails[email] = {
-            created: new Date(),
-            pub: keypair.pub,
-            priv: keypair.priv
-        };
-        if (issuer) {
-            emails[email].issuer = issuer;
-        }
-        window.localStorage.emails = JSON.stringify(emails);
+  // add the cert 
+  chan.bind("registerVerifiedEmailCertificate", function(trans, args) {
+    var keypair = retrieveTemporaryKeypair();
+
+    // parse the cert
+    var raw_cert = args.cert;
+    var cert = new jwcert.JWCert();
+    cert.parse(raw_cert);
+    var email = cert.principal.email;
+    var pk = cert.pk;
+
+    // check if the pk's match
+    if (!pk.equals(keypair.publicKey)) {
+      trans.error("bad cert");
+      return;
     }
+    
+    var new_email_obj= {
+      created: new Date(),
+      pub: keypair.publicKey.toSimpleObject(),
+      priv: keypair.secretKey.toSimpleObject(),
+      cert: raw_cert,
+      issuer: cert.issuer,
+      isPrimary: true
+    };
 
-    chan.bind("registerVerifiedEmail", function(trans, args) {
-        // This is a primary registration - the persisted
-        // identity does not have an issuer because it 
-        // was directly asserted by the controlling domain.
+    addEmail(email, new_email_obj);
+  });
 
-        var keypair = CryptoStubs.genKeyPair();
-        persistAddressAndKeyPair(args.email, keypair);
-        return keypair.pub;
-    });
-
+  // reenable this once we're ready
+  /*
     function isSuperDomain(domain) {
         return true;
     }
@@ -158,4 +178,5 @@
         // if we get here, we've failed
         trans.error("X", "not a proper token-based call");
     });
+    */
 })();
