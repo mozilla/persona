@@ -52,6 +52,8 @@ logger.info("verifier server starting up");
 // certificates is the list of chained certificates, CSV-style
 function doVerify(req, resp, next) {
   req.body = req.body || {}
+  console.log("doing verif " + req.body);
+  
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req.body.assertion;
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
 
