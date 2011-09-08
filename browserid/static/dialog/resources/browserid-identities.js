@@ -124,7 +124,7 @@ var BrowserIDIdentities = (function() {
 
           var email = emails_to_add.shift();
 
-          self.syncIdentity(email, "browserid.org:443", addNextEmail, onFailure);
+          self.syncIdentity(email, addNextEmail, onFailure);
         }
 
         addNextEmail();
@@ -157,19 +157,21 @@ var BrowserIDIdentities = (function() {
      * Stage an identity - this creates an identity that must be verified.  
      * Used when creating a new account or resetting the password of an 
      * existing account.
+     * FIXME: rename to indicate new account
      * @method stageIdentity
      * @param {string} email - Email address.
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
     stageIdentity: function(email, password, onSuccess, onFailure) {
-      var self=this,
-          keypair = CryptoStubs.genKeyPair();
+      var self=this;
+      // FIXME: keysize
+      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
 
       self.stagedEmail = email;
       self.stagedKeypair = keypair;
 
-      network.stageUser(email, password, keypair, function() {
+      network.stageUser(email, password, function() {
         if (onSuccess) {
           onSuccess(keypair);
         }
@@ -186,12 +188,16 @@ var BrowserIDIdentities = (function() {
     confirmIdentity: function(email, onSuccess, onFailure) {
       var self = this;
       if (email === self.stagedEmail) {
+        var keypair = self.stagedKeypair;
+        
         self.stagedEmail = null;
+        self.stagedKeypair = null;
 
-        // FIXME for certs, maybe call certKey here?
-        self.persistIdentity(self.stagedEmail, self.stagedKeypair, "browserid.org:443", function() {
+        // certify
+        Identities.certifyIdentity(email, keypair, function() {
           self.syncIdentities(onSuccess, onFailure);
-        }, onFailure);
+        });
+
       }
       else if (onFailure) {
         onFailure();
@@ -261,6 +267,19 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
+     * Certify an identity
+     */
+    certifyIdentity: function(email, keypair, onSuccess, onFailure) {
+      network.certKey(email, keypair.publicKey, function(cert) {
+        Identities.persistIdentity(email, keypair, cert, function() {
+          if (onSuccess) {
+            onSuccess();
+          }
+        }, onFailure);
+      }, onFailure);      
+    },
+    
+    /**
      * Sync an identity with the server.  Creates and stores locally and on the 
      * server a keypair for the given email address.
      * @method syncIdentity
@@ -269,17 +288,11 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
-    syncIdentity: function(email, issuer, onSuccess, onFailure) {
+    syncIdentity: function(email, onSuccess, onFailure) {
       // FIXME use true key sizes
       //var keypair = jwk.KeyPair.generate(vep.params.algorithm, vep.params.keysize);
       var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
-      network.certKey(email, keypair.publicKey, function(cert) {
-        Identities.persistIdentity(email, keypair, cert, issuer, function() {
-          if (onSuccess) {
-            onSuccess(keypair);
-          }
-        }, onFailure);
-      }, onFailure);
+      Identities.certifyIdentity(email, keypair, onSuccess, onFailure);
     },
 
     /**
@@ -293,8 +306,8 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     addIdentity: function(email, onSuccess, onFailure) {
-      var self = this,
-          keypair = CryptoStubs.genKeyPair();
+      var self = this;
+      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
 
       self.stagedEmail = email;
       self.stagedKeypair = keypair;
@@ -315,7 +328,7 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
-    persistIdentity: function(email, keypair, cert, issuer, onSuccess, onFailure) {
+    persistIdentity: function(email, keypair, cert, onSuccess, onFailure) {
       var new_email_obj= {
         created: new Date(),
         pub: keypair.publicKey.toSimpleObject(),
@@ -323,10 +336,6 @@ var BrowserIDIdentities = (function() {
         cert: cert
       };
 
-      if (issuer) {
-        new_email_obj.issuer = issuer;
-      }
-      
       addEmail(email, new_email_obj);
 
       if (onSuccess) {
@@ -362,7 +371,6 @@ var BrowserIDIdentities = (function() {
           assertion;
 
       if (storedID) {
-        // assertion = CryptoStubs.createAssertion(network.origin, email, storedID.priv, storedID.issuer);
         // parse the secret key
         var sk = jwk.SecretKey.fromSimpleObject(storedID.priv);
         var tok = new jwt.JWT(null, new Date(), network.origin);
