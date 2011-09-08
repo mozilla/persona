@@ -210,7 +210,7 @@ suite.addBatch({
 suite.addBatch({
   "staging an email": {
     topic: function() {
-      db.stageEmail('lloyd@nowhe.re', 'lloyd@somewhe.re', 'fakepubkey4', this.callback);
+      db.stageEmail('lloyd@nowhe.re', 'lloyd@somewhe.re', this.callback);
     },
     "yields a valid secret": function(secret) {
       assert.isString(secret);
@@ -264,6 +264,7 @@ suite.addBatch({
   }
 });
 
+/*
 // exports.getSyncResponse
 suite.addBatch({
   "sync responses": {  
@@ -361,6 +362,7 @@ suite.addBatch({
     }
   }
 });
+*/
 
 suite.addBatch({
   "removing an existing email": {

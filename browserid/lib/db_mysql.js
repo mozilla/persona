@@ -318,11 +318,11 @@ exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
     });
 }
 
-exports.stageEmail = function(existing_email, new_email, pubkey, cb) {
+exports.stageEmail = function(existing_email, new_email, cb) {
   var secret = secrets.generate(48);
   // overwrite previously staged users
-  client.query('INSERT INTO staged (secret, new_acct, existing, email, pubkey) VALUES(?,FALSE,?,?,?) ' +
-               'ON DUPLICATE KEY UPDATE secret=?, existing=?, new_acct=FALSE, pubkey=?, passwd=""',
+  client.query('INSERT INTO staged (secret, new_acct, existing, email) VALUES(?,FALSE,?,?) ' +
+               'ON DUPLICATE KEY UPDATE secret=?, existing=?, new_acct=FALSE, passwd=""',
                [ secret, existing_email, new_email, pubkey, secret, existing_email, pubkey],
                function(err) {
                  if (err) {
@@ -352,6 +352,30 @@ function emailHasPubkey(email, pubkey, cb) {
       cb(rows && rows.length === 1);
     });
 }
+
+/*
+ * a simpler action than syncResponse, just list the user's emails.
+ * this is more appropriate for the certs approach.
+ *
+ * returns an object keyed by email address with properties for each email
+ */
+exports.listEmails = function(email, cb) {
+  client.query(
+    'SELECT address FROM email WHERE user = ( SELECT user FROM email WHERE address = ? ) ',
+      [ email ],
+      function (err, rows) {
+        if (err) cb(err);
+        else {
+          var emails = {};
+
+          // eventually we'll have fields in here
+          for (var i = 0; i < rows.length; i++)
+            emails[rows[i].address] = {};
+
+          cb(null,emails);
+        }
+      });
+};
 
 /* a high level operation that attempts to sync a client's view with that of the
  * server.  email is the identity of the authenticated channel with the user,

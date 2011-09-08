@@ -134,6 +134,7 @@ var BrowserIDNetwork = (function() {
     /**
      * Create a new user or reset a current user's password.  Requires a user 
      * to verify identity.
+     * changes for certs: removed keypair.
      * @method stageUser
      * @param {string} email - Email address to prepare.
      * @param {string} password - Password for user.
@@ -141,7 +142,7 @@ var BrowserIDNetwork = (function() {
      * @param {function} [onSuccess] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    stageUser: function(email, password, keypair, onSuccess, onFailure) {
+    stageUser: function(email, password, onSuccess, onFailure) {
       withCSRF(function() { 
         $.ajax({
           type: "post",
@@ -149,7 +150,6 @@ var BrowserIDNetwork = (function() {
           data: {
             email: email,
             pass: password,
-            pubkey : keypair.pub,
             site : BrowserIDNetwork.origin || document.location.host,
             csrf : csrf_token
           },
@@ -205,18 +205,16 @@ var BrowserIDNetwork = (function() {
      * Add an email to the current user's account.
      * @method addEmail
      * @param {string} email - Email address to add.
-     * @param {object} keypair - Email's public/private key pair.
      * @param {function} [onSuccess] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    addEmail: function(email, keypair, onSuccess, onFailure) {
+    addEmail: function(email, onSuccess, onFailure) {
       withCSRF(function() { 
         $.ajax({
           type: 'POST',
           url: '/wsapi/add_email',
           data: {
             email: email,
-            pubkey: keypair.pub,
             site: BrowserIDNetwork.origin || document.location.host,
             csrf: csrf_token
           },
@@ -319,7 +317,7 @@ var BrowserIDNetwork = (function() {
           url: '/wsapi/cert_key',
           data: {
             email: email,
-            pubkey: pubkey,
+            pubkey: pubkey.serialize(),
             csrf: csrf_token
           },
           success: onSuccess,
@@ -328,6 +326,19 @@ var BrowserIDNetwork = (function() {
       });
     },
 
+    /**
+     * List emails
+     * @method listEmails
+     */
+    listEmails: function(onSuccess, onFailure) {
+      $.ajax({
+        type: "GET",
+        url: "/wsapi/list_emails",
+        success: onSuccess,
+        error: onFailure
+      });
+    },
+    
     /**
      * Sync emails
      * @method syncEmails

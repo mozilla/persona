@@ -36,6 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 var jwk = require("./jwk");
+var jwt = require("./jwt");
 var vep = require("./vep");
 
 var BrowserIDIdentities = (function() {
@@ -44,10 +45,14 @@ var BrowserIDIdentities = (function() {
       var emails = getEmails();
       var issued_identities = {};
       _(emails).each(function(email_obj, email_address) {
-        issued_identities[email_address] = email_obj.pub;
+        try {
+          email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
+        } catch (x) {
+          // nothing needed
+        }
       });
 
-      return issued_identities;
+      return emails;
   }
 
   function removeUnknownIdentities(unknown_emails) {
@@ -82,6 +87,8 @@ var BrowserIDIdentities = (function() {
     syncIdentities: function(onSuccess, onFailure) {
       var issued_identities = getIssuedIdentities();
 
+      // FIXME for certs
+      
       // send up all email/pubkey pairs to the server, it will response with a
       // list of emails that need new keys.  This may include emails in the
       // sent list, and also may include identities registered on other devices.
@@ -91,6 +98,35 @@ var BrowserIDIdentities = (function() {
       // and we don't need to worry about rekeying them.
 
       var self = this;
+
+      network.listEmails(function(emails) {
+        // lists of emails
+        var client_emails = _.keys(issued_identities);
+        var server_emails = _.keys(emails);
+
+        var emails_to_add = _.difference(server_emails, client_emails);
+        var emails_to_remove = _.difference(client_emails, server_emails);
+        
+        // remove emails
+        _.each(emails_to_remove, function(email) {removeEmail(email);});
+
+        // keygen for new emails
+        // asynchronous
+        function addNextEmail() {
+          if (!emails_to_add || !emails_to_add.length) {
+            onSuccess();
+            return;
+          }
+
+          var email = emails_to_add.shift();
+
+          self.syncIdentity(email, "browserid.org:443", addNextEmail, onFailure);
+        }
+
+        addNextEmail();
+      });
+
+      /*
       network.syncEmails(issued_identities, function(resp) {
         removeUnknownIdentities(resp.unknown_emails);
 
@@ -110,6 +146,7 @@ var BrowserIDIdentities = (function() {
 
         addNextEmail();
       }, onFailure);
+      */
     },
 
     /**
@@ -230,7 +267,8 @@ var BrowserIDIdentities = (function() {
      */
     syncIdentity: function(email, issuer, onSuccess, onFailure) {
       // var keypair = CryptoStubs.genKeyPair();
-      var keypair = jwk.KeyPair.generate(vep.params.algorithm, vep.params.keysize);
+      //var keypair = jwk.KeyPair.generate(vep.params.algorithm, vep.params.keysize);
+      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
 //      network.setKey(email, keypair, function() {
       network.certKey(email, keypair.publicKey, function(cert) {
         Identities.persistIdentity(email, keypair, cert, issuer, function() {
@@ -252,13 +290,14 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     addIdentity: function(email, onSuccess, onFailure) {
-      var self=this, 
+      var self = this,
           keypair = CryptoStubs.genKeyPair();
 
       self.stagedEmail = email;
       self.stagedKeypair = keypair;
 
-      network.addEmail(email, keypair, function() {
+      // we no longer send the keypair, since we will certify it later.
+      network.addEmail(email, function() {
         if (onSuccess) {
           onSuccess(keypair);
         }
@@ -276,8 +315,8 @@ var BrowserIDIdentities = (function() {
     persistIdentity: function(email, keypair, cert, issuer, onSuccess, onFailure) {
       var new_email_obj= {
         created: new Date(),
-        pub: keypair.publicKey,
-        priv: keypair.secretKey,
+        pub: keypair.publicKey.toSimpleObject(),
+        priv: keypair.secretKey.toSimpleObject(),
         cert: cert
       };
 
@@ -316,11 +355,15 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on failure.
      */
     getIdentityAssertion: function(email, onSuccess, onFailure) {
-      var storedID = getEmails()[email],
+      var storedID = Identities.getStoredIdentities()[email],
           assertion;
 
       if (storedID) {
-          assertion = CryptoStubs.createAssertion(network.origin, email, storedID.priv, storedID.issuer);
+        // assertion = CryptoStubs.createAssertion(network.origin, email, storedID.priv, storedID.issuer);
+        // parse the secret key
+        var sk = jwk.SecretKey.fromSimpleObject(storedID.priv);
+        var tok = new jwt.JWT(null, new Date(), network.origin);
+        assertion = vep.bundleCertsAndAssertion([storedID.cert], tok.sign(sk));
       }
 
       if (onSuccess) {

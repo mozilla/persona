@@ -101,6 +101,7 @@ exports.onReady = function(f) {
   'stageEmail',
   'gotVerificationSecret',
   'checkAuth',
+  'listEmails',
   'getSyncResponse',
   'pubkeysForEmail',
   'removeEmail',

@@ -94,6 +94,7 @@ suite.addBatch({
   }
 });
 
+/*
 suite.addBatch({
   "setting a key that is already set": {
     topic: wsapi.post('/wsapi/set_key', {
@@ -115,6 +116,7 @@ suite.addBatch({
     }
   }
 });
+*/
 
 start_stop.addShutdownBatches(suite);
 

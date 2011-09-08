@@ -258,7 +258,7 @@ function setup(app) {
   app.post('/wsapi/add_email', checkAuthed, checkParams(["email", "site"]), function (req, resp) {
     try {
       // on failure stageEmail may throw, null pubkey
-      db.stageEmail(req.session.authenticatedUser, req.body.email, null, function(secret) {
+      db.stageEmail(req.session.authenticatedUser, req.body.email, function(secret) {
 
         // store the email being added in session data
         req.session.pendingAddition = req.body.email;
@@ -306,6 +306,7 @@ function setup(app) {
       
       // same account, we certify the key
       var cert = ca.certify(req.body.email, pk);
+      resp.writeHead(200, {'Content-Type': 'text/plain'});
       resp.write(cert);
       resp.end();
     });
@@ -349,6 +350,21 @@ function setup(app) {
     resp.json('ok');
   });
 
+  // in the cert world, syncing is not necessary,
+  // just get a list of emails.
+  // returns:
+  // {
+  //   "foo@foo.com" : {..properties..}
+  //   ...
+  // }
+  app.get('/wsapi/list_emails', checkAuthed, function(req, resp) {
+    logger.debug('listing emails for ' + req.session.authenticatedUser);
+    db.listEmails(req.session.authenticatedUser, function(err, emails) {
+      if (err) httputils.serverError(resp, err);
+      else resp.json(emails);
+    });
+  });
+  
   app.post('/wsapi/sync_emails', checkAuthed, function(req,resp) {
     // validate that the post body contains an object with an .emails
     // property that is an array of strings.
@@ -357,7 +373,8 @@ function setup(app) {
       req.body.emails = JSON.parse(req.body.emails);
       Object.keys(req.body.emails).forEach(function(k) {
         if (typeof req.body.emails[k] !== 'string') {
-          throw "bogus value for key " + k;
+          // for certs, this is changing
+          // throw "bogus value for key " + k;
         }
       });
     } catch (e) {
@@ -366,7 +383,7 @@ function setup(app) {
                                   "post argument");
     }
 
-    logger.debug('sync emails called.  client provides: ' + JSON.stringify(Object.keys(req.body.emails))); 
+    logger.debug('sync emails called.  client provides: ' + JSON.stringify(req.body.emails)); 
     db.getSyncResponse(req.session.authenticatedUser, req.body.emails, function(err, syncResponse) {
       if (err) httputils.serverError(resp, err);
       else resp.json(syncResponse);
