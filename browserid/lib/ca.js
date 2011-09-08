@@ -77,6 +77,7 @@ function loadPublicKey(name, dir) {
 
 var SECRET_KEY = loadSecretKey('root', configuration.get('var_path'));
 var PUBLIC_KEY = loadPublicKey('root', configuration.get('var_path'));
+var HOSTNAME = configuration.get('hostname');
 
 function parsePublicKey(serializedPK) {
   return jwk.PublicKey.deserialize(serializedPK);
@@ -89,14 +90,14 @@ function parseCert(serializedCert) {
 }
 
 function certify(email, publicKey, expiration) {
-  return new jwcert.JWCert("browserid.org", new Date(), publicKey, {email: email}).sign(SECRET_KEY);
+  return new jwcert.JWCert(HOSTNAME, new Date(), publicKey, {email: email}).sign(SECRET_KEY);
 }
 
 function verifyChain(certChain, cb) {
   // raw certs
   return jwcert.JWCert.verifyChain(certChain, function(issuer, next) {
     // for now we only do browserid.org issued keys
-    if (issuer != "browserid.org")
+    if (issuer != HOSTNAME)
       return next(null);
 
     next(PUBLIC_KEY);

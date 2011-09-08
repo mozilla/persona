@@ -45,6 +45,7 @@ jwk = require("../../lib/jwcrypto/jwk"),
 jwt = require("../../lib/jwcrypto/jwt"),
 jwcert = require("../../lib/jwcrypto/jwcert"),
 vep = require("../../lib/jwcrypto/vep"),
+configuration = require('../../libs/configuration'),
 logger = require("../../libs/logging.js").logger;
 
 // configuration information to check the issuer
@@ -134,7 +135,7 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
   
   jwcert.JWCert.verifyChain(bundle.certificates, function(issuer, next) {
     // for now, only support the browserid.org issuer
-    if (issuer != "browserid.org") {
+    if (issuer != configuration.get('hostname')) {
       // allow other retrievers for now for testing
       //
       // retrieve the public key for the issuer and
@@ -148,7 +149,9 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
     }
 
     // retrieve the public key for real
-    retrieveHostPublicKey(issuer, next);
+    retrieveHostPublicKey(issuer, next, function(err) {
+      next(null);
+    });
   }, function(pk, principal) {
     var tok = new jwt.JWT();
     tok.parse(bundle.assertion);
@@ -162,7 +165,7 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
     } else {
       errorCB();
     }
-  });
+  }, errorCB);
 }
   
 
