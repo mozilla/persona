@@ -48,8 +48,11 @@ var BrowserIDIdentities = (function() {
         try {
           email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
         } catch (x) {
-          // nothing needed
+          delete emails[email_address];
         }
+
+        if (!email_obj.cert)
+          delete emails[email_address];
       });
 
       return emails;
