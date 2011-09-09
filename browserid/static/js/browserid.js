@@ -1,4 +1,4 @@
-/*globals BrowserIDNetwork: true, BrowserIDIdentities: true, _: true, confirm: true, getEmails: true, display_saved_ids: true, displayEmails: true*/
+/*globals BrowserIDNetwork: true, BrowserIDIdentities: true, _: true, confirm: true, getEmails: true, display_saved_ids: true, displayEmails: true, removeEmail: true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -87,10 +87,18 @@
           
           var deauth = $("<button>").text("Forget this Email");
           meta.append(deauth);
-          deauth.click(function() {
-            // remove email from server
-            BrowserIDNetwork.removeEmail(e, display_saved_ids);
-          });
+          deauth.click(function(data) {
+            // If it is a primary, we do not have to go back to the server.
+            // XXX put this into the BrowserIDIdentities abstraction
+            if (data.isPrimary) {
+              removeEmail(e);
+              display_saved_ids();
+            }
+            else {
+              // remove email from server
+              BrowserIDNetwork.removeEmail(e, display_saved_ids);
+            }
+          }.bind(null, data));
         
           var d = new Date(data.created);
           var datestamp = $("<div class='date'>").text("Signed in at " + d.toLocaleString());
