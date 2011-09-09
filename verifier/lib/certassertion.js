@@ -140,28 +140,23 @@ function retrieveHostPublicKey(host, successCB, errorCB) {
 function verify(assertion, audience, successCB, errorCB, pkRetriever) {
   // assertion is bundle
   var bundle = vep.unbundleCertsAndAssertion(assertion);
-  
-  jwcert.JWCert.verifyChain(bundle.certificates, function(issuer, next) {
-    console.log("ISSUER is " + issuer);
-    // for now, only support the browserid.org issuer
-    if (issuer != configuration.get('hostname')) {
-      // allow other retrievers for now for testing
-      //
-      // retrieve the public key for the issuer and
-      // pass it to the continuation
-      if (pkRetriever)
-        pkRetriever(issuer, next);
-      else
-        next(null);
 
-      return;
+  var theIssuer;
+  jwcert.JWCert.verifyChain(bundle.certificates, function(issuer, next) {
+    theIssuer = issuer;
+    // allow other retrievers for testing
+    if (pkRetriever)
+      pkRetriever(issuer, next);
+    else
+      retrieveHostPublicKey(issuer, next, function(err) {next(null);});
+  }, function(pk, principal) {
+    // primary?
+    if (theIssuer != configuration.get('hostname')) {
+      // then the email better match the issuer
+      if (!principal.email.match("@" + theIssuer + "$"))
+        return errorCB();
     }
 
-    // retrieve the public key for real
-    retrieveHostPublicKey(issuer, next, function(err) {
-      next(null);
-    });
-  }, function(pk, principal) {
     var tok = new jwt.JWT();
     tok.parse(bundle.assertion);
 
