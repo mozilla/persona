@@ -97,14 +97,13 @@ suite.addBatch({
   "add a new email address to our account": {
     topic: wsapi.post('/wsapi/add_email', {
       email: 'second@fakeemail.com',
-      pubkey: 'fakepubkey',
       site:'fakesite.com'
     }),
     "the token is sane": function(r, err) {
       assert.strictEqual('string', typeof token);
     }
   },
-  "set the key again": {
+/*  "set the key again": {
     topic: wsapi.post('/wsapi/set_key', {
       email: 'second@fakeemail.com',
       pubkey: 'fakepubkey2'
@@ -112,7 +111,7 @@ suite.addBatch({
     "the token is sane": function(r, err) {
       assert.strictEqual('string', typeof token);
     }
-  }
+  }*/
 });
 
 // confirm second email email address to the account

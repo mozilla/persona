@@ -44,7 +44,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 {
   var ipServer = "https://browserid.org";
   var isMobile = navigator.userAgent.indexOf('Fennec/') != -1;
-
+  
   // local embedded copy of jschannel: http://github.com/mozilla/jschannel
   var Channel = (function() {
     // current transaction id, start out at a random *odd* number between 1 and a million
@@ -52,7 +52,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     // channel instances.  That means of all messages posted from a single javascript
     // evaluation context, we'll never have two with the same id.
     var s_curTranId = Math.floor(Math.random()*1000001);
-
+    
     // no two bound channels in the same javascript evaluation context may have the same origin & scope.
     // futher if two bound channels have the same scope, they may not have *overlapping* origins
     // (either one or both support '*').  This restriction allows a single onMessage handler to efficiently
@@ -412,7 +412,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
               // what can we do?  Also, here we'll ignore return values
             }
           }
-        }
+        };
 
         // now register our bound channel for msg routing
         s_addBoundChan(cfg.origin, ((typeof cfg.scope === 'string') ? cfg.scope : ''), onMessage);
@@ -421,7 +421,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
         var scopeMethod = function(m) {
           if (typeof cfg.scope === 'string' && cfg.scope.length) m = [cfg.scope, m].join("::");
           return m;
-        }
+        };
 
         // a small wrapper around postmessage whose primary function is to handle the
         // case that clients start sending messages before the other end is "ready"
@@ -444,7 +444,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 
             cfg.window.postMessage(JSON.stringify(msg), cfg.origin);
           }
-        }
+        };
 
         var onReady = function(trans, type) {
           debug('ready msg received');
@@ -564,27 +564,30 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 
   var chan = undefined;
 
-  function _create_iframe(doc) {
-      var iframe = doc.createElement("iframe");
-      iframe.style.display = "none";
-      doc.body.appendChild(iframe);
-      iframe.src = ipServer + "/register_iframe";
-      return iframe;
+  // this is for calls that are non-interactive
+  function _open_hidden_iframe(doc) {
+    var iframe = doc.createElement("iframe");
+    // iframe.style.display = "none";
+    doc.body.appendChild(iframe);
+    iframe.src = ipServer + "/register_iframe";
+    return iframe;
   }
-
+  
   function _open_relay_frame(doc) {
-      var iframe = doc.createElement("iframe");
-      iframe.setAttribute('name', 'browserid_relay');
-      iframe.setAttribute('src', ipServer + "/relay");
-      iframe.style.display = "none";
-      doc.body.appendChild(iframe);
-      return iframe;
+    var iframe = doc.createElement("iframe");
+    iframe.setAttribute('name', 'browserid_relay');
+    iframe.setAttribute('src', ipServer + "/relay");
+    iframe.style.display = "none";
+    doc.body.appendChild(iframe);
+    return iframe;
   }
-
+  
   function _open_window() {
-      return window.open(
-          ipServer + "/sign_in#host=" + document.location.host, "_mozid_signin",
-          isMobile ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=520,height=350");
+    // FIXME: need to pass the location in a more trustworthy fashion
+    // HOW? set up a direct reference to the open window
+    return window.open(
+      ipServer + "/sign_in#host=" + document.location.host, "_mozid_signin",
+      isMobile ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=520,height=350");
   }
 
   navigator.id.getVerifiedEmail = function(callback) {
@@ -595,7 +598,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     // clean up a previous channel that never was reaped
     if (chan) chan.destroy();
     chan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid"});
-
+    
     function cleanup() {
       chan.destroy();
       chan = undefined;
@@ -620,6 +623,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     });
   };
 
+/*
   // preauthorize a particular email
   // FIXME: lots of cut-and-paste code here, need to refactor
   // not refactoring now because experimenting and don't want to break existing code
@@ -650,8 +654,11 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       }
     });
   };
+  */
 
   // get a particular verified email
+  // FIXME: needs to ditched for now until fixed
+  /*
   navigator.id.getSpecificVerifiedEmail = function(email, token, onsuccess, onerror) {
     var doc = window.document;
 
@@ -697,24 +704,27 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       }
     });
   };
+  */
 
-  navigator.id.registerVerifiedEmail = function(email, onsuccess, onerror) {
+  function _noninteractiveCall(method, args, onsuccess, onerror) {
     var doc = window.document;
-    iframe = _create_iframe(doc);
+    iframe = _open_hidden_iframe(doc);
+
+    // clean up channel
     if (chan) chan.destroy();
     chan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid"});
-
+    
     function cleanup() {
       chan.destroy();
       chan = undefined;
       doc.body.removeChild(iframe);
     }
-
+    
     chan.call({
-      method: "registerVerifiedEmail",
-      params: {email:email},
+      method: method,
+      params: args,
       success: function(rv) {
-        console.log("registerVerifiedEmail channel returned: rv is " + rv);
+        console.log(method + " channel returned: rv is " + rv);
         if (onsuccess) {
           onsuccess(rv);
         }
@@ -724,8 +734,28 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
         if (onerror) onerror(code, msg);
         cleanup();
       }
-    });
+    });    
+  }
+
+  // check if a valid cert exists for this verified email
+  // calls back with true or false
+  // FIXME: implement it for real, but
+  // be careful here because this needs to be limited
+  navigator.id.checkVerifiedEmail = function(email, onsuccess, onerror) {
+    onsuccess(false);
   };
 
+  // generate a keypair
+  navigator.id.generateKey = function(onsuccess, onerror) {
+    _noninteractiveCall("generateKey", {},
+                        onsuccess, onerror);
+  };
+  
+  navigator.id.registerVerifiedEmailCertificate = function(certificate, updateURL, onsuccess, onerror) {
+    _noninteractiveCall("registerVerifiedEmailCertificate",
+                        {cert:certificate, updateURL: updateURL},
+                        onsuccess, onerror);
+  };
+  
   navigator.id._getVerifiedEmailIsShimmed = true;
 }

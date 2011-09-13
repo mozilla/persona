@@ -22,6 +22,30 @@ body {
   overflow-y: scroll;
 }
 
+/*header {
+    border-top: 4px solid #333;
+    background-color: #333;
+    padding: 0 20% 0 20%;
+    margin: 0;
+    background: #008;
+    height: 230px;
+    color #fff;
+    min-width: 800px;
+    display: block;
+}
+
+footer {
+    background-color: #F1F1F1;
+    border-top: 2px solid #ddd;
+    margin: 0;
+    margin-top: 100px;
+    padding: 0;
+    height: 200px;
+    font-size: 1.1em;
+    display: block;
+}
+
+*/
 .sans {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }

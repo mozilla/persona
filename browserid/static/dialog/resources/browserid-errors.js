@@ -51,7 +51,7 @@ var BrowserIDErrors = (function(){
     checkAuthentication: {
       type: "serverError",
       message: "Error Checking Authentication",
-      description: "There was a tenical problem while trying to log you in.  Yucky!"
+      description: "There was a technical problem while trying to log you in.  Yucky!"
     },
 
     createAccount: {

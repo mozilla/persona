@@ -41,9 +41,14 @@ const assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-email = require('../lib/email.js');
+email = require('../lib/email.js'),
+ca = require('../lib/ca.js'),
+jwcert = require('../../lib/jwcrypto/jwcert'),
+jwk = require('../../lib/jwcrypto/jwk'),
+jws = require('../../lib/jwcrypto/jws'),
+jwt = require('../../lib/jwcrypto/jwt');
 
-var suite = vows.describe('forgotten-email');
+var suite = vows.describe('cert-emails');
 
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
@@ -55,12 +60,16 @@ start_stop.addStartupBatches(suite);
 var token = undefined;
 email.setInterceptor(function(email, site, secret) { token = secret; });
 
+// INFO: some of these tests are repeat of sync-emails... to set
+// things up properly for key certification
+
 // create a new account via the api with (first address)
 suite.addBatch({
   "stage an account": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'syncer@somehost.com',
       pass: 'fakepass',
+      pubkey: 'fakekey',
       site:'fakesite.com'
     }),
     "yields a sane token": function(r, err) {
@@ -93,76 +102,89 @@ suite.addBatch({
   }
 });
 
+var cert_key_url = "/wsapi/cert_key";
+
+// generate a keypair, we'll use this to sign assertions, as if
+// this keypair is stored in the browser localStorage
+var kp = jwk.KeyPair.generate("RS",64);
+
 suite.addBatch({
-  "list emails API": {
-    topic: wsapi.get('/wsapi/list_emails', {}),
-    "succeeds with HTTP 200" : function(r, err) {
+  "check the public key": {
+    topic: wsapi.get("/pk"),
+    "returns a 200": function(r, err) {
       assert.strictEqual(r.code, 200);
     },
-    "returns an object with proper email": function(r, err) {
-      var emails = Object.keys(JSON.parse(r.body));
-      assert.equal(emails[0], "syncer@somehost.com");
-      assert.equal(emails.length, 1);
+    "returns the right public key": function(r, err) {
+      var pk = jwk.PublicKey.deserialize(r.body);
+      assert.ok(pk);
     }
-  }
-});
-
-/*
-suite.addBatch({
-  "the sync emails API invoked without a proper argument": {
-    topic: wsapi.post('/wsapi/sync_emails', {}),
+  },
+  "cert key with no parameters": {
+    topic: wsapi.post(cert_key_url, {}),
     "fails with HTTP 400" : function(r, err) {
       assert.strictEqual(r.code, 400);
     }
   },
-  "the sync emails API invoked with a proper argument": {  
-    topic: wsapi.post('/wsapi/sync_emails', { emails: '{}' }),
+  "cert key invoked with just an email": {  
+    topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com' }),
+    "returns a 400" : function(r, err) {
+      assert.strictEqual(r.code, 400);
+    }
+  },
+  "cert key invoked with proper argument": {  
+    topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com', pubkey: kp.publicKey.serialize() }),
     "returns a response with a proper content-type" : function(r, err) {
       assert.strictEqual(r.code, 200);
-      //assert.strictEqual(r.headers['content-type'], 'application/json; charset=utf-8');
+    },
+    "returns a proper cert": function(r, err) {
+      ca.verifyChain([r.body], function(pk) {
+        assert.isTrue(kp.publicKey.equals(pk));
+      });
+    },
+    "generate an assertion": {
+      topic: function(r) {
+        var serializedCert = r.body.toString();
+        var assertion = new jwt.JWT(null, new Date(), "rp.com");
+        var full_assertion = {
+          certificates: [serializedCert],
+          assertion: assertion.sign(kp.secretKey)
+        };
+
+        return full_assertion;
+      },
+      "full assertion looks good": function(full_assertion) {
+        assert.equal(full_assertion.certificates[0].split(".").length, 3);
+        assert.equal(full_assertion.assertion.split(".").length, 3);
+      },
+      "assertion verifies": {
+        topic: function(full_assertion) {
+          var cb = this.callback;
+          // extract public key at the tail of the chain
+          ca.verifyChain(full_assertion.certificates, function(pk) {
+            if (!pk)
+              cb(false);
+            
+            var assertion = new jwt.JWT();
+            assertion.parse(full_assertion.assertion);
+            cb(assertion.verify(pk));
+          });
+        },
+        "verifies": function(result, err) {
+          assert.isTrue(result);
+        }
+      }
     }
   },
-  "the sync emails API invoked without a empty emails argument": {  
-    topic: wsapi.post('/wsapi/sync_emails', { emails: undefined }),
-    "returns a 400" : function(r, err) {
+  "cert key invoked proper arguments but incorrect email address": {  
+    topic: wsapi.post(cert_key_url, { email: 'syncer2@somehost.com', pubkey: kp.publicKey.serialize() }),
+    "returns a response with a proper error content-type" : function(r, err) {
       assert.strictEqual(r.code, 400);
-    }
-  },
-  "the sync emails API invoked without malformed JSON in emails argument": {  
-    topic: wsapi.post('/wsapi/sync_emails', { emails: '{ "foo@bar.com": "fakekey" '}),
-    "returns a 400" : function(r, err) {
-      assert.strictEqual(r.code, 400);
-    }
-  },
-  "syncing emails without providing anything": {
-    topic: wsapi.post('/wsapi/sync_emails', {emails: '{}'}),
-    "should tell us to refresh keys for exisitng accounts" : function(r, err) {
-      assert.strictEqual(r.code, 200);
-      r = JSON.parse(r.body);
-      assert.strictEqual(typeof r, 'object');
-      assert.isTrue(Array.isArray(r.unknown_emails));
-      assert.isTrue(Array.isArray(r.key_refresh));
-      assert.strictEqual(r.unknown_emails.length, 0);
-      assert.strictEqual(r.key_refresh.length, 1);
-    }
-  },
-  "syncing emails with an unknown email address": {
-    topic: wsapi.post('/wsapi/sync_emails', {emails: '{ "foo@bar.com": "fake" }'}),
-    "should tell us to refresh keys for exisitng accounts" : function(r, err) {
-      assert.strictEqual(r.code, 200);
-      r = JSON.parse(r.body);
-      assert.strictEqual(typeof r, 'object');
-      assert.isTrue(Array.isArray(r.unknown_emails));
-      assert.isTrue(Array.isArray(r.key_refresh));
-      assert.strictEqual(r.unknown_emails.length, 1);
-      assert.strictEqual(r.unknown_emails[0], 'foo@bar.com');
-      assert.strictEqual(r.key_refresh.length, 1);
-      assert.strictEqual(r.key_refresh[0], 'syncer@somehost.com');
     }
   }
-  // NOTE: db-test has more thorough tests of the algorithm behind the sync_emails API
+
+
+  // NOTE: db-test has more thorough tests of the algorithm behind the sync_emails API  
 });
-*/
 
 start_stop.addShutdownBatches(suite);
 

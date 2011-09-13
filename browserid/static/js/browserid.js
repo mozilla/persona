@@ -1,4 +1,4 @@
-/*globals: BrowserIDNetwork: true */
+/*globals BrowserIDNetwork: true, BrowserIDIdentities: true, _: true, confirm: true, getEmails: true, display_saved_ids: true, displayEmails: true, removeEmail: true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -35,6 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 $(function() {
+  "use strict";
 
   if ($('#vAlign').length) {
     $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
@@ -208,3 +209,86 @@ function display_saved_ids() {
   }
 }
 
+/*
+=======
+  $(function() {
+    BrowserIDNetwork.checkAuth(function(authenticated) {
+      if (authenticated) {
+        $("body").addClass("authenticated");
+        if ($('#emailList').length) {
+          display_saved_ids();
+        }
+      }
+    });
+  });
+
+  function display_saved_ids()
+  {
+    var emails = {};
+    BrowserIDIdentities.syncIdentities(function() {
+      emails = getEmails();
+      displayEmails();
+    });
+
+
+    function displayEmails() {
+      $('#cancellink').click(function() {
+        if (confirm('Are you sure you want to cancel your account?')) {
+          BrowserIDNetwork.cancelUser(function() {
+            document.location="/";
+          });
+        }
+      });
+
+      $("#emailList").empty();
+        _(emails).each(function(data, e) {
+          var block = $("<div>").addClass("emailblock");
+          var label = $("<div>").addClass("email").text(e);
+          var meta = $("<div>").addClass("meta");
+
+          var pub = $("<div class='keyblock'>").hide();
+          
+          var keyText = data.pub.value;
+          pub.text(keyText);
+
+          var linkblock = $("<div>");
+          var puba = $("<a>").text("[show public key]");
+          // var priva = $("<a>").text("[show private key]");
+          puba.click(function() {pub.show();});
+          // priva.click(function() {priv.show()});
+          linkblock.append(puba);
+          // linkblock.append(" / ");
+          // linkblock.append(priva);
+          
+          var deauth = $("<button>").text("Forget this Email");
+          meta.append(deauth);
+          deauth.click(function(data) {
+            // If it is a primary, we do not have to go back to the server.
+            // XXX put this into the BrowserIDIdentities abstraction
+            if (data.isPrimary) {
+              removeEmail(e);
+              display_saved_ids();
+            }
+            else {
+              // remove email from server
+              BrowserIDNetwork.removeEmail(e, display_saved_ids);
+            }
+          }.bind(null, data));
+        
+          var d = new Date(data.created);
+          var datestamp = $("<div class='date'>").text("Signed in at " + d.toLocaleString());
+
+          meta.append(datestamp);
+          meta.append(linkblock);
+                      
+          block.append(label);
+          block.append(meta);
+          // block.append(priv);
+          block.append(pub);
+          
+          $("#emailList").append(block);
+      });
+    }
+  }
+}());
+  */

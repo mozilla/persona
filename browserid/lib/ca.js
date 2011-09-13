@@ -18,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *     Ben Adida <benadida@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -33,46 +34,46 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/*globals steal
- */
-window.console = window.console || {
-  log: function() {}
-};
+// certificate authority
 
-steal.resources('../../dialog/resources/jschannel')
+var jwcert = require('../../lib/jwcrypto/jwcert'),
+    jwk = require('../../lib/jwcrypto/jwk'),
+    jws = require('../../lib/jwcrypto/jws'),
+    configuration = require('../../libs/configuration'),
+    secrets = require('../../libs/secrets'),
+    path = require("path"),
+    fs = require("fs");
 
-          .then(function($) {
-            // XXX get rid of this setTimeout.  It is in so that the build 
-            // script can do its thing without creating the channel
-            setTimeout(function() {
-              var ipServer = "https://browserid.org";
+var HOSTNAME = configuration.get('hostname');
 
-              var chan = Channel.build( {
-                window: window.parent,
-                origin: "*",
-                scope: "mozid"
-              } );
+function parsePublicKey(serializedPK) {
+  return jwk.PublicKey.deserialize(serializedPK);
+}
 
-              var transaction;
+function parseCert(serializedCert) {
+  var cert = new jwcert.JWCert();
+  cert.parse(serializedCert);
+  return cert;
+}
 
-              chan.bind("getVerifiedEmail", function(trans, s) {
-                trans.delayReturn(true);
+function certify(email, publicKey, expiration) {
+  return new jwcert.JWCert(HOSTNAME, new Date(), publicKey, {email: email}).sign(secrets.SECRET_KEY);
+}
 
-                transaction = trans;
-              });
+function verifyChain(certChain, cb) {
+  // raw certs
+  return jwcert.JWCert.verifyChain(certChain, function(issuer, next) {
+    // for now we only do browserid.org issued keys
+    if (issuer != HOSTNAME)
+      return next(null);
 
-              window.browserid_relay = function(status, error) {
-                  if(error) {
-                    errorOut(transaction, error);
-                  }
-                  else {
-                    try {
-                      transaction.complete(status);
-                    } catch(e) {
-                      // The relay function is called a second time after the 
-                      // initial success, when the window is closing.
-                    }
-                  }
-              }
-            }, 100);
-          });						// adds views to be added to build
+    next(secrets.PUBLIC_KEY);
+  }, cb);
+}
+
+// exports, not the key stuff
+exports.certify = certify;
+exports.verifyChain = verifyChain;
+exports.parsePublicKey = parsePublicKey;
+exports.parseCert = parseCert;
+exports.PUBLIC_KEY = secrets.PUBLIC_KEY;

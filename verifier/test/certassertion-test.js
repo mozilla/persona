@@ -18,6 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *     Ben Adida <benadida@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -33,46 +34,43 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/*globals steal
- */
-window.console = window.console || {
-  log: function() {}
-};
+var vows = require("vows"),
+    assert = require("assert"),
+    certassertion = require("../lib/certassertion"),
+    jwk = require("../../lib/jwcrypto/jwk"),
+    jwt = require("../../lib/jwcrypto/jwt"),
+    jwcert = require("../../lib/jwcrypto/jwcert"),
+    vep = require("../../lib/jwcrypto/vep"),
+    events = require("events");
 
-steal.resources('../../dialog/resources/jschannel')
+vows.describe('certassertion').addBatch({
+  "generate and certify key + assertion" : {
+    topic: function() {
+      // generate a key
+      var root_kp = jwk.KeyPair.generate("RS", 64);
+      var user_kp = jwk.KeyPair.generate("RS", 64);
+      var cert = new jwcert.JWCert("fakeroot.com", new Date(), user_kp.publicKey, {email:"user@fakeroot.com"}).sign(root_kp.secretKey);
+      var assertion = new jwt.JWT(null, new Date(), "rp.com").sign(user_kp.secretKey);
 
-          .then(function($) {
-            // XXX get rid of this setTimeout.  It is in so that the build 
-            // script can do its thing without creating the channel
-            setTimeout(function() {
-              var ipServer = "https://browserid.org";
-
-              var chan = Channel.build( {
-                window: window.parent,
-                origin: "*",
-                scope: "mozid"
-              } );
-
-              var transaction;
-
-              chan.bind("getVerifiedEmail", function(trans, s) {
-                trans.delayReturn(true);
-
-                transaction = trans;
-              });
-
-              window.browserid_relay = function(status, error) {
-                  if(error) {
-                    errorOut(transaction, error);
-                  }
-                  else {
-                    try {
-                      transaction.complete(status);
-                    } catch(e) {
-                      // The relay function is called a second time after the 
-                      // initial success, when the window is closing.
-                    }
-                  }
-              }
-            }, 100);
-          });						// adds views to be added to build
+      var self = this;
+      var bundle = vep.bundleCertsAndAssertion([cert],assertion);
+      
+      // verify it
+      certassertion.verify(
+        bundle, "rp.com",
+        function(email, audience, expires) {
+          self.callback({email:email, audience: audience, expires:expires});
+        },
+        function(msg) {},
+        function(issuer, next) {
+          if (issuer == "fakeroot.com")
+            next(root_kp.publicKey);
+          else
+            next(null);
+        });
+    },
+    "is successful": function(res, err) {
+      assert.notEqual(res.email, null);
+    }
+  }
+}).export(module);

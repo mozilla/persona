@@ -33,6 +33,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var jwk = require("./jwk");
+
 var getEmails = function() {
   try {
     var emails = JSON.parse(window.localStorage.emails);
@@ -64,4 +66,24 @@ var removeEmail = function(email) {
 
 var clearEmails = function() {
   _storeEmails({});
+};
+
+var storeTemporaryKeypair = function(keypair) {
+  window.localStorage.tempKeypair = JSON.stringify({
+    publicKey: keypair.publicKey.toSimpleObject(),
+    secretKey: keypair.secretKey.toSimpleObject()
+  });
+};
+
+var retrieveTemporaryKeypair = function() {
+  var raw_kp = JSON.parse(window.localStorage.tempKeypair);
+  window.localStorage.tempKeypair = null;
+  if (raw_kp) {
+    var kp = new jwk.KeyPair();
+    kp.publicKey = jwk.PublicKey.fromSimpleObject(raw_kp.publicKey);
+    kp.secretKey = jwk.SecretKey.fromSimpleObject(raw_kp.secretKey);
+    return kp;
+  } else {
+    return null;
+  }
 };

@@ -210,7 +210,6 @@ exports.stageUser = function(obj, cb) {
   staged[secret] = {
     type: "add_account",
     email: obj.email,
-    pubkey: obj.pubkey,
     pass: obj.hash
   };
 
@@ -218,14 +217,13 @@ exports.stageUser = function(obj, cb) {
   setTimeout(function() { cb(secret); }, 0);
 };
 
-exports.stageEmail = function(existing_email, new_email, pubkey, cb) {
+exports.stageEmail = function(existing_email, new_email, cb) {
   var secret = secrets.generate(48);
   // overwrite previously staged users
   staged[secret] = {
     type: "add_email",
     existing_email: existing_email,
-    email: new_email,
-    pubkey: pubkey
+    email: new_email
   };
   stagedEmails[new_email] = secret;
   setTimeout(function() { cb(secret); }, 0);
@@ -312,6 +310,22 @@ function emailToUserID(email, cb) {
 
   setTimeout(function() { cb(id); }, 0);
 }
+
+exports.listEmails = function(email, cb) {
+  // get the user id associated with this account
+  emailToUserID(email, function(userID) {
+    if (userID === undefined) {
+      cb("no such email: " + email);
+      return;
+    }
+    var email_list = jsel.match(".address", db[userID]);
+    var emails = {};
+    for (var i=0; i < email_list.length; i++)
+      emails[email_list[i]] = {};
+
+    cb(null, emails);
+  });
+};
 
 exports.getSyncResponse = function(email, identities, cb) {
   var respBody = {

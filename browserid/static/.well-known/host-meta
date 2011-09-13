@@ -5,6 +5,8 @@
 
   <hm:Host xmlns='http://host-meta.net/xrd/1.0'>browserid.org</hm:Host>
 
+  <Link rel="https://browserid.org/vocab#publicKey" href="/pk"></Link>
+
   <Link rel='lrdd' template='https://browserid.org/users/{uri}.xml'></Link>
 
   <Link rel='other' value='something-different'></Link>

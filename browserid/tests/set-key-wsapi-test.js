@@ -94,13 +94,14 @@ suite.addBatch({
   }
 });
 
+/*
 suite.addBatch({
   "setting a key that is already set": {
     topic: wsapi.post('/wsapi/set_key', {
       email: 'setkeyabuser@somehost.com',
       pubkey: 'fakekey'
     }),
-    "fails with a false return0" : function(r, err) {
+    "fails with a false return" : function(r, err) {
       assert.strictEqual(r.code, 200);
       assert.strictEqual(r.body, 'false');
     }
@@ -115,6 +116,7 @@ suite.addBatch({
     }
   }
 });
+*/
 
 start_stop.addShutdownBatches(suite);
 

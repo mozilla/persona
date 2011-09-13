@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,46 +35,51 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/*globals steal
- */
-window.console = window.console || {
-  log: function() {}
-};
+require('./lib/test_env.js');
 
-steal.resources('../../dialog/resources/jschannel')
+const assert = require('assert'),
+vows = require('vows'),
+start_stop = require('./lib/start-stop.js'),
+wsapi = require('./lib/wsapi.js'),
+email = require('../lib/email.js'),
+ca = require('../lib/ca.js'),
+jwcert = require('../../lib/jwcrypto/jwcert'),
+jwk = require('../../lib/jwcrypto/jwk'),
+jws = require('../../lib/jwcrypto/jws');
 
-          .then(function($) {
-            // XXX get rid of this setTimeout.  It is in so that the build 
-            // script can do its thing without creating the channel
-            setTimeout(function() {
-              var ipServer = "https://browserid.org";
+var suite = vows.describe('ca');
 
-              var chan = Channel.build( {
-                window: window.parent,
-                origin: "*",
-                scope: "mozid"
-              } );
+// disable vows (often flakey?) async error behavior
+suite.options.error = false;
 
-              var transaction;
+// generate a public key
+var kp = jwk.KeyPair.generate("RS",64);
 
-              chan.bind("getVerifiedEmail", function(trans, s) {
-                trans.delayReturn(true);
+var email_addr = "foo@foo.com";
 
-                transaction = trans;
-              });
+// create a new account via the api with (first address)
+suite.addBatch({
+  "certify a public key": {
+    topic: function() {
+      return ca.certify(email_addr, kp.publicKey);
+    },
+    "parses" : function(cert_raw, err) {
+      var cert = ca.parseCert(cert_raw);
+      assert.notEqual(cert, null);
+    },
+    "verifies": function(cert_raw, err) {
+      // FIXME we might want to turn this into a true async test
+      // rather than one that is assumed to be synchronous although
+      // it has an async structure
+      ca.verifyChain([cert_raw], function(pk) {
+        assert.isTrue(kp.publicKey.equals(pk));
+      });
+    }
+  },
+  "certify a chain of keys": {
+  }
+});
 
-              window.browserid_relay = function(status, error) {
-                  if(error) {
-                    errorOut(transaction, error);
-                  }
-                  else {
-                    try {
-                      transaction.complete(status);
-                    } catch(e) {
-                      // The relay function is called a second time after the 
-                      // initial success, when the window is closing.
-                    }
-                  }
-              }
-            }, 100);
-          });						// adds views to be added to build
+// run or export the suite.
+if (process.argv[1] === __filename) suite.run();
+else suite.export(module);
