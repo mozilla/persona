@@ -5,6 +5,10 @@ npm install
 echo '*** Asking for sudo to install browserify globally ***'
 sudo npm install -g browserify
 
+echo '*** Fetching and updating required submodules ***'
+git submodule init
+git submodule update
+
 cd lib/jwcrypto
 ./bundle.sh
 
