@@ -28,6 +28,7 @@
     , "jwcrypto": "https://github.com/lloyd/jwcrypto/tarball/ace101"
   }
   , "scripts": {
-    "postinstall": "./scripts/generate_ephemeral_keys.sh"
+    "postinstall": "./scripts/generate_ephemeral_keys.sh",
+    "test": "./scripts/run_all_tests.sh"
   }
 }
