@@ -587,7 +587,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     // HOW? set up a direct reference to the open window
     return window.open(
       ipServer + "/sign_in#host=" + document.location.host, "_mozid_signin",
-      isMobile ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=520,height=350");
+      isMobile ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=700,height=375");
   }
 
   navigator.id.getVerifiedEmail = function(callback) {
