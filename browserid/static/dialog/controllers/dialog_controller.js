@@ -150,7 +150,7 @@ PageController.extend("Dialog", {}, {
     doAuthenticate: function() {
       this.element.authenticate();
     },
-      
+
     doCreate: function() {
       this.element.createaccount();
     },

@@ -1,17 +1,22 @@
   <div class="content">
     <p class="prompt">Signing into <span class="sitename bad"><%= sitename %></span>:</p>
+    <img src="<%= siteicon %>" alt="NYTimes Logo" width="75" height="75"/>
+
     <div class="formRow">
       <label for="email_input"> Email </label>
       <input type="email" id="email_input" autocapitalize="off" autocorrect="off" required />
     </div>
+
     <div class="formRow">
       <label for="password_input"> Password </label>
       <input type="password" id="password_input" pattern=".{5,}" required/>
       <a href="#" id="forgotpassword">I forgot my password</a>
     </div>
+
     <div class="attention_lame" id="nosuchaccount" style="display:none;">
       No such account exists with that email and/or password
     </div>
+
     <div class="actions">
       <div class="action"><a href="#" id="create">Never used BrowserID?</a></div>
     </div>

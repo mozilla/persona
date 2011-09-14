@@ -42,7 +42,8 @@
       this._super({
         bodyTemplate: "authenticate.ejs",
         bodyVars: {
-          sitename: BrowserIDNetwork.origin
+          sitename: BrowserIDNetwork.origin,
+          siteicon: '/i/times.gif'
         },
         footerTemplate: "bottom-signin.ejs",
         footerVars: {}
