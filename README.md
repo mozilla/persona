@@ -19,11 +19,12 @@ Here's the software you'll need installed:
 * node.js (>= 0.4.5): http://nodejs.org/
 * npm: http://npmjs.org/
 * Several node.js 3rd party libraries - see `package.json` for details
+* browserify which will be installed globally.
 
 ## Getting started:
 
-1. install node
-2. run `npm install` to installed 3rd party libraries into `node_modules`
+1. install node and npm
+3. run `./prepare_deps` to install 3rd party libraries and generate keys
 3. run the top level *run.js* script: `node ./run.js`
 4. visit the demo application ('rp') in your web browser (url output on the console at runtime)
 
