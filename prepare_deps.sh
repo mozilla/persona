@@ -13,6 +13,6 @@ echo '*** Generating keys and placing them into correct location ***'
 node generate-keypair.js
 
 mv key.publickey ../../var/root.publickey
-mv key.secretkey ../../var/root.privatekey
+mv key.secretkey ../../var/root.secretkey
 cd ../..
 
