@@ -1,6 +1,0 @@
-[submodule "lib/doctest"]
-	path = lib/doctest
-	url = git@github.com:ianb/doctestjs
-[submodule "lib/jwcrypto"]
-	path = lib/jwcrypto
-	url = https://github.com/mozilla/jwcrypto.git
