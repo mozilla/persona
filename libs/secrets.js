@@ -36,7 +36,7 @@
 const
 path = require('path'),
 fs = require('fs'),
-jwk = require('../lib/jwcrypto/jwk'),
+jwk = require('jwcrypto/jwk'),
 configuration = require("./configuration");
 
 exports.generate = function(chars) {

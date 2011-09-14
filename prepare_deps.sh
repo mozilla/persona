@@ -2,7 +2,7 @@
 
 echo ''
 echo '*** Generating keys and placing them into correct location ***'
-cd lib/jwcrypto
+cd node_modules/jwcrypto
 node generate-keypair.js
 
 mv key.publickey ../../var/root.publickey

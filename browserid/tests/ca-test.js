@@ -43,9 +43,9 @@ start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 email = require('../lib/email.js'),
 ca = require('../lib/ca.js'),
-jwcert = require('../../lib/jwcrypto/jwcert'),
-jwk = require('../../lib/jwcrypto/jwk'),
-jws = require('../../lib/jwcrypto/jws');
+jwcert = require('jwcrypto/jwcert'),
+jwk = require('jwcrypto/jwk'),
+jws = require('jwcrypto/jws');
 
 var suite = vows.describe('ca');
 
