@@ -180,6 +180,10 @@ div.content > div.summary {
     padding: 0 .4em 0 .4em;
 }
 
+#createContainer, #passwordContainer, #nosuchaccount {
+  display: none;
+}
+
 a {
     color: rgb(65, 126, 208);
     text-decoration: none;

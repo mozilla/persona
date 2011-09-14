@@ -37,6 +37,9 @@
 (function() {
   "use strict";
 
+  var network = BrowserIDNetwork,
+      identities = BrowserIDIdentities;
+
   PageController.extend("Authenticate", {}, {
     init: function() {
       this._super({
@@ -44,10 +47,30 @@
         bodyVars: {
           sitename: BrowserIDNetwork.origin,
           siteicon: '/i/times.gif'
-        },
+        }/*,
         footerTemplate: "bottom-signin.ejs",
         footerVars: {}
+        */
       });
+    },
+
+    "#enterEmailNext click": function(event) {
+      var email = $("#email_input").val();
+ 
+      // XXX verify email length/format here
+      // show error message if bad.
+      network.haveEmail(email, function onComplete(registered) {
+        if(registered) {
+          $("#passwordContainer").slideDown(300);
+        }
+        else {
+          $("#createContainer").slideDown(300);
+        }
+      });
+    },
+
+    "#authenticate click": function(event) {
+      this.submit();
     },
 
     "#forgotpassword click": function(event) {
@@ -70,7 +93,7 @@
       var pass = $("#password_input").val();
 
       var self = this;
-      BrowserIDIdentities.authenticateAndSync(email, pass, function(authenticated) {
+      identities.authenticateAndSync(email, pass, function(authenticated) {
         if (authenticated) {
           self.doWait(BrowserIDWait.authentication);
         }

@@ -238,7 +238,7 @@ var BrowserIDNetwork = (function() {
         url: '/wsapi/have_email?email=' + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
           if(onSuccess) {
-            var success = !JSON.parse(data);
+            var success = typeof data === 'string' ? !JSON.parse(data) : data;
             onSuccess(success);
           }
         },
