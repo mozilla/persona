@@ -102,7 +102,7 @@
         if (authenticated) {
           self.close("authenticate:authenticated");
         } else {
-          self.find("#nosuchaccount").hide().fadeIn(400);
+          self.find("#cannotAuthenticate").hide().fadeIn(400);
         }
       }, self.getErrorDialog(BrowserIDErrors.authentication));
     }
