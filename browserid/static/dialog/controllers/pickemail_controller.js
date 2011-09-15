@@ -52,10 +52,16 @@
     },
 
     submit: function() {
-      var email = $("#inputs input:checked").val();
-      this.close("pickemail:complete", {
-        email: email
-      });
+      var me=this;
+      $("#signIn").animate({"width" : "685px"}, "slow", function () {
+        // post animation
+         $("body").delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
+            var email = $("#inputs input:checked").val();
+            me.close("pickemail:complete", {
+              email: email
+            });
+         });
+      }); 
     },
 
     "#signInButton click": function() {
