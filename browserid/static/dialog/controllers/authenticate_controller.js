@@ -62,7 +62,9 @@
       network.haveEmail(email, function onComplete(registered) {
         $(".start").hide();
         if(registered) {
-          $(".returning").slideDown(300);
+          $(".returning").slideDown(300, function() {
+            $("#password").focus();  
+          });
         }
         else {
           $(".newuser").slideDown(300);
