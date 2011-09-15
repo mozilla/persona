@@ -410,9 +410,33 @@ html[xmlns] .cf {
 	height: 1%;
 }
 
+#inputs {
+    min-height: 100px;
+}
+.add {
+    font-size: 80%;
+}
+#inputs li:only-child input {
+    display: none;
+}
+#differentEmail {
+    display: none;
+    width: 100%;
+    margin: 5px 0;
+}
+#addDifferentEmail {
+    margin: 0 5px;
+}
+#newEmail {
+    -moz-box-flex: 1;
+}
+
 #create,
 #password_section,
-#create_text_section {
+#cannot_authenticate,
+#create_text_section,
+.new,
+.returning {
     display: none;
 }
 #create_text_section {

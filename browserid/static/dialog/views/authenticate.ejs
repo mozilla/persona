@@ -37,7 +37,7 @@
                         </div>
 
                         <div id="hint_section">
-                            <p>Enter your email address to sign in to <strong>www.nytimes.com</strong></p>
+                            <p>Enter your email address to sign in to <strong><%= sitename %></strong></p>
                         </div>
 
                         <div id="create_text_section">
@@ -45,43 +45,30 @@
                             <p>This email looks new, so let's get you set up</p>
                         </div>
 
+                        <div id="cannot_authenticate">
+                          The account cannot be logged in with this username and password.
+                        </div>
                     </li>
                 
                 </ul>
 
                 <div class="submit cf">
                     <button id="next">next</button>
-                    <button id="create">Create Account</button>
+                    <button id="create" class="new">Create Account</button>
 
-                    <!--div class="add left half cf">
+                    <div class="add left half cf returning">
                         <a id="useDifferentEmail" href="#">Use a different email</a>
                         <div id="differentEmail" class="cf">
                             <input id="newEmail" type="email"/>
                             <button id="addDifferentEmail">Add</button>
                         </div>
                     </div>
-                    <button id="signInButton">sign in</button-->
+
+                    <button id="forgotpassword" class="returning">I forgot my password</button>
+                    <button id="signInButton" class="returning">sign in</button>
                 </div>
             </form>
         </div>
     </div>
 
-
-    <!-- Bryan, I am depending on the ids, not the classes-->
-    <div class="formRow" id="createContainer">
-      <strong>Welcome to BrowserID</strong>
-      This email looks new, so let's get you set up
-      <a href="#" id="create">Create Account</a>
-    </div>
-
-    <div class="formRow" id="passwordContainer">
-      <label for="password_input"> Password </label>
-      <input type="password" id="password_input" pattern=".{5,}" required/>
-      <a href="#" id="forgotpassword">I forgot my password</a>
-      <a href="#" id="authenticate">Sign In</a>
-    </div>
-
-    <div id="cannotAuthenticate">
-      The account cannot be logged in with this username and password.
-    </div>
 

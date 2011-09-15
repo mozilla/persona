@@ -54,7 +54,7 @@
       });
     },
 
-    "#enterEmailNext click": function(event) {
+    "#next click": function(event) {
       var email = $("#email").val();
  
       // XXX verify email length/format here
@@ -110,7 +110,7 @@
         if (authenticated) {
           self.close("authenticate:authenticated");
         } else {
-          self.find("#cannotAuthenticate").hide().fadeIn(400);
+          self.find("#cannot_authenticate").hide().fadeIn(400);
         }
       }, self.getErrorDialog(BrowserIDErrors.authentication));
     }
