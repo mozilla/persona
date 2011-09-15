@@ -38,14 +38,12 @@
   "use strict";
 
   PageController.extend("Checkregistration", {}, {
-    init: function(options) {
+    init: function(el, options) {
       this._super({
         bodyTemplate: "confirmemail.ejs",
         bodyVars: {
           email: options.email
-        },
-        footerTemplate: "bottom-confirmemail.ejs",
-        footerVars: {}
+        }
       });
       $('#continue_button').addClass('disabled');
       this.setupRegCheck();
