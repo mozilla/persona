@@ -36,9 +36,9 @@
 
 // certificate authority
 
-var jwcert = require('../../lib/jwcrypto/jwcert'),
-    jwk = require('../../lib/jwcrypto/jwk'),
-    jws = require('../../lib/jwcrypto/jws'),
+var jwcert = require('jwcrypto/jwcert'),
+    jwk = require('jwcrypto/jwk'),
+    jws = require('jwcrypto/jws'),
     configuration = require('../../libs/configuration'),
     secrets = require('../../libs/secrets'),
     path = require("path"),
