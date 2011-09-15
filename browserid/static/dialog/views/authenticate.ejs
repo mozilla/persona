@@ -5,7 +5,35 @@
         option to create a new account is given.
       -->
 
-  <div class="content">
+    <div id="favicon">
+        <div class="table">
+            <div class="vertical">
+                <img src="<%= siteicon %>">
+                <strong><%= sitename %></strong>
+            </div>
+        </div>
+    </div>
+
+    <div id="signIn">
+        <div class="arrow"></div>
+        <div class="table">
+            <form class="vertical">
+                <strong>Sign in using</strong>
+                <ul id="inputs"></ul>
+                <div class="submit cf">
+                    <div class="add left half cf">
+                        <a id="useDifferentEmail" href="#">Use a different email</a>
+                        <div id="differentEmail" class="cf">
+                            <input id="newEmail" type="email"/>
+                            <button id="addDifferentEmail">Add</button>
+                        </div>
+                    </div>
+                    <button id="signInButton">sign in</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <p class="prompt">Signing into <span class="sitename bad"><%= sitename %></span>:</p>
     <img src="<%= siteicon %>" alt="NYTimes Logo" width="75" height="75"/>
 
@@ -33,4 +61,3 @@
       The account cannot be logged in with this username and password.
     </div>
 
-  </div>

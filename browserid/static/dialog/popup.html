@@ -1,0 +1,102 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <meta charset='utf-8'>
+    <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">  
+    <title>Sign In to 'quora.com'</title> 
+
+    <link href='http://fonts.googleapis.com/css?family=Droid+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../css/popup.css" type="text/css" media="screen"> 
+
+    <script src="../js/jquery-1.6.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/signin.js" type="text/javascript" charset="utf-8"></script>
+
+    <style type="text/css">
+    #inputs {
+        min-height: 100px;
+    }
+    .add {
+        font-size: 80%;
+    }
+    #inputs li:only-child input {
+        display: none;
+    }
+    #differentEmail {
+        display: none;
+        width: 100%;
+        margin: 5px 0;
+    }
+    #addDifferentEmail {
+        margin: 0 5px;
+    }
+    #newEmail {
+        -moz-box-flex: 1;
+    }
+    </style>
+</head> 
+<body>
+
+<div id="wrapper">
+
+    <div id="header" class="cf">
+        <ul>
+            <li><a class="home" href="#"></a></li>
+            <li>Sign In to 'quora.com'</li>
+        </ul>
+    </div>
+    
+    <div id="formWrap" class="cf">
+
+    
+        <div id="favicon">
+            <div class="table">
+                <div class="vertical">
+                    <img src="../i/quora.gif">
+                    <strong>quora.com</strong>
+                </div>
+            </div>
+        </div>
+
+    
+        <div id="signIn">
+            <div class="arrow"></div>
+            <div class="table">
+                <form class="vertical">
+                    <strong>Sign in using</strong>
+                    <ul id="inputs"></ul>
+                    <div class="submit cf">
+                        <div class="add left half cf">
+                            <a id="useDifferentEmail" href="javascript:void(0);">Use a different email</a>
+                            <div id="differentEmail" class="cf">
+                                <input id="newEmail" type="email"/>
+                                <button id="addDifferentEmail">Add</button>
+                            </div>
+                        </div>
+                        <button id="signInButton">sign in</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div id="footer">
+        <ul class="cf">
+            <li>By <a href="http://mozillalabs.com">Mozilla Labs</a></li>
+
+            <li>&mdash;</li>           
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">TOS</a></li>
+        </ul>
+        <div class="new">
+            New to BrowserID? <a href="#">Sign up today!</a>
+        </div>
+        <div class="help">
+            <a href="http://support.mozilla.com/en-US/home" target="_blank">need help?</a>
+        </div>
+    </div>
+    
+</div>
+
+</body>
+</html>
