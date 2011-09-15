@@ -349,31 +349,6 @@ function setup(app) {
     });
   });
 
-  app.post('/wsapi/sync_emails', checkAuthed, function(req,resp) {
-    // validate that the post body contains an object with an .emails
-    // property that is an array of strings.
-    var valid = true;
-    try {
-      req.body.emails = JSON.parse(req.body.emails);
-      Object.keys(req.body.emails).forEach(function(k) {
-        if (typeof req.body.emails[k] !== 'string') {
-          // for certs, this is changing
-          // throw "bogus value for key " + k;
-        }
-      });
-    } catch (e) {
-      logger.warn("invalid request to sync_emails: " + e);
-      return httputils.badRequest(resp, "sync_emails requires a JSON formatted 'emails' " +
-                                  "post argument");
-    }
-
-    logger.debug('sync emails called.  client provides: ' + JSON.stringify(req.body.emails)); 
-    db.getSyncResponse(req.session.authenticatedUser, req.body.emails, function(err, syncResponse) {
-      if (err) httputils.serverError(resp, err);
-      else resp.json(syncResponse);
-    });
-  });
-
   app.get('/wsapi/prove_email_ownership', checkParams(["token"]), function(req, resp) {
     db.gotVerificationSecret(req.query.token, function(e) {
       if (e) {

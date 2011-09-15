@@ -101,7 +101,6 @@ exports.onReady = function(f) {
   'gotVerificationSecret',
   'checkAuth',
   'listEmails',
-  'getSyncResponse',
   'removeEmail',
   'cancelAccount'
 ].forEach(function(fn) {

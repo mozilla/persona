@@ -132,28 +132,6 @@ var BrowserIDIdentities = (function() {
 
         addNextEmail();
       });
-
-      /*
-      network.syncEmails(issued_identities, function(resp) {
-        removeUnknownIdentities(resp.unknown_emails);
-
-        // now let's begin iteratively re-keying the emails mentioned in the server provided list
-        var emailsToAdd = resp.key_refresh;
-        
-        function addNextEmail() {
-          if (!emailsToAdd || !emailsToAdd.length) {
-            onSuccess();
-            return;
-          }
-
-          var email = emailsToAdd.shift();
-
-          self.syncIdentity(email, "browserid.org:443", addNextEmail, onFailure);
-        }
-
-        addNextEmail();
-      }, onFailure);
-      */
     },
 
     /**

@@ -317,30 +317,8 @@ var BrowserIDNetwork = (function() {
         success: onSuccess,
         error: onFailure
       });
-    },
-    
-    /**
-     * Sync emails
-     * @method syncEmails
-     * @param {object} issued_identities - Identities to check against.
-     * @param {function} [onSuccess] - Called with response when complete.
-     * @param {function} [onFailure] - Called on XHR failure.
-     */
-    syncEmails: function(issued_identities, onSuccess, onFailure) {
-      withCSRF(function() { 
-        $.ajax({
-          type: "POST",
-          url: '/wsapi/sync_emails',
-          data: {
-            emails: JSON.stringify(issued_identities),
-            csrf: csrf_token
-          },
-          success: onSuccess,
-          error: onFailure
-        });
-      });
     }
-
+    
   };
 
   return Network;

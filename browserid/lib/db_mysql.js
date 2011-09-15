@@ -312,10 +312,9 @@ function emailHasPubkey(email, pubkey, cb) {
 }
 
 /*
- * a simpler action than syncResponse, just list the user's emails.
- * this is more appropriate for the certs approach.
+ * list the user's emails.
  *
- * returns an object keyed by email address with properties for each email
+ * returns an object keyed by email address with properties for each email.
  */
 exports.listEmails = function(email, cb) {
   client.query(
@@ -334,66 +333,6 @@ exports.listEmails = function(email, cb) {
         }
       });
 };
-
-/* a high level operation that attempts to sync a client's view with that of the
- * server.  email is the identity of the authenticated channel with the user,
- * identities is a map of email -> pubkey.
- * We'll return an object that expresses three different types of information:
- * there are several things we need to express:
- * 1. emails that the client knows about but we do not
- * 2. emails that we know about and the client does not
- * 3. emails that we both know about but who need to be re-keyed
- * NOTE: it's not neccesary to differentiate between #2 and #3, as the client action
- *       is the same (regen keypair and tell us about it).
- */
-exports.getSyncResponse = function(email, identities, cb) {
-  var respBody = {
-    unknown_emails: [ ],
-    key_refresh: [ ]
-  };
-
-  client.query(
-    'SELECT address FROM email WHERE user = ( SELECT user FROM email WHERE address = ? ) ',
-      [ email ],
-      function (err, rows) {
-        if (err) cb(err);
-        else {
-          var emails = [ ];
-          var keysToCheck = [ ];
-          for (var i = 0; i < rows.length; i++) emails.push(rows[i].address);
-
-          // #1
-          for (var e in identities) {
-            if (emails.indexOf(e) == -1) respBody.unknown_emails.push(e);
-            else keysToCheck.push(e);
-          }
-
-          // #2
-          for (var e in emails) {
-            e = emails[e];
-            if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
-          }
-
-          // #3 -- yes, this is sub-optimal in terms of performance.  when we
-          // move away from public keys this will be unnec.
-          if (keysToCheck.length) {
-            var checked = 0;
-            keysToCheck.forEach(function(e) {
-              emailHasPubkey(e, identities[e], function(v) {
-                checked++;
-                if (!v) respBody.key_refresh.push(e);
-                if (checked === keysToCheck.length) {
-                  cb(undefined, respBody);
-                }
-              });
-            });
-          } else {
-            cb(undefined, respBody);
-          }
-        }
-      });
-};
-
 
 exports.removeEmail = function(authenticated_email, email, cb) {
   exports.emailsBelongToSameAccount(authenticated_email, email, function(ok) {
