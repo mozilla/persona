@@ -201,14 +201,6 @@ suite.addBatch({
       assert.strictEqual(JSON.parse(r.body), true);
     }
   },
-  "sync emails": {
-    topic: wsapi.post('/wsapi/sync_emails', {'emails': '{}'}),
-      "should work" : function(r, err) {
-      var parsed_body = JSON.parse(r.body);
-      assert.equal(typeof parsed_body.unknown_emails, "object");
-      assert.equal(typeof parsed_body.key_refresh, "object");
-    }
-  },
   "logout": {
     topic: wsapi.post('/wsapi/logout', {}),
       "should work": function(r, err) {
