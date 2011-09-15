@@ -45,7 +45,7 @@ steal.plugins(
 	'jquery/view/ejs',				// client side templates
 	'jquery/controller/view')		// lookup views with the controller's name
 
-	.css("style")	// loads styles
+	.css("css/popup2")	// loads styles
 
 	.resources('jschannel',
                'base64',

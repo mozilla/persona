@@ -15,6 +15,7 @@ body {
     height: 348px;
     padding: 0;
     margin: 0;
+    background-image: url('/i/bg.png');
 }
 
 span.sitename, span.email {
@@ -29,7 +30,7 @@ span.sitename, span.email {
     margin-bottom: 1em;
 }
 
-#bottom-bar {
+footer {
     margin: 0;
     padding: 0;
     border: 0;
@@ -42,7 +43,7 @@ span.sitename, span.email {
     background-color: rgb(244, 247, 251);
 }
 
-#terms {
+footer {
     margin: 0;
     padding: 0;
     border: 0;
@@ -55,7 +56,7 @@ span.sitename, span.email {
     font-size: .7em;
 }
 
-#bottom-bar button, #bottom-bar input[type=submit] {
+footer button, footer input[type=submit] {
     height: 25px;
     border: 1px solid rgb(145, 145, 145);
     -moz-border-radius: 4px;
@@ -71,11 +72,11 @@ span.sitename, span.email {
     float: left;
 }
 
-#bottom-bar button.righty, #bottom-bar input[type=submit].righty {
+footer button.righty, footer input[type=submit].righty {
     float: right;
 }
 
-#bottom-bar button.action, #bottom-bar input[type=submit] {
+footer button.action, footer input[type=submit] {
     background-color: rgb(0,128,211);
     color: #fff;
     font-weight: bold;
@@ -239,7 +240,7 @@ div.dialog div.attention_lame {
     background: url('/i/sprite.png') no-repeat 0 0;
 }
 
-#header {
+header {
     position: fixed;
     padding: 0;
     border: 0;
