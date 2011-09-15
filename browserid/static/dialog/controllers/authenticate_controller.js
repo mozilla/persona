@@ -60,16 +60,17 @@
       // XXX verify email length/format here
       // show error message if bad.
       network.haveEmail(email, function onComplete(registered) {
+        $(".start").hide();
         if(registered) {
-          $("#passwordContainer").slideDown(300);
+          $(".returning").slideDown(300);
         }
         else {
-          $("#createContainer").slideDown(300);
+          $(".new").slideDown(300);
         }
       });
     },
 
-    "#authenticate click": function(event) {
+    "#signInButton click": function(event) {
       this.submit();
     },
 
@@ -110,7 +111,7 @@
         if (authenticated) {
           self.close("authenticate:authenticated");
         } else {
-          self.find("#cannot_authenticate").hide().fadeIn(400);
+          //self.find("#cannot_authenticate").hide().fadeIn(400);
         }
       }, self.getErrorDialog(BrowserIDErrors.authentication));
     }

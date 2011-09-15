@@ -28,19 +28,19 @@
 
                     <li class="section">
 
-                        <div id="password_section">
+                        <div id="password_section" class="returning">
                             <label for="password" class="half serif">Password</label>
                             <div class="half right">
-                                <a class="forgot" href="#">forgot your password?</a>
+                                <a id="forgotpassword" class="forgot" href="#">forgot your password?</a>
                             </div>
-                            <input id="password" class="sans" placeholder="Your password" type="text">
+                            <input id="password" class="sans" placeholder="Your password" type="password">
                         </div>
 
-                        <div id="hint_section">
+                        <div id="hint_section" class="start">
                             <p>Enter your email address to sign in to <strong><%= sitename %></strong></p>
                         </div>
 
-                        <div id="create_text_section">
+                        <div id="create_text_section" class="new">
                             <p><strong>Welcome BrowserID!</strong></p>
                             <p>This email looks new, so let's get you set up</p>
                         </div>
@@ -53,10 +53,10 @@
                 </ul>
 
                 <div class="submit cf">
-                    <button id="next">next</button>
+                    <button id="next" class="start">next</button>
                     <button id="create" class="new">Create Account</button>
 
-                    <div class="add left half cf returning">
+                    <div class="add left half cf" style="display:none;">
                         <a id="useDifferentEmail" href="#">Use a different email</a>
                         <div id="differentEmail" class="cf">
                             <input id="newEmail" type="email"/>
@@ -64,7 +64,6 @@
                         </div>
                     </div>
 
-                    <button id="forgotpassword" class="returning">I forgot my password</button>
                     <button id="signInButton" class="returning">sign in</button>
                 </div>
             </form>
