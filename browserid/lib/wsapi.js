@@ -302,7 +302,7 @@ function setup(app) {
 
       // parse the pubkey
       var pk = ca.parsePublicKey(req.body.pubkey);
-      
+
       // same account, we certify the key
       var cert = ca.certify(req.body.email, pk);
       resp.writeHead(200, {'Content-Type': 'text/plain'});
@@ -310,7 +310,7 @@ function setup(app) {
       resp.end();
     });
   });
-  
+
   app.post('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
     db.emailsBelongToSameAccount(req.session.authenticatedUser, req.body.email, function(sameAccount) {
       // not same account? big fat error
@@ -363,7 +363,7 @@ function setup(app) {
       else resp.json(emails);
     });
   });
-  
+
   app.post('/wsapi/sync_emails', checkAuthed, function(req,resp) {
     // validate that the post body contains an object with an .emails
     // property that is an array of strings.
