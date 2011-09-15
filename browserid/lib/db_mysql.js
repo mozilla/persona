@@ -323,7 +323,7 @@ exports.stageEmail = function(existing_email, new_email, cb) {
   // overwrite previously staged users
   client.query('INSERT INTO staged (secret, new_acct, existing, email) VALUES(?,FALSE,?,?) ' +
                'ON DUPLICATE KEY UPDATE secret=?, existing=?, new_acct=FALSE, passwd=""',
-               [ secret, existing_email, new_email, pubkey, secret, existing_email, pubkey],
+               [ secret, existing_email, new_email, secret, existing_email],
                function(err) {
                  if (err) {
                    logUnexpectedError(err);
