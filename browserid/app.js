@@ -40,7 +40,6 @@ url = require('url'),
 wsapi = require('./lib/wsapi.js'),
 ca = require('./lib/ca.js'),
 httputils = require('./lib/httputils.js'),
-webfinger = require('./lib/webfinger.js'),
 sessions = require('connect-cookie-session'),
 express = require('express'),
 secrets = require('../libs/secrets.js'),
@@ -62,7 +61,6 @@ function internal_redirector(new_url, suppress_noframes) {
   return function(req, resp, next) {
     if (suppress_noframes)
       resp.removeHeader('x-frame-options');
-    
     req.url = new_url;
     return next();
   };
@@ -155,17 +153,6 @@ function router(app) {
     });
   });
 
-  // FIXME: remove this call
-  app.get('/users/:identity.xml', function(req, resp, next) {
-    webfinger.renderUserPage(req.params.identity, function (resultDocument) {
-      if (resultDocument === undefined) {
-        httputils.fourOhFour(resp, "I don't know anything about: " + req.params.identity + "\n");
-      } else {
-        httputils.xmlResponse(resp, resultDocument);
-      }
-    });
-  });
-
   app.get('/code_update', function(req, resp, next) {
     logger.warn("code updated.  shutting down.");
     process.exit();
@@ -185,7 +172,7 @@ exports.setup = function(server) {
 
   // over SSL?
   var overSSL = (configuration.get('scheme') == 'https');
-  
+
   server.use(express.cookieParser());
 
   var cookieSessionMiddleware = sessions({
@@ -196,7 +183,7 @@ exports.setup = function(server) {
       httpOnly: true,
       // IMPORTANT: we allow users to go 1 weeks on the same device
       // without entering their password again
-      maxAge: (7 * 24 * 60 * 60 * 1000), 
+      maxAge: (7 * 24 * 60 * 60 * 1000),
       secure: overSSL
     }
   });
@@ -232,14 +219,14 @@ exports.setup = function(server) {
       var denied = false;
       if (!/^\/wsapi/.test(req.url)) { // post requests only allowed to /wsapi
         denied = true;
-        logger.warn("CSRF validation failure: POST only allowed to /wsapi urls.  not '" + req.url + "'");        
+        logger.warn("CSRF validation failure: POST only allowed to /wsapi urls.  not '" + req.url + "'");
       }
 
       if (req.session === undefined) { // there must be a session
         denied = true;
-        logger.warn("CSRF validation failure: POST calls to /wsapi require an active session");        
+        logger.warn("CSRF validation failure: POST calls to /wsapi require an active session");
       }
-      
+
       // the session must have a csrf token
       if (typeof req.session.csrf !== 'string') {
         denied = true;
