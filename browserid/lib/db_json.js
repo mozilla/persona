@@ -167,42 +167,6 @@ function addEmailToAccount(existing_email, email, pubkey, cb) {
   });
 }
 
-exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
-  emailToUserID(existing_email, function(userID) {
-    if (userID == undefined) {
-      cb("no such email: " + existing_email, undefined);
-      return;
-    }
-
-    if (!(db[userID].emails)) {
-      db[userID].emails = [ ];
-    }
-
-    var m = jsel.match("object:has(.address:val(" + ESC(email) + ")) > .keys", db[userID].emails);
-    
-    if (jsel.match(".key:val(" + ESC(pubkey) + ")", m).length > 0) {
-      return cb("cannot set a key that is already known");
-    }
-
-    var kobj = {
-      key: pubkey,
-      expires: getExpiryTime()
-    };
-
-    if (m.length) {
-      m[0].push(kobj);
-    } else {
-      db[userID].emails.push({
-        address: email,
-        keys: [ kobj ]
-      });
-    }
-
-    flush();
-    if (cb) setTimeout(function() { cb(); }, 0);
-  });
-}
-
 exports.stageUser = function(obj, cb) {
   var secret = secrets.generate(48);
 
@@ -367,11 +331,6 @@ exports.getSyncResponse = function(email, identities, cb) {
       cb(undefined, respBody);
     }
   });
-};
-
-exports.pubkeysForEmail = function(identity, cb) {
-  var m = jsel.match(".emails object:has(.address:val(" + ESC(identity)+ ")) .key", db);
-  setTimeout(function() { cb(m); }, 0);
 };
 
 exports.removeEmail = function(authenticated_email, email, cb) {

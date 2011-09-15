@@ -287,26 +287,6 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
-     * Set the public key for the email address.
-     * @method setKey
-     */
-    setKey: function(email, keypair, onSuccess, onError) {
-      withCSRF(function() { 
-        $.ajax({
-          type: 'POST',
-          url: '/wsapi/set_key',
-          data: {
-            email: email,
-            pubkey: keypair.pub,
-            csrf: csrf_token
-          },
-          success: onSuccess,
-          error: onError
-        });
-      });
-    },
-
-    /**
      * Certify the public key for the email address.
      * @method certKey
      */

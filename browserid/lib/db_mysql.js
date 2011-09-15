@@ -233,8 +233,8 @@ exports.gotVerificationSecret = function(secret, cb) {
                   "INSERT INTO email(user, address) VALUES(?, ?)",
                   [ userID, o.email ],
                   function(err, info) {
-                    if (err) { logUnexpectedError(err); cb(err); return; }
-                    addKeyToEmailRecord(info.insertId, o.pubkey, cb);
+                    if (err) logUnexpectedError(err);
+                    cb(err ? err : undefined);
                   });
               }
             });
@@ -277,44 +277,6 @@ exports.emailsBelongToSameAccount = function(lhs, rhs, cb) {
     function (err, rows) {
       if (err) cb(false);
       else cb(rows.length === 1 && rows[0].n === 1);
-    });
-}
-
-function addKeyToEmailRecord(emailId, pubkey, cb) {
-  client.query(
-    "SELECT COUNT(*) AS n FROM pubkey WHERE email = ? AND content = ?",
-    [ emailId, pubkey ],
-    function(err, rows) {
-      if (err) {
-        logUnexpectedError(err);
-        return cb(err);
-      }
-      if (rows[0].n > 0) {
-        return cb("cannot set a key that is already known");
-      }
-      
-      client.query(
-        // XXX: 2 weeks is wrong, but then so is keypairs.
-        "INSERT INTO pubkey(email, content, expiry) VALUES(?, ?, DATE_ADD(NOW(), INTERVAL 2 WEEK))",
-        [ emailId, pubkey ],
-        function(err, info) {
-          if (err) logUnexpectedError(err);
-          // smash null into undefined.
-          cb(err ? err : undefined);
-        });
-    });
-}
-
-exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
-  // now we know that the user has permission to add a key.
-  client.query(
-    "SELECT id FROM email WHERE address = ?", [ email ],
-    function(err, rows) {
-      if (err) { logUnexpectedError(err); cb(err); }
-      else if (rows.length === 0) cb("cannot find email address: " + email);
-      else {
-        addKeyToEmailRecord(rows[0].id, pubkey, cb);
-      }
     });
 }
 
@@ -436,18 +398,6 @@ exports.getSyncResponse = function(email, identities, cb) {
       });
 };
 
-
-exports.pubkeysForEmail = function(email, cb) {
-  client.query(
-    'SELECT content FROM pubkey WHERE email = (SELECT id FROM email WHERE address = ?)',
-    [ email ],
-    function (err, rows) {
-      var ar = [ ];
-      if (!err) rows.forEach(function(r) { ar.push(r.content); });
-      else logUnexpectedError(err);
-      cb(ar);
-    });
-}
 
 exports.removeEmail = function(authenticated_email, email, cb) {
   exports.emailsBelongToSameAccount(authenticated_email, email, function(ok) {

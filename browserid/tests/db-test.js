@@ -163,40 +163,6 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  "adding keys to email": {
-    topic: function() {
-      db.addKeyToEmail('lloyd@nowhe.re', 'lloyd@nowhe.re', 'fakepubkey2', this.callback);
-    },
-    "works": function(r) {
-      assert.isUndefined(r);
-    }
-  }
-});
-
-suite.addBatch({
-  "adding multiple keys to email": {
-    topic: function() {
-      db.addKeyToEmail('lloyd@nowhe.re', 'lloyd@nowhe.re', 'fakepubkey3', this.callback);
-    },
-    "works too": function(r) {
-      assert.isUndefined(r);
-    }
-  }
-});
-
-suite.addBatch({
-  "pubkeysForEmail": {
-    topic: function() {
-      db.pubkeysForEmail('lloyd@nowhe.re', this.callback);
-    },
-    "returns all public keys properly": function(r) {
-      assert.isArray(r);
-      assert.strictEqual(r.length, 3);
-    }
-  }
-});
-
-suite.addBatch({
   "checkAuth returns": {
     topic: function() {
       db.checkAuth('lloyd@nowhe.re', this.callback);
