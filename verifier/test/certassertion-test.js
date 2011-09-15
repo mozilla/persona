@@ -37,10 +37,10 @@
 var vows = require("vows"),
     assert = require("assert"),
     certassertion = require("../lib/certassertion"),
-    jwk = require("../../lib/jwcrypto/jwk"),
-    jwt = require("../../lib/jwcrypto/jwt"),
-    jwcert = require("../../lib/jwcrypto/jwcert"),
-    vep = require("../../lib/jwcrypto/vep"),
+    jwk = require("jwcrypto/jwk"),
+    jwt = require("jwcrypto/jwt"),
+    jwcert = require("jwcrypto/jwcert"),
+    vep = require("jwcrypto/vep"),
     events = require("events");
 
 vows.describe('certassertion').addBatch({

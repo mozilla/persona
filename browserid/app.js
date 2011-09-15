@@ -138,7 +138,7 @@ function router(app) {
 
   // vep bundle of JavaScript
   app.get("/vepbundle", function(req, res) {
-    fs.readFile(__dirname + "/../lib/jwcrypto/vepbundle.js", function(error, content) {
+    fs.readFile(__dirname + "/../node_modules/jwcrypto/vepbundle.js", function(error, content) {
       if (error) {
         res.writeHead(500);
         res.end("oops");
