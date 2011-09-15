@@ -139,7 +139,7 @@ exports.emailsBelongToSameAccount = function(lhs, rhs, cb) {
   });
 };
 
-function addEmailToAccount(existing_email, email, pubkey, cb) {
+function addEmailToAccount(existing_email, email, cb) {
   emailToUserID(existing_email, function(userID) {
     if (userID == undefined) {
       cb("no such email: " + existing_email, undefined);
@@ -214,7 +214,7 @@ exports.gotVerificationSecret = function(secret, cb) {
   } else if (o.type === 'add_email') {
     exports.emailKnown(o.email, function(known) {
       function addIt() {
-        addEmailToAccount(o.existing_email, o.email, o.pubkey, cb);
+        addEmailToAccount(o.existing_email, o.email, cb);
       }
       if (known) {
         exports.removeEmail(o.email, o.email, function (err) {

@@ -41,12 +41,11 @@
 /*
  * The Schema:
  *
- *    +--- user ------+       +--- email ----+        +--- pubkey -----+
- *    |*int id        | <-\   |*int id       | <-\    |*int id         |
- *    | string passwd |    \- |*int user     |    \-- |*int email      |
- *    +---------------+       |*string address        | string pubkey  |
- *                            +--------------+        | int expires    |
- *                                                    +----------------+
+ *    +--- user ------+       +--- email ----+        
+ *    |*int id        | <-\   |*int id       |
+ *    | string passwd |    \- |*int user     |
+ *    +---------------+       |*string address
+ *                            +--------------+
  *
  *
  *    +------ staged ----------+
@@ -54,7 +53,6 @@
  *    | bool new_acct          |
  *    | string existing        |
  *    |*string email           |
- *    | string pubkey          |
  *    | string passwd          |
  *    | timestamp ts           |
  *    +------------------------+
@@ -73,8 +71,7 @@ var drop_on_close = undefined;
 const schemas = [
   "CREATE TABLE IF NOT EXISTS user   ( id INTEGER AUTO_INCREMENT PRIMARY KEY, passwd VARCHAR(64) );",
   "CREATE TABLE IF NOT EXISTS email  ( id INTEGER AUTO_INCREMENT PRIMARY KEY, user INTEGER, address VARCHAR(255) UNIQUE, INDEX(address) );",
-  "CREATE TABLE IF NOT EXISTS pubkey ( id INTEGER AUTO_INCREMENT PRIMARY KEY, email INTEGER, content TEXT, expiry DATETIME );",
-  "CREATE TABLE IF NOT EXISTS staged ( secret VARCHAR(48) PRIMARY KEY, new_acct BOOL, existing VARCHAR(255), email VARCHAR(255) UNIQUE, INDEX(email), pubkey TEXT, passwd VARCHAR(64), ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
+  "CREATE TABLE IF NOT EXISTS staged ( secret VARCHAR(48) PRIMARY KEY, new_acct BOOL, existing VARCHAR(255), email VARCHAR(255) UNIQUE, INDEX(email), passwd VARCHAR(64), ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
 ];
 
 // log an unexpected database error
@@ -301,16 +298,6 @@ exports.checkAuth = function(email, cb) {
     });
 }
 
-function emailHasPubkey(email, pubkey, cb) {
-  client.query(
-    'SELECT pubkey.content FROM pubkey, email WHERE email.address = ? AND pubkey.email = email.id AND pubkey.content = ?',
-    [ email, pubkey ],
-    function(err, rows) {
-      if (err) logUnexpectedError(err);
-      cb(rows && rows.length === 1);
-    });
-}
-
 /*
  * list the user's emails.
  *
@@ -343,22 +330,12 @@ exports.removeEmail = function(authenticated_email, email, cb) {
     }
 
     client.query(
-      'DELETE FROM pubkey WHERE email = ( SELECT id FROM email WHERE address = ? )',
+      'DELETE FROM email WHERE address = ?',
       [ email ],
-      function (err, info) {
-        if (err) {
-          logUnexpectedError(err);
-          cb(err);
-        } else {
-          client.query(
-            'DELETE FROM email WHERE address = ?',
-            [ email ],
-            function(err, info) {
-              if (err) logUnexpectedError(err);
-              // smash null into undefined
-              cb(err ? err : undefined);
-            });
-        }
+      function(err, info) {
+        if (err) logUnexpectedError(err);
+        // smash null into undefined
+        cb(err ? err : undefined);
       });
   });
 }
@@ -374,7 +351,6 @@ exports.cancelAccount = function(email, cb) {
         return
       }
       var uid = rows[0].user;
-      client.query("DELETE LOW_PRIORITY FROM pubkey WHERE email in ( SELECT id FROM email WHERE user = ? )", [ uid ], reportErr);
       client.query("DELETE LOW_PRIORITY FROM email WHERE user = ?", [ uid ], reportErr);
       client.query("DELETE LOW_PRIORITY FROM user WHERE id = ?", [ uid ], reportErr);
       cb();
