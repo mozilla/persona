@@ -102,15 +102,15 @@ PageController.extend("Dialog", {}, {
         self.doSignIn();
       });
 */
-      hub.subscribe("chooseemail:complete", function(msg, info) {
+      hub.subscribe("pickemail:complete", function(msg, info) {
         self.doEmailSelected(info.email);
       });
 
-      hub.subscribe("chooseemail:addemail", function() {
+      hub.subscribe("pickemail:addemail", function() {
         self.doAddEmail();
       });
 
-      hub.subscribe("chooseemail:notme", function() {
+      hub.subscribe("pickemail:notme", function() {
         self.doNotMe();
       });
 
@@ -145,7 +145,7 @@ PageController.extend("Dialog", {}, {
     },
 
     doSignIn: function() {
-      this.element.chooseemail();
+      this.element.pickemail();
     },
 
     doAuthenticate: function() {

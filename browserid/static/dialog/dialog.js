@@ -69,7 +69,7 @@ steal.plugins(
                'checkregistration',
                'setpassword',
                'forgotpassword',
-               'chooseemail',
+               'pickemail',
                'addemail')					// loads files in controllers folder
 
 	.views('authenticate.ejs',

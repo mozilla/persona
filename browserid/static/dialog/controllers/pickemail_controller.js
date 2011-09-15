@@ -37,7 +37,7 @@
 (function() {
   "use strict";
 
-  PageController.extend("Chooseemail", {}, {
+  PageController.extend("Pickemail", {}, {
     init: function(options) {
       this._super({
         bodyTemplate: "pickemail.ejs",
@@ -45,9 +45,7 @@
           sitename: BrowserIDNetwork.origin,
           siteicon: '/i/times.gif',
           identities: getEmails()
-        },
-        footerTemplate: "bottom-pickemail.ejs",
-        footerVars: {}
+        }
       });
       // select the first option
       this.find('input:first').attr('checked', true);
@@ -55,17 +53,17 @@
 
     submit: function() {
       var email = $("#identities input:checked").val();
-      this.close("chooseemail:complete", {
+      this.close("pickemail:complete", {
         email: email
       });
     },
 
     "#addemail click": function() {
-      this.close("chooseemail:addemail");
+      this.close("pickemail:addemail");
     },
 
     "#notme click": function() {
-      this.close("chooseemail:notme");
+      this.close("pickemail:notme");
     },
 
     "#needhelp click": function(event) {
