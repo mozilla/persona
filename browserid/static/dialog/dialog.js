@@ -67,6 +67,7 @@ steal.plugins(
                'authenticate',
                'createaccount',
                'checkregistration',
+               'setpassword',
                'forgotpassword',
                'chooseemail',
                'addemail')					// loads files in controllers folder

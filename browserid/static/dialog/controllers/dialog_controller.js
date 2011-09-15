@@ -176,6 +176,7 @@ PageController.extend("Dialog", {}, {
         // email, keypair, and that fact
         // XXX How do we handle the password input, in the dialog or on an 
         // external page?
+        this.element.setpassword();
     /*    BrowserIDIdentities.confirmIdentity(self.confirmEmail,
           self.doSignIn.bind(self));
       */
