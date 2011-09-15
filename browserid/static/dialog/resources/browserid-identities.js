@@ -160,22 +160,21 @@ var BrowserIDIdentities = (function() {
      * Stage an identity - this creates an identity that must be verified.  
      * Used when creating a new account or resetting the password of an 
      * existing account.
-     * FIXME: rename to indicate new account
-     * @method stageIdentity
+     * @method createIdentity
      * @param {string} email - Email address.
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
-    stageIdentity: function(email, password, onSuccess, onFailure) {
+    createIdentity: function(email, onSuccess, onFailure) {
       var self=this;
       // FIXME: keysize
-      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
-
-      self.stagedEmail = email;
-      self.stagedKeypair = keypair;
-
-      network.stageUser(email, password, function() {
+      network.createUser(email, function() {
         if (onSuccess) {
+          var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
+
+          self.stagedEmail = email;
+          self.stagedKeypair = keypair;
+
           onSuccess(keypair);
         }
       }, onFailure);

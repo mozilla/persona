@@ -73,7 +73,7 @@ PageController.extend("Dialog", {}, {
     stateMachine: function() {
       var self=this, hub = OpenAjax.hub, el = this.element;
 
-      hub.subscribe("createaccount:created", function(msg, info) {
+      hub.subscribe("createaccount:staged", function(msg, info) {
         self.doConfirmEmail(info.email);
       });
 
@@ -152,7 +152,7 @@ PageController.extend("Dialog", {}, {
     },
 
     doCreate: function() {
-      this.element.createaccount();
+      //this.element.createaccount();
     },
       
     doForgotPassword: function() {

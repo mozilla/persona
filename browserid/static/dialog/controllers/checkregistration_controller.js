@@ -52,48 +52,33 @@
     },
 
     close: function() {
-      if(this.pollTimeout) {
-        clearTimeout(this.pollTimeout);
-        this.pollTimeout = null;
-      }
-
+      BrowserIDNetwork.cancelRegistrationCheck();
       this._super.apply(this, arguments);
     },
 
     setupRegCheck: function() {
       // now poll every 3s waiting for the user to complete confirmation
       var self=this;
-      function setupRegCheck() {
-        self.pollTimeout = setTimeout(function() {
-          BrowserIDNetwork.checkRegistration(function(status) {
-            // registration status checks the status of the last initiated registration,
-            // it's possible return values are:
-            //   'complete' - registration has been completed
-            //   'pending'  - a registration is in progress
-            //   'noRegistration' - no registration is in progress
-            if (status === 'complete') {
-              // and tell the user that everything is really quite awesome.
-              self.find("#waiting_confirmation").hide();
-              self.find("#resendit_action").hide();
-              self.find("#confirmed_notice").show();
+      BrowserIDNetwork.checkRegistration(function(status) {
+        // registration status checks the status of the last initiated registration,
+        // it's possible return values are:
+        //   'complete' - registration has been completed
+        //   'pending'  - a registration is in progress
+        //   'noRegistration' - no registration is in progress
+        if (status === 'complete') {
+          // and tell the user that everything is really quite awesome.
+          self.find("#waiting_confirmation").hide();
+          self.find("#resendit_action").hide();
+          self.find("#confirmed_notice").show();
 
-              // enable button
-              $('#continue_button').removeClass('disabled');
+          // enable button
+          $('#continue_button').removeClass('disabled');
 
-              self.close("checkregistration:confirmed");
-            } else if (status === 'pending') {
-              // try again, what else can we do?
-              self.setupRegCheck();
-            } else {
-              self.runErrorDialog(BrowserIDErrors.registration);
-            }
-          }, self.getErrorDialog(BrowserIDErrors.registration));
-        }, 3000);
-      }
-      
-      // setup the timeout
-      setupRegCheck();
-
+          self.close("checkregistration:confirmed");
+        } else if (status !== 'pending') {
+          self.runErrorDialog(BrowserIDErrors.registration);
+        }
+      }, self.getErrorDialog(BrowserIDErrors.registration));
     },
 
     validate: function() {

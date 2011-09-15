@@ -78,7 +78,15 @@
     },
 
     "#create click": function(event) {
-      this.close("authenticate:createuser");
+      var self = this,
+          email = $("#email_input").val();
+
+      identities.createIdentity(email, function(keypair) {
+          self.close("createaccount:staged", {
+            email: email,
+            keypair: keypair
+          });
+        }, self.getErrorDialog(BrowserIDErrors.createAccount));
     },
 
     validate: function() {

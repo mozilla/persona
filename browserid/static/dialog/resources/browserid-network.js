@@ -160,6 +160,22 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
+     * Create a new user.  Requires a user to verify identity.
+     * @method stageUser
+     * @param {string} email - Email address to prepare.
+     * @param {string} password - Password for user.
+     * @param {object} keypair - User's public/private key pair.
+     * @param {function} [onSuccess] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    createUser: function(email, onSuccess, onFailure) {
+      // XXX fill this in
+      if (onSuccess) {
+        onSuccess();
+      }
+    },
+
+    /**
      * Call with a token to prove an email address ownership.
      * @method proveEmailOwnership
      * @param {string} token - token proving email ownership.
@@ -275,15 +291,44 @@ var BrowserIDNetwork = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     checkRegistration: function(onSuccess, onFailure) {
-      $.ajax({
-          url: '/wsapi/registration_status',
-          success: function(status, textStatus, jqXHR) {
-            if(onSuccess) {
-              onSuccess(status);
-            }
-          },
-          error: onFailure
-      });
+      setTimeout(function() {
+        onSuccess('complete'); 
+      }, 10000);
+      /*
+      var self=this;
+      function poll() {
+        $.ajax({
+            url: '/wsapi/registration_status',
+            success: function(status, textStatus, jqXHR) {
+              self.pollTimeout = null;
+
+              if(status === 'pending') {
+                self.pollTimeout = setTimeout(poll); 
+              }
+              if(onSuccess) {
+                onSuccess(status);
+              }
+            },
+            error: onFailure
+        });
+      }
+      */
+    },
+
+    /**
+     * Cancel the registration check
+     * @method cancelRegistrationCheck
+     */
+    cancelRegistrationCheck: function(onSuccess, onFailure) {
+      var self=this;
+      if (self.pollTimeout) {
+        clearTimeout(self.pollTimeout);
+        self.pollTimeout = null;
+      }
+
+      if (onSuccess) {
+        onSuccess();
+      }
     },
 
     /**
