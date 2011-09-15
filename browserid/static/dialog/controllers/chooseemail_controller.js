@@ -40,9 +40,10 @@
   PageController.extend("Chooseemail", {}, {
     init: function(options) {
       this._super({
-        bodyTemplate: "signin.ejs",
+        bodyTemplate: "pickemail.ejs",
         bodyVars: {
           sitename: BrowserIDNetwork.origin,
+          siteicon: '/i/times.gif',
           identities: getEmails()
         },
         footerTemplate: "bottom-pickemail.ejs",
@@ -59,12 +60,17 @@
       });
     },
 
-    "#addemail click": function(event) {
+    "#addemail click": function() {
       this.close("chooseemail:addemail");
     },
 
-    "#notme click": function(event) {
+    "#notme click": function() {
       this.close("chooseemail:notme");
+    },
+
+    "#needhelp click": function(event) {
+      // XXX Needs to go somewhere!
+
     }
   });
 

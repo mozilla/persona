@@ -71,15 +71,12 @@
           self.find("#resendit_action").hide();
           self.find("#confirmed_notice").show();
 
-          // enable button
-          $('#continue_button').removeClass('disabled');
-
           self.close("checkregistration:confirmed");
         } else if (status !== 'pending') {
           self.runErrorDialog(BrowserIDErrors.registration);
         }
       }, self.getErrorDialog(BrowserIDErrors.registration));
-    },
+    }/*,
 
     validate: function() {
       var valid = !$("#continue_button").hasClass("disabled");
@@ -91,7 +88,7 @@
       self.publish("checkregistration:complete");
       self._super();      
     }
-
+*/
   });
 
 

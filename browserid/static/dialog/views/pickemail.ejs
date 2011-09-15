@@ -5,8 +5,10 @@
         <li><input type="radio" name="identity" value="<%=email_address%>" id="<%=email_address%>" /><label for="<%=email_address%>"><%= email_address %></label></li>
       <% }); %>
     </ul>
+
+    <label for="signin">Sign In</label>
+    <input type="submit" id="signin" class="righty action submit" name="submit" value="Sign In"/ ></label>
+
+    <img src="<%= siteicon %>" alt="NYTimes Logo" width="75" height="75"/>
   </div>
-  <div class="actions">
-    <div class="action"><a id="addemail" href="#">Add a new email address</a></div>
-    <div class="action"><a id="notme" href="#">This is not me.</a></div>
-  </div>
+

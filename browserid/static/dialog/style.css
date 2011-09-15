@@ -287,3 +287,7 @@ p.prompt .sitename {
     font-size: 1.1em;
 }
 
+label[for=signin] {
+  visibility: hidden;
+}
+
