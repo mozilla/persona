@@ -254,7 +254,6 @@ function setup(app) {
     });
   });
 
-  // MODIFICATIONS for cert: remove pubkey
   app.post('/wsapi/add_email', checkAuthed, checkParams(["email", "site"]), function (req, resp) {
     try {
       // on failure stageEmail may throw, null pubkey
