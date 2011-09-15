@@ -435,7 +435,7 @@ html[xmlns] .cf {
 #password_section,
 #cannot_authenticate,
 #create_text_section,
-.new,
+.newuser,
 .returning {
     display: none;
 }

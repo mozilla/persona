@@ -65,7 +65,7 @@
           $(".returning").slideDown(300);
         }
         else {
-          $(".new").slideDown(300);
+          $(".newuser").slideDown(300);
         }
       });
     },
