@@ -47,5 +47,23 @@
         }
       });
     },
+
+
+    validate: function() {
+      return true;
+    },
+
+    submit: function() {
+      var password = $("#pass").val(),
+          me=this;
+
+      BrowserIDNetwork.setPassword(password, function() {
+        me.close("setpassword:complete"); 
+      });
+    },
+
+    '#submit click': function() {
+      this.submit();
+    }
   });
 }());

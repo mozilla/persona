@@ -175,6 +175,12 @@ var BrowserIDNetwork = (function() {
       }
     },
 
+    setPassword: function(password, onSuccess, onFailure) {
+      if (onSuccess) {
+        onSuccess();
+      }
+    },
+
     /**
      * Call with a token to prove an email address ownership.
      * @method proveEmailOwnership
