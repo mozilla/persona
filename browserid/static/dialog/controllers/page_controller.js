@@ -71,10 +71,11 @@
         });
       }
 
+      var footerHtml = '';
       if (footer) {
-        var footerHtml = $.View("//dialog/views/" + footer, footer_vars);
-        $("#bottom-bar").html(footerHtml);
+        footerHtml = $.View("//dialog/views/" + footer, footer_vars);
       }
+      $("#bottom-bar").html(footerHtml);
     },
 
     onSubmit: function(event) {
