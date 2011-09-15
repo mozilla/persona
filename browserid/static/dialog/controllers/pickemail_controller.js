@@ -52,10 +52,14 @@
     },
 
     submit: function() {
-      var email = $("#identities input:checked").val();
+      var email = $("#inputs input:checked").val();
       this.close("pickemail:complete", {
         email: email
       });
+    },
+
+    "#signInButton click": function() {
+      this.submit();
     },
 
     "#useDifferentEmail click": function() {
@@ -68,7 +72,6 @@
 
     "#needhelp click": function(event) {
       // XXX Needs to go somewhere!
-
     }
   });
 
