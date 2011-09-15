@@ -58,7 +58,7 @@
       });
     },
 
-    "#addemail click": function() {
+    "#useDifferentEmail click": function() {
       this.close("pickemail:addemail");
     },
 

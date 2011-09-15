@@ -1,14 +1,36 @@
-  <div class="content">
-    <p class="prompt">What email address would you like to use to sign into <span class="sitename bad"><%= sitename %></span>?</p>
-    <ul id="identities">
-      <% _.each(identities, function(email_obj, email_address) { %>
-        <li><input type="radio" name="identity" value="<%=email_address%>" id="<%=email_address%>" /><label for="<%=email_address%>"><%= email_address %></label></li>
-      <% }); %>
-    </ul>
+  <div id="favicon">
+      <div class="table">
+          <div class="vertical">
+              <img src="<%= siteicon %>">
+              <strong><%= sitename %></strong>
+          </div>
+      </div>
+  </div>
 
-    <label for="signin">Sign In</label>
-    <input type="submit" id="signin" class="righty action submit" name="submit" value="Sign In"/ ></label>
 
-    <img src="<%= siteicon %>" alt="NYTimes Logo" width="75" height="75"/>
+  <div id="signIn">
+      <div class="arrow"></div>
+      <div class="table">
+          <form class="vertical">
+              <strong>Sign in using</strong>
+
+              <ul id="inputs">
+                <% _.each(identities, function(email_obj, email_address) { %>
+                  <li><input type="radio" name="identity" value="<%=email_address%>" id="<%=email_address%>" /><label for="<%=email_address%>"><%= email_address %></label></li>
+                <% }); %>
+              </ul>
+
+              <div class="submit cf">
+                  <div class="add left half cf">
+                      <a id="useDifferentEmail" href="#">Use a different email</a>
+                      <div id="differentEmail" class="cf">
+                          <input id="newEmail" type="email"/>
+                          <button id="addDifferentEmail">Add</button>
+                      </div>
+                  </div>
+                  <button id="signInButton">sign in</button>
+              </div>
+          </form>
+      </div>
   </div>
 
