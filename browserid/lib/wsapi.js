@@ -128,7 +128,6 @@ function setup(app) {
    * this involves creating a secret url that must be delivered to the
    * user via their claimed email address.  Upon timeout expiry OR clickthrough
    * the staged user account transitions to a valid user account
-   * MODIFICATIONS for Certs: no more pubkey in params. Null is passed to DB layer for now.
    */
   app.post('/wsapi/stage_user', checkParams([ "email", "pass", "site" ]), function(req, resp) {
 
@@ -256,7 +255,7 @@ function setup(app) {
 
   app.post('/wsapi/add_email', checkAuthed, checkParams(["email", "site"]), function (req, resp) {
     try {
-      // on failure stageEmail may throw, null pubkey
+      // on failure stageEmail may throw
       db.stageEmail(req.session.authenticatedUser, req.body.email, function(secret) {
 
         // store the email being added in session data

@@ -190,9 +190,9 @@ exports.isStaged = function(email, cb) {
 exports.stageUser = function(obj, cb) {
   var secret = secrets.generate(48);
   // overwrite previously staged users
-  client.query('INSERT INTO staged (secret, new_acct, email, pubkey, passwd) VALUES(?,TRUE,?,?,?) ' +
-               'ON DUPLICATE KEY UPDATE secret=?, existing="", new_acct=TRUE, pubkey=?, passwd=?',
-               [ secret, obj.email, obj.pubkey, obj.hash, secret, obj.pubkey, obj.hash],
+  client.query('INSERT INTO staged (secret, new_acct, email, passwd) VALUES(?,TRUE,?,?) ' +
+               'ON DUPLICATE KEY UPDATE secret=?, existing="", new_acct=TRUE, passwd=?',
+               [ secret, obj.email, obj.hash, secret, obj.hash],
                function(err) {
                  if (err) {
                    logUnexpectedError(err);
@@ -212,17 +212,13 @@ exports.gotVerificationSecret = function(secret, cb) {
       else {
         var o = rows[0];
 
-        function addEmailAndPubkey(userID) {
+        function addEmailToUser(userID) {
           // issue #170 - delete any old records with the same
           // email address.  this is necessary because
-          // gotVerificationSecret is invoked both for 
+          // gotVerificationSecret is invoked both for
           // forgotten password flows and for new user signups.
           // We could add an `ON DUPLICATE KEY` clause, however
           // We actually want to invalidate all old public keys.
-          //
-          // XXX: periodic database cleanup should remove old expired
-          // keys, but this is moot once we move to certs as the
-          // server won't know about old keys 
           client.query(
             "DELETE FROM email WHERE address = ?",
             [ o.email ],
@@ -244,24 +240,24 @@ exports.gotVerificationSecret = function(secret, cb) {
         client.query("DELETE LOW_PRIORITY FROM staged WHERE secret = ?", [ secret ]);
 
         if (o.new_acct) {
-          // we're creating a new account, add appropriate entries into user, email, and pubkey.
+          // we're creating a new account, add appropriate entries into user and email tables.
           client.query(
             "INSERT INTO user(passwd) VALUES(?)",
             [ o.passwd ],
             function(err, info) {
               if (err) { logUnexpectedError(err); cb(err); return; }
-              addEmailAndPubkey(info.insertId);
+              addEmailToUser(info.insertId);
             });
         } else {
-          // we're adding an email address to an existing user account.  add appropriate entries into email and
-          // pubkey
+          // we're adding an email address to an existing user account.  add appropriate entries into
+          // email table
           client.query(
             "SELECT user FROM email WHERE address = ?", [ o.existing ],
             function(err, rows) {
               if (err) { logUnexpectedError(err); cb(err); }
               else if (rows.length === 0) cb("cannot find email address: " + o.existing);
               else {
-                addEmailAndPubkey(rows[0].user);
+                addEmailToUser(rows[0].user);
               }
             });
         }
