@@ -55,7 +55,7 @@
     },
 
     "#enterEmailNext click": function(event) {
-      var email = $("#email_input").val();
+      var email = $("#email").val();
  
       // XXX verify email length/format here
       // show error message if bad.
@@ -79,7 +79,7 @@
 
     "#create click": function(event) {
       var self = this,
-          email = $("#email_input").val();
+          email = $("#email").val();
 
       identities.createIdentity(email, function(keypair) {
           self.close("createaccount:staged", {
@@ -90,15 +90,15 @@
     },
 
     validate: function() {
-      var email = $("#email_input").val();
-      var pass = $("#password_input").val();
+      var email = $("#email").val();
+      var pass = $("#password").val();
 
       return true;
     },
 
     submit: function() {
-      var email = $("#email_input").val();
-      var pass = $("#password_input").val();
+      var email = $("#email").val();
+      var pass = $("#password").val();
 
       var self = this;
       identities.authenticateAndSync(email, pass, function(authenticated) {

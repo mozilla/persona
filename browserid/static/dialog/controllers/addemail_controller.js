@@ -53,14 +53,14 @@
     },
 
     validate: function() {
-      var email = $("#email_input").val();
+      var email = $("#email").val();
       return /^[\w.!#$%&'*+\-/=?\^`{|}~]+@[a-z0-9-]+(\.[a-z0-9-]+)*$/.test(email);
     },
 
     submit: function() {
       // add the actual email
       // now we need to actually try to stage the creation of this account.
-      var email = $("#email_input").val();
+      var email = $("#email").val();
 
       // kick the user to waiting/status page while we talk to the server.
       this.doWait(BrowserIDWait.addEmail);

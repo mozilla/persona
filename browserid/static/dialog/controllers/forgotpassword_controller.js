@@ -54,7 +54,7 @@
       setupWatchers: function() {
         var self=this;
         function checkInput() {
-          var pass = $("#password_input").val();
+          var pass = $("#password").val();
           var match = pass === $("#password_verify_input").val();
           self.find(".passwordnote").hide();
           $("#create_continue").addClass("disabled");
@@ -90,8 +90,8 @@
 
       submit: function() {
         // now we need to actually try to stage the creation of this account.
-        var email = this.find("#email_input").val();
-        var pass = this.find("#password_input").val();
+        var email = this.find("#email").val();
+        var pass = this.find("#password").val();
 
         this.doWait(BrowserIDWait.createAccount);
 

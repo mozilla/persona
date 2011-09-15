@@ -60,8 +60,8 @@
 
     submit: function() {
       // now we need to actually try to stage the creation of this account.
-      var email = this.find("#email_input").val();
-      var pass = this.find("#password_input").val();
+      var email = this.find("#email").val();
+      var pass = this.find("#password").val();
 
       this.doWait(BrowserIDWait.createAccount);
 
@@ -82,7 +82,7 @@
 
       function checkInput() {
         // check the email address
-        var email = self.find("#email_input").val();
+        var email = self.find("#email").val();
 
         if (typeof email === 'string' && email.length) {
           var valid = checkedEmails[email];
@@ -91,11 +91,11 @@
             // user anything, cause this is a non-critical issue
           } else if (typeof valid === 'boolean') {
             if (valid) {
-              self.find("#email_input_note").show();
+              self.find("#email_note").show();
               self.find("#emailinuse_message").hide();
             } else {
               $("#emailinuse_message").fadeIn(300);
-              self.find("#email_input_note").hide();
+              self.find("#email_note").hide();
               $("#in_use_email").text(email);
             }
           } else {
@@ -130,7 +130,7 @@
         }
       
         // next let's check the password entry
-        var pass = $("#password_input").val();
+        var pass = $("#password").val();
         var match = pass === $("#password_verify_input").val();
         self.find('.passwordnote').hide();
         $('#create_continue').addClass('disabled');

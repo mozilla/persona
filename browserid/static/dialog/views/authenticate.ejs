@@ -19,29 +19,53 @@
         <div class="table">
             <form class="vertical">
                 <strong>Sign in using</strong>
-                <ul id="inputs"></ul>
+                <ul id="inputs">
+
+                    <li class="section">
+                        <label for="email" class="serif">Email</label>
+                        <input id="email" class="sans" placeholder="Your email" type="email" autocapitalize="off" autocorrect="off" autofocus required x-moz-errormessage="an email address is required">
+                    </li>
+
+                    <li class="section">
+
+                        <div id="password_section">
+                            <label for="password" class="half serif">Password</label>
+                            <div class="half right">
+                                <a class="forgot" href="#">forgot your password?</a>
+                            </div>
+                            <input id="password" class="sans" placeholder="Your password" type="text">
+                        </div>
+
+                        <div id="hint_section">
+                            <p>Enter your email address to sign in to <strong>www.nytimes.com</strong></p>
+                        </div>
+
+                        <div id="create_text_section">
+                            <p><strong>Welcome BrowserID!</strong></p>
+                            <p>This email looks new, so let's get you set up</p>
+                        </div>
+
+                    </li>
+                
+                </ul>
+
                 <div class="submit cf">
-                    <div class="add left half cf">
+                    <button id="next">next</button>
+                    <button id="create">Create Account</button>
+
+                    <!--div class="add left half cf">
                         <a id="useDifferentEmail" href="#">Use a different email</a>
                         <div id="differentEmail" class="cf">
                             <input id="newEmail" type="email"/>
                             <button id="addDifferentEmail">Add</button>
                         </div>
                     </div>
-                    <button id="signInButton">sign in</button>
+                    <button id="signInButton">sign in</button-->
                 </div>
             </form>
         </div>
     </div>
 
-    <p class="prompt">Signing into <span class="sitename bad"><%= sitename %></span>:</p>
-    <img src="<%= siteicon %>" alt="NYTimes Logo" width="75" height="75"/>
-
-    <div class="formRow">
-      <label for="email_input"> Email </label>
-      <input type="email" id="email_input" autocapitalize="off" autocorrect="off" required />
-      <a href="#" id="enterEmailNext">Next</a>
-    </div>
 
     <!-- Bryan, I am depending on the ids, not the classes-->
     <div class="formRow" id="createContainer">

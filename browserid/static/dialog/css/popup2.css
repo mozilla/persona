@@ -409,3 +409,17 @@ html[xmlns] .cf {
 * html .cf {
 	height: 1%;
 }
+
+#create,
+#password_section,
+#create_text_section {
+    display: none;
+}
+#create_text_section {
+    color: #222;
+}
+#checkemail {
+    display: none;
+    text-align: center;
+}
+
