@@ -69,16 +69,12 @@
     },
 
     "#useDifferentEmail click": function() {
-      this.close("pickemail:addemail");
-    },
-
-    "#notme click": function() {
-      this.close("pickemail:notme");
-    },
-
-    "#needhelp click": function(event) {
-      // XXX Needs to go somewhere!
+      //this.close("pickemail:addemail");
+      $("#signInButton").hide();
+      $("#differentEmail").slideDown(300);
+      $("#newEmail").focus();
     }
+
   });
 
 }());
