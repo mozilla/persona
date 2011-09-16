@@ -273,12 +273,15 @@ button:active {
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3AA7FF), color-stop(100%, #006EC6));
 }
 
-.new {
+.learn {
     display: inline-block;
-    /* float: right; */
     font-size: 12px;
     color: #62615F;
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+}
+
+footer .learn a {
+    color: #549FDC;
 }
 
 #checkemail {
@@ -295,10 +298,6 @@ button:active {
 #checkemail #displayemail {
     color: #222;
     font-weight: bold;
-}
-
-footer .new a {
-    color: #549FDC;
 }
 
 #favicon {
