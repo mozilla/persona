@@ -38,12 +38,13 @@
   "use strict";
 
   PageController.extend("Setpassword", {}, {
-    init: function(options) {
+    init: function(el, options) {
       this._super({
-        bodyTemplate: "enterpassword.ejs",
+        bodyTemplate: "setpassword.ejs",
         bodyVars: {
           sitename: BrowserIDNetwork.origin,
-          siteicon: '/i/times.gif'
+          siteicon: '/i/times.gif',
+          email: options.email
         }
       });
     },

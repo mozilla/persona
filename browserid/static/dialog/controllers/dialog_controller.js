@@ -172,11 +172,7 @@ PageController.extend("Dialog", {}, {
 
     doRegistrationConfirmed: function() {
         var self = this;
-        // this is a secondary registration from browserid.org, persist
-        // email, keypair, and that fact
-        // XXX How do we handle the password input, in the dialog or on an 
-        // external page?
-        this.element.setpassword();
+        self.element.setpassword({ email: self.confirmEmail });
     /*    BrowserIDIdentities.confirmIdentity(self.confirmEmail,
           self.doSignIn.bind(self));
       */
