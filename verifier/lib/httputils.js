@@ -63,18 +63,3 @@ exports.badRequest = function(resp, reason)
   resp.end();
 };
 
-exports.jsonResponse = function(resp, obj)
-{
-  resp.writeHead(200, {"Content-Type": "application/json"});
-  if (obj) resp.write(JSON.stringify(obj));
-  resp.end();
-};
-
-exports.checkGetArgs = function(req, args) {
-    [ "email", "pass", "pubkey" ].forEach(function(k) {
-      if (!urlobj.hasOwnProperty(k) || typeof urlobj[k] !== 'string') {
-        throw k;
-      }
-    });
-
-};

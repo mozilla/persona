@@ -37,8 +37,6 @@
 const   path = require('path'),
          url = require('url'),
           fs = require('fs'),
-   httputils = require('./lib/httputils.js'),
- idassertion = require('./lib/idassertion.js'),
 certassertion = require('./lib/certassertion.js'),
      express = require('express'),
      metrics = require('../libs/metrics.js'),
@@ -52,7 +50,7 @@ logger.info("verifier server starting up");
 // certificates is the list of chained certificates, CSV-style
 function doVerify(req, resp, next) {
   req.body = req.body || {}
-  
+
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req.body.assertion;
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
 
@@ -77,7 +75,7 @@ function doVerify(req, resp, next) {
         audience : audience,
         expires : expires
       });
-      
+
       metrics.report('verify', {
         result: 'success',
         rp: audience
@@ -90,48 +88,7 @@ function doVerify(req, resp, next) {
         rp: audience
       });
     });
-  
-  // old verification code. Still here in case we want to enable backwards compatibility
-  // for some period of time (doubt it.)
-  /*
-  try {
-    var assertionObj = new idassertion.IDAssertion(assertion);
-    assertionObj
-      .verify(
-        audience,
-        function(payload) {
-          // log it!
-          metrics.report('verify', {
-            result: 'success',
-            rp: payload.audience
-          });
-          
-          result = {
-            status : "okay",
-            email : payload.email,
-            audience : payload.audience,
-            "valid-until" : payload["valid-until"],
-            issuer : payload.issuer
-          };
-          resp.json(result);
-        },
-        function(errorObj) {
-          metrics.report('verify', {
-            result: 'failure',
-            rp: audience
-          });
-          resp.json({ status: "failure", reason: errorObj });
-        }
-      );
-  } catch (e) {
-    // XXX: is this really a warning, or is it just informational
-    logger.warn(e.stack);
-    metrics.report('verify', {
-      result: 'failure',
-      rp: audience
-    });
-    resp.json({ status: "failure", reason: e.toString() });
-  } */
+
 }
 
 exports.setup = function(app) {

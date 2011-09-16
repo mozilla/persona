@@ -181,9 +181,6 @@ suite.addBatch({
       assert.strictEqual(r.code, 400);
     }
   }
-
-
-  // NOTE: db-test has more thorough tests of the algorithm behind the sync_emails API  
 });
 
 start_stop.addShutdownBatches(suite);

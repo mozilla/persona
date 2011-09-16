@@ -107,62 +107,6 @@ suite.addBatch({
   }
 });
 
-/*
-suite.addBatch({
-  "the sync emails API invoked without a proper argument": {
-    topic: wsapi.post('/wsapi/sync_emails', {}),
-    "fails with HTTP 400" : function(r, err) {
-      assert.strictEqual(r.code, 400);
-    }
-  },
-  "the sync emails API invoked with a proper argument": {  
-    topic: wsapi.post('/wsapi/sync_emails', { emails: '{}' }),
-    "returns a response with a proper content-type" : function(r, err) {
-      assert.strictEqual(r.code, 200);
-      //assert.strictEqual(r.headers['content-type'], 'application/json; charset=utf-8');
-    }
-  },
-  "the sync emails API invoked without a empty emails argument": {  
-    topic: wsapi.post('/wsapi/sync_emails', { emails: undefined }),
-    "returns a 400" : function(r, err) {
-      assert.strictEqual(r.code, 400);
-    }
-  },
-  "the sync emails API invoked without malformed JSON in emails argument": {  
-    topic: wsapi.post('/wsapi/sync_emails', { emails: '{ "foo@bar.com": "fakekey" '}),
-    "returns a 400" : function(r, err) {
-      assert.strictEqual(r.code, 400);
-    }
-  },
-  "syncing emails without providing anything": {
-    topic: wsapi.post('/wsapi/sync_emails', {emails: '{}'}),
-    "should tell us to refresh keys for exisitng accounts" : function(r, err) {
-      assert.strictEqual(r.code, 200);
-      r = JSON.parse(r.body);
-      assert.strictEqual(typeof r, 'object');
-      assert.isTrue(Array.isArray(r.unknown_emails));
-      assert.isTrue(Array.isArray(r.key_refresh));
-      assert.strictEqual(r.unknown_emails.length, 0);
-      assert.strictEqual(r.key_refresh.length, 1);
-    }
-  },
-  "syncing emails with an unknown email address": {
-    topic: wsapi.post('/wsapi/sync_emails', {emails: '{ "foo@bar.com": "fake" }'}),
-    "should tell us to refresh keys for exisitng accounts" : function(r, err) {
-      assert.strictEqual(r.code, 200);
-      r = JSON.parse(r.body);
-      assert.strictEqual(typeof r, 'object');
-      assert.isTrue(Array.isArray(r.unknown_emails));
-      assert.isTrue(Array.isArray(r.key_refresh));
-      assert.strictEqual(r.unknown_emails.length, 1);
-      assert.strictEqual(r.unknown_emails[0], 'foo@bar.com');
-      assert.strictEqual(r.key_refresh.length, 1);
-      assert.strictEqual(r.key_refresh[0], 'syncer@somehost.com');
-    }
-  }
-  // NOTE: db-test has more thorough tests of the algorithm behind the sync_emails API
-});
-*/
 
 start_stop.addShutdownBatches(suite);
 

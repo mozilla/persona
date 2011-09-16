@@ -76,12 +76,3 @@ exports.xmlResponse = function(resp, doc)
   if (doc !== undefined) resp.write(doc);
   resp.end();
 };
-
-exports.checkGetArgs = function(req, args) {
-  [ "email", "pass", "pubkey" ].forEach(function(k) {
-    if (!urlobj.hasOwnProperty(k) || typeof urlobj[k] !== 'string') {
-      throw k;
-    }
-  });
-
-};

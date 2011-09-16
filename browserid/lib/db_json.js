@@ -57,15 +57,7 @@ var dbPath = path.join(configuration.get('var_path'), "authdb.json");
  *    {
  *      password: "somepass",
  *      emails: [
- *        {
- *          address: "lloyd@hilaiel.com",
- *          keys: [
- *            {
- *              key: "SOMESTRINGOFTEXT",
- *              expires: 1231541615125
- *            }
- *          ]
- *        }
+ *        "lloyd@hilaiel.com"
  *      ]
  *    }
  *  ]
@@ -123,7 +115,7 @@ exports.close = function(cb) {
 };
 
 exports.emailKnown = function(email, cb) {
-  var m = jsel.match(".address:val(" + ESC(email) + ")", db);
+  var m = jsel.match(".emails :val(" + ESC(email) + ")", db);
   setTimeout(function() { cb(m.length > 0) }, 0);
 };
 
@@ -147,59 +139,15 @@ exports.emailsBelongToSameAccount = function(lhs, rhs, cb) {
   });
 };
 
-function addEmailToAccount(existing_email, email, pubkey, cb) {
+function addEmailToAccount(existing_email, email, cb) {
   emailToUserID(existing_email, function(userID) {
     if (userID == undefined) {
       cb("no such email: " + existing_email, undefined);
     } else {
-      db[userID].emails.push({
-        address: email,
-        keys: [
-          {
-            key: pubkey,
-            expires: getExpiryTime()
-          }
-        ]
-      });
+      db[userID].emails.push(email);
       flush();
       cb();
     }
-  });
-}
-
-exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
-  emailToUserID(existing_email, function(userID) {
-    if (userID == undefined) {
-      cb("no such email: " + existing_email, undefined);
-      return;
-    }
-
-    if (!(db[userID].emails)) {
-      db[userID].emails = [ ];
-    }
-
-    var m = jsel.match("object:has(.address:val(" + ESC(email) + ")) > .keys", db[userID].emails);
-    
-    if (jsel.match(".key:val(" + ESC(pubkey) + ")", m).length > 0) {
-      return cb("cannot set a key that is already known");
-    }
-
-    var kobj = {
-      key: pubkey,
-      expires: getExpiryTime()
-    };
-
-    if (m.length) {
-      m[0].push(kobj);
-    } else {
-      db[userID].emails.push({
-        address: email,
-        keys: [ kobj ]
-      });
-    }
-
-    flush();
-    if (cb) setTimeout(function() { cb(); }, 0);
   });
 }
 
@@ -241,15 +189,7 @@ exports.gotVerificationSecret = function(secret, cb) {
       function createAccount() {
         db.push({
           password: o.pass,
-          emails: [
-            {
-              address: o.email,
-              keys: [ {
-                key: o.pubkey,
-                expires: getExpiryTime(),
-              } ]
-            }
-          ]
+          emails: [ o.email ]
         });
         flush();
         cb();
@@ -274,7 +214,7 @@ exports.gotVerificationSecret = function(secret, cb) {
   } else if (o.type === 'add_email') {
     exports.emailKnown(o.email, function(known) {
       function addIt() {
-        addEmailToAccount(o.existing_email, o.email, o.pubkey, cb);
+        addEmailToAccount(o.existing_email, o.email, cb);
       }
       if (known) {
         exports.removeEmail(o.email, o.email, function (err) {
@@ -291,7 +231,7 @@ exports.gotVerificationSecret = function(secret, cb) {
 };
 
 exports.checkAuth = function(email, cb) {
-  var m = jsel.match(":root > object:has(.address:val(" + ESC(email) + ")) > .password", db);
+  var m = jsel.match(":root > object:has(.emails > :val(" + ESC(email) + ")) > .password", db);
   if (m.length === 0) m = undefined;
   else m = m[0];
   setTimeout(function() { cb(m) }, 0);
@@ -301,7 +241,7 @@ function emailToUserID(email, cb) {
   var id = undefined;
 
   for (var i = 0; i < db.length; i++) {
-    if (jsel.match(".address:val(" + JSON.stringify(email) + ")", db[i]).length) {
+    if (jsel.match(":val(" + JSON.stringify(email) + ")", db[i]).length) {
       id = i;
       break;
     }
@@ -318,7 +258,7 @@ exports.listEmails = function(email, cb) {
       cb("no such email: " + email);
       return;
     }
-    var email_list = jsel.match(".address", db[userID]);
+    var email_list = jsel.match(".emails string", db[userID]);
     var emails = {};
     for (var i=0; i < email_list.length; i++)
       emails[email_list[i]] = {};
@@ -327,60 +267,13 @@ exports.listEmails = function(email, cb) {
   });
 };
 
-exports.getSyncResponse = function(email, identities, cb) {
-  var respBody = {
-    unknown_emails: [ ],
-    key_refresh: [ ]
-  };
-
-  // get the user id associated with this account
-  emailToUserID(email, function(userID) {
-    if (userID === undefined) {
-      cb("no such email: " + email);
-      return;
-    }
-    var emails = jsel.match(".address", db[userID]);
-    var keysToCheck = [ ];
-
-    // #1 emails that the client knows about but we do not
-    for (var e in identities) {
-      if (emails.indexOf(e) == -1) respBody.unknown_emails.push(e);
-      else keysToCheck.push(e);
-    }
-
-    // #2 emails that we know about and the client does not
-    for (var e in emails) {
-      e = emails[e];
-      if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
-    }
-
-    // #3 emails that we both know about but who need to be re-keyed
-    if (keysToCheck.length) {
-      var checked = 0;
-      keysToCheck.forEach(function(e) {
-        if (!jsel.match(".key:val(" + ESC(identities[e]) + ")", db[userID]).length)
-          respBody.key_refresh.push(e);
-        checked++;
-        if (checked === keysToCheck.length) cb(undefined, respBody);
-      });
-    } else {
-      cb(undefined, respBody);
-    }
-  });
-};
-
-exports.pubkeysForEmail = function(identity, cb) {
-  var m = jsel.match(".emails object:has(.address:val(" + ESC(identity)+ ")) .key", db);
-  setTimeout(function() { cb(m); }, 0);
-};
-
 exports.removeEmail = function(authenticated_email, email, cb) {
-  var m = jsel.match(":root > object:has(.address:val("+ESC(authenticated_email)+")):has(.address:val("+ESC(email)+")) .emails", db);
+  var m = jsel.match(".emails:has(:val("+ESC(authenticated_email)+")):has(:val("+ESC(email)+"))", db);
 
   if (m.length) {
     var emails = m[0];
     for (var i = 0; i < emails.length; i++) {
-      if (emails[i].address === email) {
+      if (emails[i] === email) {
         emails.splice(i, 1);
         break;
       }

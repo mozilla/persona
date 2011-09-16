@@ -33,57 +33,67 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var jwk = require("./jwk");
-
-var getEmails = function() {
-  try {
-    var emails = JSON.parse(window.localStorage.emails);
-    if (emails != null)
-      return emails;
-  } catch(e) {
-  }
+(function() {
   
-  // if we had a problem parsing or the emails are null
-  clearEmails();
-  return {};
-};
-
-var _storeEmails = function(emails) {
-  window.localStorage.emails = JSON.stringify(emails);
-};
-
-var addEmail = function(email, obj) {
-  var emails = getEmails();
-  emails[email] = obj;
-  _storeEmails(emails);
-};
-
-var removeEmail = function(email) {
-  var emails = getEmails();
-  delete emails[email];
-  _storeEmails(emails);
-};
-
-var clearEmails = function() {
-  _storeEmails({});
-};
-
-var storeTemporaryKeypair = function(keypair) {
-  window.localStorage.tempKeypair = JSON.stringify({
-    publicKey: keypair.publicKey.toSimpleObject(),
-    secretKey: keypair.secretKey.toSimpleObject()
-  });
-};
-
-var retrieveTemporaryKeypair = function() {
-  var raw_kp = JSON.parse(window.localStorage.tempKeypair);
-  window.localStorage.tempKeypair = null;
-  if (raw_kp) {
-    var kp = new jwk.KeyPair();
-    kp.publicKey = jwk.PublicKey.fromSimpleObject(raw_kp.publicKey);
-    kp.secretKey = jwk.SecretKey.fromSimpleObject(raw_kp.secretKey);
-    return kp;
-  } else {
-    return null;
+  var jwk;
+  
+  function prepareDeps() {
+   if (!jwk) {
+     jwk = require("./jwk");
+   }
   }
-};
+
+  window.getEmails = function() {
+    try {
+      var emails = JSON.parse(window.localStorage.emails);
+      if (emails != null)
+        return emails;
+    } catch(e) {
+    }
+    
+    // if we had a problem parsing or the emails are null
+    clearEmails();
+    return {};
+  };
+
+  var _storeEmails = function(emails) {
+    window.localStorage.emails = JSON.stringify(emails);
+  };
+
+  window.addEmail = function(email, obj) {
+    var emails = getEmails();
+    emails[email] = obj;
+    _storeEmails(emails);
+  };
+
+  window.removeEmail = function(email) {
+    var emails = getEmails();
+    delete emails[email];
+    _storeEmails(emails);
+  };
+
+  window.clearEmails = function() {
+    _storeEmails({});
+  };
+
+  window.storeTemporaryKeypair = function(keypair) {
+    window.localStorage.tempKeypair = JSON.stringify({
+      publicKey: keypair.publicKey.toSimpleObject(),
+      secretKey: keypair.secretKey.toSimpleObject()
+    });
+  };
+
+  window.retrieveTemporaryKeypair = function() {
+    var raw_kp = JSON.parse(window.localStorage.tempKeypair);
+    window.localStorage.tempKeypair = null;
+    if (raw_kp) {
+      prepareDeps();
+      var kp = new jwk.KeyPair();
+      kp.publicKey = jwk.PublicKey.fromSimpleObject(raw_kp.publicKey);
+      kp.secretKey = jwk.SecretKey.fromSimpleObject(raw_kp.secretKey);
+      return kp;
+    } else {
+      return null;
+    }
+  };
+}());
