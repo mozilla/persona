@@ -47,7 +47,12 @@ var jwk = require("./jwk"),
       origin: "*",
       scope: "mozid"
     });
-  
+
+  //
+  // for now, DISABLE primary support
+  //
+
+  /*
   // primary requests a keygen to certify  
   chan.bind("generateKey", function(trans, args) {
     // keygen
@@ -88,6 +93,7 @@ var jwk = require("./jwk"),
 
     addEmail(email, new_email_obj);
   });
+  */
 
   // reenable this once we're ready
   /*
