@@ -35,17 +35,24 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var jwk = require("./jwk");
-var jwt = require("./jwt");
-var vep = require("./vep");
-
 var BrowserIDIdentities = (function() {
+  var jwk, jwt, vep;
+  
+  function prepareDeps() {
+    if (!jwk) {
+      jwk= require("./jwk");
+      jwt = require("./jwt");
+      vep = require("./vep");
+    }
+  }
+
   "use strict";
   function getIssuedIdentities() {
       var emails = getEmails();
       var issued_identities = {};
       _(emails).each(function(email_obj, email_address) {
         try {
+          prepareDeps();
           email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
         } catch (x) {
           delete emails[email_address];
@@ -169,6 +176,7 @@ var BrowserIDIdentities = (function() {
     stageIdentity: function(email, password, onSuccess, onFailure) {
       var self=this;
       // FIXME: keysize
+      prepareDeps();
       var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
 
       self.stagedEmail = email;
@@ -293,6 +301,7 @@ var BrowserIDIdentities = (function() {
      */
     syncIdentity: function(email, onSuccess, onFailure) {
       // FIXME use true key sizes
+      prepareDeps();
       //var keypair = jwk.KeyPair.generate(vep.params.algorithm, vep.params.keysize);
       var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
       Identities.certifyIdentity(email, keypair, onSuccess, onFailure);
@@ -310,6 +319,7 @@ var BrowserIDIdentities = (function() {
      */
     addIdentity: function(email, onSuccess, onFailure) {
       var self = this;
+      prepareDeps();
       var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
 
       self.stagedEmail = email;
@@ -375,6 +385,7 @@ var BrowserIDIdentities = (function() {
 
       if (storedID) {
         // parse the secret key
+        prepareDeps();
         var sk = jwk.SecretKey.fromSimpleObject(storedID.priv);
         var tok = new jwt.JWT(null, new Date(), network.origin);
         assertion = vep.bundleCertsAndAssertion([storedID.cert], tok.sign(sk));
