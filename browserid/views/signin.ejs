@@ -1,12 +1,15 @@
 <div id="vAlign">
     <div id="signUpFormWrap">
         <!-- XXX this form submits to nowhere -->
-        <form id="signUpForm" class="cf">
+        <form id="signUpForm" class="cf authform">
             <h1 class="serif">Sign In</h1>
+            <div class="notifications">
+                <div class="notification error doh">Doh! Something went wrong :-( </div>
+            </div>
             <ul class="inputs">
                 <li>
                     <label class="serif" for="email">Email Address</label>
-                    <input class="sans" id="email" placeholder="Your Email" type="text">
+                    <input class="sans" id="email" autofocus placeholder="Your Email" type="email" required x-moz-errormessage="Enter the email address you created your account with">
                 </li>
                 <li>
                     <label class="serif half" for="password">Password</label>
@@ -14,7 +17,7 @@
                         <!-- XXX: this needs to be fixed -->
                         <a class="forgot" href="/signup">forgot your password?</a>
                     </div>
-                    <input class="sans" id="password" placeholder="Your Password" type="text">
+                    <input class="sans" id="password" placeholder="Your Password" type="password" required x-moz-errormessage="Oops!  We need your password to sign you in">
                 </li>
             </ul>
             <div class="submit cf">
@@ -33,7 +36,7 @@
 
 <script type="text/javascript">
   $(document).ready(function () {
-    $("form input:visible:first").focus();
+    $("form input[autofocus]").focus();
 
     $("#signUpForm").bind("submit", function(event) {
       event.preventDefault();
@@ -47,6 +50,7 @@
         }
         else {
           // bad authentication
+          $(".notifications .notification.doh").fadeIn();
         }
       }, function onFailure() {
         // Wah wah.  Network error

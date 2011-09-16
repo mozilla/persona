@@ -1,20 +1,24 @@
 <div id="vAlign">   
     <div id="signUpFormWrap">
         <!-- XXX this form submits to nowhere -->
-        <form id="signUpForm" class="cf">
+        <form id="signUpForm" class="cf authform">
             <h1 class="serif">Create Account</h1>
+            <div class="notifications">
+                <div class="notification error doh">Doh! Something went wrong :-( </div>
+                <div class="notification error mismatchpassword">XXX: Your passwords need to match</div>
+            </div>
             <ul class="inputs">
                 <li>
                     <label class="serif" for="email">Email Address</label>
-                    <input class="sans" id="email" placeholder="Your Email" type="text">
+                    <input class="sans" id="email" autofocus required placeholder="Your Email" type="email" x-moz-errormessage="Please enter the email address you would like to use">
                 </li>
                 <li>
                     <label class="serif" for="password">New Password</label>
-                    <input class="sans" id="password" placeholder="Enter a Password" type="text">
+                    <input class="sans" type="password" id="password" required placeholder="Enter a Password" type="password" x-moz-errormessage="Please create a new password for your BrowserID account">
                 </li>
                 <li>
                     <label class="serif" for="vpassword">Verify Password</label>
-                    <input class="sans" id="vpassword" placeholder="Repeat Password" type="text">
+                    <input class="sans" type="password" id="vpassword" required placeholder="Repeat Password" type="text" x-moz-errormessage="Oops! Just repeat your password above to double check.  Thanks!">
                 </li>
             </ul>
             <div class="submit cf">
@@ -29,24 +33,33 @@
 
 <script type="text/javascript">
   $(document).ready(function () {
-    $("form input:visible:first").focus();
+    $("form input[autofocus]").focus();
 
     $("#signUpForm").bind("submit", function(event) {
       event.preventDefault();
+      $(".notifications .notification").hide();
 
       var email = $("#email").val(),
-          password = $("#password").val();
-      
+          password = $("#password").val(),
+          vpassword = $("#vpassword").val();
+
+      if (password != vpassword) {
+        $(".notifications .notification.mismatchpassword").fadeIn();
+        return false;
+      }
+
       BrowserIDIdentities.stageIdentity(email, password, function onSuccess(authenticated) {
         if (authenticated) {
           document.location = "/";
         }
         else {
           // bad authentication
+          $(".notifications .notification.doh").fadeIn();
         }
       }, function onFailure() {
         // Wah wah.  Network error
       });
+      return false;
     });
 
   });
