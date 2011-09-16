@@ -16,7 +16,12 @@
 
               <ul id="inputs">
                 <% _.each(identities, function(email_obj, email_address) { %>
-                  <li><input type="radio" name="identity" value="<%=email_address%>" id="<%=email_address%>" /><label for="<%=email_address%>"><%= email_address %></label></li>
+                  <li>
+                    <label for="<%= email_address %>" class="serif">
+                      <input type="radio" name="email" id="<%= email_address %>" />
+                      <%= email_address %>
+                    </label>
+                  </li>
                 <% }); %>
               </ul>
 
