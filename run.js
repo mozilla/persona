@@ -50,7 +50,6 @@ require('./libs/logging.js').enableConsoleLogging();
 
 var configuration = require('./libs/configuration.js');
 
-
 var PRIMARY_HOST = process.env.IP_ADDRESS || "127.0.0.1";
 
 var boundServers = [ ];
