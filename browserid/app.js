@@ -126,6 +126,10 @@ function router(app) {
     res.render('privacy.ejs', {title: 'Privacy Policy', fullpage: false});
   });
 
+  app.get(/^\/verify(\.html)?$/, function(req, res) {
+    res.render('verify.ejs', {title: 'Complete Registration', fullpage: true});
+  });
+
   // register all the WSAPI handlers
   wsapi.setup(app);
 
