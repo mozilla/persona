@@ -737,6 +737,11 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     });    
   }
 
+  //
+  // for now, disabling primary support.
+  //
+
+  /*
   // check if a valid cert exists for this verified email
   // calls back with true or false
   // FIXME: implement it for real, but
@@ -756,6 +761,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
                         {cert:certificate, updateURL: updateURL},
                         onsuccess, onerror);
   };
+  */
   
   navigator.id._getVerifiedEmailIsShimmed = true;
 }
