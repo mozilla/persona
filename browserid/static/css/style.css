@@ -628,24 +628,31 @@ a.forgot {
   font-size: 11px;
 }
 
-#signUpForm .error {
+.authform .notifications > .notification {
   margin-top: 20px;
-  color: red;
-  background-color: rgba(255,0,0,0.25);
   padding: 5px;
   line-height: 16px;
-
   -webkit-border-radius: 3px;
      -moz-border-radius: 3px;
        -o-border-radius: 3px;
           border-radius: 3px;
 }
 
+.authform .notifications > .notification {
+  display: none;
+}
+
+.authform .notifications .notification.error {
+  color: red;
+  background-color: rgba(255,0,0,0.25);
+}
+
 #signUpForm .red {
   color: red;
 }
 
-#signUpForm input[type=text] {
+#signUpForm input[type=email],
+#signUpForm input[type=password] {
   width: 100%;
   font-size: 14px;
   padding: 5px;
@@ -665,7 +672,8 @@ a.forgot {
           box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
-#signUpForm input[type=text]:focus {
+#signUpForm input[type=email]:focus,
+#signUpForm input[type=password]:focus {
   border: 1px solid #549FDC;
 
   -webkit-border-radius: 0;
