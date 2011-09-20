@@ -142,34 +142,37 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
   var bundle = vep.unbundleCertsAndAssertion(assertion);
 
   var theIssuer;
-  jwcert.JWCert.verifyChain(bundle.certificates, function(issuer, next) {
-    theIssuer = issuer;
-    // allow other retrievers for testing
-    if (pkRetriever)
-      pkRetriever(issuer, next);
-    else
-      retrieveHostPublicKey(issuer, next, function(err) {next(null);});
-  }, function(pk, principal) {
-    // primary?
-    if (theIssuer != configuration.get('hostname')) {
-      // then the email better match the issuer
-      if (!principal.email.match("@" + theIssuer + "$"))
+  jwcert.JWCert.verifyChain(
+    bundle.certificates,
+    new Date(), function(issuer, next) {
+      theIssuer = issuer;
+      // allow other retrievers for testing
+      if (pkRetriever)
+        pkRetriever(issuer, next);
+      else
+        retrieveHostPublicKey(issuer, next, function(err) {next(null);});
+    }, function(pk, principal) {
+      // primary?
+      if (theIssuer != configuration.get('hostname')) {
+        // then the email better match the issuer
+        console.log(principal);
+        if (!principal.email.match("@" + theIssuer + "$"))
+          return errorCB();
+      }
+      
+      var tok = new jwt.JWT();
+      tok.parse(bundle.assertion);
+      
+      // audience must match!
+      if (tok.audience != audience)
         return errorCB();
-    }
-
-    var tok = new jwt.JWT();
-    tok.parse(bundle.assertion);
-
-    // audience must match!
-    if (tok.audience != audience)
-      return errorCB();
-    
-    if (tok.verify(pk)) {
-      successCB(principal.email, tok.audience, tok.expires);
-    } else {
-      errorCB();
-    }
-  }, errorCB);
+      
+      if (tok.verify(pk)) {
+        successCB(principal.email, tok.audience, tok.expires);
+      } else {
+        errorCB();
+      }
+    }, errorCB);
 }
   
 
