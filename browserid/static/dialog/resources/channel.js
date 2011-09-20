@@ -52,6 +52,7 @@
 
 (function() {
   // Read a page's GET URL variables and return them as an associative array.
+  /*
   function getUrlVars() {
     var hashes = {},
         hash,
@@ -63,9 +64,21 @@
     }
     return hashes;
   }
-
-  function getRelay() {
+*/
+  function getRelayWindow() {
     var frameWindow = window.opener.frames['browserid_relay'];
+    return frameWindow;
+  }
+
+  function registerWithRelayFrame(callback) {
+    var frameWindow = getRelayWindow();
+    if (frameWindow) {
+      frameWindow['register_dialog'](callback);
+    }
+  }
+
+  function getRPRelay() {
+    var frameWindow = getRelayWindow();
     return frameWindow && frameWindow['browserid_relay'];
   }
 
@@ -101,8 +114,8 @@
   };
 
   var setupIFrameChannel = function(controller) {
-    var hash = getUrlVars();
-    var origin = hash['host'];
+    //var hash = getUrlVars();
+    //var origin = hash['host'];
 
     // TODO - Add a check for whether the dialog was opened by another window
     // (has window.opener) as well as whether the relay function exists.
@@ -111,20 +124,23 @@
     function onsuccess(rv) {
       // Get the relay here so that we ensure that the calling window is still
       // open and we aren't causing a problem.
-      var relay = getRelay();
+      var relay = getRPRelay();
       if(relay) {
         relay(rv, null);
       }
     }
 
     function onerror(error) {
-      var relay = getRelay();
+      var relay = getRPRelay();
       if(relay) {
         relay(null, error);
       }
     }
 
-    controller.getVerifiedEmail(origin, onsuccess, onerror);
+    // The relay frame will give us the origin.
+    registerWithRelayFrame(function(origin) {
+      controller.getVerifiedEmail(origin, onsuccess, onerror);
+    });
   };
 
 }());

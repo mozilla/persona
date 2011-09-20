@@ -54,12 +54,20 @@ steal.resources('../../dialog/resources/jschannel')
               } );
 
               var transaction;
+              var origin;
 
               chan.bind("getVerifiedEmail", function(trans, s) {
+                origin = trans.origin;
                 trans.delayReturn(true);
 
                 transaction = trans;
               });
+
+              window.register_dialog = function(callback) {
+                // register the dialog, tell the dialog what the origin is.  
+                // Get the origin from the channel binding.
+                callback(origin);
+              };
 
               window.browserid_relay = function(status, error) {
                   if(error) {

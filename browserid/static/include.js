@@ -586,7 +586,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     // FIXME: need to pass the location in a more trustworthy fashion
     // HOW? set up a direct reference to the open window
     return window.open(
-      ipServer + "/sign_in#host=" + document.location.host, "_mozid_signin",
+      ipServer + "/sign_in", "_mozid_signin",
       isMobile ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=520,height=350");
   }
 
