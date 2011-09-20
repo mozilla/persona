@@ -590,10 +590,18 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       isMobile ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=520,height=350");
   }
 
+  // keep track of these so that we can re-use/re-focus an already open window.
+  var w, iframe;
   navigator.id.getVerifiedEmail = function(callback) {
+    if (w) {
+      // if there is already a window open, just focus the old window.
+      w.focus();
+      return;
+    }
+
     var doc = window.document;
-    var w = _open_window();
-    var iframe = _open_relay_frame(doc);
+    w = _open_window();
+    iframe = _open_relay_frame(doc);
 
     // clean up a previous channel that never was reaped
     if (chan) chan.destroy();
@@ -601,9 +609,13 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     
     function cleanup() {
       chan.destroy();
-      chan = undefined;
+      chan = null;
+
       w.close();
+      w = null;
+
       iframe.parentNode.removeChild(iframe);
+      iframe = null;
     }
 
     chan.call({
