@@ -50,6 +50,7 @@
       var footerVars = options.footerVars;
 
       this.renderTemplates(bodyTemplate, bodyVars, footerTemplate, footerVars);
+      // XXX move all of these, bleck.
       $("form").bind("submit", this.onSubmit.bind(this));
       $("#cancel").click(this.onCancel.bind(this));
       $("#back").click(this.onBack.bind(this));

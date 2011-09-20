@@ -37,6 +37,9 @@
 (function() {
   "use strict";
 
+  // XXX  this needs changed so that the create account/authenticate flow is 
+  // cleaner.  Right now we are trying to authenticate on every "enter" press, 
+  // this is no good.
   var network = BrowserIDNetwork,
       identities = BrowserIDIdentities;
 
@@ -47,10 +50,7 @@
         bodyVars: {
           sitename: BrowserIDNetwork.origin,
           siteicon: '/i/times.gif'
-        }/*,
-        footerTemplate: "bottom-signin.ejs",
-        footerVars: {}
-        */
+        }
       });
     },
 
@@ -60,6 +60,7 @@
       // XXX verify email length/format here
       // show error message if bad.
       network.haveEmail(email, function onComplete(registered) {
+        // XXX instead of using jQuery here, think about using CSS animations.
         $(".start").hide();
         if(registered) {
           $(".returning").slideDown(300, function() {
@@ -100,22 +101,27 @@
     },
 
     submit: function() {
+      // XXX change this so that we do not authenticate and sync unless we have 
+      // both an email and password.
       var email = $("#email").val();
       var pass = $("#password").val();
 
       var self = this;
-      identities.authenticateAndSync(email, pass, function(authenticated) {
-        if (authenticated) {
-          self.doWait(BrowserIDWait.authentication);
-        }
-      },
-      function(authenticated) {
-        if (authenticated) {
-          self.close("authenticate:authenticated");
-        } else {
-          //self.find("#cannot_authenticate").hide().fadeIn(400);
-        }
-      }, self.getErrorDialog(BrowserIDErrors.authentication));
+      identities.authenticateAndSync(email, pass, 
+        function onAuthenticate(authenticated) {
+          if (authenticated) {
+            self.doWait(BrowserIDWait.authentication);
+          }
+        },
+        function onComplete(authenticated) {
+          if (authenticated) {
+            self.close("authenticate:authenticated");
+          } else {
+            //self.find("#cannot_authenticate").hide().fadeIn(400);
+          }
+        }, 
+        self.getErrorDialog(BrowserIDErrors.authentication)
+      );
     }
   });
 
