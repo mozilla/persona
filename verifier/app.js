@@ -73,7 +73,7 @@ function doVerify(req, resp, next) {
         status : "okay",
         email : email,
         audience : audience,
-        expires : expires
+        expires : expires.valueOf()
       });
 
       metrics.report('verify', {
