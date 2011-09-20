@@ -77,18 +77,18 @@ PageController.extend("Dialog", {}, {
         self.doConfirmEmail(info.email);
       });
 
-      hub.subscribe("createaccount:signin", function() {
+/*      hub.subscribe("createaccount:signin", function() {
         self.doAuthenticate();
       });
-
+*/
       hub.subscribe("authenticate:authenticated", function() {
         self.syncIdentities();
       });
 
-      hub.subscribe("authenticate:createuser", function() {
+/*      hub.subscribe("authenticate:createuser", function() {
         self.doCreate();
       });
-
+*/
       hub.subscribe("authenticate:forgotpassword", function() {
         self.doForgotPassword();
       });
