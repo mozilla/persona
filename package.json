@@ -29,6 +29,7 @@
   }
   , "scripts": {
     "postinstall": "./scripts/generate_ephemeral_keys.sh",
-    "test": "./scripts/run_all_tests.sh"
+    "test": "./scripts/run_all_tests.sh",
+    "start": "node ./run.js"
   }
 }
