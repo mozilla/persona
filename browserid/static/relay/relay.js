@@ -1,3 +1,5 @@
+/*global Channel: true, errorOut: true */
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,54 +35,47 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/*globals steal
- */
-window.console = window.console || {
-  log: function() {}
-};
 
-steal.resources('../../dialog/resources/jschannel')
+(function() {
+  "use strict";
 
-          .then(function($) {
-            // XXX get rid of this setTimeout.  It is in so that the build 
-            // script can do its thing without creating the channel
-            setTimeout(function() {
-              var ipServer = "https://browserid.org";
+  window.console = window.console || {
+    log: function() {}
+  };
 
-              var chan = Channel.build( {
-                window: window.parent,
-                origin: "*",
-                scope: "mozid"
-              } );
+  var ipServer = "https://browserid.org",
+      chan = Channel.build( {
+        window: window.parent,
+        origin: "*",
+        scope: "mozid"
+      } ),
+      transaction,
+      origin;
 
-              var transaction;
-              var origin;
+  chan.bind("getVerifiedEmail", function(trans, s) {
+    origin = trans.origin;
+    trans.delayReturn(true);
 
-              chan.bind("getVerifiedEmail", function(trans, s) {
-                origin = trans.origin;
-                trans.delayReturn(true);
+    transaction = trans;
+  });
 
-                transaction = trans;
-              });
+  window.register_dialog = function(callback) {
+    // register the dialog, tell the dialog what the origin is.  
+    // Get the origin from the channel binding.
+    callback(origin);
+  };
 
-              window.register_dialog = function(callback) {
-                // register the dialog, tell the dialog what the origin is.  
-                // Get the origin from the channel binding.
-                callback(origin);
-              };
-
-              window.browserid_relay = function(status, error) {
-                  if(error) {
-                    errorOut(transaction, error);
-                  }
-                  else {
-                    try {
-                      transaction.complete(status);
-                    } catch(e) {
-                      // The relay function is called a second time after the 
-                      // initial success, when the window is closing.
-                    }
-                  }
-              }
-            }, 100);
-          });						// adds views to be added to build
+  window.browserid_relay = function(status, error) {
+      if(error) {
+        errorOut(transaction, error);
+      }
+      else {
+        try {
+          transaction.complete(status);
+        } catch(e) {
+          // The relay function is called a second time after the 
+          // initial success, when the window is closing.
+        }
+      }
+  };
+}());
