@@ -6,6 +6,15 @@
 </head>
   <body>
       Relay iframe.  Woohoo!
-      <script type='text/javascript' src='https://browserid.org/steal/steal<%= production ? ".production" : "" %>.js?relay'></script>
+      <% if (production) { %>
+        <script type='text/javascript' 
+          src='https://browserid.org/relay/production.js'></script>
+
+      <% } else { %>
+        <script type='text/javascript' 
+          src='https://browserid.org/dialog/resources/jschannel.js'></script>
+        <script type='text/javascript' 
+          src='https://browserid.org/relay/relay.js'></script>
+      <% } %>
 	</body>
 </html>
