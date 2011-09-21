@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global _: true, network: true, addEmail: true, removeEmail: true, clearEmails: true, getEmails: true, CryptoStubs: true */
+/*global _: true, BrowserIDStorage: true, BrowserIDNetwork: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -36,8 +36,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 var BrowserIDIdentities = (function() {
-  var jwk, jwt, vep;
-  
+  "use strict";
+
+  var jwk, jwt, vep, 
+      network = BrowserIDNetwork, 
+      storage = BrowserIDStorage;
+    
   function prepareDeps() {
     if (!jwk) {
       jwk= require("./jwk");
@@ -46,9 +50,8 @@ var BrowserIDIdentities = (function() {
     }
   }
 
-  "use strict";
   function getIssuedIdentities() {
-      var emails = getEmails();
+      var emails = storage.getEmails();
       var issued_identities = {};
       prepareDeps();
       _(emails).each(function(email_obj, email_address) {
@@ -69,12 +72,10 @@ var BrowserIDIdentities = (function() {
     // first remove idenitites that the server doesn't know about
     if (unknown_emails) {
       _(unknown_emails).each(function(email_address) {
-        removeEmail(email_address);
+        storage.removeEmail(email_address);
       });
     }
   }
-
-  var network = BrowserIDNetwork;
 
   var Identities = {
     /**
@@ -121,7 +122,7 @@ var BrowserIDIdentities = (function() {
         _.each(emails_to_remove, function(email) {
           // if it's not a primary
           if (!issued_identities[email].isPrimary)
-            removeEmail(email);
+            storage.removeEmail(email);
         });
 
         // keygen for new emails
@@ -327,7 +328,7 @@ var BrowserIDIdentities = (function() {
         cert: cert
       };
 
-      addEmail(email, new_email_obj);
+      storage.addEmail(email, new_email_obj);
 
       if (onSuccess) {
         onSuccess();
@@ -343,7 +344,7 @@ var BrowserIDIdentities = (function() {
      */
     removeIdentity: function(email, onSuccess, onFailure) {
       network.removeEmail(email, function() {
-        removeEmail(email);
+        storage.removeEmail(email);
         if (onSuccess) {
           onSuccess();
         }
@@ -381,7 +382,7 @@ var BrowserIDIdentities = (function() {
      * @return {object} identities.
      */
     getStoredIdentities: function() {
-      return getEmails();
+      return storage.getEmails();
     },
 
     /**
@@ -389,7 +390,7 @@ var BrowserIDIdentities = (function() {
      * @method clearStoredIdentities
      */
     clearStoredIdentities: function() {
-      clearEmails();
+      storage.clearEmails();
     }
 
 
