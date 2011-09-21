@@ -55,7 +55,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     
     // no two bound channels in the same javascript evaluation context may have the same origin & scope.
     // futher if two bound channels have the same scope, they may not have *overlapping* origins
-    // (either one or both support '*').  This restriction allows a single onMessage handler to efficiently
+    // (either one or both support '*').  This restriction allows a single onMessage handler to efficient
     // route messages based on origin and scope.  The s_boundChans maps origins to scopes, to message
     // handlers.  Request and Notification messages are routed using this table.
     // Finally, channels are inserted into this table when built, and removed when destroyed.
@@ -562,7 +562,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   })();
 
 
-  var chan = undefined;
+  var chan, w, iframe;
 
   // this is for calls that are non-interactive
   function _open_hidden_iframe(doc) {
@@ -590,8 +590,13 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       isMobile ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=520,height=350");
   }
 
+  function _close_window() {
+    if (w) {
+      w.close();
+    }      
+  }
+
   // keep track of these so that we can re-use/re-focus an already open window.
-  var w, iframe;
   navigator.id.getVerifiedEmail = function(callback) {
     if (w) {
       // if there is already a window open, just focus the old window.
@@ -602,6 +607,15 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     var doc = window.document;
     w = _open_window();
     iframe = _open_relay_frame(doc);
+
+    // if the RP window closes, close the dialog as well.
+    if (window.addEventListener) {
+      window.addEventListener('unload', _close_window, false);
+    }
+    else if(window.attachEvent) {
+      // IE < 9
+      window.attachEvent('unload', _close_window);
+    }
 
     // clean up a previous channel that never was reaped
     if (chan) chan.destroy();
@@ -616,6 +630,14 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 
       iframe.parentNode.removeChild(iframe);
       iframe = null;
+
+
+      if (window.removeEventListener) {
+        window.removeEventListener('unload', _close_window, false);
+      }
+      else if(window.detachEvent) {
+        window.detachEvent('unload', _close_window);
+      }
     }
 
     chan.call({
