@@ -50,9 +50,9 @@ var BrowserIDIdentities = (function() {
   function getIssuedIdentities() {
       var emails = getEmails();
       var issued_identities = {};
+      prepareDeps();
       _(emails).each(function(email_obj, email_address) {
         try {
-          prepareDeps();
           email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
         } catch (x) {
           delete emails[email_address];
