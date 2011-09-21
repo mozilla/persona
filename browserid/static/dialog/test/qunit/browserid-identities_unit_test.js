@@ -41,6 +41,11 @@
 var jwk = require("./jwk");
 
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-identities", function() {
+  // I generated these locally, they are used nowhere else.
+  var pubkey = {"algorithm":"RS","value":"-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIPEB6mvbW4GHA5tYJ7CJbNU6CkDLfZa\nyv91CsC5TQ88oOQ7+63ispPJQGQxUgP4/QA3LObUX/eKF08VS9rlFm8CAwEAAQ==\n-----END PUBLIC KEY-----\n"};
+
+  var privkey = {"algorithm":"RS","value":"-----BEGIN RSA PRIVATE KEY-----\nMIIBOgIBAAJBAIPEB6mvbW4GHA5tYJ7CJbNU6CkDLfZayv91CsC5TQ88oOQ7+63i\nspPJQGQxUgP4/QA3LObUX/eKF08VS9rlFm8CAwEAAQJBAIGeU/9rL9W8strKY/Ko\nf9eynZLCqvMeC3VS2JoPbqueBirCJSYNjGd70TXQ4MPzYWx8PsR3VrLQnWH8DWUk\n/hECIQDVWmkDM1vZUzQecHZkaRN8okv+Q3M6PL5qwy0GKCvqeQIhAJ4arGLARNWm\nidxGsJ0IPhtLyvcbNoDTU5rnx8LP/84nAiAUcpLH7L8rx+6h0DN4kh18/2z7FGnR\ntgql3sjM40K6OQIgBvKlILHSVJE8/bEdkckK8agjAzju7DpdMjF9VdJOK4ECIF2L\nSctl4hhZRUWzBN+sfuYEQTD8cc6svjBwlnEwJE9I\n-----END RSA PRIVATE KEY-----\n"};
+
   var credentialsValid, unknownEmails, keyRefresh, syncValid, userEmails;
   var netStub = {
     reset: function() {
@@ -418,9 +423,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("syncIdentities with identities preloaded and one to add", function() {
     clearEmails();
-    addEmail("testuser@testuser.com", {});
-    userEmails = {"testuser@testuser.com": {},
-                  "testuser2@testuser.com": {}};
+    addEmail("testuser@testuser.com", {pubkey: pubkey, cert: "1234"});
+    userEmails = {"testuser@testuser.com": {pubkey: pubkey, cert: "1234"},
+                  "testuser2@testuser.com": {pubkey: pubkey, cert: "1234"}};
 
     BrowserIDIdentities.syncIdentities(function onSuccess() {
       var identities = BrowserIDIdentities.getStoredIdentities();
@@ -436,9 +441,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("syncIdentities with identities preloaded and one to remove", function() {
     clearEmails();
-    addEmail("testuser@testuser.com", {});
-    addEmail("testuser2@testuser.com", {});
-    userEmails = {"testuser@testuser.com": {}};
+    addEmail("testuser@testuser.com", {pub: pubkey, cert: "1234"});
+    addEmail("testuser2@testuser.com", {pub: pubkey, cert: "1234"});
+    userEmails = {"testuser@testuser.com":  { pub: pubkey, cert: "1234"}};
     
     BrowserIDIdentities.syncIdentities(function onSuccess() {
       var identities = BrowserIDIdentities.getStoredIdentities();
