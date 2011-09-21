@@ -188,13 +188,9 @@ var BrowserIDNetwork = (function() {
      * @method cancelUser
      * @param {function} [onSuccess] - called whenever complete.
      */
-
-    // XXX put the main call into BrowserIDIDentities and remove the 
-    // clearEmails call
     cancelUser: function(onSuccess) {
       withCSRF(function() {
         $.post("/wsapi/account_cancel", {"csrf": csrf_token}, function(result) {
-          BrowserIDStorage.clearEmails();
           if (onSuccess) {
             onSuccess();
           }

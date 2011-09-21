@@ -102,6 +102,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       else {
         onFailure();
       }
+    },
+
+    cancelUser: function(onSuccess) {
+      onSuccess();
     }
   };
 
@@ -481,6 +485,17 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       });
     }, failure("getIdentityAssertion failure"));
     
+    stop();
+  });
+
+  test("cancelUser", function(onSuccess) {
+    BrowserIDIdentities.cancelUser(function() {
+      var storedIdentities = BrowserIDStorage.getEmails();
+      
+      equal(_.size(storedIdentities), 0, "All items have been removed");
+      start();
+    });
+
     stop();
   });
 

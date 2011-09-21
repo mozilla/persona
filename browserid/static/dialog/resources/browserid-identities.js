@@ -391,6 +391,24 @@ var BrowserIDIdentities = (function() {
      */
     clearStoredIdentities: function() {
       storage.clearEmails();
+    },
+
+
+    /**
+     * Cancel the current user's account.  Remove last traces of their 
+     * identity.
+     * @method cancelUser
+     * @param {function} [onSuccess] - Called whenever complete.
+     * @param {function} [onFailure] - called on failure.
+     */
+    cancelUser: function(onSuccess, onFailure) {
+      network.cancelUser(function() {
+        storage.clearEmails();
+        if (onSuccess) {
+          onSuccess();
+        }
+      });
+
     }
 
 

@@ -59,7 +59,7 @@
     function displayEmails() {
       $('#cancellink').click(function() {
         if (confirm('Are you sure you want to cancel your account?')) {
-          BrowserIDNetwork.cancelUser(function() {
+          BrowserIDIdentities.cancelUser(function() {
             document.location="/";
           });
         }
