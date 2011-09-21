@@ -32,9 +32,8 @@ cd dialog
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
 
-cd ..
-steal/js relay/scripts/build.js
-cd relay
+cd ../relay
+cat ../dialog/resources/jschannel.js relay.js > production.js
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
 
