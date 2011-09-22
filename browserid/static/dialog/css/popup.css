@@ -98,7 +98,7 @@ h1 {
     background-color: rgba(0, 0, 0, 0.035);
 }
 
-.forgotpassword #formWrap {
+.forgotpassword #formWrap, .setpassword #formWrap {
     background-color: rgba(0, 0, 0, 0.035);
     background-image: url('/i/bg.png');
     width: 325px;

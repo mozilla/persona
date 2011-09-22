@@ -47,6 +47,7 @@
           email: options.email
         }
       });
+      $("body").addClass("setpassword");
     },
 
 
@@ -55,6 +56,7 @@
     },
 
     submit: function() {
+      $("body").removeClass("setpassword");
       var password = $("#pass").val(),
           me=this;
 
