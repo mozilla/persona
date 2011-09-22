@@ -78,7 +78,10 @@
     },
 
     "#forgotpassword click": function(event) {
-      this.close("authenticate:forgotpassword");
+      var email = $("#email").val();
+      this.close("authenticate:forgotpassword", {
+        email: email  
+      });
     },
 
     "#create click": function(event) {

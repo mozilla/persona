@@ -38,72 +38,24 @@
   "use strict";
 
   PageController.extend("Forgotpassword", {}, {
-      init: function() {
+      init: function(el, options) {
         this._super({
           bodyTemplate: "forgotpassword.ejs",
-          bodyVars: {},
-          footerTemplate: "bottom-continue.ejs",
-          footerVars: {}
+          bodyVars: options
         });
-
-        $("#create_continue").addClass("disabled");
-        
-        this.setupWatchers();
+      
+        $('#formWrap').addClass("standardbg");
       },
 
-      setupWatchers: function() {
-        var self=this;
-        function checkInput() {
-          var pass = $("#password").val();
-          var match = pass === $("#password_verify_input").val();
-          self.find(".passwordnote").hide();
-          $("#create_continue").addClass("disabled");
-          if (!match) {
-            self.find("#passwords_different").show();
-          } else {
-            if (!pass) {
-              self.find("#enter_a_password").show();
-            } else if (pass.length < 8) {
-              self.find("#password_too_short").show();
-            } else if (pass.length > 80) {
-              self.find("#password_too_long").show();
-            } else {
-              self.find("#password_ok").show();
-              $("#create_continue").removeClass("disabled");
-            }
-          }
-        }
-        
-        // watch input dialogs
-        self.find("input").unbind("keyup").bind("keyup", checkInput);
-        
-        // do a check at load time, in case the user is using the back button (enables the continue button!)
-        checkInput();
-
-      },
-
-      validate: function() {
-        if ($("#create_continue").hasClass("disabled"))
-          return false;
-        return true;
-      },
 
       submit: function() {
-        // now we need to actually try to stage the creation of this account.
-        var email = this.find("#email").val();
-        var pass = this.find("#password").val();
+        $('#formWrap').removeClass("standardbg");
 
-        this.doWait(BrowserIDWait.createAccount);
-
-        var self = this;
-        BrowserIDIdentities.stageIdentity(email, pass, function(keypair) {
-            self.close("createaccount:created", {
-              email: email,
-              keypair: keypair
-            });
-          }, self.getErrorDialog(BrowserIDErrors.createAccount));
+        var email = $('#email_input').val();
+        this.close("forgotpassword:reset", {
+          email: email
+        });
       }
-
   });
 
 }());

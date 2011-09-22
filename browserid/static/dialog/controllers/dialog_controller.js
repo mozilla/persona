@@ -71,7 +71,10 @@ PageController.extend("Dialog", {}, {
 
 
     stateMachine: function() {
-      var self=this, hub = OpenAjax.hub, el = this.element;
+      var self=this, 
+          hub = OpenAjax.hub, 
+          el = this.element;
+     
 
       hub.subscribe("createaccount:staged", function(msg, info) {
         self.doConfirmEmail(info.email);
@@ -89,8 +92,12 @@ PageController.extend("Dialog", {}, {
         self.doCreate();
       });
 */
-      hub.subscribe("authenticate:forgotpassword", function() {
-        self.doForgotPassword();
+      hub.subscribe("authenticate:forgotpassword", function(msg, info) {
+        self.doForgotPassword(info.email);
+      });
+
+      hub.subscribe("forgotpassword:reset", function(msg, info) {
+        self.doConfirmEmail(info.email);
       });
 
       hub.subscribe("checkregistration:confirmed", function() {
@@ -156,8 +163,10 @@ PageController.extend("Dialog", {}, {
       //this.element.createaccount();
     },
       
-    doForgotPassword: function() {
-      this.element.forgotpassword();
+    doForgotPassword: function(email) {
+      this.element.forgotpassword({
+        email: email  
+      });
     },
 
     doAddEmail: function() {

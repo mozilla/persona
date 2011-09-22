@@ -104,7 +104,9 @@ var BrowserIDNetwork = (function() {
         url: '/wsapi/am_authed',
         success: function(status, textStatus, jqXHR) {
           var authenticated = JSON.parse(status);
-          onSuccess(authenticated);
+          setTimeout(function() {
+            onSuccess(authenticated);
+          }, 10);
         },
         error: onFailure
       });
