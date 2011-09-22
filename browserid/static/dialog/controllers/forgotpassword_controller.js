@@ -44,14 +44,14 @@
           bodyVars: options
         });
       
-        $('#formWrap').addClass("standardbg");
+        $("body").addClass("forgotpassword");
       },
 
 
       submit: function() {
-        $('#formWrap').removeClass("standardbg");
+        $("body").removeClass("forgotpassword");
 
-        var email = $('#email_input').val();
+        var email = $("#email_input").val();
         this.close("forgotpassword:reset", {
           email: email
         });
