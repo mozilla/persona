@@ -51,7 +51,9 @@ var BrowserIDIdentities = (function() {
     }
   }
 
-  function getIssuedIdentities() {
+  "use strict";
+  // remove identities that are no longer valid
+  function cleanupIdentities() {
       var emails = storage.getEmails();
       var issued_identities = {};
       prepareDeps();
@@ -59,12 +61,13 @@ var BrowserIDIdentities = (function() {
         try {
           email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
         } catch (x) {
-          delete emails[email_address];
+          storage.removeEmail(email_address);
+          return;
         }
 
         // no cert? reset
         if (!email_obj.cert) {
-          delete emails[email_address];
+          storage.removeEmail(email_address);
         } else {
           try {
             // parse the cert
@@ -74,18 +77,15 @@ var BrowserIDIdentities = (function() {
             // check if needs to be reset, if it expires in 5 minutes
             var diff = cert.expires.valueOf() - new Date().valueOf();
             if (diff < 300000)
-              delete emails[email_address];
+              storage.removeEmail(email_address);
           } catch (e) {
             // error parsing the certificate!  Maybe it's of an old/different
             // format?  just delete it.
             try { console.log("error parsing cert for", email_address ,":", e); } catch(e2) { }
-            delete emails[email_address];
             storage.removeEmail(email_address);
           }
         }
       });
-
-      return emails;
   }
 
   function removeUnknownIdentities(unknown_emails) {
@@ -116,7 +116,8 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on failure.
      */
     syncIdentities: function(onSuccess, onFailure) {
-      var issued_identities = getIssuedIdentities();
+      cleanupIdentities();
+      var issued_identities = Identities.getStoredIdentities();
 
       // FIXME for certs
 
