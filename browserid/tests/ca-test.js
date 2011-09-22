@@ -61,7 +61,9 @@ var email_addr = "foo@foo.com";
 suite.addBatch({
   "certify a public key": {
     topic: function() {
-      return ca.certify(email_addr, kp.publicKey);
+      var expiration = new Date();
+      expiration.setTime(new Date().valueOf() + 5000);
+      return ca.certify(email_addr, kp.publicKey, expiration);
     },
     "parses" : function(cert_raw, err) {
       var cert = ca.parseCert(cert_raw);
