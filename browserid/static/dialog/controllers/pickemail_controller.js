@@ -1,5 +1,5 @@
 /*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global Channel:true, CryptoStubs:true, alert:true, errorOut:true, setupChannel:true, getEmails:true, clearEmails: true, console: true, _: true, pollTimeout: true, addEmail: true, removeEmail:true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */ 
+/*global _: true, BrowserIDIdentities: true, BrowserIDNetwork: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -44,7 +44,7 @@
         bodyVars: {
           sitename: BrowserIDNetwork.origin,
           siteicon: '/i/times.gif',
-          identities: getEmails()
+          identities: BrowserIDIdentities.getStoredIdentities(),
         }
       });
       // select the first option
