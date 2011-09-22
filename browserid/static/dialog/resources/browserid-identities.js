@@ -89,6 +89,15 @@ var BrowserIDIdentities = (function() {
     }
   }
 
+  function setAuthenticationStatus(authenticated) {
+    var func = authenticated ? 'addClass' : 'removeClass';
+    $('body')[func]('authenticated');
+
+    if (!authenticated) {
+      storage.clearEmails();
+    }
+  }
+
   var Identities = {
     /**
      * Set the interface to use for networking.  Used for unit testing.
@@ -217,6 +226,7 @@ var BrowserIDIdentities = (function() {
     checkAuthenticationAndSync: function(onSuccess, onComplete, onFailure) {
       var self=this;
       network.checkAuth(function(authenticated) {
+        setAuthenticationStatus(authenticated);
         if (authenticated) {
           if (onSuccess) {
             onSuccess(authenticated);
@@ -249,6 +259,7 @@ var BrowserIDIdentities = (function() {
     authenticateAndSync: function(email, password, onSuccess, onComplete, onFailure) {
       var self=this;
       network.authenticate(email, password, function(authenticated) {
+        setAuthenticationStatus(authenticated);
         if (authenticated) {
           if (onSuccess) {
             onSuccess(authenticated);
@@ -413,7 +424,7 @@ var BrowserIDIdentities = (function() {
      */
     cancelUser: function(onSuccess, onFailure) {
       network.cancelUser(function() {
-        storage.clearEmails();
+        setAuthenticationStatus(false);
         if (onSuccess) {
           onSuccess();
         }
@@ -429,7 +440,7 @@ var BrowserIDIdentities = (function() {
      */
     logoutUser: function(onSuccess, onFailure) {
       network.logout(function() {
-        storage.clearEmails();
+        setAuthenticationStatus(false);
         if (onSuccess) {
           onSuccess();
         }

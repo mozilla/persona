@@ -53,8 +53,7 @@
       $("form").bind("submit", this.onSubmit.bind(this));
       $("#cancel").click(this.onCancel.bind(this));
       $("#back").click(this.onBack.bind(this));
-      $("#notme").click(this.close.bind(this, "pickemail:notme"));
-      $("#needhelp").click(function() {/* XXX Do something here */ });
+      $("#signOut").click(this.close.bind(this, "pickemail:notme"));
     },
 
     destroy: function() {
@@ -62,6 +61,7 @@
       $("input").unbind("keyup");
       $("#cancel").unbind("click");
       $("#back").unbind("click");
+      $("#signOut").unbind("click");
       this._super();
     },
 
