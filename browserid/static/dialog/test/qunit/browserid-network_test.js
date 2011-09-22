@@ -147,4 +147,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   test("syncEmails", function() {
     ok(true, "syncEmails");
   });
+
+  test("cancelUser", function() {
+    equal(typeof BrowserIDNetwork.cancelUser, "function", "what a ridiculously stupid test");
+  });
 });

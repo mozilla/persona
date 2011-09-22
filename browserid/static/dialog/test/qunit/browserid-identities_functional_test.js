@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, clearEmails: true, BrowserIDNetwork: true , BrowserIDIdentities: true */
+/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserIDStorage.clearEmails: true, BrowserIDNetwork: true , BrowserIDIdentities: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -85,7 +85,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("authenticateAndSync", function() {
-    clearEmails();
+    BrowserIDStorage.clearEmails();
     BrowserIDIdentities.authenticateAndSync("testuser@testuser.com", "testuser", function() {
     }, function() {
       var identities = BrowserIDIdentities.getStoredIdentities();
@@ -99,7 +99,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("checkAuthenticationAndSync", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
-      clearEmails();
+      BrowserIDStorage.clearEmails();
       BrowserIDIdentities.checkAuthenticationAndSync(function() {
         var identities = BrowserIDIdentities.getStoredIdentities();
         ok("testuser@testuser.com" in identities, "checkAuthenticationAndSync syncs email addresses");
@@ -166,7 +166,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
   */
   test("syncIdentities with no identities", function() {
-    clearEmails();
+    BrowserIDStorage.clearEmails();
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
       BrowserIDIdentities.syncIdentities(function onSuccess() {
         ok(true, "we have synced identities");
@@ -201,7 +201,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   /*
   test("syncIdentity on non-confirmed email address", function() {
-    clearEmails();
+    BrowserIDStorage.clearEmails();
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function() {
       BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
         BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
@@ -227,7 +227,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       // First, force removal that way we know it is not part of our list.
       BrowserIDIdentities.removeIdentity("unvalidated@unvalidated.com", function() {
 
-        clearEmails();
+        BrowserIDStorage.clearEmails();
         BrowserIDIdentities.syncIdentities(function onSuccess() {
 
           var identities = BrowserIDIdentities.getStoredIdentities();
@@ -239,7 +239,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
           BrowserIDIdentities.syncIdentity("unvalidated@unvalidated.com", "issuer", function(keypair) {
             // Clear all the local emails, then refetch the list from the server
             // just to be sure we are seeing what the server sees.
-            clearEmails();
+            BrowserIDStorage.clearEmails();
             BrowserIDIdentities.syncIdentities(function onSuccess() {
 
               var identities = BrowserIDIdentities.getStoredIdentities();

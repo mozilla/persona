@@ -1,3 +1,4 @@
+/*jshint browsers:true, forin: true, laxbreak: true */
 /*global alert:true, setupNativeChannel:true, setupIFrameChannel:true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -51,20 +52,6 @@
 
 
 (function() {
-  // Read a page's GET URL variables and return them as an associative array.
-  /*
-  function getUrlVars() {
-    var hashes = {},
-        hash,
-        pairs = window.location.href.slice(window.location.href.indexOf('#') + 1).split('&');
-
-    for(var i = 0, pair; pair=pairs[i]; ++i) {
-      hash = pair.split('=');
-      hashes[hash[0]] = hash[1];
-    }
-    return hashes;
-  }
-*/
   function getRelayWindow() {
     var frameWindow = window.opener.frames['browserid_relay'];
     return frameWindow;
@@ -114,9 +101,6 @@
   };
 
   var setupIFrameChannel = function(controller) {
-    //var hash = getUrlVars();
-    //var origin = hash['host'];
-
     // TODO - Add a check for whether the dialog was opened by another window
     // (has window.opener) as well as whether the relay function exists.
     // If these conditions are not met, then print an appropriate message.
