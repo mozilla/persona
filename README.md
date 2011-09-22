@@ -49,13 +49,13 @@ Here's the software you'll need installed:
 ## Getting started:
 
 1. install node and npm
-3. run `./prepare_deps` to install 3rd party libraries and generate keys
-3. run the top level *run.js* script: `node ./run.js`
+3. run `npm install` to install 3rd party libraries and generate keys
+3. run `npm start` to start the servers locally
 4. visit the demo application ('rp') in your web browser (url output on the console at runtime)
 
 ## Testing
 
-Unit tests can be run by invoking `test.sh` at the top level, and you
+Unit tests can be run by invoking `npm test` at the top level, and you
 should run them often.  Like before committing code.  To fully test
 the code you should install mysql and have a well permissions `test`
 user (can create and drop databases).  If you don't have mysql installed,

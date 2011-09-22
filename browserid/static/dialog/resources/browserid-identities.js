@@ -38,7 +38,7 @@
 var BrowserIDIdentities = (function() {
   "use strict";
 
-  var jwk, jwt, vep, 
+  var jwk, jwt, vep, jwcert,
       network = BrowserIDNetwork, 
       storage = BrowserIDStorage;
     
@@ -47,6 +47,7 @@ var BrowserIDIdentities = (function() {
       jwk= require("./jwk");
       jwt = require("./jwt");
       vep = require("./vep");
+      jwcert = require("./jwcert");
     }
   }
 
@@ -61,8 +62,19 @@ var BrowserIDIdentities = (function() {
           delete emails[email_address];
         }
 
-        if (!email_obj.cert)
+        // no cert? reset
+        if (!email_obj.cert) {
           delete emails[email_address];
+        } else {
+          // parse the cert
+          var cert = new jwcert.JWCert();
+          cert.parse(emails[email_address].cert);
+
+          // check if needs to be reset, if it expires in 5 minutes
+          var diff = cert.expires.valueOf() - new Date().valueOf();
+          if (diff < 300000)
+            delete emails[email_address];
+        }
       });
 
       return emails;

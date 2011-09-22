@@ -303,7 +303,11 @@ function setup(app) {
       var pk = ca.parsePublicKey(req.body.pubkey);
 
       // same account, we certify the key
-      var cert = ca.certify(req.body.email, pk);
+      // we certify it for a day for now
+      var expiration = new Date();
+      expiration.setTime(new Date().valueOf() + (24*3600*1000));
+      var cert = ca.certify(req.body.email, pk, expiration);
+      
       resp.writeHead(200, {'Content-Type': 'text/plain'});
       resp.write(cert);
       resp.end();
