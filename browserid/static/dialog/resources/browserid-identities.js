@@ -409,6 +409,21 @@ var BrowserIDIdentities = (function() {
         }
       });
 
+    },
+
+    /**
+     * Log the current user out.
+     * @method logoutUser
+     * @param {function} [onSuccess] - Called whenever complete.
+     * @param {function} [onFailure] - called on failure.
+     */
+    logoutUser: function(onSuccess, onFailure) {
+      network.logout(function() {
+        storage.clearEmails();
+        if (onSuccess) {
+          onSuccess();
+        }
+      });
     }
 
 

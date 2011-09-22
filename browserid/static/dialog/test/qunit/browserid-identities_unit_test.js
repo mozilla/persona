@@ -106,6 +106,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     cancelUser: function(onSuccess) {
       onSuccess();
+    },
+
+    logout: function(onSuccess) {
+      credentialsValid = false;
+      onSuccess();
     }
   };
 
@@ -488,10 +493,31 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
+  test("logoutUser", function(onSuccess) {
+    credentialsValid = true;
+    keyRefresh = ["testuser@testuser.com"]; 
+    BrowserIDStorage.clearEmails();
+
+    BrowserIDIdentities.authenticateAndSync("testuser@testuser.com", "testuser", function() {
+    }, function(authenticated) {
+      var storedIdentities = BrowserIDStorage.getEmails();
+      equal(_.size(storedIdentities), 1, "one identity");
+
+      BrowserIDIdentities.logoutUser(function() {
+        storedIdentities = BrowserIDStorage.getEmails();
+        equal(_.size(storedIdentities), 0, "All items have been removed on logout");
+
+        equal(credentialsValid, false, "credentials were invalidated in logout");
+        start();
+      });
+    });
+
+    stop();
+  });
+
   test("cancelUser", function(onSuccess) {
     BrowserIDIdentities.cancelUser(function() {
       var storedIdentities = BrowserIDStorage.getEmails();
-      
       equal(_.size(storedIdentities), 0, "All items have been removed");
       start();
     });
