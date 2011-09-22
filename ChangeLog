@@ -1,3 +1,11 @@
+train-2011.09.22:
+  * migrate to browserid signed certificates rather than keypairs where browserid hosts the public key: https://github.com/mozilla/browserid/issues?milestone=6
+  * IE9 support
+  * partial IE8 support (not yet usable, several small remaining bugs, and abysmal performance)
+  * development harness (./run.js) now respects an IP_ADDRESS env var to bind to a specific address (other than 127.0.0.1)
+  * improved first-time development experience:  `git clone && cd browserid && npm install && npm run`
+  * initial support for running locally under virtualbox via vagrant: issue #261 (thanks ozten!)
+
 train-2011.09.01:
   * /ws_api/set_key always returns returns value instead of HTTP 204 response: #219
   * update javascript mvc to 3.1.0.
