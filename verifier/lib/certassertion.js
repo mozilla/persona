@@ -59,9 +59,6 @@ var publicKeys = {};
 // set up some default public keys
 publicKeys[configuration.get('hostname')] = secrets.PUBLIC_KEY;
 
-// FIXME: hard-wired key for mozilla.com
-publicKeys['mozilla.com'] = jwk.PublicKey.fromSimpleObject({"algorithm":"RS","value":"-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIkB8pmT0Zf2gLW5oplYL22vjj6UIuXx\n9CfosFDy8DYTOVA6Z0wBBfQyaUcAdcQ4BzkV2zb7ik+f4WKdch2nwWkCAwEAAQ==\n-----END PUBLIC KEY-----\n"});
-
 function https_complete_get(host, url, successCB, errorCB) {
   https.get({host: host,path: url}, function(res) {
     var allData = "";
