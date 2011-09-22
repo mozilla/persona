@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global _: true, console: true, addEmail: true, removeEmail: true, clearEmails: true, CryptoStubs: true */
+/*global BrowserIDStorage: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,7 +37,7 @@
 var BrowserIDNetwork = (function() {
   "use strict";
 
-  var csrf_token = undefined;
+  var csrf_token;
 
   function withCSRF(cb) {
     if (csrf_token) setTimeout(cb, 0);
@@ -82,7 +82,7 @@ var BrowserIDNetwork = (function() {
             csrf: csrf_token
           },
           success: function(status, textStatus, jqXHR) {
-            if(onSuccess) {
+            if (onSuccess) {
               var authenticated = JSON.parse(status);
               onSuccess(authenticated);
             }
@@ -123,7 +123,7 @@ var BrowserIDNetwork = (function() {
         }, function() {
           csrf_token = undefined;
           withCSRF(function() {
-            if(onSuccess) {
+            if (onSuccess) {
               onSuccess();
             }
           });
@@ -191,10 +191,7 @@ var BrowserIDNetwork = (function() {
     cancelUser: function(onSuccess) {
       withCSRF(function() {
         $.post("/wsapi/account_cancel", {"csrf": csrf_token}, function(result) {
-          // XXX move this out of here, we now have 
-          // BrowserIDIdentities.clearStoredIdentities
-          clearEmails();
-          if(onSuccess) {
+          if (onSuccess) {
             onSuccess();
           }
         });
@@ -237,7 +234,7 @@ var BrowserIDNetwork = (function() {
       $.ajax({
         url: '/wsapi/have_email?email=' + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
-          if(onSuccess) {
+          if (onSuccess) {
             var success = !JSON.parse(data);
             onSuccess(success);
           }
@@ -278,7 +275,7 @@ var BrowserIDNetwork = (function() {
       $.ajax({
           url: '/wsapi/registration_status',
           success: function(status, textStatus, jqXHR) {
-            if(onSuccess) {
+            if (onSuccess) {
               onSuccess(status);
             }
           },
