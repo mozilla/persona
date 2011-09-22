@@ -39,9 +39,9 @@ var BrowserIDIdentities = (function() {
   "use strict";
 
   var jwk, jwt, vep, jwcert,
-      network = BrowserIDNetwork, 
+      network = BrowserIDNetwork,
       storage = BrowserIDStorage;
-    
+
   function prepareDeps() {
     if (!jwk) {
       jwk= require("./jwk");
@@ -66,14 +66,22 @@ var BrowserIDIdentities = (function() {
         if (!email_obj.cert) {
           delete emails[email_address];
         } else {
-          // parse the cert
-          var cert = new jwcert.JWCert();
-          cert.parse(emails[email_address].cert);
+          try {
+            // parse the cert
+            var cert = new jwcert.JWCert();
+            cert.parse(emails[email_address].cert);
 
-          // check if needs to be reset, if it expires in 5 minutes
-          var diff = cert.expires.valueOf() - new Date().valueOf();
-          if (diff < 300000)
+            // check if needs to be reset, if it expires in 5 minutes
+            var diff = cert.expires.valueOf() - new Date().valueOf();
+            if (diff < 300000)
+              delete emails[email_address];
+          } catch (e) {
+            // error parsing the certificate!  Maybe it's of an old/different
+            // format?  just delete it.
+            try { console.log("error parsing cert for", email_address ,":", e); } catch(e2) { }
             delete emails[email_address];
+            storage.removeEmail(email_address);
+          }
         }
       });
 
@@ -111,12 +119,12 @@ var BrowserIDIdentities = (function() {
       var issued_identities = getIssuedIdentities();
 
       // FIXME for certs
-      
+
       // send up all email/pubkey pairs to the server, it will response with a
       // list of emails that need new keys.  This may include emails in the
       // sent list, and also may include identities registered on other devices.
       // we'll go through the list and generate new keypairs
-      
+
       // identities that don't have an issuer are primary authentications,
       // and we don't need to worry about rekeying them.
 
@@ -129,7 +137,7 @@ var BrowserIDIdentities = (function() {
 
         var emails_to_add = _.difference(server_emails, client_emails);
         var emails_to_remove = _.difference(client_emails, server_emails);
-        
+
         // remove emails
         _.each(emails_to_remove, function(email) {
           // if it's not a primary
