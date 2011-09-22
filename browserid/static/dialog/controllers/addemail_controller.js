@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global BrowserIDIdentities: true, BrowserIDStorage: true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */ 
+/*global BrowserIDIdentities: true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -43,7 +43,7 @@
         bodyTemplate: "addemail.ejs",
         bodyVars: {
           sitename: BrowserIDNetwork.origin,
-          identities: BrowserIDStorage.getEmails()
+          identities: BrowserIDIdentities.getStoredIdentities()
         },
         footerTemplate: "bottom-addemail.ejs",
         footerVars: {}
