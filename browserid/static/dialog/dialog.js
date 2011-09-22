@@ -50,8 +50,6 @@ steal.plugins(
 	.resources('jschannel',
                'base64',
                'underscore-min',
-               'crypto',
-               'crypto-api',
                'channel',
                'storage',
                'browserid-extensions',
