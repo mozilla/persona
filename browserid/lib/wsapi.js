@@ -176,8 +176,8 @@ function setup(app) {
 
     // if the secret is still in the database, it hasn't yet been verified and
     // verification is still pending
-    db.haveVerificationSecret(req.session.pendingCreation, function (haveSecret) {
-      if (haveSecret) return resp.json('pending');
+    db.emailForVerificationSecret(req.session.pendingCreation, function (email) {
+      if (email) return resp.json('pending');
       // if the secret isn't known, and we're not authenticated, then the user must authenticate
       // (maybe they verified the URL on a different browser, or maybe they canceled the account
       // creation)
@@ -202,8 +202,8 @@ function setup(app) {
     // We should check to see if the verification secret is valid *before*
     // bcrypting the password (which is expensive), to prevent a possible
     // DoS attack.
-    db.haveVerificationSecret(req.body.token, function(valid) {
-      if (!valid) return resp.json(false);
+    db.emailForVerificationSecret(req.body.token, function(email) {
+      if (!email) return resp.json(false);
 
       // now bcrypt the password
       bcrypt.gen_salt(10, function (err, salt) {
@@ -282,8 +282,8 @@ function setup(app) {
         } else if (!req.session.pendingAddition) {
           resp.json('failed');
         } else {
-          db.haveVerificationSecret(req.session.pendingAddition, function (haveSecret) {
-            if (haveSecret) {
+          db.emailForVerificationSecret(req.session.pendingAddition, function (email) {
+            if (email) {
               return resp.json('pending');
             } else {
               delete req.session.pendingAddition;

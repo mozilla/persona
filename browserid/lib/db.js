@@ -99,7 +99,7 @@ exports.onReady = function(f) {
   'stageUser',
   'stageEmail',
   'gotVerificationSecret',
-  'haveVerificationSecret',
+  'emailForVerificationSecret',
   'checkAuth',
   'listEmails',
   'removeEmail',

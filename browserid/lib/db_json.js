@@ -177,8 +177,10 @@ exports.stageEmail = function(existing_email, new_email, cb) {
 };
 
 
-exports.haveVerificationSecret = function(secret, cb) {
-  setTimeout(function() { cb(staged.hasOwnProperty(secret)); }, 0);
+exports.emailForVerificationSecret = function(secret, cb) {
+  setTimeout(function() {
+    cb(staged[secret]? staged[secret].email:undefined);
+  }, 0);
 };
 
 exports.gotVerificationSecret = function(secret, hash, cb) {

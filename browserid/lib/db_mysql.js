@@ -197,12 +197,12 @@ exports.stageUser = function(email, cb) {
                });
 }
 
-exports.haveVerificationSecret = function(secret, cb) {
+exports.emailForVerificationSecret = function(secret, cb) {
   client.query(
-    "SELECT COUNT(*) as N FROM staged WHERE secret = ?", [ secret ],
+    "SELECT email FROM staged WHERE secret = ?", [ secret ],
     function(err, rows) {
       if (err) logUnexpectedError(err);
-      cb(rows && rows.length > 0 && rows[0].N > 0);
+      cb((rows && rows.length > 0) ? rows[0].email : undefined);
     });
 };
 

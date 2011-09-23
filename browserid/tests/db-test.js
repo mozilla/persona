@@ -105,6 +105,14 @@ suite.addBatch({
       secret = r;
       assert.isString(secret);
       assert.strictEqual(secret.length, 48);
+    },
+    "fetch email for given secret": {
+      topic: function(secret) {
+        db.emailForVerificationSecret(secret, this.callback);
+      },
+      "matches expected email": function(storedEmail) {
+        assert.strictEqual('lloyd@nowhe.re', storedEmail);
+      }
     }
   }
 });
