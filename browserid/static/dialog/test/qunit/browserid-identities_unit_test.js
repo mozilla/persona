@@ -171,6 +171,15 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
+  test("setPassword", function() {
+    BrowserIDIdentities.setPassword("password", function() {
+      // XXX fill this in.
+      ok(true);
+      start();
+    });
+
+    stop();
+  });
 
   test("confirmEmail on staged identity", function() {
     BrowserIDIdentities.createUser("testuser@testuser.com", function(keypair) {

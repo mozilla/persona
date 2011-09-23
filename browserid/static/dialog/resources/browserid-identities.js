@@ -140,6 +140,17 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
+     * Set the password of the current user.
+     * @method setPassword
+     * @param {string} password - password to set
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
+     */
+    setPassword: function(password, onSuccess, onFailure) {
+      network.setPassword(password, onSuccess, onFailure);
+    },
+
+    /**
      * Cancel the current user's account.  Remove last traces of their 
      * identity.
      * @method cancelUser

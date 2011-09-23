@@ -39,17 +39,21 @@
  * "testuser@testuser.com" with the password "testuser"
  */
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-network", function() {
-  module("browserid-network");
-  
-  test("setOrigin", function() {
-    BrowserIDNetwork.setOrigin("https://www.mozilla.com");
+  "use strict";
 
-    equal("www.mozilla.com", BrowserIDNetwork.origin, "origin's are properly filtered");
+  module("browserid-network");
+
+  var network = BrowserIDNetwork;
+
+  test("setOrigin", function() {
+    network.setOrigin("https://www.mozilla.com");
+
+    equal("www.mozilla.com", network.origin, "origin's are properly filtered");
   });
 
 
   test("authenticate with valid user", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
+    network.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
       start();
       equal(true, authenticated, "valid authentication");
     }, function onFailure() {
@@ -61,7 +65,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
   test("authenticate with invalid user", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "invalid", function onSuccess(authenticated) {
+    network.authenticate("testuser@testuser.com", "invalid", function onSuccess(authenticated) {
       start();
       equal(false, authenticated, "invalid authentication");
     }, function onFailure() {
@@ -73,8 +77,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
   test("checkAuth", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
-      BrowserIDNetwork.checkAuth(function onSuccess(authenticated) {
+    network.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
+      network.checkAuth(function onSuccess(authenticated) {
         start();
         equal(true, authenticated, "we have an authentication");
       }, function onFailure() {
@@ -90,9 +94,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
   test("logout->checkAuth: are we really logged out?", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
-      BrowserIDNetwork.logout(function onSuccess(authenticated) {
-        BrowserIDNetwork.checkAuth(function onSuccess(authenticated) {
+    network.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
+      network.logout(function onSuccess(authenticated) {
+        network.checkAuth(function onSuccess(authenticated) {
           start();
           equal(false, authenticated, "after logout, we are not authenticated");
         }, function onFailure() {
@@ -107,9 +111,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
 
   test("prove_email_ownership with valid login cookie but invalid token", function() {
-    BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
+    network.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
       var token = "badtoken";
-      BrowserIDNetwork.proveEmailOwnership(token, function onSuccess(proven) {
+      network.proveEmailOwnership(token, function onSuccess(proven) {
         equal(proven, false, "bad token could not be proved");
         start(); 
       }, function onFailure() {
@@ -126,6 +130,14 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
   test("stageUser", function() {
     ok(true, "stageUser");
+  });
+
+  test("setPassword", function() {
+    equal(typeof network.setPassword, "function");  
+  });
+
+  test("cancelUser", function() {
+    equal(typeof network.cancelUser, "function", "what a ridiculously stupid test");
   });
 
   test("haveEmail", function() {
@@ -148,7 +160,4 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     ok(true, "syncEmails");
   });
 
-  test("cancelUser", function() {
-    equal(typeof BrowserIDNetwork.cancelUser, "function", "what a ridiculously stupid test");
-  });
 });
