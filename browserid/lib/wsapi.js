@@ -253,6 +253,11 @@ function setup(app) {
     }
   });
 
+  app.get('/wsapi/email_for_token', checkParams(["token"]), function(req,resp) {
+    db.emailForVerificationSecret(req.query.token, function(email) {
+      resp.json({email: email});
+    });
+  });
 
   app.get('/wsapi/email_addition_status', function(req, resp) {
 

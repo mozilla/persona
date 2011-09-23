@@ -126,9 +126,7 @@ function router(app) {
   });
 
   app.get("/verify_email_address", function(req, res) {
-    var email = "email@email.com";
-
-    res.render('verifyuser.ejs', {title: 'Complete Registration', fullpage: true, email: email});
+    res.render('verifyuser.ejs', {title: 'Complete Registration', fullpage: true, token: req.query.token});
   });
 
   app.get("/add_email_address", function(req,res) {

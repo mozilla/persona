@@ -52,7 +52,7 @@ var suite = vows.describe('registration-status-wsapi');
 // ever time a new token is sent out, let's update the global
 // var 'token'
 var token = undefined;
-email.setInterceptor(function(email, site, secret) { token = secret; });
+email.setInterceptor(function(email, site, secret) {token = secret; });
 
 // start up a pristine server
 start_stop.addStartupBatches(suite);
@@ -84,6 +84,16 @@ suite.addBatch({
     }),
     "the token is sane": function(r, err) {
       assert.strictEqual('string', typeof token);
+    }
+  }});
+
+suite.addBatch({
+  "comparing token to email": {
+    topic: function() {
+      return wsapi.get('/wsapi/email_for_token', {token: token}).call(this);
+    },
+    "and it matches": function(r, err) {
+      assert.strictEqual(JSON.parse(r.body).email, 'first@fakeemail.com');
     }
   }
 });
