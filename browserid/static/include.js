@@ -562,7 +562,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   })();
 
 
-  var chan, w, iframe;
+  var chan, w, iframe, relayframe_opencount=0;
 
   // this is for calls that are non-interactive
   function _open_hidden_iframe(doc) {
@@ -573,20 +573,32 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     return iframe;
   }
   
-  function _open_relay_frame(doc) {
+  function _get_relayframe_name() {
+    var framename = 'browserid_relay' + relayframe_opencount;
+    relayframe_opencount++;
+    return framename;
+  }
+
+  function _open_relayframe(framename) {
+    var doc = window.document;
     var iframe = doc.createElement("iframe");
-    iframe.setAttribute('name', 'browserid_relay');
+    iframe.setAttribute('name', framename);
     iframe.setAttribute('src', ipServer + "/relay");
     iframe.style.display = "none";
     doc.body.appendChild(iframe);
+
     return iframe;
   }
   
-  function _open_window() {
+  function _open_window(framename) {
     // FIXME: need to pass the location in a more trustworthy fashion
-    // HOW? set up a direct reference to the open window
+    // We have to change the name of the relay frame every time or else Firefox 
+    // has a problem re-attaching new iframes with the same name.  Code inside 
+    // of frames with the same name sometimes does not get run.
+    // See https://bugzilla.mozilla.org/show_bug.cgi?id=350023
     return window.open(
-      ipServer + "/sign_in", "_mozid_signin",
+      "about:blank",
+      "_mozid_signin",
       isMobile ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=520,height=350");
   }
 
@@ -594,6 +606,25 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     if (w) {
       w.close();
     }      
+  }
+
+  function _attach_event(element, name, listener) {
+    if (element.addEventListener) {
+      element.addEventListener(name, listener, false);
+    }
+    else if(element.attachEvent) {
+      // IE < 9
+      element.attachEvent(name, listener);
+    }
+  }
+
+  function _detatch_event(element, name, listener) {
+    if (element.removeEventListener) {
+      element.removeEventListener(name, listener, false);
+    }
+    else if(element.detachEvent) {
+      element.detachEvent(name, listener);
+    }
   }
 
   // keep track of these so that we can re-use/re-focus an already open window.
@@ -604,22 +635,24 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       return;
     }
 
-    var doc = window.document;
-    w = _open_window();
-    iframe = _open_relay_frame(doc);
+    var framename = _get_relayframe_name();
+    var iframe = _open_relayframe(framename);
+    w = _open_window(framename);
 
     // if the RP window closes, close the dialog as well.
-    if (window.addEventListener) {
-      window.addEventListener('unload', _close_window, false);
-    }
-    else if(window.attachEvent) {
-      // IE < 9
-      window.attachEvent('unload', _close_window);
-    }
+    _attach_event(window, 'unload', _close_window);
 
     // clean up a previous channel that never was reaped
     if (chan) chan.destroy();
-    chan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid"});
+    chan = Channel.build({
+      window: iframe.contentWindow,
+      origin: ipServer,
+      scope: "mozid",
+      onReady: function() {
+        w.location = ipServer + "/sign_in#relay=" + framename;
+        w.focus();
+      }
+    });
     
     function cleanup() {
       chan.destroy();
@@ -631,13 +664,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       iframe.parentNode.removeChild(iframe);
       iframe = null;
 
-
-      if (window.removeEventListener) {
-        window.removeEventListener('unload', _close_window, false);
-      }
-      else if(window.detachEvent) {
-        window.detachEvent('unload', _close_window);
-      }
+      _detatch_event(window, 'unload', _close_window);
     }
 
     chan.call({
@@ -758,7 +785,6 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       method: method,
       params: args,
       success: function(rv) {
-        console.log(method + " channel returned: rv is " + rv);
         if (onsuccess) {
           onsuccess(rv);
         }
