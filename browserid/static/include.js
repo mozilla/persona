@@ -591,11 +591,11 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   }
   
   function _open_window(framename) {
-    // FIXME: need to pass the location in a more trustworthy fashion
-    // We have to change the name of the relay frame every time or else Firefox 
-    // has a problem re-attaching new iframes with the same name.  Code inside 
-    // of frames with the same name sometimes does not get run.
-    // See https://bugzilla.mozilla.org/show_bug.cgi?id=350023
+    // we open the window initially blank, and only after our relay frame has
+    // been constructed do we update the location.  This is done because we
+    // must launch the window inside a click handler, but we should wait to
+    // start loading it until our relay iframe is instantiated and ready.
+    // see issue #287 & #286
     return window.open(
       "about:blank",
       "_mozid_signin",
@@ -649,11 +649,15 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       origin: ipServer,
       scope: "mozid",
       onReady: function() {
+        // We have to change the name of the relay frame every time or else Firefox
+        // has a problem re-attaching new iframes with the same name.  Code inside
+        // of frames with the same name sometimes does not get run.
+        // See https://bugzilla.mozilla.org/show_bug.cgi?id=350023
         w.location = ipServer + "/sign_in#relay=" + framename;
         w.focus();
       }
     });
-    
+
     function cleanup() {
       chan.destroy();
       chan = null;
