@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
-VAR=SCRIPT_DIR/../var
+VAR=$SCRIPT_DIR/../var
 export PATH=$PATH:$SCRIPT_DIR/../node_modules/.bin
 
 # if keys already exist, do nothing
@@ -17,7 +17,7 @@ if [ ! -x "$GENERATE_KEYPAIR" ] ; then
 fi
 
 echo '*** Generating ephemeral keys used for testing ***'
-$GENERATE_KEYPAIR
+$GENERATE_KEYPAIR -k 128
 mkdir -p $VAR
 mv key.publickey $VAR/root.publickey
 mv key.secretkey $VAR/root.secretkey

@@ -277,7 +277,22 @@ server {
 }
 </pre>
 
-  5. restart your webserver and you're all done: `sudo /etc/init.d/nginx restart
+  5. restart your webserver: `sudo /etc/init.d/nginx restart
+
+### 6. set up log rotation
+
+create a file as root at `/etc/logrotate.d/browserid`:
+
+    /home/browserid/var/log/browserid.log /home/browserid/var/log/browserid-metrics.json /home/browserid/var/log/verifier.log /home/browserid/var/log/verifier-metrics.json {
+        daily
+        rotate 30
+        copytruncate
+        dateext
+        compress
+        dateformat -%Y-%m-%d
+    }
+
+Now your logfiles will be automatically rotated.
 
 easy, right?
 
