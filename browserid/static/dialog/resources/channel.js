@@ -113,18 +113,22 @@
     // (has window.opener) as well as whether the relay function exists.
     // If these conditions are not met, then print an appropriate message.
 
+    // get the relay here at the time the channel is setup before any navigation has
+    // occured.  if we wait the window hash might change as a side effect to user
+    // navigation, which would cause us to not find our parent window.
+    // issue #295
+    var relay = getRPRelay();
+
     function onsuccess(rv) {
       // Get the relay here so that we ensure that the calling window is still
       // open and we aren't causing a problem.
-      var relay = getRPRelay();
-      if(relay) {
+      if (relay) {
         relay(rv, null);
       }
     }
 
     function onerror(error) {
-      var relay = getRPRelay();
-      if(relay) {
+      if (relay) {
         relay(null, error);
       }
     }
