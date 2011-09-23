@@ -46,7 +46,8 @@ email = require('./email.js'),
 bcrypt = require('bcrypt'),
 crypto = require('crypto'),
 logger = require('../../libs/logging.js').logger,
-ca = require('./ca.js');
+ca = require('./ca.js'),
+BCRYPT_WORK_FACTOR = 12;
 
 function checkParams(params) {
   return function(req, resp, next) {
@@ -141,7 +142,7 @@ function setup(app) {
     }
 
     // bcrypt the password
-    bcrypt.gen_salt(10, function (err, salt) {
+    bcrypt.gen_salt(BCRYPT_WORK_FACTOR, function (err, salt) {
       if (err) {
         winston.error("error generating salt with bcrypt: " + err);
         return resp.json(false);
@@ -247,6 +248,9 @@ function setup(app) {
         if (success) {
           if (!req.session) req.session = {};
           req.session.authenticatedUser = req.body.email;
+
+          // if the work factor has changed, update the hash here
+          
         }
         resp.json(success);
       });
