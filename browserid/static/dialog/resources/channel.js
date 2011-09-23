@@ -52,8 +52,26 @@
 
 
 (function() {
+  function getUrlVars() {
+    var hashes = window.location.href.slice(
+                    window.location.href.indexOf('#') + 1).split('&');
+        vars = {};
+
+    for(var i = 0, item, hash; item=hashes[i]; ++i) {
+      hash = hashes[i].split('=');
+      vars[hash[0]] = hash[1];
+    }
+
+    return vars;
+  }
+
+  function getRelayName() {
+    var vars = getUrlVars();
+    return vars.relay;
+  }
+
   function getRelayWindow() {
-    var frameWindow = window.opener.frames['browserid_relay'];
+    var frameWindow = window.opener.frames[getRelayName()];
     return frameWindow;
   }
 
