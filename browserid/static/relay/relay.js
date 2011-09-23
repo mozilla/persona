@@ -44,14 +44,20 @@
   };
 
   var ipServer = "https://browserid.org",
-      transaction,
-      origin,
       chan = Channel.build( {
         window: window.parent,
         origin: "*",
         scope: "mozid"
-      } );
+      } ),
+      transaction,
+      origin;
 
+  chan.bind("getVerifiedEmail", function(trans, s) {
+    origin = trans.origin;
+    trans.delayReturn(true);
+
+    transaction = trans;
+  });
 
   window.register_dialog = function(callback) {
     // register the dialog, tell the dialog what the origin is.  
@@ -72,12 +78,4 @@
         }
       }
   };
-
-  chan.bind("getVerifiedEmail", function(trans, s) {
-    origin = trans.origin;
-    trans.delayReturn(true);
-
-    transaction = trans;
-  });
-
 }());
