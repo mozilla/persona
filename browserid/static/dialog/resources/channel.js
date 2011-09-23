@@ -52,22 +52,12 @@
 
 
 (function() {
-  function getUrlVars() {
-    var hashes = window.location.href.slice(
-                    window.location.href.indexOf('#') + 1).split('&');
-        vars = {};
-
-    for(var i = 0, item, hash; item=hashes[i]; ++i) {
-      hash = hashes[i].split('=');
-      vars[hash[0]] = hash[1];
-    }
-
-    return vars;
+  function getRelayID() {
+    return window.location.href.slice(window.location.href.indexOf('#') + 1);
   }
 
   function getRelayName() {
-    var vars = getUrlVars();
-    return vars.relay;
+    return "browserid_relay_" + getRelayID();
   }
 
   function getRelayWindow() {
