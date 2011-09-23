@@ -188,7 +188,7 @@ exports.setup = function(server) {
     }
   });
 
-  // cookie sessions
+  // cookie sessions && cache control
   server.use(function(req, resp, next) {
     // cookie sessions are only applied to calls to /wsapi
     // as all other resources can be aggressively cached
@@ -196,6 +196,9 @@ exports.setup = function(server) {
     // the fallout is that all code that interacts with sessions
     // should be under /wsapi
     if (/^\/wsapi/.test(req.url)) {
+      // explicitly disallow caching on all /wsapi calls (issue #294)
+      resp.setHeader('Cache-Control', 'no-cache, max-age=0');
+
       // we set this parameter so the connect-cookie-session
       // sends the cookie even though the local connection is HTTP
       // (the load balancer does SSL)
