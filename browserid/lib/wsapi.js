@@ -222,6 +222,7 @@ function setup(app) {
               logger.error("error completing the verification: " + err);
               resp.json(false);
             } else {
+              // FIXME: not sure if we want to do this (ba)
               // at this point the user has set a password associated with an email address
               // that they've verified.  We create an authenticated session.
               req.session.authenticatedUser = email;
