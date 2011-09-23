@@ -172,17 +172,12 @@
     resetPassword: function() {
       var email = $("#email").val();
       var me=this;
-      identities.requestPasswordReset(email, function(reset) {
-        if (reset) {
-          me.close("reset_password", {
-            email: email
-          });
-        }
-        else {
-          // XXX error screen.
-        }
-      }, function onFailure() {
-
+      identities.requestPasswordReset(email, function() {
+        me.close("reset_password", {
+          email: email
+        });
+      }, function() {
+        // XXX TODO error screen!
       });
     }
   });
