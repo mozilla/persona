@@ -1,7 +1,7 @@
 <div id="vAlign">   
   <div id="signUpFormWrap">
     <form id="signUpForm" class="cf">
-      <p class="hint">Finish signing into: <span class="website"><strong><%= site %></strong></span></p>
+      <p class="hint">Finish signing into: <strong><span class="website"></span></strong></p>
       <h1 class="serif">Last step!</h1>
       <ul class="inputs">
         <li>
@@ -29,3 +29,8 @@
   </div>
 </div>
 
+<script>
+$(document).ready(function() {
+   $('.website').html(BrowserIDStorage.getStagedOnBehalfOf());
+});
+</script>

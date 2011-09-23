@@ -173,6 +173,10 @@ var BrowserIDIdentities = (function() {
      */
     createUser: function(email, onSuccess, onFailure) {
       var self=this;
+
+      // remember this for later
+      storage.setStagedOnBehalfOf(origin);
+      
       // FIXME: keysize
       network.createUser(email, origin, function(created) {
         if (onSuccess) {

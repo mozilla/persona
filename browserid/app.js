@@ -102,34 +102,36 @@ function router(app) {
     res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});
   });
 
-  app.get(/^\/signup(\.html)?$/, function(req, res) {
+  // BA removed .html URLs. If we have 404s,
+  // we should set up some redirects
+  
+  app.get("/signup", function(req, res) {
     res.render('signup.ejs', {title: 'Sign Up', fullpage: false});
   });
 
-  app.get(/^\/signin(\.html)?$/, function(req, res) {
+  app.get("/signin", function(req, res) {
     res.render('signin.ejs', {title: 'Sign In', fullpage: false});
   });
 
-  app.get(/^\/about(\.html)?$/, function(req, res) {
+  app.get("/about", function(req, res) {
     res.render('about.ejs', {title: 'About', fullpage: false});
   });
 
-  app.get(/^\/tos(\.html)?$/, function(req, res) {
+  app.get("/tos", function(req, res) {
     res.render('tos.ejs', {title: 'Terms of Service', fullpage: false});
   });
 
-  app.get(/^\/privacy(\.html)?$/, function(req, res) {
+  app.get("/privacy", function(req, res) {
     res.render('privacy.ejs', {title: 'Privacy Policy', fullpage: false});
   });
 
-  app.get(/^\/verify_email_address(\.html)?$/, function(req, res) {
-    var site = "http://sitesite.com";
+  app.get("/verify_email_address", function(req, res) {
     var email = "email@email.com";
 
-    res.render('verifyuser.ejs', {title: 'Complete Registration', fullpage: true, site: site, email: email});
+    res.render('verifyuser.ejs', {title: 'Complete Registration', fullpage: true, email: email});
   });
 
-  app.get(/^\/add_email_address(\.html)?$/, function(req,res) {
+  app.get("/add_email_address", function(req,res) {
     res.render('verifyemail.ejs', {title: 'Verify Email Address', fullpage: false});
   });
 
