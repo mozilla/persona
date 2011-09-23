@@ -80,18 +80,10 @@ PageController.extend("Dialog", {}, {
         self.doConfirmEmail(info.email);
       });
 
-/*      hub.subscribe("createaccount:signin", function() {
-        self.doAuthenticate();
-      });
-*/
       hub.subscribe("authenticate:authenticated", function() {
         self.syncEmailKeypairs();
       });
 
-/*      hub.subscribe("authenticate:createuser", function() {
-        self.doCreate();
-      });
-*/
       hub.subscribe("authenticate:forgotpassword", function(msg, info) {
         self.doForgotPassword(info.email);
       });
@@ -180,11 +172,7 @@ PageController.extend("Dialog", {}, {
     },
 
     doRegistrationConfirmed: function() {
-        var self = this;
-        self.element.setpassword({ email: self.confirmEmail });
-    /*    BrowserIDIdentities.confirmIdentity(self.confirmEmail,
-          self.doSignIn.bind(self));
-      */
+        this.doSignIn();
     },
 
     doEmailSelected: function(email) {
