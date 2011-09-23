@@ -69,8 +69,9 @@
       // loaded, we get a security exception.
     }
 
+    console.log('relay or functions not found, retrying');
     // not ready yet, check in 100ms
-    setTimeout(getRelayWindow.bind(null, callback), 100);
+    setTimeout(getRelayWindow.bind(null, callback), 500);
   }
 
   function registerWithRelayFrame(callback) {
