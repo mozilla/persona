@@ -88,7 +88,7 @@
       var self = this,
           email = $("#email").val();
 
-      identities.createIdentity(email, function(keypair) {
+      identities.createUser(email, function(keypair) {
           self.close("createaccount:staged", {
             email: email,
             keypair: keypair

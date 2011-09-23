@@ -44,7 +44,7 @@
         bodyVars: {
           sitename: BrowserIDNetwork.origin,
           siteicon: '/i/times.gif',
-          identities: BrowserIDIdentities.getStoredIdentities(),
+          identities: BrowserIDIdentities.getStoredEmailKeypairs(),
         }
       });
       // select the first option

@@ -43,7 +43,7 @@
         bodyTemplate: "addemail.ejs",
         bodyVars: {
           sitename: BrowserIDNetwork.origin,
-          identities: BrowserIDIdentities.getStoredIdentities()
+          identities: BrowserIDIdentities.getStoredEmailKeypairs()
         },
         footerTemplate: "bottom-addemail.ejs",
         footerVars: {}
@@ -66,7 +66,7 @@
       this.doWait(BrowserIDWait.addEmail);
 
       var self = this;
-      BrowserIDIdentities.addIdentity(email, function(keypair) {
+      BrowserIDIdentities.addEmail(email, function(keypair) {
           // email successfully staged, now wait for email confirmation
           self.close("addemail:complete", {
             email: email,

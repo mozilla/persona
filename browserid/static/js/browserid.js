@@ -139,7 +139,7 @@ $(function() {
 
 function display_saved_ids() {
   var emails = {};
-  BrowserIDIdentities.syncIdentities(function() {
+  BrowserIDIdentities.syncEmailKeypairs(function() {
     emails = getEmails();
     if (_.isEmpty(emails)) {
       console.log(emails);
@@ -203,7 +203,7 @@ function display_saved_ids() {
       event.preventDefault();
 
       if (confirm("Remove " + email + " from your BrowserID?")) {
-        BrowserIDIdentities.removeIdentity(email, display_saved_ids);
+        BrowserIDIdentities.removeEmail(email, display_saved_ids);
       }
     }
   }
@@ -234,7 +234,7 @@ function display_saved_ids() {
     });
 
     $("#emailList").empty();
-    var emails = BrowserIDIdentities.getStoredIdentities();
+    var emails = BrowserIDIdentities.getStoredEmailKeypairs();
     _(emails).each(function(data, e) {
       var block = $("<div>").addClass("emailblock");
       var label = $("<div>").addClass("email").text(e);

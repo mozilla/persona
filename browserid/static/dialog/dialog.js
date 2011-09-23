@@ -63,7 +63,6 @@ steal.plugins(
 	.controllers('page',
                'dialog',
                'authenticate',
-               'createaccount',
                'checkregistration',
                'setpassword',
                'forgotpassword',
@@ -80,7 +79,6 @@ steal.plugins(
            'bottom-signin.ejs',
            'bottom.ejs',
            'confirmemail.ejs',
-           'create.ejs',
            'forgotpassword.ejs',
            'signin.ejs',
            'wait.ejs'

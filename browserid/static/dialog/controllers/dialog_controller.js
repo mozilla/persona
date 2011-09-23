@@ -85,7 +85,7 @@ PageController.extend("Dialog", {}, {
       });
 */
       hub.subscribe("authenticate:authenticated", function() {
-        self.syncIdentities();
+        self.syncEmailKeypairs();
       });
 
 /*      hub.subscribe("authenticate:createuser", function() {
@@ -190,7 +190,7 @@ PageController.extend("Dialog", {}, {
     doEmailSelected: function(email) {
       var self=this;
       // yay!  now we need to produce an assertion.
-      BrowserIDIdentities.getIdentityAssertion(email, function(assertion) {
+      BrowserIDIdentities.getAssertion(email, function(assertion) {
         // Clear onerror before the call to onsuccess - the code to onsuccess 
         // calls window.close, which would trigger the onerror callback if we 
         // tried this afterwards.
@@ -203,9 +203,9 @@ PageController.extend("Dialog", {}, {
       BrowserIDIdentities.logoutUser(this.doAuthenticate.bind(this));
     },
 
-    syncIdentities: function() {
+    syncEmailKeypairs: function() {
       var self = this;
-      BrowserIDIdentities.syncIdentities(self.doSignIn.bind(self), 
+      BrowserIDIdentities.syncEmailKeypairs(self.doSignIn.bind(self), 
         self.getErrorDialog(BrowserIDErrors.signIn));
     },
 

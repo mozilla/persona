@@ -48,7 +48,7 @@
         return false;
       }
 
-      BrowserIDIdentities.stageIdentity(email, password, function onSuccess(authenticated) {
+      BrowserIDIdentities.createUser(email, function onSuccess(authenticated) {
         if (authenticated) {
           document.location = "/";
         }

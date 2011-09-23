@@ -171,13 +171,21 @@ var BrowserIDNetwork = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     createUser: function(email, onSuccess, onFailure) {
-      // XXX fill this in
+      // XXX fill this in.
       if (onSuccess) {
         onSuccess();
       }
     },
 
+    /**
+     * Set the password of the current user.
+     * @method setPassword
+     * @param {string} password - password to set
+     * @param {function} [onSuccess] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */ 
     setPassword: function(password, onSuccess, onFailure) {
+      // XXX fill this in.
       if (onSuccess) {
         onSuccess();
       }
