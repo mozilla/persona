@@ -31,6 +31,10 @@
 
 <script>
 $(document).ready(function() {
-   $('.website').html(BrowserIDStorage.getStagedOnBehalfOf());
+   var staged = BrowserIDStorage.getStagedOnBehalfOf();
+   if (staged)
+     $('.website').html(staged);
+   else
+     $('.hint').hide();
 });
 </script>
