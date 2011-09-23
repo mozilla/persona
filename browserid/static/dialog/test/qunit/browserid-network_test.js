@@ -128,8 +128,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
   });
 
-  test("stageUser", function() {
-    ok(true, "stageUser");
+  test("createUser", function() {
+    ok(true, "createUser");
   });
 
   test("setPassword", function() {

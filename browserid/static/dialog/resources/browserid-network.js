@@ -134,24 +134,20 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
-     * Create a new user or reset a current user's password.  Requires a user 
-     * to verify identity.
-     * changes for certs: removed keypair.
-     * @method stageUser
+     * Create a new user.  Requires a user to verify identity.
+     * @method createUser
      * @param {string} email - Email address to prepare.
-     * @param {string} password - Password for user.
-     * @param {object} keypair - User's public/private key pair.
      * @param {function} [onSuccess] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    stageUser: function(email, password, onSuccess, onFailure) {
+    createUser: function(email, onSuccess, onFailure) {
       withCSRF(function() { 
         $.ajax({
           type: "post",
           url: '/wsapi/stage_user',
           data: {
             email: email,
-            pass: password,
+            pass: "",
             site : BrowserIDNetwork.origin || document.location.host,
             csrf : csrf_token
           },
@@ -159,22 +155,6 @@ var BrowserIDNetwork = (function() {
           error: onFailure
         });
       });
-    },
-
-    /**
-     * Create a new user.  Requires a user to verify identity.
-     * @method stageUser
-     * @param {string} email - Email address to prepare.
-     * @param {string} password - Password for user.
-     * @param {object} keypair - User's public/private key pair.
-     * @param {function} [onSuccess] - Callback to call when complete.
-     * @param {function} [onFailure] - Called on XHR failure.
-     */
-    createUser: function(email, onSuccess, onFailure) {
-      // XXX fill this in.
-      if (onSuccess) {
-        onSuccess();
-      }
     },
 
     /**
