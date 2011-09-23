@@ -9,25 +9,25 @@
             <ul class="inputs">
                 <li>
                     <label class="serif" for="email">Email Address</label>
-                    <input class="sans" id="email" autofocus placeholder="Your Email" type="email" required x-moz-errormessage="Enter the email address you created your account with">
+                    <input class="sans" id="email" autofocus placeholder="Your Email" type="email" required x-moz-errormessage="Enter the email address you created your account with" tabindex="1">
                 </li>
                 <li>
                     <label class="serif half" for="password">Password</label>
                     <div class="half right">
                         <!-- XXX: this needs to be fixed -->
-                        <a class="forgot" href="/signup">forgot your password?</a>
+                        <a class="forgot" href="/signup" tabindex="4">forgot your password?</a>
                     </div>
-                    <input class="sans" id="password" placeholder="Your Password" type="password" required x-moz-errormessage="Oops!  We need your password to sign you in">
+                    <input class="sans" id="password" placeholder="Your Password" type="password" required x-moz-errormessage="Oops!  We need your password to sign you in" tabindex="2">
                 </li>
             </ul>
             <div class="submit cf">
                 <div class="remember cf">
                     <div class="checkAlign">
-                        <input id="memorize" type="checkbox">
+                        <input id="memorize" type="checkbox" tabindex="3">
                     </div>
                     <label for="memorize">remember me</label>
                 </div>
-                <input type="submit" class="create" value="Sign In"/>
+                <input type="submit" class="create" value="Sign In" tabindex="5"/>
             </div>
         </form>
         <a class="signUpIn space" href="/signup">New to BrowserID? Sign up today.</a>
