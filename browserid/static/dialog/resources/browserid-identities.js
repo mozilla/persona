@@ -220,7 +220,7 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     requestPasswordReset: function(email, onSuccess, onFailure) {
-      network.requestPasswordReset(email, onSuccess, onFailure);
+      network.requestPasswordReset(email, origin, onSuccess, onFailure);
     },
 
     /**

@@ -428,7 +428,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
 
   test("requestPasswordReset", function() {
-    network.requestPasswordReset("address", function onSuccess() {
+    network.requestPasswordReset("address", "origin", function onSuccess() {
       // XXX need a test here;
       ok(true);
       start();

@@ -227,10 +227,12 @@ var BrowserIDNetwork = (function() {
      * @param {function} [onSuccess] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestPasswordReset: function(email, onSuccess, onFailure) {
-      // XXX fill this in.
+    requestPasswordReset: function(email, origin, onSuccess, onFailure) {
       if (email) {
-        this.createUser(email, onSuccess, onFailure);
+        this.createUser(email, origin, onSuccess, onFailure);
+      } else {
+        // TODO: if no email is provided, then what?
+        throw "no email provided to password reset";
       }
     },
 

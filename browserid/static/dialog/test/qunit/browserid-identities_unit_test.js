@@ -142,7 +142,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       onSuccess();
     },
 
-    requestPasswordReset: function(email, onSuccess, onFailure) {
+    requestPasswordReset: function(email, origin, onSuccess, onFailure) {
       onSuccess(true);
     },
 
