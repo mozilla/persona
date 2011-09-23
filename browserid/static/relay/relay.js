@@ -73,8 +73,6 @@
       }
   };
 
-  console.log('adding browserid_relay functions');
-
   chan.bind("getVerifiedEmail", function(trans, s) {
     origin = trans.origin;
     trans.delayReturn(true);
