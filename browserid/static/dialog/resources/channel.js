@@ -52,12 +52,31 @@
 
 
 (function() {
+  function getUrlVars() {
+    var hashes = window.location.href.slice(
+                    window.location.href.indexOf('#') + 1).split('&');
+        vars = {};
+
+    for(var i = 0, item, hash; item=hashes[i]; ++i) {
+      hash = hashes[i].split('=');
+      vars[hash[0]] = hash[1];
+    }
+
+    return vars;
+  }
+
+  function getRelayName() {
+    var vars = getUrlVars();
+    return vars.relay;
+  }
+
   function getRelayWindow(callback) {
-    var frames = window.opener.frames;
-    var frameWindow;
+    var frames = window.opener.frames,
+        frameWindow,
+        relayName = getRelayName();
 
     try {
-      frameWindow = frames['browserid_relay'];
+      frameWindow = frames[relayName];
       // Make sure that we have our frameWindow as well as the two functions we 
       // care about before saying that we are ready.
       if (frameWindow && frameWindow.register_dialog && frameWindow.browserid_relay) {
@@ -67,10 +86,8 @@
     } catch(e) {
       // if the relay iframe does not yet exist, or if its contents are not yet 
       // loaded, we get a security exception.
-      console.log(e);
     }
 
-    console.log('relay or functions not found, retrying');
     // not ready yet, check in 100ms
     setTimeout(getRelayWindow.bind(null, callback), 500);
   }
