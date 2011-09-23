@@ -6,26 +6,21 @@
             <div class="notifications">
                 <div class="notification error doh">Doh! Something went wrong :-( </div>
                 <div class="notification error mismatchpassword">XXX: Your passwords need to match</div>
+                <div class="notification emailsent">A confirmation email has been sent to you at <strong id="sent_to_email"></strong>. Check it!</div>
             </div>
+            <div id="forminputs">
             <ul class="inputs">
                 <li>
                     <label class="serif" for="email">Email Address</label>
                     <input class="sans" id="email" autofocus required placeholder="Your Email" type="email" x-moz-errormessage="Please enter the email address you would like to use">
-                </li>
-                <li>
-                    <label class="serif" for="password">New Password</label>
-                    <input class="sans" type="password" id="password" required placeholder="Enter a Password" type="password" x-moz-errormessage="Please create a new password for your BrowserID account">
-                </li>
-                <li>
-                    <label class="serif" for="vpassword">Verify Password</label>
-                    <input class="sans" type="password" id="vpassword" required placeholder="Repeat Password" type="text" x-moz-errormessage="Oops! Just repeat your password above to double check.  Thanks!">
                 </li>
             </ul>
             <div class="submit cf">
                 <div class="remember cf">
                     <a class="signUpIn" href="/signin">Existing account? Sign in.</a>
                 </div>
-                <input type="submit" class="create" value="Create Account"/>
+                <input type="submit" class="create" value="Verify Email"/>
+            </div>
             </div>
         </form>
     </div>
@@ -48,16 +43,13 @@
         return false;
       }
 
-      BrowserIDIdentities.createUser(email, function onSuccess(authenticated) {
-        if (authenticated) {
-          document.location = "/";
-        }
-        else {
-          // bad authentication
-          $(".notifications .notification.doh").fadeIn();
-        }
+      BrowserIDIdentities.createUser(email, function onSuccess(keypair) {
+        $('#sent_to_email').html(email);
+        $('#forminputs').fadeOut();
+        $(".notifications .notification.emailsent").fadeIn();
       }, function onFailure() {
-        // Wah wah.  Network error
+        // bad authentication
+        $(".notifications .notification.doh").fadeIn();
       });
       return false;
     });
