@@ -52,21 +52,37 @@
 
 
 (function() {
-  function getRelayWindow() {
-    var frameWindow = window.opener.frames['browserid_relay'];
-    return frameWindow;
+  function getRelayWindow(callback) {
+    var frames = window.opener.frames;
+    var frameWindow;
+
+    try {
+      frameWindow = frames['browserid_relay'];
+      // Make sure that we have our frameWindow as well as the two functions we 
+      // care about before saying that we are ready.
+      if (frameWindow && frameWindow.register_dialog && frameWindow.browserid_relay) {
+        callback(frameWindow);
+        return;
+      }
+    } catch(e) {
+      // if the relay iframe does not yet exist, or if its contents are not yet 
+      // loaded, we get a security exception.
+    }
+
+    // not ready yet, check in 100ms
+    setTimeout(getRelayWindow.bind(null, callback), 100);
   }
 
   function registerWithRelayFrame(callback) {
-    var frameWindow = getRelayWindow();
-    if (frameWindow) {
+    getRelayWindow(function(frameWindow) {
       frameWindow['register_dialog'](callback);
-    }
+    });
   }
 
-  function getRPRelay() {
-    var frameWindow = getRelayWindow();
-    return frameWindow && frameWindow['browserid_relay'];
+  function getRPRelay(callback) {
+    getRelayWindow(function(frameWindow) {
+      callback(frameWindow['browserid_relay']);
+    });
   }
 
 
@@ -108,17 +124,15 @@
     function onsuccess(rv) {
       // Get the relay here so that we ensure that the calling window is still
       // open and we aren't causing a problem.
-      var relay = getRPRelay();
-      if(relay) {
+      getRPRelay(function(relay) {
         relay(rv, null);
-      }
+      });
     }
 
     function onerror(error) {
-      var relay = getRPRelay();
-      if(relay) {
+      getRPRelay(function(relay) {
         relay(null, error);
-      }
+      });
     }
 
     // The relay frame will give us the origin.

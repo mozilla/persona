@@ -605,8 +605,8 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     }
 
     var doc = window.document;
-    w = _open_window();
     iframe = _open_relay_frame(doc);
+    w = _open_window();
 
     // if the RP window closes, close the dialog as well.
     if (window.addEventListener) {
