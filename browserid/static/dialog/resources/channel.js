@@ -67,6 +67,7 @@
     } catch(e) {
       // if the relay iframe does not yet exist, or if its contents are not yet 
       // loaded, we get a security exception.
+      console.log(e);
     }
 
     console.log('relay or functions not found, retrying');
