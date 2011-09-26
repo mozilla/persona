@@ -41,13 +41,10 @@ $(function() {
     $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
   }
 
-  BrowserIDNetwork.checkAuth(function(authenticated) {
-    if (authenticated) {
-      if ($('#emailList').length) {
-        display_saved_ids();
-      }
-    } else {
-      $("#vAlign").fadeIn("slow");
+  BrowserIDIdentities.checkAuthentication(function(authenticated) {
+    $("#vAlign").fadeIn("slow");
+    if (authenticated && $('#emailList').length) {
+      display_saved_ids();
     }
   });
 
