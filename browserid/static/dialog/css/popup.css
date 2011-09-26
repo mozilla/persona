@@ -467,7 +467,7 @@ html[xmlns] .cf {
     margin: 5px 0;
 }
 #addDifferentEmail {
-    margin: 0 5px;
+    margin: 10px 5px 0 0;
 }
 #newEmail {
     -moz-box-flex: 1;
