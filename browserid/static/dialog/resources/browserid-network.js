@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global BrowserIDStorage: true */
+/*global BrowserIDStorage: true, _: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -44,13 +44,21 @@ var BrowserIDNetwork = (function() {
     else {
       $.get('/wsapi/csrf', {}, function(result) {
         csrf_token = result;
-        cb();
+        _.defer(cb);
       }, 'html');
     }
   }
 
   function filterOrigin(origin) {
     return origin.replace(/^.*:\/\//, '');
+  }
+
+  function createDeferred(cb) {
+    if (cb) {
+      return function() {
+        _.defer(cb);
+      };
+    }
   }
 
   var Network = {
@@ -84,7 +92,7 @@ var BrowserIDNetwork = (function() {
           success: function(status, textStatus, jqXHR) {
             if (onSuccess) {
               var authenticated = JSON.parse(status);
-              onSuccess(authenticated);
+              _.delay(onSuccess, 0, authenticated);
             }
           },
           error: onFailure
@@ -104,9 +112,7 @@ var BrowserIDNetwork = (function() {
         url: '/wsapi/am_authed',
         success: function(status, textStatus, jqXHR) {
           var authenticated = JSON.parse(status);
-          setTimeout(function() {
-            onSuccess(authenticated);
-          }, 10);
+          _.delay(onSuccess, 0, authenticated);
         },
         error: onFailure
       });
@@ -126,7 +132,7 @@ var BrowserIDNetwork = (function() {
           csrf_token = undefined;
           withCSRF(function() {
             if (onSuccess) {
-              onSuccess();
+              _.defer(onSuccess);
             }
           });
         } );
@@ -151,7 +157,7 @@ var BrowserIDNetwork = (function() {
             site : BrowserIDNetwork.origin || document.location.host,
             csrf : csrf_token
           },
-          success: onSuccess,
+          success: createDeferred(onSuccess),
           error: onFailure
         });
       });
@@ -167,7 +173,7 @@ var BrowserIDNetwork = (function() {
     setPassword: function(password, onSuccess, onFailure) {
       // XXX fill this in.
       if (onSuccess) {
-        onSuccess();
+        _.defer(onSuccess);
       }
     },
 
@@ -188,7 +194,7 @@ var BrowserIDNetwork = (function() {
         success: function(status, textStatus, jqXHR) {
           if (onSuccess) {
             var valid = JSON.parse(status);
-            onSuccess(valid);
+            _.delay(onSuccess, 0, valid);
           }
         },
         error: onFailure
@@ -202,10 +208,11 @@ var BrowserIDNetwork = (function() {
      */
     cancelUser: function(onSuccess) {
       withCSRF(function() {
-        $.post("/wsapi/account_cancel", {"csrf": csrf_token}, function(result) {
-          if (onSuccess) {
-            onSuccess();
-          }
+        $.ajax({
+          type: 'POST',
+          url: "/wsapi/account_cancel", 
+          data: {"csrf": csrf_token}, 
+          success: createDeferred(onSuccess)
         });
       });
     },
@@ -227,7 +234,7 @@ var BrowserIDNetwork = (function() {
             site: BrowserIDNetwork.origin || document.location.host,
             csrf: csrf_token
           },
-          success: onSuccess,
+          success: createDeferred(onSuccess),
           error: onFailure
         });
       });
@@ -248,7 +255,7 @@ var BrowserIDNetwork = (function() {
         success: function(data, textStatus, xhr) {
           if(onSuccess) {
             var success = typeof data === 'string' ? !JSON.parse(data) : data;
-            onSuccess(success);
+            _.delay(onSuccess, 0, success);
           }
         },
         error: onFailure
@@ -271,7 +278,7 @@ var BrowserIDNetwork = (function() {
             email: email,
             csrf: csrf_token
           },
-          success: onSuccess,
+          success: createDeferred(onSuccess),
           failure: onFailure
         });
       });
@@ -338,7 +345,7 @@ var BrowserIDNetwork = (function() {
             pubkey: pubkey.serialize(),
             csrf: csrf_token
           },
-          success: onSuccess,
+          success: createDeferred(onSuccess),
           error: onError
         });
       });
@@ -352,7 +359,7 @@ var BrowserIDNetwork = (function() {
       $.ajax({
         type: "GET",
         url: "/wsapi/list_emails",
-        success: onSuccess,
+        success: createDeferred(onSuccess),
         error: onFailure
       });
     }
