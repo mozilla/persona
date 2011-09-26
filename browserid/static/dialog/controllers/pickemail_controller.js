@@ -70,9 +70,10 @@
 
     "#useDifferentEmail click": function() {
       //this.close("pickemail:addemail");
-      $("#signInButton").hide();
-      $("#differentEmail").slideDown(300);
-      $("#newEmail").focus();
+      $("#signInButton,#useDifferentEmail").fadeOut(250, function() {
+        $("#differentEmail").fadeIn(250);
+        $("#newEmail").focus();
+      });
     }
 
   });
