@@ -199,16 +199,17 @@ PageController.extend("Dialog", {}, {
 
 
     doCheckAuth: function() {
-      this.doWait(BrowserIDWait.checkAuth);
       var self=this;
+      self.doWait(BrowserIDWait.checkAuth);
       BrowserIDIdentities.checkAuthenticationAndSync(function onSuccess() {}, 
-      function onComplete(authenticated) {
-        if (authenticated) {
-          self.doSignIn();
-        } else {
-          self.doAuthenticate();
-        }
-      }, self.getErrorDialog(BrowserIDErrors.checkAuthentication));
+        function onComplete(authenticated) {
+          if (authenticated) {
+              self.doSignIn();
+          } else {
+            self.doAuthenticate();
+          }
+        }, 
+        self.getErrorDialog(BrowserIDErrors.checkAuthentication));
   }
 
   });

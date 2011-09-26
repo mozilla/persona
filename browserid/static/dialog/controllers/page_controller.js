@@ -43,17 +43,25 @@
   $.Controller.extend("PageController", {
     }, {
     init: function(options) {
-      var bodyTemplate = options.bodyTemplate;
-      var bodyVars = options.bodyVars;
-      var footerTemplate = options.footerTemplate;
-      var footerVars = options.footerVars;
+      var me=this,
+          bodyTemplate = options.bodyTemplate,
+          bodyVars = options.bodyVars,
+          footerTemplate = options.footerTemplate,
+          footerVars = options.footerVars;
 
-      this.renderTemplates(bodyTemplate, bodyVars, footerTemplate, footerVars);
+
+      me.renderTemplates(bodyTemplate, bodyVars, footerTemplate, footerVars);
+
       // XXX move all of these, bleck.
-      $("form").bind("submit", this.onSubmit.bind(this));
-      $("#cancel").click(this.onCancel.bind(this));
-      $("#back").click(this.onBack.bind(this));
-      $("#signOut").click(this.close.bind(this, "pickemail:notme"));
+      $("form").bind("submit", me.onSubmit.bind(me));
+      $("#cancel").click(me.onCancel.bind(me));
+      $("#back").click(me.onBack.bind(me));
+      $("#signOut").click(me.close.bind(me, "pickemail:notme"));
+
+      me.className = options.className;
+      if (me.className) {
+        $("body").addClass(me.className);
+      }
     },
 
     destroy: function() {
@@ -62,10 +70,19 @@
       $("#cancel").unbind("click");
       $("#back").unbind("click");
       $("#signOut").unbind("click");
+
+      if (this.className) {
+        $("body").removeClass(this.className);
+      }
+
+      $("body").removeClass("waiting");
+
       this._super();
     },
 
     renderTemplates: function(body, body_vars, footer, footer_vars) {
+      $("body").removeClass("waiting");
+
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
         $("#dialog").html(bodyHtml).hide().fadeIn(300, function() {
@@ -83,6 +100,7 @@
     onSubmit: function(event) {
       event.stopPropagation();
       event.preventDefault();
+
       if (this.validate()) {
         this.submit();
       }
@@ -98,7 +116,13 @@
     },
 
     doWait: function(info) {
+      if (this.className) {
+        $("body").removeClass(this.className);
+      }
+
       this.renderTemplates("wait.ejs", {title: info.message, message: info.description});
+
+      $("body").addClass("waiting");
     },
 
     close: function(message, data) {

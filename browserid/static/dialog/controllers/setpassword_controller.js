@@ -45,9 +45,9 @@
           sitename: BrowserIDNetwork.origin,
           siteicon: '/i/times.gif',
           email: options.email
-        }
+        },
+        className: "setpassword"
       });
-      $("body").addClass("setpassword");
     },
 
 
@@ -56,7 +56,6 @@
     },
 
     submit: function() {
-      $("body").removeClass("setpassword");
       var password = $("#pass").val(),
           me=this;
 

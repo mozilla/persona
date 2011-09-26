@@ -41,16 +41,13 @@
       init: function(el, options) {
         this._super({
           bodyTemplate: "forgotpassword.ejs",
-          bodyVars: options
+          bodyVars: options,
+          className: "forgotpassword"
         });
-      
-        $("body").addClass("forgotpassword");
       },
 
 
       submit: function() {
-        $("body").removeClass("forgotpassword");
-
         var email = $("#email_input").val();
         this.close("forgotpassword:reset", {
           email: email

@@ -90,7 +90,12 @@ h2 {
     width: 100%;
 }
 
-#formWrap {
+.authenticate #formWrap, .authenticated #formWrap {
+    background-color: #fff;
+    background-image: none;
+}
+
+#formWrap, .waiting #formWrap {
     background-color: rgba(0, 0, 0, 0.035);
     background-image: url('/i/bg.png');
     position: relative;
@@ -99,17 +104,13 @@ h2 {
     overflow: hidden;
 }
 
-.authenticate #formWrap, .authenticated #formWrap {
-    background-color: #fff;
-    background-image: none;
-}
 
-.forgotpassword #formWrap {
+.forgotpassword #formWrap, .waiting #formWrap {
     width: 325px;
     margin: 0 auto;
 }
 
-.forgotpassword #formWrap > form {
+.forgotpassword #formWrap > form, .waiting #formWrap > form {
     height: 250px;
     width: 325px;
     display: table-cell;
