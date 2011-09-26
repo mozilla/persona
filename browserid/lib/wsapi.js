@@ -148,7 +148,7 @@ function setup(app) {
         resp.json(true);
 
         // let's now kick out a verification email!
-        email.sendVerificationEmail(req.body.email, req.body.site, secret);
+        email.sendNewUserEmail(req.body.email, req.body.site, secret);
       });
     } catch(e) {
       // we should differentiate tween' 400 and 500 here.
@@ -244,7 +244,7 @@ function setup(app) {
         resp.json(true);
 
         // let's now kick out a verification email!
-        email.sendVerificationEmail(req.body.email, req.body.site, secret);
+        email.sendAddAddressEmail(req.body.email, req.body.site, secret);
       });
     } catch(e) {
       // we should differentiate tween' 400 and 500 here.

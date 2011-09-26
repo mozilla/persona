@@ -61,8 +61,8 @@ exports.setInterceptor = function(callback) {
   interceptor = callback;
 };
 
-exports.sendVerificationEmail = function(email, site, secret) {
-  var url = config.get('URL') + "/prove?token=" + encodeURIComponent(secret);
+function doSend(landing_page, email, site, secret) {
+  var url = config.get('URL') + "/" + landing_page + "?token=" + encodeURIComponent(secret);
 
   if (interceptor) {
     interceptor(email, site, secret);
@@ -82,4 +82,12 @@ exports.sendVerificationEmail = function(email, site, secret) {
       }
     });
   };
+};
+
+exports.sendNewUserEmail = function(email, site, secret) {
+  doSend('verify_email_address', email, site, secret);
+};
+
+exports.sendAddAddressEmail = function(email, site, secret) {
+  doSend('add_email_address', email, site, secret);
 };
