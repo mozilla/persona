@@ -199,7 +199,7 @@ exports.stageUser = function(email, cb) {
 
 exports.haveVerificationSecret = function(secret, cb) {
   client.query(
-    "SELECT COUNT(*) as N FROM staged WHERE secret = ?", [ email ],
+    "SELECT COUNT(*) as N FROM staged WHERE secret = ?", [ secret ],
     function(err, rows) {
       if (err) logUnexpectedError(err);
       cb(rows && rows.length > 0 && rows[0].N > 0);
@@ -235,7 +235,7 @@ exports.gotVerificationSecret = function(secret, hash, cb) {
                   [ userID, o.email ],
                   function(err, info) {
                     if (err) logUnexpectedError(err);
-                    cb(err ? err : undefined);
+                    cb(err ? err : undefined, o.email);
                   });
               }
             });

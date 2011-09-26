@@ -60,8 +60,6 @@ suite.addBatch({
   "stage first account": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
-      pass: 'firstfakepass',
-      pubkey: 'fakepubkey',
       site:'fakesite.com'
     }),
     "the token is sane": function(r, err) {
@@ -73,7 +71,7 @@ suite.addBatch({
 suite.addBatch({
   "create first account": {
     topic: function() {
-      wsapi.get('/wsapi/prove_email_ownership', { token: token }).call(this);
+      wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'firstfakepass' }).call(this);
     },
     "account created": function(r, err) {
       assert.equal(r.code, 200);
@@ -84,7 +82,7 @@ suite.addBatch({
 
 suite.addBatch({
   "email created": {
-    topic: wsapi.get('/wsapi/registration_status'),
+    topic: wsapi.get('/wsapi/user_creation_status', { email: 'first@fakeemail.com' } ),
     "should exist": function(r, err) {
       assert.strictEqual(r.code, 200);
       assert.strictEqual(JSON.parse(r.body), "complete");
@@ -95,7 +93,7 @@ suite.addBatch({
 // add a new email address to the account (second address)
 suite.addBatch({
   "add a new email address to our account": {
-    topic: wsapi.post('/wsapi/add_email', {
+    topic: wsapi.post('/wsapi/stage_email', {
       email: 'second@fakeemail.com',
       site:'fakesite.com'
     }),
@@ -109,7 +107,7 @@ suite.addBatch({
 suite.addBatch({
   "create second account": {
     topic: function() {
-      wsapi.get('/wsapi/prove_email_ownership', { token: token }).call(this);
+      wsapi.post('/wsapi/complete_email_addition', { token: token }).call(this);
     },
     "account created": function(r, err) {
       assert.equal(r.code, 200);
@@ -146,8 +144,6 @@ suite.addBatch({
   "re-stage first account": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
-      pass: 'secondfakepass',
-      pubkey: 'fakepubkey2',
       site:'otherfakesite.com'
     }),
     "the token is sane": function(r, err) {
@@ -177,7 +173,7 @@ suite.addBatch({
 suite.addBatch({
   "re-create first email address": {
     topic: function() {
-      wsapi.get('/wsapi/prove_email_ownership', { token: token }).call(this);
+      wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'secondfakepass' }).call(this);
     },
     "account created": function(r, err) {
       assert.equal(r.code, 200);

@@ -196,7 +196,7 @@ exports.gotVerificationSecret = function(secret, hash, cb) {
           emails: [ o.email ]
         });
         flush();
-        cb();
+        cb(undefined, o.email);
       }
 
       // if this email address is known and a user has completed a re-verification of this email

@@ -60,7 +60,6 @@ suite.addBatch({
   "stage an account": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'syncer@somehost.com',
-      pass: 'fakepass',
       site:'fakesite.com'
     }),
     "yields a sane token": function(r, err) {
@@ -72,18 +71,18 @@ suite.addBatch({
 suite.addBatch({
   "verifying account ownership": {
     topic: function() {
-      wsapi.get('/wsapi/prove_email_ownership', { token: token }).call(this);
+      wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'fakepass' }).call(this);
     },
     "works": function(r, err) {
       assert.equal(r.code, 200);
-      assert.strictEqual(true, JSON.parse(r.body));
+      assert.strictEqual(JSON.parse(r.body), true);
     }
   }
 });
 
 suite.addBatch({
-  "calling registration_status after a registration is complete": {
-    topic: wsapi.get("/wsapi/registration_status"),
+  "calling user_creation_status after a creation is complete": {
+    topic: wsapi.get("/wsapi/user_creation_status", { email: 'syncer@somehost.com' }),
     "yields a HTTP 200": function (r, err) {
       assert.strictEqual(r.code, 200);
     },
@@ -106,7 +105,6 @@ suite.addBatch({
     }
   }
 });
-
 
 start_stop.addShutdownBatches(suite);
 
