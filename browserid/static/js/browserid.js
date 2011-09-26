@@ -1,4 +1,4 @@
-/*globals BrowserIDNetwork: true, BrowserIDIdentities: true, _: true, confirm: true, getEmails: true, display_saved_ids: true, removeEmail: true*/
+/*globals BrowserIDNetwork: true, BrowserIDIdentities: true, _: true, confirm: true, display_saved_ids: true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -139,8 +139,9 @@ $(function() {
 
 function display_saved_ids() {
   var emails = {};
+
   BrowserIDIdentities.syncEmailKeypairs(function() {
-    emails = getEmails();
+    emails = BrowserIDIdentities.getEmails();
     if (_.isEmpty(emails)) {
       console.log(emails);
       $("#content").hide();
