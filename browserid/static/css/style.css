@@ -96,8 +96,14 @@ hr {
 
 #content {
   padding: 84px 0;
+  display: none;
 }
 
+/*
+.authenticated #content {
+  display: block;
+}
+*/
 #about {
   font-family: 'Droid Serif', Georgia, serif;
   font-size: 14px;
@@ -446,7 +452,7 @@ h1 {
   padding: 0 0 0 250px;
 }
 
-#signUp a {
+#signUp .info {
   color: #549FDC;
   text-decoration: underline;
 }
@@ -458,6 +464,8 @@ h1 {
 .create {
   background-color: #37A6FF;
   height: 32px;
+  line-height: 27px;
+  display: inline-block;
   padding: 0 16px;
   vertical-align: middle;
   border: 1px solid #37A6FF;
@@ -748,7 +756,7 @@ a.forgot {
   background-repeat: no-repeat;
 }
 
-#header a.signIn {
+#header a.signIn, #header a.signOut {
   background-color: rgba(0,0,0,0.1);
   padding: 4px 8px;
 
@@ -758,13 +766,17 @@ a.forgot {
           border-radius: 3px;
 }
 
-#header a.signIn:hover {
+#header a.signIn:hover, #header a.signOut:hover {
   background-color: rgba(0,0,0,0.25);
   text-decoration: none;
 }
 
-.authenticated .signIn {
+.authenticated .signIn, .signOut {
   display: none;
+}
+
+.authenticated .signOut {
+  display: inline;
 }
 
 #header,

@@ -41,10 +41,29 @@ $(function() {
     $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
   }
 
+  $(".signOut").click(function(event) {
+    event.preventDefault();
+
+    BrowserIDIdentities.logoutUser(function() {
+      document.location = "/";
+    });
+  });
+
   BrowserIDIdentities.checkAuthentication(function(authenticated) {
-    $("#vAlign").fadeIn("slow");
-    if (authenticated && $('#emailList').length) {
-      display_saved_ids();
+    if (authenticated) {
+      $("#content").fadeIn("slow");
+      if ($('#emailList').length) {
+        display_saved_ids();
+      }
+    }
+    else {
+      // If vAlign exists (main page), it takes precedence over content.
+      if( $("#vAlign").length) {
+        $("#vAlign").fadeIn("slow");
+      }
+      else {
+        $("#content").fadeIn("slow");
+      }
     }
   });
 
@@ -132,80 +151,80 @@ $(function() {
     }
   });
 
-});
 
-function display_saved_ids() {
-  var emails = {};
+  function display_saved_ids() {
+    var emails = {};
 
-  BrowserIDIdentities.syncEmailKeypairs(function() {
-    emails = BrowserIDIdentities.getStoredEmailKeypairs();
-    if (_.isEmpty(emails)) {
-      console.log(emails);
-      $("#content").hide();
-    } else {
-      $("#content").show();
-      $("#vAlign").hide();
-      displayEmails();
-    }
-  });
-
-  function displayEmails() {
-    // XXX: this is currently not displayed
-    $('#cancellink').click(function() {
-      if (confirm('Are you sure you want to cancel your account?')) {
-        BrowserIDNetwork.cancelUser(function() {
-          document.location="/";
-        });
+    BrowserIDIdentities.syncEmailKeypairs(function() {
+      emails = BrowserIDIdentities.getStoredEmailKeypairs();
+      if (_.isEmpty(emails)) {
+        console.log(emails);
+        $("#content").hide();
+      } else {
+        $("#content").show();
+        $("#vAlign").hide();
+        displayEmails();
       }
     });
 
-    $('#manageAccounts').click(function(event) {
-        event.preventDefault();
-
-        $('#emailList').addClass('remove');
-        $(this).hide();
-        $("#cancelManage").show();
-    });
-    
-    $('#cancelManage').click(function(event) {
-        event.preventDefault();
-
-        $('#emailList').removeClass('remove');
-        $(this).hide();
-        $("#manageAccounts").show();
-    });
-
-    var list = $("#emailList").empty();
-
-    // Set up to use mustache style templating, the normal Django style blows 
-    // up the node templates
-    _.templateSettings = {
-        interpolate : /\{\{(.+?)\}\}/g
-    };
-    var template = $('#templateUser').html();
-
-    _(emails).each(function(data, e) {
-      var date = _.relative(new Date(data.created));
-
-      var identity = _.template(template, {
-        email: e,
-        relative: date.friendly,
-        created: date.locale
+    function displayEmails() {
+      // XXX: this is currently not displayed
+      $('#cancellink').click(function() {
+        if (confirm('Are you sure you want to cancel your account?')) {
+          BrowserIDNetwork.cancelUser(function() {
+            document.location="/";
+          });
+        }
       });
 
-      var idEl = $(identity).appendTo(list);
-      idEl.find('.delete').click(onRemoveEmail.bind(null, e));
-    });
+      $('#manageAccounts').click(function(event) {
+          event.preventDefault();
 
-    function onRemoveEmail(email, event) {
-      event.preventDefault();
+          $('#emailList').addClass('remove');
+          $(this).hide();
+          $("#cancelManage").show();
+      });
+      
+      $('#cancelManage').click(function(event) {
+          event.preventDefault();
 
-      if (confirm("Remove " + email + " from your BrowserID?")) {
-        BrowserIDIdentities.removeEmail(email, display_saved_ids);
+          $('#emailList').removeClass('remove');
+          $(this).hide();
+          $("#manageAccounts").show();
+      });
+
+      var list = $("#emailList").empty();
+
+      // Set up to use mustache style templating, the normal Django style blows 
+      // up the node templates
+      _.templateSettings = {
+          interpolate : /\{\{(.+?)\}\}/g
+      };
+      var template = $('#templateUser').html();
+
+      _(emails).each(function(data, e) {
+        var date = _.relative(new Date(data.created));
+
+        var identity = _.template(template, {
+          email: e,
+          relative: date.friendly,
+          created: date.locale
+        });
+
+        var idEl = $(identity).appendTo(list);
+        idEl.find('.delete').click(onRemoveEmail.bind(null, e));
+      });
+
+      function onRemoveEmail(email, event) {
+        event.preventDefault();
+
+        if (confirm("Remove " + email + " from your BrowserID?")) {
+          BrowserIDIdentities.removeEmail(email, display_saved_ids);
+        }
       }
     }
   }
-}
+});
 
 /*
 =======

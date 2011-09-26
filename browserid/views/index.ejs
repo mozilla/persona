@@ -20,7 +20,10 @@
             <div id="status"></div>
 
             <p>Connect with <em>BrowserID</em>, the safest &amp; easiest way to sign in.</p>
-            <p><a class="granted info" href="/about">Take the tour</a> or <button class="granted create">sign up</button></p>
+            <p>
+              <a class="granted info" href="/about">Take the tour</a> or 
+              <a href="/signup" class="button granted create">sign up</a>
+            </p>
         </div>
     </div>
 
@@ -43,8 +46,6 @@
 
       $('.create').hover(function() {
           $('#hint').addClass('signUp').removeClass('info');
-      }).click(function () {
-          document.location = '/signup';
       });
 
       $('.info').hover(function() {
