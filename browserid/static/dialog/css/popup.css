@@ -65,6 +65,10 @@ h1 {
     text-shadow: 1px 1px 0 rgba(255, 255, 255,0.5);
 }
 
+h2 {
+    font-size: 1em;
+}
+
 .right {
     text-align: right;
 }
@@ -87,20 +91,20 @@ h1 {
 }
 
 #formWrap {
-    background-color: rgba(255,255,255,1);
+    background-color: rgba(0, 0, 0, 0.035);
+    background-image: url('/i/bg.png');
     position: relative;
     width: 100%;
     height: 250px;
     overflow: hidden;
 }
 
-.setpassword #formWrap {
-    background-color: rgba(0, 0, 0, 0.035);
+.authenticate #formWrap, .authenticated #formWrap {
+    background-color: #fff;
+    background-image: none;
 }
 
-.forgotpassword #formWrap, .setpassword #formWrap {
-    background-color: rgba(0, 0, 0, 0.035);
-    background-image: url('/i/bg.png');
+.forgotpassword #formWrap {
     width: 325px;
     margin: 0 auto;
 }
