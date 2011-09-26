@@ -99,11 +99,7 @@ suite.addBatch({
 suite.addBatch({
   "stage a user for creation pending verification": {
     topic: function() {
-      db.stageUser({
-        email: 'lloyd@nowhe.re',
-        pubkey: 'fakepubkey',
-        hash: 'fakepasswordhash'
-      }, this.callback);
+      db.stageUser('lloyd@nowhe.re', this.callback);
     },
     "staging returns a valid secret": function(r) {
       secret = r;
@@ -135,7 +131,7 @@ suite.addBatch({
 suite.addBatch({
   "upon receipt of a secret": {
     topic: function() {
-      db.gotVerificationSecret(secret, this.callback);
+      db.gotVerificationSecret(secret, 'fakepasswordhash', this.callback);
     },
     "gotVerificationSecret completes without error": function (r) {
       assert.strictEqual(r, undefined);
@@ -190,7 +186,7 @@ suite.addBatch({
       "makes it visible via isStaged": function(sekret, r) { assert.isTrue(r); },
       "and lets you verify it": {
         topic: function(secret, r) {
-          db.gotVerificationSecret(secret, this.callback);
+          db.gotVerificationSecret(secret, undefined, this.callback);
         },
         "successfully": function(r) {
           assert.isUndefined(r);

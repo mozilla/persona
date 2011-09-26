@@ -53,7 +53,6 @@
  *    | bool new_acct          |
  *    | string existing        |
  *    |*string email           |
- *    | string passwd          |
  *    | timestamp ts           |
  *    +------------------------+
  */
@@ -71,7 +70,7 @@ var drop_on_close = undefined;
 const schemas = [
   "CREATE TABLE IF NOT EXISTS user   ( id INTEGER AUTO_INCREMENT PRIMARY KEY, passwd VARCHAR(64) );",
   "CREATE TABLE IF NOT EXISTS email  ( id INTEGER AUTO_INCREMENT PRIMARY KEY, user INTEGER, address VARCHAR(255) UNIQUE, INDEX(address) );",
-  "CREATE TABLE IF NOT EXISTS staged ( secret VARCHAR(48) PRIMARY KEY, new_acct BOOL, existing VARCHAR(255), email VARCHAR(255) UNIQUE, INDEX(email), passwd VARCHAR(64), ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
+  "CREATE TABLE IF NOT EXISTS staged ( secret VARCHAR(48) PRIMARY KEY, new_acct BOOL, existing VARCHAR(255), email VARCHAR(255) UNIQUE, INDEX(email), ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
 ];
 
 // log an unexpected database error
@@ -184,12 +183,12 @@ exports.isStaged = function(email, cb) {
   );
 }
 
-exports.stageUser = function(obj, cb) {
+exports.stageUser = function(email, cb) {
   var secret = secrets.generate(48);
   // overwrite previously staged users
-  client.query('INSERT INTO staged (secret, new_acct, email, passwd) VALUES(?,TRUE,?,?) ' +
-               'ON DUPLICATE KEY UPDATE secret=?, existing="", new_acct=TRUE, passwd=?',
-               [ secret, obj.email, obj.hash, secret, obj.hash],
+  client.query('INSERT INTO staged (secret, new_acct, email) VALUES(?,TRUE,?) ' +
+               'ON DUPLICATE KEY UPDATE secret=?, existing="", new_acct=TRUE',
+               [ secret, email, secret],
                function(err) {
                  if (err) {
                    logUnexpectedError(err);
@@ -198,7 +197,16 @@ exports.stageUser = function(obj, cb) {
                });
 }
 
-exports.gotVerificationSecret = function(secret, cb) {
+exports.haveVerificationSecret = function(secret, cb) {
+  client.query(
+    "SELECT COUNT(*) as N FROM staged WHERE secret = ?", [ email ],
+    function(err, rows) {
+      if (err) logUnexpectedError(err);
+      cb(rows && rows.length > 0 && rows[0].N > 0);
+    });
+};
+
+exports.gotVerificationSecret = function(secret, hash, cb) {
   client.query(
     "SELECT * FROM staged WHERE secret = ?", [ secret ],
     function(err, rows) {
@@ -240,7 +248,7 @@ exports.gotVerificationSecret = function(secret, cb) {
           // we're creating a new account, add appropriate entries into user and email tables.
           client.query(
             "INSERT INTO user(passwd) VALUES(?)",
-            [ o.passwd ],
+            [ hash ],
             function(err, info) {
               if (err) { logUnexpectedError(err); cb(err); return; }
               addEmailToUser(info.insertId);
@@ -277,7 +285,7 @@ exports.stageEmail = function(existing_email, new_email, cb) {
   var secret = secrets.generate(48);
   // overwrite previously staged users
   client.query('INSERT INTO staged (secret, new_acct, existing, email) VALUES(?,FALSE,?,?) ' +
-               'ON DUPLICATE KEY UPDATE secret=?, existing=?, new_acct=FALSE, passwd=""',
+               'ON DUPLICATE KEY UPDATE secret=?, existing=?, new_acct=FALSE',
                [ secret, existing_email, new_email, secret, existing_email],
                function(err) {
                  if (err) {
@@ -347,8 +355,11 @@ exports.cancelAccount = function(email, cb) {
     function (err, rows) {
       if (err) {
         logUnexpectedError(err)
-        cb(err);
-        return
+        return cb(err);
+      } else if (!rows || !rows.length === 1 || typeof rows[0] !== 'object') {
+        var e = "no user with given account: " + email ;
+        logUnexpectedError(e)
+        return cb(e);
       }
       var uid = rows[0].user;
       client.query("DELETE LOW_PRIORITY FROM email WHERE user = ?", [ uid ], reportErr);
