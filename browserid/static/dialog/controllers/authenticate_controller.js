@@ -37,6 +37,7 @@
 (function() {
   "use strict";
 
+  var ANIMATION_TIME = 250;
   // XXX  this needs changed so that the create account/authenticate flow is 
   // cleaner.  Right now we are trying to authenticate on every "enter" press, 
   // this is no good.
@@ -54,6 +55,12 @@
       });
     },
 
+    "#email click" : function(event) {
+      $(".returning:visible,.newuser:visible").fadeOut(ANIMATION_TIME, function() {
+        $(".start").fadeIn();
+      });
+    },
+
     "#next click": function(event) {
       var email = $("#email").val();
  
@@ -61,15 +68,20 @@
       // show error message if bad.
       network.haveEmail(email, function onComplete(registered) {
         // XXX instead of using jQuery here, think about using CSS animations.
-        $(".start").hide();
-        if(registered) {
-          $(".returning").slideDown(300, function() {
-            $("#password").focus();  
-          });
-        }
-        else {
-          $(".newuser").slideDown(300);
-        }
+        $(".start").fadeOut(function() {
+          if(registered) {
+            $(".newuser").fadeOut(ANIMATION_TIME, function() {
+              $(".returning").fadeIn(ANIMATION_TIME, function() {
+                $("#password").focus();  
+              });
+            });
+          }
+          else {
+            $(".returning").fadeOut(ANIMATION_TIME, function() {
+              $(".newuser").fadeIn(ANIMATION_TIME);
+            });
+          }
+        })
       });
     },
 
