@@ -131,7 +131,7 @@
         },
         function onComplete(authenticated) {
           if (authenticated) {
-//            self.close("authenticate:authenticated");
+            self.close("authenticate:authenticated");
           } else {
             //self.find("#cannot_authenticate").hide().fadeIn(400);
           }
