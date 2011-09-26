@@ -138,7 +138,7 @@ function display_saved_ids() {
   var emails = {};
 
   BrowserIDIdentities.syncEmailKeypairs(function() {
-    emails = BrowserIDIdentities.getEmails();
+    emails = BrowserIDIdentities.getStoredEmailKeypairs();
     if (_.isEmpty(emails)) {
       console.log(emails);
       $("#content").hide();
