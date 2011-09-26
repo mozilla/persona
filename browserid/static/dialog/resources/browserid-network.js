@@ -56,7 +56,10 @@ var BrowserIDNetwork = (function() {
   function createDeferred(cb) {
     if (cb) {
       return function() {
-        _.defer(cb);
+        var args = _.toArray(arguments);
+        _.defer(function() {
+          cb.apply(null, args); 
+        });
       };
     }
   }
