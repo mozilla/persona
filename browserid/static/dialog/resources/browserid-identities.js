@@ -264,6 +264,23 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
+     * Check whether the current user is authenticated.
+     * @method checkAuthentication
+     * @param {function} [onSuccess] - Called when check is complete with one 
+     * boolean parameter, authenticated.  authenticated will be true if user is 
+     * authenticated, false otw.
+     * @param {function} [onFailure] - Called on failure.
+     */
+    checkAuthentication: function(onSuccess, onFailure) {
+      network.checkAuth(function(authenticated) {
+        setAuthenticationStatus(authenticated);
+        if (onSuccess) {
+          onSuccess(authenticated);
+        }
+      }, onFailure);
+    },
+
+    /**
      * Check whether the current user is authenticated.  If authenticated, sync 
      * identities.
      * @method checkAuthenticationAndSync

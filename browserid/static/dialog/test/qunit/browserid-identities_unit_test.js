@@ -253,12 +253,35 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
 
+  test("checkAuthentication with valid authentication", function() {
+    credentialsValid = true;
+    BrowserIDIdentities.checkAuthentication(function(authenticated) {
+      equal(authenticated, true, "We are authenticated!");
+      start();
+    });
+
+    stop();
+  });
+
+
+
+  test("checkAuthentication with invalid authentication", function() {
+    credentialsValid = false;
+    BrowserIDIdentities.checkAuthentication(function(authenticated) {
+      equal(authenticated, false, "We are not authenticated!");
+      start();
+    });
+
+    stop();
+  });
+
+
 
   test("checkAuthenticationAndSync with valid authentication", function() {
     credentialsValid = true;
     BrowserIDIdentities.checkAuthenticationAndSync(function onSuccess() {},
     function onComplete(authenticated) {
-      ok(authenticated, true, "We are authenticated!");
+      equal(authenticated, true, "We are authenticated!");
       start();
     });
 
