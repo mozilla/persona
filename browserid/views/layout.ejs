@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
-  <title><%- title %></title>
   <!--[if lt IE 9]>
     <script src="/js/html5shim.js"></script>
   <![endif]-->
@@ -13,21 +12,19 @@
     <link rel="stylesheet" type="text/css" href="/css/browserid.min.css">
     <script src="/js/lib.min.js" type="text/javascript"></script>
   <% } else { %>
-    <link href='//fonts.googleapis.com/css?family=Droid+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/css/style.css" type="text/css" media="screen">
 
     <script src="/js/jquery-1.6.2.min.js" type="text/javascript"></script>
     <script src="/js/json2.js" type="text/javascript"></script>
     <script src="/dialog/resources/underscore-min.js" type="text/javascript"></script>
     <script src="/dialog/resources/storage.js" type="text/javascript"></script>
-    <script src="/dialog/resources/crypto-api.js" type="text/javascript"></script>
-    <script src="/dialog/resources/crypto.js" type="text/javascript"></script>
     <script src="/dialog/resources/browserid-network.js" type="text/javascript"></script>
     <script src="/dialog/resources/browserid-identities.js" type="text/javascript"></script>
     <script src="/js/browserid.js" type="text/javascript"></script>
   <% } %>
+  <title><%- title %></title>
 </head>
-<body>
+<body class="authenticated">
 
 <div id="wrapper">
 
