@@ -52,56 +52,29 @@
 
 
 (function() {
-  function getUrlVars() {
-    var hashes = window.location.href.slice(
-                    window.location.href.indexOf('#') + 1).split('&');
-        vars = {};
-
-    for(var i = 0, item, hash; item=hashes[i]; ++i) {
-      hash = hashes[i].split('=');
-      vars[hash[0]] = hash[1];
-    }
-
-    return vars;
+  function getRelayID() {
+    return window.location.href.slice(window.location.href.indexOf('#') + 1);
   }
 
   function getRelayName() {
-    var vars = getUrlVars();
-    return vars.relay;
+    return "browserid_relay_" + getRelayID();
   }
 
-  function getRelayWindow(callback) {
-    var frames = window.opener.frames,
-        frameWindow,
-        relayName = getRelayName();
-
-    try {
-      frameWindow = frames[relayName];
-      // Make sure that we have our frameWindow as well as the two functions we 
-      // care about before saying that we are ready.
-      if (frameWindow && frameWindow.register_dialog && frameWindow.browserid_relay) {
-        callback(frameWindow);
-        return;
-      }
-    } catch(e) {
-      // if the relay iframe does not yet exist, or if its contents are not yet 
-      // loaded, we get a security exception.
-    }
-
-    // not ready yet, check in 100ms
-    setTimeout(getRelayWindow.bind(null, callback), 500);
+  function getRelayWindow() {
+    var frameWindow = window.opener.frames[getRelayName()];
+    return frameWindow;
   }
 
   function registerWithRelayFrame(callback) {
-    getRelayWindow(function(frameWindow) {
+    var frameWindow = getRelayWindow();
+    if (frameWindow) {
       frameWindow['register_dialog'](callback);
-    });
+    }
   }
 
-  function getRPRelay(callback) {
-    getRelayWindow(function(frameWindow) {
-      callback(frameWindow['browserid_relay']);
-    });
+  function getRPRelay() {
+    var frameWindow = getRelayWindow();
+    return frameWindow && frameWindow['browserid_relay'];
   }
 
 
@@ -140,18 +113,24 @@
     // (has window.opener) as well as whether the relay function exists.
     // If these conditions are not met, then print an appropriate message.
 
+    // get the relay here at the time the channel is setup before any navigation has
+    // occured.  if we wait the window hash might change as a side effect to user
+    // navigation, which would cause us to not find our parent window.
+    // issue #295
+    var relay = getRPRelay();
+
     function onsuccess(rv) {
       // Get the relay here so that we ensure that the calling window is still
       // open and we aren't causing a problem.
-      getRPRelay(function(relay) {
+      if (relay) {
         relay(rv, null);
-      });
+      }
     }
 
     function onerror(error) {
-      getRPRelay(function(relay) {
+      if (relay) {
         relay(null, error);
-      });
+      }
     }
 
     // The relay frame will give us the origin.

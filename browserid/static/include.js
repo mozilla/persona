@@ -44,7 +44,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
 {
   var ipServer = "https://browserid.org";
   var isMobile = navigator.userAgent.indexOf('Fennec/') != -1;
-  
+
   // local embedded copy of jschannel: http://github.com/mozilla/jschannel
   var Channel = (function() {
     // current transaction id, start out at a random *odd* number between 1 and a million
@@ -52,7 +52,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     // channel instances.  That means of all messages posted from a single javascript
     // evaluation context, we'll never have two with the same id.
     var s_curTranId = Math.floor(Math.random()*1000001);
-    
+
     // no two bound channels in the same javascript evaluation context may have the same origin & scope.
     // futher if two bound channels have the same scope, they may not have *overlapping* origins
     // (either one or both support '*').  This restriction allows a single onMessage handler to efficient
@@ -572,11 +572,14 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     iframe.src = ipServer + "/register_iframe";
     return iframe;
   }
-  
-  function _get_relayframe_name() {
-    var framename = 'browserid_relay' + relayframe_opencount;
-    relayframe_opencount++;
-    return framename;
+
+  function _get_relayframe_id() {
+    var randomString = '';
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (var i=0; i < 4; i++) {
+      randomString += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return randomString;
   }
 
   function _open_relayframe(framename) {
@@ -590,14 +593,15 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
     return iframe;
   }
   
-  function _open_window(framename) {
-    // FIXME: need to pass the location in a more trustworthy fashion
-    // We have to change the name of the relay frame every time or else Firefox 
-    // has a problem re-attaching new iframes with the same name.  Code inside 
-    // of frames with the same name sometimes does not get run.
-    // See https://bugzilla.mozilla.org/show_bug.cgi?id=350023
+  function _open_window() {
+    // we open the window initially blank, and only after our relay frame has
+    // been constructed do we update the location.  This is done because we
+    // must launch the window inside a click handler, but we should wait to
+    // start loading it until our relay iframe is instantiated and ready.
+    // see issue #287 & #286
     return window.open(
-      ipServer + "/sign_in#relay=" + framename, "_mozid_signin",
+      "about:blank",
+      "_mozid_signin",
       isMobile ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=700,height=375");
   }
 
@@ -634,17 +638,29 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
       return;
     }
 
-    var framename = _get_relayframe_name();
-    var iframe = _open_relayframe(framename);
-    w = _open_window(framename);
+    var frameid = _get_relayframe_id();
+    var iframe = _open_relayframe("browserid_relay_" + frameid);
+    w = _open_window();
 
     // if the RP window closes, close the dialog as well.
     _attach_event(window, 'unload', _close_window);
 
     // clean up a previous channel that never was reaped
     if (chan) chan.destroy();
-    chan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid"});
-    
+    chan = Channel.build({
+      window: iframe.contentWindow,
+      origin: ipServer,
+      scope: "mozid",
+      onReady: function() {
+        // We have to change the name of the relay frame every time or else Firefox
+        // has a problem re-attaching new iframes with the same name.  Code inside
+        // of frames with the same name sometimes does not get run.
+        // See https://bugzilla.mozilla.org/show_bug.cgi?id=350023
+        w.location = ipServer + "/sign_in#" + frameid;
+        w.focus();
+      }
+    });
+
     function cleanup() {
       chan.destroy();
       chan = null;

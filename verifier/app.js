@@ -82,7 +82,7 @@ function doVerify(req, resp, next) {
       });
     },
     function(error) {
-      resp.json({"status":"failure", reason: error.toString()});
+      resp.json({"status":"failure", reason: (error ? error.toString() : "unknown")});
       metrics.report('verify', {
         result: 'failure',
         rp: audience
