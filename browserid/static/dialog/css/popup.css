@@ -184,7 +184,7 @@ h2 {
 
 #signIn form ul li {
     padding: 0 0 10px 0;
-    min-height: 53px;
+/*    min-height: 53px;*/
 }
 
 #signIn .submit {
@@ -229,6 +229,10 @@ label {
     display: block;
     color: #62615F;
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+}
+
+#inputs > li > label {
+  cursor: pointer;
 }
 
 input[type=email],
