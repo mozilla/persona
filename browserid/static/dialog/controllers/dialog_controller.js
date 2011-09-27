@@ -104,8 +104,8 @@ PageController.extend("Dialog", {}, {
         self.doConfirmEmail(info.email);
       });
 
-      hub.subscribe("email_confirmed", function(msg, info) {
-        self.doEmailConfirmed(info.email);
+      hub.subscribe("email_confirmed", function() {
+        self.doEmailConfirmed();
       });
 
       hub.subscribe("notme", function() {
