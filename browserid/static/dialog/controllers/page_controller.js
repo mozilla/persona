@@ -45,12 +45,10 @@
     init: function(options) {
       var me=this,
           bodyTemplate = options.bodyTemplate,
-          bodyVars = options.bodyVars,
-          footerTemplate = options.footerTemplate,
-          footerVars = options.footerVars;
+          bodyVars = options.bodyVars;
 
 
-      me.renderTemplates(bodyTemplate, bodyVars, footerTemplate, footerVars);
+      me.renderTemplates(bodyTemplate, bodyVars);
 
       // XXX move all of these, bleck.
       $("form").bind("submit", me.onSubmit.bind(me));
@@ -71,7 +69,7 @@
       this._super();
     },
 
-    renderTemplates: function(body, body_vars, footer, footer_vars) {
+    renderTemplates: function(body, body_vars) {
       $("body").removeClass("waiting");
 
       if (body) {
@@ -80,12 +78,6 @@
           $("#dialog input").eq(0).focus(); 
         });
       }
-
-      var footerHtml = '';
-      if (footer) {
-        footerHtml = $.View("//dialog/views/" + footer, footer_vars);
-      }
-      $("#bottom-bar").html(footerHtml);
     },
 
     onSubmit: function(event) {
