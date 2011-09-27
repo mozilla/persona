@@ -275,7 +275,10 @@ var BrowserIDNetwork = (function() {
             site: BrowserIDNetwork.origin || document.location.host,
             csrf: csrf_token
           },
-          success: createDeferred(onSuccess),
+          success: function(status) {
+            var staged = JSON.parse(status);
+            _.delay(onSuccess, 0, staged);
+          },
           error: onFailure
         });
       });

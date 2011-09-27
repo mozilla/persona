@@ -360,16 +360,18 @@ var BrowserIDIdentities = (function() {
      */
     addEmail: function(email, onSuccess, onFailure) {
       var self = this;
-      prepareDeps();
-      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
+      network.addEmail(email, function(added) {
+        if (added) {
+          prepareDeps();
+          var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
 
-      self.stagedEmail = email;
-      self.stagedKeypair = keypair;
+          self.stagedEmail = email;
+          self.stagedKeypair = keypair;
 
-      // we no longer send the keypair, since we will certify it later.
-      network.addEmail(email, function() {
-        if (onSuccess) {
-          onSuccess(keypair);
+          // we no longer send the keypair, since we will certify it later.
+          if (onSuccess) {
+            onSuccess(keypair);
+          }
         }
       }, onFailure);
     },

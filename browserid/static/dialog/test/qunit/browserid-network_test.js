@@ -65,6 +65,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
       "post /wsapi/account_cancel valid": "true",
       "post /wsapi/account_cancel invalid": "false",
       "post /wsapi/stage_email valid": "true",
+      "post /wsapi/stage_email invalid": "false",
       "get /wsapi/email_addition_status?email=address notcreated": undefined, // undefined because server returns 400 error
       "get /wsapi/email_addition_status?email=address pending": "pending",
       "get /wsapi/email_addition_status?email=address complete": "complete",
@@ -316,9 +317,21 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
 
   test("addEmail valid", function() {
-    network.addEmail("address", function onSuccess() {
-      // XXX needs a valid test
-      ok(true);
+    network.addEmail("address", function onSuccess(added) {
+      ok(added);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
+  test("addEmail invalid", function() {
+    xhr.useResult("invalid");
+    network.addEmail("address", function onSuccess(added) {
+      equal(added, false);
       start();
     }, function onFailure() {
       ok(false);

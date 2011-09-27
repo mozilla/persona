@@ -72,7 +72,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     },
 
     addEmail: function(email, onSuccess, onFailure) {
-      onSuccess();
+      onSuccess(true);
     },
 
     removeEmail: function(email, onSuccess, onFailure) {
