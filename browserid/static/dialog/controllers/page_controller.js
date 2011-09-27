@@ -56,7 +56,7 @@
       $("form").bind("submit", me.onSubmit.bind(me));
       $("#cancel").click(me.onCancel.bind(me));
       $("#back").click(me.onBack.bind(me));
-      $("#signOut").click(me.close.bind(me, "pickemail:notme"));
+      $("#signOut").click(me.close.bind(me, "notme"));
 
       me.className = options.className;
       if (me.className) {
@@ -69,7 +69,7 @@
       $("input").unbind("keyup");
       $("#cancel").unbind("click");
       $("#back").unbind("click");
-      $("#signOut").unbind("click");
+      //$("#signOut").unbind("click");
 
       if (this.className) {
         $("body").removeClass(this.className);

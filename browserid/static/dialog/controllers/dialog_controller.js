@@ -109,7 +109,7 @@ PageController.extend("Dialog", {}, {
         self.doAddEmail();
       });
 
-      hub.subscribe("pickemail:notme", function() {
+      hub.subscribe("notme", function() {
         self.doNotMe();
       });
 
