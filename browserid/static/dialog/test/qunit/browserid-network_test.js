@@ -41,9 +41,71 @@
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-network", function() {
   "use strict";
 
-  module("browserid-network");
-
   var network = BrowserIDNetwork;
+  var xhr = {
+    results: {
+      "get /wsapi/csrf valid": "csrf_token", 
+      "get /wsapi/csrf invalid": "csrf_token",  // since CSRF is called for most everything, it is always valid, the valid/invalid flags are for the other wsapi calls
+      "post /wsapi/authenticate_user valid": "true",  
+      "post /wsapi/authenticate_user invalid": "false",
+      "get /wsapi/am_authed valid": "true",
+      "get /wsapi/am_authed invalid": "false",
+      "get /wsapi/prove_email_ownership valid": "true",
+      "get /wsapi/prove_email_ownership invalid": "false",
+      "post /wsapi/stage_user valid": "true",
+      "post /wsapi/stage_user invalid": "false",
+      "post /wsapi/logout valid": "true",
+      "get /wsapi/have_email?email=taken valid": "false",
+      "get /wsapi/have_email?email=nottaken valid" : "true",
+      "post /wsapi/remove_email valid": "true",
+      "post /wsapi/remove_email invalid": "false",
+      "post /wsapi/account_cancel valid": "true",
+      "post /wsapi/account_cancel invalid": "false"
+    },
+
+    useResult: function(result) {
+      xhr.resultType = result;
+    },
+
+    getLastRequest: function() {
+      return this.req;
+    },
+
+    ajax: function(obj) {
+      console.log("ajax request");
+      var req = this.req = {
+        type: obj.type ? obj.type.toLowerCase() : "get",
+        url: obj.url,
+        data: obj.data
+      };
+
+      var resName = req.type + " " + req.url + " " + xhr.resultType;
+      var result = xhr.results[resName];
+
+      if(result) {
+        if(obj.success) {
+          obj.success(result);
+        }
+      }
+      else if (obj.error) {
+        // Invalid result - either invalid URL, invalid GET/POST or 
+        // invalid resultType
+        obj.error();
+      }
+    }
+  }
+
+
+  module("browserid-network", {
+    setup: function() {
+      network.setXHR(xhr);
+      xhr.useResult("valid");
+    },
+    teardown: function() {
+      network.setXHR($);
+    }
+  });
+
 
   test("setOrigin", function() {
     network.setOrigin("https://www.mozilla.com");
@@ -65,6 +127,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
   test("authenticate with invalid user", function() {
+    xhr.useResult("invalid");
     network.authenticate("testuser@testuser.com", "invalid", function onSuccess(authenticated) {
       start();
       equal(false, authenticated, "invalid authentication");
@@ -76,77 +139,168 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     stop();
   });
 
-  test("checkAuth", function() {
-    network.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
-      network.checkAuth(function onSuccess(authenticated) {
-        start();
-        equal(true, authenticated, "we have an authentication");
-      }, function onFailure() {
-        start();
-        ok(false, "checkAuth failure");
-      });
+  test("checkAuth with valid authentication", function() {
+    network.checkAuth(function onSuccess(authenticated) {
+      start();
+      equal(true, authenticated, "we have an authentication");
     }, function onFailure() {
       start();
-      ok(false, "valid authentication");
+      ok(false, "checkAuth failure");
     });
 
     stop();
   });
 
-  test("logout->checkAuth: are we really logged out?", function() {
-    network.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
-      network.logout(function onSuccess(authenticated) {
-        network.checkAuth(function onSuccess(authenticated) {
-          start();
-          equal(false, authenticated, "after logout, we are not authenticated");
-        }, function onFailure() {
-          start();
-          ok(false, "checkAuth failure");
-        });
-      });
+  test("checkAuth with invalid authentication", function() {
+    xhr.useResult("invalid");
+
+    network.checkAuth(function onSuccess(authenticated) {
+      start();
+      equal(false, authenticated, "we are not authenticated");
+    }, function onFailure() {
+      start();
+      ok(false, "checkAuth failure");
+    });
+
+    stop();
+  });
+
+  test("logout", function() {
+    network.logout(function onSuccess() {
+      start();
+      ok(true, "we can logout");
+    }, function onFailure() {
+      start();
+      ok(false, "logout failure");
     });
 
     stop();
   });
 
 
-  test("prove_email_ownership with valid login cookie but invalid token", function() {
-    network.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
-      var token = "badtoken";
-      network.proveEmailOwnership(token, function onSuccess(proven) {
-        equal(proven, false, "bad token could not be proved");
-        start(); 
-      }, function onFailure() {
-        start();
-      });
+  test("prove_email_ownership valid", function() {
+    network.proveEmailOwnership("goodtoken", function onSuccess(proven) {
+      equal(proven, true, "good token proved");
+      start(); 
+    }, function onFailure() {
+      start();
     });
 
     stop();
   });
 
-  test("prove_email_ownership without valid login cookie", function() {
+  test("prove_email_ownership with invalid token", function() {
+    xhr.useResult("invalid");
+    network.proveEmailOwnership("badtoken", function onSuccess(proven) {
+      equal(proven, false, "bad token could not be proved");
+      start(); 
+    }, function onFailure() {
+      start();
+    });
 
+    stop();
   });
 
-  test("createUser", function() {
-    ok(true, "createUser");
+  test("createUser with valid user", function() {
+    network.createUser("validuser", function onSuccess() {
+      start();
+      // XXX need to test here
+    }, function onFailure() {
+      start();
+    });
+
+    stop();
   });
 
-  test("setPassword", function() {
-    equal(typeof network.setPassword, "function");  
+  test("createUser with invalid user", function() {
+    xhr.useResult("invalid");
+    network.createUser("invaliduser", function onSuccess() {
+      start();
+      // XXX need a test here.
+    }, function onFailure() {
+      start();
+    });
+
+    stop();
   });
 
-  test("cancelUser", function() {
-    equal(typeof network.cancelUser, "function", "what a ridiculously stupid test");
+  test("cancelUser valid", function() {
+    network.cancelUser(function() {
+      // XXX need a test here.
+      ok(true);
+      start();
+    }, function onFailure() {
+      start();
+    });
+
+    stop();
   });
 
-  test("haveEmail", function() {
-    ok(true, "haveEmail");
+  test("cancelUser invalid", function() {
+    xhr.useResult("invalid");
+    network.cancelUser(function() {
+      // XXX need a test here.
+      ok(true);
+      start();
+    }, function onFailure() {
+      start();
+    });
+
+    stop();
   });
 
-  test("removeEmail", function() {
-    ok(true, "removeEmail");
+  test("haveEmail with taken email", function() {
+    network.haveEmail("taken", function(have) {
+      equal(have, true, "a taken email is marked taken");
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
   });
+
+  test("haveEmail with nottaken email", function() {
+    network.haveEmail("nottaken", function(have) {
+      equal(have, false, "a not taken email is not marked taken");
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
+
+  test("removeEmail valid", function() {
+    network.removeEmail("validemail", function onSuccess() {
+      // XXX need a test here;
+      ok(true);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
+  test("removeEmail invalid", function() {
+    xhr.useResult("invalid");
+    network.removeEmail("invalidemail", function onSuccess() {
+      // XXX need a test here;
+      ok(true);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
 
   test("checkRegistration", function() {
     ok(true, "checkRegistration");

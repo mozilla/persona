@@ -37,15 +37,21 @@
 var BrowserIDNetwork = (function() {
   "use strict";
 
-  var csrf_token;
+  var csrf_token,
+      xhr = $;
 
   function withCSRF(cb) {
     if (csrf_token) setTimeout(cb, 0);
     else {
-      $.get('/wsapi/csrf', {}, function(result) {
-        csrf_token = result;
-        _.defer(cb);
-      }, 'html');
+      xhr.ajax({
+        url: '/wsapi/csrf',
+        type: 'GET',
+        success: function(result) {
+          csrf_token = result;
+          _.defer(cb);
+        }, 
+        dataType: 'html'
+      });
     }
   }
 
@@ -75,6 +81,15 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
+     * Set the XHR object.  Used for testing
+     * @method setXHR
+     * @param {object} xhr - xhr object.
+     */
+    setXHR: function(newXHR) {
+      xhr = newXHR;
+    },
+
+    /**
      * Authenticate the current user
      * @method authenticate
      * @param {string} email - address to authenticate
@@ -84,7 +99,7 @@ var BrowserIDNetwork = (function() {
      */
     authenticate: function(email, password, onSuccess, onFailure) {
       withCSRF(function() { 
-        $.ajax({
+        xhr.ajax({
           type: "POST",
           url: '/wsapi/authenticate_user',
           data: {
@@ -111,7 +126,7 @@ var BrowserIDNetwork = (function() {
      * @param {function} [onFailure] - called on XHR failure.
      */
     checkAuth: function(onSuccess, onFailure) {
-      $.ajax({
+      xhr.ajax({
         url: '/wsapi/am_authed',
         success: function(status, textStatus, jqXHR) {
           var authenticated = JSON.parse(status);
@@ -129,16 +144,21 @@ var BrowserIDNetwork = (function() {
      */
     logout: function(onSuccess) {
       withCSRF(function() { 
-        $.post("/wsapi/logout", {
-          csrf: csrf_token
-        }, function() {
-          csrf_token = undefined;
-          withCSRF(function() {
-            if (onSuccess) {
-              _.defer(onSuccess);
-            }
-          });
-        } );
+        xhr.ajax({
+          type: "POST",
+          url: "/wsapi/logout", 
+          data: {
+            csrf: csrf_token
+          }, 
+          success: function() {
+            csrf_token = undefined;
+            withCSRF(function() {
+              if (onSuccess) {
+                _.defer(onSuccess);
+              }
+            });
+          }
+        });
       });
     },
 
@@ -151,12 +171,11 @@ var BrowserIDNetwork = (function() {
      */
     createUser: function(email, onSuccess, onFailure) {
       withCSRF(function() { 
-        $.ajax({
+        xhr.ajax({
           type: "post",
           url: '/wsapi/stage_user',
           data: {
             email: email,
-            pass: "",
             site : BrowserIDNetwork.origin || document.location.host,
             csrf : csrf_token
           },
@@ -189,7 +208,7 @@ var BrowserIDNetwork = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     proveEmailOwnership: function(token, onSuccess, onFailure) {
-      $.ajax({
+      xhr.ajax({
         url: '/wsapi/prove_email_ownership',
         data: {
           token: token
@@ -208,14 +227,16 @@ var BrowserIDNetwork = (function() {
      * Cancel the current user's account.
      * @method cancelUser
      * @param {function} [onSuccess] - called whenever complete.
+     * @param {function} [onFailure] - Called on XHR failure.
      */
-    cancelUser: function(onSuccess) {
+    cancelUser: function(onSuccess, onFailure) {
       withCSRF(function() {
-        $.ajax({
+        xhr.ajax({
           type: 'POST',
           url: "/wsapi/account_cancel", 
           data: {"csrf": csrf_token}, 
-          success: createDeferred(onSuccess)
+          success: createDeferred(onSuccess),
+          error: onFailure
         });
       });
     },
@@ -229,7 +250,7 @@ var BrowserIDNetwork = (function() {
      */
     addEmail: function(email, onSuccess, onFailure) {
       withCSRF(function() { 
-        $.ajax({
+        xhr.ajax({
           type: 'POST',
           url: '/wsapi/add_email',
           data: {
@@ -253,7 +274,7 @@ var BrowserIDNetwork = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     haveEmail: function(email, onSuccess, onFailure) {
-      $.ajax({
+      xhr.ajax({
         url: '/wsapi/have_email?email=' + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
           if(onSuccess) {
@@ -274,7 +295,7 @@ var BrowserIDNetwork = (function() {
      */
     removeEmail: function(email, onSuccess, onFailure) {
       withCSRF(function() { 
-        $.ajax({
+        xhr.ajax({
           type: 'POST',
           url: '/wsapi/remove_email',
           data: {
@@ -300,7 +321,7 @@ var BrowserIDNetwork = (function() {
       /*
       var self=this;
       function poll() {
-        $.ajax({
+        xhr.ajax({
             url: '/wsapi/registration_status',
             success: function(status, textStatus, jqXHR) {
               self.pollTimeout = null;
@@ -340,7 +361,7 @@ var BrowserIDNetwork = (function() {
      */
     certKey: function(email, pubkey, onSuccess, onError) {
       withCSRF(function() { 
-        $.ajax({
+        xhr.ajax({
           type: 'POST',
           url: '/wsapi/cert_key',
           data: {
@@ -359,7 +380,7 @@ var BrowserIDNetwork = (function() {
      * @method listEmails
      */
     listEmails: function(onSuccess, onFailure) {
-      $.ajax({
+      xhr.ajax({
         type: "GET",
         url: "/wsapi/list_emails",
         success: createDeferred(onSuccess),
