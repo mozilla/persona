@@ -77,7 +77,11 @@ PageController.extend("Dialog", {}, {
      
 
       hub.subscribe("user_staged", function(msg, info) {
-        self.doConfirmEmail(info.email);
+        self.doConfirmUser(info.email);
+      });
+
+      hub.subscribe("user_confirmed", function() {
+        self.doUserConfirmed();
       });
 
       hub.subscribe("authenticated", function() {
@@ -92,29 +96,20 @@ PageController.extend("Dialog", {}, {
         self.doConfirmEmail(info.email);
       });
 
-      hub.subscribe("checkregistration:confirmed", function() {
-        self.doRegistrationConfirmed();
-      });
-
-      /*
-      hub.subscribe("checkregistration:complete", function() {
-        self.doSignIn();
-      });
-*/
-      hub.subscribe("pickemail:complete", function(msg, info) {
+      hub.subscribe("email_chosen", function(msg, info) {
         self.doEmailSelected(info.email);
       });
 
-      hub.subscribe("pickemail:addemail", function() {
-        self.doAddEmail();
+      hub.subscribe("email_staged", function(msg, info) {
+        self.doConfirmEmail(info.email);
+      });
+
+      hub.subscribe("email_confirmed", function(msg, info) {
+        self.doEmailConfirmed(info.email);
       });
 
       hub.subscribe("notme", function() {
         self.doNotMe();
-      });
-
-      hub.subscribe("addemail:complete", function(msg, info) {
-        self.doConfirmEmail(info.email);
       });
 
       hub.subscribe("start", function() {
@@ -125,6 +120,16 @@ PageController.extend("Dialog", {}, {
         self.doCancel();
       });
 
+    },
+
+    doConfirmUser: function(email) {
+      this.confirmEmail = email;
+
+      this.element.checkregistration({email: email});
+    },
+
+    doUserConfirmed: function() {
+      this.doSignIn();
     },
 
     doStart: function() {
@@ -161,18 +166,14 @@ PageController.extend("Dialog", {}, {
       });
     },
 
-    doAddEmail: function() {
-      this.element.addemail();
-    },
-
     doConfirmEmail: function(email) {
       this.confirmEmail = email;
 
       this.element.checkregistration({email: email});
     },
 
-    doRegistrationConfirmed: function() {
-        this.doSignIn();
+    doEmailConfirmed: function() {
+      this.doSignIn();
     },
 
     doEmailSelected: function(email) {

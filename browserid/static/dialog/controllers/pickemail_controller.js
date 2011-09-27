@@ -49,29 +49,50 @@
       });
       // select the first option
       this.find('input:first').attr('checked', true);
+      this.submitAction = "signIn";
     },
 
     submit: function() {
+      this[this.submitAction]();
+    },
+
+    signIn: function() {
       var me=this;
       $("#signIn").animate({"width" : "685px"}, "slow", function () {
         // post animation
          $("body").delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
             var email = $("#inputs input:checked").val();
-            me.close("pickemail:complete", {
+            me.close("email_chosen", {
               email: email
             });
          });
       }); 
     },
 
-    "#signInButton click": function(element, event) {
-      event.preventDefault();
+    addEmail: function() {
+      var email = $("#newEmail").val(),
+          me=this;;
 
-      this.submit();
+      if (email) {
+        BrowserIDIdentities.addEmail(email, function(keypair) {
+          if (keypair) {
+            me.close("email_staged", {
+              email: email
+            });
+          }
+          else {
+            // XXX BAAAAAAAAAAAAAH.
+          }
+        }, function onFailure() {
+
+        });
+      }
     },
 
     "#useDifferentEmail click": function(element, event) {
       event.preventDefault();
+
+      this.submitAction = "addEmail";
 
       $("#signInButton,#useDifferentEmail").fadeOut(250, function() {
         $("#differentEmail").fadeIn(250);
@@ -81,6 +102,8 @@
 
     "#cancelDifferentEmail click": function(element, event) {
       event.preventDefault();
+
+      this.submitAction = "signIn";
 
       $("#differentEmail").fadeOut(250, function() {
         $("#signInButton,#useDifferentEmail").fadeIn(250);
