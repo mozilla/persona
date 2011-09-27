@@ -174,15 +174,15 @@ h2 {
     margin: 0 auto 10px;
 }
 
-#signIn form {
+#signIn .vertical {
     padding: 20px;
 }
 
-#signIn form ul {
+#signIn .vertical ul {
     list-style-type: none;
 }
 
-#signIn form ul li {
+#signIn .vertical ul li {
     padding: 0 0 10px 0;
 /*    min-height: 53px;*/
 }
