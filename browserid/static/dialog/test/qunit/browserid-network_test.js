@@ -211,9 +211,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
   test("createUser with valid user", function() {
-    network.createUser("validuser", function onSuccess() {
+    network.createUser("validuser", function onSuccess(created) {
+      ok(created);
       start();
-      // XXX need to test here
     }, function onFailure() {
       start();
     });
@@ -223,9 +223,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
   test("createUser with invalid user", function() {
     xhr.useResult("invalid");
-    network.createUser("invaliduser", function onSuccess() {
+    network.createUser("invaliduser", function onSuccess(created) {
+      equal(created, false);
       start();
-      // XXX need a test here.
     }, function onFailure() {
       start();
     });
