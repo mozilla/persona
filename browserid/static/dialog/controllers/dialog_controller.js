@@ -125,7 +125,11 @@ PageController.extend("Dialog", {}, {
     doConfirmUser: function(email) {
       this.confirmEmail = email;
 
-      this.element.checkregistration({email: email});
+      this.element.checkregistration({
+        email: email,
+        verifier: "checkUserRegistration",
+        verificationMessage: "user_confirmed"
+      });
     },
 
     doUserConfirmed: function() {
@@ -169,7 +173,11 @@ PageController.extend("Dialog", {}, {
     doConfirmEmail: function(email) {
       this.confirmEmail = email;
 
-      this.element.checkregistration({email: email});
+      this.element.checkregistration({
+        email: email,
+        verifier: "checkEmailRegistration",
+        verificationMessage: "email_confirmed"
+      });
     },
 
     doEmailConfirmed: function() {

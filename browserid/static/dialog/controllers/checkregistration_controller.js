@@ -47,6 +47,8 @@
         }
       });
       me.email = options.email;
+      me.verifier = options.verifier;
+      me.verificationMessage = options.verificationMessage;
       me.setupRegCheck();
     },
 
@@ -54,14 +56,14 @@
       // Try this every 3 seconds until registration is good.
       var me=this,
       poll = function() {
-        BrowserIDNetwork.checkUserRegistration(me.email, function(status) {
+        BrowserIDNetwork[me.verifier](me.email, function(status) {
           // registration status checks the status of the last initiated registration,
           // it's possible return values are:
           //   'complete' - registration has been completed
           //   'pending'  - a registration is in progress
           //   'noRegistration' - no registration is in progress
           if (status === 'complete') {
-            me.close("checkregistration:confirmed");
+            me.close(me.verificationMessage);
           } else if (status === 'pending') {
             setTimeout(poll, 3000);
           }
