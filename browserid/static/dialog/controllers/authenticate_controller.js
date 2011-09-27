@@ -81,31 +81,42 @@
               $(".newuser").fadeIn(ANIMATION_TIME);
             });
           }
-        })
+        });
       });
     },
 
-    "#signInButton click": function(event) {
+    "#signInButton click": function(el, event) {
+      event.preventDefault();
+
       this.submit();
     },
 
-    "#forgotpassword click": function(event) {
+    "#forgotpassword click": function(el, event) {
+      event.preventDefault();
+
       var email = $("#email").val();
       this.close("forgotpassword", {
         email: email  
       });
     },
 
-    "#create click": function(event) {
+    "#create click": function(el, event) {
+      event.preventDefault();
+
       var self = this,
           email = $("#email").val();
 
       identities.createUser(email, function(keypair) {
+        if(keypair) {
           self.close("user_staged", {
             email: email,
             keypair: keypair
           });
-        }, self.getErrorDialog(BrowserIDErrors.createAccount));
+        }
+        else {
+          // XXX can't register this email address.
+        }
+      }, self.getErrorDialog(BrowserIDErrors.createAccount));
     },
 
     validate: function() {
@@ -121,22 +132,25 @@
       var email = $("#email").val();
       var pass = $("#password").val();
 
-      var self = this;
-      identities.authenticateAndSync(email, pass, 
-        function onAuthenticate(authenticated) {
-          if (authenticated) {
-            self.doWait(BrowserIDWait.authentication);
-          }
-        },
-        function onComplete(authenticated) {
-          if (authenticated) {
-            self.close("authenticated");
-          } else {
-            //self.find("#cannot_authenticate").hide().fadeIn(400);
-          }
-        }, 
-        self.getErrorDialog(BrowserIDErrors.authentication)
-      );
+      // XXX need a better check here, some mini-state machine.
+      if (email && pass) {
+        var self = this;
+        identities.authenticateAndSync(email, pass, 
+          function onAuthenticate(authenticated) {
+            if (authenticated) {
+              self.doWait(BrowserIDWait.authentication);
+            }
+          },
+          function onComplete(authenticated) {
+            if (authenticated) {
+              self.close("authenticated");
+            } else {
+              //self.find("#cannot_authenticate").hide().fadeIn(400);
+            }
+          }, 
+          self.getErrorDialog(BrowserIDErrors.authentication)
+        );
+      }
     }
   });
 
