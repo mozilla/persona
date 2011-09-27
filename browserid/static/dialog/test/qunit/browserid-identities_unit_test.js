@@ -109,7 +109,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     },
 
     createUser: function(email, onSuccess) {
-      onSuccess();
+      onSuccess(true);
     },
 
     setPassword: function(password, onSuccess) {
