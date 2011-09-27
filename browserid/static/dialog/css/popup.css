@@ -466,7 +466,7 @@ html[xmlns] .cf {
     display: none;
 }
 
-#differentEmail > button {
+#differentEmail > button, .submit > button {
     margin: 10px 5px 0 0;
 }
 
