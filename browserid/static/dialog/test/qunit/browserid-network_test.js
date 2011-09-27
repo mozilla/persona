@@ -265,9 +265,21 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
   test("completeUserRegistration with valid token", function() {
-    network.completeUserRegistration("token", "password", function() {
-      // XXX need a valid test here.
-      ok(true);
+    network.completeUserRegistration("token", "password", function(registered) {
+      ok(registered);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
+  test("completeUserRegistration with invalid token", function() {
+    xhr.useResult("invalid");
+    network.completeUserRegistration("token", "password", function(registered) {
+      equal(registered, false);
       start();
     }, function onFailure() {
       ok(false);
