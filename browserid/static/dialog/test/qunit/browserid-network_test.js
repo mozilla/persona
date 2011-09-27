@@ -191,7 +191,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
 
   test("complete_email_addition valid", function() {
-    network.proveEmailOwnership("goodtoken", function onSuccess(proven) {
+    network.completeEmailRegistration("goodtoken", function onSuccess(proven) {
       equal(proven, true, "good token proved");
       start(); 
     }, function onFailure() {
@@ -203,7 +203,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
   test("complete_email_addition with invalid token", function() {
     xhr.useResult("invalid");
-    network.proveEmailOwnership("badtoken", function onSuccess(proven) {
+    network.completeEmailRegistration("badtoken", function onSuccess(proven) {
       equal(proven, false, "bad token could not be proved");
       start(); 
     }, function onFailure() {

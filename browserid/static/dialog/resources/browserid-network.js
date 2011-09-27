@@ -248,13 +248,13 @@ var BrowserIDNetwork = (function() {
 
     /**
      * Call with a token to prove an email address ownership.
-     * @method proveEmailOwnership
+     * @method completeEmailRegistration
      * @param {string} token - token proving email ownership.
      * @param {function} [onSuccess] - Callback to call when complete.  Called 
      * with one boolean parameter that specifies the validity of the token.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    proveEmailOwnership: function(token, onSuccess, onFailure) {
+    completeEmailRegistration: function(token, onSuccess, onFailure) {
       withCSRF(function() {
         xhr.ajax({
           type: "POST",

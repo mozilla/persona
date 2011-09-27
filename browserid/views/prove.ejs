@@ -36,7 +36,7 @@ function failure(why) {
 
 $(function() {
     var token = getParameterByName("token");
-    BrowserIDNetwork.proveEmailOwnership(token, function onSuccess(valid) {
+    BrowserIDNetwork.completeEmailRegistration(token, function onSuccess(valid) {
         if (valid) {
           success();
         } else {
