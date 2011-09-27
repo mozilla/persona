@@ -46,8 +46,8 @@
           email: options.email
         }
       });
-      me.setupRegCheck();
       me.email = options.email;
+      me.setupRegCheck();
     },
 
     setupRegCheck: function() {
@@ -66,7 +66,7 @@
             setTimeout(poll, 3000);
           }
           else {
-            me.runErrorDialog(BrowserIDErrors.registration);
+            me.errorDialog(BrowserIDErrors.registration);
           }
         }, me.getErrorDialog(BrowserIDErrors.registration));
       };
