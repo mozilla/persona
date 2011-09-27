@@ -218,7 +218,7 @@ var BrowserIDNetwork = (function() {
           data: {
             csrf: csrf_token,
             token: token,
-            password: password
+            pass: password
           },
           success: function(status, textStatus, jqXHR) {
             if (onSuccess) {
