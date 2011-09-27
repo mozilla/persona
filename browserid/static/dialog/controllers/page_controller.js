@@ -57,11 +57,6 @@
       $("#cancel").click(me.onCancel.bind(me));
       $("#back").click(me.onBack.bind(me));
       $("#signOut").click(me.close.bind(me, "notme"));
-
-      me.className = options.className;
-      if (me.className) {
-        $("body").addClass(me.className);
-      }
     },
 
     destroy: function() {
@@ -69,11 +64,7 @@
       $("input").unbind("keyup");
       $("#cancel").unbind("click");
       $("#back").unbind("click");
-      //$("#signOut").unbind("click");
-
-      if (this.className) {
-        $("body").removeClass(this.className);
-      }
+      $("#signOut").unbind("click");
 
       $("body").removeClass("waiting");
 
@@ -116,10 +107,6 @@
     },
 
     doWait: function(info) {
-      if (this.className) {
-        $("body").removeClass(this.className);
-      }
-
       this.renderTemplates("wait.ejs", {title: info.message, message: info.description});
 
       $("body").addClass("waiting");

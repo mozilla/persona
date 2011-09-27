@@ -41,8 +41,7 @@
       init: function(el, options) {
         this._super({
           bodyTemplate: "forgotpassword.ejs",
-          bodyVars: options,
-          className: "forgotpassword"
+          bodyVars: options
         });
       },
 

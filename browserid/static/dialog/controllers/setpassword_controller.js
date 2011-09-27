@@ -45,8 +45,7 @@
           sitename: BrowserIDNetwork.origin,
           siteicon: '/i/times.gif',
           email: options.email
-        },
-        className: "setpassword"
+        }
       });
     },
 

@@ -51,8 +51,7 @@
         bodyVars: {
           sitename: BrowserIDNetwork.origin,
           siteicon: '/i/times.gif'
-        },
-        className: 'authenticate'
+        }
       });
     },
 
