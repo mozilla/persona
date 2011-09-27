@@ -37,6 +37,10 @@
 $(function() {
   "use strict";
 
+  /**
+   * For the main page
+   */
+
   if ($('#vAlign').length) {
     $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
   }
@@ -224,81 +228,70 @@ $(function() {
       }
     }
   }
-});
 
-/*
-=======
-  $(function() {
-    BrowserIDIdentities.checkAuthenticationAndSync(function onSuccess(authenticated) {
-      if (authenticated) {
-        $("body").addClass("authenticated");
-      }
-    }, function onComplete(authenticated) {
-      if (authenticated && $('#emailList').length) {
-        display_saved_ids();
-      } 
+
+  /**
+   * For the prove page
+   */
+  function getParameterByName( name ) {
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp( regexS );
+    var results = regex.exec( window.location.href );
+    if( results == null )
+      return "";
+    else
+      return decodeURIComponent(results[1].replace(/\+/g, " "));
+  }
+
+  function emailRegistrationSuccess() {
+    $("div.status").text("Address confirmed!");
+    $("body").delay(1000).fadeOut(500, function() {
+      // if the close didn't work, then let's redirect the the main page where they'll
+      // get to see the ids that they've created.
+      document.location = '/';
     });
-  });
+  }
 
-  function display_saved_ids()
-  {
-    $('#cancellink').click(function() {
-      if (confirm('Are you sure you want to cancel your account?')) {
-        BrowserIDIdentities.cancelUser(function() {
-          document.location="/";
+  function emailRegistrationFailure(why) {
+    $("div.status").text("Error encountered while attempting to confirm your address.  Have you previously verified this address?");
+  }
+
+  var token = getParameterByName("token"),
+      path = document.location.pathname;
+
+  if (token && path === "/prove") {
+    BrowserIDNetwork.completeEmailRegistration(token, function onSuccess(valid) {
+        if (valid) {
+          emailRegistrationSuccess();
+        } else {
+          emailRegistrationFailure("unknown");
+        }
+
+    }, function onFailure() {
+        failure("Error Communicating With Server!");
+    });
+  }
+
+
+  if(token && path === "/verify") {
+    $("#signUpForm").submit(function(event) {
+      event.preventDefault();
+
+      var email = $("#email").val(),
+          pass = $("#password").val(),
+          pass2 = $("#vpassword").val();
+
+      if (pass && pass === pass2) {
+        BrowserIDNetwork.completeUserRegistration(token, pass, function onSuccess(registered) {
+          if (registered) {
+            $("#congrats").fadeIn(250);
+          }
+        }, function onFailure() {
+
         });
       }
     });
-
-    $("#emailList").empty();
-    var emails = BrowserIDIdentities.getStoredEmailKeypairs();
-    _(emails).each(function(data, e) {
-      var block = $("<div>").addClass("emailblock");
-      var label = $("<div>").addClass("email").text(e);
-      var meta = $("<div>").addClass("meta");
-
-      var pub = $("<div class='keyblock'>").hide();
-      
-      var keyText = data.pub.value;
-      pub.text(keyText);
-
-      var linkblock = $("<div>");
-      var puba = $("<a>").text("[show public key]");
-      // var priva = $("<a>").text("[show private key]");
-      puba.click(function() {pub.show();});
-      // priva.click(function() {priv.show()});
-      linkblock.append(puba);
-      // linkblock.append(" / ");
-      // linkblock.append(priva);
-      
-      var deauth = $("<button>").text("Forget this Email");
-      meta.append(deauth);
-      deauth.click(function(data) {
-        // If it is a primary, we do not have to go back to the server.
-        // XXX put this into the BrowserIDIdentities abstraction
-        if (data.isPrimary) {
-          BrowserIDStorage.removeEmail(e);
-          display_saved_ids();
-        }
-        else {
-          // remove email from server
-          BrowserIDIdentities.removeIdentity(e, display_saved_ids);
-        }
-      }.bind(null, data));
-    
-      var d = new Date(data.created);
-      var datestamp = $("<div class='date'>").text("Signed in at " + d.toLocaleString());
-
-      meta.append(datestamp);
-      meta.append(linkblock);
-                  
-      block.append(label);
-      block.append(meta);
-      // block.append(priv);
-      block.append(pub);
-      
-      $("#emailList").append(block);
-    });
   }
-}());
-  */
+});
+

@@ -1,32 +1,31 @@
-    <div id="vAlign">   
-        <div id="signUpFormWrap">
-            <!-- XXX this form submits to nowhere -->
-            <form id="signUpForm" class="cf">
-                <p class="hint">Finish signing into <span class="website"><strong>http://www.nytimes.com</strong></span></p>
-                <h1 class="serif">Last step!</h1>
-                <ul class="inputs">
-                    <li>
-                        <label class="serif" for="email">Email Address</label>
-                        <input class="youraddress sans" id="email" placeholder="Your Email" type="email" disabled="disabled">
-                    </li>
-                    <li>
-                        <label class="serif" for="password">New Password</label>
-                        <input class="sans" id="password" placeholder="Enter a Password" type="password" autofocus>
-                    </li>
-                    <li>
-                        <label class="serif" for="vpassword">Verify Password</label>
-                        <input class="sans" id="vpassword" placeholder="Repeat Password" type="password">
-                    </li>
-                </ul>
-                <div class="submit cf">
-                    <input type="submit" class="create" value="Finish"/>
-                </div>
-            </form>
-            
-            <div id="congrats">
-                <p class="serif">Thank you signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!</p>
-            </div>
-            
-        </div>
+<div id="vAlign">   
+  <div id="signUpFormWrap">
+    <form id="signUpForm" class="cf">
+      <p class="hint">Finish signing into <span class="website"><strong>http://www.nytimes.com</strong></span></p>
+      <h1 class="serif">Last step!</h1>
+      <ul class="inputs">
+        <li>
+            <label class="serif" for="email">Email Address</label>
+            <input class="youraddress sans" id="email" placeholder="Your Email" type="email" disabled="disabled">
+        </li>
+        <li>
+            <label class="serif" for="password">New Password</label>
+            <input required class="sans" id="password" placeholder="Enter a Password" type="password" autofocus>
+        </li>
+        <li>
+            <label class="serif" for="vpassword">Verify Password</label>
+            <input required class="sans" id="vpassword" placeholder="Repeat Password" type="password">
+        </li>
+      </ul>
+      <div class="submit cf">
+          <input type="submit" class="create" value="Finish"/>
+      </div>
+    </form>
+    
+    <div id="congrats">
+        <p class="serif">Thank you signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!</p>
     </div>
+      
+  </div>
+</div>
 
