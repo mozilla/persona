@@ -63,7 +63,9 @@
           //   'pending'  - a registration is in progress
           //   'noRegistration' - no registration is in progress
           if (status === 'complete') {
-            me.close(me.verificationMessage);
+            BrowserIDIdentities.syncEmailKeypairs(function() {
+              me.close(me.verificationMessage);
+            });
           } else if (status === 'pending') {
             setTimeout(poll, 3000);
           }
