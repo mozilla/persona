@@ -53,42 +53,14 @@
           siteicon: '/i/times.gif'
         }
       });
+      this.submitAction = "checkEmail";
     },
 
-    "#email click" : function(event) {
+    "#email click" : function(el, event) {
+      this.submitAction = "checkEmail";
       $(".returning:visible,.newuser:visible").fadeOut(ANIMATION_TIME, function() {
         $(".start").fadeIn();
       });
-    },
-
-    "#next click": function(event) {
-      var email = $("#email").val();
- 
-      // XXX verify email length/format here
-      // show error message if bad.
-      network.emailRegistered(email, function onComplete(registered) {
-        // XXX instead of using jQuery here, think about using CSS animations.
-        $(".start").fadeOut(function() {
-          if(registered) {
-            $(".newuser").fadeOut(ANIMATION_TIME, function() {
-              $(".returning").fadeIn(ANIMATION_TIME, function() {
-                $("#password").focus();  
-              });
-            });
-          }
-          else {
-            $(".returning").fadeOut(ANIMATION_TIME, function() {
-              $(".newuser").fadeIn(ANIMATION_TIME);
-            });
-          }
-        });
-      });
-    },
-
-    "#signInButton click": function(el, event) {
-      event.preventDefault();
-
-      this.submit();
     },
 
     "#forgotpassword click": function(el, event) {
@@ -100,11 +72,48 @@
       });
     },
 
-    "#create click": function(el, event) {
-      event.preventDefault();
+    submit: function() {
+      this[this.submitAction]();
+    },
 
-      var self = this,
+    checkEmail: function() {
+      var email = $("#email").val(),
+          self = this;
+
+      if(!email) {
+        return;
+      }
+
+      // XXX verify email length/format here
+      // show error message if bad.
+      network.emailRegistered(email, function onComplete(registered) {
+        // XXX instead of using jQuery here, think about using CSS animations.
+        $(".start").fadeOut(function() {
+          if(registered) {
+            self.submitAction = "authenticate";
+            $(".newuser").fadeOut(ANIMATION_TIME, function() {
+              $(".returning").fadeIn(ANIMATION_TIME, function() {
+                $("#password").focus();  
+              });
+            });
+          }
+          else {
+            self.submitAction = "createUser";
+            $(".returning").fadeOut(ANIMATION_TIME, function() {
+              $(".newuser").fadeIn(ANIMATION_TIME);
+            });
+          }
+        });
+      });
+    },
+
+    createUser: function() {
+      var self=this,
           email = $("#email").val();
+
+      if(!email) {
+        return;
+      }
 
       identities.createUser(email, function(keypair) {
         if(keypair) {
@@ -119,38 +128,31 @@
       }, self.getErrorDialog(BrowserIDErrors.createAccount));
     },
 
-    validate: function() {
-      var email = $("#email").val();
-      var pass = $("#password").val();
+    authenticate: function() {
+      var email = $("#email").val(),
+          pass = $("#password").val(),
+          self = this;
 
-      return true;
-    },
-
-    submit: function() {
-      // XXX change this so that we do not authenticate and sync unless we have 
-      // both an email and password.
-      var email = $("#email").val();
-      var pass = $("#password").val();
-
-      // XXX need a better check here, some mini-state machine.
-      if (email && pass) {
-        var self = this;
-        identities.authenticateAndSync(email, pass, 
-          function onAuthenticate(authenticated) {
-            if (authenticated) {
-              self.doWait(BrowserIDWait.authentication);
-            }
-          },
-          function onComplete(authenticated) {
-            if (authenticated) {
-              self.close("authenticated");
-            } else {
-              //self.find("#cannot_authenticate").hide().fadeIn(400);
-            }
-          }, 
-          self.getErrorDialog(BrowserIDErrors.authentication)
-        );
+      if(!(email && pass)) {
+        return;
       }
+
+      identities.authenticateAndSync(email, pass, 
+        function onAuthenticate(authenticated) {
+          if (authenticated) {
+            self.doWait(BrowserIDWait.authentication);
+          }
+        },
+        function onComplete(authenticated) {
+          if (authenticated) {
+            self.close("authenticated");
+          } else {
+            //self.find("#cannot_authenticate").hide().fadeIn(400);
+          }
+        }, 
+        self.getErrorDialog(BrowserIDErrors.authentication)
+      );
+
     }
   });
 
