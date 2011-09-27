@@ -127,14 +127,18 @@ var BrowserIDIdentities = (function() {
     createUser: function(email, onSuccess, onFailure) {
       var self=this;
       // FIXME: keysize
-      network.createUser(email, function() {
+      network.createUser(email, function(created) {
         if (onSuccess) {
-          prepareDeps();
-          var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
-          self.stagedEmail = email;
-          self.stagedKeypair = keypair;
+          var val = created;
+          if(created) {
+            prepareDeps();
+            var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
+            self.stagedEmail = email;
+            self.stagedKeypair = keypair;
+            val = keypair;
+          }
 
-          onSuccess(keypair);
+          onSuccess(val);
         }
       }, onFailure);
     },
