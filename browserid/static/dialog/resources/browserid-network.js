@@ -44,19 +44,19 @@ var BrowserIDNetwork = (function() {
     if (csrf_token) setTimeout(cb, 0);
     else {
       xhr.ajax({
-        url: '/wsapi/csrf',
-        type: 'GET',
+        url: "/wsapi/csrf",
+        type: "GET",
         success: function(result) {
           csrf_token = result;
           _.defer(cb);
         }, 
-        dataType: 'html'
+        dataType: "html"
       });
     }
   }
 
   function filterOrigin(origin) {
-    return origin.replace(/^.*:\/\//, '');
+    return origin.replace(/^.*:\/\//, "");
   }
 
   function createDeferred(cb) {
@@ -101,7 +101,7 @@ var BrowserIDNetwork = (function() {
       withCSRF(function() { 
         xhr.ajax({
           type: "POST",
-          url: '/wsapi/authenticate_user',
+          url: "/wsapi/authenticate_user",
           data: {
             email: email,
             pass: password,
@@ -127,7 +127,7 @@ var BrowserIDNetwork = (function() {
      */
     checkAuth: function(onSuccess, onFailure) {
       xhr.ajax({
-        url: '/wsapi/am_authed',
+        url: "/wsapi/am_authed",
         success: function(status, textStatus, jqXHR) {
           var authenticated = JSON.parse(status);
           _.delay(onSuccess, 0, authenticated);
@@ -173,7 +173,7 @@ var BrowserIDNetwork = (function() {
       withCSRF(function() { 
         xhr.ajax({
           type: "post",
-          url: '/wsapi/stage_user',
+          url: "/wsapi/stage_user",
           data: {
             email: email,
             site : BrowserIDNetwork.origin || document.location.host,
@@ -189,17 +189,47 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
-     * Check the current user's registration status
+     * Check the current user"s registration status
      * @method checkUserRegistration
      * @param {function} [onSuccess] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
     checkUserRegistration: function(email, onSuccess, onFailure) {
       xhr.ajax({
-        url: '/wsapi/user_creation_status?email=' + encodeURIComponent(email),
+        url: "/wsapi/user_creation_status?email=" + encodeURIComponent(email),
         success: createDeferred(onSuccess),
         error: onFailure
       });
+    },
+
+    /**
+     * Complete user registration, give user a password
+     * @method completeUserRegistration
+     * @param {string} token - token to register for.
+     * @param {string} password - password to register for account.
+     * @param {function} [onSuccess] - Called when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    completeUserRegistration: function(token, password, onSuccess, onFailure) {
+      withCSRF(function() {
+        xhr.ajax({
+          type: "POST",
+          url: "/wsapi/complete_user_creation",
+          data: {
+            csrf: csrf_token,
+            token: token,
+            password: password
+          },
+          success: function(status, textStatus, jqXHR) {
+            if (onSuccess) {
+              var valid = JSON.parse(status);
+              _.delay(onSuccess, 0, valid);
+            }
+          },
+          error: onFailure
+        });
+      });
+
     },
 
     /**
@@ -228,7 +258,7 @@ var BrowserIDNetwork = (function() {
       withCSRF(function() {
         xhr.ajax({
           type: "POST",
-          url: '/wsapi/complete_email_addition',
+          url: "/wsapi/complete_email_addition",
           data: {
             csrf: csrf_token,
             token: token
@@ -245,7 +275,7 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
-     * Cancel the current user's account.
+     * Cancel the current user"s account.
      * @method cancelUser
      * @param {function} [onSuccess] - called whenever complete.
      * @param {function} [onFailure] - Called on XHR failure.
@@ -253,7 +283,7 @@ var BrowserIDNetwork = (function() {
     cancelUser: function(onSuccess, onFailure) {
       withCSRF(function() {
         xhr.ajax({
-          type: 'POST',
+          type: "POST",
           url: "/wsapi/account_cancel", 
           data: {"csrf": csrf_token}, 
           success: createDeferred(onSuccess),
@@ -263,7 +293,7 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
-     * Add an email to the current user's account.
+     * Add an email to the current user"s account.
      * @method addEmail
      * @param {string} email - Email address to add.
      * @param {function} [onsuccess] - called when complete.
@@ -272,8 +302,8 @@ var BrowserIDNetwork = (function() {
     addEmail: function(email, onSuccess, onFailure) {
       withCSRF(function() { 
         xhr.ajax({
-          type: 'POST',
-          url: '/wsapi/stage_email',
+          type: "POST",
+          url: "/wsapi/stage_email",
           data: {
             email: email,
             site: BrowserIDNetwork.origin || document.location.host,
@@ -297,7 +327,7 @@ var BrowserIDNetwork = (function() {
      */
     checkEmailRegistration: function(email, onSuccess, onFailure) {
       xhr.ajax({
-        url: '/wsapi/email_addition_status?email=' + encodeURIComponent(email),
+        url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
         success: createDeferred(onSuccess),
         error: onFailure
       });
@@ -314,10 +344,10 @@ var BrowserIDNetwork = (function() {
      */
     emailRegistered: function(email, onSuccess, onFailure) {
       xhr.ajax({
-        url: '/wsapi/have_email?email=' + encodeURIComponent(email),
+        url: "/wsapi/have_email?email=" + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
           if(onSuccess) {
-            var success = typeof data === 'string' ? !JSON.parse(data) : data;
+            var success = typeof data === "string" ? !JSON.parse(data) : data;
             _.delay(onSuccess, 0, success);
           }
         },
@@ -335,8 +365,8 @@ var BrowserIDNetwork = (function() {
     removeEmail: function(email, onSuccess, onFailure) {
       withCSRF(function() { 
         xhr.ajax({
-          type: 'POST',
-          url: '/wsapi/remove_email',
+          type: "POST",
+          url: "/wsapi/remove_email",
           data: {
             email: email,
             csrf: csrf_token
@@ -354,8 +384,8 @@ var BrowserIDNetwork = (function() {
     certKey: function(email, pubkey, onSuccess, onError) {
       withCSRF(function() { 
         xhr.ajax({
-          type: 'POST',
-          url: '/wsapi/cert_key',
+          type: "POST",
+          url: "/wsapi/cert_key",
           data: {
             email: email,
             pubkey: pubkey.serialize(),

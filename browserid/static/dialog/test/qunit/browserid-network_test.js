@@ -57,6 +57,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
       "get /wsapi/user_creation_status?email=address notcreated": undefined, // undefined because server returns 400 error
       "get /wsapi/user_creation_status?email=address pending": "pending",
       "get /wsapi/user_creation_status?email=address complete": "complete",
+      "post /wsapi/complete_user_creation valid": "true",
+      "post /wsapi/complete_user_creation invalid": "false",
       "post /wsapi/logout valid": "true",
       "get /wsapi/have_email?email=address taken": "false",
       "get /wsapi/have_email?email=address nottaken" : "true",
@@ -253,6 +255,19 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
     network.checkUserRegistration("address", function(status) {
       equal(status, "complete");
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
+  test("completeUserRegistration with valid token", function() {
+    network.completeUserRegistration("token", "password", function() {
+      // XXX need a valid test here.
+      ok(true);
       start();
     }, function onFailure() {
       ok(false);
