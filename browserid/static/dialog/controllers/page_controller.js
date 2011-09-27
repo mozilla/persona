@@ -131,10 +131,7 @@
       $("#error_dialog .title").text(info.message);
       $("#error_dialog .content").text(info.description);
 
-      $("#back").hide();
-      $("input[type=submit]").hide();
-
-      $("#cancel").text("Close").addClass("action");
+      $("body").removeClass("authenticated").addClass("error");
 
       $("#error_dialog").fadeIn(500);
     },

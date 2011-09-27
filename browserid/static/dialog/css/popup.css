@@ -78,6 +78,11 @@ h2 {
     position: relative;
 }
 
+#error_dialog {
+  text-align: center;
+  margin: 100px auto;
+}
+
 .table {
     display: table;
     width: 100%;
