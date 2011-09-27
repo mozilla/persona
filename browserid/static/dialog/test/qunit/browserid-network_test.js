@@ -54,13 +54,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
       "get /wsapi/prove_email_ownership invalid": "false",
       "post /wsapi/stage_user valid": "true",
       "post /wsapi/stage_user invalid": "false",
+      "get /wsapi/user_creation_status?email=address notcreated": undefined, // undefined because server returns 400 error
+      "get /wsapi/user_creation_status?email=address pending": "pending",
+      "get /wsapi/user_creation_status?email=address complete": "complete",
       "post /wsapi/logout valid": "true",
       "get /wsapi/have_email?email=taken valid": "false",
       "get /wsapi/have_email?email=nottaken valid" : "true",
       "post /wsapi/remove_email valid": "true",
       "post /wsapi/remove_email invalid": "false",
       "post /wsapi/account_cancel valid": "true",
-      "post /wsapi/account_cancel invalid": "false"
+      "post /wsapi/account_cancel invalid": "false",
+      "post /wsapi/stage_email valid": "true",
+      "get /wsapi/email_addition_status?email=address notcreated": undefined, // undefined because server returns 400 error
+      "get /wsapi/email_addition_status?email=address pending": "pending",
+      "get /wsapi/email_addition_status?email=address complete": "complete",
     },
 
     useResult: function(result) {
@@ -73,8 +80,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
     ajax: function(obj) {
       console.log("ajax request");
+      var type = obj.type ? obj.type.toLowerCase() : "get";
+
       var req = this.req = {
-        type: obj.type ? obj.type.toLowerCase() : "get",
+        type: type,
         url: obj.url,
         data: obj.data
       };
@@ -224,6 +233,34 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     stop();
   });
 
+  test("checkUserRegistration with pending email", function() {
+    xhr.useResult("pending");
+
+    network.checkUserRegistration("address", function(status) {
+      equal(status, "pending");
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
+  test("checkUserRegistration with complete email", function() {
+    xhr.useResult("complete");
+
+    network.checkUserRegistration("address", function(status) {
+      equal(status, "complete");
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
   test("cancelUser valid", function() {
     network.cancelUser(function() {
       // XXX need a test here.
@@ -249,8 +286,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     stop();
   });
 
-  test("haveEmail with taken email", function() {
-    network.haveEmail("taken", function(have) {
+  test("emailRegistered with taken email", function() {
+    network.emailRegistered("taken", function(have) {
       equal(have, true, "a taken email is marked taken");
       start();
     }, function onFailure() {
@@ -261,8 +298,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     stop();
   });
 
-  test("haveEmail with nottaken email", function() {
-    network.haveEmail("nottaken", function(have) {
+  test("emailRegistered with nottaken email", function() {
+    network.emailRegistered("nottaken", function(have) {
       equal(have, false, "a not taken email is not marked taken");
       start();
     }, function onFailure() {
@@ -271,6 +308,51 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     });
 
     stop();
+  });
+
+
+  test("addEmail valid", function() {
+    network.addEmail("address", function onSuccess() {
+      // XXX needs a valid test
+      ok(true);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
+  test("checkEmailRegistration pending", function() {
+    xhr.useResult("pending");
+
+    network.checkEmailRegistration("address", function(status) {
+      equal(status, "pending");
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+
+  });
+
+  test("checkEmailRegistration complete", function() {
+    xhr.useResult("complete");
+
+    network.checkEmailRegistration("address", function(status) {
+      equal(status, "complete");
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+
+
   });
 
 

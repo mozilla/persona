@@ -186,6 +186,20 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
+     * Check the current user's registration status
+     * @method checkUserRegistration
+     * @param {function} [onSuccess] - Called when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    checkUserRegistration: function(email, onSuccess, onFailure) {
+      xhr.ajax({
+        url: '/wsapi/user_creation_status?email=' + encodeURIComponent(email),
+        success: createDeferred(onSuccess),
+        error: onFailure
+      });
+    },
+
+    /**
      * Set the password of the current user.
      * @method setPassword
      * @param {string} password - password to set
@@ -245,14 +259,14 @@ var BrowserIDNetwork = (function() {
      * Add an email to the current user's account.
      * @method addEmail
      * @param {string} email - Email address to add.
-     * @param {function} [onSuccess] - Called when complete.
-     * @param {function} [onFailure] - Called on XHR failure.
+     * @param {function} [onsuccess] - called when complete.
+     * @param {function} [onfailure] - called on xhr failure.
      */
     addEmail: function(email, onSuccess, onFailure) {
       withCSRF(function() { 
         xhr.ajax({
           type: 'POST',
-          url: '/wsapi/add_email',
+          url: '/wsapi/stage_email',
           data: {
             email: email,
             site: BrowserIDNetwork.origin || document.location.host,
@@ -264,16 +278,31 @@ var BrowserIDNetwork = (function() {
       });
     },
 
+
+    /**
+     * Check the registration status of an email
+     * @method checkEmailRegistration
+     * @param {function} [onsuccess] - called when complete.
+     * @param {function} [onfailure] - called on xhr failure.
+     */
+    checkEmailRegistration: function(email, onSuccess, onFailure) {
+      xhr.ajax({
+        url: '/wsapi/email_addition_status?email=' + encodeURIComponent(email),
+        success: createDeferred(onSuccess),
+        error: onFailure
+      });
+    },
+
     /**
      * Check whether the email is already registered.
-     * @method haveEmail
+     * @method emailRegistered
      * @param {string} email - Email address to check.
      * @param {function} [onSuccess] - Called with one boolean parameter when 
      * complete.  Parameter is true if `email` is already registered, false 
      * otw.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    haveEmail: function(email, onSuccess, onFailure) {
+    emailRegistered: function(email, onSuccess, onFailure) {
       xhr.ajax({
         url: '/wsapi/have_email?email=' + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
@@ -306,53 +335,6 @@ var BrowserIDNetwork = (function() {
           failure: onFailure
         });
       });
-    },
-
-    /**
-     * Check the current user's registration status
-     * @method checkRegistration
-     * @param {function} [onSuccess] - Called when complete.
-     * @param {function} [onFailure] - Called on XHR failure.
-     */
-    checkRegistration: function(onSuccess, onFailure) {
-      setTimeout(function() {
-        onSuccess('complete'); 
-      }, 10000);
-      /*
-      var self=this;
-      function poll() {
-        xhr.ajax({
-            url: '/wsapi/registration_status',
-            success: function(status, textStatus, jqXHR) {
-              self.pollTimeout = null;
-
-              if(status === 'pending') {
-                self.pollTimeout = setTimeout(poll); 
-              }
-              if(onSuccess) {
-                onSuccess(status);
-              }
-            },
-            error: onFailure
-        });
-      }
-      */
-    },
-
-    /**
-     * Cancel the registration check
-     * @method cancelRegistrationCheck
-     */
-    cancelRegistrationCheck: function(onSuccess, onFailure) {
-      var self=this;
-      if (self.pollTimeout) {
-        clearTimeout(self.pollTimeout);
-        self.pollTimeout = null;
-      }
-
-      if (onSuccess) {
-        onSuccess();
-      }
     },
 
     /**
