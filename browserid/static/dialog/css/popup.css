@@ -183,7 +183,7 @@ h2 {
 }
 
 #signIn .submit {
-    height: 28px;
+    min-height: 88px;
 }
 
 #signIn .remember {
@@ -461,14 +461,15 @@ html[xmlns] .cf {
 #inputs li:only-child input[type=radio] {
     display: none;
 }
+
 #differentEmail {
     display: none;
-    width: 100%;
-    margin: 5px 0;
 }
-#addDifferentEmail {
+
+#differentEmail > button {
     margin: 10px 5px 0 0;
 }
+
 #newEmail {
     -moz-box-flex: 1;
 }

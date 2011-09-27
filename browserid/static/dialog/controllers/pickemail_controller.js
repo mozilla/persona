@@ -64,15 +64,26 @@
       }); 
     },
 
-    "#signInButton click": function() {
+    "#signInButton click": function(element, event) {
+      event.preventDefault();
+
       this.submit();
     },
 
-    "#useDifferentEmail click": function() {
-      //this.close("pickemail:addemail");
+    "#useDifferentEmail click": function(element, event) {
+      event.preventDefault();
+
       $("#signInButton,#useDifferentEmail").fadeOut(250, function() {
         $("#differentEmail").fadeIn(250);
         $("#newEmail").focus();
+      });
+    },
+
+    "#cancelDifferentEmail click": function(element, event) {
+      event.preventDefault();
+
+      $("#differentEmail").fadeOut(250, function() {
+        $("#signInButton,#useDifferentEmail").fadeIn(250);
       });
     }
 
