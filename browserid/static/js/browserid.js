@@ -260,7 +260,7 @@ $(function() {
   var token = getParameterByName("token"),
       path = document.location.pathname;
 
-  if (token && path === "/prove") {
+  if (token && path === "/add_email_address") {
     BrowserIDNetwork.completeEmailRegistration(token, function onSuccess(valid) {
         if (valid) {
           emailRegistrationSuccess();
@@ -274,7 +274,7 @@ $(function() {
   }
 
 
-  if(token && path === "/verify") {
+  if(token && path === "/verify_email_address") {
     $("#signUpForm").submit(function(event) {
       event.preventDefault();
 

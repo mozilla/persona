@@ -122,14 +122,14 @@ function router(app) {
     res.render('privacy.ejs', {title: 'Privacy Policy', fullpage: false});
   });
 
-  app.get(/^\/verifyuser(\.html)?$/, function(req, res) {
+  app.get(/^\/verify_email_address(\.html)?$/, function(req, res) {
     var site = "http://sitesite.com";
     var email = "email@email.com";
 
     res.render('verifyuser.ejs', {title: 'Complete Registration', fullpage: true, site: site, email: email});
   });
 
-  app.get(/^\/verifyemail(\.html)?$/, function(req,res) {
+  app.get(/^\/add_email_address(\.html)?$/, function(req,res) {
     res.render('verifyemail.ejs', {title: 'Verify Email Address', fullpage: false});
   });
 
