@@ -50,8 +50,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
       "post /wsapi/authenticate_user invalid": "false",
       "get /wsapi/am_authed valid": "true",
       "get /wsapi/am_authed invalid": "false",
-      "get /wsapi/prove_email_ownership valid": "true",
-      "get /wsapi/prove_email_ownership invalid": "false",
+      "post /wsapi/complete_email_addition valid": "true",
+      "post /wsapi/complete_email_addition invalid": "false",
       "post /wsapi/stage_user valid": "true",
       "post /wsapi/stage_user invalid": "false",
       "get /wsapi/user_creation_status?email=address notcreated": undefined, // undefined because server returns 400 error
@@ -188,7 +188,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
 
-  test("prove_email_ownership valid", function() {
+  test("complete_email_addition valid", function() {
     network.proveEmailOwnership("goodtoken", function onSuccess(proven) {
       equal(proven, true, "good token proved");
       start(); 
@@ -199,7 +199,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     stop();
   });
 
-  test("prove_email_ownership with invalid token", function() {
+  test("complete_email_addition with invalid token", function() {
     xhr.useResult("invalid");
     network.proveEmailOwnership("badtoken", function onSuccess(proven) {
       equal(proven, false, "bad token could not be proved");

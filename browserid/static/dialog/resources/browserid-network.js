@@ -225,18 +225,22 @@ var BrowserIDNetwork = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     proveEmailOwnership: function(token, onSuccess, onFailure) {
-      xhr.ajax({
-        url: '/wsapi/prove_email_ownership',
-        data: {
-          token: token
-        },
-        success: function(status, textStatus, jqXHR) {
-          if (onSuccess) {
-            var valid = JSON.parse(status);
-            _.delay(onSuccess, 0, valid);
-          }
-        },
-        error: onFailure
+      withCSRF(function() {
+        xhr.ajax({
+          type: "POST",
+          url: '/wsapi/complete_email_addition',
+          data: {
+            csrf: csrf_token,
+            token: token
+          },
+          success: function(status, textStatus, jqXHR) {
+            if (onSuccess) {
+              var valid = JSON.parse(status);
+              _.delay(onSuccess, 0, valid);
+            }
+          },
+          error: onFailure
+        });
       });
     },
 
