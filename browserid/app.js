@@ -102,10 +102,6 @@ function router(app) {
     res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});
   });
 
-  app.get(/^\/prove(\.html)?$/, function(req,res) {
-    res.render('prove.ejs', {title: 'Verify Email Address', fullpage: false});
-  });
-
   app.get(/^\/signup(\.html)?$/, function(req, res) {
     res.render('signup.ejs', {title: 'Sign Up', fullpage: false});
   });
@@ -126,8 +122,15 @@ function router(app) {
     res.render('privacy.ejs', {title: 'Privacy Policy', fullpage: false});
   });
 
-  app.get(/^\/verify(\.html)?$/, function(req, res) {
-    res.render('verify.ejs', {title: 'Complete Registration', fullpage: true});
+  app.get(/^\/verifyuser(\.html)?$/, function(req, res) {
+    var site = "http://sitesite.com";
+    var email = "email@email.com";
+
+    res.render('verifyuser.ejs', {title: 'Complete Registration', fullpage: true, site: site, email: email});
+  });
+
+  app.get(/^\/verifyemail(\.html)?$/, function(req,res) {
+    res.render('verifyemail.ejs', {title: 'Verify Email Address', fullpage: false});
   });
 
   // register all the WSAPI handlers

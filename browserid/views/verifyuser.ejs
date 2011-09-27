@@ -1,12 +1,12 @@
 <div id="vAlign">   
   <div id="signUpFormWrap">
     <form id="signUpForm" class="cf">
-      <p class="hint">Finish signing into <span class="website"><strong>http://www.nytimes.com</strong></span></p>
+      <p class="hint">Finish signing into: <span class="website"><strong><%= site %></strong></span></p>
       <h1 class="serif">Last step!</h1>
       <ul class="inputs">
         <li>
             <label class="serif" for="email">Email Address</label>
-            <input class="youraddress sans" id="email" placeholder="Your Email" type="email" disabled="disabled">
+            <input class="youraddress sans" id="email" placeholder="Your Email" type="email" value="<%= email %>" disabled="disabled">
         </li>
         <li>
             <label class="serif" for="password">New Password</label>
