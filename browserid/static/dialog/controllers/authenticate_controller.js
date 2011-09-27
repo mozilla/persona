@@ -66,7 +66,7 @@
  
       // XXX verify email length/format here
       // show error message if bad.
-      network.haveEmail(email, function onComplete(registered) {
+      network.emailRegistered(email, function onComplete(registered) {
         // XXX instead of using jQuery here, think about using CSS animations.
         $(".start").fadeOut(function() {
           if(registered) {
@@ -91,7 +91,7 @@
 
     "#forgotpassword click": function(event) {
       var email = $("#email").val();
-      this.close("authenticate:forgotpassword", {
+      this.close("forgotpassword", {
         email: email  
       });
     },
@@ -101,7 +101,7 @@
           email = $("#email").val();
 
       identities.createUser(email, function(keypair) {
-          self.close("createaccount:staged", {
+          self.close("user_staged", {
             email: email,
             keypair: keypair
           });
@@ -130,7 +130,7 @@
         },
         function onComplete(authenticated) {
           if (authenticated) {
-            self.close("authenticate:authenticated");
+            self.close("authenticated");
           } else {
             //self.find("#cannot_authenticate").hide().fadeIn(400);
           }

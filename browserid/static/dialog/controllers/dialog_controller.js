@@ -76,15 +76,15 @@ PageController.extend("Dialog", {}, {
           el = this.element;
      
 
-      hub.subscribe("createaccount:staged", function(msg, info) {
+      hub.subscribe("user_staged", function(msg, info) {
         self.doConfirmEmail(info.email);
       });
 
-      hub.subscribe("authenticate:authenticated", function() {
+      hub.subscribe("authenticated", function() {
         self.syncEmailKeypairs();
       });
 
-      hub.subscribe("authenticate:forgotpassword", function(msg, info) {
+      hub.subscribe("forgotpassword", function(msg, info) {
         self.doForgotPassword(info.email);
       });
 
