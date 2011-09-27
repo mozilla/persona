@@ -71,7 +71,7 @@ steal.plugins(
            'body.ejs',
            'confirmemail.ejs',
            'forgotpassword.ejs',
-           'signin.ejs',
+           'pickemail.ejs',
            'wait.ejs'
           ).
 
