@@ -58,8 +58,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
       "get /wsapi/user_creation_status?email=address pending": "pending",
       "get /wsapi/user_creation_status?email=address complete": "complete",
       "post /wsapi/logout valid": "true",
-      "get /wsapi/have_email?email=taken valid": "false",
-      "get /wsapi/have_email?email=nottaken valid" : "true",
+      "get /wsapi/have_email?email=address taken": "false",
+      "get /wsapi/have_email?email=address nottaken" : "true",
       "post /wsapi/remove_email valid": "true",
       "post /wsapi/remove_email invalid": "false",
       "post /wsapi/account_cancel valid": "true",
@@ -287,8 +287,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
   test("emailRegistered with taken email", function() {
-    network.emailRegistered("taken", function(have) {
-      equal(have, true, "a taken email is marked taken");
+    xhr.useResult("taken");
+
+    network.emailRegistered("address", function(taken) {
+      equal(taken, true, "a taken email is marked taken");
       start();
     }, function onFailure() {
       ok(false);
@@ -299,8 +301,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
   test("emailRegistered with nottaken email", function() {
-    network.emailRegistered("nottaken", function(have) {
-      equal(have, false, "a not taken email is not marked taken");
+    xhr.useResult("nottaken");
+
+    network.emailRegistered("address", function(taken) {
+      equal(taken, false, "a not taken email is not marked taken");
       start();
     }, function onFailure() {
       ok(false);
@@ -336,7 +340,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     });
 
     stop();
-
   });
 
   test("checkEmailRegistration complete", function() {
@@ -351,8 +354,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     });
 
     stop();
-
-
   });
 
 
@@ -383,10 +384,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     stop();
   });
 
-
-  test("checkRegistration", function() {
-    ok(true, "checkRegistration");
-  });
 
   test("setKey", function() {
     ok(true, "setKey");
