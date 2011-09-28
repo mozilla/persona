@@ -242,9 +242,7 @@ var BrowserIDNetwork = (function() {
     requestPasswordReset: function(email, onSuccess, onFailure) {
       // XXX fill this in.
       if (email) {
-        if (onSuccess) {
-          _.defer(onSuccess);
-        }
+        this.createUser(email, onSuccess, onFailure);
       }
 
     },

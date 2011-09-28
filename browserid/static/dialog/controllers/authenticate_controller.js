@@ -169,8 +169,15 @@
 
     resetPassword: function() {
       var email = $("#email").val();
-      this.close("reset_password", {
-        email: email
+      var me=this;
+      network.requestPasswordReset(email, function(reset) {
+        if (reset) {
+          me.close("reset_password", {
+            email: email
+          });
+        }
+      }, function onFailure() {
+
       });
     }
   });
