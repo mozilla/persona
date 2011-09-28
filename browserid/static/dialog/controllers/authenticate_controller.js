@@ -44,6 +44,12 @@
   var network = BrowserIDNetwork,
       identities = BrowserIDIdentities;
 
+  function animateSwap(fadeOutSelector, fadeInSelector, callback) {
+    $(fadeOutSelector).fadeOut(ANIMATION_TIME, function() {
+      $(fadeInSelector).fadeIn(ANIMATION_TIME, callback);
+    });
+  }
+
   PageController.extend("Authenticate", {}, {
     init: function() {
       this._super({
@@ -57,18 +63,28 @@
     },
 
     "#email click" : function(el, event) {
-      this.submitAction = "checkEmail";
-      $(".returning:visible,.newuser:visible").fadeOut(ANIMATION_TIME, function() {
-        $(".start").fadeIn();
-      });
+      if (!el.is(":disabled")) {
+        this.submitAction = "checkEmail";
+        animateSwap(".returning:visible,.newuser:visible", ".start");
+      }
     },
 
-    "#forgotpassword click": function(el, event) {
+    "#forgotPassword click": function(el, event) {
       event.preventDefault();
 
-      var email = $("#email").val();
-      this.close("forgotpassword", {
-        email: email  
+      this.submitAction = "resetPassword";
+      $("#email").attr("disabled", "disabled");
+
+      animateSwap(".returning", ".forgot");
+    },
+
+    '#cancel_forgot_password click': function(el, event) {
+      event.preventDefault();
+
+      this.submitAction = "authenticate";
+      $("#email").removeAttr("disabled");
+      animateSwap(".forgot", ".returning", function() {
+        $("#password").focus();
       });
     },
 
@@ -91,17 +107,13 @@
         $(".start").fadeOut(function() {
           if(registered) {
             self.submitAction = "authenticate";
-            $(".newuser").fadeOut(ANIMATION_TIME, function() {
-              $(".returning").fadeIn(ANIMATION_TIME, function() {
-                $("#password").focus();  
-              });
+            animateSwap(".newuser", ".returning", function() {
+              $("#password").focus();  
             });
           }
           else {
             self.submitAction = "createUser";
-            $(".returning").fadeOut(ANIMATION_TIME, function() {
-              $(".newuser").fadeIn(ANIMATION_TIME);
-            });
+            animateSwap(".returning", ".newuser");
           }
         });
       });
@@ -153,6 +165,9 @@
         self.getErrorDialog(BrowserIDErrors.authentication)
       );
 
+    },
+
+    resetPassword: function() {
     }
   });
 

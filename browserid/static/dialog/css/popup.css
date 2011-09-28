@@ -110,12 +110,12 @@ h2 {
 }
 
 
-.forgotpassword #formWrap, .waiting #formWrap {
+/*.forgotpassword #formWrap, */.waiting #formWrap {
     width: 325px;
     margin: 0 auto;
 }
 
-.forgotpassword #formWrap > form, .waiting #formWrap > form {
+/*.forgotpassword #formWrap > form,*/ .waiting #formWrap > form {
     height: 250px;
     width: 325px;
     display: table-cell;
@@ -212,7 +212,7 @@ h2 {
     float: left;
 }
 
-a.forgot {
+#forgotPassword {
     color: #888784;
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
     font-size: 11px;
@@ -483,17 +483,17 @@ html[xmlns] .cf {
     -moz-box-flex: 1;
 }
 
-#create,
-#password_section,
 #cannot_authenticate,
-#create_text_section,
 .newuser,
+.forgot,
 .returning {
     display: none;
 }
+
 #create_text_section {
     color: #222;
 }
+
 #checkemail {
     text-align: center;
 }
