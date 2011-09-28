@@ -180,7 +180,7 @@ h2 {
 }
 
 #signIn .vertical {
-    padding: 20px;
+    padding: 15px 20px 20px 20px;
 }
 
 #signIn .vertical ul {
@@ -237,7 +237,8 @@ label {
 }
 
 #inputs > li > label {
-  cursor: pointer;
+    cursor: pointer;
+    color: #333;
 }
 
 input[type=email],
@@ -467,8 +468,18 @@ html[xmlns] .cf {
 }
 
 #inputs {
-    min-height: 100px;
+    min-height: 90px;
+    max-height: 140px;
 }
+
+body.pickemail #inputs {
+    overflow-y: auto;
+    max-height: 95px;
+    margin-top: 1em;
+    margin-left: 1em;
+    line-height: 18px;
+}
+
 .add {
     font-size: 80%;
 }
