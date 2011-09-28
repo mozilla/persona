@@ -546,7 +546,7 @@ var BrowserIDIdentities = (function() {
         // parse the secret key
         prepareDeps();
         var sk = jwk.SecretKey.fromSimpleObject(storedID.priv);
-        var tok = new jwt.JWT(null, new Date(), network.origin);
+        var tok = new jwt.JWT(null, new Date(), origin);
         assertion = vep.bundleCertsAndAssertion([storedID.cert], tok.sign(sk));
       }
 
