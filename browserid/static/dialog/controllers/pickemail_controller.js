@@ -71,7 +71,7 @@
 
     addEmail: function() {
       var email = $("#newEmail").val(),
-          me=this;;
+          me=this;
 
       if (email) {
         BrowserIDIdentities.addEmail(email, function(keypair) {

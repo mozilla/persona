@@ -37,11 +37,10 @@
 (function() {
   "use strict";
 
-  var ANIMATION_TIME = 250;
-  // XXX  this needs changed so that the create account/authenticate flow is 
-  // cleaner.  Right now we are trying to authenticate on every "enter" press, 
-  // this is no good.
-  var network = BrowserIDNetwork,
+  // XXX - Push what we can of BrowserIDNetwork into BrowserIDIdentities.
+  
+  var ANIMATION_TIME = 250,
+      network = BrowserIDNetwork,
       identities = BrowserIDIdentities;
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
@@ -97,6 +96,7 @@
           self = this;
 
       if(!email) {
+        // XXX error screen
         return;
       }
 
@@ -124,6 +124,7 @@
           email = $("#email").val();
 
       if(!email) {
+        // XXX error screen
         return;
       }
 
@@ -146,6 +147,7 @@
           self = this;
 
       if(!(email && pass)) {
+        // XXX error screen
         return;
       }
 
@@ -153,13 +155,16 @@
         function onAuthenticate(authenticated) {
           if (authenticated) {
             self.doWait(BrowserIDWait.authentication);
+          } 
+          else {
+            // XXX error screen
           }
         },
         function onComplete(authenticated) {
           if (authenticated) {
             self.close("authenticated");
           } else {
-            //self.find("#cannot_authenticate").hide().fadeIn(400);
+            // XXX error screen.
           }
         }, 
         self.getErrorDialog(BrowserIDErrors.authentication)
@@ -175,6 +180,9 @@
           me.close("reset_password", {
             email: email
           });
+        }
+        else {
+          // XXX error screen.
         }
       }, function onFailure() {
 

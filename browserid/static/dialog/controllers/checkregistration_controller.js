@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */ 
+/*global BrowserIDIdentities: true, BrowserIDNetwork: true, BrowserIDErrors: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -54,6 +54,8 @@
 
     setupRegCheck: function() {
       // Try this every 3 seconds until registration is good.
+      // XXX push this polling into BrowserIDIdentities and then we
+      // can get rid of the dependency on BrowserIDNetwork
       var me=this,
       poll = function() {
         BrowserIDNetwork[me.verifier](me.email, function(status) {
