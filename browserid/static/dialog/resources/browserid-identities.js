@@ -110,6 +110,31 @@ var BrowserIDIdentities = (function() {
     return origin.replace(/^.*:\/\//, "");
   }
 
+  function registrationPoll(checkFunc, email, onSuccess, onFailure) {
+    function poll() {
+      checkFunc(email, function(status) {
+        // registration status checks the status of the last initiated registration,
+        // it's possible return values are:
+        //   'complete' - registration has been completed
+        //   'pending'  - a registration is in progress
+        //   'noRegistration' - no registration is in progress
+        if (status === "complete") {
+          if (onSuccess) {
+            onSuccess(status);
+          }
+        }
+        else if (status === 'pending') {
+          setTimeout(poll, 3000);
+        }
+        else if (onFailure) {
+            onFailure();
+        }
+      });
+    };
+
+    poll();
+  }
+
   var Identities = {
     /**
      * Set the interface to use for networking.  Used for unit testing.
@@ -163,6 +188,17 @@ var BrowserIDIdentities = (function() {
           onSuccess(val);
         }
       }, onFailure);
+    },
+
+    /**
+     * Poll the server until user registration is complete.
+     * @method waitForUserRegistration
+     * @param {string} email - email address to check.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    waitForUserRegistration: function(email, onSuccess, onFailure) {
+      registrationPoll(network.checkUserRegistration, email, onSuccess, onFailure);
     },
 
     /**
@@ -420,6 +456,10 @@ var BrowserIDIdentities = (function() {
           }
         }
       }, onFailure);
+    },
+
+    waitForEmailRegistration: function(email, onSuccess, onFailure) {
+      registrationPoll(network.checkEmailRegistration, email, onSuccess, onFailure);
     },
 
     /**

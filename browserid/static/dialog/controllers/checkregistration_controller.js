@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global BrowserIDIdentities: true, BrowserIDNetwork: true, BrowserIDErrors: true, PageController: true */ 
+/*global BrowserIDIdentities: true, BrowserIDErrors: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,6 +37,8 @@
 (function() {
   "use strict";
 
+  var identities = BrowserIDIdentities;
+
   PageController.extend("Checkregistration", {}, {
     init: function(el, options) {
       var me=this;
@@ -53,32 +55,12 @@
     },
 
     setupRegCheck: function() {
-      // Try this every 3 seconds until registration is good.
-      // XXX push this polling into BrowserIDIdentities and then we
-      // can get rid of the dependency on BrowserIDNetwork
-      var me=this,
-      poll = function() {
-        BrowserIDNetwork[me.verifier](me.email, function(status) {
-          // registration status checks the status of the last initiated registration,
-          // it's possible return values are:
-          //   'complete' - registration has been completed
-          //   'pending'  - a registration is in progress
-          //   'noRegistration' - no registration is in progress
-          if (status === 'complete') {
-            BrowserIDIdentities.syncEmailKeypairs(function() {
-              me.close(me.verificationMessage);
-            });
-          } else if (status === 'pending') {
-            setTimeout(poll, 3000);
-          }
-          else {
-            me.errorDialog(BrowserIDErrors.registration);
-          }
-        }, me.getErrorDialog(BrowserIDErrors.registration));
-      };
-
-      poll();
-
+      var me=this;
+      identities[me.verifier](me.email, function(status) {
+        identities.syncEmailKeypairs(function() {
+          me.close(me.verificationMessage);
+        });
+      }, me.getErrorDialog(BrowserIDErrors.registration));
     }
   });
 

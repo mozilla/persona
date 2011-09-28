@@ -54,7 +54,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   // this cert is meaningless, but it has the right format
   var random_cert = "eyJhbGciOiJSUzEyOCJ9.eyJpc3MiOiJpc3N1ZXIuY29tIiwiZXhwIjoxMzE2Njk1MzY3NzA3LCJwdWJsaWMta2V5Ijp7ImFsZ29yaXRobSI6IlJTIiwibiI6IjU2MDYzMDI4MDcwNDMyOTgyMzIyMDg3NDE4MTc2ODc2NzQ4MDcyMDM1NDgyODk4MzM0ODExMzY4NDA4NTI1NTk2MTk4MjUyNTE5MjY3MTA4MTMyNjA0MTk4MDA0NzkyODQ5MDc3ODY4OTUxOTA2MTcwODEyNTQwNzEzOTgyOTU0NjUzODEwNTM5OTQ5Mzg0NzEyNzczMzkwMjAwNzkxOTQ5NTY1OTAzNDM5NTIxNDI0OTA5NTc2ODMyNDE4ODkwODE5MjA0MzU0NzI5MjE3MjA3MzYwMTA1OTA2MDM5MDIzMjk5NTYxMzc0MDk4OTQyNzg5OTk2NzgwMTAyMDczMDcxNzYwODUyODQxMDY4OTg5ODYwNDAzNDMxNzM3NDgwMTgyNzI1ODUzODk5NzMzNzA2MDY5IiwiZSI6IjY1NTM3In0sInByaW5jaXBhbCI6eyJlbWFpbCI6InRlc3R1c2VyQHRlc3R1c2VyLmNvbSJ9fQ.aVIO470S_DkcaddQgFUXciGwq2F_MTdYOJtVnEYShni7I6mqBwK3fkdWShPEgLFWUSlVUtcy61FkDnq2G-6ikSx1fUZY7iBeSCOKYlh6Kj9v43JX-uhctRSB2pI17g09EUtvmb845EHUJuoowdBLmLa4DSTdZE-h4xUQ9MsY7Ik";
 
-  var credentialsValid, unknownEmails, keyRefresh, syncValid, userEmails;
+  var credentialsValid, unknownEmails, keyRefresh, syncValid, userEmails, 
+      userCheckCount = 0,
+      emailCheckCount = 0;
+
   var netStub = {
     reset: function() {
       credentialsValid = syncValid = true;
@@ -65,6 +68,13 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     stageUser: function(email, password, onSuccess) {
       onSuccess();
+    },
+
+    checkUserRegistration: function(email, onSuccess, onFailure) {
+      userCheckCount++;
+      var status = userCheckCount === 2 ? "complete" : "pending";
+
+      onSuccess(status);
     },
 
     authenticate: function(email, password, onSuccess, onFailure) {
@@ -81,6 +91,14 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     addEmail: function(email, origin, onSuccess, onFailure) {
       onSuccess(true);
+    },
+
+    checkEmailRegistration: function(email, onSuccess, onFailure) {
+      emailCheckCount++;
+      var status = emailCheckCount === 2 ? "complete" : "pending";
+
+      onSuccess(status);
+
     },
 
     removeEmail: function(email, onSuccess, onFailure) {
@@ -142,6 +160,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     setup: function() {
       lib.setNetwork(netStub);
       netStub.reset();
+      userCheckCount = 0;
+      emailCheckCount = 0;
     },
     teardown: function() {
       lib.setNetwork(BrowserIDNetwork);
@@ -183,6 +203,15 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       equal("object", typeof keypair, "We have a key pair");
       start();
     }, failure("createUser failure"));
+
+    stop();
+  });
+
+  test("waitForUserRegistration", function() {
+    lib.waitForUserRegistration("testuser@testuser.com", function() {
+      ok(true);
+      start();
+    }, failure("waitForUserRegistration failure"));
 
     stop();
   });
@@ -390,6 +419,15 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
+
+  test("waitForEmailRegistration", function() {
+    lib.waitForEmailRegistration("testuser@testuser.com", function() {
+      ok(true);
+      start();
+    }, failure("waitForEmailRegistration failure"));
+
+    stop();
+  });
 
 
   test("syncEmailKeypair with successful sync", function() {

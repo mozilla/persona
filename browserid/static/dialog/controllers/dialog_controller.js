@@ -123,7 +123,7 @@ PageController.extend("Dialog", {}, {
 
       this.element.checkregistration({
         email: email,
-        verifier: "checkUserRegistration",
+        verifier: "waitForUserRegistration",
         verificationMessage: "user_confirmed"
       });
     },
@@ -171,7 +171,7 @@ PageController.extend("Dialog", {}, {
 
       this.element.checkregistration({
         email: email,
-        verifier: "checkEmailRegistration",
+        verifier: "waitForEmailRegistration",
         verificationMessage: "email_confirmed"
       });
     },

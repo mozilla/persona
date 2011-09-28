@@ -451,7 +451,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     });
 
     stop();
-
   });
 
 
