@@ -64,13 +64,11 @@ steal.plugins(
                'dialog',
                'authenticate',
                'checkregistration',
-               'forgotpassword',
                'pickemail')					// loads files in controllers folder
 
 	.views('authenticate.ejs',
            'body.ejs',
            'confirmemail.ejs',
-           'forgotpassword.ejs',
            'pickemail.ejs',
            'wait.ejs'
           ).
