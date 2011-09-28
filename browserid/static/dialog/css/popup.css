@@ -170,6 +170,10 @@ h2 {
     z-index: 10;
 }
 
+#favicon strong {
+    font-size: 1.5em;
+}
+
 #favicon img {
     display: block;
     margin: 0 auto 10px;
