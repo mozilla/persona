@@ -168,6 +168,10 @@
     },
 
     resetPassword: function() {
+      var email = $("#email").val();
+      this.close("reset_password", {
+        email: email
+      });
     }
   });
 

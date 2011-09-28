@@ -88,12 +88,8 @@ PageController.extend("Dialog", {}, {
         self.syncEmailKeypairs();
       });
 
-      hub.subscribe("forgotpassword", function(msg, info) {
-        self.doForgotPassword(info.email);
-      });
-
-      hub.subscribe("forgotpassword:reset", function(msg, info) {
-        self.doConfirmEmail(info.email);
+      hub.subscribe("reset_password", function(msg, info) {
+        self.doConfirmUser(info.email);
       });
 
       hub.subscribe("email_chosen", function(msg, info) {
