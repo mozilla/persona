@@ -54,7 +54,7 @@
       $("form").bind("submit", me.onSubmit.bind(me));
       $("#cancel").click(me.onCancel.bind(me));
       $("#back").click(me.onBack.bind(me));
-      $("#signOut").click(me.close.bind(me, "notme"));
+      $("#thisIsNotMe").click(me.close.bind(me, "notme"));
     },
 
     destroy: function() {
@@ -62,7 +62,7 @@
       $("input").unbind("keyup");
       $("#cancel").unbind("click");
       $("#back").unbind("click");
-      $("#signOut").unbind("click");
+      $("#thisIsNotMe").unbind("click");
 
       $("body").removeClass("waiting");
 
