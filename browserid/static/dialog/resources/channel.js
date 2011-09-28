@@ -118,7 +118,7 @@
     // navigation, which would cause us to not find our parent window.
     // issue #295
     var relay = getRPRelay();
-
+    
     function onsuccess(rv) {
       // Get the relay here so that we ensure that the calling window is still
       // open and we aren't causing a problem.
@@ -137,6 +137,8 @@
     registerWithRelayFrame(function(origin) {
       controller.getVerifiedEmail(origin, onsuccess, onerror);
     });
+
+    window.location.hash = '';
   };
 
 }());
