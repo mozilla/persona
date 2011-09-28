@@ -54,7 +54,7 @@
       this._super({
         bodyTemplate: "authenticate.ejs",
         bodyVars: {
-          sitename: BrowserIDNetwork.origin,
+          sitename: identities.getOrigin(),
           siteicon: '/i/times.gif'
         }
       });

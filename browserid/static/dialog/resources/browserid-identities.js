@@ -38,7 +38,7 @@
 var BrowserIDIdentities = (function() {
   "use strict";
 
-  var jwk, jwt, vep, jwcert,
+  var jwk, jwt, vep, jwcert, origin,
       network = BrowserIDNetwork,
       storage = BrowserIDStorage;
 
@@ -106,6 +106,10 @@ var BrowserIDIdentities = (function() {
     }
   }
 
+  function filterOrigin(origin) {
+    return origin.replace(/^.*:\/\//, "");
+  }
+
   var Identities = {
     /**
      * Set the interface to use for networking.  Used for unit testing.
@@ -118,6 +122,24 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
+     * setOrigin
+     * @method setOrigin
+     * @param {string} origin
+     */
+    setOrigin: function(unfilteredOrigin) {
+      origin = filterOrigin(unfilteredOrigin);
+    },
+
+    /**
+     * Get the origin of the current host being signed in to.
+     * @method getOrigin
+     * @return {string} origin
+     */
+    getOrigin: function() {
+      return origin;
+    },
+
+    /**
      * Create a user account - this creates an user account that must be verified.  
      * @method createUser
      * @param {string} email - Email address.
@@ -127,7 +149,7 @@ var BrowserIDIdentities = (function() {
     createUser: function(email, onSuccess, onFailure) {
       var self=this;
       // FIXME: keysize
-      network.createUser(email, function(created) {
+      network.createUser(email, origin, function(created) {
         if (onSuccess) {
           var val = created;
           if(created) {
@@ -360,7 +382,7 @@ var BrowserIDIdentities = (function() {
      */
     addEmail: function(email, onSuccess, onFailure) {
       var self = this;
-      network.addEmail(email, function(added) {
+      network.addEmail(email, origin, function(added) {
         if (added) {
           prepareDeps();
           var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
@@ -489,6 +511,8 @@ var BrowserIDIdentities = (function() {
 
 
   };
+
+  Identities.setOrigin(document.location.host);
 
   return Identities;
 }());

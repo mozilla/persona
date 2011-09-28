@@ -59,7 +59,7 @@ PageController.extend("Dialog", {}, {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
 
-      BrowserIDNetwork.setOrigin(origin_url);
+      BrowserIDIdentities.setOrigin(origin_url);
 
       this.doStart();
 

@@ -119,13 +119,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
 
-  test("setOrigin", function() {
-    network.setOrigin("https://www.mozilla.com");
-
-    equal("www.mozilla.com", network.origin, "origin's are properly filtered");
-  });
-
-
   test("authenticate with valid user", function() {
     network.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
       start();
@@ -214,7 +207,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   });
 
   test("createUser with valid user", function() {
-    network.createUser("validuser", function onSuccess(created) {
+    network.createUser("validuser", "origin", function onSuccess(created) {
       ok(created);
       start();
     }, function onFailure() {
@@ -226,7 +219,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
   test("createUser with invalid user", function() {
     xhr.useResult("invalid");
-    network.createUser("invaliduser", function onSuccess(created) {
+    network.createUser("invaliduser", "origin", function onSuccess(created) {
       equal(created, false);
       start();
     }, function onFailure() {
@@ -344,7 +337,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
 
   test("addEmail valid", function() {
-    network.addEmail("address", function onSuccess(added) {
+    network.addEmail("address", "origin", function onSuccess(added) {
       ok(added);
       start();
     }, function onFailure() {
@@ -357,7 +350,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
   test("addEmail invalid", function() {
     xhr.useResult("invalid");
-    network.addEmail("address", function onSuccess(added) {
+    network.addEmail("address", "origin", function onSuccess(added) {
       equal(added, false);
       start();
     }, function onFailure() {

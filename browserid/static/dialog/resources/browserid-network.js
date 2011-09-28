@@ -55,10 +55,6 @@ var BrowserIDNetwork = (function() {
     }
   }
 
-  function filterOrigin(origin) {
-    return origin.replace(/^.*:\/\//, "");
-  }
-
   function createDeferred(cb) {
     if (cb) {
       return function() {
@@ -71,15 +67,6 @@ var BrowserIDNetwork = (function() {
   }
 
   var Network = {
-    /**
-     * Set the origin of the current host being logged in to.
-     * @method setOrigin
-     * @param {string} origin
-     */
-    setOrigin: function(origin) {
-      BrowserIDNetwork.origin = filterOrigin(origin);
-    },
-
     /**
      * Set the XHR object.  Used for testing
      * @method setXHR
@@ -166,17 +153,18 @@ var BrowserIDNetwork = (function() {
      * Create a new user.  Requires a user to verify identity.
      * @method createUser
      * @param {string} email - Email address to prepare.
+     * @param {string} origin - site user is trying to sign in to.
      * @param {function} [onSuccess] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    createUser: function(email, onSuccess, onFailure) {
+    createUser: function(email, origin, onSuccess, onFailure) {
       withCSRF(function() { 
         xhr.ajax({
           type: "post",
           url: "/wsapi/stage_user",
           data: {
             email: email,
-            site : BrowserIDNetwork.origin || document.location.host,
+            site : origin,
             csrf : csrf_token
           },
           success: function(status) {
@@ -311,17 +299,18 @@ var BrowserIDNetwork = (function() {
      * Add an email to the current user"s account.
      * @method addEmail
      * @param {string} email - Email address to add.
+     * @param {string} origin - site user is trying to sign in to.
      * @param {function} [onsuccess] - called when complete.
      * @param {function} [onfailure] - called on xhr failure.
      */
-    addEmail: function(email, onSuccess, onFailure) {
+    addEmail: function(email, origin, onSuccess, onFailure) {
       withCSRF(function() { 
         xhr.ajax({
           type: "POST",
           url: "/wsapi/stage_email",
           data: {
             email: email,
-            site: BrowserIDNetwork.origin || document.location.host,
+            site: origin,
             csrf: csrf_token
           },
           success: function(status) {

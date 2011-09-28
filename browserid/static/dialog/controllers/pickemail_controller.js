@@ -1,5 +1,5 @@
 /*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global _: true, BrowserIDIdentities: true, BrowserIDNetwork: true, PageController: true */ 
+/*global _: true, identities: true, BrowserIDNetwork: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,14 +37,16 @@
 (function() {
   "use strict";
 
+  var identities = BrowserIDIdentities;
+
   PageController.extend("Pickemail", {}, {
     init: function(options) {
       this._super({
         bodyTemplate: "pickemail.ejs",
         bodyVars: {
-          sitename: BrowserIDNetwork.origin,
+          sitename: identities.getOrigin(),
           siteicon: '/i/times.gif',
-          identities: BrowserIDIdentities.getStoredEmailKeypairs(),
+          identities: identities.getStoredEmailKeypairs(),
         }
       });
       // select the first option
@@ -74,7 +76,7 @@
           me=this;
 
       if (email) {
-        BrowserIDIdentities.addEmail(email, function(keypair) {
+        identities.addEmail(email, function(keypair) {
           if (keypair) {
             me.close("email_staged", {
               email: email
