@@ -433,4 +433,33 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     ok(true, "syncEmails");
   });
 
+  test("setPassword", function() {
+    network.setPassword("assword", function onSuccess() {
+      // XXX need a test here;
+      ok(true);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
+
+  test("requestPasswordReset", function() {
+    network.requestPasswordReset("address", function onSuccess() {
+      // XXX need a test here;
+      ok(true);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+
+  });
+
+
 });

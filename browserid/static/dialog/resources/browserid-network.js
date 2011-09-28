@@ -233,9 +233,26 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
-     * Set the password of the current user.
+     * Request a password reset for the given email address.
+     * @method requestPasswordReset
+     * @param {string} email - email address to reset password for.
+     * @param {function} [onSuccess] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    requestPasswordReset: function(email, onSuccess, onFailure) {
+      // XXX fill this in.
+      if (email) {
+        if (onSuccess) {
+          _.defer(onSuccess);
+        }
+      }
+
+    },
+
+    /**
+     * Update the password of the current user.
      * @method setPassword
-     * @param {string} password - password to set
+     * @param {string} password - new password.
      * @param {function} [onSuccess] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */ 
