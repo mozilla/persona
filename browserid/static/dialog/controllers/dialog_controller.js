@@ -129,7 +129,7 @@ PageController.extend("Dialog", {}, {
     },
 
     doUserConfirmed: function() {
-      this.doSignIn();
+      this.doEmailSelected(this.confirmEmail);
     },
 
     doStart: function() {
@@ -177,7 +177,7 @@ PageController.extend("Dialog", {}, {
     },
 
     doEmailConfirmed: function() {
-      this.doSignIn();
+      this.doEmailSelected(this.confirmEmail);
     },
 
     doEmailSelected: function(email) {
