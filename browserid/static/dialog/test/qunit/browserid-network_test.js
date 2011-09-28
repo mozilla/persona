@@ -426,19 +426,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     ok(true, "syncEmails");
   });
 
-  test("setPassword", function() {
-    network.setPassword("assword", function onSuccess() {
-      // XXX need a test here;
-      ok(true);
-      start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
-    stop();
-  });
-
 
   test("requestPasswordReset", function() {
     network.requestPasswordReset("address", function onSuccess() {
@@ -453,5 +440,30 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
     stop();
   });
 
+  test("resetPassword", function() {
+    network.resetPassword("password", function onSuccess() {
+      // XXX need a test here;
+      ok(true);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
+  test("changePassword", function() {
+    network.changePassword("oldpassword", "newpassword", function onSuccess() {
+      // XXX need a real test here.
+      ok(true);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
 
 });

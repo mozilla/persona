@@ -232,20 +232,35 @@ var BrowserIDNetwork = (function() {
       if (email) {
         this.createUser(email, onSuccess, onFailure);
       }
-
     },
 
     /**
-     * Update the password of the current user.
-     * @method setPassword
+     * Update the password of the current user. This is for a password reseT
+     * @method resetPassword
      * @param {string} password - new password.
      * @param {function} [onSuccess] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */ 
-    setPassword: function(password, onSuccess, onFailure) {
+    resetPassword: function(password, onSuccess, onFailure) {
       // XXX fill this in.
       if (onSuccess) {
         _.defer(onSuccess);
+      }
+    },
+
+    /**
+     * Update the password of the current user
+     * @method changePassword
+     * @param {string} oldpassword - old password.
+     * @param {string} newpassword - new password.
+     * @param {function} [onSuccess] - Callback to call when complete. Will be 
+     * called with true if successful, false otw.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */ 
+    changePassword: function(oldPassword, newPassword, onSuccess, onFailure) {
+      // XXX fill this in
+      if (onSuccess) {
+        _.delay(onSuccess, 0, true);
       }
     },
 
