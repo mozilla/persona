@@ -177,6 +177,17 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
+     * Request a password reset for the given email address.
+     * @method requestPasswordReset
+     * @param {string} email - email address to reset password for.
+     * @param {function} [onSuccess] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    requestPasswordReset: function(email, onSuccess, onFailure) {
+      network.requestPasswordReset(email, onSuccess, onFailure);
+    },
+
+    /**
      * Cancel the current user's account.  Remove last traces of their 
      * identity.
      * @method cancelUser
@@ -368,6 +379,19 @@ var BrowserIDIdentities = (function() {
           onComplete(authenticated);
         }
       }, onFailure);
+    },
+
+    /**
+     * Check whether the email is already registered.
+     * @method emailRegistered
+     * @param {string} email - Email address to check.
+     * @param {function} [onSuccess] - Called with one boolean parameter when 
+     * complete.  Parameter is true if `email` is already registered, false 
+     * otw.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    emailRegistered: function(email, onSuccess, onFailure) {
+      network.emailRegistered(email, onSuccess, onFailure);
     },
 
     /**

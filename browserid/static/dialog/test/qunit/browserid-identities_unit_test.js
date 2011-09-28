@@ -75,6 +75,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       onSuccess(credentialsValid);
     },
 
+    emailRegistered: function(email, onSuccess, onFailure) {
+      onSuccess(email === "registered");
+    },
+
     addEmail: function(email, origin, onSuccess, onFailure) {
       onSuccess(true);
     },
@@ -118,6 +122,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     setPassword: function(password, onSuccess) {
       onSuccess();
+    },
+
+    requestPasswordReset: function(email, onSuccess, onFailure) {
+      onSuccess(true);
     },
 
     cancelUser: function(onSuccess) {
@@ -181,6 +189,16 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("setPassword", function() {
     lib.setPassword("password", function() {
+      // XXX fill this in.
+      ok(true);
+      start();
+    });
+
+    stop();
+  });
+
+  test("requestPasswordReset", function() {
+    lib.requestPasswordReset("address", function(reset) {
       // XXX fill this in.
       ok(true);
       start();
@@ -347,6 +365,17 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
 
+  test("emailRegistered with registered email", function() {
+    lib.emailRegistered("registered", function(registered) {
+      ok(registered);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
 
   test("addEmail", function() {
     lib.addEmail("testemail@testemail.com", function(keypair) {

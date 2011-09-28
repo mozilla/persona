@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global BrowserIDIdentities: true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */
+/*global BrowserIDIdentities: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,10 +37,7 @@
 (function() {
   "use strict";
 
-  // XXX - Push what we can of BrowserIDNetwork into BrowserIDIdentities.
-  
   var ANIMATION_TIME = 250,
-      network = BrowserIDNetwork,
       identities = BrowserIDIdentities;
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
@@ -102,7 +99,7 @@
 
       // XXX verify email length/format here
       // show error message if bad.
-      network.emailRegistered(email, function onComplete(registered) {
+      identities.emailRegistered(email, function onComplete(registered) {
         // XXX instead of using jQuery here, think about using CSS animations.
         $(".start").fadeOut(function() {
           if(registered) {
@@ -175,7 +172,7 @@
     resetPassword: function() {
       var email = $("#email").val();
       var me=this;
-      network.requestPasswordReset(email, function(reset) {
+      identities.requestPasswordReset(email, function(reset) {
         if (reset) {
           me.close("reset_password", {
             email: email
