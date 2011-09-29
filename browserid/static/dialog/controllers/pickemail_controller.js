@@ -57,7 +57,6 @@
     cancelEvent(event);
 
     var self=this;
-    // select the first option
     animateSwap("#addEmail", "#selectEmail", function() {
       if(!self.find("input[type=radio]:checked").length) {
         // If none are already checked, select the first one.

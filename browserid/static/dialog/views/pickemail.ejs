@@ -14,7 +14,7 @@
               <strong>Sign in using</strong>
 
               <section id="selectEmail">
-                  <ul id="inputs">
+                  <ul class="inputs">
                       <% _.each(identities, function(email_obj, email_address) { %>
                           <li>
                               <label for="<%= email_address %>" class="serif">
@@ -25,22 +25,25 @@
                       <% }); %>
                   </ul>
 
-                  <div class="submit cf">
-                      <div class="add cf">
-                          <a id="thisIsNotMe" href="#">This is not me</a>
-                          <a id="useNewEmail" href="#">Use a different email</a>
-                          <button id="signInButton">sign in</button>
-                      </div>
+                  <div class="submit add cf">
+                      <a id="thisIsNotMe" href="#">This is not me</a>
+                      <a id="useNewEmail" href="#">Use a different email</a>
+                      <button id="signInButton">sign in</button>
                   </div>
               </section>
 
               <section id="addEmail" class="cf">
-                  <label for="newEmail">New email address</label>
-                  <input id="newEmail" name="newEmail" type="email"/>
+
+                  <div class="inputs">
+                      <label for="newEmail">New email address</label>
+                      <input id="newEmail" name="newEmail" type="email"/>
+                  </div>
+
                   <div class="submit cf">
                       <button id="addNewEmail">add</button>
                       <button id="cancelNewEmail">cancel</button>
                   </div>
+
               </section>
 
           </div>
