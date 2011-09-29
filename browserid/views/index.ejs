@@ -1,12 +1,57 @@
-    <div class="why">
-      <img style="float: right;" src="i/people.png">
-      <p>For <b>users</b>, BrowserID provides a <b>safer and easier</b> way to sign in.  <a href="/users">How it works.</a></p>
+    <div id="content" style="display:none;">
+        <div id="manage">
+            <h1 class="serif">Account Manager</h1>
+            <div class="edit cf">
+                <strong>Your Accounts</strong>
+
+                <a id="manageAccounts" href="#">edit</a>
+                <a id="cancelManage" href="#">done</a>
+            </div>
+            <ul id="emailList">
+            </ul>
+            <!-- <div id="disclaimer">You may, at any time, <a href="#">cancel your account</a></div> -->
+        </div>
     </div>
-    <div class="why">
-      <img style="float: left;" src="i/developers.png">
-      <p>For <b>developers</b>, BrowserID offers a world class sign-in experience with only a couple lines of code. <a href="developers">Get Started.</a></p>
+
+    <div id="vAlign" style="display:none;">
+        <div id="signUp">
+            <div id="card"><img src="/i/slit.png"></div>
+            <div id="hint"></div>
+            <div id="status"></div>
+
+            <p>Connect with <em>BrowserID</em>, the safest &amp; easiest way to sign in.</p>
+            <p>
+              <a class="granted info" href="/about">Take the tour</a> or 
+              <a href="/signup" class="button granted create">sign up</a>
+            </p>
+        </div>
     </div>
-    <div class="why">
-      <img style="float: right;" src="i/id.png">
-      <p>For <b>identity providers</b>, BrowserID lets you give your users an identity they can <b>use everywhere</b>. <a href="primaries">Dig Deeper.</a> </p>
+
+<script type="text/html" id="templateUser">
+  <li class="identity cf">
+    <div class="email">{{ email }}</div>
+    <div class="activity cf">
+      <button class="delete">remove</button>
+      <!-- removed registration info. We want to replace this with Last Used At ... -->
+      <!-- <abbr title="Registered: {{ created }}" class="status">Registered {{ relative }}.</abbr>-->
     </div>
+  </li>
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+      $('.granted').hover(function() {
+          $('#card').toggleClass('insert');
+          $('#status').delay(400).toggleClass('green');
+      });
+
+      $('.create').hover(function() {
+          $('#hint').addClass('signUp').removeClass('info');
+      });
+
+      $('.info').hover(function() {
+          $('#hint').removeClass('signUp').addClass('info');
+      });
+  });
+</script>
+

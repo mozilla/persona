@@ -45,7 +45,7 @@ steal.plugins(
 	'jquery/view/ejs',				// client side templates
 	'jquery/controller/view')		// lookup views with the controller's name
 
-	.css("style")	// loads styles
+	.css("css/popup")	// loads styles
 
 	.resources('jschannel',
                'base64',
@@ -63,25 +63,13 @@ steal.plugins(
 	.controllers('page',
                'dialog',
                'authenticate',
-               'createaccount',
                'checkregistration',
-               'forgotpassword',
-               'chooseemail',
-               'addemail')					// loads files in controllers folder
+               'pickemail')					// loads files in controllers folder
 
 	.views('authenticate.ejs',
-           'addemail.ejs',
            'body.ejs',
-           'bottom-addemail.ejs',
-           'bottom-confirmemail.ejs',
-           'bottom-continue.ejs',
-           'bottom-pickemail.ejs',
-           'bottom-signin.ejs',
-           'bottom.ejs',
            'confirmemail.ejs',
-           'create.ejs',
-           'forgotpassword.ejs',
-           'signin.ejs',
+           'pickemail.ejs',
            'wait.ejs'
           ).
 

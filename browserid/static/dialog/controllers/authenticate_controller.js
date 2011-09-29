@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global BrowserIDIdentities: true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */
+/*global BrowserIDIdentities: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,50 +37,150 @@
 (function() {
   "use strict";
 
+  var ANIMATION_TIME = 250,
+      identities = BrowserIDIdentities;
+
+  function animateSwap(fadeOutSelector, fadeInSelector, callback) {
+    $(fadeOutSelector).fadeOut(ANIMATION_TIME, function() {
+      $(fadeInSelector).fadeIn(ANIMATION_TIME, callback);
+    });
+  }
+
   PageController.extend("Authenticate", {}, {
     init: function() {
       this._super({
         bodyTemplate: "authenticate.ejs",
         bodyVars: {
-          sitename: BrowserIDNetwork.origin
-        },
-        footerTemplate: "bottom-signin.ejs",
-        footerVars: {}
+          sitename: identities.getOrigin(),
+          siteicon: '/i/times.gif'
+        }
+      });
+      this.submitAction = "checkEmail";
+    },
+
+    "#email click" : function(el, event) {
+      if (!el.is(":disabled")) {
+        this.submitAction = "checkEmail";
+        animateSwap(".returning:visible,.newuser:visible", ".start");
+      }
+    },
+
+    "#forgotPassword click": function(el, event) {
+      event.preventDefault();
+
+      this.submitAction = "resetPassword";
+      $("#email").attr("disabled", "disabled");
+
+      animateSwap(".returning", ".forgot");
+    },
+
+    '#cancel_forgot_password click': function(el, event) {
+      event.preventDefault();
+
+      this.submitAction = "authenticate";
+      $("#email").removeAttr("disabled");
+      animateSwap(".forgot", ".returning", function() {
+        $("#password").focus();
       });
     },
 
-    "#forgotpassword click": function(event) {
-      this.close("authenticate:forgotpassword");
-    },
-
-    "#create click": function(event) {
-      this.close("authenticate:createuser");
-    },
-
-    validate: function() {
-      var email = $("#email_input").val();
-      var pass = $("#password_input").val();
-
-      return true;
-    },
-
     submit: function() {
-      var email = $("#email_input").val();
-      var pass = $("#password_input").val();
+      this[this.submitAction]();
+    },
 
-      var self = this;
-      BrowserIDIdentities.authenticateAndSync(email, pass, function(authenticated) {
-        if (authenticated) {
-          self.doWait(BrowserIDWait.authentication);
+    checkEmail: function() {
+      var email = $("#email").val(),
+          self = this;
+
+      if(!email) {
+        // XXX error screen
+        return;
+      }
+
+      // XXX verify email length/format here
+      // show error message if bad.
+      identities.emailRegistered(email, function onComplete(registered) {
+        // XXX instead of using jQuery here, think about using CSS animations.
+        $(".start").fadeOut(function() {
+          if(registered) {
+            self.submitAction = "authenticate";
+            animateSwap(".newuser", ".returning", function() {
+              $("#password").focus();  
+            });
+          }
+          else {
+            self.submitAction = "createUser";
+            animateSwap(".returning", ".newuser");
+          }
+        });
+      });
+    },
+
+    createUser: function() {
+      var self=this,
+          email = $("#email").val();
+
+      if(!email) {
+        // XXX error screen
+        return;
+      }
+
+      $("button.newuser").attr("disabled", "disabled");
+
+      identities.createUser(email, function(keypair) {
+        if(keypair) {
+          self.close("user_staged", {
+            email: email,
+            keypair: keypair
+          });
         }
-      },
-      function(authenticated) {
-        if (authenticated) {
-          self.close("authenticate:authenticated");
-        } else {
-          self.find("#nosuchaccount").hide().fadeIn(400);
+        else {
+          // XXX can't register this email address.
         }
-      }, self.getErrorDialog(BrowserIDErrors.authentication));
+      }, self.getErrorDialog(BrowserIDErrors.createAccount));
+    },
+
+    authenticate: function() {
+      var email = $("#email").val(),
+          pass = $("#password").val(),
+          self = this;
+
+      if(!(email && pass)) {
+        // XXX error screen
+        return;
+      }
+
+      identities.authenticateAndSync(email, pass, 
+        function onAuthenticate(authenticated) {
+          if (authenticated) {
+            self.doWait(BrowserIDWait.authentication);
+          } 
+          else {
+            // XXX error screen
+          }
+        },
+        function onComplete(authenticated) {
+          if (authenticated) {
+            self.close("authenticated");
+          } else {
+            // XXX error screen.
+          }
+        }, 
+        self.getErrorDialog(BrowserIDErrors.authentication)
+      );
+
+    },
+
+    resetPassword: function() {
+      var email = $("#email").val();
+      var me=this;
+      identities.requestPasswordReset(email, function() {
+        me.close("reset_password", {
+          email: email
+        });
+      }, function() {
+        // XXX TODO error screen!
+      });
     }
   });
 

@@ -97,12 +97,40 @@ var BrowserIDStorage = (function() {
     }
   }
 
+  function setStagedOnBehalfOf(origin) {
+    window.localStorage.stagedOnBehalfOf = JSON.stringify({
+      at: new Date().toString(),
+      origin: origin
+    });
+  }
+
+  function getStagedOnBehalfOf() {
+    var origin;
+
+    try {
+      var staged = JSON.parse(window.localStorage.stagedOnBehalfOf);
+      
+      if (staged) {
+        if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw "stale";
+        if (typeof(staged.origin) !== 'string') throw "malformed";
+        origin = staged.origin;
+      }
+    } catch (x) {
+      console.log(x);
+      delete window.localStorage.stagedOnBehalfOf;
+    }
+
+    return origin;
+  }
+
   return {
     getEmails: getEmails,
     addEmail: addEmail,
     removeEmail: removeEmail,
     clearEmails: clearEmails,
     storeTemporaryKeypair: storeTemporaryKeypair,
-    retrieveTemporaryKeypair: retrieveTemporaryKeypair
+    retrieveTemporaryKeypair: retrieveTemporaryKeypair,
+    setStagedOnBehalfOf: setStagedOnBehalfOf,
+    getStagedOnBehalfOf: getStagedOnBehalfOf
   };
 }());

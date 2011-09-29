@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global setupChannel:true, BrowserIDIdentities: true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true, OpenAjax: true */ 
+/*global setupChannel:true, BrowserIDIdentities: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true, OpenAjax: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -59,7 +59,7 @@ PageController.extend("Dialog", {}, {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
 
-      BrowserIDNetwork.setOrigin(origin_url);
+      BrowserIDIdentities.setOrigin(origin_url);
 
       this.doStart();
 
@@ -71,50 +71,41 @@ PageController.extend("Dialog", {}, {
 
 
     stateMachine: function() {
-      var self=this, hub = OpenAjax.hub, el = this.element;
+      var self=this, 
+          hub = OpenAjax.hub, 
+          el = this.element;
+     
 
-      hub.subscribe("createaccount:created", function(msg, info) {
-        self.doConfirmEmail(info.email);
+      hub.subscribe("user_staged", function(msg, info) {
+        self.doConfirmUser(info.email);
       });
 
-      hub.subscribe("createaccount:signin", function() {
-        self.doAuthenticate();
+      hub.subscribe("user_confirmed", function() {
+        self.doUserConfirmed();
       });
 
-      hub.subscribe("authenticate:authenticated", function() {
-        self.syncIdentities();
+      hub.subscribe("authenticated", function() {
+        self.syncEmailKeypairs();
       });
 
-      hub.subscribe("authenticate:createuser", function() {
-        self.doCreate();
+      hub.subscribe("reset_password", function(msg, info) {
+        self.doConfirmUser(info.email);
       });
 
-      hub.subscribe("authenticate:forgotpassword", function() {
-        self.doForgotPassword();
-      });
-
-      hub.subscribe("checkregistration:confirmed", function() {
-        self.doRegistrationConfirmed();
-      });
-
-      hub.subscribe("checkregistration:complete", function() {
-        self.doSignIn();
-      });
-
-      hub.subscribe("chooseemail:complete", function(msg, info) {
+      hub.subscribe("email_chosen", function(msg, info) {
         self.doEmailSelected(info.email);
       });
 
-      hub.subscribe("chooseemail:addemail", function() {
-        self.doAddEmail();
-      });
-
-      hub.subscribe("chooseemail:notme", function() {
-        self.doNotMe();
-      });
-
-      hub.subscribe("addemail:complete", function(msg, info) {
+      hub.subscribe("email_staged", function(msg, info) {
         self.doConfirmEmail(info.email);
+      });
+
+      hub.subscribe("email_confirmed", function() {
+        self.doEmailConfirmed();
+      });
+
+      hub.subscribe("notme", function() {
+        self.doNotMe();
       });
 
       hub.subscribe("start", function() {
@@ -125,6 +116,20 @@ PageController.extend("Dialog", {}, {
         self.doCancel();
       });
 
+    },
+
+    doConfirmUser: function(email) {
+      this.confirmEmail = email;
+
+      this.element.checkregistration({
+        email: email,
+        verifier: "waitForUserRegistration",
+        verificationMessage: "user_confirmed"
+      });
+    },
+
+    doUserConfirmed: function() {
+      this.doEmailSelected(this.confirmEmail);
     },
 
     doStart: function() {
@@ -144,43 +149,41 @@ PageController.extend("Dialog", {}, {
     },
 
     doSignIn: function() {
-      this.element.chooseemail();
+      this.element.pickemail();
     },
 
     doAuthenticate: function() {
       this.element.authenticate();
     },
-      
-    doCreate: function() {
-      this.element.createaccount();
-    },
-      
-    doForgotPassword: function() {
-      this.element.forgotpassword();
-    },
 
-    doAddEmail: function() {
-      this.element.addemail();
+    doCreate: function() {
+      //this.element.createaccount();
+    },
+      
+    doForgotPassword: function(email) {
+      this.element.forgotpassword({
+        email: email  
+      });
     },
 
     doConfirmEmail: function(email) {
       this.confirmEmail = email;
 
-      this.element.checkregistration({email: email});
+      this.element.checkregistration({
+        email: email,
+        verifier: "waitForEmailRegistration",
+        verificationMessage: "email_confirmed"
+      });
     },
 
-    doRegistrationConfirmed: function() {
-        var self = this;
-        // this is a secondary registration from browserid.org, persist
-        // email, keypair, and that fact
-        BrowserIDIdentities.confirmIdentity(self.confirmEmail,
-          self.doSignIn.bind(self));
+    doEmailConfirmed: function() {
+      this.doEmailSelected(this.confirmEmail);
     },
 
     doEmailSelected: function(email) {
       var self=this;
       // yay!  now we need to produce an assertion.
-      BrowserIDIdentities.getIdentityAssertion(email, function(assertion) {
+      BrowserIDIdentities.getAssertion(email, function(assertion) {
         // Clear onerror before the call to onsuccess - the code to onsuccess 
         // calls window.close, which would trigger the onerror callback if we 
         // tried this afterwards.
@@ -193,24 +196,25 @@ PageController.extend("Dialog", {}, {
       BrowserIDIdentities.logoutUser(this.doAuthenticate.bind(this));
     },
 
-    syncIdentities: function() {
+    syncEmailKeypairs: function() {
       var self = this;
-      BrowserIDIdentities.syncIdentities(self.doSignIn.bind(self), 
+      BrowserIDIdentities.syncEmailKeypairs(self.doSignIn.bind(self), 
         self.getErrorDialog(BrowserIDErrors.signIn));
     },
 
 
     doCheckAuth: function() {
-      this.doWait(BrowserIDWait.checkAuth);
       var self=this;
+      self.doWait(BrowserIDWait.checkAuth);
       BrowserIDIdentities.checkAuthenticationAndSync(function onSuccess() {}, 
-      function onComplete(authenticated) {
-        if (authenticated) {
-          self.doSignIn();
-        } else {
-          self.doAuthenticate();
-        }
-      }, self.getErrorDialog(BrowserIDErrors.checkAuthentication));
+        function onComplete(authenticated) {
+          if (authenticated) {
+              self.doSignIn();
+          } else {
+            self.doAuthenticate();
+          }
+        }, 
+        self.getErrorDialog(BrowserIDErrors.checkAuthentication));
   }
 
   });

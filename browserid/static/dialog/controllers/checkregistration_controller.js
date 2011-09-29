@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */ 
+/*global BrowserIDIdentities: true, BrowserIDErrors: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,76 +37,31 @@
 (function() {
   "use strict";
 
+  var identities = BrowserIDIdentities;
+
   PageController.extend("Checkregistration", {}, {
-    init: function(options) {
-      this._super({
+    init: function(el, options) {
+      var me=this;
+      me._super({
         bodyTemplate: "confirmemail.ejs",
         bodyVars: {
           email: options.email
-        },
-        footerTemplate: "bottom-confirmemail.ejs",
-        footerVars: {}
+        }
       });
-      $('#continue_button').addClass('disabled');
-      this.setupRegCheck();
-    },
-
-    close: function() {
-      if(this.pollTimeout) {
-        clearTimeout(this.pollTimeout);
-        this.pollTimeout = null;
-      }
-
-      this._super.apply(this, arguments);
+      me.email = options.email;
+      me.verifier = options.verifier;
+      me.verificationMessage = options.verificationMessage;
+      me.setupRegCheck();
     },
 
     setupRegCheck: function() {
-      // now poll every 3s waiting for the user to complete confirmation
-      var self=this;
-      function setupRegCheck() {
-        self.pollTimeout = setTimeout(function() {
-          BrowserIDNetwork.checkRegistration(function(status) {
-            // registration status checks the status of the last initiated registration,
-            // it's possible return values are:
-            //   'complete' - registration has been completed
-            //   'pending'  - a registration is in progress
-            //   'noRegistration' - no registration is in progress
-            if (status === 'complete') {
-              // and tell the user that everything is really quite awesome.
-              self.find("#waiting_confirmation").hide();
-              self.find("#resendit_action").hide();
-              self.find("#confirmed_notice").show();
-
-              // enable button
-              $('#continue_button').removeClass('disabled');
-
-              self.close("checkregistration:confirmed");
-            } else if (status === 'pending') {
-              // try again, what else can we do?
-              self.setupRegCheck();
-            } else {
-              self.runErrorDialog(BrowserIDErrors.registration);
-            }
-          }, self.getErrorDialog(BrowserIDErrors.registration));
-        }, 3000);
-      }
-      
-      // setup the timeout
-      setupRegCheck();
-
-    },
-
-    validate: function() {
-      var valid = !$("#continue_button").hasClass("disabled");
-      return valid;
-    },
-
-    submit: function() {
-      var self=this;
-      self.publish("checkregistration:complete");
-      self._super();      
+      var me=this;
+      identities[me.verifier](me.email, function(status) {
+        identities.syncEmailKeypairs(function() {
+          me.close(me.verificationMessage);
+        });
+      }, me.getErrorDialog(BrowserIDErrors.registration));
     }
-
   });
 
 

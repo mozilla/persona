@@ -1,14 +1,11 @@
-  <h2> Confirm Your Email </h2>
-  <div class="content">
-    <div class="summary">Welcome, <span class="email good"><%= email %></span>.  You will receive a <strong>confirmation email</strong> in a few moments.  To activate your BrowserID, please <strong>visit the link</strong> included in the email.</div>
-    <div class="attention" id="waiting_confirmation">
-      Waiting for email confirmation...
-    </div>
-    <div class="attention_awesome" style="display:none;" id="confirmed_notice">
-      Your email has been confirmed! </span>
-    </div>
-    <div class="actions">
-      <!-- XXX: disable the resend link until it's implemented -->
-      <div style="display: none;" class="action" id="resendit_action"> No email yet?  <a href="#">Resend it!</a></div>
-    </div>
+  <div id="checkemail">
+      <div class="table">
+          <div class="vertical">
+              <p style="margin:20px auto;font-size:150%;"><strong style="color:#222">Check your email!</strong></p>
+              <p>We sent a confirmation email to <span id="displayemail"><%= email %></span></p>
+              <p>To finish signing in just click the verify link we sent to your email address.</p><br />
+              <p>If this is a mistake, <a href="#" id="back">cancel this email</a>.</p>
+          </div>
+      </div>
   </div>
+

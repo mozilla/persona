@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global BrowserIDStorage: true */
+/*global BrowserIDStorage: true, _: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,30 +37,43 @@
 var BrowserIDNetwork = (function() {
   "use strict";
 
-  var csrf_token;
+  var csrf_token,
+      xhr = $;
 
   function withCSRF(cb) {
     if (csrf_token) setTimeout(cb, 0);
     else {
-      $.get('/wsapi/csrf', {}, function(result) {
-        csrf_token = result;
-        cb();
-      }, 'html');
+      xhr.ajax({
+        url: "/wsapi/csrf",
+        type: "GET",
+        success: function(result) {
+          csrf_token = result;
+          _.defer(cb);
+        }, 
+        dataType: "html"
+      });
     }
   }
 
-  function filterOrigin(origin) {
-    return origin.replace(/^.*:\/\//, '');
+  function createDeferred(cb) {
+    if (cb) {
+      return function() {
+        var args = _.toArray(arguments);
+        _.defer(function() {
+          cb.apply(null, args); 
+        });
+      };
+    }
   }
 
   var Network = {
     /**
-     * Set the origin of the current host being logged in to.
-     * @method setOrigin
-     * @param {string} origin
+     * Set the XHR object.  Used for testing
+     * @method setXHR
+     * @param {object} xhr - xhr object.
      */
-    setOrigin: function(origin) {
-      BrowserIDNetwork.origin = filterOrigin(origin);
+    setXHR: function(newXHR) {
+      xhr = newXHR;
     },
 
     /**
@@ -73,9 +86,9 @@ var BrowserIDNetwork = (function() {
      */
     authenticate: function(email, password, onSuccess, onFailure) {
       withCSRF(function() { 
-        $.ajax({
+        xhr.ajax({
           type: "POST",
-          url: '/wsapi/authenticate_user',
+          url: "/wsapi/authenticate_user",
           data: {
             email: email,
             pass: password,
@@ -84,7 +97,7 @@ var BrowserIDNetwork = (function() {
           success: function(status, textStatus, jqXHR) {
             if (onSuccess) {
               var authenticated = JSON.parse(status);
-              onSuccess(authenticated);
+              _.delay(onSuccess, 0, authenticated);
             }
           },
           error: onFailure
@@ -100,11 +113,11 @@ var BrowserIDNetwork = (function() {
      * @param {function} [onFailure] - called on XHR failure.
      */
     checkAuth: function(onSuccess, onFailure) {
-      $.ajax({
-        url: '/wsapi/am_authed',
+      xhr.ajax({
+        url: "/wsapi/am_authed",
         success: function(status, textStatus, jqXHR) {
           var authenticated = JSON.parse(status);
-          onSuccess(authenticated);
+          _.delay(onSuccess, 0, authenticated);
         },
         error: onFailure
       });
@@ -118,125 +131,265 @@ var BrowserIDNetwork = (function() {
      */
     logout: function(onSuccess) {
       withCSRF(function() { 
-        $.post("/wsapi/logout", {
-          csrf: csrf_token
-        }, function() {
-          csrf_token = undefined;
-          withCSRF(function() {
-            if (onSuccess) {
-              onSuccess();
-            }
-          });
-        } );
+        xhr.ajax({
+          type: "POST",
+          url: "/wsapi/logout", 
+          data: {
+            csrf: csrf_token
+          }, 
+          success: function() {
+            csrf_token = undefined;
+            withCSRF(function() {
+              if (onSuccess) {
+                _.defer(onSuccess);
+              }
+            });
+          }
+        });
       });
     },
 
     /**
-     * Create a new user or reset a current user's password.  Requires a user 
-     * to verify identity.
-     * changes for certs: removed keypair.
-     * @method stageUser
+     * Create a new user.  Requires a user to verify identity.
+     * @method createUser
      * @param {string} email - Email address to prepare.
-     * @param {string} password - Password for user.
-     * @param {object} keypair - User's public/private key pair.
+     * @param {string} origin - site user is trying to sign in to.
      * @param {function} [onSuccess] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    stageUser: function(email, password, onSuccess, onFailure) {
+    createUser: function(email, origin, onSuccess, onFailure) {
       withCSRF(function() { 
-        $.ajax({
+        xhr.ajax({
           type: "post",
-          url: '/wsapi/stage_user',
+          url: "/wsapi/stage_user",
           data: {
             email: email,
-            pass: password,
-            site : BrowserIDNetwork.origin || document.location.host,
+            site : origin,
             csrf : csrf_token
           },
-          success: onSuccess,
+          success: function(status) {
+            var staged = JSON.parse(status);
+            // why a delay here? Because of the test harness?
+            // shouldn't the delay be in the test harness?
+            _.delay(onSuccess, 0, staged);
+          },
           error: onFailure
         });
       });
     },
 
     /**
-     * Call with a token to prove an email address ownership.
-     * @method proveEmailOwnership
-     * @param {string} token - token proving email ownership.
-     * @param {function} [onSuccess] - Callback to call when complete.  Called 
-     * with one boolean parameter that specifies the validity of the token.
-     * @param {function} [onFailure] - Called on XHR failure.
+     * Check the email address associated with a verification token
+     * @method emailForVerificationToken
+     * @param {string} token - Token to check
+     *
+     * TODO: think about whether this requires the right cookie
+     * I think so (BA).
      */
-    proveEmailOwnership: function(token, onSuccess, onFailure) {
-      $.ajax({
-        url: '/wsapi/prove_email_ownership',
-        data: {
-          token: token
-        },
-        success: function(status, textStatus, jqXHR) {
-          if (onSuccess) {
-            var valid = JSON.parse(status);
-            onSuccess(valid);
-          }
+    emailForVerificationToken: function(token, onSuccess, onFailure) {
+      xhr.ajax({
+        url : "/wsapi/email_for_token?token=" + encodeURIComponent(token),
+        success: function(data) {
+          onSuccess(data.email);
         },
         error: onFailure
       });
     },
 
     /**
-     * Cancel the current user's account.
-     * @method cancelUser
-     * @param {function} [onSuccess] - called whenever complete.
+     * Check the current user"s registration status
+     * @method checkUserRegistration
+     * @param {function} [onSuccess] - Called when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
      */
-    cancelUser: function(onSuccess) {
-      withCSRF(function() {
-        $.post("/wsapi/account_cancel", {"csrf": csrf_token}, function(result) {
-          if (onSuccess) {
-            onSuccess();
-          }
-        });
+    checkUserRegistration: function(email, onSuccess, onFailure) {
+      xhr.ajax({
+        url: "/wsapi/user_creation_status?email=" + encodeURIComponent(email),
+        success: createDeferred(onSuccess),
+        error: onFailure
       });
     },
 
     /**
-     * Add an email to the current user's account.
-     * @method addEmail
-     * @param {string} email - Email address to add.
+     * Complete user registration, give user a password
+     * @method completeUserRegistration
+     * @param {string} token - token to register for.
+     * @param {string} password - password to register for account.
      * @param {function} [onSuccess] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    addEmail: function(email, onSuccess, onFailure) {
-      withCSRF(function() { 
-        $.ajax({
-          type: 'POST',
-          url: '/wsapi/add_email',
+    completeUserRegistration: function(token, password, onSuccess, onFailure) {
+      withCSRF(function() {
+        xhr.ajax({
+          type: "POST",
+          url: "/wsapi/complete_user_creation",
           data: {
-            email: email,
-            site: BrowserIDNetwork.origin || document.location.host,
-            csrf: csrf_token
+            csrf: csrf_token,
+            token: token,
+            pass: password
           },
-          success: onSuccess,
+          success: function(status, textStatus, jqXHR) {
+            if (onSuccess) {
+              var valid = JSON.parse(status);
+              _.delay(onSuccess, 0, valid);
+            }
+          },
+          error: onFailure
+        });
+      });
+
+    },
+
+    /**
+     * Request a password reset for the given email address.
+     * @method requestPasswordReset
+     * @param {string} email - email address to reset password for.
+     * @param {function} [onSuccess] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    requestPasswordReset: function(email, origin, onSuccess, onFailure) {
+      if (email) {
+        this.createUser(email, origin, onSuccess, onFailure);
+      } else {
+        // TODO: if no email is provided, then what?
+        throw "no email provided to password reset";
+      }
+    },
+
+    /**
+     * Update the password of the current user. This is for a password reseT
+     * @method resetPassword
+     * @param {string} password - new password.
+     * @param {function} [onSuccess] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */ 
+    resetPassword: function(password, onSuccess, onFailure) {
+      // XXX fill this in.
+      if (onSuccess) {
+        _.defer(onSuccess);
+      }
+    },
+
+    /**
+     * Update the password of the current user
+     * @method changePassword
+     * @param {string} oldpassword - old password.
+     * @param {string} newpassword - new password.
+     * @param {function} [onSuccess] - Callback to call when complete. Will be 
+     * called with true if successful, false otw.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */ 
+    changePassword: function(oldPassword, newPassword, onSuccess, onFailure) {
+      // XXX fill this in
+      if (onSuccess) {
+        _.delay(onSuccess, 0, true);
+      }
+    },
+
+    /**
+     * Call with a token to prove an email address ownership.
+     * @method completeEmailRegistration
+     * @param {string} token - token proving email ownership.
+     * @param {function} [onSuccess] - Callback to call when complete.  Called 
+     * with one boolean parameter that specifies the validity of the token.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    completeEmailRegistration: function(token, onSuccess, onFailure) {
+      withCSRF(function() {
+        xhr.ajax({
+          type: "POST",
+          url: "/wsapi/complete_email_addition",
+          data: {
+            csrf: csrf_token,
+            token: token
+          },
+          success: function(status, textStatus, jqXHR) {
+            if (onSuccess) {
+              var valid = JSON.parse(status);
+              _.delay(onSuccess, 0, valid);
+            }
+          },
           error: onFailure
         });
       });
     },
 
     /**
+     * Cancel the current user"s account.
+     * @method cancelUser
+     * @param {function} [onSuccess] - called whenever complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    cancelUser: function(onSuccess, onFailure) {
+      withCSRF(function() {
+        xhr.ajax({
+          type: "POST",
+          url: "/wsapi/account_cancel", 
+          data: {"csrf": csrf_token}, 
+          success: createDeferred(onSuccess),
+          error: onFailure
+        });
+      });
+    },
+
+    /**
+     * Add an email to the current user"s account.
+     * @method addEmail
+     * @param {string} email - Email address to add.
+     * @param {string} origin - site user is trying to sign in to.
+     * @param {function} [onsuccess] - called when complete.
+     * @param {function} [onfailure] - called on xhr failure.
+     */
+    addEmail: function(email, origin, onSuccess, onFailure) {
+      withCSRF(function() { 
+        xhr.ajax({
+          type: "POST",
+          url: "/wsapi/stage_email",
+          data: {
+            email: email,
+            site: origin,
+            csrf: csrf_token
+          },
+          success: function(status) {
+            var staged = JSON.parse(status);
+            _.delay(onSuccess, 0, staged);
+          },
+          error: onFailure
+        });
+      });
+    },
+
+
+    /**
+     * Check the registration status of an email
+     * @method checkEmailRegistration
+     * @param {function} [onsuccess] - called when complete.
+     * @param {function} [onfailure] - called on xhr failure.
+     */
+    checkEmailRegistration: function(email, onSuccess, onFailure) {
+      xhr.ajax({
+        url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
+        success: createDeferred(onSuccess),
+        error: onFailure
+      });
+    },
+
+    /**
      * Check whether the email is already registered.
-     * @method haveEmail
+     * @method emailRegistered
      * @param {string} email - Email address to check.
      * @param {function} [onSuccess] - Called with one boolean parameter when 
      * complete.  Parameter is true if `email` is already registered, false 
      * otw.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    haveEmail: function(email, onSuccess, onFailure) {
-      $.ajax({
-        url: '/wsapi/have_email?email=' + encodeURIComponent(email),
+    emailRegistered: function(email, onSuccess, onFailure) {
+      xhr.ajax({
+        url: "/wsapi/have_email?email=" + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
-          if (onSuccess) {
-            var success = !JSON.parse(data);
-            onSuccess(success);
+          if(onSuccess) {
+            var success = typeof data === "string" ? !JSON.parse(data) : data;
+            _.delay(onSuccess, 0, success);
           }
         },
         error: onFailure
@@ -252,34 +405,16 @@ var BrowserIDNetwork = (function() {
      */
     removeEmail: function(email, onSuccess, onFailure) {
       withCSRF(function() { 
-        $.ajax({
-          type: 'POST',
-          url: '/wsapi/remove_email',
+        xhr.ajax({
+          type: "POST",
+          url: "/wsapi/remove_email",
           data: {
             email: email,
             csrf: csrf_token
           },
-          success: onSuccess,
+          success: createDeferred(onSuccess),
           failure: onFailure
         });
-      });
-    },
-
-    /**
-     * Check the current user's registration status
-     * @method checkRegistration
-     * @param {function} [onSuccess] - Called when complete.
-     * @param {function} [onFailure] - Called on XHR failure.
-     */
-    checkRegistration: function(onSuccess, onFailure) {
-      $.ajax({
-          url: '/wsapi/registration_status',
-          success: function(status, textStatus, jqXHR) {
-            if (onSuccess) {
-              onSuccess(status);
-            }
-          },
-          error: onFailure
       });
     },
 
@@ -289,15 +424,15 @@ var BrowserIDNetwork = (function() {
      */
     certKey: function(email, pubkey, onSuccess, onError) {
       withCSRF(function() { 
-        $.ajax({
-          type: 'POST',
-          url: '/wsapi/cert_key',
+        xhr.ajax({
+          type: "POST",
+          url: "/wsapi/cert_key",
           data: {
             email: email,
             pubkey: pubkey.serialize(),
             csrf: csrf_token
           },
-          success: onSuccess,
+          success: createDeferred(onSuccess),
           error: onError
         });
       });
@@ -308,10 +443,10 @@ var BrowserIDNetwork = (function() {
      * @method listEmails
      */
     listEmails: function(onSuccess, onFailure) {
-      $.ajax({
+      xhr.ajax({
         type: "GET",
         url: "/wsapi/list_emails",
-        success: onSuccess,
+        success: createDeferred(onSuccess),
         error: onFailure
       });
     }

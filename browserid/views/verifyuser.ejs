@@ -1,0 +1,48 @@
+<div id="vAlign">   
+  <div id="signUpFormWrap">
+    <form id="signUpForm" class="cf">
+      <p class="hint">Finish signing into: <strong><span class="website"></span></strong></p>
+      <h1 class="serif">Last step!</h1>
+      <ul class="inputs">
+        <li>
+            <label class="serif" for="email">Email Address</label>
+            <input class="youraddress sans" id="email" placeholder="Your Email" type="email" value="" disabled="disabled">
+        </li>
+        <li>
+            <label class="serif" for="password">New Password</label>
+            <input required class="sans" id="password" placeholder="Enter a Password" type="password" autofocus>
+        </li>
+        <li>
+            <label class="serif" for="vpassword">Verify Password</label>
+            <input required class="sans" id="vpassword" placeholder="Repeat Password" type="password">
+        </li>
+      </ul>
+      <div class="submit cf">
+          <input type="submit" class="create" value="Finish"/>
+      </div>
+    </form>
+    
+    <div id="congrats">
+        <p class="serif">Thank you signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!</p>
+    </div>
+      
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+   var staged = BrowserIDStorage.getStagedOnBehalfOf();
+   if (staged)
+     $('.website').html(staged);
+   else
+     $('.hint').hide();
+
+   // go get the email address
+   BrowserIDNetwork.emailForVerificationToken("<%= token %>", function(email) {
+     if (email)
+       $('#email').val(email);
+     else
+       $('#signUpFormWrap').html('There was a problem with your signup link.');
+   });
+});
+</script>

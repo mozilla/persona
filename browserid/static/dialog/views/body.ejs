@@ -1,25 +1,41 @@
-<header id="header">
-  <hgroup>
-      <h1 id="logo" class="sprite">BrowserID</h1>
-      <h2 id="subtitle" class="sprite">A better way to sign in.</h2>
-  </hgroup>
-  <div id="labs_logo" class="sprite"></div>
-</header>
+<div id="wrapper">
+  <header class="cf">
+    <div id="header" class="cf">
+        <ul>
+            <li><a class="home" target="_blank" href="/"></a></li>
+        </ul>
+    </div>
+  </header>
 
-<form action="" onsubmit="return false;"> <!-- using the form element to hook into with js -->
-  <div id="dialog" class="dialog">
+  <div id="formWrap" class="cf">
+    <form> 
+      <div id="dialog" class="dialog cf">
+      </div>
+
+      <div id="error_dialog">
+        <h3 class="title"></h3>
+        <p class="content"></p>
+      </div>
+
+    </form>
   </div>
 
-  <div id="error_dialog">
-    <h3 class="title"></h3>
-    <p class="content"></p>
-  </div>
+  <footer>
+        <ul class="cf">
+            <li>By <a href="http://mozillalabs.com">Mozilla Labs</a></li>
 
-  <div id="bottom-bar">
-  </div>
-</form>
+            <li>&mdash;</li>           
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">TOS</a></li>
+        </ul>
 
-<footer id="terms">
-    BrowserID is a <a target="_blank" href="http://mozillalabs.com">Mozilla Labs</a> service.
-    See our <a target="_blank" href="https://browserid.org/tos">terms</a> and <a target="_blank" href="https://browserid.org/privacy">privacy policy</a>, or <a target="_blank" href="https://browserid.org/users">learn more</a>.
-</footer>
+        <div class="learn">
+            BrowserID is the fast and secure way to sign in &mdash; <a target="_blank" href="/about">learn more</a>
+        </div>
+
+        <div class="help">
+            <a href="http://support.mozilla.com/en-US/home" target="_blank">need help?</a>
+        </div>
+  </footer>
+
+</div>

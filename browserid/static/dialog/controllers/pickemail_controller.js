@@ -1,5 +1,5 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global BrowserIDIdentities: true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */ 
+/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*global _: true, BrowserIDIdentities: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,43 +37,81 @@
 (function() {
   "use strict";
 
-  PageController.extend("addemail", {}, {
+  var identities = BrowserIDIdentities;
+
+  PageController.extend("Pickemail", {}, {
     init: function(options) {
       this._super({
-        bodyTemplate: "addemail.ejs",
+        bodyTemplate: "pickemail.ejs",
         bodyVars: {
-          sitename: BrowserIDNetwork.origin,
-          identities: BrowserIDIdentities.getStoredIdentities()
-        },
-        footerTemplate: "bottom-addemail.ejs",
-        footerVars: {}
+          sitename: identities.getOrigin(),
+          siteicon: '/i/times.gif',
+          identities: identities.getStoredEmailKeypairs(),
+        }
       });
       // select the first option
       this.find('input:first').attr('checked', true);
-    },
-
-    validate: function() {
-      var email = $("#email_input").val();
-      return /^[\w.!#$%&'*+\-/=?\^`{|}~]+@[a-z0-9-]+(\.[a-z0-9-]+)*$/.test(email);
+      this.submitAction = "signIn";
     },
 
     submit: function() {
-      // add the actual email
-      // now we need to actually try to stage the creation of this account.
-      var email = $("#email_input").val();
+      this[this.submitAction]();
+    },
 
-      // kick the user to waiting/status page while we talk to the server.
-      this.doWait(BrowserIDWait.addEmail);
+    signIn: function() {
+      var me=this;
+      $("#signIn").animate({"width" : "685px"}, "slow", function () {
+        // post animation
+         $("body").delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
+            var email = $("#inputs input:checked").val();
+            me.close("email_chosen", {
+              email: email
+            });
+         });
+      }); 
+    },
 
-      var self = this;
-      BrowserIDIdentities.addIdentity(email, function(keypair) {
-          // email successfully staged, now wait for email confirmation
-          self.close("addemail:complete", {
-            email: email,
-            keypair: keypair
-          });
-        }, self.getErrorDialog(BrowserIDErrors.addEmail));
+    addEmail: function() {
+      var email = $("#newEmail").val(),
+          me=this;
+
+      if (email) {
+        identities.addEmail(email, function(keypair) {
+          if (keypair) {
+            me.close("email_staged", {
+              email: email
+            });
+          }
+          else {
+            // XXX BAAAAAAAAAAAAAH.
+          }
+        }, function onFailure() {
+
+        });
+      }
+    },
+
+    "#useDifferentEmail click": function(element, event) {
+      event.preventDefault();
+
+      this.submitAction = "addEmail";
+
+      $("#signInButton,#useDifferentEmail").fadeOut(250, function() {
+        $("#differentEmail").fadeIn(250);
+        $("#newEmail").focus();
+      });
+    },
+
+    "#cancelDifferentEmail click": function(element, event) {
+      event.preventDefault();
+
+      this.submitAction = "signIn";
+
+      $("#differentEmail").fadeOut(250, function() {
+        $("#signInButton,#useDifferentEmail").fadeIn(250);
+      });
     }
+
   });
 
 }());

@@ -146,17 +146,16 @@ function addEmailToAccount(existing_email, email, cb) {
   });
 }
 
-exports.stageUser = function(obj, cb) {
+exports.stageUser = function(email, cb) {
   var secret = secrets.generate(48);
 
   // overwrite previously staged users
   staged[secret] = {
     type: "add_account",
-    email: obj.email,
-    pass: obj.hash
+    email: email
   };
 
-  stagedEmails[obj.email] = secret;
+  stagedEmails[email] = secret;
   setTimeout(function() { cb(secret); }, 0);
 };
 
@@ -172,7 +171,14 @@ exports.stageEmail = function(existing_email, new_email, cb) {
   setTimeout(function() { cb(secret); }, 0);
 };
 
-exports.gotVerificationSecret = function(secret, cb) {
+
+exports.emailForVerificationSecret = function(secret, cb) {
+  setTimeout(function() {
+    cb(staged[secret]? staged[secret].email:undefined);
+  }, 0);
+};
+
+exports.gotVerificationSecret = function(secret, hash, cb) {
   if (!staged.hasOwnProperty(secret)) return cb("unknown secret");
 
   // simply move from staged over to the emails "database"
@@ -183,11 +189,11 @@ exports.gotVerificationSecret = function(secret, cb) {
     exports.emailKnown(o.email, function(known) {
       function createAccount() {
         db.push({
-          password: o.pass,
+          password: hash,
           emails: [ o.email ]
         });
         flush();
-        cb();
+        cb(undefined, o.email);
       }
 
       // if this email address is known and a user has completed a re-verification of this email

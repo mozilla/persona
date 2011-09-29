@@ -38,7 +38,7 @@
 var BrowserIDIdentities = (function() {
   "use strict";
 
-  var jwk, jwt, vep, jwcert,
+  var jwk, jwt, vep, jwcert, origin,
       network = BrowserIDNetwork,
       storage = BrowserIDStorage;
 
@@ -97,6 +97,44 @@ var BrowserIDIdentities = (function() {
     }
   }
 
+  function setAuthenticationStatus(authenticated) {
+    var func = authenticated ? 'addClass' : 'removeClass';
+    $('body')[func]('authenticated');
+
+    if (!authenticated) {
+      storage.clearEmails();
+    }
+  }
+
+  function filterOrigin(origin) {
+    return origin.replace(/^.*:\/\//, "");
+  }
+
+  function registrationPoll(checkFunc, email, onSuccess, onFailure) {
+    function poll() {
+      checkFunc(email, function(status) {
+        // registration status checks the status of the last initiated registration,
+        // it's possible return values are:
+        //   'complete' - registration has been completed
+        //   'pending'  - a registration is in progress
+        //   'noRegistration' - no registration is in progress
+        if (status === "complete") {
+          if (onSuccess) {
+            onSuccess(status);
+          }
+        }
+        else if (status === 'pending') {
+          setTimeout(poll, 3000);
+        }
+        else if (onFailure) {
+            onFailure();
+        }
+      });
+    };
+
+    poll();
+  }
+
   var Identities = {
     /**
      * Set the interface to use for networking.  Used for unit testing.
@@ -109,15 +147,128 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
+     * setOrigin
+     * @method setOrigin
+     * @param {string} origin
+     */
+    setOrigin: function(unfilteredOrigin) {
+      origin = filterOrigin(unfilteredOrigin);
+    },
+
+    /**
+     * Get the origin of the current host being signed in to.
+     * @method getOrigin
+     * @return {string} origin
+     */
+    getOrigin: function() {
+      return origin;
+    },
+
+    /**
+     * Create a user account - this creates an user account that must be verified.  
+     * @method createUser
+     * @param {string} email - Email address.
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
+     */
+    createUser: function(email, onSuccess, onFailure) {
+      var self=this;
+
+      // remember this for later
+      storage.setStagedOnBehalfOf(origin);
+      
+      // FIXME: keysize
+      network.createUser(email, origin, function(created) {
+        if (onSuccess) {
+          var val = created;
+          if(created) {
+            prepareDeps();
+            var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
+            self.stagedEmail = email;
+            self.stagedKeypair = keypair;
+            val = keypair;
+          }
+
+          onSuccess(val);
+        }
+      }, onFailure);
+    },
+
+    /**
+     * Poll the server until user registration is complete.
+     * @method waitForUserRegistration
+     * @param {string} email - email address to check.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    waitForUserRegistration: function(email, onSuccess, onFailure) {
+      registrationPoll(network.checkUserRegistration, email, onSuccess, onFailure);
+    },
+
+    /**
+     * Set the password of the current user.
+     * @method setPassword
+     * @param {string} password - password to set
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
+     */
+    setPassword: function(password, onSuccess, onFailure) {
+      network.setPassword(password, onSuccess, onFailure);
+    },
+
+    /**
+     * Request a password reset for the given email address.
+     * @method requestPasswordReset
+     * @param {string} email - email address to reset password for.
+     * @param {function} [onSuccess] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    requestPasswordReset: function(email, onSuccess, onFailure) {
+      network.requestPasswordReset(email, origin, onSuccess, onFailure);
+    },
+
+    /**
+     * Cancel the current user's account.  Remove last traces of their 
+     * identity.
+     * @method cancelUser
+     * @param {function} [onSuccess] - Called whenever complete.
+     * @param {function} [onFailure] - called on failure.
+     */
+    cancelUser: function(onSuccess, onFailure) {
+      network.cancelUser(function() {
+        setAuthenticationStatus(false);
+        if (onSuccess) {
+          onSuccess();
+        }
+      });
+
+    },
+
+    /**
+     * Log the current user out.
+     * @method logoutUser
+     * @param {function} [onSuccess] - Called whenever complete.
+     * @param {function} [onFailure] - called on failure.
+     */
+    logoutUser: function(onSuccess, onFailure) {
+      network.logout(function() {
+        setAuthenticationStatus(false);
+        if (onSuccess) {
+          onSuccess();
+        }
+      });
+    },
+
+    /**
      * Sync local identities with browserid.org.  Generally should not need to 
      * be called.
-     * @method syncIdentities
+     * @method syncEmailKeypairs
      * @param {function} [onSuccess] - Called whenever complete.
      * @param {function} [onFailure] - Called on failure.
      */
-    syncIdentities: function(onSuccess, onFailure) {
+    syncEmailKeypairs: function(onSuccess, onFailure) {
       cleanupIdentities();
-      var issued_identities = Identities.getStoredIdentities();
+      var issued_identities = Identities.getStoredEmailKeypairs();
 
       // FIXME for certs
 
@@ -156,7 +307,7 @@ var BrowserIDIdentities = (function() {
 
           var email = emails_to_add.shift();
 
-          self.syncIdentity(email, addNextEmail, onFailure);
+          self.syncEmailKeypair(email, addNextEmail, onFailure);
         }
 
         addNextEmail();
@@ -164,39 +315,13 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
-     * Stage an identity - this creates an identity that must be verified.  
-     * Used when creating a new account or resetting the password of an 
-     * existing account.
-     * FIXME: rename to indicate new account
-     * @method stageIdentity
-     * @param {string} email - Email address.
-     * @param {function} [onSuccess] - Called on successful completion. 
-     * @param {function} [onFailure] - Called on error.
-     */
-    stageIdentity: function(email, password, onSuccess, onFailure) {
-      var self=this;
-      // FIXME: keysize
-      prepareDeps();
-      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
-
-      self.stagedEmail = email;
-      self.stagedKeypair = keypair;
-
-      network.stageUser(email, password, function() {
-        if (onSuccess) {
-          onSuccess(keypair);
-        }
-      }, onFailure);
-    },
-
-    /**
      * Signifies that an identity has been confirmed.
-     * @method confirmIdentity
+     * @method confirmEmail
      * @param {string} email - Email address.
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
-    confirmIdentity: function(email, onSuccess, onFailure) {
+    confirmEmail: function(email, onSuccess, onFailure) {
       var self = this;
       if (email === self.stagedEmail) {
         var keypair = self.stagedKeypair;
@@ -205,14 +330,31 @@ var BrowserIDIdentities = (function() {
         self.stagedKeypair = null;
 
         // certify
-        Identities.certifyIdentity(email, keypair, function() {
-          self.syncIdentities(onSuccess, onFailure);
+        Identities.certifyEmailKeypair(email, keypair, function() {
+          self.syncEmailKeypairs(onSuccess, onFailure);
         });
 
       }
       else if (onFailure) {
         onFailure();
       }
+    },
+
+    /**
+     * Check whether the current user is authenticated.
+     * @method checkAuthentication
+     * @param {function} [onSuccess] - Called when check is complete with one 
+     * boolean parameter, authenticated.  authenticated will be true if user is 
+     * authenticated, false otw.
+     * @param {function} [onFailure] - Called on failure.
+     */
+    checkAuthentication: function(onSuccess, onFailure) {
+      network.checkAuth(function(authenticated) {
+        setAuthenticationStatus(authenticated);
+        if (onSuccess) {
+          onSuccess(authenticated);
+        }
+      }, onFailure);
     },
 
     /**
@@ -228,12 +370,13 @@ var BrowserIDIdentities = (function() {
     checkAuthenticationAndSync: function(onSuccess, onComplete, onFailure) {
       var self=this;
       network.checkAuth(function(authenticated) {
+        setAuthenticationStatus(authenticated);
         if (authenticated) {
           if (onSuccess) {
             onSuccess(authenticated);
           }
 
-          self.syncIdentities(function() {
+          self.syncEmailKeypairs(function() {
             if (onComplete) {
               onComplete(authenticated);
             }
@@ -260,12 +403,13 @@ var BrowserIDIdentities = (function() {
     authenticateAndSync: function(email, password, onSuccess, onComplete, onFailure) {
       var self=this;
       network.authenticate(email, password, function(authenticated) {
+        setAuthenticationStatus(authenticated);
         if (authenticated) {
           if (onSuccess) {
             onSuccess(authenticated);
           }
 
-          self.syncIdentities(function() {
+          self.syncEmailKeypairs(function() {
             if (onComplete) {
               onComplete(authenticated);
             }
@@ -278,11 +422,89 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
+     * Check whether the email is already registered.
+     * @method emailRegistered
+     * @param {string} email - Email address to check.
+     * @param {function} [onSuccess] - Called with one boolean parameter when 
+     * complete.  Parameter is true if `email` is already registered, false 
+     * otw.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    emailRegistered: function(email, onSuccess, onFailure) {
+      network.emailRegistered(email, onSuccess, onFailure);
+    },
+
+    /**
+     * Add an email address to an already created account.  Sends address and 
+     * keypair to the server, user then needs to verify account ownership. This 
+     * does not add the new email address/keypair to the local list of 
+     * valid identities.
+     * @method addEmail
+     * @param {string} email - Email address.
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
+     */
+    addEmail: function(email, onSuccess, onFailure) {
+      var self = this;
+      network.addEmail(email, origin, function(added) {
+        if (added) {
+          prepareDeps();
+          var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
+
+          self.stagedEmail = email;
+          self.stagedKeypair = keypair;
+
+          // we no longer send the keypair, since we will certify it later.
+          if (onSuccess) {
+            onSuccess(keypair);
+          }
+        }
+      }, onFailure);
+    },
+
+    waitForEmailRegistration: function(email, onSuccess, onFailure) {
+      registrationPoll(network.checkEmailRegistration, email, onSuccess, onFailure);
+    },
+
+    /**
+     * Remove an email address.
+     * @method removeEmail
+     * @param {string} email - Email address to remove.
+     * @param {function} [onSuccess] - Called when complete.
+     * @param {function} [onFailure] - Called on failure.
+     */
+    removeEmail: function(email, onSuccess, onFailure) {
+      network.removeEmail(email, function() {
+        storage.removeEmail(email);
+        if (onSuccess) {
+          onSuccess();
+        }
+      }, onFailure);
+    },
+
+    /**
+     * Sync an identity with the server.  Creates and stores locally and on the 
+     * server a keypair for the given email address.
+     * @method syncEmailKeypair
+     * @param {string} email - Email address.
+     * @param {string} [issuer] - Issuer of keypair.
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
+     */
+    syncEmailKeypair: function(email, onSuccess, onFailure) {
+      // FIXME use true key sizes
+      prepareDeps();
+      //var keypair = jwk.KeyPair.generate(vep.params.algorithm, vep.params.keysize);
+      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
+      Identities.certifyEmailKeypair(email, keypair, onSuccess, onFailure);
+    },
+
+    /**
      * Certify an identity
      */
-    certifyIdentity: function(email, keypair, onSuccess, onFailure) {
+    certifyEmailKeypair: function(email, keypair, onSuccess, onFailure) {
       network.certKey(email, keypair.publicKey, function(cert) {
-        Identities.persistIdentity(email, keypair, cert, function() {
+        Identities.persistEmailKeypair(email, keypair, cert, function() {
           if (onSuccess) {
             onSuccess();
           }
@@ -290,58 +512,15 @@ var BrowserIDIdentities = (function() {
       }, onFailure);      
     },
     
-    /**
-     * Sync an identity with the server.  Creates and stores locally and on the 
-     * server a keypair for the given email address.
-     * @method syncIdentity
-     * @param {string} email - Email address.
-     * @param {string} [issuer] - Issuer of keypair.
-     * @param {function} [onSuccess] - Called on successful completion. 
-     * @param {function} [onFailure] - Called on error.
-     */
-    syncIdentity: function(email, onSuccess, onFailure) {
-      // FIXME use true key sizes
-      prepareDeps();
-      //var keypair = jwk.KeyPair.generate(vep.params.algorithm, vep.params.keysize);
-      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
-      Identities.certifyIdentity(email, keypair, onSuccess, onFailure);
-    },
-
-    /**
-     * Add an identity to an already created account.  Sends address and 
-     * keypair to the server, user then needs to verify account ownership. This 
-     * does not add the new email address/keypair to the local list of 
-     * valid identities.
-     * @method addIdentity
-     * @param {string} email - Email address.
-     * @param {function} [onSuccess] - Called on successful completion. 
-     * @param {function} [onFailure] - Called on error.
-     */
-    addIdentity: function(email, onSuccess, onFailure) {
-      var self = this;
-      prepareDeps();
-      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
-
-      self.stagedEmail = email;
-      self.stagedKeypair = keypair;
-
-      // we no longer send the keypair, since we will certify it later.
-      network.addEmail(email, function() {
-        if (onSuccess) {
-          onSuccess(keypair);
-        }
-      }, onFailure);
-    },
-
     /** 
      * Persist an address and key pair locally.
-     * @method persistIdentity
+     * @method persistEmailKeypair
      * @param {string} email - Email address to persist.
      * @param {object} keypair - Key pair to save
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
-    persistIdentity: function(email, keypair, cert, onSuccess, onFailure) {
+    persistEmailKeypair: function(email, keypair, cert, onSuccess, onFailure) {
       var new_email_obj= {
         created: new Date(),
         pub: keypair.publicKey.toSimpleObject(),
@@ -357,37 +536,21 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
-     * Remove an email address.
-     * @method removeIdentity
-     * @param {string} email - Email address to remove.
-     * @param {function} [onSuccess] - Called when complete.
-     * @param {function} [onFailure] - Called on failure.
-     */
-    removeIdentity: function(email, onSuccess, onFailure) {
-      network.removeEmail(email, function() {
-        storage.removeEmail(email);
-        if (onSuccess) {
-          onSuccess();
-        }
-      }, onFailure);
-    },
-
-    /**
      * Get an assertion for an identity
-     * @method getIdentityAssertion
+     * @method getAssertion
      * @param {string} email - Email to get assertion for.
      * @param {function} [onSuccess] - Called with assertion on success.
      * @param {function} [onFailure] - Called on failure.
      */
-    getIdentityAssertion: function(email, onSuccess, onFailure) {
-      var storedID = Identities.getStoredIdentities()[email],
+    getAssertion: function(email, onSuccess, onFailure) {
+      var storedID = Identities.getStoredEmailKeypairs()[email],
           assertion;
 
       if (storedID) {
         // parse the secret key
         prepareDeps();
         var sk = jwk.SecretKey.fromSimpleObject(storedID.priv);
-        var tok = new jwt.JWT(null, new Date(), network.origin);
+        var tok = new jwt.JWT(null, new Date(), origin);
         assertion = vep.bundleCertsAndAssertion([storedID.cert], tok.sign(sk));
       }
 
@@ -399,56 +562,25 @@ var BrowserIDIdentities = (function() {
 
     /**
      * Get the list of identities stored locally.
-     * @method getStoredIdentities
+     * @method getStoredEmailKeypairs
      * @return {object} identities.
      */
-    getStoredIdentities: function() {
+    getStoredEmailKeypairs: function() {
       return storage.getEmails();
     },
 
     /**
      * Clear the list of identities stored locally.
-     * @method clearStoredIdentities
+     * @method clearStoredEmailKeypairs
      */
-    clearStoredIdentities: function() {
+    clearStoredEmailKeypairs: function() {
       storage.clearEmails();
     },
 
 
-    /**
-     * Cancel the current user's account.  Remove last traces of their 
-     * identity.
-     * @method cancelUser
-     * @param {function} [onSuccess] - Called whenever complete.
-     * @param {function} [onFailure] - called on failure.
-     */
-    cancelUser: function(onSuccess, onFailure) {
-      network.cancelUser(function() {
-        storage.clearEmails();
-        if (onSuccess) {
-          onSuccess();
-        }
-      });
-
-    },
-
-    /**
-     * Log the current user out.
-     * @method logoutUser
-     * @param {function} [onSuccess] - Called whenever complete.
-     * @param {function} [onFailure] - called on failure.
-     */
-    logoutUser: function(onSuccess, onFailure) {
-      network.logout(function() {
-        storage.clearEmails();
-        if (onSuccess) {
-          onSuccess();
-        }
-      });
-    }
-
-
   };
+
+  Identities.setOrigin(document.location.host);
 
   return Identities;
 }());

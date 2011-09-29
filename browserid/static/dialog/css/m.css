@@ -1,0 +1,65 @@
+body #wrapper {
+    min-width: 320px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+body #header {
+    padding: 10px;
+}
+
+body #header ul li:nth-child(2) {
+    display: none;
+}
+
+body #signIn,
+body #favicon {
+    display: block;
+    width: 100%;
+    position: relative;
+    padding: 10px;
+}
+
+body #signIn {
+    max-width: none;
+    padding: 10px;
+}
+
+body #signIn form {
+    padding: 0;
+}
+
+body #favicon {
+    text-align: left;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    background-color: rgba(255,255,255,0.25);
+}
+
+body #favicon img {
+    width: 32px;
+    height: auto;
+    display: inline;
+    margin: 0;
+    vertical-align: middle;
+}
+
+body #formWrap {
+    background-color: transparent;
+}
+
+body #formWrap,
+body .vertical {
+    height: auto;
+}
+
+body .arrow {
+    display: none;
+}
+
+body #checkemail p {
+    height: 250px;
+}
+
+body #footer {
+    padding: 10px;
+}
