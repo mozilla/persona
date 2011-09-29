@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, storage:true, BrowserIDNetwork: true , lib: true */
+/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserIDStorage:true, BrowserIDNetwork: true , BrowserIDIdentities: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *

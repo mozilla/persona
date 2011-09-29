@@ -13,31 +13,39 @@
           <div class="vertical">
               <strong>Sign in using</strong>
 
-              <ul id="inputs">
-                <% _.each(identities, function(email_obj, email_address) { %>
-                  <li>
-                    <label for="<%= email_address %>" class="serif">
-                      <input type="radio" name="email" id="<%= email_address %>" value="<%= email_address %>" />
-                      <%= email_address %>
-                    </label>
-                  </li>
-                <% }); %>
-              </ul>
+              <section id="selectEmail">
+                  <ul class="inputs">
+                      <% _.each(identities, function(email_obj, email_address) { %>
+                          <li>
+                              <label for="<%= email_address %>" class="serif">
+                                <input type="radio" name="email" id="<%= email_address %>" value="<%= email_address %>" />
+                                <%= email_address %>
+                              </label>
+                          </li>
+                      <% }); %>
+                  </ul>
 
-              <div class="submit cf">
-                  <div class="add cf">
+                  <div class="submit add cf">
                       <a id="thisIsNotMe" href="#">This is not me</a>
-                      &nbsp;&nbsp;
-                      <a id="useDifferentEmail" href="#">Use a different email</a>
-                      <div id="differentEmail" class="cf">
-                          <label for="newEmail">New email address</label>
-                          <input id="newEmail" name="newEmail" type="email"/>
-                          <button id="addDifferentEmail">Add</button>
-                          <button id="cancelDifferentEmail">Cancel</button>
-                      </div>
+                      <a id="useNewEmail" href="#">Use a different email</a>
+                      <button id="signInButton">sign in</button>
                   </div>
-                  <button id="signInButton">sign in</button>
-              </div>
+              </section>
+
+              <section id="addEmail" class="cf">
+
+                  <div class="inputs">
+                      <label for="newEmail">New email address</label>
+                      <input id="newEmail" name="newEmail" type="email"/>
+                  </div>
+
+                  <div class="submit cf">
+                      <button id="addNewEmail">add</button>
+                      <button id="cancelNewEmail">cancel</button>
+                  </div>
+
+              </section>
+
           </div>
       </div>
   </div>

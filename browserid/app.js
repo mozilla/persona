@@ -109,6 +109,10 @@ function router(app) {
     res.render('signup.ejs', {title: 'Sign Up', fullpage: false});
   });
 
+  app.get("/forgot", function(req, res) {
+    res.render('forgot.ejs', {title: 'Forgot Password', fullpage: false, email: req.query.email});
+  });
+
   app.get("/signin", function(req, res) {
     res.render('signin.ejs', {title: 'Sign In', fullpage: false});
   });

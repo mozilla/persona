@@ -37,7 +37,82 @@
 (function() {
   "use strict";
 
-  var identities = BrowserIDIdentities;
+  var ANIMATION_TIME = 250,
+      identities = BrowserIDIdentities;
+
+  function animateSwap(fadeOutSelector, fadeInSelector, callback) {
+    // XXX instead of using jQuery here, think about using CSS animations.
+    $(fadeOutSelector).fadeOut(ANIMATION_TIME, function() {
+      $(fadeInSelector).fadeIn(ANIMATION_TIME, callback);
+    });
+  }
+
+  function cancelEvent(event) {
+    if (event) {
+      event.preventDefault();
+    }
+  }
+
+  function pickEmailState(element, event) {
+    cancelEvent(event);
+
+    var self=this;
+    animateSwap("#addEmail", "#selectEmail", function() {
+      if(!self.find("input[type=radio]:checked").length) {
+        // If none are already checked, select the first one.
+        self.find('input[type=radio]').eq(0).attr('checked', true);
+      }
+      // focus whichever is checked.
+      self.find("input[type=radio]:checked").focus();
+      self.submit = signIn;
+    });
+  }
+
+  function addEmailState(element, event) {
+    cancelEvent(event);
+
+    this.submit = addEmail;
+    animateSwap("#selectEmail", "#addEmail", function() {
+      $("#newEmail").focus();
+    });
+  }
+
+  function signIn() {
+    var self=this;
+    $("#signIn").animate({"width" : "685px"}, "slow", function () {
+      // post animation
+       $("body").delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
+          var email = $("input[type=radio]:checked").val();
+          self.close("email_chosen", {
+            email: email
+          });
+       });
+    }); 
+  }
+
+  function addEmail() {
+    var email = $("#newEmail").val(),
+        self=this;
+
+    if (email) {
+      identities.addEmail(email, function(keypair) {
+        if (keypair) {
+          self.close("email_staged", {
+            email: email
+          });
+        }
+        else {
+          // XXX BAAAAAAAAAAAAAH.
+        }
+      }, function onFailure() {
+
+      });
+    }
+    else {
+      // XXX Error message!
+    }
+  }
+
 
   PageController.extend("Pickemail", {}, {
     init: function(options) {
@@ -49,69 +124,12 @@
           identities: identities.getStoredEmailKeypairs(),
         }
       });
-      // select the first option
-      this.find('input:first').attr('checked', true);
-      this.submitAction = "signIn";
+
+      pickEmailState.call(this);
     },
 
-    submit: function() {
-      this[this.submitAction]();
-    },
-
-    signIn: function() {
-      var me=this;
-      $("#signIn").animate({"width" : "685px"}, "slow", function () {
-        // post animation
-         $("body").delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
-            var email = $("#inputs input:checked").val();
-            me.close("email_chosen", {
-              email: email
-            });
-         });
-      }); 
-    },
-
-    addEmail: function() {
-      var email = $("#newEmail").val(),
-          me=this;
-
-      if (email) {
-        identities.addEmail(email, function(keypair) {
-          if (keypair) {
-            me.close("email_staged", {
-              email: email
-            });
-          }
-          else {
-            // XXX BAAAAAAAAAAAAAH.
-          }
-        }, function onFailure() {
-
-        });
-      }
-    },
-
-    "#useDifferentEmail click": function(element, event) {
-      event.preventDefault();
-
-      this.submitAction = "addEmail";
-
-      $("#signInButton,#useDifferentEmail").fadeOut(250, function() {
-        $("#differentEmail").fadeIn(250);
-        $("#newEmail").focus();
-      });
-    },
-
-    "#cancelDifferentEmail click": function(element, event) {
-      event.preventDefault();
-
-      this.submitAction = "signIn";
-
-      $("#differentEmail").fadeOut(250, function() {
-        $("#signInButton,#useDifferentEmail").fadeIn(250);
-      });
-    }
-
+    "#useNewEmail click": addEmailState,
+    "#cancelNewEmail click": pickEmailState
   });
 
 }());

@@ -188,12 +188,16 @@ h2 {
 }
 
 #signIn .vertical ul li {
-    padding: 0 0 10px 0;
-/*    min-height: 53px;*/
+  margin-top: 10px;
+}
+
+#signIn .vertical ul li:first-child {
+  margin-top: 0;
 }
 
 #signIn .submit {
-    min-height: 88px;
+    margin-top: 10px;
+    line-height: 28px;
 }
 
 #signIn .remember {
@@ -288,6 +292,7 @@ button {
     font-family: 'Droid Serif', Georgia, serif;
     color: #fff;
     text-shadow: -1px -1px 0 #37A6FF;
+    text-transform: lowercase;
     cursor: pointer;
     
     -webkit-box-shadow: 0 0 0 1px #76C2FF inset;
@@ -472,32 +477,36 @@ html[xmlns] .cf {
 	height: 1%;
 }
 
-#inputs {
-    min-height: 90px;
+.inputs {
+    min-height: 106px;
     max-height: 140px;
+    overflow-y: auto;
 }
 
-body.pickemail #inputs {
-    overflow-y: auto;
-    max-height: 95px;
-    margin-top: 1em;
-    margin-left: 1em;
+.inputs {
+    margin: 1em 0 .5em;
+    padding: 0 1em;
     line-height: 18px;
 }
 
 .add {
     font-size: 80%;
 }
+
 #inputs li:only-child input[type=radio] {
     display: none;
 }
 
-#differentEmail {
+#thisIsNotMe {
+  margin-right: 10px;
+}
+
+#addEmail {
     display: none;
 }
 
-#differentEmail > button, .submit > button {
-    margin: 10px 5px 0 0;
+.submit > button {
+    margin: 0 5px;
 }
 
 #newEmail {
