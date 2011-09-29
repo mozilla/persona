@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global _: true, network: true, addEmail: true, removeEmail: true, clearEmails: true, getEmails: true, CryptoStubs: true */
+/*global _: true, BrowserIDStorage: true, BrowserIDNetwork: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,28 +34,68 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
 var BrowserIDIdentities = (function() {
   "use strict";
+
+  var jwk, jwt, vep, jwcert,
+      network = BrowserIDNetwork,
+      storage = BrowserIDStorage;
+
+  function prepareDeps() {
+    if (!jwk) {
+      jwk= require("./jwk");
+      jwt = require("./jwt");
+      vep = require("./vep");
+      jwcert = require("./jwcert");
+    }
+  }
+
   function getIssuedIdentities() {
-      var emails = getEmails();
+      var emails = storage.getEmails();
       var issued_identities = {};
+      prepareDeps();
       _(emails).each(function(email_obj, email_address) {
-        issued_identities[email_address] = email_obj.pub;
+        try {
+          email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
+        } catch (x) {
+          delete emails[email_address];
+        }
+
+        // no cert? reset
+        if (!email_obj.cert) {
+          delete emails[email_address];
+        } else {
+          try {
+            // parse the cert
+            var cert = new jwcert.JWCert();
+            cert.parse(emails[email_address].cert);
+
+            // check if needs to be reset, if it expires in 5 minutes
+            var diff = cert.expires.valueOf() - new Date().valueOf();
+            if (diff < 300000)
+              delete emails[email_address];
+          } catch (e) {
+            // error parsing the certificate!  Maybe it's of an old/different
+            // format?  just delete it.
+            try { console.log("error parsing cert for", email_address ,":", e); } catch(e2) { }
+            delete emails[email_address];
+            storage.removeEmail(email_address);
+          }
+        }
       });
 
-      return issued_identities;
+      return emails;
   }
 
   function removeUnknownIdentities(unknown_emails) {
     // first remove idenitites that the server doesn't know about
     if (unknown_emails) {
       _(unknown_emails).each(function(email_address) {
-        removeEmail(email_address);
+        storage.removeEmail(email_address);
       });
     }
   }
-
-  var network = BrowserIDNetwork;
 
   var Identities = {
     /**
@@ -78,53 +118,70 @@ var BrowserIDIdentities = (function() {
     syncIdentities: function(onSuccess, onFailure) {
       var issued_identities = getIssuedIdentities();
 
+      // FIXME for certs
+
       // send up all email/pubkey pairs to the server, it will response with a
       // list of emails that need new keys.  This may include emails in the
       // sent list, and also may include identities registered on other devices.
       // we'll go through the list and generate new keypairs
-      
+
       // identities that don't have an issuer are primary authentications,
       // and we don't need to worry about rekeying them.
 
       var self = this;
-      network.syncEmails(issued_identities, function(resp) {
-        removeUnknownIdentities(resp.unknown_emails);
 
-        // now let's begin iteratively re-keying the emails mentioned in the server provided list
-        var emailsToAdd = resp.key_refresh;
-        
+      network.listEmails(function(emails) {
+        // lists of emails
+        var client_emails = _.keys(issued_identities);
+        var server_emails = _.keys(emails);
+
+        var emails_to_add = _.difference(server_emails, client_emails);
+        var emails_to_remove = _.difference(client_emails, server_emails);
+
+        // remove emails
+        _.each(emails_to_remove, function(email) {
+          // if it's not a primary
+          if (!issued_identities[email].isPrimary)
+            storage.removeEmail(email);
+        });
+
+        // keygen for new emails
+        // asynchronous
         function addNextEmail() {
-          if (!emailsToAdd || !emailsToAdd.length) {
+          if (!emails_to_add || !emails_to_add.length) {
             onSuccess();
             return;
           }
 
-          var email = emailsToAdd.shift();
+          var email = emails_to_add.shift();
 
-          self.syncIdentity(email, "browserid.org:443", addNextEmail, onFailure);
+          self.syncIdentity(email, addNextEmail, onFailure);
         }
 
         addNextEmail();
-      }, onFailure);
+      });
     },
 
     /**
      * Stage an identity - this creates an identity that must be verified.  
      * Used when creating a new account or resetting the password of an 
      * existing account.
+     * FIXME: rename to indicate new account
      * @method stageIdentity
      * @param {string} email - Email address.
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
     stageIdentity: function(email, password, onSuccess, onFailure) {
-      var self=this,
-          keypair = CryptoStubs.genKeyPair();
+      var self=this;
+      // FIXME: keysize
+      prepareDeps();
+      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
 
       self.stagedEmail = email;
       self.stagedKeypair = keypair;
 
-      network.stageUser(email, password, keypair, function() {
+      network.stageUser(email, password, function() {
         if (onSuccess) {
           onSuccess(keypair);
         }
@@ -141,10 +198,16 @@ var BrowserIDIdentities = (function() {
     confirmIdentity: function(email, onSuccess, onFailure) {
       var self = this;
       if (email === self.stagedEmail) {
+        var keypair = self.stagedKeypair;
+        
         self.stagedEmail = null;
-        self.persistIdentity(self.stagedEmail, self.stagedKeypair, "browserid.org:443", function() {
+        self.stagedKeypair = null;
+
+        // certify
+        Identities.certifyIdentity(email, keypair, function() {
           self.syncIdentities(onSuccess, onFailure);
-        }, onFailure);
+        });
+
       }
       else if (onFailure) {
         onFailure();
@@ -214,6 +277,19 @@ var BrowserIDIdentities = (function() {
     },
 
     /**
+     * Certify an identity
+     */
+    certifyIdentity: function(email, keypair, onSuccess, onFailure) {
+      network.certKey(email, keypair.publicKey, function(cert) {
+        Identities.persistIdentity(email, keypair, cert, function() {
+          if (onSuccess) {
+            onSuccess();
+          }
+        }, onFailure);
+      }, onFailure);      
+    },
+    
+    /**
      * Sync an identity with the server.  Creates and stores locally and on the 
      * server a keypair for the given email address.
      * @method syncIdentity
@@ -222,15 +298,12 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
-    syncIdentity: function(email, issuer, onSuccess, onFailure) {
-      var keypair = CryptoStubs.genKeyPair();
-      network.setKey(email, keypair, function() {
-        Identities.persistIdentity(email, keypair, issuer, function() {
-          if (onSuccess) {
-            onSuccess(keypair);
-          }
-        }, onFailure);
-      }, onFailure);
+    syncIdentity: function(email, onSuccess, onFailure) {
+      // FIXME use true key sizes
+      prepareDeps();
+      //var keypair = jwk.KeyPair.generate(vep.params.algorithm, vep.params.keysize);
+      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
+      Identities.certifyIdentity(email, keypair, onSuccess, onFailure);
     },
 
     /**
@@ -244,13 +317,15 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     addIdentity: function(email, onSuccess, onFailure) {
-      var self=this, 
-          keypair = CryptoStubs.genKeyPair();
+      var self = this;
+      prepareDeps();
+      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
 
       self.stagedEmail = email;
       self.stagedKeypair = keypair;
 
-      network.addEmail(email, keypair, function() {
+      // we no longer send the keypair, since we will certify it later.
+      network.addEmail(email, function() {
         if (onSuccess) {
           onSuccess(keypair);
         }
@@ -265,18 +340,15 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onSuccess] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
-    persistIdentity: function(email, keypair, issuer, onSuccess, onFailure) {
+    persistIdentity: function(email, keypair, cert, onSuccess, onFailure) {
       var new_email_obj= {
         created: new Date(),
-        pub: keypair.pub,
-        priv: keypair.priv
+        pub: keypair.publicKey.toSimpleObject(),
+        priv: keypair.secretKey.toSimpleObject(),
+        cert: cert
       };
 
-      if (issuer) {
-        new_email_obj.issuer = issuer;
-      }
-      
-      addEmail(email, new_email_obj);
+      storage.addEmail(email, new_email_obj);
 
       if (onSuccess) {
         onSuccess();
@@ -292,7 +364,7 @@ var BrowserIDIdentities = (function() {
      */
     removeIdentity: function(email, onSuccess, onFailure) {
       network.removeEmail(email, function() {
-        removeEmail(email);
+        storage.removeEmail(email);
         if (onSuccess) {
           onSuccess();
         }
@@ -307,11 +379,15 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on failure.
      */
     getIdentityAssertion: function(email, onSuccess, onFailure) {
-      var storedID = getEmails()[email],
+      var storedID = Identities.getStoredIdentities()[email],
           assertion;
 
       if (storedID) {
-          assertion = CryptoStubs.createAssertion(network.origin, email, storedID.priv, storedID.issuer);
+        // parse the secret key
+        prepareDeps();
+        var sk = jwk.SecretKey.fromSimpleObject(storedID.priv);
+        var tok = new jwt.JWT(null, new Date(), network.origin);
+        assertion = vep.bundleCertsAndAssertion([storedID.cert], tok.sign(sk));
       }
 
       if (onSuccess) {
@@ -326,7 +402,7 @@ var BrowserIDIdentities = (function() {
      * @return {object} identities.
      */
     getStoredIdentities: function() {
-      return getEmails();
+      return storage.getEmails();
     },
 
     /**
@@ -334,7 +410,40 @@ var BrowserIDIdentities = (function() {
      * @method clearStoredIdentities
      */
     clearStoredIdentities: function() {
-      clearEmails();
+      storage.clearEmails();
+    },
+
+
+    /**
+     * Cancel the current user's account.  Remove last traces of their 
+     * identity.
+     * @method cancelUser
+     * @param {function} [onSuccess] - Called whenever complete.
+     * @param {function} [onFailure] - called on failure.
+     */
+    cancelUser: function(onSuccess, onFailure) {
+      network.cancelUser(function() {
+        storage.clearEmails();
+        if (onSuccess) {
+          onSuccess();
+        }
+      });
+
+    },
+
+    /**
+     * Log the current user out.
+     * @method logoutUser
+     * @param {function} [onSuccess] - Called whenever complete.
+     * @param {function} [onFailure] - called on failure.
+     */
+    logoutUser: function(onSuccess, onFailure) {
+      network.logout(function() {
+        storage.clearEmails();
+        if (onSuccess) {
+          onSuccess();
+        }
+      });
     }
 
 

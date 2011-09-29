@@ -97,17 +97,7 @@ suite.addBatch({
   "add a new email address to our account": {
     topic: wsapi.post('/wsapi/add_email', {
       email: 'second@fakeemail.com',
-      pubkey: 'fakepubkey',
       site:'fakesite.com'
-    }),
-    "the token is sane": function(r, err) {
-      assert.strictEqual('string', typeof token);
-    }
-  },
-  "set the key again": {
-    topic: wsapi.post('/wsapi/set_key', {
-      email: 'second@fakeemail.com',
-      pubkey: 'fakepubkey2'
     }),
     "the token is sane": function(r, err) {
       assert.strictEqual('string', typeof token);
@@ -209,14 +199,6 @@ suite.addBatch({
     topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
     "should work": function(r, err) {
       assert.strictEqual(JSON.parse(r.body), true);
-    }
-  },
-  "sync emails": {
-    topic: wsapi.post('/wsapi/sync_emails', {'emails': '{}'}),
-      "should work" : function(r, err) {
-      var parsed_body = JSON.parse(r.body);
-      assert.equal(typeof parsed_body.unknown_emails, "object");
-      assert.equal(typeof parsed_body.key_refresh, "object");
     }
   },
   "logout": {

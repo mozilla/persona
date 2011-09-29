@@ -1989,8 +1989,17 @@ Envjs.runAsync = function(fn, onInterupt){
 
     try{
         run = Envjs.sync(function(){
-            fn();
-            Envjs.wait();
+            if(Envjs.exitOnError){
+            	try { fn(); }
+            	catch(ex) {
+            		console.log("Rhino shell error: " + ex.message);
+            		java.lang.System.exit(1);
+            	}
+            } else {
+            	fn();
+            }
+            
+            //Envjs.wait();
         });
         Envjs.spawn(run);
     }catch(e){
@@ -8201,6 +8210,14 @@ __extend__(HTMLElement.prototype, {
         //Not in the specs but I'll leave it here for now.
         return this.xhtml;
     },
+	get clearAttributes(){
+        //Not in the specs but I'll leave it here for now.
+        return;
+    },
+	get mergeAttributes(src){
+        //Not in the specs but I'll leave it here for now.
+        return;
+    },
     scrollIntoView: function(){
         /*TODO*/
         return;
@@ -9851,6 +9868,11 @@ __extend__(HTMLInputElement.prototype, {
     },
     toString: function() {
         return '[object HTMLInputElement]';
+    },
+    cloneNode : function(){
+        var newnode = HTMLInputAreaCommon.prototype.cloneNode.apply(this, arguments);
+        newnode.checked = this.checked;
+        return newnode;
     }
 });
 
@@ -24500,7 +24522,13 @@ XMLHttpRequest.prototype = {
 
             if (!_this.aborted  && !redirecting){
 				//console.log('did not abort so call onreadystatechange');
-                _this.onreadystatechange();
+                if(_this.async){
+                	setTimeout(function(){
+                		_this.onreadystatechange();
+                	},10)
+            	 } else {
+            		_this.onreadystatechange();
+            	}
             }
         }
 

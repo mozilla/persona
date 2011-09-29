@@ -1,3 +1,20 @@
+train-2011.09.22:
+  * migrate to browserid signed certificates rather than keypairs where browserid hosts the public key: https://github.com/mozilla/browserid/issues?milestone=6
+  * IE9 support
+  * partial IE8 support (not yet usable, several small remaining bugs, and abysmal performance)
+  * development harness (./run.js) now respects an IP_ADDRESS env var to bind to a specific address (other than 127.0.0.1)
+  * improved first-time development experience:  `git clone && cd browserid && npm install && npm run`
+  * initial support for running locally under virtualbox via vagrant: issue #261 (thanks ozten!)
+  * (fix 2011.09.23) fix race condition between relay iframe and window introduced with IE9 support.  issue #287
+  * (fix 2011.09.23) fix blank popup on second sigin invocation in same session in FFX:  issue #286
+  * (fix 2011.09.23) explicitly disable caching for /wsapi calls, prevents unwanted caching of CSRF and friends. issue #294
+
+train-2011.09.01:
+  * /ws_api/set_key always returns returns value instead of HTTP 204 response: #219
+  * update javascript mvc to 3.1.0.
+  * major interframe/window communication change using a hidden relay iframe to facilitate IE: #97(still open)
+  * link colors on browserid.org are consistent: #227
+
 train-2011.08.25:
   * created command line load generation tool and performance analysis work: #125
   * beginning unit/functional tests for front end: #183

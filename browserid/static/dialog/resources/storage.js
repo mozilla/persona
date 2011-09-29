@@ -33,35 +33,76 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var getEmails = function() {
-  try {
-    var emails = JSON.parse(window.localStorage.emails);
-    if (emails != null)
-      return emails;
-  } catch(e) {
-  }
+var BrowserIDStorage = (function() {
   
-  // if we had a problem parsing or the emails are null
-  clearEmails();
-  return {};
-};
+  var jwk;
+  
+  function prepareDeps() {
+    if (!jwk) {
+      jwk = require("./jwk");
+    }
+  }
 
-var _storeEmails = function(emails) {
-  window.localStorage.emails = JSON.stringify(emails);
-};
+  function storeEmails(emails) {
+    window.localStorage.emails = JSON.stringify(emails);
+  }
 
-var addEmail = function(email, obj) {
-  var emails = getEmails();
-  emails[email] = obj;
-  _storeEmails(emails);
-};
+  function clearEmails() {
+    storeEmails({});
+  }
 
-var removeEmail = function(email) {
-  var emails = getEmails();
-  delete emails[email];
-  _storeEmails(emails);
-};
+  function getEmails() {
+    try {
+      var emails = JSON.parse(window.localStorage.emails);
+      if (emails !== null)
+        return emails;
+    } catch(e) {
+    }
+    
+    // if we had a problem parsing or the emails are null
+    clearEmails();
+    return {};
+  }
 
-var clearEmails = function() {
-  _storeEmails({});
-};
+  function addEmail(email, obj) {
+    var emails = getEmails();
+    emails[email] = obj;
+    storeEmails(emails);
+  }
+
+  function removeEmail(email) {
+    var emails = getEmails();
+    delete emails[email];
+    storeEmails(emails);
+  }
+
+  function storeTemporaryKeypair(keypair) {
+    window.localStorage.tempKeypair = JSON.stringify({
+      publicKey: keypair.publicKey.toSimpleObject(),
+      secretKey: keypair.secretKey.toSimpleObject()
+    });
+  }
+
+  function retrieveTemporaryKeypair() {
+    var raw_kp = JSON.parse(window.localStorage.tempKeypair);
+    window.localStorage.tempKeypair = null;
+    if (raw_kp) {
+      prepareDeps();
+      var kp = new jwk.KeyPair();
+      kp.publicKey = jwk.PublicKey.fromSimpleObject(raw_kp.publicKey);
+      kp.secretKey = jwk.SecretKey.fromSimpleObject(raw_kp.secretKey);
+      return kp;
+    } else {
+      return null;
+    }
+  }
+
+  return {
+    getEmails: getEmails,
+    addEmail: addEmail,
+    removeEmail: removeEmail,
+    clearEmails: clearEmails,
+    storeTemporaryKeypair: storeTemporaryKeypair,
+    retrieveTemporaryKeypair: retrieveTemporaryKeypair
+  };
+}());

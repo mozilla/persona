@@ -3,7 +3,8 @@
   font-family: 'Tenor Sans';
   font-style: normal;
   font-weight: normal;
-  src: local('Tenor Sans'), local('TenorSans'), url('/css/ts.ttf') format('truetype');
+  /*src: local('Tenor Sans'), local('TenorSans'), url('/css/ts.ttf')
+   * format('truetype');*/
 }
 
 body {
@@ -249,7 +250,7 @@ div.dialog div.attention_lame {
 
 #logo {
     background-position: 0 -26px;;
-    color: transparent;
+    font-size: 0px;
     width: 135px;
     height: 35px;
     margin: 2px 16px 0 16px;
@@ -258,7 +259,7 @@ div.dialog div.attention_lame {
 
 #subtitle {
     margin: 8px 0 0;
-    color: transparent;
+    font-size: 0px;
     background-position: 0 0;
     width: 146px;
     height: 25px;

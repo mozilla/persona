@@ -96,13 +96,11 @@ exports.onReady = function(f) {
   'emailKnown',
   'isStaged',
   'emailsBelongToSameAccount',
-  'addKeyToEmail',
   'stageUser',
   'stageEmail',
   'gotVerificationSecret',
   'checkAuth',
-  'getSyncResponse',
-  'pubkeysForEmail',
+  'listEmails',
   'removeEmail',
   'cancelAccount'
 ].forEach(function(fn) {

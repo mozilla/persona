@@ -1,3 +1,0 @@
-[submodule "lib/doctest"]
-	path = lib/doctest
-	url = git@github.com:ianb/doctestjs

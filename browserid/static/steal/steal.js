@@ -103,10 +103,10 @@
 				scriptTag += steal.loadErrorTimer(options);
 			}
 			scriptTag += '>' + (bodyText || '') + '</script>';
-			if ( steal.support.load ) {
+			if ( steal.support.load && !browser.msie) {
 				scriptTag += '<script type="text/javascript"' + '>steal.end()</script>';
 			}
-			else {
+			else { // this is here b/c IE will run a script above right away (before the script above it loads)
 				scriptTag += '<script type="text/javascript" src="' + steal.root.join('steal/end.js') + '"></script>';
 			}
 			document.write((options.src || bodyText ? scriptTag : ''));
@@ -762,7 +762,9 @@
 		//    
 		current_steals = [],
 		//steals that are pending to be steald
-		total = []; //
+		total = [],
+		//mapping of loaded css files
+		css = {};
 	extend(steal, {
 		/**
 		 * Sets options from script
@@ -770,7 +772,9 @@
 		 */
 		setScriptOptions: function() {
 			var scripts = document.getElementsByTagName("script"),
-				scriptOptions, commaSplit, stealReg = /steal\.(production\.)?js/;
+				scriptOptions, 
+				commaSplit, 
+				stealReg = /steal\.(production\.)?js/;
 
 			//find the steal script and setup initial paths.
 			for ( var i = 0; i < scripts.length; i++ ) {
@@ -790,6 +794,7 @@
 					if ( src.indexOf('?') != -1 ) {
 						scriptOptions = src.split('?')[1];
 					}
+					steal.options.evalAfter = /\w+/.test(scripts[i].text) && scripts[i].text
 				}
 
 			}
@@ -857,8 +862,10 @@
 				steal.options.production = steal.options.production + (steal.options.production.indexOf('.js') == -1 ? '.js' : '');
 			}
 			//we only load things with force = true
-			if ( steal.options.env == 'production' && steal.options.loadProduction ) {
-				if ( steal.options.production ) {
+			if ( steal.options.env == 'production' ) {
+				
+				// if we have a production script and we haven't been told not to load it
+				if ( steal.options.production && steal.options.loadProduction ) {
 					first = false; //makes it so we call close after
 					//steal(steal.options.startFile);
 					steal({
@@ -983,6 +990,9 @@
 			return;
 		},
 		done: function() {
+			if ( steal.options.evalAfter ){
+				eval(steal.options.evalAfter);
+			}
 			if ( typeof steal.options.done == "function" ) {
 				steal.options.done(total);
 			}
@@ -993,9 +1003,7 @@
 			clearTimeout(steal.timer);
 			// add steals that were just added to the end of the list
 			steals = steals.concat(current_steals);
-			if (!steals.length ) {
-				return;
-			}
+			
 
 			// take the last one
 			var next = steals.pop();
@@ -1055,8 +1063,12 @@
 			}
 			var current;
 			for ( var i = 0; i < arguments.length; i++ ) {
-				current = File(arguments[i] + ".css").joinCurrent();
-				steal.createLink(steal.root.join(current));
+				current = steal.root.join( File(arguments[i] + ".css").joinCurrent() );
+				if(!css[current]){
+					steal.createLink(current);
+					css[current] = true;
+				}
+				
 			}
 			return this;
 		},
@@ -1168,6 +1180,10 @@
 				return steal;
 			};
 		},
+		/**
+		 * @function then
+		 * A chainable alias for [steal].
+		 */
 		then: steal,
 		total: total
 	});

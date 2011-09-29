@@ -35,6 +35,10 @@
 
 /*globals steal
  */
+window.console = window.console || {
+  log: function() {}
+};
+
 steal.plugins(
 	'jquery/controller',			// a widget factory
 	'jquery/controller/subscribe',	// subscribe to OpenAjax.hub
@@ -44,9 +48,8 @@ steal.plugins(
 	.css("style")	// loads styles
 
 	.resources('jschannel',
+               'base64',
                'underscore-min',
-               'crypto',
-               'crypto-api',
                'channel',
                'storage',
                'browserid-extensions',
@@ -55,7 +58,7 @@ steal.plugins(
                'browserid-errors',
                'browserid-wait')					// 3rd party script's (like jQueryUI), in resources folder
 
-	.models()						// loads files in models folder 
+	.models()						// loads files in models folder
 
 	.controllers('page',
                'dialog',
@@ -80,4 +83,10 @@ steal.plugins(
            'forgotpassword.ejs',
            'signin.ejs',
            'wait.ejs'
-          );						// adds views to be added to build
+          ).
+
+          then(function() {
+            $(function() {
+              $('body').dialog().show();
+            });
+          });						// adds views to be added to build

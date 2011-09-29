@@ -1,3 +1,5 @@
+/*jshint browsers:true, forin: true, laxbreak: true */
+/*global alert:true, setupNativeChannel:true, setupIFrameChannel:true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,60 +35,108 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/*global alert:true, setupNativeChannel:true, setupHTMLChannel:true, Channel:true */
-function errorOut(trans, code) {
-  function getVerboseMessage(code) {
-    var msgs = {
-      "canceled": "user canceled selection",
-      "notImplemented": "the user tried to invoke behavior that's not yet implemented",
-      "serverError": "a technical problem was encountered while trying to communicate with BrowserID servers."
-    };
-    var msg = msgs[code];
-    if (!msg) {
-      alert("need verbose message for " + code);
-      msg = "unknown error";
-        }
-    return msg;
+// The way this works, when the dialog is opened from a web page, it opens
+// the window with a #host=<requesting_host_name> parameter in its URL.
+// window.setupChannel is called automatically when the dialog is opened. We
+// assume that navigator.id.getVerifiedEmail was the function called, we will
+// keep this assumption until we start experimenting.  Since IE has some
+// serious problems iwth postMessage from a window to a child window, we are now
+// communicating not directly with the calling window, but with an iframe
+// on the same domain as us that we place into the calling window.  We use a
+// function within this iframe to relay messages back to the calling window.
+// We do so by searching for the frame within the calling window, and then
+// getting a reference to the proxy function.  When getVerifiedEmail is
+// complete, it calls the proxy function in the iframe, which then sends a
+// message back to the calling window.
+
+
+
+(function() {
+  function getRelayID() {
+    return window.location.href.slice(window.location.href.indexOf('#') + 1);
   }
-  trans.error(code, getVerboseMessage(code));
-  window.self.close();
-}
+
+  function getRelayName() {
+    return "browserid_relay_" + getRelayID();
+  }
+
+  function getRelayWindow() {
+    var frameWindow = window.opener.frames[getRelayName()];
+    return frameWindow;
+  }
+
+  function registerWithRelayFrame(callback) {
+    var frameWindow = getRelayWindow();
+    if (frameWindow) {
+      frameWindow['register_dialog'](callback);
+    }
+  }
+
+  function getRPRelay() {
+    var frameWindow = getRelayWindow();
+    return frameWindow && frameWindow['browserid_relay'];
+  }
 
 
-var setupChannel = function(controller) {
-  if (navigator.id && navigator.id.channel)
-    setupNativeChannel(controller);
-  else
-    setupHTMLChannel(controller);
-};
+  function errorOut(trans, code) {
+    function getVerboseMessage(code) {
+      var msgs = {
+        "canceled": "user canceled selection",
+        "notImplemented": "the user tried to invoke behavior that's not yet implemented",
+        "serverError": "a technical problem was encountered while trying to communicate with BrowserID servers."
+      };
+      var msg = msgs[code];
+      if (!msg) {
+        alert("need verbose message for " + code);
+        msg = "unknown error";
+          }
+      return msg;
+    }
+    trans.error(code, getVerboseMessage(code));
+    window.self.close();
+  }
 
-var setupNativeChannel = function(controller) {
-  navigator.id.channel.registerController(controller);
-};
 
-var setupHTMLChannel = function(controller) {
-  var chan = Channel.build(
-    {
-      window: window.opener,
-      origin: "*",
-      scope: "mozid"
-    });
+  window.setupChannel = function(controller) {
+    if (navigator.id && navigator.id.channel)
+      setupNativeChannel(controller);
+    else
+      setupIFrameChannel(controller);
+  };
 
-  var remoteOrigin;
+  var setupNativeChannel = function(controller) {
+    navigator.id.channel.registerController(controller);
+  };
 
-  chan.bind("getVerifiedEmail", function(trans, s) {
-    trans.delayReturn(true);
+  var setupIFrameChannel = function(controller) {
+    // TODO - Add a check for whether the dialog was opened by another window
+    // (has window.opener) as well as whether the relay function exists.
+    // If these conditions are not met, then print an appropriate message.
+
+    // get the relay here at the time the channel is setup before any navigation has
+    // occured.  if we wait the window hash might change as a side effect to user
+    // navigation, which would cause us to not find our parent window.
+    // issue #295
+    var relay = getRPRelay();
 
     function onsuccess(rv) {
-      trans.complete(rv);
+      // Get the relay here so that we ensure that the calling window is still
+      // open and we aren't causing a problem.
+      if (relay) {
+        relay(rv, null);
+      }
     }
 
     function onerror(error) {
-      errorOut(trans, error);
+      if (relay) {
+        relay(null, error);
+      }
     }
 
-    controller.getVerifiedEmail(trans.origin, onsuccess, onerror);
-  });
+    // The relay frame will give us the origin.
+    registerWithRelayFrame(function(origin) {
+      controller.getVerifiedEmail(origin, onsuccess, onerror);
+    });
+  };
 
-  return chan;
-};
+}());

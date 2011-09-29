@@ -41,11 +41,12 @@
 const
 db = require('./db.js'),
 url = require('url'),
-httputils = require('./httputils.js');
+httputils = require('./httputils.js'),
 email = require('./email.js'),
 bcrypt = require('bcrypt'),
 crypto = require('crypto'),
-logger = require('../../libs/logging.js').logger;
+logger = require('../../libs/logging.js').logger,
+ca = require('./ca.js');
 
 function checkParams(params) {
   return function(req, resp, next) {
@@ -126,8 +127,9 @@ function setup(app) {
   /* First half of account creation.  Stages a user account for creation.
    * this involves creating a secret url that must be delivered to the
    * user via their claimed email address.  Upon timeout expiry OR clickthrough
-   * the staged user account transitions to a valid user account */
-  app.post('/wsapi/stage_user', checkParams([ "email", "pass", "pubkey", "site" ]), function(req, resp) {
+   * the staged user account transitions to a valid user account
+   */
+  app.post('/wsapi/stage_user', checkParams([ "email", "pass", "site" ]), function(req, resp) {
 
     // we should be cloning this object here.
     var stageParams = req.body;
@@ -251,10 +253,10 @@ function setup(app) {
     });
   });
 
-  app.post('/wsapi/add_email', checkAuthed, checkParams(["email", "pubkey", "site"]), function (req, resp) {
+  app.post('/wsapi/add_email', checkAuthed, checkParams(["email", "site"]), function (req, resp) {
     try {
       // on failure stageEmail may throw
-      db.stageEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function(secret) {
+      db.stageEmail(req.session.authenticatedUser, req.body.email, function(secret) {
 
         // store the email being added in session data
         req.session.pendingAddition = req.body.email;
@@ -292,17 +294,23 @@ function setup(app) {
       }});
   });
 
-  app.post('/wsapi/set_key', checkAuthed, checkParams(["email", "pubkey"]), function (req, resp) {
+  app.post('/wsapi/cert_key', checkAuthed, checkParams(["email", "pubkey"]), function(req, resp) {
     db.emailsBelongToSameAccount(req.session.authenticatedUser, req.body.email, function(sameAccount) {
       // not same account? big fat error
       if (!sameAccount) return httputils.badRequest(resp, "that email does not belong to you");
 
-      // same account, we add the key
-      db.addKeyToEmail(req.session.authenticatedUser, req.body.email, req.body.pubkey, function (rv) {
-        // addKeyToEmail returns errors as strings, and undefined on success.
-        if (rv) logger.warn("set_key WSAPI call failed to add key: " + rv.toString());
-        resp.json(rv === undefined);
-      });
+      // parse the pubkey
+      var pk = ca.parsePublicKey(req.body.pubkey);
+
+      // same account, we certify the key
+      // we certify it for a day for now
+      var expiration = new Date();
+      expiration.setTime(new Date().valueOf() + (24*3600*1000));
+      var cert = ca.certify(req.body.email, pk, expiration);
+      
+      resp.writeHead(200, {'Content-Type': 'text/plain'});
+      resp.write(cert);
+      resp.end();
     });
   });
 
@@ -330,27 +338,18 @@ function setup(app) {
     resp.json('ok');
   });
 
-  app.post('/wsapi/sync_emails', checkAuthed, function(req,resp) {
-    // validate that the post body contains an object with an .emails
-    // property that is an array of strings.
-    var valid = true;
-    try {
-      req.body.emails = JSON.parse(req.body.emails);
-      Object.keys(req.body.emails).forEach(function(k) {
-        if (typeof req.body.emails[k] !== 'string') {
-          throw "bogus value for key " + k;
-        }
-      });
-    } catch (e) {
-      logger.warn("invalid request to sync_emails: " + e);
-      return httputils.badRequest(resp, "sync_emails requires a JSON formatted 'emails' " +
-                                  "post argument");
-    }
-
-    logger.debug('sync emails called.  client provides: ' + JSON.stringify(Object.keys(req.body.emails))); 
-    db.getSyncResponse(req.session.authenticatedUser, req.body.emails, function(err, syncResponse) {
+  // in the cert world, syncing is not necessary,
+  // just get a list of emails.
+  // returns:
+  // {
+  //   "foo@foo.com" : {..properties..}
+  //   ...
+  // }
+  app.get('/wsapi/list_emails', checkAuthed, function(req, resp) {
+    logger.debug('listing emails for ' + req.session.authenticatedUser);
+    db.listEmails(req.session.authenticatedUser, function(err, emails) {
       if (err) httputils.serverError(resp, err);
-      else resp.json(syncResponse);
+      else resp.json(emails);
     });
   });
 

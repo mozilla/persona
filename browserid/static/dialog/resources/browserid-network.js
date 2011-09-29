@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global _: true, console: true, addEmail: true, removeEmail: true, clearEmails: true, CryptoStubs: true */
+/*global BrowserIDStorage: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,7 +37,7 @@
 var BrowserIDNetwork = (function() {
   "use strict";
 
-  var csrf_token = undefined;
+  var csrf_token;
 
   function withCSRF(cb) {
     if (csrf_token) setTimeout(cb, 0);
@@ -82,7 +82,7 @@ var BrowserIDNetwork = (function() {
             csrf: csrf_token
           },
           success: function(status, textStatus, jqXHR) {
-            if(onSuccess) {
+            if (onSuccess) {
               var authenticated = JSON.parse(status);
               onSuccess(authenticated);
             }
@@ -123,7 +123,7 @@ var BrowserIDNetwork = (function() {
         }, function() {
           csrf_token = undefined;
           withCSRF(function() {
-            if(onSuccess) {
+            if (onSuccess) {
               onSuccess();
             }
           });
@@ -134,6 +134,7 @@ var BrowserIDNetwork = (function() {
     /**
      * Create a new user or reset a current user's password.  Requires a user 
      * to verify identity.
+     * changes for certs: removed keypair.
      * @method stageUser
      * @param {string} email - Email address to prepare.
      * @param {string} password - Password for user.
@@ -141,7 +142,7 @@ var BrowserIDNetwork = (function() {
      * @param {function} [onSuccess] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    stageUser: function(email, password, keypair, onSuccess, onFailure) {
+    stageUser: function(email, password, onSuccess, onFailure) {
       withCSRF(function() { 
         $.ajax({
           type: "post",
@@ -149,7 +150,6 @@ var BrowserIDNetwork = (function() {
           data: {
             email: email,
             pass: password,
-            pubkey : keypair.pub,
             site : BrowserIDNetwork.origin || document.location.host,
             csrf : csrf_token
           },
@@ -191,10 +191,7 @@ var BrowserIDNetwork = (function() {
     cancelUser: function(onSuccess) {
       withCSRF(function() {
         $.post("/wsapi/account_cancel", {"csrf": csrf_token}, function(result) {
-          // XXX move this out of here, we now have 
-          // BrowserIDIdentities.clearStoredIdentities
-          clearEmails();
-          if(onSuccess) {
+          if (onSuccess) {
             onSuccess();
           }
         });
@@ -205,18 +202,16 @@ var BrowserIDNetwork = (function() {
      * Add an email to the current user's account.
      * @method addEmail
      * @param {string} email - Email address to add.
-     * @param {object} keypair - Email's public/private key pair.
      * @param {function} [onSuccess] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    addEmail: function(email, keypair, onSuccess, onFailure) {
+    addEmail: function(email, onSuccess, onFailure) {
       withCSRF(function() { 
         $.ajax({
           type: 'POST',
           url: '/wsapi/add_email',
           data: {
             email: email,
-            pubkey: keypair.pub,
             site: BrowserIDNetwork.origin || document.location.host,
             csrf: csrf_token
           },
@@ -239,7 +234,7 @@ var BrowserIDNetwork = (function() {
       $.ajax({
         url: '/wsapi/have_email?email=' + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
-          if(onSuccess) {
+          if (onSuccess) {
             var success = !JSON.parse(data);
             onSuccess(success);
           }
@@ -280,7 +275,7 @@ var BrowserIDNetwork = (function() {
       $.ajax({
           url: '/wsapi/registration_status',
           success: function(status, textStatus, jqXHR) {
-            if(onSuccess) {
+            if (onSuccess) {
               onSuccess(status);
             }
           },
@@ -289,17 +284,17 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
-     * Set the public key for the email address.
-     * @method setKey
+     * Certify the public key for the email address.
+     * @method certKey
      */
-    setKey: function(email, keypair, onSuccess, onError) {
+    certKey: function(email, pubkey, onSuccess, onError) {
       withCSRF(function() { 
         $.ajax({
           type: 'POST',
-          url: '/wsapi/set_key',
+          url: '/wsapi/cert_key',
           data: {
             email: email,
-            pubkey: keypair.pub,
+            pubkey: pubkey.serialize(),
             csrf: csrf_token
           },
           success: onSuccess,
@@ -309,27 +304,18 @@ var BrowserIDNetwork = (function() {
     },
 
     /**
-     * Sync emails
-     * @method syncEmails
-     * @param {object} issued_identities - Identities to check against.
-     * @param {function} [onSuccess] - Called with response when complete.
-     * @param {function} [onFailure] - Called on XHR failure.
+     * List emails
+     * @method listEmails
      */
-    syncEmails: function(issued_identities, onSuccess, onFailure) {
-      withCSRF(function() { 
-        $.ajax({
-          type: "POST",
-          url: '/wsapi/sync_emails',
-          data: {
-            emails: JSON.stringify(issued_identities),
-            csrf: csrf_token
-          },
-          success: onSuccess,
-          error: onFailure
-        });
+    listEmails: function(onSuccess, onFailure) {
+      $.ajax({
+        type: "GET",
+        url: "/wsapi/list_emails",
+        success: onSuccess,
+        error: onFailure
       });
     }
-
+    
   };
 
   return Network;

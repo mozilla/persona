@@ -41,12 +41,11 @@
 /*
  * The Schema:
  *
- *    +--- user ------+       +--- email ----+        +--- pubkey -----+
- *    |*int id        | <-\   |*int id       | <-\    |*int id         |
- *    | string passwd |    \- |*int user     |    \-- |*int email      |
- *    +---------------+       |*string address        | string pubkey  |
- *                            +--------------+        | int expires    |
- *                                                    +----------------+
+ *    +--- user ------+       +--- email ----+        
+ *    |*int id        | <-\   |*int id       |
+ *    | string passwd |    \- |*int user     |
+ *    +---------------+       |*string address
+ *                            +--------------+
  *
  *
  *    +------ staged ----------+
@@ -54,7 +53,6 @@
  *    | bool new_acct          |
  *    | string existing        |
  *    |*string email           |
- *    | string pubkey          |
  *    | string passwd          |
  *    | timestamp ts           |
  *    +------------------------+
@@ -73,8 +71,7 @@ var drop_on_close = undefined;
 const schemas = [
   "CREATE TABLE IF NOT EXISTS user   ( id INTEGER AUTO_INCREMENT PRIMARY KEY, passwd VARCHAR(64) );",
   "CREATE TABLE IF NOT EXISTS email  ( id INTEGER AUTO_INCREMENT PRIMARY KEY, user INTEGER, address VARCHAR(255) UNIQUE, INDEX(address) );",
-  "CREATE TABLE IF NOT EXISTS pubkey ( id INTEGER AUTO_INCREMENT PRIMARY KEY, email INTEGER, content TEXT, expiry DATETIME );",
-  "CREATE TABLE IF NOT EXISTS staged ( secret VARCHAR(48) PRIMARY KEY, new_acct BOOL, existing VARCHAR(255), email VARCHAR(255) UNIQUE, INDEX(email), pubkey TEXT, passwd VARCHAR(64), ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
+  "CREATE TABLE IF NOT EXISTS staged ( secret VARCHAR(48) PRIMARY KEY, new_acct BOOL, existing VARCHAR(255), email VARCHAR(255) UNIQUE, INDEX(email), passwd VARCHAR(64), ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
 ];
 
 // log an unexpected database error
@@ -190,9 +187,9 @@ exports.isStaged = function(email, cb) {
 exports.stageUser = function(obj, cb) {
   var secret = secrets.generate(48);
   // overwrite previously staged users
-  client.query('INSERT INTO staged (secret, new_acct, email, pubkey, passwd) VALUES(?,TRUE,?,?,?) ' +
-               'ON DUPLICATE KEY UPDATE secret=?, existing="", new_acct=TRUE, pubkey=?, passwd=?',
-               [ secret, obj.email, obj.pubkey, obj.hash, secret, obj.pubkey, obj.hash],
+  client.query('INSERT INTO staged (secret, new_acct, email, passwd) VALUES(?,TRUE,?,?) ' +
+               'ON DUPLICATE KEY UPDATE secret=?, existing="", new_acct=TRUE, passwd=?',
+               [ secret, obj.email, obj.hash, secret, obj.hash],
                function(err) {
                  if (err) {
                    logUnexpectedError(err);
@@ -212,17 +209,13 @@ exports.gotVerificationSecret = function(secret, cb) {
       else {
         var o = rows[0];
 
-        function addEmailAndPubkey(userID) {
+        function addEmailToUser(userID) {
           // issue #170 - delete any old records with the same
           // email address.  this is necessary because
-          // gotVerificationSecret is invoked both for 
+          // gotVerificationSecret is invoked both for
           // forgotten password flows and for new user signups.
           // We could add an `ON DUPLICATE KEY` clause, however
           // We actually want to invalidate all old public keys.
-          //
-          // XXX: periodic database cleanup should remove old expired
-          // keys, but this is moot once we move to certs as the
-          // server won't know about old keys 
           client.query(
             "DELETE FROM email WHERE address = ?",
             [ o.email ],
@@ -233,8 +226,8 @@ exports.gotVerificationSecret = function(secret, cb) {
                   "INSERT INTO email(user, address) VALUES(?, ?)",
                   [ userID, o.email ],
                   function(err, info) {
-                    if (err) { logUnexpectedError(err); cb(err); return; }
-                    addKeyToEmailRecord(info.insertId, o.pubkey, cb);
+                    if (err) logUnexpectedError(err);
+                    cb(err ? err : undefined);
                   });
               }
             });
@@ -244,24 +237,24 @@ exports.gotVerificationSecret = function(secret, cb) {
         client.query("DELETE LOW_PRIORITY FROM staged WHERE secret = ?", [ secret ]);
 
         if (o.new_acct) {
-          // we're creating a new account, add appropriate entries into user, email, and pubkey.
+          // we're creating a new account, add appropriate entries into user and email tables.
           client.query(
             "INSERT INTO user(passwd) VALUES(?)",
             [ o.passwd ],
             function(err, info) {
               if (err) { logUnexpectedError(err); cb(err); return; }
-              addEmailAndPubkey(info.insertId);
+              addEmailToUser(info.insertId);
             });
         } else {
-          // we're adding an email address to an existing user account.  add appropriate entries into email and
-          // pubkey
+          // we're adding an email address to an existing user account.  add appropriate entries into
+          // email table
           client.query(
             "SELECT user FROM email WHERE address = ?", [ o.existing ],
             function(err, rows) {
               if (err) { logUnexpectedError(err); cb(err); }
               else if (rows.length === 0) cb("cannot find email address: " + o.existing);
               else {
-                addEmailAndPubkey(rows[0].user);
+                addEmailToUser(rows[0].user);
               }
             });
         }
@@ -280,50 +273,12 @@ exports.emailsBelongToSameAccount = function(lhs, rhs, cb) {
     });
 }
 
-function addKeyToEmailRecord(emailId, pubkey, cb) {
-  client.query(
-    "SELECT COUNT(*) AS n FROM pubkey WHERE email = ? AND content = ?",
-    [ emailId, pubkey ],
-    function(err, rows) {
-      if (err) {
-        logUnexpectedError(err);
-        return cb(err);
-      }
-      if (rows[0].n > 0) {
-        return cb("cannot set a key that is already known");
-      }
-      
-      client.query(
-        // XXX: 2 weeks is wrong, but then so is keypairs.
-        "INSERT INTO pubkey(email, content, expiry) VALUES(?, ?, DATE_ADD(NOW(), INTERVAL 2 WEEK))",
-        [ emailId, pubkey ],
-        function(err, info) {
-          if (err) logUnexpectedError(err);
-          // smash null into undefined.
-          cb(err ? err : undefined);
-        });
-    });
-}
-
-exports.addKeyToEmail = function(existing_email, email, pubkey, cb) {
-  // now we know that the user has permission to add a key.
-  client.query(
-    "SELECT id FROM email WHERE address = ?", [ email ],
-    function(err, rows) {
-      if (err) { logUnexpectedError(err); cb(err); }
-      else if (rows.length === 0) cb("cannot find email address: " + email);
-      else {
-        addKeyToEmailRecord(rows[0].id, pubkey, cb);
-      }
-    });
-}
-
-exports.stageEmail = function(existing_email, new_email, pubkey, cb) {
+exports.stageEmail = function(existing_email, new_email, cb) {
   var secret = secrets.generate(48);
   // overwrite previously staged users
-  client.query('INSERT INTO staged (secret, new_acct, existing, email, pubkey) VALUES(?,FALSE,?,?,?) ' +
-               'ON DUPLICATE KEY UPDATE secret=?, existing=?, new_acct=FALSE, pubkey=?, passwd=""',
-               [ secret, existing_email, new_email, pubkey, secret, existing_email, pubkey],
+  client.query('INSERT INTO staged (secret, new_acct, existing, email) VALUES(?,FALSE,?,?) ' +
+               'ON DUPLICATE KEY UPDATE secret=?, existing=?, new_acct=FALSE, passwd=""',
+               [ secret, existing_email, new_email, secret, existing_email],
                function(err) {
                  if (err) {
                    logUnexpectedError(err);
@@ -343,87 +298,28 @@ exports.checkAuth = function(email, cb) {
     });
 }
 
-function emailHasPubkey(email, pubkey, cb) {
-  client.query(
-    'SELECT pubkey.content FROM pubkey, email WHERE email.address = ? AND pubkey.email = email.id AND pubkey.content = ?',
-    [ email, pubkey ],
-    function(err, rows) {
-      if (err) logUnexpectedError(err);
-      cb(rows && rows.length === 1);
-    });
-}
-
-/* a high level operation that attempts to sync a client's view with that of the
- * server.  email is the identity of the authenticated channel with the user,
- * identities is a map of email -> pubkey.
- * We'll return an object that expresses three different types of information:
- * there are several things we need to express:
- * 1. emails that the client knows about but we do not
- * 2. emails that we know about and the client does not
- * 3. emails that we both know about but who need to be re-keyed
- * NOTE: it's not neccesary to differentiate between #2 and #3, as the client action
- *       is the same (regen keypair and tell us about it).
+/*
+ * list the user's emails.
+ *
+ * returns an object keyed by email address with properties for each email.
  */
-exports.getSyncResponse = function(email, identities, cb) {
-  var respBody = {
-    unknown_emails: [ ],
-    key_refresh: [ ]
-  };
-
+exports.listEmails = function(email, cb) {
   client.query(
     'SELECT address FROM email WHERE user = ( SELECT user FROM email WHERE address = ? ) ',
       [ email ],
       function (err, rows) {
         if (err) cb(err);
         else {
-          var emails = [ ];
-          var keysToCheck = [ ];
-          for (var i = 0; i < rows.length; i++) emails.push(rows[i].address);
+          var emails = {};
 
-          // #1
-          for (var e in identities) {
-            if (emails.indexOf(e) == -1) respBody.unknown_emails.push(e);
-            else keysToCheck.push(e);
-          }
+          // eventually we'll have fields in here
+          for (var i = 0; i < rows.length; i++)
+            emails[rows[i].address] = {};
 
-          // #2
-          for (var e in emails) {
-            e = emails[e];
-            if (!identities.hasOwnProperty(e)) respBody.key_refresh.push(e);
-          }
-
-          // #3 -- yes, this is sub-optimal in terms of performance.  when we
-          // move away from public keys this will be unnec.
-          if (keysToCheck.length) {
-            var checked = 0;
-            keysToCheck.forEach(function(e) {
-              emailHasPubkey(e, identities[e], function(v) {
-                checked++;
-                if (!v) respBody.key_refresh.push(e);
-                if (checked === keysToCheck.length) {
-                  cb(undefined, respBody);
-                }
-              });
-            });
-          } else {
-            cb(undefined, respBody);
-          }
+          cb(null,emails);
         }
       });
 };
-
-
-exports.pubkeysForEmail = function(email, cb) {
-  client.query(
-    'SELECT content FROM pubkey WHERE email = (SELECT id FROM email WHERE address = ?)',
-    [ email ],
-    function (err, rows) {
-      var ar = [ ];
-      if (!err) rows.forEach(function(r) { ar.push(r.content); });
-      else logUnexpectedError(err);
-      cb(ar);
-    });
-}
 
 exports.removeEmail = function(authenticated_email, email, cb) {
   exports.emailsBelongToSameAccount(authenticated_email, email, function(ok) {
@@ -434,22 +330,12 @@ exports.removeEmail = function(authenticated_email, email, cb) {
     }
 
     client.query(
-      'DELETE FROM pubkey WHERE email = ( SELECT id FROM email WHERE address = ? )',
+      'DELETE FROM email WHERE address = ?',
       [ email ],
-      function (err, info) {
-        if (err) {
-          logUnexpectedError(err);
-          cb(err);
-        } else {
-          client.query(
-            'DELETE FROM email WHERE address = ?',
-            [ email ],
-            function(err, info) {
-              if (err) logUnexpectedError(err);
-              // smash null into undefined
-              cb(err ? err : undefined);
-            });
-        }
+      function(err, info) {
+        if (err) logUnexpectedError(err);
+        // smash null into undefined
+        cb(err ? err : undefined);
       });
   });
 }
@@ -465,7 +351,6 @@ exports.cancelAccount = function(email, cb) {
         return
       }
       var uid = rows[0].user;
-      client.query("DELETE LOW_PRIORITY FROM pubkey WHERE email in ( SELECT id FROM email WHERE user = ? )", [ uid ], reportErr);
       client.query("DELETE LOW_PRIORITY FROM email WHERE user = ?", [ uid ], reportErr);
       client.query("DELETE LOW_PRIORITY FROM user WHERE id = ?", [ uid ], reportErr);
       cb();

@@ -1,4 +1,4 @@
-/*globals: BrowserIDNetwork: true */
+/*globals BrowserIDNetwork: true, BrowserIDIdentities: true, _: true, confirm: true, getEmails: true, display_saved_ids: true, removeEmail: true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,72 +33,79 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+(function() {
+  "use strict";
 
-$(function() {
-  BrowserIDNetwork.checkAuth(function(authenticated) {
-    if (authenticated) {
-      $("body").addClass("authenticated");
-      if ($('#emailList').length) {
-        display_saved_ids();
+  $(function() {
+    BrowserIDIdentities.checkAuthenticationAndSync(function onSuccess(authenticated) {
+      if (authenticated) {
+        $("body").addClass("authenticated");
       }
-    }
-  });
-});
-
-function display_saved_ids()
-{
-  var emails = {};
-  BrowserIDIdentities.syncIdentities(function() {
-    emails = getEmails();
-    displayEmails();
+    }, function onComplete(authenticated) {
+      if (authenticated && $('#emailList').length) {
+        display_saved_ids();
+      } 
+    });
   });
 
-
-  function displayEmails() {
+  function display_saved_ids()
+  {
     $('#cancellink').click(function() {
       if (confirm('Are you sure you want to cancel your account?')) {
-        BrowserIDNetwork.cancelUser(function() {
+        BrowserIDIdentities.cancelUser(function() {
           document.location="/";
         });
       }
     });
 
     $("#emailList").empty();
-      _(emails).each(function(data, e) {
-        var block = $("<div>").addClass("emailblock");
-        var label = $("<div>").addClass("email").text(e);
-        var meta = $("<div>").addClass("meta");
+    var emails = BrowserIDIdentities.getStoredIdentities();
+    _(emails).each(function(data, e) {
+      var block = $("<div>").addClass("emailblock");
+      var label = $("<div>").addClass("email").text(e);
+      var meta = $("<div>").addClass("meta");
 
-        var pub = $("<div class='keyblock'>").text(data.pub);
-        pub.hide();
-        var linkblock = $("<div>");
-        var puba = $("<a>").text("[show public key]");
-        // var priva = $("<a>").text("[show private key]");
-        puba.click(function() {pub.show()});
-        // priva.click(function() {priv.show()});
-        linkblock.append(puba);
-        // linkblock.append(" / ");
-        // linkblock.append(priva);
-        
-        var deauth = $("<button>").text("Forget this Email");
-        meta.append(deauth);
-        deauth.click(function() {
-          // remove email from server
-          BrowserIDNetwork.removeEmail(e, display_saved_ids);
-        });
+      var pub = $("<div class='keyblock'>").hide();
       
-        var d = new Date(data.created);
-        var datestamp = $("<div class='date'>").text("Signed in at " + d.toLocaleString());
+      var keyText = data.pub.value;
+      pub.text(keyText);
 
-        meta.append(datestamp);
-        meta.append(linkblock);
-                    
-        block.append(label);
-        block.append(meta);
-        // block.append(priv);
-        block.append(pub);
-        
-        $("#emailList").append(block);
+      var linkblock = $("<div>");
+      var puba = $("<a>").text("[show public key]");
+      // var priva = $("<a>").text("[show private key]");
+      puba.click(function() {pub.show();});
+      // priva.click(function() {priv.show()});
+      linkblock.append(puba);
+      // linkblock.append(" / ");
+      // linkblock.append(priva);
+      
+      var deauth = $("<button>").text("Forget this Email");
+      meta.append(deauth);
+      deauth.click(function(data) {
+        // If it is a primary, we do not have to go back to the server.
+        // XXX put this into the BrowserIDIdentities abstraction
+        if (data.isPrimary) {
+          BrowserIDStorage.removeEmail(e);
+          display_saved_ids();
+        }
+        else {
+          // remove email from server
+          BrowserIDIdentities.removeIdentity(e, display_saved_ids);
+        }
+      }.bind(null, data));
+    
+      var d = new Date(data.created);
+      var datestamp = $("<div class='date'>").text("Signed in at " + d.toLocaleString());
+
+      meta.append(datestamp);
+      meta.append(linkblock);
+                  
+      block.append(label);
+      block.append(meta);
+      // block.append(priv);
+      block.append(pub);
+      
+      $("#emailList").append(block);
     });
   }
-}
+}());

@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, clearEmails: true, BrowserIDNetwork: true , BrowserIDIdentities: true */
+/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserIDStorage:true, BrowserIDNetwork: true , BrowserIDIdentities: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -38,16 +38,24 @@
  * This test assumes for authentication that there is a user named 
  * "testuser@testuser.com" with the password "testuser"
  */
+var jwk = require("./jwk");
+
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-identities", function() {
-  var credentialsValid, unknownEmails, keyRefresh, syncValid;
+  // I generated these locally, they are used nowhere else.
+  var pubkey = {"algorithm":"RS","value":"-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIPEB6mvbW4GHA5tYJ7CJbNU6CkDLfZa\nyv91CsC5TQ88oOQ7+63ispPJQGQxUgP4/QA3LObUX/eKF08VS9rlFm8CAwEAAQ==\n-----END PUBLIC KEY-----\n"};
+
+  var privkey = {"algorithm":"RS","value":"-----BEGIN RSA PRIVATE KEY-----\nMIIBOgIBAAJBAIPEB6mvbW4GHA5tYJ7CJbNU6CkDLfZayv91CsC5TQ88oOQ7+63i\nspPJQGQxUgP4/QA3LObUX/eKF08VS9rlFm8CAwEAAQJBAIGeU/9rL9W8strKY/Ko\nf9eynZLCqvMeC3VS2JoPbqueBirCJSYNjGd70TXQ4MPzYWx8PsR3VrLQnWH8DWUk\n/hECIQDVWmkDM1vZUzQecHZkaRN8okv+Q3M6PL5qwy0GKCvqeQIhAJ4arGLARNWm\nidxGsJ0IPhtLyvcbNoDTU5rnx8LP/84nAiAUcpLH7L8rx+6h0DN4kh18/2z7FGnR\ntgql3sjM40K6OQIgBvKlILHSVJE8/bEdkckK8agjAzju7DpdMjF9VdJOK4ECIF2L\nSctl4hhZRUWzBN+sfuYEQTD8cc6svjBwlnEwJE9I\n-----END RSA PRIVATE KEY-----\n"};
+
+  var credentialsValid, unknownEmails, keyRefresh, syncValid, userEmails;
   var netStub = {
     reset: function() {
       credentialsValid = syncValid = true;
       unknownEmails = [];
       keyRefresh = [];
+      userEmails = {"testuser@testuser.com": {}};
     },
 
-    stageUser: function(email, password, keypair, onSuccess) {
+    stageUser: function(email, password, onSuccess) {
       onSuccess();
     },
 
@@ -59,7 +67,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       onSuccess(credentialsValid);
     },
 
-    addEmail: function(email, keypair, onSuccess, onFailure) {
+    addEmail: function(email, onSuccess, onFailure) {
       onSuccess();
     },
 
@@ -67,6 +75,19 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       onSuccess();
     },
 
+    listEmails: function(onSuccess, onFailure) {
+      onSuccess(userEmails);
+    },
+
+    certKey: function(email, pubkey, onSuccess, onFailure) {
+      if (syncValid) {
+        onSuccess("foocert");
+      }
+      else {
+        onFailure();
+      }
+    },
+    
     syncEmails: function(issued_identities, onSuccess, onFailure) {
       onSuccess({
         unknown_emails: unknownEmails,
@@ -81,6 +102,15 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       else {
         onFailure();
       }
+    },
+
+    cancelUser: function(onSuccess) {
+      onSuccess();
+    },
+
+    logout: function(onSuccess) {
+      credentialsValid = false;
+      onSuccess();
     }
   };
 
@@ -233,7 +263,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   test("authenticateAndSync with valid authentication", function() {
     credentialsValid = true;
     keyRefresh = ["testuser@testuser.com"]; 
-    clearEmails();
+    BrowserIDStorage.clearEmails();
 
     BrowserIDIdentities.authenticateAndSync("testuser@testuser.com", "testuser", function() {
     }, function(authenticated) {
@@ -251,7 +281,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   test("authenticateAndSync with invalid authentication", function() {
     credentialsValid = false;
     keyRefresh = ["testuser@testuser.com"]; 
-    clearEmails();
+    BrowserIDStorage.clearEmails();
 
     BrowserIDIdentities.authenticateAndSync("testuser@testuser.com", "testuser", function() {
     }, function(authenticated) {
@@ -282,10 +312,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncIdentity with successful sync", function() {
-    clearEmails();
+    BrowserIDStorage.clearEmails();
 
     syncValid = true;
-    BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
+    BrowserIDIdentities.syncIdentity("testemail@testemail.com", function(keypair) {
       var identities = BrowserIDIdentities.getStoredIdentities();
       ok("testemail@testemail.com" in identities, "Valid email is synced");
 
@@ -297,10 +327,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncIdentity with invalid sync", function() {
-    clearEmails();
+    BrowserIDStorage.clearEmails();
 
     syncValid = false;
-    BrowserIDIdentities.syncIdentity("testemail@testemail.com", "issuer", function(keypair) {
+    BrowserIDIdentities.syncIdentity("testemail@testemail.com", function(keypair) {
       ok(false, "sync was invalid, this should have failed");
       start();
     }, function() {
@@ -316,7 +346,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("persistIdentity", function() {
-    BrowserIDIdentities.persistIdentity("testemail2@testemail.com", { pub: "pub", priv: "priv" }, undefined, function onSuccess() {
+    var user_kp = jwk.KeyPair.generate("RS",64);
+    BrowserIDIdentities.persistIdentity("testemail2@testemail.com", user_kp, undefined, function onSuccess() {
       var identities = BrowserIDIdentities.getStoredIdentities();
       ok("testemail2@testemail.com" in identities, "Our new email is added");
       start(); 
@@ -328,7 +359,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("removeIdentity that is added", function() {
-    addEmail("testemail@testemail.com", {pub: "pub", priv: "priv"});
+    BrowserIDStorage.addEmail("testemail@testemail.com", {pub: "pub", priv: "priv"});
 
     BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
       var identities = BrowserIDIdentities.getStoredIdentities();
@@ -342,7 +373,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("removeIdentity that is not added", function() {
-    clearEmails();
+    BrowserIDStorage.clearEmails();
 
     BrowserIDIdentities.removeIdentity("testemail@testemail.com", function() {
       var identities = BrowserIDIdentities.getStoredIdentities();
@@ -356,7 +387,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncIdentities with no pre-loaded identities and no identities to add", function() {
-    clearEmails();
+    BrowserIDStorage.clearEmails();
+    userEmails = {};
+
     BrowserIDIdentities.syncIdentities(function onSuccess() {
       var identities = BrowserIDIdentities.getStoredIdentities();
       ok(true, "we have synced identities");
@@ -368,8 +401,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("syncIdentities with no pre-loaded identities and identities to add", function() {
-    clearEmails();
-    keyRefresh = ["testuser@testuser.com"];
+    BrowserIDStorage.clearEmails();
+    userEmails = {"testuser@testuser.com": {}};
+
     BrowserIDIdentities.syncIdentities(function onSuccess() {
       var identities = BrowserIDIdentities.getStoredIdentities();
       ok("testuser@testuser.com" in identities, "Our new email is added");
@@ -381,8 +415,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("syncIdentities with identities preloaded and none to add", function() {
-    clearEmails();
-    addEmail("testuser@testuser.com", {});
+    BrowserIDStorage.clearEmails();
+    userEmails = {"testuser@testuser.com": {}};
+    BrowserIDStorage.addEmail("testuser@testuser.com", {});
 
     BrowserIDIdentities.syncIdentities(function onSuccess() {
       var identities = BrowserIDIdentities.getStoredIdentities();
@@ -396,9 +431,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncIdentities with identities preloaded and one to add", function() {
-    clearEmails();
-    addEmail("testuser@testuser.com", {});
-    keyRefresh = ["testuser2@testuser.com"];
+    BrowserIDStorage.clearEmails();
+    BrowserIDStorage.addEmail("testuser@testuser.com", {pubkey: pubkey, cert: "1234"});
+    userEmails = {"testuser@testuser.com": {pubkey: pubkey, cert: "1234"},
+                  "testuser2@testuser.com": {pubkey: pubkey, cert: "1234"}};
 
     BrowserIDIdentities.syncIdentities(function onSuccess() {
       var identities = BrowserIDIdentities.getStoredIdentities();
@@ -413,11 +449,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncIdentities with identities preloaded and one to remove", function() {
-    clearEmails();
-    addEmail("testuser@testuser.com", {});
-    addEmail("testuser2@testuser.com", {});
-    unknownEmails = ["testuser2@testuser.com"];
-
+    BrowserIDStorage.clearEmails();
+    BrowserIDStorage.addEmail("testuser@testuser.com", {pub: pubkey, cert: "1234"});
+    BrowserIDStorage.addEmail("testuser2@testuser.com", {pub: pubkey, cert: "1234"});
+    userEmails = {"testuser@testuser.com":  { pub: pubkey, cert: "1234"}};
+    
     BrowserIDIdentities.syncIdentities(function onSuccess() {
       var identities = BrowserIDIdentities.getStoredIdentities();
       ok("testuser@testuser.com" in identities, "Our old email address is still there");
@@ -431,26 +467,58 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("getIdentityAssertion with known email", function() {
-    clearEmails();
-    var keypair = CryptoStubs.genKeyPair();
-    addEmail("testuser@testuser.com", { priv: keypair.priv, issuer: "issuer" });
-
-    BrowserIDIdentities.getIdentityAssertion("testuser@testuser.com", function onSuccess(assertion) {
-      equal("string", typeof assertion, "we have an assertion!");
-      start();
-    });
+    BrowserIDStorage.clearEmails();
+    var keypair = jwk.KeyPair.generate("RS",64);
+    BrowserIDIdentities.certifyIdentity("testuser@testuser.com", keypair, function() {
+      BrowserIDIdentities.getIdentityAssertion("testuser@testuser.com", function onSuccess(assertion) {
+        equal("string", typeof assertion, "we have an assertion!");
+        start();
+      });
+    }, failure("getIdentityAssertion failure"));
 
     stop();
   });
 
 
   test("getIdentityAssertion with unknown email", function() {
-    clearEmails();
-    var keypair = CryptoStubs.genKeyPair();
-    addEmail("testuser@testuser.com", { priv: keypair.priv, issuer: "issuer" });
+    BrowserIDStorage.clearEmails();
+    var keypair = jwk.KeyPair.generate("RS",64);
+    BrowserIDIdentities.certifyIdentity("testuser@testuser.com", keypair, function() {
+      BrowserIDIdentities.getIdentityAssertion("testuser2@testuser.com", function onSuccess(assertion) {
+        equal("undefined", typeof assertion, "email was unknown, we do not have an assertion");
+        start();
+      });
+    }, failure("getIdentityAssertion failure"));
+    
+    stop();
+  });
 
-    BrowserIDIdentities.getIdentityAssertion("testuser2@testuser.com", function onSuccess(assertion) {
-      equal("undefined", typeof assertion, "email was unknown, we do not have an assertion");
+  test("logoutUser", function(onSuccess) {
+    credentialsValid = true;
+    keyRefresh = ["testuser@testuser.com"]; 
+    BrowserIDStorage.clearEmails();
+
+    BrowserIDIdentities.authenticateAndSync("testuser@testuser.com", "testuser", function() {
+    }, function(authenticated) {
+      var storedIdentities = BrowserIDStorage.getEmails();
+      equal(_.size(storedIdentities), 1, "one identity");
+
+      BrowserIDIdentities.logoutUser(function() {
+        storedIdentities = BrowserIDStorage.getEmails();
+        equal(_.size(storedIdentities), 0, "All items have been removed on logout");
+
+        equal(credentialsValid, false, "credentials were invalidated in logout");
+        start();
+      });
+    });
+
+    stop();
+  });
+
+  test("cancelUser", function(onSuccess) {
+    BrowserIDIdentities.cancelUser(function() {
+      var storedIdentities = BrowserIDStorage.getEmails();
+      equal(_.size(storedIdentities), 0, "All items have been removed");
       start();
     });
 

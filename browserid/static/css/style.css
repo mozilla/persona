@@ -2,14 +2,16 @@
   font-family: 'Shadows Into Light';
   font-style: normal;
   font-weight: normal;
-  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('sil.ttf') format('truetype');
+/*  src: local('Shadows Into Light'), local('ShadowsIntoLight'), url('sil.ttf')
+ *  format('truetype');*/
 }
 
 @font-face {
   font-family: 'Tenor Sans';
   font-style: normal;
   font-weight: normal;
-  src: local('Tenor Sans'), local('TenorSans'), url('ts.ttf') format('truetype');
+ /* src: local('Tenor Sans'), local('TenorSans'), url('ts.ttf')
+  * format('truetype');*/
 }
 
 body {
@@ -28,6 +30,7 @@ header {
     height: 230px;
     color #fff;
     min-width: 800px;
+    display: block;
 }
 
 header.quarter {
@@ -41,7 +44,7 @@ header.quarter {
     width: 161px;
     height: 34px;
     margin: 10px 0 0 110px;
-    color: transparent;
+    font-size: 0px;
     display: inline-block;
 }
 
@@ -54,7 +57,7 @@ header.quarter {
     height: 72px;
     margin: 43px auto 0 auto;
     clear: left;
-    color: transparent;
+    font-size: 0px;
 }
 
 .quarter h1 {
@@ -65,7 +68,7 @@ header.quarter {
 }
 
 .quarter h1 > a {
-    color: transparent;
+    font-size: 0px;
 }
 
 
@@ -128,9 +131,15 @@ header > #manageLink:hover {
     opacity: 1;
 }
 
-a {
+header a {
     color: #fff;
     text-decoration: none;
+}
+
+a {
+    color: #666;
+    text-decoration: none;
+    border-bottom: 1px dotted #666;
 }
 
 a:hover {
@@ -145,6 +154,7 @@ footer {
     padding: 0;
     height: 200px;
     font-size: 1.1em;
+    display: block;
 }
 
 footer > div {
@@ -166,9 +176,6 @@ footer .right img {
     margin-bottom: -5px;
 }
 
-footer a {
-    color: #666;
-}
 
 footer .right p {
     text-align: right;
@@ -184,12 +191,6 @@ footer .copyright {
     width: 800px;
     margin: 0 auto;
     padding: 0;
-}
-
-#steps a {
-    color: #666;
-    text-decoration: none;
-    border-bottom: 1px dotted #666;
 }
 
 .step  {
@@ -243,17 +244,17 @@ pre code {
 }
 
 #emailList {
-  font-size: 1.0em; 
-  width: 4x00px; 
-  margin: auto; 
+  font-size: 1.0em;
+  width: 4x00px;
+  margin: auto;
   font-weight:bold;
   margin-top:32px;
 }
 
 #cancelaccount {
-  font-size: 1.0em; 
-  width: 500px; 
-  margin: auto; 
+  font-size: 1.0em;
+  width: 500px;
+  margin: auto;
   margin-top:35px;
 }
 
@@ -277,7 +278,7 @@ pre code {
 .meta {
   display:inline-block;
   float:right;
-  font:8pt Arial;  
+  font:8pt Arial;
 }
 .meta a {
   cursor:pointer;

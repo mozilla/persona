@@ -38,8 +38,8 @@ fs = require('fs'),
 path = require('path'),
 url = require('url'),
 wsapi = require('./lib/wsapi.js'),
+ca = require('./lib/ca.js'),
 httputils = require('./lib/httputils.js'),
-webfinger = require('./lib/webfinger.js'),
 sessions = require('connect-cookie-session'),
 express = require('express'),
 secrets = require('../libs/secrets.js'),
@@ -57,8 +57,10 @@ db.open(configuration.get('database'));
 const COOKIE_SECRET = secrets.hydrateSecret('browserid_cookie', configuration.get('var_path'));
 const COOKIE_KEY = 'browserid_state';
 
-function internal_redirector(new_url) {
+function internal_redirector(new_url, suppress_noframes) {
   return function(req, resp, next) {
+    if (suppress_noframes)
+      resp.removeHeader('x-frame-options');
     req.url = new_url;
     return next();
   };
@@ -83,7 +85,18 @@ function router(app) {
   });
 
   // simple redirects (internal for now)
-  app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html'));
+  app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html',true));
+
+  // Used for a relay page for communication.
+  app.get("/relay", function(req,res, next) {
+    // Allow the relay to be run within a frame
+    res.removeHeader('x-frame-options');
+    res.render('relay.ejs', {
+      layout: false,
+      production: configuration.get('use_minified_resources')
+    });
+  });
+
 
   app.get('/', function(req,res) {
     res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});
@@ -120,12 +133,22 @@ function router(app) {
   // register all the WSAPI handlers
   wsapi.setup(app);
 
-  app.get('/users/:identity.xml', function(req, resp, next) {
-    webfinger.renderUserPage(req.params.identity, function (resultDocument) {
-      if (resultDocument === undefined) {
-        httputils.fourOhFour(resp, "I don't know anything about: " + req.params.identity + "\n");
+  // the public key
+  app.get("/pk", function(req, res) {
+    res.json(ca.PUBLIC_KEY.toSimpleObject());
+  });
+
+  // vep bundle of JavaScript
+  app.get("/vepbundle", function(req, res) {
+    fs.readFile(__dirname + "/../node_modules/jwcrypto/vepbundle.js", function(error, content) {
+      if (error) {
+        res.writeHead(500);
+        res.end("oops");
+        console.log(error);
       } else {
-        httputils.xmlResponse(resp, resultDocument);
+        res.writeHead(200, {'Content-Type': 'text/javascript'});
+        res.write(content);
+        res.end();
       }
     });
   });
@@ -149,7 +172,7 @@ exports.setup = function(server) {
 
   // over SSL?
   var overSSL = (configuration.get('scheme') == 'https');
-  
+
   server.use(express.cookieParser());
 
   var cookieSessionMiddleware = sessions({
@@ -160,12 +183,12 @@ exports.setup = function(server) {
       httpOnly: true,
       // IMPORTANT: we allow users to go 1 weeks on the same device
       // without entering their password again
-      maxAge: (7 * 24 * 60 * 60 * 1000), 
+      maxAge: (7 * 24 * 60 * 60 * 1000),
       secure: overSSL
     }
   });
 
-  // cookie sessions
+  // cookie sessions && cache control
   server.use(function(req, resp, next) {
     // cookie sessions are only applied to calls to /wsapi
     // as all other resources can be aggressively cached
@@ -173,6 +196,9 @@ exports.setup = function(server) {
     // the fallout is that all code that interacts with sessions
     // should be under /wsapi
     if (/^\/wsapi/.test(req.url)) {
+      // explicitly disallow caching on all /wsapi calls (issue #294)
+      resp.setHeader('Cache-Control', 'no-cache, max-age=0');
+
       // we set this parameter so the connect-cookie-session
       // sends the cookie even though the local connection is HTTP
       // (the load balancer does SSL)
@@ -196,14 +222,14 @@ exports.setup = function(server) {
       var denied = false;
       if (!/^\/wsapi/.test(req.url)) { // post requests only allowed to /wsapi
         denied = true;
-        logger.warn("CSRF validation failure: POST only allowed to /wsapi urls.  not '" + req.url + "'");        
+        logger.warn("CSRF validation failure: POST only allowed to /wsapi urls.  not '" + req.url + "'");
       }
 
       if (req.session === undefined) { // there must be a session
         denied = true;
-        logger.warn("CSRF validation failure: POST calls to /wsapi require an active session");        
+        logger.warn("CSRF validation failure: POST calls to /wsapi require an active session");
       }
-      
+
       // the session must have a csrf token
       if (typeof req.session.csrf !== 'string') {
         denied = true;

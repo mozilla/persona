@@ -1,18 +1,13 @@
 <!doctype html>
 <html>
 <head>
-	<head>
-		<title>Browser ID</title>
-		<script type='text/javascript' src='steal/steal<%= production ? ".production" : "" %>.js?dialog'></script>
-        <!--[if lt IE 9]>
-        <script src="/dialog/html5shim.js"></script>
-        <![endif]-->
-        <script>
-            $(function() {
-                $('body').dialog().show();
-            });
-        </script>
-	</head>
-    <body>
+  <!--[if lt IE 9]>
+    <script src="/js/html5shim.js"></script>
+  <![endif]-->
+  <title>Browser ID</title>
+</head>
+  <body>
 	</body>
 </html>
+<script type='text/javascript' src='/vepbundle'></script>
+<script type='text/javascript' src='steal/steal<%= production ? ".production" : "" %>.js?dialog'></script>
