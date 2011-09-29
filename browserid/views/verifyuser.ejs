@@ -6,7 +6,7 @@
       <ul class="inputs">
         <li>
             <label class="serif" for="email">Email Address</label>
-            <input class="youraddress sans" id="email" placeholder="Your Email" type="email" value="<%= email %>" disabled="disabled">
+            <input class="youraddress sans" id="email" placeholder="Your Email" type="email" value="" disabled="disabled">
         </li>
         <li>
             <label class="serif" for="password">New Password</label>
@@ -36,5 +36,13 @@ $(document).ready(function() {
      $('.website').html(staged);
    else
      $('.hint').hide();
+
+   // go get the email address
+   BrowserIDNetwork.emailForVerificationToken("<%= token %>", function(email) {
+     if (email)
+       $('#email').val(email);
+     else
+       $('#signUpFormWrap').html('There was a problem with your signup link.');
+   });
 });
 </script>

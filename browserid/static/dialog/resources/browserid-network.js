@@ -169,10 +169,30 @@ var BrowserIDNetwork = (function() {
           },
           success: function(status) {
             var staged = JSON.parse(status);
+            // why a delay here? Because of the test harness?
+            // shouldn't the delay be in the test harness?
             _.delay(onSuccess, 0, staged);
           },
           error: onFailure
         });
+      });
+    },
+
+    /**
+     * Check the email address associated with a verification token
+     * @method emailForVerificationToken
+     * @param {string} token - Token to check
+     *
+     * TODO: think about whether this requires the right cookie
+     * I think so (BA).
+     */
+    emailForVerificationToken: function(token, onSuccess, onFailure) {
+      xhr.ajax({
+        url : "/wsapi/email_for_token?token=" + encodeURIComponent(token),
+        success: function(data) {
+          onSuccess(data.email);
+        },
+        error: onFailure
       });
     },
 
