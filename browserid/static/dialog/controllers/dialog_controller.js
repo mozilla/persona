@@ -84,7 +84,10 @@ PageController.extend("Dialog", {}, {
         self.doUserConfirmed();
       });
 
-      hub.subscribe("authenticated", function() {
+      hub.subscribe("authenticated", function(msg, info) {
+        //self.doEmailSelected(info.email);
+        // XXX benadida, lloyd - swap these two if you want to experiment with 
+        // generating assertions directly from signin.
         self.syncEmailKeypairs();
       });
 

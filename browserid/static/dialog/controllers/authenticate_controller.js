@@ -104,7 +104,9 @@
       },
       function onComplete(authenticated) {
         if (authenticated) {
-          self.close("authenticated");
+          self.close("authenticated", {
+            email: email 
+          });
         } else {
           // XXX error screen.
         }
