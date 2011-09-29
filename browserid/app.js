@@ -183,7 +183,7 @@ exports.setup = function(server) {
       httpOnly: true,
       // IMPORTANT: we allow users to go 1 weeks on the same device
       // without entering their password again
-      maxAge: (7 * 24 * 60 * 60 * 1000),
+      maxAge: configuration.get('authentication_duration_ms'),
       secure: overSSL
     }
   });
