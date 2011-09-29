@@ -125,6 +125,8 @@
         return;
       }
 
+      $("button.newuser").attr("disabled", "disabled");
+
       identities.createUser(email, function(keypair) {
         if(keypair) {
           self.close("user_staged", {

@@ -304,6 +304,11 @@ button {
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
 }
 
+button[disabled=disabled] {
+    opacity: .5;
+}
+
+
 button:active {
     background-color: #006EC6;
     border: 1px solid #003E70;
