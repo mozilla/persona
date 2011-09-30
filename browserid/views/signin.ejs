@@ -3,9 +3,11 @@
         <!-- XXX this form submits to nowhere -->
         <form id="signUpForm" class="cf authform">
             <h1 class="serif">Sign In</h1>
-            <div class="notifications">
-                <div class="notification error doh">Bad Login. Check your email and password.</div>
-            </div>
+
+            <ul class="notifications">
+                <li class="notification error doh">Bad Login. Check your email and password.</li>
+            </ul>
+
             <ul class="inputs">
                 <li>
                     <label class="serif" for="email">Email Address</label>
@@ -20,6 +22,7 @@
                     <input class="sans" id="password" placeholder="Your Password" type="password" required x-moz-errormessage="Oops!  We need your password to sign you in" tabindex="2">
                 </li>
             </ul>
+
             <div class="submit cf">
                 <div class="remember cf">
                     <div class="checkAlign">
