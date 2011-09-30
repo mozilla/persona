@@ -1,4 +1,4 @@
-/*globals BrowserID:true, $:true */
+/*globals BrowserID: true, BrowserIDNetwork: true, $:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,45 +34,36 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-(function() {
+BrowserID.forgot = (function() {
   "use strict";
 
-  BrowserID.verifyEmailAddress = function(token) {
-    $("#signUpForm").submit(function(event) {
+  return function() {
+    $("form input[autofocus]").focus();
+
+    $("#signUpForm").bind("submit", function(event) {
       event.preventDefault();
+      $(".notifications .notification").hide();
 
       var email = $("#email").val(),
-          pass = $("#password").val(),
-          pass2 = $("#vpassword").val();
+          password = $("#password").val(),
+          vpassword = $("#vpassword").val();
 
-      if (pass && pass === pass2) {
-        BrowserID.Network.completeUserRegistration(token, pass, function onSuccess(registered) {
-          if (registered) {
-            $("#congrats").fadeIn(250);
-          }
-        }, function onFailure() {
-
-        });
+      if (password != vpassword) {
+        $(".notifications .notification.mismatchpassword").fadeIn();
+        return false;
       }
+
+      BrowserIDIdentities.createUser(email, function onSuccess(keypair) {
+        $('#sent_to_email').html(email);
+        $('#forminputs').fadeOut();
+        $(".notifications .notification.emailsent").fadeIn();
+      }, function onFailure() {
+        // bad authentication
+        $(".notifications .notification.doh").fadeIn();
+      });
     });
-
-    var staged = BrowserIDStorage.getStagedOnBehalfOf();
-    if (staged) {
-      $('.website').html(staged);
-    }
-    else {
-      $('.hint').hide();
-    }
-
-    // go get the email address
-    BrowserIDNetwork.emailForVerificationToken(token, function(email) {
-      if (email) {
-        $('#email').val(email);
-      }
-      else {
-        $('#signUpFormWrap').html('There was a problem with your signup link.');
-      }
-    });
-
   };
+
+
 }());
+

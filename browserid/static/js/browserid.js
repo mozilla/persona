@@ -68,6 +68,9 @@ $(function() {
   else if (path === "/signup") {
     bid.signUp();
   }
+  else if (path === "/forgot") {
+    bid.forgot();
+  }
   else if (token && path === "/add_email_address") {
     bid.addEmailAddress(token);
   }

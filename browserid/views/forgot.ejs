@@ -26,33 +26,3 @@
     </div>
 </div>
 
-<script type="text/javascript">
-  $(document).ready(function () {
-    $("form input[autofocus]").focus();
-
-    $("#signUpForm").bind("submit", function(event) {
-      event.preventDefault();
-      $(".notifications .notification").hide();
-
-      var email = $("#email").val(),
-          password = $("#password").val(),
-          vpassword = $("#vpassword").val();
-
-      if (password != vpassword) {
-        $(".notifications .notification.mismatchpassword").fadeIn();
-        return false;
-      }
-
-      BrowserIDIdentities.createUser(email, function onSuccess(keypair) {
-        $('#sent_to_email').html(email);
-        $('#forminputs').fadeOut();
-        $(".notifications .notification.emailsent").fadeIn();
-      }, function onFailure() {
-        // bad authentication
-        $(".notifications .notification.doh").fadeIn();
-      });
-      return false;
-    });
-
-  });
-</script>
