@@ -120,9 +120,6 @@ exports.setup = function(app) {
     resp.end();
   });
 
-  app.get('/', doVerify);
-  app.get('/verify', doVerify);
-
   app.post('/', doVerify);
   app.post('/verify', doVerify);
 };
