@@ -1,4 +1,5 @@
-steal("/dialog/resources/storage.js",
+steal("/dialog/resources/browserid.js",
+      "/dialog/resources/storage.js",
       "/dialog/resources/underscore-min.js")
   .plugins("funcunit/qunit")
   .then("browserid-storage_unit_test")

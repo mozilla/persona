@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global setupChannel:true, BrowserIDIdentities: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true, OpenAjax: true */ 
+/*global setupChannel:true, BrowserID: true, PageController: true, OpenAjax: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -59,7 +59,7 @@ PageController.extend("Dialog", {}, {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
 
-      BrowserIDIdentities.setOrigin(origin_url);
+      BrowserID.Identities.setOrigin(origin_url);
 
       this.doStart();
 
@@ -186,7 +186,7 @@ PageController.extend("Dialog", {}, {
     doEmailSelected: function(email) {
       var self=this;
       // yay!  now we need to produce an assertion.
-      BrowserIDIdentities.getAssertion(email, function(assertion) {
+      BrowserID.Identities.getAssertion(email, function(assertion) {
         // Clear onerror before the call to onsuccess - the code to onsuccess 
         // calls window.close, which would trigger the onerror callback if we 
         // tried this afterwards.
@@ -196,20 +196,20 @@ PageController.extend("Dialog", {}, {
     },
 
     doNotMe: function() {
-      BrowserIDIdentities.logoutUser(this.doAuthenticate.bind(this));
+      BrowserID.Identities.logoutUser(this.doAuthenticate.bind(this));
     },
 
     syncEmailKeypairs: function() {
       var self = this;
-      BrowserIDIdentities.syncEmailKeypairs(self.doSignIn.bind(self), 
-        self.getErrorDialog(BrowserIDErrors.signIn));
+      BrowserID.Identities.syncEmailKeypairs(self.doSignIn.bind(self), 
+        self.getErrorDialog(BrowserID.Errors.signIn));
     },
 
 
     doCheckAuth: function() {
       var self=this;
-      self.doWait(BrowserIDWait.checkAuth);
-      BrowserIDIdentities.checkAuthenticationAndSync(function onSuccess() {}, 
+      self.doWait(BrowserID.Wait.checkAuth);
+      BrowserID.Identities.checkAuthenticationAndSync(function onSuccess() {}, 
         function onComplete(authenticated) {
           if (authenticated) {
               self.doSignIn();
@@ -217,7 +217,7 @@ PageController.extend("Dialog", {}, {
             self.doAuthenticate();
           }
         }, 
-        self.getErrorDialog(BrowserIDErrors.checkAuthentication));
+        self.getErrorDialog(BrowserID.Errors.checkAuthentication));
   }
 
   });

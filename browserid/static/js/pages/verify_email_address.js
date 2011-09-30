@@ -1,4 +1,4 @@
-/*globals BrowserID:true, BrowserIDNetwork: true, $:true */
+/*globals BrowserID:true, $:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -46,7 +46,7 @@
           pass2 = $("#vpassword").val();
 
       if (pass && pass === pass2) {
-        BrowserIDNetwork.completeUserRegistration(token, pass, function onSuccess(registered) {
+        BrowserID.Network.completeUserRegistration(token, pass, function onSuccess(registered) {
           if (registered) {
             $("#congrats").fadeIn(250);
           }

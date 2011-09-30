@@ -1,4 +1,4 @@
-/*globals BrowserIDNetwork: true, BrowserIDIdentities: true, _: true */
+/*globals BrowserID: true, _: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -56,7 +56,8 @@ $(function() {
 
   var token = getParameterByName("token"),
       path = document.location.pathname,
-      bid = BrowserID;
+      bid = BrowserID,
+      identities = bid.Identities;
 
   if (!path || path === "/") {
     bid.index();
@@ -81,12 +82,12 @@ $(function() {
   $(".signOut").click(function(event) {
     event.preventDefault();
 
-    BrowserIDIdentities.logoutUser(function() {
+    identities.logoutUser(function() {
       document.location = "/";
     });
   });
 
-  BrowserIDIdentities.checkAuthentication(function(authenticated) {
+  identities.checkAuthentication(function(authenticated) {
     if (authenticated) {
       $("#content").fadeIn("slow");
       if ($('#emailList').length) {

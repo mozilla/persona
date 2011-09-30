@@ -1,5 +1,5 @@
 /*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global _: true, BrowserIDIdentities: true, PageController: true */ 
+/*global _: true, BrowserID: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -38,7 +38,7 @@
   "use strict";
 
   var ANIMATION_TIME = 250,
-      identities = BrowserIDIdentities;
+      identities = BrowserID.Identities;
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
     // XXX instead of using jQuery here, think about using CSS animations.

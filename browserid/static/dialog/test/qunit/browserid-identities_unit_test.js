@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserIDStorage:true, BrowserIDNetwork: true , BrowserIDIdentities: true */
+/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -42,9 +42,9 @@ var jwk = require("./jwk");
 var jwcert = require("./jwcert");
 
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-identities", function() {
-  var lib = BrowserIDIdentities,
-      network = BrowserIDNetwork,
-      storage = BrowserIDStorage;
+  var lib = BrowserID.Identities,
+      network = BrowserID.Network,
+      storage = BrowserID.Storage;
 
   // I generated these locally, they are used nowhere else.
   var pubkey = {"algorithm":"RS","n":"56063028070432982322087418176876748072035482898334811368408525596198252519267108132604198004792849077868951906170812540713982954653810539949384712773390200791949565903439521424909576832418890819204354729217207360105906039023299561374098942789996780102073071760852841068989860403431737480182725853899733706069","e":"65537"};
@@ -164,7 +164,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       emailCheckCount = 0;
     },
     teardown: function() {
-      lib.setNetwork(BrowserIDNetwork);
+      lib.setNetwork(BrowserID.Network);
     }
   });
 

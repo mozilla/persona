@@ -33,7 +33,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var BrowserIDStorage = (function() {
+BrowserID.Storage = (function() {
   
   var jwk;
   
