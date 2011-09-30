@@ -41,7 +41,7 @@
 /*
  * The Schema:
  *
- *    +--- user ------+       +--- email ----+        
+ *    +--- user ------+       +--- email ----+
  *    |*int id        | <-\   |*int id       |
  *    | string passwd |    \- |*int user     |
  *    +---------------+       |*string address
@@ -69,7 +69,7 @@ var drop_on_close = undefined;
 
 const schemas = [
   "CREATE TABLE IF NOT EXISTS user   ( id INTEGER AUTO_INCREMENT PRIMARY KEY, passwd VARCHAR(64) );",
-  "CREATE TABLE IF NOT EXISTS email  ( id INTEGER AUTO_INCREMENT PRIMARY KEY, user INTEGER, address VARCHAR(255) UNIQUE, INDEX(address) );",
+  "CREATE TABLE IF NOT EXISTS email  ( id INTEGER AUTO_INCREMENT PRIMARY KEY, user INTEGER, INDEX(user), address VARCHAR(255) UNIQUE, INDEX(address) );",
   "CREATE TABLE IF NOT EXISTS staged ( secret VARCHAR(48) PRIMARY KEY, new_acct BOOL, existing VARCHAR(255), email VARCHAR(255) UNIQUE, INDEX(email), ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
 ];
 
