@@ -58,8 +58,14 @@ $(function() {
       path = document.location.pathname,
       bid = BrowserID;
 
-  if (path === "/") {
+  if (!path || path === "/") {
     bid.index();
+  }
+  else if (path === "/signin") {
+    bid.signIn();
+  }
+  else if (path === "/signup") {
+    bid.signUp();
   }
   else if (token && path === "/add_email_address") {
     bid.addEmailAddress(token);

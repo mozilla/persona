@@ -37,28 +37,3 @@
     </div>
 </div>
 
-<script type="text/javascript">
-  $(document).ready(function () {
-    $("form input[autofocus]").focus();
-
-    $("#signUpForm").bind("submit", function(event) {
-      event.preventDefault();
-
-      var email = $("#email").val(),
-          password = $("#password").val();
-      
-      BrowserIDNetwork.authenticate(email, password, function onSuccess(authenticated) {
-        if (authenticated) {
-          document.location = "/";
-        }
-        else {
-          // bad authentication
-          $(".notifications .notification.doh").fadeIn();
-        }
-      }, function onFailure() {
-        // Wah wah.  Network error
-      });
-    });
-
-  });
-</script>
