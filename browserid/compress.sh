@@ -44,9 +44,9 @@ echo ''
 
 cd ../js
 # re-minimize everything together
-cat jquery-1.6.2.min.js json2.js ../dialog/resources/underscore-min.js ../dialog/resources/storage.js ../dialog/resources/browserid-network.js ../dialog/resources/browserid-identities.js browserid.js > lib.js
+cat jquery-1.6.2.min.js json2.js ../dialog/resources/underscore-min.js ../dialog/resources/storage.js ../dialog/resources/browserid-network.js ../dialog/resources/browserid-identities.js browserid.js pages/index.js pages/add_email_address.js pages/verify_email_address.js pages/manage_account.js > lib.js
 $UGLIFY < lib.js > lib.min.js
 
 cd ../css
-cat github.css style.css > browserid.css
+cat style.css > browserid.css
 $JAVA -jar $YUI_LOCATION browserid.css -o browserid.min.css

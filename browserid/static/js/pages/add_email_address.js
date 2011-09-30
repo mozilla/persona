@@ -1,4 +1,4 @@
-/*globals BrowserIDNetwork: true, BrowserIDIdentities: true, _: true */
+/*globals BrowserID: true, BrowserIDNetwork: true, $:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,70 +34,31 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-window.BrowserID = window.BrowserID || {};
-
-$(function() {
+(function() {
   "use strict";
 
-  /**
-   * For the main page
-   */
-
-  function getParameterByName( name ) {
-    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-    var regexS = "[\\?&]"+name+"=([^&#]*)";
-    var regex = new RegExp( regexS );
-    var results = regex.exec( window.location.href );
-    if( results == null )
-      return "";
-    else
-      return decodeURIComponent(results[1].replace(/\+/g, " "));
-  }
-
-  var token = getParameterByName("token"),
-      path = document.location.pathname,
-      bid = BrowserID;
-
-  if (path === "/") {
-    bid.index();
-  }
-  else if (token && path === "/add_email_address") {
-    bid.addEmailAddress(token);
-  }
-  else if(token && path === "/verify_email_address") {
-    bid.verifyEmailAddress(token);
-  }
-
-  if ($('#vAlign').length) {
-    $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
-  }
-
-  $(".signOut").click(function(event) {
-    event.preventDefault();
-
-    BrowserIDIdentities.logoutUser(function() {
-      document.location = "/";
+  function emailRegistrationSuccess() {
+    $("div.status").text("Address confirmed!");
+    $("body").delay(1000).fadeOut(500, function() {
+      // if the close didn't work, then let's redirect the the main page where they'll
+      // get to see the ids that they've created.
+      document.location = '/';
     });
-  });
+  }
 
-  BrowserIDIdentities.checkAuthentication(function(authenticated) {
-    if (authenticated) {
-      $("#content").fadeIn("slow");
-      if ($('#emailList').length) {
-        bid.manageAccount();
+  function emailRegistrationFailure(why) {
+    $("div.status").text("Error encountered while attempting to confirm your address.  Have you previously verified this address?");
+  }
+
+  BrowserID.addEmailAddress = function(token) {
+    BrowserIDNetwork.completeEmailRegistration(token, function onSuccess(valid) {
+      if (valid) {
+        emailRegistrationSuccess();
+      } else {
+        emailRegistrationFailure("unknown");
       }
-    }
-    else {
-      // If vAlign exists (main page), it takes precedence over content.
-      if( $("#vAlign").length) {
-        $("#vAlign").fadeIn("slow");
-      }
-      else {
-        $("#content").fadeIn("slow");
-      }
-    }
-  });
-
-
-});
-
+    }, function onFailure() {
+       failure("Error Communicating With Server!");
+    });
+  };
+}());

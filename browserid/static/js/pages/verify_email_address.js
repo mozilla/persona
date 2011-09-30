@@ -1,4 +1,4 @@
-/*globals BrowserIDNetwork: true, BrowserIDIdentities: true, _: true */
+/*globals BrowserID:true, BrowserIDNetwork: true, $:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,70 +34,26 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-window.BrowserID = window.BrowserID || {};
-
-$(function() {
+(function() {
   "use strict";
 
-  /**
-   * For the main page
-   */
+  BrowserID.verifyEmailAddress = function(token) {
+    $("#signUpForm").submit(function(event) {
+      event.preventDefault();
 
-  function getParameterByName( name ) {
-    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-    var regexS = "[\\?&]"+name+"=([^&#]*)";
-    var regex = new RegExp( regexS );
-    var results = regex.exec( window.location.href );
-    if( results == null )
-      return "";
-    else
-      return decodeURIComponent(results[1].replace(/\+/g, " "));
-  }
+      var email = $("#email").val(),
+          pass = $("#password").val(),
+          pass2 = $("#vpassword").val();
 
-  var token = getParameterByName("token"),
-      path = document.location.pathname,
-      bid = BrowserID;
+      if (pass && pass === pass2) {
+        BrowserIDNetwork.completeUserRegistration(token, pass, function onSuccess(registered) {
+          if (registered) {
+            $("#congrats").fadeIn(250);
+          }
+        }, function onFailure() {
 
-  if (path === "/") {
-    bid.index();
-  }
-  else if (token && path === "/add_email_address") {
-    bid.addEmailAddress(token);
-  }
-  else if(token && path === "/verify_email_address") {
-    bid.verifyEmailAddress(token);
-  }
-
-  if ($('#vAlign').length) {
-    $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
-  }
-
-  $(".signOut").click(function(event) {
-    event.preventDefault();
-
-    BrowserIDIdentities.logoutUser(function() {
-      document.location = "/";
+        });
+      }
     });
-  });
-
-  BrowserIDIdentities.checkAuthentication(function(authenticated) {
-    if (authenticated) {
-      $("#content").fadeIn("slow");
-      if ($('#emailList').length) {
-        bid.manageAccount();
-      }
-    }
-    else {
-      // If vAlign exists (main page), it takes precedence over content.
-      if( $("#vAlign").length) {
-        $("#vAlign").fadeIn("slow");
-      }
-      else {
-        $("#content").fadeIn("slow");
-      }
-    }
-  });
-
-
-});
-
+  };
+}());
