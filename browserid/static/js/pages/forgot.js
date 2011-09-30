@@ -1,4 +1,4 @@
-/*globals BrowserID: true, BrowserIDNetwork: true, $:true */
+/*globals BrowserID: true, $:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -53,7 +53,7 @@ BrowserID.forgot = (function() {
         return false;
       }
 
-      BrowserIDIdentities.createUser(email, function onSuccess(keypair) {
+      BrowserID.Identities.createUser(email, function onSuccess(keypair) {
         $('#sent_to_email').html(email);
         $('#forminputs').fadeOut();
         $(".notifications .notification.emailsent").fadeIn();

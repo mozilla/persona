@@ -37,7 +37,9 @@
 (function() {
   "use strict";
 
-  BrowserID.verifyEmailAddress = function(token) {
+  var bid = BrowserID;
+
+  bid.verifyEmailAddress = function(token) {
     $("#signUpForm").submit(function(event) {
       event.preventDefault();
 
@@ -46,7 +48,7 @@
           pass2 = $("#vpassword").val();
 
       if (pass && pass === pass2) {
-        BrowserID.Network.completeUserRegistration(token, pass, function onSuccess(registered) {
+        bid.Network.completeUserRegistration(token, pass, function onSuccess(registered) {
           if (registered) {
             $("#congrats").fadeIn(250);
           }
@@ -56,7 +58,7 @@
       }
     });
 
-    var staged = BrowserIDStorage.getStagedOnBehalfOf();
+    var staged = bid.Storage.getStagedOnBehalfOf();
     if (staged) {
       $('.website').html(staged);
     }
@@ -65,7 +67,7 @@
     }
 
     // go get the email address
-    BrowserIDNetwork.emailForVerificationToken(token, function(email) {
+    bid.Network.emailForVerificationToken(token, function(email) {
       if (email) {
         $('#email').val(email);
       }
