@@ -29,20 +29,3 @@
   </div>
 </div>
 
-<script>
-$(document).ready(function() {
-   var staged = BrowserIDStorage.getStagedOnBehalfOf();
-   if (staged)
-     $('.website').html(staged);
-   else
-     $('.hint').hide();
-
-   // go get the email address
-   BrowserIDNetwork.emailForVerificationToken("<%= token %>", function(email) {
-     if (email)
-       $('#email').val(email);
-     else
-       $('#signUpFormWrap').html('There was a problem with your signup link.');
-   });
-});
-</script>
