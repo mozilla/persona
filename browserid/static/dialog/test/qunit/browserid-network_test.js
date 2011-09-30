@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserIDNetwork: true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -41,7 +41,7 @@
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-network", function() {
   "use strict";
 
-  var network = BrowserIDNetwork;
+  var network = BrowserID.Network;
   var xhr = {
     results: {
       "get /wsapi/csrf valid": "csrf_token", 

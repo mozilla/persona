@@ -1,4 +1,4 @@
-/*globals BrowserID: true, BrowserIDNetwork: true, $:true */
+/*globals BrowserID: true, $:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -51,7 +51,7 @@
   }
 
   BrowserID.addEmailAddress = function(token) {
-    BrowserIDNetwork.completeEmailRegistration(token, function onSuccess(valid) {
+    BrowserID.Network.completeEmailRegistration(token, function onSuccess(valid) {
       if (valid) {
         emailRegistrationSuccess();
       } else {

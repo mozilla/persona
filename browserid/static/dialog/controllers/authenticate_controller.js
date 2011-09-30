@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global BrowserIDIdentities: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true */
+/*global BrowserID, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -38,7 +38,7 @@
   "use strict";
 
   var ANIMATION_TIME = 250,
-      identities = BrowserIDIdentities;
+      identities = BrowserID.Identities;
 
   function checkEmail() {
     var email = $("#email").val(), 
@@ -80,7 +80,7 @@
       else {
         // XXX can't register this email address.
       }
-    }, self.getErrorDialog(BrowserIDErrors.createAccount));
+    }, self.getErrorDialog(BrowserID.Errors.createAccount));
   }
 
   function authenticate() {
@@ -96,7 +96,7 @@
     identities.authenticateAndSync(email, pass, 
       function onAuthenticate(authenticated) {
         if (authenticated) {
-          self.doWait(BrowserIDWait.authentication);
+          self.doWait(BrowserID.Wait.authentication);
         } 
         else {
           // XXX error screen
@@ -111,7 +111,7 @@
           // XXX error screen.
         }
       }, 
-      self.getErrorDialog(BrowserIDErrors.authentication)
+      self.getErrorDialog(BrowserID.Errors.authentication)
     );
 
   }

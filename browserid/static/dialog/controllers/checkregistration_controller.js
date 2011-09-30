@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global BrowserIDIdentities: true, BrowserIDErrors: true, PageController: true */ 
+/*global BrowserID: true, PageController: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,7 +37,7 @@
 (function() {
   "use strict";
 
-  var identities = BrowserIDIdentities;
+  var identities = BrowserID.Identities;
 
   PageController.extend("Checkregistration", {}, {
     init: function(el, options) {
@@ -60,7 +60,7 @@
         identities.syncEmailKeypairs(function() {
           me.close(me.verificationMessage);
         });
-      }, me.getErrorDialog(BrowserIDErrors.registration));
+      }, me.getErrorDialog(BrowserID.Errors.registration));
     }
   });
 

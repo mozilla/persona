@@ -1,4 +1,4 @@
-/*globals BrowserID:true, BrowserIDIdentities: true, $:true*/
+/*globals BrowserID:true, $:true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -56,7 +56,7 @@
 
 
     $(function () {
-      var identities = BrowserIDIdentities;
+      var identities = BrowserID.Identities;
 
       $("form input[autofocus]").focus();
 

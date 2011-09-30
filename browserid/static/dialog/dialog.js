@@ -51,6 +51,7 @@ steal.plugins(
                'base64',
                'underscore-min',
                'channel',
+               'browserid',
                'storage',
                'browserid-extensions',
                'browserid-network',

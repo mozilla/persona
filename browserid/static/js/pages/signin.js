@@ -1,4 +1,4 @@
-/*globals BrowserID:true, BrowserIDNetwork: true, $:true*/
+/*globals BrowserID:true, $:true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -46,7 +46,7 @@
       var email = $("#email").val(),
           password = $("#password").val();
       
-      BrowserIDNetwork.authenticate(email, password, function onSuccess(authenticated) {
+      BrowserID.Network.authenticate(email, password, function onSuccess(authenticated) {
         if (authenticated) {
           document.location = "/";
         }

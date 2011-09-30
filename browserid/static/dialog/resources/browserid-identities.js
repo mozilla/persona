@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global _: true, BrowserIDStorage: true, BrowserIDNetwork: true */
+/*global _: true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -35,12 +35,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var BrowserIDIdentities = (function() {
+BrowserID.Identities = (function() {
   "use strict";
 
   var jwk, jwt, vep, jwcert, origin,
-      network = BrowserIDNetwork,
-      storage = BrowserIDStorage;
+      network = BrowserID.Network,
+      storage = BrowserID.Storage;
 
   function prepareDeps() {
     if (!jwk) {
@@ -139,8 +139,8 @@ var BrowserIDIdentities = (function() {
     /**
      * Set the interface to use for networking.  Used for unit testing.
      * @method setNetwork
-     * @param {BrowserIDNetwork} networkInterface - BrowserIDNetwork interface 
-     * to use.
+     * @param {BrowserID.Network} networkInterface - BrowserID.Network 
+     * compatible interface to use.
      */
     setNetwork: function(networkInterface) {
       network = networkInterface;

@@ -1,4 +1,4 @@
-/*globals BrowserID:true, BrowserIDNetwork: true, BrowserIDIdentities: true, _: true, confirm: true, syncAndDisplayEmails: true, displayEmails: true, onRemoveEmail: true*/
+/*globals BrowserID:true, _: true, confirm: true, syncAndDisplayEmails: true, displayEmails: true, onRemoveEmail: true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -122,8 +122,8 @@
   function syncAndDisplayEmails() {
     var emails = {};
 
-    BrowserIDIdentities.syncEmailKeypairs(function() {
-      emails = BrowserIDIdentities.getStoredEmailKeypairs();
+    BrowserID.Identities.syncEmailKeypairs(function() {
+      emails = BrowserID.Identities.getStoredEmailKeypairs();
       if (_.isEmpty(emails)) {
         $("#content").hide();
       } else {
@@ -163,14 +163,14 @@
     event.preventDefault();
 
     if (confirm("Remove " + email + " from your BrowserID?")) {
-      BrowserIDIdentities.removeEmail(email, syncAndDisplayEmails);
+      BrowserID.Identities.removeEmail(email, syncAndDisplayEmails);
     }
   }
 
   BrowserID.manageAccount = function() {
     $('#cancellink').click(function() {
       if (confirm('Are you sure you want to cancel your account?')) {
-        BrowserIDNetwork.cancelUser(function() {
+        BrowserID.Network.cancelUser(function() {
           document.location="/";
         });
       }
