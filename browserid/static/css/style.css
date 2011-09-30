@@ -609,8 +609,11 @@ h1 {
 }
 
 #signUpForm ul {
-  margin: 20px 0;
   list-style-type: none;
+}
+
+#signUpForm .inputs {
+  margin: 20px 0;
 }
 
 #signUpForm li {
@@ -636,7 +639,7 @@ a.forgot {
   font-size: 11px;
 }
 
-.authform .notifications > .notification {
+.notifications > .notification {
   margin-top: 20px;
   padding: 5px;
   line-height: 16px;
@@ -646,11 +649,11 @@ a.forgot {
           border-radius: 3px;
 }
 
-.authform .notifications > .notification {
+.notifications > .notification {
   display: none;
 }
 
-.authform .notifications .notification.error {
+.notifications .notification.error {
   color: red;
   background-color: rgba(255,0,0,0.25);
 }
@@ -856,21 +859,14 @@ html[xmlns] .cf {
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-#signUpForm ul {
-  margin: 20px 0;
-  list-style-type: none;
-}
-
-#signUpForm li {
-  padding: 0 0 10px 0;
-}
-
-#signUpForm label,
-#signUpForm p.hint {
+#signUpForm label/*,
+#signUpForm p.hint*/ {
   display: block;
   color: #62615F;
   text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
+
+/*
 
 #signUpForm p.hint {
   margin: -20px -20px 20px;
@@ -885,7 +881,7 @@ html[xmlns] .cf {
        -o-border-radius: 5px 5px 0 0;
           border-radius: 5px 5px 0 0;
 }
-
+*/
 #signUpForm label.half,
 .half {
   width: 50%;
