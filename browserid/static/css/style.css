@@ -433,6 +433,7 @@ h1 {
   font-size: 24px;
   font-weight: normal;
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+  margin-bottom: 20px;
 }
 
 #vAlign {
@@ -610,14 +611,12 @@ h1 {
 
 #signUpForm ul {
   list-style-type: none;
-}
-
-#signUpForm .inputs {
-  margin: 20px 0;
+  margin: 0 0 20px;
 }
 
 #signUpForm li {
-  padding: 0 0 10px 0;
+  margin: 0 0 10px;
+  padding: 0;
 }
 
 #signUpForm label {
