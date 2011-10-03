@@ -383,7 +383,6 @@ var BrowserIDIdentities = (function() {
       // we use the current time from the browserid servers
       // to avoid issues with clock drift on user's machine.
       network.serverTime(function(serverTime) {
-        alert("server time: " + serverTime.toString() + " local time: " + (new Date()).toString());
         var storedID = Identities.getStoredIdentities()[email],
         assertion;
 
