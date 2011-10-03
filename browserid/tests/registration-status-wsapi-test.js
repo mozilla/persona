@@ -136,10 +136,10 @@ suite.addBatch({
 
 suite.addBatch({
   "after successful registration": {
-    topic: wsapi.get("/wsapi/am_authed"),
+    topic: wsapi.get("/wsapi/session_context"),
     "we're authenticated": function (r, err) {
       assert.strictEqual(r.code, 200);
-      assert.strictEqual(JSON.parse(r.body), true);
+      assert.strictEqual(JSON.parse(r.body).authenticated, true);
     },
     "but we can easily clear cookies on the client to change that!": function(r, err) {
       wsapi.clearCookies();
@@ -149,10 +149,10 @@ suite.addBatch({
 
 suite.addBatch({
   "after clearing cookies": {
-    topic: wsapi.get("/wsapi/am_authed"),
+    topic: wsapi.get("/wsapi/session_context"),
     "we're NOT authenticated": function (r, err) {
       assert.strictEqual(r.code, 200);
-      assert.strictEqual(JSON.parse(r.body), false);
+      assert.strictEqual(JSON.parse(r.body).authenticated, false);
     }
   }
 });

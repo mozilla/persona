@@ -115,7 +115,7 @@ function checkAuthed(req, resp, next) {
 }
 
 function setup(app) {
-  // return the CSRF token and current server time (for assertion signing)
+  // return the CSRF token, authentication status, and current server time (for assertion signing)
   // IMPORTANT: this is safe because it's only readable by same-origin code
   app.get('/wsapi/session_context', function(req, res) {
     if (typeof req.session == 'undefined') {
@@ -129,12 +129,34 @@ function setup(app) {
       logger.debug("NEW csrf token created: " + req.session.csrf);
     }
 
-    res.write(JSON.stringify({
-      csrf_token: req.session.csrf,
-      server_time: (new Date()).getTime()
-    }));
+    var auth_status = false;
 
-    res.end();
+    function sendResponse() {
+      res.write(JSON.stringify({
+        csrf_token: req.session.csrf,
+        server_time: (new Date()).getTime(),
+        authenticated: auth_status
+      }));
+      res.end();
+    };
+
+    // if they're authenticated for an email address that we don't know about,
+    // then we should purge the stored cookie
+    if (!isAuthed(req)) {
+      logger.debug("user is not authenticated");
+      sendResponse();
+    } else {
+      db.emailKnown(req.session.authenticatedUser, function (known) {
+        if (!known) {
+          logger.debug("user is authenticated with an email that doesn't exist in the database");
+          clearAuthenticatedUser(req.session);
+        } else {
+          logger.debug("user is authenticated");
+          auth_status = true;
+        }
+        sendResponse();
+      });
+    }
   });
 
   /* checks to see if an email address is known to the server
@@ -272,7 +294,6 @@ function setup(app) {
           setAuthenticatedUser(req.session, req.body.email);
 
           // if the work factor has changed, update the hash here
-          
         }
         resp.json(success);
       });
@@ -333,30 +354,11 @@ function setup(app) {
       var expiration = new Date();
       expiration.setTime(new Date().valueOf() + configuration.get('certificate_validity_ms'));
       var cert = ca.certify(req.body.email, pk, expiration);
-      
+
       resp.writeHead(200, {'Content-Type': 'text/plain'});
       resp.write(cert);
       resp.end();
     });
-  });
-
-  app.get('/wsapi/am_authed', function(req,resp) {
-    // if they're authenticated for an email address that we don't know about,
-    // then we should purge the stored cookie
-    if (!isAuthed(req)) {
-      logger.debug("user is not authenticated");
-      resp.json(false);
-    } else {
-      db.emailKnown(req.session.authenticatedUser, function (known) {
-        if (!known) {
-          logger.debug("user is authenticated with an email that doesn't exist in the database");
-          clearAuthenticatedUser(req.session);
-        } else {
-          logger.debug("user is authenticated");
-        }
-        resp.json(known);
-      });
-    }
   });
 
   app.post('/wsapi/logout', function(req, resp) {
