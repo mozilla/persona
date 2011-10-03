@@ -562,7 +562,7 @@ if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed)
   })();
 
 
-  var chan, w, iframe, relayframe_opencount=0;
+  var chan, w, iframe;
 
   // this is for calls that are non-interactive
   function _open_hidden_iframe(doc) {
