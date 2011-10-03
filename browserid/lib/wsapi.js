@@ -115,11 +115,9 @@ function checkAuthed(req, resp, next) {
 }
 
 function setup(app) {
-  // return the CSRF token
-  // IMPORTANT: this should be safe because it's only readable by same-origin code
-  // but we must be careful that this is never a JSON structure that could be hijacked
-  // by a third party
-  app.get('/wsapi/csrf', function(req, res) {
+  // return the CSRF token and current server time (for assertion signing)
+  // IMPORTANT: this is safe because it's only readable by same-origin code
+  app.get('/wsapi/session_context', function(req, res) {
     if (typeof req.session == 'undefined') {
       req.session = {};
     }
@@ -131,10 +129,13 @@ function setup(app) {
       logger.debug("NEW csrf token created: " + req.session.csrf);
     }
 
-    res.write(req.session.csrf);
+    res.write(JSON.stringify({
+      csrf_token: req.session.csrf,
+      server_time: (new Date()).getTime()
+    }));
+
     res.end();
   });
-
 
   /* checks to see if an email address is known to the server
    * takes 'email' as a GET argument */
