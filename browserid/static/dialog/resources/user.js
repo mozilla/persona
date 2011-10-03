@@ -513,7 +513,8 @@ BrowserID.User = (function() {
     syncEmailKeypair: function(email, onSuccess, onFailure) {
       // FIXME use true key sizes
       prepareDeps();
-      var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
+      // FIXME: parameterize!
+      var keypair = jwk.KeyPair.generate("DS", 256);
       certifyEmailKeypair(email, keypair, onSuccess, onFailure);
     },
 
