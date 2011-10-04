@@ -78,14 +78,31 @@
   }
 
   function signIn() {
-    var self=this;
+    var self=this,
+        animationComplete = false,
+        assertion,
+        email = $("input[type=radio]:checked").val();
+
+    function onComplete() {
+      if(assertion && animationComplete) {
+        self.close("assertion_generated", {
+          assertion: assertion
+        });
+      }
+    }
+
+    // Kick of the assertion fetching/keypair generating while we are shoing 
+    // the animation, hopefully this minimizes the delay the user notices.
+    identities.getAssertion(email, function(assert) {
+      assertion = assert;
+      onComplete();
+    });
+
     $("#signIn").animate({"width" : "685px"}, "slow", function () {
       // post animation
        $("body").delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
-          var email = $("input[type=radio]:checked").val();
-          self.close("email_chosen", {
-            email: email
-          });
+         animationComplete = true;
+         onComplete();
        });
     }); 
   }

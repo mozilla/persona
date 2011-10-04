@@ -95,8 +95,8 @@ PageController.extend("Dialog", {}, {
         self.doConfirmUser(info.email);
       });
 
-      hub.subscribe("email_chosen", function(msg, info) {
-        self.doEmailSelected(info.email);
+      hub.subscribe("assertion_generated", function(msg, info) {
+        self.doAssertionGenerated(info.assertion);
       });
 
       hub.subscribe("email_staged", function(msg, info) {
@@ -180,19 +180,18 @@ PageController.extend("Dialog", {}, {
     },
 
     doEmailConfirmed: function() {
-      this.doEmailSelected(this.confirmEmail);
-    },
-
-    doEmailSelected: function(email) {
       var self=this;
       // yay!  now we need to produce an assertion.
-      BrowserID.Identities.getAssertion(email, function(assertion) {
-        // Clear onerror before the call to onsuccess - the code to onsuccess 
-        // calls window.close, which would trigger the onerror callback if we 
-        // tried this afterwards.
-        self.onerror = null;
-        self.onsuccess(assertion);
-      });
+      BrowserID.Identities.getAssertion(this.confirmEmail, self.doAssertionGenerated.bind(self));
+    },
+
+    doAssertionGenerated: function(assertion) {
+      var self=this;
+      // Clear onerror before the call to onsuccess - the code to onsuccess 
+      // calls window.close, which would trigger the onerror callback if we 
+      // tried this afterwards.
+      self.onerror = null;
+      self.onsuccess(assertion);
     },
 
     doNotMe: function() {
