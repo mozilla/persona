@@ -380,21 +380,24 @@ var BrowserIDIdentities = (function() {
      * @param {function} [onFailure] - Called on failure.
      */
     getIdentityAssertion: function(email, onSuccess, onFailure) {
-      var storedID = Identities.getStoredIdentities()[email],
-          assertion;
+      // we use the current time from the browserid servers
+      // to avoid issues with clock drift on user's machine.
+      network.serverTime(function(serverTime) {
+        var storedID = Identities.getStoredIdentities()[email],
+        assertion;
 
-      if (storedID) {
-        // parse the secret key
-        prepareDeps();
-        var sk = jwk.SecretKey.fromSimpleObject(storedID.priv);
-        var tok = new jwt.JWT(null, new Date(), network.origin);
-        assertion = vep.bundleCertsAndAssertion([storedID.cert], tok.sign(sk));
-      }
+        if (storedID) {
+          // parse the secret key
+          prepareDeps();
+          var sk = jwk.SecretKey.fromSimpleObject(storedID.priv);
+          var tok = new jwt.JWT(null, serverTime, network.origin);
+          assertion = vep.bundleCertsAndAssertion([storedID.cert], tok.sign(sk));
+        }
 
-      if (onSuccess) {
-        onSuccess(assertion);
-      }
-
+        if (onSuccess) {
+          onSuccess(assertion);
+        }
+      }, onFailure);
     },
 
     /**
