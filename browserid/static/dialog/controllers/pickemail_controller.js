@@ -77,11 +77,13 @@
     });
   }
 
-  function signIn() {
+  function signIn(element, event) {
     var self=this,
         animationComplete = false,
         assertion,
         email = $("input[type=radio]:checked").val();
+
+    cancelEvent(event);
 
     function onComplete() {
       if(assertion && animationComplete) {
@@ -107,9 +109,11 @@
     }); 
   }
 
-  function addEmail() {
+  function addEmail(element, event) {
     var email = $("#newEmail").val(),
         self=this;
+
+    cancelEvent(event);
 
     if (email) {
       identities.addEmail(email, function(keypair) {
