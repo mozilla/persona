@@ -61,13 +61,13 @@ BrowserID.Identities = (function() {
         try {
           email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
         } catch (x) {
-          storage.removeEmail(email_address);
+          storage.invalidateEmail(email_address);
           return;
         }
 
         // no cert? reset
         if (!email_obj.cert) {
-          storage.removeEmail(email_address);
+          storage.invalidateEmail(email_address);
         } else {
           try {
             // parse the cert
@@ -77,24 +77,15 @@ BrowserID.Identities = (function() {
             // check if needs to be reset, if it expires in 5 minutes
             var diff = cert.expires.valueOf() - new Date().valueOf();
             if (diff < 300000)
-              storage.removeEmail(email_address);
+              storage.invalidateEmail(email_address);
           } catch (e) {
             // error parsing the certificate!  Maybe it's of an old/different
             // format?  just delete it.
             try { console.log("error parsing cert for", email_address ,":", e); } catch(e2) { }
-            storage.removeEmail(email_address);
+            storage.invalidateEmail(email_address);
           }
         }
       });
-  }
-
-  function removeUnknownIdentities(unknown_emails) {
-    // first remove idenitites that the server doesn't know about
-    if (unknown_emails) {
-      _(unknown_emails).each(function(email_address) {
-        storage.removeEmail(email_address);
-      });
-    }
   }
 
   function setAuthenticationStatus(authenticated) {
@@ -262,11 +253,11 @@ BrowserID.Identities = (function() {
     /**
      * Sync local identities with browserid.org.  Generally should not need to 
      * be called.
-     * @method syncEmailKeypairs
+     * @method syncEmails
      * @param {function} [onSuccess] - Called whenever complete.
      * @param {function} [onFailure] - Called on failure.
      */
-    syncEmailKeypairs: function(onSuccess, onFailure) {
+    syncEmails: function(onSuccess, onFailure) {
       cleanupIdentities();
       var issued_identities = Identities.getStoredEmailKeypairs();
 
@@ -307,7 +298,7 @@ BrowserID.Identities = (function() {
 
           var email = emails_to_add.shift();
 
-          self.syncEmailKeypair(email, addNextEmail, onFailure);
+          self.persistEmail(email, addNextEmail, onFailure);
         }
 
         addNextEmail();
@@ -331,7 +322,7 @@ BrowserID.Identities = (function() {
 
         // certify
         Identities.certifyEmailKeypair(email, keypair, function() {
-          self.syncEmailKeypairs(onSuccess, onFailure);
+          self.syncEmails(onSuccess, onFailure);
         });
 
       }
@@ -376,7 +367,7 @@ BrowserID.Identities = (function() {
             onSuccess(authenticated);
           }
 
-          self.syncEmailKeypairs(function() {
+          self.syncEmails(function() {
             if (onComplete) {
               onComplete(authenticated);
             }
@@ -409,7 +400,7 @@ BrowserID.Identities = (function() {
             onSuccess(authenticated);
           }
 
-          self.syncEmailKeypairs(function() {
+          self.syncEmails(function() {
             if (onComplete) {
               onComplete(authenticated);
             }
@@ -494,24 +485,37 @@ BrowserID.Identities = (function() {
     syncEmailKeypair: function(email, onSuccess, onFailure) {
       // FIXME use true key sizes
       prepareDeps();
-      //var keypair = jwk.KeyPair.generate(vep.params.algorithm, vep.params.keysize);
       var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
       Identities.certifyEmailKeypair(email, keypair, onSuccess, onFailure);
     },
 
     /**
-     * Certify an identity
+     * Certify an identity.
+     * @method certifyEmailKeypair
      */
     certifyEmailKeypair: function(email, keypair, onSuccess, onFailure) {
       network.certKey(email, keypair.publicKey, function(cert) {
-        Identities.persistEmailKeypair(email, keypair, cert, function() {
-          if (onSuccess) {
-            onSuccess();
-          }
-        }, onFailure);
+        Identities.persistEmailKeypair(email, keypair, cert, onSuccess, onFailure);
       }, onFailure);      
     },
     
+    /**
+     * Persist an email address without a keypair
+     * @method persistEmail
+     * @param {string} email - Email address to persist.
+     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onFailure] - Called on error.
+     */
+    persistEmail: function(email, onSuccess, onFailure) {
+      storage.addEmail(email, {
+        created: new Date() 
+      });
+
+      if (onSuccess) {
+        onSuccess();
+      }
+    },
+
     /** 
      * Persist an address and key pair locally.
      * @method persistEmailKeypair
@@ -521,14 +525,19 @@ BrowserID.Identities = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     persistEmailKeypair: function(email, keypair, cert, onSuccess, onFailure) {
-      var new_email_obj= {
-        created: new Date(),
+      var now = new Date();
+      var email_obj = storage.getEmails()[email] || {
+        created: now
+      };
+
+      _.extend(email_obj, {
+        updated: now,
         pub: keypair.publicKey.toSimpleObject(),
         priv: keypair.secretKey.toSimpleObject(),
         cert: cert
-      };
+      });
 
-      storage.addEmail(email, new_email_obj);
+      storage.addEmail(email, email_obj);
 
       if (onSuccess) {
         onSuccess();
@@ -546,17 +555,33 @@ BrowserID.Identities = (function() {
       var storedID = Identities.getStoredEmailKeypairs()[email],
           assertion;
 
-      if (storedID) {
-        // parse the secret key
-        prepareDeps();
-        var sk = jwk.SecretKey.fromSimpleObject(storedID.priv);
+      function createAssertion(idInfo) {
+        var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
         var tok = new jwt.JWT(null, new Date(), origin);
-        assertion = vep.bundleCertsAndAssertion([storedID.cert], tok.sign(sk));
+        assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
+        if (onSuccess) {
+          onSuccess(assertion);
+        }
       }
 
-      if (onSuccess) {
-        onSuccess(assertion);
+      if (storedID) {
+        prepareDeps();
+        if (storedID.priv) {
+          // parse the secret key
+          createAssertion(storedID);
+        }
+        else {
+          // we have no key for this identity, go generate the key, 
+          // sync it and then get the assertion recursively.
+          Identities.syncEmailKeypair(email, function() {
+            Identities.getAssertion(email, onSuccess, onFailure);
+          }, onFailure);
+        }
       }
+      else if (onSuccess) {
+        onSuccess();
+      }
+
 
     },
 

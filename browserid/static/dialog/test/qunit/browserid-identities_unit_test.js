@@ -463,16 +463,67 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
 
+  test("persistEmail", function() {
+    lib.clearStoredEmailKeypairs();
 
-  test("persistEmailKeypair", function() {
-    var user_kp = jwk.KeyPair.generate("RS",64);
-    lib.persistEmailKeypair("testemail2@testemail.com", user_kp, undefined, function onSuccess() {
+    lib.persistEmail("testemail@testemail.com", function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
-      ok("testemail2@testemail.com" in identities, "Our new email is added");
+      ok("testemail@testemail.com" in identities, "Our new email is added");
       start(); 
     });
 
     stop();
+  });
+
+
+  test("persistEmailKeypair with new email", function() {
+    lib.clearStoredEmailKeypairs();
+
+    var user_kp = jwk.KeyPair.generate("RS",64);
+    lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
+      var id = lib.getStoredEmailKeypairs()["testemail@testemail.com"];
+
+      ok(id, "Email is added");
+      ok(id.created, "A create date is generated");
+      ok(id.updated, "An updated date is generated");
+      equal(id.created, id.updated, "Create and update dates are the same");
+
+      ok(id.pub, "A public key is generated");
+      ok(id.priv, "A private key is generated");
+      ok(id.cert, "A certificate is generated");
+
+      start(); 
+    });
+
+    stop();
+  });
+
+  test("persistEmailKeypair with already saved email", function() {
+    lib.clearStoredEmailKeypairs();
+
+    var user_kp = jwk.KeyPair.generate("RS",64);
+    lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
+      setTimeout(function() {
+        lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
+
+        var id = lib.getStoredEmailKeypairs()["testemail@testemail.com"];
+
+        ok(id, "Email is added");
+        ok(id.created, "A create date is generated");
+        ok(id.updated, "An updated date is generated");
+        notEqual(id.created, id.updated, "Create and update dates are NOT the same when an address is updated");
+
+        ok(id.pub, "A public key is generated");
+        ok(id.priv, "A private key is generated");
+        ok(id.cert, "A certificate is generated");
+
+        start(); 
+        });
+      }, 500);
+    });
+
+    stop();
+
   });
 
 
@@ -505,11 +556,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
 
-  test("syncEmailKeypairs with no pre-loaded identities and no identities to add", function() {
+  test("syncEmails with no pre-loaded identities and no identities to add", function() {
     storage.clearEmails();
     userEmails = {};
 
-    lib.syncEmailKeypairs(function onSuccess() {
+    lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
       ok(true, "we have synced identities");
       equal(_.size(identities), 0, "there are no identities");
@@ -519,11 +570,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
-  test("syncEmailKeypairs with no pre-loaded identities and identities to add", function() {
+  test("syncEmails with no pre-loaded identities and identities to add", function() {
     storage.clearEmails();
     userEmails = {"testuser@testuser.com": {}};
 
-    lib.syncEmailKeypairs(function onSuccess() {
+    lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
       ok("testuser@testuser.com" in identities, "Our new email is added");
       equal(_.size(identities), 1, "there is one identity");
@@ -533,11 +584,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
-  test("syncEmailKeypairs with identities preloaded and none to add", function() {
+  test("syncEmails with identities preloaded and none to add", function() {
     storage.clearEmails();
     userEmails = {"testuser@testuser.com": {}};
     storage.addEmail("testuser@testuser.com", {});
-    lib.syncEmailKeypairs(function onSuccess() {
+    lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
       ok("testuser@testuser.com" in identities, "Our new email is added");
       equal(_.size(identities), 1, "there is one identity");
@@ -548,13 +599,13 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
 
-  test("syncEmailKeypairs with identities preloaded and one to add", function() {
+  test("syncEmails with identities preloaded and one to add", function() {
     storage.clearEmails();
     storage.addEmail("testuser@testuser.com", {pubkey: pubkey, cert: random_cert});
     userEmails = {"testuser@testuser.com": {pubkey: pubkey, cert: random_cert},
                   "testuser2@testuser.com": {pubkey: pubkey, cert: random_cert}};
 
-    lib.syncEmailKeypairs(function onSuccess() {
+    lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
       ok("testuser@testuser.com" in identities, "Our old email address is still there");
       ok("testuser2@testuser.com" in identities, "Our new email is added");
@@ -566,13 +617,13 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
 
-  test("syncEmailKeypairs with identities preloaded and one to remove", function() {
+  test("syncEmails with identities preloaded and one to remove", function() {
     storage.clearEmails();
     storage.addEmail("testuser@testuser.com", {pub: pubkey, cert: random_cert});
     storage.addEmail("testuser2@testuser.com", {pub: pubkey, cert: random_cert});
     userEmails = {"testuser@testuser.com":  { pub: pubkey, cert: random_cert}};
 
-    lib.syncEmailKeypairs(function onSuccess() {
+    lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
       ok("testuser@testuser.com" in identities, "Our old email address is still there");
       equal("testuser2@testuser.com" in identities, false, "Our unknown email is removed");
@@ -584,15 +635,28 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
 
-  test("getAssertion with known email", function() {
+  test("getAssertion with known email that has key", function() {
     storage.clearEmails();
     var keypair = jwk.KeyPair.generate("RS",64);
     lib.certifyEmailKeypair("testuser@testuser.com", keypair, function() {
       lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
         equal("string", typeof assertion, "we have an assertion!");
         start();
-      });
-    }, failure("getAssertion failure"));
+      }, failure("getAssertion failure"));
+    }, failure("certifyEmailKeypair failure"));
+
+    stop();
+  });
+
+
+  test("getAssertion with known email that does not have a key", function() {
+    storage.clearEmails();
+    lib.persistEmail("testuser@testuser.com", function() {
+      lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
+        equal("string", typeof assertion, "we have an assertion!");
+        start();
+      }, failure("getAssertion failure"));
+    }, failure("persistEmail failure"));
 
     stop();
   });

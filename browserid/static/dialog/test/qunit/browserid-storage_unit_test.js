@@ -55,7 +55,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/storage", func
   });
 
   test("addEmail, getEmails", function() {
-    storage.addEmail("testuser@testuser.com", {key: "key"});
+    storage.addEmail("testuser@testuser.com", {priv: "key"});
 
     var emails = storage.getEmails();
     equal(_.size(emails), 1, "object should have one item");
@@ -64,7 +64,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/storage", func
 
 
   test("removeEmail, getEmails", function() {
-    storage.addEmail("testuser@testuser.com", {key: "key"});
+    storage.addEmail("testuser@testuser.com", {priv: "key"});
     storage.removeEmail("testuser@testuser.com");
 
     var emails = storage.getEmails();
@@ -73,13 +73,22 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/storage", func
 
 
   test("clearEmails", function() {
-    storage.addEmail("testuser@testuser.com", {key: "key"});
+    storage.addEmail("testuser@testuser.com", {priv: "key"});
     storage.clearEmails();
 
     var emails = storage.getEmails();
     equal(_.size(emails), 0, "object should have no items");
   });
 
+  test("invalidateEmail", function() {
+    storage.addEmail("testuser@testuser.com", {priv: "key", pub: "pub", cert: "cert"});
+
+    storage.invalidateEmail("testuser@testuser.com");
+    var id = storage.getEmails()["testuser@testuser.com"];
+    ok(id && !("priv" in id), "private key was removed");
+    ok(id && !("pub" in id), "public key was removed");
+    ok(id && !("cert" in id), "cert was removed");
+  });
 
   test("storeTemporaryKeypair", function() {
     // XXX needs a test
