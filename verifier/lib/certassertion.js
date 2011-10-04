@@ -165,7 +165,7 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
         return errorCB();
       
       if (tok.verify(pk)) {
-        successCB(principal.email, tok.audience, tok.expires);
+        successCB(principal.email, tok.audience, tok.expires, theIssuer);
       } else {
         errorCB();
       }
