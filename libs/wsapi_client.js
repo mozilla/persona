@@ -112,10 +112,15 @@ exports.get = function(cfg, path, context, getArgs, cb) {
 function withCSRF(cfg, context, cb) {
   if (context.csrf) cb(context.csrf);
   else {
-    exports.get(cfg, '/wsapi/csrf', context, undefined, function(r) {
-      if (r.code === 200 && typeof r.body === 'string')
-        context.csrf = r.body;
-      cb(context.csrf);
+    exports.get(cfg, '/wsapi/session_context', context, undefined, function(r) {
+      try {
+        if (r.code !== 200) throw 'http error';
+        context.csrf = JSON.parse(r.body).csrf_token;
+        cb(context.csrf);
+      } catch(e) {
+        console.log('error getting csrf token: ', e);
+        cb();
+      }
     });
   }
 }

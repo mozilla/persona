@@ -37,20 +37,27 @@
 BrowserID.Network = (function() {
   "use strict";
 
-  var csrf_token,
-      xhr = $;
+  var csrf_token;
+  var xhr = $;
+  var server_time;
+  var auth_status;
 
-  function withCSRF(cb) {
-    if (csrf_token) setTimeout(cb, 0);
+  function withContext(cb) {
+    if (typeof auth_status === 'boolean' && csrf_token !== undefined) setTimeout(cb, 0);
     else {
       xhr.ajax({
-        url: "/wsapi/csrf",
+        url: "/wsapi/session_context",
         type: "GET",
         success: function(result) {
-          csrf_token = result;
+          csrf_token = result.csrf_token;
+          server_time = {
+            remote: result.server_time,
+            local: (new Date()).getTime()
+          };
+          auth_status = result.authenticated;
           _.defer(cb);
-        }, 
-        dataType: "html"
+        },
+        dataType: "json"
       });
     }
   }
@@ -60,7 +67,7 @@ BrowserID.Network = (function() {
       return function() {
         var args = _.toArray(arguments);
         _.defer(function() {
-          cb.apply(null, args); 
+          cb.apply(null, args);
         });
       };
     }
@@ -85,7 +92,7 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - called on XHR failure
      */
     authenticate: function(email, password, onSuccess, onFailure) {
-      withCSRF(function() { 
+      withContext(function() {
         xhr.ajax({
           type: "POST",
           url: "/wsapi/authenticate_user",
@@ -96,8 +103,19 @@ BrowserID.Network = (function() {
           },
           success: function(status, textStatus, jqXHR) {
             if (onSuccess) {
-              var authenticated = JSON.parse(status);
-              _.delay(onSuccess, 0, authenticated);
+              try {
+                var authenticated = JSON.parse(status);
+
+                if (typeof authenticated !== 'boolean') throw status;
+
+                // at this point we know the authentication status of the
+                // session, let's set it to perhaps save a network request
+                // (to fetch session context).
+                auth_status = authenticated;
+                _.delay(onSuccess, 0, authenticated);
+              } catch (e) {
+                onFailure("unexpected server response: " + e);
+              }
             }
           },
           error: onFailure
@@ -113,15 +131,17 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - called on XHR failure.
      */
     checkAuth: function(onSuccess, onFailure) {
-      xhr.ajax({
-        url: "/wsapi/am_authed",
-        success: function(status, textStatus, jqXHR) {
-          var authenticated = JSON.parse(status);
-          _.delay(onSuccess, 0, authenticated);
-        },
-        error: onFailure
-      });
-
+      function returnAuthStatus() {
+        try {
+          if (typeof auth_status !== 'boolean') throw "can't get authentication status!";
+          _.delay(onSuccess, 0, auth_status);
+          onSuccess(auth_status);
+        } catch(e) {
+          if (onFailure) onFailure(e.toString());
+        }
+      }
+      if (typeof auth_status !== 'boolean') withContext(returnAuthStatus);
+      else setTimeout(returnAuthStatus, 0);
     },
 
     /**
@@ -130,20 +150,21 @@ BrowserID.Network = (function() {
      * @param {function} [onSuccess] - called on completion
      */
     logout: function(onSuccess) {
-      withCSRF(function() { 
+      withContext(function() {
         xhr.ajax({
           type: "POST",
-          url: "/wsapi/logout", 
+          url: "/wsapi/logout",
           data: {
             csrf: csrf_token
-          }, 
+          },
           success: function() {
-            csrf_token = undefined;
-            withCSRF(function() {
-              if (onSuccess) {
-                _.defer(onSuccess);
-              }
-            });
+            // assume the logout request is successful and
+            // log the user out.  There is no need to reset the
+            // CSRF token.
+            // FIXME: we should return a confirmation that the
+            // user was successfully logged out.
+            auth_status = false;
+            if (onSuccess) _.defer(onSuccess);
           }
         });
       });
@@ -158,7 +179,7 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     createUser: function(email, origin, onSuccess, onFailure) {
-      withCSRF(function() { 
+      withContext(function() {
         xhr.ajax({
           type: "post",
           url: "/wsapi/stage_user",
@@ -219,7 +240,7 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     completeUserRegistration: function(token, password, onSuccess, onFailure) {
-      withCSRF(function() {
+      withContext(function() {
         xhr.ajax({
           type: "POST",
           url: "/wsapi/complete_user_creation",
@@ -295,7 +316,7 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     completeEmailRegistration: function(token, onSuccess, onFailure) {
-      withCSRF(function() {
+      withContext(function() {
         xhr.ajax({
           type: "POST",
           url: "/wsapi/complete_email_addition",
@@ -321,11 +342,11 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     cancelUser: function(onSuccess, onFailure) {
-      withCSRF(function() {
+      withContext(function() {
         xhr.ajax({
           type: "POST",
-          url: "/wsapi/account_cancel", 
-          data: {"csrf": csrf_token}, 
+          url: "/wsapi/account_cancel",
+          data: {"csrf": csrf_token},
           success: createDeferred(onSuccess),
           error: onFailure
         });
@@ -341,7 +362,7 @@ BrowserID.Network = (function() {
      * @param {function} [onfailure] - called on xhr failure.
      */
     addEmail: function(email, origin, onSuccess, onFailure) {
-      withCSRF(function() { 
+      withContext(function() {
         xhr.ajax({
           type: "POST",
           url: "/wsapi/stage_email",
@@ -404,7 +425,7 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     removeEmail: function(email, onSuccess, onFailure) {
-      withCSRF(function() { 
+      withContext(function() {
         xhr.ajax({
           type: "POST",
           url: "/wsapi/remove_email",
@@ -423,7 +444,7 @@ BrowserID.Network = (function() {
      * @method certKey
      */
     certKey: function(email, pubkey, onSuccess, onError) {
-      withCSRF(function() { 
+      withContext(function() {
         xhr.ajax({
           type: "POST",
           url: "/wsapi/cert_key",
@@ -449,8 +470,31 @@ BrowserID.Network = (function() {
         success: createDeferred(onSuccess),
         error: onFailure
       });
+    },
+
+    /**
+     * Get the current time on the server in the form of a
+     * date object.
+     *
+     * Note: this function will perform a network request if
+     * during this session /wsapi/session_context has not
+     * been called.
+     *
+     * @method serverTime
+     */
+    serverTime: function(onSuccess, onFailure) {
+      function calcAndReturn() {
+        try {
+          if (!server_time) throw "can't get server time!";
+          var offset = (new Date()).getTime() - server_time.local;
+          onSuccess(new Date(offset + server_time.remote));
+        } catch(e) {
+          onFailure(e.toString());
+        }
+      }
+      if (!server_time) withContext(calcAndReturn);
+      else setTimeout(calcAndReturn, 0);
     }
-    
   };
 
   return Network;

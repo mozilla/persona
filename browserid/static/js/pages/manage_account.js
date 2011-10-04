@@ -122,7 +122,7 @@
   function syncAndDisplayEmails() {
     var emails = {};
 
-    BrowserID.Identities.syncEmailKeypairs(function() {
+    BrowserID.Identities.syncEmails(function() {
       emails = BrowserID.Identities.getStoredEmailKeypairs();
       if (_.isEmpty(emails)) {
         $("#content").hide();

@@ -540,37 +540,40 @@ BrowserID.Identities = (function() {
      * @param {function} [onFailure] - Called on failure.
      */
     getAssertion: function(email, onSuccess, onFailure) {
-      var storedID = Identities.getStoredEmailKeypairs()[email],
-          assertion;
+      // we use the current time from the browserid servers
+      // to avoid issues with clock drift on user's machine.
+      // (issue #329)
+      network.serverTime(function(serverTime) {
+        var storedID = Identities.getStoredEmailKeypairs()[email],
+        assertion;
 
-      function createAssertion(idInfo) {
-        var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
-        var tok = new jwt.JWT(null, new Date(), origin);
-        assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
-        if (onSuccess) {
-          onSuccess(assertion);
+        function createAssertion(idInfo) {
+          var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
+          var tok = new jwt.JWT(null, serverTime, origin);
+          assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
+          if (onSuccess) {
+            onSuccess(assertion);
+          }
         }
-      }
 
-      if (storedID) {
-        prepareDeps();
-        if (storedID.priv) {
-          // parse the secret key
-          createAssertion(storedID);
+        if (storedID) {
+          prepareDeps();
+          if (storedID.priv) {
+            // parse the secret key
+            createAssertion(storedID);
+          }
+          else {
+            // we have no key for this identity, go generate the key, 
+            // sync it and then get the assertion recursively.
+            Identities.syncEmailKeypair(email, function() {
+              Identities.getAssertion(email, onSuccess, onFailure);
+            }, onFailure);
+          }
         }
-        else {
-          // we have no key for this identity, go generate the key, 
-          // sync it and then get the assertion recursively.
-          Identities.syncEmailKeypair(email, function() {
-            Identities.getAssertion(email, onSuccess, onFailure);
-          }, onFailure);
+        else if (onSuccess) {
+          onSuccess();
         }
-      }
-      else if (onSuccess) {
-        onSuccess();
-      }
-
-
+      });
     },
 
     /**

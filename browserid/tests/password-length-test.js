@@ -57,9 +57,13 @@ email.setInterceptor(function(email, site, secret) { token = secret; });
 
 suite.addBatch({
   "get csrf token": {
-    topic: wsapi.get('/wsapi/csrf'),
+    topic: wsapi.get('/wsapi/session_context'),
     "works": function (r, err) {
       assert.equal(typeof r.body, 'string');
+      var v = JSON.parse(r.body);
+      assert.equal(typeof v, 'object');
+      assert.equal(typeof v.csrf_token, 'string');
+      assert.equal(typeof v.server_time, 'number');
     }
   }
 });
