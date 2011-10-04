@@ -3,6 +3,8 @@ train-2011.09.29:
   * fix bug where session duration had an upper bound of 7 days - the time the server was running: #310
   * fix bug where a user could go longer than 1 week without re-authenticating: #309
   * fix link on /developers page to verfier source: #326
+  * (merged 2011.10.04) fix issue where a wrong-set client clock could prevent login: #329
+  * (external fix in myfavoritebeer) IE9 support: #240
 
 train-2011.09.22:
   * migrate to browserid signed certificates rather than keypairs where browserid hosts the public key: https://github.com/mozilla/browserid/issues?milestone=6
