@@ -476,15 +476,54 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
 
-  test("persistEmailKeypair", function() {
+  test("persistEmailKeypair with new email", function() {
+    lib.clearStoredEmailKeypairs();
+
     var user_kp = jwk.KeyPair.generate("RS",64);
-    lib.persistEmailKeypair("testemail2@testemail.com", user_kp, undefined, function onSuccess() {
-      var identities = lib.getStoredEmailKeypairs();
-      ok("testemail2@testemail.com" in identities, "Our new email is added");
+    lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
+      var id = lib.getStoredEmailKeypairs()["testemail@testemail.com"];
+
+      ok(id, "Email is added");
+      ok(id.created, "A create date is generated");
+      ok(id.updated, "An updated date is generated");
+      equal(id.created, id.updated, "Create and update dates are the same");
+
+      ok(id.pub, "A public key is generated");
+      ok(id.priv, "A private key is generated");
+      ok(id.cert, "A certificate is generated");
+
       start(); 
     });
 
     stop();
+  });
+
+  test("persistEmailKeypair with already saved email", function() {
+    lib.clearStoredEmailKeypairs();
+
+    var user_kp = jwk.KeyPair.generate("RS",64);
+    lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
+      setTimeout(function() {
+        lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
+
+        var id = lib.getStoredEmailKeypairs()["testemail@testemail.com"];
+
+        ok(id, "Email is added");
+        ok(id.created, "A create date is generated");
+        ok(id.updated, "An updated date is generated");
+        notEqual(id.created, id.updated, "Create and update dates are NOT the same when an address is updated");
+
+        ok(id.pub, "A public key is generated");
+        ok(id.priv, "A private key is generated");
+        ok(id.cert, "A certificate is generated");
+
+        start(); 
+        });
+      }, 500);
+    });
+
+    stop();
+
   });
 
 

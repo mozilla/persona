@@ -88,7 +88,7 @@ PageController.extend("Dialog", {}, {
         //self.doEmailSelected(info.email);
         // XXX benadida, lloyd - swap these two if you want to experiment with 
         // generating assertions directly from signin.
-        self.syncEmailKeypairs();
+        self.syncEmails();
       });
 
       hub.subscribe("reset_password", function(msg, info) {
@@ -199,9 +199,9 @@ PageController.extend("Dialog", {}, {
       BrowserID.Identities.logoutUser(this.doAuthenticate.bind(this));
     },
 
-    syncEmailKeypairs: function() {
+    syncEmails: function() {
       var self = this;
-      BrowserID.Identities.syncEmailKeypairs(self.doSignIn.bind(self), 
+      BrowserID.Identities.syncEmails(self.doSignIn.bind(self), 
         self.getErrorDialog(BrowserID.Errors.signIn));
     },
 

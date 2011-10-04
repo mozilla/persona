@@ -57,7 +57,7 @@
     setupRegCheck: function() {
       var me=this;
       identities[me.verifier](me.email, function(status) {
-        identities.syncEmailKeypairs(function() {
+        identities.syncEmails(function() {
           me.close(me.verificationMessage);
         });
       }, me.getErrorDialog(BrowserID.Errors.registration));

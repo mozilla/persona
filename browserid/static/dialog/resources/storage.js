@@ -76,6 +76,16 @@ BrowserID.Storage = (function() {
     storeEmails(emails);
   }
 
+  function invalidateEmail(email) {
+    var id = getEmails()[email];
+    if (id) {
+      delete id.priv;
+      delete id.pub;
+      delete id.cert;
+      addEmail(email, id);
+    }
+  }
+
   function storeTemporaryKeypair(keypair) {
     window.localStorage.tempKeypair = JSON.stringify({
       publicKey: keypair.publicKey.toSimpleObject(),
@@ -127,6 +137,7 @@ BrowserID.Storage = (function() {
     getEmails: getEmails,
     addEmail: addEmail,
     removeEmail: removeEmail,
+    invalidateEmail: invalidateEmail,
     clearEmails: clearEmails,
     storeTemporaryKeypair: storeTemporaryKeypair,
     retrieveTemporaryKeypair: retrieveTemporaryKeypair,
