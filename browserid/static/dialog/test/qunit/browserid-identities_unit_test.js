@@ -112,6 +112,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       onSuccess();
     },
 
+    serverTime: function(onSuccess) {
+      onSuccess(new Date());
+    },
+
     logout: function(onSuccess) {
       credentialsValid = false;
       onSuccess();
