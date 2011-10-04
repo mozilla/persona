@@ -61,7 +61,7 @@ PageController.extend("Dialog", {}, {
 
       BrowserID.Identities.setOrigin(origin_url);
 
-      this.doStart();
+      this.doCheckAuth();
 
       var self=this;
       $(window).bind("unload", function() {
@@ -112,7 +112,7 @@ PageController.extend("Dialog", {}, {
       });
 
       hub.subscribe("start", function() {
-        self.doStart();
+        self.doCheckAuth();
       });
 
       hub.subscribe("cancel", function() {
@@ -131,15 +131,6 @@ PageController.extend("Dialog", {}, {
       });
     },
 
-    doStart: function() {
-      // we should always check to see whether we're authenticated
-      // at dialog start. issue #74.
-      //
-      // (lth) XXX: we could include both csrf token and auth status
-      // in the intial resource serving to reduce network requests.
-      this.doCheckAuth();
-    },
-      
     doCancel: function() {
       var self=this;
       if(self.onsuccess) {
@@ -155,10 +146,6 @@ PageController.extend("Dialog", {}, {
       this.element.authenticate();
     },
 
-    doCreate: function() {
-      //this.element.createaccount();
-    },
-      
     doForgotPassword: function(email) {
       this.element.forgotpassword({
         email: email  

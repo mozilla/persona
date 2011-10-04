@@ -40,7 +40,8 @@
   var ANIMATION_TIME = 250,
       identities = BrowserID.Identities;
 
-  function checkEmail() {
+  function checkEmail(el, event) {
+    cancelEvent(event);
     var email = $("#email").val(), 
         self = this;
 
@@ -61,9 +62,11 @@
     });
   }
 
-  function createUser() {
+  function createUser(el, event) {
     var self=this,
         email = $("#email").val();
+
+    cancelEvent(event);
 
     if(!email) {
       // XXX error screen
@@ -83,10 +86,12 @@
     }, self.getErrorDialog(BrowserID.Errors.createAccount));
   }
 
-  function authenticate() {
+  function authenticate(el, event) {
     var email = $("#email").val(),
         pass = $("#password").val(),
         self = this;
+
+    cancelEvent(event);
 
     if(!(email && pass)) {
       // XXX error screen
@@ -116,9 +121,12 @@
 
   }
 
-  function resetPassword() {
-    var email = $("#email").val();
-    var self=this;
+  function resetPassword(el, event) {
+    var email = $("#email").val(),
+        self=this;
+
+    cancelEvent(event);
+
     identities.requestPasswordReset(email, function() {
       self.close("reset_password", {
         email: email

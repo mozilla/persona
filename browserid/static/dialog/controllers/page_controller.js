@@ -95,7 +95,7 @@
     },
 
     submit: function() {
-      this.close("submit");
+    //  this.close("submit");
     },
 
     doWait: function(info) {
