@@ -40,7 +40,8 @@
   var ANIMATION_TIME = 250,
       identities = BrowserID.Identities;
 
-  function checkEmail() {
+  function checkEmail(el, event) {
+    cancelEvent(event);
     var email = $("#email").val(), 
         self = this;
 
