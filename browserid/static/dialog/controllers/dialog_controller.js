@@ -81,7 +81,7 @@ PageController.extend("Dialog", {}, {
       });
 
       hub.subscribe("user_confirmed", function() {
-        self.doUserConfirmed();
+        self.doEmailConfirmed();
       });
 
       hub.subscribe("authenticated", function(msg, info) {
@@ -129,10 +129,6 @@ PageController.extend("Dialog", {}, {
         verifier: "waitForUserRegistration",
         verificationMessage: "user_confirmed"
       });
-    },
-
-    doUserConfirmed: function() {
-      this.doEmailSelected(this.confirmEmail);
     },
 
     doStart: function() {
