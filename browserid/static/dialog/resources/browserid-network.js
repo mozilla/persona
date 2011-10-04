@@ -42,7 +42,7 @@ var BrowserIDNetwork = (function() {
   var auth_status;
 
   function withContext(cb) {
-    if (auth_status !== undefined && csrf_token !== undefined) setTimeout(cb, 0);
+    if (typeof auth_status !== 'boolean' && csrf_token !== undefined) setTimeout(cb, 0);
     else {
       $.get('/wsapi/session_context', {}, function(result) {
         csrf_token = result.csrf_token;
@@ -90,12 +90,19 @@ var BrowserIDNetwork = (function() {
           },
           success: function(status, textStatus, jqXHR) {
             if (onSuccess) {
-              var authenticated = JSON.parse(status);
-              // at this point we know the authentication status of the
-              // session, let's set it to perhaps save a network request
-              // (to fetch session context).
-              if (typeof authenticated === 'boolean') auth_status = authenticated;
-              onSuccess(authenticated);
+              try {
+                var authenticated = JSON.parse(status);
+
+                if (typeof authenticated !== 'boolean') throw status;
+
+                // at this point we know the authentication status of the
+                // session, let's set it to perhaps save a network request
+                // (to fetch session context).
+                auth_status = authenticated;
+                onSuccess(authenticated);
+              } catch (e) {
+                onFailure("unexpected server response: " + e);
+              }
             }
           },
           error: onFailure
@@ -113,13 +120,13 @@ var BrowserIDNetwork = (function() {
     checkAuth: function(onSuccess, onFailure) {
       function returnAuthStatus() {
         try {
-          if (!auth_status) throw "can't get authentication status!";
+          if (typeof auth_status !== 'boolean') throw "can't get authentication status!";
           onSuccess(auth_status);
         } catch(e) {
           onFailure(e.toString());
         }
       }
-      if (!auth_status) withContext(returnAuthStatus);
+      if (typeof auth_status !== 'boolean') withContext(returnAuthStatus);
       else setTimeout(returnAuthStatus, 0);
     },
 
