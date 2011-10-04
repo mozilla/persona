@@ -199,8 +199,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("createUser", function() {
-    lib.createUser("testuser@testuser.com", function(keypair) {
-      equal("object", typeof keypair, "We have a key pair");
+    lib.createUser("testuser@testuser.com", function(status) {
+      ok(status, "user created");
       start();
     }, failure("createUser failure"));
 
@@ -237,7 +237,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("confirmEmail on staged identity", function() {
-    lib.createUser("testuser@testuser.com", function(keypair) {
+    lib.createUser("testuser@testuser.com", function(created) {
       lib.confirmEmail("testuser@testuser.com", function() {
         ok(true, "confirming staged identity");
         start();
@@ -249,7 +249,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("confirmEmail on non staged identity", function() {
-    lib.createUser("testuser@testuser.com", function(keypair) {
+    lib.createUser("testuser@testuser.com", function(created) {
       lib.confirmEmail("testuser2@testuser.com", function onSuccess() {
         ok(false, "confirming unstaged identity");
         start();
@@ -264,7 +264,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("confirmEmail on previously confirmed identity", function() {
-    lib.createUser("testuser@testuser.com", function(keypair) {
+    lib.createUser("testuser@testuser.com", function(created) {
       lib.confirmEmail("testuser@testuser.com", function() {
         lib.confirmEmail("testuser@testuser.com", function() {
           ok(false, "confirming previously confirmed identity should fail");
@@ -407,8 +407,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("addEmail", function() {
-    lib.addEmail("testemail@testemail.com", function(keypair) {
-      equal("object", typeof keypair, "we have a keypair");
+    lib.addEmail("testemail@testemail.com", function(added) {
+      ok(added, "user was added");
 
       var identities = lib.getStoredEmailKeypairs();
       equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
