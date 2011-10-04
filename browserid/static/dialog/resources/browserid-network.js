@@ -42,7 +42,7 @@ var BrowserIDNetwork = (function() {
   var auth_status;
 
   function withContext(cb) {
-    if (typeof auth_status !== 'boolean' && csrf_token !== undefined) setTimeout(cb, 0);
+    if (typeof auth_status === 'boolean' && csrf_token !== undefined) setTimeout(cb, 0);
     else {
       $.get('/wsapi/session_context', {}, function(result) {
         csrf_token = result.csrf_token;
@@ -139,9 +139,13 @@ var BrowserIDNetwork = (function() {
       withContext(function() {
         $.post("/wsapi/logout", {
           csrf: csrf_token
-        }, function() {
-          csrf_token = undefined;
-          auth_status = undefined;
+        }, function(result) {
+          // assume the logout request is successful and
+          // log the user out.  There is no need to reset the
+          // CSRF token.
+          // FIXME: we should return a confirmation that the
+          // user was successfully logged out.
+          auth_status = false;
           withContext(function() {
             if (onSuccess) {
               onSuccess();
