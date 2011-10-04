@@ -50,6 +50,7 @@
       if (pass && pass === pass2) {
         bid.Network.completeUserRegistration(token, pass, function onSuccess(registered) {
           if (registered) {
+            $("#signUpForm").hide();
             $("#congrats").fadeIn(250);
           }
         }, function onFailure() {
