@@ -171,16 +171,11 @@ BrowserID.Identities = (function() {
       // FIXME: keysize
       network.createUser(email, origin, function(created) {
         if (onSuccess) {
-          var val = created;
           if(created) {
-            prepareDeps();
-            var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
             self.stagedEmail = email;
-            self.stagedKeypair = keypair;
-            val = keypair;
           }
 
-          onSuccess(val);
+          onSuccess(created);
         }
       }, onFailure);
     },
@@ -315,13 +310,10 @@ BrowserID.Identities = (function() {
     confirmEmail: function(email, onSuccess, onFailure) {
       var self = this;
       if (email === self.stagedEmail) {
-        var keypair = self.stagedKeypair;
-        
         self.stagedEmail = null;
-        self.stagedKeypair = null;
 
         // certify
-        Identities.certifyEmailKeypair(email, keypair, function() {
+        Identities.persistEmail(email, function() {
           self.syncEmails(onSuccess, onFailure);
         });
 
@@ -439,15 +431,11 @@ BrowserID.Identities = (function() {
       var self = this;
       network.addEmail(email, origin, function(added) {
         if (added) {
-          prepareDeps();
-          var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
-
           self.stagedEmail = email;
-          self.stagedKeypair = keypair;
 
           // we no longer send the keypair, since we will certify it later.
           if (onSuccess) {
-            onSuccess(keypair);
+            onSuccess(added);
           }
         }
       }, onFailure);
