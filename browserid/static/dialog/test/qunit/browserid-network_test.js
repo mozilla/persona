@@ -91,13 +91,13 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
   test("logout->checkAuth: are we really logged out?", function() {
     BrowserIDNetwork.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
-      BrowserIDNetwork.logout(function onSuccess(authenticated) {
+      BrowserIDNetwork.logout(function onSuccess() {
         BrowserIDNetwork.checkAuth(function onSuccess(authenticated) {
           start();
           equal(false, authenticated, "after logout, we are not authenticated");
-        }, function onFailure() {
+        }, function onFailure(err) {
           start();
-          ok(false, "checkAuth failure");
+          ok(false, "checkAuth failure", err);
         });
       });
     });
@@ -151,4 +151,17 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   test("cancelUser", function() {
     equal(typeof BrowserIDNetwork.cancelUser, "function", "what a ridiculously stupid test");
   });
+
+  test("serverTime", function() {
+    BrowserIDNetwork.serverTime(function onSuccess(time) {
+      var diff = (new Date()) - time;
+      equal(Math.abs(diff) < 100, true, "server time and local time should be less than 100ms different (is " + diff + "ms different)");
+      start();
+    }, function onfailure() {
+      start();
+    });
+
+    stop();
+  });
+
 });
