@@ -103,9 +103,6 @@
         if (authenticated) {
           self.doWait(BrowserID.Wait.authentication);
         } 
-        else {
-          // XXX error screen
-        }
       },
       function onComplete(authenticated) {
         if (authenticated) {
@@ -113,7 +110,7 @@
             email: email 
           });
         } else {
-          // XXX error screen.
+          self.showTooltip("#cannot_authenticate");
         }
       }, 
       self.getErrorDialog(BrowserID.Errors.authentication)

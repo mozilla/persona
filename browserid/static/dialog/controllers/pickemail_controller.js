@@ -116,17 +116,22 @@
     cancelEvent(event);
 
     if (email) {
-      identities.addEmail(email, function(keypair) {
-        if (keypair) {
-          self.close("email_staged", {
-            email: email
-          });
+      identities.emailRegistered(email, function onComplete(registered) {
+        if(registered) {
+          self.showTooltip("#already_taken");
         }
         else {
-          // XXX BAAAAAAAAAAAAAH.
+          identities.addEmail(email, function(added) {
+            if (added) {
+              self.close("email_staged", {
+                email: email
+              });
+            }
+            else {
+            }
+          }, function onFailure() {
+          });
         }
-      }, function onFailure() {
-
       });
     }
     else {
