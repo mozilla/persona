@@ -241,9 +241,13 @@ label {
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
-#inputs > li > label {
+.inputs > li > label {
     cursor: pointer;
     color: #333;
+}
+
+.inputs > li:only-child > label {
+    cursor: default;
 }
 
 input[type=email],
@@ -506,7 +510,7 @@ html[xmlns] .cf {
     font-size: 80%;
 }
 
-#inputs li:only-child input[type=radio] {
+.inputs > li:only-child input[type=radio] {
     display: none;
 }
 
