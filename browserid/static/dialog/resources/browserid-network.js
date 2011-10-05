@@ -80,10 +80,16 @@ BrowserID.Network = (function() {
 
   function post(options) {
     withContext(function() {
+      var data = options.data || {};
+
+      if(!data.csrf) {
+        data.csrf = csrf_token;
+      }
+
       xhr.ajax({
         type: "POST",
         url: options.url,
-        data: options.data,
+        data: data,
         success: options.success,
         error: options.error
       });
@@ -114,8 +120,7 @@ BrowserID.Network = (function() {
         url: "/wsapi/authenticate_user",
         data: {
           email: email,
-          pass: password,
-          csrf: csrf_token
+          pass: password
         },
         success: function(status, textStatus, jqXHR) {
           if (onSuccess) {
@@ -164,9 +169,6 @@ BrowserID.Network = (function() {
     logout: function(onSuccess) {
       post({
         url: "/wsapi/logout",
-        data: {
-          csrf: csrf_token
-        },
         success: function() {
           // assume the logout request is successful and
           // log the user out.  There is no need to reset the
@@ -192,8 +194,7 @@ BrowserID.Network = (function() {
         url: "/wsapi/stage_user",
         data: {
           email: email,
-          site : origin,
-          csrf : csrf_token
+          site : origin
         },
         success: function(status) {
           var staged = JSON.parse(status);
@@ -249,7 +250,6 @@ BrowserID.Network = (function() {
       post({
         url: "/wsapi/complete_user_creation",
         data: {
-          csrf: csrf_token,
           token: token,
           pass: password
         },
@@ -321,7 +321,6 @@ BrowserID.Network = (function() {
       post({
         url: "/wsapi/complete_email_addition",
         data: {
-          csrf: csrf_token,
           token: token
         },
         success: function(status, textStatus, jqXHR) {
@@ -343,7 +342,6 @@ BrowserID.Network = (function() {
     cancelUser: function(onSuccess, onFailure) {
       post({
         url: "/wsapi/account_cancel",
-        data: {"csrf": csrf_token},
         success: createDeferred(onSuccess),
         error: onFailure
       });
@@ -362,8 +360,7 @@ BrowserID.Network = (function() {
         url: "/wsapi/stage_email",
         data: {
           email: email,
-          site: origin,
-          csrf: csrf_token
+          site: origin
         },
         success: function(status) {
           var staged = JSON.parse(status);
@@ -421,8 +418,7 @@ BrowserID.Network = (function() {
       post({
         url: "/wsapi/remove_email",
         data: {
-          email: email,
-          csrf: csrf_token
+          email: email
         },
         success: createDeferred(onSuccess),
         failure: onFailure
@@ -438,8 +434,7 @@ BrowserID.Network = (function() {
         url: "/wsapi/cert_key",
         data: {
           email: email,
-          pubkey: pubkey.serialize(),
-          csrf: csrf_token
+          pubkey: pubkey.serialize()
         },
         success: createDeferred(onSuccess),
         error: onError
