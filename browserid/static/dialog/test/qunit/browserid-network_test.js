@@ -305,7 +305,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
   wrappedAsyncTest("cancelUser valid", function() {
     network.cancelUser(function() {
-      // XXX need a wrappedAsyncTest here.
+      // XXX need a test here.
       ok(true);
       wrappedStart();
     }, function onFailure() {
@@ -318,7 +318,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   wrappedAsyncTest("cancelUser invalid", function() {
     xhr.useResult("invalid");
     network.cancelUser(function() {
-      // XXX need a wrappedAsyncTest here.
+      // XXX need a test here.
       ok(true);
       wrappedStart();
     }, function onFailure() {
@@ -413,7 +413,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
   wrappedAsyncTest("removeEmail valid", function() {
     network.removeEmail("validemail", function onSuccess() {
-      // XXX need a wrappedAsyncTest here;
+      // XXX need a test here;
       ok(true);
       wrappedStart();
     }, function onFailure() {
@@ -427,7 +427,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   wrappedAsyncTest("removeEmail invalid", function() {
     xhr.useResult("invalid");
     network.removeEmail("invalidemail", function onSuccess() {
-      // XXX need a wrappedAsyncTest here;
+      // XXX need a test here;
       ok(true);
       wrappedStart();
     }, function onFailure() {
@@ -452,7 +452,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
   wrappedAsyncTest("requestPasswordReset", function() {
     network.requestPasswordReset("address", "origin", function onSuccess() {
-      // XXX need a wrappedAsyncTest here;
+      // XXX need a test here;
       ok(true);
       wrappedStart();
     }, function onFailure() {
@@ -465,7 +465,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
 
   wrappedAsyncTest("resetPassword", function() {
     network.resetPassword("password", function onSuccess() {
-      // XXX need a wrappedAsyncTest here;
+      // XXX need a test here;
       ok(true);
       wrappedStart();
     }, function onFailure() {
