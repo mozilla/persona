@@ -128,6 +128,12 @@ hr {
 .video {
   margin: 0 0 25px 0;
   width: 700px;
+  font-size: 2em;
+  line-height: 1.3em;
+  padding: 1em 2em 1em 2em;
+  text-align: center;
+  font-weight: normal;
+  font-style: italic;
 }
 
 .video img, .video iframe {
