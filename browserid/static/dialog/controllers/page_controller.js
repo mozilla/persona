@@ -33,23 +33,51 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-//
-// a JMVC controller for the browserid dialog
-//
-
 (function() {
 "use strict";
 
   var ANIMATION_TIME = 250,
+      TOOLTIP_DISPLAY = 2000,
       bid = BrowserID,  
       identities = bid.Identities;
 
   function showTooltip(el) {
-    $(el).fadeIn(ANIMATION_TIME, function() {
-      setTimeout(function() {
-        $(el).fadeOut(ANIMATION_TIME);
-      }, 2000);
-    });
+    el = $(el);
+    var messageFor = el.attr("for");
+
+    if(messageFor) {
+      var contents = el.html();
+      var template = $("#templateTooltip").html();
+      _.templateSettings = {
+          interpolate : /\{\{(.+?)\}\}/g
+      };
+      var tooltip = $(_.template(template, {
+        contents: contents
+      })).appendTo("body");
+
+      var target = $("#" + messageFor);
+      var targetOffset = target.offset();
+      targetOffset.top -= tooltip.outerHeight();
+      targetOffset.left += 10;
+
+      tooltip.css(targetOffset);
+
+      show(tooltip, function() {
+        tooltip.remove();
+        tooltip = null;
+      });
+    }
+    else {
+      show(el);
+    }
+
+    function show(el, complete) {
+      el.fadeIn(ANIMATION_TIME, function() {
+        setTimeout(function() {
+          el.fadeOut(ANIMATION_TIME, complete);
+        }, TOOLTIP_DISPLAY);
+      });
+    }
   }
 
   function validateEmail(email) {
