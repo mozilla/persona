@@ -40,6 +40,18 @@
 (function() {
 "use strict";
 
+  var ANIMATION_TIME = 250,
+      identities = BrowserID.Identities;
+
+  function showTooltip(el) {
+    $(el).fadeIn(ANIMATION_TIME, function() {
+      setTimeout(function() {
+        $(el).fadeOut(ANIMATION_TIME);
+      }, 2000);
+    });
+  }
+
+
   $.Controller.extend("PageController", {
     }, {
     init: function(options) {
@@ -149,7 +161,9 @@
       event.preventDefault();
       event.stopPropagation();
       this.close("start");
-    }
+    },
+
+    showTooltip: showTooltip
   });
 
 }());

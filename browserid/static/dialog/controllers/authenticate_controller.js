@@ -40,14 +40,6 @@
   var ANIMATION_TIME = 250,
       identities = BrowserID.Identities;
 
-  function showTooltip(el) {
-    $(el).fadeIn(ANIMATION_TIME, function() {
-      setTimeout(function() {
-        $(el).fadeOut(ANIMATION_TIME);
-      }, 2000);
-    });
-  }
-
   function checkEmail(el, event) {
     cancelEvent(event);
     var email = $("#email").val(), 
@@ -118,7 +110,7 @@
             email: email 
           });
         } else {
-          showTooltip("#cannot_authenticate");
+          self.showTooltip("#cannot_authenticate");
         }
       }, 
       self.getErrorDialog(BrowserID.Errors.authentication)

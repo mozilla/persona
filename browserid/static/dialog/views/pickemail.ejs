@@ -34,10 +34,16 @@
 
               <div id="addEmail" class="cf">
 
-                  <div class="inputs">
-                      <label for="newEmail">New email address</label>
-                      <input id="newEmail" name="newEmail" type="email"/>
-                  </div>
+                  <ul class="inputs">
+                      <li>
+                          <label for="newEmail">New email address</label>
+                          <input id="newEmail" name="newEmail" type="email" required/>
+
+                          <div id="already_taken" class="tooltip" for="newEmail">
+                            This email address is already taken.
+                          </div>
+                      </li>
+                  </ul>
 
                   <div class="submit cf">
                       <button id="addNewEmail">add</button>
