@@ -40,18 +40,32 @@
   var ANIMATION_TIME = 250,
       identities = BrowserID.Identities;
 
+  function verifyEmail(email) {
+    var valid = true,
+        self = this;
+
+    if(!email) {
+      self.showTooltip("#email_required");
+      valid = false;
+    }
+    else if(!BrowserID.verifyEmail(email)) {
+      self.showTooltip("#email_format");
+      valid = false;
+    }
+
+    return valid;
+  }
+
   function checkEmail(el, event) {
     cancelEvent(event);
     var email = $("#email").val(), 
         self = this;
 
-    if(!email) {
-      // XXX error screen
+
+    if(!verifyEmail.call(this, email)) {
       return;
     }
 
-    // XXX verify email length/format here
-    // show error message if bad.
     identities.emailRegistered(email, function onComplete(registered) {
       if(registered) {
         enterPasswordState.call(self);
@@ -68,8 +82,7 @@
 
     cancelEvent(event);
 
-    if(!email) {
-      // XXX error screen
+    if(!verifyEmail.call(this, email)) {
       return;
     }
 
@@ -93,8 +106,12 @@
 
     cancelEvent(event);
 
-    if(!(email && pass)) {
-      // XXX error screen
+    if(!verifyEmail.call(this, email)) {
+      return;
+    }
+
+    if(!pass) {
+      self.showTooltip("#password_required");
       return;
     }
 

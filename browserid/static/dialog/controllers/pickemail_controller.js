@@ -47,6 +47,23 @@
     });
   }
 
+  function verifyEmail(email) {
+    var valid = true,
+        self = this;
+
+    if(!email) {
+      self.showTooltip("#email_required");
+      valid = false;
+    }
+    else if(!BrowserID.verifyEmail(email)) {
+      self.showTooltip("#email_format");
+      valid = false;
+    }
+
+    return valid;
+  }
+
+
   function cancelEvent(event) {
     if (event) {
       event.preventDefault();
@@ -115,30 +132,29 @@
 
     cancelEvent(event);
 
-    if (email) {
-      identities.emailRegistered(email, function onComplete(registered) {
-        if(registered) {
-          self.showTooltip("#already_taken");
-        }
-        else {
-          identities.addEmail(email, function(added) {
-            if (added) {
-              self.close("email_staged", {
-                email: email
-              });
-            }
-            else {
-              self.showTooltip("#could_not_add");
-            }
-          }, function onFailure() {
-              self.showTooltip("#could_not_add");
-          });
-        }
-      });
+    if(!verifyEmail.call(this, email)) {
+      return;
     }
-    else {
-      self.showTooltip("#required_newemail");
-    }
+
+    identities.emailRegistered(email, function onComplete(registered) {
+      if(registered) {
+        self.showTooltip("#already_taken");
+      }
+      else {
+        identities.addEmail(email, function(added) {
+          if (added) {
+            self.close("email_staged", {
+              email: email
+            });
+          }
+          else {
+            self.showTooltip("#could_not_add");
+          }
+        }, function onFailure() {
+            self.showTooltip("#could_not_add");
+        });
+      }
+    });
   }
 
 

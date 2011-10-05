@@ -1,3 +1,5 @@
+/*jshint browsers:true, forin: true, laxbreak: true */
+/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -32,18 +34,36 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-
-(function() {
+steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", function() {
   "use strict";
 
-  window.BrowserID = window.BrowserID || {};
+  module("browserid-unit");
+  
+  var bid = BrowserID;
 
+  test("email address x@y.z is valid", function() {
+    ok(bid.verifyEmail("x@y.z"), "x@y.z is valid");
+  });
 
-  window.BrowserID.verifyEmail = function(address) {
-    // gotten from http://blog.gerv.net/2011/05/html5_email_address_regexp/
-    // changed the requirement that there must be a ldh-str because BrowserID 
-    // is only used on internet based networks.
-    return /^[\w.!#$%&'*+\-/=?\^`{|}~]+@[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(address);
-  };
+  test("email address x@y.z.w is valid", function() {
+    ok(bid.verifyEmail("x@y.z.w"), "x@y.z.w is valid");
+  });
 
-}());
+  test("email address x.v@y.z.w is valid", function() {
+    ok(bid.verifyEmail("x.v@y.z.w"), "x.v@y.z.w is valid");
+  });
+
+  test("email address x_v@y.z.w is valid", function() {
+    ok(bid.verifyEmail("x_v@y.z.w"), "x_v@y.z.w is valid");
+  });
+
+  test("email address x is not valid", function() {
+    equal(bid.verifyEmail("x"), false, "x is not valid");
+  });
+
+  test("email address x@y is not valid", function() {
+    equal(bid.verifyEmail("x@y"), false, "x@y is not valid");
+  });
+
+});
+
