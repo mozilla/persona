@@ -201,6 +201,10 @@ h2 {
     line-height: 28px;
 }
 
+#signIn .submit > p {
+  line-height: 13px;
+}
+
 #signIn .remember {
     display: inline-block;
     line-height: 28px;
@@ -498,8 +502,7 @@ html[xmlns] .cf {
 }
 
 .inputs {
-    min-height: 106px;
-    max-height: 140px;
+    height: 110px;
     overflow-y: auto;
     margin: 1em 0 .5em;
     padding: 0 1em;
