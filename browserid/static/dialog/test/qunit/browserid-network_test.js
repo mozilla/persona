@@ -108,6 +108,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
         data: obj.data
       };
 
+
+      if(type === "post" && !obj.data.csrf) {
+        ok(false, "missing csrf token on POST request");
+      }
+
       var resName = req.type + " " + req.url + " " + xhr.resultType;
       var result = xhr.results[resName];
 
