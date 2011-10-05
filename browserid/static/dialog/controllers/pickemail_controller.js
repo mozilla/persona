@@ -38,7 +38,8 @@
   "use strict";
 
   var ANIMATION_TIME = 250,
-      identities = BrowserID.Identities;
+      bid = BrowserID,
+      identities = bid.Identities;
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
     // XXX instead of using jQuery here, think about using CSS animations.
@@ -123,7 +124,7 @@
 
     identities.emailRegistered(email, function onComplete(registered) {
       if(registered) {
-        self.showTooltip("#already_taken");
+        bid.Tooltip.showTooltip("#already_taken");
       }
       else {
         identities.addEmail(email, function(added) {
@@ -133,10 +134,10 @@
             });
           }
           else {
-            self.showTooltip("#could_not_add");
+            bid.Tooltip.showTooltip("#could_not_add");
           }
         }, function onFailure() {
-            self.showTooltip("#could_not_add");
+            bid.Tooltip.showTooltip("#could_not_add");
         });
       }
     });

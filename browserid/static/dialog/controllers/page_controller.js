@@ -1,4 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*global BrowserID: true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -12,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozilla bid.
+ * The Original Code is Mozilla BrowserID.
  *
  * The Initial Developer of the Original Code is Mozilla.
  * Portions created by the Initial Developer are Copyright (C) 2011
@@ -36,60 +37,19 @@
 (function() {
 "use strict";
 
-  var ANIMATION_TIME = 250,
-      TOOLTIP_DISPLAY = 2000,
-      bid = BrowserID,  
+  var bid = BrowserID,  
       identities = bid.Identities;
 
-  function showTooltip(el) {
-    el = $(el);
-    var messageFor = el.attr("for");
-
-    if(messageFor) {
-      var contents = el.html();
-      var template = $("#templateTooltip").html();
-      _.templateSettings = {
-          interpolate : /\{\{(.+?)\}\}/g
-      };
-      var tooltip = $(_.template(template, {
-        contents: contents
-      })).appendTo("body");
-
-      var target = $("#" + messageFor);
-      var targetOffset = target.offset();
-      targetOffset.top -= tooltip.outerHeight();
-      targetOffset.left += 10;
-
-      tooltip.css(targetOffset);
-
-      show(tooltip, function() {
-        tooltip.remove();
-        tooltip = null;
-      });
-    }
-    else {
-      show(el);
-    }
-
-    function show(el, complete) {
-      el.fadeIn(ANIMATION_TIME, function() {
-        setTimeout(function() {
-          el.fadeOut(ANIMATION_TIME, complete);
-        }, TOOLTIP_DISPLAY);
-      });
-    }
-  }
 
   function validateEmail(email) {
-    var valid = true,
-        self = this;
+    var valid = true;
 
     if(!email) {
-      self.showTooltip("#email_required");
+      bid.Tooltip.showTooltip("#email_required");
       valid = false;
     }
     else if(!bid.verifyEmail(email)) {
-      self.showTooltip("#email_format");
+      bid.Tooltip.showTooltip("#email_format");
       valid = false;
     }
 
@@ -207,7 +167,6 @@
       this.close("start");
     },
 
-    showTooltip: showTooltip,
     validateEmail: validateEmail
   });
 
