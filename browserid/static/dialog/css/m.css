@@ -25,14 +25,19 @@ body #signIn {
     padding: 10px;
 }
 
+body #signIn .table {
+    width: 100%;
+}
+
 body #signIn form {
     padding: 0;
 }
 
 body #favicon {
-    text-align: left;
     border-bottom: 1px solid rgba(0,0,0,0.05);
     background-color: rgba(255,255,255,0.25);
+    text-align: center;
+    left: 0;
 }
 
 body #favicon img {
@@ -62,4 +67,8 @@ body #checkemail p {
 
 body #footer {
     padding: 10px;
+}
+
+body #signIn .vertical ul li {
+  margin-top: 20px;
 }
