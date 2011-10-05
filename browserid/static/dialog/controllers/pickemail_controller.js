@@ -128,14 +128,16 @@
               });
             }
             else {
+              self.showTooltip("#could_not_add");
             }
           }, function onFailure() {
+              self.showTooltip("#could_not_add");
           });
         }
       });
     }
     else {
-      // XXX Error message!
+      self.showTooltip("#required_newemail");
     }
   }
 

@@ -37,7 +37,15 @@
                   <ul class="inputs">
                       <li>
                           <label for="newEmail">New email address</label>
-                          <input id="newEmail" name="newEmail" type="email" required/>
+                          <input id="newEmail" name="newEmail" type="email" />
+
+                          <div id="could_not_add" class="tooltip" for="newEmail">
+                            This email address could not be added.
+                          </div>
+
+                          <div id="required_newemail" class="tooltip" for="newEmail">
+                            This field is required.
+                          </div>
 
                           <div id="already_taken" class="tooltip" for="newEmail">
                             This email address is already taken.

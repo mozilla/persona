@@ -487,6 +487,7 @@ html[xmlns] .cf {
   border-radius: 10px;
   padding: 5px;
   border: 2px solid #000;
+  display: none;
 }
 
 .inputs {
@@ -522,16 +523,10 @@ html[xmlns] .cf {
     -moz-box-flex: 1;
 }
 
-#cannot_authenticate,
-#already_taken,
 .newuser,
 .forgot,
 .returning {
     display: none;
-}
-
-.invalid_auth #cannot_authenticate {
-  display: block;
 }
 
 #create_text_section {
