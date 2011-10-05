@@ -62,6 +62,11 @@ BrowserID.Network = (function() {
     }
   }
 
+  function clearContext() {
+    var undef;
+    csrf_token = server_time = auth_status = undef;
+  }
+
   function createDeferred(cb) {
     if (cb) {
       return function() {
@@ -75,12 +80,13 @@ BrowserID.Network = (function() {
 
   var Network = {
     /**
-     * Set the XHR object.  Used for testing
+     * Set the XHR object and clear all context info.  Used for testing.
      * @method setXHR
      * @param {object} xhr - xhr object.
      */
     setXHR: function(newXHR) {
       xhr = newXHR;
+      clearContext();
     },
 
     /**
@@ -135,7 +141,6 @@ BrowserID.Network = (function() {
         try {
           if (typeof auth_status !== 'boolean') throw "can't get authentication status!";
           _.delay(onSuccess, 0, auth_status);
-          onSuccess(auth_status);
         } catch(e) {
           if (onFailure) onFailure(e.toString());
         }
