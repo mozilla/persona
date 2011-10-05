@@ -22,7 +22,15 @@
 
                     <li>
                         <label for="email" class="serif">Email</label>
-                        <input id="email" class="sans" type="email" autocapitalize="off" autocorrect="off" required x-moz-errormessage="an email address is required">
+                        <input id="email" class="sans" type="email" autocapitalize="off" autocorrect="off" x-moz-errormessage="an email address is required">
+
+                        <div id="email_format" class="tooltip" for="email">
+                          This field must be an email address.
+                        </div>
+
+                        <div id="email_required" class="tooltip" for="email">
+                          The email field is required.
+                        </div>
                     </li>
 
                     <li>
@@ -42,6 +50,10 @@
                         <div id="create_text_section" class="newuser">
                             <p><strong>Welcome to BrowserID!</strong></p>
                             <p>This email looks new, so let's get you set up.</p>
+                        </div>
+
+                        <div id="password_required" class="tooltip" for="password">
+                          The password field is required.
                         </div>
 
                         <div id="cannot_authenticate" class="tooltip" for="password">

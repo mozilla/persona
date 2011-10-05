@@ -53,6 +53,7 @@ steal.plugins(
                'channel',
                'browserid',
                'storage',
+               'tooltip',
                'browserid-extensions',
                'browserid-network',
                'browserid-identities',

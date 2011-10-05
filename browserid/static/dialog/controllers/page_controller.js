@@ -1,4 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*global BrowserID: true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,24 +34,27 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-//
-// a JMVC controller for the browserid dialog
-//
-
 (function() {
 "use strict";
 
-  var ANIMATION_TIME = 250,
-      identities = BrowserID.Identities;
+  var bid = BrowserID,  
+      identities = bid.Identities;
 
-  function showTooltip(el) {
-    $(el).fadeIn(ANIMATION_TIME, function() {
-      setTimeout(function() {
-        $(el).fadeOut(ANIMATION_TIME);
-      }, 2000);
-    });
+
+  function validateEmail(email) {
+    var valid = true;
+
+    if(!email) {
+      bid.Tooltip.showTooltip("#email_required");
+      valid = false;
+    }
+    else if(!bid.verifyEmail(email)) {
+      bid.Tooltip.showTooltip("#email_format");
+      valid = false;
+    }
+
+    return valid;
   }
-
 
   $.Controller.extend("PageController", {
     }, {
@@ -163,7 +167,7 @@
       this.close("start");
     },
 
-    showTooltip: showTooltip
+    validateEmail: validateEmail
   });
 
 }());

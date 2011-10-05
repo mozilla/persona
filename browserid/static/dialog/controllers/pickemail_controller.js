@@ -38,7 +38,8 @@
   "use strict";
 
   var ANIMATION_TIME = 250,
-      identities = BrowserID.Identities;
+      bid = BrowserID,
+      identities = bid.Identities;
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
     // XXX instead of using jQuery here, think about using CSS animations.
@@ -46,6 +47,8 @@
       $(fadeInSelector).fadeIn(ANIMATION_TIME, callback);
     });
   }
+
+
 
   function cancelEvent(event) {
     if (event) {
@@ -115,28 +118,29 @@
 
     cancelEvent(event);
 
-    if (email) {
-      identities.emailRegistered(email, function onComplete(registered) {
-        if(registered) {
-          self.showTooltip("#already_taken");
-        }
-        else {
-          identities.addEmail(email, function(added) {
-            if (added) {
-              self.close("email_staged", {
-                email: email
-              });
-            }
-            else {
-            }
-          }, function onFailure() {
-          });
-        }
-      });
+    if(!self.validateEmail(email)) {
+      return;
     }
-    else {
-      // XXX Error message!
-    }
+
+    identities.emailRegistered(email, function onComplete(registered) {
+      if(registered) {
+        bid.Tooltip.showTooltip("#already_taken");
+      }
+      else {
+        identities.addEmail(email, function(added) {
+          if (added) {
+            self.close("email_staged", {
+              email: email
+            });
+          }
+          else {
+            bid.Tooltip.showTooltip("#could_not_add");
+          }
+        }, function onFailure() {
+            bid.Tooltip.showTooltip("#could_not_add");
+        });
+      }
+    });
   }
 
 

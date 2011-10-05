@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global BrowserID, PageController: true */
+/*global BrowserID:true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -38,20 +38,19 @@
   "use strict";
 
   var ANIMATION_TIME = 250,
-      identities = BrowserID.Identities;
+      bid = BrowserID,
+      identities = bid.Identities;
 
   function checkEmail(el, event) {
-    cancelEvent(event);
-    var email = $("#email").val(), 
+    var email = $("#email").val(),
         self = this;
 
-    if(!email) {
-      // XXX error screen
+    cancelEvent(event);
+
+    if(!self.validateEmail(email)) {
       return;
     }
 
-    // XXX verify email length/format here
-    // show error message if bad.
     identities.emailRegistered(email, function onComplete(registered) {
       if(registered) {
         enterPasswordState.call(self);
@@ -68,8 +67,7 @@
 
     cancelEvent(event);
 
-    if(!email) {
-      // XXX error screen
+    if(!self.validateEmail(email)) {
       return;
     }
 
@@ -83,7 +81,7 @@
       else {
         // XXX can't register this email address.
       }
-    }, self.getErrorDialog(BrowserID.Errors.createAccount));
+    }, self.getErrorDialog(bid.Errors.createAccount));
   }
 
   function authenticate(el, event) {
@@ -93,15 +91,19 @@
 
     cancelEvent(event);
 
-    if(!(email && pass)) {
-      // XXX error screen
+    if(!self.validateEmail(email)) {
+      return;
+    }
+
+    if(!pass) {
+      bid.Tooltip.showTooltip("#password_required");
       return;
     }
 
     identities.authenticateAndSync(email, pass, 
       function onAuthenticate(authenticated) {
         if (authenticated) {
-          self.doWait(BrowserID.Wait.authentication);
+          self.doWait(bid.Wait.authentication);
         } 
       },
       function onComplete(authenticated) {
@@ -110,10 +112,10 @@
             email: email 
           });
         } else {
-          self.showTooltip("#cannot_authenticate");
+          bid.Tooltip.showTooltip("#cannot_authenticate");
         }
       }, 
-      self.getErrorDialog(BrowserID.Errors.authentication)
+      self.getErrorDialog(bid.Errors.authentication)
     );
 
   }

@@ -34,10 +34,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-/**
- * This test assumes for authentication that there is a user named 
- * "testuser@testuser.com" with the password "testuser"
- */
 var jwk = require("./jwk");
 var jwcert = require("./jwcert");
 
