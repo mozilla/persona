@@ -40,6 +40,14 @@
   var ANIMATION_TIME = 250,
       identities = BrowserID.Identities;
 
+  function showTooltip(el) {
+    $(el).fadeIn(ANIMATION_TIME, function() {
+      setTimeout(function() {
+        $(el).fadeOut(ANIMATION_TIME);
+      }, 2000);
+    });
+  }
+
   function checkEmail(el, event) {
     cancelEvent(event);
     var email = $("#email").val(), 
@@ -103,9 +111,6 @@
         if (authenticated) {
           self.doWait(BrowserID.Wait.authentication);
         } 
-        else {
-          // XXX error screen
-        }
       },
       function onComplete(authenticated) {
         if (authenticated) {
@@ -113,7 +118,7 @@
             email: email 
           });
         } else {
-          // XXX error screen.
+          showTooltip("#cannot_authenticate");
         }
       }, 
       self.getErrorDialog(BrowserID.Errors.authentication)

@@ -184,7 +184,8 @@ h2 {
 }
 
 #signIn .vertical ul {
-    list-style-type: none;
+  list-style-type: none;
+  position: relative;
 }
 
 #signIn .vertical ul li {
@@ -477,6 +478,17 @@ html[xmlns] .cf {
 	height: 1%;
 }
 
+.tooltip {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0,0,0,.7);
+  color: #fff;
+  border-radius: 10px;
+  padding: 5px;
+  border: 2px solid #000;
+}
+
 .inputs {
     min-height: 106px;
     max-height: 140px;
@@ -518,6 +530,10 @@ html[xmlns] .cf {
 .forgot,
 .returning {
     display: none;
+}
+
+.invalid_auth #cannot_authenticate {
+  display: block;
 }
 
 #create_text_section {
