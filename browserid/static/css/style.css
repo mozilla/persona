@@ -181,13 +181,13 @@ hr {
   display: inline-block;
 }
 
-.steps {
+div.steps {
   width: 24px;
   height: 24px;
-  display: inline-block;
   vertical-align: bottom;
-  margin-right: 5px;
+  margin-right: 10px;
   background-image: url('/i/count.png');
+  float: left;
 }
 
 .one .steps {
