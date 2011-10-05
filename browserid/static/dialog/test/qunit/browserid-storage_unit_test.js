@@ -38,7 +38,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/storage", func
   var storage = BrowserID.Storage;
 
   module("BrowserID.Storage", {
-    startup: function() {
+    setup: function() {
       storage.clearEmails();
     },
 
