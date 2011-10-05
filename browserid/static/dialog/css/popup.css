@@ -493,9 +493,6 @@ html[xmlns] .cf {
     min-height: 106px;
     max-height: 140px;
     overflow-y: auto;
-}
-
-.inputs {
     margin: 1em 0 .5em;
     padding: 0 1em;
     line-height: 18px;
@@ -526,6 +523,7 @@ html[xmlns] .cf {
 }
 
 #cannot_authenticate,
+#already_taken,
 .newuser,
 .forgot,
 .returning {
