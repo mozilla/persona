@@ -12,7 +12,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozilla BrowserID.
+ * The Original Code is Mozilla bid.
  *
  * The Initial Developer of the Original Code is Mozilla.
  * Portions created by the Initial Developer are Copyright (C) 2011
@@ -41,7 +41,8 @@
 "use strict";
 
   var ANIMATION_TIME = 250,
-      identities = BrowserID.Identities;
+      bid = BrowserID,  
+      identities = bid.Identities;
 
   function showTooltip(el) {
     $(el).fadeIn(ANIMATION_TIME, function() {
@@ -51,6 +52,21 @@
     });
   }
 
+  function validateEmail(email) {
+    var valid = true,
+        self = this;
+
+    if(!email) {
+      self.showTooltip("#email_required");
+      valid = false;
+    }
+    else if(!bid.verifyEmail(email)) {
+      self.showTooltip("#email_format");
+      valid = false;
+    }
+
+    return valid;
+  }
 
   $.Controller.extend("PageController", {
     }, {
@@ -163,7 +179,8 @@
       this.close("start");
     },
 
-    showTooltip: showTooltip
+    showTooltip: showTooltip,
+    validateEmail: validateEmail
   });
 
 }());

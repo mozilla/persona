@@ -47,21 +47,6 @@
     });
   }
 
-  function verifyEmail(email) {
-    var valid = true,
-        self = this;
-
-    if(!email) {
-      self.showTooltip("#email_required");
-      valid = false;
-    }
-    else if(!BrowserID.verifyEmail(email)) {
-      self.showTooltip("#email_format");
-      valid = false;
-    }
-
-    return valid;
-  }
 
 
   function cancelEvent(event) {
@@ -132,7 +117,7 @@
 
     cancelEvent(event);
 
-    if(!verifyEmail.call(this, email)) {
+    if(!self.validateEmail(email)) {
       return;
     }
 
