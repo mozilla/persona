@@ -504,10 +504,12 @@ html[xmlns] .cf {
     margin: 1em 0 .5em;
     padding: 0 1em;
     line-height: 18px;
+    min-height: 110px;
 }
 
 .pickemail .inputs {
     height: 110px;
+    min-height: 0;
     overflow-y: auto;
 }
 

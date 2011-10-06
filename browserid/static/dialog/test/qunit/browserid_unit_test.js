@@ -39,31 +39,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", fu
 
   module("browserid-unit");
   
-  var bid = BrowserID;
-
-  test("email address x@y.z is valid", function() {
-    ok(bid.verifyEmail("x@y.z"), "x@y.z is valid");
-  });
-
-  test("email address x@y.z.w is valid", function() {
-    ok(bid.verifyEmail("x@y.z.w"), "x@y.z.w is valid");
-  });
-
-  test("email address x.v@y.z.w is valid", function() {
-    ok(bid.verifyEmail("x.v@y.z.w"), "x.v@y.z.w is valid");
-  });
-
-  test("email address x_v@y.z.w is valid", function() {
-    ok(bid.verifyEmail("x_v@y.z.w"), "x_v@y.z.w is valid");
-  });
-
-  test("email address x is not valid", function() {
-    equal(bid.verifyEmail("x"), false, "x is not valid");
-  });
-
-  test("email address x@y is not valid", function() {
-    equal(bid.verifyEmail("x@y"), false, "x@y is not valid");
-  });
 
 });
 

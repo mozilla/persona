@@ -45,37 +45,14 @@
     $("#signUpForm").remove();
   }
 
-  function validate(pass, vpass) {
-    var valid = false;
-
-    if(!pass) {
-      tooltip.showTooltip("#password_required"); 
-    }
-    else if(pass.length < 8) {
-      tooltip.showTooltip("#password_too_short"); 
-    }
-    else if(!vpass) {
-      tooltip.showTooltip("#vpassword_required"); 
-    }
-    else if(pass !== vpass) {
-      tooltip.showTooltip("#passwords_no_match"); 
-    }
-    else {
-      valid = true;
-    }
-
-    return valid;
-  }
-
   bid.verifyEmailAddress = function(token) {
     $("#signUpForm").submit(function(event) {
       event.preventDefault();
 
-      var email = $("#email").val(),
-          pass = $("#password").val(),
+      var pass = $("#password").val(),
           vpass = $("#vpassword").val();
 
-      var valid = validate(pass, vpass);
+      var valid = bid.Validation.passwordAndValidationPassword(pass, vpass);
 
       if (valid) {
         bid.Network.completeUserRegistration(token, pass, function onSuccess(registered) {

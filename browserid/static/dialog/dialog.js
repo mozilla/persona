@@ -54,6 +54,7 @@ steal.plugins(
                'browserid',
                'storage',
                'tooltip',
+               'validation',
                'browserid-extensions',
                'browserid-network',
                'browserid-identities',
