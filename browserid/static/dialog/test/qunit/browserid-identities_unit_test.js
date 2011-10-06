@@ -52,7 +52,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   var credentialsValid, unknownEmails, keyRefresh, syncValid, userEmails, 
       userCheckCount = 0,
-      emailCheckCount = 0;
+      emailCheckCount = 0,
+      registrationResponse;
 
   var netStub = {
     reset: function() {
@@ -60,6 +61,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
       unknownEmails = [];
       keyRefresh = [];
       userEmails = {"testuser@testuser.com": {}};
+      registrationResponse = "complete";
     },
 
     stageUser: function(email, password, onSuccess) {
@@ -68,7 +70,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     checkUserRegistration: function(email, onSuccess, onFailure) {
       userCheckCount++;
-      var status = userCheckCount === 2 ? "complete" : "pending";
+      var status = userCheckCount === 2 ? registrationResponse : "pending";
 
       onSuccess(status);
     },
@@ -91,7 +93,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     checkEmailRegistration: function(email, onSuccess, onFailure) {
       emailCheckCount++;
-      var status = emailCheckCount === 2 ? "complete" : "pending";
+      var status = emailCheckCount === 2 ? registrationResponse : "pending";
 
       onSuccess(status);
 
@@ -207,7 +209,18 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
-  test("waitForUserRegistration", function() {
+  test("waitForUserRegistration with success response", function() {
+    lib.waitForUserRegistration("testuser@testuser.com", function() {
+      ok(true);
+      start();
+    }, failure("waitForUserRegistration failure"));
+
+    stop();
+  });
+
+  test("waitForUserRegistration with mustAuth response", function() {
+    registrationResponse = "mustAuth";
+
     lib.waitForUserRegistration("testuser@testuser.com", function() {
       ok(true);
       start();

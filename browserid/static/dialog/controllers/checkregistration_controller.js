@@ -57,9 +57,14 @@
     setupRegCheck: function() {
       var me=this;
       identities[me.verifier](me.email, function(status) {
-        identities.syncEmails(function() {
-          me.close(me.verificationMessage);
-        });
+        if (status === "complete") {
+          identities.syncEmails(function() {
+            me.close(me.verificationMessage);
+          });
+        }
+        else if (status === "mustAuth") {
+          me.close("auth");
+        }
       }, me.getErrorDialog(BrowserID.Errors.registration));
     }
   });
