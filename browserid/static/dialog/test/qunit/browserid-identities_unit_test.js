@@ -39,12 +39,16 @@
  * "testuser@testuser.com" with the password "testuser"
  */
 var jwk = require("./jwk");
+var jwcert = require("./jwcert");
 
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-identities", function() {
   // I generated these locally, they are used nowhere else.
-  var pubkey = {"algorithm":"RS","value":"-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIPEB6mvbW4GHA5tYJ7CJbNU6CkDLfZa\nyv91CsC5TQ88oOQ7+63ispPJQGQxUgP4/QA3LObUX/eKF08VS9rlFm8CAwEAAQ==\n-----END PUBLIC KEY-----\n"};
+  var pubkey = {"algorithm":"RS","n":"56063028070432982322087418176876748072035482898334811368408525596198252519267108132604198004792849077868951906170812540713982954653810539949384712773390200791949565903439521424909576832418890819204354729217207360105906039023299561374098942789996780102073071760852841068989860403431737480182725853899733706069","e":"65537"};
 
-  var privkey = {"algorithm":"RS","value":"-----BEGIN RSA PRIVATE KEY-----\nMIIBOgIBAAJBAIPEB6mvbW4GHA5tYJ7CJbNU6CkDLfZayv91CsC5TQ88oOQ7+63i\nspPJQGQxUgP4/QA3LObUX/eKF08VS9rlFm8CAwEAAQJBAIGeU/9rL9W8strKY/Ko\nf9eynZLCqvMeC3VS2JoPbqueBirCJSYNjGd70TXQ4MPzYWx8PsR3VrLQnWH8DWUk\n/hECIQDVWmkDM1vZUzQecHZkaRN8okv+Q3M6PL5qwy0GKCvqeQIhAJ4arGLARNWm\nidxGsJ0IPhtLyvcbNoDTU5rnx8LP/84nAiAUcpLH7L8rx+6h0DN4kh18/2z7FGnR\ntgql3sjM40K6OQIgBvKlILHSVJE8/bEdkckK8agjAzju7DpdMjF9VdJOK4ECIF2L\nSctl4hhZRUWzBN+sfuYEQTD8cc6svjBwlnEwJE9I\n-----END RSA PRIVATE KEY-----\n"};
+  var privkey = {"algorithm":"RS","n":"56063028070432982322087418176876748072035482898334811368408525596198252519267108132604198004792849077868951906170812540713982954653810539949384712773390200791949565903439521424909576832418890819204354729217207360105906039023299561374098942789996780102073071760852841068989860403431737480182725853899733706069","e":"65537","d":"786150156350274055174913976906933968265264030754683486390396799104417261473770120296370873955240982995278496143719986037141619777024457729427415826765728988003471373990098269492312035966334999128083733012526716409629032119935282516842904344253703738413658199885458117908331858717294515041118355034573371553"};
+
+  // this cert is meaningless, but it has the right format
+  var random_cert = "eyJhbGciOiJSUzEyOCJ9.eyJpc3MiOiJpc3N1ZXIuY29tIiwiZXhwIjoxMzE2Njk1MzY3NzA3LCJwdWJsaWMta2V5Ijp7ImFsZ29yaXRobSI6IlJTIiwibiI6IjU2MDYzMDI4MDcwNDMyOTgyMzIyMDg3NDE4MTc2ODc2NzQ4MDcyMDM1NDgyODk4MzM0ODExMzY4NDA4NTI1NTk2MTk4MjUyNTE5MjY3MTA4MTMyNjA0MTk4MDA0NzkyODQ5MDc3ODY4OTUxOTA2MTcwODEyNTQwNzEzOTgyOTU0NjUzODEwNTM5OTQ5Mzg0NzEyNzczMzkwMjAwNzkxOTQ5NTY1OTAzNDM5NTIxNDI0OTA5NTc2ODMyNDE4ODkwODE5MjA0MzU0NzI5MjE3MjA3MzYwMTA1OTA2MDM5MDIzMjk5NTYxMzc0MDk4OTQyNzg5OTk2NzgwMTAyMDczMDcxNzYwODUyODQxMDY4OTg5ODYwNDAzNDMxNzM3NDgwMTgyNzI1ODUzODk5NzMzNzA2MDY5IiwiZSI6IjY1NTM3In0sInByaW5jaXBhbCI6eyJlbWFpbCI6InRlc3R1c2VyQHRlc3R1c2VyLmNvbSJ9fQ.aVIO470S_DkcaddQgFUXciGwq2F_MTdYOJtVnEYShni7I6mqBwK3fkdWShPEgLFWUSlVUtcy61FkDnq2G-6ikSx1fUZY7iBeSCOKYlh6Kj9v43JX-uhctRSB2pI17g09EUtvmb845EHUJuoowdBLmLa4DSTdZE-h4xUQ9MsY7Ik";
 
   var credentialsValid, unknownEmails, keyRefresh, syncValid, userEmails;
   var netStub = {
@@ -81,7 +85,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     certKey: function(email, pubkey, onSuccess, onFailure) {
       if (syncValid) {
-        onSuccess("foocert");
+        onSuccess(random_cert);
       }
       else {
         onFailure();
@@ -106,6 +110,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     cancelUser: function(onSuccess) {
       onSuccess();
+    },
+
+    serverTime: function(onSuccess) {
+      onSuccess(new Date());
     },
 
     logout: function(onSuccess) {
@@ -418,7 +426,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     BrowserIDStorage.clearEmails();
     userEmails = {"testuser@testuser.com": {}};
     BrowserIDStorage.addEmail("testuser@testuser.com", {});
-
     BrowserIDIdentities.syncIdentities(function onSuccess() {
       var identities = BrowserIDIdentities.getStoredIdentities();
       ok("testuser@testuser.com" in identities, "Our new email is added");
@@ -432,9 +439,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("syncIdentities with identities preloaded and one to add", function() {
     BrowserIDStorage.clearEmails();
-    BrowserIDStorage.addEmail("testuser@testuser.com", {pubkey: pubkey, cert: "1234"});
-    userEmails = {"testuser@testuser.com": {pubkey: pubkey, cert: "1234"},
-                  "testuser2@testuser.com": {pubkey: pubkey, cert: "1234"}};
+    BrowserIDStorage.addEmail("testuser@testuser.com", {pubkey: pubkey, cert: random_cert});
+    userEmails = {"testuser@testuser.com": {pubkey: pubkey, cert: random_cert},
+                  "testuser2@testuser.com": {pubkey: pubkey, cert: random_cert}};
 
     BrowserIDIdentities.syncIdentities(function onSuccess() {
       var identities = BrowserIDIdentities.getStoredIdentities();
@@ -450,10 +457,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
   test("syncIdentities with identities preloaded and one to remove", function() {
     BrowserIDStorage.clearEmails();
-    BrowserIDStorage.addEmail("testuser@testuser.com", {pub: pubkey, cert: "1234"});
-    BrowserIDStorage.addEmail("testuser2@testuser.com", {pub: pubkey, cert: "1234"});
-    userEmails = {"testuser@testuser.com":  { pub: pubkey, cert: "1234"}};
-    
+    BrowserIDStorage.addEmail("testuser@testuser.com", {pub: pubkey, cert: random_cert});
+    BrowserIDStorage.addEmail("testuser2@testuser.com", {pub: pubkey, cert: random_cert});
+    userEmails = {"testuser@testuser.com":  { pub: pubkey, cert: random_cert}};
+
     BrowserIDIdentities.syncIdentities(function onSuccess() {
       var identities = BrowserIDIdentities.getStoredIdentities();
       ok("testuser@testuser.com" in identities, "Our old email address is still there");

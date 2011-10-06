@@ -46,7 +46,8 @@ email = require('./email.js'),
 bcrypt = require('bcrypt'),
 crypto = require('crypto'),
 logger = require('../../libs/logging.js').logger,
-ca = require('./ca.js');
+ca = require('./ca.js'),
+configuration = require('../../libs/configuration.js');
 
 function checkParams(params) {
   return function(req, resp, next) {
@@ -71,9 +72,37 @@ function checkParams(params) {
   };
 }
 
+// log a user out, clearing everything from their session except the csrf token
+function clearAuthenticatedUser(session) {
+  Object.keys(session).forEach(function(k) {
+    if (k !== 'csrf') delete session[k];
+  });
+}
+
+
+function setAuthenticatedUser(session, email) {
+  session.authenticatedUser = email;
+  session.authenticatedAt = new Date();
+}
+
 function isAuthed(req) {
-  var result= (req.session && typeof req.session.authenticatedUser === 'string');
-  return result;
+  var who;
+  try {
+    if (req.session.authenticatedUser) {
+      if (!Date.parse(req.session.authenticatedAt) > 0) throw "bad timestamp";
+      if (new Date() - new Date(req.session.authenticatedAt) >
+          configuration.get('authentication_duration_ms'))
+      {
+        throw "expired";
+      }
+      who = req.session.authenticatedUser;
+    }
+  } catch(e) {
+    logger.debug("Session authentication has expired:", e);
+    clearAuthenticatedUser(req.session);
+  }
+
+  return who;
 }
 
 // turned this into a proper middleware
@@ -86,18 +115,9 @@ function checkAuthed(req, resp, next) {
 }
 
 function setup(app) {
-  // log a user out, clearing everything from their session except the csrf token
-  function clearAuthenticatedUser(session) {
-    Object.keys(session).forEach(function(k) {
-      if (k !== 'csrf') delete session[k];
-    });
-  }
-
-  // return the CSRF token
-  // IMPORTANT: this should be safe because it's only readable by same-origin code
-  // but we must be careful that this is never a JSON structure that could be hijacked
-  // by a third party
-  app.get('/wsapi/csrf', function(req, res) {
+  // return the CSRF token, authentication status, and current server time (for assertion signing)
+  // IMPORTANT: this is safe because it's only readable by same-origin code
+  app.get('/wsapi/session_context', function(req, res) {
     if (typeof req.session == 'undefined') {
       req.session = {};
     }
@@ -109,10 +129,35 @@ function setup(app) {
       logger.debug("NEW csrf token created: " + req.session.csrf);
     }
 
-    res.write(req.session.csrf);
-    res.end();
-  });
+    var auth_status = false;
 
+    function sendResponse() {
+      res.write(JSON.stringify({
+        csrf_token: req.session.csrf,
+        server_time: (new Date()).getTime(),
+        authenticated: auth_status
+      }));
+      res.end();
+    };
+
+    // if they're authenticated for an email address that we don't know about,
+    // then we should purge the stored cookie
+    if (!isAuthed(req)) {
+      logger.debug("user is not authenticated");
+      sendResponse();
+    } else {
+      db.emailKnown(req.session.authenticatedUser, function (known) {
+        if (!known) {
+          logger.debug("user is authenticated with an email that doesn't exist in the database");
+          clearAuthenticatedUser(req.session);
+        } else {
+          logger.debug("user is authenticated");
+          auth_status = true;
+        }
+        sendResponse();
+      });
+    }
+  });
 
   /* checks to see if an email address is known to the server
    * takes 'email' as a GET argument */
@@ -141,7 +186,7 @@ function setup(app) {
     }
 
     // bcrypt the password
-    bcrypt.gen_salt(10, function (err, salt) {
+    bcrypt.gen_salt(configuration.get('bcrypt_work_factor'), function (err, salt) {
       if (err) {
         winston.error("error generating salt with bcrypt: " + err);
         return resp.json(false);
@@ -221,7 +266,7 @@ function setup(app) {
       db.checkAuth(v.email, function(hash) {
         if (hash === v.hash) {
           delete req.session.pendingVerification;
-          req.session.authenticatedUser = v.email;
+          setAuthenticatedUser(req.session, v.email);
           resp.json('complete');
         } else {
           resp.json('pending');
@@ -246,7 +291,9 @@ function setup(app) {
         }
         if (success) {
           if (!req.session) req.session = {};
-          req.session.authenticatedUser = req.body.email;
+          setAuthenticatedUser(req.session, req.body.email);
+
+          // if the work factor has changed, update the hash here
         }
         resp.json(success);
       });
@@ -305,32 +352,13 @@ function setup(app) {
       // same account, we certify the key
       // we certify it for a day for now
       var expiration = new Date();
-      expiration.setTime(new Date().valueOf() + (24*3600*1000));
+      expiration.setTime(new Date().valueOf() + configuration.get('certificate_validity_ms'));
       var cert = ca.certify(req.body.email, pk, expiration);
-      
+
       resp.writeHead(200, {'Content-Type': 'text/plain'});
       resp.write(cert);
       resp.end();
     });
-  });
-
-  app.get('/wsapi/am_authed', function(req,resp) {
-    // if they're authenticated for an email address that we don't know about,
-    // then we should purge the stored cookie
-    if (!isAuthed(req)) {
-      logger.debug("user is not authenticated");
-      resp.json(false);
-    } else {
-      db.emailKnown(req.session.authenticatedUser, function (known) {
-        if (!known) {
-          logger.debug("user is authenticated with an email that doesn't exist in the database");
-          clearAuthenticatedUser(req.session);
-        } else {
-          logger.debug("user is authenticated");
-        }
-        resp.json(known);
-      });
-    }
   });
 
   app.post('/wsapi/logout', function(req, resp) {

@@ -75,11 +75,6 @@ function flush() {
   }
 }
 
-// when should a key created right now expire?
-function getExpiryTime() {
-  return ((new Date()).getTime() + (14 * 24 * 60 * 60 * 1000));
-}
-
 // when unit_test is set in configuration, database should be
 // ephemeral.  which simply means we use a temp file and delete
 // on close;

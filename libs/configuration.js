@@ -70,7 +70,10 @@ g_configs.production = {
   database: {
     driver: "mysql",
     user: 'browserid'
-  }
+  },
+  bcrypt_work_factor: 12,
+  authentication_duration_ms: (7 * 24 * 60 * 60 * 1000),
+  certificate_validity_ms: (24 * 60 * 60 * 1000)
 };
 
 // beta (diresworb.org) the only difference from production 
@@ -91,7 +94,10 @@ g_configs.local =  {
   email_to_console: true, // don't send email, just dump verification URLs to console.
   use_minified_resources: false,
   var_path: path.join(__dirname, "..", "var"),
-  database: { driver: "json" }
+  database: { driver: "json" },
+  bcrypt_work_factor: g_configs.production.bcrypt_work_factor,
+  authentication_duration_ms: g_configs.production.authentication_duration_ms,
+  certificate_validity_ms: g_configs.production.certificate_validity_ms
 };
 
 // test environments are variations on local
