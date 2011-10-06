@@ -138,6 +138,44 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", fu
     equal(tooltipShown, true, "empty password shows tooltip");
   });
 
+
+  test("passwordAndValidationPassword with empty password", function() {
+    var valid = validation.passwordAndValidationPassword("", "password");
+
+    equal(valid, false, "empty password is invalid");
+    equal(tooltipShown, true, "empty password shows tooltip");
+  });
+
+
+  test("passwordAndValidationPassword with too short password", function() {
+    var valid = validation.passwordAndValidationPassword("pass", "password");
+
+    equal(valid, false, "too short password is invalid");
+    equal(tooltipShown, true, "too short password shows tooltip");
+  });
+
+  test("passwordAndValidationPassword with empty validation password", function() {
+    var valid = validation.passwordAndValidationPassword("password", "");
+
+    equal(valid, false, "empty validation password is invalid");
+    equal(tooltipShown, true, "empty validation password shows tooltip");
+  });
+
+
+  test("passwordAndValidationPassword with different validation password", function() {
+    var valid = validation.passwordAndValidationPassword("password", "pass");
+
+    equal(valid, false, "different password is invalid");
+    equal(tooltipShown, true, "different password shows tooltip");
+  });
+
+  test("passwordAndValidationPassword all valid", function() {
+    var valid = validation.passwordAndValidationPassword("password", "password");
+
+    equal(valid, true, "passwords valid");
+    equal(tooltipShown, false, "tooltip not shown");
+  });
+
 });
 
 

@@ -31,10 +31,48 @@ BrowserID.Validation = (function() {
     var valid = validateEmail(email);
 
     if (valid) {
-      if (!password) {
-        tooltip.showTooltip("#password_required");
-        valid = false;
-      }
+      valid = passwordExists(password);
+    }
+
+    return valid;
+  }
+
+  function passwordExists(password) {
+    var valid = !!password;
+
+    if (!valid) {
+      tooltip.showTooltip("#password_required");
+    }
+
+    return valid;
+  }
+
+  function passwordLength(password) {
+    var valid = password && (password.length >= 8);
+
+    if(!valid) {
+      tooltip.showTooltip("#password_too_short");
+    }
+
+    return valid;
+  }
+
+  function validationPasswordExists(vpass) {
+    var valid = !!vpass;
+
+    if(!valid) {
+      tooltip.showTooltip("#vpassword_required");
+    }
+
+    return valid;
+  }
+
+  function passwordAndValidationPassword(pass, vpass) {
+    var valid = passwordExists(pass) && passwordLength(pass) && validationPasswordExists(vpass);
+
+    if (valid && pass !== vpass) {
+      valid = false;
+      tooltip.showTooltip("#passwords_no_match");
     }
 
     return valid;
@@ -42,7 +80,8 @@ BrowserID.Validation = (function() {
 
   return {
     email: validateEmail,
-    emailAndPassword: validateEmailAndPassword
+    emailAndPassword: validateEmailAndPassword,
+    passwordAndValidationPassword: passwordAndValidationPassword
   };
   
 }());
