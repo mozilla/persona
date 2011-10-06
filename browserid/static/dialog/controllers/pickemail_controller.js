@@ -123,7 +123,7 @@
 
     cancelEvent(event);
 
-    if(!self.validateEmail(email)) {
+    if(!bid.Validation.email(email)) {
       return;
     }
 

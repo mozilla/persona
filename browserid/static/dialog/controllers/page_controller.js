@@ -41,21 +41,6 @@
       identities = bid.Identities;
 
 
-  function validateEmail(email) {
-    var valid = true;
-
-    if(!email) {
-      bid.Tooltip.showTooltip("#email_required");
-      valid = false;
-    }
-    else if(!bid.verifyEmail(email)) {
-      bid.Tooltip.showTooltip("#email_format");
-      valid = false;
-    }
-
-    return valid;
-  }
-
   $.Controller.extend("PageController", {
     }, {
     init: function(options) {
@@ -165,9 +150,7 @@
       event.preventDefault();
       event.stopPropagation();
       this.close("start");
-    },
-
-    validateEmail: validateEmail
+    }
   });
 
 }());

@@ -37,7 +37,11 @@
 (function() {
   "use strict";
 
-  BrowserID.signIn = function () {
+  var bid = BrowserID,
+      network = bid.Network,
+      validation = bid.Validation;
+
+  bid.signIn = function () {
     $("form input[autofocus]").focus();
 
     $("#signUpForm").bind("submit", function(event) {
@@ -45,18 +49,22 @@
 
       var email = $("#email").val(),
           password = $("#password").val();
-      
-      BrowserID.Network.authenticate(email, password, function onSuccess(authenticated) {
-        if (authenticated) {
-          document.location = "/";
-        }
-        else {
-          // bad authentication
-          $(".notifications .notification.doh").fadeIn();
-        }
-      }, function onFailure() {
-        // Wah wah.  Network error
-      });
+
+      var valid = validation.emailAndPassword(email, password);
+
+      if (valid) {
+        network.authenticate(email, password, function onSuccess(authenticated) {
+          if (authenticated) {
+            document.location = "/";
+          }
+          else {
+            // bad authentication
+            $(".notifications .notification.doh").fadeIn();
+          }
+        }, function onFailure() {
+          // Wah wah.  Network error
+        });
+      }
     });
   };
 }());

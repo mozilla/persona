@@ -39,7 +39,8 @@
 
   var ANIMATION_TIME = 250,
       bid = BrowserID,
-      identities = bid.Identities;
+      identities = bid.Identities,
+      validation = bid.Validation;
 
   function checkEmail(el, event) {
     var email = $("#email").val(),
@@ -47,7 +48,7 @@
 
     cancelEvent(event);
 
-    if(!self.validateEmail(email)) {
+    if(!validation.email(email)) {
       return;
     }
 
@@ -67,7 +68,7 @@
 
     cancelEvent(event);
 
-    if(!self.validateEmail(email)) {
+    if(!validation.email(email)) {
       return;
     }
 
@@ -91,12 +92,7 @@
 
     cancelEvent(event);
 
-    if(!self.validateEmail(email)) {
-      return;
-    }
-
-    if(!pass) {
-      bid.Tooltip.showTooltip("#password_required");
+    if(!validation.emailAndPassword(email, pass)) {
       return;
     }
 

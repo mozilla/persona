@@ -1,7 +1,7 @@
 <div id="vAlign">
     <div id="signUpFormWrap">
         <!-- XXX this form submits to nowhere -->
-        <form id="signUpForm" class="cf authform">
+        <form id="signUpForm" class="cf authform" novalidate>
             <h1 class="serif">Sign In</h1>
 
             <ul class="notifications">
@@ -11,7 +11,15 @@
             <ul class="inputs">
                 <li>
                     <label class="serif" for="email">Email Address</label>
-                    <input class="sans" id="email" autofocus placeholder="Your Email" type="email" required x-moz-errormessage="Enter the email address you created your account with" tabindex="1">
+                    <input class="sans" id="email" autofocus placeholder="Your Email" type="email" tabindex="1">
+
+                    <div id="email_format" class="tooltip" for="email">
+                      This field must be an email address.
+                    </div>
+
+                    <div id="email_required" class="tooltip" for="email">
+                      The email field is required.
+                    </div>
                 </li>
                 <li>
                     <label class="serif half" for="password">Password</label>
@@ -19,7 +27,11 @@
                         <!-- XXX: this needs to be fixed -->
                         <a class="forgot" href="/forgot" tabindex="4">forgot your password?</a>
                     </div>
-                    <input class="sans" id="password" placeholder="Your Password" type="password" required x-moz-errormessage="Oops!  We need your password to sign you in" tabindex="2" maxlength="80">
+                    <input class="sans" id="password" placeholder="Your Password" type="password" tabindex="2" maxlength="80">
+
+                    <div id="password_required" class="tooltip" for="password">
+                      The password field is required.
+                    </div>
                 </li>
             </ul>
 

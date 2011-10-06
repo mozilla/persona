@@ -39,11 +39,4 @@
   window.BrowserID = window.BrowserID || {};
 
 
-  window.BrowserID.verifyEmail = function(address) {
-    // gotten from http://blog.gerv.net/2011/05/html5_email_address_regexp/
-    // changed the requirement that there must be a ldh-str because BrowserID 
-    // is only used on internet based networks.
-    return /^[\w.!#$%&'*+\-/=?\^`{|}~]+@[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(address);
-  };
-
 }());
