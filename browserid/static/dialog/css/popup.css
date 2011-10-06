@@ -203,6 +203,8 @@ h2 {
 
 #signIn .submit > p {
   line-height: 13px;
+  clear: right;
+  text-align: center;
 }
 
 #signIn .remember {
@@ -461,9 +463,6 @@ footer a {
 
 footer .help {
     float: right;
-}
-
-footer .help > a {
     color: #62615F;
     cursor: help;
 }
@@ -502,11 +501,14 @@ html[xmlns] .cf {
 }
 
 .inputs {
-    height: 110px;
-    overflow-y: auto;
     margin: 1em 0 .5em;
     padding: 0 1em;
     line-height: 18px;
+}
+
+.pickemail .inputs {
+    height: 110px;
+    overflow-y: auto;
 }
 
 .add {
@@ -526,7 +528,7 @@ html[xmlns] .cf {
 }
 
 .submit > button {
-    margin: 0 5px;
+    margin: 0 5px 15px 0;
 }
 
 #newEmail {
