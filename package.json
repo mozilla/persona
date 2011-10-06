@@ -16,7 +16,7 @@
     , "uglify-js": "1.0.6"
     , "JSONSelect": "0.2.1"
     , "winston" : "0.3.3"
-    , "connect-cookie-session" : "https://github.com/lloyd/connect-cookie-session/tarball/367b780"
+    , "connect-cookie-session" : "0.0.2"
     , "mysql" : "0.9.2"
     , "optimist" : "0.2.6"
     , "qs" : "0.3.1"
