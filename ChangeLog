@@ -1,3 +1,21 @@
+train-2011.10.06:
+  * full site & dialog redesign: (many, many closed issues are related to this, including #269, #343, #342, #347, #354, #356, #357, #350, #349, #364, #346, #336)
+  * improved debugging, all network callbacks are invoked asynchronously: #276
+  * MYSQL SCHEMA CHANGE: passwd field no longer in staged table (password is now set after verfiy link clickthrough)
+  * MYSQL SCHEMA CHANGE: add index to emails table: #209
+  * WSAPI CHANGES (to support new UI): https://github.com/mozilla/browserid/commit/b6ee51
+  * WSAPI CHANGES: a mis-set client clock no longer causes invalid assertions to be issued (wsapi changed to minimize network requests): #329
+  * disallow re-registration of existing account: #333
+  * (non-visible) namespacing in dialog code: #275
+  * API BREAKING CHANGE: verifier no longer supports GET requests: #98
+  * significant performance / UX improvment - keys are generated and certified when needed, not all upfront at sign-in: #278
+  * remove 'download printable format' language from privacy policy: #280
+  * faster keygen via crypto optimizations: https://github.com/mozilla/browserid/commit/778433
+  * improvements to mobile layout & usability (specific to the new UI)
+  * more user visible error messages to improve community sourced problem reports: #335
+  * IE8 improvements (still not fully supported): #246, #361, #346
+  * cookie fixes revisited, now on upstream version of connect-cookie-session: #310
+
 train-2011.09.29:
   * shortly after dialog is spawned, we remove the four random chars in the fragment (aesthetic)
   * fix bug where session duration had an upper bound of 7 days - the time the server was running: #310
