@@ -44,8 +44,6 @@
 
 PageController.extend("Dialog", {}, {
     init: function(el) {
-      var html = $.View("//dialog/views/body.ejs", {});
-      this.element.html(html);
       this.element.show();
 
       // keep track of where we are and what we do on success and error
