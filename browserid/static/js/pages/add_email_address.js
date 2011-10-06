@@ -38,16 +38,19 @@
   "use strict";
 
   function emailRegistrationSuccess() {
-    $("div.status").text("Address confirmed!");
-    $("body").delay(1000).fadeOut(500, function() {
-      // if the close didn't work, then let's redirect the the main page where they'll
-      // get to see the ids that they've created.
-      document.location = '/';
+    $(".hint").hide();
+    $("#congrats").fadeIn(250, function() {
+      $("body").delay(1000).fadeOut(500, function() {
+        // if the close didn't work, then let's redirect the the main page where they'll
+        // get to see the ids that they've created.
+        document.location = '/';
+      });
     });
   }
 
-  function emailRegistrationFailure(why) {
-    $("div.status").text("Error encountered while attempting to confirm your address.  Have you previously verified this address?");
+  function showError(el) {
+    $(".hint").hide();
+    $(el).fadeIn(250);
   }
 
   BrowserID.addEmailAddress = function(token) {
@@ -55,10 +58,10 @@
       if (valid) {
         emailRegistrationSuccess();
       } else {
-        emailRegistrationFailure("unknown");
+        showError("#cannotconfirm");
       }
     }, function onFailure() {
-       failure("Error Communicating With Server!");
+      showError("#cannotcommunicate");
     });
   };
 }());
