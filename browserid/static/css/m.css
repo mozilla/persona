@@ -24,9 +24,10 @@ body #header ul.nav {
 body #header ul.nav li {
   margin: 0 1px 0 0;
   text-align: center;
+  width: 64px;
 }
 
-body #header ul.nav li:nth-child(1) {
+body #header ul.nav li:first-child {
   width: 102px;
 }
 
@@ -34,10 +35,6 @@ body #header ul.nav li:nth-child(2) {
   width: 91px;
 }
 
-body #header ul.nav li:nth-child(3) {
-  width: 65px;
-  margin: 0;
-}
 
 body #header ul.nav li a {
   padding: 3px 0;
@@ -51,7 +48,24 @@ body #header ul.nav li a {
           border-radius: 3px;
 }
 
-body #header ul.nav li:nth-child(1) a {
+body.authenticated #header ul.nav li.signOut,
+body #header ul.nav li {
+  display: block;
+}
+
+body #header ul.nav li.signOut,
+body.authenticated #header ul.nav li.signIn {
+  display: none;
+}
+
+body #header ul.nav li a {
+  -webkit-border-radius: 0 3px 3px 0;
+     -moz-border-radius: 0 3px 3px 0;
+       -o-border-radius: 0 3px 3px 0;
+          border-radius: 0 3px 3px 0;
+}
+
+body #header ul.nav li:first-child a {
   
   -webkit-border-radius: 3px 0 0 3px;
      -moz-border-radius: 3px 0 0 3px;
@@ -64,13 +78,6 @@ body #header ul.nav li:nth-child(2) a {
      -moz-border-radius: 0px;
        -o-border-radius: 0px;
           border-radius: 0px;
-}
-
-body #header ul.nav li:nth-child(3) a {
-  -webkit-border-radius: 0 3px 3px 0;
-     -moz-border-radius: 0 3px 3px 0;
-       -o-border-radius: 0 3px 3px 0;
-          border-radius: 0 3px 3px 0;
 }
 
 body #header ul.nav li a.signIn {
