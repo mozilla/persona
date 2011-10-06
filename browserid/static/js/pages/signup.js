@@ -37,8 +37,11 @@
 (function() {
   "use strict";
 
-  BrowserID.signUp = function () {
-    var ANIMATION_SPEED = 250;
+  var bid = BrowserID,
+      identities = bid.Identities,
+      ANIMATION_SPEED = 250;
+
+  bid.signUp = function () {
 
     function replaceWithMessage(selector) {
         $('.forminputs').fadeOut(ANIMATION_SPEED, function() {
@@ -56,8 +59,6 @@
 
 
     $(function () {
-      var identities = BrowserID.Identities;
-
       $("form input[autofocus]").focus();
 
       $("#email").bind("keyup", function(event) {
@@ -69,7 +70,13 @@
       $("#signUpForm").bind("submit", function(event) {
         event.preventDefault();
 
-        var email = $("#email").val();
+        var email = $("#email").val(),
+            valid = bid.Validation.email(email);
+
+        if (!valid) {
+          return;
+        }
+
         identities.emailRegistered(email, function(registered) {
           if (!registered) {
             identities.createUser(email, function onSuccess(keypair) {

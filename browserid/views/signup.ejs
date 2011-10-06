@@ -1,7 +1,7 @@
 <div id="vAlign">   
     <div id="signUpFormWrap">
         <!-- XXX this form submits to nowhere -->
-        <form id="signUpForm" class="cf authform">
+        <form id="signUpForm" class="cf authform" novalidate>
             <h1 class="serif">Create Account</h1>
 
             <ul class="notifications">
@@ -13,7 +13,15 @@
             <ul class="inputs forminputs">
                 <li>
                     <label class="serif" for="email">Email Address</label>
-                    <input class="sans" id="email" autofocus required placeholder="Your Email" type="email" x-moz-errormessage="Please enter the email address you would like to use">
+                    <input class="sans" id="email" autofocus placeholder="Your Email" type="email" />
+
+                    <div id="email_format" class="tooltip" for="email">
+                      This field must be an email address.
+                    </div>
+
+                    <div id="email_required" class="tooltip" for="email">
+                      The email field is required.
+                    </div>
                 </li>
             </ul>
 
