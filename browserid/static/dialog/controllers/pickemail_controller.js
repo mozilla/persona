@@ -82,9 +82,11 @@
 
   function signIn(element, event) {
     var self=this,
-        animationComplete = false,
+        body = $("body"),
+        animationComplete = body.innerWidth() < 640,
         assertion,
         email = $("input[type=radio]:checked").val();
+
 
     cancelEvent(event);
 
@@ -103,7 +105,6 @@
       onComplete();
     });
 
-    var body = $("body");
 
     if(body.innerWidth() > 640) {
       $("#signIn").animate({"width" : "685px"}, "slow", function () {
@@ -113,9 +114,6 @@
            onComplete();
          });
       }); 
-    }
-    else {
-      animationComplete = true;
     }
   }
 
