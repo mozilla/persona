@@ -70,7 +70,6 @@ steal.plugins(
                'pickemail')					// loads files in controllers folder
 
 	.views('authenticate.ejs',
-           'body.ejs',
            'confirmemail.ejs',
            'pickemail.ejs',
            'wait.ejs'
