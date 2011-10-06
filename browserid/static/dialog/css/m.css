@@ -1,15 +1,34 @@
+
 body #wrapper {
     min-width: 320px;
     width: 100%;
     margin: 0 auto;
 }
 
-body #header {
-    padding: 10px;
+body header, body footer {
+  padding: 5px 20px;
 }
 
-body #header ul li:nth-child(2) {
+body header ul li:nth-child(2) {
     display: none;
+}
+
+body button {
+  height: 40px;
+  font-size: 18px;
+}
+
+body input[type=email],
+body input[type=password] {
+  font-size: 17px;
+}
+
+body .inputs > li > label {
+  font-size: 18px;
+}
+
+body .vertical > strong {
+  font-size: 20px;
 }
 
 body #signIn,
@@ -27,6 +46,7 @@ body #signIn {
 
 body #signIn .table {
     width: 100%;
+    margin: 0;
 }
 
 body #signIn form {
@@ -69,6 +89,15 @@ body #footer {
     padding: 10px;
 }
 
+body #signIn .vertical {
+  padding-bottom: 0;
+}
+
 body #signIn .vertical ul li {
   margin-top: 20px;
 }
+
+body #signIn .submit > p {
+  font-size: 14px;
+}
+
