@@ -108,8 +108,9 @@ BrowserID.Identities = (function() {
         // it's possible return values are:
         //   'complete' - registration has been completed
         //   'pending'  - a registration is in progress
+        //   'mustAuth' - user must authenticate
         //   'noRegistration' - no registration is in progress
-        if (status === "complete") {
+        if (status === "complete" || status === "mustAuth") {
           if (onSuccess) {
             onSuccess(status);
           }

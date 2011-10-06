@@ -109,6 +109,10 @@ PageController.extend("Dialog", {}, {
         self.doNotMe();
       });
 
+      hub.subscribe("auth", function() {
+        self.doAuthenticate();
+      });
+
       hub.subscribe("start", function() {
         self.doCheckAuth();
       });
