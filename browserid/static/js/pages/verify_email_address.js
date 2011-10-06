@@ -37,7 +37,35 @@
 (function() {
   "use strict";
 
-  var bid = BrowserID;
+  var bid = BrowserID,
+      tooltip = bid.Tooltip;
+
+  function showError(el) {
+    $(el).fadeIn(250);
+    $("#signUpForm").remove();
+  }
+
+  function validate(pass, vpass) {
+    var valid = false;
+
+    if(!pass) {
+      tooltip.showTooltip("#password_required"); 
+    }
+    else if(pass.length < 8) {
+      tooltip.showTooltip("#password_too_short"); 
+    }
+    else if(!vpass) {
+      tooltip.showTooltip("#vpassword_required"); 
+    }
+    else if(pass !== vpass) {
+      tooltip.showTooltip("#passwords_no_match"); 
+    }
+    else {
+      valid = true;
+    }
+
+    return valid;
+  }
 
   bid.verifyEmailAddress = function(token) {
     $("#signUpForm").submit(function(event) {
@@ -45,16 +73,21 @@
 
       var email = $("#email").val(),
           pass = $("#password").val(),
-          pass2 = $("#vpassword").val();
+          vpass = $("#vpassword").val();
 
-      if (pass && pass === pass2) {
+      var valid = validate(pass, vpass);
+
+      if (valid) {
         bid.Network.completeUserRegistration(token, pass, function onSuccess(registered) {
           if (registered) {
             $("#signUpForm").hide();
             $("#congrats").fadeIn(250);
           }
+          else {
+            showError("#cannotcomplete");
+          }
         }, function onFailure() {
-
+          showError("#cannotconnect");
         });
       }
     });
@@ -73,7 +106,7 @@
         $('#email').val(email);
       }
       else {
-        $('#signUpFormWrap').html('There was a problem with your signup link.');
+        showError("#badtoken");
       }
     });
 
