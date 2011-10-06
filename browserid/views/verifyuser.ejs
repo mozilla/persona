@@ -1,8 +1,16 @@
 <div id="vAlign">   
   <div id="signUpFormWrap">
+    <ul class="notifications">
+        <li class="notification error" id="badtoken">There was a problem with your signup link.  Has this address already been registered?</li>
+        <li class="notification error" id="cannotconnect">Error comunicating with server.</li>
+        <li class="notification error" id="cannotcomplete">Error encountered trying to complete registration.</li>
+    </ul>
+
     <form id="signUpForm" class="cf">
       <p class="hint">Finish signing into: <strong><span class="website"></span></strong></p>
       <h1 class="serif">Last step!</h1>
+
+
       <ul class="inputs">
         <li>
             <label class="serif" for="email">Email Address</label>
@@ -10,16 +18,34 @@
         </li>
         <li>
             <label class="serif" for="password">New Password</label>
-            <input required class="sans" id="password" placeholder="Enter a Password" type="password" autofocus maxlength=80>
+            <input class="sans" id="password" placeholder="Enter a Password" type="password" autofocus maxlength=80>
+
+            <div class="tooltip" id="password_required" for="password">
+              Password is required.
+            </div>
+
+            <div class="tooltip" id="password_too_short" for="password">
+              Password must be at least 8 characters long. 
+            </div>
         </li>
         <li>
             <label class="serif" for="vpassword">Verify Password</label>
-            <input required class="sans" id="vpassword" placeholder="Repeat Password" type="password" maxlength=80>
+            <input class="sans" id="vpassword" placeholder="Repeat Password" type="password" maxlength=80>
+
+            <div class="tooltip" id="vpassword_required" for="vpassword">
+              Verification password is required.
+            </div>
+
+            <div class="tooltip" id="passwords_no_match" for="vpassword">
+              Passwords do not match
+            </div>
         </li>
       </ul>
+
       <div class="submit cf">
           <input type="submit" class="create" value="Finish"/>
       </div>
+
     </form>
     
     <div id="congrats">
