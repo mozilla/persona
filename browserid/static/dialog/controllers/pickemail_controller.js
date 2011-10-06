@@ -96,20 +96,27 @@
       }
     }
 
-    // Kick of the assertion fetching/keypair generating while we are shoing 
+    // Kick of the assertion fetching/keypair generating while we are showing 
     // the animation, hopefully this minimizes the delay the user notices.
     identities.getAssertion(email, function(assert) {
       assertion = assert;
       onComplete();
     });
 
-    $("#signIn").animate({"width" : "685px"}, "slow", function () {
-      // post animation
-       $("body").delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
-         animationComplete = true;
-         onComplete();
-       });
-    }); 
+    var body = $("body");
+
+    if(body.innerWidth() > 640) {
+      $("#signIn").animate({"width" : "685px"}, "slow", function () {
+        // post animation
+         body.delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
+           animationComplete = true;
+           onComplete();
+         });
+      }); 
+    }
+    else {
+      animationComplete = true;
+    }
   }
 
   function addEmail(element, event) {
