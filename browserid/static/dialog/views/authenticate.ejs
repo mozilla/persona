@@ -33,24 +33,23 @@
                         </div>
                     </li>
 
-                    <li>
+                    <li id="hint_section" class="start">
+                        <p>Enter your email address to sign in to <strong><%= sitename %></strong></p>
+                    </li>
 
-                        <div id="password_section" class="returning">
-                            <label for="password" class="half serif">Password</label>
-                            <div class="half right">
-                                <a id="forgotPassword" href="#">forgot your password?</a>
-                            </div>
-                            <input id="password" class="sans" type="password" maxlength="80">
-                        </div>
+                    <li id="create_text_section" class="newuser">
+                        <p><strong>Welcome to BrowserID!</strong></p>
+                        <p>This email looks new, so let's get you set up.</p>
+                    </li>
 
-                        <div id="hint_section" class="start">
-                            <p>Enter your email address to sign in to <strong><%= sitename %></strong></p>
-                        </div>
+                    <li id="password_section" class="returning">
 
-                        <div id="create_text_section" class="newuser">
-                            <p><strong>Welcome to BrowserID!</strong></p>
-                            <p>This email looks new, so let's get you set up.</p>
+                        <label for="password" class="half serif">Password</label>
+                        <div class="half right">
+                            <a id="forgotPassword" href="#">forgot your password?</a>
                         </div>
+                        <input id="password" class="sans" type="password" maxlength="80">
+
 
                         <div id="password_required" class="tooltip" for="password">
                           The password field is required.

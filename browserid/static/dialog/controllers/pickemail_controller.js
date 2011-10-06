@@ -82,9 +82,11 @@
 
   function signIn(element, event) {
     var self=this,
-        animationComplete = false,
+        body = $("body"),
+        animationComplete = body.innerWidth() < 640,
         assertion,
         email = $("input[type=radio]:checked").val();
+
 
     cancelEvent(event);
 
@@ -96,20 +98,23 @@
       }
     }
 
-    // Kick of the assertion fetching/keypair generating while we are shoing 
+    // Kick of the assertion fetching/keypair generating while we are showing 
     // the animation, hopefully this minimizes the delay the user notices.
     identities.getAssertion(email, function(assert) {
       assertion = assert;
       onComplete();
     });
 
-    $("#signIn").animate({"width" : "685px"}, "slow", function () {
-      // post animation
-       $("body").delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
-         animationComplete = true;
-         onComplete();
-       });
-    }); 
+
+    if(body.innerWidth() > 640) {
+      $("#signIn").animate({"width" : "685px"}, "slow", function () {
+        // post animation
+         body.delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
+           animationComplete = true;
+           onComplete();
+         });
+      }); 
+    }
   }
 
   function addEmail(element, event) {
