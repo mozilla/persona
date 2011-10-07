@@ -52,5 +52,5 @@ cat jquery-1.6.2.min.js json2.js browserid.js ../dialog/resources/underscore-min
 $UGLIFY < lib.js > lib.min.js
 
 cd ../css
-cat style.css > browserid.css
+cat style.css m.css > browserid.css
 $JAVA -jar $YUI_LOCATION browserid.css -o browserid.min.css
