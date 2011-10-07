@@ -6,6 +6,12 @@
   <!--[if lt IE 9]>
     <script type="text/javascript" src="/js/html5shim.js"></script>
   <![endif]-->
+  <% if (production) { %>
+      <link href="/dialog/css/production.min.css" rel="stylesheet" type="text/css">
+  <% } else { %>
+      <link href="/dialog/css/popup.css" rel="stylesheet" type="text/css">
+      <link href="/dialog/css/m.css" rel="stylesheet" type="text/css">
+  <% } %>
   <link href="https://fonts.googleapis.com/css?family=Droid+Serif:400,400italic,700,700italic" rel="stylesheet" type="text/css">
   <title>Browser ID</title>
 </head>

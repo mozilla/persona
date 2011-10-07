@@ -1,103 +1,104 @@
+@media screen and (max-width: 640px) {
 
-body #wrapper {
-    min-width: 320px;
-    width: 100%;
-    margin: 0 auto;
+  #wrapper {
+      min-width: 320px;
+      width: 100%;
+      margin: 0 auto;
+  }
+
+  header, footer {
+    padding: 5px 20px;
+  }
+
+  header ul li:nth-child(2) {
+      display: none;
+  }
+
+  button {
+    height: 40px;
+    font-size: 18px;
+  }
+
+  input[type=email],
+  input[type=password] {
+    font-size: 17px;
+  }
+
+  .inputs > li > label {
+    font-size: 18px;
+  }
+
+  .vertical > strong {
+    font-size: 20px;
+  }
+
+  #signIn,
+  #favicon {
+      display: block;
+      width: 100%;
+      position: relative;
+      padding: 10px;
+  }
+
+  #signIn {
+      max-width: none;
+      padding: 10px;
+  }
+
+  #signIn .table {
+      width: 100%;
+      margin: 0;
+  }
+
+  #signIn form {
+      padding: 0;
+  }
+
+  #favicon {
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      background-image: url('/i/bg.png');
+      text-align: center;
+      left: 0;
+  }
+
+  #favicon img {
+      width: 32px;
+      height: auto;
+      display: inline;
+      margin: 0;
+      vertical-align: middle;
+  }
+
+  #formWrap {
+      background-color: transparent;
+  }
+
+  #formWrap,
+  .vertical {
+      height: auto;
+  }
+
+  .arrow {
+      display: none;
+  }
+
+  #checkemail p {
+      height: 250px;
+  }
+
+  #footer {
+      padding: 10px;
+  }
+
+  #signIn .vertical {
+    padding-bottom: 0;
+  }
+
+  #signIn .vertical ul li {
+    margin-top: 20px;
+  }
+
+  #signIn .submit > p {
+    font-size: 14px;
+  }
 }
-
-body header, body footer {
-  padding: 5px 20px;
-}
-
-body header ul li:nth-child(2) {
-    display: none;
-}
-
-body button {
-  height: 40px;
-  font-size: 18px;
-}
-
-body input[type=email],
-body input[type=password] {
-  font-size: 17px;
-}
-
-body .inputs > li > label {
-  font-size: 18px;
-}
-
-body .vertical > strong {
-  font-size: 20px;
-}
-
-body #signIn,
-body #favicon {
-    display: block;
-    width: 100%;
-    position: relative;
-    padding: 10px;
-}
-
-body #signIn {
-    max-width: none;
-    padding: 10px;
-}
-
-body #signIn .table {
-    width: 100%;
-    margin: 0;
-}
-
-body #signIn form {
-    padding: 0;
-}
-
-body #favicon {
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    background-image: url('/i/bg.png');
-    text-align: center;
-    left: 0;
-}
-
-body #favicon img {
-    width: 32px;
-    height: auto;
-    display: inline;
-    margin: 0;
-    vertical-align: middle;
-}
-
-body #formWrap {
-    background-color: transparent;
-}
-
-body #formWrap,
-body .vertical {
-    height: auto;
-}
-
-body .arrow {
-    display: none;
-}
-
-body #checkemail p {
-    height: 250px;
-}
-
-body #footer {
-    padding: 10px;
-}
-
-body #signIn .vertical {
-  padding-bottom: 0;
-}
-
-body #signIn .vertical ul li {
-  margin-top: 20px;
-}
-
-body #signIn .submit > p {
-  font-size: 14px;
-}
-
