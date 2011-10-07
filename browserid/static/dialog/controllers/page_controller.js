@@ -38,6 +38,7 @@
 "use strict";
 
   var bid = BrowserID,  
+      ANIMATION_TIME = 250,
       identities = bid.Identities;
 
 
@@ -75,7 +76,7 @@
 
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
-        $("#dialog").html(bodyHtml).hide().fadeIn(300, function() {
+        $("#dialog").html(bodyHtml).hide().fadeIn(ANIMATION_TIME, function() {
           $("#dialog input").eq(0).focus(); 
         });
       }
@@ -126,7 +127,7 @@
 
       $("body").removeClass("authenticated").addClass("error");
 
-      $("#error_dialog").fadeIn(500);
+      $("#error_dialog").fadeIn(ANIMATION_TIME);
     },
 
     /**

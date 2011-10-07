@@ -190,20 +190,29 @@
 
 
   PageController.extend("Authenticate", {}, {
-    init: function() {
+    init: function(el, options) {
+      options = options || {};
+
       this._super({
         bodyTemplate: "authenticate.ejs",
         bodyVars: {
           sitename: identities.getOrigin(),
-          siteicon: '/i/times.gif'
+          siteicon: "/i/times.gif",
+          email: options.email || ""
         }
       });
+
       this.submit = checkEmail;
+      // If we already have an email address, check if it is valid, if so, show 
+      // password.
+      if(options.email) {
+        this.submit();
+      }
     },
 
     "#email keyup": enterEmailState,
     "#forgotPassword click": forgotPasswordState,
-    '#cancel_forgot_password click': cancelForgotPassword
+    "#cancel_forgot_password click": cancelForgotPassword
   });
 
 }());

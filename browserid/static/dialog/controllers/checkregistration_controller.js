@@ -63,7 +63,7 @@
           });
         }
         else if (status === "mustAuth") {
-          me.close("auth");
+          me.close("auth", { email: me.email });
         }
       }, me.getErrorDialog(BrowserID.Errors.registration));
     }
