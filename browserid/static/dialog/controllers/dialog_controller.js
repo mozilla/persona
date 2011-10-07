@@ -44,13 +44,14 @@
 
 PageController.extend("Dialog", {}, {
     init: function(el) {
-      this.element.show();
+      var self=this;
+      //this.element.show();
 
       // keep track of where we are and what we do on success and error
-      this.onsuccess = null;
-      this.onerror = null;
-      var chan = setupChannel(this);
-      this.stateMachine();
+      self.onsuccess = null;
+      self.onerror = null;
+      setupChannel(self);
+      self.stateMachine();
     },
       
     getVerifiedEmail: function(origin_url, onsuccess, onerror) {
@@ -196,7 +197,6 @@ PageController.extend("Dialog", {}, {
 
     doCheckAuth: function() {
       var self=this;
-      self.doWait(BrowserID.Wait.checkAuth);
       BrowserID.Identities.checkAuthenticationAndSync(function onSuccess() {}, 
         function onComplete(authenticated) {
           if (authenticated) {
