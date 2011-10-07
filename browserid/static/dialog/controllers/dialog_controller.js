@@ -109,8 +109,12 @@ PageController.extend("Dialog", {}, {
         self.doNotMe();
       });
 
-      hub.subscribe("auth", function() {
-        self.doAuthenticate();
+      hub.subscribe("auth", function(msg, info) {
+        info = info || {};
+
+        self.doAuthenticate({
+          email: info.email
+        });
       });
 
       hub.subscribe("start", function() {
@@ -144,8 +148,8 @@ PageController.extend("Dialog", {}, {
       this.element.pickemail();
     },
 
-    doAuthenticate: function() {
-      this.element.authenticate();
+    doAuthenticate: function(info) {
+      this.element.authenticate(info);
     },
 
     doForgotPassword: function(email) {
