@@ -45,8 +45,6 @@ steal.plugins(
 	'jquery/view/ejs',				// client side templates
 	'jquery/controller/view')		// lookup views with the controller's name
 
-	.css("css/popup")	// loads styles
-
 	.resources('jschannel',
                'base64',
                'underscore-min',
@@ -60,8 +58,6 @@ steal.plugins(
                'browserid-identities',
                'browserid-errors',
                'browserid-wait')					// 3rd party script's (like jQueryUI), in resources folder
-
-	.models()						// loads files in models folder
 
 	.controllers('page',
                'dialog',

@@ -12,7 +12,7 @@ if [ ! -x "$JAVA" ]; then
     exit 1
 fi
 
-YUI_LOCATION='../../static/steal/build/scripts/yui.jar'
+YUI_LOCATION=`pwd`'/static/steal/build/scripts/yui.jar'
 
 echo ''
 echo '****Compressing include.js****'
@@ -32,7 +32,11 @@ cd dialog
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
 
-cd ../relay
+cd css
+cat popup.css m.css > production.css
+$JAVA -jar $YUI_LOCATION production.css -o production.min.css
+
+cd ../../relay
 cat ../dialog/resources/jschannel.js relay.js > production.js
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
