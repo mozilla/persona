@@ -579,32 +579,8 @@
     return message;
   }
 
-  function getAndroidVersion() {
-    var rv = -1; // Return value assumes failure.
-    var ua = navigator.userAgent;
-    if (ua.match(/Android/)) {
-      var re = new RegExp("Android ([0-9]{1,}[\.0-9]{0,})");
-      if (re.exec(ua) != null)
-        rv = parseFloat(RegExp.$1);
-    }
-
-    return rv;
-  }
-
-  function checkAndroid() {
-    var androidVersion = getAndroidVersion(),
-        androidNoSupport = androidVersion > -1 && androidVersion < 3,
-        message;
-
-    if(androidNoSupport) {
-      message = "Unfortunately, your version of the Android browser is not yet supported.";
-    }
-
-    return message;
-  }
-
   function explicitNosupport() {
-    var message = checkIE() || checkAndroid();
+    var message = checkIE();
 
     if (message) {
        message += "\nWe are working hard to bring BrowserID support to your browser!";
@@ -617,13 +593,26 @@
   function checkRequirements() {
     var localStorage = 'localStorage' in window && window['localStorage'] !== null;
     var postMessage = !!window.postMessage;
+    var json = true;
+
+    if(window.JSON) {
+      // If there is no native JSON support, we use Crockford's JSON2 library.
+      try {
+        // Android < 3 blows up on this.
+        JSON.parse(null);
+      }
+      catch(e) {
+        json = false;
+      }
+    }
+
     var explicitNo = explicitNosupport()
 
-    if(!explicitNo && !(localStorage && postMessage)) {
+    if(!explicitNo && !(localStorage && postMessage && json)) {
       alert("Unfortunately, your browser does not meet the minimum HTML5 support required for BrowserID.");
     }
 
-    return localStorage && postMessage && !(explicitNo);
+    return localStorage && postMessage && json && !(explicitNo);
   }
 
   // this is for calls that are non-interactive
