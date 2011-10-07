@@ -2,11 +2,12 @@
 
 const https = require('https');
 
-var people = [
-  'lloyd',
-  'stomlinson',
-  'benadida'
-];
+// people to get issues, and the issues that were assigned to them
+var people = {
+  'lloyd': [],
+  'shane-tomlinson': [],
+  'benadida': []
+};
 
 var auth = process.env.AUTH;
 
@@ -23,20 +24,34 @@ https.get({
   var body = "";
   res.on('data', function(chunk) {
     body += chunk;
-  }); 
+  });
   res.on('end', function() {
     processIssues(body);
-  }); 
+  });
 }).on('error', function(e) {
   console.log("Got error: " + e.message);
   process.exit(1);
 });
 
+// count of how many issues are left to assign, used to determine when we're done for
+// final output
+var assigning = 0;
+
+function outputResults() {
+  console.log("All issues assigned:");
+  Object.keys(people).forEach(function(person) {
+    console.log(" ", person + ":", people[person].join(", "));
+  });
+}
+
 function processIssues(json) {
   var issues = JSON.parse(json);
   var num = 0;
   issues.forEach(function(i) {
-    if (!i.assignee) assignIssueTo(i.number, people[num++ % people.length]);
+    if (!i.assignee) {
+      assigning++;
+      assignIssueTo(i.number, Object.keys(people)[num++ % Object.keys(people).length]);
+    }
   });
 }
 
@@ -49,8 +64,10 @@ function assignIssueTo(number, person) {
   };
 
   var req = https.request(options, function(res) {
-    console.log("assign issue", number, "to", person, "-", res.statusCode);
+    console.log("  * assign issue", number, "to", person, "-", res.statusCode);
     res.setEncoding('utf8');
+    people[person].push(number);
+    if (--assigning === 0) outputResults();
   });
   var content = JSON.stringify({assignee:person});
   req.setHeader('content-length', content.length);
