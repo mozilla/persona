@@ -1,217 +1,219 @@
-body #wrapper {
-  width: 320px;
-}
+@media screen and (max-width: 640px) {
+  #wrapper {
+    width: 320px;
+  }
 
-body hr {
-  width: 300px;
-}
+  hr {
+    width: 300px;
+  }
 
-body #content {
-  padding: 122px 0 84px;
-  margin: 0 10px;
-}
+  #content {
+    padding: 122px 0 84px;
+    margin: 0 10px;
+  }
 
-body #header {
-  padding: 20px 30px;
-}
+  #header {
+    padding: 20px 30px;
+  }
 
-body #header ul.nav {
-  float: left;
-  width: 260px;
-  margin-top: 10px;
-}
+  #header ul.nav {
+    float: left;
+    width: 260px;
+    margin-top: 10px;
+  }
 
-body #header ul.nav li {
-  margin: 0 1px 0 0;
-  text-align: center;
-  width: 64px;
-}
+  #header ul.nav li {
+    margin: 0 1px 0 0;
+    text-align: center;
+    width: 64px;
+  }
 
-body #header ul.nav li:first-child {
-  width: 102px;
-}
+  #header ul.nav li:first-child {
+    width: 102px;
+  }
 
-body #header ul.nav li:nth-child(2) {
-  width: 91px;
-}
+  #header ul.nav li:nth-child(2) {
+    width: 91px;
+  }
 
 
-body #header ul.nav li a {
-  padding: 3px 0;
-  background-color: #549FDC;
-  color: #fff;
-  display: block;
-  
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-       -o-border-radius: 3px;
-          border-radius: 3px;
-}
+  #header ul.nav li a {
+    padding: 3px 0;
+    background-color: #549FDC;
+    color: #fff;
+    display: block;
+    
+    -webkit-border-radius: 3px;
+       -moz-border-radius: 3px;
+         -o-border-radius: 3px;
+            border-radius: 3px;
+  }
 
-body.authenticated #header ul.nav li.signOut,
-body #header ul.nav li {
-  display: block;
-}
+  body.authenticated #header ul.nav li.signOut,
+  #header ul.nav li {
+    display: block;
+  }
 
-body #header ul.nav li.signOut,
-body.authenticated #header ul.nav li.signIn {
-  display: none;
-}
+  #header ul.nav li.signOut,
+  body.authenticated #header ul.nav li.signIn {
+    display: none;
+  }
 
-body #header ul.nav li a {
-  -webkit-border-radius: 0 3px 3px 0;
-     -moz-border-radius: 0 3px 3px 0;
-       -o-border-radius: 0 3px 3px 0;
-          border-radius: 0 3px 3px 0;
-}
+  #header ul.nav li a {
+    -webkit-border-radius: 0 3px 3px 0;
+       -moz-border-radius: 0 3px 3px 0;
+         -o-border-radius: 0 3px 3px 0;
+            border-radius: 0 3px 3px 0;
+  }
 
-body #header ul.nav li:first-child a {
-  
-  -webkit-border-radius: 3px 0 0 3px;
-     -moz-border-radius: 3px 0 0 3px;
-       -o-border-radius: 3px 0 0 3px;
-          border-radius: 3px 0 0 3px;
-}
+  #header ul.nav li:first-child a {
+    
+    -webkit-border-radius: 3px 0 0 3px;
+       -moz-border-radius: 3px 0 0 3px;
+         -o-border-radius: 3px 0 0 3px;
+            border-radius: 3px 0 0 3px;
+  }
 
-body #header ul.nav li:nth-child(2) a {
-  -webkit-border-radius: 0px;
-     -moz-border-radius: 0px;
-       -o-border-radius: 0px;
-          border-radius: 0px;
-}
+  #header ul.nav li:nth-child(2) a {
+    -webkit-border-radius: 0px;
+       -moz-border-radius: 0px;
+         -o-border-radius: 0px;
+            border-radius: 0px;
+  }
 
-body #header ul.nav li a.signIn {
-  background-color: rgba(0,0,0,0.1);
-  color: #222;
-}
+  #header ul.nav li a.signIn {
+    background-color: rgba(0,0,0,0.1);
+    color: #222;
+  }
 
-body #header ul.nav li a:hover {
-  text-decoration: none;
-}
+  #header ul.nav li a:hover {
+    text-decoration: none;
+  }
 
-body #signUp {
-  width: 320px;
-  padding: 0 10px;
-  font-size: 16px;
-  line-height: 21px;
-  margin: 122px 0 122px;
-}
+  #signUp {
+    width: 320px;
+    padding: 0 10px;
+    font-size: 16px;
+    line-height: 21px;
+    margin: 122px 0 122px;
+  }
 
-body #signUp p {
-  padding: 0 20px;
-}
+  #signUp p {
+    padding: 0 20px;
+  }
 
-body #card {
-  width: 260px;
-  height: 80px;
-  background-position: center top;
-  background-size: 50%;
-  position: relative;
-  margin: 0 20px 20px;
-  top: auto;
-  
-  -webkit-transition: none;
-     -moz-transition: none;
-       -o-transition: none;
-          transition: none;
-}
+  #card {
+    width: 260px;
+    height: 80px;
+    background-position: center top;
+    background-size: 50%;
+    position: relative;
+    margin: 0 20px 20px;
+    top: auto;
+    
+    -webkit-transition: none;
+       -moz-transition: none;
+         -o-transition: none;
+            transition: none;
+  }
 
-body button.create {
-  font-size: 14px;
-  height: 28px;
-  padding: 0 12px;
-}
+  button.create {
+    font-size: 14px;
+    height: 28px;
+    padding: 0 12px;
+  }
 
-body #card.insert {
-  background-position: center top;
-}
+  #card.insert {
+    background-position: center top;
+  }
 
-body #card img {
-  display: none;
-}
+  #card img {
+    display: none;
+  }
 
-body #hint,
-body #status {
-  display: none;
-}
+  #hint,
+  #status {
+    display: none;
+  }
 
-body #legal {
-  padding: 20px;
-  text-align: left;
-} 
+  #legal {
+    padding: 20px;
+    text-align: left;
+  } 
 
-body #legal li {
-  list-style-position: inside;
-}
+  #legal li {
+    list-style-position: inside;
+  }
 
-body #about {
-  padding: 0;
-}
+  #about {
+    padding: 0;
+  }
 
-body #about .video,
-body #about .video img {
-  width: 300px;
-  height: auto;
-}
+  #about .video,
+  #about .video img {
+    width: 300px;
+    height: auto;
+  }
 
-body .row {
-  padding: 20px 20px 0;
-  margin: 0;
-}
+  .row {
+    padding: 20px 20px 0;
+    margin: 0;
+  }
 
-body .row div {
-  width: auto;
-  height: auto;
-  vertical-align: inherit;
-  display: block;
-  padding: 20px 0;
-}
+  .row div {
+    width: auto;
+    height: auto;
+    vertical-align: inherit;
+    display: block;
+    padding: 20px 0;
+  }
 
-body .row img {
-  float: none;
-  width: 260px;
-  height: auto;
-}
+  .row img {
+    float: none;
+    width: 260px;
+    height: auto;
+  }
 
-body .row p {
-  float: none;
-  display: block;
-  width: 260px;
-  text-indent: -33px;
-  padding-left: 33px;
-}
+  .row p {
+    float: none;
+    display: block;
+    width: 260px;
+    text-indent: -33px;
+    padding-left: 33px;
+  }
 
-body #signUpFormWrap {
-  margin: 122px 10px 122px;
-}
+  #signUpFormWrap {
+    margin: 122px 10px 122px;
+  }
 
-body #manage {
-  padding: 20px;
-  text-align: left;
-}
+  #manage {
+    padding: 20px;
+    text-align: left;
+  }
 
-body #manage .edit {
-  margin: 36px 0 14px;
-}
+  #manage .edit {
+    margin: 36px 0 14px;
+  }
 
-body #manage #emails {
-  margin: 0 0 36px;
-}
+  #manage #emails {
+    margin: 0 0 36px;
+  }
 
-body #emails .email, 
-body #emails .activity {
-  display: block;
-  width: 260px;
-}
+  #emails .email, 
+  #emails .activity {
+    display: block;
+    width: 260px;
+  }
 
-body #emails .activity span {
-  float: left;
-}
+  #emails .activity span {
+    float: left;
+  }
 
-body #disclaimer {
-  text-align: left;
-}
+  #disclaimer {
+    text-align: left;
+  }
 
-body #footer {
-  padding: 20px 30px;
+  #footer {
+    padding: 20px 30px;
+  }
 }
