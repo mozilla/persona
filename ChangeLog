@@ -15,6 +15,7 @@ train-2011.10.06:
   * more user visible error messages to improve community sourced problem reports: #335
   * IE8 improvements (still not fully supported): #246, #361, #346
   * cookie fixes revisited, now on upstream version of connect-cookie-session: #310
+  * (merged 2011.10.07) fix unstyled flash at first dialog display: #365
 
 train-2011.09.29:
   * shortly after dialog is spawned, we remove the four random chars in the fragment (aesthetic)
