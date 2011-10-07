@@ -100,7 +100,7 @@ h2 {
     background-image: none;
 }
 
-#formWrap, .waiting #formWrap  {
+#formWrap, .waiting #formWrap, .checkregistration #formWrap  {
     background-color: rgba(0, 0, 0, 0.035);
     background-image: url('/i/bg.png');
     position: relative;
@@ -109,13 +109,13 @@ h2 {
     overflow: hidden;
 }
 
-.waiting #formWrap {
+.waiting #formWrap, .checkregistration #formWrap {
     width: 325px;
     margin: 0 auto;
     text-align: center;
 }
 
-.waiting #formWrap > form {
+.waiting #formWrap > form, .checkregistration #formWrap > form {
     height: 250px;
     width: 325px;
     display: table-cell;
@@ -350,18 +350,17 @@ footer .learn a {
     color: #549FDC;
 }
 
-#checkemail {
-    text-align: center;
-    padding: 0 20px;
-    background-image: url('/i/bg.png');
-}
-
-#checkemail p {
+.checkregistration p {
     color: #62615F;
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-#checkemail #displayemail {
+.checkregistration p:first-child {
+    margin-bottom: 20px;
+    font-size: 150%;
+}
+
+.checkregistration strong {
     color: #222;
     font-weight: bold;
 }
