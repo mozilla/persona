@@ -566,16 +566,52 @@
     return rv;
   }
 
-  function explicitNosupport() {
-    var ieVersion = getInternetExplorerVersion();
-    var ieNosupport = ieVersion > -1 && ieVersion < 9;
+  function checkIE() {
+    var ieVersion = getInternetExplorerVersion(),
+        ieNosupport = ieVersion > -1 && ieVersion < 9,
+        message;
 
     if(ieNosupport) {
-      alert("Unfortunately, your version of Internet Explorer is not supported.\n" +
-            'Please upgrade to Internet Explorer 9 or turn off "Compatibility View".');
+      message = "Unfortunately, your version of Internet Explorer is not yet supported.\n" +
+            'If you are using Internet Explorer 9, turn off "Compatibility View".';
     }
 
-    return ieNosupport;
+    return message;
+  }
+
+  function getAndroidVersion() {
+    var rv = -1; // Return value assumes failure.
+    var ua = navigator.userAgent;
+    if (ua.match(/Android/)) {
+      var re = new RegExp("Android ([0-9]{1,}[\.0-9]{0,})");
+      if (re.exec(ua) != null)
+        rv = parseFloat(RegExp.$1);
+    }
+
+    return rv;
+  }
+
+  function checkAndroid() {
+    var androidVersion = getAndroidVersion(),
+        androidNoSupport = androidVersion > -1 && androidVersion < 3,
+        message;
+
+    if(androidNoSupport) {
+      message = "Unfortunately, your version of the Android browser is not yet supported.";
+    }
+
+    return message;
+  }
+
+  function explicitNosupport() {
+    var message = checkIE() || checkAndroid();
+
+    if (message) {
+       message += "\nWe are working hard to bring BrowserID support to your browser!";
+       alert(message);
+    }
+
+    return message;
   }
 
   function checkRequirements() {
