@@ -566,28 +566,53 @@
     return rv;
   }
 
-  function explicitNosupport() {
-    var ieVersion = getInternetExplorerVersion();
-    var ieNosupport = ieVersion > -1 && ieVersion < 9;
+  function checkIE() {
+    var ieVersion = getInternetExplorerVersion(),
+        ieNosupport = ieVersion > -1 && ieVersion < 9,
+        message;
 
     if(ieNosupport) {
-      alert("Unfortunately, your version of Internet Explorer is not supported.\n" +
-            'Please upgrade to Internet Explorer 9 or turn off "Compatibility View".');
+      message = "Unfortunately, your version of Internet Explorer is not yet supported.\n" +
+            'If you are using Internet Explorer 9, turn off "Compatibility View".';
     }
 
-    return ieNosupport;
+    return message;
+  }
+
+  function explicitNosupport() {
+    var message = checkIE();
+
+    if (message) {
+       message += "\nWe are working hard to bring BrowserID support to your browser!";
+       alert(message);
+    }
+
+    return message;
   }
 
   function checkRequirements() {
     var localStorage = 'localStorage' in window && window['localStorage'] !== null;
     var postMessage = !!window.postMessage;
+    var json = true;
+
+    if(window.JSON) {
+      // If there is no native JSON support, we use Crockford's JSON2 library.
+      try {
+        // Android < 3 blows up on this.
+        JSON.parse(null);
+      }
+      catch(e) {
+        json = false;
+      }
+    }
+
     var explicitNo = explicitNosupport()
 
-    if(!explicitNo && !(localStorage && postMessage)) {
+    if(!explicitNo && !(localStorage && postMessage && json)) {
       alert("Unfortunately, your browser does not meet the minimum HTML5 support required for BrowserID.");
     }
 
-    return localStorage && postMessage && !(explicitNo);
+    return localStorage && postMessage && json && !(explicitNo);
   }
 
   // this is for calls that are non-interactive
