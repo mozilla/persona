@@ -161,6 +161,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   module("browserid-identities-unit", {
     setup: function() {
       lib.setNetwork(netStub);
+      lib.clearStoredEmailKeypairs();
       netStub.reset();
       userCheckCount = 0;
       emailCheckCount = 0;
@@ -375,7 +376,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   test("authenticateAndSync with valid authentication", function() {
     credentialsValid = true;
     keyRefresh = ["testuser@testuser.com"]; 
-    lib.clearStoredEmailKeypairs();
 
     lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
     }, function(authenticated) {
@@ -393,7 +393,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   test("authenticateAndSync with invalid authentication", function() {
     credentialsValid = false;
     keyRefresh = ["testuser@testuser.com"]; 
-    lib.clearStoredEmailKeypairs();
 
     lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
     }, function(authenticated) {
@@ -444,8 +443,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncEmailKeypair with successful sync", function() {
-    lib.clearStoredEmailKeypairs();
-
     syncValid = true;
     lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
       var identities = lib.getStoredEmailKeypairs();
@@ -459,8 +456,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncEmailKeypair with invalid sync", function() {
-    lib.clearStoredEmailKeypairs();
-
     syncValid = false;
     lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
       ok(false, "sync was invalid, this should have failed");
@@ -477,8 +472,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("persistEmail", function() {
-    lib.clearStoredEmailKeypairs();
-
     lib.persistEmail("testemail@testemail.com", function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
       ok("testemail@testemail.com" in identities, "Our new email is added");
@@ -490,8 +483,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("persistEmailKeypair with new email", function() {
-    lib.clearStoredEmailKeypairs();
-
     var user_kp = jwk.KeyPair.generate("RS",64);
     lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
       var id = lib.getStoredEmailKeypairs()["testemail@testemail.com"];
@@ -512,8 +503,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("persistEmailKeypair with already saved email", function() {
-    lib.clearStoredEmailKeypairs();
-
     var user_kp = jwk.KeyPair.generate("RS",64);
     lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
       setTimeout(function() {
@@ -556,8 +545,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("removeEmail that is not added", function() {
-    lib.clearStoredEmailKeypairs();
-
     lib.removeEmail("testemail@testemail.com", function() {
       var identities = lib.getStoredEmailKeypairs();
       equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
@@ -570,7 +557,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncEmails with no pre-loaded identities and no identities to add", function() {
-    lib.clearStoredEmailKeypairs();
     userEmails = {};
 
     lib.syncEmails(function onSuccess() {
@@ -584,7 +570,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("syncEmails with no pre-loaded identities and identities to add", function() {
-    lib.clearStoredEmailKeypairs();
     userEmails = {"testuser@testuser.com": {}};
 
     lib.syncEmails(function onSuccess() {
@@ -598,7 +583,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("syncEmails with identities preloaded and none to add", function() {
-    lib.clearStoredEmailKeypairs();
     userEmails = {"testuser@testuser.com": {}};
     storage.addEmail("testuser@testuser.com", {});
     lib.syncEmails(function onSuccess() {
@@ -613,7 +597,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncEmails with identities preloaded and one to add", function() {
-    lib.clearStoredEmailKeypairs();
     storage.addEmail("testuser@testuser.com", {pubkey: pubkey, cert: random_cert});
     userEmails = {"testuser@testuser.com": {pubkey: pubkey, cert: random_cert},
                   "testuser2@testuser.com": {pubkey: pubkey, cert: random_cert}};
@@ -631,7 +614,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncEmails with identities preloaded and one to remove", function() {
-    lib.clearStoredEmailKeypairs();
     storage.addEmail("testuser@testuser.com", {pub: pubkey, cert: random_cert});
     storage.addEmail("testuser2@testuser.com", {pub: pubkey, cert: random_cert});
     userEmails = {"testuser@testuser.com":  { pub: pubkey, cert: random_cert}};
@@ -649,7 +631,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("getAssertion with known email that has key", function() {
-    lib.clearStoredEmailKeypairs();
     var keypair = jwk.KeyPair.generate("RS",64);
     lib.certifyEmailKeypair("testuser@testuser.com", keypair, function() {
       lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
@@ -663,7 +644,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("getAssertion with known email that does not have a key", function() {
-    lib.clearStoredEmailKeypairs();
     lib.persistEmail("testuser@testuser.com", function() {
       lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
         equal("string", typeof assertion, "we have an assertion!");
@@ -676,7 +656,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("getAssertion with unknown email", function() {
-    lib.clearStoredEmailKeypairs();
     var keypair = jwk.KeyPair.generate("RS",64);
     lib.certifyEmailKeypair("testuser@testuser.com", keypair, function() {
       lib.getAssertion("testuser2@testuser.com", function onSuccess(assertion) {
@@ -691,7 +670,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   test("logoutUser", function(onSuccess) {
     credentialsValid = true;
     keyRefresh = ["testuser@testuser.com"]; 
-    lib.clearStoredEmailKeypairs();
 
     lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
     }, function(authenticated) {

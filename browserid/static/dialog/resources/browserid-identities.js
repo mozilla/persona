@@ -169,7 +169,6 @@ BrowserID.Identities = (function() {
       // remember this for later
       storage.setStagedOnBehalfOf(origin);
       
-      // FIXME: keysize
       network.createUser(email, origin, function(created) {
         if (onSuccess) {
           if(created) {
@@ -454,12 +453,16 @@ BrowserID.Identities = (function() {
      * @param {function} [onFailure] - Called on failure.
      */
     removeEmail: function(email, onSuccess, onFailure) {
-      network.removeEmail(email, function() {
-        storage.removeEmail(email);
-        if (onSuccess) {
-          onSuccess();
-        }
-      }, onFailure);
+      if(storage.getEmail(email)) {
+        network.removeEmail(email, function() {
+          storage.removeEmail(email);
+          if (onSuccess) {
+            onSuccess();
+          }
+        }, onFailure);
+      } else if(onSuccess) {
+        onSuccess();
+      }
     },
 
     /**
@@ -545,8 +548,8 @@ BrowserID.Identities = (function() {
       // to avoid issues with clock drift on user's machine.
       // (issue #329)
       network.serverTime(function(serverTime) {
-        var storedID = Identities.getStoredEmailKeypairs()[email],
-        assertion;
+        var storedID = storage.getEmail(email),
+            assertion;
 
         function createAssertion(idInfo) {
           var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
