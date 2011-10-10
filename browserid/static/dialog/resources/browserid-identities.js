@@ -93,7 +93,7 @@ BrowserID.Identities = (function() {
     $('body')[func]('authenticated');
 
     if (!authenticated) {
-      storage.clearEmails();
+      storage.clear();
     }
   }
 
@@ -591,7 +591,7 @@ BrowserID.Identities = (function() {
      * @method clearStoredEmailKeypairs
      */
     clearStoredEmailKeypairs: function() {
-      storage.clearEmails();
+      storage.clear();
     },
 
 
