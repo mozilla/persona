@@ -512,6 +512,10 @@ html[xmlns] .cf {
     overflow-y: auto;
 }
 
+.pickemail .form_section {
+    height: 176px;
+}
+
 .add {
     font-size: 80%;
 }
