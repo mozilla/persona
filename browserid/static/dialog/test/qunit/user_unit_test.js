@@ -430,7 +430,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("syncEmailKeypair with successful sync", function() {
     syncValid = true;
     lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
-      var identity = lib.getStoredEmailKeypair("testuser@testuser.com");
+      var identity = lib.getStoredEmailKeypair("testemail@testemail.com");
 
       ok(identity, "we have an identity");
       ok(identity.priv, "a private key is on the identity");
