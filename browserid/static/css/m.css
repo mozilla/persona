@@ -216,4 +216,15 @@
   #footer {
     padding: 20px 30px;
   }
+
+  #emailList .email {
+    width: auto;
+    float: left;
+  }
+
+  #emailList .activity {
+    width: auto;
+    float: right;
+  }
+
 }
