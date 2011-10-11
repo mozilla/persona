@@ -75,7 +75,7 @@ suite.addBatch({
     },
     "works": function(r, err) {
       assert.equal(r.code, 200);
-      assert.strictEqual(JSON.parse(r.body), true);
+      assert.strictEqual(JSON.parse(r.body).success, true);
     }
   }
 });
@@ -87,7 +87,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns a json encoded string - `complete`": function (r, err) {
-      assert.strictEqual(JSON.parse(r.body), "complete");
+      assert.strictEqual(JSON.parse(r.body).status, "complete");
     }
   }
 });

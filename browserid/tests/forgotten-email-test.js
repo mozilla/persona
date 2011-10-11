@@ -75,7 +75,7 @@ suite.addBatch({
     },
     "account created": function(r, err) {
       assert.equal(r.code, 200);
-      assert.strictEqual(true, JSON.parse(r.body));
+      assert.strictEqual(true, JSON.parse(r.body).success);
     }
   }
 });
@@ -85,7 +85,7 @@ suite.addBatch({
     topic: wsapi.get('/wsapi/user_creation_status', { email: 'first@fakeemail.com' } ),
     "should exist": function(r, err) {
       assert.strictEqual(r.code, 200);
-      assert.strictEqual(JSON.parse(r.body), "complete");
+      assert.strictEqual(JSON.parse(r.body).status, "complete");
     }
   }
 });
@@ -111,7 +111,7 @@ suite.addBatch({
     },
     "account created": function(r, err) {
       assert.equal(r.code, 200);
-      assert.strictEqual(true, JSON.parse(r.body));
+      assert.strictEqual(JSON.parse(r.body).success, true);
     }
   }
 });
@@ -121,19 +121,19 @@ suite.addBatch({
   "first email exists": {
     topic: wsapi.get('/wsapi/have_email', { email: 'first@fakeemail.com' }),
     "should exist": function(r, err) {
-      assert.strictEqual(true, JSON.parse(r.body));
+      assert.strictEqual(JSON.parse(r.body).email_known, true);
     }
   },
   "second email exists": {
     topic: wsapi.get('/wsapi/have_email', { email: 'second@fakeemail.com' }),
     "should exist": function(r, err) {
-      assert.strictEqual(JSON.parse(r.body), true);
+      assert.strictEqual(JSON.parse(r.body).email_known, true);
     }
   },
   "a random email doesn't exist": {
     topic: wsapi.get('/wsapi/have_email', { email: 'third@fakeemail.com' }),
     "shouldn't exist": function(r, err) {
-      assert.strictEqual(JSON.parse(r.body), false);
+      assert.strictEqual(JSON.parse(r.body).email_known, false);
     }
   }
 });
@@ -158,13 +158,13 @@ suite.addBatch({
   "first email works": {
     topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'firstfakepass' }),
     "should work": function(r, err) {
-      assert.strictEqual(true, JSON.parse(r.body));
+      assert.strictEqual(JSON.parse(r.body).success, true);
     }
   },
   "second email works": {
     topic: wsapi.post('/wsapi/authenticate_user', { email: 'second@fakeemail.com', pass: 'firstfakepass' }),
     "should work": function(r, err) {
-      assert.strictEqual(true, JSON.parse(r.body));
+      assert.strictEqual(JSON.parse(r.body).success, true);
     }
   }
 });
@@ -177,7 +177,7 @@ suite.addBatch({
     },
     "account created": function(r, err) {
       assert.equal(r.code, 200);
-      assert.strictEqual(true, JSON.parse(r.body));
+      assert.strictEqual(JSON.parse(r.body).success, true);
     }
   }
 });
@@ -188,31 +188,31 @@ suite.addBatch({
   "first email, first pass bad": {
     topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'firstfakepass' }),
     "shouldn't work": function(r, err) {
-      assert.strictEqual(JSON.parse(r.body), false);
+      assert.strictEqual(JSON.parse(r.body).success, false);
     }
   },
   "first email, second pass good": {
     topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
     "should work": function(r, err) {
-      assert.strictEqual(JSON.parse(r.body), true);
+      assert.strictEqual(JSON.parse(r.body).success, true);
     }
   },
   "logout": {
     topic: wsapi.post('/wsapi/logout', {}),
-      "should work": function(r, err) {
-      assert.strictEqual(JSON.parse(r.body), "ok");
+    "should work": function(r, err) {
+      assert.strictEqual(JSON.parse(r.body).success, true);
     }
   },
   "second email, first pass good": {
     topic: wsapi.post('/wsapi/authenticate_user', { email: 'second@fakeemail.com', pass: 'firstfakepass' }),
     "should work": function(r, err) {
-      assert.strictEqual(JSON.parse(r.body), true);
+      assert.strictEqual(JSON.parse(r.body).success, true);
     }
   },
   "second email, second pass bad": {
     topic: wsapi.post('/wsapi/authenticate_user', { email: 'second@fakeemail.com', pass: 'secondfakepass' }),
     "shouldn' work": function(r, err) {
-      assert.strictEqual(JSON.parse(r.body), false);
+      assert.strictEqual(JSON.parse(r.body).success, false);
     }
   },
 });

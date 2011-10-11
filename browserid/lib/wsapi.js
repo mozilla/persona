@@ -164,7 +164,7 @@ function setup(app) {
     // get inputs from get data!
     var email = url.parse(req.url, true).query['email'];
     db.emailKnown(email, function(known) {
-      resp.json(known);
+      resp.json({ email_known: known });
     });
   });
 
@@ -189,7 +189,7 @@ function setup(app) {
         // status of the email verification.
         req.session.pendingCreation = secret;
 
-        resp.json(true);
+        resp.json({ success: true });
 
         // let's now kick out a verification email!
         email.sendNewUserEmail(req.body.email, req.body.site, secret);
@@ -210,24 +210,24 @@ function setup(app) {
 
     // if the user is authenticated as the user in question, we're done
     if (isAuthed(req) && req.session.authenticatedUser === email) {
-      return resp.json('complete');
+      return resp.json({ status: 'complete' });
     }
     // if the user isn't authenticated and there's no pendingCreation token,
     // then they must authenticate
     else if (!req.session.pendingCreation) {
-      return resp.json('mustAuth');
+      return resp.json({ status: 'mustAuth' });
     }
 
     // if the secret is still in the database, it hasn't yet been verified and
     // verification is still pending
     db.emailForVerificationSecret(req.session.pendingCreation, function (email) {
-      if (email) return resp.json('pending');
+      if (email) return resp.json({ status: 'pending' });
       // if the secret isn't known, and we're not authenticated, then the user must authenticate
       // (maybe they verified the URL on a different browser, or maybe they canceled the account
       // creation)
       else {
         delete req.session.pendingCreation;
-        resp.json('mustAuth');
+        resp.json({ status: 'mustAuth' });
       }
     });
   });
@@ -247,30 +247,30 @@ function setup(app) {
     // bcrypting the password (which is expensive), to prevent a possible
     // DoS attack.
     db.emailForVerificationSecret(req.body.token, function(email) {
-      if (!email) return resp.json(false);
+      if (!email) return resp.json({ success: false} );
 
       // now bcrypt the password
       bcrypt.gen_salt(10, function (err, salt) {
         if (err) {
           logger.error("error generating salt with bcrypt: " + err);
-          return resp.json(false);
+          return resp.json({ success: false });
         }
         bcrypt.encrypt(req.body.pass, salt, function(err, hash) {
           if (err) {
             logger.error("error generating password hash with bcrypt: " + err);
-            return resp.json(false);
+            return resp.json({ success: false });
           }
 
           db.gotVerificationSecret(req.body.token, hash, function(err, email) {
             if (err) {
               logger.error("error completing the verification: " + err);
-              resp.json(false);
+              resp.json({ success: false });
             } else {
               // FIXME: not sure if we want to do this (ba)
               // at this point the user has set a password associated with an email address
               // that they've verified.  We create an authenticated session.
               setAuthenticatedUser(req.session, email);
-              resp.json(true);
+              resp.json({ success: true });
             }
           });
         });
@@ -286,7 +286,7 @@ function setup(app) {
         // store the email being added in session data
         req.session.pendingAddition = secret;
 
-        resp.json(true);
+        resp.json({ success: true });
 
         // let's now kick out a verification email!
         email.sendAddAddressEmail(req.body.email, req.body.site, secret);
@@ -299,7 +299,7 @@ function setup(app) {
 
   app.get('/wsapi/email_for_token', checkParams(["token"]), function(req,resp) {
     db.emailForVerificationSecret(req.query.token, function(email) {
-      resp.json({email: email});
+      resp.json({ email: email });
     });
   });
 
@@ -327,16 +327,16 @@ function setup(app) {
       function(registered) {
         if (registered) {
           delete req.session.pendingAddition;
-          resp.json('complete');
+          resp.json({ status: 'complete' });
         } else if (!req.session.pendingAddition) {
           resp.json('failed');
         } else {
           db.emailForVerificationSecret(req.session.pendingAddition, function (email) {
             if (email) {
-              return resp.json('pending');
+              return resp.json({ status: 'pending' });
             } else {
               delete req.session.pendingAddition;
-              resp.json('failed');
+              resp.json({ status: 'failed' });
             }
           });
         }
@@ -347,9 +347,9 @@ function setup(app) {
     db.gotVerificationSecret(req.body.token, undefined, function(e) {
       if (e) {
         logger.error("error completing the verification: " + e);
-        resp.json(false);
+        resp.json({ success: false });
       } else {
-        resp.json(true);
+        resp.json({ success: true });
       }
     });
   });
@@ -359,7 +359,7 @@ function setup(app) {
       if (typeof hash !== 'string' ||
           typeof req.body.pass !== 'string')
       {
-        return resp.json(false);
+        return resp.json({ success: false });
       }
 
       bcrypt.compare(req.body.pass, hash, function (err, success) {
@@ -373,7 +373,7 @@ function setup(app) {
 
           // if the work factor has changed, update the hash here
         }
-        resp.json(success);
+        resp.json({ success: success });
       });
     });
   });
@@ -386,7 +386,7 @@ function setup(app) {
         logger.error("error removing email " + email);
         httputils.badRequest(resp, error.toString());
       } else {
-        resp.json(true);
+        resp.json({ success: true });
       }});
   });
 
@@ -396,7 +396,7 @@ function setup(app) {
         logger.error("error cancelling account : " + error.toString());
         httputils.badRequest(resp, error.toString());
       } else {
-        resp.json(true);
+        resp.json({ success: true });
       }});
   });
 
@@ -422,7 +422,7 @@ function setup(app) {
 
   app.post('/wsapi/logout', function(req, resp) {
     clearAuthenticatedUser(req.session);
-    resp.json('ok');
+    resp.json({ success: true });
   });
 
   // in the cert world, syncing is not necessary,
