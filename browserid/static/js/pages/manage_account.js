@@ -170,9 +170,9 @@
   }
 
   BrowserID.manageAccount = function() {
-    $('#cancellink').click(function() {
+    $('#cancelAccount').click(function() {
       if (confirm('Are you sure you want to cancel your account?')) {
-        BrowserID.Network.cancelUser(function() {
+        User.cancelUser(function() {
           document.location="/";
         });
       }
