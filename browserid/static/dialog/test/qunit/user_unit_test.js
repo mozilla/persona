@@ -418,7 +418,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("waitForEmailValidation", function() {
-    lib.waitForEmailValidation("testuser@testuser.com", function() {
+    lib.waitForEmailValidation("testemail@testemail.com", function() {
       ok(true);
       start();
     }, failure("waitForEmailValidation failure"));
