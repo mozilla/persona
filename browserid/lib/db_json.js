@@ -238,6 +238,14 @@ exports.checkAuth = function(email, cb) {
   setTimeout(function() { cb(m) }, 0);
 };
 
+exports.updatePassword = function(email, hash, cb) {
+  var m = jsel.match(":root > object:has(.emails > :val(" + ESC(email) + "))", db);
+  var err = undefined;
+  if (m.length === 0) err = "no such email address";
+  else m[0].password = hash;
+  setTimeout(function() { cb(err) }, 0);
+};
+
 function emailToUserID(email, cb) {
   var id = undefined;
 

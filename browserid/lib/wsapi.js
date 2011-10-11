@@ -385,7 +385,18 @@ function setup(app) {
           if (!req.session) req.session = {};
           setAuthenticatedUser(req.session, req.body.email);
 
-          // if the work factor has changed, update the hash here
+          // if the work factor has changed, update the hash here.  issue #204
+          // NOTE: this runs asynchronously and will not delay the response
+          if (configuration.get('bcrypt_work_factor') != bcrypt.get_rounds(hash)) {
+            logger.info("updating bcrypted password for email " + req.body.email);
+            bcrypt_password(req.body.pass, function(err, hash) {
+              db.updatePassword(req.body.email, hash, function(err) {
+                if (err) {
+                  logger.error("error updating bcrypted password for email " + req.body.email, err);
+                }
+              });
+            });
+          }
         }
         resp.json({ success: success });
       });
