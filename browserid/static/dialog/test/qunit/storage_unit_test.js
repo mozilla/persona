@@ -37,7 +37,7 @@
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/storage", function() {
   var storage = BrowserID.Storage;
 
-  module("BrowserID.Storage", {
+  module("storage", {
     setup: function() {
       storage.clear();
     },

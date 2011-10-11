@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-network", function() {
+steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", function() {
   "use strict";
 
   var testName;
@@ -130,7 +130,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   }
 
 
-  module("browserid-network", {
+  module("network", {
     setup: function() {
       network.setXHR(xhr);
       xhr.useResult("valid");

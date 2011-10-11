@@ -46,7 +46,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", fu
     tooltipShown = true;
   }
 
-  module("validation-unit", {
+  module("validation", {
     setup: function() {
       origShowTooltip = bid.Tooltip.showTooltip;
       bid.Tooltip.showTooltip = showTooltip;

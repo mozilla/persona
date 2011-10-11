@@ -37,7 +37,7 @@
 var jwk = require("./jwk");
 var jwcert = require("./jwcert");
 
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-identities", function() {
+steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", function() {
   var lib = BrowserID.Identities,
       network = BrowserID.Network,
       storage = BrowserID.Storage;
@@ -158,7 +158,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     }
   };
 
-  module("browserid-identities-unit", {
+  module("user", {
     setup: function() {
       lib.setNetwork(netStub);
       lib.clearStoredEmailKeypairs();
