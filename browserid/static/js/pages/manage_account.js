@@ -1,4 +1,4 @@
-/*globals BrowserID:true, _: true, confirm: true, syncAndDisplayEmails: true, displayEmails: true, onRemoveEmail: true*/
+/*globals BrowserID:true, _: true, confirm: true, displayEmails: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -136,6 +136,25 @@
     });
   }
 
+  function onRemoveEmail(email, event) {
+    event.preventDefault();
+
+    var emails = User.getStoredEmailKeypairs();
+
+    if (_.size(emails) > 1) {
+      if (confirm("Remove " + email + " from your BrowserID?")) {
+        User.removeEmail(email, syncAndDisplayEmails);
+      }
+    }
+    else {
+      if (confirm('Removing the last address will cancel your BrowserID account,\nare you sure you want to continute?')) {
+        User.cancelUser(function() {
+          document.location="/";
+        });
+      }
+    }
+  }
+
   function displayEmails(emails) {
     var list = $("#emailList").empty();
 
@@ -161,17 +180,10 @@
 
   }
 
-  function onRemoveEmail(email, event) {
-    event.preventDefault();
-
-    if (confirm("Remove " + email + " from your BrowserID?")) {
-      User.removeEmail(email, syncAndDisplayEmails);
-    }
-  }
-
   BrowserID.manageAccount = function() {
-    $('#cancelAccount').click(function() {
-      if (confirm('Are you sure you want to cancel your account?')) {
+    $('#cancelAccount').click(function(event) {
+      event.preventDefault();
+      if (confirm('Are you sure you want to cancel your BrowserID account?')) {
         User.cancelUser(function() {
           document.location="/";
         });
