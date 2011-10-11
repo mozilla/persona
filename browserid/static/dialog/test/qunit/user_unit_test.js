@@ -188,6 +188,23 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     equal("object", typeof identities, "we have some identities");
   });
 
+  test("getStoredEmailKeypair with known key", function() {
+    lib.syncEmailKeypair("testuser@testuser.com", function() {
+      var identity = lib.getStoredEmailKeypair("testuser@testuser.com");
+
+      ok(identity, "we have an identity");
+      start();
+    }, failure("syncEmailKeypair failure"));
+
+    stop();
+  });
+
+  test("getStoredEmailKeypair with unknown key", function() {
+    var identity = lib.getStoredEmailKeypair("testuser@testuser.com");
+
+    equal(typeof identity, "undefined", "identity is undefined for unknown key");
+  });
+
   test("clearStoredEmailKeypairs", function() {
     lib.clearStoredEmailKeypairs();
     var identities = lib.getStoredEmailKeypairs();
@@ -413,8 +430,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("syncEmailKeypair with successful sync", function() {
     syncValid = true;
     lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
-      var identities = lib.getStoredEmailKeypairs();
-      ok("testemail@testemail.com" in identities, "Valid email is synced");
+      var identity = lib.getStoredEmailKeypair("testuser@testuser.com");
+
+      ok(identity, "we have an identity");
+      ok(identity.priv, "a private key is on the identity");
+      ok(identity.pub, "a private key is on the identity");
 
       start();
     }, failure("syncEmailKeypair failure"));
@@ -429,8 +449,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "sync was invalid, this should have failed");
       start();
     }, function() {
-      var identities = lib.getStoredEmailKeypairs();
-      equal("testemail@testemail.com" in identities, false, "Invalid email is not synced");
+      var identity = lib.getStoredEmailKeypair("testemail@testemail.com");
+      equal(typeof identity, "undefined", "Invalid email is not synced");
 
       start();      
     });
