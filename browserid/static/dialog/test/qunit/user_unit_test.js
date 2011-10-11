@@ -250,50 +250,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
-  test("confirmEmail on staged identity", function() {
-    lib.createUser("testuser@testuser.com", function(created) {
-      lib.confirmEmail("testuser@testuser.com", function() {
-        ok(true, "confirming staged identity");
-        start();
-      });
-    }, failure("createUser failure"));
-
-    stop();
-  });
-
-
-  test("confirmEmail on non staged identity", function() {
-    lib.createUser("testuser@testuser.com", function(created) {
-      lib.confirmEmail("testuser2@testuser.com", function onSuccess() {
-        ok(false, "confirming unstaged identity");
-        start();
-      }, function onFailure() {
-        ok(true, "confirming unstaged identity should fail");
-        start();
-      });
-    }, failure("createUser failure"));
-
-    stop();
-  });
-
-
-  test("confirmEmail on previously confirmed identity", function() {
-    lib.createUser("testuser@testuser.com", function(created) {
-      lib.confirmEmail("testuser@testuser.com", function() {
-        lib.confirmEmail("testuser@testuser.com", function() {
-          ok(false, "confirming previously confirmed identity should fail");
-          start();
-        }, function onFailure() {
-          ok(true, "confirming previously confirmed identity should fail");  
-          start();
-        });
-      });
-    }, failure("createUser failure"));
-
-    stop();
-  });
-
-
 
   test("authenticateAndSync with valid credentials", function() {
     lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
@@ -483,65 +439,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
 
-  test("persistEmail", function() {
-    lib.persistEmail("testemail@testemail.com", function onSuccess() {
-      var identities = lib.getStoredEmailKeypairs();
-      ok("testemail@testemail.com" in identities, "Our new email is added");
-      start(); 
-    });
-
-    stop();
-  });
-
-
-  test("persistEmailKeypair with new email", function() {
-    var user_kp = jwk.KeyPair.generate("RS",64);
-    lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
-      var id = lib.getStoredEmailKeypairs()["testemail@testemail.com"];
-
-      ok(id, "Email is added");
-      ok(id.created, "A create date is generated");
-      ok(id.updated, "An updated date is generated");
-      equal(id.created, id.updated, "Create and update dates are the same");
-
-      ok(id.pub, "A public key is generated");
-      ok(id.priv, "A private key is generated");
-      ok(id.cert, "A certificate is generated");
-
-      start(); 
-    });
-
-    stop();
-  });
-
-  test("persistEmailKeypair with already saved email", function() {
-    var user_kp = jwk.KeyPair.generate("RS",64);
-    lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
-      setTimeout(function() {
-        lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
-
-        var id = lib.getStoredEmailKeypairs()["testemail@testemail.com"];
-
-        ok(id, "Email is added");
-        ok(id.created, "A create date is generated");
-        ok(id.updated, "An updated date is generated");
-        notEqual(id.created, id.updated, "Create and update dates are NOT the same when an address is updated");
-
-        ok(id.pub, "A public key is generated");
-        ok(id.priv, "A private key is generated");
-        ok(id.cert, "A certificate is generated");
-
-        start(); 
-        });
-      }, 500);
-    });
-
-    stop();
-
-  });
-
-
-
   test("removeEmail that is added", function() {
     storage.addEmail("testemail@testemail.com", {pub: "pub", priv: "priv"});
 
@@ -643,33 +540,30 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("getAssertion with known email that has key", function() {
-    var keypair = jwk.KeyPair.generate("RS",64);
-    lib.certifyEmailKeypair("testuser@testuser.com", keypair, function() {
+    lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
         equal("string", typeof assertion, "we have an assertion!");
         start();
       }, failure("getAssertion failure"));
-    }, failure("certifyEmailKeypair failure"));
+    }, failure("syncEmailKeypair failure"));
 
     stop();
   });
 
 
   test("getAssertion with known email that does not have a key", function() {
-    lib.persistEmail("testuser@testuser.com", function() {
-      lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
-        equal("string", typeof assertion, "we have an assertion!");
-        start();
-      }, failure("getAssertion failure"));
-    }, failure("persistEmail failure"));
+    storage.addEmail("testuser@testuser.com", {});
+    lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
+      equal("string", typeof assertion, "we have an assertion!");
+      start();
+    }, failure("getAssertion failure"));
 
     stop();
   });
 
 
   test("getAssertion with unknown email", function() {
-    var keypair = jwk.KeyPair.generate("RS",64);
-    lib.certifyEmailKeypair("testuser@testuser.com", keypair, function() {
+    lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser2@testuser.com", function onSuccess(assertion) {
         equal("undefined", typeof assertion, "email was unknown, we do not have an assertion");
         start();

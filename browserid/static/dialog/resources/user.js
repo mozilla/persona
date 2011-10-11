@@ -40,7 +40,8 @@ BrowserID.User = (function() {
 
   var jwk, jwt, vep, jwcert, origin,
       network = BrowserID.Network,
-      storage = BrowserID.Storage;
+      storage = BrowserID.Storage,
+      User;
 
   function prepareDeps() {
     if (!jwk) {
@@ -127,7 +128,64 @@ BrowserID.User = (function() {
     poll();
   }
 
-  var User = {
+
+  /**
+   * Certify an identity with the server, persist it to storage if the server 
+   * says the identity is good
+   * @method certifyEmailKeypair
+   */
+  function certifyEmailKeypair(email, keypair, onSuccess, onFailure) {
+    network.certKey(email, keypair.publicKey, function(cert) {
+      persistEmailKeypair(email, keypair, cert, onSuccess, onFailure);
+    }, onFailure);      
+  }
+    
+  /**
+   * Persist an email address without a keypair
+   * @method persistEmail
+   * @param {string} email - Email address to persist.
+   * @param {function} [onSuccess] - Called on successful completion. 
+   * @param {function} [onFailure] - Called on error.
+   */
+  function persistEmail(email, onSuccess, onFailure) {
+    storage.addEmail(email, {
+      created: new Date() 
+    });
+
+    if (onSuccess) {
+      onSuccess();
+    }
+  }
+
+  /** 
+   * Persist an address and key pair locally.
+   * @method persistEmailKeypair
+   * @param {string} email - Email address to persist.
+   * @param {object} keypair - Key pair to save
+   * @param {function} [onSuccess] - Called on successful completion. 
+   * @param {function} [onFailure] - Called on error.
+   */
+  function persistEmailKeypair(email, keypair, cert, onSuccess, onFailure) {
+    var now = new Date();
+    var email_obj = storage.getEmails()[email] || {
+      created: now
+    };
+
+    _.extend(email_obj, {
+      updated: now,
+      pub: keypair.publicKey.toSimpleObject(),
+      priv: keypair.secretKey.toSimpleObject(),
+      cert: cert
+    });
+
+    storage.addEmail(email, email_obj);
+
+    if (onSuccess) {
+      onSuccess();
+    }
+  }
+
+  User = {
     /**
      * Set the interface to use for networking.  Used for unit testing.
      * @method setNetwork
@@ -171,10 +229,6 @@ BrowserID.User = (function() {
       
       network.createUser(email, origin, function(created) {
         if (onSuccess) {
-          if(created) {
-            self.stagedEmail = email;
-          }
-
           onSuccess(created);
         }
       }, onFailure);
@@ -293,34 +347,11 @@ BrowserID.User = (function() {
 
           var email = emails_to_add.shift();
 
-          self.persistEmail(email, addNextEmail, onFailure);
+          persistEmail(email, addNextEmail, onFailure);
         }
 
         addNextEmail();
       });
-    },
-
-    /**
-     * Signifies that an identity has been confirmed.
-     * @method confirmEmail
-     * @param {string} email - Email address.
-     * @param {function} [onSuccess] - Called on successful completion. 
-     * @param {function} [onFailure] - Called on error.
-     */
-    confirmEmail: function(email, onSuccess, onFailure) {
-      var self = this;
-      if (email === self.stagedEmail) {
-        self.stagedEmail = null;
-
-        // certify
-        this.persistEmail(email, function() {
-          self.syncEmails(onSuccess, onFailure);
-        });
-
-      }
-      else if (onFailure) {
-        onFailure();
-      }
     },
 
     /**
@@ -431,8 +462,6 @@ BrowserID.User = (function() {
       var self = this;
       network.addEmail(email, origin, function(added) {
         if (added) {
-          self.stagedEmail = email;
-
           // we no longer send the keypair, since we will certify it later.
           if (onSuccess) {
             onSuccess(added);
@@ -485,63 +514,9 @@ BrowserID.User = (function() {
       // FIXME use true key sizes
       prepareDeps();
       var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
-      this.certifyEmailKeypair(email, keypair, onSuccess, onFailure);
+      certifyEmailKeypair(email, keypair, onSuccess, onFailure);
     },
 
-    /**
-     * Certify an identity.
-     * @method certifyEmailKeypair
-     */
-    certifyEmailKeypair: function(email, keypair, onSuccess, onFailure) {
-      network.certKey(email, keypair.publicKey, function(cert) {
-        User.persistEmailKeypair(email, keypair, cert, onSuccess, onFailure);
-      }, onFailure);      
-    },
-    
-    /**
-     * Persist an email address without a keypair
-     * @method persistEmail
-     * @param {string} email - Email address to persist.
-     * @param {function} [onSuccess] - Called on successful completion. 
-     * @param {function} [onFailure] - Called on error.
-     */
-    persistEmail: function(email, onSuccess, onFailure) {
-      storage.addEmail(email, {
-        created: new Date() 
-      });
-
-      if (onSuccess) {
-        onSuccess();
-      }
-    },
-
-    /** 
-     * Persist an address and key pair locally.
-     * @method persistEmailKeypair
-     * @param {string} email - Email address to persist.
-     * @param {object} keypair - Key pair to save
-     * @param {function} [onSuccess] - Called on successful completion. 
-     * @param {function} [onFailure] - Called on error.
-     */
-    persistEmailKeypair: function(email, keypair, cert, onSuccess, onFailure) {
-      var now = new Date();
-      var email_obj = storage.getEmails()[email] || {
-        created: now
-      };
-
-      _.extend(email_obj, {
-        updated: now,
-        pub: keypair.publicKey.toSimpleObject(),
-        priv: keypair.secretKey.toSimpleObject(),
-        cert: cert
-      });
-
-      storage.addEmail(email, email_obj);
-
-      if (onSuccess) {
-        onSuccess();
-      }
-    },
 
     /**
      * Get an assertion for an identity
