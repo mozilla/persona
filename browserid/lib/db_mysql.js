@@ -306,6 +306,16 @@ exports.checkAuth = function(email, cb) {
     });
 }
 
+exports.updatePassword = function(email, hash, cb) {
+  client.query(
+    'UPDATE user SET passwd = ? WHERE id = ( SELECT user FROM email WHERE address = ? )',
+    [ hash, email ],
+    function (err, rows) {
+      if (err) logUnexpectedError(err);
+      cb((err || rows.affectedRows !== 1) ? ("no record with email " + email) : undefined);
+    });
+}
+
 /*
  * list the user's emails.
  *

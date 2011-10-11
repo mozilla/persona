@@ -103,7 +103,8 @@ exports.onReady = function(f) {
   'checkAuth',
   'listEmails',
   'removeEmail',
-  'cancelAccount'
+  'cancelAccount',
+  'updatePassword'
 ].forEach(function(fn) {
   exports[fn] = function() {
     checkReady();
