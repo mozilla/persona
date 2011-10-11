@@ -51,9 +51,18 @@ var g_config = {
 
 // get the value for a given key, this mechanism allows the rest of the
 // application to reach in and set
-exports.get = function(val) {
-  if (val === 'env') return process.env['NODE_ENV'];
-  return g_config[val];
+exports.get = function(key) {
+  if (key === 'env') return process.env['NODE_ENV'];
+  return g_config[key];
+}
+
+// allow the application to set configuration variables
+// iff we're in a test_ environment
+exports.set = function(key, val) {
+  if (!/^test_/.test(exports.get('env')))
+    throw "you may only set configuration variables in a test_ environment " +
+          "(not in '" + exports.get('env') + "')";
+  g_config[key] = val;
 }
 
 // *** the various deployment configurations ***
