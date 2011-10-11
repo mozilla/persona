@@ -77,7 +77,7 @@
           return;
         }
 
-        user.emailRegistered(email, function(registered) {
+        user.isEmailRegistered(email, function(registered) {
           if (!registered) {
             user.createUser(email, function onSuccess(keypair) {
               $('#sentToEmail').html(email);
