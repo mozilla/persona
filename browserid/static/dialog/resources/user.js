@@ -120,7 +120,7 @@ BrowserID.User = (function() {
           setTimeout(poll, 3000);
         }
         else if (onFailure) {
-            onFailure();
+            onFailure(status);
         }
       });
     };

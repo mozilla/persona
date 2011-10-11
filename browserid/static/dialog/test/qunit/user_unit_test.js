@@ -227,22 +227,45 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
-  test("waitForUserValidation with success response", function() {
-    lib.waitForUserValidation("testuser@testuser.com", function() {
-      ok(true);
+  /**
+   * The next three tests use the mock network harness.  The tests are testing 
+   * the polling action and whether `waitForUserValidation` reacts as expected
+   * to the various network responses.  The network harness simulates multiple 
+   * calls to `checkUserRegistration`, attempting to simulate real use 
+   * interaction to verify the email address, the first call to 
+   * `checkUserRegistration` returns `pending`, the second returns the value 
+   * stored in `registrationResponse`.
+   */
+  test("waitForUserValidation with `complete` response", function() {
+    lib.waitForUserValidation("testuser@testuser.com", function(status) {
+      equal(status, "complete", "complete response expected");
       start();
     }, failure("waitForUserValidation failure"));
 
     stop();
   });
 
-  test("waitForUserValidation with mustAuth response", function() {
+  test("waitForUserValidation with `mustAuth` response", function() {
     registrationResponse = "mustAuth";
 
-    lib.waitForUserValidation("testuser@testuser.com", function() {
-      ok(true);
+    lib.waitForUserValidation("testuser@testuser.com", function(status) {
+      equal(status, "mustAuth", "mustAuth response expected");
       start();
     }, failure("waitForUserValidation failure"));
+
+    stop();
+  });
+
+  test("waitForUserValidation with `noRegistration` response", function() {
+    registrationResponse = "noRegistration";
+
+    lib.waitForUserValidation("baduser@testuser.com", function(status) {
+      ok(false, "not expecting success")
+      start();
+    }, function(status) {
+      ok(status, "noRegistration", "noRegistration response causes failure");
+      start();
+    });
 
     stop();
   });
@@ -417,15 +440,48 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
 
-  test("waitForEmailValidation", function() {
-    lib.waitForEmailValidation("testemail@testemail.com", function() {
-      ok(true);
+  /**
+   * The next three tests use the mock network harness.  The tests are testing 
+   * the polling action and whether `waitForEmailValidation` reacts as expected
+   * to the various network responses.  The network harness simulates multiple 
+   * calls to `checkEmailRegistration`, attempting to simulate real use 
+   * interaction to verify the email address, the first call to 
+   * `checkEmailRegistration` returns `pending`, the second returns the value 
+   * stored in `registrationResponse`.
+   */
+ test("waitForEmailValidation `complete` response", function() {
+    lib.waitForEmailValidation("testemail@testemail.com", function(status) {
+      equal(status, "complete", "complete response expected");
       start();
     }, failure("waitForEmailValidation failure"));
 
     stop();
   });
 
+  test("waitForEmailValidation `mustAuth` response", function() {
+    registrationResponse = "mustAuth";
+
+    lib.waitForEmailValidation("testemail@testemail.com", function(status) {
+      equal(status, "mustAuth", "mustAuth response expected");
+      start();
+    }, failure("waitForEmailValidation failure"));
+
+    stop();
+  });
+
+  test("waitForEmailValidation with `noRegistration` response", function() {
+    registrationResponse = "noRegistration";
+
+    lib.waitForEmailValidation("baduser@testuser.com", function(status) {
+      ok(false, "not expecting success")
+      start();
+    }, function(status) {
+      ok(status, "noRegistration", "noRegistration response causes failure");
+      start();
+    });
+
+    stop();
+  });
 
   test("syncEmailKeypair with successful sync", function() {
     syncValid = true;
