@@ -91,7 +91,7 @@
     cancelEvent(event);
 
     function onComplete() {
-      if(assertion && animationComplete) {
+      if(typeof assertion !== "undefined" && animationComplete) {
         self.close("assertion_generated", {
           assertion: assertion
         });
@@ -101,7 +101,7 @@
     // Kick of the assertion fetching/keypair generating while we are showing 
     // the animation, hopefully this minimizes the delay the user notices.
     user.getAssertion(email, function(assert) {
-      assertion = assert;
+      assertion = assert || null;
       onComplete();
     });
 
@@ -159,6 +159,8 @@
           identities: user.getStoredEmailKeypairs(),
         }
       });
+
+      $("body").css("opacity", "1");
 
       pickEmailState.call(this);
     },
