@@ -529,17 +529,18 @@ BrowserID.User = (function() {
       // we use the current time from the browserid servers
       // to avoid issues with clock drift on user's machine.
       // (issue #329)
-      network.serverTime(function(serverTime) {
         var storedID = storage.getEmail(email),
             assertion;
 
         function createAssertion(idInfo) {
-          var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
-          var tok = new jwt.JWT(null, serverTime, origin);
-          assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
-          if (onSuccess) {
-            onSuccess(assertion);
-          }
+          network.serverTime(function(serverTime) {
+            var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
+            var tok = new jwt.JWT(null, serverTime, origin);
+            assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
+            if (onSuccess) {
+              onSuccess(assertion);
+            }
+          });
         }
 
         if (storedID) {
@@ -559,7 +560,6 @@ BrowserID.User = (function() {
         else if (onSuccess) {
           onSuccess();
         }
-      });
     },
 
     /**
