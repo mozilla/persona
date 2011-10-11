@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-BrowserID.Identities = (function() {
+BrowserID.User = (function() {
   "use strict";
 
   var jwk, jwt, vep, jwcert, origin,
@@ -127,7 +127,7 @@ BrowserID.Identities = (function() {
     poll();
   }
 
-  var Identities = {
+  var User = {
     /**
      * Set the interface to use for networking.  Used for unit testing.
      * @method setNetwork
@@ -254,7 +254,7 @@ BrowserID.Identities = (function() {
      */
     syncEmails: function(onSuccess, onFailure) {
       cleanupIdentities();
-      var issued_identities = Identities.getStoredEmailKeypairs();
+      var issued_identities = this.getStoredEmailKeypairs();
 
       // FIXME for certs
 
@@ -313,7 +313,7 @@ BrowserID.Identities = (function() {
         self.stagedEmail = null;
 
         // certify
-        Identities.persistEmail(email, function() {
+        this.persistEmail(email, function() {
           self.syncEmails(onSuccess, onFailure);
         });
 
@@ -478,7 +478,7 @@ BrowserID.Identities = (function() {
       // FIXME use true key sizes
       prepareDeps();
       var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
-      Identities.certifyEmailKeypair(email, keypair, onSuccess, onFailure);
+      this.certifyEmailKeypair(email, keypair, onSuccess, onFailure);
     },
 
     /**
@@ -487,7 +487,7 @@ BrowserID.Identities = (function() {
      */
     certifyEmailKeypair: function(email, keypair, onSuccess, onFailure) {
       network.certKey(email, keypair.publicKey, function(cert) {
-        Identities.persistEmailKeypair(email, keypair, cert, onSuccess, onFailure);
+        User.persistEmailKeypair(email, keypair, cert, onSuccess, onFailure);
       }, onFailure);      
     },
     
@@ -569,8 +569,8 @@ BrowserID.Identities = (function() {
           else {
             // we have no key for this identity, go generate the key, 
             // sync it and then get the assertion recursively.
-            Identities.syncEmailKeypair(email, function() {
-              Identities.getAssertion(email, onSuccess, onFailure);
+            User.syncEmailKeypair(email, function() {
+              User.getAssertion(email, onSuccess, onFailure);
             }, onFailure);
           }
         }
@@ -600,7 +600,7 @@ BrowserID.Identities = (function() {
 
   };
 
-  Identities.setOrigin(document.location.host);
+  User.setOrigin(document.location.host);
 
-  return Identities;
+  return User;
 }());

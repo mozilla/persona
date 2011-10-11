@@ -38,7 +38,7 @@ var jwk = require("./jwk");
 var jwcert = require("./jwcert");
 
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", function() {
-  var lib = BrowserID.Identities,
+  var lib = BrowserID.User,
       network = BrowserID.Network,
       storage = BrowserID.Storage;
 

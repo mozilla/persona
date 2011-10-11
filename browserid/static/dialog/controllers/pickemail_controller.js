@@ -39,7 +39,7 @@
 
   var ANIMATION_TIME = 250,
       bid = BrowserID,
-      identities = bid.Identities;
+      user = bid.User;
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
     // XXX instead of using jQuery here, think about using CSS animations.
@@ -100,7 +100,7 @@
 
     // Kick of the assertion fetching/keypair generating while we are showing 
     // the animation, hopefully this minimizes the delay the user notices.
-    identities.getAssertion(email, function(assert) {
+    user.getAssertion(email, function(assert) {
       assertion = assert;
       onComplete();
     });
@@ -127,12 +127,12 @@
       return;
     }
 
-    identities.emailRegistered(email, function onComplete(registered) {
+    user.emailRegistered(email, function onComplete(registered) {
       if(registered) {
         bid.Tooltip.showTooltip("#already_taken");
       }
       else {
-        identities.addEmail(email, function(added) {
+        user.addEmail(email, function(added) {
           if (added) {
             self.close("email_staged", {
               email: email
@@ -154,9 +154,9 @@
       this._super({
         bodyTemplate: "pickemail.ejs",
         bodyVars: {
-          sitename: identities.getOrigin(),
+          sitename: user.getOrigin(),
           siteicon: '/i/times.gif',
-          identities: identities.getStoredEmailKeypairs(),
+          identities: user.getStoredEmailKeypairs(),
         }
       });
 

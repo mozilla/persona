@@ -37,6 +37,8 @@
 (function() {
   "use strict";
 
+  var User = BrowserID.User;
+
   function relativeDate(date) {
     var diff = (((new Date()).getTime() - date.getTime()) / 1000),
         day_diff = Math.floor(diff / 86400),
@@ -122,8 +124,8 @@
   function syncAndDisplayEmails() {
     var emails = {};
 
-    BrowserID.Identities.syncEmails(function() {
-      emails = BrowserID.Identities.getStoredEmailKeypairs();
+    User.syncEmails(function() {
+      emails = User.getStoredEmailKeypairs();
       if (_.isEmpty(emails)) {
         $("#content").hide();
       } else {
@@ -163,7 +165,7 @@
     event.preventDefault();
 
     if (confirm("Remove " + email + " from your BrowserID?")) {
-      BrowserID.Identities.removeEmail(email, syncAndDisplayEmails);
+      User.removeEmail(email, syncAndDisplayEmails);
     }
   }
 

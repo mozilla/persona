@@ -38,7 +38,7 @@
   "use strict";
 
   var bid = BrowserID,
-      identities = bid.Identities,
+      user = bid.User,
       ANIMATION_SPEED = 250;
 
   bid.signUp = function () {
@@ -77,9 +77,9 @@
           return;
         }
 
-        identities.emailRegistered(email, function(registered) {
+        user.emailRegistered(email, function(registered) {
           if (!registered) {
-            identities.createUser(email, function onSuccess(keypair) {
+            user.createUser(email, function onSuccess(keypair) {
               $('#sentToEmail').html(email);
               replaceWithMessage(".emailsent");
             }, onFailure);
