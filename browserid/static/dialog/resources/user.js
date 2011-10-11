@@ -572,6 +572,16 @@ BrowserID.User = (function() {
     },
 
     /**
+     * Get an individual stored identity.
+     * @method getStoredEmailKeypair
+     * @return {object} identity information for email, if exists, undefined 
+     * otw.
+     */
+    getStoredEmailKeypair: function(email) {
+      return storage.getEmail(email);
+    },
+
+    /**
      * Clear the list of identities stored locally.
      * @method clearStoredEmailKeypairs
      */

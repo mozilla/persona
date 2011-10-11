@@ -97,7 +97,12 @@
         });
 
         hub.subscribe("assertion_generated", function(msg, info) {
-          self.doAssertionGenerated(info.assertion);
+          if(info.assertion !== null) {
+            self.doAssertionGenerated(info.assertion);
+          }
+          else {
+            self.doPickEmail();
+          }
         });
 
         hub.subscribe("email_staged", function(msg, info) {
@@ -147,7 +152,7 @@
         }
       },
 
-      doSignIn: function() {
+      doPickEmail: function() {
         this.element.pickemail();
       },
 
@@ -192,7 +197,7 @@
 
       syncEmails: function() {
         var self = this;
-        user.syncEmails(self.doSignIn.bind(self), 
+        user.syncEmails(self.doPickEmail.bind(self), 
           self.getErrorDialog(BrowserID.Errors.signIn));
       },
 
@@ -202,7 +207,7 @@
         user.checkAuthenticationAndSync(function onSuccess() {}, 
           function onComplete(authenticated) {
             if (authenticated) {
-                self.doSignIn();
+                self.doPickEmail();
             } else {
               self.doAuthenticate();
             }
