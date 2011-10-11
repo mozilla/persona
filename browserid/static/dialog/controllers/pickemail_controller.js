@@ -184,6 +184,13 @@
 
       $("body").css("opacity", "1");
 
+      if($("#selectEmail input[type=radio]:visible").length === 0) {
+        // If there is only one email address, the radio button is never shown, 
+        // instead focus the sign in button so that the user can click enter.
+        // issue #412
+        $("#signInButton").focus();
+      }
+
       pickEmailState.call(this);
     },
 
