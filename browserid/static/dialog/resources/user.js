@@ -182,12 +182,12 @@ BrowserID.User = (function() {
 
     /**
      * Poll the server until user registration is complete.
-     * @method waitForUserRegistration
+     * @method waitForUserValidation
      * @param {string} email - email address to check.
      * @param {function} [onSuccess] - Called to give status updates.
      * @param {function} [onFailure] - Called on error.
      */
-    waitForUserRegistration: function(email, onSuccess, onFailure) {
+    waitForUserValidation: function(email, onSuccess, onFailure) {
       registrationPoll(network.checkUserRegistration, email, onSuccess, onFailure);
     },
 
@@ -413,7 +413,7 @@ BrowserID.User = (function() {
      * otw.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    emailRegistered: function(email, onSuccess, onFailure) {
+    isEmailRegistered: function(email, onSuccess, onFailure) {
       network.emailRegistered(email, onSuccess, onFailure);
     },
 
@@ -441,7 +441,14 @@ BrowserID.User = (function() {
       }, onFailure);
     },
 
-    waitForEmailRegistration: function(email, onSuccess, onFailure) {
+    /**
+     * Wait for the email registration to complete
+     * @method waitForEmailValidation
+     * @param {string} email - email address to check.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    waitForEmailValidation: function(email, onSuccess, onFailure) {
       registrationPoll(network.checkEmailRegistration, email, onSuccess, onFailure);
     },
 

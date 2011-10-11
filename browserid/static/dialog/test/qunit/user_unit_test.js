@@ -210,22 +210,22 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
-  test("waitForUserRegistration with success response", function() {
-    lib.waitForUserRegistration("testuser@testuser.com", function() {
+  test("waitForUserValidation with success response", function() {
+    lib.waitForUserValidation("testuser@testuser.com", function() {
       ok(true);
       start();
-    }, failure("waitForUserRegistration failure"));
+    }, failure("waitForUserValidation failure"));
 
     stop();
   });
 
-  test("waitForUserRegistration with mustAuth response", function() {
+  test("waitForUserValidation with mustAuth response", function() {
     registrationResponse = "mustAuth";
 
-    lib.waitForUserRegistration("testuser@testuser.com", function() {
+    lib.waitForUserValidation("testuser@testuser.com", function() {
       ok(true);
       start();
-    }, failure("waitForUserRegistration failure"));
+    }, failure("waitForUserValidation failure"));
 
     stop();
   });
@@ -406,9 +406,21 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
 
-  test("emailRegistered with registered email", function() {
-    lib.emailRegistered("registered", function(registered) {
+  test("isEmailRegistered with registered email", function() {
+    lib.isEmailRegistered("registered", function(registered) {
       ok(registered);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
+  test("isEmailRegistered with non-registered email", function() {
+    lib.isEmailRegistered("nonregistered", function(registered) {
+      equal(registered, false);
       start();
     }, function onFailure() {
       ok(false);
@@ -432,11 +444,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
 
-  test("waitForEmailRegistration", function() {
-    lib.waitForEmailRegistration("testuser@testuser.com", function() {
+  test("waitForEmailValidation", function() {
+    lib.waitForEmailValidation("testuser@testuser.com", function() {
       ok(true);
       start();
-    }, failure("waitForEmailRegistration failure"));
+    }, failure("waitForEmailValidation failure"));
 
     stop();
   });

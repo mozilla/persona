@@ -127,7 +127,7 @@
       return;
     }
 
-    user.emailRegistered(email, function onComplete(registered) {
+    user.isEmailRegistered(email, function onComplete(registered) {
       if(registered) {
         bid.Tooltip.showTooltip("#already_taken");
       }

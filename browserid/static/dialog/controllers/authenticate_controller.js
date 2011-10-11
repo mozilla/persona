@@ -52,7 +52,7 @@
       return;
     }
 
-    user.emailRegistered(email, function onComplete(registered) {
+    user.isEmailRegistered(email, function onComplete(registered) {
       if(registered) {
         enterPasswordState.call(self);
       }

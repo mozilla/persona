@@ -135,7 +135,7 @@
 
         this.element.checkregistration({
           email: email,
-          verifier: "waitForUserRegistration",
+          verifier: "waitForUserValidation",
           verificationMessage: "user_confirmed"
         });
       },
@@ -166,7 +166,7 @@
 
         this.element.checkregistration({
           email: email,
-          verifier: "waitForEmailRegistration",
+          verifier: "waitForEmailValidation",
           verificationMessage: "email_confirmed"
         });
       },
