@@ -48,7 +48,7 @@ echo ''
 
 cd ../js
 # re-minimize everything together
-cat jquery-1.6.2.min.js json2.js browserid.js ../dialog/resources/underscore-min.js ../dialog/resources/browserid-extensions.js ../dialog/resources/storage.js ../dialog/resources/browserid-network.js ../dialog/resources/browserid-identities.js ../dialog/resources/tooltip.js ../dialog/resources/validation.js pages/index.js pages/add_email_address.js pages/verify_email_address.js pages/manage_account.js pages/signin.js pages/signup.js pages/forgot.js > lib.js
+cat jquery-1.6.2.min.js json2.js browserid.js ../dialog/resources/underscore-min.js ../dialog/resources/browserid-extensions.js ../dialog/resources/storage.js ../dialog/resources/network.js ../dialog/resources/user.js ../dialog/resources/tooltip.js ../dialog/resources/validation.js pages/index.js pages/add_email_address.js pages/verify_email_address.js pages/manage_account.js pages/signin.js pages/signup.js pages/forgot.js > lib.js
 $UGLIFY < lib.js > lib.min.js
 
 cd ../css

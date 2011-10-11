@@ -37,9 +37,7 @@
 (function() {
 "use strict";
 
-  var bid = BrowserID,  
-      ANIMATION_TIME = 250,
-      identities = bid.Identities;
+  var ANIMATION_TIME = 250;
 
 
   $.Controller.extend("PageController", {

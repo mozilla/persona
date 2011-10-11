@@ -37,8 +37,8 @@
 var jwk = require("./jwk");
 var jwcert = require("./jwcert");
 
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-identities", function() {
-  var lib = BrowserID.Identities,
+steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", function() {
+  var lib = BrowserID.User,
       network = BrowserID.Network,
       storage = BrowserID.Storage;
 
@@ -158,9 +158,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     }
   };
 
-  module("browserid-identities-unit", {
+  module("user", {
     setup: function() {
       lib.setNetwork(netStub);
+      lib.clearStoredEmailKeypairs();
       netStub.reset();
       userCheckCount = 0;
       emailCheckCount = 0;
@@ -209,22 +210,22 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
     stop();
   });
 
-  test("waitForUserRegistration with success response", function() {
-    lib.waitForUserRegistration("testuser@testuser.com", function() {
+  test("waitForUserValidation with success response", function() {
+    lib.waitForUserValidation("testuser@testuser.com", function() {
       ok(true);
       start();
-    }, failure("waitForUserRegistration failure"));
+    }, failure("waitForUserValidation failure"));
 
     stop();
   });
 
-  test("waitForUserRegistration with mustAuth response", function() {
+  test("waitForUserValidation with mustAuth response", function() {
     registrationResponse = "mustAuth";
 
-    lib.waitForUserRegistration("testuser@testuser.com", function() {
+    lib.waitForUserValidation("testuser@testuser.com", function() {
       ok(true);
       start();
-    }, failure("waitForUserRegistration failure"));
+    }, failure("waitForUserValidation failure"));
 
     stop();
   });
@@ -248,50 +249,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     stop();
   });
-
-  test("confirmEmail on staged identity", function() {
-    lib.createUser("testuser@testuser.com", function(created) {
-      lib.confirmEmail("testuser@testuser.com", function() {
-        ok(true, "confirming staged identity");
-        start();
-      });
-    }, failure("createUser failure"));
-
-    stop();
-  });
-
-
-  test("confirmEmail on non staged identity", function() {
-    lib.createUser("testuser@testuser.com", function(created) {
-      lib.confirmEmail("testuser2@testuser.com", function onSuccess() {
-        ok(false, "confirming unstaged identity");
-        start();
-      }, function onFailure() {
-        ok(true, "confirming unstaged identity should fail");
-        start();
-      });
-    }, failure("createUser failure"));
-
-    stop();
-  });
-
-
-  test("confirmEmail on previously confirmed identity", function() {
-    lib.createUser("testuser@testuser.com", function(created) {
-      lib.confirmEmail("testuser@testuser.com", function() {
-        lib.confirmEmail("testuser@testuser.com", function() {
-          ok(false, "confirming previously confirmed identity should fail");
-          start();
-        }, function onFailure() {
-          ok(true, "confirming previously confirmed identity should fail");  
-          start();
-        });
-      });
-    }, failure("createUser failure"));
-
-    stop();
-  });
-
 
 
   test("authenticateAndSync with valid credentials", function() {
@@ -375,7 +332,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   test("authenticateAndSync with valid authentication", function() {
     credentialsValid = true;
     keyRefresh = ["testuser@testuser.com"]; 
-    storage.clearEmails();
 
     lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
     }, function(authenticated) {
@@ -393,7 +349,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   test("authenticateAndSync with invalid authentication", function() {
     credentialsValid = false;
     keyRefresh = ["testuser@testuser.com"]; 
-    storage.clearEmails();
 
     lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
     }, function(authenticated) {
@@ -407,9 +362,21 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
 
-  test("emailRegistered with registered email", function() {
-    lib.emailRegistered("registered", function(registered) {
+  test("isEmailRegistered with registered email", function() {
+    lib.isEmailRegistered("registered", function(registered) {
       ok(registered);
+      start();
+    }, function onFailure() {
+      ok(false);
+      start();
+    });
+
+    stop();
+  });
+
+  test("isEmailRegistered with non-registered email", function() {
+    lib.isEmailRegistered("nonregistered", function(registered) {
+      equal(registered, false);
       start();
     }, function onFailure() {
       ok(false);
@@ -433,19 +400,17 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
 
-  test("waitForEmailRegistration", function() {
-    lib.waitForEmailRegistration("testuser@testuser.com", function() {
+  test("waitForEmailValidation", function() {
+    lib.waitForEmailValidation("testuser@testuser.com", function() {
       ok(true);
       start();
-    }, failure("waitForEmailRegistration failure"));
+    }, failure("waitForEmailValidation failure"));
 
     stop();
   });
 
 
   test("syncEmailKeypair with successful sync", function() {
-    storage.clearEmails();
-
     syncValid = true;
     lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
       var identities = lib.getStoredEmailKeypairs();
@@ -459,8 +424,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncEmailKeypair with invalid sync", function() {
-    storage.clearEmails();
-
     syncValid = false;
     lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
       ok(false, "sync was invalid, this should have failed");
@@ -474,71 +437,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
     stop();
   });
-
-
-  test("persistEmail", function() {
-    lib.clearStoredEmailKeypairs();
-
-    lib.persistEmail("testemail@testemail.com", function onSuccess() {
-      var identities = lib.getStoredEmailKeypairs();
-      ok("testemail@testemail.com" in identities, "Our new email is added");
-      start(); 
-    });
-
-    stop();
-  });
-
-
-  test("persistEmailKeypair with new email", function() {
-    lib.clearStoredEmailKeypairs();
-
-    var user_kp = jwk.KeyPair.generate("RS",64);
-    lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
-      var id = lib.getStoredEmailKeypairs()["testemail@testemail.com"];
-
-      ok(id, "Email is added");
-      ok(id.created, "A create date is generated");
-      ok(id.updated, "An updated date is generated");
-      equal(id.created, id.updated, "Create and update dates are the same");
-
-      ok(id.pub, "A public key is generated");
-      ok(id.priv, "A private key is generated");
-      ok(id.cert, "A certificate is generated");
-
-      start(); 
-    });
-
-    stop();
-  });
-
-  test("persistEmailKeypair with already saved email", function() {
-    lib.clearStoredEmailKeypairs();
-
-    var user_kp = jwk.KeyPair.generate("RS",64);
-    lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
-      setTimeout(function() {
-        lib.persistEmailKeypair("testemail@testemail.com", user_kp, "cert", function onSuccess() {
-
-        var id = lib.getStoredEmailKeypairs()["testemail@testemail.com"];
-
-        ok(id, "Email is added");
-        ok(id.created, "A create date is generated");
-        ok(id.updated, "An updated date is generated");
-        notEqual(id.created, id.updated, "Create and update dates are NOT the same when an address is updated");
-
-        ok(id.pub, "A public key is generated");
-        ok(id.priv, "A private key is generated");
-        ok(id.cert, "A certificate is generated");
-
-        start(); 
-        });
-      }, 500);
-    });
-
-    stop();
-
-  });
-
 
 
   test("removeEmail that is added", function() {
@@ -556,8 +454,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("removeEmail that is not added", function() {
-    storage.clearEmails();
-
     lib.removeEmail("testemail@testemail.com", function() {
       var identities = lib.getStoredEmailKeypairs();
       equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
@@ -570,7 +466,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncEmails with no pre-loaded identities and no identities to add", function() {
-    storage.clearEmails();
     userEmails = {};
 
     lib.syncEmails(function onSuccess() {
@@ -584,7 +479,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("syncEmails with no pre-loaded identities and identities to add", function() {
-    storage.clearEmails();
     userEmails = {"testuser@testuser.com": {}};
 
     lib.syncEmails(function onSuccess() {
@@ -598,7 +492,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   });
 
   test("syncEmails with identities preloaded and none to add", function() {
-    storage.clearEmails();
     userEmails = {"testuser@testuser.com": {}};
     storage.addEmail("testuser@testuser.com", {});
     lib.syncEmails(function onSuccess() {
@@ -613,7 +506,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncEmails with identities preloaded and one to add", function() {
-    storage.clearEmails();
     storage.addEmail("testuser@testuser.com", {pubkey: pubkey, cert: random_cert});
     userEmails = {"testuser@testuser.com": {pubkey: pubkey, cert: random_cert},
                   "testuser2@testuser.com": {pubkey: pubkey, cert: random_cert}};
@@ -631,7 +523,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("syncEmails with identities preloaded and one to remove", function() {
-    storage.clearEmails();
     storage.addEmail("testuser@testuser.com", {pub: pubkey, cert: random_cert});
     storage.addEmail("testuser2@testuser.com", {pub: pubkey, cert: random_cert});
     userEmails = {"testuser@testuser.com":  { pub: pubkey, cert: random_cert}};
@@ -649,36 +540,30 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
 
 
   test("getAssertion with known email that has key", function() {
-    storage.clearEmails();
-    var keypair = jwk.KeyPair.generate("RS",64);
-    lib.certifyEmailKeypair("testuser@testuser.com", keypair, function() {
+    lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
         equal("string", typeof assertion, "we have an assertion!");
         start();
       }, failure("getAssertion failure"));
-    }, failure("certifyEmailKeypair failure"));
+    }, failure("syncEmailKeypair failure"));
 
     stop();
   });
 
 
   test("getAssertion with known email that does not have a key", function() {
-    storage.clearEmails();
-    lib.persistEmail("testuser@testuser.com", function() {
-      lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
-        equal("string", typeof assertion, "we have an assertion!");
-        start();
-      }, failure("getAssertion failure"));
-    }, failure("persistEmail failure"));
+    storage.addEmail("testuser@testuser.com", {});
+    lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
+      equal("string", typeof assertion, "we have an assertion!");
+      start();
+    }, failure("getAssertion failure"));
 
     stop();
   });
 
 
   test("getAssertion with unknown email", function() {
-    storage.clearEmails();
-    var keypair = jwk.KeyPair.generate("RS",64);
-    lib.certifyEmailKeypair("testuser@testuser.com", keypair, function() {
+    lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser2@testuser.com", function onSuccess(assertion) {
         equal("undefined", typeof assertion, "email was unknown, we do not have an assertion");
         start();
@@ -691,7 +576,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-iden
   test("logoutUser", function(onSuccess) {
     credentialsValid = true;
     keyRefresh = ["testuser@testuser.com"]; 
-    storage.clearEmails();
 
     lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
     }, function(authenticated) {

@@ -40,173 +40,175 @@
 //
 
 (function() {
-"use strict";
+  "use strict";
 
-PageController.extend("Dialog", {}, {
-    init: function(el) {
-      var self=this;
-      //this.element.show();
+  var user = BrowserID.User;
 
-      // keep track of where we are and what we do on success and error
-      self.onsuccess = null;
-      self.onerror = null;
-      setupChannel(self);
-      self.stateMachine();
-    },
-      
-    getVerifiedEmail: function(origin_url, onsuccess, onerror) {
-      this.onsuccess = onsuccess;
-      this.onerror = onerror;
+  PageController.extend("Dialog", {}, {
+      init: function(el) {
+        var self=this;
+        //this.element.show();
 
-      BrowserID.Identities.setOrigin(origin_url);
+        // keep track of where we are and what we do on success and error
+        self.onsuccess = null;
+        self.onerror = null;
+        setupChannel(self);
+        self.stateMachine();
+      },
+        
+      getVerifiedEmail: function(origin_url, onsuccess, onerror) {
+        this.onsuccess = onsuccess;
+        this.onerror = onerror;
 
-      this.doCheckAuth();
+        user.setOrigin(origin_url);
 
-      var self=this;
-      $(window).bind("unload", function() {
-        self.doCancel();
-      });
-    },
+        this.doCheckAuth();
 
-
-    stateMachine: function() {
-      var self=this, 
-          hub = OpenAjax.hub, 
-          el = this.element;
-     
-
-      hub.subscribe("user_staged", function(msg, info) {
-        self.doConfirmUser(info.email);
-      });
-
-      hub.subscribe("user_confirmed", function() {
-        self.doEmailConfirmed();
-      });
-
-      hub.subscribe("authenticated", function(msg, info) {
-        //self.doEmailSelected(info.email);
-        // XXX benadida, lloyd - swap these two if you want to experiment with 
-        // generating assertions directly from signin.
-        self.syncEmails();
-      });
-
-      hub.subscribe("reset_password", function(msg, info) {
-        self.doConfirmUser(info.email);
-      });
-
-      hub.subscribe("assertion_generated", function(msg, info) {
-        self.doAssertionGenerated(info.assertion);
-      });
-
-      hub.subscribe("email_staged", function(msg, info) {
-        self.doConfirmEmail(info.email);
-      });
-
-      hub.subscribe("email_confirmed", function() {
-        self.doEmailConfirmed();
-      });
-
-      hub.subscribe("notme", function() {
-        self.doNotMe();
-      });
-
-      hub.subscribe("auth", function(msg, info) {
-        info = info || {};
-
-        self.doAuthenticate({
-          email: info.email
+        var self=this;
+        $(window).bind("unload", function() {
+          self.doCancel();
         });
-      });
-
-      hub.subscribe("start", function() {
-        self.doCheckAuth();
-      });
-
-      hub.subscribe("cancel", function() {
-        self.doCancel();
-      });
-
-    },
-
-    doConfirmUser: function(email) {
-      this.confirmEmail = email;
-
-      this.element.checkregistration({
-        email: email,
-        verifier: "waitForUserRegistration",
-        verificationMessage: "user_confirmed"
-      });
-    },
-
-    doCancel: function() {
-      var self=this;
-      if(self.onsuccess) {
-        self.onsuccess(null);
-      }
-    },
-
-    doSignIn: function() {
-      this.element.pickemail();
-    },
-
-    doAuthenticate: function(info) {
-      this.element.authenticate(info);
-    },
-
-    doForgotPassword: function(email) {
-      this.element.forgotpassword({
-        email: email  
-      });
-    },
-
-    doConfirmEmail: function(email) {
-      this.confirmEmail = email;
-
-      this.element.checkregistration({
-        email: email,
-        verifier: "waitForEmailRegistration",
-        verificationMessage: "email_confirmed"
-      });
-    },
-
-    doEmailConfirmed: function() {
-      var self=this;
-      // yay!  now we need to produce an assertion.
-      BrowserID.Identities.getAssertion(this.confirmEmail, self.doAssertionGenerated.bind(self));
-    },
-
-    doAssertionGenerated: function(assertion) {
-      var self=this;
-      // Clear onerror before the call to onsuccess - the code to onsuccess 
-      // calls window.close, which would trigger the onerror callback if we 
-      // tried this afterwards.
-      self.onerror = null;
-      self.onsuccess(assertion);
-    },
-
-    doNotMe: function() {
-      BrowserID.Identities.logoutUser(this.doAuthenticate.bind(this));
-    },
-
-    syncEmails: function() {
-      var self = this;
-      BrowserID.Identities.syncEmails(self.doSignIn.bind(self), 
-        self.getErrorDialog(BrowserID.Errors.signIn));
-    },
+      },
 
 
-    doCheckAuth: function() {
-      var self=this;
-      BrowserID.Identities.checkAuthenticationAndSync(function onSuccess() {}, 
-        function onComplete(authenticated) {
-          if (authenticated) {
-              self.doSignIn();
-          } else {
-            self.doAuthenticate();
-          }
-        }, 
-        self.getErrorDialog(BrowserID.Errors.checkAuthentication));
-  }
+      stateMachine: function() {
+        var self=this, 
+            hub = OpenAjax.hub, 
+            el = this.element;
+       
+
+        hub.subscribe("user_staged", function(msg, info) {
+          self.doConfirmUser(info.email);
+        });
+
+        hub.subscribe("user_confirmed", function() {
+          self.doEmailConfirmed();
+        });
+
+        hub.subscribe("authenticated", function(msg, info) {
+          //self.doEmailSelected(info.email);
+          // XXX benadida, lloyd - swap these two if you want to experiment with 
+          // generating assertions directly from signin.
+          self.syncEmails();
+        });
+
+        hub.subscribe("reset_password", function(msg, info) {
+          self.doConfirmUser(info.email);
+        });
+
+        hub.subscribe("assertion_generated", function(msg, info) {
+          self.doAssertionGenerated(info.assertion);
+        });
+
+        hub.subscribe("email_staged", function(msg, info) {
+          self.doConfirmEmail(info.email);
+        });
+
+        hub.subscribe("email_confirmed", function() {
+          self.doEmailConfirmed();
+        });
+
+        hub.subscribe("notme", function() {
+          self.doNotMe();
+        });
+
+        hub.subscribe("auth", function(msg, info) {
+          info = info || {};
+
+          self.doAuthenticate({
+            email: info.email
+          });
+        });
+
+        hub.subscribe("start", function() {
+          self.doCheckAuth();
+        });
+
+        hub.subscribe("cancel", function() {
+          self.doCancel();
+        });
+
+      },
+
+      doConfirmUser: function(email) {
+        this.confirmEmail = email;
+
+        this.element.checkregistration({
+          email: email,
+          verifier: "waitForUserValidation",
+          verificationMessage: "user_confirmed"
+        });
+      },
+
+      doCancel: function() {
+        var self=this;
+        if(self.onsuccess) {
+          self.onsuccess(null);
+        }
+      },
+
+      doSignIn: function() {
+        this.element.pickemail();
+      },
+
+      doAuthenticate: function(info) {
+        this.element.authenticate(info);
+      },
+
+      doForgotPassword: function(email) {
+        this.element.forgotpassword({
+          email: email  
+        });
+      },
+
+      doConfirmEmail: function(email) {
+        this.confirmEmail = email;
+
+        this.element.checkregistration({
+          email: email,
+          verifier: "waitForEmailValidation",
+          verificationMessage: "email_confirmed"
+        });
+      },
+
+      doEmailConfirmed: function() {
+        var self=this;
+        // yay!  now we need to produce an assertion.
+        user.getAssertion(this.confirmEmail, self.doAssertionGenerated.bind(self));
+      },
+
+      doAssertionGenerated: function(assertion) {
+        var self=this;
+        // Clear onerror before the call to onsuccess - the code to onsuccess 
+        // calls window.close, which would trigger the onerror callback if we 
+        // tried this afterwards.
+        self.onerror = null;
+        self.onsuccess(assertion);
+      },
+
+      doNotMe: function() {
+        user.logoutUser(this.doAuthenticate.bind(this));
+      },
+
+      syncEmails: function() {
+        var self = this;
+        user.syncEmails(self.doSignIn.bind(self), 
+          self.getErrorDialog(BrowserID.Errors.signIn));
+      },
+
+
+      doCheckAuth: function() {
+        var self=this;
+        user.checkAuthenticationAndSync(function onSuccess() {}, 
+          function onComplete(authenticated) {
+            if (authenticated) {
+                self.doSignIn();
+            } else {
+              self.doAuthenticate();
+            }
+          }, 
+          self.getErrorDialog(BrowserID.Errors.checkAuthentication));
+    }
 
   });
 

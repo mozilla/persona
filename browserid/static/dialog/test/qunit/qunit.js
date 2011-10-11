@@ -7,5 +7,5 @@ steal("/dialog/resources/browserid.js",
   .then("browserid_unit_test")
   .then("validation_unit_test")
   .then("storage_unit_test")
-  .then("browserid-network_test")
-  .then("browserid-identities_unit_test")
+  .then("network_unit_test")
+  .then("user_unit_test")
