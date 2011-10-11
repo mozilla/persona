@@ -132,12 +132,11 @@ function setup(app) {
     var auth_status = false;
 
     function sendResponse() {
-      res.write(JSON.stringify({
+      res.json({
         csrf_token: req.session.csrf,
         server_time: (new Date()).getTime(),
         authenticated: auth_status
-      }));
-      res.end();
+      });
     };
 
     // if they're authenticated for an email address that we don't know about,
