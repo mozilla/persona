@@ -232,6 +232,26 @@ function setup(app) {
     });
   });
 
+  function bcrypt_password(password, cb) {
+    var bcryptWorkFactor = configuration.get('bcrypt_work_factor');
+
+    bcrypt.gen_salt(bcryptWorkFactor, function (err, salt) {
+      if (err) {
+        var msg = "error generating salt with bcrypt: " + err;
+        logger.error(msg);
+        return cb(msg);
+      }
+      bcrypt.encrypt(password, salt, function(err, hash) {
+        if (err) {
+          var msg = "error generating password hash with bcrypt: " + err;
+          logger.error(msg);
+          return cb(msg);
+        }
+        return cb(undefined, hash);
+      });
+    });
+  };
+
   app.post('/wsapi/complete_user_creation', checkParams(["token", "pass"]), function(req, resp) {
     // issue #155, valid password length is between 8 and 80 chars.
     if (req.body.pass.length < 8 || req.body.pass.length > 80) {
@@ -250,29 +270,23 @@ function setup(app) {
       if (!email) return resp.json({ success: false} );
 
       // now bcrypt the password
-      bcrypt.gen_salt(10, function (err, salt) {
+      bcrypt_password(req.body.pass, function (err, hash) {
         if (err) {
-          logger.error("error generating salt with bcrypt: " + err);
+          logger.error("can't bcrypt: " + err);
           return resp.json({ success: false });
         }
-        bcrypt.encrypt(req.body.pass, salt, function(err, hash) {
-          if (err) {
-            logger.error("error generating password hash with bcrypt: " + err);
-            return resp.json({ success: false });
-          }
 
-          db.gotVerificationSecret(req.body.token, hash, function(err, email) {
-            if (err) {
-              logger.error("error completing the verification: " + err);
-              resp.json({ success: false });
-            } else {
-              // FIXME: not sure if we want to do this (ba)
-              // at this point the user has set a password associated with an email address
-              // that they've verified.  We create an authenticated session.
-              setAuthenticatedUser(req.session, email);
-              resp.json({ success: true });
-            }
-          });
+        db.gotVerificationSecret(req.body.token, hash, function(err, email) {
+          if (err) {
+            logger.error("error completing the verification: " + err);
+            resp.json({ success: false });
+          } else {
+            // FIXME: not sure if we want to do this (ba)
+            // at this point the user has set a password associated with an email address
+            // that they've verified.  We create an authenticated session.
+            setAuthenticatedUser(req.session, email);
+            resp.json({ success: true });
+          }
         });
       });
     });
