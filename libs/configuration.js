@@ -109,6 +109,16 @@ g_configs.local =  {
   certificate_validity_ms: g_configs.production.certificate_validity_ms
 };
 
+Object.keys(g_configs).forEach(function(config) {
+  if (!g_configs[config].smtp) {
+    g_configs[config].smtp = {
+      host: process.env['SMTP_HOST'],
+      user: process.env['SMTP_USER'],
+      pass: process.env['SMTP_PASS']
+    };
+  }
+});
+
 // test environments are variations on local
 g_configs.test_json = JSON.parse(JSON.stringify(g_configs.local));
 g_configs.test_json.database = { driver: "json", unit_test: true }; 
