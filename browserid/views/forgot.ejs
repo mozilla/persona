@@ -1,0 +1,28 @@
+<div id="vAlign">   
+    <div id="signUpFormWrap">
+        <!-- XXX this form submits to nowhere -->
+        <form id="signUpForm" class="cf authform">
+            <h1 class="serif">Forgot Password</h1>
+            <div class="notifications">
+                <div class="notification error doh">Doh! Something went wrong :-( </div>
+                <div class="notification error mismatchpassword">XXX: Your passwords need to match</div>
+                <div class="notification emailsent">A confirmation email has been sent to you at <strong id="sent_to_email"></strong>. Check it!</div>
+            </div>
+            <div id="forminputs">
+            <ul class="inputs">
+                <li>
+                    <label class="serif" for="email">Email Address</label>
+                    <input class="sans" id="email" autofocus required placeholder="Your Email" type="email" x-moz-errormessage="Please enter the email address you would like to use">
+                </li>
+            </ul>
+            <div class="submit cf">
+                <div class="remember cf">
+                    <a class="signUpIn" href="/signin">Know your password? Sign in.</a>
+                </div>
+                <input type="submit" class="create" value="Reset Password"/>
+            </div>
+            </div>
+        </form>
+    </div>
+</div>
+

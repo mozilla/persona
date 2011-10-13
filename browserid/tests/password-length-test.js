@@ -52,7 +52,8 @@ suite.options.error = false;
 start_stop.addStartupBatches(suite);
 
 // surpress console output of emails with a noop email interceptor
-email.setInterceptor(function(email, site, secret) { });
+var token = undefined;
+email.setInterceptor(function(email, site, secret) { token = secret; });
 
 suite.addBatch({
   "get csrf token": {
@@ -67,38 +68,47 @@ suite.addBatch({
   }
 });
 
+// first stage the account
+suite.addBatch({
+  "account staging": {
+    topic: wsapi.post('/wsapi/stage_user', {
+      email: 'first@fakeemail.com',
+      site:'fakesite.com'
+    }),
+    "works":     function(r, err) {
+      assert.equal(r.code, 200);
+    }
+  }
+})
+
 // create a new account via the api with (first address)
 suite.addBatch({
   "a password that is too short": {
-    topic: wsapi.post('/wsapi/stage_user', {
-      email: 'first@fakeemail.com',
-      pass: '0123456', // less than 8 chars, invalid
-      pubkey: 'fakepubkey',
-      site:'fakesite.com'
+    topic: wsapi.post('/wsapi/complete_user_creation', {
+      token: token,
+      pass: '0123456' // less than 8 chars, invalid
     }),
     "causes a HTTP error response": function(r, err) {
       assert.equal(r.code, 400);
+      assert.equal(r.body, "Bad Request: valid passwords are between 8 and 80 chars");
     }
   },
   "a password that is too long": {
-    topic: wsapi.post('/wsapi/stage_user', {
-      email: 'second@fakeemail.com',
+    topic: wsapi.post('/wsapi/complete_user_creation', {
+      token: token,
       pass: '012345678901234567890123456789012345678901234567890123456789012345678901234567891', // more than 81 chars, invalid.
-      pubkey: 'fakepubkey',
-      site:'fakesite.com'
     }),
     "causes a HTTP error response": function(r, err) {
       assert.equal(r.code, 400);
+      assert.equal(r.body, "Bad Request: valid passwords are between 8 and 80 chars");
     }
   },
   "but a password that is just right": {
-    topic: wsapi.post('/wsapi/stage_user', {
-      email: 'third@fakeemail.com',
-      pass: 'ahhh.  this is just right.', // valid.
-      pubkey: 'fakepubkey',
-      site:'fakesite.com'
+    topic: wsapi.post('/wsapi/complete_user_creation', {
+      token: token,
+      pass: 'ahhh.  this is just right.'
     }),
-    "causes a HTTP error response": function(r, err) {
+    "works just fine": function(r, err) {
       assert.equal(r.code, 200);
     }
   }

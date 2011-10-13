@@ -1,8 +1,11 @@
-steal("/dialog/resources/storage.js",
-      "/dialog/resources/underscore-min.js",
-      "/dialog/resources/crypto-api.js",
-      "/dialog/resources/crypto.js")
+steal("/dialog/resources/browserid.js",
+      "/dialog/resources/storage.js",
+      "/dialog/resources/tooltip.js",
+      "/dialog/resources/validation.js",
+      "/dialog/resources/underscore-min.js")
   .plugins("funcunit/qunit")
+  .then("browserid_unit_test")
+  .then("validation_unit_test")
+  .then("storage_unit_test")
   .then("browserid-network_test")
   .then("browserid-identities_unit_test")
-//  .then("browserid-identities_functional_test");

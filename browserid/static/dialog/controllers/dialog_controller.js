@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global setupChannel:true, BrowserIDIdentities: true, BrowserIDNetwork: true, BrowserIDWait:true, BrowserIDErrors: true, PageController: true, OpenAjax: true */ 
+/*global setupChannel:true, BrowserID: true, PageController: true, OpenAjax: true */ 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -44,8 +44,6 @@
 
 PageController.extend("Dialog", {}, {
     init: function(el) {
-      var html = $.View("//dialog/views/body.ejs", {});
-      this.element.html(html);
       this.element.show();
 
       // keep track of where we are and what we do on success and error
@@ -59,9 +57,9 @@ PageController.extend("Dialog", {}, {
       this.onsuccess = onsuccess;
       this.onerror = onerror;
 
-      BrowserIDNetwork.setOrigin(origin_url);
+      BrowserID.Identities.setOrigin(origin_url);
 
-      this.doStart();
+      this.doCheckAuth();
 
       var self=this;
       $(window).bind("unload", function() {
@@ -71,54 +69,52 @@ PageController.extend("Dialog", {}, {
 
 
     stateMachine: function() {
-      var self=this, hub = OpenAjax.hub, el = this.element;
+      var self=this, 
+          hub = OpenAjax.hub, 
+          el = this.element;
+     
 
-      hub.subscribe("createaccount:created", function(msg, info) {
+      hub.subscribe("user_staged", function(msg, info) {
+        self.doConfirmUser(info.email);
+      });
+
+      hub.subscribe("user_confirmed", function() {
+        self.doEmailConfirmed();
+      });
+
+      hub.subscribe("authenticated", function(msg, info) {
+        //self.doEmailSelected(info.email);
+        // XXX benadida, lloyd - swap these two if you want to experiment with 
+        // generating assertions directly from signin.
+        self.syncEmails();
+      });
+
+      hub.subscribe("reset_password", function(msg, info) {
+        self.doConfirmUser(info.email);
+      });
+
+      hub.subscribe("assertion_generated", function(msg, info) {
+        self.doAssertionGenerated(info.assertion);
+      });
+
+      hub.subscribe("email_staged", function(msg, info) {
         self.doConfirmEmail(info.email);
       });
 
-      hub.subscribe("createaccount:signin", function() {
-        self.doAuthenticate();
+      hub.subscribe("email_confirmed", function() {
+        self.doEmailConfirmed();
       });
 
-      hub.subscribe("authenticate:authenticated", function() {
-        self.syncIdentities();
-      });
-
-      hub.subscribe("authenticate:createuser", function() {
-        self.doCreate();
-      });
-
-      hub.subscribe("authenticate:forgotpassword", function() {
-        self.doForgotPassword();
-      });
-
-      hub.subscribe("checkregistration:confirmed", function() {
-        self.doRegistrationConfirmed();
-      });
-
-      hub.subscribe("checkregistration:complete", function() {
-        self.doSignIn();
-      });
-
-      hub.subscribe("chooseemail:complete", function(msg, info) {
-        self.doEmailSelected(info.email);
-      });
-
-      hub.subscribe("chooseemail:addemail", function() {
-        self.doAddEmail();
-      });
-
-      hub.subscribe("chooseemail:notme", function() {
+      hub.subscribe("notme", function() {
         self.doNotMe();
       });
 
-      hub.subscribe("addemail:complete", function(msg, info) {
-        self.doConfirmEmail(info.email);
+      hub.subscribe("auth", function() {
+        self.doAuthenticate();
       });
 
       hub.subscribe("start", function() {
-        self.doStart();
+        self.doCheckAuth();
       });
 
       hub.subscribe("cancel", function() {
@@ -127,15 +123,16 @@ PageController.extend("Dialog", {}, {
 
     },
 
-    doStart: function() {
-      // we should always check to see whether we're authenticated
-      // at dialog start. issue #74.
-      //
-      // (lth) XXX: we could include both csrf token and auth status
-      // in the intial resource serving to reduce network requests.
-      this.doCheckAuth();
+    doConfirmUser: function(email) {
+      this.confirmEmail = email;
+
+      this.element.checkregistration({
+        email: email,
+        verifier: "waitForUserRegistration",
+        verificationMessage: "user_confirmed"
+      });
     },
-      
+
     doCancel: function() {
       var self=this;
       if(self.onsuccess) {
@@ -144,73 +141,67 @@ PageController.extend("Dialog", {}, {
     },
 
     doSignIn: function() {
-      this.element.chooseemail();
+      this.element.pickemail();
     },
 
     doAuthenticate: function() {
       this.element.authenticate();
     },
-      
-    doCreate: function() {
-      this.element.createaccount();
-    },
-      
-    doForgotPassword: function() {
-      this.element.forgotpassword();
-    },
 
-    doAddEmail: function() {
-      this.element.addemail();
+    doForgotPassword: function(email) {
+      this.element.forgotpassword({
+        email: email  
+      });
     },
 
     doConfirmEmail: function(email) {
       this.confirmEmail = email;
 
-      this.element.checkregistration({email: email});
-    },
-
-    doRegistrationConfirmed: function() {
-        var self = this;
-        // this is a secondary registration from browserid.org, persist
-        // email, keypair, and that fact
-        BrowserIDIdentities.confirmIdentity(self.confirmEmail,
-          self.doSignIn.bind(self));
-    },
-
-    doEmailSelected: function(email) {
-      var self=this;
-      // yay!  now we need to produce an assertion.
-      BrowserIDIdentities.getIdentityAssertion(email, function(assertion) {
-        // Clear onerror before the call to onsuccess - the code to onsuccess 
-        // calls window.close, which would trigger the onerror callback if we 
-        // tried this afterwards.
-        self.onerror = null;
-        self.onsuccess(assertion);
+      this.element.checkregistration({
+        email: email,
+        verifier: "waitForEmailRegistration",
+        verificationMessage: "email_confirmed"
       });
     },
 
-    doNotMe: function() {
-      BrowserIDIdentities.logoutUser(this.doAuthenticate.bind(this));
+    doEmailConfirmed: function() {
+      var self=this;
+      // yay!  now we need to produce an assertion.
+      BrowserID.Identities.getAssertion(this.confirmEmail, self.doAssertionGenerated.bind(self));
     },
 
-    syncIdentities: function() {
+    doAssertionGenerated: function(assertion) {
+      var self=this;
+      // Clear onerror before the call to onsuccess - the code to onsuccess 
+      // calls window.close, which would trigger the onerror callback if we 
+      // tried this afterwards.
+      self.onerror = null;
+      self.onsuccess(assertion);
+    },
+
+    doNotMe: function() {
+      BrowserID.Identities.logoutUser(this.doAuthenticate.bind(this));
+    },
+
+    syncEmails: function() {
       var self = this;
-      BrowserIDIdentities.syncIdentities(self.doSignIn.bind(self), 
-        self.getErrorDialog(BrowserIDErrors.signIn));
+      BrowserID.Identities.syncEmails(self.doSignIn.bind(self), 
+        self.getErrorDialog(BrowserID.Errors.signIn));
     },
 
 
     doCheckAuth: function() {
-      this.doWait(BrowserIDWait.checkAuth);
       var self=this;
-      BrowserIDIdentities.checkAuthenticationAndSync(function onSuccess() {}, 
-      function onComplete(authenticated) {
-        if (authenticated) {
-          self.doSignIn();
-        } else {
-          self.doAuthenticate();
-        }
-      }, self.getErrorDialog(BrowserIDErrors.checkAuthentication));
+      self.doWait(BrowserID.Wait.checkAuth);
+      BrowserID.Identities.checkAuthenticationAndSync(function onSuccess() {}, 
+        function onComplete(authenticated) {
+          if (authenticated) {
+              self.doSignIn();
+          } else {
+            self.doAuthenticate();
+          }
+        }, 
+        self.getErrorDialog(BrowserID.Errors.checkAuthentication));
   }
 
   });

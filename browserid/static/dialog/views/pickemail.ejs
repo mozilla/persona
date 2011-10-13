@@ -1,0 +1,72 @@
+  <div id="favicon">
+      <div class="table">
+          <div class="vertical">
+              <strong><%= sitename %></strong>
+          </div>
+      </div>
+  </div>
+
+
+  <div id="signIn">
+      <div class="arrow"></div>
+      <div class="table">
+          <div class="vertical">
+              <strong>Sign in using</strong>
+
+              <div id="selectEmail">
+                  <ul class="inputs">
+                      <% _.each(identities, function(email_obj, email_address) { %>
+                          <li>
+                              <label for="<%= email_address %>" class="serif">
+                                <input type="radio" name="email" id="<%= email_address %>" value="<%= email_address %>" />
+                                <%= email_address %>
+                              </label>
+                          </li>
+                      <% }); %>
+                  </ul>
+
+                  <div class="submit add cf">
+                      <button id="signInButton">sign in</button>
+                      <p>
+                        <a id="thisIsNotMe" href="#">This is not me</a>
+                        <a id="useNewEmail" href="#">Use a different email</a>
+                      </p>
+                  </div>
+              </div>
+
+              <div id="addEmail" class="cf">
+
+                  <ul class="inputs">
+                      <li>
+                          <label for="newEmail">New email address</label>
+                          <input id="newEmail" name="newEmail" type="email" />
+
+                          <div id="email_format" class="tooltip" for="newEmail">
+                            This field must be an email address.
+                          </div>
+
+                          <div id="email_required" class="tooltip" for="newEmail">
+                            The email field is required.
+                          </div>
+
+                          <div id="could_not_add" class="tooltip" for="newEmail">
+                            This email address could not be added.
+                          </div>
+
+                          <div id="already_taken" class="tooltip" for="newEmail">
+                            This email address is already taken.
+                          </div>
+                      </li>
+                  </ul>
+
+                  <div class="submit cf">
+                      <button id="addNewEmail">add</button>
+                      <button id="cancelNewEmail">cancel</button>
+                  </div>
+
+              </div>
+
+          </div>
+      </div>
+  </div>
+

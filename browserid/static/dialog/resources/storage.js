@@ -33,7 +33,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var BrowserIDStorage = (function() {
+BrowserID.Storage = (function() {
   
   var jwk;
   
@@ -76,6 +76,16 @@ var BrowserIDStorage = (function() {
     storeEmails(emails);
   }
 
+  function invalidateEmail(email) {
+    var id = getEmails()[email];
+    if (id) {
+      delete id.priv;
+      delete id.pub;
+      delete id.cert;
+      addEmail(email, id);
+    }
+  }
+
   function storeTemporaryKeypair(keypair) {
     window.localStorage.tempKeypair = JSON.stringify({
       publicKey: keypair.publicKey.toSimpleObject(),
@@ -97,12 +107,41 @@ var BrowserIDStorage = (function() {
     }
   }
 
+  function setStagedOnBehalfOf(origin) {
+    window.localStorage.stagedOnBehalfOf = JSON.stringify({
+      at: new Date().toString(),
+      origin: origin
+    });
+  }
+
+  function getStagedOnBehalfOf() {
+    var origin;
+
+    try {
+      var staged = JSON.parse(window.localStorage.stagedOnBehalfOf);
+      
+      if (staged) {
+        if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw "stale";
+        if (typeof(staged.origin) !== 'string') throw "malformed";
+        origin = staged.origin;
+      }
+    } catch (x) {
+      console.log(x);
+      delete window.localStorage.stagedOnBehalfOf;
+    }
+
+    return origin;
+  }
+
   return {
     getEmails: getEmails,
     addEmail: addEmail,
     removeEmail: removeEmail,
+    invalidateEmail: invalidateEmail,
     clearEmails: clearEmails,
     storeTemporaryKeypair: storeTemporaryKeypair,
-    retrieveTemporaryKeypair: retrieveTemporaryKeypair
+    retrieveTemporaryKeypair: retrieveTemporaryKeypair,
+    setStagedOnBehalfOf: setStagedOnBehalfOf,
+    getStagedOnBehalfOf: getStagedOnBehalfOf
   };
 }());

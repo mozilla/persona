@@ -12,7 +12,7 @@ if [ ! -x "$JAVA" ]; then
     exit 1
 fi
 
-YUI_LOCATION='../../static/steal/build/scripts/yui.jar'
+YUI_LOCATION=`pwd`'/static/steal/build/scripts/yui.jar'
 
 echo ''
 echo '****Compressing include.js****'
@@ -32,7 +32,11 @@ cd dialog
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
 
-cd ../relay
+cd css
+cat popup.css m.css > production.css
+$JAVA -jar $YUI_LOCATION production.css -o production.min.css
+
+cd ../../relay
 cat ../dialog/resources/jschannel.js relay.js > production.js
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
@@ -44,9 +48,9 @@ echo ''
 
 cd ../js
 # re-minimize everything together
-cat jquery-1.6.2.min.js json2.js ../dialog/resources/underscore-min.js ../dialog/resources/storage.js ../dialog/resources/browserid-network.js ../dialog/resources/browserid-identities.js browserid.js > lib.js
+cat jquery-1.6.2.min.js json2.js browserid.js ../dialog/resources/underscore-min.js ../dialog/resources/browserid-extensions.js ../dialog/resources/storage.js ../dialog/resources/browserid-network.js ../dialog/resources/browserid-identities.js ../dialog/resources/tooltip.js ../dialog/resources/validation.js pages/index.js pages/add_email_address.js pages/verify_email_address.js pages/manage_account.js pages/signin.js pages/signup.js pages/forgot.js > lib.js
 $UGLIFY < lib.js > lib.min.js
 
 cd ../css
-cat github.css style.css > browserid.css
+cat style.css m.css > browserid.css
 $JAVA -jar $YUI_LOCATION browserid.css -o browserid.min.css

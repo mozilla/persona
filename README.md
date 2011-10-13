@@ -42,9 +42,8 @@ Here's the software you'll need installed:
 
 * node.js (>= 0.4.5): http://nodejs.org/
 * npm: http://npmjs.org/
-* Several node.js 3rd party libraries - see `package.json` for details
-* browserify which will be installed globally.
-* git, g++
+* git
+* g++
 
 ## Getting started:
 

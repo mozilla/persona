@@ -174,107 +174,186 @@ function setup(app) {
    * user via their claimed email address.  Upon timeout expiry OR clickthrough
    * the staged user account transitions to a valid user account
    */
-  app.post('/wsapi/stage_user', checkParams([ "email", "pass", "site" ]), function(req, resp) {
+  app.post('/wsapi/stage_user', checkParams([ "email", "site" ]), function(req, resp) {
+    // staging a user logs you out.
+    clearAuthenticatedUser(req.session);
 
-    // we should be cloning this object here.
-    var stageParams = req.body;
+    try {
+      // upon success, stage_user returns a secret (that'll get baked into a url
+      // and given to the user), on failure it throws
+      db.stageUser(req.body.email, function(secret) {
+        // store the email being registered in the session data
+        if (!req.session) req.session = {};
 
+        // store the secret we're sending via email in the users session, as checking
+        // that it still exists in the database is the surest way to determine the
+        // status of the email verification.
+        req.session.pendingCreation = secret;
+
+        resp.json(true);
+
+        // let's now kick out a verification email!
+        email.sendNewUserEmail(req.body.email, req.body.site, secret);
+      });
+    } catch(e) {
+      // we should differentiate tween' 400 and 500 here.
+      httputils.badRequest(resp, e.toString());
+    }
+  });
+
+  app.get('/wsapi/user_creation_status', function(req, resp) {
+    var email = req.query.email;
+    if (typeof email !== 'string') {
+      logger.warn("user_creation_status called without 'email' parameter");
+      httputils.badRequest(resp, "no 'email' parameter");
+      return;
+    }
+
+    // if the user is authenticated as the user in question, we're done
+    if (isAuthed(req) && req.session.authenticatedUser === email) {
+      return resp.json('complete');
+    }
+    // if the user isn't authenticated and there's no pendingCreation token,
+    // then they must authenticate
+    else if (!req.session.pendingCreation) {
+      return resp.json('mustAuth');
+    }
+
+    // if the secret is still in the database, it hasn't yet been verified and
+    // verification is still pending
+    db.emailForVerificationSecret(req.session.pendingCreation, function (email) {
+      if (email) return resp.json('pending');
+      // if the secret isn't known, and we're not authenticated, then the user must authenticate
+      // (maybe they verified the URL on a different browser, or maybe they canceled the account
+      // creation)
+      else {
+        delete req.session.pendingCreation;
+        resp.json('mustAuth');
+      }
+    });
+  });
+
+  app.post('/wsapi/complete_user_creation', checkParams(["token", "pass"]), function(req, resp) {
     // issue #155, valid password length is between 8 and 80 chars.
-    if (stageParams.pass.length < 8 || stageParams.pass.length > 80) {
+    if (req.body.pass.length < 8 || req.body.pass.length > 80) {
       httputils.badRequest(resp, "valid passwords are between 8 and 80 chars");
       return;
     }
 
-    // bcrypt the password
-    bcrypt.gen_salt(configuration.get('bcrypt_work_factor'), function (err, salt) {
-      if (err) {
-        winston.error("error generating salt with bcrypt: " + err);
-        return resp.json(false);
-      }
+    // at the time the email verification is performed, we'll clear the pendingCreation
+    // data on the session.
+    delete req.session.pendingCreation;
 
-      bcrypt.encrypt(stageParams.pass, salt, function(err, hash) {
+    // We should check to see if the verification secret is valid *before*
+    // bcrypting the password (which is expensive), to prevent a possible
+    // DoS attack.
+    db.emailForVerificationSecret(req.body.token, function(email) {
+      if (!email) return resp.json(false);
+
+      // now bcrypt the password
+      bcrypt.gen_salt(10, function (err, salt) {
         if (err) {
-          winston.error("error generating password hash with bcrypt: " + err);
+          logger.error("error generating salt with bcrypt: " + err);
           return resp.json(false);
         }
+        bcrypt.encrypt(req.body.pass, salt, function(err, hash) {
+          if (err) {
+            logger.error("error generating password hash with bcrypt: " + err);
+            return resp.json(false);
+          }
 
-        stageParams['hash'] = hash;
-
-        try {
-          // upon success, stage_user returns a secret (that'll get baked into a url
-          // and given to the user), on failure it throws
-          db.stageUser(stageParams, function(secret) {
-            // store the email being registered in the session data
-            if (!req.session) req.session = {};
-
-            // store inside the session the details of this pending verification
-            req.session.pendingVerification = {
-              email: stageParams.email,
-              hash: stageParams.hash // we must store both email and password to handle the case where
-              // a user re-creates an account - specifically, registration status
-              // must ensure the new credentials work to properly verify that
-              // the user has clicked throught the email link. note, this salted, bcrypted
-              // representation of a user's password will get thrust into an encrypted cookie
-              // served over an encrypted (SSL) session.  guten, yah.
-            };
-
-            resp.json(true);
-
-            // let's now kick out a verification email!
-            email.sendVerificationEmail(stageParams.email, stageParams.site, secret);
+          db.gotVerificationSecret(req.body.token, hash, function(err, email) {
+            if (err) {
+              logger.error("error completing the verification: " + err);
+              resp.json(false);
+            } else {
+              // FIXME: not sure if we want to do this (ba)
+              // at this point the user has set a password associated with an email address
+              // that they've verified.  We create an authenticated session.
+              setAuthenticatedUser(req.session, email);
+              resp.json(true);
+            }
           });
-        } catch(e) {
-          // we should differentiate tween' 400 and 500 here.
-          httputils.badRequest(resp, e.toString());
-        }
+        });
       });
     });
   });
 
-  app.get('/wsapi/registration_status', function(req, resp) {
-    if (!req.session ||
-        (!(typeof req.session.pendingVerification === 'object') &&
-         !(typeof req.session.pendingAddition === 'string')))
-    {
-      httputils.badRequest(resp, "api abuse: registration_status called without a pending email addition/verification");
-      return;
-    }
+  app.post('/wsapi/stage_email', checkAuthed, checkParams(["email", "site"]), function (req, resp) {
+    try {
+      // on failure stageEmail may throw
+      db.stageEmail(req.session.authenticatedUser, req.body.email, function(secret) {
 
-    // Is the current session trying to add an email, or register a new one?
-    if (req.session.pendingAddition) {
-      // this is a pending email addition, it requires authentication
-      if (!isAuthed(req, resp)) {
-        return httputils.badRequest(resp, "requires authentication");
-      }
+        // store the email being added in session data
+        req.session.pendingAddition = secret;
 
-      // check if the currently authenticated user has the email stored under pendingAddition
-      // in their acct.
-      db.emailsBelongToSameAccount(req.session.pendingAddition,
-                                   req.session.authenticatedUser,
-                                   function(registered) {
-                                     if (registered) {
-                                       delete req.session.pendingAddition;
-                                       resp.json('complete');
-                                     } else {
-                                       resp.json('pending');
-                                     }
-                                   });
-    } else {
-      // this is a pending registration, let's check if the creds stored on the
-      // session are good yet.
-      var v = req.session.pendingVerification;
-      db.checkAuth(v.email, function(hash) {
-        if (hash === v.hash) {
-          delete req.session.pendingVerification;
-          setAuthenticatedUser(req.session, v.email);
-          resp.json('complete');
-        } else {
-          resp.json('pending');
-        }
+        resp.json(true);
+
+        // let's now kick out a verification email!
+        email.sendAddAddressEmail(req.body.email, req.body.site, secret);
       });
+    } catch(e) {
+      // we should differentiate tween' 400 and 500 here.
+      httputils.badRequest(resp, e.toString());
     }
   });
 
+  app.get('/wsapi/email_for_token', checkParams(["token"]), function(req,resp) {
+    db.emailForVerificationSecret(req.query.token, function(email) {
+      resp.json({email: email});
+    });
+  });
+
+  app.get('/wsapi/email_addition_status', function(req, resp) {
+
+    var email = req.query.email;
+    if (typeof email !== 'string')
+    {
+      logger.warn("email_addition_status called without an 'email' parameter");
+      httputils.badRequest(resp, "missing 'email' parameter");
+      return;
+    }
+
+    // this is a pending email addition, it requires authentication
+    if (!isAuthed(req, resp)) {
+      delete req.session.pendingAddition;
+      return httputils.badRequest(resp, "requires authentication");
+    }
+
+    // check if the currently authenticated user has the email stored under pendingAddition
+    // in their acct.
+    db.emailsBelongToSameAccount(
+      email,
+      req.session.authenticatedUser,
+      function(registered) {
+        if (registered) {
+          delete req.session.pendingAddition;
+          resp.json('complete');
+        } else if (!req.session.pendingAddition) {
+          resp.json('failed');
+        } else {
+          db.emailForVerificationSecret(req.session.pendingAddition, function (email) {
+            if (email) {
+              return resp.json('pending');
+            } else {
+              delete req.session.pendingAddition;
+              resp.json('failed');
+            }
+          });
+        }
+      });
+  });
+
+  app.post('/wsapi/complete_email_addition', checkParams(["token"]), function(req, resp) {
+    db.gotVerificationSecret(req.body.token, undefined, function(e) {
+      if (e) {
+        logger.error("error completing the verification: " + e);
+        resp.json(false);
+      } else {
+        resp.json(true);
+      }
+    });
+  });
 
   app.post('/wsapi/authenticate_user', checkParams(["email", "pass"]), function(req, resp) {
     db.checkAuth(req.body.email, function(hash) {
@@ -286,7 +365,7 @@ function setup(app) {
 
       bcrypt.compare(req.body.pass, hash, function (err, success) {
         if (err) {
-          winston.warn("error comparing passwords with bcrypt: " + err);
+          logger.warn("error comparing passwords with bcrypt: " + err);
           success = false;
         }
         if (success) {
@@ -298,25 +377,6 @@ function setup(app) {
         resp.json(success);
       });
     });
-  });
-
-  app.post('/wsapi/add_email', checkAuthed, checkParams(["email", "site"]), function (req, resp) {
-    try {
-      // on failure stageEmail may throw
-      db.stageEmail(req.session.authenticatedUser, req.body.email, function(secret) {
-
-        // store the email being added in session data
-        req.session.pendingAddition = req.body.email;
-
-        resp.json(true);
-
-        // let's now kick out a verification email!
-        email.sendVerificationEmail(req.body.email, req.body.site, secret);
-      });
-    } catch(e) {
-      // we should differentiate tween' 400 and 500 here.
-      httputils.badRequest(resp, e.toString());
-    }
   });
 
   app.post('/wsapi/remove_email', checkAuthed, checkParams(["email"]), function(req, resp) {
@@ -378,17 +438,6 @@ function setup(app) {
     db.listEmails(req.session.authenticatedUser, function(err, emails) {
       if (err) httputils.serverError(resp, err);
       else resp.json(emails);
-    });
-  });
-
-  app.get('/wsapi/prove_email_ownership', checkParams(["token"]), function(req, resp) {
-    db.gotVerificationSecret(req.query.token, function(e) {
-      if (e) {
-        logger.error("error completing the verification: " + e);
-        resp.json(false);
-      } else {
-        resp.json(true);
-      }
     });
   });
 

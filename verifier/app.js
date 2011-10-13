@@ -68,12 +68,13 @@ function doVerify(req, resp, next) {
 
   certassertion.verify(
     assertion, audience,
-    function(email, audience, expires) {
+    function(email, audience, expires, issuer) {
       resp.json({
         status : "okay",
         email : email,
         audience : audience,
-        expires : expires.valueOf()
+        expires : expires.valueOf(),
+        issuer: issuer
       });
 
       metrics.report('verify', {
@@ -119,9 +120,6 @@ exports.setup = function(app) {
     resp.write("k.");
     resp.end();
   });
-
-  app.get('/', doVerify);
-  app.get('/verify', doVerify);
 
   app.post('/', doVerify);
   app.post('/verify', doVerify);

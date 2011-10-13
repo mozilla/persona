@@ -1,4 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*global BrowserID: true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,25 +34,28 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-//
-// a JMVC controller for the browserid dialog
-//
-
 (function() {
 "use strict";
+
+  var bid = BrowserID,  
+      identities = bid.Identities;
+
 
   $.Controller.extend("PageController", {
     }, {
     init: function(options) {
-      var bodyTemplate = options.bodyTemplate;
-      var bodyVars = options.bodyVars;
-      var footerTemplate = options.footerTemplate;
-      var footerVars = options.footerVars;
+      var me=this,
+          bodyTemplate = options.bodyTemplate,
+          bodyVars = options.bodyVars;
 
-      this.renderTemplates(bodyTemplate, bodyVars, footerTemplate, footerVars);
-      $("form").bind("submit", this.onSubmit.bind(this));
-      $("#cancel").click(this.onCancel.bind(this));
-      $("#back").click(this.onBack.bind(this));
+
+      me.renderTemplates(bodyTemplate, bodyVars);
+
+      // XXX move all of these, bleck.
+      $("form").bind("submit", me.onSubmit.bind(me));
+      $("#cancel").click(me.onCancel.bind(me));
+      $("#back").click(me.onBack.bind(me));
+      $("#thisIsNotMe").click(me.close.bind(me, "notme"));
     },
 
     destroy: function() {
@@ -59,26 +63,28 @@
       $("input").unbind("keyup");
       $("#cancel").unbind("click");
       $("#back").unbind("click");
+      $("#thisIsNotMe").unbind("click");
+
+      $("body").removeClass("waiting");
+
       this._super();
     },
 
-    renderTemplates: function(body, body_vars, footer, footer_vars) {
+    renderTemplates: function(body, body_vars) {
+      $("body").removeClass("waiting");
+
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
         $("#dialog").html(bodyHtml).hide().fadeIn(300, function() {
           $("#dialog input").eq(0).focus(); 
         });
       }
-
-      if (footer) {
-        var footerHtml = $.View("//dialog/views/" + footer, footer_vars);
-        $("#bottom-bar").html(footerHtml);
-      }
     },
 
     onSubmit: function(event) {
       event.stopPropagation();
       event.preventDefault();
+
       if (this.validate()) {
         this.submit();
       }
@@ -90,11 +96,13 @@
     },
 
     submit: function() {
-      this.close("submit");
+    //  this.close("submit");
     },
 
     doWait: function(info) {
       this.renderTemplates("wait.ejs", {title: info.message, message: info.description});
+
+      $("body").addClass("waiting");
     },
 
     close: function(message, data) {
@@ -116,10 +124,7 @@
       $("#error_dialog .title").text(info.message);
       $("#error_dialog .content").text(info.description);
 
-      $("#back").hide();
-      $("input[type=submit]").hide();
-
-      $("#cancel").text("Close").addClass("action");
+      $("body").removeClass("authenticated").addClass("error");
 
       $("#error_dialog").fadeIn(500);
     },

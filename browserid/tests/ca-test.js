@@ -57,7 +57,7 @@ var kp = jwk.KeyPair.generate("RS",64);
 
 var email_addr = "foo@foo.com";
 
-// create a new account via the api with (first address)
+// certify a key
 suite.addBatch({
   "certify a public key": {
     topic: function() {
