@@ -14,6 +14,7 @@ train-2011.10.13:
   * default work factor is now at 12 (NOTE: [re]authentication now takes 6x longer - ~600ms on our current hardware): #212
   * many test fixes, and code refactoring, cleanup, and reorganization
   * accept SMTP parameters from the environment: #214 (not yet closed)
+  * WSAPI CHANGES (https://github.com/mozilla/browserid/commit/511b56): all server responses are now objects: #217, #325
 
 train-2011.10.06:
   * full site & dialog redesign: (many, many closed issues are related to this, including #269, #343, #342, #347, #354, #356, #357, #350, #349, #364, #346, #336)
