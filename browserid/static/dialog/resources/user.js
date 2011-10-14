@@ -535,7 +535,9 @@ BrowserID.User = (function() {
         function createAssertion(idInfo) {
           network.serverTime(function(serverTime) {
             var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
-            var tok = new jwt.JWT(null, serverTime, origin);
+            // assertions are valid for 2 minutes
+            var expiration = serverTime + (2 * 60 * 1000);
+            var tok = new jwt.JWT(null, expiration, origin);
             assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
             if (onSuccess) {
               onSuccess(assertion);
