@@ -137,6 +137,26 @@ function router(app) {
     res.render('verifyemail.ejs', {title: 'Verify Email Address', fullpage: false});
   });
 
+  // REDIRECTS
+  REDIRECTS = {
+    "/manage": "/",
+    "/users": "/",
+    "/users/": "/",    
+    "/primaries" : "/developers",
+    "/primaries/" : "/developers",
+    "/developers" : "https://github.com/mozilla/browserid/wiki/How-to-Use-BrowserID-on-Your-Site"
+  };
+
+  // set up all the redirects
+  // oh my watch out for scope issues on var url - closure time
+  for (var url in REDIRECTS) {
+    (function(from,to) {
+      app.get(from, function(req, res) {
+        res.redirect(to);
+      });
+    })(url, REDIRECTS[url]);
+  }
+
   // register all the WSAPI handlers
   wsapi.setup(app);
 
