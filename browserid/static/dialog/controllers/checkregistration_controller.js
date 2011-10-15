@@ -42,9 +42,9 @@
   PageController.extend("Checkregistration", {}, {
     init: function(el, options) {
       var me=this;
-      me._super({
-        bodyTemplate: "confirmemail.ejs",
-        bodyVars: {
+      me._super(el, {
+        waitTemplate: "confirmemail.ejs",
+        waitVars: {
           email: options.email
         }
       });

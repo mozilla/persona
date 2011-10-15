@@ -65,8 +65,12 @@ h1 {
 }
 
 h2 {
-    font-size: 1em;
+    margin-bottom: 20px;
+    font-size: 150%;
+    color: #222;
+    font-weight: bold;
 }
+
 
 .right {
     text-align: right;
@@ -77,11 +81,6 @@ h2 {
     position: relative;
 }
 
-#error_dialog {
-  text-align: center;
-  margin: 100px auto;
-  display: none;
-}
 
 .table {
     display: table;
@@ -95,37 +94,55 @@ h2 {
     width: 100%;
 }
 
-.authenticate #formWrap, .pickemail #formWrap {
-    background-color: #fff;
-    background-image: none;
-}
-
-#formWrap, .waiting #formWrap, .checkregistration #formWrap  {
-    background-color: rgba(0, 0, 0, 0.035);
-    background-image: url('/i/bg.png');
+#content {
     position: relative;
-    width: 100%;
     height: 250px;
     overflow: hidden;
 }
 
-.waiting #formWrap, .checkregistration #formWrap {
-    width: 325px;
-    margin: 0 auto;
-    text-align: center;
+section {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 0;
 }
 
-.waiting #formWrap > form, .checkregistration #formWrap > form {
-    height: 250px;
-    width: 325px;
+section > .contents {
     display: table-cell;
     vertical-align: middle;
+    height: 250px;
 }
 
-#signIn,
-#favicon {
-    display: inline-block;
-    float: left;
+#wait, #error {
+    text-align: center;
+    background-image: url("/i/bg.png");
+}
+
+#wait {
+    z-index: 1;
+}
+
+#error {
+    display: none;
+    z-index: 2;
+}
+
+#wait strong, #error strong {
+    color: #222;
+    font-weight: bold;
+}
+
+#error {
+    z-index: 2;
+}
+
+#formWrap {
+    background-color: #fff;
+    background-image: none;
+    display: block;
 }
 
 #signIn {
@@ -166,6 +183,7 @@ h2 {
 #favicon {
     position: absolute;
     left: 450px;
+    top: 0;
     z-index: 10;
 }
 
@@ -355,21 +373,12 @@ footer .learn a {
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-.checkregistration p:first-child {
-    margin-bottom: 20px;
-    font-size: 150%;
-}
-
-.checkregistration strong {
-    color: #222;
-    font-weight: bold;
-}
-
+    /*
 #favicon {
     text-align: center;
     max-width: 940px;
 }
-
+*/
 header {
     padding: 20px;
     font-weight: bold;
@@ -435,11 +444,11 @@ header,
 footer {
     display: block;
     width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 footer {
     padding: 20px;
-    border-top: 1px solid rgba(0,0,0,0.05);
     color: #aaa;   
 }
 

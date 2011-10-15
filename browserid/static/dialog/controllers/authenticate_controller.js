@@ -40,7 +40,8 @@
   var ANIMATION_TIME = 250,
       bid = BrowserID,
       user = bid.User,
-      validation = bid.Validation;
+      validation = bid.Validation,
+      lastEmail = "";
 
   function checkEmail(el, event) {
     var email = $("#email").val(),
@@ -48,12 +49,12 @@
 
     cancelEvent(event);
 
-    if(!validation.email(email)) {
+    if (!validation.email(email)) {
       return;
     }
 
     user.isEmailRegistered(email, function onComplete(registered) {
-      if(registered) {
+      if (registered) {
         enterPasswordState.call(self);
       }
       else {
@@ -68,12 +69,12 @@
 
     cancelEvent(event);
 
-    if(!validation.email(email)) {
+    if (!validation.email(email)) {
       return;
     }
 
     user.createUser(email, function(keypair) {
-      if(keypair) {
+      if (keypair) {
         self.close("user_staged", {
           email: email,
           keypair: keypair
@@ -92,16 +93,11 @@
 
     cancelEvent(event);
 
-    if(!validation.emailAndPassword(email, pass)) {
+    if (!validation.emailAndPassword(email, pass)) {
       return;
     }
 
-    user.authenticateAndSync(email, pass, 
-      function onAuthenticate(authenticated) {
-        if (authenticated) {
-          self.doWait(bid.Wait.authentication);
-        } 
-      },
+    user.authenticate(email, pass, 
       function onComplete(authenticated) {
         if (authenticated) {
           self.close("authenticated", {
@@ -145,7 +141,7 @@
   }
 
   function enterEmailState(el, event) {
-    if(event && event.which === 13) {
+    if (event && event.which === 13) {
       // Enter key, do nothing
       return;
     }
@@ -193,11 +189,10 @@
     init: function(el, options) {
       options = options || {};
 
-      this._super({
+      this._super(el, {
         bodyTemplate: "authenticate.ejs",
         bodyVars: {
-          sitename: user.getOrigin(),
-          siteicon: "/i/times.gif",
+          sitename: user.getHostname(),
           email: options.email || ""
         }
       });
@@ -205,12 +200,18 @@
       this.submit = checkEmail;
       // If we already have an email address, check if it is valid, if so, show 
       // password.
-      if(options.email) {
+      if (options.email) {
         this.submit();
       }
     },
 
-    "#email keyup": enterEmailState,
+    "#email keyup": function(el, event) {
+      var newEmail = el.val();
+      if (newEmail !== lastEmail) {
+        lastEmail = newEmail;
+        enterEmailState.call(this, el);
+      }
+    },
     "#forgotPassword click": forgotPasswordState,
     "#cancel_forgot_password click": cancelForgotPassword
   });

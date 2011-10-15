@@ -118,13 +118,47 @@ function retrieveHostPublicKey(host, successCB, errorCB) {
 
         // cache it
         publicKeys[host] = pk;
-        
+
         return successCB(pk);
       });
     });
-    
+
     parser.parseString(hostmeta);
   }, errorCB);
+}
+
+// compare two audiences:
+//   *want* is what was extracted from the assertion (it's trusted, we
+//   generated it!
+//   *got* is what was provided by the RP, so depending on their implementation
+//   it might be strangely formed.
+function compareAudiences(want, got) {
+  try {
+    // issue #82 - for a limited time, let's allow got to be sloppy and omit scheme
+    // in which case we guess a scheme based on port
+    if (!/^https?:\/\//.test(got)) {
+      var x = got.split(':');
+      var scheme = "http";
+      if (x.length === 2 && x[1] === '443') scheme = "https";
+      got = scheme + "://" + got;
+    }
+
+    // now parse and compare
+    function normalizeParsedURL(u) {
+      if (!u.port) u.port = u.protocol === 'https:' ? 443 : 80;
+      return u;
+    }
+
+    want = normalizeParsedURL(url.parse(want));
+
+    got = normalizeParsedURL(url.parse(got));
+
+    return (want.protocol === got.protocol &&
+            want.hostname === got.hostname &&
+            want.port === got.port);
+  } catch(e) {
+    return false;
+  }
 }
 
 // verify the tuple certList, assertion, audience
@@ -156,14 +190,17 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
         if (!principal.email.match("@" + theIssuer + "$"))
           return errorCB();
       }
-      
+
       var tok = new jwt.JWT();
       tok.parse(bundle.assertion);
-      
+
       // audience must match!
-      if (tok.audience != audience)
-        return errorCB();
-      
+      if (!compareAudiences(tok.audience, audience)) {
+        logger.debug("verification failure, audience mismatch: '"
+                     + tok.audience + "' != '" + audience + "'");
+        return errorCB("audience mismatch");
+      }
+
       if (tok.verify(pk)) {
         successCB(principal.email, tok.audience, tok.expires, theIssuer);
       } else {
@@ -171,7 +208,7 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
       }
     }, errorCB);
 }
-  
+
 
 exports.retrieveHostPublicKey = retrieveHostPublicKey;
 exports.verify = verify;

@@ -38,11 +38,24 @@
   "use strict";
 
   var bid = BrowserID,
-      network = bid.Network,
+      user = bid.User,
       validation = bid.Validation;
+
+  function prefillEmail() {
+    // If the user tried to sign in on the sign up page with an existing email, 
+    // place that email in the email field, then focus the password.
+    var email = window.localStorage.signInEmail;
+    if (email) {
+      $("#email").val(email);
+      window.localStorage.removeItem('signInEmail');
+      $("#password").focus();
+    }
+  }
 
   bid.signIn = function () {
     $("form input[autofocus]").focus();
+
+    prefillEmail();
 
     $("#signUpForm").bind("submit", function(event) {
       event.preventDefault();
@@ -53,7 +66,7 @@
       var valid = validation.emailAndPassword(email, password);
 
       if (valid) {
-        network.authenticate(email, password, function onSuccess(authenticated) {
+        user.authenticate(email, password, function onSuccess(authenticated) {
           if (authenticated) {
             document.location = "/";
           }
