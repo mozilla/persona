@@ -172,6 +172,9 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
   // assertion is bundle
   var bundle = vep.unbundleCertsAndAssertion(assertion);
 
+  console.log("bundle:");
+  console.log(bundle);
+
   var theIssuer;
   jwcert.JWCert.verifyChain(
     bundle.certificates,
@@ -191,6 +194,8 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
           return errorCB();
       }
 
+      console.log("verifying assertion");
+      
       var tok = new jwt.JWT();
       tok.parse(bundle.assertion);
 
