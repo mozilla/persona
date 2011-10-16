@@ -180,9 +180,6 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
   // assertion is bundle
   var bundle = vep.unbundleCertsAndAssertion(assertion);
 
-  console.log("bundle:");
-  console.log(bundle);
-
   var theIssuer;
   jwcert.JWCert.verifyChain(
     bundle.certificates,
