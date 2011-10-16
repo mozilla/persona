@@ -58,6 +58,8 @@ var publicKeys = {};
 
 // set up some default public keys
 publicKeys[configuration.get('hostname')] = secrets.PUBLIC_KEY;
+logger.debug("pre-seeded public key cache with key for " +
+             configuration.get('hostname'));
 
 function https_complete_get(host, url, successCB, errorCB) {
   https.get({host: host,path: url}, function(res) {
@@ -78,10 +80,16 @@ function https_complete_get(host, url, successCB, errorCB) {
 
 // only over SSL
 function retrieveHostPublicKey(host, successCB, errorCB) {
+  logger.debug("attempting to fetching public key for " + host);
+
   // cached?
   var cached = publicKeys[host];
-  if (cached)
+  if (cached) {
+    logger.debug("public key for " + host + " returned from cache");
     return successCB(cached);
+  }
+
+  logger.debug("performing HTTP request to fetch public key from " + host);
   
   https_complete_get(host, HOSTMETA_URL, function(hostmeta) {
     // find the location of the public key

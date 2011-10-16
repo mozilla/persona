@@ -36,28 +36,35 @@
 
 (function() {
   "use strict";
+  
+  var ANIMATION_TIME=250;
+  function emailRegistrationSuccess(info) {
 
-  function emailRegistrationSuccess() {
-    $(".hint").hide();
-    $("#congrats").fadeIn(250, function() {
-      $("body").delay(1000).fadeOut(500, function() {
-        // if the close didn't work, then let's redirect the the main page where they'll
-        // get to see the ids that they've created.
-        document.location = '/';
-      });
+    $("#email").text(info.email);
+    
+    if (info.origin) {
+      $("#siteinfo .website").html(info.origin);
+      $("#siteinfo").show();
+    }
+
+    $("#signUpForm").delay(2000).fadeOut(ANIMATION_TIME, function() {
+      $("#congrats").fadeIn(ANIMATION_TIME);
     });
   }
 
   function showError(el) {
     $(".hint").hide();
-    $(el).fadeIn(250);
+    $(el).fadeIn(ANIMATION_TIME);
   }
 
   BrowserID.addEmailAddress = function(token) {
-    BrowserID.Network.completeEmailRegistration(token, function onSuccess(valid) {
-      if (valid) {
-        emailRegistrationSuccess();
-      } else {
+    var user = BrowserID.User;
+
+    user.verifyEmail(token, function onSuccess(info) {
+      if (info.valid) {
+        emailRegistrationSuccess(info);
+      }
+      else {
         showError("#cannotconfirm");
       }
     }, function onFailure() {

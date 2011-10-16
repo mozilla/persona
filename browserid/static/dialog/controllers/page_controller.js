@@ -95,14 +95,14 @@
 
     renderWait: function(body, body_vars) {
       this.renderTemplates("#wait", body, body_vars);
-      $("body").removeClass("error").removeClass("form").addClass("waiting");
-      $("#wait").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
+      $("body").removeClass("error").removeClass("form").addClass("waiting").css('opacity', 1);
+      $("#wait").stop().hide().fadeIn(ANIMATION_TIME);
     },
 
     renderError: function(error_vars) {
       this.renderTemplates("#error", "wait.ejs", error_vars);
-      $("body").removeClass("waiting").removeClass("form").addClass("error");
-      $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
+      $("body").removeClass("waiting").removeClass("form").addClass("error").css('opacity', 1);
+      $("#error").stop().hide().fadeIn(ANIMATION_TIME);
     },
 
     onSubmit: function(event) {

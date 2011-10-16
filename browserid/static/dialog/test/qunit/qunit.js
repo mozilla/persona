@@ -13,6 +13,7 @@ steal("/dialog/resources/browserid.js",
 	.views('testBodyTemplate.ejs')
 	.views('wait.ejs')
   .then("browserid_unit_test")
+  .then("pages/add_email_address_test")
   .then("controllers/page_controller_unit_test")
   .then("resources/validation_unit_test")
   .then("resources/storage_unit_test")

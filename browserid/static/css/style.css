@@ -21,30 +21,24 @@ body {
   overflow-y: scroll;
 }
 
-/*header {
-    border-top: 4px solid #333;
-    background-color: #333;
-    padding: 0 20% 0 20%;
-    margin: 0;
-    background: #008;
-    height: 230px;
-    color #fff;
-    min-width: 800px;
-    display: block;
+/* for floats */
+.cf:after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0;
 }
 
-footer {
-    background-color: #F1F1F1;
-    border-top: 2px solid #ddd;
-    margin: 0;
-    margin-top: 100px;
-    padding: 0;
-    height: 200px;
-    font-size: 1.1em;
-    display: block;
+html[xmlns] .cf {
+  display: block;
 }
 
-*/
+* html .cf {
+  height: 1%;
+}
+
 .sans {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -115,11 +109,6 @@ hr {
   display: none;
 }
 
-/*
-.authenticated #content {
-  display: block;
-}
-*/
 #about {
   font-family: 'Droid Serif', Georgia, serif;
   font-size: 14px;
@@ -623,7 +612,7 @@ h1 {
   display: inline-block;
 }
 
-#signUpForm {
+#signUpForm, #congrats {
   padding: 20px;
   background-color: rgba(0,0,0,0.035);
 
@@ -654,33 +643,6 @@ h1 {
   width: 50%;
   display: inline-block;
   float: left;
-}
-
-a.forgot {
-  color: #888784;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-  font-size: 11px;
-}
-
-.notifications {
-  list-style-type: none;
-}
-
-.notifications > .notification {
-  margin-top: 20px;
-  padding: 5px;
-  line-height: 16px;
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-       -o-border-radius: 3px;
-          border-radius: 3px;
-  display: none;
-  text-align: center;
-}
-
-.notifications .notification.error {
-  color: red;
-  background-color: rgba(255,0,0,0.25);
 }
 
 #signUpForm .red {
@@ -747,6 +709,64 @@ a.forgot {
   padding: 0 10px;
   float: right;
 }
+
+#signUpForm .error {
+  margin-top: 20px;
+  color: red;
+  background-color: rgba(255,0,0,0.25);
+  padding: 5px;
+  line-height: 16px;
+
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+       -o-border-radius: 3px;
+          border-radius: 3px;
+}
+
+
+#signUpForm #siteinfo, #congrats {
+  display: none;
+}
+
+#congrats p {
+    color: #62615F;
+    display: block;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+#congrats .website {
+    display: block;
+    text-align: center;
+}
+
+
+a.forgot {
+  color: #888784;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+}
+
+.notifications {
+  list-style-type: none;
+}
+
+.notifications > .notification {
+  margin-top: 20px;
+  padding: 5px;
+  line-height: 16px;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+       -o-border-radius: 3px;
+          border-radius: 3px;
+  display: none;
+  text-align: center;
+}
+
+.notifications .notification.error {
+  color: red;
+  background-color: rgba(255,0,0,0.25);
+}
+
 
 #header {
   position: absolute;
@@ -829,173 +849,4 @@ a.forgot {
 #footer a {
   color: #aaa;
 }
-
-
-/* for floats */
-.cf:after {
-  content: ".";
-  display: block;
-  clear: both;
-  visibility: hidden;
-  line-height: 0;
-  height: 0;
-}
-
-html[xmlns] .cf {
-  display: block;
-}
-
-* html .cf {
-  height: 1%;
-}
-
-#signUpFormWrap {
-  margin: 122px 160px;
-}
-
-#signUpFormWrap a.signUpIn {
-  color: #549FDC;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-#signUpFormWrap a.space {
-  margin: 10px 20px 0;
-  display: inline-block;
-}
-
-#signUpForm,
-#congrats {
-  padding: 20px;
-  background-color: rgba(0,0,0,0.035);
-
-  -webkit-border-radius: 5px;
-     -moz-border-radius: 5px;
-       -o-border-radius: 5px;
-          border-radius: 5px;
-}
-
-#congrats {
-    display: none;
-}
-
-#congrats p {
-    color: #62615F;
-    display: block;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-#signUpForm label/*,
-#signUpForm p.hint*/ {
-  display: block;
-  color: #62615F;
-  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-}
-
-/*
-
-#signUpForm p.hint {
-  margin: -20px -20px 20px;
-  padding: 10px 20px 10px 45px;
-  background-color: rgba(0,0,0,0.05);
-  background-repeat: no-repeat;
-  background-position: 20px center;
-  color: #222;
-  
-  -webkit-border-radius: 5px 5px 0 0;
-     -moz-border-radius: 5px 5px 0 0;
-       -o-border-radius: 5px 5px 0 0;
-          border-radius: 5px 5px 0 0;
-}
-*/
-#signUpForm label.half,
-.half {
-  width: 50%;
-  display: inline-block;
-  float: left;
-}
-
-a.forgot {
-  color: #888784;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-  font-size: 11px;
-}
-
-#signUpForm .error {
-  margin-top: 20px;
-  color: red;
-  background-color: rgba(255,0,0,0.25);
-  padding: 5px;
-  line-height: 16px;
-
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-       -o-border-radius: 3px;
-          border-radius: 3px;
-}
-
-#signUpForm .red {
-  color: red;
-}
-
-#signUpForm input[type=email],
-#signUpForm input[type=password] {
-  width: 100%;
-  font-size: 14px;
-  padding: 5px;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #A3A29D #C6C3B4 #C6C3B4 #A3A29D;
-  outline: none;
-
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-       -o-border-radius: 3px;
-          border-radius: 3px;
-
-  -webkit-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-     -moz-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-       -o-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-          box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-}
-
-#signUpForm input[type=email]:focus,
-#signUpForm input[type=password]:focus {
-  border: 1px solid #549FDC;
-
-  -webkit-border-radius: 0;
-     -moz-border-radius: 0;
-       -o-border-radius: 0;
-          border-radius: 0;
-
-  -webkit-box-shadow: 0 0 0 1px #549FDC inset;
-     -moz-box-shadow: 0 0 0 1px #549FDC inset;
-       -o-box-shadow: 0 0 0 1px #549FDC inset;
-          box-shadow: 0 0 0 1px #549FDC inset;
-}
-
-#signUpForm .submit {
-  height: 28px;
-}
-
-#signUpForm .remember {
-  display: inline-block;
-  line-height: 28px;
-}
-
-#signUpForm .remember .checkAlign {
-  float: left;
-}
-
-#signUpForm .remember label {
-  margin-left: 5px;
-  float: left;
-}
-
-#signUpForm .create {
-  font-size: 14px;
-  height: 28px;
-  padding: 0 10px;
-  float: right;
-}
-
 

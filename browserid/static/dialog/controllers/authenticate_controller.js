@@ -40,6 +40,7 @@
   var ANIMATION_TIME = 250,
       bid = BrowserID,
       user = bid.User,
+      errors = bid.Errors,
       validation = bid.Validation,
       lastEmail = "";
 
@@ -60,7 +61,7 @@
       else {
         createUserState.call(self);
       }
-    });
+    }, self.getErrorDialog(errors.isEmailRegistered));
   }
 
   function createUser(el, event) {
@@ -83,7 +84,7 @@
       else {
         // XXX can't register this email address.
       }
-    }, self.getErrorDialog(bid.Errors.createAccount));
+    }, self.getErrorDialog(errors.createUser));
   }
 
   function authenticate(el, event) {
@@ -106,10 +107,7 @@
         } else {
           bid.Tooltip.showTooltip("#cannot_authenticate");
         }
-      }, 
-      self.getErrorDialog(bid.Errors.authentication)
-    );
-
+      }, self.getErrorDialog(errors.authenticate));
   }
 
   function resetPassword(el, event) {
@@ -122,9 +120,7 @@
       self.close("reset_password", {
         email: email
       });
-    }, function() {
-      // XXX TODO error screen!
-    });
+    }, self.getErrorDialog(errors.requestPasswordReset));
   }
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
