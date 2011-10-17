@@ -330,7 +330,8 @@ div.steps {
        -o-box-shadow: 0 0 0 1px #76C2FF inset;
           box-shadow: 0 0 0 1px #76C2FF inset;
 
-  background-image: -moz-linear-gradient(center top , #76C2FF 0pt, #37A6FF 100%);
+  background-image: -moz-linear-gradient(#76C2FF 0pt, #37A6FF 100%);
+  background-image: -o-linear-gradient(#76C2FF 0pt, #37A6FF 100%);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
 }
 
@@ -346,7 +347,8 @@ div.steps {
        -o-box-shadow: 0 0 5px #003763 inset;
           box-shadow: 0 0 5px #003763 inset;
 
-  background-image: -moz-linear-gradient(center top , #3AA7FF 0%, #006EC6 100%);
+  background-image: -moz-linear-gradient(#3AA7FF 0%, #006EC6 100%);
+  background-image: -o-linear-gradient(#3AA7FF 0%, #006EC6 100%);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3AA7FF), color-stop(100%, #006EC6));
 }
 
@@ -402,7 +404,7 @@ div.steps {
 }
 
 button.delete {
-  background-color: #37A6FF;
+  background-color: #EA7676;
   height: 24px;
   vertical-align: middle;
   border: 1px solid #B13D3D;
@@ -423,7 +425,8 @@ button.delete {
        -o-border-radius: 5px;
           border-radius: 5px;
 
-  background-image: -moz-linear-gradient(center top , #EA7676 0pt, #C84343 100%);
+  background-image: -moz-linear-gradient(#EA7676 0%, #C84343 100%);
+  background-image: -o-linear-gradient(#EA7676 0%, #C84343 100%);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #EA7676), color-stop(100%, #C84343));
 }
 
@@ -439,6 +442,7 @@ button.delete:active {
           box-shadow: 0 0 5px #003763 inset;
 
   background-image: -moz-linear-gradient(center top , #C84343 0%, #AA3D3D 100%);
+  background-image: -o-linear-gradient(#C84343 0%, #AA3D3D 100%);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #C84343), color-stop(100%, #AA3D3D));
 }
 
@@ -508,7 +512,8 @@ h1 {
        -o-border-radius: 5px;
           border-radius: 5px;
 
-  background-image: -moz-linear-gradient(center top , #76C2FF 0pt, #37A6FF 100%);
+  background-image: -moz-linear-gradient(#76C2FF 0pt, #37A6FF 100%);
+  background-image: -o-linear-gradient(#76C2FF 0pt, #37A6FF 100%);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
 }
 
@@ -523,7 +528,8 @@ h1 {
        -o-box-shadow: 0 0 5px #003763 inset;
           box-shadow: 0 0 5px #003763 inset;
 
-  background-image: -moz-linear-gradient(center top , #3AA7FF 0%, #006EC6 100%);
+  background-image: -moz-linear-gradient(#3AA7FF 0%, #006EC6 100%);
+  background-image: -o-linear-gradient(#3AA7FF 0%, #006EC6 100%);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3AA7FF), color-stop(100%, #006EC6));
 }
 
