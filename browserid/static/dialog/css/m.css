@@ -24,6 +24,11 @@
     font-size: 17px;
   }
 
+  section {
+    position: static;
+    overflow: auto;
+  }
+
   .inputs > li > label {
     font-size: 18px;
   }

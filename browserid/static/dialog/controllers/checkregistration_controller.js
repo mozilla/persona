@@ -43,8 +43,8 @@
     init: function(el, options) {
       var me=this;
       me._super({
-        bodyTemplate: "confirmemail.ejs",
-        bodyVars: {
+        waitTemplate: "confirmemail.ejs",
+        waitVars: {
           email: options.email
         }
       });
