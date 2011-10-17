@@ -20,7 +20,7 @@ echo ''
 
 cd static
 mv include.js include.orig.js
-$UGLIFY -nc include.orig.js > include.js
+$UGLIFY include.orig.js > include.js
 
 echo ''
 echo '****Building dialog HTML, CSS, and JS****'
