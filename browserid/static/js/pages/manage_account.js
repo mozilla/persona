@@ -147,7 +147,7 @@
       }
     }
     else {
-      if (confirm('Removing the last address will cancel your BrowserID account,\nare you sure you want to continute?')) {
+      if (confirm('Removing the last address will cancel your BrowserID account.\nAre you sure you want to continue?')) {
         User.cancelUser(function() {
           document.location="/";
         });
