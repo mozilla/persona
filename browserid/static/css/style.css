@@ -79,7 +79,7 @@ a {
   text-decoration: none;
 }
 
-a:hover {
+a:hover, button:hover, input[type=submit]:hover {
   text-decoration: underline;
 }
 
@@ -313,10 +313,6 @@ div.steps {
      -moz-border-radius: 5px;
        -o-border-radius: 5px;
           border-radius: 5px;
-}
-
-#manage .edit a:hover {
-  text-decoration: none;
 }
 
 #manageAccounts {
