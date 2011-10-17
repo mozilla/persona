@@ -1,4 +1,7 @@
-/* ***** BEGIN LICENSE BLOCK *****
+/**
+ * Uncompressed source can be found at https://browserid.org/include.orig.js
+ *
+ * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
