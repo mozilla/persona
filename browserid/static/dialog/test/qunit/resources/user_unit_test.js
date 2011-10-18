@@ -35,12 +35,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 var jwk = require("./jwk");
+var jwt = require("./jwt");
 var jwcert = require("./jwcert");
 
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", function() {
   var lib = BrowserID.User,
       network = BrowserID.Network,
-      storage = BrowserID.Storage;
+      storage = BrowserID.Storage,
+      testOrigin = "testOrigin";
 
   // I generated these locally, they are used nowhere else.
   var pubkey = {"algorithm":"RS","n":"56063028070432982322087418176876748072035482898334811368408525596198252519267108132604198004792849077868951906170812540713982954653810539949384712773390200791949565903439521424909576832418890819204354729217207360105906039023299561374098942789996780102073071760852841068989860403431737480182725853899733706069","e":"65537"};
@@ -158,6 +160,35 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     }
   };
 
+
+  function testAssertion(assertion) {
+    equal(typeof assertion, "string", "An assertion was correctly generated");
+
+    // Decode the assertion to a bundle.
+    var bundle = JSON.parse(window.atob(assertion));
+    
+    // Make sure both parts of the bundle exist
+    ok(bundle.certificates && bundle.certificates.length, "we have an array like object for the certificates");
+    equal(typeof bundle.assertion, "string");
+
+    // Decode the assertion itself
+    var tok = new jwt.JWT();
+    tok.parse(bundle.assertion);
+
+
+    // Check for parts of the assertion
+    equal(tok.audience, testOrigin, "correct audience");
+    equal(isNaN(tok.expires.valueOf()), false, "expiration date is valid");
+    equal(typeof tok.cryptoSegment, "string", "cryptoSegment exists");
+    equal(typeof tok.headerSegment, "string", "headerSegment exists");
+    equal(typeof tok.payloadSegment, "string", "payloadSegment exists");
+    /*
+    // What are these supposed to be?
+    ok(tok.issuer, "issuer?");
+    ok(tok.payload, "payload?");
+    */
+  }
+
   module("user", {
     setup: function() {
       lib.setNetwork(netStub);
@@ -179,8 +210,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   }
 
   test("setOrigin, getOrigin", function() {
-    lib.setOrigin("someorigin");
-    equal(lib.getOrigin(), "someorigin");
+    lib.setOrigin(testOrigin);
+    equal(lib.getOrigin(), testOrigin);
   });
 
   test("getStoredEmailKeypairs", function() {
@@ -618,7 +649,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("getAssertion with known email that has key", function() {
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
-        equal("string", typeof assertion, "we have an assertion!");
+        testAssertion(assertion);
         start();
       }, failure("getAssertion failure"));
     }, failure("syncEmailKeypair failure"));
@@ -630,7 +661,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("getAssertion with known email that does not have a key", function() {
     storage.addEmail("testuser@testuser.com", {});
     lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
-      equal("string", typeof assertion, "we have an assertion!");
+      testAssertion(assertion);
       start();
     }, failure("getAssertion failure"));
 
