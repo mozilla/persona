@@ -134,6 +134,7 @@
 
     var valid = checkEmail.call(self, email);
     if (valid) {
+//      self.doWait(bid.Wait.generateKey);
       getAssertion.call(self, email);
       startAnimation.call(self);
     }

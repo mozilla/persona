@@ -121,7 +121,7 @@
     },
 
     doWait: function(info) {
-      this.renderWait("wait.ejs", {title: info.message, message: info.description});
+      this.renderWait("wait.ejs", info);
 
       $("body").addClass("waiting");
     },
