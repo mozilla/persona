@@ -26,7 +26,7 @@
 
   section {
     position: static;
-    overflow: auto;
+    overflow: visible;
   }
 
   .inputs > li > label {
@@ -78,21 +78,12 @@
       background-color: transparent;
   }
 
-  #formWrap,
-  .vertical {
-      height: auto;
-  }
-
   .arrow {
       display: none;
   }
 
   #checkemail p {
       height: 250px;
-  }
-
-  #footer {
-      padding: 10px;
   }
 
   #signIn .vertical {
@@ -105,5 +96,10 @@
 
   #signIn .submit > p {
     font-size: 14px;
+  }
+
+  #content, .pickemail .form_section, .pickemail .inputs, .vertical {
+    height: auto;
+    overflow: visible;
   }
 }

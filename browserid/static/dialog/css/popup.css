@@ -94,21 +94,26 @@ h2 {
     width: 100%;
 }
 
-section {
-    display: table;
-    position: absolute;
-    top: 62px;
-    left: 0;
+#content {
+    position: relative;
     height: 250px;
-    width: 100%;
     overflow: hidden;
+}
+
+section {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
     z-index: 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 section > .contents {
     display: table-cell;
     vertical-align: middle;
+    height: 250px;
 }
 
 #wait, #error {
@@ -444,13 +449,12 @@ header,
 footer {
     display: block;
     width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 footer {
     padding: 20px;
     color: #aaa;   
-    position: fixed;
-    bottom: 0;
 }
 
 footer ul {
