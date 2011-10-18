@@ -10,6 +10,7 @@ steal("/dialog/resources/browserid.js",
     "jquery/controller/view",
     "jquery/view/ejs",
     "funcunit/qunit")
+	.views('wait.ejs')
   .then("browserid_unit_test")
   .then("controllers/page_controller_unit_test")
   .then("resources/validation_unit_test")

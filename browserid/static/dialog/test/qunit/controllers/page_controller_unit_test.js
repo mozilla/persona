@@ -35,18 +35,62 @@
  *
  * ***** END LICENSE BLOCK ***** */
 steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
+  "use strict";
 
-  var controller;
+  var controller, el;
 
   module("PageController", {
     setup: function() {
+      el = $("#page_controller");
     },
 
     teardown: function() {
-      if (controller) {
-        controller.teardown();
-      }
+      el.find("form").html("");
+      el.find("#wait .contents").html("");
+      controller.destroy();
     } 
+  });
+
+  test("page controller with no template causes no side effects", function() {
+    controller = el.page().controller();
+
+    var html = el.find("form").html();
+    equal(html, "", "with no template specified, no text is loaded");
+
+    html = el.find("#wait .contents").html();
+    equal(html, "", "with no template specified, no text is loaded");
+  });
+
+  test("page controller with body template renders in #formWrap > form", function() {
+    controller = el.page({
+      bodyTemplate: "wait.ejs",
+      bodyVars: {
+        title: "Test title",
+        message: "Test message"
+      }
+    }).controller();
+
+    var html = el.find("form").html();
+    ok(html.length, "with template specified, form text is loaded");
+
+    html = el.find("#wait .contents").html();
+    equal(html, "", "with body template specified, wait text is not loaded");
+  });
+
+  test("page controller with wait template renders in #wait .contents", function() {
+    controller = el.page({
+      waitTemplate: "wait.ejs",
+      waitVars: {
+        title: "Test title",
+        message: "Test message"
+      }
+    }).controller();
+
+    var html = el.find("form").html();
+    equal(html, "", "with wait template specified, form is ignored");
+
+    html = el.find("#wait .contents").html();
+    ok(html.length, "with wait template specified, wait text is loaded");
   });
 
 });

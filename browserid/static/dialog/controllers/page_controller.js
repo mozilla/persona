@@ -42,7 +42,9 @@
 
   $.Controller.extend("PageController", {
     }, {
-    init: function(options) {
+    init: function(el, options) {
+      options = options || {};
+
       var me=this,
           bodyTemplate = options.bodyTemplate,
           bodyVars = options.bodyVars,

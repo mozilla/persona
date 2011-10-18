@@ -2,9 +2,6 @@
 	<head>
 		<link rel="stylesheet" type="text/css" href="/funcunit/qunit/qunit.css" />
 		<title>dialog QUnit Test</title>
-		<script type='text/javascript'>
-			steal = {ignoreControllers: false}
-		</script>
 		<script type='text/javascript' src='/vepbundle'></script>
 		<script type='text/javascript' src='/steal/steal.js?/dialog/test/qunit'></script>
 	</head>
@@ -15,7 +12,13 @@
 		<div id="qunit-testrunner-toolbar"></div>
 		<h2 id="qunit-userAgent"></h2>
 		<div id="test-content">
-      <div id="page_controller"></div>
+      <div id="page_controller">
+        <div id="formWrap">
+          <form></form>
+        </div>
+
+        <div id="wait"><div class="contents"></div></div>
+      </div>
     </div>
 		<ol id="qunit-tests"></ol>
 		<div id="qunit-test-area"></div>
