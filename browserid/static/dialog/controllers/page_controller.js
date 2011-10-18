@@ -89,12 +89,17 @@
 
     renderDialog: function(body, body_vars) {
       this.renderTemplates("#formWrap", body, body_vars);
-      $("#wait").stop().fadeOut(250);
+      $("#wait").stop().fadeOut(ANIMATION_TIME);
     },
 
     renderWait: function(body, body_vars) {
       this.renderTemplates("#wait", body, body_vars);
-      $("#wait").stop().css('opacity', 1).hide().fadeIn(250);
+      $("#wait").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
+    },
+
+    renderError: function(error_vars) {
+      this.renderTemplates("#error", "wait.ejs", error_vars);
+      $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
     },
 
     onSubmit: function(event) {
@@ -135,14 +140,7 @@
      * two fields, message, description.
      */
     errorDialog: function(info) {
-      $("form").hide();
-
-      $("#error_dialog .title").text(info.message);
-      $("#error_dialog .content").text(info.description);
-
-      $("body").removeClass("authenticated").addClass("error");
-
-      $("#error_dialog").fadeIn(ANIMATION_TIME);
+      this.renderError({title: info.message, message: info.description});
     },
 
     /**

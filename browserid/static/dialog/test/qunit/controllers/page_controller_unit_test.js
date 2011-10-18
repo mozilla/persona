@@ -49,6 +49,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     teardown: function() {
       el.find("#formWrap .contents").html("");
       el.find("#wait .contents").html("");
+      el.find("#error .contents").html("");
       controller.destroy();
     } 
   });
@@ -97,6 +98,24 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
 
     html = el.find("#wait .contents").html();
     ok(html.length, "with wait template specified, wait text is loaded");
+  });
+
+  test("renderError does what it is meant to", function() {
+    controller = el.page({
+      waitTemplate: waitTemplate,
+      waitVars: {
+        title: "Test title",
+        message: "Test message"
+      }
+    }).controller();
+   
+    el.page("renderError", {
+      title: "error title",
+      message: "error message"
+    });
+
+    var html = el.find("#error .contents").html();
+    ok(html.length, "with error template specified, error text is loaded");
   });
 
 });
