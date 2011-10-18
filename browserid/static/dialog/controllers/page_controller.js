@@ -83,9 +83,7 @@
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
         target = $(target + " .contents");
-        target.html(bodyHtml);//.hide().fadeIn(ANIMATION_TIME, function() {
-          target.find("input").eq(0).focus(); 
-        //});
+        target.html(bodyHtml).find("input").eq(0).focus(); 
       }
     },
 

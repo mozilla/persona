@@ -37,7 +37,9 @@
 steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   "use strict";
 
-  var controller, el;
+  var controller, el,
+      bodyTemplate = "testBodyTemplate.ejs",
+      waitTemplate = "wait.ejs";
 
   module("PageController", {
     setup: function() {
@@ -61,9 +63,9 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     equal(html, "", "with no template specified, no text is loaded");
   });
 
-  test("page controller with body template renders in #formWrap > form", function() {
+  test("page controller with body template renders in #formWrap .contents", function() {
     controller = el.page({
-      bodyTemplate: "wait.ejs",
+      bodyTemplate: bodyTemplate,
       bodyVars: {
         title: "Test title",
         message: "Test message"
@@ -73,13 +75,17 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     var html = el.find("#formWrap .contents").html();
     ok(html.length, "with template specified, form text is loaded");
 
+
+    var input = el.find("input").eq(0);
+    ok(input.is(":focus"), "make sure the first input is focused");
+
     html = el.find("#wait .contents").html();
     equal(html, "", "with body template specified, wait text is not loaded");
   });
 
   test("page controller with wait template renders in #wait .contents", function() {
     controller = el.page({
-      waitTemplate: "wait.ejs",
+      waitTemplate: waitTemplate,
       waitVars: {
         title: "Test title",
         message: "Test message"
