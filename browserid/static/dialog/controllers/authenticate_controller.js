@@ -193,11 +193,10 @@
     init: function(el, options) {
       options = options || {};
 
-      this._super({
+      this._super(el, {
         bodyTemplate: "authenticate.ejs",
         bodyVars: {
           sitename: user.getOrigin(),
-          siteicon: "/i/times.gif",
           email: options.email || ""
         }
       });
