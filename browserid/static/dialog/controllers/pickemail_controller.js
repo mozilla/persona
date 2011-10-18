@@ -176,9 +176,7 @@
       this._super(el, {
         bodyTemplate: "pickemail.ejs",
         bodyVars: {
-          sitename: user.getOrigin(),
-          siteicon: '/i/times.gif',
-          identities: user.getStoredEmailKeypairs(),
+          identities: user.getStoredEmailKeypairs()
         }
       });
 

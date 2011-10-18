@@ -61,6 +61,9 @@
         this.onerror = onerror;
 
         user.setOrigin(origin_url);
+        
+        // get the cleaned origin.
+        $("#sitename").text(user.getOrigin());
 
         this.doCheckAuth();
 

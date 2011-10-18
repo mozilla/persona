@@ -82,7 +82,7 @@
     renderTemplates: function(target, body, body_vars) {
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
-        target = $(target);
+        target = $(target + " .contents");
         target.html(bodyHtml);//.hide().fadeIn(ANIMATION_TIME, function() {
           target.find("input").eq(0).focus(); 
         //});
@@ -90,12 +90,12 @@
     },
 
     renderDialog: function(body, body_vars) {
-      this.renderTemplates("#formWrap > form", body, body_vars);
+      this.renderTemplates("#formWrap", body, body_vars);
       $("#wait").stop().fadeOut(250);
     },
 
     renderWait: function(body, body_vars) {
-      this.renderTemplates("#wait .contents", body, body_vars);
+      this.renderTemplates("#wait", body, body_vars);
       $("#wait").stop().css('opacity', 1).hide().fadeIn(250);
     },
 

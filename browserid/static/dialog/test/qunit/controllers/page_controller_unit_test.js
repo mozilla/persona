@@ -45,7 +45,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     },
 
     teardown: function() {
-      el.find("form").html("");
+      el.find("#formWrap .contents").html("");
       el.find("#wait .contents").html("");
       controller.destroy();
     } 
@@ -54,7 +54,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   test("page controller with no template causes no side effects", function() {
     controller = el.page().controller();
 
-    var html = el.find("form").html();
+    var html = el.find("#formWrap .contents").html();
     equal(html, "", "with no template specified, no text is loaded");
 
     html = el.find("#wait .contents").html();
@@ -70,7 +70,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
       }
     }).controller();
 
-    var html = el.find("form").html();
+    var html = el.find("#formWrap .contents").html();
     ok(html.length, "with template specified, form text is loaded");
 
     html = el.find("#wait .contents").html();
@@ -86,7 +86,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
       }
     }).controller();
 
-    var html = el.find("form").html();
+    var html = el.find("#formWrap .contents").html();
     equal(html, "", "with wait template specified, form is ignored");
 
     html = el.find("#wait .contents").html();
