@@ -178,7 +178,14 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
     // Check for parts of the assertion
     equal(tok.audience, testOrigin, "correct audience");
-    equal(isNaN(tok.expires.valueOf()), false, "expiration date is valid");
+    var expires = tok.expires.getTime();
+    ok(typeof expires === "number" && !isNaN(expires), "expiration date is valid");
+  
+    var nowPlus2Mins = new Date().getTime() + (2 * 60 * 1000);
+    // expiration date must be within 5 seconds of 2 minutes from now - see 
+    // issue 433 (https://github.com/mozilla/browserid/issues/433)
+    ok(((nowPlus2Mins - 5000) < expires) && (expires < (nowPlus2Mins + 5000)), "expiration date must be within 5 seconds of 2 minutes from now");
+
     equal(typeof tok.cryptoSegment, "string", "cryptoSegment exists");
     equal(typeof tok.headerSegment, "string", "headerSegment exists");
     equal(typeof tok.payloadSegment, "string", "payloadSegment exists");
