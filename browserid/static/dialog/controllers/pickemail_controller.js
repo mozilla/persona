@@ -172,7 +172,7 @@
 
 
   PageController.extend("Pickemail", {}, {
-    init: function(options) {
+    init: function(el, options) {
       this._super(el, {
         bodyTemplate: "pickemail.ejs",
         bodyVars: {
