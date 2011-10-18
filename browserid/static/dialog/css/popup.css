@@ -145,12 +145,6 @@ section > .contents {
     display: block;
 }
 
-#signIn,
-#favicon {
-    display: inline-block;
-    float: left;
-}
-
 #signIn {
     background-image: url('/i/bg.png');
     position: absolute;
@@ -379,11 +373,12 @@ footer .learn a {
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
+    /*
 #favicon {
     text-align: center;
     max-width: 940px;
 }
-
+*/
 header {
     padding: 20px;
     font-weight: bold;
