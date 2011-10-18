@@ -100,7 +100,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     ok(html.length, "with wait template specified, wait text is loaded");
   });
 
-  test("renderError does what it is meant to", function() {
+  test("renderError renders an error message", function() {
     controller = el.page({
       waitTemplate: waitTemplate,
       waitVars: {
@@ -109,13 +109,37 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
       }
     }).controller();
    
-    el.page("renderError", {
+    controller.renderError({
       title: "error title",
       message: "error message"
     });
 
     var html = el.find("#error .contents").html();
+    // XXX underpowered test, we don't actually check the contents.
     ok(html.length, "with error template specified, error text is loaded");
+  });
+
+  test("getErrorDialog gets a function that can be used to render an error message", function() {
+    controller = el.page({
+      waitTemplate: waitTemplate,
+      waitVars: {
+        title: "Test title",
+        message: "Test message"
+      }
+    }).controller();
+   
+    var func = controller.getErrorDialog({
+      title: "error title",
+      message: "error message"
+    });
+
+    equal(typeof func, "function", "a function was returned from getErrorDialog");
+    func();
+
+    var html = el.find("#error .contents").html();
+    // XXX underpowered test, we don't actually check the contents.
+    ok(html.length, "when function is run, error text is loaded");
+
   });
 
 });

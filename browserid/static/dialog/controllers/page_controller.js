@@ -134,16 +134,6 @@
     },
 
     /**
-     * Immediately show the error dialog
-     * @method errorDialog
-     * @param {object} info - info to use for the error dialog.  Should have 
-     * two fields, message, description.
-     */
-    errorDialog: function(info) {
-      this.renderError({title: info.message, message: info.description});
-    },
-
-    /**
      * Get a curried function to an error dialog.
      * @method getErrorDialog
      * @method {object} info - info to use for the error dialog.  Should have 
@@ -151,7 +141,7 @@
      */
     getErrorDialog: function(info) {
       var self=this;
-      return self.errorDialog.bind(self, info);
+      return self.renderError.bind(self, info);
     },
 
     onCancel: function(event) {
