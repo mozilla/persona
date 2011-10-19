@@ -87,6 +87,7 @@
           else {
             $('#registeredEmail').html(email);
             showNotice(".alreadyRegistered");
+            window.localStorage.signInEmail = email;
           }
         }, onFailure);
       });
