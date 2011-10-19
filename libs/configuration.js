@@ -109,6 +109,11 @@ g_configs.local =  {
   certificate_validity_ms: g_configs.production.certificate_validity_ms
 };
 
+if (undefined !== process.env['NODE_EXTRA_CONFIG']) {
+  var fs = require('fs');
+  eval(fs.readFileSync(process.env['NODE_EXTRA_CONFIG']) + '');
+}
+
 Object.keys(g_configs).forEach(function(config) {
   if (!g_configs[config].smtp) {
     g_configs[config].smtp = {
