@@ -40,7 +40,8 @@
   var ANIMATION_TIME = 250,
       bid = BrowserID,
       user = bid.User,
-      validation = bid.Validation;
+      validation = bid.Validation,
+      lastEmail = "";
 
   function checkEmail(el, event) {
     var email = $("#email").val(),
@@ -48,12 +49,12 @@
 
     cancelEvent(event);
 
-    if(!validation.email(email)) {
+    if (!validation.email(email)) {
       return;
     }
 
     user.isEmailRegistered(email, function onComplete(registered) {
-      if(registered) {
+      if (registered) {
         enterPasswordState.call(self);
       }
       else {
@@ -68,12 +69,12 @@
 
     cancelEvent(event);
 
-    if(!validation.email(email)) {
+    if (!validation.email(email)) {
       return;
     }
 
     user.createUser(email, function(keypair) {
-      if(keypair) {
+      if (keypair) {
         self.close("user_staged", {
           email: email,
           keypair: keypair
@@ -92,7 +93,7 @@
 
     cancelEvent(event);
 
-    if(!validation.emailAndPassword(email, pass)) {
+    if (!validation.emailAndPassword(email, pass)) {
       return;
     }
 
@@ -145,7 +146,7 @@
   }
 
   function enterEmailState(el, event) {
-    if(event && event.which === 13) {
+    if (event && event.which === 13) {
       // Enter key, do nothing
       return;
     }
@@ -204,20 +205,18 @@
       this.submit = checkEmail;
       // If we already have an email address, check if it is valid, if so, show 
       // password.
-      if(options.email) {
+      if (options.email) {
         this.submit();
       }
     },
 
     "#email keyup": function(el, event) {
-      // Fixes a bug in IE9 that does not pick up the input event on 
-      // a backspace.
-      if(event.which === 8) {
+      var newEmail = el.val();
+      if (newEmail !== lastEmail) {
+        lastEmail = newEmail;
         enterEmailState.call(this, el);
       }
     },
-    // This is part of the HTML5 spec
-    "#email input": enterEmailState,
     "#forgotPassword click": forgotPasswordState,
     "#cancel_forgot_password click": cancelForgotPassword
   });
