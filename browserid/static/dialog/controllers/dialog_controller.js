@@ -210,7 +210,7 @@
         user.checkAuthenticationAndSync(function onSuccess() {}, 
           function onComplete(authenticated) {
             if (authenticated) {
-                self.doPickEmail();
+              self.doPickEmail();
             } else {
               self.doAuthenticate();
             }

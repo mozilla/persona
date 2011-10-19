@@ -38,7 +38,7 @@
   "use strict";
 
   var bid = BrowserID,
-      network = bid.Network,
+      user = bid.User,
       validation = bid.Validation;
 
   function prefillEmail() {
@@ -66,7 +66,7 @@
       var valid = validation.emailAndPassword(email, password);
 
       if (valid) {
-        network.authenticate(email, password, function onSuccess(authenticated) {
+        user.authenticate(email, password, function onSuccess(authenticated) {
           if (authenticated) {
             document.location = "/";
           }

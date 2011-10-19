@@ -97,12 +97,7 @@
       return;
     }
 
-    user.authenticateAndSync(email, pass, 
-      function onAuthenticate(authenticated) {
-        if (authenticated) {
-          self.doWait(bid.Wait.authentication);
-        } 
-      },
+    user.authenticate(email, pass, 
       function onComplete(authenticated) {
         if (authenticated) {
           self.close("authenticated", {
