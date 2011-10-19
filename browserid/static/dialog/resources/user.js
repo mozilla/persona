@@ -403,33 +403,18 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Authenticate the user with the given email and password, if 
-     * authentication successful, sync addresses with server.
-     * @method authenticateAndSync
+     * Authenticate the user with the given email and password.
+     * @method authenticate
      * @param {string} email - Email address to authenticate.
      * @param {string} password - Password.
-     * @param {function} [onSuccess] - Called whenever authentication succeeds 
-     * but before sync starts.  Useful for displaying status messages about the 
-     * sync taking a moment.
      * @param {function} [onComplete] - Called on sync completion.
      * @param {function} [onFailure] - Called on failure.
      */
-    authenticateAndSync: function(email, password, onSuccess, onComplete, onFailure) {
+    authenticate: function(email, password, onComplete, onFailure) {
       var self=this;
       network.authenticate(email, password, function(authenticated) {
         setAuthenticationStatus(authenticated);
-        if (authenticated) {
-          if (onSuccess) {
-            onSuccess(authenticated);
-          }
-
-          self.syncEmails(function() {
-            if (onComplete) {
-              onComplete(authenticated);
-            }
-          }, onFailure);
-        } else if (onComplete) {
-          // If not authenticated, we have to complete still.
+        if (onComplete) {
           onComplete(authenticated);
         }
       }, onFailure);

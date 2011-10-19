@@ -329,9 +329,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
 
-  test("authenticateAndSync with valid credentials", function() {
-    lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
-    }, function(authenticated) {
+  test("authenticate with valid credentials", function() {
+    lib.authenticate("testuser@testuser.com", "testuser", function(authenticated) {
       equal(true, authenticated, "we are authenticated!");
       start();
     }, failure("Authentication failure"));
@@ -342,11 +341,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
 
-  test("authenticateAndSync with invalid credentials", function() {
+  test("authenticate with invalid credentials", function() {
     credentialsValid = false;
-    lib.authenticateAndSync("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
-      ok(false, "This should not be called on authentication failure");
-    }, function onComplete(authenticated) {
+    lib.authenticate("testuser@testuser.com", "testuser", function onComplete(authenticated) {
       equal(false, authenticated, "invalid authentication.");
       start();
     }, failure("Authentication failure"));
@@ -405,40 +402,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
     stop();
   });
-
-
-  test("authenticateAndSync with valid authentication", function() {
-    credentialsValid = true;
-    keyRefresh = ["testuser@testuser.com"]; 
-
-    lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
-    }, function(authenticated) {
-      var identities = lib.getStoredEmailKeypairs();
-      ok("testuser@testuser.com" in identities, "authenticateAndSync syncs email addresses");
-      ok(authenticated, "we are authenticated")
-      start();
-    });
-
-    stop();
-  });
-
-
-
-  test("authenticateAndSync with invalid authentication", function() {
-    credentialsValid = false;
-    keyRefresh = ["testuser@testuser.com"]; 
-
-    lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
-    }, function(authenticated) {
-      var identities = lib.getStoredEmailKeypairs();
-      equal("testuser@testuser.com" in identities, false, "authenticateAndSync does not sync if authentication is invalid");
-      equal(authenticated, false, "not authenticated");
-      start();
-    });
-
-    stop();
-  });
-
 
   test("isEmailRegistered with registered email", function() {
     lib.isEmailRegistered("registered", function(registered) {
@@ -652,6 +615,19 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  test("syncEmails with one to refresh", function() {
+    storage.addEmail("testuser@testuser.com", {pub: pubkey, cert: random_cert});
+    keyRefresh = ["testuser@testuser.com"]; 
+
+    lib.syncEmails(function onSuccess() {
+      var identities = lib.getStoredEmailKeypairs();
+      ok("testuser@testuser.com" in identities, "refreshed key is synced");
+      start();
+    }, failure("identity sync failure"));
+
+    stop();
+  });
+
 
   test("getAssertion with known email that has key", function() {
     lib.syncEmailKeypair("testuser@testuser.com", function() {
@@ -691,19 +667,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     credentialsValid = true;
     keyRefresh = ["testuser@testuser.com"]; 
 
-    lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
-    }, function(authenticated) {
-      var storedIdentities = storage.getEmails();
-      equal(_.size(storedIdentities), 1, "one identity");
+    lib.authenticate("testuser@testuser.com", "testuser", function(authenticated) {
+      lib.syncEmails(function() {
+        var storedIdentities = storage.getEmails();
+        equal(_.size(storedIdentities), 1, "one identity");
 
-      lib.logoutUser(function() {
-        storedIdentities = storage.getEmails();
-        equal(_.size(storedIdentities), 0, "All items have been removed on logout");
+        lib.logoutUser(function() {
+          storedIdentities = storage.getEmails();
+          equal(_.size(storedIdentities), 0, "All items have been removed on logout");
 
-        equal(credentialsValid, false, "credentials were invalidated in logout");
-        start();
-      });
-    });
+          equal(credentialsValid, false, "credentials were invalidated in logout");
+          start();
+        }, failure("logoutUser failure"));
+      }, failure("syncEmails failure"));
+    }, failure("authenticate failure"));
 
     stop();
   });
