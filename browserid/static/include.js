@@ -598,17 +598,6 @@
     var postMessage = !!window.postMessage;
     var json = true;
 
-    if(window.JSON) {
-      // If there is no native JSON support, we use Crockford's JSON2 library.
-      try {
-        // Android < 3 blows up on this.
-        JSON.parse(null);
-      }
-      catch(e) {
-        json = false;
-      }
-    }
-
     var explicitNo = explicitNosupport()
 
     if(!explicitNo && !(localStorage && postMessage && json)) {
