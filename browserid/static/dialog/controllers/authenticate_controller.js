@@ -209,7 +209,9 @@
       }
     },
 
-    "#email keyup": enterEmailState,
+    // The next two events are part of the HTML5 spec
+    "#email propertychange": enterEmailState,
+    "#email input": enterEmailState,
     "#forgotPassword click": forgotPasswordState,
     "#cancel_forgot_password click": cancelForgotPassword
   });
