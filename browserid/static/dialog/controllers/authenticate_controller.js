@@ -209,8 +209,14 @@
       }
     },
 
-    // The next two events are part of the HTML5 spec
-    "#email propertychange": enterEmailState,
+    "#email keyup": function(el, event) {
+      // Fixes a bug in IE9 that does not pick up the input event on 
+      // a backspace.
+      if(event.which === 8) {
+        enterEmailState.call(this, el);
+      }
+    },
+    // This is part of the HTML5 spec
     "#email input": enterEmailState,
     "#forgotPassword click": forgotPasswordState,
     "#cancel_forgot_password click": cancelForgotPassword
