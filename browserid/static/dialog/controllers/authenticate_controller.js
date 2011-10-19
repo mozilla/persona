@@ -40,6 +40,7 @@
   var ANIMATION_TIME = 250,
       bid = BrowserID,
       user = bid.User,
+      network = bid.Network,
       validation = bid.Validation,
       lastEmail = "";
 
@@ -97,12 +98,7 @@
       return;
     }
 
-    user.authenticateAndSync(email, pass, 
-      function onAuthenticate(authenticated) {
-        if (authenticated) {
-          self.doWait(bid.Wait.authentication);
-        } 
-      },
+    network.authenticate(email, pass, 
       function onComplete(authenticated) {
         if (authenticated) {
           self.close("authenticated", {
