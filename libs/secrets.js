@@ -57,6 +57,8 @@ exports.hydrateSecret = function(name, dir) {
 
   if (secret === undefined) {
     secret = exports.generate(128);
+    fs.writeFileSync(p, '');
+    fs.chmodSync(p, 0600);
     fs.writeFileSync(p, secret);
   }
   return secret;
