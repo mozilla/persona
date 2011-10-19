@@ -89,16 +89,19 @@
 
     renderDialog: function(body, body_vars) {
       this.renderTemplates("#formWrap", body, body_vars);
-      $("#wait").stop().fadeOut(ANIMATION_TIME);
+      $("body").removeClass("error").removeClass("waiting").addClass("form");
+      $("#wait, #error").stop().fadeOut(ANIMATION_TIME);
     },
 
     renderWait: function(body, body_vars) {
       this.renderTemplates("#wait", body, body_vars);
+      $("body").removeClass("error").removeClass("form").addClass("waiting");
       $("#wait").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
     },
 
     renderError: function(error_vars) {
       this.renderTemplates("#error", "wait.ejs", error_vars);
+      $("body").removeClass("waiting").removeClass("form").addClass("error");
       $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
     },
 
