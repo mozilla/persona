@@ -219,6 +219,19 @@ exports.setup = function(server) {
     }
   });
 
+  // verify all JSON responses are objects - prevents regression on issue #217
+  server.use(function(req, resp, next) {
+    var realRespJSON = resp.json;
+    resp.json = function(obj) {
+      if (!obj || typeof obj !== 'object') {
+        logger.error("INTERNAL ERROR!  *all* json responses must be objects");
+        throw "internal error";
+      }
+      realRespJSON.call(resp, obj);
+    };
+    return next();
+  });
+
   server.use(express.bodyParser());
 
   // Check CSRF token early.  POST requests are only allowed to

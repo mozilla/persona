@@ -48,6 +48,10 @@ exports.clearCookies = function() {
   wcli.clearCookies(context);
 };
 
+exports.injectCookies = function(cookies) {
+  wcli.injectCookies({cookieJar: cookies}, context);
+};
+
 exports.get = function (path, getArgs) {
   return function () {
     wcli.get(configuration, path, context, getArgs, this.callback);

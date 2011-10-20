@@ -125,7 +125,7 @@ BrowserID.Network = (function() {
         success: function(status, textStatus, jqXHR) {
           if (onSuccess) {
             try {
-              var authenticated = JSON.parse(status);
+              var authenticated = status.success;
 
               if (typeof authenticated !== 'boolean') throw status;
 
@@ -197,7 +197,7 @@ BrowserID.Network = (function() {
           site : origin
         },
         success: function(status) {
-          var staged = JSON.parse(status);
+          var staged = status.success;
           // why a delay here? Because of the test harness?
           // shouldn't the delay be in the test harness?
           _.delay(onSuccess, 0, staged);
@@ -233,7 +233,11 @@ BrowserID.Network = (function() {
     checkUserRegistration: function(email, onSuccess, onFailure) {
       xhr.ajax({
         url: "/wsapi/user_creation_status?email=" + encodeURIComponent(email),
-        success: createDeferred(onSuccess),
+        success: function(status, textStatus, jqXHR) {
+          if (onSuccess) {
+            _.delay(onSuccess, 0, status.status);
+          }
+        },
         error: onFailure
       });
     },
@@ -255,8 +259,7 @@ BrowserID.Network = (function() {
         },
         success: function(status, textStatus, jqXHR) {
           if (onSuccess) {
-            var valid = JSON.parse(status);
-            _.delay(onSuccess, 0, valid);
+            _.delay(onSuccess, 0, status.success);
           }
         },
         error: onFailure
@@ -325,8 +328,7 @@ BrowserID.Network = (function() {
         },
         success: function(status, textStatus, jqXHR) {
           if (onSuccess) {
-            var valid = JSON.parse(status);
-            _.delay(onSuccess, 0, valid);
+            _.delay(onSuccess, 0, status.success);
           }
         },
         error: onFailure
@@ -363,7 +365,7 @@ BrowserID.Network = (function() {
           site: origin
         },
         success: function(status) {
-          var staged = JSON.parse(status);
+          var staged = status.success;
           _.delay(onSuccess, 0, staged);
         },
         error: onFailure
@@ -380,7 +382,11 @@ BrowserID.Network = (function() {
     checkEmailRegistration: function(email, onSuccess, onFailure) {
       xhr.ajax({
         url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
-        success: createDeferred(onSuccess),
+        success: function(status, textStatus, jqXHR) {
+          if (onSuccess) {
+            _.delay(onSuccess, 0, status.status);
+          }
+        },
         error: onFailure
       });
     },
@@ -399,8 +405,7 @@ BrowserID.Network = (function() {
         url: "/wsapi/have_email?email=" + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
           if(onSuccess) {
-            var success = typeof data === "string" ? !JSON.parse(data) : data;
-            _.delay(onSuccess, 0, success);
+            _.delay(onSuccess, 0, data.email_known);
           }
         },
         error: onFailure
@@ -420,7 +425,11 @@ BrowserID.Network = (function() {
         data: {
           email: email
         },
-        success: createDeferred(onSuccess),
+        success: function(status, textStatus, jqXHR) {
+          if (onSuccess) {
+            _.delay(onSuccess, 0, status.success);
+          }
+        },
         failure: onFailure
       });
     },

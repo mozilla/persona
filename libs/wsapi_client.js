@@ -74,6 +74,8 @@ exports.clearCookies = function(ctx) {
   if (ctx && ctx.csrf) delete ctx.csrf;
 };
 
+exports.injectCookies = injectCookies;
+
 exports.get = function(cfg, path, context, getArgs, cb) {
   // parse the server URL (cfg.browserid)
   var uObj;

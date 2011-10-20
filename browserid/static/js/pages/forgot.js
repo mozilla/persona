@@ -53,7 +53,7 @@ BrowserID.forgot = (function() {
         return false;
       }
 
-      BrowserID.Identities.createUser(email, function onSuccess(keypair) {
+      BrowserID.User.createUser(email, function onSuccess(keypair) {
         $('#sent_to_email').html(email);
         $('#forminputs').fadeOut();
         $(".notifications .notification.emailsent").fadeIn();

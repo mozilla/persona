@@ -108,10 +108,13 @@ exports.report = function(type, entry) {
 
 // utility function to log a bunch of stuff at user entry point
 exports.userEntry = function(req) {
+  var ipAddress = req.connection.remoteAddress;
+  if (req.headers['x-real-ip']) ipAddress = req.headers['x-real-ip'];
+
   exports.report('signin', {
     browser: req.headers['user-agent'],
     rp: req.headers['referer'],
     // IP address (this probably needs to be replaced with the X-forwarded-for value
-    ip: req.connection.remoteAddress
+    ip: ipAddress
   });
 };

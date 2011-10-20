@@ -37,7 +37,7 @@
 (function() {
   "use strict";
 
-  var identities = BrowserID.Identities;
+  var user = BrowserID.User;
 
   PageController.extend("Checkregistration", {}, {
     init: function(el, options) {
@@ -56,14 +56,14 @@
 
     setupRegCheck: function() {
       var me=this;
-      identities[me.verifier](me.email, function(status) {
+      user[me.verifier](me.email, function(status) {
         if (status === "complete") {
-          identities.syncEmails(function() {
+          user.syncEmails(function() {
             me.close(me.verificationMessage);
           });
         }
         else if (status === "mustAuth") {
-          me.close("auth");
+          me.close("auth", { email: me.email });
         }
       }, me.getErrorDialog(BrowserID.Errors.registration));
     }

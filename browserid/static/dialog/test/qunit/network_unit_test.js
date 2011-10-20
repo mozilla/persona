@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-network", function() {
+steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", function() {
   "use strict";
 
   var testName;
@@ -42,7 +42,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   function wrappedAsyncTest(name, test) {
     asyncTest(name, function() {
       testName = name;
-      test(); 
+      test();
     });
   }
 
@@ -56,38 +56,36 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
         server_time: new Date().getTime(),
         csrf_token: "csrf",
         authenticated: false
-      }; 
+      };
 
 
   var xhr = {
     results: {
       "get /wsapi/session_context valid": contextInfo,
       "get /wsapi/session_context invalid": contextInfo,
-      "post /wsapi/authenticate_user valid": "true",  
-      "post /wsapi/authenticate_user invalid": "false",
-      "get /wsapi/am_authed valid": "true",
-      "get /wsapi/am_authed invalid": "false",
-      "post /wsapi/complete_email_addition valid": "true",
-      "post /wsapi/complete_email_addition invalid": "false",
-      "post /wsapi/stage_user valid": "true",
-      "post /wsapi/stage_user invalid": "false",
+      "post /wsapi/authenticate_user valid": { success: true },
+      "post /wsapi/authenticate_user invalid": { success: false },
+      "post /wsapi/complete_email_addition valid": { success: true },
+      "post /wsapi/complete_email_addition invalid": { success: false },
+      "post /wsapi/stage_user valid": { success: true },
+      "post /wsapi/stage_user invalid": { success: false },
       "get /wsapi/user_creation_status?email=address notcreated": undefined, // undefined because server returns 400 error
-      "get /wsapi/user_creation_status?email=address pending": "pending",
-      "get /wsapi/user_creation_status?email=address complete": "complete",
-      "post /wsapi/complete_user_creation valid": "true",
-      "post /wsapi/complete_user_creation invalid": "false",
-      "post /wsapi/logout valid": "true",
-      "get /wsapi/have_email?email=address taken": "false",
-      "get /wsapi/have_email?email=address nottaken" : "true",
-      "post /wsapi/remove_email valid": "true",
-      "post /wsapi/remove_email invalid": "false",
-      "post /wsapi/account_cancel valid": "true",
-      "post /wsapi/account_cancel invalid": "false",
-      "post /wsapi/stage_email valid": "true",
-      "post /wsapi/stage_email invalid": "false",
+      "get /wsapi/user_creation_status?email=address pending": { status: "pending" },
+      "get /wsapi/user_creation_status?email=address complete": { status: "complete" },
+      "post /wsapi/complete_user_creation valid": { success: true },
+      "post /wsapi/complete_user_creation invalid": { success: false },
+      "post /wsapi/logout valid": { success: true },
+      "get /wsapi/have_email?email=address taken": { email_known: true },
+      "get /wsapi/have_email?email=address nottaken" : { email_known: false },
+      "post /wsapi/remove_email valid": { success: true },
+      "post /wsapi/remove_email invalid": { success: false },
+      "post /wsapi/account_cancel valid": { success: true },
+      "post /wsapi/account_cancel invalid": { success: false },
+      "post /wsapi/stage_email valid": { success: true },
+      "post /wsapi/stage_email invalid": { success: false },
       "get /wsapi/email_addition_status?email=address notcreated": undefined, // undefined because server returns 400 error
-      "get /wsapi/email_addition_status?email=address pending": "pending",
-      "get /wsapi/email_addition_status?email=address complete": "complete",
+      "get /wsapi/email_addition_status?email=address pending": { status: "pending" },
+      "get /wsapi/email_addition_status?email=address complete": { status: "complete" },
     },
 
     useResult: function(result) {
@@ -130,7 +128,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid-netw
   }
 
 
-  module("browserid-network", {
+  module("network", {
     setup: function() {
       network.setXHR(xhr);
       xhr.useResult("valid");

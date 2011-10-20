@@ -84,7 +84,7 @@ suite.addBatch({
     },
     "works": function(r, err) {
       assert.equal(r.code, 200);
-      assert.strictEqual(true, JSON.parse(r.body));
+      assert.strictEqual(true, JSON.parse(r.body).success);
     }
   }
 });

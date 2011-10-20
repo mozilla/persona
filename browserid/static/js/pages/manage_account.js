@@ -1,4 +1,4 @@
-/*globals BrowserID:true, _: true, confirm: true, syncAndDisplayEmails: true, displayEmails: true, onRemoveEmail: true*/
+/*globals BrowserID:true, _: true, confirm: true, displayEmails: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -36,6 +36,8 @@
 
 (function() {
   "use strict";
+
+  var User = BrowserID.User;
 
   function relativeDate(date) {
     var diff = (((new Date()).getTime() - date.getTime()) / 1000),
@@ -122,8 +124,8 @@
   function syncAndDisplayEmails() {
     var emails = {};
 
-    BrowserID.Identities.syncEmails(function() {
-      emails = BrowserID.Identities.getStoredEmailKeypairs();
+    User.syncEmails(function() {
+      emails = User.getStoredEmailKeypairs();
       if (_.isEmpty(emails)) {
         $("#content").hide();
       } else {
@@ -132,6 +134,25 @@
         displayEmails(emails);
       }
     });
+  }
+
+  function onRemoveEmail(email, event) {
+    event.preventDefault();
+
+    var emails = User.getStoredEmailKeypairs();
+
+    if (_.size(emails) > 1) {
+      if (confirm("Remove " + email + " from your BrowserID?")) {
+        User.removeEmail(email, syncAndDisplayEmails);
+      }
+    }
+    else {
+      if (confirm('Removing the last address will cancel your BrowserID account,\nare you sure you want to continute?')) {
+        User.cancelUser(function() {
+          document.location="/";
+        });
+      }
+    }
   }
 
   function displayEmails(emails) {
@@ -159,18 +180,11 @@
 
   }
 
-  function onRemoveEmail(email, event) {
-    event.preventDefault();
-
-    if (confirm("Remove " + email + " from your BrowserID?")) {
-      BrowserID.Identities.removeEmail(email, syncAndDisplayEmails);
-    }
-  }
-
   BrowserID.manageAccount = function() {
-    $('#cancellink').click(function() {
-      if (confirm('Are you sure you want to cancel your account?')) {
-        BrowserID.Network.cancelUser(function() {
+    $('#cancelAccount').click(function(event) {
+      event.preventDefault();
+      if (confirm('Are you sure you want to cancel your BrowserID account?')) {
+        User.cancelUser(function() {
           document.location="/";
         });
       }

@@ -1,14 +1,32 @@
+train-2011.10.13:
+  * fix verification of email in different browser than where verification is initiated: #336
+  * Android < 3.0 (browsers that can't handle JSON.parse("null")) now blocked explicitly (until we complete support)
+  * textual fixes to about page: #350
+  * 'cancel account' link added to manage page: #405
+  * warn user that removing last email address effectively cancels account: #394, #404, #137
+  * fixed signing dialog hang when you delete an email on manage page while dialog is open (now that's not obscure :P): #401
+  * Optimize UI in case where user has only 1 email address: #412
+  * smooth out transition from pick email to add new email pages: #410
+  * reposition remove buttons on manage page: #409
+  * identity and labs links open in new tabs: #380
+  * fix innocuous (but ugly) error in firefox error console: #390
+  * implement dynamic bcrypt work factor update: #204
+  * default work factor is now at 12 (NOTE: [re]authentication now takes 6x longer - ~600ms on our current hardware): #212
+  * many test fixes, and code refactoring, cleanup, and reorganization
+  * accept SMTP parameters from the environment: #214 (not yet closed)
+  * WSAPI CHANGES (https://github.com/mozilla/browserid/commit/511b56): all server responses are now objects: #217, #325
+
 train-2011.10.06:
   * full site & dialog redesign: (many, many closed issues are related to this, including #269, #343, #342, #347, #354, #356, #357, #350, #349, #364, #346, #336)
   * improved debugging, all network callbacks are invoked asynchronously: #276
-  * MYSQL SCHEMA CHANGE: passwd field no longer in staged table (password is now set after verfiy link clickthrough)
+  * MYSQL SCHEMA CHANGE: passwd field no longer in staged table (password is now set after verify link clickthrough)
   * MYSQL SCHEMA CHANGE: add index to emails table: #209
   * WSAPI CHANGES (to support new UI): https://github.com/mozilla/browserid/commit/b6ee51
   * WSAPI CHANGES: a mis-set client clock no longer causes invalid assertions to be issued (wsapi changed to minimize network requests): #329
   * disallow re-registration of existing account: #333
   * (non-visible) namespacing in dialog code: #275
   * API BREAKING CHANGE: verifier no longer supports GET requests: #98
-  * significant performance / UX improvment - keys are generated and certified when needed, not all upfront at sign-in: #278
+  * significant performance / UX improvement - keys are generated and certified when needed, not all upfront at sign-in: #278
   * remove 'download printable format' language from privacy policy: #280
   * faster keygen via crypto optimizations: https://github.com/mozilla/browserid/commit/778433
   * improvements to mobile layout & usability (specific to the new UI)
@@ -33,7 +51,7 @@ train-2011.09.22:
   * improved first-time development experience:  `git clone && cd browserid && npm install && npm run`
   * initial support for running locally under virtualbox via vagrant: issue #261 (thanks ozten!)
   * (fix 2011.09.23) fix race condition between relay iframe and window introduced with IE9 support.  issue #287
-  * (fix 2011.09.23) fix blank popup on second sigin invocation in same session in FFX:  issue #286
+  * (fix 2011.09.23) fix blank popup on second signin invocation in same session in FFX:  issue #286
   * (fix 2011.09.23) explicitly disable caching for /wsapi calls, prevents unwanted caching of CSRF and friends. issue #294
 
 train-2011.09.01:

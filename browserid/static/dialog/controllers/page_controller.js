@@ -37,8 +37,7 @@
 (function() {
 "use strict";
 
-  var bid = BrowserID,  
-      identities = bid.Identities;
+  var ANIMATION_TIME = 250;
 
 
   $.Controller.extend("PageController", {
@@ -71,12 +70,13 @@
     },
 
     renderTemplates: function(body, body_vars) {
-      $("body").removeClass("waiting");
 
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
-        $("#dialog").html(bodyHtml).hide().fadeIn(300, function() {
-          $("#dialog input").eq(0).focus(); 
+        var form = $("#formWrap > form");
+        form.html(bodyHtml).hide().fadeIn(ANIMATION_TIME, function() {
+          $("body").removeClass("waiting");
+          form.find("input").eq(0).focus(); 
         });
       }
     },
@@ -119,14 +119,14 @@
      * two fields, message, description.
      */
     errorDialog: function(info) {
-      $("#dialog").hide();
+      $("form").hide();
 
       $("#error_dialog .title").text(info.message);
       $("#error_dialog .content").text(info.description);
 
       $("body").removeClass("authenticated").addClass("error");
 
-      $("#error_dialog").fadeIn(500);
+      $("#error_dialog").fadeIn(ANIMATION_TIME);
     },
 
     /**

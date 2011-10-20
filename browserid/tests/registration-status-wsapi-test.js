@@ -70,7 +70,7 @@ suite.addBatch({
   "authentication as an unknown user": {
     topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
     "fails": function (r, err) {
-      assert.isFalse(JSON.parse(r.body));
+      assert.isFalse(JSON.parse(r.body).success);
     }
   }
 });
@@ -117,7 +117,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns a json encoded string - `pending`": function (r, err) {
-      assert.strictEqual(JSON.parse(r.body), "pending");
+      assert.strictEqual(JSON.parse(r.body).status, "pending");
     }
   }
 });
@@ -140,7 +140,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns a json encoded string - `complete`": function (r, err) {
-      assert.strictEqual(JSON.parse(r.body), "complete");
+      assert.strictEqual(JSON.parse(r.body).status, "complete");
     }
   }
 });
@@ -152,7 +152,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "and still returns a json encoded string - `complete`": function (r, err) {
-      assert.strictEqual(JSON.parse(r.body), "complete");
+      assert.strictEqual(JSON.parse(r.body).status, "complete");
     }
   }
 });
@@ -199,7 +199,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns a json encoded string - `pending`": function (r, err) {
-      assert.strictEqual(JSON.parse(r.body), "pending");
+      assert.strictEqual(JSON.parse(r.body).status, "pending");
     }
   }
 });
@@ -222,7 +222,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns a json encoded string - `complete`": function (r, err) {
-      assert.strictEqual(JSON.parse(r.body), "complete");
+      assert.strictEqual(JSON.parse(r.body).status, "complete");
     }
   }
 });
@@ -240,7 +240,7 @@ suite.addBatch({
   "after re-registration, authenticating with new credetials": {
     topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
     "works as you might expect": function (r, err) {
-      assert.strictEqual(true, JSON.parse(r.body));
+      assert.strictEqual(JSON.parse(r.body).success, true);
     }
   }
 });

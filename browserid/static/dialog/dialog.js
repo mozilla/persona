@@ -54,10 +54,10 @@ steal.plugins(
                'tooltip',
                'validation',
                'browserid-extensions',
-               'browserid-network',
-               'browserid-identities',
-               'browserid-errors',
-               'browserid-wait')					// 3rd party script's (like jQueryUI), in resources folder
+               'network',
+               'user',
+               'error-messages',
+               'wait-messages')					// 3rd party script's (like jQueryUI), in resources folder
 
 	.controllers('page',
                'dialog',

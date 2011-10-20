@@ -41,67 +41,58 @@ const assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-email = require('../lib/email.js');
+wcli = require('../../libs/wsapi_client');
+email = require('../lib/email.js'),
+ca = require('../lib/ca.js'),
+jwcert = require('jwcrypto/jwcert'),
+jwk = require('jwcrypto/jwk'),
+jws = require('jwcrypto/jws');
 
-var suite = vows.describe('forgotten-email');
+var suite = vows.describe('cookie-session-security');
 
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
 start_stop.addStartupBatches(suite);
 
-// ever time a new token is sent out, let's update the global
-// var 'token'
-var token = undefined;
-email.setInterceptor(function(email, site, secret) { token = secret; });
+var first_cookie, second_cookie;
 
-// create a new account via the api with (first address)
+// certify a key
 suite.addBatch({
-  "stage an account": {
-    topic: wsapi.post('/wsapi/stage_user', {
-      email: 'syncer@somehost.com',
-      site:'fakesite.com'
-    }),
-    "yields a sane token": function(r, err) {
-      assert.strictEqual(typeof token, 'string');
-    }
-  }
-});
-
-suite.addBatch({
-  "verifying account ownership": {
-    topic: function() {
-      wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'fakepass' }).call(this);
+  "get context": {
+    topic: wsapi.get('/wsapi/session_context'),
+    "parses" : function(r, err) {
+      // make sure there's a cookie
+      var cookie = r.headers["set-cookie"];
+      assert.isNotNull(cookie);
+      assert.isNotNull(cookie[0]);
+      first_cookie = cookie[0];
     },
-    "works": function(r, err) {
-      assert.equal(r.code, 200);
-      assert.strictEqual(JSON.parse(r.body).success, true);
-    }
-  }
-});
-
-suite.addBatch({
-  "calling user_creation_status after a creation is complete": {
-    topic: wsapi.get("/wsapi/user_creation_status", { email: 'syncer@somehost.com' }),
-    "yields a HTTP 200": function (r, err) {
-      assert.strictEqual(r.code, 200);
+    "with nothing": {
+      topic: wsapi.get('/wsapi/session_context'),
+      "still the same": function(r, err) {
+        var cookie = r.headers["set-cookie"];
+        assert.equal(first_cookie, cookie[0]);
+      }
     },
-    "returns a json encoded string - `complete`": function (r, err) {
-      assert.strictEqual(JSON.parse(r.body).status, "complete");
-    }
-  }
-});
+    "let's screw it up": {
+      topic: function() {
+        wsapi.clearCookies();
 
-suite.addBatch({
-  "list emails API": {
-    topic: wsapi.get('/wsapi/list_emails', {}),
-    "succeeds with HTTP 200" : function(r, err) {
-      assert.strictEqual(r.code, 200);
-    },
-    "returns an object with proper email": function(r, err) {
-      var emails = Object.keys(JSON.parse(r.body));
-      assert.equal(emails[0], "syncer@somehost.com");
-      assert.equal(emails.length, 1);
+        // mess up the cookie
+        var the_match = first_cookie.match(/browserid_state=([^;]*);/);
+        assert.isNotNull(the_match);
+        var new_cookie_val = the_match[1].substring(0, the_match[1].length - 1);
+        wsapi.injectCookies({browserid_state: new_cookie_val});
+        return "next";
+      },
+      "and then": {
+        topic: wsapi.get('/wsapi/session_context'),
+        "and result": function(r, err) {
+          var cookie = r.headers["set-cookie"];
+          assert.notEqual(first_cookie, cookie[0]);
+        }
+      }
     }
   }
 });

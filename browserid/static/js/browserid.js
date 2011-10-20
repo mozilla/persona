@@ -57,7 +57,7 @@ $(function() {
   var token = getParameterByName("token"),
       path = document.location.pathname,
       bid = BrowserID,
-      identities = bid.Identities;
+      user = bid.User;
 
   if (!path || path === "/") {
     bid.index();
@@ -85,12 +85,12 @@ $(function() {
   $(".signOut").click(function(event) {
     event.preventDefault();
 
-    identities.logoutUser(function() {
+    user.logoutUser(function() {
       document.location = "/";
     });
   });
 
-  identities.checkAuthentication(function(authenticated) {
+  user.checkAuthentication(function(authenticated) {
     if (authenticated) {
       $("#content").fadeIn("slow");
       if ($('#emailList').length) {

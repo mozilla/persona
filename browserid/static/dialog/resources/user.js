@@ -35,12 +35,13 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-BrowserID.Identities = (function() {
+BrowserID.User = (function() {
   "use strict";
 
   var jwk, jwt, vep, jwcert, origin,
       network = BrowserID.Network,
-      storage = BrowserID.Storage;
+      storage = BrowserID.Storage,
+      User;
 
   function prepareDeps() {
     if (!jwk) {
@@ -93,7 +94,7 @@ BrowserID.Identities = (function() {
     $('body')[func]('authenticated');
 
     if (!authenticated) {
-      storage.clearEmails();
+      storage.clear();
     }
   }
 
@@ -119,7 +120,7 @@ BrowserID.Identities = (function() {
           setTimeout(poll, 3000);
         }
         else if (onFailure) {
-            onFailure();
+            onFailure(status);
         }
       });
     };
@@ -127,7 +128,64 @@ BrowserID.Identities = (function() {
     poll();
   }
 
-  var Identities = {
+
+  /**
+   * Certify an identity with the server, persist it to storage if the server 
+   * says the identity is good
+   * @method certifyEmailKeypair
+   */
+  function certifyEmailKeypair(email, keypair, onSuccess, onFailure) {
+    network.certKey(email, keypair.publicKey, function(cert) {
+      persistEmailKeypair(email, keypair, cert, onSuccess, onFailure);
+    }, onFailure);      
+  }
+    
+  /**
+   * Persist an email address without a keypair
+   * @method persistEmail
+   * @param {string} email - Email address to persist.
+   * @param {function} [onSuccess] - Called on successful completion. 
+   * @param {function} [onFailure] - Called on error.
+   */
+  function persistEmail(email, onSuccess, onFailure) {
+    storage.addEmail(email, {
+      created: new Date() 
+    });
+
+    if (onSuccess) {
+      onSuccess();
+    }
+  }
+
+  /** 
+   * Persist an address and key pair locally.
+   * @method persistEmailKeypair
+   * @param {string} email - Email address to persist.
+   * @param {object} keypair - Key pair to save
+   * @param {function} [onSuccess] - Called on successful completion. 
+   * @param {function} [onFailure] - Called on error.
+   */
+  function persistEmailKeypair(email, keypair, cert, onSuccess, onFailure) {
+    var now = new Date();
+    var email_obj = storage.getEmails()[email] || {
+      created: now
+    };
+
+    _.extend(email_obj, {
+      updated: now,
+      pub: keypair.publicKey.toSimpleObject(),
+      priv: keypair.secretKey.toSimpleObject(),
+      cert: cert
+    });
+
+    storage.addEmail(email, email_obj);
+
+    if (onSuccess) {
+      onSuccess();
+    }
+  }
+
+  User = {
     /**
      * Set the interface to use for networking.  Used for unit testing.
      * @method setNetwork
@@ -169,13 +227,8 @@ BrowserID.Identities = (function() {
       // remember this for later
       storage.setStagedOnBehalfOf(origin);
       
-      // FIXME: keysize
       network.createUser(email, origin, function(created) {
         if (onSuccess) {
-          if(created) {
-            self.stagedEmail = email;
-          }
-
           onSuccess(created);
         }
       }, onFailure);
@@ -183,12 +236,12 @@ BrowserID.Identities = (function() {
 
     /**
      * Poll the server until user registration is complete.
-     * @method waitForUserRegistration
+     * @method waitForUserValidation
      * @param {string} email - email address to check.
      * @param {function} [onSuccess] - Called to give status updates.
      * @param {function} [onFailure] - Called on error.
      */
-    waitForUserRegistration: function(email, onSuccess, onFailure) {
+    waitForUserValidation: function(email, onSuccess, onFailure) {
       registrationPoll(network.checkUserRegistration, email, onSuccess, onFailure);
     },
 
@@ -255,7 +308,7 @@ BrowserID.Identities = (function() {
      */
     syncEmails: function(onSuccess, onFailure) {
       cleanupIdentities();
-      var issued_identities = Identities.getStoredEmailKeypairs();
+      var issued_identities = this.getStoredEmailKeypairs();
 
       // FIXME for certs
 
@@ -294,34 +347,11 @@ BrowserID.Identities = (function() {
 
           var email = emails_to_add.shift();
 
-          self.persistEmail(email, addNextEmail, onFailure);
+          persistEmail(email, addNextEmail, onFailure);
         }
 
         addNextEmail();
       });
-    },
-
-    /**
-     * Signifies that an identity has been confirmed.
-     * @method confirmEmail
-     * @param {string} email - Email address.
-     * @param {function} [onSuccess] - Called on successful completion. 
-     * @param {function} [onFailure] - Called on error.
-     */
-    confirmEmail: function(email, onSuccess, onFailure) {
-      var self = this;
-      if (email === self.stagedEmail) {
-        self.stagedEmail = null;
-
-        // certify
-        Identities.persistEmail(email, function() {
-          self.syncEmails(onSuccess, onFailure);
-        });
-
-      }
-      else if (onFailure) {
-        onFailure();
-      }
     },
 
     /**
@@ -414,7 +444,7 @@ BrowserID.Identities = (function() {
      * otw.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    emailRegistered: function(email, onSuccess, onFailure) {
+    isEmailRegistered: function(email, onSuccess, onFailure) {
       network.emailRegistered(email, onSuccess, onFailure);
     },
 
@@ -432,8 +462,6 @@ BrowserID.Identities = (function() {
       var self = this;
       network.addEmail(email, origin, function(added) {
         if (added) {
-          self.stagedEmail = email;
-
           // we no longer send the keypair, since we will certify it later.
           if (onSuccess) {
             onSuccess(added);
@@ -442,7 +470,14 @@ BrowserID.Identities = (function() {
       }, onFailure);
     },
 
-    waitForEmailRegistration: function(email, onSuccess, onFailure) {
+    /**
+     * Wait for the email registration to complete
+     * @method waitForEmailValidation
+     * @param {string} email - email address to check.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    waitForEmailValidation: function(email, onSuccess, onFailure) {
       registrationPoll(network.checkEmailRegistration, email, onSuccess, onFailure);
     },
 
@@ -454,12 +489,16 @@ BrowserID.Identities = (function() {
      * @param {function} [onFailure] - Called on failure.
      */
     removeEmail: function(email, onSuccess, onFailure) {
-      network.removeEmail(email, function() {
-        storage.removeEmail(email);
-        if (onSuccess) {
-          onSuccess();
-        }
-      }, onFailure);
+      if(storage.getEmail(email)) {
+        network.removeEmail(email, function() {
+          storage.removeEmail(email);
+          if (onSuccess) {
+            onSuccess();
+          }
+        }, onFailure);
+      } else if(onSuccess) {
+        onSuccess();
+      }
     },
 
     /**
@@ -475,63 +514,9 @@ BrowserID.Identities = (function() {
       // FIXME use true key sizes
       prepareDeps();
       var keypair = jwk.KeyPair.generate(vep.params.algorithm, 64);
-      Identities.certifyEmailKeypair(email, keypair, onSuccess, onFailure);
+      certifyEmailKeypair(email, keypair, onSuccess, onFailure);
     },
 
-    /**
-     * Certify an identity.
-     * @method certifyEmailKeypair
-     */
-    certifyEmailKeypair: function(email, keypair, onSuccess, onFailure) {
-      network.certKey(email, keypair.publicKey, function(cert) {
-        Identities.persistEmailKeypair(email, keypair, cert, onSuccess, onFailure);
-      }, onFailure);      
-    },
-    
-    /**
-     * Persist an email address without a keypair
-     * @method persistEmail
-     * @param {string} email - Email address to persist.
-     * @param {function} [onSuccess] - Called on successful completion. 
-     * @param {function} [onFailure] - Called on error.
-     */
-    persistEmail: function(email, onSuccess, onFailure) {
-      storage.addEmail(email, {
-        created: new Date() 
-      });
-
-      if (onSuccess) {
-        onSuccess();
-      }
-    },
-
-    /** 
-     * Persist an address and key pair locally.
-     * @method persistEmailKeypair
-     * @param {string} email - Email address to persist.
-     * @param {object} keypair - Key pair to save
-     * @param {function} [onSuccess] - Called on successful completion. 
-     * @param {function} [onFailure] - Called on error.
-     */
-    persistEmailKeypair: function(email, keypair, cert, onSuccess, onFailure) {
-      var now = new Date();
-      var email_obj = storage.getEmails()[email] || {
-        created: now
-      };
-
-      _.extend(email_obj, {
-        updated: now,
-        pub: keypair.publicKey.toSimpleObject(),
-        priv: keypair.secretKey.toSimpleObject(),
-        cert: cert
-      });
-
-      storage.addEmail(email, email_obj);
-
-      if (onSuccess) {
-        onSuccess();
-      }
-    },
 
     /**
      * Get an assertion for an identity
@@ -544,17 +529,18 @@ BrowserID.Identities = (function() {
       // we use the current time from the browserid servers
       // to avoid issues with clock drift on user's machine.
       // (issue #329)
-      network.serverTime(function(serverTime) {
-        var storedID = Identities.getStoredEmailKeypairs()[email],
-        assertion;
+        var storedID = storage.getEmail(email),
+            assertion;
 
         function createAssertion(idInfo) {
-          var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
-          var tok = new jwt.JWT(null, serverTime, origin);
-          assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
-          if (onSuccess) {
-            onSuccess(assertion);
-          }
+          network.serverTime(function(serverTime) {
+            var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
+            var tok = new jwt.JWT(null, serverTime, origin);
+            assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
+            if (onSuccess) {
+              onSuccess(assertion);
+            }
+          });
         }
 
         if (storedID) {
@@ -566,15 +552,14 @@ BrowserID.Identities = (function() {
           else {
             // we have no key for this identity, go generate the key, 
             // sync it and then get the assertion recursively.
-            Identities.syncEmailKeypair(email, function() {
-              Identities.getAssertion(email, onSuccess, onFailure);
+            User.syncEmailKeypair(email, function() {
+              User.getAssertion(email, onSuccess, onFailure);
             }, onFailure);
           }
         }
         else if (onSuccess) {
           onSuccess();
         }
-      });
     },
 
     /**
@@ -587,17 +572,27 @@ BrowserID.Identities = (function() {
     },
 
     /**
+     * Get an individual stored identity.
+     * @method getStoredEmailKeypair
+     * @return {object} identity information for email, if exists, undefined 
+     * otw.
+     */
+    getStoredEmailKeypair: function(email) {
+      return storage.getEmail(email);
+    },
+
+    /**
      * Clear the list of identities stored locally.
      * @method clearStoredEmailKeypairs
      */
     clearStoredEmailKeypairs: function() {
-      storage.clearEmails();
+      storage.clear();
     },
 
 
   };
 
-  Identities.setOrigin(document.location.host);
+  User.setOrigin(document.location.host);
 
-  return Identities;
+  return User;
 }());

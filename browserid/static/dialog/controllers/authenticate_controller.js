@@ -39,7 +39,7 @@
 
   var ANIMATION_TIME = 250,
       bid = BrowserID,
-      identities = bid.Identities,
+      user = bid.User,
       validation = bid.Validation;
 
   function checkEmail(el, event) {
@@ -52,7 +52,7 @@
       return;
     }
 
-    identities.emailRegistered(email, function onComplete(registered) {
+    user.isEmailRegistered(email, function onComplete(registered) {
       if(registered) {
         enterPasswordState.call(self);
       }
@@ -72,7 +72,7 @@
       return;
     }
 
-    identities.createUser(email, function(keypair) {
+    user.createUser(email, function(keypair) {
       if(keypair) {
         self.close("user_staged", {
           email: email,
@@ -96,7 +96,7 @@
       return;
     }
 
-    identities.authenticateAndSync(email, pass, 
+    user.authenticateAndSync(email, pass, 
       function onAuthenticate(authenticated) {
         if (authenticated) {
           self.doWait(bid.Wait.authentication);
@@ -122,7 +122,7 @@
 
     cancelEvent(event);
 
-    identities.requestPasswordReset(email, function() {
+    user.requestPasswordReset(email, function() {
       self.close("reset_password", {
         email: email
       });
@@ -190,20 +190,29 @@
 
 
   PageController.extend("Authenticate", {}, {
-    init: function() {
+    init: function(el, options) {
+      options = options || {};
+
       this._super({
         bodyTemplate: "authenticate.ejs",
         bodyVars: {
-          sitename: identities.getOrigin(),
-          siteicon: '/i/times.gif'
+          sitename: user.getOrigin(),
+          siteicon: "/i/times.gif",
+          email: options.email || ""
         }
       });
+
       this.submit = checkEmail;
+      // If we already have an email address, check if it is valid, if so, show 
+      // password.
+      if(options.email) {
+        this.submit();
+      }
     },
 
     "#email keyup": enterEmailState,
     "#forgotPassword click": forgotPasswordState,
-    '#cancel_forgot_password click': cancelForgotPassword
+    "#cancel_forgot_password click": cancelForgotPassword
   });
 
 }());

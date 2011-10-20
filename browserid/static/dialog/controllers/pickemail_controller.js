@@ -39,7 +39,10 @@
 
   var ANIMATION_TIME = 250,
       bid = BrowserID,
-      identities = bid.Identities;
+      user = bid.User,
+      body = $("body"),
+      animationComplete = body.innerWidth() < 640,
+      assertion;
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
     // XXX instead of using jQuery here, think about using CSS animations.
@@ -80,40 +83,59 @@
     });
   }
 
-  function signIn(element, event) {
-    var self=this,
-        body = $("body"),
-        animationComplete = body.innerWidth() < 640,
-        assertion,
-        email = $("input[type=radio]:checked").val();
-
-
-    cancelEvent(event);
-
-    function onComplete() {
-      if(assertion && animationComplete) {
-        self.close("assertion_generated", {
-          assertion: assertion
-        });
-      }
+  function checkEmail(email) {
+    var identity = user.getStoredEmailKeypair(email);
+    if(!identity) {
+      alert("The selected email is invalid or has been deleted.");
+      this.close("assertion_generated", {
+        assertion: null
+      });
     }
 
+    return !!identity;
+  }
+
+  function tryClose() {
+    if(typeof assertion !== "undefined" && animationComplete) {
+      this.close("assertion_generated", {
+        assertion: assertion
+      });
+    }
+  }
+
+  function getAssertion(email) {
     // Kick of the assertion fetching/keypair generating while we are showing 
     // the animation, hopefully this minimizes the delay the user notices.
-    identities.getAssertion(email, function(assert) {
-      assertion = assert;
-      onComplete();
+    var self=this;
+    user.getAssertion(email, function(assert) {
+      assertion = assert || null;
+      tryClose.call(self);
     });
+  }
 
-
-    if(body.innerWidth() > 640) {
+  function startAnimation() {
+    if(!animationComplete) {
+      var self=this;
       $("#signIn").animate({"width" : "685px"}, "slow", function () {
         // post animation
          body.delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
            animationComplete = true;
-           onComplete();
+           tryClose.call(self);
          });
       }); 
+    }
+
+  }
+
+  function signIn(element, event) {
+    cancelEvent(event);
+    var self=this,
+        email = $("input[type=radio]:checked").val();
+
+    var valid = checkEmail.call(self, email);
+    if (valid) {
+      getAssertion.call(self, email);
+      startAnimation.call(self);
     }
   }
 
@@ -127,12 +149,12 @@
       return;
     }
 
-    identities.emailRegistered(email, function onComplete(registered) {
+    user.isEmailRegistered(email, function onComplete(registered) {
       if(registered) {
         bid.Tooltip.showTooltip("#already_taken");
       }
       else {
-        identities.addEmail(email, function(added) {
+        user.addEmail(email, function(added) {
           if (added) {
             self.close("email_staged", {
               email: email
@@ -154,11 +176,20 @@
       this._super({
         bodyTemplate: "pickemail.ejs",
         bodyVars: {
-          sitename: identities.getOrigin(),
+          sitename: user.getOrigin(),
           siteicon: '/i/times.gif',
-          identities: identities.getStoredEmailKeypairs(),
+          identities: user.getStoredEmailKeypairs(),
         }
       });
+
+      $("body").css("opacity", "1");
+
+      if($("#selectEmail input[type=radio]:visible").length === 0) {
+        // If there is only one email address, the radio button is never shown, 
+        // instead focus the sign in button so that the user can click enter.
+        // issue #412
+        $("#signInButton").focus();
+      }
 
       pickEmailState.call(this);
     },
