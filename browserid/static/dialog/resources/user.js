@@ -211,6 +211,15 @@ BrowserID.User = (function() {
     },
 
     /**
+     * Get the hostname for the set origin
+     * @method getHostname
+     * @returns {string}
+     */
+    getHostname: function() {
+      return origin.replace(/^.*:\/\//, "").replace(/:\d*$/, "");
+    },
+
+    /**
      * Create a user account - this creates an user account that must be verified.  
      * @method createUser
      * @param {string} email - Email address.

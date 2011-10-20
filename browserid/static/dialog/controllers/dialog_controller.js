@@ -63,7 +63,7 @@
         user.setOrigin(origin_url);
         
         // get the cleaned origin.
-        $("#sitename").text(user.getOrigin());
+        $("#sitename").text(user.getHostname());
 
         this.doCheckAuth();
 

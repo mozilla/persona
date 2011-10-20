@@ -221,6 +221,14 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     equal(lib.getOrigin(), testOrigin);
   });
 
+  test("setOrigin, getHostname", function() {
+    var origin = "http://testorigin.com:10001";
+    lib.setOrigin(origin);
+
+    var hostname = lib.getHostname();
+    equal(hostname, "testorigin.com", "getHostname returns only the hostname"); 
+  });
+
   test("getStoredEmailKeypairs", function() {
     var identities = lib.getStoredEmailKeypairs();
     equal("object", typeof identities, "we have some identities");
