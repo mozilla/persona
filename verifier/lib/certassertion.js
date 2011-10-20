@@ -156,14 +156,17 @@ function verify(assertion, audience, successCB, errorCB, pkRetriever) {
         if (!principal.email.match("@" + theIssuer + "$"))
           return errorCB();
       }
-      
+
       var tok = new jwt.JWT();
       tok.parse(bundle.assertion);
-      
+
       // audience must match!
-      if (tok.audience != audience)
-        return errorCB();
-      
+      if (tok.audience != audience) {
+        logger.debug("verification failure, audience mismatch: '"
+                     + tok.audience + "' != '" + audience + "'");
+        return errorCB("audience mismatch");
+      }
+
       if (tok.verify(pk)) {
         successCB(principal.email, tok.audience, tok.expires, theIssuer);
       } else {
