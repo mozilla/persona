@@ -130,37 +130,39 @@ exports.open = function(cfg, cb) {
   }
 
   // now create the databse
-  client.query("CREATE DATABASE IF NOT EXISTS " + database, function(err) {
-    if (err) {
-      logUnexpectedError(err);
-      cb(err);
-      return;
-    }
-    client.useDatabase(database, function(err) {
+  if (cfg.create_schema || cfg.unit_test) {
+    client.query("CREATE DATABASE IF NOT EXISTS " + database, function(err) {
       if (err) {
         logUnexpectedError(err);
         cb(err);
         return;
       }
-
-      // now create tables
-      function createNextTable(i) {
-        if (i < schemas.length) {
-          client.query(schemas[i], function(err) {
-            if (err) {
-              logUnexpectedError(err);
-              cb(err);
-            } else {
-              createNextTable(i+1);
-            }
-          });
-        } else {
-          cb();
+      client.useDatabase(database, function(err) {
+        if (err) {
+          logUnexpectedError(err);
+          cb(err);
+          return;
         }
-      }
-      createNextTable(0);
+
+        // now create tables
+        function createNextTable(i) {
+          if (i < schemas.length) {
+            client.query(schemas[i], function(err) {
+              if (err) {
+                logUnexpectedError(err);
+                cb(err);
+              } else {
+                createNextTable(i+1);
+              }
+            });
+          } else {
+            cb();
+          }
+        }
+        createNextTable(0);
+      });
     });
-  });
+  };
 };
 
 exports.close = function(cb) {

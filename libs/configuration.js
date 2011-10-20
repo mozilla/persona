@@ -78,7 +78,8 @@ g_configs.production = {
   var_path: '/home/browserid/var/',
   database: {
     driver: "mysql",
-    user: 'browserid'
+    user: 'browserid',
+    create_schema: true
   },
   bcrypt_work_factor: 12,
   authentication_duration_ms: (7 * 24 * 60 * 60 * 1000),
