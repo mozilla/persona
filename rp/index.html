@@ -94,7 +94,7 @@ a:hover { border-bottom: 2px solid black ; }
           var url = "https://browserid.org/verify"
           var data = {
             assertion: assertion,
-            audience: window.location.host
+            audience: window.location.protocol + "//" + window.location.host
           };
 
           $("#oVerificationRequest").empty().text("POST " + url + "\n" + JSON.stringify(data));

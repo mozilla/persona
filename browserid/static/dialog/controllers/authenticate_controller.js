@@ -192,7 +192,7 @@
       this._super(el, {
         bodyTemplate: "authenticate.ejs",
         bodyVars: {
-          sitename: user.getOrigin(),
+          sitename: user.getHostname(),
           email: options.email || ""
         }
       });

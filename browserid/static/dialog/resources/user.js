@@ -98,10 +98,6 @@ BrowserID.User = (function() {
     }
   }
 
-  function filterOrigin(origin) {
-    return origin.replace(/^.*:\/\//, "");
-  }
-
   function registrationPoll(checkFunc, email, onSuccess, onFailure) {
     function poll() {
       checkFunc(email, function(status) {
@@ -201,8 +197,8 @@ BrowserID.User = (function() {
      * @method setOrigin
      * @param {string} origin
      */
-    setOrigin: function(unfilteredOrigin) {
-      origin = filterOrigin(unfilteredOrigin);
+    setOrigin: function(originArg) {
+      origin = originArg;
     },
 
     /**
@@ -212,6 +208,15 @@ BrowserID.User = (function() {
      */
     getOrigin: function() {
       return origin;
+    },
+
+    /**
+     * Get the hostname for the set origin
+     * @method getHostname
+     * @returns {string}
+     */
+    getHostname: function() {
+      return origin.replace(/^.*:\/\//, "").replace(/:\d*$/, "");
     },
 
     /**
@@ -575,9 +580,7 @@ BrowserID.User = (function() {
      */
     clearStoredEmailKeypairs: function() {
       storage.clear();
-    },
-
-
+    }
   };
 
   User.setOrigin(document.location.host);
