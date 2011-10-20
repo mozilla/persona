@@ -1,3 +1,21 @@
+train-2011.10.20:
+  * android < 3.0 now supported: #461
+  * properly set assertion expiration time to when they expire, not when they're issued: #433, #457, #458
+  * update privacy policy language to jive with new UI: #381
+  * add redirects for old URLs that no longer exist with the new UI: #376
+  * inside the minified include.js, link to uncompressed version for developer convenience and discovery: #432
+  * language tweaks: #437, #444
+  * improve button UI appearance on opera and IE: #435
+  * improve visual feedback for links: #440
+  * UI fixes for > 2 email addresses on iOS: #417
+  * smooth out screen transitions in dialog: #369
+  * improved "check your email" screen on mobile: #462
+  * no auto-caps nor auto-correct for iOS in add email field: #464
+  * improve event listening on input fields: #406
+  * remember email when moving user from signup to sign-in for known email address: #108
+  * don't call sync_emails more than necessary: #434
+  * assertions now include full origin (scheme+host+port).  verifier accepts only host+port OR full origin, and returns whatever RP sends for back compat: #82
+
 train-2011.10.13:
   * fix verification of email in different browser than where verification is initiated: #336
   * Android < 3.0 (browsers that can't handle JSON.parse("null")) now blocked explicitly (until we complete support)
