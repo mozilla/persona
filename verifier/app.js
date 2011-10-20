@@ -34,13 +34,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const   path = require('path'),
-         url = require('url'),
-          fs = require('fs'),
+const    path = require('path'),
+          url = require('url'),
+           fs = require('fs'),
 certassertion = require('./lib/certassertion.js'),
-     express = require('express'),
-     metrics = require('../libs/metrics.js'),
-     logger = require('../libs/logging.js').logger;
+      express = require('express'),
+      metrics = require('../libs/metrics.js'),
+    heartbeat = require('../libs/heartbeat.js'),
+       logger = require('../libs/logging.js').logger;
 
 logger.info("verifier server starting up");
 
@@ -114,12 +115,8 @@ exports.setup = function(app) {
     process.exit();
   });
 
-  // A simple ping hook for monitoring.
-  app.get("/ping.txt", function(req ,resp) {
-    resp.writeHead(200, {"Content-Type": "text/plain"})
-    resp.write("k.");
-    resp.end();
-  });
+  // setup health check / heartbeat
+  heartbeat.setup(app);
 
   app.post('/', doVerify);
   app.post('/verify', doVerify);

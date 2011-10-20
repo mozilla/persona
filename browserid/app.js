@@ -45,6 +45,7 @@ express = require('express'),
 secrets = require('../libs/secrets.js'),
 db = require('./lib/db.js'),
 configuration = require('../libs/configuration.js'),
+heartbeat = require('../libs/heartbeat.js'),
 substitution = require('../libs/substitute.js');
 metrics = require("../libs/metrics.js"),
 logger = require("../libs/logging.js").logger;
@@ -102,9 +103,6 @@ function router(app) {
     res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});
   });
 
-  // BA removed .html URLs. If we have 404s,
-  // we should set up some redirects
-  
   app.get("/signup", function(req, res) {
     res.render('signup.ejs', {title: 'Sign Up', fullpage: false});
   });
@@ -141,7 +139,7 @@ function router(app) {
   REDIRECTS = {
     "/manage": "/",
     "/users": "/",
-    "/users/": "/",    
+    "/users/": "/",
     "/primaries" : "/developers",
     "/primaries/" : "/developers",
     "/developers" : "https://github.com/mozilla/browserid/wiki/How-to-Use-BrowserID-on-Your-Site"
@@ -159,6 +157,9 @@ function router(app) {
 
   // register all the WSAPI handlers
   wsapi.setup(app);
+
+  // setup health check / heartbeat
+  heartbeat.setup(app);
 
   // the public key
   app.get("/pk", function(req, res) {
