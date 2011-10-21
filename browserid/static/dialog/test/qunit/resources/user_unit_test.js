@@ -638,6 +638,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("getAssertion with known email that has key", function() {
+    lib.setOrigin(testOrigin);
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
         testAssertion(assertion);
@@ -650,6 +651,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("getAssertion with known email that does not have a key", function() {
+    lib.setOrigin(testOrigin);
     storage.addEmail("testuser@testuser.com", {});
     lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
       testAssertion(assertion);
