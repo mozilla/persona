@@ -37,12 +37,12 @@
 BrowserID.Network = (function() {
   "use strict";
 
-  var csrf_token;
-  var xhr = $;
-  var server_time;
-  var auth_status;
+  var csrf_token,
+      xhr = $,
+      server_time,
+      auth_status;
 
-  function withContext(cb) {
+  function withContext(cb, error) {
     if (typeof auth_status === 'boolean' && typeof csrf_token !== 'undefined') cb();
     else {
       xhr.ajax({
@@ -57,6 +57,7 @@ BrowserID.Network = (function() {
           auth_status = result.authenticated;
           _.defer(cb);
         },
+        error: error,
         dataType: "json"
       });
     }
@@ -93,7 +94,7 @@ BrowserID.Network = (function() {
         success: options.success,
         error: options.error
       });
-    });
+    }, options.error);
   }
 
   var Network = {
@@ -158,15 +159,16 @@ BrowserID.Network = (function() {
         } catch(e) {
           if (onFailure) onFailure(e.toString());
         }
-      });
+      }, onFailure);
     },
 
     /**
      * Log the authenticated user out
      * @method logout
      * @param {function} [onSuccess] - called on completion
+     * @param {function} [onFailure] - Called on XHR failure.
      */
-    logout: function(onSuccess) {
+    logout: function(onSuccess, onFailure) {
       post({
         url: "/wsapi/logout",
         success: function() {
@@ -177,7 +179,8 @@ BrowserID.Network = (function() {
           // user was successfully logged out.
           auth_status = false;
           if (onSuccess) _.defer(onSuccess);
-        }
+        },
+        error: onFailure
       });
     },
 
@@ -430,7 +433,7 @@ BrowserID.Network = (function() {
             _.delay(onSuccess, 0, status.success);
           }
         },
-        failure: onFailure
+        error: onFailure
       });
     },
 
@@ -482,7 +485,7 @@ BrowserID.Network = (function() {
         } catch(e) {
           onFailure(e.toString());
         }
-      });
+      }, onFailure);
     }
   };
 

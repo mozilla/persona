@@ -59,33 +59,54 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
       };
 
 
+  /**
+   * This is the results table, the keys are the request type, url, and 
+   * a "selector" for testing.  The right is the expected return value, already 
+   * decoded.  If a result is "undefined", the request's error handler will be 
+   * called.
+   */
   var xhr = {
     results: {
-      "get /wsapi/session_context valid": contextInfo,
+      "get /wsapi/session_context valid": contextInfo,   
       "get /wsapi/session_context invalid": contextInfo,
+      // We are going to test for ajax errors for session_context using 
+      // call to serverTime.  We are going to use the flag contextAjaxError
+      "get /wsapi/session_context ajaxError": contextInfo, 
+      "get /wsapi/session_context contextAjaxError": undefined,  
       "post /wsapi/authenticate_user valid": { success: true },
       "post /wsapi/authenticate_user invalid": { success: false },
+      "post /wsapi/authenticate_user ajaxError": undefined,
       "post /wsapi/complete_email_addition valid": { success: true },
       "post /wsapi/complete_email_addition invalid": { success: false },
+      "post /wsapi/complete_email_addition ajaxError": undefined,
       "post /wsapi/stage_user valid": { success: true },
       "post /wsapi/stage_user invalid": { success: false },
+      "post /wsapi/stage_user ajaxError": undefined,
       "get /wsapi/user_creation_status?email=address notcreated": undefined, // undefined because server returns 400 error
       "get /wsapi/user_creation_status?email=address pending": { status: "pending" },
       "get /wsapi/user_creation_status?email=address complete": { status: "complete" },
+      "get /wsapi/user_creation_status?email=address ajaxError": undefined,
       "post /wsapi/complete_user_creation valid": { success: true },
       "post /wsapi/complete_user_creation invalid": { success: false },
+      "post /wsapi/complete_user_creation ajaxError": undefined,
       "post /wsapi/logout valid": { success: true },
+      "post /wsapi/logout ajaxError": undefined,
       "get /wsapi/have_email?email=address taken": { email_known: true },
       "get /wsapi/have_email?email=address nottaken" : { email_known: false },
+      "get /wsapi/have_email?email=address ajaxError" : undefined,
       "post /wsapi/remove_email valid": { success: true },
       "post /wsapi/remove_email invalid": { success: false },
+      "post /wsapi/remove_email ajaxError": undefined,
       "post /wsapi/account_cancel valid": { success: true },
       "post /wsapi/account_cancel invalid": { success: false },
+      "post /wsapi/account_cancel ajaxError": undefined,
       "post /wsapi/stage_email valid": { success: true },
       "post /wsapi/stage_email invalid": { success: false },
+      "post /wsapi/stage_email ajaxError": undefined,
       "get /wsapi/email_addition_status?email=address notcreated": undefined, // undefined because server returns 400 error
       "get /wsapi/email_addition_status?email=address pending": { status: "pending" },
       "get /wsapi/email_addition_status?email=address complete": { status: "complete" },
+      "get /wsapi/email_addition_status?email=address ajaxError": undefined
     },
 
     useResult: function(result) {
@@ -165,6 +186,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
 
+  wrappedAsyncTest("authenticate with ajax error after context already setup", function() {
+    xhr.useResult("ajaxError");
+    network.authenticate("testuser@testuser.com", "ajaxError", function onSuccess(authenticated) {
+      ok(false, "ajax error should never pass");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should never pass");
+      wrappedStart();
+    });
+
+    stop();
+  });
+
+
   wrappedAsyncTest("checkAuth with valid authentication", function() {
     contextInfo.authenticated = true;
     network.checkAuth(function onSuccess(authenticated) {
@@ -194,12 +229,43 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
 
+  wrappedAsyncTest("checkAuth with ajax error", function() {
+    xhr.useResult("ajaxError");
+    contextInfo.authenticated = false;
+
+    network.checkAuth(function onSuccess() {
+      ok(true, "checkAuth does not make an ajax call, all good");
+      wrappedStart();
+    }, function onFailure() {
+      ok(false, "checkAuth does not make an ajax call, should not fail");
+      wrappedStart();
+    });
+
+    stop();
+  });
+
+
   wrappedAsyncTest("logout", function() {
     network.logout(function onSuccess() {
       ok(true, "we can logout");
       wrappedStart();
     }, function onFailure() {
       ok(false, "logout failure");
+      wrappedStart();
+    });
+
+    stop();
+  });
+
+
+  wrappedAsyncTest("logout with ajax error", function() {
+    xhr.useResult("ajaxError");
+
+    network.logout(function onSuccess() {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
       wrappedStart();
     });
 
@@ -230,6 +296,19 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     stop();
   });
 
+  wrappedAsyncTest("complete_email_addition with ajax error", function() {
+    xhr.useResult("ajaxError");
+    network.completeEmailRegistration("goodtoken", function onSuccess(proven) {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
+      wrappedStart();
+    });
+
+    stop();
+  });
+
   wrappedAsyncTest("createUser with valid user", function() {
     network.createUser("validuser", "origin", function onSuccess(created) {
       ok(created);
@@ -247,6 +326,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
       equal(created, false);
       wrappedStart();
     }, function onFailure() {
+      wrappedStart();
+    });
+
+    stop();
+  });
+
+  wrappedAsyncTest("createUser with ajax error", function() {
+    xhr.useResult("ajaxError");
+
+    network.createUser("validuser", "origin", function onSuccess(created) {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
       wrappedStart();
     });
 
@@ -281,6 +374,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     stop();
   });
 
+  wrappedAsyncTest("checkUserRegistration with ajax error", function() {
+    xhr.useResult("ajaxError");
+
+    network.checkUserRegistration("address", function(status) {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
+      wrappedStart();
+    });
+
+    stop();
+  });
+
   wrappedAsyncTest("completeUserRegistration with valid token", function() {
     network.completeUserRegistration("token", "password", function(registered) {
       ok(registered);
@@ -295,6 +402,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
 
   wrappedAsyncTest("completeUserRegistration with invalid token", function() {
     xhr.useResult("invalid");
+
     network.completeUserRegistration("token", "password", function(registered) {
       equal(registered, false);
       wrappedStart();
@@ -306,7 +414,22 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     stop();
   });
 
+  wrappedAsyncTest("completeUserRegistration with ajax error", function() {
+    xhr.useResult("ajaxError");
+
+    network.completeUserRegistration("token", "password", function(registered) {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
+      wrappedStart();
+    });
+
+    stop();
+  });
+
   wrappedAsyncTest("cancelUser valid", function() {
+
     network.cancelUser(function() {
       // XXX need a test here.
       ok(true);
@@ -320,11 +443,26 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
 
   wrappedAsyncTest("cancelUser invalid", function() {
     xhr.useResult("invalid");
+
     network.cancelUser(function() {
       // XXX need a test here.
       ok(true);
       wrappedStart();
     }, function onFailure() {
+      wrappedStart();
+    });
+
+    stop();
+  });
+
+  wrappedAsyncTest("cancelUser with ajax error", function() {
+    xhr.useResult("ajaxError");
+
+    network.cancelUser(function() {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
       wrappedStart();
     });
 
@@ -359,6 +497,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     stop();
   });
 
+  wrappedAsyncTest("emailRegistered with ajax error", function() {
+    xhr.useResult("ajaxError");
+
+    network.emailRegistered("address", function(taken) {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
+      wrappedStart();
+    });
+
+    stop();
+  });
+
 
   wrappedAsyncTest("addEmail valid", function() {
     network.addEmail("address", "origin", function onSuccess(added) {
@@ -379,6 +531,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
       wrappedStart();
     }, function onFailure() {
       ok(false);
+      wrappedStart();
+    });
+
+    stop();
+  });
+
+  wrappedAsyncTest("addEmail with ajax error", function() {
+    xhr.useResult("ajaxError");
+
+    network.addEmail("address", "origin", function onSuccess(added) {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
       wrappedStart();
     });
 
@@ -413,6 +579,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     stop();
   });
 
+  wrappedAsyncTest("checkEmailRegistration with ajax error", function() {
+    xhr.useResult("ajaxError");
+
+    network.checkEmailRegistration("address", function(status) {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
+      wrappedStart();
+    });
+
+    stop();
+  });
+
 
   wrappedAsyncTest("removeEmail valid", function() {
     network.removeEmail("validemail", function onSuccess() {
@@ -429,6 +609,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
 
   wrappedAsyncTest("removeEmail invalid", function() {
     xhr.useResult("invalid");
+
     network.removeEmail("invalidemail", function onSuccess() {
       // XXX need a test here;
       ok(true);
@@ -441,15 +622,18 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     stop();
   });
 
+  wrappedAsyncTest("removeEmail with ajax error", function() {
+    xhr.useResult("ajaxError");
 
-  wrappedAsyncTest("setKey", function() {
-    ok(true, "setKey");
-    start();
-  });
+    network.removeEmail("invalidemail", function onSuccess() {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
+      wrappedStart();
+    });
 
-  wrappedAsyncTest("syncEmails", function() {
-    ok(true, "syncEmails");
-    start();
+    stop();
   });
 
 
@@ -460,6 +644,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
       wrappedStart();
     }, function onFailure() {
       ok(false);
+      wrappedStart();
+    });
+
+    stop();
+  });
+
+  wrappedAsyncTest("requestPasswordReset with ajax error", function() {
+    xhr.useResult("ajaxError");
+
+    network.requestPasswordReset("address", "origin", function onSuccess() {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
       wrappedStart();
     });
 
@@ -479,6 +677,23 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     stop();
   });
 
+  wrappedAsyncTest("resetPassword with ajax error", function() {
+    xhr.useResult("ajaxError");
+/*
+    the body of this function is not yet written
+
+    network.resetPassword("password", function onSuccess() {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
+      wrappedStart();
+    });
+    stop();
+*/
+    start();
+  });
+
   wrappedAsyncTest("changePassword", function() {
     network.changePassword("oldpassword", "newpassword", function onSuccess() {
       // XXX need a real wrappedAsyncTest here.
@@ -490,6 +705,24 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     });
 
     stop();
+  });
+
+  wrappedAsyncTest("changePassword with ajax error", function() {
+    xhr.useResult("ajaxError");
+
+    /*
+    the body of this function is not yet written.
+    network.changePassword("oldpassword", "newpassword", function onSuccess() {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
+      wrappedStart();
+    });
+
+    stop();
+    */
+    start();
   });
 
   wrappedAsyncTest("serverTime", function() {
@@ -504,6 +737,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
       //equal(Math.abs(diff) < 100, true, "server time and local time should be less than 100ms different (is " + diff + "ms different)");
       wrappedStart();
     }, function onfailure() {
+      wrappedStart();
+    });
+
+    stop();
+  });
+
+  wrappedAsyncTest("serverTime with ajax error before context has been setup", function() {
+    xhr.useResult("contextAjaxError");
+
+    network.serverTime(function onSuccess(time) {
+      ok(false, "ajax error should never call success");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "ajax error should always call failure");
       wrappedStart();
     });
 
