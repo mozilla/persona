@@ -152,8 +152,9 @@ g_config['URL'] = g_config['scheme'] + '://' + g_config['hostname'] + getPortFor
  * all source files are written for that environment.
  */
 exports.performSubstitution = function(app) {
-  if (process.env['NODE_ENV'] !== 'production' &&
-      process.env['NODE_ENV'] !== 'local') {
+  if (g_config.hostname != 'browserid.org' ||
+      g_config.port != '443' ||
+      g_config.scheme != 'https') {
     app.use(substitution.substitute({
       'https://browserid.org': g_config['URL'],
       'browserid.org:443': g_config['hostname'] + ':' + g_config['port'],
