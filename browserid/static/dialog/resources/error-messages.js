@@ -36,7 +36,7 @@ BrowserID.Errors = (function(){
   "use strict";
 
   var Errors = {
-    authentication: {
+    authenticate: {
       type: "serverError",
       title: "Error Authenticating",
       message: "There was a technical problem while trying to log you in.  Yucky!"
@@ -54,7 +54,13 @@ BrowserID.Errors = (function(){
       message: "There was a technical problem while trying to log you in.  Yucky!"
     },
 
-    createAccount: {
+    isEmailRegistered: {
+      type: "serverError",
+      title: "Error Checking Email Address",
+      message: "There was a technical problem while trying to check that email address.  Yucky!"
+    },
+
+    createUser: {
       type: "serverError",
       title: "Error Creating Account",
       message: "There was a technical problem while trying to create your account.  Yucky!"
@@ -64,6 +70,12 @@ BrowserID.Errors = (function(){
       type: "serverError",
       title: "Registration Failed",
       message: "An error was encountered and the signup cannot be completed.  Yucky!"
+    },
+
+    requestPasswordReset: {
+      type: "serverError",
+      title: "Error Resetting Password",
+      message: "There was a technical problem while trying to reset your password."
     },
 
     signIn: {
