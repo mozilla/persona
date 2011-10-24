@@ -110,13 +110,13 @@
     var self=this;
     user.getAssertion(email, function(assert) {
       assertion = assert || null;
-      tryClose.call(self);
+      startAnimation.call(self);
     }, self.getErrorDialog(errors.getAssertion));
   }
 
   function startAnimation() {
+    var self=this;
     if(!animationComplete) {
-      var self=this;
       $("#signIn").animate({"width" : "685px"}, "slow", function () {
         // post animation
          body.delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
@@ -124,6 +124,9 @@
            tryClose.call(self);
          });
       }); 
+    }
+    else {
+      tryClose.call(self);
     }
 
   }
@@ -135,9 +138,7 @@
 
     var valid = checkEmail.call(self, email);
     if (valid) {
-//      self.doWait(bid.Wait.generateKey);
       getAssertion.call(self, email);
-      startAnimation.call(self);
     }
   }
 
