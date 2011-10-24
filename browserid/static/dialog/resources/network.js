@@ -54,6 +54,13 @@ BrowserID.Network = (function() {
     }
   }
 
+  function xhrError(cb, errorMessage) {
+    return function() {
+      if (cb) cb();
+      hub.publish("xhrError", errorMessage);
+    };
+  }
+
   function get(options) {
     xhr.ajax({
       type: "GET",
@@ -62,7 +69,7 @@ BrowserID.Network = (function() {
       // that are thrown in the response handlers and it becomes very difficult 
       // to debug.
       success: deferResponse(options.success),
-      error: deferResponse(options.error),
+      error: deferResponse(xhrError(options.error, options.errorMessage)),
       dataType: "json"
     });
   }
@@ -83,7 +90,7 @@ BrowserID.Network = (function() {
         // that are thrown in the response handlers and it becomes very difficult 
         // to debug.
         success: deferResponse(options.success),
-        error: deferResponse(options.error)
+        error: deferResponse(xhrError(options.error, options.errorMessage)),
       });
     }, options.error);
   }
@@ -102,7 +109,7 @@ BrowserID.Network = (function() {
           auth_status = result.authenticated;
           cb();
         },
-        error: onFailure
+        error: xhrError(onFailure)
       });
     }
   }
@@ -300,7 +307,7 @@ BrowserID.Network = (function() {
      */
     requestPasswordReset: function(email, origin, onSuccess, onFailure) {
       if (email) {
-        this.createUser(email, origin, onSuccess, onFailure);
+        Network.createUser(email, origin, onSuccess, onFailure);
       } else {
         // TODO: if no email is provided, then what?
         throw "no email provided to password reset";

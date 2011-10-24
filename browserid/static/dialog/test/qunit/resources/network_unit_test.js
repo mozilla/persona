@@ -51,6 +51,52 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     start();
   }
 
+  function notificationCheck(cb) {
+    // Take the original arguments, take off the function.  Add any additional 
+    // arguments that were passed in, and then tack on the onSuccess and 
+    // onFailure to the end.  Then call the callback.
+    var args = Array.prototype.slice.call(arguments, 1);
+
+    xhr.useResult("ajaxError");
+
+    var handle;
+
+    var subscriber = function() {
+      ok(true, "xhr error notified application");
+      wrappedStart();
+      OpenAjax.hub.unsubscribe(handle);
+    };
+
+    handle = OpenAjax.hub.subscribe("xhrError", subscriber);
+
+    if (cb) {
+      cb.apply(null, args);
+    }
+
+    stop();
+  }
+
+  function failureCheck(cb) {
+    // Take the original arguments, take off the function.  Add any additional 
+    // arguments that were passed in, and then tack on the onSuccess and 
+    // onFailure to the end.  Then call the callback.
+    var args = Array.prototype.slice.call(arguments, 1);
+    
+    args.push(function onSuccess(authenticated) {
+      ok(false, "XHR failure should never pass");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "XHR failure should never pass");
+      wrappedStart();
+    });
+
+    xhr.useResult("ajaxError");
+
+    cb.apply(null, args);
+
+    stop();
+  }
+
   var network = BrowserID.Network,
       contextInfo = {
         server_time: new Date().getTime(),
@@ -185,32 +231,12 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     stop();
   });
 
-/*
   wrappedAsyncTest("authenticate with XHR failure, checking whether application is notified", function() {
-    xhr.useResult("ajaxError");
-
-    OpenAjax.hub.subscribe("xhrError", function() {
-      ok(true, "xhr error notified application");
-      wrappedStart();
-    });
-
-    network.authenticate("testuser@testuser.com", "ajaxError");
-    
-    stop();
+    notificationCheck(network.authenticate, "testuser@testuser.com", "ajaxError");
   });
-*/
-  wrappedAsyncTest("authenticate with XHR failure after context already setup", function() {
-    xhr.useResult("ajaxError");
-    
-    network.authenticate("testuser@testuser.com", "ajaxError", function onSuccess(authenticated) {
-      ok(false, "XHR failure should never pass");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should never pass");
-      wrappedStart();
-    });
 
-    stop();
+  wrappedAsyncTest("authenticate with XHR failure after context already setup", function() {
+    failureCheck(network.authenticate, "testuser@testuser.com", "ajaxError");
   });
 
 
@@ -243,10 +269,14 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
 
+
   wrappedAsyncTest("checkAuth with XHR failure", function() {
     xhr.useResult("ajaxError");
     contextInfo.authenticated = false;
 
+    // Do not convert this to failureCheck, we do this manually because 
+    // checkAuth does not make an XHR request.  Since it does not make an XHR 
+    // request, we do not test whether the app is notified of an XHR failure
     network.checkAuth(function onSuccess() {
       ok(true, "checkAuth does not make an ajax call, all good");
       wrappedStart();
@@ -273,17 +303,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
 
 
   wrappedAsyncTest("logout with XHR failure", function() {
-    xhr.useResult("ajaxError");
+    notificationCheck(network.logout);
+  });
 
-    network.logout(function onSuccess() {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    stop();
+  wrappedAsyncTest("logout with XHR failure", function() {
+    failureCheck(network.logout);
   });
 
 
@@ -311,16 +335,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("complete_email_addition with XHR failure", function() {
-    xhr.useResult("ajaxError");
-    network.completeEmailRegistration("goodtoken", function onSuccess(proven) {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
+    notificationCheck(network.completeEmailRegistration, "goodtoken");
+  });
 
-    stop();
+  wrappedAsyncTest("complete_email_addition with XHR failure", function() {
+    failureCheck(network.completeEmailRegistration, "goodtoken");
   });
 
   wrappedAsyncTest("createUser with valid user", function() {
@@ -347,17 +366,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("createUser with XHR failure", function() {
-    xhr.useResult("ajaxError");
+    notificationCheck(network.createUser, "validuser", "origin");
+  });
 
-    network.createUser("validuser", "origin", function onSuccess(created) {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    stop();
+  wrappedAsyncTest("createUser with XHR failure", function() {
+    failureCheck(network.createUser, "validuser", "origin");
   });
 
   wrappedAsyncTest("checkUserRegistration with pending email", function() {
@@ -389,17 +402,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("checkUserRegistration with XHR failure", function() {
-    xhr.useResult("ajaxError");
+    notificationCheck(network.checkUserRegistration, "address");
+  });
 
-    network.checkUserRegistration("address", function(status) {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    stop();
+  wrappedAsyncTest("checkUserRegistration with XHR failure", function() {
+    failureCheck(network.checkUserRegistration, "address");
   });
 
   wrappedAsyncTest("completeUserRegistration with valid token", function() {
@@ -429,17 +436,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("completeUserRegistration with XHR failure", function() {
-    xhr.useResult("ajaxError");
+    notificationCheck(network.completeUserRegistration, "token", "password");
+  });
 
-    network.completeUserRegistration("token", "password", function(registered) {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    stop();
+  wrappedAsyncTest("completeUserRegistration with XHR failure", function() {
+    failureCheck(network.completeUserRegistration, "token", "password");
   });
 
   wrappedAsyncTest("cancelUser valid", function() {
@@ -470,17 +471,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("cancelUser with XHR failure", function() {
-    xhr.useResult("ajaxError");
+    notificationCheck(network.cancelUser);
+  });
 
-    network.cancelUser(function() {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    stop();
+  wrappedAsyncTest("cancelUser with XHR failure", function() {
+    failureCheck(network.cancelUser);
   });
 
   wrappedAsyncTest("emailRegistered with taken email", function() {
@@ -512,17 +507,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("emailRegistered with XHR failure", function() {
-    xhr.useResult("ajaxError");
+    notificationCheck(network.emailRegistered, "address");
+  });
 
-    network.emailRegistered("address", function(taken) {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    stop();
+  wrappedAsyncTest("emailRegistered with XHR failure", function() {
+    failureCheck(network.emailRegistered, "address");
   });
 
 
@@ -552,17 +541,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("addEmail with XHR failure", function() {
-    xhr.useResult("ajaxError");
+    notificationCheck(network.addEmail, "address", "origin");
+  });
 
-    network.addEmail("address", "origin", function onSuccess(added) {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    stop();
+  wrappedAsyncTest("addEmail with XHR failure", function() {
+    failureCheck(network.addEmail, "address", "origin");
   });
 
   wrappedAsyncTest("checkEmailRegistration pending", function() {
@@ -594,17 +577,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("checkEmailRegistration with XHR failure", function() {
-    xhr.useResult("ajaxError");
+    notificationCheck(network.checkEmailRegistration, "address");
+  });
 
-    network.checkEmailRegistration("address", function(status) {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    stop();
+  wrappedAsyncTest("checkEmailRegistration with XHR failure", function() {
+    failureCheck(network.checkEmailRegistration, "address");
   });
 
 
@@ -637,17 +614,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("removeEmail with XHR failure", function() {
-    xhr.useResult("ajaxError");
+    notificationCheck(network.removeEmail, "validemail");
+  });
 
-    network.removeEmail("invalidemail", function onSuccess() {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    stop();
+  wrappedAsyncTest("removeEmail with XHR failure", function() {
+    failureCheck(network.removeEmail, "invalidemail");
   });
 
 
@@ -665,17 +636,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("requestPasswordReset with XHR failure", function() {
-    xhr.useResult("ajaxError");
+    notificationCheck(network.requestPasswordReset, "address", "origin");
+  });
 
-    network.requestPasswordReset("address", "origin", function onSuccess() {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    stop();
+  wrappedAsyncTest("requestPasswordReset with XHR failure", function() {
+    failureCheck(network.requestPasswordReset, "address", "origin");
   });
 
   wrappedAsyncTest("resetPassword", function() {
@@ -755,6 +720,13 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     });
 
     stop();
+  });
+
+  wrappedAsyncTest("serverTime with XHR failure before context has been setup", function() {
+    notificationCheck();
+    xhr.useResult("contextAjaxError");
+
+    network.serverTime();
   });
 
   wrappedAsyncTest("serverTime with XHR failure before context has been setup", function() {
