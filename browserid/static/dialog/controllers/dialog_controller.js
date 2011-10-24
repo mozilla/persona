@@ -94,7 +94,8 @@
         });
 
         hub.subscribe("xhrError", function(msg, info) {
-          self.doXHRError(info);
+          //self.doXHRError(info);
+          // XXX how are we going to handle this?
         });
 
         hub.subscribe("user_staged", function(msg, info) {
