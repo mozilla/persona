@@ -44,7 +44,8 @@
 
   var bid = BrowserID,
       user = bid.User,
-      errors = bid.Errors;
+      errors = bid.Errors,
+      offline = false;
 
   PageController.extend("Dialog", {}, {
       init: function(el) {
@@ -59,17 +60,23 @@
       },
         
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {
-        this.onsuccess = onsuccess;
-        this.onerror = onerror;
+        var self=this;
+
+        self.onsuccess = onsuccess;
+        self.onerror = onerror;
+
+        if('onLine' in navigator && !navigator.onLine) {
+          self.doOffline();
+          return;
+        }
 
         user.setOrigin(origin_url);
         
         // get the cleaned origin.
         $("#sitename").text(user.getHostname());
 
-        this.doCheckAuth();
+        self.doCheckAuth();
 
-        var self=this;
         $(window).bind("unload", function() {
           self.doCancel();
         });
@@ -81,6 +88,14 @@
             hub = OpenAjax.hub, 
             el = this.element;
        
+
+        hub.subscribe("offline", function(msg, info) {
+          self.doOffline();
+        });
+
+        hub.subscribe("xhrError", function(msg, info) {
+          self.doXHRError(info);
+        });
 
         hub.subscribe("user_staged", function(msg, info) {
           self.doConfirmUser(info.email);
@@ -138,6 +153,15 @@
           self.doCancel();
         });
 
+      },
+
+      doOffline: function() {
+        this.renderError(errors.offline);
+        offline = true;
+      },
+
+      doXHRError: function(info) {
+        if (!offline) this.renderError(errors.offline);  
       },
 
       doConfirmUser: function(email) {

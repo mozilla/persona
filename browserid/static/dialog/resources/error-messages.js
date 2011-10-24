@@ -78,6 +78,12 @@ BrowserID.Errors = (function(){
       message: "An error was encountered while signing you out.  Yucky!"
     },
 
+    offline: {
+      type: "networkError",
+      title: "You are offline!",
+      message: "Unfortunately, BrowserID cannot communicate while offline!"
+    },
+
     registration: {
       type: "serverError",
       title: "Registration Failed",
