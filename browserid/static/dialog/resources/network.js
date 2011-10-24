@@ -109,7 +109,7 @@ BrowserID.Network = (function() {
           auth_status = result.authenticated;
           cb();
         },
-        error: xhrError(onFailure)
+        error: deferResponse(xhrError(onFailure))
       });
     }
   }
@@ -123,15 +123,6 @@ BrowserID.Network = (function() {
   $(document).bind("offline", function() {
     hub.publish("offline");
   });
-
-  function xhrError(callback, error) {
-    return function() {
-      if (callback) {
-        callback();
-      }
-      hub.publish("xhrError", error);
-    };
-  }
 
   var Network = {
     /**
