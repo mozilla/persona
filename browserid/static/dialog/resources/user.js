@@ -118,7 +118,7 @@ BrowserID.User = (function() {
         else if (onFailure) {
             onFailure(status);
         }
-      });
+      }, onFailure);
     };
 
     poll();
@@ -285,7 +285,7 @@ BrowserID.User = (function() {
         if (onSuccess) {
           onSuccess();
         }
-      });
+      }, onFailure);
 
     },
 
@@ -301,7 +301,7 @@ BrowserID.User = (function() {
         if (onSuccess) {
           onSuccess();
         }
-      });
+      }, onFailure);
     },
 
     /**
@@ -356,7 +356,7 @@ BrowserID.User = (function() {
         }
 
         addNextEmail();
-      });
+      }, onFailure);
     },
 
     /**
@@ -533,7 +533,7 @@ BrowserID.User = (function() {
             if (onSuccess) {
               onSuccess(assertion);
             }
-          });
+          }, onFailure);
         }
 
         if (storedID) {

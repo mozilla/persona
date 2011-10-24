@@ -55,7 +55,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   var credentialsValid, unknownEmails, keyRefresh, syncValid, userEmails, 
       userCheckCount = 0,
       emailCheckCount = 0,
-      registrationResponse;
+      registrationResponse,
+      xhrFailure = false; 
 
   var netStub = {
     reset: function() {
@@ -64,54 +65,50 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       keyRefresh = [];
       userEmails = {"testuser@testuser.com": {}};
       registrationResponse = "complete";
-    },
-
-    stageUser: function(email, password, onSuccess) {
-      onSuccess();
+      xhrFailure = false;
     },
 
     checkUserRegistration: function(email, onSuccess, onFailure) {
       userCheckCount++;
       var status = userCheckCount === 2 ? registrationResponse : "pending";
 
-      onSuccess(status);
+      xhrFailure ? onFailure() : onSuccess(status);
     },
 
     authenticate: function(email, password, onSuccess, onFailure) {
-      onSuccess(credentialsValid);
+      xhrFailure ? onFailure() : onSuccess(credentialsValid);
     },
 
     checkAuth: function(onSuccess, onFailure) {
-      onSuccess(credentialsValid);
+      xhrFailure ? onFailure() : onSuccess(credentialsValid);
     },
 
     emailRegistered: function(email, onSuccess, onFailure) {
-      onSuccess(email === "registered");
+      xhrFailure ? onFailure() : onSuccess(email === "registered");
     },
 
     addEmail: function(email, origin, onSuccess, onFailure) {
-      onSuccess(true);
+      xhrFailure ? onFailure() : onSuccess(true);
     },
 
     checkEmailRegistration: function(email, onSuccess, onFailure) {
       emailCheckCount++;
       var status = emailCheckCount === 2 ? registrationResponse : "pending";
 
-      onSuccess(status);
-
+      xhrFailure ? onFailure() : onSuccess(status);
     },
 
     removeEmail: function(email, onSuccess, onFailure) {
-      onSuccess();
+      xhrFailure ? onFailure() : onSuccess();
     },
 
     listEmails: function(onSuccess, onFailure) {
-      onSuccess(userEmails);
+      xhrFailure ? onFailure() : onSuccess(userEmails);
     },
 
     certKey: function(email, pubkey, onSuccess, onFailure) {
       if (syncValid) {
-        onSuccess(random_cert);
+        xhrFailure ? onFailure() : onSuccess(random_cert);
       }
       else {
         onFailure();
@@ -119,7 +116,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     },
     
     syncEmails: function(issued_identities, onSuccess, onFailure) {
-      onSuccess({
+      xhrFailure ? onFailure() : onSuccess({
         unknown_emails: unknownEmails,
         key_refresh: keyRefresh
       });
@@ -127,36 +124,36 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
     setKey: function(email, keypair, onSuccess, onFailure) {
       if (syncValid) {
-        onSuccess();
+        xhrFailure ? onFailure() : onSuccess();
       }
       else {
         onFailure();
       }
     },
 
-    createUser: function(email, origin, onSuccess) {
-      onSuccess(true);
+    createUser: function(email, origin, onSuccess, onFailure) {
+      xhrFailure ? onFailure() : onSuccess(true);
     },
 
     setPassword: function(password, onSuccess) {
-      onSuccess();
+      xhrFailure ? onFailure() : onSuccess();
     },
 
     requestPasswordReset: function(email, origin, onSuccess, onFailure) {
-      onSuccess(true);
+      xhrFailure ? onFailure() : onSuccess(true);
     },
 
-    cancelUser: function(onSuccess) {
-      onSuccess();
+    cancelUser: function(onSuccess, onFailure) {
+      xhrFailure ? onFailure() : onSuccess();
     },
 
-    serverTime: function(onSuccess) {
-      onSuccess(new Date());
+    serverTime: function(onSuccess, onFailure) {
+      xhrFailure ? onFailure() : onSuccess(new Date());
     },
 
-    logout: function(onSuccess) {
+    logout: function(onSuccess, onFailure) {
       credentialsValid = false;
-      onSuccess();
+      xhrFailure ? onFailure() : onSuccess();
     }
   };
 
@@ -273,6 +270,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  test("createUser with XHR failure", function() {
+    xhrFailure = true;
+
+    lib.createUser("testuser@testuser.com", function(status) {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+
+    stop();
+  });
+
   /**
    * The next three tests use the mock network harness.  The tests are testing 
    * the polling action and whether `waitForUserValidation` reacts as expected
@@ -316,6 +327,21 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  test("waitForUserValidation with XHR failure", function() {
+    xhrFailure = true;
+
+    lib.waitForUserValidation("baduser@testuser.com", function(status) {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+
+    stop();
+  });
+
+
   test("setPassword", function() {
     lib.setPassword("password", function() {
       // XXX fill this in.
@@ -348,13 +374,27 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
 
-
   test("authenticate with invalid credentials", function() {
     credentialsValid = false;
     lib.authenticate("testuser@testuser.com", "testuser", function onComplete(authenticated) {
       equal(false, authenticated, "invalid authentication.");
       start();
     }, failure("Authentication failure"));
+
+    stop();
+
+  });
+
+
+  test("authenticate with XHR failure", function() {
+    xhrFailure = true;
+    lib.authenticate("testuser@testuser.com", "testuser", function onComplete(authenticated) {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
 
     stop();
 
@@ -377,6 +417,21 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     credentialsValid = false;
     lib.checkAuthentication(function(authenticated) {
       equal(authenticated, false, "We are not authenticated!");
+      start();
+    });
+
+    stop();
+  });
+
+
+
+  test("checkAuthentication with XHR failure", function() {
+    xhrFailure = true;
+    lib.checkAuthentication(function(authenticated) {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
       start();
     });
 
@@ -411,6 +466,24 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+
+  test("checkAuthenticationAndSync with XHR failure", function() {
+    xhrFailure = true;
+    lib.checkAuthenticationAndSync(function onSuccess() {
+      ok(false, "xhr failure should never succeed");
+    }, function onComplete() {
+      ok(false, "xhr failure should never succeed");
+      
+      start();
+    }, function onFailure() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+
+    stop();
+  });
+
+
   test("isEmailRegistered with registered email", function() {
     lib.isEmailRegistered("registered", function(registered) {
       ok(registered);
@@ -435,6 +508,19 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  test("isEmailRegistered with XHR failure", function() {
+    xhrFailure = true;
+    lib.isEmailRegistered("registered", function(registered) {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+
+    stop();
+  });
+
   test("addEmail", function() {
     lib.addEmail("testemail@testemail.com", function(added) {
       ok(added, "user was added");
@@ -447,6 +533,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
     stop();
   });
+
+  test("addEmail with XHR failure", function() {
+    xhrFailure = true;
+    lib.addEmail("testemail@testemail.com", function(added) {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+
+    stop();
+  });
+
 
 
   /**
@@ -492,6 +592,21 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+
+ test("waitForEmailValidation XHR failure", function() {
+    xhrFailure = true;
+    lib.waitForEmailValidation("testemail@testemail.com", function(status) {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+
+    stop();
+  });
+
+
   test("syncEmailKeypair with successful sync", function() {
     syncValid = true;
     lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
@@ -523,6 +638,19 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  test("syncEmailKeypair with XHR failure", function() {
+    xhrFailure = true;
+    lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+
+    stop();
+  });
+
 
   test("removeEmail that is added", function() {
     storage.addEmail("testemail@testemail.com", {pub: "pub", priv: "priv"});
@@ -547,6 +675,22 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
     stop();
   });
+
+  test("removeEmail with XHR failure", function() {
+    storage.addEmail("testemail@testemail.com", {pub: "pub", priv: "priv"});
+
+    xhrFailure = true;
+    lib.removeEmail("testemail@testemail.com", function() {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+
+    stop();
+  });
+
 
 
 
@@ -636,6 +780,19 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  test("syncEmails with XHR failure", function() {
+    xhrFailure = true;
+
+    lib.syncEmails(function onSuccess() {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+
+    stop();
+  });
 
   test("getAssertion with known email that has key", function() {
     lib.setOrigin(testOrigin);
@@ -673,6 +830,22 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  test("getAssertion with XHR failure", function() {
+    lib.setOrigin(testOrigin);
+    xhrFailure = true;
+
+    lib.syncEmailKeypair("testuser@testuser.com", function() {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+
+    stop();
+  });
+
+
   test("logoutUser", function(onSuccess) {
     credentialsValid = true;
     keyRefresh = ["testuser@testuser.com"]; 
@@ -695,10 +868,46 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  test("logoutUser with XHR failure", function(onSuccess) {
+    credentialsValid = true;
+    keyRefresh = ["testuser@testuser.com"]; 
+
+    lib.authenticate("testuser@testuser.com", "testuser", function(authenticated) {
+      lib.syncEmails(function() {
+         xhrFailure = true;
+
+        lib.logoutUser(function() {
+          ok(false, "xhr failure should never succeed");
+          start();
+        }, function() {
+          ok(true, "xhr failure should always be a failure"); 
+          start();
+        });
+
+
+      }, failure("syncEmails failure"));
+    }, failure("authenticate failure"));
+
+    stop();
+  });
+
   test("cancelUser", function(onSuccess) {
     lib.cancelUser(function() {
       var storedIdentities = storage.getEmails();
       equal(_.size(storedIdentities), 0, "All items have been removed");
+      start();
+    });
+
+    stop();
+  });
+
+  test("cancelUser with XHR failure", function(onSuccess) {
+     xhrFailure = true;
+    lib.cancelUser(function() {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
       start();
     });
 
