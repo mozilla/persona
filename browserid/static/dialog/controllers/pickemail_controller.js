@@ -40,6 +40,7 @@
   var ANIMATION_TIME = 250,
       bid = BrowserID,
       user = bid.User,
+      errors = bid.Errors,
       body = $("body"),
       animationComplete = body.innerWidth() < 640,
       assertion;
@@ -110,7 +111,7 @@
     user.getAssertion(email, function(assert) {
       assertion = assert || null;
       tryClose.call(self);
-    });
+    }, self.getErrorDialog(errors.getAssertion));
   }
 
   function startAnimation() {
@@ -168,7 +169,7 @@
             bid.Tooltip.showTooltip("#could_not_add");
         });
       }
-    });
+    }, self.getErrorDialog(errors.isEmailRegistered));
   }
 
 

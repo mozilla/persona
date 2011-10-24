@@ -42,7 +42,9 @@
 (function() {
   "use strict";
 
-  var user = BrowserID.User;
+  var bid = BrowserID,
+      user = bid.User,
+      errors = bid.Errors;
 
   PageController.extend("Dialog", {}, {
       init: function(el) {
@@ -182,7 +184,8 @@
       doEmailConfirmed: function() {
         var self=this;
         // yay!  now we need to produce an assertion.
-        user.getAssertion(this.confirmEmail, self.doAssertionGenerated.bind(self));
+        user.getAssertion(this.confirmEmail, self.doAssertionGenerated.bind(self),
+          self.getErrorDialog(errors.getAssertion));
       },
 
       doAssertionGenerated: function(assertion) {
@@ -195,15 +198,15 @@
       },
 
       doNotMe: function() {
-        user.logoutUser(this.doAuthenticate.bind(this));
+        var self=this;
+        user.logoutUser(self.doAuthenticate.bind(self), self.getErrorDialog(errors.logoutUser));
       },
 
       syncEmails: function() {
         var self = this;
         user.syncEmails(self.doPickEmail.bind(self), 
-          self.getErrorDialog(BrowserID.Errors.signIn));
+          self.getErrorDialog(errors.signIn));
       },
-
 
       doCheckAuth: function() {
         var self=this;
@@ -215,7 +218,7 @@
               self.doAuthenticate();
             }
           }, 
-          self.getErrorDialog(BrowserID.Errors.checkAuthentication));
+          self.getErrorDialog(errors.checkAuthentication));
     }
 
   });

@@ -54,16 +54,28 @@ BrowserID.Errors = (function(){
       message: "There was a technical problem while trying to log you in.  Yucky!"
     },
 
+    createUser: {
+      type: "serverError",
+      title: "Error Creating Account",
+      message: "There was a technical problem while trying to create your account.  Yucky!"
+    },
+
+    getAssertion: {
+      type: "serverError",
+      title: "Error Getting Assertion",
+      message: "There was a technical problem while trying to authenticate you.  Yucky!"
+    },
+
     isEmailRegistered: {
       type: "serverError",
       title: "Error Checking Email Address",
       message: "There was a technical problem while trying to check that email address.  Yucky!"
     },
 
-    createUser: {
+    logoutUser: {
       type: "serverError",
-      title: "Error Creating Account",
-      message: "There was a technical problem while trying to create your account.  Yucky!"
+      title: "Logout Failed",
+      message: "An error was encountered while signing you out.  Yucky!"
     },
 
     registration: {
