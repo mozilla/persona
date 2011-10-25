@@ -452,6 +452,7 @@ BrowserID.User = (function() {
       var self = this;
       network.addEmail(email, origin, function(added) {
         if (added) {
+          localStorage.initiatingOrigin = self.getHostname();
           // we no longer send the keypair, since we will certify it later.
           if (onSuccess) {
             onSuccess(added);
@@ -477,23 +478,26 @@ BrowserID.User = (function() {
      * @param {string} token
      * @param {function} [onSuccess] - Called on success.
      *   Called with an object with valid, email, and origin if valid, called 
-     *   with null otw.
+     *   with only valid otw.
      * @param {function} [onFailure] - Called on error.
      */
     verifyEmail: function(token, onSuccess, onFailure) {
       network.emailForVerificationToken(token, function (email) {
+        var invalidInfo = { valid: false };
         if (email) {
           network.completeEmailRegistration(token, function (valid) {
             var info = valid ? {
               valid: valid,
               email: email,
-              origin: "browserid.org"
-            } : null;
+              origin: localStorage.initiatingOrigin
+            } : invalidInfo;
+
+            localStorage.removeItem("initiatingOrigin");
 
             if (onSuccess) onSuccess(info);
           }, onFailure);
         } else if(onSuccess) {
-          onSuccess(null);
+          onSuccess(invalidInfo);
         }
       }, onFailure);
     },

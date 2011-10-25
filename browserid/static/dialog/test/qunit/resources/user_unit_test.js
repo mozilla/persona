@@ -538,6 +538,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       var identities = lib.getStoredEmailKeypairs();
       equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
 
+
+      equal(localStorage.initiatingOrigin, lib.getHostname(), "initiatingOrigin is stored"); 
+
       start();
     }, failure("addEmail failure"));
 
@@ -618,11 +621,13 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("verifyEmail with a good token", function() {
+    localStorage.initiatingOrigin = "browserid.org";
     lib.verifyEmail("token", function onSuccess(info) {
       
       ok(info.valid, "token was valid");
       equal(info.email, "testuser@testuser.com", "email part of info");
       equal(info.origin, "browserid.org", "origin in info");
+      equal(localStorage.initiatingOrigin, null, "initiating origin was removed");
 
       start();
     }, failure("verifyEmail failure"));
@@ -635,7 +640,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
     lib.verifyEmail("token", function onSuccess(info) {
       
-      equal(info, null, "bad token calls onSuccess with null");
+      equal(info.valid, false, "bad token calls onSuccess with a false validity");
 
       start();
     }, failure("verifyEmail failure"));
