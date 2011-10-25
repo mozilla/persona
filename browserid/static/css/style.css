@@ -998,4 +998,6 @@ a.forgot {
   float: right;
 }
 
-
+#siteinfo {
+  display: none;
+}
