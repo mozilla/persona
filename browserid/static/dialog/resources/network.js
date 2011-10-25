@@ -42,7 +42,7 @@ BrowserID.Network = (function() {
       xhr = $,
       server_time,
       auth_status,
-      hub = OpenAjax.hub;
+      hub = window.OpenAjax && OpenAjax.hub;
 
   function deferResponse(cb) {
     if (cb) {
@@ -58,7 +58,7 @@ BrowserID.Network = (function() {
   function xhrError(cb, errorMessage) {
     return function() {
       if (cb) cb();
-      hub.publish("xhrError", errorMessage);
+      hub && hub.publish("xhrError", errorMessage);
     };
   }
 
