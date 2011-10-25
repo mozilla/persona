@@ -39,16 +39,17 @@
   
   var ANIMATION_TIME=250;
   function emailRegistrationSuccess(info) {
-    $(".hint").hide();
 
     $("#email").text(info.email);
     
     if (info.origin) {
-      $("#origin").text(info.origin);
+      $("#siteinfo .website").html(info.origin);
       $("#siteinfo").show();
     }
 
-    $("#congrats").fadeIn(ANIMATION_TIME);
+    $("#signUpForm").delay(2000).fadeOut(ANIMATION_TIME, function() {
+      $("#congrats").fadeIn(ANIMATION_TIME);
+    });
   }
 
   function showError(el) {

@@ -539,7 +539,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
 
 
-      equal(localStorage.initiatingOrigin, lib.getHostname(), "initiatingOrigin is stored"); 
+      equal(storage.getStagedOnBehalfOf(), lib.getHostname(), "initiatingOrigin is stored"); 
 
       start();
     }, failure("addEmail failure"));
@@ -621,13 +621,13 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("verifyEmail with a good token", function() {
-    localStorage.initiatingOrigin = "browserid.org";
+    storage.setStagedOnBehalfOf(testOrigin);
     lib.verifyEmail("token", function onSuccess(info) {
       
       ok(info.valid, "token was valid");
       equal(info.email, "testuser@testuser.com", "email part of info");
-      equal(info.origin, "browserid.org", "origin in info");
-      equal(localStorage.initiatingOrigin, null, "initiating origin was removed");
+      equal(info.origin, testOrigin, "origin in info");
+      equal(storage.getStagedOnBehalfOf(), "", "initiating origin was removed");
 
       start();
     }, failure("verifyEmail failure"));
