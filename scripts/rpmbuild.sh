@@ -4,10 +4,10 @@ set -e
 
 progname=$(basename $0)
 
-cd $(dirname $0)    # top level of the checkout
+cd $(dirname $0)/..    # top level of the checkout
 
 curdir=$(basename $PWD)
-if [ "$curdir" != "browserid" ]; then  
+if [ "$curdir" != "browserid" ]; then
     echo "$progname: git checkout must be in a dir named 'browserid'" >&2
     exit 1
 fi
@@ -23,7 +23,7 @@ set +e
 rpmbuild --define "_topdir $PWD/rpmbuild" -ba browserid.spec
 rc=$?
 if [ $rc -eq 0 ]; then
-    ls -l $PWD/rpmbuild/RPMS/*/*.rpm   
+    ls -l $PWD/rpmbuild/RPMS/*/*.rpm
 else
     echo "$progname: failed to build browserid RPM (rpmbuild rc=$rc)" >&2
 fi
