@@ -56,7 +56,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       userCheckCount = 0,
       emailCheckCount = 0,
       registrationResponse,
-      xhrFailure = false; 
+      xhrFailure = false,
+      validToken = true; 
 
   var netStub = {
     reset: function() {
@@ -96,6 +97,14 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       var status = emailCheckCount === 2 ? registrationResponse : "pending";
 
       xhrFailure ? onFailure() : onSuccess(status);
+    },
+
+    emailForVerificationToken: function(token, onSuccess, onFailure) {
+      xhrFailure ? onFailure() : onSuccess("testuser@testuser.com");
+    },
+
+    completeEmailRegistration: function(token, onSuccess, onFailure) {
+      xhrFailure ? onFailure() : onSuccess(validToken);
     },
 
     removeEmail: function(email, onSuccess, onFailure) {
@@ -200,6 +209,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       netStub.reset();
       userCheckCount = 0;
       emailCheckCount = 0;
+      validToken = true;
     },
     teardown: function() {
       lib.setNetwork(BrowserID.Network);
@@ -606,6 +616,47 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+
+  test("verifyEmail with a good token", function() {
+    lib.verifyEmail("token", function onSuccess(info) {
+      
+      ok(info.valid, "token was valid");
+      equal(info.email, "testuser@testuser.com", "email part of info");
+      equal(info.origin, "browserid.org", "origin in info");
+
+      start();
+    }, failure("verifyEmail failure"));
+
+    stop();
+  });
+
+  test("verifyEmail with a bad token", function() {
+    validToken = false;
+
+    lib.verifyEmail("token", function onSuccess(info) {
+      
+      equal(info, null, "bad token calls onSuccess with null");
+
+      start();
+    }, failure("verifyEmail failure"));
+
+    stop();
+
+  });
+
+  test("verifyEmail with an XHR failure", function() {
+    xhrFailure = true;
+
+    lib.verifyEmail("token", function onSuccess(info) {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+      
+    stop();
+  });
 
   test("syncEmailKeypair with successful sync", function() {
     syncValid = true;
