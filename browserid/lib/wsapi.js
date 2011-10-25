@@ -278,7 +278,7 @@ function setup(app) {
 
         db.gotVerificationSecret(req.body.token, hash, function(err, email) {
           if (err) {
-            logger.error("error completing the verification: " + err);
+            logger.warn("couldn't complete email verification: " + err);
             resp.json({ success: false });
           } else {
             // FIXME: not sure if we want to do this (ba)
@@ -360,7 +360,7 @@ function setup(app) {
   app.post('/wsapi/complete_email_addition', checkParams(["token"]), function(req, resp) {
     db.gotVerificationSecret(req.body.token, undefined, function(e) {
       if (e) {
-        logger.error("error completing the verification: " + e);
+        logger.warn("couldn't complete email verification: " + e);
         resp.json({ success: false });
       } else {
         resp.json({ success: true });
