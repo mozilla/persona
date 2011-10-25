@@ -39,6 +39,7 @@ steal.plugins("jquery").then("/js/pages/add_email_address", function() {
 
   var bid = BrowserID,
       network = bid.Network,
+      storage = bid.Storage,
       emailForVerificationTokenFailure = false,
       completeEmailRegistrationFailure = false,
       validToken = true;
@@ -59,23 +60,23 @@ steal.plugins("jquery").then("/js/pages/add_email_address", function() {
       emailForVerificationTokenFailure = completeEmailRegistrationFailure = false;
       validToken = true;
       $(".error").stop().hide();
-      $("#origin").text("");
+      $(".website").text("");
     },
     teardown: function() {
       BrowserID.User.setNetwork(network);  
       $(".error").stop().hide();
-      $("#origin").text("");
+      $(".website").text("");
     }
   });
 
   test("addEmailAddress with good token and site", function() {
-    localStorage.initiatingOrigin = "browserid.org";
+    storage.setStagedOnBehalfOf("browserid.org");
 
     bid.addEmailAddress("token");
     
     equal($("#email").text(), "testuser@testuser.com", "email set");
     ok($("#siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
-    equal($("#origin").text(), "browserid.org", "origin is updated");
+    equal($("#siteinfo .website").text(), "browserid.org", "origin is updated");
   });
 
   test("addEmailAddress with good token and nosite", function() {
@@ -83,7 +84,7 @@ steal.plugins("jquery").then("/js/pages/add_email_address", function() {
     
     equal($("#email").text(), "testuser@testuser.com", "email set");
     equal($("#siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
-    equal($("#origin").text(), "", "origin is not updated");
+    equal($("#siteinfo .website").text(), "", "origin is not updated");
   });
 
   test("addEmailAddress with bad token", function() {

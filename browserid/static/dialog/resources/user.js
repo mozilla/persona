@@ -230,7 +230,7 @@ BrowserID.User = (function() {
       var self=this;
 
       // remember this for later
-      storage.setStagedOnBehalfOf(origin);
+      storage.setStagedOnBehalfOf(self.getHostname());
       
       network.createUser(email, origin, function(created) {
         if (onSuccess) {
@@ -452,7 +452,7 @@ BrowserID.User = (function() {
       var self = this;
       network.addEmail(email, origin, function(added) {
         if (added) {
-          localStorage.initiatingOrigin = self.getHostname();
+          storage.setStagedOnBehalfOf(self.getHostname());
           // we no longer send the keypair, since we will certify it later.
           if (onSuccess) {
             onSuccess(added);
@@ -489,10 +489,10 @@ BrowserID.User = (function() {
             var info = valid ? {
               valid: valid,
               email: email,
-              origin: localStorage.initiatingOrigin
+              origin: storage.getStagedOnBehalfOf()
             } : invalidInfo;
 
-            localStorage.removeItem("initiatingOrigin");
+            storage.setStagedOnBehalfOf("");
 
             if (onSuccess) onSuccess(info);
           }, onFailure);
