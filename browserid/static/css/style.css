@@ -724,7 +724,7 @@ h1 {
 }
 
 
-#signUpForm #siteinfo, #congrats {
+#congrats #siteinfo, #congrats {
   display: none;
 }
 
