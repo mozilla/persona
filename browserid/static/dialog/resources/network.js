@@ -37,8 +37,7 @@
 BrowserID.Network = (function() {
   "use strict";
 
-  var XHR_TIMEOUT = 10000,
-      csrf_token,
+  var csrf_token,
       xhr = $,
       server_time,
       auth_status,
@@ -71,8 +70,7 @@ BrowserID.Network = (function() {
       // to debug.
       success: deferResponse(options.success),
       error: deferResponse(xhrError(options.error, options.errorMessage)),
-      dataType: "json",
-      timeout: XHR_TIMEOUT
+      dataType: "json"
     });
   }
 
@@ -92,8 +90,7 @@ BrowserID.Network = (function() {
         // that are thrown in the response handlers and it becomes very difficult 
         // to debug.
         success: deferResponse(options.success),
-        error: deferResponse(xhrError(options.error, options.errorMessage)),
-        timeout: XHR_TIMEOUT
+        error: deferResponse(xhrError(options.error, options.errorMessage))
       });
     }, options.error);
   }
@@ -112,8 +109,7 @@ BrowserID.Network = (function() {
           auth_status = result.authenticated;
           cb();
         },
-        error: deferResponse(xhrError(onFailure)),
-        timeout: XHR_TIMEOUT
+        error: deferResponse(xhrError(onFailure))
       });
     }
   }
