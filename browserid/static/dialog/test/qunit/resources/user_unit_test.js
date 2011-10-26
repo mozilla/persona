@@ -76,6 +76,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       xhrFailure ? onFailure() : onSuccess(status);
     },
 
+    completeUserRegistration: function(token, password, onSuccess, onFailure) {
+      xhrFailure ? onFailure() : onSuccess(validToken);
+    },
+
     authenticate: function(email, password, onSuccess, onFailure) {
       xhrFailure ? onFailure() : onSuccess(credentialsValid);
     },
@@ -304,8 +308,12 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
    * stored in `registrationResponse`.
    */
   test("waitForUserValidation with `complete` response", function() {
+    storage.setStagedOnBehalfOf(testOrigin);
+
     lib.waitForUserValidation("testuser@testuser.com", function(status) {
       equal(status, "complete", "complete response expected");
+
+      ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       start();
     }, failure("waitForUserValidation failure"));
 
@@ -315,8 +323,12 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("waitForUserValidation with `mustAuth` response", function() {
     registrationResponse = "mustAuth";
 
+    storage.setStagedOnBehalfOf(testOrigin);
+
     lib.waitForUserValidation("testuser@testuser.com", function(status) {
       equal(status, "mustAuth", "mustAuth response expected");
+
+      ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       start();
     }, failure("waitForUserValidation failure"));
 
@@ -326,10 +338,13 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("waitForUserValidation with `noRegistration` response", function() {
     registrationResponse = "noRegistration";
 
+    storage.setStagedOnBehalfOf(testOrigin);
     lib.waitForUserValidation("baduser@testuser.com", function(status) {
       ok(false, "not expecting success")
+
       start();
     }, function(status) {
+      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       ok(status, "noRegistration", "noRegistration response causes failure");
       start();
     });
@@ -340,10 +355,12 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("waitForUserValidation with XHR failure", function() {
     xhrFailure = true;
 
+    storage.setStagedOnBehalfOf(testOrigin);
     lib.waitForUserValidation("baduser@testuser.com", function(status) {
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
+      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared on XHR failure");
       ok(true, "xhr failure should always be a failure"); 
       start();
     });
@@ -351,6 +368,48 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  test("verifyUser with a good token", function() {
+    storage.setStagedOnBehalfOf(testOrigin);
+    lib.verifyUser("token", "password", function onSuccess(info) {
+      
+      ok(info.valid, "token was valid");
+      equal(info.email, "testuser@testuser.com", "email part of info");
+      equal(info.origin, testOrigin, "origin in info");
+      equal(storage.getStagedOnBehalfOf(), "", "initiating origin was removed");
+
+      start();
+    }, failure("verifyUser failure"));
+
+    stop();
+  });
+
+  test("verifyUser with a bad token", function() {
+    validToken = false;
+
+    lib.verifyUser("token", "password", function onSuccess(info) {
+      
+      equal(info.valid, false, "bad token calls onSuccess with a false validity");
+
+      start();
+    }, failure("verifyUser failure"));
+
+    stop();
+
+  });
+
+  test("verifyUser with an XHR failure", function() {
+    xhrFailure = true;
+
+    lib.verifyUser("token", "password", function onSuccess(info) {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
+      start();
+    });
+      
+    stop();
+  });
 
   test("setPassword", function() {
     lib.setPassword("password", function() {
@@ -572,7 +631,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
    * stored in `registrationResponse`.
    */
  test("waitForEmailValidation `complete` response", function() {
+    storage.setStagedOnBehalfOf(testOrigin);
+
     lib.waitForEmailValidation("testemail@testemail.com", function(status) {
+      ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       equal(status, "complete", "complete response expected");
       start();
     }, failure("waitForEmailValidation failure"));
@@ -581,9 +643,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("waitForEmailValidation `mustAuth` response", function() {
+    storage.setStagedOnBehalfOf(testOrigin);
     registrationResponse = "mustAuth";
 
     lib.waitForEmailValidation("testemail@testemail.com", function(status) {
+      ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       equal(status, "mustAuth", "mustAuth response expected");
       start();
     }, failure("waitForEmailValidation failure"));
@@ -592,12 +656,14 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("waitForEmailValidation with `noRegistration` response", function() {
+    storage.setStagedOnBehalfOf(testOrigin);
     registrationResponse = "noRegistration";
 
     lib.waitForEmailValidation("baduser@testuser.com", function(status) {
       ok(false, "not expecting success")
       start();
     }, function(status) {
+      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       ok(status, "noRegistration", "noRegistration response causes failure");
       start();
     });
@@ -607,11 +673,14 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
  test("waitForEmailValidation XHR failure", function() {
+    storage.setStagedOnBehalfOf(testOrigin);
     xhrFailure = true;
+
     lib.waitForEmailValidation("testemail@testemail.com", function(status) {
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
+      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       ok(true, "xhr failure should always be a failure"); 
       start();
     });

@@ -108,6 +108,10 @@ BrowserID.User = (function() {
         //   'mustAuth' - user must authenticate
         //   'noRegistration' - no registration is in progress
         if (status === "complete" || status === "mustAuth") {
+          // As soon as the registration comes back as complete, we should 
+          // ensure that the stagedOnBehalfOf is cleared so there is no stale 
+          // data.
+          storage.setStagedOnBehalfOf("");
           if (onSuccess) {
             onSuccess(status);
           }
@@ -248,6 +252,35 @@ BrowserID.User = (function() {
      */
     waitForUserValidation: function(email, onSuccess, onFailure) {
       registrationPoll(network.checkUserRegistration, email, onSuccess, onFailure);
+    },
+
+    /**
+     * Verify a user
+     * @method verifyUser
+     * @param {string} token - token to verify.
+     * @param {string} password - password to set for account.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    verifyUser: function(token, password, onSuccess, onFailure) {
+      network.emailForVerificationToken(token, function (email) {
+        var invalidInfo = { valid: false };
+        if (email) {
+          network.completeUserRegistration(token, password, function (valid) {
+            var info = valid ? {
+              valid: valid,
+              email: email,
+              origin: storage.getStagedOnBehalfOf()
+            } : invalidInfo;
+
+            storage.setStagedOnBehalfOf("");
+
+            if (onSuccess) onSuccess(info);
+          }, onFailure);
+        } else if(onSuccess) {
+          onSuccess(invalidInfo);
+        }
+      }, onFailure);
     },
 
     /**

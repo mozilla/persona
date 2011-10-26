@@ -78,6 +78,7 @@
         self.doCheckAuth();
 
         $(window).bind("unload", function() {
+          bid.Storage.setStagedOnBehalfOf("");
           self.doCancel();
         });
       },
