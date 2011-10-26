@@ -1,90 +1,35 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">  
-  <!--[if lt IE 9]>
-    <script type="text/javascript" src="/js/html5shim.js"></script>
-  <![endif]-->
-  <% if (production) { %>
-      <link href="/dialog/css/production.min.css" rel="stylesheet" type="text/css">
-  <% } else { %>
-      <link href="/dialog/css/popup.css" rel="stylesheet" type="text/css">
-      <link href="/dialog/css/m.css" rel="stylesheet" type="text/css">
-  <% } %>
-  <link href="https://fonts.googleapis.com/css?family=Droid+Serif:400,400italic,700,700italic" rel="stylesheet" type="text/css">
-  <title>Browser ID</title>
-</head>
-  <body class="waiting">
-      <div id="wrapper">
-          <header id="header" class="cf">
-              <ul>
-                  <li><a class="home" target="_blank" href="/"></a></li>
-              </ul>
-          </header>
-
-          <div id="content">
-              <section id="formWrap">
-                <form novalidate> 
-                  <div id="favicon">
-                      <div class="vertical">
-                          <strong id="sitename"></strong>
-                      </div>
-                  </div>
-
-                  <div id="signIn">
-                      <div class="arrow"></div>
-                      <div class="table">
-                          <div class="vertical contents">
-                          </div>
-                      </div>
-                  </div>
-                </form>
-              </section>
-
-
-              <section id="wait">
-                  <div class="table">
-                      <div class="vertical contents">
-                          <h2>Communicating with server</h2>
-                          <p>Just a moment while we talk with the server.</p>
-                      </div>
-                  </div>
-              </section>
-
-
-              <section id="error">
-                  <div class="table">
-                      <div class="vertical contents">
-                      </div>
-                  </div>
-              </section>
-          </div>
-
-          <footer>
-                <ul class="cf">
-                    <li>By <a href="http://mozillalabs.com">Mozilla Labs</a></li>
-
-                    <li>&mdash;</li>           
-                    <li><a href="#">Privacy</a></li>
-                    <li><a href="#">TOS</a></li>
-                </ul>
-
-                <div class="learn">
-                    BrowserID is the fast and secure way to sign in &mdash; <a target="_blank" href="/about">learn more</a>
-                </div>
-
-                <a class="help" href="https://support.mozilla.com/en-US/kb/what-browserid-and-how-does-it-work" target="_blank">need help?</a>
-          </footer>
-
-      </div>
-
-      <script type="text/html" id="templateTooltip">
-        <div class="tooltip">
-          {{ contents }}
+    <section id="formWrap">
+      <form novalidate> 
+        <div id="favicon">
+            <div class="vertical">
+                <strong id="sitename"></strong>
+            </div>
         </div>
-      </script>
-      <script type="text/javascript" src="/vepbundle"></script>
-      <script type="text/javascript" src="steal/steal<%= production ? '.production' : '' %>.js?dialog"></script>
-	</body>
-</html>
+
+        <div id="signIn">
+            <div class="arrow"></div>
+            <div class="table">
+                <div class="vertical contents">
+                </div>
+            </div>
+        </div>
+      </form>
+    </section>
+
+
+    <section id="wait">
+        <div class="table">
+            <div class="vertical contents">
+                <h2>Communicating with server</h2>
+                <p>Just a moment while we talk with the server.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="error">
+        <div class="table">
+            <div class="vertical contents">
+            </div>
+        </div>
+    </section>

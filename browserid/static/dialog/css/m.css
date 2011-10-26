@@ -111,6 +111,19 @@
       height: 250px;
   }
 
-}
+  #error .vertical {
+    width: auto;
+  }
+  #error .vertical > div {
+    display: block;
+    height: auto;
+    padding: 10px;
+  }
+
+  #error #borderbox {
+    border-left: none;
+    padding: 0;
+  }
+
 
 

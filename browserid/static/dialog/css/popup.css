@@ -118,16 +118,17 @@ section > .contents {
 
 #wait, #error {
     text-align: center;
-    background-image: url("/i/bg.png");
 }
 
 #wait {
     z-index: 1;
+    background-image: url("/i/bg.png");
 }
 
 #error {
     display: none;
     z-index: 2;
+    background-color: #fff;
 }
 
 #wait strong, #error strong {
@@ -135,9 +136,39 @@ section > .contents {
     font-weight: bold;
 }
 
-#error {
-    z-index: 2;
+
+#error .vertical {
+    width: 630px;
+    margin: 0 auto;
+    display: block;
 }
+
+
+#error .vertical > div {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0 10px;
+    height: 250px;
+}
+
+#error #alternative a {
+    color: #549FDC;
+    text-decoration: underline;
+}
+
+#error #borderbox {
+    border-left: 1px solid #777;
+    padding: 20px 0;
+}
+
+#error #borderbox img {
+    border: none;
+}
+
+#error #alternative .lighter {
+    color: #777;
+}
+
 
 #formWrap {
     background-color: #fff;

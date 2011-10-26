@@ -41,16 +41,21 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
       bodyTemplate = "testBodyTemplate.ejs",
       waitTemplate = "wait.ejs";
 
+  function reset() {
+    el = $("#controller_head");
+    el.find("#formWrap .contents").html("");
+    el.find("#wait .contents").html("");
+    el.find("#error .contents").html("");
+  }
+
   module("PageController", {
     setup: function() {
-      el = $("#page_controller");
+      reset();
     },
 
     teardown: function() {
-      el.find("#formWrap .contents").html("");
-      el.find("#wait .contents").html("");
-      el.find("#error .contents").html("");
       controller.destroy();
+      reset();
     } 
   });
 
@@ -76,10 +81,11 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     var html = el.find("#formWrap .contents").html();
     ok(html.length, "with template specified, form text is loaded");
 
+/*
 
     var input = el.find("input").eq(0);
     ok(input.is(":focus"), "make sure the first input is focused");
-
+*/
     html = el.find("#wait .contents").html();
     equal(html, "", "with body template specified, wait text is not loaded");
   });
@@ -100,6 +106,22 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     ok(html.length, "with wait template specified, wait text is loaded");
   });
 
+  test("page controller with error template renders in #error .contents", function() {
+    controller = el.page({
+      errorTemplate: waitTemplate,
+      errorVars: {
+        title: "Test title",
+        message: "Test message"
+      }
+    }).controller();
+
+    var html = el.find("#formWrap .contents").html();
+    equal(html, "", "with error template specified, form is ignored");
+
+    html = el.find("#error .contents").html();
+    ok(html.length, "with error template specified, error text is loaded");
+  });
+
   test("renderError renders an error message", function() {
     controller = el.page({
       waitTemplate: waitTemplate,
@@ -109,7 +131,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
       }
     }).controller();
    
-    controller.renderError({
+    controller.renderError("wait.ejs", {
       title: "error title",
       message: "error message"
     });

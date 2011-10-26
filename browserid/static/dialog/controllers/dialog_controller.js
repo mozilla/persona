@@ -50,18 +50,17 @@
   PageController.extend("Dialog", {}, {
       init: function(el) {
         var self=this;
-        //this.element.show();
 
         // keep track of where we are and what we do on success and error
         self.onsuccess = null;
         self.onerror = null;
         setupChannel(self);
         self.stateMachine();
+       
       },
         
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {
         var self=this;
-
         self.onsuccess = onsuccess;
         self.onerror = onerror;
 
@@ -71,8 +70,6 @@
         }
 
         user.setOrigin(origin_url);
-        
-        // get the cleaned origin.
         $("#sitename").text(user.getHostname());
 
         self.doCheckAuth();
@@ -88,7 +85,6 @@
         var self=this, 
             hub = OpenAjax.hub, 
             el = this.element;
-       
 
         hub.subscribe("offline", function(msg, info) {
           self.doOffline();
@@ -119,7 +115,7 @@
         });
 
         hub.subscribe("assertion_generated", function(msg, info) {
-          if(info.assertion !== null) {
+          if (info.assertion !== null) {
             self.doAssertionGenerated(info.assertion);
           }
           else {
@@ -158,12 +154,12 @@
       },
 
       doOffline: function() {
-        this.renderError(errors.offline);
+        this.renderError("wait.ejs", errors.offline);
         offline = true;
       },
 
       doXHRError: function(info) {
-        if (!offline) this.renderError(errors.offline);  
+        if (!offline) this.renderError("wait.ejs", errors.offline);  
       },
 
       doConfirmUser: function(email) {
@@ -178,7 +174,7 @@
 
       doCancel: function() {
         var self=this;
-        if(self.onsuccess) {
+        if (self.onsuccess) {
           self.onsuccess(null);
         }
       },

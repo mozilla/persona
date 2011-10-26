@@ -557,55 +557,88 @@
     };
   })();
 
-  function getInternetExplorerVersion() {
-    var rv = -1; // Return value assumes failure.
-    if (navigator.appName == 'Microsoft Internet Explorer') {
-      var ua = navigator.userAgent;
-      var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
-      if (re.exec(ua) != null)
-        rv = parseFloat(RegExp.$1);
+  var BrowserSupport = (function() {
+    var win = window,
+        nav = navigator,
+        reason;
+
+    // For unit testing
+    function setTestEnv(newNav, newWindow) {
+      nav = newNav;
+      win = newWindow;
     }
 
-    return rv;
-  }
+    function getInternetExplorerVersion() {
+      var rv = -1; // Return value assumes failure.
+      if (nav.appName == 'Microsoft Internet Explorer') {
+        var ua = nav.userAgent;
+        var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+        if (re.exec(ua) != null)
+          rv = parseFloat(RegExp.$1);
+      }
 
-  function checkIE() {
-    var ieVersion = getInternetExplorerVersion(),
-        ieNosupport = ieVersion > -1 && ieVersion < 9,
-        message;
-
-    if(ieNosupport) {
-      message = "Unfortunately, your version of Internet Explorer is not yet supported.\n" +
-            'If you are using Internet Explorer 9, turn off "Compatibility View".';
+      return rv;
     }
 
-    return message;
-  }
+    function checkIE() {
+      var ieVersion = getInternetExplorerVersion(),
+          ieNosupport = ieVersion > -1 && ieVersion < 9;
 
-  function explicitNosupport() {
-    var message = checkIE();
-
-    if (message) {
-       message += "\nWe are working hard to bring BrowserID support to your browser!";
-       alert(message);
+      if(ieNosupport) {
+        return "IE_VERSION";
+      }
     }
 
-    return message;
-  }
-
-  function checkRequirements() {
-    var localStorage = 'localStorage' in window && window['localStorage'] !== null;
-    var postMessage = !!window.postMessage;
-    var json = true;
-
-    var explicitNo = explicitNosupport()
-
-    if(!explicitNo && !(localStorage && postMessage && json)) {
-      alert("Unfortunately, your browser does not meet the minimum HTML5 support required for BrowserID.");
+    function explicitNosupport() {
+      return checkIE();
     }
 
-    return localStorage && postMessage && json && !(explicitNo);
-  }
+    function checkLocalStorage() {
+      var localStorage = 'localStorage' in win && win['localStorage'] !== null;
+      if(!localStorage) {
+        return "LOCALSTORAGE";
+      }
+    }
+
+    function checkPostMessage() {
+      if(!win.postMessage) {
+        return "POSTMESSAGE";
+      }
+    }
+
+    function isSupported() {
+      reason = checkLocalStorage() || checkPostMessage() || explicitNosupport();
+
+      return !reason;
+    }
+
+    function getNoSupportReason() {
+      return reason;
+    }
+
+    return {
+      /**
+       * Set the test environment.
+       * @method setTestEnv
+       */
+      setTestEnv: setTestEnv,
+      /**
+       * Check whether the current browser is supported
+       * @method isSupported
+       * @returns {boolean}
+       */
+      isSupported: isSupported,
+      /**
+       * Called after isSupported, if isSupported returns false.  Gets the reason 
+       * why browser is not supported.
+       * @method getNoSupportReason
+       * @returns {string}
+       */
+      getNoSupportReason: getNoSupportReason
+    };
+    
+  }());
+
 
   // this is for calls that are non-interactive
   function _open_hidden_iframe(doc) {
@@ -636,16 +669,20 @@
     return iframe;
   }
   
-  function _open_window() {
+  function _open_window(url) {
+    url = url || "about:blank";
     // we open the window initially blank, and only after our relay frame has
     // been constructed do we update the location.  This is done because we
     // must launch the window inside a click handler, but we should wait to
     // start loading it until our relay iframe is instantiated and ready.
     // see issue #287 & #286
-    return window.open(
-      "about:blank",
+    var dialog = window.open(
+      url,
       "_mozid_signin",
       isFennec ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=700,height=375");
+
+    dialog.focus();
+    return dialog;
   }
 
   function _attach_event(element, name, listener) {
@@ -684,13 +721,14 @@
 
     // keep track of these so that we can re-use/re-focus an already open window.
     navigator.id.getVerifiedEmail = function(callback) {
-      if(!checkRequirements()) {
-        return;
-      }
-
       if (w) {
         // if there is already a window open, just focus the old window.
         w.focus();
+        return;
+      }
+
+      if (!BrowserSupport.isSupported()) {
+        w = _open_window(ipServer + "/unsupported_dialog");
         return;
       }
 
@@ -712,8 +750,7 @@
           // has a problem re-attaching new iframes with the same name.  Code inside
           // of frames with the same name sometimes does not get run.
           // See https://bugzilla.mozilla.org/show_bug.cgi?id=350023
-          w.location = ipServer + "/sign_in#" + frameid;
-          w.focus();
+          w = _open_window(ipServer + "/sign_in#" + frameid);
         }
       });
 
@@ -721,8 +758,10 @@
         chan.destroy();
         chan = null;
 
-        w.close();
-        w = null;
+        if (w) {
+          w.close();
+          w = null;
+        }
 
         iframe.parentNode.removeChild(iframe);
         iframe = null;
