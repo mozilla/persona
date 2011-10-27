@@ -45,18 +45,28 @@
   var bid = BrowserID,
       user = bid.User,
       errors = bid.Errors,
-      offline = false;
+      offline = false,
+      win = window;
+      
 
   PageController.extend("Dialog", {}, {
-      init: function(el) {
+      init: function(el, options) {
+        offline = false;
+
+        options = options || {};
+
+        if(options.window) {
+          win = options.window;
+        }
+
         var self=this;
 
         // keep track of where we are and what we do on success and error
         self.onsuccess = null;
         self.onerror = null;
-        setupChannel(self);
+
+        win.setupChannel(self);
         self.stateMachine();
-       
       },
         
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {
@@ -74,7 +84,7 @@
 
         self.doCheckAuth();
 
-        $(window).bind("unload", function() {
+        $(win).bind("unload", function() {
           bid.Storage.setStagedOnBehalfOf("");
           self.doCancel();
         });
@@ -154,12 +164,16 @@
       },
 
       doOffline: function() {
-        this.renderError("wait.ejs", errors.offline);
+        this.renderError("offline.ejs", {});
         offline = true;
       },
 
       doXHRError: function(info) {
-        if (!offline) this.renderError("wait.ejs", errors.offline);  
+        if (!offline) {
+          this.renderError("error.ejs", $.extend({
+            action: errors.xhrError
+          }, info));
+        }
       },
 
       doConfirmUser: function(email) {

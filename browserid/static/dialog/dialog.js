@@ -68,7 +68,9 @@ steal.plugins(
 	.views('authenticate.ejs',
            'confirmemail.ejs',
            'pickemail.ejs',
-           'wait.ejs'
+           'wait.ejs',
+           'error.ejs',
+           'offline.ejs'
           ).
 
           then(function() {

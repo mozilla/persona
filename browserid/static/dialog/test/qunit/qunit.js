@@ -1,5 +1,6 @@
 steal("/dialog/resources/browserid.js",
       "/dialog/resources/browser-support.js",
+      "/dialog/resources/error-messages.js",
       "/dialog/resources/storage.js",
       "/dialog/resources/tooltip.js",
       "/dialog/resources/validation.js",
@@ -11,9 +12,11 @@ steal("/dialog/resources/browserid.js",
     "jquery/controller/view",
     "jquery/view/ejs",
     "funcunit/qunit")
-	.views('testBodyTemplate.ejs')
-	.views('wait.ejs',
-         'pickemail.ejs')
+	.views('testBodyTemplate.ejs',
+         'wait.ejs',
+         'pickemail.ejs',
+         'offline.ejs',
+         'error.ejs')
   .then("browserid_unit_test")
   .then("include_unit_test")
   .then("relay/relay_unit_test")
@@ -26,4 +29,5 @@ steal("/dialog/resources/browserid.js",
   .then("resources/user_unit_test")
   .then("controllers/page_controller_unit_test")
   .then("controllers/pickemail_controller_unit_test")
+  .then("controllers/dialog_controller_unit_test")
 

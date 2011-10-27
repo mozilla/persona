@@ -145,12 +145,16 @@
     /**
      * Get a curried function to an error dialog.
      * @method getErrorDialog
-     * @method {object} info - info to use for the error dialog.  Should have 
+     * @method {object} action - info to use for the error dialog.  Should have 
      * two fields, message, description.
      */
-    getErrorDialog: function(info) {
+    getErrorDialog: function(action) {
       var self=this;
-      return self.renderError.bind(self, "wait.ejs", info);
+      return function(lowLevelInfo) {
+        self.renderError("error.ejs", $.extend({
+          action: action
+        }, lowLevelInfo));
+      }
     },
 
     onCancel: function(event) {

@@ -48,7 +48,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     el.find("#error .contents").html("");
   }
 
-  module("PageController", {
+  module("/controllers/page_controller", {
     setup: function() {
       reset();
     },
@@ -150,9 +150,10 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
       }
     }).controller();
    
+    // This is the medium level info.
     var func = controller.getErrorDialog({
-      title: "error title",
-      message: "error message"
+      title: "medium level info error title",
+      message: "medium level info error message"
     });
 
     equal(typeof func, "function", "a function was returned from getErrorDialog");

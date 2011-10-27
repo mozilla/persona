@@ -1,0 +1,27 @@
+
+  <h2>There has been an error!</h2>
+
+  <p>
+    We are very sorry, but there has been an error. You can open the error message below
+    if you care to find out more information.  To retry, you will have to close BrowserID and try again.
+  </p>
+
+  <a href="#">See more info</a>
+
+  <aside>
+    <% if (typeof action !== "undefined") { %>
+      <h3 id="action">Action: <%= action.title %></h3>
+      <p>
+        <%= action.message %>
+      </p>  
+    <% } %>
+
+    <% if (typeof network !== "undefined") { %>
+      <h3 id="network">Network Info: </h3>
+      <p>
+        <%= network.type %>: <%= network.url %>
+      </p>  
+
+    <% } %>
+
+  </aside>
