@@ -12,8 +12,8 @@ steal("/dialog/resources/browserid.js",
     "jquery/view/ejs",
     "funcunit/qunit")
 	.views('testBodyTemplate.ejs')
-	.views('wait.ejs')
-  .then("/dialog/controllers/page_controller.js")
+	.views('wait.ejs',
+         'pickemail.ejs')
   .then("browserid_unit_test")
   .then("include_unit_test")
   .then("pages/add_email_address_test")
@@ -23,5 +23,5 @@ steal("/dialog/resources/browserid.js",
   .then("resources/network_unit_test")
   .then("resources/user_unit_test")
   .then("controllers/page_controller_unit_test")
-  .then("controllers/page_controller_unit_test")
+  .then("controllers/pickemail_controller_unit_test")
 

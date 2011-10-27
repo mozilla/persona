@@ -300,6 +300,10 @@ label {
     color: #333;
 }
 
+.inputs > li > label.preselected {
+    font-weight: bold;
+}
+
 .inputs > li:only-child > label {
     cursor: default;
 }
