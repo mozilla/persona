@@ -43,41 +43,114 @@
     log: function() {}
   };
 
-  var ipServer = "https://browserid.org",
-      transaction,
-      origin,
-      chan = Channel.build( {
-        window: window.parent,
+  BrowserID.Relay = (function() {
+    var transaction,
+        origin,
+        channel = Channel,
+        win = window,
+        registerCB;
+
+
+    function init(options) {
+      origin = transaction = registerCB = undefined;
+
+      if(options.window) {
+        win = options.window;
+      }
+
+      if(options.channel) {
+        channel = options.channel;
+      }
+    }
+
+    function open() {
+      var rpc = channel.build({
+        window: win,
         origin: "*",
         scope: "mozid"
-      } );
+      });
 
+      rpc.bind("getVerifiedEmail", function(trans, s) {
+        trans.delayReturn(true);
+        origin = trans.origin;
+        transaction = trans;
 
-  window.register_dialog = function(callback) {
-    // register the dialog, tell the dialog what the origin is.  
-    // Get the origin from the channel binding.
-    callback(origin);
-  };
+        // If the client has run early and already registered its registration 
+        // callback, call it now.
+        if (registerCB) {
+          registerCB(origin, completionCB);  
+        }
+      });
+    }
 
-  window.browserid_relay = function(status, error) {
-      if(error) {
-        errorOut(transaction, error);
+    function registerClient(callback) {
+      // If the origin is ready, call the callback immediately.
+      if (origin) {
+        callback(origin, completionCB);
       }
       else {
-        try {
-          transaction.complete(status);
-        } catch(e) {
-          // The relay function is called a second time after the 
-          // initial success, when the window is closing.
-        }
+        registerCB = callback;
       }
-  };
+    }
 
-  chan.bind("getVerifiedEmail", function(trans, s) {
-    origin = trans.origin;
-    trans.delayReturn(true);
+    function errorOut(code) {
+      function getVerboseMessage(code) {
+        var msgs = {
+          "canceled": "user canceled selection",
+          "notImplemented": "the user tried to invoke behavior that's not yet implemented",
+          "serverError": "a technical problem was encountered while trying to communicate with BrowserID servers."
+        };
+        var msg = msgs[code];
+        if (!msg) {
+          alert("need verbose message for " + code);
+          msg = "unknown error";
+            }
+        return msg;
+      }
+      transaction.error(code, getVerboseMessage(code));
+    }
 
-    transaction = trans;
-  });
+    /**
+     * The client calls this to relay a message back to the RP whenever it is 
+     * complete.  This function is passed to the client when the client does 
+     * its registerClient.
+     */
+    function completionCB(status, error) {
+        if(error) {
+          errorOut(error);
+        }
+        else {
+          try {
+            transaction.complete(status);
+          } catch(e) {
+            // The relay function is called a second time after the 
+            // initial success, when the window is closing.
+          }
+        }
+    }
+
+
+    return {
+      /**
+       * Initialize the relay. 
+       * @method init
+       * @param {object} [options] - options used to override window, channel 
+       * for unit testing.
+       */
+      init: init,
+
+      /**
+       * Open the relay with the parent window.
+       * @method open
+       */
+      open: open,
+
+      /**
+       * Register a client to use the relay
+       * @method registerClient
+       */
+      registerClient: registerClient
+    };
+  }());
 
 }());
