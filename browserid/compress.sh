@@ -37,7 +37,7 @@ cat popup.css m.css > production.css
 $JAVA -jar $YUI_LOCATION production.css -o production.min.css
 
 cd ../../relay
-cat ../dialog/resources/jschannel.js relay.js > production.js
+cat ../dialog/resources/jschannel.js ../dialog/resources/browserid.js relay.js > production.js
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
 

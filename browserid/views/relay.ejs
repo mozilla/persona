@@ -14,7 +14,19 @@
         <script type='text/javascript' 
           src='https://browserid.org/dialog/resources/jschannel.js'></script>
         <script type='text/javascript' 
+          src='https://browserid.org/dialog/resources/browserid.js'></script>
+        <script type='text/javascript' 
           src='https://browserid.org/relay/relay.js'></script>
       <% } %>
+
+      <script type="text/javascript">
+        var relay = BrowserID.Relay;
+        relay.init({
+          channel: Channel,
+          window: window.parent
+        });
+
+        relay.open();
+      </script>
 	</body>
 </html>

@@ -52,93 +52,90 @@
 
 
 (function() {
-  function getRelayID() {
-    return window.location.href.slice(window.location.href.indexOf('#') + 1);
-  }
+  var win = window,
+      nav = navigator,
+      onCompleteCallback;
 
   function getRelayName() {
-    return "browserid_relay_" + getRelayID();
+    var relayID = win.location.href.slice(win.location.href.indexOf('#') + 1);
+    return "browserid_relay_" + relayID;
   }
 
   function getRelayWindow() {
-    var frameWindow = window.opener.frames[getRelayName()];
+    var frameWindow = win.opener.frames[getRelayName()];
     return frameWindow;
   }
 
-  function registerWithRelayFrame(callback) {
+  function setupNativeChannel(controller) {
+    nav.id.channel.registerController(controller);
+  };
+
+  function setupIFrameChannel(controller) {
+    // TODO - Add a check for whether the dialog was opened by another window
+    // (has window.opener) as well as whether the relay function exists.
+    // If these conditions are not met, then print an appropriate message.
+
+    function onsuccess(rv) {
+      onCompleteCallback(rv, null);
+    }
+
+    function onerror(error) {
+      onCompleteCallback(null, error);
+    }
+
+    // The relay frame will give us the origin and a function to call when 
+    // dialog processing is complete.
     var frameWindow = getRelayWindow();
     if (frameWindow) {
-      frameWindow['register_dialog'](callback);
+      frameWindow.BrowserID.Relay.registerClient(function(origin, onComplete) {
+        onCompleteCallback = onComplete;
+        controller.getVerifiedEmail(origin, onsuccess, onerror);
+      });
     }
-  }
 
-  function getRPRelay() {
-    var frameWindow = getRelayWindow();
-    return frameWindow && frameWindow['browserid_relay'];
-  }
+    win.location.hash = '';
+  };
 
-
-  function errorOut(trans, code) {
-    function getVerboseMessage(code) {
-      var msgs = {
-        "canceled": "user canceled selection",
-        "notImplemented": "the user tried to invoke behavior that's not yet implemented",
-        "serverError": "a technical problem was encountered while trying to communicate with BrowserID servers."
-      };
-      var msg = msgs[code];
-      if (!msg) {
-        alert("need verbose message for " + code);
-        msg = "unknown error";
-          }
-      return msg;
-    }
-    trans.error(code, getVerboseMessage(code));
-    window.self.close();
-  }
-
-
-  window.setupChannel = function(controller) {
-    if (navigator.id && navigator.id.channel)
+  function open(controller) {
+    if (nav.id && nav.id.channel)
       setupNativeChannel(controller);
     else
       setupIFrameChannel(controller);
   };
 
-  var setupNativeChannel = function(controller) {
-    navigator.id.channel.registerController(controller);
-  };
 
-  var setupIFrameChannel = function(controller) {
-    // TODO - Add a check for whether the dialog was opened by another window
-    // (has window.opener) as well as whether the relay function exists.
-    // If these conditions are not met, then print an appropriate message.
+  function init(options) {
+    onCompleteCallback = undefined;
 
-    // get the relay here at the time the channel is setup before any navigation has
-    // occured.  if we wait the window hash might change as a side effect to user
-    // navigation, which would cause us to not find our parent window.
-    // issue #295
-    var relay = getRPRelay();
-    
-    function onsuccess(rv) {
-      // Get the relay here so that we ensure that the calling window is still
-      // open and we aren't causing a problem.
-      if (relay) {
-        relay(rv, null);
-      }
+    if(options.navigator) {
+      nav = navigator;
     }
 
-    function onerror(error) {
-      if (relay) {
-        relay(null, error);
-      }
+    if(options.window) {
+      win = options.window;
     }
+  }
 
-    // The relay frame will give us the origin.
-    registerWithRelayFrame(function(origin) {
-      controller.getVerifiedEmail(origin, onsuccess, onerror);
-    });
 
-    window.location.hash = '';
-  };
+  if(window.BrowserID) {
+    BrowserID.Channel = {
+      /**
+       * Used to intialize the channel, mostly for unit testing to override 
+       * window and navigator.
+       * @method init
+       */
+      init: init,
+      /**
+       * Open the channel.
+       * @method open 
+       */
+      open: open
+    };
+  }
 
+  /**
+   * This is here as a legacy API for addons/etc that are depending on 
+   * window.setupChannel;
+   */
+  window.setupChannel = open;
 }());
