@@ -180,7 +180,12 @@
       },
 
       doPickEmail: function() {
-        this.element.pickemail();
+        this.element.pickemail({
+          // XXX ideal is to get rid of this and have a User function 
+          // that takes care of getting email addresses AND the last used email 
+          // for this site.
+          origin: user.getHostname()
+        });
       },
 
       doAuthenticate: function(info) {

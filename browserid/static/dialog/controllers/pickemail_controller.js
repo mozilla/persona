@@ -41,6 +41,8 @@
       bid = BrowserID,
       user = bid.User,
       errors = bid.Errors,
+      storage = bid.Storage,
+      origin,
       body = $("body"),
       animationComplete = body.innerWidth() < 640,
       assertion;
@@ -109,6 +111,9 @@
     // the animation, hopefully this minimizes the delay the user notices.
     var self=this;
     user.getAssertion(email, function(assert) {
+      // XXX make a user api call that gets the assertion and sets the site 
+      // email as well.
+      storage.setSiteEmail(origin, email);
       assertion = assert || null;
       startAnimation.call(self);
     }, self.getErrorDialog(errors.getAssertion));
@@ -176,10 +181,16 @@
 
   PageController.extend("Pickemail", {}, {
     init: function(el, options) {
+      origin = options.origin;
+
       this._super(el, {
         bodyTemplate: "pickemail.ejs",
         bodyVars: {
-          identities: user.getStoredEmailKeypairs()
+          identities: user.getStoredEmailKeypairs(),
+          // XXX ideal is to get rid of this and have a User function 
+          // that takes care of getting email addresses AND the last used email 
+          // for this site.
+          siteemail: storage.getSiteEmail(options.origin)
         }
       });
 
