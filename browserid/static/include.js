@@ -1,4 +1,7 @@
-/* ***** BEGIN LICENSE BLOCK *****
+/**
+ * Uncompressed source can be found at https://browserid.org/include.orig.js
+ *
+ * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -33,9 +36,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// this is the file that the RP includes to shim in the
-// navigator.id.getVerifiedEmail() function
 (function() {
+  // this is the file that the RP includes to shim in the
+  // navigator.id.getVerifiedEmail() function
   "use strict";
 
   // local embedded copy of jschannel: http://github.com/mozilla/jschannel
@@ -594,17 +597,6 @@
     var localStorage = 'localStorage' in window && window['localStorage'] !== null;
     var postMessage = !!window.postMessage;
     var json = true;
-
-    if(window.JSON) {
-      // If there is no native JSON support, we use Crockford's JSON2 library.
-      try {
-        // Android < 3 blows up on this.
-        JSON.parse(null);
-      }
-      catch(e) {
-        json = false;
-      }
-    }
 
     var explicitNo = explicitNosupport()
 

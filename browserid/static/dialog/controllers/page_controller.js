@@ -42,13 +42,23 @@
 
   $.Controller.extend("PageController", {
     }, {
-    init: function(options) {
+    init: function(el, options) {
+      options = options || {};
+
       var me=this,
           bodyTemplate = options.bodyTemplate,
-          bodyVars = options.bodyVars;
+          bodyVars = options.bodyVars,
+          waitTemplate = options.waitTemplate,
+          waitVars = options.waitVars;
 
 
-      me.renderTemplates(bodyTemplate, bodyVars);
+      if(bodyTemplate) {
+        me.renderDialog(bodyTemplate, bodyVars);
+      }
+
+      if(waitTemplate) {
+        me.renderWait(waitTemplate, waitVars);
+      }
 
       // XXX move all of these, bleck.
       $("form").bind("submit", me.onSubmit.bind(me));
@@ -69,16 +79,30 @@
       this._super();
     },
 
-    renderTemplates: function(body, body_vars) {
-
+    renderTemplates: function(target, body, body_vars) {
       if (body) {
         var bodyHtml = $.View("//dialog/views/" + body, body_vars);
-        var form = $("#formWrap > form");
-        form.html(bodyHtml).hide().fadeIn(ANIMATION_TIME, function() {
-          $("body").removeClass("waiting");
-          form.find("input").eq(0).focus(); 
-        });
+        target = $(target + " .contents");
+        target.html(bodyHtml).find("input").eq(0).focus(); 
       }
+    },
+
+    renderDialog: function(body, body_vars) {
+      this.renderTemplates("#formWrap", body, body_vars);
+      $("body").removeClass("error").removeClass("waiting").addClass("form");
+      $("#wait, #error").stop().fadeOut(ANIMATION_TIME);
+    },
+
+    renderWait: function(body, body_vars) {
+      this.renderTemplates("#wait", body, body_vars);
+      $("body").removeClass("error").removeClass("form").addClass("waiting");
+      $("#wait").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
+    },
+
+    renderError: function(error_vars) {
+      this.renderTemplates("#error", "wait.ejs", error_vars);
+      $("body").removeClass("waiting").removeClass("form").addClass("error");
+      $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
     },
 
     onSubmit: function(event) {
@@ -100,7 +124,7 @@
     },
 
     doWait: function(info) {
-      this.renderTemplates("wait.ejs", {title: info.message, message: info.description});
+      this.renderWait("wait.ejs", info);
 
       $("body").addClass("waiting");
     },
@@ -113,23 +137,6 @@
     },
 
     /**
-     * Immediately show the error dialog
-     * @method errorDialog
-     * @param {object} info - info to use for the error dialog.  Should have 
-     * two fields, message, description.
-     */
-    errorDialog: function(info) {
-      $("form").hide();
-
-      $("#error_dialog .title").text(info.message);
-      $("#error_dialog .content").text(info.description);
-
-      $("body").removeClass("authenticated").addClass("error");
-
-      $("#error_dialog").fadeIn(ANIMATION_TIME);
-    },
-
-    /**
      * Get a curried function to an error dialog.
      * @method getErrorDialog
      * @method {object} info - info to use for the error dialog.  Should have 
@@ -137,7 +144,7 @@
      */
     getErrorDialog: function(info) {
       var self=this;
-      return self.errorDialog.bind(self, info);
+      return self.renderError.bind(self, info);
     },
 
     onCancel: function(event) {

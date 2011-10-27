@@ -23,20 +23,42 @@
               </ul>
           </header>
 
-          <div id="formWrap" class="cf">
-            <form novalidate class="cf"> 
+          <div id="content">
+              <section id="formWrap">
+                <form novalidate> 
+                  <div id="favicon">
+                      <div class="vertical">
+                          <strong id="sitename"></strong>
+                      </div>
+                  </div>
 
-              <!-- All of this is going to be replaced on startup, but we need some temporary placeholder -->
-              <h2>Communicating with server</h2>
-              <p>Just a moment while we talk with the server.</p>
+                  <div id="signIn">
+                      <div class="arrow"></div>
+                      <div class="table">
+                          <div class="vertical contents">
+                          </div>
+                      </div>
+                  </div>
+                </form>
+              </section>
 
-            </form>
 
-            <div id="error_dialog">
-                <h3 class="title"></h3>
-                <p class="content"></p>
-            </div>
+              <section id="wait">
+                  <div class="table">
+                      <div class="vertical contents">
+                          <h2>Communicating with server</h2>
+                          <p>Just a moment while we talk with the server.</p>
+                      </div>
+                  </div>
+              </section>
 
+
+              <section id="error">
+                  <div class="table">
+                      <div class="vertical contents">
+                      </div>
+                  </div>
+              </section>
           </div>
 
           <footer>

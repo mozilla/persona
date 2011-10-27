@@ -61,6 +61,9 @@
         this.onerror = onerror;
 
         user.setOrigin(origin_url);
+        
+        // get the cleaned origin.
+        $("#sitename").text(user.getHostname());
 
         this.doCheckAuth();
 
@@ -207,7 +210,7 @@
         user.checkAuthenticationAndSync(function onSuccess() {}, 
           function onComplete(authenticated) {
             if (authenticated) {
-                self.doPickEmail();
+              self.doPickEmail();
             } else {
               self.doAuthenticate();
             }

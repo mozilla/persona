@@ -37,24 +37,15 @@ BrowserID.Wait = (function(){
 
   var Wait = {
     authentication: {
-      message: "Finishing Sign In...",
-      description: "In just a moment you'll be signed into BrowserID."
+      title: "Finishing Sign In...",
+      message: "In just a moment you'll be signed into BrowserID."
     },
 
-    addEmail: {
-      message: "One Moment Please...",
-      description: "We're adding this email to your account, this should only take a couple of seconds."
-    },
-
-    checkAuth: {
-      message: "Communicating with server",
-      description: "Just a moment while we talk with the server."
-    },
-
-    createAccount: {
-      message: "One Moment Please...",
-      description: "We're creating your account, this should only take a couple of seconds."
+    generateKey: {
+      title: "Finishing Sign In...",
+      message: "Please wait just a moment while your account is authenticated."
     }
+
   };
 
 

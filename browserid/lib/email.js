@@ -44,7 +44,6 @@ logger = require('../../libs/logging.js').logger;
 
 /* if smtp parameters are configured, use them */
 var smtp_params = config.get('smtp');
-console.log("SMTP", smtp_params);
 if (smtp_params && smtp_params.host) {
   emailer.SMTP = { host: smtp_params.host };
   logger.info("delivering email via SMTP host: " +  emailer.SMTP.host);

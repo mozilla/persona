@@ -134,6 +134,7 @@
 
     var valid = checkEmail.call(self, email);
     if (valid) {
+//      self.doWait(bid.Wait.generateKey);
       getAssertion.call(self, email);
       startAnimation.call(self);
     }
@@ -172,13 +173,11 @@
 
 
   PageController.extend("Pickemail", {}, {
-    init: function(options) {
-      this._super({
+    init: function(el, options) {
+      this._super(el, {
         bodyTemplate: "pickemail.ejs",
         bodyVars: {
-          sitename: user.getOrigin(),
-          siteicon: '/i/times.gif',
-          identities: user.getStoredEmailKeypairs(),
+          identities: user.getStoredEmailKeypairs()
         }
       });
 

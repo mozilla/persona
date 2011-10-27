@@ -35,12 +35,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 var jwk = require("./jwk");
+var jwt = require("./jwt");
 var jwcert = require("./jwcert");
 
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", function() {
   var lib = BrowserID.User,
       network = BrowserID.Network,
-      storage = BrowserID.Storage;
+      storage = BrowserID.Storage,
+      testOrigin = "testOrigin";
 
   // I generated these locally, they are used nowhere else.
   var pubkey = {"algorithm":"RS","n":"56063028070432982322087418176876748072035482898334811368408525596198252519267108132604198004792849077868951906170812540713982954653810539949384712773390200791949565903439521424909576832418890819204354729217207360105906039023299561374098942789996780102073071760852841068989860403431737480182725853899733706069","e":"65537"};
@@ -158,6 +160,42 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     }
   };
 
+
+  function testAssertion(assertion) {
+    equal(typeof assertion, "string", "An assertion was correctly generated");
+
+    // Decode the assertion to a bundle.
+    var bundle = JSON.parse(window.atob(assertion));
+    
+    // Make sure both parts of the bundle exist
+    ok(bundle.certificates && bundle.certificates.length, "we have an array like object for the certificates");
+    equal(typeof bundle.assertion, "string");
+
+    // Decode the assertion itself
+    var tok = new jwt.JWT();
+    tok.parse(bundle.assertion);
+
+
+    // Check for parts of the assertion
+    equal(tok.audience, testOrigin, "correct audience");
+    var expires = tok.expires.getTime();
+    ok(typeof expires === "number" && !isNaN(expires), "expiration date is valid");
+  
+    var nowPlus2Mins = new Date().getTime() + (2 * 60 * 1000);
+    // expiration date must be within 5 seconds of 2 minutes from now - see 
+    // issue 433 (https://github.com/mozilla/browserid/issues/433)
+    ok(((nowPlus2Mins - 5000) < expires) && (expires < (nowPlus2Mins + 5000)), "expiration date must be within 5 seconds of 2 minutes from now");
+
+    equal(typeof tok.cryptoSegment, "string", "cryptoSegment exists");
+    equal(typeof tok.headerSegment, "string", "headerSegment exists");
+    equal(typeof tok.payloadSegment, "string", "payloadSegment exists");
+    /*
+    // What are these supposed to be?
+    ok(tok.issuer, "issuer?");
+    ok(tok.payload, "payload?");
+    */
+  }
+
   module("user", {
     setup: function() {
       lib.setNetwork(netStub);
@@ -179,8 +217,16 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   }
 
   test("setOrigin, getOrigin", function() {
-    lib.setOrigin("someorigin");
-    equal(lib.getOrigin(), "someorigin");
+    lib.setOrigin(testOrigin);
+    equal(lib.getOrigin(), testOrigin);
+  });
+
+  test("setOrigin, getHostname", function() {
+    var origin = "http://testorigin.com:10001";
+    lib.setOrigin(origin);
+
+    var hostname = lib.getHostname();
+    equal(hostname, "testorigin.com", "getHostname returns only the hostname"); 
   });
 
   test("getStoredEmailKeypairs", function() {
@@ -291,9 +337,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
 
-  test("authenticateAndSync with valid credentials", function() {
-    lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
-    }, function(authenticated) {
+  test("authenticate with valid credentials", function() {
+    lib.authenticate("testuser@testuser.com", "testuser", function(authenticated) {
       equal(true, authenticated, "we are authenticated!");
       start();
     }, failure("Authentication failure"));
@@ -304,11 +349,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
 
-  test("authenticateAndSync with invalid credentials", function() {
+  test("authenticate with invalid credentials", function() {
     credentialsValid = false;
-    lib.authenticateAndSync("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
-      ok(false, "This should not be called on authentication failure");
-    }, function onComplete(authenticated) {
+    lib.authenticate("testuser@testuser.com", "testuser", function onComplete(authenticated) {
       equal(false, authenticated, "invalid authentication.");
       start();
     }, failure("Authentication failure"));
@@ -367,40 +410,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
     stop();
   });
-
-
-  test("authenticateAndSync with valid authentication", function() {
-    credentialsValid = true;
-    keyRefresh = ["testuser@testuser.com"]; 
-
-    lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
-    }, function(authenticated) {
-      var identities = lib.getStoredEmailKeypairs();
-      ok("testuser@testuser.com" in identities, "authenticateAndSync syncs email addresses");
-      ok(authenticated, "we are authenticated")
-      start();
-    });
-
-    stop();
-  });
-
-
-
-  test("authenticateAndSync with invalid authentication", function() {
-    credentialsValid = false;
-    keyRefresh = ["testuser@testuser.com"]; 
-
-    lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
-    }, function(authenticated) {
-      var identities = lib.getStoredEmailKeypairs();
-      equal("testuser@testuser.com" in identities, false, "authenticateAndSync does not sync if authentication is invalid");
-      equal(authenticated, false, "not authenticated");
-      start();
-    });
-
-    stop();
-  });
-
 
   test("isEmailRegistered with registered email", function() {
     lib.isEmailRegistered("registered", function(registered) {
@@ -614,11 +623,24 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  test("syncEmails with one to refresh", function() {
+    storage.addEmail("testuser@testuser.com", {pub: pubkey, cert: random_cert});
+    keyRefresh = ["testuser@testuser.com"]; 
+
+    lib.syncEmails(function onSuccess() {
+      var identities = lib.getStoredEmailKeypairs();
+      ok("testuser@testuser.com" in identities, "refreshed key is synced");
+      start();
+    }, failure("identity sync failure"));
+
+    stop();
+  });
+
 
   test("getAssertion with known email that has key", function() {
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
-        equal("string", typeof assertion, "we have an assertion!");
+        testAssertion(assertion);
         start();
       }, failure("getAssertion failure"));
     }, failure("syncEmailKeypair failure"));
@@ -630,7 +652,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("getAssertion with known email that does not have a key", function() {
     storage.addEmail("testuser@testuser.com", {});
     lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
-      equal("string", typeof assertion, "we have an assertion!");
+      testAssertion(assertion);
       start();
     }, failure("getAssertion failure"));
 
@@ -653,19 +675,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     credentialsValid = true;
     keyRefresh = ["testuser@testuser.com"]; 
 
-    lib.authenticateAndSync("testuser@testuser.com", "testuser", function() {
-    }, function(authenticated) {
-      var storedIdentities = storage.getEmails();
-      equal(_.size(storedIdentities), 1, "one identity");
+    lib.authenticate("testuser@testuser.com", "testuser", function(authenticated) {
+      lib.syncEmails(function() {
+        var storedIdentities = storage.getEmails();
+        equal(_.size(storedIdentities), 1, "one identity");
 
-      lib.logoutUser(function() {
-        storedIdentities = storage.getEmails();
-        equal(_.size(storedIdentities), 0, "All items have been removed on logout");
+        lib.logoutUser(function() {
+          storedIdentities = storage.getEmails();
+          equal(_.size(storedIdentities), 0, "All items have been removed on logout");
 
-        equal(credentialsValid, false, "credentials were invalidated in logout");
-        start();
-      });
-    });
+          equal(credentialsValid, false, "credentials were invalidated in logout");
+          start();
+        }, failure("logoutUser failure"));
+      }, failure("syncEmails failure"));
+    }, failure("authenticate failure"));
 
     stop();
   });

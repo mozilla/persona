@@ -98,10 +98,6 @@ BrowserID.User = (function() {
     }
   }
 
-  function filterOrigin(origin) {
-    return origin.replace(/^.*:\/\//, "");
-  }
-
   function registrationPoll(checkFunc, email, onSuccess, onFailure) {
     function poll() {
       checkFunc(email, function(status) {
@@ -201,8 +197,8 @@ BrowserID.User = (function() {
      * @method setOrigin
      * @param {string} origin
      */
-    setOrigin: function(unfilteredOrigin) {
-      origin = filterOrigin(unfilteredOrigin);
+    setOrigin: function(originArg) {
+      origin = originArg;
     },
 
     /**
@@ -212,6 +208,15 @@ BrowserID.User = (function() {
      */
     getOrigin: function() {
       return origin;
+    },
+
+    /**
+     * Get the hostname for the set origin
+     * @method getHostname
+     * @returns {string}
+     */
+    getHostname: function() {
+      return origin.replace(/^.*:\/\//, "").replace(/:\d*$/, "");
     },
 
     /**
@@ -403,33 +408,18 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Authenticate the user with the given email and password, if 
-     * authentication successful, sync addresses with server.
-     * @method authenticateAndSync
+     * Authenticate the user with the given email and password.
+     * @method authenticate
      * @param {string} email - Email address to authenticate.
      * @param {string} password - Password.
-     * @param {function} [onSuccess] - Called whenever authentication succeeds 
-     * but before sync starts.  Useful for displaying status messages about the 
-     * sync taking a moment.
      * @param {function} [onComplete] - Called on sync completion.
      * @param {function} [onFailure] - Called on failure.
      */
-    authenticateAndSync: function(email, password, onSuccess, onComplete, onFailure) {
+    authenticate: function(email, password, onComplete, onFailure) {
       var self=this;
       network.authenticate(email, password, function(authenticated) {
         setAuthenticationStatus(authenticated);
-        if (authenticated) {
-          if (onSuccess) {
-            onSuccess(authenticated);
-          }
-
-          self.syncEmails(function() {
-            if (onComplete) {
-              onComplete(authenticated);
-            }
-          }, onFailure);
-        } else if (onComplete) {
-          // If not authenticated, we have to complete still.
+        if (onComplete) {
           onComplete(authenticated);
         }
       }, onFailure);
@@ -535,7 +525,10 @@ BrowserID.User = (function() {
         function createAssertion(idInfo) {
           network.serverTime(function(serverTime) {
             var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
-            var tok = new jwt.JWT(null, serverTime, origin);
+            // assertions are valid for 2 minutes
+            var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
+            var expirationDate = new Date(expirationMS);
+            var tok = new jwt.JWT(null, expirationDate, origin);
             assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
             if (onSuccess) {
               onSuccess(assertion);
@@ -587,9 +580,7 @@ BrowserID.User = (function() {
      */
     clearStoredEmailKeypairs: function() {
       storage.clear();
-    },
-
-
+    }
   };
 
   User.setOrigin(document.location.host);

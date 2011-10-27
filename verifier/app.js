@@ -68,25 +68,25 @@ function doVerify(req, resp, next) {
 
   certassertion.verify(
     assertion, audience,
-    function(email, audience, expires, issuer) {
+    function(email, audienceFromAssertion, expires, issuer) {
       resp.json({
         status : "okay",
         email : email,
-        audience : audience,
+        audience : audience, // NOTE: we return the audience formatted as the RP provided it, not normalized in any way.
         expires : expires.valueOf(),
         issuer: issuer
       });
 
       metrics.report('verify', {
         result: 'success',
-        rp: audience
+        rp: audienceFromAssertion
       });
     },
     function(error) {
       resp.json({"status":"failure", reason: (error ? error.toString() : "unknown")});
       metrics.report('verify', {
         result: 'failure',
-        rp: audience
+        rp: audienceFromAssertion
       });
     });
 
