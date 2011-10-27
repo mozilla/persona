@@ -134,6 +134,8 @@ function retrieveHostPublicKey(host, successCB, errorCB) {
 //   it might be strangely formed.
 function compareAudiences(want, got) {
   try {
+    var checkHostOnly = false;
+
     // issue #82 - for a limited time, let's allow got to be sloppy and omit scheme
     // in which case we guess a scheme based on port
     if (!/^https?:\/\//.test(got)) {
@@ -141,6 +143,7 @@ function compareAudiences(want, got) {
       var scheme = "http";
       if (x.length === 2 && x[1] === '443') scheme = "https";
       got = scheme + "://" + got;
+      checkHostOnly = true;
     }
 
     // now parse and compare
@@ -153,9 +156,11 @@ function compareAudiences(want, got) {
 
     got = normalizeParsedURL(url.parse(got));
 
+    if (checkHostOnly) return want.hostname === got.hostname;
+
     return (want.protocol === got.protocol &&
             want.hostname === got.hostname &&
-            want.port === got.port);
+            want.port == got.port);
   } catch(e) {
     return false;
   }
