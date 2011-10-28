@@ -41,7 +41,7 @@ var context = {};
 
 // the configuration
 var configuration = {
-  browserid: 'http://127.0.0.1:10001/'
+  browserid: 'http://127.0.0.1:10002/'
 }
 
 exports.clearCookies = function() {
