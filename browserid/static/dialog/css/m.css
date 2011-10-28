@@ -102,7 +102,7 @@
     font-size: 14px;
   }
 
-  #content, .pickemail .form_section, .pickemail .inputs, .vertical {
+  #content, .form_section, .pickemail .inputs, .vertical {
     height: auto;
     overflow: visible;
   }
