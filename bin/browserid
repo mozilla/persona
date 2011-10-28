@@ -353,7 +353,8 @@ app.use(express.static(path.join(__dirname, "..", "resources", "static")));
 
 // open the databse
 db.open(config.get('database'), function () {
-  app.listen(config.get('port'), config.get('hostname'), function() {
+  var bindTo = config.get('bind_to');
+  app.listen(bindTo.port, bindTo.host, function() {
     logger.info("running on http://" + app.address().address + ":" + app.address().port);
   });
 });

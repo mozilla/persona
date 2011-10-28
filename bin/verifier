@@ -45,12 +45,10 @@ express = require('express'),
 certassertion = require('../lib/verifier/certassertion.js'),
 metrics = require('../lib/metrics'),
 heartbeat = require('../lib/heartbeat'),
-logger = require('../lib/logging').logger;
+logger = require('../lib/logging').logger,
+config = require('../lib/configuration');
 
 logger.info("verifier server starting up");
-
-const HOST = process.env['HOST'] || "127.0.0.1";
-const PORT = process.env['PORT'] || 62800;
 
 var app = express.createServer();
 
@@ -120,6 +118,7 @@ app.post('/verify', function(req, resp, next) {
 
 });
 
-app.listen(PORT, HOST, function(conn) {
+var bindTo = config.get('bind_to');
+app.listen(bindTo.port, bindTo.host, function(conn) {
   logger.info("running on http://" + app.address().address + ":" + app.address().port);
 });

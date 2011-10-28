@@ -19,7 +19,8 @@ var daemonsToRun = {
   },
   example: {
     path: path.join(__dirname, "..", "scripts", "serve_example.js"),
-    PORT: 10001
+    PORT: 10001,
+    HOST: HOST
   }
 };
 
