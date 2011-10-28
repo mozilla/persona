@@ -20,7 +20,7 @@ tar -C .. --exclude rpmbuild -czf \
 
 set +e
 
-rpmbuild --define "_topdir $PWD/rpmbuild" -ba browserid.spec
+rpmbuild --define "_topdir $PWD/rpmbuild" -ba scripts/browserid.spec
 rc=$?
 if [ $rc -eq 0 ]; then
     ls -l $PWD/rpmbuild/RPMS/*/*.rpm
