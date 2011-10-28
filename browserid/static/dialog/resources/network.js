@@ -54,10 +54,16 @@ BrowserID.Network = (function() {
     }
   }
 
-  function xhrError(cb, errorMessage) {
-    return function() {
-      if (cb) cb();
-      hub && hub.publish("xhrError", errorMessage);
+  function xhrError(cb, info) {
+    return function(jqXHR, textStatus, errorThrown) {
+      info = info || {};
+      var network = info.network = info.network || {};
+
+      network.textStatus = textStatus;
+      network.errorThrown = errorThrown;
+
+      if (cb) cb(info);
+      hub && hub.publish("xhrError", info);
     };
   }
 
@@ -69,7 +75,12 @@ BrowserID.Network = (function() {
       // that are thrown in the response handlers and it becomes very difficult 
       // to debug.
       success: deferResponse(options.success),
-      error: deferResponse(xhrError(options.error, options.errorMessage)),
+      error: deferResponse(xhrError(options.error, {
+        network: {
+          type: "GET",
+          url: options.url
+        }
+      })),
       dataType: "json"
     });
   }
@@ -90,7 +101,13 @@ BrowserID.Network = (function() {
         // that are thrown in the response handlers and it becomes very difficult 
         // to debug.
         success: deferResponse(options.success),
-        error: deferResponse(xhrError(options.error, options.errorMessage))
+        error: deferResponse(xhrError(options.error, {
+          network: {
+            type: "POST",
+            url: options.url,
+            data: options.data
+          }
+        }))
       });
     }, options.error);
   }
@@ -98,6 +115,7 @@ BrowserID.Network = (function() {
   function withContext(cb, onFailure) {
     if (typeof auth_status === 'boolean' && typeof csrf_token !== 'undefined') cb();
     else {
+      var url = "/wsapi/session_context";
       xhr.ajax({
         url: "/wsapi/session_context",
         success: function(result) {
@@ -109,7 +127,12 @@ BrowserID.Network = (function() {
           auth_status = result.authenticated;
           cb();
         },
-        error: deferResponse(xhrError(onFailure))
+        error: deferResponse(xhrError(onFailure, {
+          network: {
+            type: "GET",
+            url: url
+          }
+        }))
       });
     }
   }

@@ -61,8 +61,12 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
 
     var handle;
 
-    var subscriber = function() {
+    var subscriber = function(message, info) {
       ok(true, "xhr error notified application");
+      ok(info.network.url, "url is in network info");
+      ok(info.network.type, "request type is in network info");
+      equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
+      equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
       wrappedStart();
       OpenAjax.hub.unsubscribe(handle);
     };
@@ -85,8 +89,12 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     args.push(function onSuccess(authenticated) {
       ok(false, "XHR failure should never pass");
       wrappedStart();
-    }, function onFailure() {
+    }, function onFailure(info) {
       ok(true, "XHR failure should never pass");
+      ok(info.network.url, "url is in network info");
+      ok(info.network.type, "request type is in network info");
+      equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
+      equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
       wrappedStart();
     });
 
@@ -189,13 +197,13 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
       else if (obj.error) {
         // Invalid result - either invalid URL, invalid GET/POST or 
         // invalid resultType
-        obj.error();
+        obj.error({}, "errorStatus", "errorThrown");
       }
     }
   }
 
 
-  module("network", {
+  module("/resources/network", {
     setup: function() {
       network.setXHR(xhr);
       xhr.useResult("valid");

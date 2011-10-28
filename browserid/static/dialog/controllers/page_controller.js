@@ -109,6 +109,16 @@
       this.renderTemplates("#error", body, body_vars);
       $("body").removeClass("waiting").removeClass("form").addClass("error");
       $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
+
+      /**
+       * What a big steaming pile, use CSS animations for this!
+       */
+      $("#openMoreInfo").click(function(event) {
+        event.preventDefault();
+
+        $("#moreInfo").slideDown();
+        $("#openMoreInfo").css({visibility: "hidden"});
+      });
     },
 
     onSubmit: function(event) {
@@ -145,12 +155,16 @@
     /**
      * Get a curried function to an error dialog.
      * @method getErrorDialog
-     * @method {object} info - info to use for the error dialog.  Should have 
+     * @method {object} action - info to use for the error dialog.  Should have 
      * two fields, message, description.
      */
-    getErrorDialog: function(info) {
+    getErrorDialog: function(action) {
       var self=this;
-      return self.renderError.bind(self, "wait.ejs", info);
+      return function(lowLevelInfo) {
+        self.renderError("error.ejs", $.extend({
+          action: action
+        }, lowLevelInfo));
+      }
     },
 
     onCancel: function(event) {

@@ -48,7 +48,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     el.find("#error .contents").html("");
   }
 
-  module("PageController", {
+  module("/controllers/page_controller", {
     setup: function() {
       reset();
     },
@@ -141,6 +141,37 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     ok(html.length, "with error template specified, error text is loaded");
   });
 
+  test("renderError allows us to open expanded error info", function() {
+    controller = el.page({
+      waitTemplate: waitTemplate,
+      waitVars: {
+        title: "Test title",
+        message: "Test message"
+      }
+    }).controller();
+   
+    controller.renderError("error.ejs", {
+      action: {
+        title: "expanded action info",
+        message: "expanded message"
+      }
+    });
+
+    var html = el.find("#error .contents").html();
+
+    $("#moreInfo").hide();
+
+    $("#openMoreInfo").click();
+
+    setTimeout(function() {
+      equal($("#showMoreInfo").is(":visible"), false, "button is not visible after clicking expanded info");
+      equal($("#moreInfo").is(":visible"), true, "expanded error info is visible after clicking expanded info");
+      start();
+    }, 500);
+
+    stop();
+  });
+
   test("getErrorDialog gets a function that can be used to render an error message", function() {
     controller = el.page({
       waitTemplate: waitTemplate,
@@ -150,9 +181,10 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
       }
     }).controller();
    
+    // This is the medium level info.
     var func = controller.getErrorDialog({
-      title: "error title",
-      message: "error message"
+      title: "medium level info error title",
+      message: "medium level info error message"
     });
 
     equal(typeof func, "function", "a function was returned from getErrorDialog");

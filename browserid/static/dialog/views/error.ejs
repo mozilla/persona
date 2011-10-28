@@ -1,0 +1,42 @@
+
+  <h2>We are very sorry, there has been an error!</h2>
+
+  <p>
+    To retry, you will have to close BrowserID and try again.  More info can be found by opening the expanded info below.
+  </p>
+
+  <a href="#" id="openMoreInfo">See more info</a>
+
+  <ul id="moreInfo">
+    <% if (typeof action !== "undefined") { %>
+      <li>
+        <strong id="action">Action: </strong><%= action.title %>
+
+        <% if (action.message) { %>
+          <p>
+            <%= action.message %>
+          </p>  
+        <% } %>
+      </li>
+    <% } %>
+
+    <% if (typeof network !== "undefined") { %>
+      <li>
+
+        <strong id="network">Network Info:</strong> <%= network.type %>: <%= network.url %>
+
+        <p>
+          <strong>Response Code - </strong> <%= network.textStatus %> 
+        </p>
+
+        <% if (network.errorThrown) { %>
+          <p>
+            <strong>Error Type:</strong> <%= network.errorThrown %> 
+          </p>  
+        <% } %>
+
+      </li>
+
+    <% } %>
+
+  </ul>
