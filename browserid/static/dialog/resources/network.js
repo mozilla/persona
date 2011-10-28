@@ -55,7 +55,13 @@ BrowserID.Network = (function() {
   }
 
   function xhrError(cb, info) {
-    return function() {
+    return function(jqXHR, textStatus, errorThrown) {
+      info = info || {};
+      var network = info.network = info.network || {};
+
+      network.textStatus = textStatus;
+      network.errorThrown = errorThrown;
+
       if (cb) cb(info);
       hub && hub.publish("xhrError", info);
     };

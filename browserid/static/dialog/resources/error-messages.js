@@ -37,38 +37,31 @@ BrowserID.Errors = (function(){
 
   var Errors = {
     authenticate: {
-      title: "Error Authenticating",
-      message: "There was a technical problem while trying to log you in.  Yucky!"
+      title: "Authenticating User"
     },
 
     addEmail: {
-      title: "Error Adding Address",
-      message: "There was a technical problem while trying to add this email to your account.  Yucky!"
+      title: "Adding Address"
     },
 
     checkAuthentication: {
-      title: "Error Checking Authentication",
-      message: "There was a technical problem while trying to log you in.  Yucky!"
+      title: "Checking Authentication"
     },
 
     createUser: {
-      title: "Error Creating Account",
-      message: "There was a technical problem while trying to create your account.  Yucky!"
+      title: "Creating Account"
     },
 
     getAssertion: {
-      title: "Error Getting Assertion",
-      message: "There was a technical problem while trying to authenticate you.  Yucky!"
+      title: "Getting Assertion"
     },
 
     isEmailRegistered: {
-      title: "Error Checking Email Address",
-      message: "There was a technical problem while trying to check that email address.  Yucky!"
+      title: "Checking Email Address"
     },
 
     logoutUser: {
-      title: "Logout Failed",
-      message: "An error was encountered while signing you out.  Yucky!"
+      title: "Logout Failed"
     },
 
     offline: {
@@ -77,28 +70,23 @@ BrowserID.Errors = (function(){
     },
 
     registration: {
-      title: "Registration Failed",
-      message: "An error was encountered and the signup cannot be completed.  Yucky!"
+      title: "Registration Failed"
     },
 
     requestPasswordReset: {
-      title: "Error Resetting Password",
-      message: "There was a technical problem while trying to reset your password."
+      title: "Resetting Password"
     },
 
     signIn: {
-      title: "Signin Failed",
-      message: "There was an error signing in. Yucky!"
+      title: "Signin Failed"
     },
 
     syncAddress: {
-      title: "Error Syncing Address",
-      message: "There was a technical problem while trying to synchronize your account.  Yucky!"
+      title: "Syncing Address"
     },
 
     xhrError: {
-      title: "Communication Error",
-      message: "It's embarrassing, but for some reason we cannot communicate with BrowserID at the moment.  Please try again."
+      title: "Communication Error"
     }
 
   };

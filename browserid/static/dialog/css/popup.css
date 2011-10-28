@@ -131,27 +131,35 @@ section > .contents {
     background-color: #fff;
 }
 
+#error ul, #error li {
+    list-style-type: none; 
+}
+
 #wait strong, #error strong {
     color: #222;
     font-weight: bold;
 }
 
 
-#error .vertical {
+#error.unsupported .vertical {
     width: 630px;
     margin: 0 auto;
     display: block;
 }
 
 
-#error .vertical > div {
+#error.unsupported .vertical > div {
     display: table-cell;
     vertical-align: middle;
     padding: 0 10px;
     height: 250px;
 }
 
-#error #alternative a {
+#error #moreInfo {
+    display: none;
+}
+
+#error a {
     color: #549FDC;
     text-decoration: underline;
 }

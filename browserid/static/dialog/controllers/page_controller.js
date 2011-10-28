@@ -109,6 +109,16 @@
       this.renderTemplates("#error", body, body_vars);
       $("body").removeClass("waiting").removeClass("form").addClass("error");
       $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
+
+      /**
+       * What a big steaming pile, use CSS animations for this!
+       */
+      $("#openMoreInfo").click(function(event) {
+        event.preventDefault();
+
+        $("#moreInfo").slideDown();
+        $("#openMoreInfo").css({visibility: "hidden"});
+      });
     },
 
     onSubmit: function(event) {
