@@ -39,7 +39,8 @@ BrowserID.Tooltip = (function() {
   "use strict";
 
   var ANIMATION_TIME = 250,
-      TOOLTIP_DISPLAY = 2000;
+      TOOLTIP_DISPLAY = 2000,
+      READ_WPM = 200;
 
   function createTooltip(el) {
       var contents = el.html();
@@ -63,14 +64,21 @@ BrowserID.Tooltip = (function() {
   }
 
   function animateTooltip(el, complete) {
+    var contents = el.text().replace(/\s+/, ' ').replace(/^\s+/, '').replace(/\s+$/, '');
+    var words = contents.split(' ').length;
+
+    // The average person can read ± 250 wpm.
+    var wordTimeMS = (words / READ_WPM) * 60 * 1000;
+    var displayTimeMS = Math.max(wordTimeMS, TOOLTIP_DISPLAY);
+
     el.fadeIn(ANIMATION_TIME, function() {
       setTimeout(function() {
         el.fadeOut(ANIMATION_TIME, complete);
-      }, TOOLTIP_DISPLAY);
+      }, displayTimeMS);
     });
   }
 
-  function createAndShowRelatedTooltip(el, relatedTo) {
+  function createAndShowRelatedTooltip(el, relatedTo, complete) {
       // This means create a copy of the tooltip element and position it in 
       // relation to an element.  Right now we are putting the tooltip directly 
       // above the element.  Once the tooltip is no longer needed, remove it 
@@ -81,22 +89,26 @@ BrowserID.Tooltip = (function() {
       positionTooltip(tooltip, target);
 
       animateTooltip(tooltip, function() {
-        tooltip.remove();
-        tooltip = null;
+        console.log("close tooltip");
+        if (tooltip) {
+          tooltip.remove();
+          tooltip = null;
+        }
+        if (complete) complete();
       });
   }
 
-  function showTooltip(el) {
+  function showTooltip(el, complete) {
     el = $(el);
     var messageFor = el.attr("for");
 
     // First, see if we are "for" another element, if we are, create a copy of 
     // the tooltip to attach to the element.
     if(messageFor) {
-      createAndShowRelatedTooltip(el, messageFor);
+      createAndShowRelatedTooltip(el, messageFor, complete);
     }
     else {
-      animateTooltip(el);
+      animateTooltip(el, complete);
     }
   }
 
