@@ -59,6 +59,7 @@ BrowserID.Network = (function() {
       info = info || {};
       var network = info.network = info.network || {};
 
+      network.status = jqXHR && jqXHR.status;
       network.textStatus = textStatus;
       network.errorThrown = errorThrown;
 
@@ -252,7 +253,13 @@ BrowserID.Network = (function() {
         success: function(status) {
           if (onSuccess) onSuccess(status.success);
         },
-        error: onFailure
+        error: function(info) {
+          // 403 is throttling.
+          if(info.network.status === 403) {
+            if (onSuccess) onSuccess(false); 
+          }
+          else if (onFailure) onFailure(info);
+        }
       });
     },
 
@@ -410,7 +417,13 @@ BrowserID.Network = (function() {
         success: function(status) {
           if (onSuccess) onSuccess(status.success);
         },
-        error: onFailure
+        error: function(info) {
+          // 403 is throttling.
+          if(info.network.status === 403) {
+            if (onSuccess) onSuccess(false); 
+          }
+          else if (onFailure) onFailure(info);
+        }
       });
     },
 

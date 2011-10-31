@@ -42,6 +42,7 @@
       user = bid.User,
       errors = bid.Errors,
       validation = bid.Validation,
+      tooltip = bid.Tooltip,
       lastEmail = "";
 
   function checkEmail(el, event) {
@@ -50,9 +51,7 @@
 
     cancelEvent(event);
 
-    if (!validation.email(email)) {
-      return;
-    }
+    if (!validation.email(email)) return;
 
     user.isEmailRegistered(email, function onComplete(registered) {
       if (registered) {
@@ -70,19 +69,16 @@
 
     cancelEvent(event);
 
-    if (!validation.email(email)) {
-      return;
-    }
+    if (!validation.email(email)) return;
 
-    user.createUser(email, function(keypair) {
-      if (keypair) {
+    user.createUser(email, function(staged) {
+      if (staged) {
         self.close("user_staged", {
-          email: email,
-          keypair: keypair
+          email: email
         });
       }
       else {
-        // XXX can't register this email address.
+        tooltip.showTooltip("#could_not_add");
       }
     }, self.getErrorDialog(errors.createUser));
   }
@@ -94,9 +90,7 @@
 
     cancelEvent(event);
 
-    if (!validation.emailAndPassword(email, pass)) {
-      return;
-    }
+    if (!validation.emailAndPassword(email, pass)) return;
 
     user.authenticate(email, pass, 
       function onComplete(authenticated) {
@@ -131,16 +125,12 @@
   }
 
   function cancelEvent(event) {
-    if (event) {
-      event.preventDefault();
-    }
+    if (event) event.preventDefault();
   }
 
   function enterEmailState(el, event) {
-    if (event && event.which === 13) {
-      // Enter key, do nothing
-      return;
-    }
+    // Enter key, do nothing
+    if (event && event.which === 13) return;
 
     if (!el.is(":disabled")) {
       this.submit = checkEmail;
@@ -185,6 +175,10 @@
     init: function(el, options) {
       options = options || {};
 
+      if (options.user) {
+        user = options.user;
+      }
+
       this._super(el, {
         bodyTemplate: "authenticate.ejs",
         bodyVars: {
@@ -196,9 +190,7 @@
       this.submit = checkEmail;
       // If we already have an email address, check if it is valid, if so, show 
       // password.
-      if (options.email) {
-        this.submit();
-      }
+      if (options.email) this.submit();
     },
 
     "#email keyup": function(el, event) {

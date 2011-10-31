@@ -30,4 +30,5 @@ steal("/dialog/resources/browserid.js",
   .then("controllers/page_controller_unit_test")
   .then("controllers/pickemail_controller_unit_test")
   .then("controllers/dialog_controller_unit_test")
+  .then("controllers/authenticate_controller_unit_test")
 

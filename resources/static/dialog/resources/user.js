@@ -236,11 +236,7 @@ BrowserID.User = (function() {
       // remember this for later
       storage.setStagedOnBehalfOf(self.getHostname());
       
-      network.createUser(email, origin, function(created) {
-        if (onSuccess) {
-          onSuccess(created);
-        }
-      }, onFailure);
+      network.createUser(email, origin, onSuccess, onFailure);
     },
 
     /**
@@ -484,13 +480,10 @@ BrowserID.User = (function() {
     addEmail: function(email, onSuccess, onFailure) {
       var self = this;
       network.addEmail(email, origin, function(added) {
-        if (added) {
-          storage.setStagedOnBehalfOf(self.getHostname());
-          // we no longer send the keypair, since we will certify it later.
-          if (onSuccess) {
-            onSuccess(added);
-          }
-        }
+        if (added) storage.setStagedOnBehalfOf(self.getHostname());
+
+        // we no longer send the keypair, since we will certify it later.
+        if (onSuccess) onSuccess(added);
       }, onFailure);
     },
 

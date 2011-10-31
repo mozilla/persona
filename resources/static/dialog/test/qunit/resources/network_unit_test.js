@@ -126,6 +126,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
       // We are going to test for XHR failures for session_context using 
       // call to serverTime.  We are going to use the flag contextAjaxError
       "get /wsapi/session_context ajaxError": contextInfo, 
+      "get /wsapi/session_context throttle": contextInfo, 
       "get /wsapi/session_context contextAjaxError": undefined,  
       "post /wsapi/authenticate_user valid": { success: true },
       "post /wsapi/authenticate_user invalid": { success: false },
@@ -135,6 +136,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
       "post /wsapi/complete_email_addition ajaxError": undefined,
       "post /wsapi/stage_user valid": { success: true },
       "post /wsapi/stage_user invalid": { success: false },
+      "post /wsapi/stage_user throttle": 403,
       "post /wsapi/stage_user ajaxError": undefined,
       "get /wsapi/user_creation_status?email=address notcreated": undefined, // undefined because server returns 400 error
       "get /wsapi/user_creation_status?email=address pending": { status: "pending" },
@@ -156,6 +158,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
       "post /wsapi/account_cancel ajaxError": undefined,
       "post /wsapi/stage_email valid": { success: true },
       "post /wsapi/stage_email invalid": { success: false },
+      "post /wsapi/stage_email throttle": 403,
       "post /wsapi/stage_email ajaxError": undefined,
       "get /wsapi/email_addition_status?email=address notcreated": undefined, // undefined because server returns 400 error
       "get /wsapi/email_addition_status?email=address pending": { status: "pending" },
@@ -189,7 +192,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
       var resName = req.type + " " + req.url + " " + xhr.resultType;
       var result = xhr.results[resName];
 
-      if(result) {
+      var type = typeof result;
+      if(!(type == "number" || type == "undefined")) {
         if(obj.success) {
           obj.success(result);
         }
@@ -197,7 +201,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
       else if (obj.error) {
         // Invalid result - either invalid URL, invalid GET/POST or 
         // invalid resultType
-        obj.error({}, "errorStatus", "errorThrown");
+        obj.error({ status: result || 400 }, "errorStatus", "errorThrown");
       }
     }
   }
@@ -373,6 +377,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     stop();
   });
 
+  wrappedAsyncTest("createUser throttled", function() {
+    xhr.useResult("throttle");
+
+    network.createUser("validuser", "origin", function onSuccess(added) {
+      equal(added, false, "throttled email returns onSuccess but with false as the value");
+      wrappedStart();
+    }, function onFailure() {
+      ok(false);
+      wrappedStart();
+    });
+
+    stop();
+  });
+
   wrappedAsyncTest("createUser with XHR failure", function() {
     notificationCheck(network.createUser, "validuser", "origin");
   });
@@ -539,6 +557,20 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     xhr.useResult("invalid");
     network.addEmail("address", "origin", function onSuccess(added) {
       equal(added, false);
+      wrappedStart();
+    }, function onFailure() {
+      ok(false);
+      wrappedStart();
+    });
+
+    stop();
+  });
+
+  wrappedAsyncTest("addEmail throttled", function() {
+    xhr.useResult("throttle");
+
+    network.addEmail("address", "origin", function onSuccess(added) {
+      equal(added, false, "throttled email returns onSuccess but with false as the value");
       wrappedStart();
     }, function onFailure() {
       ok(false);

@@ -61,7 +61,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
   var netStub = {
     reset: function() {
-      credentialsValid = syncValid = true;
+      credentialsValid = emailAdded = userAdded = syncValid = true;
       unknownEmails = [];
       keyRefresh = [];
       userEmails = {"testuser@testuser.com": {}};
@@ -93,7 +93,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     },
 
     addEmail: function(email, origin, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(true);
+      xhrFailure ? onFailure() : onSuccess(emailAdded);
     },
 
     checkEmailRegistration: function(email, onSuccess, onFailure) {
@@ -145,7 +145,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     },
 
     createUser: function(email, origin, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(true);
+      xhrFailure ? onFailure() : onSuccess(userAdded);
     },
 
     setPassword: function(password, onSuccess) {
@@ -206,7 +206,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     */
   }
 
-  module("user", {
+  module("resources/user", {
     setup: function() {
       lib.setNetwork(netStub);
       lib.clearStoredEmailKeypairs();
@@ -278,6 +278,16 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("createUser", function() {
     lib.createUser("testuser@testuser.com", function(status) {
       ok(status, "user created");
+      start();
+    }, failure("createUser failure"));
+
+    stop();
+  });
+
+  test("createUser with user creation refused", function() {
+    userAdded = false
+    lib.createUser("testuser@testuser.com", function(status) {
+      equal(status, false, "user creation refused");
       start();
     }, failure("createUser failure"));
 
@@ -597,8 +607,24 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       var identities = lib.getStoredEmailKeypairs();
       equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
 
-
       equal(storage.getStagedOnBehalfOf(), lib.getHostname(), "initiatingOrigin is stored"); 
+
+      start();
+    }, failure("addEmail failure"));
+
+    stop();
+  });
+
+  test("addEmail with addition refused", function() {
+    emailAdded = false;
+
+    lib.addEmail("testemail@testemail.com", function(added) {
+      equal(added, false, "user addition was refused");
+
+      var identities = lib.getStoredEmailKeypairs();
+      equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
+
+      equal(typeof storage.getStagedOnBehalfOf(), "undefined", "initiatingOrigin is not stored"); 
 
       start();
     }, failure("addEmail failure"));
