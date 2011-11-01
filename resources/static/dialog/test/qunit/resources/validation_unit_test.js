@@ -46,7 +46,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", fu
     tooltipShown = true;
   }
 
-  module("validation", {
+  module("resources/validation", {
     setup: function() {
       origShowTooltip = bid.Tooltip.showTooltip;
       bid.Tooltip.showTooltip = showTooltip;
@@ -98,8 +98,75 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", fu
   test("email with empty email", function() {
     var valid = validation.email("");
 
-    equal(valid, valid, "missing email is missing");
+    equal(valid, false, "missing email is missing");
     equal(tooltipShown, true, "missing email shows no tooltip");
+  });
+
+  test("email with Capital Letters in local side", function() {
+    var valid = validation.email("X@y.z");
+
+    equal(valid, true, "capital letters allowed in local side");
+    equal(tooltipShown, false, "capital letters in local side causes no tooltip");
+  });
+
+  test("email with Capital Letters in domain side", function() {
+    var valid = validation.email("x@Y.z");
+
+    equal(valid, false, "capital letters not allowed in domain side");
+    equal(tooltipShown, true, "missing email shows no tooltip");
+  });
+
+
+  test("email with 64 characters in local side", function() {
+    var local = "";
+
+    for(var i = 0; i < 64; i++) {
+      local += "a";
+    }
+
+    var valid = validation.email(local + "@y.z");
+
+    equal(valid, true, "64 characters allowed in local side");
+    equal(tooltipShown, false, "64 characters causes no error");
+  });
+
+  test("email with more than 64 characters in local side", function() {
+    var local = "";
+
+    for(var i = 0; i <= 64; i++) {
+      local += "a";
+    }
+
+    var valid = validation.email(local + "@y.z");
+
+    equal(valid, false, "only 64 characters allowed in local side");
+    equal(tooltipShown, true, "65 characters causes an error");
+  });
+
+  test("email with 254 characters", function() {
+    var domain = "";
+
+    for(var i = 0; i < 248; i++) {
+      domain += "a";
+    }
+
+    var valid = validation.email("x@" + domain * ".com");
+
+    equal(valid, false, "254 characters allowed in total address");
+    equal(tooltipShown, true, "254 characters causes no error");
+  });
+
+  test("email with more than 254 characters", function() {
+    var domain = "";
+
+    for(var i = 0; i <= 248; i++) {
+      domain += "a";
+    }
+
+    var valid = validation.email("x@" + domain * ".com");
+
+    equal(valid, false, "only 254 characters allowed in total address");
+    equal(tooltipShown, true, "> 254 characters causes an error");
   });
 
   test("email with invalid email", function() {
