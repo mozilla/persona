@@ -37,8 +37,13 @@
 BrowserID.forgot = (function() {
   "use strict";
 
+  var bid = BrowserID,
+      pageHelpers = bid.PageHelpers;
+
   return function() {
     $("form input[autofocus]").focus();
+
+    pageHelpers.setupEmail();
 
     $("#signUpForm").bind("submit", function(event) {
       event.preventDefault();
@@ -53,7 +58,8 @@ BrowserID.forgot = (function() {
         return false;
       }
 
-      BrowserID.User.createUser(email, function onSuccess(keypair) {
+      pageHelpers.clearStoredEmail();
+      bid.User.createUser(email, function onSuccess(keypair) {
         $('#sent_to_email').html(email);
         $('#forminputs').fadeOut();
         $(".notifications .notification.emailsent").fadeIn();

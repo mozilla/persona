@@ -1,4 +1,5 @@
-/*globals BrowserID: true, _: true */
+/*jshint browsers:true, forin: true, laxbreak: true */
+/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,72 +34,48 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-
-$(function() {
+steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", function() {
   "use strict";
 
-  /**
-   * For the main page
-   */
+  var pageHelpers = BrowserID.PageHelpers;
 
-  var bid = BrowserID,
-      pageHelpers = bid.PageHelpers,
-      user = bid.User,
-      token = pageHelpers.getParameterByName("token"),
-      path = document.location.pathname;
+  module("/js/page_helpers");
+  
 
-  if (!path || path === "/") {
-    bid.index();
-  }
-  else if (path === "/signin") {
-    bid.signIn();
-  }
-  else if (path === "/signup") {
-    bid.signUp();
-  }
-  else if (path === "/forgot") {
-    bid.forgot();
-  }
-  else if (token && path === "/add_email_address") {
-    bid.addEmailAddress(token);
-  }
-  else if(token && path === "/verify_email_address") {
-    bid.verifyEmailAddress(token);
-  }
+  test("setStoredEmail/getStoredEmail/setupEmail prefills the email address", function() {
+    $("#email").val("");
 
-  if ($('#vAlign').length) {
-    $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
-  }
+    pageHelpers.setStoredEmail("testuser@testuser.com");
+    pageHelpers.setupEmail();
 
-  $(".signOut").click(function(event) {
-    event.preventDefault();
-
-    user.logoutUser(function() {
-      document.location = "/";
-    });
+    equal($("#email").val(), "testuser@testuser.com", "email was set on setupEmail");
+    equal(pageHelpers.getStoredEmail(), "testuser@testuser.com", "getStoredEmail works correctly");
   });
 
-  $("#vAlign,#content").hide();
+  test("a key press in the email address field saves it", function() {
+    $("#email").val("");
 
-  var ANIMATION_TIME = 500;
-  user.checkAuthentication(function(authenticated) {
-    if (authenticated) {
-      $("#content").fadeIn(ANIMATION_TIME);
-      if ($('#emailList').length) {
-        bid.manageAccount();
-      }
-    }
-    else {
-      // If vAlign exists (main page), it takes precedence over content.
-      if( $("#vAlign").length) {
-        $("#vAlign").fadeIn(ANIMATION_TIME);
-      }
-      else {
-        $("#content").fadeIn(ANIMATION_TIME);
-      }
-    }
+    pageHelpers.setStoredEmail("testuser@testuser.co");
+    pageHelpers.setupEmail();
+
+    // The fake jQuery event does not actually cause the letter to be added, we 
+    // have to do that manually.
+    $("#email").val("testuser@testuser.com");
+
+    var e = jQuery.Event("keyup");
+    e.which = 77; //choose the one you want
+    e.keyCode = 77;
+    $("#email").trigger(e);
+
+    equal(pageHelpers.getStoredEmail(), "testuser@testuser.com", "hitting a key updates the stored email");
   });
 
+  test("clearStoredEmail clears the email address from storage", function() {
+    pageHelpers.clearStoredEmail();
+
+    equal(pageHelpers.getStoredEmail(), "", "clearStoredEmail clears stored email");
+  });
 
 });
+
 
