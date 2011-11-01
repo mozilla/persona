@@ -65,8 +65,14 @@
         self.onsuccess = null;
         self.onerror = null;
 
-        win.setupChannel(self);
-        self.stateMachine();
+        try {
+          win.setupChannel(self);
+          self.stateMachine();
+        } catch (e) {
+          self.renderError("error.ejs", {
+            action: errors.relaySetup
+          });
+        }
       },
         
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {

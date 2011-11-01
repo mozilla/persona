@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global alert:true, setupNativeChannel:true, setupIFrameChannel:true*/
+/*global BrowserID: true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -68,7 +68,7 @@
 
   function setupNativeChannel(controller) {
     nav.id.channel.registerController(controller);
-  };
+  }
 
   function setupIFrameChannel(controller) {
     // TODO - Add a check for whether the dialog was opened by another window
@@ -91,17 +91,19 @@
         onCompleteCallback = onComplete;
         controller.getVerifiedEmail(origin, onsuccess, onerror);
       });
+      win.location.hash = '';
     }
-
-    win.location.hash = '';
-  };
+    else {
+      throw "relay frame not found";
+    }
+  }
 
   function open(controller) {
     if (nav.id && nav.id.channel)
       setupNativeChannel(controller);
     else
       setupIFrameChannel(controller);
-  };
+  }
 
 
   function init(options) {
@@ -125,9 +127,12 @@
        * @method init
        */
       init: init,
+
       /**
        * Open the channel.
        * @method open 
+       * @param {object} options - contains:
+       * *   options.getVerifiedEmail {function} - function to /get
        */
       open: open
     };

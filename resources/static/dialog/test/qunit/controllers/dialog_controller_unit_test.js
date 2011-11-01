@@ -37,24 +37,33 @@
 steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/controllers/dialog_controller", function() {
   "use strict";
 
-  var controller, el
+  var controller,
+      el,
+      channelError = false;
 
   function reset() {
     el = $("#controller_head");
     el.find("#formWrap .contents").html("");
     el.find("#wait .contents").html("");
     el.find("#error .contents").html("");
+
+    channelError = false;
+  }
+
+  function initController() {
+    controller = el.dialog({
+      window: {
+        setupChannel: function() { 
+          if (channelError) throw "Channel error";  
+        }
+      }
+    }).controller();
   }
 
   module("controllers/dialog_controller", {
     setup: function() {
       reset();
-
-      controller = el.dialog({
-        window: {
-          setupChannel: function() {}
-        }
-      }).controller();
+      initController();
     },
 
     teardown: function() {
@@ -63,17 +72,27 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     } 
   });
 
+  test("initialization with channel error", function() {
+    controller.destroy();
+    reset();
+    channelError = true;
+
+    initController();
+
+    ok($("#error .contents").text().length, "contents have been written");
+  });
+
   test("doOffline", function() {
     controller.doOffline();
-    ok($("#error .contents").length, "contents have been written");
-    ok($("#error #offline").length, "offline error message has been written");
+    ok($("#error .contents").text().length, "contents have been written");
+    ok($("#error #offline").text().length, "offline error message has been written");
   });
 
   test("doXHRError while online, no network info given", function() {
     controller.doXHRError();
-    ok($("#error .contents").length, "contents have been written");
-    ok($("#error #action").length, "action contents have been written");
-    equal($("#error #network").length, 0, "no network contents to be written");
+    ok($("#error .contents").text().length, "contents have been written");
+    ok($("#error #action").text().length, "action contents have been written");
+    equal($("#error #network").text().length, 0, "no network contents to be written");
   });
 
   test("doXHRError while online, network info given", function() {
@@ -83,9 +102,9 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
         url: "browserid.org/verify"
       }
     });
-    ok($("#error .contents").length, "contents have been written");
-    ok($("#error #action").length, "action contents have been written");
-    ok($("#error #network").length, "network contents have been written");
+    ok($("#error .contents").text().length, "contents have been written");
+    ok($("#error #action").text().length, "action contents have been written");
+    ok($("#error #network").text().length, "network contents have been written");
   });
 
   test("doXHRError while offline does not update contents", function() {
@@ -93,7 +112,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     $("#error #action").remove();
 
     controller.doXHRError();
-    ok(!$("#error #action").length, "XHR error is not reported if the user is offline.");
+    ok(!$("#error #action").text().length, "XHR error is not reported if the user is offline.");
   });
 
   test("window.unload causes setStagedOnBehalfOf data to be cleared", function() {

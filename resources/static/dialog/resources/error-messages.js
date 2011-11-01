@@ -1,3 +1,4 @@
+/*global BrowserID: true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -71,6 +72,11 @@ BrowserID.Errors = (function(){
 
     registration: {
       title: "Registration Failed"
+    },
+
+    relaySetup: {
+      title: "Establishing Relay",
+      message: "Relay frame could not be found"
     },
 
     requestPasswordReset: {

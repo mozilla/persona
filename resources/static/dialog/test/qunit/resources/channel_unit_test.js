@@ -116,7 +116,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/channel", func
     stop();
   });
 
-  test("IFRAME channel with error", function() {
+  test("IFRAME channel relaying error", function() {
     channel.init({
       window: winMock,
       navigator: navMock
@@ -129,6 +129,31 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/channel", func
         start();
       }
     });
+
+    stop();
+  });
+
+  test("IFRAME channel with error on open", function() {
+    var winMockWithoutRelay = $.extend(true, {}, winMock);
+    delete winMockWithoutRelay.opener.frames.browserid_relay_1234; 
+
+    channel.init({
+      window: winMockWithoutRelay,
+      navigator: navMock
+    });
+
+    // Do this manually so we can test if getVerifiedEmail gets called.
+    try {
+      channel.open({
+        getVerifiedEmail: function(origin, onsuccess, onerror) {
+          ok(false, "getVerifiedEmail should never be called on channel error");
+          start();
+        }
+      });
+    } catch(e) {
+      equal(e.toString(), "relay frame not found", "exception caught when trying to open channel that does not exist");
+      start();
+    }
 
     stop();
   });
