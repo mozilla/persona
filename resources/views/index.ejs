@@ -1,40 +1,43 @@
-    <div id="content" style="display:none;">
-        <div id="manage">
-            <h1 class="serif">Account Manager</h1>
-            <div class="edit cf">
-                <strong>Your Email Addresses</strong>
+  <div id="content" style="display:none">
+      <div id="manage">
+          <h1 class="serif">Account Manager</h1>
+          <div class="edit cf">
+              <strong>Your Email Addresses</strong>
 
-                <a id="manageAccounts" href="#">edit</a>
-                <a id="cancelManage" href="#">done</a>
-            </div>
-            <ul id="emailList">
-            </ul>
-            <div id="disclaimer">You may, at any time, <a href="#" id="cancelAccount">cancel your account</a></div>
-        </div>
-    </div>
+              <a id="manageAccounts" href="#">edit</a>
+              <a id="cancelManage" href="#">done</a>
+          </div>
+          <ul id="emailList">
+          </ul>
+          <div id="disclaimer">You may, at any time, <a href="#" id="cancelAccount">cancel your account</a></div>
+      </div>
+  </div>
 
-    <div id="vAlign" style="display:none;">
-        <div id="signUp">
-            <div id="card"><img src="/i/slit.png"></div>
-            <div id="hint"></div>
-            <div id="status"></div>
+  <div id="vAlign">
+      <div id="signUp">
+          <div id="card"><img src="/i/slit.png"></div>
+          <div id="hint"></div>
+          <div id="status"></div>
 
-            <p>Connect with <em>BrowserID</em>, the safest &amp; easiest way to sign in.</p>
-            <p>
-              <a class="granted info" href="/about">Take the tour</a> or 
+          <p>Connect with <em>BrowserID</em>, the safest &amp; easiest way to sign in.</p>
+          <p>
+            <a class="granted info" href="/about">Take the tour</a> 
+            <span class="require-js">or 
               <a href="/signup" class="button granted create">sign up</a>
-            </p>
-        </div>
-    </div>
+            </span>
+          </p>
+      </div>
+  </div>
 
-<script type="text/html" id="templateUser">
-  <li class="identity cf">
-    <div class="email">{{ email }}</div>
-    <div class="activity cf">
-      <button class="delete">remove</button>
-      <!-- removed registration info. We want to replace this with Last Used At ... -->
-      <!-- <abbr title="Registered: {{ created }}" class="status">Registered {{ relative }}.</abbr>-->
-    </div>
-  </li>
-</script>
+  <script type="text/html" id="templateUser">
+    <li class="identity cf">
+      <div class="email">{{ email }}</div>
+      <div class="activity cf">
+        <button class="delete">remove</button>
+        <!-- removed registration info. We want to replace this with Last Used At ... -->
+        <!-- <abbr title="Registered: {{ created }}" class="status">Registered {{ relative }}.</abbr>-->
+      </div>
+    </li>
+  </script>
+
 

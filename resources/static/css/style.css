@@ -21,6 +21,18 @@ body {
   overflow-y: scroll;
 }
 
+noscript {
+  position: fixed;
+  display: block;
+  background-color: #ef1010;
+  top: 0;
+  left: 0;
+  padding: 1px;
+  width: 100%;
+  color: #fff;
+  text-align: center;
+}
+
 /* for floats */
 .cf:after {
   content: ".";
@@ -106,7 +118,7 @@ hr {
 
 #content {
   padding: 84px 0;
-  display: none;
+ /* display: none;*/
 }
 
 #about {
