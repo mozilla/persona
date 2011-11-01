@@ -37,8 +37,7 @@
 (function() {
   "use strict";
 
-  var bid = BrowserID,
-      tooltip = bid.Tooltip;
+  var bid = BrowserID;
 
   function showError(el) {
     $(el).fadeIn(250);

@@ -57,6 +57,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       emailCheckCount = 0,
       registrationResponse,
       xhrFailure = false,
+      throttle = false,
       validToken = true; 
 
   var netStub = {
@@ -67,6 +68,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       userEmails = {"testuser@testuser.com": {}};
       registrationResponse = "complete";
       xhrFailure = false;
+      throttle = false;
     },
 
     checkUserRegistration: function(email, onSuccess, onFailure) {
@@ -153,7 +155,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     },
 
     requestPasswordReset: function(email, origin, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(true);
+      xhrFailure ? onFailure() : onSuccess(!throttle);
     },
 
     cancelUser: function(onSuccess, onFailure) {
@@ -431,10 +433,52 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
-  test("requestPasswordReset", function() {
-    lib.requestPasswordReset("address", function(reset) {
-      // XXX fill this in.
-      ok(true);
+  test("requestPasswordReset with known email", function() {
+    lib.requestPasswordReset("registered", function(status) {
+      equal(status.success, true, "password reset for known user");
+      start();
+    }, function() {
+      ok(false, "onFailure should not be called"); 
+      start();
+    });
+
+    stop();
+  });
+
+  test("requestPasswordReset with unknown email", function() {
+    lib.requestPasswordReset("unregistered", function(status) {
+      equal(status.success, false, "password not reset for unknown user");
+      equal(status.reason, "invalid_user", "invalid_user is the reason");
+      start();
+    }, function() {
+      ok(false, "onFailure should not be called"); 
+      start();
+    });
+
+    stop();
+  });
+
+  test("requestPasswordReset with throttle", function() {
+    throttle = true;
+    lib.requestPasswordReset("registered", function(status) {
+      equal(status.success, false, "password not reset for throttle");
+      equal(status.reason, "throttle", "password reset was throttled");
+      start();
+    }, function() {
+      ok(false, "onFailure should not be called"); 
+      start();
+    });
+
+    stop();
+  });
+
+  test("requestPasswordReset with XHR failure", function() {
+    xhrFailure = true;
+    lib.requestPasswordReset("address", function(status) {
+      ok(false, "xhr failure should never succeed");
+      start();
+    }, function() {
+      ok(true, "xhr failure should always be a failure"); 
       start();
     });
 

@@ -283,36 +283,54 @@ BrowserID.User = (function() {
      * Set the password of the current user.
      * @method setPassword
      * @param {string} password - password to set
-     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onComplete] - Called on successful completion. 
      * @param {function} [onFailure] - Called on error.
      */
-    setPassword: function(password, onSuccess, onFailure) {
-      network.setPassword(password, onSuccess, onFailure);
+    setPassword: function(password, onComplete, onFailure) {
+      network.setPassword(password, onComplete, onFailure);
     },
 
     /**
      * Request a password reset for the given email address.
      * @method requestPasswordReset
      * @param {string} email - email address to reset password for.
-     * @param {function} [onSuccess] - Callback to call when complete.
+     * @param {function} [onComplete] - Callback to call when complete, called 
+     * with a single object, info.
+     *    info.status {boolean} - true or false whether request was successful.
+     *    info.reason {string} - if status false, reason of failure.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestPasswordReset: function(email, onSuccess, onFailure) {
-      network.requestPasswordReset(email, origin, onSuccess, onFailure);
+    requestPasswordReset: function(email, onComplete, onFailure) {
+      this.isEmailRegistered(email, function(registered) {
+        if (registered) {
+          network.requestPasswordReset(email, origin, function(reset) {
+            var status = {
+              success: reset
+            };
+
+            if(!reset) status.reason = "throttle";
+
+            if (onComplete) onComplete(status);
+          }, onFailure);
+        }
+        else if (onComplete) {
+          onComplete({ success: false, reason: "invalid_user" });
+        }
+      }, onFailure);
     },
 
     /**
      * Cancel the current user's account.  Remove last traces of their 
      * identity.
      * @method cancelUser
-     * @param {function} [onSuccess] - Called whenever complete.
+     * @param {function} [onComplete] - Called whenever complete.
      * @param {function} [onFailure] - called on error.
      */
-    cancelUser: function(onSuccess, onFailure) {
+    cancelUser: function(onComplete, onFailure) {
       network.cancelUser(function() {
         setAuthenticationStatus(false);
-        if (onSuccess) {
-          onSuccess();
+        if (onComplete) {
+          onComplete();
         }
       }, onFailure);
 
