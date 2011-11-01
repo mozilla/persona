@@ -78,7 +78,7 @@
       background-color: transparent;
   }
 
-  .error #formWrap, .waiting #formWrap {
+  .error #formWrap, .error #wait, .waiting #formWrap {
       display: none;
   }
 
@@ -107,13 +107,14 @@
     overflow: visible;
   }
 
-  #wait .vertical {
+  #error .vertical, #wait .vertical {
       height: 250px;
   }
 
   #error .vertical {
     width: auto;
   }
+
   #error .vertical > div {
     display: block;
     height: auto;
