@@ -38,38 +38,55 @@ BrowserID.forgot = (function() {
   "use strict";
 
   var bid = BrowserID,
-      pageHelpers = bid.PageHelpers;
+      user = bid.User,
+      pageHelpers = bid.PageHelpers,
+      tooltip = bid.Tooltip;
 
-  return function() {
+  function submit(event) {
+    if (event) event.preventDefault();
+
+    // GET RID OF THIS HIDE CRAP AND USE CSS!
+    $(".notifications .notification").hide();
+
+    var email = $("#email").val(),
+        valid = bid.Validation.email(email);
+
+    if (valid) {
+      user.requestPasswordReset(email, function onSuccess(info) {
+        if (info.success) {
+          pageHelpers.clearStoredEmail();
+          $('#sent_to_email').html(email);
+          $('#forminputs').fadeOut();
+          $(".notifications .notification.emailsent").fadeIn();
+        }
+        else {
+          var tooltipEl = info.reason === "throttle" ? "#could_not_add" : "#not_registered";
+          tooltip.showTooltip(tooltipEl);
+        }
+      }, function onFailure() {
+        $(".notifications .notification.doh").fadeIn();
+      });
+    }
+  };
+
+  function init() {
     $("form input[autofocus]").focus();
 
     pageHelpers.setupEmail();
 
-    $("#signUpForm").bind("submit", function(event) {
-      event.preventDefault();
-      $(".notifications .notification").hide();
+    $("#signUpForm").bind("submit", submit);
+  }
 
-      var email = $("#email").val(),
-          password = $("#password").val(),
-          vpassword = $("#vpassword").val();
+  function reset() {
+    $("#signUpForm").unbind("submit", submit);
+  }
 
-      if (password != vpassword) {
-        $(".notifications .notification.mismatchpassword").fadeIn();
-        return false;
-      }
 
-      pageHelpers.clearStoredEmail();
-      bid.User.createUser(email, function onSuccess(keypair) {
-        $('#sent_to_email').html(email);
-        $('#forminputs').fadeOut();
-        $(".notifications .notification.emailsent").fadeIn();
-      }, function onFailure() {
-        // bad authentication
-        $(".notifications .notification.doh").fadeIn();
-      });
-    });
-  };
+  var forgot = init;
+  forgot.submit = submit; 
+  forgot.reset = reset;
 
+  return forgot;
 
 }());
 
