@@ -78,24 +78,20 @@ $(function() {
     });
   });
 
-  $("#vAlign,#content").hide();
+  $(".display_always,.display_auth,.display_nonauth").hide();
 
   var ANIMATION_TIME = 500;
   user.checkAuthentication(function(authenticated) {
+    $(".display_always").fadeIn(ANIMATION_TIME);
+
     if (authenticated) {
-      $("#content").fadeIn(ANIMATION_TIME);
+      $(".display_auth").fadeIn(ANIMATION_TIME);
       if ($('#emailList').length) {
         bid.manageAccount();
       }
     }
     else {
-      // If vAlign exists (main page), it takes precedence over content.
-      if( $("#vAlign").length) {
-        $("#vAlign").fadeIn(ANIMATION_TIME);
-      }
-      else {
-        $("#content").fadeIn(ANIMATION_TIME);
-      }
+      $(".display_nonauth").fadeIn(ANIMATION_TIME);
     }
   });
 
