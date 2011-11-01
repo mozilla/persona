@@ -17,7 +17,8 @@ steal("/dialog/resources/browserid.js",
          'pickemail.ejs',
          'offline.ejs',
          'error.ejs')
-  .then("browserid_unit_test")
+  .then("js/browserid_unit_test")
+  .then("js/page_helpers_unit_test")
   .then("include_unit_test")
   .then("relay/relay_unit_test")
   .then("pages/add_email_address_test")

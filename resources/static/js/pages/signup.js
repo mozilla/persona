@@ -39,10 +39,10 @@
 
   var bid = BrowserID,
       user = bid.User,
+      pageHelpers = bid.PageHelpers,
       ANIMATION_SPEED = 250;
 
   bid.signUp = function () {
-
     function replaceWithMessage(selector) {
         $('.forminputs').fadeOut(ANIMATION_SPEED, function() {
           $(selector).fadeIn(ANIMATION_SPEED);
@@ -60,6 +60,8 @@
 
     $(function () {
       $("form input[autofocus]").focus();
+
+      pageHelpers.setupEmail();
 
       $("#email").bind("keyup", function(event) {
         if (event.which !== 13) {
@@ -79,6 +81,7 @@
 
         user.isEmailRegistered(email, function(registered) {
           if (!registered) {
+            pageHelpers.clearStoredEmail();
             user.createUser(email, function onSuccess(keypair) {
               $('#sentToEmail').html(email);
               replaceWithMessage(".emailsent");
@@ -87,7 +90,6 @@
           else {
             $('#registeredEmail').html(email);
             showNotice(".alreadyRegistered");
-            window.localStorage.signInEmail = email;
           }
         }, onFailure);
       });

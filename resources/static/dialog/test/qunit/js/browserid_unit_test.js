@@ -1,4 +1,5 @@
-/*globals BrowserID: true, _: true */
+/*jshint browsers:true, forin: true, laxbreak: true */
+/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,72 +34,11 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-
-$(function() {
+steal.plugins("jquery", "funcunit/qunit").then("/js/page_helpers", "/js/browserid", function() {
   "use strict";
 
-  /**
-   * For the main page
-   */
-
-  var bid = BrowserID,
-      pageHelpers = bid.PageHelpers,
-      user = bid.User,
-      token = pageHelpers.getParameterByName("token"),
-      path = document.location.pathname;
-
-  if (!path || path === "/") {
-    bid.index();
-  }
-  else if (path === "/signin") {
-    bid.signIn();
-  }
-  else if (path === "/signup") {
-    bid.signUp();
-  }
-  else if (path === "/forgot") {
-    bid.forgot();
-  }
-  else if (token && path === "/add_email_address") {
-    bid.addEmailAddress(token);
-  }
-  else if(token && path === "/verify_email_address") {
-    bid.verifyEmailAddress(token);
-  }
-
-  if ($('#vAlign').length) {
-    $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
-  }
-
-  $(".signOut").click(function(event) {
-    event.preventDefault();
-
-    user.logoutUser(function() {
-      document.location = "/";
-    });
-  });
-
-  $("#vAlign,#content").hide();
-
-  var ANIMATION_TIME = 500;
-  user.checkAuthentication(function(authenticated) {
-    if (authenticated) {
-      $("#content").fadeIn(ANIMATION_TIME);
-      if ($('#emailList').length) {
-        bid.manageAccount();
-      }
-    }
-    else {
-      // If vAlign exists (main page), it takes precedence over content.
-      if( $("#vAlign").length) {
-        $("#vAlign").fadeIn(ANIMATION_TIME);
-      }
-      else {
-        $("#content").fadeIn(ANIMATION_TIME);
-      }
-    }
-  });
-
+  module("/js/browserid");
+  
 
 });
 

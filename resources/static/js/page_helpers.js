@@ -1,5 +1,4 @@
-/*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
+/*globals BrowserID: true, _: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,11 +33,61 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", function() {
+
+BrowserID.PageHelpers = (function() {
   "use strict";
 
-  module("browserid-unit");
+  var win = window,
+      locStorage = win.localStorage,
+      bid = BrowserID;
+
+  function setStoredEmail(email) {
+    locStorage.signInEmail = email;
+  }
+
+  function onEmailKeyUp(event) {
+    var email = $("#email").val();
+    setStoredEmail(email);
+  }
+
+  function prefillEmail() {
+    // If the user tried to sign in on the sign up page with an existing email, 
+    // place that email in the email field, then focus the password.
+    var el = $("#email"),
+        email = locStorage.signInEmail;
+
+    if (email) {
+      el.val(email);
+      if ($("#password").length) $("#password").focus();
+    }
+
+    el.keyup(onEmailKeyUp);
+  }
   
+  function clearStoredEmail() {
+    locStorage.removeItem("signInEmail");
+  }
 
-});
+  function getStoredEmail() {
+    return locStorage.signInEmail || "";
+  }
 
+  function getParameterByName( name ) {
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp( regexS );
+    var results = regex.exec( win.location.href );
+    if( results === null )
+      return "";
+    else
+      return decodeURIComponent(results[1].replace(/\+/g, " "));
+  }
+
+  return {
+    setupEmail: prefillEmail,
+    setStoredEmail: setStoredEmail,
+    clearStoredEmail: clearStoredEmail,
+    getStoredEmail: getStoredEmail,
+    getParameterByName: getParameterByName
+  };
+}());
