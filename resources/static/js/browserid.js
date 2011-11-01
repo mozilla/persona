@@ -90,9 +90,12 @@ $(function() {
     });
   });
 
+  $("#vAlign,#content").hide();
+
+  var ANIMATION_TIME = 500;
   user.checkAuthentication(function(authenticated) {
     if (authenticated) {
-      $("#content").fadeIn("slow");
+      $("#content").fadeIn(ANIMATION_TIME);
       if ($('#emailList').length) {
         bid.manageAccount();
       }
@@ -100,10 +103,10 @@ $(function() {
     else {
       // If vAlign exists (main page), it takes precedence over content.
       if( $("#vAlign").length) {
-        $("#vAlign").fadeIn("slow");
+        $("#vAlign").fadeIn(ANIMATION_TIME);
       }
       else {
-        $("#content").fadeIn("slow");
+        $("#content").fadeIn(ANIMATION_TIME);
       }
     }
   });
