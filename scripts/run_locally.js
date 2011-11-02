@@ -13,13 +13,17 @@ var daemonsToRun = {
     PORT: 10000,
     HOST: HOST
   },
+  example: {
+    path: path.join(__dirname, "..", "scripts", "serve_example.js"),
+    PORT: 10001,
+    HOST: HOST
+  },
   browserid: {
     PORT: 10002,
     HOST: HOST
   },
-  example: {
-    path: path.join(__dirname, "..", "scripts", "serve_example.js"),
-    PORT: 10001,
+  keysigner: {
+    PORT: 10003,
     HOST: HOST
   }
 };
@@ -30,6 +34,7 @@ process.env['LOG_TO_CONSOLE'] = 1;
 // all spawned processes will communicate with the local browserid
 process.env['BROWSERID_URL'] = 'http://' + HOST + ":10002";
 process.env['VERIFIER_URL'] = 'http://' + HOST + ":10000/verify";
+process.env['KEYSIGNER_URL'] = 'http://' + HOST + ":10003";
 
 Object.keys(daemonsToRun).forEach(function(k) {
   Object.keys(daemonsToRun[k]).forEach(function(ek) {
