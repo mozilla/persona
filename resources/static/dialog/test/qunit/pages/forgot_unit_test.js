@@ -34,34 +34,24 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/resources/network", "/dialog/resources/user", "/js/pages/forgot", function() {
+steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/network", "/dialog/resources/user", "/js/pages/forgot", function() {
   "use strict";
 
   var bid = BrowserID,
       network = bid.Network,
       user = bid.User,
-      xhrError = false,
+      xhr = bid.Mocks.xhr,
       CHECK_DELAY = 500;
-
-  var netMock = {
-    requestPasswordReset: function(email, origin, onComplete, onFailure) {
-      xhrError ? onFailure() : onComplete(email === "registered@testuser.com");
-    },
-
-    emailRegistered: function(email, onComplete, onFailure) {
-      xhrError ? onFailure() : onComplete(email === "registered@testuser.com");
-    }
-  };
 
   module("pages/forgot", {
     setup: function() {
-      user.setNetwork(netMock);
+      network.setXHR(xhr);
       $(".error").stop().hide();
-      xhrError = false;
+      xhr.useResult("valid");
       bid.forgot();
     },
     teardown: function() {
-      user.setNetwork(network);  
+      network.setXHR($);
       $(".error").stop().hide();
       $(".website").text("");
       bid.forgot.reset();
@@ -70,6 +60,8 @@ steal.plugins("jquery").then("/dialog/resources/network", "/dialog/resources/use
 
   test("requestPasswordReset with invalid email", function() {
     $("#email").val("invalid");
+
+    xhr.useResult("invalid");
     bid.forgot.submit();
 
     setTimeout(function() {
@@ -105,6 +97,8 @@ steal.plugins("jquery").then("/dialog/resources/network", "/dialog/resources/use
   });
 
   test("requestPasswordReset with throttling", function() {
+    xhr.useResult("throttle");
+
     $("#email").val("throttled@testuser.com");
     bid.forgot.submit();
 
@@ -117,7 +111,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/dialog/resources/use
   });
 
   test("requestPasswordReset with XHR Error", function() {
-    xhrError = true;
+    xhr.useResult("ajaxError");
 
     $("#email").val("testuser@testuser.com");
     bid.forgot.submit();

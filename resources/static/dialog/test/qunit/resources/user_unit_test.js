@@ -40,137 +40,15 @@ var jwcert = require("./jwcert");
 
 steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", function() {
   var lib = BrowserID.User,
-      network = BrowserID.Network,
       storage = BrowserID.Storage,
+      xhr = BrowserID.Mocks.xhr,
       testOrigin = "testOrigin";
 
   // I generated these locally, they are used nowhere else.
   var pubkey = {"algorithm":"RS","n":"56063028070432982322087418176876748072035482898334811368408525596198252519267108132604198004792849077868951906170812540713982954653810539949384712773390200791949565903439521424909576832418890819204354729217207360105906039023299561374098942789996780102073071760852841068989860403431737480182725853899733706069","e":"65537"};
 
-  var privkey = {"algorithm":"RS","n":"56063028070432982322087418176876748072035482898334811368408525596198252519267108132604198004792849077868951906170812540713982954653810539949384712773390200791949565903439521424909576832418890819204354729217207360105906039023299561374098942789996780102073071760852841068989860403431737480182725853899733706069","e":"65537","d":"786150156350274055174913976906933968265264030754683486390396799104417261473770120296370873955240982995278496143719986037141619777024457729427415826765728988003471373990098269492312035966334999128083733012526716409629032119935282516842904344253703738413658199885458117908331858717294515041118355034573371553"};
-
   // this cert is meaningless, but it has the right format
   var random_cert = "eyJhbGciOiJSUzEyOCJ9.eyJpc3MiOiJpc3N1ZXIuY29tIiwiZXhwIjoxMzE2Njk1MzY3NzA3LCJwdWJsaWMta2V5Ijp7ImFsZ29yaXRobSI6IlJTIiwibiI6IjU2MDYzMDI4MDcwNDMyOTgyMzIyMDg3NDE4MTc2ODc2NzQ4MDcyMDM1NDgyODk4MzM0ODExMzY4NDA4NTI1NTk2MTk4MjUyNTE5MjY3MTA4MTMyNjA0MTk4MDA0NzkyODQ5MDc3ODY4OTUxOTA2MTcwODEyNTQwNzEzOTgyOTU0NjUzODEwNTM5OTQ5Mzg0NzEyNzczMzkwMjAwNzkxOTQ5NTY1OTAzNDM5NTIxNDI0OTA5NTc2ODMyNDE4ODkwODE5MjA0MzU0NzI5MjE3MjA3MzYwMTA1OTA2MDM5MDIzMjk5NTYxMzc0MDk4OTQyNzg5OTk2NzgwMTAyMDczMDcxNzYwODUyODQxMDY4OTg5ODYwNDAzNDMxNzM3NDgwMTgyNzI1ODUzODk5NzMzNzA2MDY5IiwiZSI6IjY1NTM3In0sInByaW5jaXBhbCI6eyJlbWFpbCI6InRlc3R1c2VyQHRlc3R1c2VyLmNvbSJ9fQ.aVIO470S_DkcaddQgFUXciGwq2F_MTdYOJtVnEYShni7I6mqBwK3fkdWShPEgLFWUSlVUtcy61FkDnq2G-6ikSx1fUZY7iBeSCOKYlh6Kj9v43JX-uhctRSB2pI17g09EUtvmb845EHUJuoowdBLmLa4DSTdZE-h4xUQ9MsY7Ik";
-
-  var credentialsValid, unknownEmails, keyRefresh, syncValid, userEmails, 
-      userCheckCount = 0,
-      emailCheckCount = 0,
-      registrationResponse,
-      xhrFailure = false,
-      throttle = false,
-      validToken = true; 
-
-  var netStub = {
-    reset: function() {
-      credentialsValid = emailAdded = userAdded = syncValid = true;
-      unknownEmails = [];
-      keyRefresh = [];
-      userEmails = {"testuser@testuser.com": {}};
-      registrationResponse = "complete";
-      xhrFailure = false;
-      throttle = false;
-    },
-
-    checkUserRegistration: function(email, onSuccess, onFailure) {
-      userCheckCount++;
-      var status = userCheckCount === 2 ? registrationResponse : "pending";
-
-      xhrFailure ? onFailure() : onSuccess(status);
-    },
-
-    completeUserRegistration: function(token, password, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(validToken);
-    },
-
-    authenticate: function(email, password, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(credentialsValid);
-    },
-
-    checkAuth: function(onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(credentialsValid);
-    },
-
-    emailRegistered: function(email, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(email === "registered");
-    },
-
-    addEmail: function(email, origin, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(emailAdded);
-    },
-
-    checkEmailRegistration: function(email, onSuccess, onFailure) {
-      emailCheckCount++;
-      var status = emailCheckCount === 2 ? registrationResponse : "pending";
-
-      xhrFailure ? onFailure() : onSuccess(status);
-    },
-
-    emailForVerificationToken: function(token, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess("testuser@testuser.com");
-    },
-
-    completeEmailRegistration: function(token, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(validToken);
-    },
-
-    removeEmail: function(email, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess();
-    },
-
-    listEmails: function(onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(userEmails);
-    },
-
-    certKey: function(email, pubkey, onSuccess, onFailure) {
-      if (syncValid) {
-        xhrFailure ? onFailure() : onSuccess(random_cert);
-      }
-      else {
-        onFailure();
-      }
-    },
-    
-    syncEmails: function(issued_identities, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess({
-        unknown_emails: unknownEmails,
-        key_refresh: keyRefresh
-      });
-    },
-
-    setKey: function(email, keypair, onSuccess, onFailure) {
-      if (syncValid) {
-        xhrFailure ? onFailure() : onSuccess();
-      }
-      else {
-        onFailure();
-      }
-    },
-
-    createUser: function(email, origin, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(userAdded);
-    },
-
-    setPassword: function(password, onSuccess) {
-      xhrFailure ? onFailure() : onSuccess();
-    },
-
-    requestPasswordReset: function(email, origin, onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(!throttle);
-    },
-
-    cancelUser: function(onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess();
-    },
-
-    serverTime: function(onSuccess, onFailure) {
-      xhrFailure ? onFailure() : onSuccess(new Date());
-    },
-
-    logout: function(onSuccess, onFailure) {
-      credentialsValid = false;
-      xhrFailure ? onFailure() : onSuccess();
-    }
-  };
 
 
   function testAssertion(assertion) {
@@ -210,15 +88,12 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
   module("resources/user", {
     setup: function() {
-      lib.setNetwork(netStub);
+      BrowserID.Network.setXHR(xhr);
+      xhr.useResult("valid");
       lib.clearStoredEmailKeypairs();
-      netStub.reset();
-      userCheckCount = 0;
-      emailCheckCount = 0;
-      validToken = true;
     },
     teardown: function() {
-      lib.setNetwork(BrowserID.Network);
+      BrowserID.Network.setXHR($);
     }
   });
 
@@ -287,7 +162,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("createUser with user creation refused", function() {
-    userAdded = false
+    xhr.useResult("throttle");
+
     lib.createUser("testuser@testuser.com", function(status) {
       equal(status, false, "user creation refused");
       start();
@@ -297,7 +173,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("createUser with XHR failure", function() {
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
 
     lib.createUser("testuser@testuser.com", function(status) {
       ok(false, "xhr failure should never succeed");
@@ -310,19 +186,12 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
-  /**
-   * The next three tests use the mock network harness.  The tests are testing 
-   * the polling action and whether `waitForUserValidation` reacts as expected
-   * to the various network responses.  The network harness simulates multiple 
-   * calls to `checkUserRegistration`, attempting to simulate real use 
-   * interaction to verify the email address, the first call to 
-   * `checkUserRegistration` returns `pending`, the second returns the value 
-   * stored in `registrationResponse`.
-   */
   test("waitForUserValidation with `complete` response", function() {
     storage.setStagedOnBehalfOf(testOrigin);
 
-    lib.waitForUserValidation("testuser@testuser.com", function(status) {
+    xhr.useResult("complete");
+
+    lib.waitForUserValidation("registered@testuser.com", function(status) {
       equal(status, "complete", "complete response expected");
 
       ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
@@ -333,11 +202,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("waitForUserValidation with `mustAuth` response", function() {
-    registrationResponse = "mustAuth";
-
     storage.setStagedOnBehalfOf(testOrigin);
 
-    lib.waitForUserValidation("testuser@testuser.com", function(status) {
+    xhr.useResult("mustAuth");
+
+    lib.waitForUserValidation("registered@testuser.com", function(status) {
       equal(status, "mustAuth", "mustAuth response expected");
 
       ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
@@ -348,10 +217,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("waitForUserValidation with `noRegistration` response", function() {
-    registrationResponse = "noRegistration";
+    xhr.useResult("noRegistration");
 
     storage.setStagedOnBehalfOf(testOrigin);
-    lib.waitForUserValidation("baduser@testuser.com", function(status) {
+    lib.waitForUserValidation("registered@testuser.com", function(status) {
       ok(false, "not expecting success")
 
       start();
@@ -365,10 +234,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("waitForUserValidation with XHR failure", function() {
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
 
     storage.setStagedOnBehalfOf(testOrigin);
-    lib.waitForUserValidation("baduser@testuser.com", function(status) {
+    lib.waitForUserValidation("registered@testuser.com", function(status) {
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
@@ -382,6 +251,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
   test("verifyUser with a good token", function() {
     storage.setStagedOnBehalfOf(testOrigin);
+
     lib.verifyUser("token", "password", function onSuccess(info) {
       
       ok(info.valid, "token was valid");
@@ -396,7 +266,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("verifyUser with a bad token", function() {
-    validToken = false;
+    xhr.useResult("invalid");
 
     lib.verifyUser("token", "password", function onSuccess(info) {
       
@@ -410,7 +280,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("verifyUser with an XHR failure", function() {
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
 
     lib.verifyUser("token", "password", function onSuccess(info) {
       ok(false, "xhr failure should never succeed");
@@ -423,6 +293,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  /*
   test("setPassword", function() {
     lib.setPassword("password", function() {
       // XXX fill this in.
@@ -432,9 +303,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
     stop();
   });
-
+*/
   test("requestPasswordReset with known email", function() {
-    lib.requestPasswordReset("registered", function(status) {
+    lib.requestPasswordReset("registered@testuser.com", function(status) {
       equal(status.success, true, "password reset for known user");
       start();
     }, function() {
@@ -446,7 +317,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("requestPasswordReset with unknown email", function() {
-    lib.requestPasswordReset("unregistered", function(status) {
+    lib.requestPasswordReset("unregistered@testuser.com", function(status) {
       equal(status.success, false, "password not reset for unknown user");
       equal(status.reason, "invalid_user", "invalid_user is the reason");
       start();
@@ -459,8 +330,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("requestPasswordReset with throttle", function() {
-    throttle = true;
-    lib.requestPasswordReset("registered", function(status) {
+    xhr.useResult("throttle");
+    lib.requestPasswordReset("registered@testuser.com", function(status) {
       equal(status.success, false, "password not reset for throttle");
       equal(status.reason, "throttle", "password reset was throttled");
       start();
@@ -473,8 +344,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("requestPasswordReset with XHR failure", function() {
-    xhrFailure = true;
-    lib.requestPasswordReset("address", function(status) {
+    xhr.useResult("ajaxError");
+    lib.requestPasswordReset("registered@testuser.com", function(status) {
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
@@ -498,7 +369,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("authenticate with invalid credentials", function() {
-    credentialsValid = false;
+    xhr.useResult("invalid");
     lib.authenticate("testuser@testuser.com", "testuser", function onComplete(authenticated) {
       equal(false, authenticated, "invalid authentication.");
       start();
@@ -510,7 +381,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("authenticate with XHR failure", function() {
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
     lib.authenticate("testuser@testuser.com", "testuser", function onComplete(authenticated) {
       ok(false, "xhr failure should never succeed");
       start();
@@ -525,7 +396,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("checkAuthentication with valid authentication", function() {
-    credentialsValid = true;
+    xhr.setContextInfo("authenticated", true);
     lib.checkAuthentication(function(authenticated) {
       equal(authenticated, true, "We are authenticated!");
       start();
@@ -537,7 +408,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("checkAuthentication with invalid authentication", function() {
-    credentialsValid = false;
+    xhr.setContextInfo("authenticated", false);
     lib.checkAuthentication(function(authenticated) {
       equal(authenticated, false, "We are not authenticated!");
       start();
@@ -549,7 +420,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("checkAuthentication with XHR failure", function() {
-    xhrFailure = true;
+    xhr.useResult("contextAjaxError");
     lib.checkAuthentication(function(authenticated) {
       ok(false, "xhr failure should never succeed");
       start();
@@ -564,7 +435,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("checkAuthenticationAndSync with valid authentication", function() {
-    credentialsValid = true;
+    xhr.setContextInfo("authenticated", true);
+
     lib.checkAuthenticationAndSync(function onSuccess() {},
     function onComplete(authenticated) {
       equal(authenticated, true, "We are authenticated!");
@@ -577,7 +449,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("checkAuthenticationAndSync with invalid authentication", function() {
-    credentialsValid = false;
+    xhr.setContextInfo("authenticated", false);
+
     lib.checkAuthenticationAndSync(function onSuccess() {
         ok(false, "We are not authenticated!");
         start();
@@ -591,9 +464,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("checkAuthenticationAndSync with XHR failure", function() {
-    xhrFailure = true;
+    xhr.setContextInfo("authenticated", true);
+    xhr.useResult("ajaxError");
+
     lib.checkAuthenticationAndSync(function onSuccess() {
-      ok(false, "xhr failure should never succeed");
     }, function onComplete() {
       ok(false, "xhr failure should never succeed");
       
@@ -608,7 +482,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("isEmailRegistered with registered email", function() {
-    lib.isEmailRegistered("registered", function(registered) {
+    lib.isEmailRegistered("registered@testuser.com", function(registered) {
       ok(registered);
       start();
     }, function onFailure() {
@@ -619,8 +493,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
-  test("isEmailRegistered with non-registered email", function() {
-    lib.isEmailRegistered("nonregistered", function(registered) {
+  test("isEmailRegistered with unregistered email", function() {
+    lib.isEmailRegistered("unregistered@testuser.com", function(registered) {
       equal(registered, false);
       start();
     }, function onFailure() {
@@ -632,7 +506,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("isEmailRegistered with XHR failure", function() {
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
     lib.isEmailRegistered("registered", function(registered) {
       ok(false, "xhr failure should never succeed");
       start();
@@ -660,7 +534,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("addEmail with addition refused", function() {
-    emailAdded = false;
+    xhr.useResult("throttle");
 
     lib.addEmail("testemail@testemail.com", function(added) {
       equal(added, false, "user addition was refused");
@@ -677,7 +551,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("addEmail with XHR failure", function() {
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
     lib.addEmail("testemail@testemail.com", function(added) {
       ok(false, "xhr failure should never succeed");
       start();
@@ -690,20 +564,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
 
-
-  /**
-   * The next three tests use the mock network harness.  The tests are testing 
-   * the polling action and whether `waitForEmailValidation` reacts as expected
-   * to the various network responses.  The network harness simulates multiple 
-   * calls to `checkEmailRegistration`, attempting to simulate real use 
-   * interaction to verify the email address, the first call to 
-   * `checkEmailRegistration` returns `pending`, the second returns the value 
-   * stored in `registrationResponse`.
-   */
  test("waitForEmailValidation `complete` response", function() {
     storage.setStagedOnBehalfOf(testOrigin);
 
-    lib.waitForEmailValidation("testemail@testemail.com", function(status) {
+    xhr.useResult("complete");
+    lib.waitForEmailValidation("registered@testuser.com", function(status) {
       ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       equal(status, "complete", "complete response expected");
       start();
@@ -714,9 +579,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
   test("waitForEmailValidation `mustAuth` response", function() {
     storage.setStagedOnBehalfOf(testOrigin);
-    registrationResponse = "mustAuth";
+    xhr.useResult("mustAuth");
 
-    lib.waitForEmailValidation("testemail@testemail.com", function(status) {
+    lib.waitForEmailValidation("registered@testuser.com", function(status) {
       ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       equal(status, "mustAuth", "mustAuth response expected");
       start();
@@ -727,9 +592,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
   test("waitForEmailValidation with `noRegistration` response", function() {
     storage.setStagedOnBehalfOf(testOrigin);
-    registrationResponse = "noRegistration";
+    xhr.useResult("noRegistration");
 
-    lib.waitForEmailValidation("baduser@testuser.com", function(status) {
+    lib.waitForEmailValidation("registered@testuser.com", function(status) {
       ok(false, "not expecting success")
       start();
     }, function(status) {
@@ -744,9 +609,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
  test("waitForEmailValidation XHR failure", function() {
     storage.setStagedOnBehalfOf(testOrigin);
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
 
-    lib.waitForEmailValidation("testemail@testemail.com", function(status) {
+    lib.waitForEmailValidation("registered@testuser.com", function(status) {
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
@@ -775,7 +640,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("verifyEmail with a bad token", function() {
-    validToken = false;
+    xhr.useResult("invalid");
 
     lib.verifyEmail("token", function onSuccess(info) {
       
@@ -789,7 +654,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("verifyEmail with an XHR failure", function() {
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
 
     lib.verifyEmail("token", function onSuccess(info) {
       ok(false, "xhr failure should never succeed");
@@ -803,7 +668,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("syncEmailKeypair with successful sync", function() {
-    syncValid = true;
     lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
       var identity = lib.getStoredEmailKeypair("testemail@testemail.com");
 
@@ -819,7 +683,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("syncEmailKeypair with invalid sync", function() {
-    syncValid = false;
+    xhr.useResult("invalid");
     lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
       ok(false, "sync was invalid, this should have failed");
       start();
@@ -834,7 +698,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("syncEmailKeypair with XHR failure", function() {
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
     lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
       ok(false, "xhr failure should never succeed");
       start();
@@ -874,7 +738,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("removeEmail with XHR failure", function() {
     storage.addEmail("testemail@testemail.com", {pub: "pub", priv: "priv"});
 
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
     lib.removeEmail("testemail@testemail.com", function() {
       ok(false, "xhr failure should never succeed");
       start();
@@ -890,8 +754,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("syncEmails with no pre-loaded identities and no identities to add", function() {
-    userEmails = {};
-
+    xhr.useResult("no_identities");
     lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
       ok(true, "we have synced identities");
@@ -903,8 +766,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("syncEmails with no pre-loaded identities and identities to add", function() {
-    userEmails = {"testuser@testuser.com": {}};
-
     lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
       ok("testuser@testuser.com" in identities, "Our new email is added");
@@ -916,7 +777,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("syncEmails with identities preloaded and none to add", function() {
-    userEmails = {"testuser@testuser.com": {}};
     storage.addEmail("testuser@testuser.com", {});
     lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
@@ -931,8 +791,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
   test("syncEmails with identities preloaded and one to add", function() {
     storage.addEmail("testuser@testuser.com", {pubkey: pubkey, cert: random_cert});
-    userEmails = {"testuser@testuser.com": {pubkey: pubkey, cert: random_cert},
-                  "testuser2@testuser.com": {pubkey: pubkey, cert: random_cert}};
+
+    xhr.useResult("multiple");
 
     lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
@@ -949,7 +809,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("syncEmails with identities preloaded and one to remove", function() {
     storage.addEmail("testuser@testuser.com", {pub: pubkey, cert: random_cert});
     storage.addEmail("testuser2@testuser.com", {pub: pubkey, cert: random_cert});
-    userEmails = {"testuser@testuser.com":  { pub: pubkey, cert: random_cert}};
 
     lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
@@ -964,7 +823,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
   test("syncEmails with one to refresh", function() {
     storage.addEmail("testuser@testuser.com", {pub: pubkey, cert: random_cert});
-    keyRefresh = ["testuser@testuser.com"]; 
 
     lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
@@ -976,7 +834,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("syncEmails with XHR failure", function() {
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
 
     lib.syncEmails(function onSuccess() {
       ok(false, "xhr failure should never succeed");
@@ -1027,7 +885,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
   test("getAssertion with XHR failure", function() {
     lib.setOrigin(testOrigin);
-    xhrFailure = true;
+    xhr.useResult("ajaxError");
 
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       ok(false, "xhr failure should never succeed");
@@ -1042,9 +900,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
 
   test("logoutUser", function(onSuccess) {
-    credentialsValid = true;
-    keyRefresh = ["testuser@testuser.com"]; 
-
     lib.authenticate("testuser@testuser.com", "testuser", function(authenticated) {
       lib.syncEmails(function() {
         var storedIdentities = storage.getEmails();
@@ -1054,7 +909,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
           storedIdentities = storage.getEmails();
           equal(_.size(storedIdentities), 0, "All items have been removed on logout");
 
-          equal(credentialsValid, false, "credentials were invalidated in logout");
           start();
         }, failure("logoutUser failure"));
       }, failure("syncEmails failure"));
@@ -1064,12 +918,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("logoutUser with XHR failure", function(onSuccess) {
-    credentialsValid = true;
-    keyRefresh = ["testuser@testuser.com"]; 
-
     lib.authenticate("testuser@testuser.com", "testuser", function(authenticated) {
       lib.syncEmails(function() {
-         xhrFailure = true;
+         xhr.useResult("ajaxError");
 
         lib.logoutUser(function() {
           ok(false, "xhr failure should never succeed");
@@ -1097,7 +948,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   });
 
   test("cancelUser with XHR failure", function(onSuccess) {
-     xhrFailure = true;
+    xhr.useResult("ajaxError");
     lib.cancelUser(function() {
       ok(false, "xhr failure should never succeed");
       start();

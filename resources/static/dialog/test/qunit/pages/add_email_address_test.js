@@ -34,36 +34,24 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/js/pages/add_email_address", function() {
+steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/network", "/js/pages/add_email_address", function() {
   "use strict";
 
   var bid = BrowserID,
       network = bid.Network,
       storage = bid.Storage,
-      emailForVerificationTokenFailure = false,
-      completeEmailRegistrationFailure = false,
+      xhr = bid.Mocks.xhr,
       validToken = true;
   
-  var netMock = {
-    emailForVerificationToken: function(token, onSuccess, onFailure) {
-      emailForVerificationTokenFailure ? onFailure() : onSuccess("testuser@testuser.com");
-    },
-
-    completeEmailRegistration: function(token, onSuccess, onFailure) {
-      completeEmailRegistrationFailure ? onFailure() : onSuccess(validToken);
-    }
-  };
-
   module("pages/add_email_address", {
     setup: function() {
-      BrowserID.User.setNetwork(netMock);  
-      emailForVerificationTokenFailure = completeEmailRegistrationFailure = false;
-      validToken = true;
+      network.setXHR(xhr);  
+      xhr.useResult("valid");
       $(".error").stop().hide();
       $(".website").text("");
     },
     teardown: function() {
-      BrowserID.User.setNetwork(network);  
+      network.setXHR($);  
       $(".error").stop().hide();
       $(".website").text("");
     }
@@ -74,39 +62,57 @@ steal.plugins("jquery").then("/js/pages/add_email_address", function() {
 
     bid.addEmailAddress("token");
     
-    equal($("#email").text(), "testuser@testuser.com", "email set");
-    ok($("#siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
-    equal($("#siteinfo .website").text(), "browserid.org", "origin is updated");
+    setTimeout(function() {
+      equal($("#email").text(), "testuser@testuser.com", "email set");
+      ok($("#siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
+      equal($("#siteinfo .website").text(), "browserid.org", "origin is updated");
+      start();
+    }, 500);
+    stop();
   });
 
   test("addEmailAddress with good token and nosite", function() {
     bid.addEmailAddress("token");
     
-    equal($("#email").text(), "testuser@testuser.com", "email set");
-    equal($("#siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
-    equal($("#siteinfo .website").text(), "", "origin is not updated");
+    setTimeout(function() {
+      equal($("#email").text(), "testuser@testuser.com", "email set");
+      equal($("#siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
+      equal($("#siteinfo .website").text(), "", "origin is not updated");
+      start();
+    }, 500);
+    stop();
   });
 
   test("addEmailAddress with bad token", function() {
-    validToken = false;
+    xhr.useResult("invalid");
 
     bid.addEmailAddress("token");
-    ok($("#cannotconfirm").is(":visible"), "cannot confirm box is visible");
+    setTimeout(function() {
+      ok($("#cannotconfirm").is(":visible"), "cannot confirm box is visible");
+      start();
+    }, 500);
+    stop();
   });
 
   test("addEmailAddress with emailForVerficationToken XHR failure", function() {
-    validToken = true;
-    emailForVerificationTokenFailure = true;
+    xhr.useResult("ajaxError");
     bid.addEmailAddress("token");
 
-    ok($("#cannotcommunicate").is(":visible"), "cannot communicate box is visible");
+    setTimeout(function() {
+      ok($("#cannotcommunicate").is(":visible"), "cannot communicate box is visible");
+      start();
+    }, 500);
+    stop();
   });
 
   test("addEmailAddress with completeEmailRegistration XHR failure", function() {
-    validToken = true;
-    completeEmailRegistrationFailure = true;
+    xhr.useResult("ajaxError");
     bid.addEmailAddress("token");
 
-    ok($("#cannotcommunicate").is(":visible"), "cannot communicate box is visible");
+    setTimeout(function() {
+      ok($("#cannotcommunicate").is(":visible"), "cannot communicate box is visible");
+      start();
+    }, 500);
+    stop();
   });
 });

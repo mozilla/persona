@@ -4,7 +4,9 @@ steal("/dialog/resources/browserid.js",
       "/dialog/resources/storage.js",
       "/dialog/resources/tooltip.js",
       "/dialog/resources/validation.js",
-      "/dialog/resources/underscore-min.js")
+      "/dialog/resources/underscore-min.js",
+      "/dialog/test/qunit/mocks/mocks.js",
+      "/dialog/test/qunit/mocks/xhr.js")
   .plugins(
     "jquery", 
     "jquery/controller",

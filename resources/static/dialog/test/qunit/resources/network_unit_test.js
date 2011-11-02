@@ -34,10 +34,11 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", function() {
+steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", "/dialog/test/qunit/mocks/xhr", function() {
   "use strict";
 
-  var testName;
+  var testName,
+  xhr = BrowserID.Mocks.xhr;
 
   function wrappedAsyncTest(name, test) {
     asyncTest(name, function() {
@@ -105,107 +106,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     stop();
   }
 
-  var network = BrowserID.Network,
-      contextInfo = {
-        server_time: new Date().getTime(),
-        csrf_token: "csrf",
-        authenticated: false
-      };
-
-
-  /**
-   * This is the results table, the keys are the request type, url, and 
-   * a "selector" for testing.  The right is the expected return value, already 
-   * decoded.  If a result is "undefined", the request's error handler will be 
-   * called.
-   */
-  var xhr = {
-    results: {
-      "get /wsapi/session_context valid": contextInfo,   
-      "get /wsapi/session_context invalid": contextInfo,
-      // We are going to test for XHR failures for session_context using 
-      // call to serverTime.  We are going to use the flag contextAjaxError
-      "get /wsapi/session_context ajaxError": contextInfo, 
-      "get /wsapi/session_context throttle": contextInfo, 
-      "get /wsapi/session_context contextAjaxError": undefined,  
-      "post /wsapi/authenticate_user valid": { success: true },
-      "post /wsapi/authenticate_user invalid": { success: false },
-      "post /wsapi/authenticate_user ajaxError": undefined,
-      "post /wsapi/complete_email_addition valid": { success: true },
-      "post /wsapi/complete_email_addition invalid": { success: false },
-      "post /wsapi/complete_email_addition ajaxError": undefined,
-      "post /wsapi/stage_user valid": { success: true },
-      "post /wsapi/stage_user invalid": { success: false },
-      "post /wsapi/stage_user throttle": 403,
-      "post /wsapi/stage_user ajaxError": undefined,
-      "get /wsapi/user_creation_status?email=address notcreated": undefined, // undefined because server returns 400 error
-      "get /wsapi/user_creation_status?email=address pending": { status: "pending" },
-      "get /wsapi/user_creation_status?email=address complete": { status: "complete" },
-      "get /wsapi/user_creation_status?email=address ajaxError": undefined,
-      "post /wsapi/complete_user_creation valid": { success: true },
-      "post /wsapi/complete_user_creation invalid": { success: false },
-      "post /wsapi/complete_user_creation ajaxError": undefined,
-      "post /wsapi/logout valid": { success: true },
-      "post /wsapi/logout ajaxError": undefined,
-      "get /wsapi/have_email?email=address taken": { email_known: true },
-      "get /wsapi/have_email?email=address nottaken" : { email_known: false },
-      "get /wsapi/have_email?email=address ajaxError" : undefined,
-      "post /wsapi/remove_email valid": { success: true },
-      "post /wsapi/remove_email invalid": { success: false },
-      "post /wsapi/remove_email ajaxError": undefined,
-      "post /wsapi/account_cancel valid": { success: true },
-      "post /wsapi/account_cancel invalid": { success: false },
-      "post /wsapi/account_cancel ajaxError": undefined,
-      "post /wsapi/stage_email valid": { success: true },
-      "post /wsapi/stage_email invalid": { success: false },
-      "post /wsapi/stage_email throttle": 403,
-      "post /wsapi/stage_email ajaxError": undefined,
-      "get /wsapi/email_addition_status?email=address notcreated": undefined, // undefined because server returns 400 error
-      "get /wsapi/email_addition_status?email=address pending": { status: "pending" },
-      "get /wsapi/email_addition_status?email=address complete": { status: "complete" },
-      "get /wsapi/email_addition_status?email=address ajaxError": undefined
-    },
-
-    useResult: function(result) {
-      xhr.resultType = result;
-    },
-
-    getLastRequest: function() {
-      return this.req;
-    },
-
-    ajax: function(obj) {
-      //console.log("ajax request");
-      var type = obj.type ? obj.type.toLowerCase() : "get";
-
-      var req = this.req = {
-        type: type,
-        url: obj.url,
-        data: obj.data
-      };
-
-
-      if(type === "post" && !obj.data.csrf) {
-        ok(false, "missing csrf token on POST request");
-      }
-
-      var resName = req.type + " " + req.url + " " + xhr.resultType;
-      var result = xhr.results[resName];
-
-      var type = typeof result;
-      if(!(type == "number" || type == "undefined")) {
-        if(obj.success) {
-          obj.success(result);
-        }
-      }
-      else if (obj.error) {
-        // Invalid result - either invalid URL, invalid GET/POST or 
-        // invalid resultType
-        obj.error({ status: result || 400 }, "errorStatus", "errorThrown");
-      }
-    }
-  }
-
+  var network = BrowserID.Network;
 
   module("/resources/network", {
     setup: function() {
@@ -253,7 +154,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
 
 
   wrappedAsyncTest("checkAuth with valid authentication", function() {
-    contextInfo.authenticated = true;
+    xhr.setContextInfo("authenticated", true);
     network.checkAuth(function onSuccess(authenticated) {
       equal(authenticated, true, "we have an authentication");
       wrappedStart();
@@ -267,7 +168,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
 
   wrappedAsyncTest("checkAuth with invalid authentication", function() {
     xhr.useResult("invalid");
-    contextInfo.authenticated = false;
+    xhr.setContextInfo("authenticated", false);
 
     network.checkAuth(function onSuccess(authenticated) {
       equal(authenticated, false, "we are not authenticated");
@@ -284,7 +185,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
 
   wrappedAsyncTest("checkAuth with XHR failure", function() {
     xhr.useResult("ajaxError");
-    contextInfo.authenticated = false;
+    xhr.setContextInfo("authenticated", false);
 
     // Do not convert this to failureCheck, we do this manually because 
     // checkAuth does not make an XHR request.  Since it does not make an XHR 
@@ -402,7 +303,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   wrappedAsyncTest("checkUserRegistration with pending email", function() {
     xhr.useResult("pending");
 
-    network.checkUserRegistration("address", function(status) {
+    network.checkUserRegistration("registered@testuser.com", function(status) {
       equal(status, "pending");
       wrappedStart();
     }, function onFailure() {
@@ -416,7 +317,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   wrappedAsyncTest("checkUserRegistration with complete email", function() {
     xhr.useResult("complete");
 
-    network.checkUserRegistration("address", function(status) {
+    network.checkUserRegistration("registered@testuser.com", function(status) {
       equal(status, "complete");
       wrappedStart();
     }, function onFailure() {
@@ -428,11 +329,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("checkUserRegistration with XHR failure", function() {
-    notificationCheck(network.checkUserRegistration, "address");
+    notificationCheck(network.checkUserRegistration, "registered@testuser.com");
   });
 
   wrappedAsyncTest("checkUserRegistration with XHR failure", function() {
-    failureCheck(network.checkUserRegistration, "address");
+    failureCheck(network.checkUserRegistration, "registered@testuser.com");
   });
 
   wrappedAsyncTest("completeUserRegistration with valid token", function() {
@@ -505,9 +406,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("emailRegistered with taken email", function() {
-    xhr.useResult("taken");
-
-    network.emailRegistered("address", function(taken) {
+    network.emailRegistered("registered@testuser.com", function(taken) {
       equal(taken, true, "a taken email is marked taken");
       wrappedStart();
     }, function onFailure() {
@@ -519,9 +418,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("emailRegistered with nottaken email", function() {
-    xhr.useResult("nottaken");
-
-    network.emailRegistered("address", function(taken) {
+    network.emailRegistered("unregistered@testuser.com", function(taken) {
       equal(taken, false, "a not taken email is not marked taken");
       wrappedStart();
     }, function onFailure() {
@@ -533,11 +430,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   });
 
   wrappedAsyncTest("emailRegistered with XHR failure", function() {
-    notificationCheck(network.emailRegistered, "address");
+    notificationCheck(network.emailRegistered, "registered@testuser.com");
   });
 
   wrappedAsyncTest("emailRegistered with XHR failure", function() {
-    failureCheck(network.emailRegistered, "address");
+    failureCheck(network.emailRegistered, "registered@testuser.com");
   });
 
 
@@ -591,7 +488,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   wrappedAsyncTest("checkEmailRegistration pending", function() {
     xhr.useResult("pending");
 
-    network.checkEmailRegistration("address", function(status) {
+    network.checkEmailRegistration("registered@testuser.com", function(status) {
       equal(status, "pending");
       wrappedStart();
     }, function onFailure() {
@@ -605,7 +502,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   wrappedAsyncTest("checkEmailRegistration complete", function() {
     xhr.useResult("complete");
 
-    network.checkEmailRegistration("address", function(status) {
+    network.checkEmailRegistration("registered@testuser.com", function(status) {
       equal(status, "complete");
       wrappedStart();
     }, function onFailure() {
@@ -746,7 +643,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
 
   wrappedAsyncTest("serverTime", function() {
     // I am forcing the server time to be 1.25 seconds off.
-    contextInfo.server_time = new Date().getTime() - 1250;
+    xhr.setContextInfo("server_time", new Date().getTime() - 1250);
     network.serverTime(function onSuccess(time) {
       var diff = Math.abs((new Date()) - time);
       equal(1245 < diff && diff < 1255, true, "server time and local time should be less than 100ms different (is " + diff + "ms different)");
