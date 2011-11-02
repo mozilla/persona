@@ -13,6 +13,10 @@ var daemonsToRun = {
     PORT: 10000,
     HOST: HOST
   },
+  keysigner: {
+    PORT: 10003,
+    HOST: HOST
+  },
   example: {
     path: path.join(__dirname, "..", "scripts", "serve_example.js"),
     PORT: 10001,
@@ -20,10 +24,6 @@ var daemonsToRun = {
   },
   browserid: {
     PORT: 10002,
-    HOST: HOST
-  },
-  keysigner: {
-    PORT: 10003,
     HOST: HOST
   }
 };
