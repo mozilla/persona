@@ -1,0 +1,46 @@
+<div id="vAlign" class="display_always">   
+    <div id="signUpFormWrap">
+        <!-- XXX this form submits to nowhere -->
+        <form id="signUpForm" class="cf authform" novalidate>
+            <h1 class="serif">Forgot Password</h1>
+            <div class="notifications">
+                <div class="notification error doh">Doh! Something went wrong :-( </div>
+                <div class="notification error mismatchpassword">XXX: Your passwords need to match</div>
+                <div class="notification emailsent">A confirmation email has been sent to you at <strong id="sent_to_email"></strong>. Check it!</div>
+            </div>
+            <div id="forminputs">
+            <ul class="inputs">
+                <li>
+                    <label class="serif" for="email">Email Address</label>
+                    <input class="sans" id="email" autofocus required placeholder="Your Email" type="email" autocapitalize="off" autocorrect="off" maxlength="254" />
+
+                    <div id="email_format" class="tooltip" for="email">
+                      This field must be an email address.
+                    </div>
+
+                    <div id="email_required" class="tooltip" for="email">
+                      The email field is required.
+                    </div>
+
+                    <div id="could_not_add" class="tooltip" for="email">
+                      We just sent an email to that address! If you really want to send another, wait a minute or two and try again.
+                    </div>
+
+                    <div id="not_registered" class="tooltip" for="email">
+                      Non existent user!
+                    </div>
+                </li>
+
+
+            </ul>
+            <div class="submit cf">
+                <div class="remember cf">
+                    <a class="signUpIn" href="/signin">Know your password? Sign in.</a>
+                </div>
+                <input type="submit" class="create" value="Reset Password"/>
+            </div>
+            </div>
+        </form>
+    </div>
+</div>
+

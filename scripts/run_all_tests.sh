@@ -16,9 +16,9 @@ cd $BASEDIR
 for env in test_json test_mysql ; do
   export NODE_ENV=$env
   $SCRIPT_DIR/test_db_connectivity.js
-  if [ $? = 0 ] ; then 
+  if [ $? = 0 ] ; then
       echo "Testing with NODE_ENV=$env"
-      for file in browserid/tests/*.js ; do
+      for file in tests/*.js ; do
           echo $file
           vows $file
           if [[ $? != 0 ]] ; then

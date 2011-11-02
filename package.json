@@ -26,10 +26,12 @@
     , "sax" : "0.2.3"
     , "mimelib-noiconv" : "0.1.3"
     , "jwcrypto": "https://github.com/mozilla/jwcrypto/tarball/3a21befabfff"
+    , "postprocess": "0.0.3"
+    , "urlparse": "0.0.1"
   }
   , "scripts": {
     "postinstall": "./scripts/generate_ephemeral_keys.sh",
     "test": "./scripts/run_all_tests.sh",
-    "start": "node ./run.js"
+    "start": "./scripts/run_locally.js"
   }
 }
