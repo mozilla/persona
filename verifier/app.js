@@ -86,7 +86,7 @@ function doVerify(req, resp, next) {
       resp.json({"status":"failure", reason: (error ? error.toString() : "unknown")});
       metrics.report('verify', {
         result: 'failure',
-        rp: audienceFromAssertion
+        rp: audience
       });
     });
 
