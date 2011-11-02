@@ -49,7 +49,8 @@ config = require('configuration.js'),
 validate = require('validate.js'),
 metrics = require("metrics.js"),
 logger = require("logging.js").logger,
-ca = require('keysigner/ca.js');
+ca = require('keysigner/ca.js'),
+heartbeat = require('heartbeat');
 
 // create an express server
 var app = express.createServer();
@@ -64,8 +65,14 @@ app.use(express.logger({
   }
 }));
 
+app.use(function(req, resp, next) {
+  next();
+});
+
 // parse POST bodies
 app.use(express.bodyParser());
+
+heartbeat.setup(app);
 
 // and our single function
 app.post('/wsapi/cert_key', validate(["email", "pubkey"]), function(req, resp) {

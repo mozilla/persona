@@ -39,6 +39,7 @@ const
 fs = require('fs'),
 path = require('path'),
 url = require('url'),
+http = require('http');
 sessions = require('connect-cookie-session');
 
 // add lib/ to the require path
@@ -55,7 +56,8 @@ config = require('configuration.js'),
 heartbeat = require('heartbeat.js'),
 metrics = require("metrics.js"),
 logger = require("logging.js").logger,
-forward = require('browserid/http_forward');
+forward = require('browserid/http_forward'),
+urlparse = require('urlparse');
 
 var app = undefined;
 
@@ -65,6 +67,12 @@ logger.info("browserid server starting up");
 
 const COOKIE_SECRET = secrets.hydrateSecret('browserid_cookie', config.get('var_path'));
 const COOKIE_KEY = 'browserid_state';
+
+// verify that we have a keysigner configured
+if (!config.get('keysigner_url')) {
+  logger.error('missing required configuration - url for the keysigner (KEYSIGNER_URL in env)');
+  process.exit(1);
+}
 
 function internal_redirector(new_url, suppress_noframes) {
   return function(req, resp, next) {
@@ -172,7 +180,10 @@ function router(app) {
   wsapi.setup(app);
 
   // setup health check / heartbeat
-  heartbeat.setup(app);
+  heartbeat.setup(app, function(cb) {
+    // let's check stuff!  first the heartbeat of our keysigner
+    heartbeat.check(config.get('keysigner_url'), cb);
+  });
 
   // the public key
   app.get("/pk", function(req, res) {
