@@ -221,8 +221,9 @@ section > .contents {
 
 #favicon {
     position: absolute;
-    left: 450px;
+    left: 375px;
     top: 0;
+    right: 0;
     z-index: 10;
 }
 
@@ -233,6 +234,14 @@ section > .contents {
 #favicon img {
     display: block;
     margin: 0 auto 10px;
+}
+
+#favicon .vertical {
+    display: block;
+    line-height: 250px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #signIn .vertical {
