@@ -57,7 +57,7 @@ var app = express.createServer();
 
 // our server will log
 app.use(express.logger({
-  format: 'dev',
+  format: config.get('express_log_format'),
   stream: {
     write: function(x) {
       logger.info(typeof x === 'string' ? x.trim() : x);
