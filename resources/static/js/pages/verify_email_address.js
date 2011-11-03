@@ -1,4 +1,4 @@
-/*globals BrowserID:true, $:true */
+/*globals BrowserID: true, $:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,43 +37,47 @@
 (function() {
   "use strict";
 
-  var bid = BrowserID;
+  var bid = BrowserID,
+      token;
 
   function showError(el) {
     $(el).fadeIn(250);
     $("#signUpForm").remove();
   }
 
-  bid.verifyEmailAddress = function(token) {
-    $("#signUpForm").submit(function(event) {
-      event.preventDefault();
+  function submit(event) {
+    if (event) event.preventDefault();
 
-      var pass = $("#password").val(),
-          vpass = $("#vpassword").val();
+    var pass = $("#password").val(),
+        vpass = $("#vpassword").val();
 
-      var valid = bid.Validation.passwordAndValidationPassword(pass, vpass);
+    var valid = bid.Validation.passwordAndValidationPassword(pass, vpass);
 
-      if (valid) {
-        bid.Network.completeUserRegistration(token, pass, function onSuccess(registered) {
-          if (registered) {
-            $("#signUpForm").hide();
-            $("#congrats").fadeIn(250);
-          }
-          else {
-            showError("#cannotcomplete");
-          }
-        }, function onFailure() {
-          showError("#cannotconnect");
-        });
-      }
-    });
+    if (valid) {
+      bid.Network.completeUserRegistration(token, pass, function onSuccess(registered) {
+        if (registered) {
+          $("#signUpForm").hide();
+          $("#congrats").fadeIn(250);
+        }
+        else {
+          showError("#cannotcomplete");
+        }
+      }, function onFailure() {
+        showError("#cannotcommunicate");
+      });
+    }
+  }
+
+  function init(tok) {
+    $("#signUpForm").bind("submit", submit);
+    $(".siteinfo").hide();
+    $("#congrats").hide();
+    token = tok;
 
     var staged = bid.Storage.getStagedOnBehalfOf();
     if (staged) {
       $('.website').html(staged);
-    }
-    else {
-      $('.hint').hide();
+      $('.siteinfo').show();
     }
 
     // go get the email address
@@ -82,9 +86,20 @@
         $('#email').val(email);
       }
       else {
-        showError("#badtoken");
+        showError("#cannotconfirm");
       }
+    }, function() {
+        showError("#cannotcommunicate");
     });
+  }
 
-  };
+  function reset() {
+    $("#signUpForm").unbind("submit", submit);
+  }
+
+  init.submit = submit;
+  init.reset = reset;
+
+  bid.verifyEmailAddress = init;
+
 }());

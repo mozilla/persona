@@ -24,6 +24,7 @@ steal("/dialog/resources/browserid.js",
   .then("include_unit_test")
   .then("relay/relay_unit_test")
   .then("pages/add_email_address_test")
+  .then("pages/verify_email_address_test")
   .then("pages/forgot_unit_test")
   .then("resources/tooltip_unit_test")
   .then("resources/channel_unit_test")
