@@ -1,13 +1,13 @@
 <div id="vAlign" class="display_always">   
   <div id="signUpFormWrap">
     <ul class="notifications">
-        <li class="notification error" id="badtoken">There was a problem with your signup link.  Has this address already been registered?</li>
-        <li class="notification error" id="cannotconnect">Error comunicating with server.</li>
+        <li class="notification error" id="cannotconfirm">There was a problem with your signup link.  Has this address already been registered?</li>
+        <li class="notification error" id="cannotcommunicate">Error comunicating with server.</li>
         <li class="notification error" id="cannotcomplete">Error encountered trying to complete registration.</li>
     </ul>
 
     <form id="signUpForm" class="cf">
-      <p class="hint">Finish signing into: <strong><span class="website"></span></strong></p>
+      <p class="hint siteinfo">Finish signing into: <strong><span class="website"></span></strong></p>
       <h1 class="serif">Last step!</h1>
 
 
@@ -49,7 +49,14 @@
     </form>
     
     <div id="congrats">
-        <p class="serif">Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!</p>
+        <p class="serif">Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!
+        </p>
+
+        <p class="serif siteinfo">
+          Your new address is set up and you should now be signed in.
+          You may now close this window and go back to 
+          <strong class="website"></strong> 
+        </p>
     </div>
       
   </div>

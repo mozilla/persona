@@ -43,8 +43,8 @@
     $("#email").text(info.email);
     
     if (info.origin) {
-      $("#siteinfo .website").html(info.origin);
-      $("#siteinfo").show();
+      $(".website").html(info.origin);
+      $(".siteinfo").show();
     }
 
     $("#signUpForm").delay(2000).fadeOut(ANIMATION_TIME, function() {

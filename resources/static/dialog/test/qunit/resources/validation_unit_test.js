@@ -112,8 +112,15 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", fu
   test("email with Capital Letters in domain side", function() {
     var valid = validation.email("x@Y.z");
 
-    equal(valid, false, "capital letters not allowed in domain side");
-    equal(tooltipShown, true, "missing email shows no tooltip");
+    equal(valid, true, "capital letters are allowed in domain side");
+    equal(tooltipShown, false, "capital letters in domain side causes no tooltip");
+  });
+
+  test("email with numbers in domain side", function() {
+    var valid = validation.email("x@0.Z");
+
+    equal(valid, true, "numbers are allowed in domain side");
+    equal(tooltipShown, false, "numbers in domain side causes no tooltip");
   });
 
 

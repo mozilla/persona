@@ -54,6 +54,7 @@ var app = express.createServer();
 
 // request to logger, dev formatted which omits personal data in the requests
 app.use(express.logger({
+  format: config.get('express_log_format'),
   stream: {
     write: function(x) {
       logger.info(typeof x === 'string' ? x.trim() : x);

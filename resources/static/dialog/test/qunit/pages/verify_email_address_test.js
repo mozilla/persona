@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/network", "/js/pages/add_email_address", function() {
+steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/network", "/js/pages/verify_email_address", function() {
   "use strict";
 
   var bid = BrowserID,
@@ -43,7 +43,7 @@ steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/
       xhr = bid.Mocks.xhr,
       validToken = true;
   
-  module("pages/add_email_address", {
+  module("pages/verify_email_address", {
     setup: function() {
       network.setXHR(xhr);  
       xhr.useResult("valid");
@@ -57,13 +57,13 @@ steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/
     }
   });
 
-  test("addEmailAddress with good token and site", function() {
+  test("verifyEmailAddress with good token and site", function() {
     storage.setStagedOnBehalfOf("browserid.org");
 
-    bid.addEmailAddress("token");
+    bid.verifyEmailAddress("token");
     
     setTimeout(function() {
-      equal($("#email").text(), "testuser@testuser.com", "email set");
+      equal($("#email").val(), "testuser@testuser.com", "email set");
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
       equal($(".website").text(), "browserid.org", "origin is updated");
       start();
@@ -71,11 +71,15 @@ steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/
     stop();
   });
 
-  test("addEmailAddress with good token and nosite", function() {
-    bid.addEmailAddress("token");
+  test("verifyEmailAddress with good token and nosite", function() {
+    $(".siteinfo").hide();
+    storage.setStagedOnBehalfOf("");
+
+    bid.verifyEmailAddress("token");
+
     
     setTimeout(function() {
-      equal($("#email").text(), "testuser@testuser.com", "email set");
+      equal($("#email").val(), "testuser@testuser.com", "email set");
       equal($(".siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
       equal($(".siteinfo .website").text(), "", "origin is not updated");
       start();
@@ -83,10 +87,10 @@ steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/
     stop();
   });
 
-  test("addEmailAddress with bad token", function() {
+  test("verifyEmailAddress with bad token", function() {
     xhr.useResult("invalid");
 
-    bid.addEmailAddress("token");
+    bid.verifyEmailAddress("token");
     setTimeout(function() {
       ok($("#cannotconfirm").is(":visible"), "cannot confirm box is visible");
       start();
@@ -94,9 +98,9 @@ steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/
     stop();
   });
 
-  test("addEmailAddress with emailForVerficationToken XHR failure", function() {
+  test("verifyEmailAddress with emailForVerficationToken XHR failure", function() {
     xhr.useResult("ajaxError");
-    bid.addEmailAddress("token");
+    bid.verifyEmailAddress("token");
 
     setTimeout(function() {
       ok($("#cannotcommunicate").is(":visible"), "cannot communicate box is visible");
@@ -105,4 +109,66 @@ steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/
     stop();
   });
 
+  test("submit with good token, both passwords", function() {
+    bid.verifyEmailAddress("token");
+
+
+    $("#password").val("password");
+    $("#vpassword").val("password");
+
+    bid.verifyEmailAddress.submit();
+
+    setTimeout(function() {
+      equal($("#congrats").is(":visible"), true, "congrats is visible, we are complete");
+      start();
+    }, 500);
+    stop();
+  });
+
+  test("submit with good token, missing password", function() {
+    bid.verifyEmailAddress("token");
+
+
+    $("#password").val("");
+    $("#vpassword").val("password");
+
+    bid.verifyEmailAddress.submit();
+
+    setTimeout(function() {
+      equal($("#congrats").is(":visible"), false, "congrats is not visible, missing password");
+      start();
+    }, 500);
+    stop();
+  });
+
+  test("submit with good token, missing verification password", function() {
+    bid.verifyEmailAddress("token");
+
+
+    $("#password").val("password");
+    $("#vpassword").val("");
+
+    bid.verifyEmailAddress.submit();
+
+    setTimeout(function() {
+      equal($("#congrats").is(":visible"), false, "congrats is not visible, missing verification password");
+      start();
+    }, 500);
+    stop();
+  });
+
+  test("submit with good token, different passwords", function() {
+    bid.verifyEmailAddress("token");
+
+    $("#password").val("password");
+    $("#vpassword").val("pass");
+
+    bid.verifyEmailAddress.submit();
+
+    setTimeout(function() {
+      equal($("#congrats").is(":visible"), false, "congrats is not visible, different passwords");
+      start();
+    }, 500);
+    stop();
+  });
 });
