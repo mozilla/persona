@@ -40,11 +40,10 @@ BrowserID.Validation = (function() {
   bid.verifyEmail = function(address) {
     // Original gotten from http://blog.gerv.net/2011/05/html5_email_address_regexp/
     // changed the requirement that there must be a ldh-str because BrowserID 
-    // is only used on internet based networks.  Also modified to allow capital 
-    // letters in the domain name.
+    // is only used on internet based networks.  
     var parts = address.split("@");
 
-    return /^[\w.!#$%&'*+\-/=?\^`{|}~]+@[a-zA-Z\d-]+(\.[a-zA-Z\d-]+)+$/.test(address)
+    return /^[\w.!#$%&'*+\-/=?\^`{|}~]+@[a-z\d-]+(\.[a-z\d-]+)+$/i.test(address)
            // total address allwed to be 254 bytes long
            && address.length <= 254
            // local side only allowed to be 64 bytes long
