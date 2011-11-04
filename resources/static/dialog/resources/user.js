@@ -586,7 +586,7 @@ BrowserID.User = (function() {
       var keypair = jwk.KeyPair.generate("DS", keysize);
       setTimeout(function() {
         certifyEmailKeypair(email, keypair, onSuccess, onFailure);
-      }, 0);
+      }, 1000);
     },
 
 
