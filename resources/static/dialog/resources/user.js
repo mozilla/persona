@@ -612,6 +612,7 @@ BrowserID.User = (function() {
             var expirationDate = new Date(expirationMS);
             var tok = new jwt.JWT(null, expirationDate, origin);
             assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
+            alert('after createAssertion');
             if (onSuccess) {
               onSuccess(assertion);
             }
@@ -623,7 +624,9 @@ BrowserID.User = (function() {
           if (storedID.priv) {
             // parse the secret key
             // yield to the render thread!
+            alert('before timeout to createAssertion');
             setTimeout(function() {
+              alert('after timeout to createAssertion');
               createAssertion(storedID);
             }, 0);
           }
