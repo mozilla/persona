@@ -78,7 +78,8 @@ g_configs.production = {
   var_path: '/home/browserid/var/',
   database: {
     driver: "mysql",
-    user: 'browserid'
+    user: 'browserid',
+    create_schema: true
   },
   bcrypt_work_factor: 12,
   authentication_duration_ms: (7 * 24 * 60 * 60 * 1000),
@@ -108,6 +109,11 @@ g_configs.local =  {
   authentication_duration_ms: g_configs.production.authentication_duration_ms,
   certificate_validity_ms: g_configs.production.certificate_validity_ms
 };
+
+if (undefined !== process.env['NODE_EXTRA_CONFIG']) {
+  var fs = require('fs');
+  eval(fs.readFileSync(process.env['NODE_EXTRA_CONFIG']) + '');
+}
 
 Object.keys(g_configs).forEach(function(config) {
   if (!g_configs[config].smtp) {
@@ -148,12 +154,13 @@ g_config['URL'] = g_config['scheme'] + '://' + g_config['hostname'] + getPortFor
  * to re-write urls as needed for this particular environment.
  *
  * Note, for a 'local' environment, no re-write is needed because this is
- * handled at a higher level.  For a 'production' env no rewrite is necc cause
- * all source files are written for that environment.
+ * handled at a higher level.  For other environments, only perform re-writing
+ * if the host, port, or scheme are different than https://browserid.org:443
+ * (all source files always should have the production hostname written into them)
  */
 exports.performSubstitution = function(app) {
-  if (process.env['NODE_ENV'] !== 'production' &&
-      process.env['NODE_ENV'] !== 'local') {
+  if ((g_config.hostname != 'browserid.org' || g_config.port != '443' || g_config.scheme != 'https') &&
+      process.env['NODE_ENV'] !== 'local'){
     app.use(substitution.substitute({
       'https://browserid.org': g_config['URL'],
       'browserid.org:443': g_config['hostname'] + ':' + g_config['port'],
@@ -164,7 +171,7 @@ exports.performSubstitution = function(app) {
 
 // At the time this file is required, we'll determine the "process name" for this proc
 // if we can determine what type of process it is (browserid or verifier) based
-// on the path, we'll use that, otherwise we'll name it 'ephemeral'.  
+// on the path, we'll use that, otherwise we'll name it 'ephemeral'.
 if (process.argv[1] == path.join(__dirname, "..", "browserid", "run.js")) {
   g_config['process_type'] = 'browserid';
 } else if (process.argv[1] == path.join(__dirname, "..", "verifier", "run.js")) {

@@ -2,17 +2,27 @@
     <div id="signUpFormWrap">
         <div id="signUpForm" class="cf">
             <h1 class="serif">Email Verification</h1>
+
             <ul class="notifications">
                 <li class="notification error" id="cannotconnect">Error comunicating with server.</li>
                 <li class="notification error" id="cannotconfirm">Error encountered while attempting to confirm your address. Have you previously verified this address?</li>
             </ul>
-            <p class="hint">One moment while we attempt to confirm your email address...</p>
-        </div>
-        
 
-        <div id="congrats" class="serif">
-          Your email address has been verified!
+            <p class="hint">One moment while we attempt to confirm your email address...</p>
+        
         </div>
-  </div>
+
+        <div id="congrats">
+            <p class="serif">
+                <strong id="email">Your address</strong> has been verified!
+
+                <span id="siteinfo">
+                  Your new address is set up and you should now be signed in.
+                  You may now close this window and go back to 
+                  <strong class="website"></strong> 
+                </span>
+            </p>
+        </div>
+    </div>
 </div>
 

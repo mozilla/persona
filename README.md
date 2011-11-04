@@ -23,10 +23,12 @@ or changes will be made.
 
 2. Boot up the VM:
 
-    $ cd browserid
-    $ vagrant up
-    $ vagrant ssh
-    vagrant@lucid32:browserid$ node ./run.js
+```
+cd browserid
+vagrant up
+vagrant ssh vagrant@lucid32:browserid
+node ./run.js
+```
 
 `vagrant up` will take a while. Go get a cup of coffee. This is because it downloads the 500MB VM.
 

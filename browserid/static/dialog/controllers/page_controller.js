@@ -48,6 +48,8 @@
       var me=this,
           bodyTemplate = options.bodyTemplate,
           bodyVars = options.bodyVars,
+          errorTemplate = options.errorTemplate,
+          errorVars = options.errorVars,
           waitTemplate = options.waitTemplate,
           waitVars = options.waitVars;
 
@@ -58,6 +60,10 @@
 
       if(waitTemplate) {
         me.renderWait(waitTemplate, waitVars);
+      }
+
+      if(errorTemplate) {
+        me.renderError(errorTemplate, errorVars);
       }
 
       // XXX move all of these, bleck.
@@ -95,12 +101,12 @@
 
     renderWait: function(body, body_vars) {
       this.renderTemplates("#wait", body, body_vars);
-      $("body").removeClass("error").removeClass("form").addClass("waiting");
-      $("#wait").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
+      $("body").removeClass("error").removeClass("form").addClass("waiting").css('opacity', 1);
+      $("#wait").stop().hide().fadeIn(ANIMATION_TIME);
     },
 
-    renderError: function(error_vars) {
-      this.renderTemplates("#error", "wait.ejs", error_vars);
+    renderError: function(body, body_vars) {
+      this.renderTemplates("#error", body, body_vars);
       $("body").removeClass("waiting").removeClass("form").addClass("error");
       $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
     },
@@ -144,7 +150,7 @@
      */
     getErrorDialog: function(info) {
       var self=this;
-      return self.renderError.bind(self, info);
+      return self.renderError.bind(self, "wait.ejs", info);
     },
 
     onCancel: function(event) {

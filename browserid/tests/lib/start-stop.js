@@ -71,7 +71,7 @@ exports.addStartupBatches = function(suite) {
         return true;
       },
       "server should be running": {
-        topic: wsapi.get('/ping.txt'),
+        topic: wsapi.get('/__heartbeat__'),
         "server is running": function (r, err) {
           assert.equal(r.code, 200);
         }

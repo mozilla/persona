@@ -108,6 +108,10 @@ BrowserID.User = (function() {
         //   'mustAuth' - user must authenticate
         //   'noRegistration' - no registration is in progress
         if (status === "complete" || status === "mustAuth") {
+          // As soon as the registration comes back as complete, we should 
+          // ensure that the stagedOnBehalfOf is cleared so there is no stale 
+          // data.
+          storage.setStagedOnBehalfOf("");
           if (onSuccess) {
             onSuccess(status);
           }
@@ -118,7 +122,7 @@ BrowserID.User = (function() {
         else if (onFailure) {
             onFailure(status);
         }
-      });
+      }, onFailure);
     };
 
     poll();
@@ -230,7 +234,7 @@ BrowserID.User = (function() {
       var self=this;
 
       // remember this for later
-      storage.setStagedOnBehalfOf(origin);
+      storage.setStagedOnBehalfOf(self.getHostname());
       
       network.createUser(email, origin, function(created) {
         if (onSuccess) {
@@ -248,6 +252,35 @@ BrowserID.User = (function() {
      */
     waitForUserValidation: function(email, onSuccess, onFailure) {
       registrationPoll(network.checkUserRegistration, email, onSuccess, onFailure);
+    },
+
+    /**
+     * Verify a user
+     * @method verifyUser
+     * @param {string} token - token to verify.
+     * @param {string} password - password to set for account.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    verifyUser: function(token, password, onSuccess, onFailure) {
+      network.emailForVerificationToken(token, function (email) {
+        var invalidInfo = { valid: false };
+        if (email) {
+          network.completeUserRegistration(token, password, function (valid) {
+            var info = valid ? {
+              valid: valid,
+              email: email,
+              origin: storage.getStagedOnBehalfOf()
+            } : invalidInfo;
+
+            storage.setStagedOnBehalfOf("");
+
+            if (onSuccess) onSuccess(info);
+          }, onFailure);
+        } else if(onSuccess) {
+          onSuccess(invalidInfo);
+        }
+      }, onFailure);
     },
 
     /**
@@ -277,7 +310,7 @@ BrowserID.User = (function() {
      * identity.
      * @method cancelUser
      * @param {function} [onSuccess] - Called whenever complete.
-     * @param {function} [onFailure] - called on failure.
+     * @param {function} [onFailure] - called on error.
      */
     cancelUser: function(onSuccess, onFailure) {
       network.cancelUser(function() {
@@ -285,7 +318,7 @@ BrowserID.User = (function() {
         if (onSuccess) {
           onSuccess();
         }
-      });
+      }, onFailure);
 
     },
 
@@ -293,7 +326,7 @@ BrowserID.User = (function() {
      * Log the current user out.
      * @method logoutUser
      * @param {function} [onSuccess] - Called whenever complete.
-     * @param {function} [onFailure] - called on failure.
+     * @param {function} [onFailure] - called on error.
      */
     logoutUser: function(onSuccess, onFailure) {
       network.logout(function() {
@@ -301,7 +334,7 @@ BrowserID.User = (function() {
         if (onSuccess) {
           onSuccess();
         }
-      });
+      }, onFailure);
     },
 
     /**
@@ -309,7 +342,7 @@ BrowserID.User = (function() {
      * be called.
      * @method syncEmails
      * @param {function} [onSuccess] - Called whenever complete.
-     * @param {function} [onFailure] - Called on failure.
+     * @param {function} [onFailure] - Called on error.
      */
     syncEmails: function(onSuccess, onFailure) {
       cleanupIdentities();
@@ -356,7 +389,7 @@ BrowserID.User = (function() {
         }
 
         addNextEmail();
-      });
+      }, onFailure);
     },
 
     /**
@@ -365,7 +398,7 @@ BrowserID.User = (function() {
      * @param {function} [onSuccess] - Called when check is complete with one 
      * boolean parameter, authenticated.  authenticated will be true if user is 
      * authenticated, false otw.
-     * @param {function} [onFailure] - Called on failure.
+     * @param {function} [onFailure] - Called on error.
      */
     checkAuthentication: function(onSuccess, onFailure) {
       network.checkAuth(function(authenticated) {
@@ -384,7 +417,7 @@ BrowserID.User = (function() {
      * but before sync starts.  Useful for displaying status messages about the 
      * sync taking a moment.
      * @param {function} [onComplete] - Called on sync completion.
-     * @param {function} [onFailure] - Called on failure.
+     * @param {function} [onFailure] - Called on error.
      */
     checkAuthenticationAndSync: function(onSuccess, onComplete, onFailure) {
       var self=this;
@@ -413,7 +446,7 @@ BrowserID.User = (function() {
      * @param {string} email - Email address to authenticate.
      * @param {string} password - Password.
      * @param {function} [onComplete] - Called on sync completion.
-     * @param {function} [onFailure] - Called on failure.
+     * @param {function} [onFailure] - Called on error.
      */
     authenticate: function(email, password, onComplete, onFailure) {
       var self=this;
@@ -452,6 +485,7 @@ BrowserID.User = (function() {
       var self = this;
       network.addEmail(email, origin, function(added) {
         if (added) {
+          storage.setStagedOnBehalfOf(self.getHostname());
           // we no longer send the keypair, since we will certify it later.
           if (onSuccess) {
             onSuccess(added);
@@ -472,11 +506,41 @@ BrowserID.User = (function() {
     },
 
     /**
+     * Verify a users email address given by the token
+     * @method verifyEmail
+     * @param {string} token
+     * @param {function} [onSuccess] - Called on success.
+     *   Called with an object with valid, email, and origin if valid, called 
+     *   with only valid otw.
+     * @param {function} [onFailure] - Called on error.
+     */
+    verifyEmail: function(token, onSuccess, onFailure) {
+      network.emailForVerificationToken(token, function (email) {
+        var invalidInfo = { valid: false };
+        if (email) {
+          network.completeEmailRegistration(token, function (valid) {
+            var info = valid ? {
+              valid: valid,
+              email: email,
+              origin: storage.getStagedOnBehalfOf()
+            } : invalidInfo;
+
+            storage.setStagedOnBehalfOf("");
+
+            if (onSuccess) onSuccess(info);
+          }, onFailure);
+        } else if(onSuccess) {
+          onSuccess(invalidInfo);
+        }
+      }, onFailure);
+    },
+
+    /**
      * Remove an email address.
      * @method removeEmail
      * @param {string} email - Email address to remove.
      * @param {function} [onSuccess] - Called when complete.
-     * @param {function} [onFailure] - Called on failure.
+     * @param {function} [onFailure] - Called on error.
      */
     removeEmail: function(email, onSuccess, onFailure) {
       if(storage.getEmail(email)) {
@@ -513,7 +577,7 @@ BrowserID.User = (function() {
      * @method getAssertion
      * @param {string} email - Email to get assertion for.
      * @param {function} [onSuccess] - Called with assertion on success.
-     * @param {function} [onFailure] - Called on failure.
+     * @param {function} [onFailure] - Called on error.
      */
     getAssertion: function(email, onSuccess, onFailure) {
       // we use the current time from the browserid servers
@@ -533,7 +597,7 @@ BrowserID.User = (function() {
             if (onSuccess) {
               onSuccess(assertion);
             }
-          });
+          }, onFailure);
         }
 
         if (storedID) {

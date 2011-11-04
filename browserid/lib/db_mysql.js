@@ -49,6 +49,7 @@
  *
  *
  *    +------ staged ----------+
+ *    |*int id                 |
  *    |*string secret          |
  *    | bool new_acct          |
  *    | string existing        |
@@ -67,10 +68,28 @@ var client = undefined;
 // may get defined at open() time causing a database to be dropped upon connection closing.
 var drop_on_close = undefined;
 
+// If you change these schemas, please notify <services-ops@mozilla.com>
 const schemas = [
-  "CREATE TABLE IF NOT EXISTS user   ( id INTEGER AUTO_INCREMENT PRIMARY KEY, passwd VARCHAR(64) );",
-  "CREATE TABLE IF NOT EXISTS email  ( id INTEGER AUTO_INCREMENT PRIMARY KEY, user INTEGER, INDEX(user), address VARCHAR(255) UNIQUE, INDEX(address) );",
-  "CREATE TABLE IF NOT EXISTS staged ( secret VARCHAR(48) PRIMARY KEY, new_acct BOOL, existing VARCHAR(255), email VARCHAR(255) UNIQUE, INDEX(email), ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
+  "CREATE TABLE IF NOT EXISTS user (" +
+    "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
+    "passwd CHAR(64) NOT NULL" +
+    ") ENGINE=InnoDB;",
+
+  "CREATE TABLE IF NOT EXISTS email (" +
+    "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
+    "user BIGINT NOT NULL," +
+    "address VARCHAR(255) UNIQUE NOT NULL," + 
+    "FOREIGN KEY user_fkey (user) REFERENCES user(id)" +
+    ") ENGINE=InnoDB;",
+
+  "CREATE TABLE IF NOT EXISTS staged (" +
+    "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
+    "secret CHAR(48) UNIQUE NOT NULL," +
+    "new_acct BOOL NOT NULL," +
+    "existing VARCHAR(255)," +
+    "email VARCHAR(255) UNIQUE NOT NULL," +
+    "ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL" + 
+    ") ENGINE=InnoDB;",
 ];
 
 // log an unexpected database error
@@ -111,37 +130,39 @@ exports.open = function(cfg, cb) {
   }
 
   // now create the databse
-  client.query("CREATE DATABASE IF NOT EXISTS " + database, function(err) {
-    if (err) {
-      logUnexpectedError(err);
-      cb(err);
-      return;
-    }
-    client.useDatabase(database, function(err) {
+  if (cfg.create_schema || cfg.unit_test) {
+    client.query("CREATE DATABASE IF NOT EXISTS " + database, function(err) {
       if (err) {
         logUnexpectedError(err);
         cb(err);
         return;
       }
-
-      // now create tables
-      function createNextTable(i) {
-        if (i < schemas.length) {
-          client.query(schemas[i], function(err) {
-            if (err) {
-              logUnexpectedError(err);
-              cb(err);
-            } else {
-              createNextTable(i+1);
-            }
-          });
-        } else {
-          cb();
+      client.useDatabase(database, function(err) {
+        if (err) {
+          logUnexpectedError(err);
+          cb(err);
+          return;
         }
-      }
-      createNextTable(0);
+
+        // now create tables
+        function createNextTable(i) {
+          if (i < schemas.length) {
+            client.query(schemas[i], function(err) {
+              if (err) {
+                logUnexpectedError(err);
+                cb(err);
+              } else {
+                createNextTable(i+1);
+              }
+            });
+          } else {
+            cb();
+          }
+        }
+        createNextTable(0);
+      });
     });
-  });
+  };
 };
 
 exports.close = function(cb) {

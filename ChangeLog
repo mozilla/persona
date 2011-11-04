@@ -1,3 +1,16 @@
+train-2011.10.27:
+  * link fixing ('need help?' to point to SUMO): #378
+  * unit tests repaired: #469 (broken in fix to #82)
+  * improve handling of network errors: #448
+  * improve styling and language of email confirmation page: #349
+  * logging improvements: #455
+  * RPM generation script created (for installation of browserid on redhat [moz prod] boxes): #478
+  * SCHEMA CHANGES to improve database performance and scalability: #480
+  * change the health check call from '/ping.txt' to '/__heartbeat__': #481
+  * remove application level network timeouts (let the network stack do its job, the user can cancel if they get sick of it): #485
+  * improve messaging for unsupported browsers: #273, #484
+  * developer documentation improvements: #496
+
 train-2011.10.20:
   * android < 3.0 now supported: #461
   * properly set assertion expiration time to when they expire, not when they're issued: #433, #457, #458

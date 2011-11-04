@@ -156,16 +156,16 @@ post update hook, annotated to help you follow along:
 ### 5. get node servers running
 
 At this point, pushing code to gitolite will cause /home/browserid/code to be updated.  Now
-we need to get the servers running!  Manually we can verify that the servers will run. 
+we need to get the servers running!  Manually we can verify that the servers will run.
 For the browser id server:
 
-    cd /home/browserid/code/browserid && sudo -u www-data ./run.js  
+    cd /home/browserid/code/browserid && sudo -u www-data ./run.js
 
 And for the verifier:
 
-    cd /home/browserid/code/verifier && sudo -u www-data ./run.js  
+    cd /home/browserid/code/verifier && sudo -u www-data ./run.js
 
-Now let's set up [monit] to restart the node.js servers:  
+Now let's set up [monit] to restart the node.js servers:
 
   1. install monit: `sudo apt-get install monit`
   2. enable monit by editing `/etc/default/monit`
@@ -181,7 +181,7 @@ include /etc/monit.d/*
 
 <pre>
 #!/bin/bash
-/usr/local/bin/node $1 > $(dirname $1)/error.log 2>&1 &    
+/usr/local/bin/node $1 > $(dirname $1)/error.log 2>&1 &
 </pre>
 
   5. create a file to run the verifier at `/etc/monit.d/verifier`:
@@ -192,7 +192,7 @@ check host verifier with address 127.0.0.1
         as uid "www-data" and gid "www-data"
     stop program  = "/usr/bin/pkill -f '/usr/local/bin/node /home/browserid/code/verifier/run.js'"
     if failed port 62800 protocol HTTP
-        request /ping.txt
+        request /__heartbeat__
         with timeout 10 seconds
         then restart
 </pre>
@@ -205,7 +205,7 @@ check host browserid.org with address 127.0.0.1
         as uid "www-data" and gid "www-data"
     stop program  = "/usr/bin/pkill -f '/usr/local/bin/node /home/browserid/code/browserid/run.js'"
     if failed port 62700 protocol HTTP
-        request /ping.txt
+        request /__heartbeat__
         with timeout 10 seconds
         then restart
 </pre>

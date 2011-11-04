@@ -42,33 +42,40 @@
 (function() {
   "use strict";
 
-  var user = BrowserID.User;
+  var bid = BrowserID,
+      user = bid.User,
+      errors = bid.Errors,
+      offline = false;
 
   PageController.extend("Dialog", {}, {
       init: function(el) {
         var self=this;
-        //this.element.show();
 
         // keep track of where we are and what we do on success and error
         self.onsuccess = null;
         self.onerror = null;
         setupChannel(self);
         self.stateMachine();
+       
       },
         
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {
-        this.onsuccess = onsuccess;
-        this.onerror = onerror;
+        var self=this;
+        self.onsuccess = onsuccess;
+        self.onerror = onerror;
+
+        if('onLine' in navigator && !navigator.onLine) {
+          self.doOffline();
+          return;
+        }
 
         user.setOrigin(origin_url);
-        
-        // get the cleaned origin.
         $("#sitename").text(user.getHostname());
 
-        this.doCheckAuth();
+        self.doCheckAuth();
 
-        var self=this;
         $(window).bind("unload", function() {
+          bid.Storage.setStagedOnBehalfOf("");
           self.doCancel();
         });
       },
@@ -78,7 +85,15 @@
         var self=this, 
             hub = OpenAjax.hub, 
             el = this.element;
-       
+
+        hub.subscribe("offline", function(msg, info) {
+          self.doOffline();
+        });
+
+        hub.subscribe("xhrError", function(msg, info) {
+          //self.doXHRError(info);
+          // XXX how are we going to handle this?
+        });
 
         hub.subscribe("user_staged", function(msg, info) {
           self.doConfirmUser(info.email);
@@ -100,7 +115,7 @@
         });
 
         hub.subscribe("assertion_generated", function(msg, info) {
-          if(info.assertion !== null) {
+          if (info.assertion !== null) {
             self.doAssertionGenerated(info.assertion);
           }
           else {
@@ -138,6 +153,15 @@
 
       },
 
+      doOffline: function() {
+        this.renderError("wait.ejs", errors.offline);
+        offline = true;
+      },
+
+      doXHRError: function(info) {
+        if (!offline) this.renderError("wait.ejs", errors.offline);  
+      },
+
       doConfirmUser: function(email) {
         this.confirmEmail = email;
 
@@ -150,7 +174,7 @@
 
       doCancel: function() {
         var self=this;
-        if(self.onsuccess) {
+        if (self.onsuccess) {
           self.onsuccess(null);
         }
       },
@@ -182,7 +206,8 @@
       doEmailConfirmed: function() {
         var self=this;
         // yay!  now we need to produce an assertion.
-        user.getAssertion(this.confirmEmail, self.doAssertionGenerated.bind(self));
+        user.getAssertion(this.confirmEmail, self.doAssertionGenerated.bind(self),
+          self.getErrorDialog(errors.getAssertion));
       },
 
       doAssertionGenerated: function(assertion) {
@@ -195,15 +220,15 @@
       },
 
       doNotMe: function() {
-        user.logoutUser(this.doAuthenticate.bind(this));
+        var self=this;
+        user.logoutUser(self.doAuthenticate.bind(self), self.getErrorDialog(errors.logoutUser));
       },
 
       syncEmails: function() {
         var self = this;
         user.syncEmails(self.doPickEmail.bind(self), 
-          self.getErrorDialog(BrowserID.Errors.signIn));
+          self.getErrorDialog(errors.signIn));
       },
-
 
       doCheckAuth: function() {
         var self=this;
@@ -215,7 +240,7 @@
               self.doAuthenticate();
             }
           }, 
-          self.getErrorDialog(BrowserID.Errors.checkAuthentication));
+          self.getErrorDialog(errors.checkAuthentication));
     }
 
   });
