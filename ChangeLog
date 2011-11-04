@@ -1,3 +1,26 @@
+train-2011.11.03:
+  * Remember the last used email for a site, and optimize the default selection based on this: #1
+  * Fix regression where verification of assertions would fail for https sites: #500 (also hot-fixed in production https://github.com/mozilla/browserid/commit/1528364)
+  * improved end user visible error messages: #448, #465, #512, #515
+  * style/transition improvements for desktop and mobile devices: #494, #502, #522, #527
+  * refuse to send out more than one email per minute to the same address: #430
+  * be *really* smart about how long to display tool-tips in the dialog: #508
+  * behave reasonably (at least display content) when javascript is disabled: #510
+  * remember the users email as they transition between screens, when appropriate: #476
+  * Suppress iOS autocapitalizion and auto-correction for email addresses: #464
+  * Improve front end email address validation: #513
+  * Improve repository organization: #503 & #488
+  * As part of above and in prep for #460 - all processes (browserid, verifier, etc) are now always run separately (never combined into the same express instance
+  * Test improvements: #520, #530, #531
+  * Fix undefined reference (crash) in verifier after verification failure: #523 (hot-fixed in production: https://github.com/mozilla/browserid/commit/ba3c53)
+  * Remove UI that corresponds to unimplemented features: #519
+  * Handle upper case letters in domain part of email addresses properly: #501
+  * Use a more conventional log format that includes time-stamps when logging to file.  closes #234
+  * Shutdown gracefully whenever possible, and always log why we go down: #529
+  * 'LOG_TO_CONSOLE' env var for verbose console output during tests: #530
+  * more checks around '/code_update' URL invocation - for bug #699171
+  * Many minor bug-fixes: #497, #532
+
 train-2011.10.27:
   * link fixing ('need help?' to point to SUMO): #378
   * unit tests repaired: #469 (broken in fix to #82)
