@@ -61,7 +61,7 @@ Object.keys(daemonsToRun).forEach(function(k) {
   daemons[k] = p;
 
   p.on('exit', function (code, signal) {
-    console.log(k, 'exited with code', code, (signal ? 'on signal ' + signal : ""));
+    console.log(k, 'exited(' + code + ') ', (signal ? 'on signal ' + signal : ""));
     delete daemons[k];
     Object.keys(daemons).forEach(function (k) { daemons[k].kill(); });
     if (Object.keys(daemons).length === 0) {

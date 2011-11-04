@@ -46,7 +46,8 @@ certassertion = require('../lib/verifier/certassertion.js'),
 metrics = require('../lib/metrics'),
 heartbeat = require('../lib/heartbeat'),
 logger = require('../lib/logging').logger,
-config = require('../lib/configuration');
+config = require('../lib/configuration'),
+shutdown = require('../lib/shutdown');
 
 logger.info("verifier server starting up");
 
@@ -64,13 +65,8 @@ app.use(express.logger({
 
 app.use(express.bodyParser());
 
-// code_update is an internal api that causes the node server to
-// shut down.  This should never be externally accessible and
-// is used during the dead simple deployment procedure.
-app.get("/code_update", function (req, resp) {
-  logger.warn("code updated.  shutting down.");
-  process.exit();
-});
+// shutdown when /code_update is invoked
+shutdown.installUpdateHandler(app);
 
 // setup health check / heartbeat
 heartbeat.setup(app);
@@ -118,6 +114,9 @@ app.post('/verify', function(req, resp, next) {
     });
 
 });
+
+// shutdown nicely on signals
+shutdown.handleTerminationSignals(app);
 
 var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function(conn) {

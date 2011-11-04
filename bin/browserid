@@ -40,7 +40,8 @@ fs = require('fs'),
 path = require('path'),
 url = require('url'),
 http = require('http');
-sessions = require('connect-cookie-session');
+sessions = require('connect-cookie-session'),
+urlparse = require('urlparse');
 
 // add lib/ to the require path
 require.paths.unshift(path.join(__dirname, '..', 'lib'));
@@ -55,9 +56,9 @@ db = require('db.js'),
 config = require('configuration.js'),
 heartbeat = require('heartbeat.js'),
 metrics = require("metrics.js"),
-logger = require("logging.js").logger,
+logger = require("logging.js").logger
 forward = require('browserid/http_forward'),
-urlparse = require('urlparse');
+shutdown = require('shutdown');
 
 var app = undefined;
 
@@ -205,9 +206,9 @@ function router(app) {
     });
   });
 
-  app.get('/code_update', function(req, resp, next) {
-    logger.warn("code updated.  shutting down.");
-    process.exit();
+  shutdown.installUpdateHandler(app, function(readyForShutdown) {
+    logger.debug("closing database connection");
+    db.close(readyForShutdown)
   });
 };
 
@@ -364,6 +365,12 @@ app.use(express.static(path.join(__dirname, "..", "resources", "static")));
 
 // open the databse
 db.open(config.get('database'), function () {
+
+  // shut down express gracefully on SIGINT
+  shutdown.handleTerminationSignals(app, function(readyForShutdown) {
+    db.close(readyForShutdown)
+  });
+
   var bindTo = config.get('bind_to');
   app.listen(bindTo.port, bindTo.host, function() {
     logger.info("running on http://" + app.address().address + ":" + app.address().port);

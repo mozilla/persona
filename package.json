@@ -15,7 +15,7 @@
     , "express-csrf": "0.3.2"
     , "uglify-js": "1.0.6"
     , "JSONSelect": "0.2.1"
-    , "winston" : "0.3.3"
+    , "winston" : "0.5.6"
     , "connect-cookie-session" : "0.0.2"
     , "mysql" : "0.9.2"
     , "optimist" : "0.2.6"
