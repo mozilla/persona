@@ -53,6 +53,9 @@ shutdown = require('../lib/shutdown');
 // create an express server
 var app = express.createServer();
 
+// respond to health checks (before logging)
+heartbeat.setup(app);
+
 // our server will log
 app.use(express.logger({
   format: config.get('express_log_format'),
@@ -69,8 +72,6 @@ app.use(function(req, resp, next) {
 
 // parse POST bodies
 app.use(express.bodyParser());
-
-heartbeat.setup(app);
 
 // and our single function
 app.post('/wsapi/cert_key', validate(["email", "pubkey"]), function(req, resp) {
