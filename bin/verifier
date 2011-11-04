@@ -80,15 +80,6 @@ app.post('/verify', function(req, resp, next) {
   if (!(assertion && audience))
     return resp.json({ status: "failure", reason: "need assertion and audience" });
 
-  // FIXME: remove this eventually
-  resp.setHeader('Access-Control-Allow-Origin', '*');
-  if (req.method === 'OPTIONS') {
-    resp.setHeader('Access-Control-Allow-Methods', 'POST, GET');
-    resp.writeHead(200);
-    resp.end();
-    return;
-  }
-
   certassertion.verify(
     assertion, audience,
     function(email, audienceFromAssertion, expires, issuer) {

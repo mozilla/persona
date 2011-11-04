@@ -100,7 +100,7 @@ a:hover { border-bottom: 2px solid black ; }
           $("#oVerificationRequest").empty().text("POST " + url + "\n" + JSON.stringify(data));
 
           $.ajax({
-            url: "https://browserid.org/verify",
+            url: "/process_assertion",
             type: "post",
             dataType: "json",
             data: data,
