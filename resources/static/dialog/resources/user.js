@@ -579,7 +579,11 @@ BrowserID.User = (function() {
       // FIXME use true key sizes
       prepareDeps();
       // FIXME: parameterize!
-      var keypair = jwk.KeyPair.generate("DS", 256);
+      var keysize = 256;
+      var ie_version = BrowserID.BrowserSupport.getInternetExplorerVersion();
+      if (ie_version > -1 && ie_version < 9)
+        keysize = 128;
+      var keypair = jwk.KeyPair.generate("DS", keysize);
       certifyEmailKeypair(email, keypair, onSuccess, onFailure);
     },
 

@@ -53,6 +53,7 @@ steal.plugins(
                'storage',
                'tooltip',
                'validation',
+               'browser-support',
                'browserid-extensions',
                'network',
                'user',

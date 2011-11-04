@@ -111,7 +111,11 @@ BrowserID.BrowserSupport = (function() {
      * @method getNoSupportReason
      * @returns {string}
      */
-    getNoSupportReason: getNoSupportReason
+    getNoSupportReason: getNoSupportReason,
+    /**
+     * IE version surfaced for crypto optimizations
+     */
+    getInternetExplorerVersion: getInternetExplorerVersion
   };
   
 }());
