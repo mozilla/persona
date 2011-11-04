@@ -107,6 +107,12 @@
     font-size: 14px;
   }
 
+  label[for=remember] {
+    display: block;
+    font-size: 15px;
+    margin: 13px;
+  }
+
   #content, .form_section, .pickemail .inputs, .vertical {
     height: auto;
     overflow: visible;
