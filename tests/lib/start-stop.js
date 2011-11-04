@@ -55,7 +55,7 @@ function setupProc(proc) {
   var m, sentReady = false;
 
   proc.stdout.on('data', function(x) {
-//    console.log(x.toString());
+    if (process.env['LOG_TO_CONSOLE']) console.log(x.toString());
     var tokenRegex = new RegExp('token=([A-Za-z0-9]+)$', 'm');
 
     if (!sentReady && /^browserid.*127\.0\.0\.1:10002/.test(x)) {
@@ -64,6 +64,9 @@ function setupProc(proc) {
     } else if (m = tokenRegex.exec(x)) {
       exports.browserid.emit('token', m[1]);
     }
+  });
+  proc.stderr.on('data', function(x) {
+    if (process.env['LOG_TO_CONSOLE']) console.log(x.toString());
   });
 }
 
