@@ -57,6 +57,10 @@ start_stop.addStartupBatches(suite);
 
 var first_cookie, second_cookie;
 
+function stripExpires(cookieString) {
+  return cookieString.replace(/expires=[^;]*;/, '');
+}
+
 // certify a key
 suite.addBatch({
   "get context": {
@@ -72,7 +76,9 @@ suite.addBatch({
       topic: wsapi.get('/wsapi/session_context'),
       "still the same": function(r, err) {
         var cookie = r.headers["set-cookie"];
-        assert.equal(first_cookie, cookie[0]);
+        // make sure the cookies are the same, but strip out the expires
+        // portion, as the time may have changed! issue #531
+        assert.equal(stripExpires(first_cookie), stripExpires(cookie[0]));
       }
     },
     "let's screw it up": {
