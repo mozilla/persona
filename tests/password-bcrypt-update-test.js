@@ -89,8 +89,7 @@ suite.addBatch({
 suite.addBatch({
   "a token": {
     topic: function() {
-      if (token) return token;
-      else start_stop.browserid.once('token', this.callback);
+      start_stop.waitForToken(this.callback);
     },
     "is obtained": function (t) {
       assert.strictEqual(typeof t, 'string');
