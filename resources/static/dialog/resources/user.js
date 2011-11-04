@@ -607,15 +607,22 @@ BrowserID.User = (function() {
         function createAssertion(idInfo) {
           network.serverTime(function(serverTime) {
             var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
-            // assertions are valid for 2 minutes
-            var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
-            var expirationDate = new Date(expirationMS);
-            var tok = new jwt.JWT(null, expirationDate, origin);
-            assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
-            alert('after createAssertion');
-            if (onSuccess) {
-              onSuccess(assertion);
-            }
+
+            // yield!
+            setTimeout(function() {
+              // assertions are valid for 2 minutes
+              var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
+              var expirationDate = new Date(expirationMS);
+              var tok = new jwt.JWT(null, expirationDate, origin);
+
+              // yield!
+              setTimeout(function() {
+                assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
+                if (onSuccess) {
+                  onSuccess(assertion);
+                }
+              }, 0);
+            }, 0);
           }, onFailure);
         }
 
@@ -624,9 +631,7 @@ BrowserID.User = (function() {
           if (storedID.priv) {
             // parse the secret key
             // yield to the render thread!
-            alert('before timeout to createAssertion');
             setTimeout(function() {
-              alert('after timeout to createAssertion');
               createAssertion(storedID);
             }, 0);
           }
