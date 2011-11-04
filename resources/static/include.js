@@ -773,7 +773,8 @@
             // has a problem re-attaching new iframes with the same name.  Code inside
             // of frames with the same name sometimes does not get run.
             // See https://bugzilla.mozilla.org/show_bug.cgi?id=350023
-            w = _open_window(ipServer + "/sign_in#" + frameid);
+            //w = _open_window(ipServer + "/sign_in#" + frameid);
+            w.location = ipServer + "/sign_in#" +frameid;
           }
         });
 
