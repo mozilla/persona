@@ -50,7 +50,8 @@ validate = require('validate.js'),
 metrics = require("metrics.js"),
 logger = require("logging.js").logger,
 ca = require('keysigner/ca.js'),
-heartbeat = require('heartbeat');
+heartbeat = require('heartbeat'),
+shutdown = require('shutdown');
 
 // create an express server
 var app = express.createServer();
@@ -89,6 +90,12 @@ app.post('/wsapi/cert_key', validate(["email", "pubkey"]), function(req, resp) {
   resp.write(cert);
   resp.end();
 });
+
+// shutdown when code_update is invoked
+shutdown.installUpdateHandler(app);
+
+// shutdown nicely on signals
+shutdown.handleTerminationSignals(app);
 
 var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function() {
