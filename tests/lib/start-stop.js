@@ -49,6 +49,19 @@ process.on('exit', function () {
   if (proc) { proc.kill(); }
 });
 
+var nextTokenFunction = undefined;
+var tokenStack = [];
+
+exports.waitForToken = function(cb) {
+  if (tokenStack.length) {
+    cb(tokenStack.shift());
+  }
+  else {
+    if (nextTokenFunction) throw "can't wait for a verification token when someone else is!";
+    nextTokenFunction = cb;
+  }
+};
+
 exports.browserid = new events.EventEmitter;
 
 function setupProc(proc) {
@@ -62,7 +75,11 @@ function setupProc(proc) {
       exports.browserid.emit('ready');
       sentReady = true;
     } else if (m = tokenRegex.exec(x)) {
-      exports.browserid.emit('token', m[1]);
+      tokenStack.push(m[1]);
+      if (nextTokenFunction) {
+        nextTokenFunction(tokenStack.shift());
+        nextTokenFunction = undefined;
+      }
     }
   });
   proc.stderr.on('data', function(x) {

@@ -50,17 +50,12 @@ jwt = require('jwcrypto/jwt');
 
 var suite = vows.describe('cert-emails');
 
+var token = undefined;
+
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
 start_stop.addStartupBatches(suite);
-
-// ever time a new token is sent out, let's update the global
-// var 'token'
-var token = undefined;
-start_stop.browserid.on('token', function(secret) {
-  token = secret;
-});
 
 // INFO: some of these tests are repeat of sync-emails... to set
 // things up properly for key certification
@@ -83,11 +78,11 @@ suite.addBatch({
 suite.addBatch({
   "a token": {
     topic: function() {
-      if (token) return token;
-      else start_stop.browserid.once('token', this.callback);
+      start_stop.waitForToken(this.callback);
     },
     "is obtained": function (t) {
       assert.strictEqual(typeof t, 'string');
+      token = t;
     }
   }
 });
