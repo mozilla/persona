@@ -17,6 +17,10 @@ var daemonsToRun = {
     PORT: 10003,
     HOST: HOST
   },
+  dbwriter: {
+    PORT: 10004,
+    HOST: HOST
+  },
   example: {
     path: path.join(__dirname, "..", "scripts", "serve_example.js"),
     PORT: 10001,
@@ -32,6 +36,7 @@ var daemonsToRun = {
 process.env['LOG_TO_CONSOLE'] = 1;
 
 // all spawned processes will communicate with the local browserid
+process.env['DBWRITER_URL'] = 'http://' + HOST + ":10004";
 process.env['BROWSERID_URL'] = 'http://' + HOST + ":10002";
 process.env['VERIFIER_URL'] = 'http://' + HOST + ":10000/verify";
 process.env['KEYSIGNER_URL'] = 'http://' + HOST + ":10003";
