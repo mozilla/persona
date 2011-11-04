@@ -586,7 +586,7 @@ BrowserID.User = (function() {
       var keypair = jwk.KeyPair.generate("DS", keysize);
       setTimeout(function() {
         certifyEmailKeypair(email, keypair, onSuccess, onFailure);
-      }, 1000);
+      }, 0);
     },
 
 
@@ -622,7 +622,10 @@ BrowserID.User = (function() {
           prepareDeps();
           if (storedID.priv) {
             // parse the secret key
-            createAssertion(storedID);
+            // yield to the render thread!
+            setTimeout(function() {
+              createAssertion(storedID);
+            }, 0);
           }
           else {
             // we have no key for this identity, go generate the key, 
