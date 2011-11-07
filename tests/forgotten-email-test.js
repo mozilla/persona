@@ -41,7 +41,7 @@ const assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-email = require('browserid/email.js');
+email = require('../lib/browserid/email.js');
 
 var suite = vows.describe('forgotten-email');
 

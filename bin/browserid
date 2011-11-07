@@ -41,24 +41,21 @@ path = require('path'),
 url = require('url'),
 http = require('http');
 sessions = require('connect-cookie-session'),
-urlparse = require('urlparse');
-
-// add lib/ to the require path
-require.paths.unshift(path.join(__dirname, '..', 'lib'));
+urlparse = require('urlparse'),
+express = require('express');
 
 const
-wsapi = require('browserid/wsapi.js'),
-ca = require('browserid/ca.js'),
-httputils = require('httputils.js'),
-express = require('express'),
-secrets = require('secrets.js'),
-db = require('db.js'),
-config = require('configuration.js'),
-heartbeat = require('heartbeat.js'),
-metrics = require("metrics.js"),
-logger = require("logging.js").logger
-forward = require('browserid/http_forward'),
-shutdown = require('shutdown');
+wsapi = require('../lib/browserid/wsapi.js'),
+ca = require('../lib/browserid/ca.js'),
+httputils = require('../lib/httputils.js'),
+secrets = require('../lib/secrets.js'),
+db = require('../lib/db.js'),
+config = require('../lib/configuration.js'),
+heartbeat = require('../lib/heartbeat.js'),
+metrics = require('../lib/metrics.js'),
+logger = require('../lib/logging.js').logger
+forward = require('../lib/browserid/http_forward'),
+shutdown = require('../lib/shutdown');
 
 var app = undefined;
 

@@ -46,4 +46,3 @@ if (undefined === process.env['NODE_ENV']) {
   console.log("(Woah.  Running tests without a test_ configuration.  Is this *really* what you want?)");
 }
 
-require.paths.unshift(require('path').join(__dirname, '..', '..', 'lib'));

@@ -40,8 +40,8 @@ path = require('path'),
 wsapi = require('./wsapi.js'),
 spawn = require('child_process').spawn,
 events = require('events'),
-config = require('configuration'),
-db = require('db');
+config = require('../../lib/configuration.js'),
+db = require('../../lib/db.js');
 
 var proc = undefined;
 

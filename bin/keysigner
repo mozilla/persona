@@ -41,17 +41,14 @@ const
 path = require('path'),
 express = require('express');
 
-// add lib/ to the require path for our own libs
-require.paths.unshift(path.join(__dirname, '..', 'lib'));
-
 const
-config = require('configuration.js'),
-validate = require('validate.js'),
-metrics = require("metrics.js"),
-logger = require("logging.js").logger,
-ca = require('keysigner/ca.js'),
-heartbeat = require('heartbeat'),
-shutdown = require('shutdown');
+config = require('../lib/configuration.js'),
+validate = require('../lib/validate.js'),
+metrics = require('../lib/metrics.js'),
+logger = require('../lib/logging.js').logger,
+ca = require('../lib/keysigner/ca.js'),
+heartbeat = require('../lib/heartbeat'),
+shutdown = require('../lib/shutdown');
 
 // create an express server
 var app = express.createServer();

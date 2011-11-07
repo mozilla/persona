@@ -44,8 +44,8 @@ assert = require('assert'),
 vows = require('vows'),
 fs = require('fs'),
 path = require('path'),
-db = require('db.js'),
-configuration = require('configuration.js');
+db = require('../lib/db.js'),
+configuration = require('../lib/configuration.js');
 
 var suite = vows.describe('db');
 // disable vows (often flakey?) async error behavior
