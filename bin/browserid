@@ -46,7 +46,6 @@ express = require('express');
 
 const
 wsapi = require('../lib/browserid/wsapi.js'),
-ca = require('../lib/browserid/ca.js'),
 httputils = require('../lib/httputils.js'),
 secrets = require('../lib/secrets.js'),
 db = require('../lib/db.js'),
@@ -185,7 +184,7 @@ function router(app) {
 
   // the public key
   app.get("/pk", function(req, res) {
-    res.json(ca.PUBLIC_KEY.toSimpleObject());
+    res.json(config.get('public_key').toSimpleObject());
   });
 
   // vep bundle of JavaScript

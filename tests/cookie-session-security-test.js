@@ -43,7 +43,6 @@ start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 wcli = require('../lib/wsapi_client.js');
 email = require('../lib/browserid/email.js'),
-ca = require('../lib/browserid/ca.js'),
 jwcert = require('jwcrypto/jwcert'),
 jwk = require('jwcrypto/jwk'),
 jws = require('jwcrypto/jws');
