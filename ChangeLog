@@ -20,6 +20,7 @@ train-2011.11.03:
   * 'LOG_TO_CONSOLE' env var for verbose console output during tests: #530
   * more checks around '/code_update' URL invocation - for bug #699171
   * Many minor bug-fixes: #497, #532
+  * (2011.11.08) don't crash on mysql connection timeout: #540
 
 train-2011.10.27:
   * link fixing ('need help?' to point to SUMO): #378
