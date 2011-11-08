@@ -1,4 +1,5 @@
-/*global BrowserID: true*/
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*globals BrowserID: true, _:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -12,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozilla BrowserID.
+ * The Original Code is Mozilla bid.
  *
  * The Initial Developer of the Original Code is Mozilla.
  * Portions created by the Initial Developer are Copyright (C) 2011
@@ -33,92 +34,27 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-BrowserID.Errors = (function(){
+steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/error-display", function() {
   "use strict";
 
-  var Errors = {
-    authenticate: {
-      title: "Authenticating User"
-    },
+  var bid = BrowserID,
+      errorDisplay = bid.ErrorDisplay;
 
-    addEmail: {
-      title: "Adding Address"
+  module("/resources/error-display", {
+    setup: function() {
     },
-
-    cancelUser: {
-      title: "Cancelling User Account"
-    },
-
-    checkAuthentication: {
-      title: "Checking Authentication"
-    },
-
-    completeUserRegistration: {
-      title: "Completing User Registration"
-    },
-    
-    createUser: {
-      title: "Creating Account"
-    },
-
-    getAssertion: {
-      title: "Getting Assertion"
-    },
-
-    isEmailRegistered: {
-      title: "Checking Email Address"
-    },
-
-    logoutUser: {
-      title: "Logout Failed"
-    },
-
-    offline: {
-      title: "You are offline!",
-      message: "Unfortunately, BrowserID cannot communicate while offline!"
-    },
-
-    registration: {
-      title: "Registration Failed"
-    },
-
-    relaySetup: {
-      title: "Establishing Relay",
-      message: "Relay frame could not be found"
-    },
-
-    requestPasswordReset: {
-      title: "Resetting Password"
-    },
-
-    removeEmail: {
-      title: "Remove Email Address from Account"
-    },
-
-    signIn: {
-      title: "Signin Failed"
-    },
-
-    signUp: {
-      title: "Signup Failed"
-    },
-
-    syncAddress: {
-      title: "Syncing Address"
-    },
-
-    syncEmails: {
-      title: "Syncing Email Addresses"
-    },
-
-    xhrError: {
-      title: "Communication Error"
+    teardown: function() {
     }
+  });
 
-  };
+  test("can show an error", function() {
+    var target = $("#error .contents");
+    target.empty();
+
+    errorDisplay.render(target, "#templateError", { action: { title: "Error Message" } });
+
+    ok(target.html(), "Error has some contents");
+  });
 
 
-  return Errors;
-}());
-
-
+});

@@ -47,12 +47,12 @@ steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/
     setup: function() {
       network.setXHR(xhr);  
       xhr.useResult("valid");
-      $(".error").stop().hide();
+      $("#error,.error").stop().hide();
       $(".website").text("");
     },
     teardown: function() {
       network.setXHR($);  
-      $(".error").stop().hide();
+      $("#error,.error").stop().hide();
       $(".website").text("");
     }
   });
@@ -103,7 +103,7 @@ steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/
     bid.verifyEmailAddress("token");
 
     setTimeout(function() {
-      ok($("#cannotcommunicate").is(":visible"), "cannot communicate box is visible");
+      ok($("#error").is(":visible"), "cannot communicate box is visible");
       start();
     }, 500);
     stop();

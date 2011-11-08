@@ -37,7 +37,10 @@
 (function() {
   "use strict";
 
-  var User = BrowserID.User;
+  var bid = BrowserID,
+      User = bid.User,
+      errors = bid.Errors,
+      pageHelpers = bid.PageHelpers;
 
   function relativeDate(date) {
     var diff = (((new Date()).getTime() - date.getTime()) / 1000),
@@ -133,7 +136,7 @@
         $("#vAlign").hide();
         displayEmails(emails);
       }
-    });
+    }, pageHelpers.getFailure(errors.syncEmails));
   }
 
   function onRemoveEmail(email, event) {
@@ -143,14 +146,14 @@
 
     if (_.size(emails) > 1) {
       if (confirm("Remove " + email + " from your BrowserID?")) {
-        User.removeEmail(email, syncAndDisplayEmails);
+        User.removeEmail(email, syncAndDisplayEmails, pageHelpers.getFailure(errors.removeEmail));
       }
     }
     else {
       if (confirm('Removing the last address will cancel your BrowserID account.\nAre you sure you want to continue?')) {
         User.cancelUser(function() {
           document.location="/";
-        });
+        }, pageHelpers.getFailure(errors.cancelUser));
       }
     }
   }
@@ -186,7 +189,7 @@
       if (confirm('Are you sure you want to cancel your BrowserID account?')) {
         User.cancelUser(function() {
           document.location="/";
-        });
+        }, pageHelpers.getFailure(errors.cancelUser));
       }
     });
 

@@ -63,9 +63,7 @@ BrowserID.forgot = (function() {
           var tooltipEl = info.reason === "throttle" ? "#could_not_add" : "#not_registered";
           tooltip.showTooltip(tooltipEl);
         }
-      }, function onFailure() {
-        $(".notifications .notification.doh").fadeIn();
-      });
+      }, pageHelpers.getFailure(bid.Errors.requestPasswordReset));
     }
   };
 
@@ -74,19 +72,17 @@ BrowserID.forgot = (function() {
 
     pageHelpers.setupEmail();
 
-    $("#signUpForm").bind("submit", submit);
+    $("form").bind("submit", submit);
   }
 
   function reset() {
-    $("#signUpForm").unbind("submit", submit);
+    $("form").unbind("submit", submit);
   }
 
+  init.submit = submit; 
+  init.reset = reset;
 
-  var forgot = init;
-  forgot.submit = submit; 
-  forgot.reset = reset;
-
-  return forgot;
+  return init;
 
 }());
 

@@ -34,43 +34,56 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-(function() {
+BrowserID.signIn = (function() {
   "use strict";
 
   var bid = BrowserID,
       user = bid.User,
       pageHelpers = bid.PageHelpers,
-      validation = bid.Validation;
+      validation = bid.Validation,
+      doc = document;
 
-  bid.signIn = function () {
+  function submit(event) {
+    if (event) event.preventDefault();
+
+    var email = $("#email").val(),
+        password = $("#password").val();
+
+    var valid = validation.emailAndPassword(email, password);
+
+    if (valid) {
+      user.authenticate(email, password, function onSuccess(authenticated) {
+        if (authenticated) {
+          pageHelpers.clearStoredEmail();
+          doc.location = "/";
+        }
+        else {
+          // bad authentication
+          $(".notifications .notification.badlogin").fadeIn();
+        }
+      }, pageHelpers.getFailure(bid.Errors.authenticate));
+    }
+  }
+
+  function init(options) {
+    if(options && options.document) doc = options.document;
+
     $("form input[autofocus]").focus();
 
     pageHelpers.setupEmail();
 
-    $("#signUpForm").bind("submit", function(event) {
-      event.preventDefault();
+    $("form").bind("submit", submit);
+  }
 
-      var email = $("#email").val(),
-          password = $("#password").val();
+  function reset() {
+    $("form").unbind("submit", submit);
+  }
 
-      var valid = validation.emailAndPassword(email, password);
+  init.submit = submit;
+  init.reset = reset;
 
-      if (valid) {
-        user.authenticate(email, password, function onSuccess(authenticated) {
-          if (authenticated) {
-            pageHelpers.clearStoredEmail();
-            document.location = "/";
-          }
-          else {
-            // bad authentication
-            $(".notifications .notification.doh").fadeIn();
-          }
-        }, function onFailure() {
-          // Wah wah.  Network error
-        });
-      }
-    });
-  };
+  return init;
+
 }());
 
 

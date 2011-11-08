@@ -34,85 +34,95 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/network", "/dialog/resources/user", "/js/pages/forgot", function() {
+steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/network", "/dialog/resources/user", "/js/pages/signin", function() {
   "use strict";
 
   var bid = BrowserID,
       network = bid.Network,
       user = bid.User,
       xhr = bid.Mocks.xhr,
-      CHECK_DELAY = 500;
+      CHECK_DELAY = 500,
+      docMock = {
+        location: "signin"
+      }
 
-  module("pages/forgot", {
+  module("pages/signin", {
     setup: function() {
       network.setXHR(xhr);
-      $(".error").stop().hide();
+      $("#error").stop().hide();
       xhr.useResult("valid");
-      bid.forgot();
+      docMock.location = "signin";
+      bid.signIn({document: docMock});
     },
     teardown: function() {
       network.setXHR($);
-      $(".error").stop().hide();
-      $(".website").text("");
-      bid.forgot.reset();
+      $("#error").stop().hide();
+      $("#error .message").remove();
+      bid.signIn.reset();
     }
   });
 
-  function testEmailNotSent(extraTests) {
-    bid.forgot.submit();
+  function testUserNotSignedIn(extraTests) {
+    bid.signIn.submit();
 
     setTimeout(function() {
-      equal($(".emailsent").is(":visible"), false, "email not sent");
+      equal(docMock.location, "signin", "user not signed in");
       if (extraTests) extraTests();
       else start();
-    }, CHECK_DELAY);
+    }, 100);
 
     stop();
   }
 
-  test("requestPasswordReset with invalid email", function() {
-    $("#email").val("invalid");
-
-    xhr.useResult("invalid");
-
-    testEmailNotSent();
-  });
-
-  test("requestPasswordReset with known email", function() {
+  test("signin with valid email and password", function() {
     $("#email").val("registered@testuser.com");
-    bid.forgot.submit();
+    $("#password").val("password");
+
+    bid.signIn.submit();
 
     setTimeout(function() {
-      ok($(".emailsent").is(":visible"), "email sent successfully");
+      equal(docMock.location, "/", "user signed in, page redirected");
       start();
-    }, CHECK_DELAY);
+    }, 100);
 
     stop();
   });
 
-  test("requestPasswordReset with unknown email", function() {
-    $("#email").val("unregistered@testuser.com");
+  test("signin with missing email", function() {
+    $("#email").val("");
+    $("#password").val("password");
 
-    testEmailNotSent();
+    testUserNotSignedIn();
   });
 
-  test("requestPasswordReset with throttling", function() {
-    xhr.useResult("throttle");
+  test("signin with missing password", function() {
+    $("#email").val("registered@testuser.com");
+    $("#password").val("");
 
-    $("#email").val("throttled@testuser.com");
-
-    testEmailNotSent();
+    testUserNotSignedIn();
   });
 
-  test("requestPasswordReset with XHR Error", function() {
+
+  test("signin with bad username/password", function() {
+    xhr.useResult("invalid");
+    $("#email").val("registered@testuser.com");
+    $("#password").val("password");
+
+    testUserNotSignedIn();
+  });
+
+  test("signin with XHR error", function() {
     xhr.useResult("ajaxError");
+    $("#email").val("registered@testuser.com");
+    $("#password").val("password");
 
-    $("#email").val("testuser@testuser.com");
-
-    testEmailNotSent(function() {
-      equal($("#error").is(":visible"), true, "error is visible");  
-      start();
+    testUserNotSignedIn(function() {
+      setTimeout(function() {
+        equal($("#error").is(":visible"), true, "error is visible");  
+        start();
+      }, 500);
     });
   });
+
 
 });

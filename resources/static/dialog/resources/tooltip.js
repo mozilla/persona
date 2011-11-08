@@ -45,7 +45,7 @@ BrowserID.Tooltip = (function() {
   function createTooltip(el) {
       var contents = el.html();
       var template = $("#templateTooltip").html();
-      _.templateSettings = {
+      _.templatesettings = {
           interpolate : /\{\{(.+?)\}\}/g
       };
       var tooltip = $(_.template(template, {

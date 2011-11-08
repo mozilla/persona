@@ -39,7 +39,8 @@ BrowserID.PageHelpers = (function() {
 
   var win = window,
       locStorage = win.localStorage,
-      bid = BrowserID;
+      bid = BrowserID,
+      errorDisplay = bid.ErrorDisplay;
 
   function setStoredEmail(email) {
     locStorage.signInEmail = email;
@@ -83,11 +84,21 @@ BrowserID.PageHelpers = (function() {
       return decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
+  function getFailure(error) {
+    return function onFailure(info) {
+      info = $.extend(info, { action: error });
+      errorDisplay.render("#error", "#templateError", info);
+      $("#errorBackground").fadeIn();
+      $("#error").fadeIn();
+    }
+  }
+
   return {
     setupEmail: prefillEmail,
     setStoredEmail: setStoredEmail,
     clearStoredEmail: clearStoredEmail,
     getStoredEmail: getStoredEmail,
-    getParameterByName: getParameterByName
+    getParameterByName: getParameterByName,
+    getFailure: getFailure
   };
 }());

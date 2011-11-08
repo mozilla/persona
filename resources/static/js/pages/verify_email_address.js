@@ -38,6 +38,8 @@
   "use strict";
 
   var bid = BrowserID,
+      errors = bid.Errors,
+      pageHelpers = bid.PageHelpers,
       token;
 
   function showError(el) {
@@ -62,9 +64,7 @@
         else {
           showError("#cannotcomplete");
         }
-      }, function onFailure() {
-        showError("#cannotcommunicate");
-      });
+      }, pageHelpers.getFailure(errors.completeUserRegistration));
     }
   }
 
@@ -88,9 +88,7 @@
       else {
         showError("#cannotconfirm");
       }
-    }, function() {
-        showError("#cannotcommunicate");
-    });
+    }, pageHelpers.getFailure(errors.completeUserRegistration));
   }
 
   function reset() {
