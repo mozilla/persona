@@ -364,7 +364,13 @@ router(app);
 app.use(express.static(path.join(__dirname, "..", "resources", "static")));
 
 // open the databse
-db.open(config.get('database'), function () {
+db.open(config.get('database'), function (error) {
+
+  if (error) {
+    logger.error("can't open database: " + error);
+    // let async logging flush, then exit 1
+    return setTimeout(function() { process.exit(1); }, 0);
+  }
 
   // shut down express gracefully on SIGINT
   shutdown.handleTerminationSignals(app, function(readyForShutdown) {
