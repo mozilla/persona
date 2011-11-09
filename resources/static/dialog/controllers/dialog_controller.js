@@ -46,8 +46,13 @@
       user = bid.User,
       errors = bid.Errors,
       offline = false,
-      win = window;
+      win = window,
+      subscriptions = [],
+      hub = OpenAjax.hub;
       
+  function subscribe(message, cb) {
+     subscriptions.push(hub.subscribe(message, cb));
+  }
 
   PageController.extend("Dialog", {}, {
       init: function(el, options) {
@@ -74,6 +79,16 @@
           });
         }
       },
+
+      destroy: function() {
+        var subscription;
+
+        while(subscription = subscriptions.pop()) {
+          hub.unsubscribe(subscription);  
+        }
+
+        this._super();
+      },
         
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {
         var self=this;
@@ -99,38 +114,37 @@
 
       stateMachine: function() {
         var self=this, 
-            hub = OpenAjax.hub, 
             el = this.element;
 
-        hub.subscribe("offline", function(msg, info) {
+        subscribe("offline", function(msg, info) {
           self.doOffline();
         });
 
-        hub.subscribe("xhrError", function(msg, info) {
+        subscribe("xhrError", function(msg, info) {
           //self.doXHRError(info);
           // XXX how are we going to handle this?
         });
 
-        hub.subscribe("user_staged", function(msg, info) {
+        subscribe("user_staged", function(msg, info) {
           self.doConfirmUser(info.email);
         });
 
-        hub.subscribe("user_confirmed", function() {
+        subscribe("user_confirmed", function() {
           self.doEmailConfirmed();
         });
 
-        hub.subscribe("authenticated", function(msg, info) {
+        subscribe("authenticated", function(msg, info) {
           //self.doEmailSelected(info.email);
           // XXX benadida, lloyd - swap these two if you want to experiment with 
           // generating assertions directly from signin.
           self.syncEmails();
         });
 
-        hub.subscribe("reset_password", function(msg, info) {
+        subscribe("reset_password", function(msg, info) {
           self.doConfirmUser(info.email);
         });
 
-        hub.subscribe("assertion_generated", function(msg, info) {
+        subscribe("assertion_generated", function(msg, info) {
           if (info.assertion !== null) {
             self.doAssertionGenerated(info.assertion);
           }
@@ -139,19 +153,19 @@
           }
         });
 
-        hub.subscribe("email_staged", function(msg, info) {
+        subscribe("email_staged", function(msg, info) {
           self.doConfirmEmail(info.email);
         });
 
-        hub.subscribe("email_confirmed", function() {
+        subscribe("email_confirmed", function() {
           self.doEmailConfirmed();
         });
 
-        hub.subscribe("notme", function() {
+        subscribe("notme", function() {
           self.doNotMe();
         });
 
-        hub.subscribe("auth", function(msg, info) {
+        subscribe("auth", function(msg, info) {
           info = info || {};
 
           self.doAuthenticate({
@@ -159,11 +173,11 @@
           });
         });
 
-        hub.subscribe("start", function() {
+        subscribe("start", function() {
           self.doCheckAuth();
         });
 
-        hub.subscribe("cancel", function() {
+        subscribe("cancel", function() {
           self.doCancel();
         });
 

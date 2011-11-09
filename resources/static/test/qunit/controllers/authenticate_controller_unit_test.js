@@ -34,25 +34,19 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/controllers/authenticate_controller", function() {
+steal.plugins("jquery").then("/test/qunit/mocks/xhr", "/dialog/resources/network", "/dialog/controllers/page_controller", "/dialog/controllers/authenticate_controller", function() {
   "use strict";
 
   var controller, 
       el = $("body"),
-      storage = BrowserID.Storage,
+      bid = BrowserID,
+      storage = bid.Storage,
+      network = bid.Network,
+      xhr = bid.Mocks.xhr,
       emailRegistered = false,
-      userCreated = true;
-
-  var userMock = {
-    getHostname: function() { return "host"; },
-    isEmailRegistered: function(email, onSuccess, onFailure) {
-      onSuccess(emailRegistered);
-    },
-
-    createUser: function(email, onSuccess, onFailure) {
-      onSuccess(userCreated);
-    }
-  };
+      userCreated = true,
+      hub = OpenAjax.hub,
+      subscriptions = [];
 
   function reset() {
     el = $("#controller_head");
@@ -63,32 +57,102 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     emailRegistered = false;
     userCreated = true;
 
-    OpenAjax.hub.unsubscribe("user_staged");
+
+    var subscription;
+    while(subscription = subscriptions.pop()) {
+      hub.unsubscribe(subscription);
+    }
   }
 
   module("controllers/authenticate_controller", {
     setup: function() {
       reset();
       storage.clear();
-      controller = el.authenticate({ user: userMock }).controller();
+      network.setXHR(xhr);
+      xhr.useResult("valid");
+      controller = el.authenticate().controller();
     },
 
     teardown: function() {
       if (controller) {
-        controller.destroy();
+        try {
+          controller.destroy();
+        } catch(e) {
+          // may already be destroyed from close inside of the controller.
+        }
       }    
       reset();
       storage.clear();
+      network.setXHR($);
     } 
   });
 
   test("setting email address prefills address field", function() {
       controller.destroy();
       $("#email").val("");
-      controller = el.authenticate({ user: userMock, email: "testuser@testuser.com" }).controller();
+      controller = el.authenticate({ email: "testuser@testuser.com" }).controller();
       equal($("#email").val(), "testuser@testuser.com", "email prefilled");
   });
 
+  function testUserUnregistered() {
+    var id = hub.subscribe("create_user", function() {
+      ok(true, "email was valid, user not registered");
+      start();
+    });
+
+    subscriptions.push(id);
+
+    controller.checkEmail();
+    stop();
+  }
+
+  test("checkEmail with normal email, user not registered", function() {
+    $("#email").val("unregistered@testuser.com");
+    testUserUnregistered();
+  });
+
+  test("checkEmail with email with leading/trailing whitespace, user not registered", function() {
+    $("#email").val("    unregistered@testuser.com   ");
+    testUserUnregistered();
+  });
+
+  test("checkEmail with normal email, user registered", function() {
+    $("#email").val("registered@testuser.com");
+
+    var id = hub.subscribe("enter_password", function() {
+      ok(true, "email was valid, user registered");
+      start();
+    });
+    subscriptions.push(id);
+
+    controller.checkEmail();
+    stop();
+  });
+
+  function testAuthenticated() {
+    var id = hub.subscribe("authenticated", function() {
+      ok(true, "user authenticated as expected");
+      start();
+    });
+    subscriptions.push(id);
+    controller.authenticate();
+
+    stop();
+  }
+
+  test("normal authentication is kosher", function() {
+      $("#email").val("testuser@testuser.com");
+      $("#password").val("password");
+
+      testAuthenticated();
+  });
+
+  test("leading/trailing whitespace on the username is stripped for authentication", function() {
+      $("#email").val("    testuser@testuser.com    ");
+      $("#password").val("password");
+
+      testAuthenticated();
+  });
 
 });
 
