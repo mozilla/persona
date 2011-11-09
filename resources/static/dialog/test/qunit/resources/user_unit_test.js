@@ -91,6 +91,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       BrowserID.Network.setXHR(xhr);
       xhr.useResult("valid");
       lib.clearStoredEmailKeypairs();
+      lib.setOrigin(testOrigin);
     },
     teardown: function() {
       BrowserID.Network.setXHR($);
@@ -960,4 +961,134 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     stop();
   });
 
+  test("getPersistentSigninAssertion with invalid login", function() {
+    xhr.setContextInfo("authenticated", false);
+
+    lib.syncEmailKeypair("testuser@testuser.com", function() {
+      storage.site.set(testOrigin, "remember", false);
+      storage.site.set(testOrigin, "email", "testuser@testuser.com");
+      xhr.useResult("invalid");
+
+      lib.getPersistentSigninAssertion(function onComplete(assertion) {
+        strictEqual(assertion, null, "assertion with invalid login is null");
+        start();
+      }, function onFailure() {
+        ok(false, "no expected XHR failure");
+        start();
+      });
+    });
+
+    stop();
+  });
+
+  test("getPersistentSigninAssertion with valid login with remember set to true but no email", function() {
+    xhr.setContextInfo("authenticated", true);
+    storage.site.set(testOrigin, "remember", true);
+    storage.site.remove(testOrigin, "email");
+
+    lib.getPersistentSigninAssertion(function onComplete(assertion) {
+      strictEqual(assertion, null, "assertion with no email is null");
+      start();
+    }, function onFailure() {
+      ok(false, "no expected XHR failure");
+      start();
+    });
+
+    stop();
+  });
+
+  test("getPersistentSigninAssertion with valid login with email and remember set to false", function() {
+    xhr.setContextInfo("authenticated", true);
+    lib.syncEmailKeypair("testuser@testuser.com", function() {
+      storage.site.set(testOrigin, "remember", false);
+      storage.site.set(testOrigin, "email", "testuser@testuser.com");
+      // invalidate the email so that we force a fresh key certification with 
+      // the server
+      storage.invalidateEmail("testuser@testuser.com");
+
+      lib.getPersistentSigninAssertion(function onComplete(assertion) {
+        strictEqual(assertion, null, "assertion with remember=false is null");
+        start();
+      }, function onFailure() {
+        ok(false, "no expected XHR failure");
+        start();
+      });
+    });
+
+    stop();
+  });
+
+  test("getPersistentSigninAssertion with valid login, email, and remember set to true", function() {
+    xhr.setContextInfo("authenticated", true);
+    lib.syncEmailKeypair("testuser@testuser.com", function() {
+      storage.site.set(testOrigin, "remember", true);
+      storage.site.set(testOrigin, "email", "testuser@testuser.com");
+      // invalidate the email so that we force a fresh key certification with 
+      // the server
+      storage.invalidateEmail("testuser@testuser.com");
+
+      lib.getPersistentSigninAssertion(function onComplete(assertion) {
+        ok(assertion, "we have an assertion!");
+        start();
+      }, function onFailure() {
+        ok(false, "no expected XHR failure");
+        start();
+      });
+    });
+
+    stop();
+  });
+
+  test("getPersistentSigninAssertion with XHR failure", function() {
+    xhr.setContextInfo("authenticated", true);
+    lib.syncEmailKeypair("testuser@testuser.com", function() {
+      storage.site.set(testOrigin, "remember", true);
+      storage.site.set(testOrigin, "email", "testuser@testuser.com");
+      // invalidate the email so that we force a fresh key certification with 
+      // the server
+      storage.invalidateEmail("testuser@testuser.com");
+
+      xhr.useResult("ajaxError");
+
+      lib.getPersistentSigninAssertion(function onComplete(assertion) {
+        ok(false, "ajax error should not pass");
+        start();
+      }, function onFailure() {
+        ok(true, "ajax error should not pass");
+        start();
+      });
+    });
+
+    stop();
+  });
+
+  test("clearPersistentSignin with invalid login", function() {
+    xhr.setContextInfo("authenticated", false);
+
+    lib.clearPersistentSignin(function onComplete(success) {
+      strictEqual(success, false, "success with invalid login is false");
+      start();
+    }, function onFailure() {
+      ok(false, "no expected XHR failure");
+      start();
+    });
+
+    stop();
+  });
+
+  test("clearPersistentSignin with valid login with remember set to true", function() {
+    xhr.setContextInfo("authenticated", true);
+    storage.site.set(testOrigin, "remember", true);
+
+    lib.clearPersistentSignin(function onComplete(success) {
+      strictEqual(success, true, "success flag good");
+      strictEqual(storage.site.get(testOrigin, "remember"), false, "remember flag set to false");
+      start();
+    }, function onFailure() {
+      ok(false, "no expected XHR failure");
+      start();
+    });
+
+    stop();
+  });
 });

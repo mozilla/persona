@@ -273,7 +273,7 @@ BrowserID.User = (function() {
 
             if (onSuccess) onSuccess(info);
           }, onFailure);
-        } else if(onSuccess) {
+        } else if (onSuccess) {
           onSuccess(invalidInfo);
         }
       }, onFailure);
@@ -308,7 +308,7 @@ BrowserID.User = (function() {
               success: reset
             };
 
-            if(!reset) status.reason = "throttle";
+            if (!reset) status.reason = "throttle";
 
             if (onComplete) onComplete(status);
           }, onFailure);
@@ -540,7 +540,7 @@ BrowserID.User = (function() {
 
             if (onSuccess) onSuccess(info);
           }, onFailure);
-        } else if(onSuccess) {
+        } else if (onSuccess) {
           onSuccess(invalidInfo);
         }
       }, onFailure);
@@ -554,14 +554,14 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     removeEmail: function(email, onSuccess, onFailure) {
-      if(storage.getEmail(email)) {
+      if (storage.getEmail(email)) {
         network.removeEmail(email, function() {
           storage.removeEmail(email);
           if (onSuccess) {
             onSuccess();
           }
         }, onFailure);
-      } else if(onSuccess) {
+      } else if (onSuccess) {
         onSuccess();
       }
     },
@@ -656,10 +656,58 @@ BrowserID.User = (function() {
      */
     clearStoredEmailKeypairs: function() {
       storage.clear();
+    },
+
+    /**
+     * Get an assertion for the current domain, as long as the user has 
+     * selected that they want the email/site remembered
+     * @method getPersistentSigninAssertion
+     * @param {function} onComplete - called on completion.  Called with an 
+     * assertion if successful, null otw.
+     * @param {function} onFailure - called on XHR failure.
+     */
+    getPersistentSigninAssertion: function(onComplete, onFailure) {
+      var self=this;
+
+      self.checkAuthentication(function(authenticated) {
+        if (authenticated) {
+          var remembered = storage.site.get(origin, "remember");
+          var email = storage.site.get(origin, "email");
+          if (remembered && email) {
+            self.getAssertion(email, onComplete, onFailure);
+          }
+          else if (onComplete) {
+            onComplete(null);
+          }
+        }
+        else if (onComplete) {
+          onComplete(null);
+        }
+      }, onFailure);
+    },
+
+    /**
+     * Clear the persistent signin field for the current origin
+     * @method clearPersistentSignin
+     * @param {function} onComplete - called on completion.  Called with 
+     * a boolean, true if successful, false otw.
+     * @param {function} onFailure - called on XHR failure.
+     */
+    clearPersistentSignin: function(onComplete, onFailure) {
+      var self=this;
+
+      self.checkAuthentication(function(authenticated) {
+        if (authenticated) {
+          storage.site.set(origin, "remember", false);
+          if (onComplete) {
+            onComplete(true);
+          }
+        } else if (onComplete) {
+          onComplete(false);
+        }
+      }, onFailure);
     }
   };
-
-  User.setOrigin(document.location.host);
 
   return User;
 }());

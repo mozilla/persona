@@ -273,20 +273,6 @@ section > .contents {
   text-align: center;
 }
 
-#signIn .remember {
-    display: inline-block;
-    line-height: 28px;
-}
-
-#signIn .remember .checkAlign {
-    float: left;
-}
-
-#signIn .remember label {
-    margin-left: 5px;
-    float: left;
-}
-
 #signIn label.half,
 .half {
     width: 50%;
@@ -313,8 +299,11 @@ label {
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
-.inputs > li > label {
+label.selectable {
     cursor: pointer;
+}
+
+.inputs > li > label {
     color: #333;
 }
 
@@ -322,7 +311,7 @@ label {
     font-weight: bold;
 }
 
-.inputs > li:only-child > label {
+.inputs > li:only-child > label.selectable {
     cursor: default;
 }
 
@@ -360,6 +349,11 @@ input[type=password]:focus {
        -moz-box-shadow: 0 0 0 1px #549FDC inset;
          -o-box-shadow: 0 0 0 1px #549FDC inset;
             box-shadow: 0 0 0 1px #549FDC inset;
+}
+
+input[type=radio],
+input[type=checkbox] {
+  cursor: pointer;
 }
 
 button {
@@ -426,12 +420,6 @@ footer .learn a {
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-    /*
-#favicon {
-    text-align: center;
-    max-width: 940px;
-}
-*/
 header {
     padding: 20px;
     font-weight: bold;
@@ -584,6 +572,11 @@ html[xmlns] .cf {
 
 .inputs > li:only-child input[type=radio] {
     display: none;
+}
+
+label[for=remember] {
+  display: inline;
+  margin-left: 13px;
 }
 
 #thisIsNotMe {

@@ -99,12 +99,17 @@ function router(app) {
     });
   });
 
+  app.get('/communication_iframe', function(req, res, next ) {
+    res.removeHeader('x-frame-options');
+    res.render('communication_iframe.ejs', {
+      layout: false,
+      production: config.get('use_minified_resources')
+    });
+  });
+
   app.get("/unsupported_dialog", function(req,res) {
     res.render('unsupported_dialog.ejs', {layout: 'dialog_layout.ejs', useJavascript: false});
   });
-
-  // simple redirects (internal for now)
-  app.get('/register_iframe', internal_redirector('/dialog/register_iframe.html',true));
 
   // Used for a relay page for communication.
   app.get("/relay", function(req,res, next) {
@@ -115,7 +120,6 @@ function router(app) {
       production: config.get('use_minified_resources')
     });
   });
-
 
   app.get('/', function(req,res) {
     res.render('index.ejs', {title: 'A Better Way to Sign In', fullpage: true});

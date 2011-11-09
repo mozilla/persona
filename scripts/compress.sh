@@ -30,7 +30,11 @@ echo ''
 
 steal/js dialog/scripts/build.js
 
-cd dialog
+cd communication_iframe
+$UGLIFY < production.js > production.min.js
+mv production.min.js production.js
+
+cd ../dialog
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
 

@@ -67,7 +67,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   test("pickemail controller with email associated with site", function() {
     storage.addEmail("testuser@testuser.com", {priv: "priv", pub: "pub"});
     storage.addEmail("testuser2@testuser.com", {priv: "priv", pub: "pub"});
-    storage.setSiteEmail("browserid.org", "testuser2@testuser.com");
+    storage.site.set("browserid.org", "email", "testuser2@testuser.com");
 
     controller = el.pickemail({origin: "browserid.org"}).controller();
     ok(controller, "controller created");
@@ -90,6 +90,47 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
 
     var label = radioButton.parent();
     equal(label.hasClass("preselected"), false, "the label has no class");
+  });
+
+  function testRemember(remember) {
+    storage.site.set("browserid.org", "remember", remember);
+
+    controller = el.pickemail({origin: "browserid.org"}).controller();
+    ok(controller, "controller created");
+
+    equal($("#remember").is(":checked"), remember, "appropriate checkbox check");
+  }
+
+  test("pickemail controller with remember set to false", function() {
+    testRemember(false);
+  });
+
+  test("pickemail controller with remember set to true", function() {
+    testRemember(true);
+  });
+
+
+  test("signIn saves email, remember", function() {
+    storage.addEmail("testuser@testuser.com", {priv: "priv", pub: "pub"});
+    storage.addEmail("testuser2@testuser.com", {priv: "priv", pub: "pub"});
+
+    controller = el.pickemail({origin: "browserid.org"}).controller();
+
+    $("input[type=radio]").eq(1).click();
+    $("#remember").attr("checked", true);
+
+    controller.signIn();
+
+    equal(storage.site.get("browserid.org", "email"), "testuser2@testuser.com", "email saved correctly");
+    equal(storage.site.get("browserid.org", "remember"), true, "remember saved correctly");
+
+    $("input[type=radio]").eq(0).click();
+    $("#remember").removeAttr("checked");
+
+    controller.signIn();
+
+    equal(storage.site.get("browserid.org", "email"), "testuser@testuser.com", "email saved correctly");
+    equal(storage.site.get("browserid.org", "remember"), false, "remember saved correctly");
   });
 
 });

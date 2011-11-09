@@ -52,7 +52,7 @@ BrowserID.Storage = (function() {
     var localStorage = window.localStorage;
     localStorage.removeItem("tempKeypair");
     localStorage.removeItem("stagedOnBehalfOf");
-    localStorage.removeItem("sitesToEmail");
+    localStorage.removeItem("siteInfo");
   }
 
   function getEmails() {
@@ -87,13 +87,13 @@ BrowserID.Storage = (function() {
       storeEmails(emails);
 
       // remove any sites associated with this email address.
-      var sitesToEmail = JSON.parse(localStorage.sitesToEmail || "{}");
-      for(var site in sitesToEmail) {
-        if(sitesToEmail[site] === email) {
-          delete sitesToEmail[site];
+      var siteInfo = JSON.parse(localStorage.siteInfo || "{}");
+      for(var site in siteInfo) {
+        if(siteInfo[site].email === email) {
+          delete siteInfo[site].email;
         }
       }
-      localStorage.sitesToEmail = JSON.stringify(sitesToEmail);
+      localStorage.siteInfo = JSON.stringify(siteInfo);
     }
     else {
       throw "unknown email address";
@@ -160,24 +160,36 @@ BrowserID.Storage = (function() {
     return origin;
   }
 
-  function setSiteEmail(site, email) {
-    if(getEmail(email)) {
-      var localStorage = window.localStorage;
+  function siteSet(site, key, value) {
+    var allSiteInfo = JSON.parse(localStorage.siteInfo || "{}");
+    var siteInfo = allSiteInfo[site] = allSiteInfo[site] || {};
 
-      var sitesToEmail = JSON.parse(localStorage.sitesToEmail || "{}");
-      sitesToEmail[site] = email;
-
-      localStorage.sitesToEmail = JSON.stringify(sitesToEmail);
-    }
-    else {
+    if(key === "email" && !getEmail(value)) {
       throw "unknown email address";
     }
+
+    siteInfo[key] = value;
+
+    localStorage.siteInfo = JSON.stringify(allSiteInfo);
   }
 
-  function getSiteEmail(site) {
-    var sitesToEmail = JSON.parse(localStorage.sitesToEmail || "{}");
-    return sitesToEmail[site];
+  function siteGet(site, key) {
+    var allSiteInfo = JSON.parse(localStorage.siteInfo || "{}");
+    var siteInfo = allSiteInfo[site];
+
+    return siteInfo && siteInfo[key];
   }
+
+  function siteRemove(site, key) {
+    var allSiteInfo = JSON.parse(localStorage.siteInfo || "{}");
+    var siteInfo = allSiteInfo[site];
+
+    if (siteInfo) {
+      delete siteInfo[key];
+      localStorage.siteInfo = JSON.stringify(allSiteInfo);
+    }
+  }
+
 
   return {
     /**
@@ -209,18 +221,32 @@ BrowserID.Storage = (function() {
      * @method invalidateEmail
      */
     invalidateEmail: invalidateEmail,
-    /**
-     * Set the associated email address for a site
-     * @throws "uknown email address" if the email address is not known.
-     * @method setSiteEmail
-     */
-    setSiteEmail: setSiteEmail,
-    /**
-     * Get the associated email address for a site, if known.  If not known, 
-     * return undefined.
-     * @method getSiteEmail
-     */
-    getSiteEmail: getSiteEmail,
+
+    site: {
+      /**
+       * Set a data field for a site
+       * @method site.set
+       * @param {string} site - site to set info for
+       * @param {string} key - key to set
+       * @param {variant} value - value to set
+       */
+      set: siteSet,
+      /**
+       * Get a data field for a site
+       * @method site.get
+       * @param {string} site - site to get info for
+       * @param {string} key - key to get
+       */
+      get: siteGet,
+      /**
+       * Remove a data field for a site
+       * @method site.remove
+       * @param {string} site - site to remove info for
+       * @param {string} key - key to remove
+       */
+      remove: siteRemove
+    },
+
     /**
      * Clear all stored data - email addresses, key pairs, temporary key pairs, 
      * site/email associations.

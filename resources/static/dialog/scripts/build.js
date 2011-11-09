@@ -2,8 +2,12 @@
 
 load("steal/rhino/steal.js");
 steal.plugins('steal/build','steal/build/scripts','steal/build/styles',function() {
-	steal.build('../static/dialog/scripts/build.html',{
+	steal.build('../static/dialog/scripts/build_dialog.html',{
         to: '../static/dialog',
+        compressor: 'concatOnly'
+    });
+	steal.build('../static/dialog/scripts/build_iframe.html',{
+        to: '../static/communication_iframe',
         compressor: 'concatOnly'
     });
 });
