@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", "/dialog/test/qunit/mocks/xhr", function() {
+steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", function() {
   "use strict";
 
   var testName,
