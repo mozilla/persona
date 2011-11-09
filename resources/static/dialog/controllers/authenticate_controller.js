@@ -45,8 +45,12 @@
       tooltip = bid.Tooltip,
       lastEmail = "";
 
+  function getEmail() {
+    return $("#email").val().trim();
+  }
+
   function checkEmail(el, event) {
-    var email = $("#email").val(),
+    var email = getEmail(),
         self = this;
 
     cancelEvent(event);
@@ -65,7 +69,7 @@
 
   function createUser(el, event) {
     var self=this,
-        email = $("#email").val();
+        email = getEmail();
 
     cancelEvent(event);
 
@@ -84,7 +88,7 @@
   }
 
   function authenticate(el, event) {
-    var email = $("#email").val(),
+    var email = getEmail(),
         pass = $("#password").val(),
         self = this;
 
@@ -105,7 +109,7 @@
   }
 
   function resetPassword(el, event) {
-    var email = $("#email").val(),
+    var email = getEmail(),
         self=this;
 
     cancelEvent(event);
@@ -140,8 +144,10 @@
 
   function enterPasswordState(el, event) {
     cancelEvent(event);
+    var self=this;
 
-    this.submit = authenticate;
+    self.publish("enter_password");
+    self.submit = authenticate;
     animateSwap(".start:visible,.newuser:visible,.forgot:visible", ".returning", function() {
       $("#password").focus();  
     });
@@ -166,7 +172,10 @@
   function createUserState(el, event) {
     cancelEvent(event);
 
-    this.submit = createUser;
+    var self=this;
+
+    self.publish("create_user");
+    self.submit = createUser;
     animateSwap(".start:visible,.returning:visible,.forgot:visible", ".newuser");
   }
 
@@ -174,10 +183,6 @@
   PageController.extend("Authenticate", {}, {
     init: function(el, options) {
       options = options || {};
-
-      if (options.user) {
-        user = options.user;
-      }
 
       this._super(el, {
         bodyTemplate: "authenticate.ejs",
@@ -201,7 +206,11 @@
       }
     },
     "#forgotPassword click": forgotPasswordState,
-    "#cancel_forgot_password click": cancelForgotPassword
+    "#cancel_forgot_password click": cancelForgotPassword,
+    checkEmail: checkEmail,
+    createUser: createUser,
+    authenticate: authenticate,
+    resetPassword: resetPassword
   });
 
 }());

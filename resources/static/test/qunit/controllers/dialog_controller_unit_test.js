@@ -115,8 +115,6 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     ok(!$("#error #action").text().length, "XHR error is not reported if the user is offline.");
   });
 
-  test("window.unload causes setStagedOnBehalfOf data to be cleared", function() {
-  });
 
 });
 

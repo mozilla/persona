@@ -59,11 +59,18 @@
 
   }
 
-  if(!window.console) {
+  if (!window.console) {
     window.console = {};
   }
 
-  if(!console.log) {
+  if (!console.log) {
     console.log = function() {};
   }
+
+  if (!String.prototype.trim) {  
+    String.prototype.trim = function () {  
+      return this.replace(/^\s+|\s+$/g,'');  
+    };  
+  }  
+
 }());
