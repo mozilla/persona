@@ -45,7 +45,7 @@ BrowserID.Tooltip = (function() {
   function createTooltip(el) {
       var contents = el.html();
       var template = $("#templateTooltip").html();
-      _.templatesettings = {
+      _.templateSettings = {
           interpolate : /\{\{(.+?)\}\}/g
       };
       var tooltip = $(_.template(template, {
@@ -89,7 +89,6 @@ BrowserID.Tooltip = (function() {
       positionTooltip(tooltip, target);
 
       animateTooltip(tooltip, function() {
-        console.log("close tooltip");
         if (tooltip) {
           tooltip.remove();
           tooltip = null;
