@@ -42,7 +42,6 @@
       user = bid.User,
       errors = bid.Errors,
       storage = bid.Storage,
-      origin,
       body = $("body"),
       animationComplete = body.innerWidth() < 640,
       assertion;
@@ -138,8 +137,9 @@
 
     var valid = checkEmail.call(self, email);
     if (valid) {
-      storage.site.set(user.getOrigin(), "email", email);
-      storage.site.set(user.getOrigin(), "remember", $("#remember").is(":checked"));
+      var origin = user.getOrigin();
+      storage.site.set(origin, "email", email);
+      storage.site.set(origin, "remember", $("#remember").is(":checked"));
       getAssertion.call(self, email);
     }
   }
@@ -178,8 +178,7 @@
 
   PageController.extend("Pickemail", {}, {
     init: function(el, options) {
-      origin = options.origin;
-
+      var origin = user.getOrigin();
       this._super(el, {
         bodyTemplate: "pickemail.ejs",
         bodyVars: {
@@ -187,8 +186,8 @@
           // XXX ideal is to get rid of this and have a User function 
           // that takes care of getting email addresses AND the last used email 
           // for this site.
-          siteemail: storage.site.get(user.getOrigin(), "email"),
-          remember: storage.site.get(user.getOrigin(), "remember") || false
+          siteemail: storage.site.get(origin, "email"),
+          remember: storage.site.get(origin, "remember") || false
         }
       });
 

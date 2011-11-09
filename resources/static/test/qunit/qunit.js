@@ -1,12 +1,13 @@
 steal("/dialog/resources/browserid.js",
+      "/test/qunit/mocks/mocks.js",
+      "/test/qunit/mocks/xhr.js",
       "/dialog/resources/browser-support.js",
       "/dialog/resources/error-messages.js",
       "/dialog/resources/storage.js",
       "/dialog/resources/tooltip.js",
       "/dialog/resources/validation.js",
-      "/dialog/resources/underscore-min.js",
-      "/dialog/test/qunit/mocks/mocks.js",
-      "/dialog/test/qunit/mocks/xhr.js")
+      "/dialog/resources/underscore-min.js"
+      )
   .plugins(
     "jquery", 
     "jquery/controller",

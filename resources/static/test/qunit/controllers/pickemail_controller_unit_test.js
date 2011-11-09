@@ -39,7 +39,9 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
 
   var controller, 
       el = $("body"),
-      storage = BrowserID.Storage;
+      storage = BrowserID.Storage,
+      user = BrowserID.User,
+      testOrigin = "http://browserid.org";
 
   function reset() {
     el = $("#controller_head");
@@ -52,6 +54,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     setup: function() {
       reset();
       storage.clear();
+      user.setOrigin(testOrigin);
     },
 
     teardown: function() {
@@ -67,9 +70,9 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   test("pickemail controller with email associated with site", function() {
     storage.addEmail("testuser@testuser.com", {priv: "priv", pub: "pub"});
     storage.addEmail("testuser2@testuser.com", {priv: "priv", pub: "pub"});
-    storage.site.set("browserid.org", "email", "testuser2@testuser.com");
+    storage.site.set(testOrigin, "email", "testuser2@testuser.com");
 
-    controller = el.pickemail({origin: "browserid.org"}).controller();
+    controller = el.pickemail().controller();
     ok(controller, "controller created");
 
     var radioButton = $("input[type=radio]").eq(1);
@@ -82,7 +85,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   test("pickemail controller without email associated with site", function() {
     storage.addEmail("testuser@testuser.com", {priv: "priv", pub: "pub"});
 
-    controller = el.pickemail({origin: "browserid.org"}).controller();
+    controller = el.pickemail().controller();
     ok(controller, "controller created");
 
     var radioButton = $("input[type=radio]").eq(0);
@@ -93,9 +96,9 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   });
 
   function testRemember(remember) {
-    storage.site.set("browserid.org", "remember", remember);
+    storage.site.set(testOrigin, "remember", remember);
 
-    controller = el.pickemail({origin: "browserid.org"}).controller();
+    controller = el.pickemail().controller();
     ok(controller, "controller created");
 
     equal($("#remember").is(":checked"), remember, "appropriate checkbox check");
@@ -110,27 +113,27 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   });
 
 
-  test("signIn saves email, remember", function() {
+  test("signIn saves email, remember status to storage", function() {
     storage.addEmail("testuser@testuser.com", {priv: "priv", pub: "pub"});
     storage.addEmail("testuser2@testuser.com", {priv: "priv", pub: "pub"});
 
-    controller = el.pickemail({origin: "browserid.org"}).controller();
+    controller = el.pickemail().controller();
 
     $("input[type=radio]").eq(1).click();
     $("#remember").attr("checked", true);
 
     controller.signIn();
 
-    equal(storage.site.get("browserid.org", "email"), "testuser2@testuser.com", "email saved correctly");
-    equal(storage.site.get("browserid.org", "remember"), true, "remember saved correctly");
+    equal(storage.site.get(testOrigin, "email"), "testuser2@testuser.com", "email saved correctly");
+    equal(storage.site.get(testOrigin, "remember"), true, "remember saved correctly");
 
     $("input[type=radio]").eq(0).click();
     $("#remember").removeAttr("checked");
 
     controller.signIn();
 
-    equal(storage.site.get("browserid.org", "email"), "testuser@testuser.com", "email saved correctly");
-    equal(storage.site.get("browserid.org", "remember"), false, "remember saved correctly");
+    equal(storage.site.get(testOrigin, "email"), "testuser@testuser.com", "email saved correctly");
+    equal(storage.site.get(testOrigin, "remember"), false, "remember saved correctly");
   });
 
 });
