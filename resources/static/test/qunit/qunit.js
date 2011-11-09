@@ -30,6 +30,7 @@ steal("/dialog/resources/browserid.js",
   .then("pages/forgot_unit_test")
   .then("pages/signin_unit_test")
   .then("pages/signup_unit_test")
+  .then("pages/manage_account_unit_test")
   .then("resources/tooltip_unit_test")
   .then("resources/error-display_unit_test")
   .then("resources/channel_unit_test")

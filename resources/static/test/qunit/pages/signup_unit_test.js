@@ -34,14 +34,15 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/network", "/dialog/resources/user", "/js/pages/signup", function() {
+steal.plugins("jquery").then("/test/qunit/mocks/xhr", "/dialog/resources/network", "/dialog/resources/user", "/js/pages/signup", function() {
   "use strict";
 
   var bid = BrowserID,
       network = bid.Network,
       user = bid.User,
       xhr = bid.Mocks.xhr,
-      CHECK_DELAY = 500;
+      CHECK_DELAY = 500,
+      testOrigin = "http://browserid.org";
 
   module("pages/signup", {
     setup: function() {
@@ -49,6 +50,7 @@ steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/
       $("#error").stop().hide();
       $(".notification").stop().hide();
       xhr.useResult("valid");
+      user.setOrigin(testOrigin);
       bid.signUp();
     },
     teardown: function() {
