@@ -52,13 +52,17 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/tooltip", func
     var startTime = new Date().getTime();
 
     tooltip.showTooltip("#shortTooltip", function() {
-      console.log("calling tooltip back");
       var endTime = new Date().getTime();
       var diff = endTime - startTime;
       ok(2000 <= diff && diff <= 3000, diff + " - minimum of 2 seconds, max of 3 seconds");
 
       start();
     });
+
+    var el = $("#createdTooltip");
+    equal(el.length, 1, "one tooltip created");
+    var contents = el.html() || "";
+    equal(contents.indexOf("contents") === -1, true, "contents have been replaced");
 
     stop();
   });
