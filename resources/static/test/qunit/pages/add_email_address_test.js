@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/test/qunit/mocks/xhr", "/dialog/resources/network", "/js/pages/add_email_address", function() {
+steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/add_email_address", function() {
   "use strict";
 
   var bid = BrowserID,

@@ -53,7 +53,7 @@ BrowserID.Mocks.xhr = (function() {
    */
   var xhr = {
     results: {
-      "get /wsapi/session_context valid": contextInfo,   
+      "get /wsapi/session_context valid": contextInfo,
       "get /wsapi/session_context invalid": contextInfo,
       // We are going to test for XHR failures for session_context using 
       // call to serverTime.  We are going to use the flag contextAjaxError

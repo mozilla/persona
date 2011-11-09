@@ -39,37 +39,37 @@ a:hover { border-bottom: 2px solid black ; }
 </div>
 
 <div class="intro">
-  This is the simplest possible (stateless, static, client-only)  BrowserID Relying Party.  It
-  demonstrates the steps required to use BrowserID to verify the identity of a user.
-  <a id="partyStarter" href="#">Click here to kick off the party</a>.  Here's what will happen:
+  This is the simplest possible BrowserID Relying Party.  It
+  demonstrates the steps required to use BrowserID to verify
+  the identity of a user.  Follow the steps below...
 </div>
 
 <div class="step">
   <div class="number">1.</div>
-  <div class="desc"><b>Browser Interaction:</b> Upon clicking the link above, the webpage will call <tt>navigator.id.getVerifiedEmail()</tt> to indicate to the browser that it would like an identity for the user</div>
+  <div class="desc">At page load time, check to see if the user is already (persistently) signed in by calling <tt>navigator.id.get(&lt;callback&gt;, {silent:true});</tt>
+  <div class="output" id="oPersistent">...</div>
 </div>
 
 <div class="step">
   <div class="number">2.</div>
-  <div class="desc"><b>User Interaction:</b> The browser will spawn a dialog that the user can interact with the select what identity they want to provide to the site </div>
+  <div class="desc">If the user is *not already signed in, wait for <a id="clickForLogin" href="#">their click</a>.
 </div>
 
 <div class="step">
   <div class="number">3.</div>
-  <div class="desc"><b>Assertion Generation:</b> Upon selection of an identity, an <i>assertion</i> will be returned to the webpage via a callback, it looks like this: </div>
-  <div class="output" id="oAssertion">...waiting for party commencement...</div>
+  <div class="desc">Once an assertion is obtained, pass it up to the server for verification.  The assertion looks like this:</div>
+  <div class="output" id="oAssertion">...</div>
 </div>
 
 <div class="step">
   <div class="number">4.</div>
-  <div class="desc"><b>Assertion Verification:</b> This site can then send that assertion up to a <i>verification server</i> which cryptographically checks that the identity embedded in the verification actually belongs to the browser in use by the monkey at the keyboard.  The request looks like </div>
-  <div class="output" id="oVerificationRequest">...waiting for party commencement...</div>
+  <div class="desc">The verification servers checks the assertion and returns a response, that looks like this:</div>
+  <div class="output" id="oVerificationResponse"><pre>...</pre></div>
 </div>
 
 <div class="step">
   <div class="number">5.</div>
-  <div class="desc"><b>Verification Response</b>: The verification server responds to the site to tell it whether or not the verification blob is valid:</div>
-  <div class="output" id="oVerificationResponse"><pre>...waiting for party commencement...</pre></div>
+  <div class="desc">Next, you should provide a logout button that calls <tt>navigator.id.logout()</tt> and then does whatever application specific logout steps are required. <a href="#" id="logout">Click here to logout</a></div>
 </div>
 
 <div class="step">
@@ -81,43 +81,60 @@ a:hover { border-bottom: 2px solid black ; }
 <script src="jquery-min.js"></script>
 <script src="https://browserid.org/include.js"></script>
 <script>
-  $(function() {
-    $("#partyStarter").click(function(event) {
-      event.preventDefault();
-      navigator.id.getVerifiedEmail(function(assertion) {
-        if (!assertion) {
-          alert("couldn't get the users email address!");
-        } else {
-          // Now we'll send this assertion over to the verification server for validation
-          $("#oAssertion").empty().text(assertion);
 
-          var url = "https://browserid.org/verify"
-          var data = {
-            assertion: assertion,
-            audience: window.location.protocol + "//" + window.location.host
-          };
+// a function to check an assertion against the server
+function checkAssertion(assertion) {
+  $.ajax({
+    url: "/process_assertion",
+    type: "post",
+    dataType: "json",
+    data: {
+      assertion: assertion,
+      audience: window.location.protocol + "//" + window.location.host
+    },
+    success: function(data, textStatus, jqXHR) {
+      $("#oVerificationResponse > pre").text(JSON.stringify(data, null, 4));
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      var resp = jqXHR.responseText ? JSON.parse(jqXHR.responseText) : errorThrown;
+      $("#oVerificationResponse > pre").text(resp);
+    }
+  });
+};
 
-          $("#oVerificationRequest").empty().text("POST " + url + "\n" + JSON.stringify(data));
+// at page load time, we'll check to see if the user is already signed in
+navigator.id.get(function(assertion) {
+  if (!assertion) {
+    $("#oPersistent").text("user isn't (persistently) signed in");
+  } else {
+    $("#oPersistent").text(assertion);
+    checkAssertion(assertion);
+  };
+}, { silent: true });
 
-          $.ajax({
-            url: "/process_assertion",
-            type: "post",
-            dataType: "json",
-            data: data,
-            success: function(data, textStatus, jqXHR) {
-              $("#oVerificationResponse > pre").empty().text(JSON.stringify(data, null, 4));
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-              var statusEl = $("#oVerificationResponse > pre").empty();
-              var resp = jqXHR.responseText ?
-                JSON.stringify(JSON.parse(jqXHR.responseText), null, 4) : errorThrown;
-              statusEl.text(resp);
-            }
-          });
-        }
-      });
+$(document).ready(function() {
+  // install a click handler for when the user clicks 'sign in'
+  $("#clickForLogin").click(function(event) {
+    event.preventDefault();
+    navigator.id.get(function(assertion) {
+      if (!assertion) {
+        $("#oAssertion").text("user didn't select an identity.");
+      } else {
+        $("#oAssertion").text(assertion);
+        checkAssertion(assertion);
+      };
     });
   });
+
+  $("#logout").click(function(event) {
+    event.preventDefault();
+    navigator.id.logout(function() {
+      // XXX: what should we do after logout?
+    });
+  });
+
+});
+
 </script>
 
 </html>

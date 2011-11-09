@@ -114,16 +114,32 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/storage", func
     equal(error.toString(), "unknown email address", "Invalidating an unknown email address");
   });
 
-  test("getSiteEmail with site not found", function() {
-    var email = storage.getSiteEmail("www.testsite.com");
+  test("site.set/site.get/site.remove, happy case", function() {
+    storage.site.set("www.testsite.com", "autoauth", true);
+    equal(storage.site.get("www.testsite.com", "autoauth"), true, "set/get works correctly");
 
-    equal(typeof email, "undefined", "if site not found, returned undefined");
+    storage.site.remove("www.testsite.com", "autoauth");
+    equal(typeof storage.site.get("www.testsite.com", "autoauth"), "undefined", "after remove, get returns undefined");
   });
 
-  test("setSiteEmail with email that is not known about", function() {
+  test("clear clears site info", function() {
+    storage.site.set("www.testsite.com", "autoauth", true);
+    storage.clear();
+    equal(typeof storage.site.get("www.testsite.com", "autoauth"), "undefined", "after clear, get returns undefined");
+  });
+
+  test("site.get on field for site with no info", function() {
+    equal(typeof storage.site.get("site.with.noinfo", "autoauth"), "undefined", "get works on site with no info");
+  });
+
+  test("site.get on field that is not set", function() {
+    equal(typeof storage.site.get("www.testsite.com", "notset"), "undefined", "get works on undefined field");
+  });
+
+  test("site.set->email with email that is not known about", function() {
     var error;
     try {
-      storage.setSiteEmail("www.testsite.com", "testuser@testuser.com");
+      storage.site.set("www.testsite.com", "email", "testuser@testuser.com");
     } catch(e) {
       error = e; 
     }
@@ -131,30 +147,21 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/storage", func
     equal(error.toString(), "unknown email address", "An unknown email address was added");
   });
 
-  test("setSiteEmail with valid email", function() {
+  test("site.set->email with valid email", function() {
     storage.addEmail("testuser@testuser.com", {});
-    storage.setSiteEmail("www.testsite.com", "testuser@testuser.com");
-    var email = storage.getSiteEmail("www.testsite.com");
+    storage.site.set("www.testsite.com", "email", "testuser@testuser.com");
+    var email = storage.site.get("www.testsite.com", "email");
 
     equal(email, "testuser@testuser.com", "set/get have the same email for the site");
   });
 
-  test("removeEmail after setSiteEmail removes site", function() {
+  test("removeEmail after site.set->email removes email", function() {
     storage.addEmail("testuser@testuser.com", {});
-    storage.setSiteEmail("www.testsite.com", "testuser@testuser.com");
+    storage.site.set("www.testsite.com", "email", "testuser@testuser.com");
     storage.removeEmail("testuser@testuser.com");
-    var email = storage.getSiteEmail("www.testsite.com");
+    var email = storage.site.get("www.testsite.com", "email");
 
     equal(typeof email, "undefined", "after removing an email address, email for site is no longer available");
-  });
-
-  test("clear clears site email info", function() {
-    storage.addEmail("testuser@testuser.com", {});
-    storage.setSiteEmail("www.testsite.com", "testuser@testuser.com");
-    storage.clear();
-    var email = storage.getSiteEmail("www.testsite.com");
-
-    equal(typeof email, "undefined", "after clearing, site email is not found");
   });
 
   test("storeTemporaryKeypair", function() {

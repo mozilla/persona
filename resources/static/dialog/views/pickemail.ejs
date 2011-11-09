@@ -5,7 +5,7 @@
           <% _.each(identities, function(email_obj, email_address) { %>
               <li>
 
-                  <label for="<%= email_address %>" class="serif<% if (email_address === siteemail) { %> preselected<% } %>">
+                  <label for="<%= email_address %>" class="serif<% if (email_address === siteemail) { %> preselected<% } %> selectable">
                     <input type="radio" name="email" id="<%= email_address %>" value="<%= email_address %>" 
                       <% if (email_address === siteemail) { %> checked="checked" <% } %> 
                     />
@@ -16,7 +16,14 @@
       </ul>
 
       <div class="submit add cf">
+
+          <label for="remember" class="selectable">
+            <input type="checkbox" id="remember" name="remember" <% if (remember) { %> checked="checked" <% } %> />
+            Always sign in using this email
+          </label>
+
           <button id="signInButton">sign in</button>
+
           <p>
             <a id="thisIsNotMe" href="#">This is not me</a>
             <a id="useNewEmail" href="#">Use a different email</a>

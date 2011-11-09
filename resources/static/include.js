@@ -636,16 +636,15 @@
        */
       getNoSupportReason: getNoSupportReason
     };
-    
   }());
 
 
   // this is for calls that are non-interactive
   function _open_hidden_iframe(doc) {
     var iframe = doc.createElement("iframe");
-    // iframe.style.display = "none";
+    iframe.style.display = "none";
     doc.body.appendChild(iframe);
-    iframe.src = ipServer + "/register_iframe";
+    iframe.src = ipServer + "/communication_iframe";
     return iframe;
   }
 
@@ -668,7 +667,7 @@
 
     return iframe;
   }
-  
+
   function _open_window(url) {
     url = url || "about:blank";
     // we open the window initially blank, and only after our relay frame has
@@ -720,40 +719,7 @@
     var chan, w, iframe;
 
     // keep track of these so that we can re-use/re-focus an already open window.
-    navigator.id.getVerifiedEmail = function(callback) {
-      if (w) {
-        // if there is already a window open, just focus the old window.
-        w.focus();
-        return;
-      }
-
-      if (!BrowserSupport.isSupported()) {
-        w = _open_window(ipServer + "/unsupported_dialog");
-        return;
-      }
-
-      var frameid = _get_relayframe_id();
-      var iframe = _open_relayframe("browserid_relay_" + frameid);
-      w = _open_window();
-
-      // if the RP window closes, close the dialog as well.
-      _attach_event(window, 'unload', cleanup);
-
-      // clean up a previous channel that never was reaped
-      if (chan) chan.destroy();
-      chan = Channel.build({
-        window: iframe.contentWindow,
-        origin: ipServer,
-        scope: "mozid",
-        onReady: function() {
-          // We have to change the name of the relay frame every time or else Firefox
-          // has a problem re-attaching new iframes with the same name.  Code inside
-          // of frames with the same name sometimes does not get run.
-          // See https://bugzilla.mozilla.org/show_bug.cgi?id=350023
-          w = _open_window(ipServer + "/sign_in#" + frameid);
-        }
-      });
-
+    navigator.id.get = function(callback, options) {
       function cleanup() {
         chan.destroy();
         chan = null;
@@ -769,105 +735,80 @@
         _detatch_event(window, 'unload', cleanup);
       }
 
-      chan.call({
-        method: "getVerifiedEmail",
-        success: function(rv) {
-          if (callback) {
-            // return the string representation of the JWT, the client is responsible for unpacking it.
-            callback(rv);
-          }
-          cleanup();
-        },
-        error: function(code, msg) {
-          // XXX: we don't make the code and msg available to the user.
-          if (callback) callback(null);
-          cleanup();
-        }
-      });
-    };
+      if (typeof callback !== 'function') throw "navigator.id.get() requires a callback argument";
 
-  /*
-    // preauthorize a particular email
-    // FIXME: lots of cut-and-paste code here, need to refactor
-    // not refactoring now because experimenting and don't want to break existing code
-    navigator.id.preauthEmail = function(email, onsuccess, onerror) {
-      var doc = window.document;
-      var iframe = _create_iframe(doc);
-
-      // clean up a previous channel that never was reaped
-      if (chan) chan.destroy();
-      chan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid"});
-
-      function cleanup() {
-        chan.destroy();
-        chan = undefined;
-        doc.body.removeChild(iframe);
-      }
-
-      chan.call({
-        method: "preauthEmail",
-        params: email,
-        success: function(rv) {
-          onsuccess(rv);
-          cleanup();
-        },
-        error: function(code, msg) {
-          if (onerror) onerror(code, msg);
-          cleanup();
-        }
-      });
-    };
-    */
-
-    // get a particular verified email
-    // FIXME: needs to ditched for now until fixed
-    /*
-    navigator.id.getSpecificVerifiedEmail = function(email, token, onsuccess, onerror) {
-      var doc = window.document;
-
-      // if we have a token, we should not be opening a window, rather we should be
-      // able to do this entirely through IFRAMEs
-      var w;
-      if (token) {
-          var iframe = _create_iframe(doc);
-          w = iframe.contentWindow;
+      if (options && options.silent) {
+        _noninteractiveCall('getPersistentAssertion', { }, function(rv) {
+          callback(rv);
+        }, function(e, msg) {
+          callback(null);
+        });
       } else {
-          _open_window();
-          _open_relay_frame(doc);
-      }
-
-      // clean up a previous channel that never was reaped
-      if (chan) chan.destroy();
-      chan = Channel.build({window: w, origin: ipServer, scope: "mozid"});
-
-      function cleanup() {
-        chan.destroy();
-        chan = undefined;
-        if (token) {
-            // just remove the IFRAME
-            doc.body.removeChild(iframe);
-        } else {
-            w.close();
+        if (w) {
+          // if there is already a window open, just focus the old window.
+          w.focus();
+          return;
         }
-      }
 
-      chan.call({
-        method: "getSpecificVerifiedEmail",
-        params: [email, token],
-        success: function(rv) {
-          if (onsuccess) {
-            // return the string representation of the JWT, the client is responsible for unpacking it.
-            onsuccess(rv);
+        if (!BrowserSupport.isSupported()) {
+          w = _open_window(ipServer + "/unsupported_dialog");
+          return;
+        }
+
+        var frameid = _get_relayframe_id();
+        var iframe = _open_relayframe("browserid_relay_" + frameid);
+        w = _open_window();
+
+        // if the RP window closes, close the dialog as well.
+        _attach_event(window, 'unload', cleanup);
+
+        // clean up a previous channel that never was reaped
+        if (chan) chan.destroy();
+        chan = Channel.build({
+          window: iframe.contentWindow,
+          origin: ipServer,
+          scope: "mozid",
+          onReady: function() {
+            // We have to change the name of the relay frame every time or else Firefox
+            // has a problem re-attaching new iframes with the same name.  Code inside
+            // of frames with the same name sometimes does not get run.
+            // See https://bugzilla.mozilla.org/show_bug.cgi?id=350023
+            w = _open_window(ipServer + "/sign_in#" + frameid);
           }
-          cleanup();
-        },
-        error: function(code, msg) {
-          if (onerror) onerror(code, msg);
-          cleanup();
-        }
+        });
+
+        chan.call({
+          method: "getVerifiedEmail",
+          success: function(rv) {
+            if (callback) {
+              // return the string representation of the JWT, the client is responsible for unpacking it.
+              callback(rv);
+            }
+            cleanup();
+          },
+          error: function(code, msg) {
+            // XXX: we don't make the code and msg available to the user.
+            if (callback) callback(null);
+            cleanup();
+          }
+        });
+      }
+    };
+
+    navigator.id.getVerifiedEmail = function (callback, options) {
+      if (options) {
+        throw "getVerifiedEmail doesn't accept options.  use navigator.id.get() instead.";
+      }
+      navigator.id.get(callback);
+    };
+
+    navigator.id.logout = function(callback) {
+      _noninteractiveCall('logout', { }, function(rv) {
+        callback(rv);
+      }, function() {
+        callback(null);
       });
     };
-    */
 
     var _noninteractiveCall = function(method, args, onsuccess, onerror) {
       var doc = window.document;
@@ -876,13 +817,13 @@
       // clean up channel
       if (chan) chan.destroy();
       chan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid"});
-      
+
       function cleanup() {
         chan.destroy();
         chan = undefined;
         doc.body.removeChild(iframe);
       }
-      
+
       chan.call({
         method: method,
         params: args,
@@ -896,35 +837,9 @@
           if (onerror) onerror(code, msg);
           cleanup();
         }
-      });    
+      });
     }
 
-    //
-    // for now, disabling primary support.
-    //
-
-    /*
-    // check if a valid cert exists for this verified email
-    // calls back with true or false
-    // FIXME: implement it for real, but
-    // be careful here because this needs to be limited
-    navigator.id.checkVerifiedEmail = function(email, onsuccess, onerror) {
-      onsuccess(false);
-    };
-
-    // generate a keypair
-    navigator.id.generateKey = function(onsuccess, onerror) {
-      _noninteractiveCall("generateKey", {},
-                          onsuccess, onerror);
-    };
-    
-    navigator.id.registerVerifiedEmailCertificate = function(certificate, updateURL, onsuccess, onerror) {
-      _noninteractiveCall("registerVerifiedEmailCertificate",
-                          {cert:certificate, updateURL: updateURL},
-                          onsuccess, onerror);
-    };
-    */
-    
     navigator.id._getVerifiedEmailIsShimmed = true;
   }
 }());

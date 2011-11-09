@@ -42,7 +42,6 @@
       user = bid.User,
       errors = bid.Errors,
       storage = bid.Storage,
-      origin,
       body = $("body"),
       animationComplete = body.innerWidth() < 640,
       assertion;
@@ -57,9 +56,7 @@
 
 
   function cancelEvent(event) {
-    if (event) {
-      event.preventDefault();
-    }
+    if (event) event.preventDefault();
   }
 
   function pickEmailState(element, event) {
@@ -111,9 +108,6 @@
     // the animation, hopefully this minimizes the delay the user notices.
     var self=this;
     user.getAssertion(email, function(assert) {
-      // XXX make a user api call that gets the assertion and sets the site 
-      // email as well.
-      storage.setSiteEmail(origin, email);
       assertion = assert || null;
       startAnimation.call(self);
     }, self.getErrorDialog(errors.getAssertion));
@@ -143,6 +137,9 @@
 
     var valid = checkEmail.call(self, email);
     if (valid) {
+      var origin = user.getOrigin();
+      storage.site.set(origin, "email", email);
+      storage.site.set(origin, "remember", $("#remember").is(":checked"));
       getAssertion.call(self, email);
     }
   }
@@ -181,8 +178,7 @@
 
   PageController.extend("Pickemail", {}, {
     init: function(el, options) {
-      origin = options.origin;
-
+      var origin = user.getOrigin();
       this._super(el, {
         bodyTemplate: "pickemail.ejs",
         bodyVars: {
@@ -190,7 +186,8 @@
           // XXX ideal is to get rid of this and have a User function 
           // that takes care of getting email addresses AND the last used email 
           // for this site.
-          siteemail: storage.getSiteEmail(options.origin)
+          siteemail: storage.site.get(origin, "email"),
+          remember: storage.site.get(origin, "remember") || false
         }
       });
 
@@ -207,7 +204,10 @@
     },
 
     "#useNewEmail click": addEmailState,
-    "#cancelNewEmail click": pickEmailState
+    "#cancelNewEmail click": pickEmailState,
+
+    signIn: signIn,
+    addEmail: addEmail
   });
 
 }());
