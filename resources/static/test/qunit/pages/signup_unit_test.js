@@ -34,83 +34,75 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/resources/network", "/dialog/resources/user", "/js/pages/forgot", function() {
+steal.plugins("jquery").then("/test/qunit/mocks/xhr", "/dialog/resources/network", "/dialog/resources/user", "/js/pages/signup", function() {
   "use strict";
 
   var bid = BrowserID,
       network = bid.Network,
       user = bid.User,
       xhr = bid.Mocks.xhr,
-      CHECK_DELAY = 500;
+      CHECK_DELAY = 500,
+      testOrigin = "http://browserid.org";
 
-  module("pages/forgot", {
+  module("pages/signup", {
     setup: function() {
       network.setXHR(xhr);
-      $(".error").stop().hide();
+      $("#error").stop().hide();
+      $(".notification").stop().hide();
       xhr.useResult("valid");
-      bid.forgot();
+      user.setOrigin(testOrigin);
+      bid.signUp();
     },
     teardown: function() {
       network.setXHR($);
-      $(".error").stop().hide();
-      $(".website").text("");
-      bid.forgot.reset();
+      $("#error").stop().hide();
+      $(".notification").stop().hide();
+      $("#error .message").remove();
+      bid.signUp.reset();
     }
   });
 
-  function testEmailNotSent(extraTests) {
-    bid.forgot.submit();
+  function testNoticeNotVisible(extraTests) {
+    bid.signUp.submit();
 
     setTimeout(function() {
-      equal($(".emailsent").is(":visible"), false, "email not sent");
-      if (extraTests) extraTests();
+      equal($(".emailsent").is(":visible"), false, "email not sent, notice not visible");
+      if(extraTests) extraTests();
       else start();
     }, CHECK_DELAY);
-
     stop();
   }
 
-  test("requestPasswordReset with invalid email", function() {
-    $("#email").val("invalid");
+  test("signup with valid unregistered email", function() {
+    $("#email").val("unregistered@testuser.com");
 
-    xhr.useResult("invalid");
-
-    testEmailNotSent();
-  });
-
-  test("requestPasswordReset with known email", function() {
-    $("#email").val("registered@testuser.com");
-    bid.forgot.submit();
+    bid.signUp.submit();
 
     setTimeout(function() {
-      ok($(".emailsent").is(":visible"), "email sent successfully");
+      equal($(".emailsent").is(":visible"), true, "email sent, notice visible");
       start();
     }, CHECK_DELAY);
-
     stop();
   });
 
-  test("requestPasswordReset with unknown email", function() {
+  test("signup with valid registered email", function() {
+    $("#email").val("registered@testuser.com");
+
+    testNoticeNotVisible();
+  });
+
+  test("signup with invalid email address", function() {
+    $("#email").val("invalid");
+
+    testNoticeNotVisible();
+  });
+
+  test("signup with invalid XHR error", function() {
+    xhr.useResult("invalid");
     $("#email").val("unregistered@testuser.com");
 
-    testEmailNotSent();
-  });
-
-  test("requestPasswordReset with throttling", function() {
-    xhr.useResult("throttle");
-
-    $("#email").val("throttled@testuser.com");
-
-    testEmailNotSent();
-  });
-
-  test("requestPasswordReset with XHR Error", function() {
-    xhr.useResult("ajaxError");
-
-    $("#email").val("testuser@testuser.com");
-
-    testEmailNotSent(function() {
-      equal($("#error").is(":visible"), true, "error is visible");  
+    testNoticeNotVisible(function() {
+      equal($("#error").is(":visible"), true, "error message displayed");
       start();
     });
   });

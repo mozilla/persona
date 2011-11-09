@@ -709,5 +709,6 @@ BrowserID.User = (function() {
     }
   };
 
+  User.setOrigin(document.location.host);
   return User;
 }());

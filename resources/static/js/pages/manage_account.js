@@ -34,10 +34,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-(function() {
+BrowserID.manageAccount = (function() {
   "use strict";
 
-  var User = BrowserID.User;
+  var bid = BrowserID,
+      user = bid.User,
+      errors = bid.Errors,
+      pageHelpers = bid.PageHelpers,
+      confirmAction = confirm,
+      doc = document;
 
   function relativeDate(date) {
     var diff = (((new Date()).getTime() - date.getTime()) / 1000),
@@ -124,8 +129,8 @@
   function syncAndDisplayEmails() {
     var emails = {};
 
-    User.syncEmails(function() {
-      emails = User.getStoredEmailKeypairs();
+    user.syncEmails(function() {
+      emails = user.getStoredEmailKeypairs();
       if (_.isEmpty(emails)) {
         $("#content").hide();
       } else {
@@ -133,24 +138,24 @@
         $("#vAlign").hide();
         displayEmails(emails);
       }
-    });
+    }, pageHelpers.getFailure(errors.syncEmails));
   }
 
   function onRemoveEmail(email, event) {
-    event.preventDefault();
+    event && event.preventDefault();
 
-    var emails = User.getStoredEmailKeypairs();
+    var emails = user.getStoredEmailKeypairs();
 
     if (_.size(emails) > 1) {
-      if (confirm("Remove " + email + " from your BrowserID?")) {
-        User.removeEmail(email, syncAndDisplayEmails);
+      if (confirmAction("Remove " + email + " from your BrowserID?")) {
+        user.removeEmail(email, syncAndDisplayEmails, pageHelpers.getFailure(errors.removeEmail));
       }
     }
     else {
-      if (confirm('Removing the last address will cancel your BrowserID account.\nAre you sure you want to continue?')) {
-        User.cancelUser(function() {
-          document.location="/";
-        });
+      if (confirmAction('Removing the last address will cancel your BrowserID account.\nAre you sure you want to continue?')) {
+        user.cancelUser(function() {
+          doc.location="/";
+        }, pageHelpers.getFailure(errors.cancelUser));
       }
     }
   }
@@ -180,34 +185,56 @@
 
   }
 
-  BrowserID.manageAccount = function() {
-    $('#cancelAccount').click(function(event) {
-      event.preventDefault();
-      if (confirm('Are you sure you want to cancel your BrowserID account?')) {
-        User.cancelUser(function() {
-          document.location="/";
-        });
-      }
-    });
+  function cancelAccount(event) {
+    event && event.preventDefault();
 
-    $('#manageAccounts').click(function(event) {
-        event.preventDefault();
+    if (confirmAction('Are you sure you want to cancel your BrowserID account?')) {
+      user.cancelUser(function() {
+        doc.location="/";
+      }, pageHelpers.getFailure(errors.cancelUser));
+    }
+  }
 
-        $('#emailList').addClass('remove');
-        $(this).hide();
-        $("#cancelManage").show();
-    });
-    
-    $('#cancelManage').click(function(event) {
-        event.preventDefault();
+  function manageAccounts(event) {
+      event && event.preventDefault();
 
-        $('#emailList').removeClass('remove');
-        $(this).hide();
-        $("#manageAccounts").show();
-    });
+      $('#emailList').addClass('remove');
+      $(this).hide();
+      $("#cancelManage").show();
+  }
+
+  function cancelManage(event) {
+      event && event.preventDefault();
+
+      $('#emailList').removeClass('remove');
+      $(this).hide();
+      $("#manageAccounts").show();
+  }
+
+  function init(options) {
+    options = options || {};
+
+    if (options.document) doc = options.document;
+    if (options.confirm) confirmAction = options.confirm;
+
+    $('#cancelAccount').click(cancelAccount);
+    $('#manageAccounts').click(manageAccounts);
+    $('#cancelManage').click(cancelManage);
 
     syncAndDisplayEmails();
-  };
+  }
+
+  function reset() {
+    $('#cancelAccount').unbind("click", cancelAccount);
+    $('#manageAccounts').unbind("click", manageAccounts);
+    $('#cancelManage').unbind("click", cancelManage);
+  }
+
+  init.reset = reset;
+  init.cancelAccount = cancelAccount;
+  init.removeEmail = onRemoveEmail;
+
+  return init;
 
 }());
 

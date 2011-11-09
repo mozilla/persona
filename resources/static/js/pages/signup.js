@@ -34,15 +34,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-(function() {
+BrowserID.signUp = (function() {
   "use strict";
 
   var bid = BrowserID,
       user = bid.User,
       pageHelpers = bid.PageHelpers,
+      errors = bid.Errors,
       ANIMATION_SPEED = 250;
 
-  bid.signUp = function () {
     function replaceWithMessage(selector) {
         $('.forminputs').fadeOut(ANIMATION_SPEED, function() {
           $(selector).fadeIn(ANIMATION_SPEED);
@@ -53,47 +53,51 @@
       $(selector).fadeIn(ANIMATION_SPEED);
     }
 
-    function onFailure() {
-      replaceWithMessage(".doh");
+    function submit(event) { 
+      if (event) event.preventDefault();
+
+      var email = $("#email").val(),
+          valid = bid.Validation.email(email);
+
+      if (!valid) {
+        return;
+      }
+
+      user.isEmailRegistered(email, function(registered) {
+        if (!registered) {
+          pageHelpers.clearStoredEmail();
+          user.createUser(email, function onSuccess(keypair) {
+            $('#sentToEmail').html(email);
+            replaceWithMessage(".emailsent");
+          }, pageHelpers.getFailure(errors.createUser));
+        }
+        else {
+          $('#registeredEmail').html(email);
+          showNotice(".alreadyRegistered");
+        }
+      }, pageHelpers.getFailure(errors.isEmailRegistered));
     }
 
+    function onEmailKeyUp(event) {
+      if (event.which !== 13) $(".notification").fadeOut(ANIMATION_SPEED);
+    }
 
-    $(function () {
+    function init() {
       $("form input[autofocus]").focus();
 
       pageHelpers.setupEmail();
 
-      $("#email").bind("keyup", function(event) {
-        if (event.which !== 13) {
-          $(".notification").fadeOut(ANIMATION_SPEED);
-        }
-      });
+      $("#email").bind("keyup", onEmailKeyUp);
+      $("form").bind("submit", submit);
+    }
 
-      $("#signUpForm").bind("submit", function(event) {
-        event.preventDefault();
+    function reset() {
+      $("form").unbind("submit", submit);
+      $("#email").unbind("keyup", onEmailKeyUp);
+    }
 
-        var email = $("#email").val(),
-            valid = bid.Validation.email(email);
+    init.submit = submit;
+    init.reset = reset;
 
-        if (!valid) {
-          return;
-        }
-
-        user.isEmailRegistered(email, function(registered) {
-          if (!registered) {
-            pageHelpers.clearStoredEmail();
-            user.createUser(email, function onSuccess(keypair) {
-              $('#sentToEmail').html(email);
-              replaceWithMessage(".emailsent");
-            }, onFailure);
-          }
-          else {
-            $('#registeredEmail').html(email);
-            showNotice(".alreadyRegistered");
-          }
-        }, onFailure);
-      });
-
-    });
-  };
+    return init;
 }());

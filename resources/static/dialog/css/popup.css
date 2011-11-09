@@ -117,16 +117,15 @@ section > .contents {
     height: 250px;
 }
 
-#wait, #error {
-    text-align: center;
-}
-
 #wait {
+    text-align: center;
     z-index: 1;
     background-image: url("/i/bg.png");
 }
 
 #error {
+    position: absolute;
+    text-align: center;
     display: none;
     z-index: 2;
     background-color: #fff;

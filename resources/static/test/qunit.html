@@ -54,15 +54,29 @@
       This is a long tooltip.  This should remain on the screen for about 5 seconds.
     </div>
 
+    <div class="forminputs">
+    </div>
+
     <ul class="notifications">
       <li class="notification emailsent">Email Sent</li> 
       <li class="notification doh">doh</li> 
     </ul>
 
+    <ul id="emailList"> 
+    </ul>
+
+    <script type="text/html" id="templateError">
+      <div class="message">{{ action.title }}</div>
+    </script>
+
     <script type="text/html" id="templateTooltip">
       <div class="tooltip">
         {{ contents }}
       </div>
+    </script>
+
+    <script type="text/html" id="templateUser">
+      <li>{{email}}</li>
     </script>
 	</body>
 </html>

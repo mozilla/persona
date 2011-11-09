@@ -105,6 +105,48 @@ hr {
   width: 700px;
 }
 
+#errorBackground {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
+  z-index: 1000;
+  background-color: rgba(0,0,0,.6);
+}
+
+#error > div {
+  background-color: #fff;
+  position: absolute;
+  top: 35%;
+  border: 2px solid #000;
+  border-radius: 5px;
+  padding: 10px;
+  z-index: 1001;
+  text-align: center;
+}
+
+#error ul, #error li {
+    list-style-type: none; 
+}
+
+#wait strong, #error strong {
+    color: #222;
+    font-weight: bold;
+}
+
+#error #moreInfo {
+    display: none;
+}
+
+#error a {
+    color: #549FDC;
+    text-decoration: underline;
+}
+
+
+
 .right {
   text-align: right;
 }

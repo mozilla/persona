@@ -3,6 +3,7 @@ steal("/dialog/resources/browserid.js",
       "/test/qunit/mocks/xhr.js",
       "/dialog/resources/browser-support.js",
       "/dialog/resources/error-messages.js",
+      "/dialog/resources/error-display.js",
       "/dialog/resources/storage.js",
       "/dialog/resources/tooltip.js",
       "/dialog/resources/validation.js",
@@ -27,7 +28,11 @@ steal("/dialog/resources/browserid.js",
   .then("pages/add_email_address_test")
   .then("pages/verify_email_address_test")
   .then("pages/forgot_unit_test")
+  .then("pages/signin_unit_test")
+  .then("pages/signup_unit_test")
+  .then("pages/manage_account_unit_test")
   .then("resources/tooltip_unit_test")
+  .then("resources/error-display_unit_test")
   .then("resources/channel_unit_test")
   .then("resources/browser-support_unit_test")
   .then("resources/validation_unit_test")
