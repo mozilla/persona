@@ -71,15 +71,6 @@ if (!config.get('keysigner_url')) {
   process.exit(1);
 }
 
-function internal_redirector(new_url, suppress_noframes) {
-  return function(req, resp, next) {
-    if (suppress_noframes)
-      resp.removeHeader('x-frame-options');
-    req.url = new_url;
-    return next();
-  };
-}
-
 function router(app) {
   app.set("views", path.join(__dirname, "..", "resources", "views"));
 
@@ -332,14 +323,6 @@ app.use(function(req, resp, next) {
 
   }
   return next();
-});
-
-// a tweak to get the content type of host-meta correct
-app.use(function(req, resp, next) {
-  if (req.url === '/.well-known/host-meta') {
-    resp.setHeader('content-type', 'text/xml');
-  }
-  next();
 });
 
 // Strict Transport Security
