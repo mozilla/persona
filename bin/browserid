@@ -71,14 +71,7 @@ if (!config.get('keysigner_url')) {
   process.exit(1);
 }
 
-function internal_redirector(new_url, suppress_noframes) {
-  return function(req, resp, next) {
-    if (suppress_noframes)
-      resp.removeHeader('x-frame-options');
-    req.url = new_url;
-    return next();
-  };
-}
+// NOTE: ordering is important in this file.  Pay attention
 
 function router(app) {
   app.set("views", path.join(__dirname, "..", "resources", "views"));
@@ -180,12 +173,6 @@ function router(app) {
   // register all the WSAPI handlers
   wsapi.setup(app);
 
-  // setup health check / heartbeat
-  heartbeat.setup(app, function(cb) {
-    // let's check stuff!  first the heartbeat of our keysigner
-    heartbeat.check(config.get('keysigner_url'), cb);
-  });
-
   // the public key
   app.get("/pk", function(req, res) {
     res.json(config.get('public_key').toSimpleObject());
@@ -211,6 +198,13 @@ function router(app) {
     db.close(readyForShutdown)
   });
 };
+
+// #1 - Setup health check / heartbeat middleware.
+// This is in front of logging on purpose.  see issue #537
+heartbeat.setup(app, function(cb) {
+  // let's check stuff!  first the heartbeat of our keysigner
+  heartbeat.check(config.get('keysigner_url'), cb);
+});
 
 // request to logger, dev formatted which omits personal data in the requests
 app.use(express.logger({
@@ -332,14 +326,6 @@ app.use(function(req, resp, next) {
 
   }
   return next();
-});
-
-// a tweak to get the content type of host-meta correct
-app.use(function(req, resp, next) {
-  if (req.url === '/.well-known/host-meta') {
-    resp.setHeader('content-type', 'text/xml');
-  }
-  next();
 });
 
 // Strict Transport Security
