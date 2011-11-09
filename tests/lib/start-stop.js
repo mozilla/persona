@@ -71,7 +71,7 @@ function setupProc(proc) {
     if (process.env['LOG_TO_CONSOLE']) console.log(x.toString());
     var tokenRegex = new RegExp('token=([A-Za-z0-9]+)$', 'm');
 
-    if (!sentReady && /^browserid.*127\.0\.0\.1:10002/.test(x)) {
+    if (!sentReady && /^browserid.*127\.0\.0\.1:10002/m.test(x)) {
       exports.browserid.emit('ready');
       sentReady = true;
     } else if (m = tokenRegex.exec(x)) {
