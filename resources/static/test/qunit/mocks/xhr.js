@@ -108,7 +108,9 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/list_emails valid": {"testuser@testuser.com":{}},
       "get /wsapi/list_emails multiple": {"testuser@testuser.com":{}, "testuser2@testuser.com":{}},
       "get /wsapi/list_emails no_identities": [],
-      "get /wsapi/list_emails ajaxError": undefined
+      "get /wsapi/list_emails ajaxError": undefined,
+      // Used in conjunction with registration to do a complete userflow
+      "get /wsapi/list_emails complete": {"registered@testuser.com":{}}
     },
 
     setContextInfo: function(field, value) {

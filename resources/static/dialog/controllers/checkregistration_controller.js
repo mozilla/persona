@@ -51,10 +51,9 @@
       me.email = options.email;
       me.verifier = options.verifier;
       me.verificationMessage = options.verificationMessage;
-      me.setupRegCheck();
     },
 
-    setupRegCheck: function() {
+    startCheck: function() {
       var me=this;
       user[me.verifier](me.email, function(status) {
         if (status === "complete") {
