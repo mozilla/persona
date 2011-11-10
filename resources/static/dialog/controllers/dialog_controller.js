@@ -242,6 +242,8 @@
           verifier: "waitForEmailValidation",
           verificationMessage: "email_confirmed"
         });
+        var controller = this.element.controller("checkregistration");
+        controller.startCheck();
       },
 
       doEmailConfirmed: function() {
