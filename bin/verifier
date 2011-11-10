@@ -53,6 +53,9 @@ logger.info("verifier server starting up");
 
 var app = express.createServer();
 
+// setup health check / heartbeat (before logging)
+heartbeat.setup(app);
+
 // request to logger, dev formatted which omits personal data in the requests
 app.use(express.logger({
   format: config.get('express_log_format'),
@@ -64,12 +67,6 @@ app.use(express.logger({
 }));
 
 app.use(express.bodyParser());
-
-// shutdown when /code_update is invoked
-shutdown.installUpdateHandler(app);
-
-// setup health check / heartbeat
-heartbeat.setup(app);
 
 app.post('/verify', function(req, resp, next) {
   req.body = req.body || {}
@@ -103,8 +100,10 @@ app.post('/verify', function(req, resp, next) {
         rp: audience
       });
     });
-
 });
+
+// shutdown when /code_update is invoked
+shutdown.installUpdateHandler(app);
 
 // shutdown nicely on signals
 shutdown.handleTerminationSignals(app);
