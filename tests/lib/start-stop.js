@@ -67,20 +67,24 @@ exports.browserid = new events.EventEmitter;
 function setupProc(proc) {
   var m, sentReady = false;
 
-  proc.stdout.on('data', function(x) {
-    if (process.env['LOG_TO_CONSOLE']) console.log(x.toString());
-    var tokenRegex = new RegExp('token=([A-Za-z0-9]+)$', 'm');
-
-    if (!sentReady && /^browserid.*127\.0\.0\.1:10002/m.test(x)) {
-      exports.browserid.emit('ready');
-      sentReady = true;
-    } else if (m = tokenRegex.exec(x)) {
-      tokenStack.push(m[1]);
-      if (nextTokenFunction) {
-        nextTokenFunction(tokenStack.shift());
-        nextTokenFunction = undefined;
+  proc.stdout.on('data', function(buf) {
+    buf.toString().split('\n').forEach(function(x) {
+      if (process.env['LOG_TO_CONSOLE'] || /^.*error.*:/.test(x)) {
+        console.log(x.toString());
       }
-    }
+      var tokenRegex = new RegExp('token=([A-Za-z0-9]+)$', 'm');
+
+      if (!sentReady && /^browserid.*127\.0\.0\.1:10002/.test(x)) {
+        exports.browserid.emit('ready');
+        sentReady = true;
+      } else if (m = tokenRegex.exec(x)) {
+        tokenStack.push(m[1]);
+        if (nextTokenFunction) {
+          nextTokenFunction(tokenStack.shift());
+          nextTokenFunction = undefined;
+        }
+      }
+    });
   });
   proc.stderr.on('data', function(x) {
     if (process.env['LOG_TO_CONSOLE']) console.log(x.toString());
