@@ -584,7 +584,9 @@ BrowserID.User = (function() {
       if (ie_version > -1 && ie_version < 9)
         keysize = 128;
       var keypair = jwk.KeyPair.generate("DS", keysize);
-      certifyEmailKeypair(email, keypair, onSuccess, onFailure);
+      setTimeout(function() {
+        certifyEmailKeypair(email, keypair, onSuccess, onFailure);
+      }, 0);
     },
 
 
