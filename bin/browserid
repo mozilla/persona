@@ -68,6 +68,12 @@ if (!config.get('keysigner_url')) {
   process.exit(1);
 }
 
+// verify that we have a dbwriter configured
+if (!config.get('dbwriter_url')) {
+  logger.error('missing required configuration - url for the dbwriter (DBWRITER_URL in env)');
+  process.exit(1);
+}
+
 // NOTE: ordering of middleware registration is important in this file, it is the
 // order in which middleware will be invoked as requests are processed.
 
@@ -75,7 +81,10 @@ if (!config.get('keysigner_url')) {
 // This is in front of logging on purpose.  see issue #537
 heartbeat.setup(app, function(cb) {
   // let's check stuff!  first the heartbeat of our keysigner
-  heartbeat.check(config.get('keysigner_url'), cb);
+  heartbeat.check(config.get('keysigner_url'), function(rv) {
+    if (!rv) return cb(rv);
+    heartbeat.check(config.get('dbwriter_url'), cb);
+  });
 });
 
 // #2 - logging!  all requests other than __heartbeat__ are logged
@@ -141,7 +150,9 @@ app.use(function(req, resp, next) {
 config.performSubstitution(app);
 
 // #8 - handle /wsapi requests
-wsapi.setup(app);
+wsapi.setup({
+  forward_writes: config.get('dbwriter_url')
+}, app);
 
 // #9 - handle views for dynamicish content
 views.setup(app);

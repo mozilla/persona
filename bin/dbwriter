@@ -1,3 +1,138 @@
 #!/usr/bin/env node
 
-require('./browserid');
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Mozilla BrowserID.
+ *
+ * The Initial Developer of the Original Code is Mozilla.
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+const
+fs = require('fs'),
+path = require('path'),
+url = require('url'),
+http = require('http');
+urlparse = require('urlparse'),
+express = require('express');
+
+const
+wsapi = require('../lib/wsapi.js'),
+httputils = require('../lib/httputils.js'),
+secrets = require('../lib/secrets.js'),
+db = require('../lib/db.js'),
+config = require('../lib/configuration.js'),
+heartbeat = require('../lib/heartbeat.js'),
+metrics = require('../lib/metrics.js'),
+logger = require('../lib/logging.js').logger,
+forward = require('../lib/browserid/http_forward'),
+shutdown = require('../lib/shutdown'),
+views = require('../lib/browserid/views.js');
+
+var app = undefined;
+
+app = express.createServer();
+
+logger.info("dbwriter starting up");
+
+// Setup health check / heartbeat middleware.
+// This is in front of logging on purpose.  see issue #537
+heartbeat.setup(app);
+
+// logging!  all requests other than __heartbeat__ are logged
+app.use(express.logger({
+  format: config.get('express_log_format'),
+  stream: {
+    write: function(x) {
+      logger.info(typeof x === 'string' ? x.trim() : x);
+    }
+  }
+}));
+
+// Add Strict-Transport-Security headers if we're serving over SSL
+if (config.get('scheme') == 'https') {
+  app.use(function(req, resp, next) {
+    // expires in 30 days, include subdomains like www
+    resp.setHeader("Strict-Transport-Security", "max-age=2592000; includeSubdomains");
+    next();
+    });
+}
+
+// prevent framing of everything.  content underneath that needs to be
+// framed must explicitly remove the x-frame-options
+app.use(function(req, resp, next) {
+  resp.setHeader('x-frame-options', 'DENY');
+  next();
+});
+
+// verify all JSON responses are objects - prevents regression on issue #217
+app.use(function(req, resp, next) {
+  var realRespJSON = resp.json;
+  resp.json = function(obj) {
+    if (!obj || typeof obj !== 'object') {
+      logger.error("INTERNAL ERROR!  *all* json responses must be objects");
+      throw "internal error";
+    }
+    realRespJSON.call(resp, obj);
+  };
+  return next();
+});
+
+// handle /wsapi requests
+wsapi.setup({
+  only_write_apis: true
+}, app);
+
+// calls to /code_update from localhost will restart the daemon,
+// this feature is not externally accessible and is only used by
+// the update logic
+shutdown.installUpdateHandler(app, function(readyForShutdown) {
+  logger.debug("closing database connection");
+  db.close(readyForShutdown)
+});
+
+// open the databse
+db.open(config.get('database'), function (error) {
+  if (error) {
+    logger.error("can't open database: " + error);
+    // let async logging flush, then exit 1
+    return setTimeout(function() { process.exit(1); }, 0);
+  }
+
+  // shut down express gracefully on SIGINT
+  shutdown.handleTerminationSignals(app, function(readyForShutdown) {
+    db.close(readyForShutdown)
+  });
+
+  var bindTo = config.get('bind_to');
+  app.listen(bindTo.port, bindTo.host, function() {
+    logger.info("running on http://" + app.address().address + ":" + app.address().port);
+  });
+});
