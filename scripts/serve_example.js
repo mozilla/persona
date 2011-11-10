@@ -78,5 +78,5 @@ exampleServer.listen(
   process.env['HOST'] || process.env['IP_ADDRESS'] || "127.0.0.1",
   function() {
     var addy = exampleServer.address();
-    console.log("http://" + addy.address + ":" + addy.port);
+    console.log("running on http://" + addy.address + ":" + addy.port);
   });

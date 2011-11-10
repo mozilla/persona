@@ -41,39 +41,52 @@ process.env['BROWSERID_URL'] = 'http://' + HOST + ":10002";
 process.env['VERIFIER_URL'] = 'http://' + HOST + ":10000/verify";
 process.env['KEYSIGNER_URL'] = 'http://' + HOST + ":10003";
 
-Object.keys(daemonsToRun).forEach(function(k) {
-  Object.keys(daemonsToRun[k]).forEach(function(ek) {
-    process.env[ek] = daemonsToRun[k][ek];
+function runDaemon(daemon, cb) {
+  Object.keys(daemonsToRun[daemon]).forEach(function(ek) {
+    process.env[ek] = daemonsToRun[daemon][ek];
   });
-  var pathToScript = daemonsToRun[k].path || path.join(__dirname, "..", "bin", k);
+  var pathToScript = daemonsToRun[daemon].path || path.join(__dirname, "..", "bin", daemon);
   var p = spawn('node', [ pathToScript ]);
 
   function dump(d) {
     d.toString().split('\n').forEach(function(d) {
       if (d.length === 0) return;
-      console.log(k, '(' + p.pid + '):', d);
+      console.log(daemon, '(' + p.pid + '):', d);
+
+      // when we find a line that looks like 'running on <url>' then we've fully
+      // started up and can run the next daemon.  see issue #556
+      if (cb && /^.*running on http:\/\/.*:[0-9]+$/.test(d)) {
+        cb();
+        cb = undefined;
+      }
     });
   }
 
   p.stdout.on('data', dump);
   p.stderr.on('data', dump);
 
-  console.log("spawned", k, "("+pathToScript+") with pid", p.pid);
-  Object.keys(daemonsToRun[k]).forEach(function(ek) {
+  console.log("spawned", daemon, "("+pathToScript+") with pid", p.pid);
+  Object.keys(daemonsToRun[daemon]).forEach(function(ek) {
     delete process.env[ek];
   });
 
-  daemons[k] = p;
+  daemons[daemon] = p;
 
   p.on('exit', function (code, signal) {
-    console.log(k, 'exited(' + code + ') ', (signal ? 'on signal ' + signal : ""));
-    delete daemons[k];
-    Object.keys(daemons).forEach(function (k) { daemons[k].kill(); });
+    console.log(daemon, 'exited(' + code + ') ', (signal ? 'on signal ' + signal : ""));
+    delete daemons[daemon];
+    Object.keys(daemons).forEach(function (daemon) { daemons[daemon].kill(); });
     if (Object.keys(daemons).length === 0) {
       console.log("all daemons torn down, exiting...");
     }
   });
-});
+};
+
+var daemonNames = Object.keys(daemonsToRun);
+function runNextDaemon() {
+  if (daemonNames.length) runDaemon(daemonNames.shift(), runNextDaemon);
+}
+runNextDaemon();
 
 process.on('SIGINT', function () {
   console.log('\nSIGINT recieved! trying to shut down gracefully...');
