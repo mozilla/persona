@@ -4,7 +4,7 @@
 
           <li>
               <label for="email" class="serif">Email</label>
-              <input id="email" class="sans" type="email" autocapitalize="off" autocorrect="off" value="<%= email %>" maxlength="254"/>
+              <input id="email" class="sans" type="email" autocapitalize="off" autocorrect="off" value="<%= email %>" maxlength="254" tabindex="1"/>
 
               <div id="email_format" class="tooltip" for="email">
                 This field must be an email address.
@@ -32,9 +32,9 @@
 
               <label for="password" class="half serif">Password</label>
               <div class="half right">
-                  <a id="forgotPassword" href="#">forgot your password?</a>
+                  <a id="forgotPassword" href="#" tabindex="4">forgot your password?</a>
               </div>
-              <input id="password" class="sans" type="password" maxlength="80">
+              <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
 
 
               <div id="password_required" class="tooltip" for="password">
@@ -49,12 +49,12 @@
       </ul>
 
       <div class="submit cf">
-          <button class="start">next</button>
-          <button class="newuser">verify email</button>
+          <button class="start" tabindex="3">next</button>
+          <button class="newuser" tabindex="3">verify email</button>
 
-          <button class="returning">select email</button>
+          <button class="returning" tabindex="3">select email</button>
 
-          <button class="forgot">Reset Password</button>
-          <button id="cancel_forgot_password" class="forgot">Cancel</button>
+          <button class="forgot" tabindex="3">Reset Password</button>
+          <button id="cancel_forgot_password" class="forgot" tabindex="4">Cancel</button>
       </div>
   </div>
