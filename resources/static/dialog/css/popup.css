@@ -366,7 +366,6 @@ button {
     height: 28px;
     padding: 0 10px;
     float: right;
-    background-color: #37A6FF;
     vertical-align: middle;
     border: 1px solid #37A6FF;
     font-family: 'Droid Serif', Georgia, serif;
@@ -385,8 +384,17 @@ button {
          -o-border-radius: 5px;
             border-radius: 5px;
     
+    background-color: #37A6FF;
     background-image: -moz-linear-gradient(center top , #76C2FF 0pt, #37A6FF 100%);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
+}
+
+button:hover,
+button:focus {
+    background-color: #76c2ff;
+    background-image: -moz-linear-gradient(center top , #76C2FF 50%, #37A6FF 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(50%, #76C2FF), color-stop(100%, #37A6FF));
+
 }
 
 button[disabled] {
