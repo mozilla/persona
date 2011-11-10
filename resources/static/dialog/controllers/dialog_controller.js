@@ -204,6 +204,8 @@
           verifier: "waitForUserValidation",
           verificationMessage: "user_confirmed"
         });
+        var controller = this.element.controller("checkregistration");
+        controller.startCheck();
       },
 
       doCancel: function() {
