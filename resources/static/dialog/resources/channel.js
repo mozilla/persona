@@ -57,8 +57,7 @@
       onCompleteCallback;
 
   function getRelayName() {
-    var relayID = win.location.href.slice(win.location.href.indexOf('#') + 1);
-    return "browserid_relay_" + relayID;
+    return window.localStorage.RELAYFRAME_NAME;
   }
 
   function getRelayWindow() {
@@ -91,7 +90,6 @@
         onCompleteCallback = onComplete;
         controller.getVerifiedEmail(origin, onsuccess, onerror);
       });
-      win.location.hash = '';
     }
     else {
       throw "relay frame not found";

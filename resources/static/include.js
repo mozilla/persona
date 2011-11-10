@@ -757,25 +757,17 @@
 
         var frameid = _get_relayframe_id();
         var iframe = _open_relayframe("browserid_relay_" + frameid);
-        w = _open_window();
 
-        // if the RP window closes, close the dialog as well.
-        _attach_event(window, 'unload', cleanup);
-
+        // first we build the channel to the IFRAME
+        // and make the call. THEN we will open the window
+        // no need to wait for channel ready.
+        
         // clean up a previous channel that never was reaped
         if (chan) chan.destroy();
         chan = Channel.build({
           window: iframe.contentWindow,
           origin: ipServer,
-          scope: "mozid",
-          onReady: function() {
-            // We have to change the name of the relay frame every time or else Firefox
-            // has a problem re-attaching new iframes with the same name.  Code inside
-            // of frames with the same name sometimes does not get run.
-            // See https://bugzilla.mozilla.org/show_bug.cgi?id=350023
-            //w = _open_window(ipServer + "/sign_in#" + frameid);
-            w.location = ipServer + "/sign_in#" +frameid;
-          }
+          scope: "mozid"
         });
 
         chan.call({
@@ -793,6 +785,12 @@
             cleanup();
           }
         });
+
+        // open the window now that all else is ready
+        w = _open_window(ipServer + "/sign_in");
+
+        // if the RP window closes, close the dialog as well.
+        _attach_event(window, 'unload', cleanup);
       }
     };
 

@@ -39,6 +39,8 @@
 (function() {
   "use strict";
 
+  window.localStorage.RELAYFRAME_NAME = window.name;
+  
   window.console = window.console || {
     log: function() {}
   };
