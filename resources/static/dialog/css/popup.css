@@ -350,6 +350,12 @@ input[type=password]:focus {
             box-shadow: 0 0 0 1px #549FDC inset;
 }
 
+input[type=email]:disabled,
+input[type=password]:disabled {
+    background-color: #f0f0f0;
+    color: #4f4f4f;
+}
+
 input[type=radio],
 input[type=checkbox] {
   cursor: pointer;
@@ -383,7 +389,7 @@ button {
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
 }
 
-button[disabled=disabled] {
+button[disabled] {
     opacity: .5;
 }
 
