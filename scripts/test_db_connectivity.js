@@ -4,8 +4,8 @@
 // the database using the present configuration.
 
 const
-configuration = require('../libs/configuration.js'),
-db = require('../browserid/lib/db.js');
+configuration = require('../lib/configuration.js'),
+db = require('../lib/db.js');
 
 var dbCfg = configuration.get('database');
 

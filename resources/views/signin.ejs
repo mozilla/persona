@@ -1,0 +1,55 @@
+<div id="vAlign" class="disply_always">
+    <div id="signUpFormWrap">
+        <!-- XXX this form submits to nowhere -->
+        <form id="signUpForm" class="cf authform" novalidate>
+            <h1 class="serif">Sign In</h1>
+
+            <ul class="notifications">
+                <li class="notification error doh">Bad Login. Check your email and password.</li>
+            </ul>
+
+            <ul class="inputs">
+                <li>
+                    <label class="serif" for="email">Email Address</label>
+                    <input class="sans" id="email" autofocus placeholder="Your Email" type="email" autocapitalize="off" autocorrect="off" tabindex="1" maxlength="254" />
+
+                    <div id="email_format" class="tooltip" for="email">
+                      This field must be an email address.
+                    </div>
+
+                    <div id="email_required" class="tooltip" for="email">
+                      The email field is required.
+                    </div>
+                </li>
+                <li>
+                    <label class="serif half" for="password">Password</label>
+                    <div class="half right">
+                        <!-- XXX: this needs to be fixed -->
+                        <a class="forgot" href="/forgot" tabindex="4">forgot your password?</a>
+                    </div>
+                    <input class="sans" id="password" placeholder="Your Password" type="password" tabindex="2" maxlength="80">
+
+                    <div id="password_required" class="tooltip" for="password">
+                      The password field is required.
+                    </div>
+                </li>
+            </ul>
+
+            <div class="submit cf">
+                <!--div class="remember cf">
+                    <div class="checkAlign">
+                        <input id="memorize" type="checkbox" tabindex="3">
+                    </div>
+                    <label for="memorize">remember me</label>
+                </div-->
+                <input type="submit" class="create" value="Sign In" tabindex="5"/>
+            </div>
+        </form>
+        <a class="signUpIn space" href="/signup">New to BrowserID? Sign up today.</a>
+    </div>
+</div>
+
+<noscript>
+  We're sorry, but to sign in to BrowserID, you must have Javascript enabled.
+</noscript>
+
