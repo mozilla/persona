@@ -716,21 +716,19 @@
     var ipServer = "https://browserid.org";
     var isFennec = navigator.userAgent.indexOf('Fennec/') != -1;
 
-    var chan, w, iframe;
+    var relay_chan, w, relay_iframe;
 
     // keep track of these so that we can re-use/re-focus an already open window.
     navigator.id.get = function(callback, options) {
+      var doc = document;
       function cleanup() {
-        chan.destroy();
-        chan = null;
+        // we no longer remove the relay chan and iframe
+        // since those live for as long as the page does
 
         if (w) {
           w.close();
           w = null;
         }
-
-        iframe.parentNode.removeChild(iframe);
-        iframe = null;
 
         _detatch_event(window, 'unload', cleanup);
       }
@@ -755,22 +753,9 @@
           return;
         }
 
-        var frameid = _get_relayframe_id();
-        var iframe = _open_relayframe("browserid_relay_" + frameid);
-
-        // first we build the channel to the IFRAME
-        // and make the call. THEN we will open the window
-        // no need to wait for channel ready.
-        
-        // clean up a previous channel that never was reaped
-        if (chan) chan.destroy();
-        chan = Channel.build({
-          window: iframe.contentWindow,
-          origin: ipServer,
-          scope: "mozid"
-        });
-
-        chan.call({
+        // we now have the relay iframe and channel already
+        // we just message it.
+        relay_chan.call({
           method: "getVerifiedEmail",
           success: function(rv) {
             if (callback) {
@@ -811,16 +796,14 @@
 
     var _noninteractiveCall = function(method, args, onsuccess, onerror) {
       var doc = window.document;
-      iframe = _open_hidden_iframe(doc);
+      var ni_iframe = _open_hidden_iframe(doc);
 
-      // clean up channel
-      if (chan) chan.destroy();
-      chan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid"});
+      var chan = Channel.build({window: ni_iframe.contentWindow, origin: ipServer, scope: "mozid_ni"});
 
       function cleanup() {
         chan.destroy();
         chan = undefined;
-        doc.body.removeChild(iframe);
+        doc.body.removeChild(ni_iframe);
       }
 
       chan.call({
@@ -837,7 +820,25 @@
           cleanup();
         }
       });
-    }
+    };
+
+    // set up the relay iframe
+    var setup_relay_iframe = function() {
+      if (document.body) {
+        var frameid = _get_relayframe_id();
+        relay_iframe = _open_relayframe("browserid_relay_" + frameid);
+        relay_chan = Channel.build({
+          window: relay_iframe.contentWindow,
+          origin: ipServer,
+          scope: "mozid"
+        });
+
+      } else {
+        window.setTimeout(setup_relay_iframe, 100);
+      }
+    };
+
+    window.setTimeout(setup_relay_iframe, 0);    
 
     navigator.id._getVerifiedEmailIsShimmed = true;
   }

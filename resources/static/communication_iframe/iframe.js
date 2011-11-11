@@ -61,7 +61,7 @@ function afterResourceLoad() {
     var chan = Channel.build({
       window: window.parent,
       origin: "*",
-      scope: "mozid"
+      scope: "mozid_ni"
     });
 
     var remoteOrigin = undefined;
@@ -79,7 +79,6 @@ function afterResourceLoad() {
       trans.delayReturn(true);
 
       BrowserID.User.getPersistentSigninAssertion(function(rv) {
-        console.log(rv);
         trans.complete(rv);
       }, function() {
         trans.error();

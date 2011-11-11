@@ -102,7 +102,9 @@ function checkAssertion(assertion) {
   });
 };
 
+$(document).ready(function() {
 // at page load time, we'll check to see if the user is already signed in
+// for IE, this MUST be done after document ready.
 navigator.id.get(function(assertion) {
   if (!assertion) {
     $("#oPersistent").text("user isn't (persistently) signed in");
@@ -112,7 +114,6 @@ navigator.id.get(function(assertion) {
   };
 }, { silent: true });
 
-$(document).ready(function() {
   // install a click handler for when the user clicks 'sign in'
   $("#clickForLogin").click(function(event) {
     event.preventDefault();
