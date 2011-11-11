@@ -1,3 +1,26 @@
+train-2011.11.10:
+  * keysigner process now handles certificate generation: #460
+  * verifier no longer supports CORS requests: #245
+  * experimental support for nodejs 0.6.0: #535
+  * reduce access to private key (only the keysigner has access to it): #539
+  * improve language of buttons during sign-in: #198
+  * better error messaging during sign-in/up interactions on main site: #542
+  * user only has to type their browserid password every two weeks (not one): #543
+  * upgrade mysql driver - no crash upon idle reconnection: #540
+  * address regression in #540 - reconnect to proper database (also fixes 'create_schema' flag): #548
+  * implement 'keep me signed in' - includes API changes and UX/UI changes: #490
+  * front end unit test improvements: #542, #408
+  * fix regression in tooltips (weren't showing contents): #547
+  * calls to __heartbeat__ aren't logged: #537
+  * strip whitespace on email input: #429
+  * fix sporadic errors in unit tests: #550, #556
+  * crypto changes to support IE8: #244
+  * fix tab ordering in UI: #544
+  * chrome specific UI fixes: #552
+  * better UI feedback when hovering over buttons: #553
+  * reorganization of browserid process, breakout of dbwriter (not yet enabled): #460
+  * improve log message error levels (be sparing with 'error'): #509
+
 train-2011.11.03:
   * Remember the last used email for a site, and optimize the default selection based on this: #1
   * Fix regression where verification of assertions would fail for https sites: #500 (also hot-fixed in production https://github.com/mozilla/browserid/commit/1528364)
