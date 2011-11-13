@@ -44,7 +44,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/channel", func
   // Mock in the window object as well as the frame relay
   var winMock = {
     location: {
-      href: "browserid.org/sign_in#1234"
+      href: "browserid.org/sign_in"
+    },
+    localStorage: {
+      RELAYFRAME_NAME : "browserid_relay_1234"
     },
     opener: {
       frames: {
