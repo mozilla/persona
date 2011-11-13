@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", function() {
+steal.plugins("jquery", "funcunit/qunit").then("/resources/browserid", function() {
   "use strict";
 
   var bid = BrowserID,
@@ -57,7 +57,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", fu
       bid.Tooltip.showTooltip = origShowTooltip;
     }
   });
-  
+
   test("email address x@y.z is valid", function() {
     ok(bid.verifyEmail("x@y.z"), "x@y.z is valid");
   });
@@ -87,7 +87,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", fu
   });
 
 
-  
+
   test("email with valid email", function() {
     var valid = validation.email("testuser@testuser.com");
 

@@ -39,26 +39,30 @@ window.console = window.console || {
   log: function() {}
 };
 
-steal.plugins(
-	'jquery/controller',			// a widget factory
-	'jquery/controller/subscribe')	// subscribe to OpenAjax.hub
+steal(
+              '../lib/jschannel',
+              '../lib/base64',
+              '../lib/underscore-min',
+              '../lib/ejs',
+              '../resources/browserid',
+              '../lib/jquery-1.6.2.min.js',
+              '../lib/dom-jquery')
+  .plugins(
+              'jquery/controller',			// a widget factory
+              'jquery/controller/subscribe')	// subscribe to OpenAjax.hub
 
-	.resources('jschannel',
-               'base64',
-               'underscore-min',
-               'channel',
-               'ejs',
-               'browserid',
-               'dom-jquery',
-               'storage',
-               'tooltip',
-               'validation',
-               'browser-support',
-               'browserid-extensions',
-               'network',
-               'user',
-               'error-messages',
-               'wait-messages')					// 3rd party script's (like jQueryUI), in resources folder
+	.resources(
+               'channel')
+  .then(
+               '../resources/storage',
+               '../resources/tooltip',
+               '../resources/validation',
+               '../resources/browser-support',
+               '../resources/browserid-extensions',
+               '../resources/network',
+               '../resources/user',
+               '../resources/error-messages',
+               '../resources/wait-messages')					// 3rd party script's (like jQueryUI), in resources folder
 
 	.controllers('page',
                'dialog',
@@ -66,15 +70,7 @@ steal.plugins(
                'checkregistration',
                'pickemail')					// loads files in controllers folder
 
-/*	.views('authenticate.ejs',
-           'confirmemail.ejs',
-           'pickemail.ejs',
-           'wait.ejs',
-           'error.ejs',
-           'offline.ejs'
-          ).
-*/
-          .then(function() {
+  .then(function() {
             $(function() {
               $('body').dialog().show();
             });

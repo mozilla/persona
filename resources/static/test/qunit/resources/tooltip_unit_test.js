@@ -1,4 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
 /*globals BrowserID: true, _:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/tooltip", function() {
+steal.plugins("jquery", "funcunit/qunit").then("/resources/tooltip", function() {
   "use strict";
 
   var bid = BrowserID,

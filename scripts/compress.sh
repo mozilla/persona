@@ -43,7 +43,7 @@ cat popup.css m.css > production.css
 $JAVA -jar $YUI_LOCATION production.css -o production.min.css
 
 cd ../../relay
-cat ../dialog/resources/jschannel.js ../dialog/resources/browserid.js relay.js > production.js
+cat ../lib/jschannel.js ../resources/browserid.js relay.js > production.js
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
 
@@ -52,9 +52,9 @@ echo ''
 echo '****Building BrowserID.org HTML, CSS, and JS****'
 echo ''
 
-cd ../js
+cd ../pages
 # re-minimize everything together
-cat jquery-1.6.2.min.js json2.js ../dialog/resources/browserid.js ../dialog/resources/error-display.js ../dialog/resources/error-messages.js page_helpers.js browserid.js ../dialog/resources/underscore-min.js ../dialog/resources/browserid-extensions.js ../dialog/resources/storage.js ../dialog/resources/network.js ../dialog/resources/user.js ../dialog/resources/tooltip.js ../dialog/resources/validation.js pages/index.js pages/add_email_address.js pages/verify_email_address.js pages/manage_account.js pages/signin.js pages/signup.js pages/forgot.js > lib.js
+cat ../lib/jquery-1.6.2.min.js ../lib/json2.js ../resources/browserid.js ../resources/error-display.js ../resources/error-messages.js page_helpers.js browserid.js ../lib/underscore-min.js ../resources/browserid-extensions.js ../resources/storage.js ../resources/network.js ../resources/user.js ../resources/tooltip.js ../resources/validation.js index.js add_email_address.js verify_email_address.js manage_account.js signin.js signup.js forgot.js > lib.js
 $UGLIFY < lib.js > lib.min.js
 
 cd ../css

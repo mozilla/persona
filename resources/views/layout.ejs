@@ -10,32 +10,32 @@
   <script src="/vepbundle" type="text/javascript"></script>
   <% if (production) { %>
     <link rel="stylesheet" type="text/css" href="/css/browserid.min.css">
-    <script src="/js/lib.min.js" type="text/javascript"></script>
+    <script src="/pages/lib.min.js" type="text/javascript"></script>
   <% } else { %>
     <link rel="stylesheet" href="/css/style.css" type="text/css" media="screen">
     <link rel="stylesheet" href="/css/m.css" type="text/css" media="screen">
 
-    <script src="/js/jquery-1.6.2.min.js" type="text/javascript"></script>
-    <script src="/js/json2.js" type="text/javascript"></script>
-    <script src="/dialog/resources/underscore-min.js" type="text/javascript"></script>
-    <script src="/dialog/resources/browserid-extensions.js" type="text/javascript"></script>
-    <script src="/dialog/resources/browserid.js" type="text/javascript"></script>
-    <script src="/dialog/resources/error-display.js" type="text/javascript"></script>
-    <script src="/dialog/resources/error-messages.js" type="text/javascript"></script>
-    <script src="/js/page_helpers.js" type="text/javascript"></script>
-    <script src="/js/browserid.js" type="text/javascript"></script>
-    <script src="/js/pages/index.js" type="text/javascript"></script>
-    <script src="/dialog/resources/storage.js" type="text/javascript"></script>
-    <script src="/dialog/resources/network.js" type="text/javascript"></script>
-    <script src="/dialog/resources/user.js" type="text/javascript"></script>
-    <script src="/dialog/resources/tooltip.js" type="text/javascript"></script>
-    <script src="/dialog/resources/validation.js" type="text/javascript"></script>
-    <script src="/js/pages/add_email_address.js" type="text/javascript"></script>
-    <script src="/js/pages/verify_email_address.js" type="text/javascript"></script>
-    <script src="/js/pages/forgot.js" type="text/javascript"></script>
-    <script src="/js/pages/manage_account.js" type="text/javascript"></script>
-    <script src="/js/pages/signin.js" type="text/javascript"></script>
-    <script src="/js/pages/signup.js" type="text/javascript"></script>
+    <script src="/lib/jquery-1.6.2.min.js" type="text/javascript"></script>
+    <script src="/lib/json2.js" type="text/javascript"></script>
+    <script src="/lib/underscore-min.js" type="text/javascript"></script>
+    <script src="/resources/browserid-extensions.js" type="text/javascript"></script>
+    <script src="/resources/browserid.js" type="text/javascript"></script>
+    <script src="/resources/error-display.js" type="text/javascript"></script>
+    <script src="/resources/error-messages.js" type="text/javascript"></script>
+    <script src="/pages/page_helpers.js" type="text/javascript"></script>
+    <script src="/pages/browserid.js" type="text/javascript"></script>
+    <script src="/pages/index.js" type="text/javascript"></script>
+    <script src="/resources/storage.js" type="text/javascript"></script>
+    <script src="/resources/network.js" type="text/javascript"></script>
+    <script src="/resources/user.js" type="text/javascript"></script>
+    <script src="/resources/tooltip.js" type="text/javascript"></script>
+    <script src="/resources/validation.js" type="text/javascript"></script>
+    <script src="/pages/add_email_address.js" type="text/javascript"></script>
+    <script src="/pages/verify_email_address.js" type="text/javascript"></script>
+    <script src="/pages/forgot.js" type="text/javascript"></script>
+    <script src="/pages/manage_account.js" type="text/javascript"></script>
+    <script src="/pages/signin.js" type="text/javascript"></script>
+    <script src="/pages/signup.js" type="text/javascript"></script>
   <% } %>
   <title>BrowserID: <%- title %></title>
 </head>
@@ -100,7 +100,7 @@
         {% if (action.message) { %}
           <p>
             {{ action.message }}
-          </p>  
+          </p>
         {% } %}
       </li>
     {% } %}
@@ -111,13 +111,13 @@
         <strong id="network">Network Info:</strong> {{ network.type }}: {{ network.url }}
 
         <p>
-          <strong>Response Code - </strong> {{ network.textStatus }} 
+          <strong>Response Code - </strong> {{ network.textStatus }}
         </p>
 
         {% if (network.errorThrown) { %}
           <p>
             <strong>Error Type:</strong> {{ network.errorThrown }}
-          </p>  
+          </p>
         {% } %}
 
       </li>

@@ -34,48 +34,11 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", function() {
+steal.plugins("jquery", "funcunit/qunit").then("/pages/page_helpers", "/pages/browserid", function() {
   "use strict";
 
-  var pageHelpers = BrowserID.PageHelpers;
+  module("/pages/browserid");
 
-  module("/js/page_helpers");
-  
-
-  test("setStoredEmail/getStoredEmail/setupEmail prefills the email address", function() {
-    $("#email").val("");
-
-    pageHelpers.setStoredEmail("testuser@testuser.com");
-    pageHelpers.setupEmail();
-
-    equal($("#email").val(), "testuser@testuser.com", "email was set on setupEmail");
-    equal(pageHelpers.getStoredEmail(), "testuser@testuser.com", "getStoredEmail works correctly");
-  });
-
-  test("a key press in the email address field saves it", function() {
-    $("#email").val("");
-
-    pageHelpers.setStoredEmail("testuser@testuser.co");
-    pageHelpers.setupEmail();
-
-    // The fake jQuery event does not actually cause the letter to be added, we 
-    // have to do that manually.
-    $("#email").val("testuser@testuser.com");
-
-    var e = jQuery.Event("keyup");
-    e.which = 77; //choose the one you want
-    e.keyCode = 77;
-    $("#email").trigger(e);
-
-    equal(pageHelpers.getStoredEmail(), "testuser@testuser.com", "hitting a key updates the stored email");
-  });
-
-  test("clearStoredEmail clears the email address from storage", function() {
-    pageHelpers.clearStoredEmail();
-
-    equal(pageHelpers.getStoredEmail(), "", "clearStoredEmail clears stored email");
-  });
 
 });
-
 

@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/verify_email_address", function() {
+steal.plugins("jquery").then("/resources/network", "/pages/verify_email_address", function() {
   "use strict";
 
   var bid = BrowserID,
@@ -42,16 +42,16 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/verify_emai
       storage = bid.Storage,
       xhr = bid.Mocks.xhr,
       validToken = true;
-  
+
   module("pages/verify_email_address", {
     setup: function() {
-      network.setXHR(xhr);  
+      network.setXHR(xhr);
       xhr.useResult("valid");
       $("#error,.error").stop().hide();
       $(".website").text("");
     },
     teardown: function() {
-      network.setXHR($);  
+      network.setXHR($);
       $("#error,.error").stop().hide();
       $(".website").text("");
     }
@@ -61,7 +61,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/verify_emai
     storage.setStagedOnBehalfOf("browserid.org");
 
     bid.verifyEmailAddress("token");
-    
+
     setTimeout(function() {
       equal($("#email").val(), "testuser@testuser.com", "email set");
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
@@ -77,7 +77,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/verify_emai
 
     bid.verifyEmailAddress("token");
 
-    
+
     setTimeout(function() {
       equal($("#email").val(), "testuser@testuser.com", "email set");
       equal($(".siteinfo").is(":visible"), false, "siteinfo is not visible without having it");

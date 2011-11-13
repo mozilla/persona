@@ -42,7 +42,7 @@ steal.plugins("jquery", "funcunit/qunit").then(function() {
       stubWindow,
       stubNavigator;
 
-  module("browser-support", {
+  module("resources/browser-support", {
     setup: function() {
       // Hard coded goodness for testing purposes
       stubNavigator = {
@@ -61,7 +61,7 @@ steal.plugins("jquery", "funcunit/qunit").then(function() {
     teardown: function() {
     }
   });
-  
+
   test("browser without localStorage", function() {
     delete stubWindow.localStorage;
 

@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/resources/jschannel", "/relay/relay", function() {
+steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
   "use strict";
 
   var winMock = {},
@@ -44,7 +44,7 @@ steal.plugins("jquery").then("/dialog/resources/jschannel", "/relay/relay", func
     build: function(options) {
       this.options = options;
 
-      channelMock.bindMessage = channelMock.cb = channelMock.status = 
+      channelMock.bindMessage = channelMock.cb = channelMock.status =
         channelMock.errorCode = channelMock.verboseError = undefined;
 
       return {
@@ -59,7 +59,7 @@ steal.plugins("jquery").then("/dialog/resources/jschannel", "/relay/relay", func
     receiveGetVerifiedEmail: function() {
       // cb is the mock callback that is passed to Channel.bind
       channelMock.cb({
-        origin: "Origin", 
+        origin: "Origin",
         delayReturn: function() {},
         complete: function(status) {
           channelMock.status = status;
@@ -84,13 +84,13 @@ steal.plugins("jquery").then("/dialog/resources/jschannel", "/relay/relay", func
     teardown: function() {
       relay.init({
         window: window.parent,
-        channel: Channel 
+        channel: Channel
       });
     }
   });
 
   test("Can open the relay, happy case", function() {
-    relay.open(); 
+    relay.open();
 
     /**
      * Check to make sure channel build is correct

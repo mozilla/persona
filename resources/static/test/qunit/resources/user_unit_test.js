@@ -38,7 +38,7 @@ var jwk = require("./jwk");
 var jwt = require("./jwt");
 var jwcert = require("./jwcert");
 
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", function() {
+steal.plugins("jquery", "funcunit/qunit").then("/resources/user", function() {
   var lib = BrowserID.User,
       storage = BrowserID.Storage,
       xhr = BrowserID.Mocks.xhr,
@@ -56,7 +56,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
 
     // Decode the assertion to a bundle.
     var bundle = JSON.parse(window.atob(assertion));
-    
+
     // Make sure both parts of the bundle exist
     ok(bundle.certificates && bundle.certificates.length, "we have an array like object for the certificates");
     equal(typeof bundle.assertion, "string");
@@ -70,9 +70,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     equal(tok.audience, testOrigin, "correct audience");
     var expires = tok.expires.getTime();
     ok(typeof expires === "number" && !isNaN(expires), "expiration date is valid");
-  
+
     var nowPlus2Mins = new Date().getTime() + (2 * 60 * 1000);
-    // expiration date must be within 5 seconds of 2 minutes from now - see 
+    // expiration date must be within 5 seconds of 2 minutes from now - see
     // issue 433 (https://github.com/mozilla/browserid/issues/433)
     ok(((nowPlus2Mins - 5000) < expires) && (expires < (nowPlus2Mins + 5000)), "expiration date must be within 5 seconds of 2 minutes from now");
 
@@ -115,7 +115,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     lib.setOrigin(origin);
 
     var hostname = lib.getHostname();
-    equal(hostname, "testorigin.com", "getHostname returns only the hostname"); 
+    equal(hostname, "testorigin.com", "getHostname returns only the hostname");
   });
 
   test("getStoredEmailKeypairs", function() {
@@ -144,9 +144,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     lib.clearStoredEmailKeypairs();
     var identities = lib.getStoredEmailKeypairs();
     var count = 0;
-    for(var key in identities) { 
+    for(var key in identities) {
       if(identities.hasOwnProperty(key)) {
-        count++; 
+        count++;
       }
     }
 
@@ -180,7 +180,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -243,7 +243,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       start();
     }, function() {
       ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared on XHR failure");
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -254,7 +254,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     storage.setStagedOnBehalfOf(testOrigin);
 
     lib.verifyUser("token", "password", function onSuccess(info) {
-      
+
       ok(info.valid, "token was valid");
       equal(info.email, "testuser@testuser.com", "email part of info");
       equal(info.origin, testOrigin, "origin in info");
@@ -270,7 +270,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     xhr.useResult("invalid");
 
     lib.verifyUser("token", "password", function onSuccess(info) {
-      
+
       equal(info.valid, false, "bad token calls onSuccess with a false validity");
 
       start();
@@ -287,10 +287,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
-      
+
     stop();
   });
 
@@ -310,7 +310,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       equal(status.success, true, "password reset for known user");
       start();
     }, function() {
-      ok(false, "onFailure should not be called"); 
+      ok(false, "onFailure should not be called");
       start();
     });
 
@@ -323,7 +323,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       equal(status.reason, "invalid_user", "invalid_user is the reason");
       start();
     }, function() {
-      ok(false, "onFailure should not be called"); 
+      ok(false, "onFailure should not be called");
       start();
     });
 
@@ -337,7 +337,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       equal(status.reason, "throttle", "password reset was throttled");
       start();
     }, function() {
-      ok(false, "onFailure should not be called"); 
+      ok(false, "onFailure should not be called");
       start();
     });
 
@@ -350,7 +350,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -387,7 +387,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -426,7 +426,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -471,10 +471,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     lib.checkAuthenticationAndSync(function onSuccess() {
     }, function onComplete() {
       ok(false, "xhr failure should never succeed");
-      
+
       start();
     }, function onFailure() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -512,7 +512,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -526,7 +526,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       var identities = lib.getStoredEmailKeypairs();
       equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
 
-      equal(storage.getStagedOnBehalfOf(), lib.getHostname(), "initiatingOrigin is stored"); 
+      equal(storage.getStagedOnBehalfOf(), lib.getHostname(), "initiatingOrigin is stored");
 
       start();
     }, failure("addEmail failure"));
@@ -543,7 +543,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       var identities = lib.getStoredEmailKeypairs();
       equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
 
-      equal(typeof storage.getStagedOnBehalfOf(), "undefined", "initiatingOrigin is not stored"); 
+      equal(typeof storage.getStagedOnBehalfOf(), "undefined", "initiatingOrigin is not stored");
 
       start();
     }, failure("addEmail failure"));
@@ -557,7 +557,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -617,7 +617,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       start();
     }, function() {
       ok(storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -628,7 +628,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
   test("verifyEmail with a good token", function() {
     storage.setStagedOnBehalfOf(testOrigin);
     lib.verifyEmail("token", function onSuccess(info) {
-      
+
       ok(info.valid, "token was valid");
       equal(info.email, "testuser@testuser.com", "email part of info");
       equal(info.origin, testOrigin, "origin in info");
@@ -644,7 +644,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     xhr.useResult("invalid");
 
     lib.verifyEmail("token", function onSuccess(info) {
-      
+
       equal(info.valid, false, "bad token calls onSuccess with a false validity");
 
       start();
@@ -661,10 +661,10 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
-      
+
     stop();
   });
 
@@ -692,7 +692,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       var identity = lib.getStoredEmailKeypair("testemail@testemail.com");
       equal(typeof identity, "undefined", "Invalid email is not synced");
 
-      start();      
+      start();
     });
 
     stop();
@@ -704,7 +704,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -744,7 +744,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -771,7 +771,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       var identities = lib.getStoredEmailKeypairs();
       ok("testuser@testuser.com" in identities, "Our new email is added");
       equal(_.size(identities), 1, "there is one identity");
-      start(); 
+      start();
     }, failure("identity sync failure"));
 
     stop();
@@ -841,7 +841,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -880,7 +880,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
         start();
       });
     }, failure("getAssertion failure"));
-    
+
     stop();
   });
 
@@ -892,7 +892,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -927,7 +927,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
           ok(false, "xhr failure should never succeed");
           start();
         }, function() {
-          ok(true, "xhr failure should always be a failure"); 
+          ok(true, "xhr failure should always be a failure");
           start();
         });
 
@@ -954,7 +954,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
       ok(false, "xhr failure should never succeed");
       start();
     }, function() {
-      ok(true, "xhr failure should always be a failure"); 
+      ok(true, "xhr failure should always be a failure");
       start();
     });
 
@@ -1002,7 +1002,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       storage.site.set(testOrigin, "remember", false);
       storage.site.set(testOrigin, "email", "testuser@testuser.com");
-      // invalidate the email so that we force a fresh key certification with 
+      // invalidate the email so that we force a fresh key certification with
       // the server
       storage.invalidateEmail("testuser@testuser.com");
 
@@ -1023,7 +1023,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       storage.site.set(testOrigin, "remember", true);
       storage.site.set(testOrigin, "email", "testuser@testuser.com");
-      // invalidate the email so that we force a fresh key certification with 
+      // invalidate the email so that we force a fresh key certification with
       // the server
       storage.invalidateEmail("testuser@testuser.com");
 
@@ -1044,7 +1044,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/user", functio
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       storage.site.set(testOrigin, "remember", true);
       storage.site.set(testOrigin, "email", "testuser@testuser.com");
-      // invalidate the email so that we force a fresh key certification with 
+      // invalidate the email so that we force a fresh key certification with
       // the server
       storage.invalidateEmail("testuser@testuser.com");
 

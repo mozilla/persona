@@ -34,10 +34,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/test/qunit/mocks/xhr", "/dialog/resources/network", "/dialog/controllers/page_controller", "/dialog/controllers/authenticate_controller", function() {
+steal.plugins("jquery").then("/test/qunit/mocks/xhr", "/resources/network", "/dialog/controllers/page_controller", "/dialog/controllers/authenticate_controller", function() {
   "use strict";
 
-  var controller, 
+  var controller,
       el = $("body"),
       bid = BrowserID,
       storage = bid.Storage,
@@ -80,11 +80,11 @@ steal.plugins("jquery").then("/test/qunit/mocks/xhr", "/dialog/resources/network
         } catch(e) {
           // may already be destroyed from close inside of the controller.
         }
-      }    
+      }
       reset();
       storage.clear();
       network.setXHR($);
-    } 
+    }
   });
 
   test("setting email address prefills address field", function() {
