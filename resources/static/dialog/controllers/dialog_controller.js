@@ -1,5 +1,5 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global setupChannel:true, BrowserID: true, PageController: true, OpenAjax: true */ 
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*global setupChannel:true, BrowserID: true, PageController: true, OpenAjax: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -45,11 +45,12 @@
   var bid = BrowserID,
       user = bid.User,
       errors = bid.Errors,
+      dom = bid.DOM,
       offline = false,
       win = window,
       subscriptions = [],
       hub = OpenAjax.hub;
-      
+
   function subscribe(message, cb) {
      subscriptions.push(hub.subscribe(message, cb));
   }
@@ -84,12 +85,12 @@
         var subscription;
 
         while(subscription = subscriptions.pop()) {
-          hub.unsubscribe(subscription);  
+          hub.unsubscribe(subscription);
         }
 
         this._super();
       },
-        
+
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {
         var self=this;
         self.onsuccess = onsuccess;
@@ -101,11 +102,11 @@
         }
 
         user.setOrigin(origin_url);
-        $("#sitename").text(user.getHostname());
+        dom.setInner("#sitename", user.getHostname());
 
         self.doCheckAuth();
 
-        $(win).bind("unload", function() {
+        dom.bindEvent(win, "unload", function() {
           bid.Storage.setStagedOnBehalfOf("");
           self.doCancel();
         });
@@ -113,7 +114,7 @@
 
 
       stateMachine: function() {
-        var self=this, 
+        var self=this,
             el = this.element;
 
         subscribe("offline", function(msg, info) {
@@ -135,7 +136,7 @@
 
         subscribe("authenticated", function(msg, info) {
           //self.doEmailSelected(info.email);
-          // XXX benadida, lloyd - swap these two if you want to experiment with 
+          // XXX benadida, lloyd - swap these two if you want to experiment with
           // generating assertions directly from signin.
           self.syncEmails();
         });
@@ -217,8 +218,8 @@
 
       doPickEmail: function() {
         this.element.pickemail({
-          // XXX ideal is to get rid of this and have a User function 
-          // that takes care of getting email addresses AND the last used email 
+          // XXX ideal is to get rid of this and have a User function
+          // that takes care of getting email addresses AND the last used email
           // for this site.
           origin: user.getHostname()
         });
@@ -230,7 +231,7 @@
 
       doForgotPassword: function(email) {
         this.element.forgotpassword({
-          email: email  
+          email: email
         });
       },
 
@@ -255,8 +256,8 @@
 
       doAssertionGenerated: function(assertion) {
         var self=this;
-        // Clear onerror before the call to onsuccess - the code to onsuccess 
-        // calls window.close, which would trigger the onerror callback if we 
+        // Clear onerror before the call to onsuccess - the code to onsuccess
+        // calls window.close, which would trigger the onerror callback if we
         // tried this afterwards.
         self.onerror = null;
         self.onsuccess(assertion);
@@ -269,20 +270,20 @@
 
       syncEmails: function() {
         var self = this;
-        user.syncEmails(self.doPickEmail.bind(self), 
+        user.syncEmails(self.doPickEmail.bind(self),
           self.getErrorDialog(errors.signIn));
       },
 
       doCheckAuth: function() {
         var self=this;
-        user.checkAuthenticationAndSync(function onSuccess() {}, 
+        user.checkAuthenticationAndSync(function onSuccess() {},
           function onComplete(authenticated) {
             if (authenticated) {
               self.doPickEmail();
             } else {
               self.doAuthenticate();
             }
-          }, 
+          },
           self.getErrorDialog(errors.checkAuthentication));
     }
 

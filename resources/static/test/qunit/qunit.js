@@ -1,6 +1,7 @@
 steal("/dialog/resources/browserid.js",
       "/test/qunit/mocks/mocks.js",
       "/test/qunit/mocks/xhr.js",
+      "/dialog/resources/ejs.js",
       "/dialog/resources/browser-support.js",
       "/dialog/resources/error-messages.js",
       "/dialog/resources/error-display.js",
@@ -9,39 +10,32 @@ steal("/dialog/resources/browserid.js",
       "/dialog/resources/validation.js",
       "/dialog/resources/underscore-min.js"
       )
-  .plugins(
-    "jquery", 
+  .plugins("jquery",
     "jquery/controller",
     "jquery/controller/subscribe",
-    "jquery/controller/view",
-    "jquery/view/ejs",
     "funcunit/qunit")
-	.views('testBodyTemplate.ejs',
-         'wait.ejs',
-         'pickemail.ejs',
-         'offline.ejs',
-         'error.ejs')
-  .then("js/browserid_unit_test")
-  .then("js/page_helpers_unit_test")
-  .then("include_unit_test")
-  .then("relay/relay_unit_test")
-  .then("pages/add_email_address_test")
-  .then("pages/verify_email_address_test")
-  .then("pages/forgot_unit_test")
-  .then("pages/signin_unit_test")
-  .then("pages/signup_unit_test")
-  .then("pages/manage_account_unit_test")
-  .then("resources/tooltip_unit_test")
-  .then("resources/error-display_unit_test")
-  .then("resources/channel_unit_test")
-  .then("resources/browser-support_unit_test")
-  .then("resources/validation_unit_test")
-  .then("resources/storage_unit_test")
-  .then("resources/network_unit_test")
-  .then("resources/user_unit_test")
-  .then("controllers/page_controller_unit_test")
-  .then("controllers/pickemail_controller_unit_test")
-  .then("controllers/dialog_controller_unit_test")
-  .then("controllers/checkregistration_controller_unit_test")
-  .then("controllers/authenticate_controller_unit_test")
+  .then("/dialog/resources/dom-jquery.js",
+        "js/browserid_unit_test",
+        "js/page_helpers_unit_test",
+        "include_unit_test",
+        "relay/relay_unit_test",
+        "pages/add_email_address_test",
+        "pages/verify_email_address_test",
+        "pages/forgot_unit_test",
+        "pages/signin_unit_test",
+        "pages/signup_unit_test",
+        "pages/manage_account_unit_test",
+        "resources/tooltip_unit_test",
+        "resources/error-display_unit_test",
+        "resources/channel_unit_test",
+        "resources/browser-support_unit_test",
+        "resources/validation_unit_test",
+        "resources/storage_unit_test",
+        "resources/network_unit_test",
+        "resources/user_unit_test",
+        "controllers/page_controller_unit_test",
+        "controllers/pickemail_controller_unit_test",
+        "controllers/dialog_controller_unit_test",
+        "controllers/checkregistration_controller_unit_test",
+        "controllers/authenticate_controller_unit_test");
 

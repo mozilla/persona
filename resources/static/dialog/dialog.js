@@ -41,15 +41,15 @@ window.console = window.console || {
 
 steal.plugins(
 	'jquery/controller',			// a widget factory
-	'jquery/controller/subscribe',	// subscribe to OpenAjax.hub
-	'jquery/view/ejs',				// client side templates
-	'jquery/controller/view')		// lookup views with the controller's name
+	'jquery/controller/subscribe')	// subscribe to OpenAjax.hub
 
 	.resources('jschannel',
                'base64',
                'underscore-min',
                'channel',
+               'ejs',
                'browserid',
+               'dom-jquery',
                'storage',
                'tooltip',
                'validation',
@@ -66,15 +66,15 @@ steal.plugins(
                'checkregistration',
                'pickemail')					// loads files in controllers folder
 
-	.views('authenticate.ejs',
+/*	.views('authenticate.ejs',
            'confirmemail.ejs',
            'pickemail.ejs',
            'wait.ejs',
            'error.ejs',
            'offline.ejs'
           ).
-
-          then(function() {
+*/
+          .then(function() {
             $(function() {
               $('body').dialog().show();
             });

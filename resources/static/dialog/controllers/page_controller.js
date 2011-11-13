@@ -1,4 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
 /*global BrowserID: true*/
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -37,7 +37,9 @@
 (function() {
 "use strict";
 
-  var ANIMATION_TIME = 250;
+  var ANIMATION_TIME = 250,
+      bid = BrowserID,
+      dom = bid.DOM;
 
 
   $.Controller.extend("PageController", {
@@ -67,53 +69,60 @@
       }
 
       // XXX move all of these, bleck.
-      $("form").bind("submit", me.onSubmit.bind(me));
-      $("#cancel").click(me.onCancel.bind(me));
-      $("#back").click(me.onBack.bind(me));
-      $("#thisIsNotMe").click(me.close.bind(me, "notme"));
+      dom.bindEvent("form", "submit", me.onSubmit.bind(me));
+      dom.bindEvent("#cancel", "click", me.onCancel.bind(me));
+      dom.bindEvent("#back", "click", me.onBack.bind(me));
+      dom.bindEvent("#thisIsNotMe", "click", me.close.bind(me, "notme"));
     },
 
     destroy: function() {
-      $("form").unbind("submit");
-      $("input").unbind("keyup");
-      $("#cancel").unbind("click");
-      $("#back").unbind("click");
-      $("#thisIsNotMe").unbind("click");
+      dom.unbindEvent("form", "submit");
+      dom.unbindEvent("input", "keyup");
+      dom.unbindEvent("#cancel", "click");
+      dom.unbindEvent("#back", "click");
+      dom.unbindEvent("#thisIsNotMe", "click");
 
-      $("body").removeClass("waiting");
+      dom.removeClass("body", "waiting");
 
       this._super();
     },
 
     renderTemplates: function(target, body, body_vars) {
       if (body) {
-        var bodyHtml = $.View("//dialog/views/" + body, body_vars);
+        var bodyHtml = new EJS({url: "/dialog/views/" + body}).render(body_vars);
         target = $(target + " .contents");
-        target.html(bodyHtml).find("input").eq(0).focus(); 
+        target.html(bodyHtml).find("input").eq(0).focus();
       }
     },
 
     renderDialog: function(body, body_vars) {
       this.renderTemplates("#formWrap", body, body_vars);
-      $("body").removeClass("error").removeClass("waiting").addClass("form");
+      dom.removeClass("body", "error");
+      dom.removeClass("body", "waiting");
+      dom.addClass("body", "form");
       $("#wait, #error").stop().fadeOut(ANIMATION_TIME);
     },
 
     renderWait: function(body, body_vars) {
       this.renderTemplates("#wait", body, body_vars);
-      $("body").removeClass("error").removeClass("form").addClass("waiting").css('opacity', 1);
+      dom.removeClass("body", "error");
+      dom.removeClass("body", "form");
+      dom.addClass("body", "waiting");
+      $("body").css('opacity', 1);
       $("#wait").stop().hide().fadeIn(ANIMATION_TIME);
     },
 
     renderError: function(body, body_vars) {
       this.renderTemplates("#error", body, body_vars);
-      $("body").removeClass("waiting").removeClass("form").addClass("error");
+      dom.removeClass("body", "waiting");
+      dom.removeClass("body", "form");
+      dom.addClass("body", "error");
       $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
 
       /**
        * What a big steaming pile, use CSS animations for this!
        */
-      $("#openMoreInfo").click(function(event) {
+      dom.bindEvent("#openMoreInfo", "click", function(event) {
         event.preventDefault();
 
         $("#moreInfo").slideDown();
@@ -142,7 +151,7 @@
     doWait: function(info) {
       this.renderWait("wait.ejs", info);
 
-      $("body").addClass("waiting");
+      dom.addClass("body", "waiting");
     },
 
     close: function(message, data) {
@@ -155,7 +164,7 @@
     /**
      * Get a curried function to an error dialog.
      * @method getErrorDialog
-     * @method {object} action - info to use for the error dialog.  Should have 
+     * @method {object} action - info to use for the error dialog.  Should have
      * two fields, message, description.
      */
     getErrorDialog: function(action) {

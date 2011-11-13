@@ -43,10 +43,11 @@
       errors = bid.Errors,
       validation = bid.Validation,
       tooltip = bid.Tooltip,
+      dom = bid.DOM,
       lastEmail = "";
 
   function getEmail() {
-    return $("#email").val().trim();
+    return dom.getInner("#email").trim();
   }
 
   function checkEmail(el, event) {
@@ -89,18 +90,18 @@
 
   function authenticate(el, event) {
     var email = getEmail(),
-        pass = $("#password").val(),
+        pass = dom.getInner("#password"),
         self = this;
 
     cancelEvent(event);
 
     if (!validation.emailAndPassword(email, pass)) return;
 
-    user.authenticate(email, pass, 
+    user.authenticate(email, pass,
       function onComplete(authenticated) {
         if (authenticated) {
           self.close("authenticated", {
-            email: email 
+            email: email
           });
         } else {
           bid.Tooltip.showTooltip("#cannot_authenticate");
@@ -149,7 +150,7 @@
     self.publish("enter_password");
     self.submit = authenticate;
     animateSwap(".start:visible,.newuser:visible,.forgot:visible", ".returning", function() {
-      $("#password").focus();  
+      dom.getElements("#password")[0].focus();
     });
   }
 
@@ -157,7 +158,7 @@
     cancelEvent(event);
 
     this.submit = resetPassword;
-    $("#email").attr("disabled", "disabled");
+    dom.setAttr("#email", "disabled", "disabled");
 
     animateSwap(".start:visible,.newuser:visible,.returning:visible", ".forgot");
   }
@@ -165,8 +166,8 @@
   function cancelForgotPassword(el, event) {
     cancelEvent(event);
 
-    $("#email").removeAttr("disabled");
-    enterPasswordState.call(this); 
+    dom.removeAttr("#email", "disabled");
+    enterPasswordState.call(this);
   }
 
   function createUserState(el, event) {
@@ -193,7 +194,7 @@
       });
 
       this.submit = checkEmail;
-      // If we already have an email address, check if it is valid, if so, show 
+      // If we already have an email address, check if it is valid, if so, show
       // password.
       if (options.email) this.submit();
     },

@@ -1,5 +1,5 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global _: true, BrowserID: true, PageController: true */ 
+/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
+/*global _: true, BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -42,6 +42,7 @@
       user = bid.User,
       errors = bid.Errors,
       storage = bid.Storage,
+      dom = bid.DOM,
       body = $("body"),
       animationComplete = body.innerWidth() < 640,
       assertion;
@@ -104,7 +105,7 @@
   }
 
   function getAssertion(email) {
-    // Kick of the assertion fetching/keypair generating while we are showing 
+    // Kick of the assertion fetching/keypair generating while we are showing
     // the animation, hopefully this minimizes the delay the user notices.
     var self=this;
     user.getAssertion(email, function(assert) {
@@ -122,7 +123,7 @@
            animationComplete = true;
            tryClose.call(self);
          });
-      }); 
+      });
     }
     else {
       tryClose.call(self);
@@ -133,7 +134,7 @@
   function signIn(element, event) {
     cancelEvent(event);
     var self=this,
-        email = $("input[type=radio]:checked").val();
+        email = dom.getInner("input[type=radio]:checked");
 
     var valid = checkEmail.call(self, email);
     if (valid) {
@@ -145,7 +146,7 @@
   }
 
   function addEmail(element, event) {
-    var email = $("#newEmail").val(),
+    var email = dom.getInner("#newEmail"),
         self=this;
 
     cancelEvent(event);
@@ -183,18 +184,18 @@
         bodyTemplate: "pickemail.ejs",
         bodyVars: {
           identities: user.getStoredEmailKeypairs(),
-          // XXX ideal is to get rid of this and have a User function 
-          // that takes care of getting email addresses AND the last used email 
+          // XXX ideal is to get rid of this and have a User function
+          // that takes care of getting email addresses AND the last used email
           // for this site.
           siteemail: storage.site.get(origin, "email"),
           remember: storage.site.get(origin, "remember") || false
         }
       });
 
-      $("body").css("opacity", "1");
+      body.css("opacity", "1");
 
-      if($("#selectEmail input[type=radio]:visible").length === 0) {
-        // If there is only one email address, the radio button is never shown, 
+      if(dom.getElements("#selectEmail input[type=radio]:visible").length === 0) {
+        // If there is only one email address, the radio button is never shown,
         // instead focus the sign in button so that the user can click enter.
         // issue #412
         $("#signInButton").focus();
