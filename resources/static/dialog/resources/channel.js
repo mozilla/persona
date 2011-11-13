@@ -57,7 +57,7 @@
       onCompleteCallback;
 
   function getRelayName() {
-    return window.localStorage.RELAYFRAME_NAME;
+    return win.localStorage.RELAYFRAME_NAME;
   }
 
   function getRelayWindow() {
