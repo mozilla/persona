@@ -37,45 +37,66 @@
 steal.then(function() {
   "use strict";
 
-  var pageHelpers = BrowserID.PageHelpers;
+  var bid = BrowserID,
+      support = bid.BrowserSupport,
+      stubWindow,
+      stubNavigator;
 
-  module("pages/page_helpers");
+  module("shared/browser-support", {
+    setup: function() {
+      // Hard coded goodness for testing purposes
+      stubNavigator = {
+        appName: "Netscape",
+        userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1"
+      };
 
+      stubWindow = {
+        localStorage: {},
+        postMessage: function() {}
+      };
 
-  test("setStoredEmail/getStoredEmail/setupEmail prefills the email address", function() {
-    $("#email").val("");
+      support.setTestEnv(stubNavigator, stubWindow);
+    },
 
-    pageHelpers.setStoredEmail("testuser@testuser.com");
-    pageHelpers.setupEmail();
-
-    equal($("#email").val(), "testuser@testuser.com", "email was set on setupEmail");
-    equal(pageHelpers.getStoredEmail(), "testuser@testuser.com", "getStoredEmail works correctly");
+    teardown: function() {
+    }
   });
 
-  test("a key press in the email address field saves it", function() {
-    $("#email").val("");
+  test("browser without localStorage", function() {
+    delete stubWindow.localStorage;
 
-    pageHelpers.setStoredEmail("testuser@testuser.co");
-    pageHelpers.setupEmail();
-
-    // The fake jQuery event does not actually cause the letter to be added, we
-    // have to do that manually.
-    $("#email").val("testuser@testuser.com");
-
-    var e = jQuery.Event("keyup");
-    e.which = 77; //choose the one you want
-    e.keyCode = 77;
-    $("#email").trigger(e);
-
-    equal(pageHelpers.getStoredEmail(), "testuser@testuser.com", "hitting a key updates the stored email");
+    equal(support.isSupported(), false, "window.localStorage is required");
+    equal(support.getNoSupportReason(), "LOCALSTORAGE", "correct reason");
   });
 
-  test("clearStoredEmail clears the email address from storage", function() {
-    pageHelpers.clearStoredEmail();
 
-    equal(pageHelpers.getStoredEmail(), "", "clearStoredEmail clears stored email");
+  test("browser without postMessage", function() {
+    delete stubWindow.postMessage;
+
+    equal(support.isSupported(), false, "window.postMessage is required");
+    equal(support.getNoSupportReason(), "POSTMESSAGE", "correct reason");
   });
 
+  test("Fake being IE8 - unsupported intentionally", function() {
+    stubNavigator.appName = "Microsoft Internet Explorer";
+    stubNavigator.userAgent = "MSIE 8.0";
+
+    equal(support.isSupported(), false, "IE8 is not supported");
+    equal(support.getNoSupportReason(), "IE_VERSION", "correct reason");
+  });
+
+  test("Fake being IE9 - supported", function() {
+    stubNavigator.appName = "Microsoft Internet Explorer";
+    stubNavigator.userAgent = "MSIE 9.0";
+
+    equal(support.isSupported(), true, "IE9 is supported");
+    equal(typeof support.getNoSupportReason(), "undefined", "no reason, we are all good");
+  });
+
+  test("Firefox 7.01 with postMessage, localStorage", function() {
+    equal(support.isSupported(), true, "Firefox 7.01 is supported");
+    equal(typeof support.getNoSupportReason(), "undefined", "no reason, we are all good");
+  });
 });
 
 

@@ -1,0 +1,2 @@
+BrowserID.Templates = {};
+

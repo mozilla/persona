@@ -34,13 +34,13 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/resources/tooltip", function() {
+steal.then(function() {
   "use strict";
 
   var bid = BrowserID,
       tooltip = bid.Tooltip
 
-  module("/resources/tooltip", {
+  module("shared/tooltip", {
     setup: function() {
     },
     teardown: function() {
@@ -58,11 +58,6 @@ steal.plugins("jquery", "funcunit/qunit").then("/resources/tooltip", function() 
 
       start();
     });
-
-    var el = $("#createdTooltip");
-    equal(el.length, 1, "one tooltip created");
-    var contents = el.html() || "";
-    equal(contents.indexOf("contents") === -1, true, "contents have been replaced");
 
     stop();
   });

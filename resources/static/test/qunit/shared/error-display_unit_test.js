@@ -34,27 +34,34 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/resources/error-display", function() {
+steal.then(function() {
   "use strict";
 
   var bid = BrowserID,
       errorDisplay = bid.ErrorDisplay;
 
-  module("/resources/error-display", {
+  module("shared/error-display", {
     setup: function() {
+        $("#error").html("<div class='contents'><a href='#' id='openMoreInfo'>Open</a><div id='moreInfo' style='display:none'>Expanded Info</div></div>");
     },
     teardown: function() {
+      $("#error").hide();
     }
   });
 
-  test("can show an error", function() {
-    var target = $("#error .contents");
-    target.empty();
+  test("can initialize and open the error display", function() {
+    $("#error").show();
+    bid.ErrorDisplay.start("#error");
+    bid.ErrorDisplay.open();
 
-    errorDisplay.render(target, "#templateError", { action: { title: "Error Message" } });
+    setTimeout(function() {
+      ok($("#moreInfo").is(":visible"), "expanded info is visible");
+      start();
+    }, 100);
 
-    ok(target.html(), "Error has some contents");
+    stop();
   });
+
 
 
 });

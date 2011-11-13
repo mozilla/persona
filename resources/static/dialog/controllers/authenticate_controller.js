@@ -186,7 +186,7 @@
       options = options || {};
 
       this._super(el, {
-        bodyTemplate: "authenticate.ejs",
+        bodyTemplate: "authenticate",
         bodyVars: {
           sitename: user.getHostname(),
           email: options.email || ""

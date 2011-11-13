@@ -75,7 +75,7 @@
           win.setupChannel(self);
           self.stateMachine();
         } catch (e) {
-          self.renderError("error.ejs", {
+          self.renderError("error", {
             action: errors.relaySetup
           });
         }
@@ -185,13 +185,13 @@
       },
 
       doOffline: function() {
-        this.renderError("offline.ejs", {});
+        this.renderError("offline", {});
         offline = true;
       },
 
       doXHRError: function(info) {
         if (!offline) {
-          this.renderError("error.ejs", $.extend({
+          this.renderError("error", $.extend({
             action: errors.xhrError
           }, info));
         }

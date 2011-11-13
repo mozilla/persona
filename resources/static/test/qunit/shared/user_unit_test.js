@@ -38,7 +38,7 @@ var jwk = require("./jwk");
 var jwt = require("./jwt");
 var jwcert = require("./jwcert");
 
-steal.plugins("jquery", "funcunit/qunit").then("/resources/user", function() {
+steal.then(function() {
   var lib = BrowserID.User,
       storage = BrowserID.Storage,
       xhr = BrowserID.Mocks.xhr,
@@ -86,7 +86,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/resources/user", function() {
     */
   }
 
-  module("resources/user", {
+  module("shared/user", {
     setup: function() {
       BrowserID.Network.setXHR(xhr);
       xhr.useResult("valid");

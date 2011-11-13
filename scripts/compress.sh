@@ -28,7 +28,17 @@ echo ''
 echo '****Building dialog HTML, CSS, and JS****'
 echo ''
 
+## This creates a combined templates file which is copied into
+## resources/templates.js and included into the minified bundle.
+
+cd dialog/views
+../../../../scripts/create_templates.js
+cd ../../
+cp shared/templates.js shared/templates.js.orig
+cp dialog/views/templates.js shared/templates.js
+
 steal/js dialog/scripts/build.js
+
 
 cd communication_iframe
 $UGLIFY < production.js > production.min.js
@@ -43,7 +53,7 @@ cat popup.css m.css > production.css
 $JAVA -jar $YUI_LOCATION production.css -o production.min.css
 
 cd ../../relay
-cat ../lib/jschannel.js ../resources/browserid.js relay.js > production.js
+cat ../lib/jschannel.js ../shared/browserid.js relay.js > production.js
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
 
@@ -54,7 +64,7 @@ echo ''
 
 cd ../pages
 # re-minimize everything together
-cat ../lib/jquery-1.6.2.min.js ../lib/json2.js ../resources/browserid.js ../resources/error-display.js ../resources/error-messages.js page_helpers.js browserid.js ../lib/underscore-min.js ../resources/browserid-extensions.js ../resources/storage.js ../resources/network.js ../resources/user.js ../resources/tooltip.js ../resources/validation.js index.js add_email_address.js verify_email_address.js manage_account.js signin.js signup.js forgot.js > lib.js
+cat ../lib/jquery-1.6.2.min.js ../lib/json2.js ../lib/underscore-min.js ../lib/ejs.js ../shared/browserid-extensions.js ../shared/browserid.js ../lib/dom-jquery.js ../shared/templates.js ../shared/renderer.js ../shared/error-display.js ../shared/screens.js ../shared/error-messages.js ../shared/storage.js ../shared/network.js ../shared/user.js ../shared/tooltip.js ../shared/validation.js page_helpers.js browserid.js index.js add_email_address.js verify_email_address.js forgot.js manage_account.js signin.js signup.js > lib.js
 $UGLIFY < lib.js > lib.min.js
 
 cd ../css

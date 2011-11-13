@@ -34,10 +34,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/resources/storage", function() {
+steal.then(function() {
   var storage = BrowserID.Storage;
 
-  module("storage", {
+  module("shared/storage", {
     setup: function() {
       storage.clear();
     },

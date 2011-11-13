@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/resources/browserid", function() {
+steal.then(function() {
   "use strict";
 
   var bid = BrowserID,
@@ -46,7 +46,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/resources/browserid", function(
     tooltipShown = true;
   }
 
-  module("resources/validation", {
+  module("shared/validation", {
     setup: function() {
       origShowTooltip = bid.Tooltip.showTooltip;
       bid.Tooltip.showTooltip = showTooltip;

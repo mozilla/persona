@@ -46,11 +46,6 @@
       </div>
 
       <% if (useJavascript !== false) { %>
-          <script type="text/html" id="templateTooltip">
-            <div class="tooltip">
-              {{ contents }}
-            </div>
-          </script>
           <script type="text/javascript" src="/vepbundle"></script>
           <script type="text/javascript" src="steal/steal<%= production ? '.production' : '' %>.js?dialog"></script>
       <% } %>

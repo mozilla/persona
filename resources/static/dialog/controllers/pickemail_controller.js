@@ -181,7 +181,7 @@
     init: function(el, options) {
       var origin = user.getOrigin();
       this._super(el, {
-        bodyTemplate: "pickemail.ejs",
+        bodyTemplate: "pickemail",
         bodyVars: {
           identities: user.getStoredEmailKeypairs(),
           // XXX ideal is to get rid of this and have a User function

@@ -137,7 +137,6 @@ BrowserID.DOM = ( function() {
             else {
                 target.html( value );
             }
-
         },
 
         /**
@@ -256,7 +255,9 @@ BrowserID.DOM = ( function() {
         * @param {selector || element} elementToAppendTo
         */
         appendTo: function( elementToInsert, elementToAppendTo ) {
-            jQuery( elementToInsert ).appendTo( jQuery( elementToAppendTo ) );
+            var el = jQuery(elementToInsert );
+            el.appendTo( jQuery( elementToAppendTo ) );
+            return el;
         },
 
         /**
@@ -286,6 +287,15 @@ BrowserID.DOM = ( function() {
                 elementToInsert.insertBefore( insertBefore );
             }
 
+        },
+
+        /**
+         * Focus an element
+         * @method focus
+         * @param {selelector || element} elementToFocus
+         */
+        focus: function( elementToFocus ) {
+          jQuery( elementToFocus ).focus();
         }
 
 

@@ -53,8 +53,8 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   function initController() {
     controller = el.dialog({
       window: {
-        setupChannel: function() { 
-          if (channelError) throw "Channel error";  
+        setupChannel: function() {
+          if (channelError) throw "Channel error";
         }
       }
     }).controller();
@@ -69,7 +69,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     teardown: function() {
       controller.destroy();
       reset();
-    } 
+    }
   });
 
   test("initialization with channel error", function() {

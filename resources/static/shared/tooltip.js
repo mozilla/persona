@@ -1,4 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
 /*globals BrowserID: true, _:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -40,17 +40,17 @@ BrowserID.Tooltip = (function() {
 
   var ANIMATION_TIME = 250,
       TOOLTIP_DISPLAY = 2000,
-      READ_WPM = 200;
+      READ_WPM = 200,
+      bid = BrowserID,
+      dom = bid.DOM,
+      renderer = bid.Renderer;
 
   function createTooltip(el) {
       var contents = el.html();
-      var template = $("#templateTooltip").html();
-      _.templateSettings = {
-          interpolate : /\{\{(.+?)\}\}/g
-      };
-      var tooltip = $(_.template(template, {
+
+      var tooltip = renderer.append("body", "tooltip", {
         contents: contents
-      }));
+      });
 
       return tooltip;
   }
@@ -79,11 +79,11 @@ BrowserID.Tooltip = (function() {
   }
 
   function createAndShowRelatedTooltip(el, relatedTo, complete) {
-      // This means create a copy of the tooltip element and position it in 
-      // relation to an element.  Right now we are putting the tooltip directly 
-      // above the element.  Once the tooltip is no longer needed, remove it 
+      // This means create a copy of the tooltip element and position it in
+      // relation to an element.  Right now we are putting the tooltip directly
+      // above the element.  Once the tooltip is no longer needed, remove it
       // from the DOM.
-      var tooltip = createTooltip(el).appendTo("body");
+      var tooltip = createTooltip(el);
 
       var target = $("#" + relatedTo);
       positionTooltip(tooltip, target);
@@ -101,7 +101,7 @@ BrowserID.Tooltip = (function() {
     el = $(el);
     var messageFor = el.attr("for");
 
-    // First, see if we are "for" another element, if we are, create a copy of 
+    // First, see if we are "for" another element, if we are, create a copy of
     // the tooltip to attach to the element.
     if(messageFor) {
       createAndShowRelatedTooltip(el, messageFor, complete);

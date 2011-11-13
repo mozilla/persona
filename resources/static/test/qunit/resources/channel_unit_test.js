@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/channel", function() {
+steal.then("/dialog/resources/channel", function() {
   var channel = BrowserID.Channel;
 
   var navMock = {
@@ -83,7 +83,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/channel", func
   test("window.setupChannel exists for legacy uses", function() {
     ok(typeof window.setupChannel, "function", "window.setupChannel exists for legacy uses");
   });
-  
+
   test("IFRAME channel with assertion", function() {
     channel.init({
       window: winMock,
@@ -138,7 +138,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/channel", func
 
   test("IFRAME channel with error on open", function() {
     var winMockWithoutRelay = $.extend(true, {}, winMock);
-    delete winMockWithoutRelay.opener.frames.browserid_relay_1234; 
+    delete winMockWithoutRelay.opener.frames.browserid_relay_1234;
 
     channel.init({
       window: winMockWithoutRelay,

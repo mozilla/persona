@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/resources/network", "/pages/manage_account", function() {
+steal.then("/pages/manage_account", function() {
   "use strict";
 
   var bid = BrowserID,
@@ -57,6 +57,7 @@ steal.plugins("jquery").then("/resources/network", "/pages/manage_account", func
       xhr.useResult("valid");
       user.setOrigin(TEST_ORIGIN);
       $("#emailList").empty();
+      $(".error").removeClass("error");
       $("#error").hide();
       mocks.document.location = "";
       storage.clear();
@@ -64,6 +65,7 @@ steal.plugins("jquery").then("/resources/network", "/pages/manage_account", func
     teardown: function() {
       network.setXHR($);
       $("#emailList").empty();
+      $(".error").removeClass("error");
       $("#error").hide();
     }
   });

@@ -1,4 +1,5 @@
-/*globals BrowserID: true, _: true */
+/*jshint browsers:true, forin: true, laxbreak: true */
+/*global BrowserID: true, _: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,72 +34,45 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-
-BrowserID.PageHelpers = (function() {
+BrowserID.Renderer = (function() {
   "use strict";
 
-  var win = window,
-      locStorage = win.localStorage,
-      bid = BrowserID,
-      errorDisplay = bid.ErrorDisplay;
+  var bid = BrowserID,
+      dom = bid.DOM;
 
-  function setStoredEmail(email) {
-    locStorage.signInEmail = email;
-  }
+  function getTemplateHTML(body, vars) {
+    var config,
+        templateText = bid.Templates[body];
 
-  function onEmailKeyUp(event) {
-    var email = $("#email").val();
-    setStoredEmail(email);
-  }
-
-  function prefillEmail() {
-    // If the user tried to sign in on the sign up page with an existing email,
-    // place that email in the email field, then focus the password.
-    var el = $("#email"),
-        email = locStorage.signInEmail;
-
-    if (email) {
-      el.val(email);
-      if ($("#password").length) $("#password").focus();
+    if(templateText) {
+      config = {
+        text: templateText
+      };
+    }
+    else {
+      // TODO - be able to set the directory
+      config = {
+        url: "/dialog/views/" + body + ".ejs"
+      };
     }
 
-    el.keyup(onEmailKeyUp);
+    var html = new EJS(config).render(vars);
+    return html;
   }
 
-  function clearStoredEmail() {
-    locStorage.removeItem("signInEmail");
+  function render(target, body, vars) {
+    var html = getTemplateHTML(body, vars);
+    return dom.setInner(target, html);
   }
 
-  function getStoredEmail() {
-    return locStorage.signInEmail || "";
-  }
-
-  function getParameterByName( name ) {
-    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-    var regexS = "[\\?&]"+name+"=([^&#]*)";
-    var regex = new RegExp( regexS );
-    var results = regex.exec( win.location.href );
-    if( results === null )
-      return "";
-    else
-      return decodeURIComponent(results[1].replace(/\+/g, " "));
-  }
-
-  function getFailure(error) {
-    return function onFailure(info) {
-      info = $.extend(info, { action: error, dialog: false });
-      bid.Screens.error("error", info);
-      $("#errorBackground").fadeIn();
-      $("#error").fadeIn();
-    }
+  function append(target, body, vars) {
+    var html = getTemplateHTML(body, vars);
+    return dom.appendTo(html, target);
   }
 
   return {
-    setupEmail: prefillEmail,
-    setStoredEmail: setStoredEmail,
-    clearStoredEmail: clearStoredEmail,
-    getStoredEmail: getStoredEmail,
-    getParameterByName: getParameterByName,
-    getFailure: getFailure
-  };
+    render: render,
+    append: append
+  }
 }());
+

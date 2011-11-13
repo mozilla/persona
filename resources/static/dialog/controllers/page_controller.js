@@ -39,7 +39,8 @@
 
   var ANIMATION_TIME = 250,
       bid = BrowserID,
-      dom = bid.DOM;
+      dom = bid.DOM,
+      screens = bid.Screens;
 
 
   $.Controller.extend("PageController", {
@@ -70,16 +71,12 @@
 
       // XXX move all of these, bleck.
       dom.bindEvent("form", "submit", me.onSubmit.bind(me));
-      dom.bindEvent("#cancel", "click", me.onCancel.bind(me));
-      dom.bindEvent("#back", "click", me.onBack.bind(me));
       dom.bindEvent("#thisIsNotMe", "click", me.close.bind(me, "notme"));
     },
 
     destroy: function() {
       dom.unbindEvent("form", "submit");
       dom.unbindEvent("input", "keyup");
-      dom.unbindEvent("#cancel", "click");
-      dom.unbindEvent("#back", "click");
       dom.unbindEvent("#thisIsNotMe", "click");
 
       dom.removeClass("body", "waiting");
@@ -87,40 +84,24 @@
       this._super();
     },
 
-    renderTemplates: function(target, body, body_vars) {
-      if (body) {
-        var bodyHtml = new EJS({url: "/dialog/views/" + body}).render(body_vars);
-        target = $(target + " .contents");
-        target.html(bodyHtml).find("input").eq(0).focus();
-      }
-    },
-
     renderDialog: function(body, body_vars) {
-      this.renderTemplates("#formWrap", body, body_vars);
-      dom.removeClass("body", "error");
-      dom.removeClass("body", "waiting");
-      dom.addClass("body", "form");
+      screens.form(body, body_vars);
       $("#wait, #error").stop().fadeOut(ANIMATION_TIME);
+      dom.focus("input:visible:eq(0)");
     },
 
     renderWait: function(body, body_vars) {
-      this.renderTemplates("#wait", body, body_vars);
-      dom.removeClass("body", "error");
-      dom.removeClass("body", "form");
-      dom.addClass("body", "waiting");
+      screens.wait(body, body_vars);
       $("body").css('opacity', 1);
       $("#wait").stop().hide().fadeIn(ANIMATION_TIME);
     },
 
     renderError: function(body, body_vars) {
-      this.renderTemplates("#error", body, body_vars);
-      dom.removeClass("body", "waiting");
-      dom.removeClass("body", "form");
-      dom.addClass("body", "error");
+      screens.error(body, body_vars);
       $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
 
       /**
-       * What a big steaming pile, use CSS animations for this!
+       * TODO What a big steaming pile, use CSS animations for this!
        */
       dom.bindEvent("#openMoreInfo", "click", function(event) {
         event.preventDefault();
@@ -149,7 +130,7 @@
     },
 
     doWait: function(info) {
-      this.renderWait("wait.ejs", info);
+      this.renderWait("wait", info);
 
       dom.addClass("body", "waiting");
     },
@@ -170,22 +151,10 @@
     getErrorDialog: function(action) {
       var self=this;
       return function(lowLevelInfo) {
-        self.renderError("error.ejs", $.extend({
+        self.renderError("error", $.extend({
           action: action
         }, lowLevelInfo));
       }
-    },
-
-    onCancel: function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.close("cancel");
-    },
-
-    onBack: function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.close("start");
     }
   });
 

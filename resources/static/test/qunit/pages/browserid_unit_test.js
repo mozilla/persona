@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/pages/page_helpers", "/pages/browserid", function() {
+steal.then("/pages/page_helpers", "/pages/browserid", function() {
   "use strict";
 
   module("/pages/browserid");
