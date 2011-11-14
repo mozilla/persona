@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
+/*global BrowserID: true, _: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,48 +34,45 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/browserid", function() {
+BrowserID.Renderer = (function() {
   "use strict";
 
-  var pageHelpers = BrowserID.PageHelpers;
+  var bid = BrowserID,
+      dom = bid.DOM;
 
-  module("/js/page_helpers");
-  
+  function getTemplateHTML(body, vars) {
+    var config,
+        templateText = bid.Templates[body];
 
-  test("setStoredEmail/getStoredEmail/setupEmail prefills the email address", function() {
-    $("#email").val("");
+    if(templateText) {
+      config = {
+        text: templateText
+      };
+    }
+    else {
+      // TODO - be able to set the directory
+      config = {
+        url: "/dialog/views/" + body + ".ejs"
+      };
+    }
 
-    pageHelpers.setStoredEmail("testuser@testuser.com");
-    pageHelpers.setupEmail();
+    var html = new EJS(config).render(vars);
+    return html;
+  }
 
-    equal($("#email").val(), "testuser@testuser.com", "email was set on setupEmail");
-    equal(pageHelpers.getStoredEmail(), "testuser@testuser.com", "getStoredEmail works correctly");
-  });
+  function render(target, body, vars) {
+    var html = getTemplateHTML(body, vars);
+    return dom.setInner(target, html);
+  }
 
-  test("a key press in the email address field saves it", function() {
-    $("#email").val("");
+  function append(target, body, vars) {
+    var html = getTemplateHTML(body, vars);
+    return dom.appendTo(html, target);
+  }
 
-    pageHelpers.setStoredEmail("testuser@testuser.co");
-    pageHelpers.setupEmail();
-
-    // The fake jQuery event does not actually cause the letter to be added, we 
-    // have to do that manually.
-    $("#email").val("testuser@testuser.com");
-
-    var e = jQuery.Event("keyup");
-    e.which = 77; //choose the one you want
-    e.keyCode = 77;
-    $("#email").trigger(e);
-
-    equal(pageHelpers.getStoredEmail(), "testuser@testuser.com", "hitting a key updates the stored email");
-  });
-
-  test("clearStoredEmail clears the email address from storage", function() {
-    pageHelpers.clearStoredEmail();
-
-    equal(pageHelpers.getStoredEmail(), "", "clearStoredEmail clears stored email");
-  });
-
-});
-
+  return {
+    render: render,
+    append: append
+  }
+}());
 

@@ -1,5 +1,5 @@
-/*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*globals BrowserID: true, _:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozilla BrowserID.
+ * The Original Code is Mozilla bid.
  *
  * The Initial Developer of the Original Code is Mozilla.
  * Portions created by the Initial Developer are Copyright (C) 2011
@@ -34,11 +34,34 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/js/page_helpers", "/js/browserid", function() {
+steal.then(function() {
   "use strict";
 
-  module("/js/browserid");
-  
+  var bid = BrowserID,
+      errorDisplay = bid.ErrorDisplay;
+
+  module("shared/error-display", {
+    setup: function() {
+        $("#error").html("<div class='contents'><a href='#' id='openMoreInfo'>Open</a><div id='moreInfo' style='display:none'>Expanded Info</div></div>");
+    },
+    teardown: function() {
+      $("#error").hide();
+    }
+  });
+
+  test("can initialize and open the error display", function() {
+    $("#error").show();
+    bid.ErrorDisplay.start("#error");
+    bid.ErrorDisplay.open();
+
+    setTimeout(function() {
+      ok($("#moreInfo").is(":visible"), "expanded info is visible");
+      start();
+    }, 100);
+
+    stop();
+  });
+
+
 
 });
-

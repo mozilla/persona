@@ -1,4 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
 /*globals BrowserID: true, _:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -34,27 +34,46 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/error-display", function() {
+steal.then(function() {
   "use strict";
 
   var bid = BrowserID,
-      errorDisplay = bid.ErrorDisplay;
+      tooltip = bid.Tooltip
 
-  module("/resources/error-display", {
+  module("shared/tooltip", {
     setup: function() {
     },
     teardown: function() {
     }
   });
 
-  test("can show an error", function() {
-    var target = $("#error .contents");
-    target.empty();
 
-    errorDisplay.render(target, "#templateError", { action: { title: "Error Message" } });
+  test("show short tooltip, min of 2.5 seconds", function() {
+    var startTime = new Date().getTime();
 
-    ok(target.html(), "Error has some contents");
+    tooltip.showTooltip("#shortTooltip", function() {
+      var endTime = new Date().getTime();
+      var diff = endTime - startTime;
+      ok(2000 <= diff && diff <= 3000, diff + " - minimum of 2 seconds, max of 3 seconds");
+
+      start();
+    });
+
+    stop();
   });
 
+  test("show long tooltip, takes about 5 seconds", function() {
+    var startTime = new Date().getTime();
+
+    tooltip.showTooltip("#longTooltip", function() {
+      var endTime = new Date().getTime();
+      var diff = endTime - startTime;
+      ok(diff >= 4500, diff + " - longer tooltip is on the screen for a bit longer");
+
+      start();
+    });
+
+    stop();
+  });
 
 });

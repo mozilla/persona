@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", function() {
+steal.then(function() {
   "use strict";
 
   var testName,
@@ -53,8 +53,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   }
 
   function notificationCheck(cb) {
-    // Take the original arguments, take off the function.  Add any additional 
-    // arguments that were passed in, and then tack on the onSuccess and 
+    // Take the original arguments, take off the function.  Add any additional
+    // arguments that were passed in, and then tack on the onSuccess and
     // onFailure to the end.  Then call the callback.
     var args = Array.prototype.slice.call(arguments, 1);
 
@@ -82,11 +82,11 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   }
 
   function failureCheck(cb) {
-    // Take the original arguments, take off the function.  Add any additional 
-    // arguments that were passed in, and then tack on the onSuccess and 
+    // Take the original arguments, take off the function.  Add any additional
+    // arguments that were passed in, and then tack on the onSuccess and
     // onFailure to the end.  Then call the callback.
     var args = Array.prototype.slice.call(arguments, 1);
-    
+
     args.push(function onSuccess(authenticated) {
       ok(false, "XHR failure should never pass");
       wrappedStart();
@@ -108,7 +108,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
 
   var network = BrowserID.Network;
 
-  module("/resources/network", {
+  module("shared/network", {
     setup: function() {
       network.setXHR(xhr);
       xhr.useResult("valid");
@@ -187,8 +187,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     xhr.useResult("ajaxError");
     xhr.setContextInfo("authenticated", false);
 
-    // Do not convert this to failureCheck, we do this manually because 
-    // checkAuth does not make an XHR request.  Since it does not make an XHR 
+    // Do not convert this to failureCheck, we do this manually because
+    // checkAuth does not make an XHR request.  Since it does not make an XHR
     // request, we do not test whether the app is notified of an XHR failure
     network.checkAuth(function onSuccess() {
       ok(true, "checkAuth does not make an ajax call, all good");
@@ -227,7 +227,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
   wrappedAsyncTest("complete_email_addition valid", function() {
     network.completeEmailRegistration("goodtoken", function onSuccess(proven) {
       equal(proven, true, "good token proved");
-      wrappedStart(); 
+      wrappedStart();
     }, function onFailure() {
       wrappedStart();
     });
@@ -239,7 +239,7 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     xhr.useResult("invalid");
     network.completeEmailRegistration("badtoken", function onSuccess(proven) {
       equal(proven, false, "bad token could not be proved");
-      wrappedStart(); 
+      wrappedStart();
     }, function onFailure() {
       wrappedStart();
     });
@@ -647,8 +647,8 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/network", func
     network.serverTime(function onSuccess(time) {
       var diff = Math.abs((new Date()) - time);
       equal(1245 < diff && diff < 1255, true, "server time and local time should be less than 100ms different (is " + diff + "ms different)");
-      // XXX by stomlinson - I think this is an incorrect test.  The time returned here is the 
-      // time as it is on the server, which could be more than 100ms off of 
+      // XXX by stomlinson - I think this is an incorrect test.  The time returned here is the
+      // time as it is on the server, which could be more than 100ms off of
       // what the local machine says it is.
       //equal(Math.abs(diff) < 100, true, "server time and local time should be less than 100ms different (is " + diff + "ms different)");
       wrappedStart();

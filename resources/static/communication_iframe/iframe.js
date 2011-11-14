@@ -41,19 +41,19 @@ window.console = window.console || {
 
 steal
   .plugins('jquery')
-  .then('../dialog/resources/jschannel',
-        '../dialog/resources/base64',
-        '../dialog/resources/underscore-min',
+  .then('../lib/jschannel',
+        '../lib/base64',
+        '../lib/underscore-min',
         '../dialog/resources/channel',
-        '../dialog/resources/browserid',
-        '../dialog/resources/storage',
-        '../dialog/resources/tooltip',
-        '../dialog/resources/validation',
-        '../dialog/resources/browserid-extensions',
-        '../dialog/resources/network',
-        '../dialog/resources/user',
-        '../dialog/resources/error-messages',
-        '../dialog/resources/wait-messages',
+        '../shared/browserid',
+        '../shared/storage',
+        '../shared/tooltip',
+        '../shared/validation',
+        '../shared/browserid-extensions',
+        '../shared/network',
+        '../shared/user',
+        '../shared/error-messages',
+        '../shared/wait-messages',
         afterResourceLoad);
 
 function afterResourceLoad() {

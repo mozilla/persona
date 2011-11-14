@@ -52,7 +52,7 @@ BrowserID.PageHelpers = (function() {
   }
 
   function prefillEmail() {
-    // If the user tried to sign in on the sign up page with an existing email, 
+    // If the user tried to sign in on the sign up page with an existing email,
     // place that email in the email field, then focus the password.
     var el = $("#email"),
         email = locStorage.signInEmail;
@@ -64,7 +64,7 @@ BrowserID.PageHelpers = (function() {
 
     el.keyup(onEmailKeyUp);
   }
-  
+
   function clearStoredEmail() {
     locStorage.removeItem("signInEmail");
   }
@@ -86,8 +86,8 @@ BrowserID.PageHelpers = (function() {
 
   function getFailure(error) {
     return function onFailure(info) {
-      info = $.extend(info, { action: error });
-      errorDisplay.render("#error", "#templateError", info);
+      info = $.extend(info, { action: error, dialog: false });
+      bid.Screens.error("error", info);
       $("#errorBackground").fadeIn();
       $("#error").fadeIn();
     }

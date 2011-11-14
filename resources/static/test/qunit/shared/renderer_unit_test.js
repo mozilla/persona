@@ -1,3 +1,5 @@
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*globals BrowserID: true, _:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -11,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozilla BrowserID.
+ * The Original Code is Mozilla bid.
  *
  * The Initial Developer of the Original Code is Mozilla.
  * Portions created by the Initial Developer are Copyright (C) 2011
@@ -32,50 +34,49 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+steal.then("/test/qunit/mocks/templates", "/shared/renderer", function() {
+  "use strict";
 
-/*globals steal
- */
-window.console = window.console || {
-  log: function() {}
-};
+  var bid = BrowserID,
+      renderer = bid.Renderer;
 
-steal
-  .plugins(
-              'jquery/controller',			// a widget factory
-              'jquery/controller/subscribe')	// subscribe to OpenAjax.hub
+  module("shared/renderer", {
+    setup: function() {
 
-	.resources(
-               'channel')
-  .then(
-               '../lib/jschannel',
-               '../lib/base64',
-               '../lib/underscore-min',
-               '../lib/ejs',
-               '../shared/browserid',
-               '../lib/dom-jquery',
+    },
 
-               '../shared/storage',
-               '../shared/templates',
-               '../shared/renderer',
-               '../shared/error-display',
-               '../shared/screens',
-               '../shared/tooltip',
-               '../shared/validation',
-               '../shared/browser-support',
-               '../shared/browserid-extensions',
-               '../shared/network',
-               '../shared/user',
-               '../shared/error-messages',
-               '../shared/wait-messages')
+    teardown: function() {
 
-	.controllers('page',
-               'dialog',
-               'authenticate',
-               'checkregistration',
-               'pickemail')					// loads files in controllers folder
+    }
+  });
 
-  .then(function() {
-    $(function() {
-      $('body').dialog().show();
-    });
-  });						// adds views to be added to build
+  test("render template loaded using XHR", function() {
+    $("#formWrap .contents").empty();
+    $("#templateInput").remove();
+
+    renderer.render("#formWrap .contents", "testBodyTemplate");
+
+    ok($("#templateInput").length, "template written when loaded using XHR");
+  });
+
+  test("render template from memory", function() {
+    $("#formWrap .contents").empty();
+    $("#templateInput").remove();
+
+    renderer.render("#formWrap .contents", "inMemoryTemplate");
+
+    ok($("#templateInput").length, "template written when loaded from memory");
+  });
+
+  test("append template to element", function() {
+    $("#formWrap .contents").empty();
+    $("#templateInput").remove();
+
+    renderer.append("#formWrap", "inMemoryTemplate");
+
+    ok($("#formWrap > #templateInput").length && $("#formWrap > .contents"), "template appended to element instead of overwriting it");
+
+  });
+});
+
+

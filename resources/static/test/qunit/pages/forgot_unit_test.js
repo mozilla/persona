@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/resources/network", "/dialog/resources/user", "/js/pages/forgot", function() {
+steal.then("/pages/forgot", function() {
   "use strict";
 
   var bid = BrowserID,
@@ -46,13 +46,15 @@ steal.plugins("jquery").then("/dialog/resources/network", "/dialog/resources/use
   module("pages/forgot", {
     setup: function() {
       network.setXHR(xhr);
-      $(".error").stop().hide();
+      $(".error").removeClass("error");
+      $("#error").stop().hide();
       xhr.useResult("valid");
       bid.forgot();
     },
     teardown: function() {
       network.setXHR($);
-      $(".error").stop().hide();
+      $(".error").removeClass("error");
+      $("#error").stop().hide();
       $(".website").text("");
       bid.forgot.reset();
     }
@@ -110,7 +112,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/dialog/resources/use
     $("#email").val("testuser@testuser.com");
 
     testEmailNotSent(function() {
-      equal($("#error").is(":visible"), true, "error is visible");  
+      equal($("#error").is(":visible"), true, "error is visible");
       start();
     });
   });

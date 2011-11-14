@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/test/qunit/mocks/xhr", "/dialog/resources/network", "/dialog/resources/user", "/js/pages/signup", function() {
+steal.then("/pages/signup", function() {
   "use strict";
 
   var bid = BrowserID,
@@ -47,6 +47,7 @@ steal.plugins("jquery").then("/test/qunit/mocks/xhr", "/dialog/resources/network
   module("pages/signup", {
     setup: function() {
       network.setXHR(xhr);
+      $(".error").removeClass("error");
       $("#error").stop().hide();
       $(".notification").stop().hide();
       xhr.useResult("valid");
@@ -55,6 +56,7 @@ steal.plugins("jquery").then("/test/qunit/mocks/xhr", "/dialog/resources/network
     },
     teardown: function() {
       network.setXHR($);
+      $(".error").removeClass("error");
       $("#error").stop().hide();
       $(".notification").stop().hide();
       $("#error .message").remove();

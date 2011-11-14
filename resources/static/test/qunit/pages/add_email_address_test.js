@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/add_email_address", function() {
+steal.then("/pages/add_email_address", function() {
   "use strict";
 
   var bid = BrowserID,
@@ -42,17 +42,19 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/add_email_a
       storage = bid.Storage,
       xhr = bid.Mocks.xhr,
       validToken = true;
-  
+
   module("pages/add_email_address", {
     setup: function() {
-      network.setXHR(xhr);  
+      network.setXHR(xhr);
       xhr.useResult("valid");
-      $(".error").stop().hide();
+      $(".error").removeClass("error");
+      $("#error").stop().hide();
       $(".website").text("");
     },
     teardown: function() {
-      network.setXHR($);  
-      $(".error").stop().hide();
+      network.setXHR($);
+      $(".error").removeClass("error");
+      $("#error").stop().hide();
       $(".website").text("");
     }
   });
@@ -61,7 +63,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/add_email_a
     storage.setStagedOnBehalfOf("browserid.org");
 
     bid.addEmailAddress("token");
-    
+
     setTimeout(function() {
       equal($("#email").text(), "testuser@testuser.com", "email set");
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
@@ -73,7 +75,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/add_email_a
 
   test("addEmailAddress with good token and nosite", function() {
     bid.addEmailAddress("token");
-    
+
     setTimeout(function() {
       equal($("#email").text(), "testuser@testuser.com", "email set");
       equal($(".siteinfo").is(":visible"), false, "siteinfo is not visible without having it");

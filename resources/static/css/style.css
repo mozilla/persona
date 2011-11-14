@@ -116,6 +116,10 @@ hr {
   background-color: rgba(0,0,0,.6);
 }
 
+#error {
+  display: none;
+}
+
 #error > div {
   background-color: #fff;
   position: absolute;
@@ -128,7 +132,7 @@ hr {
 }
 
 #error ul, #error li {
-    list-style-type: none; 
+    list-style-type: none;
 }
 
 #wait strong, #error strong {

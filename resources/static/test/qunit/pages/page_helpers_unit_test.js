@@ -1,3 +1,5 @@
+/*jshint browsers:true, forin: true, laxbreak: true */
+/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -32,50 +34,48 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+steal.then(function() {
+  "use strict";
 
-/*globals steal
- */
-window.console = window.console || {
-  log: function() {}
-};
+  var pageHelpers = BrowserID.PageHelpers;
 
-steal
-  .plugins(
-              'jquery/controller',			// a widget factory
-              'jquery/controller/subscribe')	// subscribe to OpenAjax.hub
+  module("pages/page_helpers");
 
-	.resources(
-               'channel')
-  .then(
-               '../lib/jschannel',
-               '../lib/base64',
-               '../lib/underscore-min',
-               '../lib/ejs',
-               '../shared/browserid',
-               '../lib/dom-jquery',
 
-               '../shared/storage',
-               '../shared/templates',
-               '../shared/renderer',
-               '../shared/error-display',
-               '../shared/screens',
-               '../shared/tooltip',
-               '../shared/validation',
-               '../shared/browser-support',
-               '../shared/browserid-extensions',
-               '../shared/network',
-               '../shared/user',
-               '../shared/error-messages',
-               '../shared/wait-messages')
+  test("setStoredEmail/getStoredEmail/setupEmail prefills the email address", function() {
+    $("#email").val("");
 
-	.controllers('page',
-               'dialog',
-               'authenticate',
-               'checkregistration',
-               'pickemail')					// loads files in controllers folder
+    pageHelpers.setStoredEmail("testuser@testuser.com");
+    pageHelpers.setupEmail();
 
-  .then(function() {
-    $(function() {
-      $('body').dialog().show();
-    });
-  });						// adds views to be added to build
+    equal($("#email").val(), "testuser@testuser.com", "email was set on setupEmail");
+    equal(pageHelpers.getStoredEmail(), "testuser@testuser.com", "getStoredEmail works correctly");
+  });
+
+  test("a key press in the email address field saves it", function() {
+    $("#email").val("");
+
+    pageHelpers.setStoredEmail("testuser@testuser.co");
+    pageHelpers.setupEmail();
+
+    // The fake jQuery event does not actually cause the letter to be added, we
+    // have to do that manually.
+    $("#email").val("testuser@testuser.com");
+
+    var e = jQuery.Event("keyup");
+    e.which = 77; //choose the one you want
+    e.keyCode = 77;
+    $("#email").trigger(e);
+
+    equal(pageHelpers.getStoredEmail(), "testuser@testuser.com", "hitting a key updates the stored email");
+  });
+
+  test("clearStoredEmail clears the email address from storage", function() {
+    pageHelpers.clearStoredEmail();
+
+    equal(pageHelpers.getStoredEmail(), "", "clearStoredEmail clears stored email");
+  });
+
+});
+
+

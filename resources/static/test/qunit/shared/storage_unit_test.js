@@ -34,10 +34,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/storage", function() {
+steal.then(function() {
   var storage = BrowserID.Storage;
 
-  module("storage", {
+  module("shared/storage", {
     setup: function() {
       storage.clear();
     },
@@ -141,9 +141,9 @@ steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/storage", func
     try {
       storage.site.set("www.testsite.com", "email", "testuser@testuser.com");
     } catch(e) {
-      error = e; 
+      error = e;
     }
-    
+
     equal(error.toString(), "unknown email address", "An unknown email address was added");
   });
 

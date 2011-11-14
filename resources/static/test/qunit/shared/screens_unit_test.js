@@ -34,69 +34,53 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then(function() {
+steal.then(function() {
   "use strict";
 
   var bid = BrowserID,
-      support = bid.BrowserSupport,
-      stubWindow,
-      stubNavigator;
+      screens = bid.Screens,
+      el;
 
-  module("browser-support", {
+  module("shared/screens", {
     setup: function() {
-      // Hard coded goodness for testing purposes
-      stubNavigator = {
-        appName: "Netscape",
-        userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1"
-      };
 
-      stubWindow = {
-        localStorage: {},
-        postMessage: function() {}
-      };
-
-      support.setTestEnv(stubNavigator, stubWindow);
     },
 
     teardown: function() {
+      el.empty();
     }
   });
-  
-  test("browser without localStorage", function() {
-    delete stubWindow.localStorage;
 
-    equal(support.isSupported(), false, "window.localStorage is required");
-    equal(support.getNoSupportReason(), "LOCALSTORAGE", "correct reason");
+  test("form", function() {
+    el = $("#formWrap .contents");
+    el.empty();
+    screens.form("testBodyTemplate");
+
+    ok($("#templateInput").length, "the template has been written");
+    equal($("body").hasClass("error"), false, "error class taken off of body");
+    equal($("body").hasClass("waiting"), false, "waiting class taken off of body");
+    equal($("body").hasClass("form"), true, "form class added to body");
   });
 
+  test("wait", function() {
+    var el = $("#wait .contents");
+    el.empty();
+    screens.wait("testBodyTemplate");
 
-  test("browser without postMessage", function() {
-    delete stubWindow.postMessage;
-
-    equal(support.isSupported(), false, "window.postMessage is required");
-    equal(support.getNoSupportReason(), "POSTMESSAGE", "correct reason");
+    ok($("#templateInput").length, "the template has been written");
+    equal($("body").hasClass("error"), false, "error class taken off of body");
+    equal($("body").hasClass("form"), false, "form class taken off of body");
+    equal($("body").hasClass("waiting"), true, "waiting class added to body");
   });
 
-  test("Fake being IE8 - unsupported intentionally", function() {
-    stubNavigator.appName = "Microsoft Internet Explorer";
-    stubNavigator.userAgent = "MSIE 8.0";
+  test("error", function() {
+    var el = $("#error .contents");
+    el.empty();
+    screens.error("testBodyTemplate");
 
-    equal(support.isSupported(), false, "IE8 is not supported");
-    equal(support.getNoSupportReason(), "IE_VERSION", "correct reason");
-  });
-
-  test("Fake being IE9 - supported", function() {
-    stubNavigator.appName = "Microsoft Internet Explorer";
-    stubNavigator.userAgent = "MSIE 9.0";
-
-    equal(support.isSupported(), true, "IE9 is supported");
-    equal(typeof support.getNoSupportReason(), "undefined", "no reason, we are all good");
-  });
-
-  test("Firefox 7.01 with postMessage, localStorage", function() {
-    equal(support.isSupported(), true, "Firefox 7.01 is supported");
-    equal(typeof support.getNoSupportReason(), "undefined", "no reason, we are all good");
+    ok($("#templateInput").length, "the template has been written");
+    equal($("body").hasClass("waiting"), false, "waiting class taken off of body");
+    equal($("body").hasClass("form"), false, "form class taken off of body");
+    equal($("body").hasClass("error"), true, "error class added to body");
   });
 });
-
-

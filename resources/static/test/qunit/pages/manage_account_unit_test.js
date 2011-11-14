@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/manage_account", function() {
+steal.then("/pages/manage_account", function() {
   "use strict";
 
   var bid = BrowserID,
@@ -53,17 +53,19 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/manage_acco
 
   module("pages/manage_account", {
     setup: function() {
-      network.setXHR(xhr);  
+      network.setXHR(xhr);
       xhr.useResult("valid");
       user.setOrigin(TEST_ORIGIN);
       $("#emailList").empty();
+      $(".error").removeClass("error");
       $("#error").hide();
       mocks.document.location = "";
       storage.clear();
     },
     teardown: function() {
-      network.setXHR($);  
+      network.setXHR($);
       $("#emailList").empty();
+      $(".error").removeClass("error");
       $("#error").hide();
     }
   });
@@ -74,7 +76,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/manage_acco
     bid.manageAccount(mocks);
 
     setTimeout(function() {
-      equal($("#emailList").children().length, 0, "no children have been added"); 
+      equal($("#emailList").children().length, 0, "no children have been added");
       start();
     }, TEST_DELAY);
 
@@ -85,7 +87,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/manage_acco
     bid.manageAccount(mocks);
 
     setTimeout(function() {
-      equal($("#emailList").children().length, 1, "there has been one child added"); 
+      equal($("#emailList").children().length, 1, "there has been one child added");
       start();
     }, TEST_DELAY);
 
@@ -98,7 +100,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/manage_acco
     bid.manageAccount(mocks);
 
     setTimeout(function() {
-      equal($("#error").is(":visible"), true, "error message is visible on XHR error"); 
+      equal($("#error").is(":visible"), true, "error message is visible on XHR error");
       start();
     }, ERROR_DELAY);
 
@@ -117,7 +119,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/manage_acco
       bid.manageAccount.removeEmail("testuser@testuser.com");
 
       setTimeout(function() {
-        equal($("#emailList").children().length, 1, "after removing an email, only one remains"); 
+        equal($("#emailList").children().length, 1, "after removing an email, only one remains");
         start();
       }, TEST_DELAY);
     }, TEST_DELAY);
@@ -136,7 +138,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/manage_acco
       bid.manageAccount.removeEmail("testuser@testuser.com");
 
       setTimeout(function() {
-        equal($("#error").is(":visible"), true, "error message is visible on XHR error"); 
+        equal($("#error").is(":visible"), true, "error message is visible on XHR error");
         start();
       }, ERROR_DELAY);
     }, TEST_DELAY);
@@ -170,7 +172,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/manage_acco
       bid.manageAccount.removeEmail("testuser@testuser.com");
 
       setTimeout(function() {
-        equal($("#error").is(":visible"), true, "error message is visible on XHR error"); 
+        equal($("#error").is(":visible"), true, "error message is visible on XHR error");
         start();
       }, ERROR_DELAY);
     }, TEST_DELAY);
@@ -202,7 +204,7 @@ steal.plugins("jquery").then("/dialog/resources/network", "/js/pages/manage_acco
       bid.manageAccount.cancelAccount();
 
       setTimeout(function() {
-        equal($("#error").is(":visible"), true, "error message is visible on XHR error"); 
+        equal($("#error").is(":visible"), true, "error message is visible on XHR error");
         start();
       }, ERROR_DELAY);
     }, TEST_DELAY);

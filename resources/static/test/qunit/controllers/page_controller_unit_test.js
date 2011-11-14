@@ -38,13 +38,14 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   "use strict";
 
   var controller, el,
-      bodyTemplate = "testBodyTemplate.ejs",
-      waitTemplate = "wait.ejs";
+      bodyTemplate = "testBodyTemplate",
+      waitTemplate = "wait";
 
   function reset() {
     el = $("#controller_head");
     el.find("#formWrap .contents").html("");
     el.find("#wait .contents").html("");
+    $("#error").html("<div class='contents'></div>");
     el.find("#error .contents").html("");
   }
 
@@ -56,7 +57,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     teardown: function() {
       controller.destroy();
       reset();
-    } 
+    }
   });
 
   test("page controller with no template causes no side effects", function() {
@@ -130,8 +131,8 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
         message: "Test message"
       }
     }).controller();
-   
-    controller.renderError("wait.ejs", {
+
+    controller.renderError("wait", {
       title: "error title",
       message: "error message"
     });
@@ -149,8 +150,8 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
         message: "Test message"
       }
     }).controller();
-   
-    controller.renderError("error.ejs", {
+
+    controller.renderError("error", {
       action: {
         title: "expanded action info",
         message: "expanded message"
@@ -180,7 +181,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
         message: "Test message"
       }
     }).controller();
-   
+
     // This is the medium level info.
     var func = controller.getErrorDialog({
       title: "medium level info error title",

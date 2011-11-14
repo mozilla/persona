@@ -1,5 +1,5 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global BrowserID: true, PageController: true */ 
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*global BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -43,7 +43,7 @@
     init: function(el, options) {
       var me=this;
       me._super(el, {
-        waitTemplate: "confirmemail.ejs",
+        waitTemplate: "confirmemail",
         waitVars: {
           email: options.email
         }

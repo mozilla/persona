@@ -1,5 +1,5 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*globals BrowserID: true, _:true */
+/*jshint browsers:true, forin: true, laxbreak: true */
+/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -13,7 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozilla bid.
+ * The Original Code is Mozilla BrowserID.
  *
  * The Initial Developer of the Original Code is Mozilla.
  * Portions created by the Initial Developer are Copyright (C) 2011
@@ -34,51 +34,11 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery", "funcunit/qunit").then("/dialog/resources/tooltip", function() {
+steal.then("/pages/page_helpers", "/pages/browserid", function() {
   "use strict";
 
-  var bid = BrowserID,
-      tooltip = bid.Tooltip
+  module("/pages/browserid");
 
-  module("/resources/tooltip", {
-    setup: function() {
-    },
-    teardown: function() {
-    }
-  });
-
-
-  test("show short tooltip, min of 2.5 seconds", function() {
-    var startTime = new Date().getTime();
-
-    tooltip.showTooltip("#shortTooltip", function() {
-      var endTime = new Date().getTime();
-      var diff = endTime - startTime;
-      ok(2000 <= diff && diff <= 3000, diff + " - minimum of 2 seconds, max of 3 seconds");
-
-      start();
-    });
-
-    var el = $("#createdTooltip");
-    equal(el.length, 1, "one tooltip created");
-    var contents = el.html() || "";
-    equal(contents.indexOf("contents") === -1, true, "contents have been replaced");
-
-    stop();
-  });
-
-  test("show long tooltip, takes about 5 seconds", function() {
-    var startTime = new Date().getTime();
-
-    tooltip.showTooltip("#longTooltip", function() {
-      var endTime = new Date().getTime();
-      var diff = endTime - startTime;
-      ok(diff >= 4500, diff + " - longer tooltip is on the screen for a bit longer");
-
-      start();
-    });
-
-    stop();
-  });
 
 });
+
