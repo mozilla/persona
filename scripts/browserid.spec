@@ -1,7 +1,7 @@
 %define _rootdir /opt/browserid
 
 Name:          browserid-server
-Version:       0.2011.10.13
+Version:       0.2011.11.03
 Release:       1%{?dist}
 Summary:       BrowserID server
 Packager:      Pete Fritchman <petef@mozilla.com>
@@ -23,14 +23,14 @@ browserid server & web home for browserid.org
 %build
 npm install
 export PATH=$PWD/node_modules/.bin:$PATH
-(cd browserid && ./compress.sh)
-git log -1 --oneline > browserid/static/ver.txt
+(scripts/compress.sh)
+echo "$GIT_REVISION" > resources/static/ver.txt
 
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_rootdir}
-for f in browserid libs node_modules verifier *.json *.js; do
-    cp -rp $f %{buildroot}%{_rootdir}/$dir
+for f in bin lib node_modules resources scripts *.json; do
+    cp -rp $f %{buildroot}%{_rootdir}/
 done
 
 %clean
