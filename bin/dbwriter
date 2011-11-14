@@ -52,7 +52,6 @@ config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
 metrics = require('../lib/metrics.js'),
 logger = require('../lib/logging.js').logger,
-forward = require('../lib/browserid/http_forward'),
 shutdown = require('../lib/shutdown'),
 views = require('../lib/browserid/views.js');
 
