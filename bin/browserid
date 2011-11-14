@@ -137,7 +137,7 @@ app.use(function(req, resp, next) {
   resp.json = function(obj) {
     if (!obj || typeof obj !== 'object') {
       logger.error("INTERNAL ERROR!  *all* json responses must be objects");
-      throw "internal error";
+      return httputils.serverError(resp, "broken internal API implementation");
     }
     realRespJSON.call(resp, obj);
   };
