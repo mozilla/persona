@@ -21,6 +21,7 @@ browserid server & web home for browserid.org
 %setup -q -n browserid
 
 %build
+rm -rf node_modules/jwcrypto
 npm install
 export PATH=$PWD/node_modules/.bin:$PATH
 (scripts/compress.sh)
