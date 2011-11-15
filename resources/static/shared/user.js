@@ -108,8 +108,8 @@ BrowserID.User = (function() {
         //   'mustAuth' - user must authenticate
         //   'noRegistration' - no registration is in progress
         if (status === "complete" || status === "mustAuth") {
-          // As soon as the registration comes back as complete, we should 
-          // ensure that the stagedOnBehalfOf is cleared so there is no stale 
+          // As soon as the registration comes back as complete, we should
+          // ensure that the stagedOnBehalfOf is cleared so there is no stale
           // data.
           storage.setStagedOnBehalfOf("");
           if (onSuccess) {
@@ -130,26 +130,26 @@ BrowserID.User = (function() {
 
 
   /**
-   * Certify an identity with the server, persist it to storage if the server 
+   * Certify an identity with the server, persist it to storage if the server
    * says the identity is good
    * @method certifyEmailKeypair
    */
   function certifyEmailKeypair(email, keypair, onSuccess, onFailure) {
     network.certKey(email, keypair.publicKey, function(cert) {
       persistEmailKeypair(email, keypair, cert, onSuccess, onFailure);
-    }, onFailure);      
+    }, onFailure);
   }
-    
+
   /**
    * Persist an email address without a keypair
    * @method persistEmail
    * @param {string} email - Email address to persist.
-   * @param {function} [onSuccess] - Called on successful completion. 
+   * @param {function} [onSuccess] - Called on successful completion.
    * @param {function} [onFailure] - Called on error.
    */
   function persistEmail(email, onSuccess, onFailure) {
     storage.addEmail(email, {
-      created: new Date() 
+      created: new Date()
     });
 
     if (onSuccess) {
@@ -157,12 +157,12 @@ BrowserID.User = (function() {
     }
   }
 
-  /** 
+  /**
    * Persist an address and key pair locally.
    * @method persistEmailKeypair
    * @param {string} email - Email address to persist.
    * @param {object} keypair - Key pair to save
-   * @param {function} [onSuccess] - Called on successful completion. 
+   * @param {function} [onSuccess] - Called on successful completion.
    * @param {function} [onFailure] - Called on error.
    */
   function persistEmailKeypair(email, keypair, cert, onSuccess, onFailure) {
@@ -189,7 +189,7 @@ BrowserID.User = (function() {
     /**
      * Set the interface to use for networking.  Used for unit testing.
      * @method setNetwork
-     * @param {BrowserID.Network} networkInterface - BrowserID.Network 
+     * @param {BrowserID.Network} networkInterface - BrowserID.Network
      * compatible interface to use.
      */
     setNetwork: function(networkInterface) {
@@ -224,10 +224,10 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Create a user account - this creates an user account that must be verified.  
+     * Create a user account - this creates an user account that must be verified.
      * @method createUser
      * @param {string} email - Email address.
-     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onSuccess] - Called on successful completion.
      * @param {function} [onFailure] - Called on error.
      */
     createUser: function(email, onSuccess, onFailure) {
@@ -235,7 +235,7 @@ BrowserID.User = (function() {
 
       // remember this for later
       storage.setStagedOnBehalfOf(self.getHostname());
-      
+
       network.createUser(email, origin, onSuccess, onFailure);
     },
 
@@ -283,7 +283,7 @@ BrowserID.User = (function() {
      * Set the password of the current user.
      * @method setPassword
      * @param {string} password - password to set
-     * @param {function} [onComplete] - Called on successful completion. 
+     * @param {function} [onComplete] - Called on successful completion.
      * @param {function} [onFailure] - Called on error.
      */
     setPassword: function(password, onComplete, onFailure) {
@@ -294,7 +294,7 @@ BrowserID.User = (function() {
      * Request a password reset for the given email address.
      * @method requestPasswordReset
      * @param {string} email - email address to reset password for.
-     * @param {function} [onComplete] - Callback to call when complete, called 
+     * @param {function} [onComplete] - Callback to call when complete, called
      * with a single object, info.
      *    info.status {boolean} - true or false whether request was successful.
      *    info.reason {string} - if status false, reason of failure.
@@ -320,7 +320,7 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Cancel the current user's account.  Remove last traces of their 
+     * Cancel the current user's account.  Remove last traces of their
      * identity.
      * @method cancelUser
      * @param {function} [onComplete] - Called whenever complete.
@@ -352,7 +352,7 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Sync local identities with browserid.org.  Generally should not need to 
+     * Sync local identities with browserid.org.  Generally should not need to
      * be called.
      * @method syncEmails
      * @param {function} [onSuccess] - Called whenever complete.
@@ -361,17 +361,6 @@ BrowserID.User = (function() {
     syncEmails: function(onSuccess, onFailure) {
       cleanupIdentities();
       var issued_identities = this.getStoredEmailKeypairs();
-
-      // FIXME for certs
-
-      // send up all email/pubkey pairs to the server, it will response with a
-      // list of emails that need new keys.  This may include emails in the
-      // sent list, and also may include identities registered on other devices.
-      // we'll go through the list and generate new keypairs
-
-      // identities that don't have an issuer are primary authentications,
-      // and we don't need to worry about rekeying them.
-
       var self = this;
 
       network.listEmails(function(emails) {
@@ -409,8 +398,8 @@ BrowserID.User = (function() {
     /**
      * Check whether the current user is authenticated.
      * @method checkAuthentication
-     * @param {function} [onSuccess] - Called when check is complete with one 
-     * boolean parameter, authenticated.  authenticated will be true if user is 
+     * @param {function} [onSuccess] - Called when check is complete with one
+     * boolean parameter, authenticated.  authenticated will be true if user is
      * authenticated, false otw.
      * @param {function} [onFailure] - Called on error.
      */
@@ -424,11 +413,11 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Check whether the current user is authenticated.  If authenticated, sync 
+     * Check whether the current user is authenticated.  If authenticated, sync
      * identities.
      * @method checkAuthenticationAndSync
-     * @param {function} [onSuccess] - Called if authentication check succeeds 
-     * but before sync starts.  Useful for displaying status messages about the 
+     * @param {function} [onSuccess] - Called if authentication check succeeds
+     * but before sync starts.  Useful for displaying status messages about the
      * sync taking a moment.
      * @param {function} [onComplete] - Called on sync completion.
      * @param {function} [onFailure] - Called on error.
@@ -476,8 +465,8 @@ BrowserID.User = (function() {
      * Check whether the email is already registered.
      * @method emailRegistered
      * @param {string} email - Email address to check.
-     * @param {function} [onSuccess] - Called with one boolean parameter when 
-     * complete.  Parameter is true if `email` is already registered, false 
+     * @param {function} [onSuccess] - Called with one boolean parameter when
+     * complete.  Parameter is true if `email` is already registered, false
      * otw.
      * @param {function} [onFailure] - Called on XHR failure.
      */
@@ -486,13 +475,13 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Add an email address to an already created account.  Sends address and 
-     * keypair to the server, user then needs to verify account ownership. This 
-     * does not add the new email address/keypair to the local list of 
+     * Add an email address to an already created account.  Sends address and
+     * keypair to the server, user then needs to verify account ownership. This
+     * does not add the new email address/keypair to the local list of
      * valid identities.
      * @method addEmail
      * @param {string} email - Email address.
-     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onSuccess] - Called on successful completion.
      * @param {function} [onFailure] - Called on error.
      */
     addEmail: function(email, onSuccess, onFailure) {
@@ -521,7 +510,7 @@ BrowserID.User = (function() {
      * @method verifyEmail
      * @param {string} token
      * @param {function} [onSuccess] - Called on success.
-     *   Called with an object with valid, email, and origin if valid, called 
+     *   Called with an object with valid, email, and origin if valid, called
      *   with only valid otw.
      * @param {function} [onFailure] - Called on error.
      */
@@ -567,12 +556,12 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Sync an identity with the server.  Creates and stores locally and on the 
+     * Sync an identity with the server.  Creates and stores locally and on the
      * server a keypair for the given email address.
      * @method syncEmailKeypair
      * @param {string} email - Email address.
      * @param {string} [issuer] - Issuer of keypair.
-     * @param {function} [onSuccess] - Called on successful completion. 
+     * @param {function} [onSuccess] - Called on successful completion.
      * @param {function} [onFailure] - Called on error.
      */
     syncEmailKeypair: function(email, onSuccess, onFailure) {
@@ -636,7 +625,7 @@ BrowserID.User = (function() {
             }, 0);
           }
           else {
-            // we have no key for this identity, go generate the key, 
+            // we have no key for this identity, go generate the key,
             // sync it and then get the assertion recursively.
             User.syncEmailKeypair(email, function() {
               User.getAssertion(email, onSuccess, onFailure);
@@ -660,7 +649,7 @@ BrowserID.User = (function() {
     /**
      * Get an individual stored identity.
      * @method getStoredEmailKeypair
-     * @return {object} identity information for email, if exists, undefined 
+     * @return {object} identity information for email, if exists, undefined
      * otw.
      */
     getStoredEmailKeypair: function(email) {
@@ -676,10 +665,10 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Get an assertion for the current domain, as long as the user has 
+     * Get an assertion for the current domain, as long as the user has
      * selected that they want the email/site remembered
      * @method getPersistentSigninAssertion
-     * @param {function} onComplete - called on completion.  Called with an 
+     * @param {function} onComplete - called on completion.  Called with an
      * assertion if successful, null otw.
      * @param {function} onFailure - called on XHR failure.
      */
@@ -706,7 +695,7 @@ BrowserID.User = (function() {
     /**
      * Clear the persistent signin field for the current origin
      * @method clearPersistentSignin
-     * @param {function} onComplete - called on completion.  Called with 
+     * @param {function} onComplete - called on completion.  Called with
      * a boolean, true if successful, false otw.
      * @param {function} onFailure - called on XHR failure.
      */
