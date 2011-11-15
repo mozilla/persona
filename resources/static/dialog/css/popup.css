@@ -245,7 +245,7 @@ section > .contents {
 }
 
 #signIn .vertical {
-    padding: 15px 20px 20px 20px;
+    padding: 0 20px;
 }
 
 #signIn .vertical ul {
@@ -262,8 +262,11 @@ section > .contents {
 }
 
 #signIn .submit {
-    margin-top: 10px;
     line-height: 28px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 #signIn .submit > p {
@@ -566,17 +569,17 @@ html[xmlns] .cf {
     margin: 1em 0 .5em;
     padding: 0 1em;
     line-height: 18px;
-    min-height: 110px;
 }
 
 .pickemail .inputs {
-    height: 110px;
-    min-height: 0;
+    max-height: 110px;
     overflow-y: auto;
+    position: relative;
 }
 
 .form_section {
     height: 176px;
+    position: relative;
 }
 
 .add {
@@ -594,6 +597,20 @@ label[for=remember] {
 
 #thisIsNotMe {
   margin-right: 10px;
+  float: right;
+}
+
+#useNewEmail {
+  margin-left: 0.8em;
+}
+
+.pickemail .vertical a {
+  background-color: #F0EFED;
+  color: #4E4E4E;
+  font-size: 0.75em;
+  padding: 0 5px;
+  display: inline-block;
+  line-height: 18px;
 }
 
 #addEmail {
@@ -601,7 +618,7 @@ label[for=remember] {
 }
 
 .submit > button {
-    margin: 0 5px 15px 0;
+    margin: 0 5px 0 0;
 }
 
 #newEmail {
