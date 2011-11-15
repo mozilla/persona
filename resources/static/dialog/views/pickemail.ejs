@@ -17,10 +17,12 @@
 
       <div class="submit add cf">
 
-          <label for="remember" class="selectable">
-            <input type="checkbox" id="remember" name="remember" <% if (remember) { %> checked="checked" <% } %> />
-            Always sign in using this email
-          </label>
+          <% if (allow_persistent) { %>
+            <label for="remember" class="selectable">
+              <input type="checkbox" id="remember" name="remember" <% if (remember) { %> checked="checked" <% } %> />
+              Always sign in using this email
+            </label>
+          <% } %>
 
           <button id="signInButton">sign in</button>
 
