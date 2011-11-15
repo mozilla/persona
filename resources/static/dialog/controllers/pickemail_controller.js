@@ -65,7 +65,7 @@
 
     var self=this;
     animateSwap("#addEmail", "#selectEmail", function() {
-      if(!self.find("input[type=radio]:checked").length) {
+      if (!self.find("input[type=radio]:checked").length) {
         // If none are already checked, select the first one.
         self.find('input[type=radio]').eq(0).attr('checked', true);
       }
@@ -86,7 +86,7 @@
 
   function checkEmail(email) {
     var identity = user.getStoredEmailKeypair(email);
-    if(!identity) {
+    if (!identity) {
       alert("The selected email is invalid or has been deleted.");
       this.close("assertion_generated", {
         assertion: null
@@ -97,7 +97,7 @@
   }
 
   function tryClose() {
-    if(typeof assertion !== "undefined" && animationComplete) {
+    if (typeof assertion !== "undefined" && animationComplete) {
       this.close("assertion_generated", {
         assertion: assertion
       });
@@ -116,7 +116,7 @@
 
   function startAnimation() {
     var self=this;
-    if(!animationComplete) {
+    if (!animationComplete) {
       $("#signIn").animate({"width" : "685px"}, "slow", function () {
         // post animation
          body.delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
@@ -140,7 +140,11 @@
     if (valid) {
       var origin = user.getOrigin();
       storage.site.set(origin, "email", email);
-      storage.site.set(origin, "remember", $("#remember").is(":checked"));
+
+      if (self.allowPersistent) {
+        storage.site.set(origin, "remember", $("#remember").is(":checked"));
+      }
+
       getAssertion.call(self, email);
     }
   }
@@ -151,12 +155,12 @@
 
     cancelEvent(event);
 
-    if(!bid.Validation.email(email)) {
+    if (!bid.Validation.email(email)) {
       return;
     }
 
     user.isEmailRegistered(email, function onComplete(registered) {
-      if(registered) {
+      if (registered) {
         bid.Tooltip.showTooltip("#already_taken");
       }
       else {
@@ -179,29 +183,35 @@
 
   PageController.extend("Pickemail", {}, {
     init: function(el, options) {
-      var origin = user.getOrigin();
-      this._super(el, {
+      var origin = user.getOrigin(),
+          self=this;
+
+      options = options || {};
+
+      self.allowPersistent = options.allow_persistent;
+
+      self._super(el, {
         bodyTemplate: "pickemail",
         bodyVars: {
           identities: user.getStoredEmailKeypairs(),
-          // XXX ideal is to get rid of this and have a User function
+          // XXX ideal is to get rid of self and have a User function
           // that takes care of getting email addresses AND the last used email
-          // for this site.
+          // for self site.
           siteemail: storage.site.get(origin, "email"),
+          allow_persistent: options.allow_persistent || false,
           remember: storage.site.get(origin, "remember") || false
         }
       });
-
       body.css("opacity", "1");
 
-      if(dom.getElements("#selectEmail input[type=radio]:visible").length === 0) {
+      if (dom.getElements("#selectEmail input[type=radio]:visible").length === 0) {
         // If there is only one email address, the radio button is never shown,
         // instead focus the sign in button so that the user can click enter.
         // issue #412
         $("#signInButton").focus();
       }
 
-      pickEmailState.call(this);
+      pickEmailState.call(self);
     },
 
     "#useNewEmail click": addEmailState,

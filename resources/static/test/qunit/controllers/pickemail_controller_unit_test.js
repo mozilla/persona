@@ -95,29 +95,38 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     equal(label.hasClass("preselected"), false, "the label has no class");
   });
 
-  function testRemember(remember) {
+  function testRemember(allowPersistent, remember) {
     storage.site.set(testOrigin, "remember", remember);
 
-    controller = el.pickemail().controller();
+    controller = el.pickemail({
+      allow_persistent: allowPersistent
+    }).controller();
     ok(controller, "controller created");
 
-    equal($("#remember").is(":checked"), remember, "appropriate checkbox check");
+    // remember can only be checked if allowPersistent is allowed
+    equal($("#remember").is(":checked"), allowPersistent ? remember : false, "appropriate checkbox check");
   }
 
-  test("pickemail controller with remember set to false", function() {
-    testRemember(false);
+  test("pickemail controller with allow_persistent and remember set to false", function() {
+    testRemember(false, false);
   });
 
-  test("pickemail controller with remember set to true", function() {
-    testRemember(true);
+  test("pickemail controller with allow_persistent set to false and remember set to true", function() {
+    testRemember(false, true);
+  });
+
+  test("pickemail controller with allow_persistent and remember set to true", function() {
+    testRemember(true, true);
   });
 
 
-  test("signIn saves email, remember status to storage", function() {
+  test("signIn saves email, remember status to storage when allow_persistent set to true", function() {
     storage.addEmail("testuser@testuser.com", {priv: "priv", pub: "pub"});
     storage.addEmail("testuser2@testuser.com", {priv: "priv", pub: "pub"});
 
-    controller = el.pickemail().controller();
+    controller = el.pickemail({
+      allow_persistent: true 
+    }).controller();
 
     $("input[type=radio]").eq(1).click();
     $("#remember").attr("checked", true);
@@ -126,6 +135,32 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
 
     equal(storage.site.get(testOrigin, "email"), "testuser2@testuser.com", "email saved correctly");
     equal(storage.site.get(testOrigin, "remember"), true, "remember saved correctly");
+
+    $("input[type=radio]").eq(0).click();
+    $("#remember").removeAttr("checked");
+
+    controller.signIn();
+
+    equal(storage.site.get(testOrigin, "email"), "testuser@testuser.com", "email saved correctly");
+    equal(storage.site.get(testOrigin, "remember"), false, "remember saved correctly");
+  });
+
+  test("signIn saves email, but not remember status when allow_persistent set to false", function() {
+    storage.addEmail("testuser@testuser.com", {priv: "priv", pub: "pub"});
+    storage.addEmail("testuser2@testuser.com", {priv: "priv", pub: "pub"});
+    storage.site.set(testOrigin, "remember", false);
+
+    controller = el.pickemail({
+      allow_persistent: false
+    }).controller();
+
+    $("input[type=radio]").eq(1).click();
+    $("#remember").attr("checked", true);
+
+    controller.signIn();
+
+    equal(storage.site.get(testOrigin, "email"), "testuser2@testuser.com", "email saved correctly");
+    equal(storage.site.get(testOrigin, "remember"), false, "remember saved correctly");
 
     $("input[type=radio]").eq(0).click();
     $("#remember").removeAttr("checked");

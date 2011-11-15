@@ -95,6 +95,7 @@
         var self=this;
         self.onsuccess = onsuccess;
         self.onerror = onerror;
+        self.allowPersistent = true; // XXX We need to get this info from somewhere.
 
         if('onLine' in navigator && !navigator.onLine) {
           self.doOffline();
@@ -217,11 +218,13 @@
       },
 
       doPickEmail: function() {
-        this.element.pickemail({
+        var self=this;
+        self.element.pickemail({
           // XXX ideal is to get rid of this and have a User function
           // that takes care of getting email addresses AND the last used email
           // for this site.
-          origin: user.getHostname()
+          origin: user.getHostname(),
+          allow_persistent: self.allowPersistent
         });
       },
 
