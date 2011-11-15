@@ -657,7 +657,7 @@ h1 {
 }
 
 #signUpFormWrap {
-  margin: 122px 160px;
+  margin: 122px 115px;
 }
 
 #signUpFormWrap a.signUpIn {
@@ -815,13 +815,19 @@ a.forgot {
 .notifications > .notification {
   margin-top: 20px;
   padding: 5px;
-  line-height: 16px;
+  line-height: 21px;
+  color: #62615F;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
   -webkit-border-radius: 3px;
      -moz-border-radius: 3px;
        -o-border-radius: 3px;
           border-radius: 3px;
   display: none;
   text-align: center;
+}
+
+.notifications > .notification a, .notifications > .notification strong {
+  color: #222;
 }
 
 .notifications .notification.error {

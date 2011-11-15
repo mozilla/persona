@@ -54,10 +54,7 @@ BrowserID.forgot = (function() {
     if (valid) {
       user.requestPasswordReset(email, function onSuccess(info) {
         if (info.success) {
-          pageHelpers.clearStoredEmail();
-          $('#sent_to_email').html(email);
-          $('#forminputs').fadeOut();
-          $(".notifications .notification.emailsent").fadeIn();
+          pageHelpers.showEmailSent();
         }
         else {
           var tooltipEl = info.reason === "throttle" ? "#could_not_add" : "#not_registered";
@@ -67,20 +64,29 @@ BrowserID.forgot = (function() {
     }
   };
 
+  function back(event) {
+    if (event) event.preventDefault();
+
+    pageHelpers.cancelEmailSent();
+  }
+
   function init() {
     $("form input[autofocus]").focus();
 
     pageHelpers.setupEmail();
 
     $("form").bind("submit", submit);
+    $("#back").bind("click", back);
   }
 
   function reset() {
     $("form").unbind("submit", submit);
+    $("#back").unbind("click", back);
   }
 
   init.submit = submit; 
   init.reset = reset;
+  init.back = back;
 
   return init;
 

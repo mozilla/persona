@@ -41,13 +41,9 @@ BrowserID.signUp = (function() {
       user = bid.User,
       pageHelpers = bid.PageHelpers,
       errors = bid.Errors,
-      ANIMATION_SPEED = 250;
-
-    function replaceWithMessage(selector) {
-        $('.forminputs').fadeOut(ANIMATION_SPEED, function() {
-          $(selector).fadeIn(ANIMATION_SPEED);
-        });
-    }
+      tooltip = BrowserID.Tooltip,
+      ANIMATION_SPEED = 250,
+      storedEmail = pageHelpers;
 
     function showNotice(selector) {
       $(selector).fadeIn(ANIMATION_SPEED);
@@ -65,10 +61,13 @@ BrowserID.signUp = (function() {
 
       user.isEmailRegistered(email, function(registered) {
         if (!registered) {
-          pageHelpers.clearStoredEmail();
-          user.createUser(email, function onSuccess(keypair) {
-            $('#sentToEmail').html(email);
-            replaceWithMessage(".emailsent");
+          user.createUser(email, function onSuccess(success) {
+            if(success) {
+              pageHelpers.showEmailSent();
+            }
+            else {
+              tooltip.showTooltip("#could_not_add");
+            }
           }, pageHelpers.getFailure(errors.createUser));
         }
         else {
@@ -76,6 +75,12 @@ BrowserID.signUp = (function() {
           showNotice(".alreadyRegistered");
         }
       }, pageHelpers.getFailure(errors.isEmailRegistered));
+    }
+
+    function back(event) {
+      if (event) event.preventDefault();
+
+      pageHelpers.cancelEmailSent();
     }
 
     function onEmailKeyUp(event) {
@@ -89,15 +94,18 @@ BrowserID.signUp = (function() {
 
       $("#email").bind("keyup", onEmailKeyUp);
       $("form").bind("submit", submit);
+      $("#back").bind("click", back);
     }
 
     function reset() {
       $("form").unbind("submit", submit);
       $("#email").unbind("keyup", onEmailKeyUp);
+      $("#back").unbind("click", back);
     }
 
     init.submit = submit;
     init.reset = reset;
+    init.back = back;
 
     return init;
 }());

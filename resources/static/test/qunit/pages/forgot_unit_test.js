@@ -117,4 +117,24 @@ steal.then("/pages/forgot", function() {
     });
   });
 
+  test("signup with unregistered email and cancel button pressed", function() {
+    $("#email").val("unregistered@testuser.com");
+
+    bid.signUp.submit();
+
+    setTimeout(function() {
+      bid.forgot.back();
+
+      setTimeout(function() {
+        equal($(".notification:visible").length, 0, "no notifications are visible");
+        equal($(".forminputs:visible").length, 1, "form inputs are again visible");
+        equal($("#email").val(), "unregistered@testuser.com", "email address restored");
+        start();
+      }, 500);
+    }, 100);
+
+    stop();
+  });
+
+
 });

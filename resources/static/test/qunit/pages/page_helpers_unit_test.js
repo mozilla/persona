@@ -76,6 +76,54 @@ steal.then(function() {
     equal(pageHelpers.getStoredEmail(), "", "clearStoredEmail clears stored email");
   });
 
+  test("replaceInputsWithNotice replaces contents", function() {
+    pageHelpers.replaceInputsWithNotice(".emailsent", function() {
+      equal($(".emailsent").is(":visible"), true, "emailsent is visible");
+      equal($(".forminputs").is(":visible"), false, "inputs are hidden");
+      start();
+    });
+
+    stop();
+  });
+
+  test("showInputs hides notices and shows the inputs", function() {
+    pageHelpers.replaceInputsWithNotice(".emailsent", function() {
+      pageHelpers.showInputs(function() {
+        equal($(".emailsent").is(":visible"), false, "emailsent is hidden");
+        equal($(".forminputs").is(":visible"), true, "inputs are shown");
+        start();
+      });
+    });
+
+    stop();
+  });
+
+
+  test("showEmailSent shows correct email sent message", function() {
+    pageHelpers.setStoredEmail("testuser@testuser.com");
+    pageHelpers.showEmailSent(function() {
+      equal($("#sentToEmail").html(), "testuser@testuser.com", "correct email is set");
+      equal($(".emailsent").is(":visible"), true, "emailsent is visible");
+      equal($(".forminputs").is(":visible"), false, "inputs are hidden");
+      start();
+    });
+  });
+
+  test("cancelEmailSent restores the stored email, inputs are shown again", function() {
+    pageHelpers.setStoredEmail("testuser@testuser.com");
+    pageHelpers.showEmailSent(function() {
+      pageHelpers.cancelEmailSent(function() {
+        var email = pageHelpers.getStoredEmail();
+        equal(email, "testuser@testuser.com", "stored email is reset on cancel");
+        equal($(".emailsent").is(":visible"), false, "emailsent is not visible");
+        equal($(".forminputs").is(":visible"), true, "inputs are visible");
+        start();
+      });
+    });
+
+    stop();
+  });
+
 });
 
 

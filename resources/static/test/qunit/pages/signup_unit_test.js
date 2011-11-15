@@ -99,6 +99,14 @@ steal.then("/pages/signup", function() {
     testNoticeNotVisible();
   });
 
+  test("signup with throttling", function() {
+    xhr.useResult("throttle");
+
+    $("#email").val("throttled@testuser.com");
+
+    testNoticeNotVisible();
+  });
+
   test("signup with invalid XHR error", function() {
     xhr.useResult("invalid");
     $("#email").val("unregistered@testuser.com");
@@ -107,6 +115,25 @@ steal.then("/pages/signup", function() {
       equal($("#error").is(":visible"), true, "error message displayed");
       start();
     });
+  });
+
+  test("signup with unregistered email and cancel button pressed", function() {
+    $("#email").val("unregistered@testuser.com");
+
+    bid.signUp.submit();
+
+    setTimeout(function() {
+      bid.signUp.back();
+
+      setTimeout(function() {
+        equal($(".notification:visible").length, 0, "no notifications are visible");
+        equal($(".forminputs:visible").length, 1, "form inputs are again visible");
+        equal($("#email").val(), "unregistered@testuser.com", "email address restored");
+        start();
+      }, 500);
+    }, 100);
+
+    stop();
   });
 
 });

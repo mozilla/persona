@@ -40,7 +40,9 @@ BrowserID.PageHelpers = (function() {
   var win = window,
       locStorage = win.localStorage,
       bid = BrowserID,
-      errorDisplay = bid.ErrorDisplay;
+      errorDisplay = bid.ErrorDisplay,
+      ANIMATION_SPEED = 250,
+      origStoredEmail;
 
   function setStoredEmail(email) {
     locStorage.signInEmail = email;
@@ -88,9 +90,34 @@ BrowserID.PageHelpers = (function() {
     return function onFailure(info) {
       info = $.extend(info, { action: error, dialog: false });
       bid.Screens.error("error", info);
-      $("#errorBackground").fadeIn();
-      $("#error").fadeIn();
+      $("#errorBackground").stop().fadeIn();
+      $("#error").stop().fadeIn();
     }
+  }
+
+  function replaceInputsWithNotice(selector, onComplete) {
+    $('.forminputs').hide();
+    $(selector).stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED, onComplete);
+  }
+
+  function showInputs(onComplete) {
+    $('.notification').hide();
+    $('.forminputs').stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED, onComplete);
+  }
+
+  function showEmailSent(onComplete) {
+    origStoredEmail = getStoredEmail();
+    $('#sentToorigStoredEmail').html(origStoredEmail);
+
+    clearStoredEmail();
+
+    replaceInputsWithNotice(".emailsent", onComplete);
+  }
+
+  function cancelEmailSent(onComplete) {
+    setStoredEmail(origStoredEmail);
+
+    showInputs(onComplete);
   }
 
   return {
@@ -99,6 +126,10 @@ BrowserID.PageHelpers = (function() {
     clearStoredEmail: clearStoredEmail,
     getStoredEmail: getStoredEmail,
     getParameterByName: getParameterByName,
-    getFailure: getFailure
+    getFailure: getFailure,
+    replaceInputsWithNotice: replaceInputsWithNotice,
+    showInputs: showInputs,
+    showEmailSent: showEmailSent,
+    cancelEmailSent: cancelEmailSent
   };
 }());
