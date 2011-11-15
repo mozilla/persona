@@ -43,6 +43,7 @@ express = require('express');
 
 const
 config = require('../lib/configuration.js'),
+httputils = require('../lib/httputils.js'),
 validate = require('../lib/validate.js'),
 metrics = require('../lib/metrics.js'),
 logger = require('../lib/logging.js').logger,
@@ -75,18 +76,23 @@ app.use(express.bodyParser());
 
 // and our single function
 app.post('/wsapi/cert_key', validate(["email", "pubkey"]), function(req, resp) {
-  // parse the pubkey
-  var pk = ca.parsePublicKey(req.body.pubkey);
+  try {
+    // parse the pubkey
+    var pk = ca.parsePublicKey(req.body.pubkey);
 
-  // same account, we certify the key
-  // we certify it for a day for now
-  var expiration = new Date();
-  expiration.setTime(new Date().valueOf() + config.get('certificate_validity_ms'));
-  var cert = ca.certify(req.body.email, pk, expiration);
+    // same account, we certify the key
+    // we certify it for a day for now
+    var expiration = new Date();
+    expiration.setTime(new Date().valueOf() + config.get('certificate_validity_ms'));
+    var cert = ca.certify(req.body.email, pk, expiration);
 
-  resp.writeHead(200, {'Content-Type': 'text/plain'});
-  resp.write(cert);
-  resp.end();
+    resp.writeHead(200, {'Content-Type': 'text/plain'});
+    resp.write(cert);
+    resp.end();
+  } catch (e) {
+    logger.error("certification generation error: " + e.toString());
+    httputils.serverError(resp, "certification generation error");
+  }
 });
 
 // shutdown when code_update is invoked
