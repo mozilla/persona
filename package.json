@@ -18,7 +18,7 @@
     , "winston" : "0.5.6"
     , "connect-cookie-session" : "0.0.2"
     , "mysql" : "0.9.4"
-    , "optimist" : "0.2.6"
+    , "optimist" : "0.2.8"
     , "qs" : "0.3.1"
     , "mime" : "1.2.2"
     , "pkginfo" : "0.2.2"

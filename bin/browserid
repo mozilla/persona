@@ -172,7 +172,7 @@ shutdown.installUpdateHandler(app, function(readyForShutdown) {
 // fake_verification.js.  This is used during testing only and should
 // never be included in a production deployment
 if (process.env['BROWSERID_FAKE_VERIFICATION']) {
-  require('../lib/fake_verification.js').addVerificationWSAPI(app);
+  require('../lib/browserid/fake_verification.js').addVerificationWSAPI(app);
 }
 
 // open the databse
