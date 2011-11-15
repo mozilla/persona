@@ -54,10 +54,11 @@ steal.then("/dialog/resources/channel", function() {
         browserid_relay_1234: {
           BrowserID: {
             Relay: {
-              registerClient: function(callback) {
+              registerClient: function(methods) {
                 // mock of the registerClient function in the BrowserID.Channel.
-                callback("origin", function onComplete(success, error) {
+                methods["get"]("foo.com", {}, function onComplete(success) {
                   winMock.success = success;
+                }, function onerror(error) {
                   winMock.error = error;
                 });
               }
@@ -89,7 +90,6 @@ steal.then("/dialog/resources/channel", function() {
       window: winMock,
       navigator: navMock
     });
-
 
     channel.open({
       getVerifiedEmail: function(origin, onsuccess, onerror) {

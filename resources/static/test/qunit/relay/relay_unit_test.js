@@ -56,7 +56,7 @@ steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
     },
 
     // Mock in the receiving of the RPC call from the RP.
-    receiveGetVerifiedEmail: function() {
+    receiveGet: function() {
       // cb is the mock callback that is passed to Channel.bind
       channelMock.cb({
         origin: "Origin",
@@ -102,20 +102,20 @@ steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
     /**
      * Check to make sure the correct message is bound
      */
-    equal(channelMock.bindMessage, "getVerifiedEmail", "bound to getVerifiedEmail");
+    equal(channelMock.bindMessage, "get", "bound to get");
   });
 
-  test("channel.getVerifiedEmail before registerDialog", function() {
+  test("channel.get before registerDialog", function() {
     relay.open();
 
-    channelMock.receiveGetVerifiedEmail();
+    channelMock.receiveGet();
 
-    relay.registerClient(function(origin, completeCB) {
+    relay.registerClient({'get': function(origin, params, completeCB) {
       equal(origin, "Origin", "Origin set correctly");
       equal(typeof completeCB, "function", "A completion callback is specified");
 
       start();
-    });
+    }});
 
     stop();
   });
@@ -123,14 +123,14 @@ steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
   test("registerDialog before channel.getVerifiedEmail", function() {
     relay.open();
 
-    relay.registerClient(function(origin, completeCB) {
+    relay.registerClient({'get': function(origin, params, completeCB) {
       equal(origin, "Origin", "Origin set correctly");
       equal(typeof completeCB, "function", "A completion callback is specified");
 
       start();
-    });
+    }});
 
-    channelMock.receiveGetVerifiedEmail();
+    channelMock.receiveGet();
 
     stop();
   });
@@ -138,13 +138,13 @@ steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
   test("calling the completeCB with assertion", function() {
     relay.open();
 
-    channelMock.receiveGetVerifiedEmail();
+    channelMock.receiveGet();
 
-    relay.registerClient(function(origin, completeCB) {
+    relay.registerClient({'get': function(origin, params, completeCB) {
       completeCB("assertion", null);
       equal(channelMock.status, "assertion", "channel gets the correct assertion");
       start();
-    });
+    }});
 
     stop();
   });
@@ -153,30 +153,30 @@ steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
   test("calling the completeCB with null assertion", function() {
     relay.open();
 
-    channelMock.receiveGetVerifiedEmail();
+    channelMock.receiveGet();
 
-    relay.registerClient(function(origin, completeCB) {
+    relay.registerClient({'get': function(origin, params, completeCB) {
       completeCB(null, null);
       strictEqual(channelMock.status, null, "channel gets the null assertion");
       start();
-    });
+    }});
 
     stop();
   });
 
-  test("calling the completeCB with error", function() {
+  test("calling the onerror callback", function() {
     relay.open();
 
-    channelMock.receiveGetVerifiedEmail();
+    channelMock.receiveGet();
 
-    relay.registerClient(function(origin, completeCB) {
-      completeCB(null, "canceled");
+    relay.registerClient({'get': function(origin, params, onsuccess, onerror) {
+      onerror("canceled");
 
       equal(channelMock.errorCode, "canceled", "error callback called with error code");
       ok(channelMock.verboseError, "verbose error code set");
 
       start();
-    });
+    }});
 
     stop();
   });

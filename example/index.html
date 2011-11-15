@@ -124,7 +124,7 @@ navigator.id.get(function(assertion) {
         $("#oAssertion").text(assertion);
         checkAssertion(assertion);
       };
-    });
+    }, {persistent: true});
   });
 
   $("#logout").click(function(event) {

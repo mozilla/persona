@@ -756,7 +756,8 @@
         // we now have the relay iframe and channel already
         // we just message it.
         relay_chan.call({
-          method: "getVerifiedEmail",
+          method: "get",
+          params: options,
           success: function(rv) {
             if (callback) {
               // return the string representation of the JWT, the client is responsible for unpacking it.

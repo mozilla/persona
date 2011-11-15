@@ -92,10 +92,19 @@
       },
 
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {
+        return this.get(origin_url, {}, onsuccess, onerror);
+      },
+    
+      get: function(origin_url, params, onsuccess, onerror) {
         var self=this;
         self.onsuccess = onsuccess;
         self.onerror = onerror;
-        self.allowPersistent = true; // XXX We need to get this info from somewhere.
+
+        if (typeof(params) == 'undefined') {
+          params = {};
+        }
+        
+        self.allowPersistent = (params.persistent == true);
 
         if('onLine' in navigator && !navigator.onLine) {
           self.doOffline();
