@@ -830,34 +830,34 @@ a.forgot {
 }
 
 
-#header {
+header {
   position: absolute;
   top: 0;
   font-weight: bold;
 }
 
-#header ul {
+header ul {
   display: inline-block;
 }
 
-#header ul.nav {
+header ul.nav {
   float: right;
 }
 
-#header ul li {
+header ul li {
   display: inline-block;
   float: left;
 }
 
-#header ul.nav li {
+header ul.nav li {
   margin: 0 0 0 10px;
 }
 
-#header a {
+header a {
   color: #222;
 }
 
-#header a.home {
+header a.home {
   width: 80px;
   height: 21px;
   background-image: url('/i/icon.png');
@@ -866,7 +866,7 @@ a.forgot {
   background-repeat: no-repeat;
 }
 
-#header a.signIn, #header a.signOut {
+header a.signIn, header a.signOut {
   background-color: rgba(0,0,0,0.1);
   padding: 4px 8px;
 
@@ -876,7 +876,7 @@ a.forgot {
           border-radius: 3px;
 }
 
-#header a.signIn:hover, #header a.signOut:hover {
+header a.signIn:hover, header a.signOut:hover {
   background-color: rgba(0,0,0,0.25);
   text-decoration: none;
 }
@@ -889,26 +889,31 @@ a.forgot {
   display: inline;
 }
 
-#header,
-#footer {
+header,
+footer {
   display: block;
   width: 100%;
   padding: 20px 0;
 }
 
-#footer ul li {
-  display: inline-block;
-  float: left;
-  margin: 0 10px 0 0;
-}
-
-#footer {
+footer {
   position: absolute;
   bottom: 0;
   color: #aaa;
 }
 
-#footer a {
+footer a {
   color: #aaa;
 }
+
+footer ul li {
+  display: inline-block;
+  float: left;
+  margin: 0 10px 0 0;
+}
+
+footer ul li.help {
+  float: right;
+}
+
 
