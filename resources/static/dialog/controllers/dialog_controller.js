@@ -118,8 +118,13 @@
         self.doCheckAuth();
 
         dom.bindEvent(win, "unload", function() {
-          bid.Storage.setStagedOnBehalfOf("");
-          self.doCancel();
+          // do this only if something else hasn't
+          // declared success
+          if (!self.success) {
+            bid.Storage.setStagedOnBehalfOf("");
+            self.doCancel();
+          }
+          window.teardownChannel();
         });
       },
 
@@ -295,6 +300,7 @@
         // calls window.close, which would trigger the onerror callback if we
         // tried this afterwards.
         self.onerror = null;
+        self.success = true;
         self.onsuccess(assertion);
       },
 

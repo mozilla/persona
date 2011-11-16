@@ -110,6 +110,16 @@
       setupIFrameChannel(controller);
   }
 
+  function close() {
+    var frameWindow = getRelayWindow();
+    
+    if (frameWindow) {
+      frameWindow.BrowserID.Relay.unregisterClient();
+    }
+    else {
+      throw "relay frame not found";
+    }    
+  }
 
   function init(options) {
     onCompleteCallback = undefined;
@@ -139,7 +149,12 @@
        * @param {object} options - contains:
        * *   options.getVerifiedEmail {function} - function to /get
        */
-      open: open
+      open: open,
+
+      /**
+       * Close the channel
+       */
+      close: close
     };
   }
 
@@ -148,4 +163,5 @@
    * window.setupChannel;
    */
   window.setupChannel = open;
+  window.teardownChannel = close;
 }());
