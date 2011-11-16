@@ -67,7 +67,6 @@
       }, me.getErrorDialog(BrowserID.Errors.registration));
     },
 
-    "
   });
 
 
