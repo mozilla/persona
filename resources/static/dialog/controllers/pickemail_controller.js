@@ -42,6 +42,7 @@
       user = bid.User,
       errors = bid.Errors,
       storage = bid.Storage,
+      helpers = bid.Helpers,
       dom = bid.DOM,
       body = $("body"),
       animationComplete = body.innerWidth() < 640,
@@ -150,12 +151,12 @@
   }
 
   function addEmail(element, event) {
-    var email = dom.getInner("#newEmail"),
+    var email = helpers.getAndValidateEmail("#newEmail"),
         self=this;
 
     cancelEvent(event);
 
-    if (!bid.Validation.email(email)) {
+    if (!email) {
       return;
     }
 
