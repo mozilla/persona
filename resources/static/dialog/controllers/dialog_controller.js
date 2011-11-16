@@ -94,7 +94,7 @@
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {
         return this.get(origin_url, {}, onsuccess, onerror);
       },
-    
+
       get: function(origin_url, params, onsuccess, onerror) {
         var self=this;
         self.onsuccess = onsuccess;
@@ -103,8 +103,8 @@
         if (typeof(params) == 'undefined') {
           params = {};
         }
-        
-        self.allowPersistent = !!params.persistent;
+
+        self.allowPersistent = !!params.allowPersistent;
         self.requiredEmail = params.requiredEmail;
 
         if ('onLine' in navigator && !navigator.onLine) {
