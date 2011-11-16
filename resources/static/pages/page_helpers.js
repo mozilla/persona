@@ -40,6 +40,7 @@ BrowserID.PageHelpers = (function() {
   var win = window,
       locStorage = win.localStorage,
       bid = BrowserID,
+      dom = bid.DOM,
       errorDisplay = bid.ErrorDisplay,
       ANIMATION_SPEED = 250,
       origStoredEmail;
@@ -49,7 +50,7 @@ BrowserID.PageHelpers = (function() {
   }
 
   function onEmailKeyUp(event) {
-    var email = $("#email").val();
+    var email = dom.getInner("#email");
     setStoredEmail(email);
   }
 
@@ -107,7 +108,7 @@ BrowserID.PageHelpers = (function() {
 
   function showEmailSent(onComplete) {
     origStoredEmail = getStoredEmail();
-    $('#sentToorigStoredEmail').html(origStoredEmail);
+    dom.setInner('#sentToEmail', origStoredEmail);
 
     clearStoredEmail();
 
@@ -118,6 +119,8 @@ BrowserID.PageHelpers = (function() {
     setStoredEmail(origStoredEmail);
 
     showInputs(onComplete);
+    
+    dom.focus("input:visible:eq(0)");
   }
 
   return {

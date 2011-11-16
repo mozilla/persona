@@ -92,6 +92,18 @@ steal.then("/pages/forgot", function() {
     stop();
   });
 
+  test("requestPasswordReset with known email with leading/trailing whitespace", function() {
+    $("#email").val("   registered@testuser.com  ");
+    bid.forgot.submit();
+
+    setTimeout(function() {
+      ok($(".emailsent").is(":visible"), "email sent successfully");
+      start();
+    }, CHECK_DELAY);
+
+    stop();
+  });
+
   test("requestPasswordReset with unknown email", function() {
     $("#email").val("unregistered@testuser.com");
 

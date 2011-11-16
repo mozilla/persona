@@ -43,11 +43,12 @@
       errors = bid.Errors,
       validation = bid.Validation,
       tooltip = bid.Tooltip,
+      helpers = bid.Helpers,
       dom = bid.DOM,
       lastEmail = "";
 
   function getEmail() {
-    return dom.getInner("#email").trim();
+    return helpers.getAndValidateEmail("#email");
   }
 
   function checkEmail(el, event) {
@@ -56,7 +57,7 @@
 
     cancelEvent(event);
 
-    if (!validation.email(email)) return;
+    if (!email) return;
 
     user.isEmailRegistered(email, function onComplete(registered) {
       if (registered) {

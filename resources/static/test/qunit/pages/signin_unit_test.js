@@ -90,6 +90,20 @@ steal.then("/pages/signin", function() {
     stop();
   });
 
+  test("signin with valid email with leading/trailing whitespace and password", function() {
+    $("#email").val("  registered@testuser.com  ");
+    $("#password").val("password");
+
+    bid.signIn.submit();
+
+    setTimeout(function() {
+      equal(docMock.location, "/", "user signed in, page redirected");
+      start();
+    }, 100);
+
+    stop();
+  });
+
   test("signin with missing email", function() {
     $("#email").val("");
     $("#password").val("password");

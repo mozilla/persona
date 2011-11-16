@@ -39,19 +39,18 @@ BrowserID.signIn = (function() {
 
   var bid = BrowserID,
       user = bid.User,
+      helpers = bid.Helpers,
+      dom = bid.DOM,
       pageHelpers = bid.PageHelpers,
-      validation = bid.Validation,
       doc = document;
 
   function submit(event) {
     if (event) event.preventDefault();
 
-    var email = $("#email").val(),
-        password = $("#password").val();
+    var email = helpers.getAndValidateEmail("#email"),
+        password = helpers.getAndValidatePassword("#password");
 
-    var valid = validation.emailAndPassword(email, password);
-
-    if (valid) {
+    if (email && password) {
       user.authenticate(email, password, function onSuccess(authenticated) {
         if (authenticated) {
           pageHelpers.clearStoredEmail();
@@ -72,11 +71,11 @@ BrowserID.signIn = (function() {
 
     pageHelpers.setupEmail();
 
-    $("form").bind("submit", submit);
+    dom.bindEvent("form", "submit", submit);
   }
 
   function reset() {
-    $("form").unbind("submit", submit);
+    dom.unbindEvent("form", "submit", submit);
   }
 
   init.submit = submit;

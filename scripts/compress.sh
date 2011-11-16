@@ -64,7 +64,7 @@ echo ''
 
 cd ../pages
 # re-minimize everything together
-cat ../lib/jquery-1.6.2.min.js ../lib/json2.js ../lib/underscore-min.js ../lib/ejs.js ../shared/browserid-extensions.js ../shared/browserid.js ../lib/dom-jquery.js ../shared/templates.js ../shared/renderer.js ../shared/error-display.js ../shared/screens.js ../shared/error-messages.js ../shared/storage.js ../shared/network.js ../shared/user.js ../shared/tooltip.js ../shared/validation.js page_helpers.js browserid.js index.js add_email_address.js verify_email_address.js forgot.js manage_account.js signin.js signup.js > lib.js
+cat ../lib/jquery-1.6.2.min.js ../lib/json2.js ../lib/underscore-min.js ../lib/ejs.js ../shared/browserid-extensions.js ../shared/browserid.js ../lib/dom-jquery.js ../shared/templates.js ../shared/renderer.js ../shared/error-display.js ../shared/screens.js ../shared/error-messages.js ../shared/storage.js ../shared/network.js ../shared/user.js ../shared/tooltip.js ../shared/validation.js ../shared/helpers.js page_helpers.js browserid.js index.js add_email_address.js verify_email_address.js forgot.js manage_account.js signin.js signup.js > lib.js
 $UGLIFY < lib.js > lib.min.js
 
 cd ../css
