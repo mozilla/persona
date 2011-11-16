@@ -244,6 +244,12 @@ section > .contents {
     text-overflow: ellipsis;
 }
 
+div#required_email {
+    padding-top: .7em;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
 #signIn .vertical {
     padding: 0 20px;
 }
