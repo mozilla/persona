@@ -25,6 +25,8 @@ steal.plugins(
       "/dialog/controllers/page_controller",
       "/dialog/controllers/required_email_controller",
 
+      "/pages/page_helpers",
+
       "pages/browserid_unit_test",
       "pages/page_helpers_unit_test",
 
