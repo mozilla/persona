@@ -61,19 +61,22 @@ steal
                '../shared/screens',
                '../shared/tooltip',
                '../shared/validation',
-               '../shared/helpers',
-               '../shared/browser-support',
-               '../shared/browserid-extensions',
                '../shared/network',
                '../shared/user',
                '../shared/error-messages',
-               '../shared/wait-messages')
+               '../shared/browser-support',
+               '../shared/browserid-extensions',
+               '../shared/wait-messages',
+               '../shared/helpers'
+               )
 
 	.controllers('page',
                'dialog',
                'authenticate',
                'checkregistration',
-               'pickemail')					// loads files in controllers folder
+               'pickemail',
+               'required_email'
+               )					// loads files in controllers folder
 
   .then(function() {
     $(function() {

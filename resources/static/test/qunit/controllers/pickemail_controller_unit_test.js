@@ -60,6 +60,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     teardown: function() {
       if (controller) {
         controller.destroy();
+        controller = null;
       }    
       reset();
       storage.clear();
@@ -78,7 +79,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     var radioButton = $("input[type=radio]").eq(1);
     ok(radioButton.is(":checked"), "the email address we specified is checked");
 
-    var label = radioButton.parent();;
+    var label = radioButton.parent();
     ok(label.hasClass("preselected"), "the label has the preselected class");
   });
 
@@ -169,6 +170,18 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
 
     equal(storage.site.get(testOrigin, "email"), "testuser@testuser.com", "email saved correctly");
     equal(storage.site.get(testOrigin, "remember"), false, "remember saved correctly");
+  });
+
+  test("addEmail with valid email", function() {
+
+  });
+
+  test("addEmail with valid email with leading/trailing whitespace", function() {
+
+  });
+
+  test("addEmail with invalid email", function() {
+
   });
 
 });

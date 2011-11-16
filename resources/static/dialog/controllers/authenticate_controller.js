@@ -75,52 +75,35 @@
 
     cancelEvent(event);
 
-    if (!validation.email(email)) return;
-
-    user.createUser(email, function(staged) {
-      if (staged) {
-        self.close("user_staged", {
-          email: email
-        });
-      }
-      else {
-        tooltip.showTooltip("#could_not_add");
-      }
-    }, self.getErrorDialog(errors.createUser));
+    if(email) {
+      helpers.createUser.call(self, email);
+    }
   }
 
   function authenticate(el, event) {
     var email = getEmail(),
-        pass = dom.getInner("#password"),
+        pass = helpers.getAndValidatePassword("#password"),
         self = this;
 
     cancelEvent(event);
 
-    if (!validation.emailAndPassword(email, pass)) return;
-
-    user.authenticate(email, pass,
-      function onComplete(authenticated) {
-        if (authenticated) {
-          self.close("authenticated", {
-            email: email
-          });
-        } else {
-          bid.Tooltip.showTooltip("#cannot_authenticate");
-        }
-      }, self.getErrorDialog(errors.authenticate));
+    if(email && pass) {
+      helpers.authenticateUser.call(self, email, pass, function() {
+        self.close("authenticated", {
+          email: email
+        });
+      });
+    }
   }
 
   function resetPassword(el, event) {
-    var email = getEmail(),
-        self=this;
+    var email = getEmail();
 
     cancelEvent(event);
 
-    user.requestPasswordReset(email, function() {
-      self.close("reset_password", {
-        email: email
-      });
-    }, self.getErrorDialog(errors.requestPasswordReset));
+    if(email) {
+      helpers.resetPassword.call(this, email);
+    }
   }
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {

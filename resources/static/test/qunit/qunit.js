@@ -22,6 +22,9 @@ steal.plugins(
       "/shared/validation",
       "/shared/helpers",
 
+      "/dialog/controllers/page_controller",
+      "/dialog/controllers/required_email_controller",
+
       "pages/browserid_unit_test",
       "pages/page_helpers_unit_test",
 
@@ -44,9 +47,13 @@ steal.plugins(
       "shared/network_unit_test",
       "shared/user_unit_test",
       "resources/channel_unit_test",
+
       "controllers/page_controller_unit_test",
       "controllers/pickemail_controller_unit_test",
       "controllers/dialog_controller_unit_test",
       "controllers/checkregistration_controller_unit_test",
-      "controllers/authenticate_controller_unit_test");
+      "controllers/authenticate_controller_unit_test",
+      "controllers/required_email_controller_unit_test"
+      
+      );
 
