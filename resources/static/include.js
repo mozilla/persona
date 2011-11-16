@@ -668,16 +668,20 @@
     return iframe;
   }
 
-  function _open_window(url) {
+  function _open_window(url, name_suffix) {
     url = url || "about:blank";
     // we open the window initially blank, and only after our relay frame has
     // been constructed do we update the location.  This is done because we
     // must launch the window inside a click handler, but we should wait to
     // start loading it until our relay iframe is instantiated and ready.
     // see issue #287 & #286
+    var window_name = "_mozid_signin";
+    if (name_suffix)
+      window_name += "_" + name_suffix;
+    
     var dialog = window.open(
       url,
-      "_mozid_signin",
+      window_name,
       isFennec ? undefined : "menubar=0,location=0,resizable=0,scrollbars=0,status=0,dialog=1,width=700,height=375");
 
     dialog.focus();
@@ -773,7 +777,7 @@
         });
 
         // open the window now that all else is ready
-        w = _open_window(ipServer + "/sign_in");
+        w = _open_window(ipServer + "/sign_in", relay_iframe.getAttribute('name'));
 
         // if the RP window closes, close the dialog as well.
         _attach_event(window, 'unload', cleanup);

@@ -43,11 +43,9 @@ steal.then("/dialog/resources/channel", function() {
 
   // Mock in the window object as well as the frame relay
   var winMock = {
+    name : "_mozid_signin_browserid_relay_1234",
     location: {
       href: "browserid.org/sign_in"
-    },
-    localStorage: {
-      RELAYFRAME_NAME : "browserid_relay_1234"
     },
     opener: {
       frames: {

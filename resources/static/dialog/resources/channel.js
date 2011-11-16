@@ -54,10 +54,15 @@
 (function() {
   var win = window,
       nav = navigator,
-      onCompleteCallback;
+      onCompleteCallback,
+      WINDOW_NAME_REGEXP= "^_mozid_signin_(.*)";
 
   function getRelayName() {
-    return win.localStorage.RELAYFRAME_NAME;
+    var result = win.name.match(WINDOW_NAME_REGEXP);
+    if (result)
+      return result[1];
+    else
+      return null;
   }
 
   function getRelayWindow() {
