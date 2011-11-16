@@ -209,9 +209,9 @@ exports.addShutdownBatches = function(suite) {
 
   // clean up
   suite.addBatch({
-    "closing the database": {
+    "closing (and removing) the database": {
       topic: function() {
-        db.close(this.callback);
+        db.closeAndRemove(this.callback);
       },
       "should work": function(err) {
         assert.isUndefined(err);

@@ -2,7 +2,10 @@
 
 const
 spawn = require('child_process').spawn,
-path = require('path');
+path = require('path'),
+config = require('../lib/configuration.js'),
+temp = require('temp'),
+secrets = require('../lib/secrets.js');
 
 exports.daemons = daemons = {};
 
@@ -41,6 +44,19 @@ process.env['BROWSERID_URL'] = 'http://' + HOST + ":10002";
 process.env['VERIFIER_URL'] = 'http://' + HOST + ":10000/verify";
 process.env['KEYSIGNER_URL'] = 'http://' + HOST + ":10003";
 
+// if the environment is a 'test_' environment, then we'll use an
+// ephemeral database
+if (config.get('env').substr(0,5) === 'test_') {
+  if (config.get('database').driver === 'mysql') {
+    process.env['MYSQL_DATABASE_NAME'] =
+      process.env['MYSQL_DATABASE_NAME'] ||"browserid_tmp_" + secrets.generate(6);
+    console.log("temp mysql database:", process.env['MYSQL_DATABASE_NAME']);
+  } else if (config.get('database').driver === 'json') {
+    process.env['JSON_DATABASE_PATH'] =  process.env['JSON_DATABASE_PATH'] || temp.path({suffix: '.db'});
+    console.log("temp json database:", process.env['JSON_DATABASE_PATH']);
+  }
+}
+
 function runDaemon(daemon, cb) {
   Object.keys(daemonsToRun[daemon]).forEach(function(ek) {
     process.env[ek] = daemonsToRun[daemon][ek];
@@ -53,8 +69,8 @@ function runDaemon(daemon, cb) {
       if (d.length === 0) return;
       console.log(daemon, '(' + p.pid + '):', d);
 
-      // when we find a line that looks like 'running on <url>' then we've fully
-      // started up and can run the next daemon.  see issue #556
+      // when we find a line that looks like 'running on <url>' then we've
+      // fully started up and can run the next daemon.  see issue #556
       if (cb && /^.*running on http:\/\/.*:[0-9]+$/.test(d)) {
         cb();
         cb = undefined;

@@ -290,6 +290,22 @@ suite.addBatch({
     },
     "should work": function(err) {
       assert.isUndefined(err);
+    },
+    "re-opening the database": {
+      topic: function() {
+        db.open(dbCfg, this.callback);
+      },
+      "works": function(r) {
+        assert.isUndefined(r);
+      },
+      "and then purging": {
+        topic: function() {
+          db.closeAndRemove(this.callback);
+        },
+        "works": function(r) {
+          assert.isUndefined(r);
+        }
+      }
     }
   }
 });

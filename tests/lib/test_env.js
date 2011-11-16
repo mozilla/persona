@@ -44,5 +44,14 @@ if (undefined === process.env['NODE_ENV']) {
   process.env['NODE_ENV'] = 'test_json';
 } else if (process.env['NODE_ENV'].substr(0,5) !== 'test_') {
   console.log("(Woah.  Running tests without a test_ configuration.  Is this *really* what you want?)");
+  process.exit(1);
 }
 
+// if the environment is a 'test_' environment, then we'll use an
+// ephemeral database
+if (process.env['NODE_ENV'] === 'test_mysql') {
+  process.env['MYSQL_DATABASE_NAME'] = "browserid_tmp_" +
+    require('../../lib/secrets.js').generate(6);
+} else if (process.env['NODE_ENV'] === 'test_json') {
+  process.env['JSON_DATABASE_PATH'] = require('temp').path({suffix: '.db'});
+}
