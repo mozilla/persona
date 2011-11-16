@@ -1,0 +1,41 @@
+  <!--strong>Required Email Sign In</strong-->
+  <div class="form_section">
+      <ul class="inputs">
+
+          The site requested you sign in with
+          <p>
+            <span id="required_email"><%= email %></span>
+          </p>
+
+          <% if (showPassword) { %>
+            <li id="password_section">
+
+                <label for="password" class="half serif">Password</label>
+                <div class="half right">
+                    <a id="forgotPassword" href="#" tabindex="4">forgot your password?</a>
+                </div>
+                <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
+
+
+                <div id="password_required" class="tooltip" for="password">
+                  The password field is required.
+                </div>
+
+                <div id="cannot_authenticate" class="tooltip" for="password">
+                  The account cannot be logged in with this username and password.
+                </div>
+            </li>
+          <% } %>
+      
+      </ul>
+
+      <div class="submit cf">
+          <% if (signin) { %>
+            <button id="sign_in" tabindex="3">sign in</button>
+          <% } else { %>
+            <button id="verify_address" tabindex="3">verify email</button>
+          <% } %>
+
+          <button id="cancel_stage" tabindex="4">cancel</button>
+      </div>
+  </div>

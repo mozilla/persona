@@ -38,6 +38,8 @@
 
   var bid = BrowserID,
       dom = bid.DOM,
+      user = bid.User,
+      errors = bid.Errors,
       validation = bid.Validation,
       helpers = bid.Helpers = bid.Helpers || {};
 
@@ -61,6 +63,53 @@
     if(!validation.password(password)) return null;
 
     return password;
+  }
+
+  /**
+   * XXX add a test for the next two and move them into a dialog specific 
+   * helper module!
+   */
+  function animateClose(callback) {
+    var body = $("body"),
+        doAnimation = $("#signIn").length && body.innerWidth() > 640;
+
+    if (doAnimation) {
+      $("#signIn").animate({"width" : "685px"}, "slow", function () {
+        // post animation
+         body.delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
+           callback();
+         });
+      });
+    }
+    else {
+      callback();
+    }
+  }
+
+  // XXX Move this to a dialog specific module
+  function getAssertion(email) {
+    var self=this;
+    user.getAssertion(email, function(assert) {
+      assert = assert || null;
+      animateClose(function() {
+        self.close("assertion_generated", {
+          assertion: assert
+        });
+      });
+    }, self.getErrorDialog(errors.getAssertion));
+  }
+
+  // XXX Move this to a dialog specific module
+  function authenticateUser(email, pass, callback) {
+    var self=this;
+    user.authenticate(email, pass,
+      function onComplete(authenticated) {
+        if (authenticated) {
+          callback();
+        } else {
+          bid.Tooltip.showTooltip("#cannot_authenticate");
+        }
+      }, self.getErrorDialog(errors.authenticate));
   }
 
   extend(helpers, {
@@ -88,6 +137,9 @@
      * @return {string} password if password is valid, null otw.
      */
     getAndValidatePassword: getAndValidatePassword,
+
+    getAssertion: getAssertion,
+    authenticateUser: authenticateUser
   });
 
 

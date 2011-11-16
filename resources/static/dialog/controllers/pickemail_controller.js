@@ -45,7 +45,6 @@
       helpers = bid.Helpers,
       dom = bid.DOM,
       body = $("body"),
-      animationComplete = body.innerWidth() < 640,
       assertion;
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
@@ -97,41 +96,6 @@
     return !!identity;
   }
 
-  function tryClose() {
-    if (typeof assertion !== "undefined" && animationComplete) {
-      this.close("assertion_generated", {
-        assertion: assertion
-      });
-    }
-  }
-
-  function getAssertion(email) {
-    // Kick of the assertion fetching/keypair generating while we are showing
-    // the animation, hopefully this minimizes the delay the user notices.
-    var self=this;
-    user.getAssertion(email, function(assert) {
-      assertion = assert || null;
-      startAnimation.call(self);
-    }, self.getErrorDialog(errors.getAssertion));
-  }
-
-  function startAnimation() {
-    var self=this;
-    if (!animationComplete) {
-      $("#signIn").animate({"width" : "685px"}, "slow", function () {
-        // post animation
-         body.delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
-           animationComplete = true;
-           tryClose.call(self);
-         });
-      });
-    }
-    else {
-      tryClose.call(self);
-    }
-
-  }
-
   function signIn(element, event) {
     cancelEvent(event);
     var self=this,
@@ -146,7 +110,7 @@
         storage.site.set(origin, "remember", $("#remember").is(":checked"));
       }
 
-      getAssertion.call(self, email);
+      helpers.getAssertion.call(self, email);
     }
   }
 

@@ -91,23 +91,18 @@
 
   function authenticate(el, event) {
     var email = getEmail(),
-        pass = dom.getInner("#password"),
+        pass = helpers.getAndValidatePassword("#password"),
         self = this;
 
     cancelEvent(event);
 
-    if (!validation.emailAndPassword(email, pass)) return;
-
-    user.authenticate(email, pass,
-      function onComplete(authenticated) {
-        if (authenticated) {
-          self.close("authenticated", {
-            email: email
-          });
-        } else {
-          bid.Tooltip.showTooltip("#cannot_authenticate");
-        }
-      }, self.getErrorDialog(errors.authenticate));
+    if(email && pass) {
+      helpers.authenticateUser.call(self, email, pass, function() {
+        self.close("authenticated", {
+          email: email
+        });
+      });
+    }
   }
 
   function resetPassword(el, event) {

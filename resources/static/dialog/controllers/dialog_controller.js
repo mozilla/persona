@@ -61,7 +61,7 @@
 
         options = options || {};
 
-        if(options.window) {
+        if (options.window) {
           win = options.window;
         }
 
@@ -104,9 +104,10 @@
           params = {};
         }
         
-        self.allowPersistent = (params.persistent == true);
+        self.allowPersistent = !!params.persistent;
+        self.requiredEmail = params.requiredEmail;
 
-        if('onLine' in navigator && !navigator.onLine) {
+        if ('onLine' in navigator && !navigator.onLine) {
           self.doOffline();
           return;
         }
@@ -241,6 +242,10 @@
         this.element.authenticate(info);
       },
 
+      doAuthenticateWithRequiredEmail: function(info) {
+        this.element.requiredemail(info);
+      },
+
       doForgotPassword: function(email) {
         this.element.forgotpassword({
           email: email
@@ -290,13 +295,18 @@
         var self=this;
         user.checkAuthenticationAndSync(function onSuccess() {},
           function onComplete(authenticated) {
-            if (authenticated) {
+            if (self.requiredEmail) {
+              self.doAuthenticateWithRequiredEmail({
+                email: self.requiredEmail,
+                authenticated: authenticated
+              });
+            }
+            else if (authenticated) {
               self.doPickEmail();
             } else {
               self.doAuthenticate();
             }
-          },
-          self.getErrorDialog(errors.checkAuthentication));
+          }, self.getErrorDialog(errors.checkAuthentication));
     }
 
   });

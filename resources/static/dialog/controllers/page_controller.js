@@ -48,39 +48,40 @@
     init: function(el, options) {
       options = options || {};
 
-      var me=this,
-          bodyTemplate = options.bodyTemplate,
-          bodyVars = options.bodyVars,
-          errorTemplate = options.errorTemplate,
-          errorVars = options.errorVars,
-          waitTemplate = options.waitTemplate,
-          waitVars = options.waitVars;
+      var self=this;
 
-
-      if(bodyTemplate) {
-        me.renderDialog(bodyTemplate, bodyVars);
+      if(options.bodyTemplate) {
+        self.renderDialog(options.bodyTemplate, options.bodyVars);
       }
 
-      if(waitTemplate) {
-        me.renderWait(waitTemplate, waitVars);
+      if(options.waitTemplate) {
+        self.renderWait(options.waitTemplate, options.waitVars);
       }
 
-      if(errorTemplate) {
-        me.renderError(errorTemplate, errorVars);
+      if(options.errorTemplate) {
+        self.renderError(options.errorTemplate, options.errorVars);
       }
 
-      // XXX move all of these, bleck.
-      dom.bindEvent("form", "submit", me.onSubmit.bind(me));
-      dom.bindEvent("#thisIsNotMe", "click", me.close.bind(me, "notme"));
+      self.start(options);
     },
 
-    destroy: function() {
+    start: function() {
+      var self=this;
+      // XXX move all of these, bleck.
+      dom.bindEvent("form", "submit", self.onSubmit.bind(self));
+      dom.bindEvent("#thisIsNotMe", "click", self.close.bind(self, "notme"));
+    },
+
+    stop: function() {
       dom.unbindEvent("form", "submit");
       dom.unbindEvent("input", "keyup");
       dom.unbindEvent("#thisIsNotMe", "click");
 
       dom.removeClass("body", "waiting");
+    },
 
+    destroy: function() {
+      this.stop();
       this._super();
     },
 

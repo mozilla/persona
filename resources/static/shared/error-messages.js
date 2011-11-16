@@ -111,6 +111,10 @@ BrowserID.Errors = (function(){
       title: "Syncing Email Addresses"
     },
 
+    syncEmailKeypair: {
+      title: "Sync Keys for Address"
+    },
+
     xhrError: {
       title: "Communication Error"
     }

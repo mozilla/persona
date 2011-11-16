@@ -50,20 +50,21 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     channelError = false;
   }
 
-  function initController() {
-    controller = el.dialog({
+  function initController(config) {
+    var config = $.extend(config, {
       window: {
         setupChannel: function() {
           if (channelError) throw "Channel error";
         }
       }
-    }).controller();
+    });
+
+    controller = el.dialog(config).controller();
   }
 
   module("controllers/dialog_controller", {
     setup: function() {
       reset();
-      initController();
     },
 
     teardown: function() {
@@ -73,22 +74,21 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   });
 
   test("initialization with channel error", function() {
-    controller.destroy();
-    reset();
     channelError = true;
-
     initController();
 
     ok($("#error .contents").text().length, "contents have been written");
   });
 
   test("doOffline", function() {
+    initController();
     controller.doOffline();
     ok($("#error .contents").text().length, "contents have been written");
     ok($("#error #offline").text().length, "offline error message has been written");
   });
 
   test("doXHRError while online, no network info given", function() {
+    initController();
     controller.doXHRError();
     ok($("#error .contents").text().length, "contents have been written");
     ok($("#error #action").text().length, "action contents have been written");
@@ -96,6 +96,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   });
 
   test("doXHRError while online, network info given", function() {
+    initController();
     controller.doXHRError({
       network: {
         type: "POST",
@@ -108,6 +109,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   });
 
   test("doXHRError while offline does not update contents", function() {
+    initController();
     controller.doOffline();
     $("#error #action").remove();
 
@@ -115,6 +117,40 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     ok(!$("#error #action").text().length, "XHR error is not reported if the user is offline.");
   });
 
+
+  /*
+  test("doCheckAuth with registered requiredEmail, authenticated", function() {
+    initController({
+      requiredEmail: "registered@testuser.com" 
+    });
+
+    controller.doCheckAuth();
+  });
+
+  test("doCheckAuth with registered requiredEmail, not authenticated", function() {
+    initController({
+      requiredEmail: "registered@testuser.com" 
+    });
+
+    controller.doCheckAuth();
+  });
+
+  test("doCheckAuth with unregistered requiredEmail, not authenticated", function() {
+    initController({
+      requiredEmail: "unregistered@testuser.com" 
+    });
+
+    controller.doCheckAuth();
+  });
+
+  test("doCheckAuth with unregistered requiredEmail, authenticated as other user", function() {
+    initController({
+      requiredEmail: "unregistered@testuser.com" 
+    });
+
+    controller.doCheckAuth();
+  });
+*/
 
 });
 
