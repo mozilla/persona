@@ -124,6 +124,7 @@
             bid.Storage.setStagedOnBehalfOf("");
             self.doCancel();
           }
+          window.teardownChannel();
         });
       },
 

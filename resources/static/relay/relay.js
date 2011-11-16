@@ -124,6 +124,10 @@
       forwardCall();
     }
 
+    function unregisterClient() {
+      registeredMethods = null;
+    }
+
     function getVerboseMessage(code) {
       var msgs = {
         "canceled": "user canceled selection",
@@ -157,7 +161,8 @@
        * Register a client to use the relay
        * @method registerClient
        */
-      registerClient: registerClient
+      registerClient: registerClient,
+      unregisterClient: unregisterClient
     };
   }());
 
