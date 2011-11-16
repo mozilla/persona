@@ -75,7 +75,6 @@
 
   function verifyAddress(event) {
     event.preventDefault();
-
   }
 
   function forgotPassword(event) {
@@ -121,6 +120,9 @@
         dom.bindEvent("#sign_in", "click", signIn.bind(self));
         dom.bindEvent("#verify_address", "click", verifyAddress.bind(self));
         dom.bindEvent("#forgotPassword", "click", forgotPassword.bind(self));
+        dom.bindEvent("#cancel_stage", "click", function() {
+          self.stop();
+        });
       }
 
       self._super();
