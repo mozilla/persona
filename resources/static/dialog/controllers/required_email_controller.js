@@ -74,14 +74,40 @@
   }
 
   function verifyAddress(event) {
-    event.preventDefault();
+    // By being in the verifyAddress, we know that the current user  has not 
+    // been shown the password box and we have to do a verification of some 
+    // sort.  This will be either an add email to the current account or a new 
+    // registration.  
+    
+    event && event.preventDefault();
 
+    var self=this;
+    if(self.authenticated) {
+      // If we are veryifying an address and the user is authenticated, it 
+      // means that the current user does not have control of the address.
+      // If the address is registered, it means another account has control of 
+      // the address and we are consolidating.  If the email is not registered 
+      // then it means add the address to the current user's account.
+      helpers.addEmail.call(self, self.email);
+    }
+    else {
+      helpers.createUser.call(self, self.email);
+    }
   }
 
   function forgotPassword(event) {
-    event.preventDefault();
+    event && event.preventDefault();
+
+    var self=this;
+    helpers.resetPassword.call(self, self.email);
   }
 
+
+  function cancel(event) {
+    event && event.preventDefault();
+
+    this.close("cancel");
+  }
 
   PageController.extend("Requiredemail", {}, {
     start: function(options) {
@@ -121,6 +147,7 @@
         dom.bindEvent("#sign_in", "click", signIn.bind(self));
         dom.bindEvent("#verify_address", "click", verifyAddress.bind(self));
         dom.bindEvent("#forgotPassword", "click", forgotPassword.bind(self));
+        dom.bindEvent("#cancel", "click", cancel.bind(self));
       }
 
       self._super();
@@ -130,13 +157,15 @@
       dom.unbindEvent("#sign_in", "click");
       dom.unbindEvent("#verify_address", "click");
       dom.unbindEvent("#forgotPassword", "click");
+      dom.unbindEvent("#cancel", "click");
 
       this._super();
     },
 
     signIn: signIn,
     verifyAddress: verifyAddress,
-    forgotPassword: forgotPassword
+    forgotPassword: forgotPassword,
+    cancel: cancel
   });
 
 }());

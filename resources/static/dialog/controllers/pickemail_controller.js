@@ -129,18 +129,7 @@
         bid.Tooltip.showTooltip("#already_taken");
       }
       else {
-        user.addEmail(email, function(added) {
-          if (added) {
-            self.close("email_staged", {
-              email: email
-            });
-          }
-          else {
-            bid.Tooltip.showTooltip("#could_not_add");
-          }
-        }, function onFailure() {
-            bid.Tooltip.showTooltip("#could_not_add");
-        });
+        helpers.addEmail.call(self, email);
       }
     }, self.getErrorDialog(errors.isEmailRegistered));
   }

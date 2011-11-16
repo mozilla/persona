@@ -75,18 +75,9 @@
 
     cancelEvent(event);
 
-    if (!validation.email(email)) return;
-
-    user.createUser(email, function(staged) {
-      if (staged) {
-        self.close("user_staged", {
-          email: email
-        });
-      }
-      else {
-        tooltip.showTooltip("#could_not_add");
-      }
-    }, self.getErrorDialog(errors.createUser));
+    if(email) {
+      helpers.createUser.call(self, email);
+    }
   }
 
   function authenticate(el, event) {
@@ -106,16 +97,13 @@
   }
 
   function resetPassword(el, event) {
-    var email = getEmail(),
-        self=this;
+    var email = getEmail();
 
     cancelEvent(event);
 
-    user.requestPasswordReset(email, function() {
-      self.close("reset_password", {
-        email: email
-      });
-    }, self.getErrorDialog(errors.requestPasswordReset));
+    if(email) {
+      helpers.resetPassword.call(this, email);
+    }
   }
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {

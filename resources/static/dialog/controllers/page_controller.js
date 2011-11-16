@@ -102,7 +102,7 @@
       $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
 
       /**
-       * TODO What a big steaming pile, use CSS animations for this!
+       * TODO XXX - Use the error-display for this.
        */
       dom.bindEvent("#openMoreInfo", "click", function(event) {
         event.preventDefault();

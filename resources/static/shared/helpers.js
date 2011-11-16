@@ -112,6 +112,45 @@
       }, self.getErrorDialog(errors.authenticate));
   }
 
+  function createUser(email) {
+    var self=this;
+    user.createUser(email, function(staged) {
+      if (staged) {
+        self.close("user_staged", {
+          email: email
+        });
+      }
+      else {
+        tooltip.showTooltip("#could_not_add");
+      }
+    }, self.getErrorDialog(errors.createUser));
+  }
+
+  function resetPassword(email) {
+    var self=this;
+    user.requestPasswordReset(email, function() {
+      self.close("reset_password", {
+        email: email
+      });
+    }, self.getErrorDialog(errors.requestPasswordReset));
+  }
+
+  function addEmail(email) {
+    var self=this;
+    user.addEmail(email, function(added) {
+      if (added) {
+        self.close("email_staged", {
+          email: email
+        });
+      }
+      else {
+        bid.Tooltip.showTooltip("#could_not_add");
+      }
+    }, function onFailure() {
+        bid.Tooltip.showTooltip("#could_not_add");
+    });
+  }
+
   extend(helpers, {
     /**
      * Extend an object with the properties of another object.  Overwrites 
@@ -138,8 +177,15 @@
      */
     getAndValidatePassword: getAndValidatePassword,
 
+    /**
+     * XXX Get from here down out of here and into a specific dialog helpers 
+     * module.
+     */
     getAssertion: getAssertion,
-    authenticateUser: authenticateUser
+    authenticateUser: authenticateUser,
+    createUser: createUser,
+    addEmail: addEmail,
+    resetPassword: resetPassword
   });
 
 

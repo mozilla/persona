@@ -168,19 +168,19 @@ steal.then(function() {
     testSignIn(email, testNoPasswordSection);
   });
 
-  test("user who is authenticated, email does not belong to user", function() {
+  test("user who is authenticated, email belongs to another user", function() {
     xhr.setContextInfo({
       authenticated: true 
     });
 
     var email = "registered@testuser.com";
-    user.removeEmail(email, function() {
-      controller = el.requiredemail({
-        email: email, 
-        authenticated: true
-      }).controller();
-    });
+    controller = el.requiredemail({
+      email: email, 
+      authenticated: true
+    }).controller();
 
+    // This means the current user is going to take the address from the other 
+    // account.
     testVerify(email);
   });
 
@@ -275,6 +275,88 @@ steal.then(function() {
       start();
     }, 1000);
 
+    stop();
+  });
+
+  function testMessageReceived(email, message) {
+    var authenticated = true;
+
+    xhr.setContextInfo({
+      authenticated: authenticated 
+    });
+
+    controller = el.requiredemail({
+      email: email, 
+      authenticated: authenticated
+    }).controller();
+
+
+    subscribe(message, function(item, info) {
+      equal(info.email, email, message + " received with correct email");
+      start();
+    });
+
+    controller.verifyAddress();
+    stop();
+  }
+
+  test("verifyAddress of authenticated user, address belongs to another user", function() {
+    var email = "registered@testuser.com";
+
+    testMessageReceived(email, "email_staged");
+  });
+
+  test("verifyAddress of authenticated user, unknown address", function() {
+    var email = "unregistered@testuser.com";
+
+    testMessageReceived(email, "email_staged");
+  });
+
+  test("verifyAddress of un-authenticated user, forgot password", function() {
+    var email = "registered@testuser.com",
+        authenticated = false,
+        message = "reset_password";
+
+    xhr.setContextInfo({
+      authenticated: authenticated 
+    });
+
+    controller = el.requiredemail({
+      email: email, 
+      authenticated: authenticated
+    }).controller();
+
+
+    subscribe(message, function(item, info) {
+      equal(info.email, email, message + " received with correct email");
+      start();
+    });
+
+    controller.forgotPassword();
+    stop();
+  });
+
+  test("cancel raises the cancel message", function() {
+    var email = "registered@testuser.com",
+        message = "cancel",
+        authenticated = false;
+
+    xhr.setContextInfo({
+      authenticated: authenticated 
+    });
+
+    controller = el.requiredemail({
+      email: email, 
+      authenticated: authenticated
+    }).controller();
+
+
+    subscribe(message, function(item, info) {
+      ok(true, message + " received");
+      start();
+    });
+
+    controller.cancel();
     stop();
   });
 
