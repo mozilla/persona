@@ -1,4 +1,4 @@
-/*globals BrowserID: true, $:true */
+/*globals BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,63 +33,63 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-
-BrowserID.forgot = (function() {
-  "use strict";
+(function() {
+  "use strict"
 
   var bid = BrowserID,
-      user = bid.User,
-      helpers = bid.Helpers,
-      pageHelpers = bid.PageHelpers,
       dom = bid.DOM,
-      tooltip = bid.Tooltip;
+      validation = bid.Validation,
+      helpers = bid.Helpers = bid.Helpers || {};
 
-  function submit(event) {
-    if (event) event.preventDefault();
-
-    // GET RID OF THIS HIDE CRAP AND USE CSS!
-    $(".notifications .notification").hide();
-
-    var email = helpers.getAndValidateEmail("#email");
-
-    if (email) {
-      user.requestPasswordReset(email, function onSuccess(info) {
-        if (info.success) {
-          pageHelpers.showEmailSent();
-        }
-        else {
-          var tooltipEl = info.reason === "throttle" ? "#could_not_add" : "#not_registered";
-          tooltip.showTooltip(tooltipEl);
-        }
-      }, pageHelpers.getFailure(bid.Errors.requestPasswordReset));
+  function extend(target, source) {
+    for(var key in source) {
+      target[key] = source[key];
     }
   };
 
-  function back(event) {
-    if (event) event.preventDefault();
+  function getAndValidateEmail(target) {
+    var email = (dom.getInner(target) || "").trim();
 
-    pageHelpers.cancelEmailSent();
+    if(!validation.email(email)) return null;
+
+    return email;
   }
 
-  function init() {
-    $("form input[autofocus]").focus();
+  function getAndValidatePassword(target) {
+    var password = (dom.getInner(target) || "");
 
-    pageHelpers.setupEmail();
+    if(!validation.password(password)) return null;
 
-    dom.bindEvent("form", "submit", submit);
-    dom.bindEvent("#back", "click", back);
+    return password;
   }
 
-  function reset() {
-    dom.unbindEvent("form", "submit", submit);
-    dom.unbindEvent("#back", "click", back);
-  }
+  extend(helpers, {
+    /**
+     * Extend an object with the properties of another object.  Overwrites 
+     * properties if they already exist.
+     * @method extend
+     * @param {object} target
+     * @param {object} source
+     */
+    extend: extend,
 
-  init.submit = submit; 
-  init.reset = reset;
-  init.back = back;
+    /**
+     * Get an email from a DOM element and validate it.
+     * @method getAndValidateEmail
+     * @param {string} target - target containing the email
+     * @return {string} email if email is valid, null otw.
+     */
+    getAndValidateEmail: getAndValidateEmail,
 
-  return init;
+    /**
+     * Get an password from a DOM element and validate it.
+     * @method getAndValidatePassword
+     * @param {string} target - target containing the password
+     * @return {string} password if password is valid, null otw.
+     */
+    getAndValidatePassword: getAndValidatePassword,
+  });
+
 
 }());
 

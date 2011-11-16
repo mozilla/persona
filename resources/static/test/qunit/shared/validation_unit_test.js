@@ -184,6 +184,20 @@ steal.then(function() {
   });
 
 
+  test("password with valid password", function() {
+    var valid = validation.password("password");
+
+    ok(valid, "valid password is valid");
+    equal(tooltipShown, false, "valid password shows no tooltip");
+  });
+
+  test("password with missing password", function() {
+    var valid = validation.password("");
+
+    equal(valid, false, "invalid password is invalid");
+    equal(tooltipShown, true, "invalid password shows tooltip");
+  });
+
   test("validateEmailAndPassword with valid email and password", function() {
     var valid = validation.emailAndPassword("testuser@testuser.com", "password");
 

@@ -122,6 +122,7 @@ BrowserID.Validation = (function() {
 
   return {
     email: validateEmail,
+    password: passwordExists,
     emailAndPassword: validateEmailAndPassword,
     passwordAndValidationPassword: passwordAndValidationPassword
   };

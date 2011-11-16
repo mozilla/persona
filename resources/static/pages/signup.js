@@ -39,6 +39,8 @@ BrowserID.signUp = (function() {
 
   var bid = BrowserID,
       user = bid.User,
+      dom = bid.DOM,
+      helpers = bid.Helpers,
       pageHelpers = bid.PageHelpers,
       errors = bid.Errors,
       tooltip = BrowserID.Tooltip,
@@ -52,29 +54,25 @@ BrowserID.signUp = (function() {
     function submit(event) { 
       if (event) event.preventDefault();
 
-      var email = $("#email").val(),
-          valid = bid.Validation.email(email);
-
-      if (!valid) {
-        return;
+      var email = helpers.getAndValidateEmail("#email");
+      if (email) {
+        user.isEmailRegistered(email, function(registered) {
+          if (!registered) {
+            user.createUser(email, function onSuccess(success) {
+              if(success) {
+                pageHelpers.showEmailSent();
+              }
+              else {
+                tooltip.showTooltip("#could_not_add");
+              }
+            }, pageHelpers.getFailure(errors.createUser));
+          }
+          else {
+            $('#registeredEmail').html(email);
+            showNotice(".alreadyRegistered");
+          }
+        }, pageHelpers.getFailure(errors.isEmailRegistered));
       }
-
-      user.isEmailRegistered(email, function(registered) {
-        if (!registered) {
-          user.createUser(email, function onSuccess(success) {
-            if(success) {
-              pageHelpers.showEmailSent();
-            }
-            else {
-              tooltip.showTooltip("#could_not_add");
-            }
-          }, pageHelpers.getFailure(errors.createUser));
-        }
-        else {
-          $('#registeredEmail').html(email);
-          showNotice(".alreadyRegistered");
-        }
-      }, pageHelpers.getFailure(errors.isEmailRegistered));
     }
 
     function back(event) {
@@ -92,15 +90,15 @@ BrowserID.signUp = (function() {
 
       pageHelpers.setupEmail();
 
-      $("#email").bind("keyup", onEmailKeyUp);
-      $("form").bind("submit", submit);
-      $("#back").bind("click", back);
+      dom.bindEvent("#email", "keyup", onEmailKeyUp);
+      dom.bindEvent("form", "submit", submit);
+      dom.bindEvent("#back", "click", back);
     }
 
     function reset() {
-      $("form").unbind("submit", submit);
-      $("#email").unbind("keyup", onEmailKeyUp);
-      $("#back").unbind("click", back);
+      dom.unbindEvent("#email", "keyup", onEmailKeyUp);
+      dom.unbindEvent("form", "submit", submit);
+      dom.unbindEvent("#back", "click", back);
     }
 
     init.submit = submit;

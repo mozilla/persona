@@ -87,6 +87,18 @@ steal.then("/pages/signup", function() {
     stop();
   });
 
+  test("signup with valid unregistered email with leading/trailing whitespace", function() {
+    $("#email").val(" unregistered@testuser.com ");
+
+    bid.signUp.submit();
+
+    setTimeout(function() {
+      equal($(".emailsent").is(":visible"), true, "email sent, notice visible");
+      start();
+    }, CHECK_DELAY);
+    stop();
+  });
+
   test("signup with valid registered email", function() {
     $("#email").val("registered@testuser.com");
 
