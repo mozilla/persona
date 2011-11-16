@@ -60,6 +60,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     teardown: function() {
       if (controller) {
         controller.destroy();
+        controller = null;
       }    
       reset();
       storage.clear();
