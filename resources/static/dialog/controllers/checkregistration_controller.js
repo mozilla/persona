@@ -65,7 +65,9 @@
           me.close("auth", { email: me.email });
         }
       }, me.getErrorDialog(BrowserID.Errors.registration));
-    }
+    },
+
+    "
   });
 
 

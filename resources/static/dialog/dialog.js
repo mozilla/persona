@@ -61,6 +61,7 @@ steal
                '../shared/screens',
                '../shared/tooltip',
                '../shared/validation',
+               '../shared/helpers',
                '../shared/browser-support',
                '../shared/browserid-extensions',
                '../shared/network',
