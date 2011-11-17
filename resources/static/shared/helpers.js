@@ -40,6 +40,7 @@
       dom = bid.DOM,
       user = bid.User,
       errors = bid.Errors,
+      tooltip = bid.Tooltip,
       validation = bid.Validation,
       helpers = bid.Helpers = bid.Helpers || {};
 
@@ -107,7 +108,7 @@
         if (authenticated) {
           callback();
         } else {
-          bid.Tooltip.showTooltip("#cannot_authenticate");
+          tooltip.showTooltip("#cannot_authenticate");
         }
       }, self.getErrorDialog(errors.authenticate));
   }
@@ -128,10 +129,15 @@
 
   function resetPassword(email) {
     var self=this;
-    user.requestPasswordReset(email, function() {
-      self.close("reset_password", {
-        email: email
-      });
+    user.requestPasswordReset(email, function(status) {
+      if(status.success) {
+        self.close("reset_password", {
+          email: email
+        });
+      }
+      else {
+        tooltip.showTooltip("#could_not_add");
+      }
     }, self.getErrorDialog(errors.requestPasswordReset));
   }
 
@@ -144,10 +150,10 @@
         });
       }
       else {
-        bid.Tooltip.showTooltip("#could_not_add");
+        tooltip.showTooltip("#could_not_add");
       }
     }, function onFailure() {
-        bid.Tooltip.showTooltip("#could_not_add");
+        tooltip.showTooltip("#could_not_add");
     });
   }
 

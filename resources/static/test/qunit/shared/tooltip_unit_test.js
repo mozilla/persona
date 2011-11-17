@@ -56,8 +56,12 @@ steal.then(function() {
       var diff = endTime - startTime;
       ok(2000 <= diff && diff <= 3000, diff + " - minimum of 2 seconds, max of 3 seconds");
 
+      equal(tooltip.shown, false, "tooltip says it is no longer shown");
+
       start();
     });
+
+    equal(tooltip.shown, true, "tooltip says that it is shown");
 
     stop();
   });

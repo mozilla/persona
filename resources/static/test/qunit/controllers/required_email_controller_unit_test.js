@@ -69,6 +69,7 @@ steal.then(function() {
       xhr.setContextInfo({
         authenticated: false
       });
+      $("#required_email").text("");
     },
 
     teardown: function() {
@@ -92,7 +93,7 @@ steal.then(function() {
       equal($("#verify_address").length, 0, "verify address not shows");
       cb && cb();
       start();
-    }, 100);
+    }, 200);
     stop();
   }
 
@@ -104,7 +105,7 @@ steal.then(function() {
       testNoPasswordSection();
       cb && cb();
       start();
-    }, 100);
+    }, 200);
     stop();
   }
 
@@ -333,6 +334,35 @@ steal.then(function() {
     });
 
     controller.forgotPassword();
+    stop();
+  });
+
+  test("verifyAddress of un-authenticated user, forgot password, mail throttled", function() {
+    var email = "registered@testuser.com",
+        authenticated = false,
+        message = "reset_password";
+
+    xhr.setContextInfo({
+      authenticated: authenticated 
+    });
+
+    controller = el.requiredemail({
+      email: email, 
+      authenticated: authenticated
+    }).controller();
+
+
+    subscribe(message, function(item, info) {
+      ok(false, "throttling should have prevented close from happening");
+    });
+
+    xhr.useResult("throttle");
+    controller.forgotPassword();
+
+    setTimeout(function() {
+      ok(bid.Tooltip.shown, "tooltip is shown");
+      start();
+    }, 100);
     stop();
   });
 

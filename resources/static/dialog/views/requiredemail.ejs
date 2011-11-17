@@ -4,16 +4,18 @@
 
           The site requested you sign in with
           <div id="required_email"><%= email %></div>
+          <div id="could_not_add" class="tooltip" for="required_email">
+            We just sent an email to that address! If you really want to send another, wait a minute or two and try again.
+          </div>
 
           <% if (showPassword) { %>
             <li id="password_section">
-
                 <label for="password" class="half serif">Password</label>
                 <div class="half right">
                     <a id="forgotPassword" href="#" tabindex="4">forgot your password?</a>
                 </div>
-                <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
 
+                <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
 
                 <div id="password_required" class="tooltip" for="password">
                   The password field is required.
@@ -23,9 +25,6 @@
                   The account cannot be logged in with this username and password.
                 </div>
 
-                <div id="could_not_add" class="tooltip" for="password">
-                  We just sent an email to that address! If you really want to send another, wait a minute or two and try again.
-                </div>
             </li>
           <% } %>
       
