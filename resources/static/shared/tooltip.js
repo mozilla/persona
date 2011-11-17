@@ -43,7 +43,8 @@ BrowserID.Tooltip = (function() {
       READ_WPM = 200,
       bid = BrowserID,
       dom = bid.DOM,
-      renderer = bid.Renderer;
+      renderer = bid.Renderer,
+      lastTooltip;
 
   function createTooltip(el) {
       var contents = el.html();
@@ -71,9 +72,13 @@ BrowserID.Tooltip = (function() {
     var wordTimeMS = (words / READ_WPM) * 60 * 1000;
     var displayTimeMS = Math.max(wordTimeMS, TOOLTIP_DISPLAY);
 
+    bid.Tooltip.shown = true;
     el.fadeIn(ANIMATION_TIME, function() {
       setTimeout(function() {
-        el.fadeOut(ANIMATION_TIME, complete);
+        el.fadeOut(ANIMATION_TIME, function() {
+          bid.Tooltip.shown = false;
+          if(complete) complete(); 
+        });
       }, displayTimeMS);
     });
   }
