@@ -44,6 +44,7 @@
       validation = bid.Validation,
       tooltip = bid.Tooltip,
       helpers = bid.Helpers,
+      dialogHelpers = helpers.Dialog,
       dom = bid.DOM,
       lastEmail = "";
 
@@ -76,7 +77,7 @@
     cancelEvent(event);
 
     if(email) {
-      helpers.createUser.call(self, email);
+      dialogHelpers.createUser.call(self, email);
     }
   }
 
@@ -88,10 +89,12 @@
     cancelEvent(event);
 
     if(email && pass) {
-      helpers.authenticateUser.call(self, email, pass, function() {
-        self.close("authenticated", {
-          email: email
-        });
+      dialogHelpers.authenticateUser.call(self, email, pass, function(authenticated) {
+        if (authenticated) {
+          self.close("authenticated", {
+            email: email
+          });
+        }
       });
     }
   }
@@ -102,7 +105,7 @@
     cancelEvent(event);
 
     if(email) {
-      helpers.resetPassword.call(this, email);
+      dialogHelpers.resetPassword.call(this, email);
     }
   }
 

@@ -22,6 +22,8 @@ steal.plugins(
       "/shared/validation",
       "/shared/helpers",
 
+      "/dialog/resources/helpers",
+
       "/dialog/controllers/page_controller",
       "/dialog/controllers/required_email_controller",
 
@@ -49,6 +51,7 @@ steal.plugins(
       "shared/network_unit_test",
       "shared/user_unit_test",
       "resources/channel_unit_test",
+      "resources/helpers_unit_test",
 
       "controllers/page_controller_unit_test",
       "controllers/pickemail_controller_unit_test",

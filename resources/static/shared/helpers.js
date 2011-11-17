@@ -66,97 +66,6 @@
     return password;
   }
 
-  /**
-   * XXX add a test for the next two and move them into a dialog specific 
-   * helper module!
-   */
-  function animateClose(callback) {
-    var body = $("body"),
-        doAnimation = $("#signIn").length && body.innerWidth() > 640;
-
-    if (doAnimation) {
-      $("#signIn").animate({"width" : "685px"}, "slow", function () {
-        // post animation
-         body.delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
-           callback();
-         });
-      });
-    }
-    else {
-      callback();
-    }
-  }
-
-  // XXX Move this to a dialog specific module
-  function getAssertion(email) {
-    var self=this;
-    user.getAssertion(email, function(assert) {
-      assert = assert || null;
-      animateClose(function() {
-        self.close("assertion_generated", {
-          assertion: assert
-        });
-      });
-    }, self.getErrorDialog(errors.getAssertion));
-  }
-
-  // XXX Move this to a dialog specific module
-  function authenticateUser(email, pass, callback) {
-    var self=this;
-    user.authenticate(email, pass,
-      function onComplete(authenticated) {
-        if (authenticated) {
-          callback();
-        } else {
-          tooltip.showTooltip("#cannot_authenticate");
-        }
-      }, self.getErrorDialog(errors.authenticate));
-  }
-
-  function createUser(email) {
-    var self=this;
-    user.createUser(email, function(staged) {
-      if (staged) {
-        self.close("user_staged", {
-          email: email
-        });
-      }
-      else {
-        tooltip.showTooltip("#could_not_add");
-      }
-    }, self.getErrorDialog(errors.createUser));
-  }
-
-  function resetPassword(email) {
-    var self=this;
-    user.requestPasswordReset(email, function(status) {
-      if(status.success) {
-        self.close("reset_password", {
-          email: email
-        });
-      }
-      else {
-        tooltip.showTooltip("#could_not_add");
-      }
-    }, self.getErrorDialog(errors.requestPasswordReset));
-  }
-
-  function addEmail(email) {
-    var self=this;
-    user.addEmail(email, function(added) {
-      if (added) {
-        self.close("email_staged", {
-          email: email
-        });
-      }
-      else {
-        tooltip.showTooltip("#could_not_add");
-      }
-    }, function onFailure() {
-        tooltip.showTooltip("#could_not_add");
-    });
-  }
-
   extend(helpers, {
     /**
      * Extend an object with the properties of another object.  Overwrites 
@@ -181,17 +90,8 @@
      * @param {string} target - target containing the password
      * @return {string} password if password is valid, null otw.
      */
-    getAndValidatePassword: getAndValidatePassword,
+    getAndValidatePassword: getAndValidatePassword
 
-    /**
-     * XXX Get from here down out of here and into a specific dialog helpers 
-     * module.
-     */
-    getAssertion: getAssertion,
-    authenticateUser: authenticateUser,
-    createUser: createUser,
-    addEmail: addEmail,
-    resetPassword: resetPassword
   });
 
 

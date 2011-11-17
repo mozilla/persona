@@ -44,8 +44,7 @@ steal
               'jquery/controller',			// a widget factory
               'jquery/controller/subscribe')	// subscribe to OpenAjax.hub
 
-	.resources(
-               'channel')
+	.resources(  'channel')
   .then(
                '../lib/jschannel',
                '../lib/base64',
@@ -67,7 +66,8 @@ steal
                '../shared/browser-support',
                '../shared/browserid-extensions',
                '../shared/wait-messages',
-               '../shared/helpers'
+               '../shared/helpers',
+               'resources/helpers'
                )
 
 	.controllers('page',

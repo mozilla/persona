@@ -43,6 +43,7 @@
       errors = bid.Errors,
       storage = bid.Storage,
       helpers = bid.Helpers,
+      dialogHelpers = helpers.Dialog,
       dom = bid.DOM,
       assertion;
 
@@ -109,7 +110,7 @@
         storage.site.set(origin, "remember", $("#remember").is(":checked"));
       }
 
-      helpers.getAssertion.call(self, email);
+      dialogHelpers.getAssertion.call(self, email);
     }
   }
 
@@ -128,7 +129,7 @@
         bid.Tooltip.showTooltip("#already_taken");
       }
       else {
-        helpers.addEmail.call(self, email);
+        dialogHelpers.addEmail.call(self, email);
       }
     }, self.getErrorDialog(errors.isEmailRegistered));
   }

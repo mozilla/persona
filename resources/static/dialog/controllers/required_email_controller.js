@@ -42,6 +42,7 @@
       user = bid.User,
       errors = bid.Errors,
       helpers = bid.Helpers,
+      dialogHelpers = helpers.Dialog,
       dom = bid.DOM,
       assertion;
 
@@ -54,7 +55,7 @@
     // If the user is already authenticated and they own this address, sign 
     // them right in.
     if(self.authenticated) {
-      helpers.getAssertion.call(self, email);
+      dialogHelpers.getAssertion.call(self, email);
     }
     else {
       // If the user is not already authenticated, but they potentially own 
@@ -62,12 +63,14 @@
       // get the password right.
       var password = helpers.getAndValidatePassword("#password");
       if (password) {
-        helpers.authenticateUser.call(self, email, password, function() {
-          // Now that the user has authenticated, sync their emails and get an 
-          // assertion for the email we care about.
-          user.syncEmailKeypair(email, function() {
-            helpers.getAssertion.call(self, email);
-          }, self.getErrorDialog(errors.syncEmailKeypair));
+        dialogHelpers.authenticateUser.call(self, email, password, function(authenticated) {
+          if (authenticated) {
+            // Now that the user has authenticated, sync their emails and get an 
+            // assertion for the email we care about.
+            user.syncEmailKeypair(email, function() {
+              dialogHelpers.getAssertion.call(self, email);
+            }, self.getErrorDialog(errors.syncEmailKeypair));
+          }
         });
       }
     }
@@ -88,10 +91,10 @@
       // If the address is registered, it means another account has control of 
       // the address and we are consolidating.  If the email is not registered 
       // then it means add the address to the current user's account.
-      helpers.addEmail.call(self, self.email);
+      dialogHelpers.addEmail.call(self, self.email);
     }
     else {
-      helpers.createUser.call(self, self.email);
+      dialogHelpers.createUser.call(self, self.email);
     }
   }
 
@@ -99,7 +102,7 @@
     event && event.preventDefault();
 
     var self=this;
-    helpers.resetPassword.call(self, self.email);
+    dialogHelpers.resetPassword.call(self, self.email);
   }
 
 

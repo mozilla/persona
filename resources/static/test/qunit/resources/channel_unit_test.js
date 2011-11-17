@@ -35,6 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 steal.then("/dialog/resources/channel", function() {
+  "use strict";
+
   var channel = BrowserID.Channel;
 
   var navMock = {
