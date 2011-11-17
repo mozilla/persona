@@ -41,7 +41,7 @@ BrowserID.User = (function() {
   var jwk, jwt, vep, jwcert, origin,
       network = BrowserID.Network,
       storage = BrowserID.Storage,
-      User;
+      User, pollTimeout;
 
   function prepareDeps() {
     if (!jwk) {
@@ -117,7 +117,7 @@ BrowserID.User = (function() {
           }
         }
         else if (status === 'pending') {
-          setTimeout(poll, 3000);
+          pollTimeout = setTimeout(poll, 3000);
         }
         else if (onFailure) {
             onFailure(status);
@@ -128,6 +128,12 @@ BrowserID.User = (function() {
     poll();
   }
 
+  function cancelRegistrationPoll() {
+    if (pollTimeout) {
+      clearTimeout(pollTimeout);
+      pollTimeout = null;
+    }
+  }
 
   /**
    * Certify an identity with the server, persist it to storage if the server
@@ -248,6 +254,14 @@ BrowserID.User = (function() {
      */
     waitForUserValidation: function(email, onSuccess, onFailure) {
       registrationPoll(network.checkUserRegistration, email, onSuccess, onFailure);
+    },
+
+    /**
+     * Cancel the waitForUserValidation poll
+     * @method cancelUserValidation
+     */
+    cancelUserValidation: function() {
+      cancelRegistrationPoll();
     },
 
     /**
@@ -503,6 +517,14 @@ BrowserID.User = (function() {
      */
     waitForEmailValidation: function(email, onSuccess, onFailure) {
       registrationPoll(network.checkEmailRegistration, email, onSuccess, onFailure);
+    },
+
+    /**
+     * Cancel the waitForEmailValidation poll
+     * @method cancelEmailValidation
+     */
+    cancelEmailValidation: function() {
+      cancelRegistrationPoll();
     },
 
     /**

@@ -150,6 +150,11 @@
           self.doEmailConfirmed();
         });
 
+        subscribe("cancel_user_confirmed", function() {
+          user.cancelUserValidation();
+          self.returnFromStageCancel();
+        });
+
         subscribe("authenticated", function(msg, info) {
           //self.doEmailSelected(info.email);
           // XXX benadida, lloyd - swap these two if you want to experiment with
@@ -176,6 +181,11 @@
 
         subscribe("email_confirmed", function() {
           self.doEmailConfirmed();
+        });
+
+        subscribe("cancel_email_confirmed", function() {
+          user.cancelEmailValidation();
+          self.returnFromStageCancel();
         });
 
         subscribe("notme", function() {
@@ -234,6 +244,7 @@
 
       doPickEmail: function() {
         var self=this;
+        self.returnFromStageCancel = self.doPickEmail.bind(self);
         self.element.pickemail({
           // XXX ideal is to get rid of this and have a User function
           // that takes care of getting email addresses AND the last used email
@@ -244,11 +255,18 @@
       },
 
       doAuthenticate: function(info) {
-        this.element.authenticate(info);
+        var self = this;
+
+        // Save this off in case the user forgets their password or goes to add 
+        // a new password but has to cancel.
+        self.returnFromStageCancel = self.doAuthenticate.bind(self, info);
+        self.element.authenticate(info);
       },
 
       doAuthenticateWithRequiredEmail: function(info) {
-        this.element.requiredemail(info);
+        var self=this;
+        self.returnFromStageCancel = self.doAuthenticateWithRequiredEmail.bind(self, info);
+        self.element.requiredemail(info);
       },
 
       doForgotPassword: function(email) {

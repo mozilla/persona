@@ -39,9 +39,11 @@ var jwt = require("./jwt");
 var jwcert = require("./jwcert");
 
 steal.then(function() {
-  var lib = BrowserID.User,
-      storage = BrowserID.Storage,
-      xhr = BrowserID.Mocks.xhr,
+  var bid = BrowserID,
+      lib = bid.User,
+      storage = bid.Storage,
+      network = bid.Network,
+      xhr = bid.Mocks.xhr,
       testOrigin = "testOrigin";
 
   // I generated these locally, they are used nowhere else.
@@ -51,7 +53,7 @@ steal.then(function() {
   var random_cert = "eyJhbGciOiJSUzEyOCJ9.eyJpc3MiOiJpc3N1ZXIuY29tIiwiZXhwIjoxMzE2Njk1MzY3NzA3LCJwdWJsaWMta2V5Ijp7ImFsZ29yaXRobSI6IlJTIiwibiI6IjU2MDYzMDI4MDcwNDMyOTgyMzIyMDg3NDE4MTc2ODc2NzQ4MDcyMDM1NDgyODk4MzM0ODExMzY4NDA4NTI1NTk2MTk4MjUyNTE5MjY3MTA4MTMyNjA0MTk4MDA0NzkyODQ5MDc3ODY4OTUxOTA2MTcwODEyNTQwNzEzOTgyOTU0NjUzODEwNTM5OTQ5Mzg0NzEyNzczMzkwMjAwNzkxOTQ5NTY1OTAzNDM5NTIxNDI0OTA5NTc2ODMyNDE4ODkwODE5MjA0MzU0NzI5MjE3MjA3MzYwMTA1OTA2MDM5MDIzMjk5NTYxMzc0MDk4OTQyNzg5OTk2NzgwMTAyMDczMDcxNzYwODUyODQxMDY4OTg5ODYwNDAzNDMxNzM3NDgwMTgyNzI1ODUzODk5NzMzNzA2MDY5IiwiZSI6IjY1NTM3In0sInByaW5jaXBhbCI6eyJlbWFpbCI6InRlc3R1c2VyQHRlc3R1c2VyLmNvbSJ9fQ.aVIO470S_DkcaddQgFUXciGwq2F_MTdYOJtVnEYShni7I6mqBwK3fkdWShPEgLFWUSlVUtcy61FkDnq2G-6ikSx1fUZY7iBeSCOKYlh6Kj9v43JX-uhctRSB2pI17g09EUtvmb845EHUJuoowdBLmLa4DSTdZE-h4xUQ9MsY7Ik";
 
 
-  function testAssertion(assertion) {
+  function testAssertion(assertion, cb) {
     equal(typeof assertion, "string", "An assertion was correctly generated");
 
     // Decode the assertion to a bundle.
@@ -71,30 +73,32 @@ steal.then(function() {
     var expires = tok.expires.getTime();
     ok(typeof expires === "number" && !isNaN(expires), "expiration date is valid");
 
-    var nowPlus2Mins = new Date().getTime() + (2 * 60 * 1000);
-    // expiration date must be within 5 seconds of 2 minutes from now - see
-    // issue 433 (https://github.com/mozilla/browserid/issues/433)
-    ok(((nowPlus2Mins - 5000) < expires) && (expires < (nowPlus2Mins + 5000)), "expiration date must be within 5 seconds of 2 minutes from now");
+    // this should be based on server time, not local time.
+    network.serverTime(function(time) {
+      var nowPlus2Mins = time.getTime() + (2 * 60 * 1000);
 
-    equal(typeof tok.cryptoSegment, "string", "cryptoSegment exists");
-    equal(typeof tok.headerSegment, "string", "headerSegment exists");
-    equal(typeof tok.payloadSegment, "string", "payloadSegment exists");
-    /*
-    // What are these supposed to be?
-    ok(tok.issuer, "issuer?");
-    ok(tok.payload, "payload?");
-    */
+      // expiration date must be within 5 seconds of 2 minutes from now - see
+      // issue 433 (https://github.com/mozilla/browserid/issues/433)
+      var diff = Math.abs(expires - nowPlus2Mins);
+      ok(diff < 5000, "expiration date must be within 5 seconds of 2 minutes from now: " + diff);
+
+      equal(typeof tok.cryptoSegment, "string", "cryptoSegment exists");
+      equal(typeof tok.headerSegment, "string", "headerSegment exists");
+      equal(typeof tok.payloadSegment, "string", "payloadSegment exists");
+
+      if(cb) cb();
+    });
   }
 
   module("shared/user", {
     setup: function() {
-      BrowserID.Network.setXHR(xhr);
+      network.setXHR(xhr);
       xhr.useResult("valid");
       lib.clearStoredEmailKeypairs();
       lib.setOrigin(testOrigin);
     },
     teardown: function() {
-      BrowserID.Network.setXHR($);
+      network.setXHR($);
     }
   });
 
@@ -226,13 +230,14 @@ steal.then(function() {
 
       start();
     }, function(status) {
-      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
+      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared for noRegistration response");
       ok(status, "noRegistration", "noRegistration response causes failure");
       start();
     });
 
     stop();
   });
+
 
   test("waitForUserValidation with XHR failure", function() {
     xhr.useResult("ajaxError");
@@ -246,6 +251,25 @@ steal.then(function() {
       ok(true, "xhr failure should always be a failure");
       start();
     });
+
+    stop();
+  });
+
+  test("cancelUserValidation: ~1 second", function() {
+    xhr.useResult("pending");
+
+    storage.setStagedOnBehalfOf(testOrigin);
+    lib.waitForUserValidation("registered@testuser.com", function(status) {
+      ok(false, "not expecting success")
+    }, function(status) {
+      ok(false, "not expecting failure");
+    });
+
+    setTimeout(function() {
+      lib.cancelUserValidation();
+      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared when validation cancelled");
+      start();
+    }, 1000);
 
     stop();
   });
@@ -625,6 +649,25 @@ steal.then(function() {
   });
 
 
+  test("cancelEmailValidation: ~1 second", function() {
+    xhr.useResult("pending");
+
+    storage.setStagedOnBehalfOf(testOrigin);
+    lib.waitForEmailValidation("registered@testuser.com", function(status) {
+      ok(false, "not expecting success")
+    }, function(status) {
+      ok(false, "not expecting failure");
+    });
+
+    setTimeout(function() {
+      lib.cancelUserValidation();
+      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared when validation cancelled");
+      start();
+    }, 1000);
+
+    stop();
+  });
+
   test("verifyEmail with a good token", function() {
     storage.setStagedOnBehalfOf(testOrigin);
     lib.verifyEmail("token", function onSuccess(info) {
@@ -850,10 +893,10 @@ steal.then(function() {
 
   test("getAssertion with known email that has key", function() {
     lib.setOrigin(testOrigin);
+    lib.removeEmail("testuser@testuser.com");
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
-        testAssertion(assertion);
-        start();
+        testAssertion(assertion, start);
       }, failure("getAssertion failure"));
     }, failure("syncEmailKeypair failure"));
 
@@ -863,10 +906,10 @@ steal.then(function() {
 
   test("getAssertion with known email that does not have a key", function() {
     lib.setOrigin(testOrigin);
+    lib.removeEmail("testuser@testuser.com");
     storage.addEmail("testuser@testuser.com", {});
     lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
-      testAssertion(assertion);
-      start();
+      testAssertion(assertion, start);
     }, failure("getAssertion failure"));
 
     stop();

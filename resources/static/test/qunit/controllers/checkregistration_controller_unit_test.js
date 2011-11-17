@@ -56,10 +56,6 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     }
   }
 
-  function reset() {
-    unsubscribeAll();
-  }
-
   function initController(verifier, message) {
     el = $("body");
     controller = el.checkregistration({
@@ -71,8 +67,9 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
 
   module("controllers/checkregistration_controller", {
     setup: function() {
+      xhr.useResult("valid");
       network.setXHR(xhr);
-      reset();
+      $("#error").hide();
     },
 
     teardown: function() {
@@ -83,7 +80,8 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
           controller.destroy();
         } catch(e) {}
       }
-      reset();
+      unsubscribeAll();
+      $("#error").hide();
     } 
   });
 
@@ -114,21 +112,30 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   });
 
   test("user validation with XHR error", function() {
-    $("#error").hide();
-
     xhr.useResult("ajaxError");
 
     initController("waitForUserValidation", "user_verified");
     subscribe("user_verified", function() {
       ok(false, "on XHR error, should not complete");
-      start();
     });
     controller.startCheck();
     
     setTimeout(function() {
       ok($("#error").is(":visible"), "Error message is visible");
       start();
-    }, 100);
+    }, 1000);
+
+    stop();
+  });
+
+  test("cancel raises cancel_user_verified", function() {
+    initController("waitForUserValidation", "user_verified");
+    subscribe("cancel_user_verified", function() {
+      ok(true, "on cancel, cancel_user_verified is triggered");
+      start();
+    });
+    controller.startCheck();
+    controller.cancel();
 
     stop();
   });
