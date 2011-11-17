@@ -1,3 +1,20 @@
+train-2011.11.17:
+  * frontend code restructuring and refactoring
+  * process breakup complete (dbwriter, keysigner, browserid, and verifier): #460
+  * several updates to production deployment scripts (rpm generation): #571, #575
+  * all processes should log and exit hard if misconfigured: #576, #581
+  * complete 'keep me signed in' feature: #559, #490
+  * simplify and consolidate user facing help links in dialog: #553
+  * clean up user facing error messages (email throttling and sent email): #579, #577, #591
+  * moved 'this is not me' and 'use a different email' links based on UX suggestions: #459
+  * incrementally work to repair load_gen (not yet complete) : #504
+  * unit test fixes: #504
+  * remove extraneous console logging: #574
+  * improve email validation in main site (whitespace handling): #583, #429
+  * fix serious regressions related to iOS5 fixes that prevented dialog from working the second time on RPs: #580, #588 #589
+  * fix "go back and try another" link in dialog: #587
+  * added "required email" feature: #491
+
 train-2011.11.10:
   * keysigner process now handles certificate generation: #460
   * verifier no longer supports CORS requests: #245
