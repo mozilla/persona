@@ -55,19 +55,21 @@
   var win = window,
       nav = navigator,
       onCompleteCallback,
-      WINDOW_NAME_REGEXP= "^_mozid_signin_(.*)";
+      _relayWindow = null;
 
   function getRelayName() {
-    var result = win.name.match(WINDOW_NAME_REGEXP);
-    if (result)
-      return result[1];
+    var name = win.location.hash.substring(1);
+    win.location.hash = "";
+    if (name.length > 1)
+      return name;
     else
       return null;
   }
 
   function getRelayWindow() {
-    var frameWindow = win.opener.frames[getRelayName()];
-    return frameWindow;
+    if (!_relayWindow)
+      _relayWindow = win.opener.frames[getRelayName()];
+    return _relayWindow;
   }
 
   function setupNativeChannel(controller) {

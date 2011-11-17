@@ -651,7 +651,7 @@
   function _get_relayframe_id() {
     var randomString = '';
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (var i=0; i < 4; i++) {
+    for (var i=0; i < 8; i++) {
       randomString += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return randomString;
@@ -777,7 +777,7 @@
         });
 
         // open the window now that all else is ready
-        w = _open_window(ipServer + "/sign_in", relay_iframe.getAttribute('name'));
+        w = _open_window(ipServer + "/sign_in#" + relay_iframe.getAttribute('name'));
 
         // if the RP window closes, close the dialog as well.
         _attach_event(window, 'unload', cleanup);
@@ -831,7 +831,8 @@
     var setup_relay_iframe = function() {
       if (document.body) {
         var frameid = _get_relayframe_id();
-        relay_iframe = _open_relayframe("browserid_relay_" + frameid);
+        // removed browserid_relay_ prefix, cause why?
+        relay_iframe = _open_relayframe(frameid);
         relay_chan = Channel.build({
           window: relay_iframe.contentWindow,
           origin: ipServer,

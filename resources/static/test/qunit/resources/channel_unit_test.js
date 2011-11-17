@@ -43,13 +43,13 @@ steal.then("/dialog/resources/channel", function() {
 
   // Mock in the window object as well as the frame relay
   var winMock = {
-    name : "_mozid_signin_browserid_relay_1234",
     location: {
-      href: "browserid.org/sign_in"
+      href: "browserid.org/sign_in#1234",
+      hash: "#1234"
     },
     opener: {
       frames: {
-        browserid_relay_1234: {
+        "1234": {
           BrowserID: {
             Relay: {
               registerClient: function(methods) {
@@ -136,7 +136,7 @@ steal.then("/dialog/resources/channel", function() {
 
   test("IFRAME channel with error on open", function() {
     var winMockWithoutRelay = $.extend(true, {}, winMock);
-    delete winMockWithoutRelay.opener.frames.browserid_relay_1234;
+    delete winMockWithoutRelay.opener.frames['1234'];
 
     channel.init({
       window: winMockWithoutRelay,
