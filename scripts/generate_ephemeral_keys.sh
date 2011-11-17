@@ -17,7 +17,7 @@ if [ ! -x "$GENERATE_KEYPAIR" ] ; then
 fi
 
 echo '*** Generating ephemeral keys used for testing ***'
-$GENERATE_KEYPAIR -k 128
+$GENERATE_KEYPAIR -k 128 -a rsa
 mkdir -p $VAR
 mv key.publickey $VAR/root.publickey
 mv key.secretkey $VAR/root.secretkey
