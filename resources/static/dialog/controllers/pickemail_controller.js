@@ -47,15 +47,6 @@
       dom = bid.DOM,
       assertion;
 
-  function animateSwap(fadeOutSelector, fadeInSelector, callback) {
-    // XXX instead of using jQuery here, think about using CSS animations.
-    $(fadeOutSelector).fadeOut(ANIMATION_TIME, function() {
-      $(fadeInSelector).fadeIn(ANIMATION_TIME, callback);
-    });
-  }
-
-
-
   function cancelEvent(event) {
     event && event.preventDefault();
   }
@@ -64,24 +55,19 @@
     cancelEvent(event);
 
     var self=this;
-    animateSwap("#addEmail", "#selectEmail", function() {
-      if (!self.find("input[type=radio]:checked").length) {
-        // If none are already checked, select the first one.
-        self.find('input[type=radio]').eq(0).attr('checked', true);
-      }
-      // focus whichever is checked.
-      self.find("input[type=radio]:checked").focus();
-      self.submit = signIn;
-    });
+    if (!self.find("input[type=radio]:checked").length) {
+      // If none are already checked, select the first one.
+      self.find('input[type=radio]').eq(0).attr('checked', true);
+    }
+    // focus whichever is checked.
+    self.find("input[type=radio]:checked").focus();
+    self.submit = signIn;
   }
 
-  function addEmailState(event) {
+  function addEmail(event) {
     cancelEvent(event);
 
-    this.submit = addEmail;
-    animateSwap("#selectEmail", "#addEmail", function() {
-      $("#newEmail").focus();
-    });
+    this.close("add_email");
   }
 
   function checkEmail(email) {
@@ -96,7 +82,7 @@
     return !!identity;
   }
 
-  function signIn(element, event) {
+  function signIn(event) {
     cancelEvent(event);
     var self=this,
         email = dom.getInner("input[type=radio]:checked");
@@ -113,27 +99,6 @@
       dialogHelpers.getAssertion.call(self, email);
     }
   }
-
-  function addEmail(element, event) {
-    var email = helpers.getAndValidateEmail("#newEmail"),
-        self=this;
-
-    cancelEvent(event);
-
-    if (!email) {
-      return;
-    }
-
-    user.isEmailRegistered(email, function onComplete(registered) {
-      if (registered) {
-        bid.Tooltip.showTooltip("#already_taken");
-      }
-      else {
-        dialogHelpers.addEmail.call(self, email);
-      }
-    }, self.getErrorDialog(errors.isEmailRegistered));
-  }
-
 
   PageController.extend("Pickemail", {}, {
     start: function(options) {  
@@ -161,8 +126,7 @@
         dom.focus("#signInButton");
       }
 
-      self.bind("#useNewEmail", "click", addEmailState);
-      self.bind("#cancelNewEmail", "click", pickEmailState);
+      self.bind("#useNewEmail", "click", addEmail);
 
       self._super();
 

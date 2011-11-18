@@ -1,3 +1,5 @@
+/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
+/*global _: true, BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -32,55 +34,50 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+(function() {
+  "use strict";
 
-/*globals steal
- */
-window.console = window.console || {
-  log: function() {}
-};
+  var bid = BrowserID,
+      user = bid.User,
+      helpers = bid.Helpers,
+      dialogHelpers = helpers.Dialog,
+      errors = bid.Errors,
+      tooltip = bid.Tooltip;
 
-steal
-  .plugins(
-              'jquery/controller',			// a widget factory
-              'jquery/controller/subscribe')	// subscribe to OpenAjax.hub
+  function cancelEvent(event) {
+    event && event.preventDefault();
+  }
 
-	.resources(  'channel')
-  .then(
-               '../lib/jschannel',
-               '../lib/base64',
-               '../lib/underscore-min',
-               '../lib/ejs',
-               '../shared/browserid',
-               '../lib/dom-jquery',
+  function addEmail(event) {
+    var email = helpers.getAndValidateEmail("#newEmail"),
+        self=this;
 
-               '../shared/storage',
-               '../shared/templates',
-               '../shared/renderer',
-               '../shared/error-display',
-               '../shared/screens',
-               '../shared/tooltip',
-               '../shared/validation',
-               '../shared/network',
-               '../shared/user',
-               '../shared/error-messages',
-               '../shared/browser-support',
-               '../shared/browserid-extensions',
-               '../shared/wait-messages',
-               '../shared/helpers',
-               'resources/helpers'
-               )
+    cancelEvent(event);
 
-	.controllers('page',
-               'dialog',
-               'authenticate',
-               'checkregistration',
-               'pickemail',
-               'addemail',
-               'required_email'
-               )					// loads files in controllers folder
+    if (email) {
+      dialogHelpers.addEmail.call(self, email);
+    }
+  }
 
-  .then(function() {
-    $(function() {
-      $('body').dialog().show();
-    });
-  });						// adds views to be added to build
+
+  function cancelAddEmail(event) {
+    cancelEvent(event);
+
+    this.close("cancel_add_email");
+  }
+
+  PageController.extend("Addemail", {}, {
+    start: function(options) {
+      var self=this;
+
+      self.renderDialog("addemail");
+
+      self.bind("#cancelNewEmail", "click", cancelAddEmail);
+      self._super();
+    },
+    submit: addEmail,
+    addEmail: addEmail,
+    cancelAddEmail: cancelAddEmail
+  });
+
+}());

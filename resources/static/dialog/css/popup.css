@@ -619,10 +619,6 @@ label[for=remember] {
   line-height: 18px;
 }
 
-#addEmail {
-    display: none;
-}
-
 .submit > button {
     margin: 0 5px 0 0;
 }

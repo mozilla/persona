@@ -1,5 +1,5 @@
 steal.plugins(
-      "jquery",
+     "jquery",
       "jquery/controller",
       "jquery/controller/subscribe",
       "funcunit/qunit")
@@ -26,6 +26,8 @@ steal.plugins(
 
       "/dialog/controllers/page_controller",
       "/dialog/controllers/required_email_controller",
+      "/dialog/controllers/pickemail_controller",
+      "/dialog/controllers/addemail_controller",
 
       "/pages/page_helpers",
 
@@ -55,6 +57,7 @@ steal.plugins(
 
       "controllers/page_controller_unit_test",
       "controllers/pickemail_controller_unit_test",
+      "controllers/addemail_controller_unit_test",
       "controllers/dialog_controller_unit_test",
       "controllers/checkregistration_controller_unit_test",
       "controllers/authenticate_controller_unit_test",

@@ -55,6 +55,18 @@
      subscriptions.push(hub.subscribe(message, cb));
   }
 
+  function createCheckRegistrationController(email, verifier, message) {
+    this.confirmEmail = email;
+
+    var controller = this.element.checkregistration({
+      email: email,
+      verifier: verifier,
+      verificationMessage: message
+    }).controller("checkregistration");  // specify the name of the controller
+                                         // or else the dialog controller is returned.
+    controller.startCheck();
+  }
+
   PageController.extend("Dialog", {}, {
       init: function(el, options) {
         offline = false;
@@ -178,6 +190,14 @@
           }
         });
 
+        subscribe("add_email", function(msg, info) {
+          self.doAddEmail();
+        });
+
+        subscribe("cancel_add_email", function(msg, info) {
+          self.doPickEmail();
+        });
+
         subscribe("email_staged", function(msg, info) {
           self.doConfirmEmail(info.email);
         });
@@ -227,14 +247,7 @@
       },
 
       doConfirmUser: function(email) {
-        this.confirmEmail = email;
-
-        var controller = this.element.checkregistration({
-          email: email,
-          verifier: "waitForUserValidation",
-          verificationMessage: "user_confirmed"
-        }).controller();
-        controller.startCheck();
+        createCheckRegistrationController.call(this, email, "waitForUserValidation", "user_confirmed");
       },
 
       doCancel: function() {
@@ -254,6 +267,10 @@
           origin: user.getHostname(),
           allow_persistent: self.allowPersistent
         });
+      },
+
+      doAddEmail: function() {
+        this.element.addemail({});
       },
 
       doAuthenticate: function(info) {
@@ -278,14 +295,7 @@
       },
 
       doConfirmEmail: function(email) {
-        this.confirmEmail = email;
-
-        var controller = this.element.checkregistration({
-          email: email,
-          verifier: "waitForEmailValidation",
-          verificationMessage: "email_confirmed"
-        }).controller();
-        controller.startCheck();
+        createCheckRegistrationController.call(this, email, "waitForEmailValidation", "email_confirmed");
       },
 
       doEmailConfirmed: function() {
