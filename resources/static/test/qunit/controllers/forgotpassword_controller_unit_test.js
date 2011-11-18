@@ -37,15 +37,13 @@
 steal.then(function() {
   "use strict";
 
-  var controller, 
+  var controller,
       el = $("body"),
       bid = BrowserID,
       storage = bid.Storage,
-      user = bid.User,
       network = bid.Network,
       xhr = bid.Mocks.xhr,
       hub = OpenAjax.hub,
-      testOrigin = "http://browserid.org",
       registrations = [];
 
   function register(message, cb) {
@@ -59,12 +57,21 @@ steal.then(function() {
     }
   }
 
-  module("controllers/addemail_controller", {
+  function reset() {
+    el = $("#controller_head");
+    el.find("#formWrap .contents").html("");
+    el.find("#wait .contents").html("");
+    el.find("#error .contents").html("");
+  }
+
+  module("controllers/forgotpassword_controller", {
     setup: function() {
+      $("#email").val("");
+      reset();
+      storage.clear();
       network.setXHR(xhr);
       xhr.useResult("valid");
-      storage.clear();
-      user.setOrigin(testOrigin);
+      controller = el.forgotpassword({ email: "registered@testuser.com" }).controller();
     },
 
     teardown: function() {
@@ -73,89 +80,39 @@ steal.then(function() {
           controller.destroy();
           controller = null;
         } catch(e) {
-          // could already be destroyed from the close
+          // may already be destroyed from close inside of the controller.
         }
-      }    
-      network.setXHR($);
+      }
       reset();
       storage.clear();
+      network.setXHR($);
       unregisterAll();
     }
   });
 
-  function createController() {
-    return $("body").addemail({}).controller();
-  }
-
-  test("addemail controller renders correctly", function() {
-    controller = createController();
-
-    equal($("#addEmail").length, 1, "control rendered correctly");
+  test("email address prefills address field", function() {
+    equal($("#email").val(), "registered@testuser.com", "email prefilled");
   });
 
-  test("addEmail with valid email", function() {
-    controller = createController();
-
-    $("#newEmail").val("unregistered@testuser.com");
-    register("email_staged", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "email_staged called with correct email");
+  test("resetPassword raises 'reset_password' with email address", function() {
+    register("reset_password", function(msg, info) {
+      equal(info.email, "registered@testuser.com", "reset_password raised with correct email address");
       start();
     });
-    controller.addEmail();
+
+    controller.resetPassword();
     stop();
   });
 
-  test("addEmail with valid email with leading/trailing whitespace", function() {
-    controller = createController();
-
-    $("#newEmail").val("   unregistered@testuser.com  ");
-    register("email_staged", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "email_staged called with correct email");
+  test("cancelResetPassword raises 'cancel_forgot_password'", function() {
+    register("cancel_forgot_password", function(msg, info) {
+      ok(true, "cancel_forgot_password triggered");
       start();
     });
-    controller.addEmail();
+
+    controller.cancelResetPassword();
     stop();
+
   });
-
-  test("addEmail with invalid email", function() {
-    controller = createController();
-
-    $("#newEmail").val("unregistered");
-    var handlerCalled = false;
-    register("email_staged", function(msg, info) {
-      handlerCalled = true;
-      ok(false, "email_staged should not be called on invalid email");
-      start();
-    });
-    controller.addEmail();
-    setTimeout(function() {
-      equal(handlerCalled, false, "the email_staged handler should have never been called");
-      start();
-    }, 100);
-    stop();
-  });
-
-  test("addEmail with previously registered email - allows for account consolidation", function() {
-    controller = createController();
-
-    $("#newEmail").val("registered@testuser.com");
-    register("email_staged", function(msg, info) {
-      equal(info.email, "registered@testuser.com", "email_staged called with correct email");
-      start();
-    });
-    controller.addEmail();
-    stop();
-  });
-
-  test("cancelAddEmail", function() {
-    controller = createController();
-
-    register("cancel_add_email", function(msg, info) {
-      ok(true, "cancelling the add email");
-      start();
-    });
-    controller.cancelAddEmail();
-    stop();
-  });
-
 });
+

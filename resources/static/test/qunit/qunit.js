@@ -28,6 +28,8 @@ steal.plugins(
       "/dialog/controllers/required_email_controller",
       "/dialog/controllers/pickemail_controller",
       "/dialog/controllers/addemail_controller",
+      "/dialog/controllers/authenticate_controller",
+      "/dialog/controllers/forgotpassword_controller",
 
       "/pages/page_helpers",
 
@@ -61,6 +63,7 @@ steal.plugins(
       "controllers/dialog_controller_unit_test",
       "controllers/checkregistration_controller_unit_test",
       "controllers/authenticate_controller_unit_test",
+      "controllers/forgotpassword_controller_unit_test",
       "controllers/required_email_controller_unit_test"
       
       );

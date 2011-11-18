@@ -1,3 +1,5 @@
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*global BrowserID:true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -32,56 +34,49 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+(function() {
+  "use strict";
 
-/*globals steal
- */
-window.console = window.console || {
-  log: function() {}
-};
+  var ANIMATION_TIME = 250,
+      bid = BrowserID,
+      helpers = bid.Helpers,
+      dialogHelpers = helpers.Dialog,
+      dom = bid.DOM,
+      lastEmail = "";
 
-steal
-  .plugins(
-              'jquery/controller',			// a widget factory
-              'jquery/controller/subscribe')	// subscribe to OpenAjax.hub
+  function cancelEvent(event) {
+    if (event) event.preventDefault();
+  }
 
-	.resources(  'channel')
-  .then(
-               '../lib/jschannel',
-               '../lib/base64',
-               '../lib/underscore-min',
-               '../lib/ejs',
-               '../shared/browserid',
-               '../lib/dom-jquery',
+  function resetPassword(event) {
+    cancelEvent(event);
 
-               '../shared/storage',
-               '../shared/templates',
-               '../shared/renderer',
-               '../shared/error-display',
-               '../shared/screens',
-               '../shared/tooltip',
-               '../shared/validation',
-               '../shared/network',
-               '../shared/user',
-               '../shared/error-messages',
-               '../shared/browser-support',
-               '../shared/browserid-extensions',
-               '../shared/wait-messages',
-               '../shared/helpers',
-               'resources/helpers'
-               )
+    var self=this;
+    dialogHelpers.resetPassword.call(self, self.email);
+  }
 
-	.controllers('page',
-               'dialog',
-               'authenticate',
-               'forgotpassword',
-               'checkregistration',
-               'pickemail',
-               'addemail',
-               'required_email'
-               )					// loads files in controllers folder
+  function cancelResetPassword(event) {
+    cancelEvent(event);
 
-  .then(function() {
-    $(function() {
-      $('body').dialog().show();
-    });
-  });						// adds views to be added to build
+    this.close("cancel_forgot_password");
+  }
+
+  PageController.extend("Forgotpassword", {}, {
+    start: function(options) {
+      var self=this;
+      self.email = options.email;
+      self.renderDialog("forgotpassword", {
+        email: options.email || ""
+      });
+
+      self.bind("#cancel_forgot_password", "click", cancelResetPassword);
+
+      self._super();
+    },
+
+    submit: resetPassword,
+    resetPassword: resetPassword,
+    cancelResetPassword: cancelResetPassword
+  });
+
+}());

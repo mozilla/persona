@@ -76,7 +76,7 @@
 
     cancelEvent(event);
 
-    if(email) {
+    if (email) {
       dialogHelpers.createUser.call(self, email);
     }
   }
@@ -88,7 +88,7 @@
 
     cancelEvent(event);
 
-    if(email && pass) {
+    if (email && pass) {
       dialogHelpers.authenticateUser.call(self, email, pass, function(authenticated) {
         if (authenticated) {
           self.close("authenticated", {
@@ -96,16 +96,6 @@
           });
         }
       });
-    }
-  }
-
-  function resetPassword(event) {
-    var email = getEmail();
-
-    cancelEvent(event);
-
-    if(email) {
-      dialogHelpers.resetPassword.call(this, email);
     }
   }
 
@@ -123,7 +113,7 @@
   function enterEmailState(el) {
     if (!el.is(":disabled")) {
       this.submit = checkEmail;
-      animateSwap(".returning:visible,.newuser:visible,.forgot:visible", ".start");
+      animateSwap(".returning:visible,.newuser:visible", ".start");
     }
   }
 
@@ -138,20 +128,12 @@
     });
   }
 
-  function forgotPasswordState(event) {
+  function forgotPassword(event) {
     cancelEvent(event);
-
-    this.submit = resetPassword;
-    dom.setAttr("#email", "disabled", "disabled");
-
-    animateSwap(".start:visible,.newuser:visible,.returning:visible", ".forgot");
-  }
-
-  function cancelForgotPassword(event) {
-    cancelEvent(event);
-
-    dom.removeAttr("#email", "disabled");
-    enterPasswordState.call(this);
+    var email = getEmail();
+    if (email) {
+      this.close("forgot_password", { email: email });
+    }
   }
 
   function createUserState(event) {
@@ -161,7 +143,7 @@
 
     self.publish("create_user");
     self.submit = createUser;
-    animateSwap(".start:visible,.returning:visible,.forgot:visible", ".newuser");
+    animateSwap(".start:visible,.returning:visible", ".newuser");
   }
 
 
@@ -188,8 +170,7 @@
 
 
       self.bind("#email", "keyup", emailKeyUp);
-      self.bind("#forgotPassword", "click", forgotPasswordState);
-      self.bind("#cancel_forgot_password", "click", cancelForgotPassword);
+      self.bind("#forgotPassword", "click", forgotPassword);
 
       self._super();
     },
@@ -197,7 +178,7 @@
     checkEmail: checkEmail,
     createUser: createUser,
     authenticate: authenticate,
-    resetPassword: resetPassword
+    forgotPassword: forgotPassword
   });
 
 }());
