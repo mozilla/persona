@@ -587,7 +587,6 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     syncEmailKeypair: function(email, onSuccess, onFailure) {
-      // FIXME use true key sizes
       prepareDeps();
       // FIXME: parameterize!
       var keysize = 256;
