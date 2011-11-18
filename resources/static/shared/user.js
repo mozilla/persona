@@ -55,72 +55,65 @@ BrowserID.User = (function() {
   "use strict";
   // remove identities that are no longer valid
   function cleanupIdentities(cb) {
-    network.domainKeyCreationTime(function(creationTime) {
-      // Determine if a certificate is expired.  That will be
-      // if the time it was issued (expiration time minus six hours)
-      // was *before* the domain key was last created.  Also, if the
-      // certificate expires in less that 5 minutes, we consider
-      // it to be expired.
-      //
-      // In human:  If the cert was issued after we changed the
-      // main keypair on the server, then we should reissue a cert
-      function isExpired(cert) {
-        // if it expires in less than 5 minutes, it's too old to use.
-        var diff = cert.expires.valueOf() - new Date().valueOf();
-        if (diff < (60 * 5 * 1000)) {
-          return true;
+    network.serverTime(function(serverTime) {
+      network.domainKeyCreationTime(function(creationTime) {
+        // Determine if a certificate is expired.  That will be
+        // if it was issued *before* the domain key was last updated or
+        // if the certificate expires in less that 5 minutes from now.
+        function isExpired(cert) {
+          // if it expires in less than 5 minutes, it's too old to use.
+          var diff = cert.expires.valueOf() - serverTime.valueOf();
+          if (diff < (60 * 5 * 1000)) {
+            return true;
+          }
+
+          // or if it was issued before the last time the domain key
+          // was updated, it's invalid
+          if (!cert.issued_at || cert.issued_at < creationTime) {
+            return true;
+          }
+
+          return false;
         }
 
-        // or if it was issued before the last time the domain key
-        // was updated, it's invalid
-        //
-        // (This must be sync'd with certificate_validity_ms in keysigner configuration.
-        //  It would be better to stamp issue time into certs.)
-        if (cert.expires.valueOf() - creationTime.valueOf() < (24 * 60 * 60 * 1000)) {
-          alert("cert was issued before creationTime");
-          return true;
-        }
-
-        return false;
-      }
-
-      var emails = storage.getEmails();
-      var issued_identities = {};
-      prepareDeps();
-      _(emails).each(function(email_obj, email_address) {
-        try {
-          email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
-        } catch (x) {
-          storage.invalidateEmail(email_address);
-          return;
-        }
-
-        // no cert? reset
-        if (!email_obj.cert) {
-          storage.invalidateEmail(email_address);
-        } else {
+        var emails = storage.getEmails();
+        var issued_identities = {};
+        prepareDeps();
+        _(emails).each(function(email_obj, email_address) {
           try {
-            // parse the cert
-            var cert = new jwcert.JWCert();
-            cert.parse(emails[email_address].cert);
+            email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
+          } catch (x) {
+            storage.invalidateEmail(email_address);
+            return;
+          }
 
-            // check if this certificate is still valid.
-            if (isExpired(cert)) {
+          // no cert? reset
+          if (!email_obj.cert) {
+            storage.invalidateEmail(email_address);
+          } else {
+            try {
+              // parse the cert
+              var cert = new jwcert.JWCert();
+              cert.parse(emails[email_address].cert);
+
+              // check if this certificate is still valid.
+              if (isExpired(cert)) {
+                storage.invalidateEmail(email_address);
+              }
+
+            } catch (e) {
+              // error parsing the certificate!  Maybe it's of an old/different
+              // format?  just delete it.
+              try { console.log("error parsing cert for", email_address ,":", e); } catch(e2) { }
               storage.invalidateEmail(email_address);
             }
-
-          } catch (e) {
-            // error parsing the certificate!  Maybe it's of an old/different
-            // format?  just delete it.
-            try { console.log("error parsing cert for", email_address ,":", e); } catch(e2) { }
-            storage.invalidateEmail(email_address);
           }
-        }
+        });
+        cb();
+      }, function(e) {
+        // we couldn't get domain key creation time!  uh oh.
+        cb();
       });
-      cb();
-    }, function(e) {
-      // we couldn't get domain key creation time!  uh oh.
-      cb();
     });
   }
 
