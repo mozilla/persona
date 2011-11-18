@@ -67,6 +67,9 @@
 
         var self=this;
 
+        self.domEvents = [];
+        self._super();
+
         // keep track of where we are and what we do on success and error
         self.onsuccess = null;
         self.onerror = null;
@@ -117,7 +120,7 @@
 
         self.doCheckAuth();
 
-        dom.bindEvent(win, "unload", function() {
+        self.bind(win, "unload", function() {
           // do this only if something else hasn't
           // declared success
           if (!self.success) {
@@ -226,12 +229,11 @@
       doConfirmUser: function(email) {
         this.confirmEmail = email;
 
-        this.element.checkregistration({
+        var controller = this.element.checkregistration({
           email: email,
           verifier: "waitForUserValidation",
           verificationMessage: "user_confirmed"
-        });
-        var controller = this.element.controller("checkregistration");
+        }).controller();
         controller.startCheck();
       },
 
@@ -278,12 +280,11 @@
       doConfirmEmail: function(email) {
         this.confirmEmail = email;
 
-        this.element.checkregistration({
+        var controller = this.element.checkregistration({
           email: email,
           verifier: "waitForEmailValidation",
           verificationMessage: "email_confirmed"
-        });
-        var controller = this.element.controller("checkregistration");
+        }).controller();
         controller.startCheck();
       },
 

@@ -52,15 +52,9 @@
       self.verifier = options.verifier;
       self.verificationMessage = options.verificationMessage;
 
-      dom.bindEvent("#back", "click", self.cancel.bind(self));
+      self.bind("#back", "click", self.cancel);
 
       self._super();
-    },
-
-    stop: function() {
-      dom.unbindEvent("#back", "click");
-
-      this._super();
     },
 
     startCheck: function() {

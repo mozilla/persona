@@ -44,7 +44,6 @@
       storage = bid.Storage,
       helpers = bid.Helpers,
       dom = bid.DOM,
-      body = $("body"),
       assertion;
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
@@ -57,10 +56,10 @@
 
 
   function cancelEvent(event) {
-    if (event) event.preventDefault();
+    event && event.preventDefault();
   }
 
-  function pickEmailState(element, event) {
+  function pickEmailState(event) {
     cancelEvent(event);
 
     var self=this;
@@ -75,7 +74,7 @@
     });
   }
 
-  function addEmailState(element, event) {
+  function addEmailState(event) {
     cancelEvent(event);
 
     this.submit = addEmail;
@@ -136,40 +135,38 @@
 
 
   PageController.extend("Pickemail", {}, {
-    init: function(el, options) {
+    start: function(options) {  
       var origin = user.getOrigin(),
           self=this;
 
       options = options || {};
 
       self.allowPersistent = options.allow_persistent;
-
-      self._super(el, {
-        bodyTemplate: "pickemail",
-        bodyVars: {
-          identities: user.getStoredEmailKeypairs(),
-          // XXX ideal is to get rid of self and have a User function
-          // that takes care of getting email addresses AND the last used email
-          // for self site.
-          siteemail: storage.site.get(origin, "email"),
-          allow_persistent: options.allow_persistent || false,
-          remember: storage.site.get(origin, "remember") || false
-        }
+      self.renderDialog("pickemail", {
+        identities: user.getStoredEmailKeypairs(),
+        // XXX ideal is to get rid of self and have a User function
+        // that takes care of getting email addresses AND the last used email
+        // for self site.
+        siteemail: storage.site.get(origin, "email"),
+        allow_persistent: options.allow_persistent || false,
+        remember: storage.site.get(origin, "remember") || false
       });
-      body.css("opacity", "1");
+      dom.getElements("body").css("opacity", "1");
 
       if (dom.getElements("#selectEmail input[type=radio]:visible").length === 0) {
         // If there is only one email address, the radio button is never shown,
         // instead focus the sign in button so that the user can click enter.
         // issue #412
-        $("#signInButton").focus();
+        dom.focus("#signInButton");
       }
+
+      self.bind("#useNewEmail", "click", addEmailState);
+      self.bind("#cancelNewEmail", "click", pickEmailState);
+
+      self._super();
 
       pickEmailState.call(self);
     },
-
-    "#useNewEmail click": addEmailState,
-    "#cancelNewEmail click": pickEmailState,
 
     signIn: signIn,
     addEmail: addEmail

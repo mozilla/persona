@@ -42,6 +42,16 @@
       dom = bid.DOM,
       screens = bid.Screens;
 
+   function onSubmit(event) {
+     event.stopPropagation();
+     event.preventDefault();
+
+     if (this.validate()) {
+       this.submit();
+     }
+     return false;
+   }
+
 
   $.Controller.extend("PageController", {
     }, {
@@ -49,6 +59,8 @@
       options = options || {};
 
       var self=this;
+
+      this.domEvents = [];
 
       if(options.bodyTemplate) {
         self.renderDialog(options.bodyTemplate, options.bodyVars);
@@ -67,15 +79,12 @@
 
     start: function() {
       var self=this;
-      // XXX move all of these, bleck.
-      dom.bindEvent("form", "submit", self.onSubmit.bind(self));
-      dom.bindEvent("#thisIsNotMe", "click", self.close.bind(self, "notme"));
+      self.bind("form", "submit", onSubmit);
+      self.bind("#thisIsNotMe", "click", self.close.bind(self, "notme"));
     },
 
     stop: function() {
-      dom.unbindEvent("form", "submit");
-      dom.unbindEvent("input", "keyup");
-      dom.unbindEvent("#thisIsNotMe", "click");
+      this.unbindAll();
 
       dom.removeClass("body", "waiting");
     },
@@ -83,6 +92,28 @@
     destroy: function() {
       this.stop();
       this._super();
+    },
+
+    bind: function(target, type, callback, context) {
+      var self=this,
+          cb = callback.bind(context || this);
+
+      dom.bindEvent(target, type, cb);
+
+      self.domEvents.push({
+        target: target,
+        type: type,
+        cb: cb
+      });
+    },
+
+    unbindAll: function() {
+      var self=this,
+          evt;
+
+      while(evt = self.domEvents.pop()) {
+        dom.unbindEvent(evt.target, evt.type, evt.cb);
+      }
     },
 
     renderDialog: function(body, body_vars) {
@@ -104,7 +135,7 @@
       /**
        * TODO XXX - Use the error-display for this.
        */
-      dom.bindEvent("#openMoreInfo", "click", function(event) {
+      this.bind("#openMoreInfo", "click", function(event) {
         event.preventDefault();
 
         $("#moreInfo").slideDown();
@@ -112,28 +143,11 @@
       });
     },
 
-    onSubmit: function(event) {
-      event.stopPropagation();
-      event.preventDefault();
-
-      if (this.validate()) {
-        this.submit();
-      }
-      return false;
-    },
-
     validate: function() {
       return true;
     },
 
     submit: function() {
-    //  this.close("submit");
-    },
-
-    doWait: function(info) {
-      this.renderWait("wait", info);
-
-      dom.addClass("body", "waiting");
     },
 
     close: function(message, data) {
