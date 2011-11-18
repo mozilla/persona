@@ -112,12 +112,12 @@ var activity = {
     // (once every two weeks per device)
     probability: (1.0 / (40 * 7.0))
   },
+*/
   "signin": {
     // users sign in using existing authentication material
     // 8 times a day (once every six hours per device)
     probability: (8 / 40.0)
   },
-*/
   "include_only": {
     // most of the time, users are already authenticated to their
     // RPs, so the hit on our servers is simply resource (include.js)
@@ -281,7 +281,7 @@ function poll() {
 }
 
 // always start out by creating a bunch of users
-var NUM_INITIAL_USERS = 30;
+var NUM_INITIAL_USERS = 5;
 
 // if an explicit target was specified, let's output what that means
 // in understandable terms
