@@ -316,7 +316,7 @@ steal.then(function() {
   test("verifyAddress of un-authenticated user, forgot password", function() {
     var email = "registered@testuser.com",
         authenticated = false,
-        message = "reset_password";
+        message = "forgot_password";
 
     xhr.setContextInfo({
       authenticated: authenticated 
@@ -334,35 +334,6 @@ steal.then(function() {
     });
 
     controller.forgotPassword();
-    stop();
-  });
-
-  test("verifyAddress of un-authenticated user, forgot password, mail throttled", function() {
-    var email = "registered@testuser.com",
-        authenticated = false,
-        message = "reset_password";
-
-    xhr.setContextInfo({
-      authenticated: authenticated 
-    });
-
-    controller = el.requiredemail({
-      email: email, 
-      authenticated: authenticated
-    }).controller();
-
-
-    subscribe(message, function(item, info) {
-      ok(false, "throttling should have prevented close from happening");
-    });
-
-    xhr.useResult("throttle");
-    controller.forgotPassword();
-
-    setTimeout(function() {
-      ok(bid.Tooltip.shown, "tooltip is shown");
-      start();
-    }, 100);
     stop();
   });
 

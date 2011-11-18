@@ -177,6 +177,15 @@
           self.syncEmails();
         });
 
+        subscribe("forgot_password", function(msg, info) {
+          self.doForgotPassword(info.email);
+        });
+
+        subscribe("cancel_forgot_password", function(msg, info) {
+          user.cancelUserValidation();
+          self.returnFromStageCancel();
+        });
+
         subscribe("reset_password", function(msg, info) {
           self.doConfirmUser(info.email);
         });

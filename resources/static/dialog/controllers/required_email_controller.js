@@ -102,7 +102,7 @@
     event && event.preventDefault();
 
     var self=this;
-    dialogHelpers.resetPassword.call(self, self.email);
+    self.close("forgot_password", { email: self.email });
   }
 
 

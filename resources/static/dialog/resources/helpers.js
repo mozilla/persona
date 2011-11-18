@@ -34,21 +34,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-
-// The way this works, when the dialog is opened from a web page, it opens
-// the window with a #host=<requesting_host_name> parameter in its URL.
-// window.setupChannel is called automatically when the dialog is opened. We
-// assume that navigator.id.getVerifiedEmail was the function called, we will
-// keep this assumption until we start experimenting.  Since IE has some
-// serious problems iwth postMessage from a window to a child window, we are now
-// communicating not directly with the calling window, but with an iframe
-// on the same domain as us that we place into the calling window.  We use a
-// function within this iframe to relay messages back to the calling window.
-// We do so by searching for the frame within the calling window, and then
-// getting a reference to the proxy function.  When getVerifiedEmail is
-// complete, it calls the proxy function in the iframe, which then sends a
-// message back to the calling window.
-
 (function() {
   "use strict";
 

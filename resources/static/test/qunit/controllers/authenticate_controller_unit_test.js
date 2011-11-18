@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then("/dialog/controllers/page_controller", "/dialog/controllers/authenticate_controller", function() {
+steal.then(function() {
   "use strict";
 
   var controller,
@@ -46,7 +46,18 @@ steal.then("/dialog/controllers/page_controller", "/dialog/controllers/authentic
       emailRegistered = false,
       userCreated = true,
       hub = OpenAjax.hub,
-      subscriptions = [];
+      registrations = [];
+
+  function register(message, cb) {
+    registrations.push(hub.subscribe(message, cb));
+  }
+
+  function unregisterAll() {
+    var registration;
+    while(registration = registrations.pop()) {
+      hub.unsubscribe(registration);
+    }
+  }
 
   function reset() {
     el = $("#controller_head");
@@ -56,12 +67,6 @@ steal.then("/dialog/controllers/page_controller", "/dialog/controllers/authentic
 
     emailRegistered = false;
     userCreated = true;
-
-
-    var subscription;
-    while(subscription = subscriptions.pop()) {
-      hub.unsubscribe(subscription);
-    }
   }
 
   module("controllers/authenticate_controller", {
@@ -84,23 +89,22 @@ steal.then("/dialog/controllers/page_controller", "/dialog/controllers/authentic
       reset();
       storage.clear();
       network.setXHR($);
+      unregisterAll();
     }
   });
 
   test("setting email address prefills address field", function() {
       controller.destroy();
       $("#email").val("");
-      controller = el.authenticate({ email: "testuser@testuser.com" }).controller();
-      equal($("#email").val(), "testuser@testuser.com", "email prefilled");
+      controller = el.authenticate({ email: "registered@testuser.com" }).controller();
+      equal($("#email").val(), "registered@testuser.com", "email prefilled");
   });
 
   function testUserUnregistered() {
-    var id = hub.subscribe("create_user", function() {
+    register("create_user", function() {
       ok(true, "email was valid, user not registered");
       start();
     });
-
-    subscriptions.push(id);
 
     controller.checkEmail();
     stop();
@@ -119,39 +123,114 @@ steal.then("/dialog/controllers/page_controller", "/dialog/controllers/authentic
   test("checkEmail with normal email, user registered", function() {
     $("#email").val("registered@testuser.com");
 
-    var id = hub.subscribe("enter_password", function() {
+    register("enter_password", function() {
       ok(true, "email was valid, user registered");
       start();
     });
-    subscriptions.push(id);
 
     controller.checkEmail();
     stop();
   });
 
   function testAuthenticated() {
-    var id = hub.subscribe("authenticated", function() {
+    register("authenticated", function() {
       ok(true, "user authenticated as expected");
       start();
     });
-    subscriptions.push(id);
     controller.authenticate();
 
     stop();
   }
 
   test("normal authentication is kosher", function() {
-      $("#email").val("testuser@testuser.com");
+      $("#email").val("registered@testuser.com");
       $("#password").val("password");
 
       testAuthenticated();
   });
 
   test("leading/trailing whitespace on the username is stripped for authentication", function() {
-      $("#email").val("    testuser@testuser.com    ");
+      $("#email").val("    registered@testuser.com    ");
       $("#password").val("password");
 
       testAuthenticated();
+  });
+
+  test("forgotPassword triggers forgot_password message", function() {
+    $("#email").val("registered@testuser.com");
+
+    register("forgot_password", function(msg, info) {
+      equal(info.email, "registered@testuser.com", "forgot_password with correct email triggered");
+      start();  
+    });
+
+    controller.forgotPassword();
+    stop();
+  });
+
+  test("createUser with valid email", function() {
+    $("#email").val("unregistered@testuser.com");
+    register("user_staged", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "user_staged with correct email triggered");
+      start();  
+    });
+
+    controller.createUser();
+    stop();
+  });
+
+  test("createUser with invalid email", function() {
+    $("#email").val("unregistered");
+
+    var handlerCalled = false;
+    register("user_staged", function(msg, info) {
+      handlerCalled = true;
+    });
+
+    controller.createUser();
+    setTimeout(function() {
+      equal(handlerCalled, false, "bad jiji, user_staged should not have been called with invalid email");
+      start();  
+    }, 100);
+
+    stop();
+  });
+
+  test("createUser with valid email but throttling", function() {
+    $("#email").val("unregistered@testuser.com");
+
+    var handlerCalled = false;
+    register("user_staged", function(msg, info) {
+      handlerCalled = true;
+    });
+
+    xhr.useResult("throttle");
+    controller.createUser();
+    setTimeout(function() {
+      equal(handlerCalled, false, "bad jiji, user_staged should not have been called with throttling");
+      equal(bid.Tooltip.shown, true, "tooltip is shown");
+      start();  
+    }, 100);
+
+    stop();
+  });
+
+  test("createUser with valid email, XHR error", function() {
+    $("#email").val("unregistered@testuser.com");
+
+    var handlerCalled = false;
+    register("user_staged", function(msg, info) {
+      handlerCalled = true;
+    });
+
+    xhr.useResult("ajaxError");
+    controller.createUser();
+    setTimeout(function() {
+      equal(handlerCalled, false, "bad jiji, user_staged should not have been called with XHR error");
+      start();  
+    }, 100);
+
+    stop();
   });
 
 });
