@@ -197,5 +197,40 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
 
   });
 
+  test("bind DOM Events", function() {
+    controller = el.page().controller();
+
+   controller.bind("body", "click", function(event) {
+      event.preventDefault();
+
+      strictEqual(this, controller, "context is correct");
+      start();
+   });
+
+   $("body").trigger("click");
+   stop();
+  });
+
+  test("unbindAll removes all listeners", function() {
+    controller = el.page().controller();
+    var listenerCalled = false;
+
+    controller.bind("body", "click", function(event) {
+      event.preventDefault();
+
+      listenerCalled = true;
+    });
+
+    controller.unbindAll();
+
+    $("body").trigger("click");
+    stop();
+
+    setTimeout(function() {
+      equal(listenerCalled, false, "all events are unbound, listener should not be called");
+      start();
+    }, 100);
+  });
+
 });
 

@@ -144,22 +144,13 @@
           showPassword: showPassword
         });
 
-        dom.bindEvent("#sign_in", "click", signIn.bind(self));
-        dom.bindEvent("#verify_address", "click", verifyAddress.bind(self));
-        dom.bindEvent("#forgotPassword", "click", forgotPassword.bind(self));
-        dom.bindEvent("#cancel", "click", cancel.bind(self));
+        self.bind("#sign_in", "click", signIn);
+        self.bind("#verify_address", "click", verifyAddress);
+        self.bind("#forgotPassword", "click", forgotPassword);
+        self.bind("#cancel", "click", cancel);
       }
 
       self._super();
-    },
-
-    stop: function() {
-      dom.unbindEvent("#sign_in", "click");
-      dom.unbindEvent("#verify_address", "click");
-      dom.unbindEvent("#forgotPassword", "click");
-      dom.unbindEvent("#cancel", "click");
-
-      this._super();
     },
 
     signIn: signIn,

@@ -51,7 +51,7 @@
     return helpers.getAndValidateEmail("#email");
   }
 
-  function checkEmail(el, event) {
+  function checkEmail(event) {
     var email = getEmail(),
         self = this;
 
@@ -69,7 +69,7 @@
     }, self.getErrorDialog(errors.isEmailRegistered));
   }
 
-  function createUser(el, event) {
+  function createUser(event) {
     var self=this,
         email = getEmail();
 
@@ -80,7 +80,7 @@
     }
   }
 
-  function authenticate(el, event) {
+  function authenticate(event) {
     var email = getEmail(),
         pass = helpers.getAndValidatePassword("#password"),
         self = this;
@@ -96,7 +96,7 @@
     }
   }
 
-  function resetPassword(el, event) {
+  function resetPassword(event) {
     var email = getEmail();
 
     cancelEvent(event);
@@ -117,17 +117,14 @@
     if (event) event.preventDefault();
   }
 
-  function enterEmailState(el, event) {
-    // Enter key, do nothing
-    if (event && event.which === 13) return;
-
+  function enterEmailState(el) {
     if (!el.is(":disabled")) {
       this.submit = checkEmail;
       animateSwap(".returning:visible,.newuser:visible,.forgot:visible", ".start");
     }
   }
 
-  function enterPasswordState(el, event) {
+  function enterPasswordState(event) {
     cancelEvent(event);
     var self=this;
 
@@ -138,7 +135,7 @@
     });
   }
 
-  function forgotPasswordState(el, event) {
+  function forgotPasswordState(event) {
     cancelEvent(event);
 
     this.submit = resetPassword;
@@ -147,14 +144,14 @@
     animateSwap(".start:visible,.newuser:visible,.returning:visible", ".forgot");
   }
 
-  function cancelForgotPassword(el, event) {
+  function cancelForgotPassword(event) {
     cancelEvent(event);
 
     dom.removeAttr("#email", "disabled");
     enterPasswordState.call(this);
   }
 
-  function createUserState(el, event) {
+  function createUserState(event) {
     cancelEvent(event);
 
     var self=this;
@@ -165,33 +162,35 @@
   }
 
 
-  PageController.extend("Authenticate", {}, {
-    init: function(el, options) {
-      options = options || {};
+  function emailKeyUp(event) {
+    var newEmail = dom.getInner(event.target);
+    if (newEmail !== lastEmail) {
+      lastEmail = newEmail;
+      enterEmailState.call(this, $(event.target));
+    }
+  }
 
-      this._super(el, {
-        bodyTemplate: "authenticate",
-        bodyVars: {
-          sitename: user.getHostname(),
-          email: options.email || ""
-        }
+  PageController.extend("Authenticate", {}, {
+    start: function(options) {
+      var self=this;
+      self.renderDialog("authenticate", {
+        sitename: user.getHostname(),
+        email: options.email || ""
       });
 
-      this.submit = checkEmail;
+      self.submit = checkEmail;
       // If we already have an email address, check if it is valid, if so, show
       // password.
-      if (options.email) this.submit();
+      if (options.email) self.submit();
+
+
+      self.bind("#email", "keyup", emailKeyUp);
+      self.bind("#forgotPassword", "click", forgotPasswordState);
+      self.bind("#cancel_forgot_password", "click", cancelForgotPassword);
+
+      self._super();
     },
 
-    "#email keyup": function(el, event) {
-      var newEmail = el.val();
-      if (newEmail !== lastEmail) {
-        lastEmail = newEmail;
-        enterEmailState.call(this, el);
-      }
-    },
-    "#forgotPassword click": forgotPasswordState,
-    "#cancel_forgot_password click": cancelForgotPassword,
     checkEmail: checkEmail,
     createUser: createUser,
     authenticate: authenticate,
