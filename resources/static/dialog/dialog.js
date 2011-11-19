@@ -49,6 +49,7 @@ steal
                '../lib/jschannel',
                '../lib/base64',
                '../lib/underscore-min',
+               '../lib/vepbundle',
                '../lib/ejs',
                '../shared/browserid',
                '../lib/dom-jquery',
