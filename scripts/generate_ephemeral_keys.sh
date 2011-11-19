@@ -23,7 +23,7 @@ if [ ! -x "$CERTIFY" ] ; then
 fi
 
 echo '*** Generating ephemeral keys used for testing ***'
-$GENERATE_KEYPAIR -k 128 -a rsa
+$GENERATE_KEYPAIR -k 256 -a rsa
 mkdir -p $VAR
 
 # public key will be stored as a self signed certificate with an embedded
