@@ -44,7 +44,6 @@ steal
   .then('../lib/jschannel',
         '../lib/base64',
         '../lib/underscore-min',
-        '../lib/vepbundle',
         '../dialog/resources/channel',
         '../shared/browserid',
         '../shared/storage',
