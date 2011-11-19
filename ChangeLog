@@ -14,6 +14,7 @@ train-2011.11.17:
   * fix serious regressions related to iOS5 fixes that prevented dialog from working the second time on RPs: #580, #588 #589
   * fix "go back and try another" link in dialog: #587
   * added "required email" feature: #491
+  * (added 2011.11.18) fix regression - sporadic assertion verification failures: #616
 
 train-2011.11.10:
   * keysigner process now handles certificate generation: #460
