@@ -38,81 +38,107 @@ steal.then(function() {
   "use strict";
 
   var controller,
-      el = $("body"),
+      el,
       bid = BrowserID,
-      storage = bid.Storage,
-      network = bid.Network,
       xhr = bid.Mocks.xhr,
-      hub = OpenAjax.hub,
-      registrations = [];
+      network = bid.Network,
+      mediator = bid.Mediator,
+      listeners = [];
 
-  function register(message, cb) {
-    registrations.push(hub.subscribe(message, cb));
+  function subscribe(message, cb) {
+    listeners.push(mediator.subscribe(message, cb));
   }
 
-  function unregisterAll() {
+  function unsubscribeAll() {
     var registration;
-    while(registration = registrations.pop()) {
-      hub.unsubscribe(registration);
+    while(registration = listeners.pop()) {
+      mediator.unsubscribe(registration);
     }
   }
 
-  function reset() {
-    el = $("#controller_head");
-    el.find("#formWrap .contents").html("");
-    el.find("#wait .contents").html("");
-    el.find("#error .contents").html("");
+  function createController(verifier, message) {
+    el = $("body");
+    controller = bid.Modules.CheckRegistration.create({
+      email: "registered@testuser.com",
+      verifier: verifier,
+      verificationMessage: message
+    });
   }
 
-  module("controllers/forgotpassword_controller", {
+  module("controllers/checkregistration_controller", {
     setup: function() {
-      $("#email").val("");
-      reset();
-      storage.clear();
-      network.setXHR(xhr);
       xhr.useResult("valid");
-      controller = el.forgotpassword({ email: "registered@testuser.com" }).controller();
+      network.setXHR(xhr);
+      $("#error").hide();
     },
 
     teardown: function() {
+      network.setXHR($);
       if (controller) {
         try {
+          // Controller may have already destroyed itself.
           controller.destroy();
-          controller = null;
-        } catch(e) {
-          // may already be destroyed from close inside of the controller.
-        }
+        } catch(e) {}
       }
-      reset();
-      storage.clear();
-      network.setXHR($);
-      unregisterAll();
-    }
+      unsubscribeAll();
+      $("#error").hide();
+    } 
   });
 
-  test("email address prefills address field", function() {
-    equal($("#email").val(), "registered@testuser.com", "email prefilled");
-  });
-
-  test("resetPassword raises 'reset_password' with email address", function() {
-    register("reset_password", function(msg, info) {
-      equal(info.email, "registered@testuser.com", "reset_password raised with correct email address");
+  function testVerifiedUserEvent(event_name, message) {
+    createController("waitForUserValidation", event_name);
+    subscribe(event_name, function() {
+      ok(true, message);
       start();
     });
+    controller.startCheck();
 
-    controller.resetPassword();
+    stop();
+  }
+
+  test("user validation with mustAuth result", function() {
+    xhr.useResult("mustAuth");
+
+    testVerifiedUserEvent("auth", "User Must Auth");
+  });
+
+  test("user validation with pending->complete result ~3 seconds", function() {
+    xhr.useResult("pending");
+
+    testVerifiedUserEvent("user_verified", "User verified");
+    setTimeout(function() {
+      xhr.useResult("complete");
+    }, 1000);
+  });
+
+  test("user validation with XHR error", function() {
+    xhr.useResult("ajaxError");
+
+    createController("waitForUserValidation", "user_verified");
+    subscribe("user_verified", function() {
+      ok(false, "on XHR error, should not complete");
+    });
+    controller.startCheck();
+    
+    setTimeout(function() {
+      ok($("#error").is(":visible"), "Error message is visible");
+      start();
+    }, 1000);
+
     stop();
   });
 
-  test("cancelResetPassword raises 'cancel_forgot_password'", function() {
-    register("cancel_forgot_password", function(msg, info) {
-      ok(true, "cancel_forgot_password triggered");
+  test("cancel raises cancel_user_verified", function() {
+    createController("waitForUserValidation", "user_verified");
+    subscribe("cancel_user_verified", function() {
+      ok(true, "on cancel, cancel_user_verified is triggered");
       start();
     });
+    controller.startCheck();
+    controller.cancel();
 
-    controller.cancelResetPassword();
     stop();
-
   });
+
 });
 

@@ -34,12 +34,15 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
+steal.then(function() {
   "use strict";
 
   var controller, el,
       bodyTemplate = "testBodyTemplate",
-      waitTemplate = "wait";
+      waitTemplate = "wait",
+      bid = BrowserID,
+      mediator = bid.Mediator,
+      modules = bid.Modules;
 
   function reset() {
     el = $("#controller_head");
@@ -47,6 +50,10 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
     el.find("#wait .contents").html("");
     $("#error").html("<div class='contents'></div>");
     el.find("#error .contents").html("");
+  }
+
+  function createController(options) {
+    controller = bid.Modules.PageModule.create(options);
   }
 
   module("/controllers/page_controller", {
@@ -61,7 +68,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   });
 
   test("page controller with no template causes no side effects", function() {
-    controller = el.page().controller();
+    createController();
 
     var html = el.find("#formWrap .contents").html();
     equal(html, "", "with no template specified, no text is loaded");
@@ -71,13 +78,13 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   });
 
   test("page controller with body template renders in #formWrap .contents", function() {
-    controller = el.page({
+    createController({
       bodyTemplate: bodyTemplate,
       bodyVars: {
         title: "Test title",
         message: "Test message"
       }
-    }).controller();
+    });
 
     var html = el.find("#formWrap .contents").html();
     ok(html.length, "with template specified, form text is loaded");
@@ -92,13 +99,13 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   });
 
   test("page controller with wait template renders in #wait .contents", function() {
-    controller = el.page({
+    createController({
       waitTemplate: waitTemplate,
       waitVars: {
         title: "Test title",
         message: "Test message"
       }
-    }).controller();
+    });
 
     var html = el.find("#formWrap .contents").html();
     equal(html, "", "with wait template specified, form is ignored");
@@ -108,13 +115,13 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   });
 
   test("page controller with error template renders in #error .contents", function() {
-    controller = el.page({
+    createController({
       errorTemplate: waitTemplate,
       errorVars: {
         title: "Test title",
         message: "Test message"
       }
-    }).controller();
+    });
 
     var html = el.find("#formWrap .contents").html();
     equal(html, "", "with error template specified, form is ignored");
@@ -124,13 +131,13 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   });
 
   test("renderError renders an error message", function() {
-    controller = el.page({
+    createController({
       waitTemplate: waitTemplate,
       waitVars: {
         title: "Test title",
         message: "Test message"
       }
-    }).controller();
+    });
 
     controller.renderError("wait", {
       title: "error title",
@@ -143,13 +150,13 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   });
 
   test("renderError allows us to open expanded error info", function() {
-    controller = el.page({
+    createController({
       waitTemplate: waitTemplate,
       waitVars: {
         title: "Test title",
         message: "Test message"
       }
-    }).controller();
+    });
 
     controller.renderError("error", {
       action: {
@@ -174,13 +181,13 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   });
 
   test("getErrorDialog gets a function that can be used to render an error message", function() {
-    controller = el.page({
+    createController({
       waitTemplate: waitTemplate,
       waitVars: {
         title: "Test title",
         message: "Test message"
       }
-    }).controller();
+    });
 
     // This is the medium level info.
     var func = controller.getErrorDialog({
@@ -198,7 +205,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   });
 
   test("bind DOM Events", function() {
-    controller = el.page().controller();
+    createController();
 
    controller.bind("body", "click", function(event) {
       event.preventDefault();
@@ -212,7 +219,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
   });
 
   test("unbindAll removes all listeners", function() {
-    controller = el.page().controller();
+    createController();
     var listenerCalled = false;
 
     controller.bind("body", "click", function(event) {
@@ -230,6 +237,20 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", function() {
       equal(listenerCalled, false, "all events are unbound, listener should not be called");
       start();
     }, 100);
+  });
+
+  test("publish", function() {
+    createController();
+
+    mediator.subscribe("message", function(msg, data) {
+      equal(msg, "message", "message is correct");
+      equal(data.field, 1, "data passed correctly");
+      start();
+    });
+
+    controller.publish("message", {
+      field: 1
+    });
   });
 
 });

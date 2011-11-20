@@ -45,17 +45,17 @@ steal.then(function() {
       xhr = bid.Mocks.xhr,
       emailRegistered = false,
       userCreated = true,
-      hub = OpenAjax.hub,
+      mediator = bid.Mediator,
       registrations = [];
 
   function register(message, cb) {
-    registrations.push(hub.subscribe(message, cb));
+    registrations.push(mediator.subscribe(message, cb));
   }
 
   function unregisterAll() {
     var registration;
     while(registration = registrations.pop()) {
-      hub.unsubscribe(registration);
+      mediator.unsubscribe(registration);
     }
   }
 
@@ -69,13 +69,17 @@ steal.then(function() {
     userCreated = true;
   }
 
+  function createController(options) {
+    controller = bid.Modules.Authenticate.create(options);
+  }
+
   module("controllers/authenticate_controller", {
     setup: function() {
       reset();
       storage.clear();
       network.setXHR(xhr);
       xhr.useResult("valid");
-      controller = el.authenticate().controller();
+      createController();
     },
 
     teardown: function() {
@@ -93,10 +97,11 @@ steal.then(function() {
     }
   });
 
+
   test("setting email address prefills address field", function() {
       controller.destroy();
       $("#email").val("");
-      controller = el.authenticate({ email: "registered@testuser.com" }).controller();
+      createController({ email: "registered@testuser.com" });
       equal($("#email").val(), "registered@testuser.com", "email prefilled");
   });
 

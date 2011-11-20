@@ -44,18 +44,18 @@ steal.then(function() {
       user = bid.User,
       network = bid.Network,
       storage = bid.Storage,
-      hub = OpenAjax.hub,
+      mediator = bid.Mediator,
       listeners = [];
 
   // XXX TODO Share this code with the other tests.
   function subscribe(message, cb) {
-    listeners.push(hub.subscribe(message, cb));
+    listeners.push(mediator.subscribe(message, cb));
   }
 
   function unsubscribeAll() {
     var registration;
     while(registration = listeners.pop()) {
-      hub.unsubscribe(registration);
+      mediator.unsubscribe(registration);
     }
   }
 
@@ -85,6 +85,10 @@ steal.then(function() {
       unsubscribeAll();
     }
   });
+
+  function createController(options) {
+    controller = bid.Modules.RequiredEmail.create(options);
+  }
 
   function testSignIn(email, cb) {
     setTimeout(function() {
@@ -121,20 +125,20 @@ steal.then(function() {
 
   test("user who is not authenticated, email is registered", function() {
     var email = "registered@testuser.com";
-    controller = el.requiredemail({
+    createController({
       email: email, 
       authenticated: false
-    }).controller();
+    });
 
     testSignIn(email, testPasswordSection);
   });
 
   test("user who is not authenticated, email not registered", function() {
     var email = "unregistered@testuser.com";
-    controller = el.requiredemail({
+    createController({
       email: email, 
       authenticated: false
-    }).controller();
+    });
 
     testVerify(email);
   });
@@ -142,10 +146,10 @@ steal.then(function() {
   test("user who is not authenticated, XHR error", function() {
     xhr.useResult("ajaxError");
     var email = "registered@testuser.com";
-    controller = el.requiredemail({
+    createController({
       email: email, 
       authenticated: false
-    }).controller();
+    });
 
     stop();
 
@@ -162,10 +166,10 @@ steal.then(function() {
 
     var email = "registered@testuser.com";
     user.syncEmailKeypair(email, function() {
-      controller = el.requiredemail({
+      createController({
         email: email, 
         authenticated: true
-      }).controller();
+      });
     });
 
     testSignIn(email, testNoPasswordSection);
@@ -177,10 +181,10 @@ steal.then(function() {
     });
 
     var email = "registered@testuser.com";
-    controller = el.requiredemail({
+    createController({
       email: email, 
       authenticated: true
-    }).controller();
+    });
 
     // This means the current user is going to take the address from the other 
     // account.
@@ -193,10 +197,10 @@ steal.then(function() {
     });
 
     var email = "unregistered@testuser.com";
-    controller = el.requiredemail({
+    createController({
       email: email, 
       authenticated: true
-    }).controller();
+    });
 
     testVerify(email);
   });
@@ -209,10 +213,10 @@ steal.then(function() {
 
     var email = "registered@testuser.com";
     user.syncEmailKeypair(email, function() {
-      controller = el.requiredemail({
+      createController({
         email: email, 
         authenticated: true
-      }).controller();
+      });
 
       subscribe("assertion_generated", function(item, info) {
         ok(info.assertion, "we have an assertion");
@@ -231,10 +235,10 @@ steal.then(function() {
     });
 
     var email = "registered@testuser.com";
-    controller = el.requiredemail({
+    createController({
       email: email, 
       authenticated: false
-    }).controller();
+    });
 
     subscribe("assertion_generated", function(item, info) {
       ok(info.assertion, "we have an assertion");
@@ -254,10 +258,10 @@ steal.then(function() {
     });
 
     var email = "registered@testuser.com";
-    controller = el.requiredemail({
+    createController({
       email: email, 
       authenticated: false
-    }).controller();
+    });
 
     var assertion;
 
@@ -288,10 +292,10 @@ steal.then(function() {
       authenticated: authenticated 
     });
 
-    controller = el.requiredemail({
+    createController({
       email: email, 
       authenticated: authenticated
-    }).controller();
+    });
 
 
     subscribe(message, function(item, info) {
@@ -324,10 +328,10 @@ steal.then(function() {
       authenticated: authenticated 
     });
 
-    controller = el.requiredemail({
+    createController({
       email: email, 
       authenticated: authenticated
-    }).controller();
+    });
 
 
     subscribe(message, function(item, info) {
@@ -348,10 +352,10 @@ steal.then(function() {
       authenticated: authenticated 
     });
 
-    controller = el.requiredemail({
+    createController({
       email: email, 
       authenticated: authenticated
-    }).controller();
+    });
 
 
     subscribe(message, function(item, info) {

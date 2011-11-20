@@ -39,21 +39,21 @@ window.console = window.console || {
   log: function() {}
 };
 
-steal
-  .plugins(
-              'jquery/controller',			// a widget factory
-              'jquery/controller/subscribe')	// subscribe to OpenAjax.hub
-
-	.resources(  'channel')
-  .then(
+steal.then(
+               'resources/channel',
+               '../lib/jquery-1.6.2.min.js',
                '../lib/jschannel',
                '../lib/base64',
                '../lib/underscore-min',
                '../lib/vepbundle',
                '../lib/ejs',
                '../shared/browserid',
+               '../lib/openajax',
                '../lib/dom-jquery',
+               '../lib/module',
 
+               '../shared/mediator',
+               '../shared/class',
                '../shared/storage',
                '../shared/templates',
                '../shared/renderer',
@@ -68,21 +68,34 @@ steal
                '../shared/browserid-extensions',
                '../shared/wait-messages',
                '../shared/helpers',
-               'resources/helpers'
-               )
 
-	.controllers('page',
-               'dialog',
-               'authenticate',
-               'forgotpassword',
-               'checkregistration',
-               'pickemail',
-               'addemail',
-               'required_email'
+               'resources/helpers',
+
+	             'controllers/page',
+               'controllers/dialog',
+               'controllers/authenticate',
+               'controllers/forgotpassword',
+               'controllers/checkregistration',
+               'controllers/pickemail',
+               'controllers/addemail',
+               'controllers/required_email'
                )					// loads files in controllers folder
 
   .then(function() {
     $(function() {
-      $('body').dialog().show();
+      var bid = BrowserID,
+          moduleManager = bid.module,
+          modules = bid.Modules;
+      
+      moduleManager.register("dialog", modules.Dialog);
+      moduleManager.register("add_email", modules.AddEmail);
+      moduleManager.register("authenticate", modules.Authenticate);
+      moduleManager.register("check_registration", modules.CheckRegistration);
+      moduleManager.register("forgot_password", modules.ForgotPassword);
+      moduleManager.register("pick_email", modules.PickEmail);
+      moduleManager.register("required_email", modules.RequiredEmail);
+
+      moduleManager.start("dialog");
+
     });
-  });						// adds views to be added to build
+  });						

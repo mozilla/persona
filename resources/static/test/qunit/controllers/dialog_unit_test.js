@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/controllers/dialog_controller", function() {
+steal.then(function() {
   "use strict";
 
   var controller,
@@ -50,7 +50,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
     channelError = false;
   }
 
-  function initController(config) {
+  function createController(config) {
     var config = $.extend(config, {
       window: {
         setupChannel: function() {
@@ -59,7 +59,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
       }
     });
 
-    controller = el.dialog(config).controller();
+    controller = BrowserID.Modules.Dialog.create(config);
   }
 
   module("controllers/dialog_controller", {
@@ -75,20 +75,20 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
 
   test("initialization with channel error", function() {
     channelError = true;
-    initController();
+    createController();
 
     ok($("#error .contents").text().length, "contents have been written");
   });
 
   test("doOffline", function() {
-    initController();
+    createController();
     controller.doOffline();
     ok($("#error .contents").text().length, "contents have been written");
     ok($("#error #offline").text().length, "offline error message has been written");
   });
 
   test("doXHRError while online, no network info given", function() {
-    initController();
+    createController();
     controller.doXHRError();
     ok($("#error .contents").text().length, "contents have been written");
     ok($("#error #action").text().length, "action contents have been written");
@@ -96,7 +96,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   });
 
   test("doXHRError while online, network info given", function() {
-    initController();
+    createController();
     controller.doXHRError({
       network: {
         type: "POST",
@@ -109,7 +109,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   });
 
   test("doXHRError while offline does not update contents", function() {
-    initController();
+    createController();
     controller.doOffline();
     $("#error #action").remove();
 
@@ -120,7 +120,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
 
   /*
   test("doCheckAuth with registered requiredEmail, authenticated", function() {
-    initController({
+    createController({
       requiredEmail: "registered@testuser.com" 
     });
 
@@ -128,7 +128,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   });
 
   test("doCheckAuth with registered requiredEmail, not authenticated", function() {
-    initController({
+    createController({
       requiredEmail: "registered@testuser.com" 
     });
 
@@ -136,7 +136,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   });
 
   test("doCheckAuth with unregistered requiredEmail, not authenticated", function() {
-    initController({
+    createController({
       requiredEmail: "unregistered@testuser.com" 
     });
 
@@ -144,7 +144,7 @@ steal.plugins("jquery").then("/dialog/controllers/page_controller", "/dialog/con
   });
 
   test("doCheckAuth with unregistered requiredEmail, authenticated as other user", function() {
-    initController({
+    createController({
       requiredEmail: "unregistered@testuser.com" 
     });
 

@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-(function() {
+BrowserID.Modules.PickEmail = (function() {
   "use strict";
 
   var ANIMATION_TIME = 250,
@@ -55,12 +55,12 @@
     cancelEvent(event);
 
     var self=this;
-    if (!self.find("input[type=radio]:checked").length) {
+    if (!dom.getElements("input[type=radio]:checked").length) {
       // If none are already checked, select the first one.
-      self.find('input[type=radio]').eq(0).attr('checked', true);
+      dom.setAttr('input[type=radio]:eq(0)', 'checked', true);
     }
     // focus whichever is checked.
-    self.find("input[type=radio]:checked").focus();
+    dom.focus("input[type=radio]:checked");
     self.submit = signIn;
   }
 
@@ -100,7 +100,7 @@
     }
   }
 
-  PageController.extend("Pickemail", {}, {
+  var PickEmail = bid.Modules.PageModule.extend({
     start: function(options) {  
       var origin = user.getOrigin(),
           self=this;
@@ -128,7 +128,7 @@
 
       self.bind("#useNewEmail", "click", addEmail);
 
-      self._super();
+      PickEmail.sc.start.call(self, options);
 
       pickEmailState.call(self);
     },
@@ -136,5 +136,7 @@
     signIn: signIn,
     addEmail: addEmail
   });
+
+  return PickEmail;
 
 }());

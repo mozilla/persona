@@ -44,18 +44,18 @@ steal.then(function() {
       user = bid.User,
       network = bid.Network,
       xhr = bid.Mocks.xhr,
-      hub = OpenAjax.hub,
+      mediator = bid.Mediator,
       testOrigin = "http://browserid.org",
       registrations = [];
 
   function register(message, cb) {
-    registrations.push(hub.subscribe(message, cb));
+    registrations.push(mediator.subscribe(message, cb));
   }
 
   function unregisterAll() {
     var registration;
     while(registration = registrations.pop()) {
-      hub.unsubscribe(registration);
+      mediator.unsubscribe(registration);
     }
   }
 
@@ -93,9 +93,9 @@ steal.then(function() {
 
 
   function createController(allowPersistent) {
-    controller = el.pickemail({
+    controller = bid.Modules.PickEmail.create({
       allow_persistent: allowPersistent || false
-    }).controller();
+    });
   }
 
   test("pickemail controller with email associated with site", function() {

@@ -34,13 +34,15 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-(function() {
+BrowserID.Modules = BrowserID.Modules || {};
+BrowserID.Modules.PageModule = (function() {
 "use strict";
 
   var ANIMATION_TIME = 250,
       bid = BrowserID,
       dom = bid.DOM,
-      screens = bid.Screens;
+      screens = bid.Screens,
+      mediator = bid.Mediator;
 
    function onSubmit(event) {
      event.stopPropagation();
@@ -52,10 +54,8 @@
      return false;
    }
 
-
-  $.Controller.extend("PageController", {
-    }, {
-    init: function(el, options) {
+  var PageController = BrowserID.Class({
+    init: function(options) {
       options = options || {};
 
       var self=this;
@@ -73,8 +73,6 @@
       if(options.errorTemplate) {
         self.renderError(options.errorTemplate, options.errorVars);
       }
-
-      self.start(options);
     },
 
     start: function() {
@@ -91,7 +89,6 @@
 
     destroy: function() {
       this.stop();
-      this._super();
     },
 
     bind: function(target, type, callback, context) {
@@ -157,6 +154,10 @@
       }
     },
 
+    publish: function(message, data) {
+      mediator.publish(message, data);
+    },
+
     /**
      * Get a curried function to an error dialog.
      * @method getErrorDialog
@@ -172,5 +173,7 @@
       }
     }
   });
+
+  return PageController;
 
 }());

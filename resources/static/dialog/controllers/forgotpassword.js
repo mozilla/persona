@@ -1,5 +1,5 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
-/*global _: true, BrowserID: true, PageController: true */
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*global BrowserID:true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,50 +34,51 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-(function() {
+BrowserID.Modules.ForgotPassword = (function() {
   "use strict";
 
-  var bid = BrowserID,
-      user = bid.User,
+  var ANIMATION_TIME = 250,
+      bid = BrowserID,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
-      errors = bid.Errors,
-      tooltip = bid.Tooltip;
+      dom = bid.DOM,
+      lastEmail = "";
 
   function cancelEvent(event) {
-    event && event.preventDefault();
+    if (event) event.preventDefault();
   }
 
-  function addEmail(event) {
-    var email = helpers.getAndValidateEmail("#newEmail"),
-        self=this;
-
+  function resetPassword(event) {
     cancelEvent(event);
 
-    if (email) {
-      dialogHelpers.addEmail.call(self, email);
-    }
+    var self=this;
+    dialogHelpers.resetPassword.call(self, self.email);
   }
 
-
-  function cancelAddEmail(event) {
+  function cancelResetPassword(event) {
     cancelEvent(event);
 
-    this.close("cancel_add_email");
+    this.close("cancel_forgot_password");
   }
 
-  PageController.extend("Addemail", {}, {
+  var ForgotPassword = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
+      self.email = options.email;
+      self.renderDialog("forgotpassword", {
+        email: options.email || ""
+      });
 
-      self.renderDialog("addemail");
+      self.bind("#cancel_forgot_password", "click", cancelResetPassword);
 
-      self.bind("#cancelNewEmail", "click", cancelAddEmail);
-      self._super();
+      ForgotPassword.sc.start.call(self, options);
     },
-    submit: addEmail,
-    addEmail: addEmail,
-    cancelAddEmail: cancelAddEmail
+
+    submit: resetPassword,
+    resetPassword: resetPassword,
+    cancelResetPassword: cancelResetPassword
   });
+
+  return ForgotPassword;
 
 }());

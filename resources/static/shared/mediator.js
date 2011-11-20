@@ -1,5 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global BrowserID: true, PageController: true */
+/*globals BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,50 +33,14 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-(function() {
-  "use strict";
 
-  var bid = BrowserID,
-      user = bid.User,
-      dom = bid.DOM,
-      errors = bid.Errors;
+BrowserID.Mediator = (function() {
+  var hub = OpenAjax.hub;
 
-  PageController.extend("Checkregistration", {}, {
-    start: function(options) {
-      var self=this;
-      self.renderWait("confirmemail", {
-          email: options.email
-      });
-      self.email = options.email;
-      self.verifier = options.verifier;
-      self.verificationMessage = options.verificationMessage;
-
-      self.bind("#back", "click", self.cancel);
-
-      self._super();
-    },
-
-    startCheck: function() {
-      var self=this;
-      user[self.verifier](self.email, function(status) {
-        if (status === "complete") {
-          user.syncEmails(function() {
-            self.close(self.verificationMessage);
-          });
-        }
-        else if (status === "mustAuth") {
-          self.close("auth", { email: self.email });
-        }
-      }, self.getErrorDialog(errors.registration));
-    },
-
-    cancel: function() {
-      var self=this;
-      self.close("cancel_" + self.verificationMessage);
-    }
-
-  });
-
-
-
+  return {
+    subscribe: hub.subscribe.bind(hub),
+    unsubscribe: hub.unsubscribe.bind(hub),
+    publish: hub.publish.bind(hub)
+  };
 }());
+

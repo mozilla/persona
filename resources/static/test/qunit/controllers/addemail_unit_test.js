@@ -44,18 +44,19 @@ steal.then(function() {
       user = bid.User,
       network = bid.Network,
       xhr = bid.Mocks.xhr,
-      hub = OpenAjax.hub,
+      mediator = bid.Mediator, 
+      modules = bid.Modules,
       testOrigin = "http://browserid.org",
       registrations = [];
 
   function register(message, cb) {
-    registrations.push(hub.subscribe(message, cb));
+    registrations.push(mediator.subscribe(message, cb));
   }
 
   function unregisterAll() {
     var registration;
     while(registration = registrations.pop()) {
-      hub.unsubscribe(registration);
+      mediator.unsubscribe(registration);
     }
   }
 
@@ -83,18 +84,18 @@ steal.then(function() {
     }
   });
 
-  function createController() {
-    return $("body").addemail({}).controller();
+  function createController(options) {
+    controller = modules.AddEmail.create(options);
   }
 
   test("addemail controller renders correctly", function() {
-    controller = createController();
+    createController();
 
     equal($("#addEmail").length, 1, "control rendered correctly");
   });
 
   test("addEmail with valid email", function() {
-    controller = createController();
+    createController();
 
     $("#newEmail").val("unregistered@testuser.com");
     register("email_staged", function(msg, info) {
@@ -106,7 +107,7 @@ steal.then(function() {
   });
 
   test("addEmail with valid email with leading/trailing whitespace", function() {
-    controller = createController();
+    createController();
 
     $("#newEmail").val("   unregistered@testuser.com  ");
     register("email_staged", function(msg, info) {
@@ -118,7 +119,7 @@ steal.then(function() {
   });
 
   test("addEmail with invalid email", function() {
-    controller = createController();
+    createController();
 
     $("#newEmail").val("unregistered");
     var handlerCalled = false;
@@ -136,7 +137,7 @@ steal.then(function() {
   });
 
   test("addEmail with previously registered email - allows for account consolidation", function() {
-    controller = createController();
+    createController();
 
     $("#newEmail").val("registered@testuser.com");
     register("email_staged", function(msg, info) {
@@ -148,7 +149,7 @@ steal.then(function() {
   });
 
   test("cancelAddEmail", function() {
-    controller = createController();
+    createController();
 
     register("cancel_add_email", function(msg, info) {
       ok(true, "cancelling the add email");

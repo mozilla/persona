@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global BrowserID:true, PageController: true */
+/*global BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,49 +34,50 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-(function() {
+BrowserID.Modules.CheckRegistration = (function() {
   "use strict";
 
-  var ANIMATION_TIME = 250,
-      bid = BrowserID,
-      helpers = bid.Helpers,
-      dialogHelpers = helpers.Dialog,
+  var bid = BrowserID,
+      user = bid.User,
       dom = bid.DOM,
-      lastEmail = "";
+      errors = bid.Errors;
 
-  function cancelEvent(event) {
-    if (event) event.preventDefault();
-  }
-
-  function resetPassword(event) {
-    cancelEvent(event);
-
-    var self=this;
-    dialogHelpers.resetPassword.call(self, self.email);
-  }
-
-  function cancelResetPassword(event) {
-    cancelEvent(event);
-
-    this.close("cancel_forgot_password");
-  }
-
-  PageController.extend("Forgotpassword", {}, {
+  var CheckRegistration = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
-      self.email = options.email;
-      self.renderDialog("forgotpassword", {
-        email: options.email || ""
+      self.renderWait("confirmemail", {
+          email: options.email
       });
+      self.email = options.email;
+      self.verifier = options.verifier;
+      self.verificationMessage = options.verificationMessage;
 
-      self.bind("#cancel_forgot_password", "click", cancelResetPassword);
+      self.bind("#back", "click", self.cancel);
 
-      self._super();
+      CheckRegistration.sc.start.call(self, options);
     },
 
-    submit: resetPassword,
-    resetPassword: resetPassword,
-    cancelResetPassword: cancelResetPassword
+    startCheck: function() {
+      var self=this;
+      user[self.verifier](self.email, function(status) {
+        if (status === "complete") {
+          user.syncEmails(function() {
+            self.close(self.verificationMessage);
+          });
+        }
+        else if (status === "mustAuth") {
+          self.close("auth", { email: self.email });
+        }
+      }, self.getErrorDialog(errors.registration));
+    },
+
+    cancel: function() {
+      var self=this;
+      self.close("cancel_" + self.verificationMessage);
+    }
+
   });
+
+  return CheckRegistration;
 
 }());

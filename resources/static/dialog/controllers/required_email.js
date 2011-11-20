@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-(function() {
+BrowserID.Modules.RequiredEmail = (function() {
   "use strict";
 
   var ANIMATION_TIME = 250,
@@ -112,7 +112,7 @@
     this.close("cancel");
   }
 
-  PageController.extend("Requiredemail", {}, {
+  var RequiredEmail = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this,
           email = options.email || "",
@@ -153,7 +153,7 @@
         self.bind("#cancel", "click", cancel);
       }
 
-      self._super();
+      RequiredEmail.sc.start.call(self, options);
     },
 
     signIn: signIn,
@@ -161,5 +161,7 @@
     forgotPassword: forgotPassword,
     cancel: cancel
   });
+
+  return RequiredEmail;
 
 }());

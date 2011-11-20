@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global setupChannel:true, BrowserID: true, PageController: true, OpenAjax: true */
+/*global setupChannel:true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -35,11 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-//
-// a JMVC controller for the browserid dialog
-//
 
-(function() {
+BrowserID.Modules.Dialog = (function() {
   "use strict";
 
   var bid = BrowserID,
@@ -49,26 +46,36 @@
       offline = false,
       win = window,
       subscriptions = [],
-      hub = OpenAjax.hub;
+      mediator = bid.Mediator,
+      serviceManager = bid.module,
+      runningService;
 
   function subscribe(message, cb) {
-     subscriptions.push(hub.subscribe(message, cb));
+     subscriptions.push(mediator.subscribe(message, cb));
+  }
+
+  function startService(name, options) {
+    // Only one service outside of the main dialog allowed.
+    if(runningService) {
+      serviceManager.stop(runningService);
+    }
+    runningService = name;
+    return serviceManager.start(name, options);
   }
 
   function createCheckRegistrationController(email, verifier, message) {
     this.confirmEmail = email;
 
-    var controller = this.element.checkregistration({
+    var controller = startService("check_registration", {
       email: email,
       verifier: verifier,
       verificationMessage: message
-    }).controller("checkregistration");  // specify the name of the controller
-                                         // or else the dialog controller is returned.
+    }); 
     controller.startCheck();
   }
 
-  PageController.extend("Dialog", {}, {
-      init: function(el, options) {
+  var Dialog = bid.Modules.PageModule.extend({
+      init: function(options) {
         offline = false;
 
         options = options || {};
@@ -80,7 +87,7 @@
         var self=this;
 
         self.domEvents = [];
-        self._super();
+        Dialog.sc.init.call(self, options);
 
         // keep track of where we are and what we do on success and error
         self.onsuccess = null;
@@ -100,10 +107,10 @@
         var subscription;
 
         while(subscription = subscriptions.pop()) {
-          hub.unsubscribe(subscription);
+          mediator.unsubscribe(subscription);
         }
 
-        this._super();
+        Dialog.sc.destroy.call(this);
       },
 
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {
@@ -269,7 +276,7 @@
       doPickEmail: function() {
         var self=this;
         self.returnFromStageCancel = self.doPickEmail.bind(self);
-        self.element.pickemail({
+        startService("pick_email", {
           // XXX ideal is to get rid of this and have a User function
           // that takes care of getting email addresses AND the last used email
           // for this site.
@@ -279,7 +286,7 @@
       },
 
       doAddEmail: function() {
-        this.element.addemail({});
+        startService("add_email", {});
       },
 
       doAuthenticate: function(info) {
@@ -288,17 +295,17 @@
         // Save this off in case the user forgets their password or goes to add 
         // a new password but has to cancel.
         self.returnFromStageCancel = self.doAuthenticate.bind(self, info);
-        self.element.authenticate(info);
+        startService("authenticate", info);
       },
 
       doAuthenticateWithRequiredEmail: function(info) {
         var self=this;
         self.returnFromStageCancel = self.doAuthenticateWithRequiredEmail.bind(self, info);
-        self.element.requiredemail(info);
+        startService("required_email", info);
       },
 
       doForgotPassword: function(email) {
-        this.element.forgotpassword({
+        startService("forgot_password", {
           email: email
         });
       },
@@ -355,5 +362,6 @@
 
   });
 
+  return Dialog;
 
 }());

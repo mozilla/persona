@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-(function() {
+BrowserID.Modules.Authenticate = (function() {
   "use strict";
 
   var ANIMATION_TIME = 250,
@@ -155,7 +155,7 @@
     }
   }
 
-  PageController.extend("Authenticate", {}, {
+  var Authenticate = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
       self.renderDialog("authenticate", {
@@ -172,7 +172,7 @@
       self.bind("#email", "keyup", emailKeyUp);
       self.bind("#forgotPassword", "click", forgotPassword);
 
-      self._super();
+      Authenticate.sc.start.call(self, options);
     },
 
     checkEmail: checkEmail,
@@ -180,5 +180,7 @@
     authenticate: authenticate,
     forgotPassword: forgotPassword
   });
+
+  return Authenticate;
 
 }());

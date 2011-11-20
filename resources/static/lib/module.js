@@ -51,14 +51,14 @@ BrowserID.module = (function() {
 
         module = new constr();
         created[service] = module;
-        module.init(config);
+        module.init(config || {});
       }
       else {
         throw "module not registered for " + service;
       }
     }
 
-    module.start(data);
+    module.start(data || {});
     running[service] = module;
 
     return module;
