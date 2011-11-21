@@ -61,6 +61,8 @@ steal.then("/dialog/resources/channel", function() {
                 }, function onerror(error) {
                   winMock.error = error;
                 });
+              },
+              unregisterClient: function() {
               }
             }
           }
@@ -137,6 +139,8 @@ steal.then("/dialog/resources/channel", function() {
   });
 
   test("IFRAME channel with error on open", function() {
+    channel.close();
+
     var winMockWithoutRelay = $.extend(true, {}, winMock);
     delete winMockWithoutRelay.opener.frames['1234'];
 

@@ -117,6 +117,7 @@
     
     if (frameWindow) {
       frameWindow.BrowserID.Relay.unregisterClient();
+      _relayWindow = null;
     }
     else {
       throw "relay frame not found";
