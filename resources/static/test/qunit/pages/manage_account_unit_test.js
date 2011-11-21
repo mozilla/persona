@@ -116,7 +116,6 @@ steal.then("/pages/manage_account", function() {
     setTimeout(function() {
       // switch to a single address return on the sync.
       xhr.useResult("valid");
-      alert($("#emailList").children().length);
       bid.manageAccount.removeEmail("testuser@testuser.com");
 
       setTimeout(function() {
