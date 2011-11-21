@@ -59,8 +59,10 @@ BrowserID.Mocks.xhr = (function() {
       // We are going to test for XHR failures for session_context using 
       // call to serverTime.  We are going to use the flag contextAjaxError
       "get /wsapi/session_context ajaxError": contextInfo, 
+      "get /wsapi/session_context complete": contextInfo, 
       "get /wsapi/session_context throttle": contextInfo, 
       "get /wsapi/session_context multiple": contextInfo, 
+      "get /wsapi/session_context no_identities": contextInfo, 
       "get /wsapi/session_context contextAjaxError": undefined,  
       "get /wsapi/email_for_token?token=token valid": { email: "testuser@testuser.com" },  
       "get /wsapi/email_for_token?token=token invalid": { success: false },  
