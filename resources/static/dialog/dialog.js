@@ -52,6 +52,7 @@ steal.then(
                '../lib/dom-jquery',
                '../lib/module',
 
+               '../shared/browserid-extensions',
                '../shared/mediator',
                '../shared/class',
                '../shared/storage',
@@ -65,7 +66,6 @@ steal.then(
                '../shared/user',
                '../shared/error-messages',
                '../shared/browser-support',
-               '../shared/browserid-extensions',
                '../shared/wait-messages',
                '../shared/helpers',
 
