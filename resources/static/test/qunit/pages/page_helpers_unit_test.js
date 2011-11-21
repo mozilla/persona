@@ -117,7 +117,7 @@ steal.then(function() {
         equal(email, "testuser@testuser.com", "stored email is reset on cancel");
         equal($(".emailsent").is(":visible"), false, "emailsent is not visible");
         equal($(".forminputs").is(":visible"), true, "inputs are visible");
-        equal($("#email").is(":focus"), true, "first element is focused");
+        equal($("#email").is(":focus"), true, "first element is focused (NOTE: requires your browser to be focused to work)");
         start();
       });
     });
