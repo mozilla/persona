@@ -88,7 +88,8 @@ steal.then(function() {
 
   function testSignIn(email, cb) {
     setTimeout(function() {
-      equal($("#required_email").text(), email, "email set correctly");
+      var el = $("#required_email");
+      equal(el.val() || el.text(), email, "email set correctly");
       equal($("#sign_in").length, 1, "sign in button shown");
       equal($("#verify_address").length, 0, "verify address not shows");
       cb && cb();
@@ -99,7 +100,8 @@ steal.then(function() {
 
   function testVerify(email, cb) {
     setTimeout(function() {
-      equal($("#required_email").text(), email, "email set correctly");
+      var el = $("#required_email");
+      equal(el.val() || el.text(), email, "email set correctly");
       equal($("#sign_in").length, 0, "sign in button not shown");
       equal($("#verify_address").length, 1, "verify address shows");
       testNoPasswordSection();
