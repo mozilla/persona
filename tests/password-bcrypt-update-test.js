@@ -153,11 +153,11 @@ suite.addBatch({
 });
 
 // let's wait a little while for the password update to complete.
-// sleeps suck, but 8 rounds should reliably complete in under 750ms
+// sleeps suck, but 8 rounds should reliably complete in under 2s
 suite.addBatch({
   "after a bit of waiting": {
     topic: function() {
-      setTimeout(this.callback, 750);
+      setTimeout(this.callback, 2000);
     },
     "if we recheck the auth hash": {
       topic: function() {

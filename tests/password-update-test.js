@@ -53,7 +53,7 @@ suite.options.error = false;
 
 start_stop.addStartupBatches(suite);
 
-const TEST_EMAIL = 'someuser@somedomain.comt',
+const TEST_EMAIL = 'someuser@somedomain.com',
       OLD_PASSWORD = 'thisismyoldpassword',
       NEW_PASSWORD = 'thisismynewpassword';
 
