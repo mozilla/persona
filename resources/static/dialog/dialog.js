@@ -70,6 +70,7 @@ steal.then(
                '../shared/helpers',
 
                'resources/helpers',
+               'resources/state_machine',
 
 	             'controllers/page',
                'controllers/dialog',

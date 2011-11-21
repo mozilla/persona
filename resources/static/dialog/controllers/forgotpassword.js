@@ -58,7 +58,7 @@ BrowserID.Modules.ForgotPassword = (function() {
   function cancelResetPassword(event) {
     cancelEvent(event);
 
-    this.close("cancel_forgot_password");
+    this.close("cancel_state");
   }
 
   var ForgotPassword = bid.Modules.PageModule.extend({

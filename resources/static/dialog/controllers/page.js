@@ -60,7 +60,7 @@ BrowserID.Modules.PageModule = (function() {
 
       var self=this;
 
-      this.domEvents = [];
+      self.domEvents = [];
 
       if(options.bodyTemplate) {
         self.renderDialog(options.bodyTemplate, options.bodyVars);

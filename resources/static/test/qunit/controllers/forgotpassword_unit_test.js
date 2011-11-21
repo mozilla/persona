@@ -65,7 +65,8 @@ steal.then(function() {
   }
 
   function createController(options) {
-    controller = bid.Modules.ForgotPassword.create(options);
+    controller = bid.Modules.ForgotPassword.create();
+    controller.start(options);
   }
 
   module("controllers/forgotpassword_controller", {
@@ -109,14 +110,13 @@ steal.then(function() {
   });
 
   test("cancelResetPassword raises 'cancel_forgot_password'", function() {
-    register("cancel_forgot_password", function(msg, info) {
-      ok(true, "cancel_forgot_password triggered");
+    register("cancel_state", function(msg, info) {
+      ok(true, "cancel_state triggered");
       start();
     });
 
     controller.cancelResetPassword();
     stop();
-
   });
 });
 

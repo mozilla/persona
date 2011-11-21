@@ -108,6 +108,7 @@ BrowserID.Modules.PickEmail = (function() {
       options = options || {};
 
       self.allowPersistent = options.allow_persistent;
+      dom.addClass("body", "pickemail");
       self.renderDialog("pickemail", {
         identities: user.getStoredEmailKeypairs(),
         // XXX ideal is to get rid of self and have a User function
@@ -131,6 +132,11 @@ BrowserID.Modules.PickEmail = (function() {
       PickEmail.sc.start.call(self, options);
 
       pickEmailState.call(self);
+    },
+
+    stop: function() {
+      PickEmail.sc.stop.call(this);
+      dom.removeClass("body", "pickemail");
     },
 
     signIn: signIn,

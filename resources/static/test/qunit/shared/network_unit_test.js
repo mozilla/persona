@@ -38,7 +38,9 @@ steal.then(function() {
   "use strict";
 
   var testName,
-  xhr = BrowserID.Mocks.xhr;
+      bid = BrowserID,
+      mediator = bid.Mediator,
+      xhr = bid.Mocks.xhr;
 
   function wrappedAsyncTest(name, test) {
     asyncTest(name, function() {
@@ -69,10 +71,10 @@ steal.then(function() {
       equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
       equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
       wrappedStart();
-      OpenAjax.hub.unsubscribe(handle);
+      mediator.unsubscribe(handle);
     };
 
-    handle = OpenAjax.hub.subscribe("xhrError", subscriber);
+    handle = mediator.subscribe("xhrError", subscriber);
 
     if (cb) {
       cb.apply(null, args);
@@ -680,13 +682,16 @@ steal.then(function() {
     stop();
   });
 
+  /*
   wrappedAsyncTest("body offline message triggers offline message", function() {
-    OpenAjax.hub.subscribe("offline", function() {
+    mediator.subscribe("offline", function() {
       ok(true, "offline event caught and application notified");
       start();
     });
 
-    $("body").trigger("offline");
+    var evt = $.Event("offline");
+    $("body").trigger(evt);
     stop();
   });
+  */
 });

@@ -1,17 +1,19 @@
-steal.plugins(
-     "jquery",
-      "jquery/controller",
-      "jquery/controller/subscribe",
-      "funcunit/qunit")
+steal.plugins("funcunit/qunit")
   .then(
+      "/lib/jquery-1.6.2.min",
       "/lib/underscore-min",
       "/lib/ejs",
       "/lib/vepbundle",
       "/shared/browserid",
       "/lib/dom-jquery",
+      "/lib/vepbundle",
+      "/lib/openajax",
+      "/lib/module",
       "mocks/mocks",
       "mocks/xhr",
       "/shared/renderer",
+      "/shared/class",
+      "/shared/mediator",
       "/shared/screens",
       "/shared/browser-support",
       "/shared/error-messages",
@@ -25,27 +27,32 @@ steal.plugins(
 
       "/dialog/resources/channel",
       "/dialog/resources/helpers",
+      "/dialog/resources/state_machine",
+      "/dialog/resources/channel",
 
-      "/dialog/controllers/page_controller",
-      "/dialog/controllers/required_email_controller",
-      "/dialog/controllers/pickemail_controller",
-      "/dialog/controllers/addemail_controller",
-      "/dialog/controllers/authenticate_controller",
-      "/dialog/controllers/forgotpassword_controller",
+      "/dialog/controllers/page",
+      "/dialog/controllers/pickemail",
+      "/dialog/controllers/addemail",
+      "/dialog/controllers/dialog",
+      "/dialog/controllers/checkregistration",
+      "/dialog/controllers/authenticate",
+      "/dialog/controllers/forgotpassword",
+      "/dialog/controllers/required_email",
 
       "/pages/page_helpers",
 
-      "pages/browserid_unit_test",
-      "pages/page_helpers_unit_test",
-
       "include_unit_test",
       "relay/relay_unit_test",
+
+      "pages/browserid_unit_test",
+      "pages/page_helpers_unit_test",
       "pages/add_email_address_test",
       "pages/verify_email_address_test",
       "pages/forgot_unit_test",
       "pages/signin_unit_test",
       "pages/signup_unit_test",
       "pages/manage_account_unit_test",
+
       "shared/helpers_unit_test",
       "shared/renderer_unit_test",
       "shared/screens_unit_test",
@@ -56,17 +63,20 @@ steal.plugins(
       "shared/storage_unit_test",
       "shared/network_unit_test",
       "shared/user_unit_test",
-      "resources/channel_unit_test",
-      "resources/helpers_unit_test",
 
-      "controllers/page_controller_unit_test",
-      "controllers/pickemail_controller_unit_test",
-      "controllers/addemail_controller_unit_test",
-      "controllers/dialog_controller_unit_test",
-      "controllers/checkregistration_controller_unit_test",
-      "controllers/authenticate_controller_unit_test",
-      "controllers/forgotpassword_controller_unit_test",
-      "controllers/required_email_controller_unit_test"
+      "resources/helpers_unit_test",
+      "resources/state_machine_unit_test",
+      "resources/channel_unit_test",
+
+      "controllers/page_unit_test",
+      "controllers/pickemail_unit_test",
+      "controllers/addemail_unit_test",
+      "controllers/checkregistration_unit_test",
+      "controllers/authenticate_unit_test",
+      "controllers/forgotpassword_unit_test",
+      "controllers/required_email_unit_test",
+      // must go last or all other tests will fail.
+      "controllers/dialog_unit_test"
       
       );
 

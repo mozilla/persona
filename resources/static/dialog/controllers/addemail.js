@@ -63,7 +63,7 @@ BrowserID.Modules.AddEmail = (function() {
   function cancelAddEmail(event) {
     cancelEvent(event);
 
-    this.close("cancel_add_email");
+    this.close("cancel_state");
   }
 
   var AddEmail = bid.Modules.PageModule.extend({

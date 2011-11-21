@@ -70,7 +70,9 @@ steal.then(function() {
   }
 
   function createController(options) {
-    controller = bid.Modules.Authenticate.create(options);
+    options = options || {};
+    controller = bid.Modules.Authenticate.create();
+    controller.start(options);
   }
 
   module("controllers/authenticate_controller", {

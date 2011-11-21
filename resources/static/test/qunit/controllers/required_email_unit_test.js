@@ -87,7 +87,8 @@ steal.then(function() {
   });
 
   function createController(options) {
-    controller = bid.Modules.RequiredEmail.create(options);
+    controller = bid.Modules.RequiredEmail.create();
+    controller.start(options);
   }
 
   function testSignIn(email, cb) {

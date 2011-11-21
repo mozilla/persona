@@ -42,7 +42,7 @@ BrowserID.Network = (function() {
       server_time,
       domain_key_creation_time,
       auth_status,
-      hub = window.OpenAjax && OpenAjax.hub;
+      mediator = BrowserID.Mediator;
 
   function deferResponse(cb) {
     if (cb) {
@@ -65,7 +65,7 @@ BrowserID.Network = (function() {
       network.errorThrown = errorThrown;
 
       if (cb) cb(info);
-      hub && hub.publish("xhrError", info);
+      mediator && mediator.publish("xhrError", info);
     };
   }
 
@@ -147,7 +147,7 @@ BrowserID.Network = (function() {
 
   // Not really part of the Network API, but related to networking
   $(document).bind("offline", function() {
-    hub.publish("offline");
+    mediator.publish("offline");
   });
 
   var Network = {

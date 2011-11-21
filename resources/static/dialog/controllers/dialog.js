@@ -45,14 +45,8 @@ BrowserID.Modules.Dialog = (function() {
       dom = bid.DOM,
       offline = false,
       win = window,
-      subscriptions = [],
-      mediator = bid.Mediator,
       serviceManager = bid.module,
       runningService;
-
-  function subscribe(message, cb) {
-     subscriptions.push(mediator.subscribe(message, cb));
-  }
 
   function startService(name, options) {
     // Only one service outside of the main dialog allowed.
@@ -63,7 +57,7 @@ BrowserID.Modules.Dialog = (function() {
     return serviceManager.start(name, options);
   }
 
-  function createCheckRegistrationController(email, verifier, message) {
+  function startRegCheckService(email, verifier, message) {
     this.confirmEmail = email;
 
     var controller = startService("check_registration", {
@@ -72,6 +66,41 @@ BrowserID.Modules.Dialog = (function() {
       verificationMessage: message
     }); 
     controller.startCheck();
+  }
+
+  function checkOnline() {
+    if ('onLine' in navigator && !navigator.onLine) {
+      this.doOffline();
+      return false;
+    }
+
+    return true;
+  }
+
+  function onWinUnload() {
+    // do this only if something else hasn't declared success
+    if (!self.success) {
+      bid.Storage.setStagedOnBehalfOf("");
+      self.doCancel();
+    }
+    window.teardownChannel();
+  }
+
+  function setupChannel() {
+    var self = this;
+
+    try {
+      win.setupChannel(self);
+    } catch (e) {
+      self.renderError("error", {
+        action: errors.relaySetup
+      });
+    }
+  }
+
+  function setOrigin(origin) {
+    user.setOrigin(origin);
+    dom.setInner("#sitename", user.getHostname());
   }
 
   var Dialog = bid.Modules.PageModule.extend({
@@ -86,31 +115,19 @@ BrowserID.Modules.Dialog = (function() {
 
         var self=this;
 
-        self.domEvents = [];
         Dialog.sc.init.call(self, options);
 
         // keep track of where we are and what we do on success and error
         self.onsuccess = null;
         self.onerror = null;
 
-        try {
-          win.setupChannel(self);
-          self.stateMachine();
-        } catch (e) {
-          self.renderError("error", {
-            action: errors.relaySetup
-          });
-        }
-      },
+        // start this directly because it should always be running.
+        var machine = BrowserID.StateMachine.create();
+        machine.start({
+          controller: this
+        });
 
-      destroy: function() {
-        var subscription;
-
-        while(subscription = subscriptions.pop()) {
-          mediator.unsubscribe(subscription);
-        }
-
-        Dialog.sc.destroy.call(this);
+        setupChannel.call(self);
       },
 
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {
@@ -119,134 +136,22 @@ BrowserID.Modules.Dialog = (function() {
 
       get: function(origin_url, params, onsuccess, onerror) {
         var self=this;
-        self.onsuccess = onsuccess;
-        self.onerror = onerror;
 
-        if (typeof(params) == 'undefined') {
-          params = {};
-        }
+        if(checkOnline.call(self)) {
+          self.onsuccess = onsuccess;
+          self.onerror = onerror;
 
-        self.allowPersistent = !!params.allowPersistent;
-        self.requiredEmail = params.requiredEmail;
+          params = params || {};
 
-        if ('onLine' in navigator && !navigator.onLine) {
-          self.doOffline();
-          return;
-        }
+          self.allowPersistent = !!params.allowPersistent;
+          self.requiredEmail = params.requiredEmail;
 
-        user.setOrigin(origin_url);
-        dom.setInner("#sitename", user.getHostname());
+          setOrigin(origin_url);
 
-        self.doCheckAuth();
+          self.bind(win, "unload", onWinUnload);
 
-        self.bind(win, "unload", function() {
-          // do this only if something else hasn't
-          // declared success
-          if (!self.success) {
-            bid.Storage.setStagedOnBehalfOf("");
-            self.doCancel();
-          }
-          window.teardownChannel();
-        });
-      },
-
-
-      stateMachine: function() {
-        var self=this,
-            el = this.element;
-
-        subscribe("offline", function(msg, info) {
-          self.doOffline();
-        });
-
-        subscribe("xhrError", function(msg, info) {
-          //self.doXHRError(info);
-          // XXX how are we going to handle this?
-        });
-
-        subscribe("user_staged", function(msg, info) {
-          self.doConfirmUser(info.email);
-        });
-
-        subscribe("user_confirmed", function() {
-          self.doEmailConfirmed();
-        });
-
-        subscribe("cancel_user_confirmed", function() {
-          user.cancelUserValidation();
-          self.returnFromStageCancel();
-        });
-
-        subscribe("authenticated", function(msg, info) {
-          //self.doEmailSelected(info.email);
-          // XXX benadida, lloyd - swap these two if you want to experiment with
-          // generating assertions directly from signin.
-          self.syncEmails();
-        });
-
-        subscribe("forgot_password", function(msg, info) {
-          self.doForgotPassword(info.email);
-        });
-
-        subscribe("cancel_forgot_password", function(msg, info) {
-          user.cancelUserValidation();
-          self.returnFromStageCancel();
-        });
-
-        subscribe("reset_password", function(msg, info) {
-          self.doConfirmUser(info.email);
-        });
-
-        subscribe("assertion_generated", function(msg, info) {
-          if (info.assertion !== null) {
-            self.doAssertionGenerated(info.assertion);
-          }
-          else {
-            self.doPickEmail();
-          }
-        });
-
-        subscribe("add_email", function(msg, info) {
-          self.doAddEmail();
-        });
-
-        subscribe("cancel_add_email", function(msg, info) {
-          self.doPickEmail();
-        });
-
-        subscribe("email_staged", function(msg, info) {
-          self.doConfirmEmail(info.email);
-        });
-
-        subscribe("email_confirmed", function() {
-          self.doEmailConfirmed();
-        });
-
-        subscribe("cancel_email_confirmed", function() {
-          user.cancelEmailValidation();
-          self.returnFromStageCancel();
-        });
-
-        subscribe("notme", function() {
-          self.doNotMe();
-        });
-
-        subscribe("auth", function(msg, info) {
-          info = info || {};
-
-          self.doAuthenticate({
-            email: info.email
-          });
-        });
-
-        subscribe("start", function() {
           self.doCheckAuth();
-        });
-
-        subscribe("cancel", function() {
-          self.doCancel();
-        });
-
+        }
       },
 
       doOffline: function() {
@@ -263,7 +168,7 @@ BrowserID.Modules.Dialog = (function() {
       },
 
       doConfirmUser: function(email) {
-        createCheckRegistrationController.call(this, email, "waitForUserValidation", "user_confirmed");
+        startRegCheckService.call(this, email, "waitForUserValidation", "user_confirmed");
       },
 
       doCancel: function() {
@@ -275,7 +180,6 @@ BrowserID.Modules.Dialog = (function() {
 
       doPickEmail: function() {
         var self=this;
-        self.returnFromStageCancel = self.doPickEmail.bind(self);
         startService("pick_email", {
           // XXX ideal is to get rid of this and have a User function
           // that takes care of getting email addresses AND the last used email
@@ -290,17 +194,10 @@ BrowserID.Modules.Dialog = (function() {
       },
 
       doAuthenticate: function(info) {
-        var self = this;
-
-        // Save this off in case the user forgets their password or goes to add 
-        // a new password but has to cancel.
-        self.returnFromStageCancel = self.doAuthenticate.bind(self, info);
         startService("authenticate", info);
       },
 
       doAuthenticateWithRequiredEmail: function(info) {
-        var self=this;
-        self.returnFromStageCancel = self.doAuthenticateWithRequiredEmail.bind(self, info);
         startService("required_email", info);
       },
 
@@ -311,13 +208,13 @@ BrowserID.Modules.Dialog = (function() {
       },
 
       doConfirmEmail: function(email) {
-        createCheckRegistrationController.call(this, email, "waitForEmailValidation", "email_confirmed");
+        startRegCheckService.call(this, email, "waitForEmailValidation", "email_confirmed");
       },
 
       doEmailConfirmed: function() {
         var self=this;
         // yay!  now we need to produce an assertion.
-        user.getAssertion(this.confirmEmail, self.doAssertionGenerated.bind(self),
+        user.getAssertion(self.confirmEmail, self.doAssertionGenerated.bind(self),
           self.getErrorDialog(errors.getAssertion));
       },
 
@@ -333,10 +230,10 @@ BrowserID.Modules.Dialog = (function() {
 
       doNotMe: function() {
         var self=this;
-        user.logoutUser(self.doAuthenticate.bind(self), self.getErrorDialog(errors.logoutUser));
+        user.logoutUser(self.publish.bind(self, "auth"), self.getErrorDialog(errors.logoutUser));
       },
 
-      syncEmails: function() {
+      doSyncThenPickEmail: function() {
         var self = this;
         user.syncEmails(self.doPickEmail.bind(self),
           self.getErrorDialog(errors.signIn));
@@ -347,15 +244,16 @@ BrowserID.Modules.Dialog = (function() {
         user.checkAuthenticationAndSync(function onSuccess() {},
           function onComplete(authenticated) {
             if (self.requiredEmail) {
+              // XXX get this out of here and into the state machine!
               self.doAuthenticateWithRequiredEmail({
                 email: self.requiredEmail,
                 authenticated: authenticated
               });
             }
             else if (authenticated) {
-              self.doPickEmail();
+              self.publish("pick_email");
             } else {
-              self.doAuthenticate();
+              self.publish("auth");
             }
           }, self.getErrorDialog(errors.checkAuthentication));
     }

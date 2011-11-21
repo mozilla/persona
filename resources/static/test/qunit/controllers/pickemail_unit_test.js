@@ -93,7 +93,8 @@ steal.then(function() {
 
 
   function createController(allowPersistent) {
-    controller = bid.Modules.PickEmail.create({
+    controller = bid.Modules.PickEmail.create();
+    controller.start({
       allow_persistent: allowPersistent || false
     });
   }

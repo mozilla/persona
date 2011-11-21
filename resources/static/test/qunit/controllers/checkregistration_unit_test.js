@@ -38,7 +38,6 @@ steal.then(function() {
   "use strict";
 
   var controller,
-      el,
       bid = BrowserID,
       xhr = bid.Mocks.xhr,
       network = bid.Network,
@@ -57,8 +56,8 @@ steal.then(function() {
   }
 
   function createController(verifier, message) {
-    el = $("body");
-    controller = bid.Modules.CheckRegistration.create({
+    controller = bid.Modules.CheckRegistration.create();
+    controller.start({
       email: "registered@testuser.com",
       verifier: verifier,
       verificationMessage: message
@@ -128,10 +127,10 @@ steal.then(function() {
     stop();
   });
 
-  test("cancel raises cancel_user_verified", function() {
+  test("cancel raises cancel_state", function() {
     createController("waitForUserValidation", "user_verified");
-    subscribe("cancel_user_verified", function() {
-      ok(true, "on cancel, cancel_user_verified is triggered");
+    subscribe("cancel_state", function() {
+      ok(true, "on cancel, cancel_state is triggered");
       start();
     });
     controller.startCheck();

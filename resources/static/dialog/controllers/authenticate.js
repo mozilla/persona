@@ -157,6 +157,8 @@ BrowserID.Modules.Authenticate = (function() {
 
   var Authenticate = bid.Modules.PageModule.extend({
     start: function(options) {
+      options = options || {};
+
       var self=this;
       self.renderDialog("authenticate", {
         sitename: user.getHostname(),

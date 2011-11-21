@@ -54,6 +54,7 @@ steal.then(function() {
 
   function createController(options) {
     controller = bid.Modules.PageModule.create(options);
+    controller.start();
   }
 
   module("/controllers/page_controller", {
@@ -150,13 +151,7 @@ steal.then(function() {
   });
 
   test("renderError allows us to open expanded error info", function() {
-    createController({
-      waitTemplate: waitTemplate,
-      waitVars: {
-        title: "Test title",
-        message: "Test message"
-      }
-    });
+    createController();
 
     controller.renderError("error", {
       action: {
@@ -169,15 +164,17 @@ steal.then(function() {
 
     $("#moreInfo").hide();
 
-    $("#openMoreInfo").click();
+    var evt = $.Event("click");
+    $("#openMoreInfo").trigger( evt );
 
+    /*
     setTimeout(function() {
       equal($("#showMoreInfo").is(":visible"), false, "button is not visible after clicking expanded info");
       equal($("#moreInfo").is(":visible"), true, "expanded error info is visible after clicking expanded info");
       start();
     }, 500);
-
     stop();
+*/
   });
 
   test("getErrorDialog gets a function that can be used to render an error message", function() {

@@ -85,7 +85,8 @@ steal.then(function() {
   });
 
   function createController(options) {
-    controller = modules.AddEmail.create(options);
+    controller = modules.AddEmail.create();
+    controller.start(options);
   }
 
   test("addemail controller renders correctly", function() {
@@ -151,7 +152,7 @@ steal.then(function() {
   test("cancelAddEmail", function() {
     createController();
 
-    register("cancel_add_email", function(msg, info) {
+    register("cancel_state", function(msg, info) {
       ok(true, "cancelling the add email");
       start();
     });

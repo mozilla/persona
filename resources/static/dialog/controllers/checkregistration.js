@@ -73,7 +73,10 @@ BrowserID.Modules.CheckRegistration = (function() {
 
     cancel: function() {
       var self=this;
-      self.close("cancel_" + self.verificationMessage);
+      // XXX this should change to cancelEmailValidation for email, but this 
+      // will work.
+      user.cancelUserValidation();
+      self.close("cancel_state");
     }
 
   });

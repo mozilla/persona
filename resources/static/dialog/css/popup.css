@@ -196,16 +196,6 @@ section > .contents {
     margin-right: 40px;
 }
 
-#signOut {
-  display: none;
-  margin-right: 10px;
-}
-
-.authenticated #signOut {
-  cursor: pointer;
-  display: inline;
-}
-
 .arrow {
     width: 40px;
     height: 250px;
