@@ -6,6 +6,7 @@ steal.plugins(
   .then(
       "/lib/underscore-min",
       "/lib/ejs",
+      "/lib/vepbundle",
       "/shared/browserid",
       "/lib/dom-jquery",
       "mocks/mocks",
