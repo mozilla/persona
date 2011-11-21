@@ -38,6 +38,7 @@
 BrowserID.Mocks.xhr = (function() {
   var  contextInfo = {
       server_time: new Date().getTime(),
+      domain_key_creation_time: (new Date().getTime() - (30 * 24 * 60 * 60 * 1000)),
       csrf_token: "csrf",
       authenticated: false
     };
@@ -59,6 +60,7 @@ BrowserID.Mocks.xhr = (function() {
       // call to serverTime.  We are going to use the flag contextAjaxError
       "get /wsapi/session_context ajaxError": contextInfo, 
       "get /wsapi/session_context throttle": contextInfo, 
+      "get /wsapi/session_context multiple": contextInfo, 
       "get /wsapi/session_context contextAjaxError": undefined,  
       "get /wsapi/email_for_token?token=token valid": { email: "testuser@testuser.com" },  
       "get /wsapi/email_for_token?token=token invalid": { success: false },  
