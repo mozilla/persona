@@ -23,6 +23,7 @@ steal.plugins(
       "/shared/validation",
       "/shared/helpers",
 
+      "/dialog/resources/channel",
       "/dialog/resources/helpers",
 
       "/dialog/controllers/page_controller",

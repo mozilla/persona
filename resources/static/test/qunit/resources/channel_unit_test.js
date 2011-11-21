@@ -34,21 +34,20 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then("/dialog/resources/channel", function() {
+steal.then(function() {
   "use strict";
 
-  var channel = BrowserID.Channel;
-
-  var navMock = {
-    id: {},
-  };
+  var channel = BrowserID.Channel,
+      winMock,
+      navMock = { id: {} };
 
   // Mock in the window object as well as the frame relay
-  var winMock = {
-    location: {
-      href: "browserid.org/sign_in#1234",
-      hash: "#1234"
-    },
+  var WinMock = function() {
+    this.location.href = "browserid.org/sign_in#1234";
+    this.location.hash = "#1234";
+  }
+  WinMock.prototype = {
+    location: {},
     opener: {
       frames: {
         "1234": {
@@ -57,9 +56,9 @@ steal.then("/dialog/resources/channel", function() {
               registerClient: function(methods) {
                 // mock of the registerClient function in the BrowserID.Channel.
                 methods["get"]("foo.com", {}, function onComplete(success) {
-                  winMock.success = success;
+                  WinMock.success = success;
                 }, function onerror(error) {
-                  winMock.error = error;
+                  WinMock.error = error;
                 });
               },
               unregisterClient: function() {
@@ -73,13 +72,29 @@ steal.then("/dialog/resources/channel", function() {
 
   module("resources/channel", {
     setup: function() {
+      winMock = new WinMock();
+      channel.init({
+        window: winMock,
+        navigator: navMock
+      });
     },
 
     teardown: function() {
-      channel.init({
-        window: window,
-        navigator: navigator
-      });
+      if(channel) {
+        try {
+          channel.close();
+        } catch(e) {
+          if(e.toString() !== "relay frame not found") {
+            // re-throw if the error is other than expected.
+            throw e;
+          }
+        }
+
+        channel.init({
+          window: window,
+          navigator: navigator
+        });
+      }
     }
   });
 
@@ -88,15 +103,10 @@ steal.then("/dialog/resources/channel", function() {
   });
 
   test("IFRAME channel with assertion", function() {
-    channel.init({
-      window: winMock,
-      navigator: navMock
-    });
-
     channel.open({
       getVerifiedEmail: function(origin, onsuccess, onerror) {
         onsuccess("assertion");
-        equal(winMock.success, "assertion", "assertion made it to the relay");
+        equal(WinMock.success, "assertion", "assertion made it to the relay");
         start();
       }
     });
@@ -105,15 +115,10 @@ steal.then("/dialog/resources/channel", function() {
   });
 
   test("IFRAME channel with null assertion", function() {
-    channel.init({
-      window: winMock,
-      navigator: navMock
-    });
-
     channel.open({
       getVerifiedEmail: function(origin, onsuccess, onerror) {
         onsuccess(null);
-        strictEqual(winMock.success, null, "null assertion made it to the relay");
+        strictEqual(WinMock.success, null, "null assertion made it to the relay");
         start();
       }
     });
@@ -122,15 +127,10 @@ steal.then("/dialog/resources/channel", function() {
   });
 
   test("IFRAME channel relaying error", function() {
-    channel.init({
-      window: winMock,
-      navigator: navMock
-    });
-
     channel.open({
       getVerifiedEmail: function(origin, onsuccess, onerror) {
         onerror("error");
-        strictEqual(winMock.error, "error", "error made it to the relay");
+        strictEqual(WinMock.error, "error", "error made it to the relay");
         start();
       }
     });
@@ -139,15 +139,7 @@ steal.then("/dialog/resources/channel", function() {
   });
 
   test("IFRAME channel with error on open", function() {
-    channel.close();
-
-    var winMockWithoutRelay = $.extend(true, {}, winMock);
-    delete winMockWithoutRelay.opener.frames['1234'];
-
-    channel.init({
-      window: winMockWithoutRelay,
-      navigator: navMock
-    });
+    delete winMock.opener.frames['1234'];
 
     // Do this manually so we can test if getVerifiedEmail gets called.
     try {
