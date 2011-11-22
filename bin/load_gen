@@ -40,6 +40,9 @@
  * tool, which is capable of analysing the maximum active users that
  * a browserid deployment can support */
 
+const winston = require('winston');
+
+
 // option processing with optimist
 var argv = require('optimist')
 .usage('Apply load to a BrowserID server.\nUsage: $0', [ "foo" ])
@@ -63,6 +66,7 @@ if (args.h) {
   argv.showHelp();
   process.exit(1);
 }
+
 
 // global configuration
 const configuration = {
@@ -103,10 +107,12 @@ var activity = {
     // users forget their password once every 4 weeks
     probability: (1.0 / (40 * 28.0))
   },
+*/
   "add_email": {
     // users add a new email address once every 2 weeks
     probability: (1.0 / (40 * 14.0))
   },
+/*
   "reauth": {
     // users must re-authenticate to browser id once a week
     // (once every two weeks per device)
@@ -182,6 +188,7 @@ function poll() {
     if (!args.o || act !== 'include_only') {
       outstanding++;
       activity[act].startFunc(configuration, function(err) {
+        if (err) winston.error(err);
         outstanding--;
         if (undefined === completed[act]) completed[act] = [ 0, 0 ];
         completed[act][err ? 1 : 0]++;
