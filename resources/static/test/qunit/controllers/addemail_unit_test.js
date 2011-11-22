@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var controller, 
@@ -78,7 +78,6 @@ steal.then(function() {
         }
       }    
       network.setXHR($);
-      reset();
       storage.clear();
       unregisterAll();
     }
@@ -89,14 +88,10 @@ steal.then(function() {
     controller.start(options);
   }
 
-  test("addemail controller renders correctly", function() {
+  asyncTest("addEmail with valid email", function() {
     createController();
 
     equal($("#addEmail").length, 1, "control rendered correctly");
-  });
-
-  test("addEmail with valid email", function() {
-    createController();
 
     $("#newEmail").val("unregistered@testuser.com");
     register("email_staged", function(msg, info) {
@@ -104,10 +99,10 @@ steal.then(function() {
       start();
     });
     controller.addEmail();
-    stop();
+    
   });
 
-  test("addEmail with valid email with leading/trailing whitespace", function() {
+  asyncTest("addEmail with valid email with leading/trailing whitespace", function() {
     createController();
 
     $("#newEmail").val("   unregistered@testuser.com  ");
@@ -116,10 +111,10 @@ steal.then(function() {
       start();
     });
     controller.addEmail();
-    stop();
+    
   });
 
-  test("addEmail with invalid email", function() {
+  asyncTest("addEmail with invalid email", function() {
     createController();
 
     $("#newEmail").val("unregistered");
@@ -134,10 +129,10 @@ steal.then(function() {
       equal(handlerCalled, false, "the email_staged handler should have never been called");
       start();
     }, 100);
-    stop();
+    
   });
 
-  test("addEmail with previously registered email - allows for account consolidation", function() {
+  asyncTest("addEmail with previously registered email - allows for account consolidation", function() {
     createController();
 
     $("#newEmail").val("registered@testuser.com");
@@ -146,10 +141,10 @@ steal.then(function() {
       start();
     });
     controller.addEmail();
-    stop();
+    
   });
 
-  test("cancelAddEmail", function() {
+  asyncTest("cancelAddEmail", function() {
     createController();
 
     register("cancel_state", function(msg, info) {
@@ -157,7 +152,7 @@ steal.then(function() {
       start();
     });
     controller.cancelAddEmail();
-    stop();
+    
   });
 
-});
+}());

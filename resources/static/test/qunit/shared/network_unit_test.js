@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var testName,
@@ -79,8 +79,6 @@ steal.then(function() {
     if (cb) {
       cb.apply(null, args);
     }
-
-    stop();
   }
 
   function failureCheck(cb) {
@@ -104,8 +102,6 @@ steal.then(function() {
     xhr.useResult("ajaxError");
 
     cb.apply(null, args);
-
-    stop();
   }
 
   var network = BrowserID.Network;
@@ -129,8 +125,6 @@ steal.then(function() {
       ok(false, "valid authentication");
       wrappedStart();
     });
-
-    stop();
   });
 
   wrappedAsyncTest("authenticate with invalid user", function() {
@@ -142,8 +136,6 @@ steal.then(function() {
       ok(false, "invalid authentication");
       wrappedStart();
     });
-
-    stop();
   });
 
   wrappedAsyncTest("authenticate with XHR failure, checking whether application is notified", function() {
@@ -164,8 +156,6 @@ steal.then(function() {
       ok(false, "checkAuth failure");
       wrappedStart();
     });
-
-    stop();
   });
 
   wrappedAsyncTest("checkAuth with invalid authentication", function() {
@@ -179,8 +169,6 @@ steal.then(function() {
       ok(false, "checkAuth failure");
       wrappedStart();
     });
-
-    stop();
   });
 
 
@@ -200,7 +188,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
 
@@ -212,8 +199,6 @@ steal.then(function() {
       ok(false, "logout failure");
       wrappedStart();
     });
-
-    stop();
   });
 
 
@@ -234,7 +219,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("complete_email_addition with invalid token", function() {
@@ -246,7 +230,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("complete_email_addition with XHR failure", function() {
@@ -265,7 +248,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("createUser with invalid user", function() {
@@ -277,7 +259,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("createUser throttled", function() {
@@ -291,7 +272,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("createUser with XHR failure", function() {
@@ -313,7 +293,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("checkUserRegistration with complete email", function() {
@@ -327,7 +306,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("checkUserRegistration with XHR failure", function() {
@@ -347,7 +325,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("completeUserRegistration with invalid token", function() {
@@ -361,7 +338,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("completeUserRegistration with XHR failure", function() {
@@ -382,7 +358,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("cancelUser invalid", function() {
@@ -396,7 +371,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("cancelUser with XHR failure", function() {
@@ -416,7 +390,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("emailRegistered with nottaken email", function() {
@@ -428,7 +401,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("emailRegistered with XHR failure", function() {
@@ -449,7 +421,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("addEmail invalid", function() {
@@ -462,7 +433,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("addEmail throttled", function() {
@@ -476,7 +446,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("addEmail with XHR failure", function() {
@@ -498,7 +467,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("checkEmailRegistration complete", function() {
@@ -512,7 +480,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("checkEmailRegistration with XHR failure", function() {
@@ -534,7 +501,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("removeEmail invalid", function() {
@@ -549,7 +515,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("removeEmail with XHR failure", function() {
@@ -571,7 +536,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("requestPasswordReset with XHR failure", function() {
@@ -592,7 +556,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("resetPassword with XHR failure", function() {
@@ -607,7 +570,6 @@ steal.then(function() {
       ok(true, "XHR failure should always call failure");
       wrappedStart();
     });
-    stop();
 */
     start();
   });
@@ -622,7 +584,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("changePassword with XHR failure", function() {
@@ -638,7 +599,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
     */
     start();
   });
@@ -658,7 +618,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   wrappedAsyncTest("serverTime with XHR failure before context has been setup", function() {
@@ -679,7 +638,6 @@ steal.then(function() {
       wrappedStart();
     });
 
-    stop();
   });
 
   /*
@@ -691,7 +649,6 @@ steal.then(function() {
 
     var evt = $.Event("offline");
     $("body").trigger(evt);
-    stop();
   });
   */
-});
+}());

@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var controller, el,
@@ -57,7 +57,7 @@ steal.then(function() {
     controller.start();
   }
 
-  module("/controllers/page_controller", {
+  module("controllers/page_controller", {
     setup: function() {
       reset();
     },
@@ -201,7 +201,7 @@ steal.then(function() {
 
   });
 
-  test("bind DOM Events", function() {
+  asyncTest("bind DOM Events", function() {
     createController();
 
    controller.bind("body", "click", function(event) {
@@ -212,10 +212,9 @@ steal.then(function() {
    });
 
    $("body").trigger("click");
-   stop();
   });
 
-  test("unbindAll removes all listeners", function() {
+  asyncTest("unbindAll removes all listeners", function() {
     createController();
     var listenerCalled = false;
 
@@ -228,7 +227,6 @@ steal.then(function() {
     controller.unbindAll();
 
     $("body").trigger("click");
-    stop();
 
     setTimeout(function() {
       equal(listenerCalled, false, "all events are unbound, listener should not be called");
@@ -236,7 +234,7 @@ steal.then(function() {
     }, 100);
   });
 
-  test("publish", function() {
+  asyncTest("publish", function() {
     createController();
 
     mediator.subscribe("message", function(msg, data) {
@@ -250,5 +248,5 @@ steal.then(function() {
     });
   });
 
-});
+}());
 

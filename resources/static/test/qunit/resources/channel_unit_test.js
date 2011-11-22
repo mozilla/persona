@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var channel = BrowserID.Channel,
@@ -102,7 +102,7 @@ steal.then(function() {
     ok(typeof window.setupChannel, "function", "window.setupChannel exists for legacy uses");
   });
 
-  test("IFRAME channel with assertion", function() {
+  asyncTest("IFRAME channel with assertion", function() {
     channel.open({
       getVerifiedEmail: function(origin, onsuccess, onerror) {
         onsuccess("assertion");
@@ -110,11 +110,9 @@ steal.then(function() {
         start();
       }
     });
-
-    stop();
   });
 
-  test("IFRAME channel with null assertion", function() {
+  asyncTest("IFRAME channel with null assertion", function() {
     channel.open({
       getVerifiedEmail: function(origin, onsuccess, onerror) {
         onsuccess(null);
@@ -122,11 +120,9 @@ steal.then(function() {
         start();
       }
     });
-
-    stop();
   });
 
-  test("IFRAME channel relaying error", function() {
+  asyncTest("IFRAME channel relaying error", function() {
     channel.open({
       getVerifiedEmail: function(origin, onsuccess, onerror) {
         onerror("error");
@@ -134,11 +130,9 @@ steal.then(function() {
         start();
       }
     });
-
-    stop();
   });
 
-  test("IFRAME channel with error on open", function() {
+  asyncTest("IFRAME channel with error on open", function() {
     delete winMock.opener.frames['1234'];
 
     // Do this manually so we can test if getVerifiedEmail gets called.
@@ -153,9 +147,7 @@ steal.then(function() {
       equal(e.toString(), "relay frame not found", "exception caught when trying to open channel that does not exist");
       start();
     }
-
-    stop();
   });
 
-});
+}());
 

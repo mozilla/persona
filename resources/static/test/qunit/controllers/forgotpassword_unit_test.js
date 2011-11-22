@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var controller,
@@ -99,24 +99,24 @@ steal.then(function() {
     equal($("#email").val(), "registered@testuser.com", "email prefilled");
   });
 
-  test("resetPassword raises 'reset_password' with email address", function() {
+  asyncTest("resetPassword raises 'reset_password' with email address", function() {
     register("reset_password", function(msg, info) {
       equal(info.email, "registered@testuser.com", "reset_password raised with correct email address");
       start();
     });
 
     controller.resetPassword();
-    stop();
+    
   });
 
-  test("cancelResetPassword raises 'cancel_forgot_password'", function() {
+  asyncTest("cancelResetPassword raises 'cancel_forgot_password'", function() {
     register("cancel_state", function(msg, info) {
       ok(true, "cancel_state triggered");
       start();
     });
 
     controller.cancelResetPassword();
-    stop();
+    
   });
-});
+}());
 

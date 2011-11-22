@@ -1,8 +1,7 @@
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="/funcunit/qunit/qunit.css" />
+		<link rel="stylesheet" type="text/css" href="qunit.css" />
 		<title>BrowserID QUnit Test</title>
-		<script type='text/javascript' src='/steal/steal.js?/test/qunit'></script>
 	</head>
 	<body>
 
@@ -69,5 +68,93 @@
     <script type="text/html" id="templateUser">
       <li>{{email}}</li>
     </script>
+    <script type="text/javascript" src="qunit.js"></script>
+    <script type="text/javascript" src="/include.js"></script>
+    <script type="text/javascript" src="/lib/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="/lib/underscore-min.js"></script>
+    <script type="text/javascript" src="/lib/ejs.js"></script>
+    <script type="text/javascript" src="/lib/vepbundle.js"></script>
+    <script type="text/javascript" src="/shared/browserid.js"></script>
+    <script type="text/javascript" src="/lib/dom-jquery.js"></script>
+    <script type="text/javascript" src="/lib/vepbundle.js"></script>
+    <script type="text/javascript" src="/lib/openajax.js"></script>
+    <script type="text/javascript" src="/lib/module.js"></script>
+    <script type="text/javascript" src="/lib/jschannel.js"></script>
+    <script type="text/javascript" src="qunit/mocks/mocks.js"></script>
+    <script type="text/javascript" src="qunit/mocks/xhr.js"></script>
+    <script type="text/javascript" src="qunit/mocks/templates.js"></script>
+    <script type="text/javascript" src="/shared/renderer.js"></script>
+    <script type="text/javascript" src="/shared/class.js"></script>
+    <script type="text/javascript" src="/shared/mediator.js"></script>
+    <script type="text/javascript" src="/shared/screens.js"></script>
+    <script type="text/javascript" src="/shared/browser-support.js"></script>
+    <script type="text/javascript" src="/shared/error-messages.js"></script>
+    <script type="text/javascript" src="/shared/error-display.js"></script>
+    <script type="text/javascript" src="/shared/storage.js"></script>
+    <script type="text/javascript" src="/shared/network.js"></script>
+    <script type="text/javascript" src="/shared/user.js"></script>
+    <script type="text/javascript" src="/shared/tooltip.js"></script>
+    <script type="text/javascript" src="/shared/validation.js"></script>
+    <script type="text/javascript" src="/shared/helpers.js"></script>
+
+    <script type="text/javascript" src="/dialog/resources/channel.js"></script>
+    <script type="text/javascript" src="/dialog/resources/helpers.js"></script>
+    <script type="text/javascript" src="/dialog/resources/state_machine.js"></script>
+
+    <script type="text/javascript" src="/dialog/controllers/page.js"></script>
+    <script type="text/javascript" src="/dialog/controllers/pickemail.js"></script>
+    <script type="text/javascript" src="/dialog/controllers/addemail.js"></script>
+    <script type="text/javascript" src="/dialog/controllers/dialog.js"></script>
+    <script type="text/javascript" src="/dialog/controllers/checkregistration.js"></script>
+    <script type="text/javascript" src="/dialog/controllers/authenticate.js"></script>
+    <script type="text/javascript" src="/dialog/controllers/forgotpassword.js"></script>
+    <script type="text/javascript" src="/dialog/controllers/required_email.js"></script>
+
+    <script type="text/javascript" src="/pages/page_helpers.js"></script>
+    <script type="text/javascript" src="/pages/add_email_address.js"></script>
+    <script type="text/javascript" src="/pages/forgot.js"></script>
+    <script type="text/javascript" src="/pages/manage_account.js"></script>
+    <script type="text/javascript" src="/pages/signin.js"></script>
+    <script type="text/javascript" src="/pages/signup.js"></script>
+    <script type="text/javascript" src="/pages/verify_email_address.js"></script>
+
+    <script type="text/javascript" src="/relay/relay.js"></script>
+
+    <script type="text/javascript" src="qunit/include_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/relay/relay_unit_test.js"></script>
+
+    <script type="text/javascript" src="qunit/pages/browserid_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/pages/page_helpers_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/pages/add_email_address_test.js"></script>
+    <script type="text/javascript" src="qunit/pages/verify_email_address_test.js"></script>
+    <script type="text/javascript" src="qunit/pages/forgot_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/pages/signin_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/pages/signup_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/pages/manage_account_unit_test.js"></script>
+
+    <script type="text/javascript" src="qunit/shared/helpers_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/shared/renderer_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/shared/screens_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/shared/tooltip_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/shared/error-display_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/shared/browser-support_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/shared/validation_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/shared/storage_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/shared/network_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/shared/user_unit_test.js"></script>
+
+    <script type="text/javascript" src="qunit/resources/helpers_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/resources/state_machine_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/resources/channel_unit_test.js"></script>
+
+    <script type="text/javascript" src="qunit/controllers/page_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/controllers/pickemail_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/controllers/addemail_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/controllers/checkregistration_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/controllers/authenticate_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/controllers/forgotpassword_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/controllers/required_email_unit_test.js"></script>
+    // must go last or all other tests will fail.
+    <script type="text/javascript" src="qunit/controllers/dialog_unit_test.js"></script>
 	</body>
 </html>

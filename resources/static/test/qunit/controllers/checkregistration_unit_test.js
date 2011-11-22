@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var controller,
@@ -91,17 +91,15 @@ steal.then(function() {
       start();
     });
     controller.startCheck();
-
-    stop();
   }
 
-  test("user validation with mustAuth result", function() {
+  asyncTest("user validation with mustAuth result", function() {
     xhr.useResult("mustAuth");
 
     testVerifiedUserEvent("auth", "User Must Auth");
   });
 
-  test("user validation with pending->complete result ~3 seconds", function() {
+  asyncTest("user validation with pending->complete result ~3 seconds", function() {
     xhr.useResult("pending");
 
     testVerifiedUserEvent("user_verified", "User verified");
@@ -110,7 +108,7 @@ steal.then(function() {
     }, 1000);
   });
 
-  test("user validation with XHR error", function() {
+  asyncTest("user validation with XHR error", function() {
     xhr.useResult("ajaxError");
 
     createController("waitForUserValidation", "user_verified");
@@ -124,10 +122,10 @@ steal.then(function() {
       start();
     }, 1000);
 
-    stop();
+    
   });
 
-  test("cancel raises cancel_state", function() {
+  asyncTest("cancel raises cancel_state", function() {
     createController("waitForUserValidation", "user_verified");
     subscribe("cancel_state", function() {
       ok(true, "on cancel, cancel_state is triggered");
@@ -136,8 +134,8 @@ steal.then(function() {
     controller.startCheck();
     controller.cancel();
 
-    stop();
+    
   });
 
-});
+}());
 

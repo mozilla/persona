@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then("/pages/forgot", function() {
+(function() {
   "use strict";
 
   var bid = BrowserID,
@@ -68,11 +68,9 @@ steal.then("/pages/forgot", function() {
       if (extraTests) extraTests();
       else start();
     }, CHECK_DELAY);
-
-    stop();
   }
 
-  test("requestPasswordReset with invalid email", function() {
+  asyncTest("requestPasswordReset with invalid email", function() {
     $("#email").val("invalid");
 
     xhr.useResult("invalid");
@@ -80,7 +78,7 @@ steal.then("/pages/forgot", function() {
     testEmailNotSent();
   });
 
-  test("requestPasswordReset with known email", function() {
+  asyncTest("requestPasswordReset with known email", function() {
     $("#email").val("registered@testuser.com");
     bid.forgot.submit();
 
@@ -88,11 +86,9 @@ steal.then("/pages/forgot", function() {
       ok($(".emailsent").is(":visible"), "email sent successfully");
       start();
     }, CHECK_DELAY);
-
-    stop();
   });
 
-  test("requestPasswordReset with known email with leading/trailing whitespace", function() {
+  asyncTest("requestPasswordReset with known email with leading/trailing whitespace", function() {
     $("#email").val("   registered@testuser.com  ");
     bid.forgot.submit();
 
@@ -100,17 +96,15 @@ steal.then("/pages/forgot", function() {
       ok($(".emailsent").is(":visible"), "email sent successfully");
       start();
     }, CHECK_DELAY);
-
-    stop();
   });
 
-  test("requestPasswordReset with unknown email", function() {
+  asyncTest("requestPasswordReset with unknown email", function() {
     $("#email").val("unregistered@testuser.com");
 
     testEmailNotSent();
   });
 
-  test("requestPasswordReset with throttling", function() {
+  asyncTest("requestPasswordReset with throttling", function() {
     xhr.useResult("throttle");
 
     $("#email").val("throttled@testuser.com");
@@ -118,7 +112,7 @@ steal.then("/pages/forgot", function() {
     testEmailNotSent();
   });
 
-  test("requestPasswordReset with XHR Error", function() {
+  asyncTest("requestPasswordReset with XHR Error", function() {
     xhr.useResult("ajaxError");
 
     $("#email").val("testuser@testuser.com");
@@ -129,7 +123,7 @@ steal.then("/pages/forgot", function() {
     });
   });
 
-  test("signup with unregistered email and cancel button pressed", function() {
+  asyncTest("signup with unregistered email and cancel button pressed", function() {
     $("#email").val("unregistered@testuser.com");
 
     bid.signUp.submit();
@@ -144,9 +138,7 @@ steal.then("/pages/forgot", function() {
         start();
       }, 500);
     }, 100);
-
-    stop();
   });
 
 
-});
+}());

@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then("/pages/signup", function() {
+(function() {
   "use strict";
 
   var bid = BrowserID,
@@ -72,10 +72,9 @@ steal.then("/pages/signup", function() {
       if(extraTests) extraTests();
       else start();
     }, CHECK_DELAY);
-    stop();
   }
 
-  test("signup with valid unregistered email", function() {
+  asyncTest("signup with valid unregistered email", function() {
     $("#email").val("unregistered@testuser.com");
 
     bid.signUp.submit();
@@ -84,10 +83,9 @@ steal.then("/pages/signup", function() {
       equal($(".emailsent").is(":visible"), true, "email sent, notice visible");
       start();
     }, CHECK_DELAY);
-    stop();
   });
 
-  test("signup with valid unregistered email with leading/trailing whitespace", function() {
+  asyncTest("signup with valid unregistered email with leading/trailing whitespace", function() {
     $("#email").val(" unregistered@testuser.com ");
 
     bid.signUp.submit();
@@ -96,22 +94,21 @@ steal.then("/pages/signup", function() {
       equal($(".emailsent").is(":visible"), true, "email sent, notice visible");
       start();
     }, CHECK_DELAY);
-    stop();
   });
 
-  test("signup with valid registered email", function() {
+  asyncTest("signup with valid registered email", function() {
     $("#email").val("registered@testuser.com");
 
     testNoticeNotVisible();
   });
 
-  test("signup with invalid email address", function() {
+  asyncTest("signup with invalid email address", function() {
     $("#email").val("invalid");
 
     testNoticeNotVisible();
   });
 
-  test("signup with throttling", function() {
+  asyncTest("signup with throttling", function() {
     xhr.useResult("throttle");
 
     $("#email").val("throttled@testuser.com");
@@ -119,7 +116,7 @@ steal.then("/pages/signup", function() {
     testNoticeNotVisible();
   });
 
-  test("signup with invalid XHR error", function() {
+  asyncTest("signup with invalid XHR error", function() {
     xhr.useResult("invalid");
     $("#email").val("unregistered@testuser.com");
 
@@ -129,7 +126,7 @@ steal.then("/pages/signup", function() {
     });
   });
 
-  test("signup with unregistered email and cancel button pressed", function() {
+  asyncTest("signup with unregistered email and cancel button pressed", function() {
     $("#email").val("unregistered@testuser.com");
 
     bid.signUp.submit();
@@ -144,8 +141,6 @@ steal.then("/pages/signup", function() {
         start();
       }, 500);
     }, 100);
-
-    stop();
   });
 
-});
+}());

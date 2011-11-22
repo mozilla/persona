@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var bid = BrowserID,
@@ -100,7 +100,7 @@ steal.then(function() {
     }
   });
 
-  test("getAssertion happy case", function() {
+  asyncTest("getAssertion happy case", function() {
     closeCB = expectedClose("assertion_generated", "assertion");
 
     storage.addEmail("registered@testuser.com", {});
@@ -109,10 +109,10 @@ steal.then(function() {
       start();
     });
 
-    stop();
+    
   });
 
-  test("getAssertion with XHR error", function() {
+  asyncTest("getAssertion with XHR error", function() {
     closeCB = badClose;
     errorCB = expectedError;
 
@@ -122,29 +122,29 @@ steal.then(function() {
       ok(false, "unexpected finish");
       start();  
     });
-    stop();
+    
   });
 
-  test("authenticateUser happy case", function() {
+  asyncTest("authenticateUser happy case", function() {
     dialogHelpers.authenticateUser.call(controllerMock, "testuser@testuser.com", "password", function(authenticated) {
       equal(authenticated, true, "user is authenticated");
       start();
     });
 
-    stop();
+    
   });
 
-  test("authenticateUser invalid credentials", function() {
+  asyncTest("authenticateUser invalid credentials", function() {
     xhr.useResult("invalid");
     dialogHelpers.authenticateUser.call(controllerMock, "testuser@testuser.com", "password", function(authenticated) {
       equal(authenticated, false, "user is not authenticated");
       start();
     });
 
-    stop();
+    
   });
 
-  test("authenticateUser XHR error", function() {
+  asyncTest("authenticateUser XHR error", function() {
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
@@ -153,10 +153,10 @@ steal.then(function() {
       start();
     });
 
-    stop();
+    
   });
 
-  test("createUser happy case", function() {
+  asyncTest("createUser happy case", function() {
     closeCB = expectedClose("user_staged", "email", "unregistered@testuser.com");
 
     dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", function(staged) {
@@ -164,10 +164,10 @@ steal.then(function() {
       start(); 
     });
 
-    stop();
+    
   });
 
-  test("createUser could not create case", function() {
+  asyncTest("createUser could not create case", function() {
     closeCB = badClose;
 
     xhr.useResult("invalid");
@@ -176,11 +176,11 @@ steal.then(function() {
       start();
     });
 
-    stop();
+    
   });
 
 
-  test("createUser with XHR error", function() {
+  asyncTest("createUser with XHR error", function() {
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
@@ -188,31 +188,31 @@ steal.then(function() {
       ok(false, "complete should not have been called");
       start();
     });
-    stop();
+    
   });
 
-  test("addEmail happy case", function() {
+  asyncTest("addEmail happy case", function() {
     closeCB = expectedClose("email_staged", "email", "unregistered@testuser.com");
     dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
       ok(added, "email added");
       start();
     });
 
-    stop();
+    
   });
 
 
-  test("addEmail throttled", function() {
+  asyncTest("addEmail throttled", function() {
     xhr.useResult("throttle");
     dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
       equal(added, false, "email not added");
       start();
     });
 
-    stop();
+    
   });
 
-  test("addEmail with XHR error", function() {
+  asyncTest("addEmail with XHR error", function() {
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
@@ -221,31 +221,31 @@ steal.then(function() {
       start();
     });
 
-    stop();
+    
   });
 
-  test("resetPassword happy case", function() {
+  asyncTest("resetPassword happy case", function() {
     closeCB = expectedClose("reset_password", "email", "registered@testuser.com");
     dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", function(reset) {
       ok(reset, "password reset");
       start();
     });
 
-    stop();
+    
   });
 
 
-  test("resetPassword throttled", function() {
+  asyncTest("resetPassword throttled", function() {
     xhr.useResult("throttle");
     dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", function(reset) {
       equal(reset, false, "password not reset");
       start();
     });
 
-    stop();
+    
   });
 
-  test("resetPassword with XHR error", function() {
+  asyncTest("resetPassword with XHR error", function() {
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
@@ -254,9 +254,9 @@ steal.then(function() {
       start();
     });
 
-    stop();
+    
   });
-});
+}());
 
 
 

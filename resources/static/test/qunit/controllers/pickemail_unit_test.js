@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var controller, 
@@ -154,7 +154,7 @@ steal.then(function() {
   });
 
 
-  test("signIn saves email, remember status to storage when allow_persistent set to true", function() {
+  asyncTest("signIn saves email, remember status to storage when allow_persistent set to true", function() {
     storage.addEmail("testuser@testuser.com", {});
     storage.addEmail("testuser2@testuser.com", {});
 
@@ -173,10 +173,9 @@ steal.then(function() {
     });
     controller.signIn();
 
-    stop();
   });
 
-  test("signIn saves email, but not remember status when allow_persistent set to false", function() {
+  asyncTest("signIn saves email, but not remember status when allow_persistent set to false", function() {
     storage.addEmail("testuser@testuser.com", {});
     storage.addEmail("testuser2@testuser.com", {});
     storage.site.set(testOrigin, "remember", false);
@@ -194,10 +193,9 @@ steal.then(function() {
     });
     controller.signIn();
 
-    stop();
   });
 
-  test("addEmail triggers an 'add_email' message", function() {
+  asyncTest("addEmail triggers an 'add_email' message", function() {
     createController(false);
 
     register("add_email", function(msg, info) {
@@ -206,9 +204,8 @@ steal.then(function() {
     });
     controller.addEmail();
 
-    stop();
 
   });
 
-});
+}());
 

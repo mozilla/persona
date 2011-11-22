@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var bid = BrowserID,
@@ -48,7 +48,7 @@ steal.then(function() {
   });
 
 
-  test("show short tooltip, min of 2.5 seconds", function() {
+  asyncTest("show short tooltip, min of 2.5 seconds", function() {
     var startTime = new Date().getTime();
 
     tooltip.showTooltip("#shortTooltip", function() {
@@ -62,11 +62,9 @@ steal.then(function() {
     });
 
     equal(tooltip.shown, true, "tooltip says that it is shown");
-
-    stop();
   });
 
-  test("show long tooltip, takes about 5 seconds", function() {
+  asyncTest("show long tooltip, takes about 5 seconds", function() {
     var startTime = new Date().getTime();
 
     tooltip.showTooltip("#longTooltip", function() {
@@ -76,8 +74,6 @@ steal.then(function() {
 
       start();
     });
-
-    stop();
   });
 
-});
+}());

@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var el,
@@ -100,7 +100,6 @@ steal.then(function() {
       cb && cb();
       start();
     }, 200);
-    stop();
   }
 
   function testVerify(email, cb) {
@@ -113,7 +112,6 @@ steal.then(function() {
       cb && cb();
       start();
     }, 200);
-    stop();
   }
 
   function testPasswordSection() {
@@ -124,7 +122,7 @@ steal.then(function() {
     equal($("#password_section").length, 0, "password section is not there");
   }
 
-  test("user who is not authenticated, email is registered", function() {
+  asyncTest("user who is not authenticated, email is registered", function() {
     var email = "registered@testuser.com";
     createController({
       email: email, 
@@ -134,7 +132,7 @@ steal.then(function() {
     testSignIn(email, testPasswordSection);
   });
 
-  test("user who is not authenticated, email not registered", function() {
+  asyncTest("user who is not authenticated, email not registered", function() {
     var email = "unregistered@testuser.com";
     createController({
       email: email, 
@@ -144,7 +142,7 @@ steal.then(function() {
     testVerify(email);
   });
 
-  test("user who is not authenticated, XHR error", function() {
+  asyncTest("user who is not authenticated, XHR error", function() {
     xhr.useResult("ajaxError");
     var email = "registered@testuser.com";
     createController({
@@ -152,15 +150,13 @@ steal.then(function() {
       authenticated: false
     });
 
-    stop();
-
     setTimeout(function() {
       ok($("#error").is(":visible"), "Error message is visible");
       start();
     }, 100);
   });
 
-  test("user who is authenticated, email belongs to user", function() {
+  asyncTest("user who is authenticated, email belongs to user", function() {
     xhr.setContextInfo({
       authenticated: true 
     });
@@ -176,7 +172,7 @@ steal.then(function() {
     testSignIn(email, testNoPasswordSection);
   });
 
-  test("user who is authenticated, email belongs to another user", function() {
+  asyncTest("user who is authenticated, email belongs to another user", function() {
     xhr.setContextInfo({
       authenticated: true 
     });
@@ -192,7 +188,7 @@ steal.then(function() {
     testVerify(email);
   });
 
-  test("user who is authenticated, but email unknown", function() {
+  asyncTest("user who is authenticated, but email unknown", function() {
     xhr.setContextInfo({
       authenticated: true 
     });
@@ -207,7 +203,7 @@ steal.then(function() {
   });
 
   
-  test("signIn of an authenticated user generates an assertion", function() {
+  asyncTest("signIn of an authenticated user generates an assertion", function() {
     xhr.setContextInfo({
       authenticated: true 
     });
@@ -226,11 +222,9 @@ steal.then(function() {
 
       controller.signIn();
     });
-
-    stop();
   });
 
-  test("signIn of an non-authenticated user with a good password generates an assertion", function() {
+  asyncTest("signIn of an non-authenticated user with a good password generates an assertion", function() {
     xhr.setContextInfo({
       authenticated: false
     });
@@ -248,12 +242,10 @@ steal.then(function() {
 
     $("#password").val("password");
     controller.signIn();
-
-    stop();
   });
 
 
-  test("signIn of an non-authenticated user with a bad password does not generate an assertion", function() {
+  asyncTest("signIn of an non-authenticated user with a bad password does not generate an assertion", function() {
     xhr.setContextInfo({
       authenticated: false
     });
@@ -282,8 +274,6 @@ steal.then(function() {
       equal(typeof assertion, "undefined", "assertion was never generated");
       start();
     }, 1000);
-
-    stop();
   });
 
   function testMessageReceived(email, message) {
@@ -305,22 +295,21 @@ steal.then(function() {
     });
 
     controller.verifyAddress();
-    stop();
   }
 
-  test("verifyAddress of authenticated user, address belongs to another user", function() {
+  asyncTest("verifyAddress of authenticated user, address belongs to another user", function() {
     var email = "registered@testuser.com";
 
     testMessageReceived(email, "email_staged");
   });
 
-  test("verifyAddress of authenticated user, unknown address", function() {
+  asyncTest("verifyAddress of authenticated user, unknown address", function() {
     var email = "unregistered@testuser.com";
 
     testMessageReceived(email, "email_staged");
   });
 
-  test("verifyAddress of un-authenticated user, forgot password", function() {
+  asyncTest("verifyAddress of un-authenticated user, forgot password", function() {
     var email = "registered@testuser.com",
         authenticated = false,
         message = "forgot_password";
@@ -341,10 +330,9 @@ steal.then(function() {
     });
 
     controller.forgotPassword();
-    stop();
   });
 
-  test("cancel raises the cancel message", function() {
+  asyncTest("cancel raises the cancel message", function() {
     var email = "registered@testuser.com",
         message = "cancel",
         authenticated = false;
@@ -365,8 +353,7 @@ steal.then(function() {
     });
 
     controller.cancel();
-    stop();
   });
 
-});
+}());
 

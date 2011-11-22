@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
+(function() {
   "use strict";
 
   var winMock = {},
@@ -105,7 +105,7 @@ steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
     equal(channelMock.bindMessage, "get", "bound to get");
   });
 
-  test("channel.get before registerDialog", function() {
+  asyncTest("channel.get before registerDialog", function() {
     relay.open();
 
     channelMock.receiveGet();
@@ -116,11 +116,9 @@ steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
 
       start();
     }});
-
-    stop();
   });
 
-  test("registerDialog before channel.getVerifiedEmail", function() {
+  asyncTest("registerDialog before channel.getVerifiedEmail", function() {
     relay.open();
 
     relay.registerClient({'get': function(origin, params, completeCB) {
@@ -131,11 +129,9 @@ steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
     }});
 
     channelMock.receiveGet();
-
-    stop();
   });
 
-  test("calling the completeCB with assertion", function() {
+  asyncTest("calling the completeCB with assertion", function() {
     relay.open();
 
     channelMock.receiveGet();
@@ -145,12 +141,10 @@ steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
       equal(channelMock.status, "assertion", "channel gets the correct assertion");
       start();
     }});
-
-    stop();
   });
 
 
-  test("calling the completeCB with null assertion", function() {
+  asyncTest("calling the completeCB with null assertion", function() {
     relay.open();
 
     channelMock.receiveGet();
@@ -160,11 +154,9 @@ steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
       strictEqual(channelMock.status, null, "channel gets the null assertion");
       start();
     }});
-
-    stop();
   });
 
-  test("calling the onerror callback", function() {
+  asyncTest("calling the onerror callback", function() {
     relay.open();
 
     channelMock.receiveGet();
@@ -177,7 +169,5 @@ steal.plugins("jquery").then("/lib/jschannel", "/relay/relay", function() {
 
       start();
     }});
-
-    stop();
   });
-});
+}());

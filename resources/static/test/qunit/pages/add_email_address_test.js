@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then("/pages/add_email_address", function() {
+(function() {
   "use strict";
 
   var bid = BrowserID,
@@ -59,7 +59,7 @@ steal.then("/pages/add_email_address", function() {
     }
   });
 
-  test("addEmailAddress with good token and site", function() {
+  asyncTest("addEmailAddress with good token and site", function() {
     storage.setStagedOnBehalfOf("browserid.org");
 
     bid.addEmailAddress("token");
@@ -70,10 +70,9 @@ steal.then("/pages/add_email_address", function() {
       equal($(".website").text(), "browserid.org", "origin is updated");
       start();
     }, 500);
-    stop();
   });
 
-  test("addEmailAddress with good token and nosite", function() {
+  asyncTest("addEmailAddress with good token and nosite", function() {
     bid.addEmailAddress("token");
 
     setTimeout(function() {
@@ -82,10 +81,9 @@ steal.then("/pages/add_email_address", function() {
       equal($(".siteinfo .website").text(), "", "origin is not updated");
       start();
     }, 500);
-    stop();
   });
 
-  test("addEmailAddress with bad token", function() {
+  asyncTest("addEmailAddress with bad token", function() {
     xhr.useResult("invalid");
 
     bid.addEmailAddress("token");
@@ -93,10 +91,9 @@ steal.then("/pages/add_email_address", function() {
       ok($("#cannotconfirm").is(":visible"), "cannot confirm box is visible");
       start();
     }, 500);
-    stop();
   });
 
-  test("addEmailAddress with emailForVerficationToken XHR failure", function() {
+  asyncTest("addEmailAddress with emailForVerficationToken XHR failure", function() {
     xhr.useResult("ajaxError");
     bid.addEmailAddress("token");
 
@@ -104,7 +101,6 @@ steal.then("/pages/add_email_address", function() {
       ok($("#cannotcommunicate").is(":visible"), "cannot communicate box is visible");
       start();
     }, 500);
-    stop();
   });
 
-});
+}());

@@ -1,3 +1,21 @@
+<!doctype html>
+<html>
 <head><title>non-interactive iframe</title>
-  <script type="text/javascript" src="steal/steal<%= production ? '.production' : '' %>.js?communication_iframe/iframe.js"></script>
-</head><body></body>
+  <meta charset="utf-8">
+  <% if(production) { %>
+    <script type="text/javascript" src="/communication_iframe/production.js"></script>
+  <% } else { %>
+    <script type="text/javascript" src="/lib/jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="/lib/jschannel.js"></script>
+    <script type="text/javascript" src="/lib/underscore-min.js"></script>
+    <script type="text/javascript" src="/lib/vepbundle.js"></script>
+    <script type="text/javascript" src="/shared/javscript-extensions.js"></script>
+    <script type="text/javascript" src="/shared/browserid.js"></script>
+    <script type="text/javascript" src="/shared/storage.js"></script>
+    <script type="text/javascript" src="/shared/network.js"></script>
+    <script type="text/javascript" src="/shared/user.js"></script>
+    <script type="text/javascript" src="/communication_iframe/start.js"></script>
+  <% } %>
+</head>
+<body></body>
+</html>

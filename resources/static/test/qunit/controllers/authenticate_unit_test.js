@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var controller,
@@ -114,20 +114,19 @@ steal.then(function() {
     });
 
     controller.checkEmail();
-    stop();
   }
 
-  test("checkEmail with normal email, user not registered", function() {
+  asyncTest("checkEmail with normal email, user not registered", function() {
     $("#email").val("unregistered@testuser.com");
     testUserUnregistered();
   });
 
-  test("checkEmail with email with leading/trailing whitespace, user not registered", function() {
+  asyncTest("checkEmail with email with leading/trailing whitespace, user not registered", function() {
     $("#email").val("    unregistered@testuser.com   ");
     testUserUnregistered();
   });
 
-  test("checkEmail with normal email, user registered", function() {
+  asyncTest("checkEmail with normal email, user registered", function() {
     $("#email").val("registered@testuser.com");
 
     register("enter_password", function() {
@@ -136,7 +135,6 @@ steal.then(function() {
     });
 
     controller.checkEmail();
-    stop();
   });
 
   function testAuthenticated() {
@@ -145,25 +143,23 @@ steal.then(function() {
       start();
     });
     controller.authenticate();
-
-    stop();
   }
 
-  test("normal authentication is kosher", function() {
+  asyncTest("normal authentication is kosher", function() {
       $("#email").val("registered@testuser.com");
       $("#password").val("password");
 
       testAuthenticated();
   });
 
-  test("leading/trailing whitespace on the username is stripped for authentication", function() {
+  asyncTest("leading/trailing whitespace on the username is stripped for authentication", function() {
       $("#email").val("    registered@testuser.com    ");
       $("#password").val("password");
 
       testAuthenticated();
   });
 
-  test("forgotPassword triggers forgot_password message", function() {
+  asyncTest("forgotPassword triggers forgot_password message", function() {
     $("#email").val("registered@testuser.com");
 
     register("forgot_password", function(msg, info) {
@@ -172,10 +168,9 @@ steal.then(function() {
     });
 
     controller.forgotPassword();
-    stop();
   });
 
-  test("createUser with valid email", function() {
+  asyncTest("createUser with valid email", function() {
     $("#email").val("unregistered@testuser.com");
     register("user_staged", function(msg, info) {
       equal(info.email, "unregistered@testuser.com", "user_staged with correct email triggered");
@@ -183,10 +178,10 @@ steal.then(function() {
     });
 
     controller.createUser();
-    stop();
+    
   });
 
-  test("createUser with invalid email", function() {
+  asyncTest("createUser with invalid email", function() {
     $("#email").val("unregistered");
 
     var handlerCalled = false;
@@ -200,10 +195,10 @@ steal.then(function() {
       start();  
     }, 100);
 
-    stop();
+    
   });
 
-  test("createUser with valid email but throttling", function() {
+  asyncTest("createUser with valid email but throttling", function() {
     $("#email").val("unregistered@testuser.com");
 
     var handlerCalled = false;
@@ -219,10 +214,10 @@ steal.then(function() {
       start();  
     }, 100);
 
-    stop();
+    
   });
 
-  test("createUser with valid email, XHR error", function() {
+  asyncTest("createUser with valid email, XHR error", function() {
     $("#email").val("unregistered@testuser.com");
 
     var handlerCalled = false;
@@ -237,8 +232,8 @@ steal.then(function() {
       start();  
     }, 100);
 
-    stop();
+    
   });
 
-});
+}());
 
