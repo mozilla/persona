@@ -37,9 +37,14 @@
 (function() {
   "use strict";
 
-  var controller,
+  var bid = BrowserID,
+      mediator = bid.Mediator,
+      channel = bid.Channel,
+      controller,
       el,
-      channelError = false;
+      channelError = false,
+      winMock,
+      navMock;
 
   function reset() {
     el = $("#controller_head");
@@ -50,13 +55,41 @@
     channelError = false;
   }
 
-  function createController(config) {
-    var config = $.extend(config, {
-      window: {
-        setupChannel: function() {
-          if (channelError) throw "Channel error";
+  function WinMock() {
+    this.location.hash = "#1234";  
+  }
+
+  WinMock.prototype = {
+    setupChannel: function() {
+      if (channelError) throw "Channel error";
+    },
+
+    // Oh so beautiful.
+    opener: {
+      frames: {
+        1234: {
+          BrowserID: {
+            Relay: {
+              registerClient: function() {
+              },
+
+              unregisterClient: function() {
+              }
+            }
+          }
         }
       }
+    },
+
+    location: {
+    }
+
+
+  }
+
+  function createController(config) {
+    var config = $.extend(config, {
+      window: winMock
     });
 
     controller = BrowserID.Modules.Dialog.create(config);
@@ -64,12 +97,21 @@
 
   module("controllers/dialog_controller", {
     setup: function() {
+      winMock = new WinMock();
+      channel.init({
+        window: winMock,
+        navigator: navMock
+      });
       reset();
     },
 
     teardown: function() {
       controller.destroy();
       reset();
+      channel.init({
+        window: window,
+        navigator: navigator
+      });
     }
   });
 
@@ -151,6 +193,23 @@
     controller.doCheckAuth();
   });
 */
+
+  test("doWinUnload", function() {
+    createController({
+      requiredEmail: "registered@testuser.com"
+    });
+
+    var error;
+
+    try {
+      controller.doWinUnload();
+    }
+    catch(e) {
+      error = e;
+    }
+
+    equal(typeof error, "undefined", "no error thrown when unloading window");
+  });
 
 }());
 
