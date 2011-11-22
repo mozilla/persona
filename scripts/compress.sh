@@ -4,7 +4,13 @@ cd $(dirname "$0")/..
 
 UGLIFY=`which uglifyjs 2> /dev/null`
 if [ ! -x "$UGLIFY" ]; then
-    echo "uglifyjs not found in your path.  can't create production resources.  disaster."
+    echo "uglifyjs not found in your path.  Have you npm installed lately?"
+    exit 1
+fi
+
+UGLIFYCSS=`which uglifycss 2> /dev/null`
+if [ ! -x "$UGLIFY" ]; then
+    echo "uglifycss not found in your path.  Have you npm installed lately?"
     exit 1
 fi
 
