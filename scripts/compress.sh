@@ -8,13 +8,7 @@ if [ ! -x "$UGLIFY" ]; then
     exit 1
 fi
 
-JAVA=`which java 2> /dev/null`
-if [ ! -x "$JAVA" ]; then
-    echo "java not found in your path.  can't create production resources.  disaster."
-    exit 1
-fi
-
-YUI_LOCATION=`pwd`'/resources/static/steal/build/scripts/yui.jar'
+UGLIFYCSS=`pwd`'/node_modules/uglifycss/uglifycss'
 
 echo ''
 echo '****Compressing include.js****'
@@ -55,7 +49,7 @@ mv production.min.js production.js
 
 cd css
 cat popup.css m.css > production.css
-$JAVA -jar $YUI_LOCATION production.css -o production.min.css
+$UGLIFYCSS production.css > production.min.css
 
 cd ../../relay
 cat ../lib/jschannel.js ../shared/browserid.js relay.js > production.js
@@ -74,4 +68,4 @@ $UGLIFY < lib.js > lib.min.js
 
 cd ../css
 cat style.css m.css > browserid.css
-$JAVA -jar $YUI_LOCATION browserid.css -o browserid.min.css
+$UGLIFYCSS browserid.css > browserid.min.css

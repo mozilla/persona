@@ -28,6 +28,7 @@
     , "jwcrypto": "https://github.com/mozilla/jwcrypto/tarball/de57b1891"
     , "postprocess": "0.0.3"
     , "urlparse": "0.0.1"
+    , "uglifycss": "0.0.4"
   }
   , "scripts": {
     "postinstall": "./scripts/generate_ephemeral_keys.sh",
