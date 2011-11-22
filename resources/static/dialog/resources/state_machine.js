@@ -52,7 +52,7 @@
   }
 
   function pushState(funcName) {
-    var args = [].splice.call(arguments, 1),
+    var args = [].slice.call(arguments, 1),
         controller = this.controller;
 
     // Remember the state and the information for the state in case we have to 
