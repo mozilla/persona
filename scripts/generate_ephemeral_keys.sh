@@ -5,7 +5,7 @@ VAR=$SCRIPT_DIR/../var
 export PATH=$PATH:$SCRIPT_DIR/../node_modules/.bin
 
 # if keys already exist, do nothing
-if [ -f $VAR/root.publickey ] ; then
+if [ -f $VAR/root.cert ] ; then
     exit 0
 fi
 
