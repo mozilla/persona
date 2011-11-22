@@ -2,6 +2,8 @@
 
 cd $(dirname "$0")/..
 
+export PATH=$PWD/node_modules/.bin:$PATH
+
 UGLIFY=`which uglifyjs 2> /dev/null`
 if [ ! -x "$UGLIFY" ]; then
     echo "uglifyjs not found in your path.  Have you npm installed lately?"
@@ -15,6 +17,8 @@ if [ ! -x "$UGLIFY" ]; then
 fi
 
 UGLIFYCSS=`pwd`'/node_modules/uglifycss/uglifycss'
+
+set -e  # exit on errors
 
 echo ''
 echo '****Compressing include.js****'
