@@ -79,6 +79,7 @@ BrowserID.Modules.Dialog = (function() {
 
   function onWinUnload() {
     // do this only if something else hasn't declared success
+    var self=this;
     if (!self.success) {
       bid.Storage.setStagedOnBehalfOf("");
       self.doCancel();
@@ -256,7 +257,9 @@ BrowserID.Modules.Dialog = (function() {
               self.publish("auth");
             }
           }, self.getErrorDialog(errors.checkAuthentication));
-    }
+    },
+
+    doWinUnload: onWinUnload
 
   });
 
