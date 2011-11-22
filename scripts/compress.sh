@@ -2,6 +2,8 @@
 
 cd $(dirname "$0")/..
 
+export PATH=$PWD/node_modules/.bin:$PATH
+
 UGLIFY=`which uglifyjs 2> /dev/null`
 if [ ! -x "$UGLIFY" ]; then
     echo "uglifyjs not found in your path.  can't create production resources.  disaster."
@@ -15,6 +17,8 @@ if [ ! -x "$JAVA" ]; then
 fi
 
 YUI_LOCATION=`pwd`'/resources/static/steal/build/scripts/yui.jar'
+
+set -e  # exit on errors
 
 echo ''
 echo '****Compressing include.js****'
