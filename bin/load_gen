@@ -112,13 +112,11 @@ var activity = {
     // users add a new email address once every 2 weeks
     probability: (1.0 / (40 * 14.0))
   },
-/*
   "reauth": {
     // users must re-authenticate to browser id once a week
     // (once every two weeks per device)
     probability: (1.0 / (40 * 7.0))
   },
-*/
   "signin": {
     // users sign in using existing authentication material
     // 8 times a day (once every six hours per device)
@@ -271,7 +269,7 @@ function poll() {
 
   // start the new activites until they're all started, or until we've
   // got twice as many outstanding as would be required by the target we
-  // want to hit (which means the server can't keep up). 
+  // want to hit (which means the server can't keep up).
   while (newAct >= 1.0 && outstanding < (activitiesPerUserPerSecond * targetActive * 2)) {
     startNewActivity();
     newAct--;
