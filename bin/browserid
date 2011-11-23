@@ -191,5 +191,32 @@ db.open(config.get('database'), function (error) {
   var bindTo = config.get('bind_to');
   app.listen(bindTo.port, bindTo.host, function() {
     logger.info("running on http://" + app.address().address + ":" + app.address().port);
+
+    // #13 if the CREATE_TEST_USERS env var is defined, we'll try to create
+    // some test users
+    if (process.env['CREATE_TEST_USERS']) {
+      logger.warn("creating test users... this can take a while...");
+      bcrypt.gen_salt(config.get('bcrypt_work_factor'), function (err, salt) {
+        if (err) {
+          logger.error("error creating test users - bcrypt salt gen: " + err);
+          process.exit(1);
+        }
+        bcrypt.encrypt("THE PASSWORD", salt, function(err, hash) {
+          if (err) {
+            logger.error("error creating test users - bcrypt encrypt pass: " + err);
+            process.exit(1);
+          }
+          var want = parseInt(process.env['CREATE_TEST_USERS']);
+          var have = 0;
+          for (i = 1; i <= want; i++) {
+            db.addTestUser(i + "@loadtest.domain", hash, function(err, email) {
+              if (++have == want) {
+                logger.warn("created " + want + " test users");
+              }
+            });
+          }
+        });
+      });
+    }
   });
 });
