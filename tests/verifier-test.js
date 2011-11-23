@@ -524,7 +524,83 @@ suite.addBatch({
 });
 
 // now let's really get down and screw with the assertion
-// XXX
+suite.addBatch({
+  "using an email address as an assertion (which is bogus)": {
+    topic: function()  {
+      wsapi.post('/verify', {
+        audience: TEST_ORIGIN,
+        assertion: "test@example.com"
+      }).call(this);
+    },
+    "fails with a nice error": function(r, err) {
+      var resp = JSON.parse(r.body);
+      assert.strictEqual(resp.status, 'failure');
+      assert.strictEqual(resp.reason, 'malformed assertion');
+    }
+  },
+  "using an integer as an assertion (which is bogus)": {
+    topic: function()  {
+      wsapi.post('/verify', {
+        audience: TEST_ORIGIN,
+         assertion: 777
+      }).call(this);
+    },
+    "fails with a nice error": function(r, err) {
+      var resp = JSON.parse(r.body);
+      assert.strictEqual(resp.status, 'failure');
+      assert.strictEqual(resp.reason, 'malformed assertion');
+    }
+  },
+  "generating a valid assertion": {
+    topic: function()  {
+      var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var tok = new jwt.JWT(null, expirationDate, TEST_ORIGIN);
+      return vep.bundleCertsAndAssertion([g_cert], tok.sign(g_keypair.secretKey));
+    },
+    "and removing the last char from it": {
+      topic: function(assertion) {
+        assertion = assertion.substr(0, assertion.length - 1);
+        wsapi.post('/verify', {
+          audience: TEST_ORIGIN,
+          assertion: assertion
+        }).call(this);
+      },
+      "fails with a nice error": function(r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'malformed assertion');
+      }
+    },
+    "and removing the first char from it": {
+      topic: function(assertion) {
+        assertion = assertion.substr(1);
+        wsapi.post('/verify', {
+          audience: TEST_ORIGIN,
+          assertion: assertion
+        }).call(this);
+      },
+      "fails with a nice error": function(r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'malformed assertion');
+      }
+    },
+    "and appending gunk to it": {
+      topic: function(assertion) {
+        assertion += "gunk";
+        wsapi.post('/verify', {
+          audience: TEST_ORIGIN,
+          assertion: assertion
+        }).call(this);
+      },
+      "fails with a nice error": function(r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'malformed assertion');
+      }
+    }
+  }
+});
 
 // now verify that no-one other than browserid is allowed to issue assertions
 // (until primary support is implemented)
