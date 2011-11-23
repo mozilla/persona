@@ -46,7 +46,9 @@ db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
 jwk = require('jwcrypto/jwk.js'),
 jwt = require('jwcrypto/jwt.js'),
-vep = require('jwcrypto/vep.js');
+vep = require('jwcrypto/vep.js'),
+http = require('http'),
+querystring = require('querystring');
 
 var suite = vows.describe('verifier');
 
@@ -285,7 +287,180 @@ suite.addBatch({
 });
 
 // testing post format requirements and flexibility
+// several positive and negative basic verification tests
+// with a valid assertion
+suite.addBatch({
+  "generating an assertion": {
+    topic: function() {
+      var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var tok = new jwt.JWT(null, expirationDate, TEST_ORIGIN);
+      return vep.bundleCertsAndAssertion([g_cert],
+                                         tok.sign(g_keypair.secretKey));
+    },
+    "succeeds": function(r, err) {
+      assert.isString(r);
+    },
+    "posting assertion and audience as get parameters in a post request": {
+      topic: function(assertion)  {
+        var cb = this.callback;
+        var postArgs = { assertion: assertion, audience: TEST_ORIGIN };
+        http.request({
+          host: '127.0.0.1',
+          port: 10000,
+          path: '/verify?' + querystring.stringify(postArgs),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          method: "POST"
+        }, function (res) {
+          var body = "";
+          res.on('data', function(chunk) { body += chunk; })
+            .on('end', function() {
+              cb(body);
+            });
+        }).on('error', function (e) {
+          cb("error: ", e);
+        }).end();
+      },
+      "works, oddly enough": function (r, err) {
+        var resp = JSON.parse(r);
+        assert.isObject(resp);
+        assert.strictEqual(resp.status, 'okay');
+        assert.strictEqual(resp.email, TEST_EMAIL);
+        assert.strictEqual(resp.audience, TEST_ORIGIN);
+        var now = new Date().getTime();
+        assert.strictEqual(resp.expires > now, true);
+        assert.strictEqual(resp.expires <= now + (2 * 60 * 1000), true);
+        assert.strictEqual(resp.status, 'okay');
+      }
+    },
+    "posting assertion in body and audience as get parameter in a post request": {
+      topic: function(assertion)  {
+        var cb = this.callback;
+        var postArgs = querystring.stringify({ assertion: assertion });
+        var getArgs = querystring.stringify({ audience: TEST_ORIGIN });
+        var req = http.request({
+          host: '127.0.0.1',
+          port: 10000,
+          path: '/verify?' + getArgs,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          method: "POST"
+        }, function (res) {
+          var body = "";
+          res.on('data', function(chunk) { body += chunk; })
+            .on('end', function() {
+              cb(body);
+            });
+        }).on('error', function (e) {
+          cb("error: ", e);
+        });
+        req.write(postArgs);
+        req.end();
+      },
+      "works, oddly enough": function (r, err) {
+        var resp = JSON.parse(r);
+        assert.isObject(resp);
+        assert.strictEqual(resp.status, 'okay');
+        assert.strictEqual(resp.email, TEST_EMAIL);
+        assert.strictEqual(resp.audience, TEST_ORIGIN);
+        var now = new Date().getTime();
+        assert.strictEqual(resp.expires > now, true);
+        assert.strictEqual(resp.expires <= now + (2 * 60 * 1000), true);
+        assert.strictEqual(resp.status, 'okay');
+      }
+    },
+    "posting audience in body and asssertion as get parameter in a post request": {
+      topic: function(assertion)  {
+        var cb = this.callback;
+        var getArgs = querystring.stringify({ assertion: assertion });
+        var postArgs = querystring.stringify({ audience: TEST_ORIGIN });
+        var req = http.request({
+          host: '127.0.0.1',
+          port: 10000,
+          path: '/verify?' + getArgs,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          method: "POST"
+        }, function (res) {
+          var body = "";
+          res.on('data', function(chunk) { body += chunk; })
+            .on('end', function() {
+              cb(body);
+            });
+        }).on('error', function (e) {
+          cb("error: ", e);
+        });
+        req.write(postArgs);
+        req.end();
+      },
+      "works, oddly enough": function (r, err) {
+        var resp = JSON.parse(r);
+        assert.isObject(resp);
+        assert.strictEqual(resp.status, 'okay');
+        assert.strictEqual(resp.email, TEST_EMAIL);
+        assert.strictEqual(resp.audience, TEST_ORIGIN);
+        var now = new Date().getTime();
+        assert.strictEqual(resp.expires > now, true);
+        assert.strictEqual(resp.expires <= now + (2 * 60 * 1000), true);
+        assert.strictEqual(resp.status, 'okay');
+      }
+    }
+  }
+});
 
+suite.addBatch({
+  "generating an assertion": {
+    topic: function() {
+      var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var tok = new jwt.JWT(null, expirationDate, TEST_ORIGIN);
+      return vep.bundleCertsAndAssertion([g_cert], tok.sign(g_keypair.secretKey));
+    },
+    "succeeds": function(r, err) {
+      assert.isString(r);
+    },
+    "and submitting without proper Content-Type headers": {
+      topic: function(assertion)  {
+        var cb = this.callback;
+        var postArgs = querystring.stringify({ assertion: assertion, audience: TEST_ORIGIN });
+        var req = http.request({
+          host: '127.0.0.1',
+          port: 10000,
+          path: '/verify',
+          method: "POST"
+        }, function (res) {
+          var body = "";
+          res.on('data', function(chunk) { body += chunk; })
+            .on('end', function() {
+              cb(body);
+            });
+        }).on('error', function (e) {
+          cb("error: ", e);
+        });
+        req.write(postArgs);
+        req.end();
+      },
+      "fails with a helpful error message": function(r, err) {
+        var resp = JSON.parse(r);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'Content-Type expected to be application/x-www-form-urlencoded');
+      }
+    }
+  }
+});
+
+// now verify that a incorrectly signed assertion yields a good error message
+// XXX
+
+// now let's really get down and screw with the assertion
+// XXX
+
+
+// now verify that no-one other than browserid is allowed to issue assertions
+// (until primary support is implemented)
+// XXX
 
 start_stop.addShutdownBatches(suite);
 
