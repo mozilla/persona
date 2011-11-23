@@ -47,6 +47,7 @@ config = require('../lib/configuration.js'),
 jwk = require('jwcrypto/jwk.js'),
 jwt = require('jwcrypto/jwt.js'),
 vep = require('jwcrypto/vep.js'),
+jwcert = require('jwcrypto/jwcert.js'),
 http = require('http'),
 querystring = require('querystring');
 
@@ -488,11 +489,42 @@ suite.addBatch({
 });
 
 // now verify that a incorrectly signed assertion yields a good error message
-// XXX
+suite.addBatch({
+  "generating an assertion from a bogus cert": {
+    topic: function() {
+      var fakeDomainKeypair = jwk.KeyPair.generate("RS", 64);
+      var newClientKeypair = jwk.KeyPair.generate("DS", 256);
+      expiration = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
+      var cert = new jwcert.JWCert("127.0.0.1", expiration, new Date(), newClientKeypair.publicKey,
+                                   {email: TEST_EMAIL}).sign(fakeDomainKeypair.secretKey);
+
+      var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var tok = new jwt.JWT(null, expirationDate, TEST_ORIGIN);
+      return vep.bundleCertsAndAssertion([cert], tok.sign(newClientKeypair.secretKey));
+    },
+    "yields a good looking assertion": function (r, err) {
+      assert.isString(r);
+      assert.equal(r.length > 0, true);
+    },
+    "will cause the verifier": {
+      topic: function(assertion) {
+        wsapi.post('/verify', {
+          audience: TEST_ORIGIN,
+          assertion: assertion
+        }).call(this);
+      },
+      "to return a clear error message": function (r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        // XXX: the verifier response should simply be "invalid signature"
+        assert.strictEqual(resp.reason, 'bad signature in chain');
+      }
+    }
+  }
+});
 
 // now let's really get down and screw with the assertion
 // XXX
-
 
 // now verify that no-one other than browserid is allowed to issue assertions
 // (until primary support is implemented)
