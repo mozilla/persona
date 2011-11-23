@@ -29,6 +29,8 @@
     , "postprocess": "0.0.3"
     , "urlparse": "0.0.1"
     , "uglifycss": "0.0.4"
+    , "node-statsd": "https://github.com/mojodna/node-statsd/tarball/2584c08fad"
+    , "connect-logger-statsd": "0.0.1"
   }
   , "scripts": {
     "postinstall": "./scripts/generate_ephemeral_keys.sh",
