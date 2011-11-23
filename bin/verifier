@@ -74,8 +74,18 @@ app.post('/verify', function(req, resp, next) {
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req. body.assertion;
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
 
-  if (!(assertion && audience))
+  if (!(assertion && audience)) {
+    // why couldn't we extract these guys?  Is it because the request parameters weren't encoded as we expect? GH-643
+    const want_ct = [ 'application/x-www-form-urlencoded', 'application/json' ];
+    try {
+      var ct = req.headers['content-type'];
+      if (ct.indexOf(';') != -1) ct = ct.substr(0, ct.indexOf(';'));
+      if (want_ct.indexOf(ct) == -1) throw "wrong content type";
+    } catch (e) {
+      return resp.json({ status: "failure", reason: "Content-Type expected to be one of: " + want_ct.join(", ") });
+    }
     return resp.json({ status: "failure", reason: "need assertion and audience" });
+  }
 
   certassertion.verify(
     assertion, audience,

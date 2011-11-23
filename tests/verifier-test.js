@@ -445,7 +445,43 @@ suite.addBatch({
       "fails with a helpful error message": function(r, err) {
         var resp = JSON.parse(r);
         assert.strictEqual(resp.status, 'failure');
-        assert.strictEqual(resp.reason, 'Content-Type expected to be application/x-www-form-urlencoded');
+        assert.strictEqual(resp.reason, 'Content-Type expected to be one of: application/x-www-form-urlencoded, application/json');
+      }
+    },
+    "while submitting as application/json": {
+      topic: function(assertion)  {
+        var cb = this.callback;
+        var postArgs = JSON.stringify({ assertion: assertion, audience: TEST_ORIGIN });
+        var req = http.request({
+          host: '127.0.0.1',
+          port: 10000,
+          path: '/verify',
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }, function (res) {
+          var body = "";
+          res.on('data', function(chunk) { body += chunk; })
+            .on('end', function() {
+              cb(body);
+            });
+        }).on('error', function (e) {
+          cb("error: ", e);
+        });
+        req.write(postArgs);
+        req.end();
+      },
+      "works fabulously": function(r, err) {
+        var resp = JSON.parse(r);
+        assert.isObject(resp);
+        assert.strictEqual(resp.status, 'okay');
+        assert.strictEqual(resp.email, TEST_EMAIL);
+        assert.strictEqual(resp.audience, TEST_ORIGIN);
+        var now = new Date().getTime();
+        assert.strictEqual(resp.expires > now, true);
+        assert.strictEqual(resp.expires <= now + (2 * 60 * 1000), true);
+        assert.strictEqual(resp.status, 'okay');
       }
     }
   }
