@@ -602,6 +602,26 @@ suite.addBatch({
   }
 });
 
+// how about bogus parameters inside the assertion?
+suite.addBatch({
+  "An assertion that expired a millisecond ago": {
+    topic: function()  {
+      var expirationDate = new Date(new Date().getTime() - 10);
+      var tok = new jwt.JWT(null, expirationDate, TEST_ORIGIN);
+      var assertion = vep.bundleCertsAndAssertion([g_cert], tok.sign(g_keypair.secretKey));
+      wsapi.post('/verify', {
+        audience: TEST_ORIGIN,
+        assertion: assertion
+      }).call(this);
+    },
+    "fails with a nice error": function(r, err) {
+      var resp = JSON.parse(r.body);
+      assert.strictEqual(resp.status, 'failure');
+      assert.strictEqual(resp.reason, 'assertion expiration date has passed');
+    }
+  }
+});
+
 // now verify that no-one other than browserid is allowed to issue assertions
 // (until primary support is implemented)
 suite.addBatch({
