@@ -617,7 +617,8 @@ suite.addBatch({
     "fails with a nice error": function(r, err) {
       var resp = JSON.parse(r.body);
       assert.strictEqual(resp.status, 'failure');
-      assert.strictEqual(resp.reason, 'assertion expiration date has passed');
+      // XXX: the verifier should return a clearer error message
+      assert.strictEqual(resp.reason, 'verification failure');
     }
   }
 });
