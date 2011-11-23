@@ -198,7 +198,7 @@ suite.addBatch({
       "fails with a nice error": function(r, err) {
         var resp = JSON.parse(r.body);
         assert.strictEqual(resp.status, 'failure');
-        assert.strictEqual(resp.reason, 'audience mismatch');
+        assert.strictEqual(resp.reason, 'audience mismatch: domain mismatch');
       }
     },
     "but specifying the wrong port": {
@@ -211,7 +211,7 @@ suite.addBatch({
       "fails with a nice error": function(r, err) {
         var resp = JSON.parse(r.body);
         assert.strictEqual(resp.status, 'failure');
-        assert.strictEqual(resp.reason, 'audience mismatch');
+        assert.strictEqual(resp.reason, 'audience mismatch: port mismatch');
       }
     },
     "but specifying the wrong scheme": {
@@ -224,7 +224,7 @@ suite.addBatch({
       "fails with a nice error": function(r, err) {
         var resp = JSON.parse(r.body);
         assert.strictEqual(resp.status, 'failure');
-        assert.strictEqual(resp.reason, 'audience mismatch');
+        assert.strictEqual(resp.reason, 'audience mismatch: scheme mismatch');
       }
     },
     "and providing just a domain and port": {
@@ -256,7 +256,7 @@ suite.addBatch({
       "fails as you would expect": function(r, err) {
         var resp = JSON.parse(r.body);
         assert.strictEqual(resp.status, 'failure');
-        assert.strictEqual(resp.reason, 'audience mismatch');
+        assert.strictEqual(resp.reason, 'audience mismatch: port mismatch');
       }
     },
     "leaving off the audience": {
