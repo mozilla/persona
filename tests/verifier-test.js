@@ -135,6 +135,8 @@ suite.addBatch({
   }
 });
 
+// several positive and negative basic verification tests
+// with a valid assertion
 suite.addBatch({
   "generating an assertion": {
     topic: function() {
@@ -144,7 +146,7 @@ suite.addBatch({
                                          tok.sign(g_keypair.secretKey));
     },
     "succeeds": function(r, err) {
-      assert.isString(r); 
+      assert.isString(r);
     },
     "and verifying that assertion by specifying domain as audience": {
       topic: function(assertion)  {
@@ -154,7 +156,6 @@ suite.addBatch({
         }).call(this);
       },
       "works": function(r, err) {
-        assert.isString('string');
         var resp = JSON.parse(r.body);
         assert.isObject(resp);
         assert.strictEqual(resp.status, 'okay');
@@ -174,7 +175,6 @@ suite.addBatch({
         }).call(this);
       },
       "works": function(r, err) {
-        assert.isString('string');
         var resp = JSON.parse(r.body);
         assert.isObject(resp);
         assert.strictEqual(resp.status, 'okay');
@@ -185,9 +185,107 @@ suite.addBatch({
         assert.strictEqual(resp.expires <= now + (2 * 60 * 1000), true);
         assert.strictEqual(resp.status, 'okay');
       }
+    },
+    "but specifying the wrong audience": {
+      topic: function(assertion)  {
+        wsapi.post('/verify', {
+          audience: "notfakesite.com",
+          assertion: assertion
+        }).call(this);
+      },
+      "fails with a nice error": function(r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'audience mismatch');
+      }
+    },
+    "but specifying the wrong port": {
+      topic: function(assertion)  {
+        wsapi.post('/verify', {
+          audience: "http://fakesite.com:8888",
+          assertion: assertion
+        }).call(this);
+      },
+      "fails with a nice error": function(r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'audience mismatch');
+      }
+    },
+    "but specifying the wrong scheme": {
+      topic: function(assertion)  {
+        wsapi.post('/verify', {
+          audience: "https://fakesite.com:8080",
+          assertion: assertion
+        }).call(this);
+      },
+      "fails with a nice error": function(r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'audience mismatch');
+      }
+    },
+    "and providing just a domain and port": {
+      topic: function(assertion)  {
+        wsapi.post('/verify', {
+          audience: "fakesite.com:8080",
+          assertion: assertion
+        }).call(this);
+      },
+      "is cool": function(r, err) {
+        var resp = JSON.parse(r.body);
+        assert.isObject(resp);
+        assert.strictEqual(resp.status, 'okay');
+        assert.strictEqual(resp.email, TEST_EMAIL);
+        assert.strictEqual(resp.audience, 'fakesite.com:8080');
+        var now = new Date().getTime();
+        assert.strictEqual(resp.expires > now, true);
+        assert.strictEqual(resp.expires <= now + (2 * 60 * 1000), true);
+        assert.strictEqual(resp.status, 'okay');
+      }
+    },
+    "but providing just a domain and the wrong port": {
+      topic: function(assertion)  {
+        wsapi.post('/verify', {
+          audience: "fakesite.com:8888",
+          assertion: assertion
+        }).call(this);
+      },
+      "fails as you would expect": function(r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'audience mismatch');
+      }
+    },
+    "leaving off the audience": {
+      topic: function(assertion)  {
+        wsapi.post('/verify', {
+          assertion: assertion
+        }).call(this);
+      },
+      "fails as you would expect": function(r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'need assertion and audience');
+      }
+    },
+    "leaving off the assertion": {
+      topic: function(assertion)  {
+        wsapi.post('/verify', {
+          audience: TEST_ORIGIN
+        }).call(this);
+      },
+      "fails as you would expect": function(r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'need assertion and audience');
+      }
     }
   }
 });
+
+// testing post format requirements and flexibility
+
 
 start_stop.addShutdownBatches(suite);
 
