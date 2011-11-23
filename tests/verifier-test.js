@@ -620,6 +620,40 @@ suite.addBatch({
       // XXX: the verifier should return a clearer error message
       assert.strictEqual(resp.reason, 'verification failure');
     }
+  },
+  "An assertion with a bundled bogus certificate": {
+    topic: function()  {
+      var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var tok = new jwt.JWT(null, expirationDate, TEST_ORIGIN);
+      var assertion = vep.bundleCertsAndAssertion([g_cert, "bogus cert"], tok.sign(g_keypair.secretKey));
+      wsapi.post('/verify', {
+        audience: TEST_ORIGIN,
+        assertion: assertion
+      }).call(this);
+    },
+    "fails with a nice error": function(r, err) {
+      var resp = JSON.parse(r.body);
+      assert.strictEqual(resp.status, 'failure');
+      // XXX: this error should be clearer
+      assert.strictEqual(resp.reason, 'Malformed JSON web signature: Must have three parts');
+    }
+  },
+  "An assertion with a no certificate": {
+    topic: function()  {
+      var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var tok = new jwt.JWT(null, expirationDate, TEST_ORIGIN);
+      var assertion = vep.bundleCertsAndAssertion([], tok.sign(g_keypair.secretKey));
+      wsapi.post('/verify', {
+        audience: TEST_ORIGIN,
+        assertion: assertion
+      }).call(this);
+    },
+    "fails with a nice error": function(r, err) {
+      var resp = JSON.parse(r.body);
+      assert.strictEqual(resp.status, 'failure');
+      // XXX: this error should be clearer
+      assert.strictEqual(resp.reason, "TypeError: Cannot read property 'issuer' of undefined");
+    }
   }
 });
 

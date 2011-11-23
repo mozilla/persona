@@ -87,29 +87,37 @@ app.post('/verify', function(req, resp, next) {
     return resp.json({ status: "failure", reason: "need assertion and audience" });
   }
 
-  certassertion.verify(
-    assertion, audience,
-    function(email, audienceFromAssertion, expires, issuer) {
-      resp.json({
-        status : "okay",
-        email : email,
-        audience : audience, // NOTE: we return the audience formatted as the RP provided it, not normalized in any way.
-        expires : expires.valueOf(),
-        issuer: issuer
-      });
-
-      metrics.report('verify', {
-        result: 'success',
-        rp: audienceFromAssertion
-      });
-    },
-    function(error) {
-      resp.json({"status":"failure", reason: (error ? error.toString() : "unknown")});
-      metrics.report('verify', {
-        result: 'failure',
-        rp: audience
-      });
+  function doFailure(error) {
+    resp.json({"status":"failure", reason: (error ? error.toString() : "unknown")});
+    metrics.report('verify', {
+      result: 'failure',
+      rp: audience
     });
+  }
+
+  try {
+    certassertion.verify(
+      assertion, audience,
+      function(email, audienceFromAssertion, expires, issuer) {
+        resp.json({
+          status : "okay",
+          email : email,
+          audience : audience, // NOTE: we return the audience formatted as the RP provided it, not normalized in any way.
+          expires : expires.valueOf(),
+          issuer: issuer
+        });
+
+        metrics.report('verify', {
+          result: 'success',
+          rp: audienceFromAssertion
+        });
+      },
+      function(error) {
+        doFailure(error);
+      });
+  } catch(e) {
+    doFailure(e);
+  }
 });
 
 // shutdown when /code_update is invoked
