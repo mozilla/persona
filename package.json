@@ -9,7 +9,7 @@
     , "nodemailer": "0.1.18"
     , "mustache": "0.3.1-dev"
     , "vows": "0.5.13"
-    , "bcrypt": "*"
+    , "bcrypt": "0.4.1"
     , "ejs": "0.4.3"
     , "temp": "0.2.0"
     , "express-csrf": "0.3.2"
