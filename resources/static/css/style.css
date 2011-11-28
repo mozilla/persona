@@ -265,6 +265,15 @@ div.steps {
   background-position: left -48px;
 }
 
+.sumo {
+  text-align: center;
+}
+
+.sumo > a {
+  font-weight: bold;
+  color: #444;
+}
+
 #legal {
   padding: 75px 125px;
 }
