@@ -442,45 +442,11 @@ h1 {
   background-color: #37A6FF;
   height: 32px;
   line-height: 27px;
-  display: inline-block;
   padding: 0 16px;
-  vertical-align: middle;
-  border: 1px solid #37A6FF;
   font-size: 16px;
-  font-family: 'Droid Serif', Georgia, serif;
-  color: #fff;
-  text-shadow: -1px -1px 0 #37A6FF;
-  cursor: pointer;
-
-  -webkit-box-shadow: 0 0 0 1px #76C2FF inset;
-     -moz-box-shadow: 0 0 0 1px #76C2FF inset;
-       -o-box-shadow: 0 0 0 1px #76C2FF inset;
-          box-shadow: 0 0 0 1px #76C2FF inset;
-
-  -webkit-border-radius: 5px;
-     -moz-border-radius: 5px;
-       -o-border-radius: 5px;
-          border-radius: 5px;
-
-  background-image: -moz-linear-gradient(#76C2FF 0pt, #37A6FF 100%);
-  background-image: -o-linear-gradient(#76C2FF 0pt, #37A6FF 100%);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
-}
-
-.create:active {
-  background-color: #006EC6;
-  border: 1px solid #003E70;
-  color: #EEEEEE;
-  text-shadow: -1px -1px 0 #006EC6;
-
-  -webkit-box-shadow: 0 0 5px #003763 inset;
-     -moz-box-shadow: 0 0 5px #003763 inset;
-       -o-box-shadow: 0 0 5px #003763 inset;
-          box-shadow: 0 0 5px #003763 inset;
-
-  background-image: -moz-linear-gradient(#3AA7FF 0%, #006EC6 100%);
-  background-image: -o-linear-gradient(#3AA7FF 0%, #006EC6 100%);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3AA7FF), color-stop(100%, #006EC6));
+  float: none;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 #card {
@@ -632,13 +598,6 @@ h1 {
   float: left;
 }
 
-#signUpForm .create {
-  font-size: 14px;
-  height: 28px;
-  padding: 0 10px;
-  float: right;
-}
-
 #signUpForm .error {
   margin-top: 20px;
   color: red;
@@ -659,7 +618,6 @@ h1 {
 
 #congrats p {
     color: #62615F;
-    /*display: block;*/
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
