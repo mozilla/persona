@@ -35,12 +35,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 BrowserID.Mediator = (function() {
-  var hub = OpenAjax.hub;
+  var hub = Hub;
 
   return {
-    subscribe: hub.subscribe.bind(hub),
-    unsubscribe: hub.unsubscribe.bind(hub),
-    publish: hub.publish.bind(hub)
+    subscribe: hub.on.bind(hub),
+    unsubscribe: hub.off.bind(hub),
+    publish: hub.fire.bind(hub)
   };
 }());
 
