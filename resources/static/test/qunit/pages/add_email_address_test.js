@@ -50,6 +50,7 @@
       $(".error").removeClass("error");
       $("#error").stop().hide();
       $(".website").text("");
+      $(".siteinfo").hide();
     },
     teardown: function() {
       network.setXHR($);
@@ -65,7 +66,7 @@
     bid.addEmailAddress("token");
 
     setTimeout(function() {
-      equal($("#email").text(), "testuser@testuser.com", "email set");
+      equal($("#email").val(), "testuser@testuser.com", "email set");
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
       equal($(".website").text(), "browserid.org", "origin is updated");
       start();
@@ -76,7 +77,7 @@
     bid.addEmailAddress("token");
 
     setTimeout(function() {
-      equal($("#email").text(), "testuser@testuser.com", "email set");
+      equal($("#email").val(), "testuser@testuser.com", "email set");
       equal($(".siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
       equal($(".siteinfo .website").text(), "", "origin is not updated");
       start();

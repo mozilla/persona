@@ -37,13 +37,15 @@
 (function() {
   "use strict";
   
-  var ANIMATION_TIME=250;
+  var ANIMATION_TIME=250,
+      dom = BrowserID.DOM;
+
   function emailRegistrationSuccess(info) {
 
-    $("#email").text(info.email);
+    dom.setInner("#email", info.email);
     
     if (info.origin) {
-      $(".website").html(info.origin);
+      dom.setInner(".website", info.origin);
       $(".siteinfo").show();
     }
 
