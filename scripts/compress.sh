@@ -58,7 +58,7 @@ cp production.js production.uncompressed.js
 mv production.min.js production.js
 
 cd css
-cat popup.css m.css > production.css
+cat ../../css/common.css popup.css m.css > production.css
 $UGLIFYCSS production.css > production.min.css
 
 cd ../../relay
@@ -77,5 +77,5 @@ cat ../lib/jquery-1.6.2.min.js ../lib/json2.js ../lib/underscore-min.js ../lib/e
 $UGLIFY < lib.js > lib.min.js
 
 cd ../css
-cat style.css m.css > browserid.css
+cat common.css style.css m.css > browserid.css
 $UGLIFYCSS browserid.css > browserid.min.css
