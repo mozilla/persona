@@ -845,8 +845,9 @@
     };
 
     // wait for onload
-    _attach_event(window, 'load', setup_relay_iframe);
-    //window.setTimeout(setup_relay_iframe, 0);    
+    // _attach_event(window, 'load', setup_relay_iframe);
+    // that didn't work at fixing the issue, so reverting
+    window.setTimeout(setup_relay_iframe, 0);
 
     navigator.id._getVerifiedEmailIsShimmed = true;
   }
