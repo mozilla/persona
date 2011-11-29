@@ -42,12 +42,15 @@
 
 const winston = require('winston');
 
-
 // option processing with optimist
 var argv = require('optimist')
 .usage('Apply load to a BrowserID server.\nUsage: $0', [ "foo" ])
+.alias('a', 'activities')
+.describe('a', 'only run a subset of activities, specified as a CSV list')
 .alias('h', 'help')
 .describe('h', 'display this usage message')
+.alias('l', 'list')
+.describe('l', 'list available activities and exit')
 .alias('m', 'max')
 .describe('m', 'maximum active users to simulate (0 == infinite)')
 .default('m', 10000)
@@ -131,6 +134,31 @@ var activity = {
   }
 };
 
+if (args.l) {
+  console.log("available activities:", Object.keys(activity).join(", "));
+  process.exit(0);
+}
+
+var activitiesToRun = Object.keys(activity);
+
+// handle modification of activities to run (-o or -a)
+if (args.a) {
+  if (typeof args.a !== 'string') {
+    process.stdout.write("invalid argument: " + args.a.toString() + "\n\n");
+    argv.showHelp();
+    process.exit(1);
+  }
+  activitiesToRun = args.a.split(',');
+  activitiesToRun.forEach(function(act) {
+    if (!activity.hasOwnProperty(act)) {
+      process.stdout.write("invalid activity: " + act + "\n\n");
+      process.exit(1);
+    }
+  });
+} else if (args.o) {
+  activitiesToRun.splice(activitiesToRun.indexOf('include_only'), 1);
+}
+
 // outstanding incomplete activites
 var outstanding = { };
 
@@ -196,9 +224,8 @@ function poll() {
         break;
       }
     }
-    // start the activity! (except if it's an include_only and we're
-    // in 'omit static' mode
-    if (!args.o || act !== 'include_only') {
+    // start the activity! (if it is enabled)
+    if (activitiesToRun.indexOf(act) !== -1) {
       outstanding[act]++;
       activity[act].startFunc(configuration, function(err) {
         if (err) winston.error(err);
