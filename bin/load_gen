@@ -85,9 +85,6 @@ var averages = [
   0.0
 ];
 
-// outstanding incomplete activites
-var outstanding = 0;
-
 // activities complete since the last poll
 var completed = {
 };
@@ -133,6 +130,21 @@ var activity = {
     probability: (1.0 / (40 * 56))
   }
 };
+
+// outstanding incomplete activites
+var outstanding = { };
+
+Object.keys(activity).forEach(function(act) {
+  outstanding[act] = 0;
+});
+
+function numOutstanding() {
+  var n = 0;
+  Object.keys(outstanding).forEach(function(act) {
+    n += outstanding[act];
+  });
+  return n;
+}
 
 // now attach "start functions" to the activity map by including
 // the implementation of each activity
@@ -187,10 +199,10 @@ function poll() {
     // start the activity! (except if it's an include_only and we're
     // in 'omit static' mode
     if (!args.o || act !== 'include_only') {
-      outstanding++;
+      outstanding[act]++;
       activity[act].startFunc(configuration, function(err) {
         if (err) winston.error(err);
-        outstanding--;
+        outstanding[act]--;
         if (undefined === completed[act]) completed[act] = [ 0, 0 ];
         completed[act][err ? 1 : 0]++;
       });
@@ -201,6 +213,7 @@ function poll() {
   }
 
   var numErrors = 0;
+  var numStarted = 0;
 
   function updateAverages(elapsed) {
     if (!iterations) return;
@@ -225,9 +238,17 @@ function poll() {
   }
 
   function outputAverages() {
+    var actSumString = numOutstanding() + " R, " + numStarted + " S";
+    var actNums = [];
+    Object.keys(outstanding).forEach(function(act) {
+      actNums.push(outstanding[act] + act.substr(0,1) + act.substr(-1,1));
+    });
+    actSumString += " (" + actNums.join(' ') + ")";
+
     console.log("\t", averages[0].toFixed(2),
                 "\t", averages[1].toFixed(2),
                 "\t", averages[2].toFixed(2),
+                "\t", actSumString,
                 "\t", numErrors ? "(" + numErrors + " ERRORS!)" : "");
   }
 
@@ -273,7 +294,8 @@ function poll() {
   // start the new activites until they're all started, or until we've
   // got twice as many outstanding as would be required by the target we
   // want to hit (which means the server can't keep up).
-  while (newAct >= 1.0 && outstanding < (activitiesPerUserPerSecond * targetActive * 2)) {
+  while (newAct >= 1.0 && numOutstanding() < (activitiesPerUserPerSecond * targetActive * 2)) {
+    numStarted++;
     startNewActivity();
     newAct--;
   }
