@@ -63,7 +63,10 @@ logger.info("dbwriter starting up");
 
 // Setup health check / heartbeat middleware.
 // This is in front of logging on purpose.  see issue #537
-heartbeat.setup(app);
+heartbeat.setup(app, function(cb) {
+  // ping the database to verify we're really healthy.
+  db.ping(cb);
+});
 
 // logging!  all requests other than __heartbeat__ are logged
 app.use(express.logger({

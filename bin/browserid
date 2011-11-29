@@ -79,13 +79,7 @@ if (!config.get('dbwriter_url')) {
 
 // #1 - Setup health check / heartbeat middleware.
 // This is in front of logging on purpose.  see issue #537
-heartbeat.setup(app, function(cb) {
-  // let's check stuff!  first the heartbeat of our keysigner
-  heartbeat.check(config.get('keysigner_url'), function(rv) {
-    if (!rv) return cb(rv);
-    heartbeat.check(config.get('dbwriter_url'), cb);
-  });
-});
+heartbeat.setup(app);
 
 // #2 - logging!  all requests other than __heartbeat__ are logged
 app.use(express.logger({
