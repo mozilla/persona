@@ -31,6 +31,7 @@
     , "uglifycss": "0.0.4"
     , "node-statsd": "https://github.com/mojodna/node-statsd/tarball/2584c08fad"
     , "connect-logger-statsd": "0.0.1"
+    , "semver": "1.0.12"
   }
   , "scripts": {
     "postinstall": "./scripts/generate_ephemeral_keys.sh",
@@ -38,6 +39,6 @@
     "start": "./scripts/run_locally.js"
   },
   "engines": {
-    "node": ">= 0.6.3"
+    "node": ">= 0.6.2"
   }
 }
