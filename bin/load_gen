@@ -344,7 +344,6 @@ var NUM_INITIAL_USERS = 100;
 // in understandable terms
 if (args.m) outputActiveUserSummary(args.m);
 
-console.log("To start, let's create " + NUM_INITIAL_USERS + " users.  A moment please:");
 const userdb = require("../lib/load_gen/user_db.js");
 
 if (args.u) {
@@ -356,13 +355,13 @@ if (args.u) {
     start = parseInt(r[0], 10);
     end = parseInt(r[1], 10);
     if (start >= end) throw "first number must be smaller than the second";
-  } catch(e) { 
+  } catch(e) {
     console.log("your -u argument is poorly formated: " + e.toString());
     process.exit(1);
   }
 
   // now create all them users!
-  console.log("creating", (end - start + 1), " users");
+  console.log("Runing with", (end - start + 1), "pre-created users (XXX@loadtest.domain)");
   for (var i = start; i < end; i++) {
     var user = userdb.getNewUser(i + "@loadtest.domain", "THE PASSWORD");
     userdb.releaseUser(user);
@@ -370,6 +369,8 @@ if (args.u) {
   console.log("users created!  applying load...");
   poll();
 } else {
+  console.log("To start, let's create " + NUM_INITIAL_USERS + " users via the API.  One moment please...");
+
   var createUser = require("../lib/load_gen/activities/signup.js").startFunc;
   var created = 0;
   for (var i = 0; i < NUM_INITIAL_USERS; i++) {
