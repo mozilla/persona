@@ -72,7 +72,7 @@ a {
   text-decoration: none;
 }
 
-a:hover, button:hover, input[type=submit]:hover {
+a:hover, button:hover {
   text-decoration: underline;
 }
 
@@ -127,7 +127,8 @@ input[type=checkbox] {
   cursor: pointer;
 }
 
-button, input[type=submit] {
+button,
+.button {
     font-size: 14px;
     height: 28px;
     padding: 0 10px;
@@ -157,20 +158,16 @@ button, input[type=submit] {
 
 button:hover,
 button:focus,
-input[type=submit]:hover,
-input[type=submit]:focus {
+.button:hover,
+.button:focus{
     background-color: #76c2ff;
     background-image: -moz-linear-gradient(center top , #76C2FF 50%, #37A6FF 100%);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(50%, #76C2FF), color-stop(100%, #37A6FF));
 
 }
 
-button[disabled] {
-    opacity: .5;
-}
-
-
-button:active, input[type=submit]:active {
+button:active,
+.button:active {
     background-color: #006EC6;
     border: 1px solid #003E70;
     color: #EEEEEE;
@@ -184,10 +181,17 @@ button:active, input[type=submit]:active {
     background-image: -moz-linear-gradient(center top , #3AA7FF 0%, #006EC6 100%);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3AA7FF), color-stop(100%, #006EC6));
 }
+
 button::-moz-focus-inner, .button::-moz-focus-inner {
   padding: 0;
   border: 0
 }
+
+button[disabled] {
+    opacity: .5;
+}
+
+
 
 hr {
   height: 1px;
