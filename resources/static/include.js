@@ -694,7 +694,7 @@
     }
     else if(element.attachEvent) {
       // IE < 9
-      element.attachEvent(name, listener);
+      element.attachEvent('on' + name, listener);
     }
   }
 
@@ -844,7 +844,9 @@
       }
     };
 
-    window.setTimeout(setup_relay_iframe, 0);    
+    // wait for onload
+    _attach_event(window, 'load', setup_relay_iframe);
+    //window.setTimeout(setup_relay_iframe, 0);    
 
     navigator.id._getVerifiedEmailIsShimmed = true;
   }
