@@ -249,4 +249,6 @@ footer .help {
     cursor: help;
 }
 
-
+.cancelVerify {
+  font-weight: bold;
+}
