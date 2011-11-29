@@ -168,6 +168,13 @@ shutdown.installUpdateHandler(app, function(readyForShutdown) {
   db.close(readyForShutdown)
 });
 
+// #11.5 - custom 404
+app.use(function(req, res,next) {
+  res.statusCode = 404;
+  res.write("Cannot find this resource");
+  res.end();
+});
+
 // #12 if the BROWSERID_FAKE_VERIFICATION env var is defined, we'll include
 // fake_verification.js.  This is used during testing only and should
 // never be included in a production deployment
