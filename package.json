@@ -36,5 +36,8 @@
     "postinstall": "./scripts/generate_ephemeral_keys.sh",
     "test": "./scripts/run_all_tests.sh",
     "start": "./scripts/run_locally.js"
+  },
+  "engines": {
+    "node": ">= 0.6.3"
   }
 }
