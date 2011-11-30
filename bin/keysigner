@@ -47,9 +47,9 @@ httputils = require('../lib/httputils.js'),
 validate = require('../lib/validate.js'),
 metrics = require('../lib/metrics.js'),
 logger = require('../lib/logging.js').logger,
-ca = require('../lib/keysigner/ca.js'),
 heartbeat = require('../lib/heartbeat'),
-shutdown = require('../lib/shutdown');
+shutdown = require('../lib/shutdown'),
+computecluster = require('compute-cluster');
 
 // create an express server
 var app = express.createServer();
@@ -84,32 +84,51 @@ app.use(function(req, resp, next) {
 // parse POST bodies
 app.use(express.bodyParser());
 
+// allocate a compute cluster
+try {
+  var cc = new computecluster({
+    module: path.join(__dirname, "..", "lib", "keysigner", "subprocess.js"),
+    max_processes: config.get('max_compute_processes')
+  }).on('error', function(e) {
+    logger.error("error detected in keysigning computation process!  fatal: " + e.toString());
+    setTimeout(function() { process.exit(1); }, 0);
+  }).on('info', function(msg) {
+    logger.info("(compute cluster): " + msg);
+  }).on('debug', function(msg) {
+    logger.debug("(compute cluster): " + msg);
+  });
+} catch(e) {
+  process.stderr.write("can't allocate compute cluster: " + e + "\n");
+  process.exit(1);
+}
+
 // and our single function
 app.post('/wsapi/cert_key', validate(["email", "pubkey"]), function(req, resp) {
-  try {
-    // parse the pubkey
-    var pk = ca.parsePublicKey(req.body.pubkey);
-
-    // same account, we certify the key
-    // we certify it for a day for now
-    var expiration = new Date();
-    expiration.setTime(new Date().valueOf() + config.get('certificate_validity_ms'));
-    var cert = ca.certify(req.body.email, pk, expiration);
-
-    resp.writeHead(200, {'Content-Type': 'text/plain'});
-    resp.write(cert);
-    resp.end();
-  } catch (e) {
-    logger.error("certification generation error: " + e.toString());
-    httputils.serverError(resp, "certification generation error");
-  }
+  cc.enqueue({
+    pubkey: req.body.pubkey,
+    email: req.body.email
+  }, function (err, r) {
+    // consider "application" errors to be the same as harder errors
+    if (!err && r && r.error) err = r.error;
+    if (!r || !r.success) err = "no certificate returned from child process";
+    if (err) {
+      logger.error("certification generation error: " + err);
+      httputils.serverError(resp, "certification generation error");
+    } else {
+      resp.writeHead(200, {'Content-Type': 'text/plain'});
+      resp.write(r.success);
+      resp.end();
+    }
+  });
 });
 
 // shutdown when code_update is invoked
 shutdown.installUpdateHandler(app);
 
 // shutdown nicely on signals
-shutdown.handleTerminationSignals(app);
+shutdown.handleTerminationSignals(app, function() {
+  cc.exit();
+});
 
 var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function() {
