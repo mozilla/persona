@@ -90,7 +90,7 @@ try {
 
   // allocate a compute cluster
   var cc = new computecluster({
-    module: path.join(__dirname, "..", "lib", "keysigner", "subprocess.js"),
+    module: path.join(__dirname, "..", "lib", "keysigner", "keysigner-compute.js"),
     max_processes: config.get('max_compute_processes')
   }).on('error', function(e) {
     logger.error("error detected in keysigning computation process!  fatal: " + e.toString());
