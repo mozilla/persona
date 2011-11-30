@@ -113,7 +113,8 @@ app.post('/wsapi/cert_key', validate(["email", "pubkey"]), function(req, resp) {
   }, function (err, r) {
     // consider "application" errors to be the same as harder errors
     if (!err && r && r.error) err = r.error;
-    if (!r || !r.success) err = "no certificate returned from child process";
+    else if (!r || !r.success) err = "no certificate returned from child process";
+
     if (err) {
       logger.error("certification generation error: " + err);
       httputils.serverError(resp, "certification generation error");
