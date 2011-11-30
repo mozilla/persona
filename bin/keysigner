@@ -84,8 +84,11 @@ app.use(function(req, resp, next) {
 // parse POST bodies
 app.use(express.bodyParser());
 
-// allocate a compute cluster
 try {
+  // explicitly relay VAR_PATH to children
+  process.env['VAR_PATH'] = config.get('var_path');
+
+  // allocate a compute cluster
   var cc = new computecluster({
     module: path.join(__dirname, "..", "lib", "keysigner", "subprocess.js"),
     max_processes: config.get('max_compute_processes')
