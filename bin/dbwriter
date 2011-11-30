@@ -66,7 +66,8 @@ logger.info("dbwriter starting up");
 heartbeat.setup(app, function(cb) {
   // ping the database to verify we're really healthy.
   db.ping(function(e) {
-    cb(e === undefined);
+    if (e) logger.error("database ping error: " + e);
+    cb(!e);
   });
 });
 
