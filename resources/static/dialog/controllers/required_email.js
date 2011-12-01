@@ -139,7 +139,7 @@ BrowserID.Modules.RequiredEmail = (function() {
           // verify ownership of the address.
           showTemplate(registered, registered);
           ready();
-        }, self.getErrorDialog(errors.isEmailRegistered));
+        }, self.getErrorDialog(errors.isEmailRegistered, ready));
       }
 
       function showTemplate(requireSignin, showPassword) {

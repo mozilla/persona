@@ -37,84 +37,85 @@
 (function() {
   "use strict";
 
-  var controller,
-      bid = BrowserID,
-      xhr = bid.Mocks.xhr,
+  var bid = BrowserID,
       network = bid.Network,
-      testHelpers = bid.TestHelpers,
-      register = testHelpers.register;
+      xhr = bid.Mocks.xhr,
+      helpers = bid.TestHelpers,
+      controller;
 
-  function createController(verifier, message) {
-    controller = bid.Modules.CheckRegistration.create();
-    controller.start({
-      email: "registered@testuser.com",
-      verifier: verifier,
-      verificationMessage: message
-    });
+  function createController(config) {
+    var config = $.extend({
+      code_ver: "ABC123"
+    }, config);
+
+    controller = BrowserID.Modules.CodeCheck.create();
+    controller.start(config);
   }
 
-  module("controllers/checkregistration_controller", {
+  module("controllers/code_check", {
     setup: function() {
-      testHelpers.setup();
+      helpers.setup();
     },
 
     teardown: function() {
-      testHelpers.teardown();
-      if (controller) {
-        try {
-          // Controller may have already destroyed itself.
-          controller.destroy();
-        } catch(e) {}
-      }
+      helpers.teardown();
+
+      controller.destroy();
     }
   });
 
-  function testVerifiedUserEvent(event_name, message) {
-    createController("waitForUserValidation", event_name);
-    register(event_name, function() {
-      ok(true, message);
-      start();
-    });
-    controller.startCheck();
-  }
-
-  asyncTest("user validation with mustAuth result", function() {
-    xhr.useResult("mustAuth");
-
-    testVerifiedUserEvent("auth", "User Must Auth");
-  });
-
-  asyncTest("user validation with pending->complete result ~3 seconds", function() {
-    xhr.useResult("pending");
-
-    testVerifiedUserEvent("user_verified", "User verified");
-    // use setTimeout to simulate a delay in the user opening the email.
-    setTimeout(function() {
-      xhr.useResult("complete");
-    }, 500);
-  });
-
-  asyncTest("user validation with XHR error", function() {
-    xhr.useResult("ajaxError");
-
-    createController("waitForUserValidation", "user_verified");
-    controller.startCheck(function() {
-      register("user_verified", function() {
-        ok(false, "on XHR error, should not complete");
-      });
-      ok(testHelpers.errorVisible(), "Error message is visible");
-      start();
-    });
-  });
-
-  asyncTest("cancel raises cancel_state", function() {
-    createController("waitForUserValidation", "user_verified");
-    controller.startCheck(function() {
-      register("cancel_state", function() {
-        ok(true, "on cancel, cancel_state is triggered");
+  asyncTest("create controller with most recent scripts", function() {
+    createController({
+      ready: function(mostRecent) {
+        equal(mostRecent, true, "scripts are the most recent");
         start();
+      }
+    });
+  });
+
+  test("create controller without code_ver specified", function() {
+    raises(function() {
+      createController({
+        code_ver: null
       });
-      controller.cancel();
+    }, "init: code_ver must be defined", "code version not specified throws exception");
+  });
+
+  asyncTest("create controller with out of date scripts", function() {
+    var scriptCount = $("head > script").length;
+
+    createController({
+      code_ver: "ABC122",
+      ready: function(mostRecent) {
+        equal(mostRecent, false, "scripts are not the most recent");
+        var scripts = $("head > script");
+        var scriptAdded = scripts.length !== scriptCount;
+
+        equal(scriptAdded, true, "a script was added to the dom to force reload");
+
+        if(scriptAdded) {
+          // Only remove the last script if the script was actually added.
+          scripts.last().remove();
+        }
+
+        start();
+      }
+    });
+  });
+
+  asyncTest("create controller with XHR error during script check", function() {
+    xhr.useResult("contextAjaxError");
+    var scriptCount = $("head > script").length;
+
+    createController({
+      ready: function() {
+        helpers.checkNetworkError();
+        var scripts = $("head > script");
+        var scriptAdded = scripts.length !== scriptCount;
+
+        equal(scriptAdded, false, "a script was not added on XHR error");
+        start();
+      }
     });
   });
 

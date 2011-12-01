@@ -1,5 +1,5 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
-/*global _: true, BrowserID: true, PageController: true */
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*global BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,56 +34,76 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-BrowserID.Modules.AddEmail = (function() {
+
+
+BrowserID.Modules.CodeCheck = (function() {
   "use strict";
 
   var bid = BrowserID,
-      helpers = bid.Helpers,
-      dialogHelpers = helpers.Dialog,
-      errors = bid.Errors,
-      tooltip = bid.Tooltip;
+      dom = bid.DOM,
+      sc,
+      expectedCodeVer;
 
-  function cancelEvent(callback) {
-    return function(event) {
-      event && event.preventDefault();
-      callback && callback();
-    }
+  function getMostRecentCodeVersion(oncomplete) {
+    bid.Network.codeVersion(oncomplete, this.getErrorDialog(bid.Errors.checkScriptVersion, oncomplete));
   }
 
-  function addEmail(callback) {
-    var email = helpers.getAndValidateEmail("#newEmail"),
-        self=this;
+  function updateCodeIfNeeded(oncomplete, version) {
+    var mostRecent = version === expectedCodeVer;
 
-    if (email) {
-      dialogHelpers.addEmail.call(self, email, callback);
+    function ready() {
+      oncomplete && oncomplete(mostRecent);
+    }
+
+    if(mostRecent) {
+      ready();
     }
     else {
-      callback && callback();
+      loadScript(version, ready);
     }
   }
 
+  function loadScript(version, oncomplete) {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://browserid.org/dialog/production_v" + version + ".js";
+    document.head.appendChild(script);
 
-  function cancelAddEmail() {
-    this.close("cancel_state");
+    oncomplete();
   }
 
-  var AddEmail = bid.Modules.PageModule.extend({
-    start: function(options) {
-      var self=this;
+  var Module = bid.Modules.PageModule.extend({
+      start: function(data) {
+        var self=this;
 
-      self.renderDialog("addemail");
+        function complete(val) {
+          data.ready && data.ready(val);
+        }
 
-      self.bind("#cancelNewEmail", "click", cancelEvent(cancelAddEmail));
-      AddEmail.sc.start.call(self, options);
-    },
-    submit: addEmail
-    // BEGIN TESTING API
-    ,
-    addEmail: addEmail,
-    cancelAddEmail: cancelAddEmail
-    // END TESTING API
+        data = data || {};
+
+        if (data.code_ver) {
+          expectedCodeVer = data.code_ver;
+        }
+        else {
+          throw "init: code_ver must be defined";
+        }
+
+        getMostRecentCodeVersion.call(self, function(version) {
+          if(version) {
+            updateCodeIfNeeded.call(self, complete, version);
+          }
+          else {
+            complete();
+          }
+        });
+        sc.start.call(self, data);
+      }
   });
 
-  return AddEmail;
+  sc = Module.sc;
+
+  return Module;
 
 }());
+

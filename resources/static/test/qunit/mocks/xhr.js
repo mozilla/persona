@@ -40,7 +40,8 @@ BrowserID.Mocks.xhr = (function() {
       server_time: new Date().getTime(),
       domain_key_creation_time: (new Date().getTime() - (30 * 24 * 60 * 60 * 1000)),
       csrf_token: "csrf",
-      authenticated: false
+      authenticated: false,
+      code_version: "ABC123"
     };
 
   // this cert is meaningless, but it has the right format

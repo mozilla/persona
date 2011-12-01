@@ -102,7 +102,7 @@
         tooltip.showTooltip("#could_not_add");
       }
       if (callback) callback(staged);
-    }, self.getErrorDialog(errors.createUser));
+    }, self.getErrorDialog(errors.createUser, callback));
   }
 
   function resetPassword(email, callback) {

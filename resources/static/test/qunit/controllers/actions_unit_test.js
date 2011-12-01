@@ -1,5 +1,5 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
-/*global _: true, BrowserID: true, PageController: true */
+/*jshint browsers:true, forin: true, laxbreak: true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,56 +34,55 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-BrowserID.Modules.AddEmail = (function() {
+(function() {
   "use strict";
 
   var bid = BrowserID,
-      helpers = bid.Helpers,
-      dialogHelpers = helpers.Dialog,
-      errors = bid.Errors,
-      tooltip = bid.Tooltip;
+      controller,
+      el;
 
-  function cancelEvent(callback) {
-    return function(event) {
-      event && event.preventDefault();
-      callback && callback();
-    }
+  function reset() {
+    el = $("#controller_head");
+    el.find("#formWrap .contents").html("");
+    el.find("#wait .contents").html("");
+    el.find("#error .contents").html("");
   }
 
-  function addEmail(callback) {
-    var email = helpers.getAndValidateEmail("#newEmail"),
-        self=this;
-
-    if (email) {
-      dialogHelpers.addEmail.call(self, email, callback);
-    }
-    else {
-      callback && callback();
-    }
+  function createController(config) {
+    controller = BrowserID.Modules.Actions.create();
+    controller.start(config);
   }
 
-
-  function cancelAddEmail() {
-    this.close("cancel_state");
+  // XXX Make a test helper class for this.
+  function checkNetworkError() {
+    ok($("#error .contents").text().length, "contents have been written");
+    ok($("#error #action").text().length, "action contents have been written");
+    ok($("#error #network").text().length, "network contents have been written");
   }
 
-  var AddEmail = bid.Modules.PageModule.extend({
-    start: function(options) {
-      var self=this;
-
-      self.renderDialog("addemail");
-
-      self.bind("#cancelNewEmail", "click", cancelEvent(cancelAddEmail));
-      AddEmail.sc.start.call(self, options);
+  module("controllers/actions", {
+    setup: function() {
+      reset();
     },
-    submit: addEmail
-    // BEGIN TESTING API
-    ,
-    addEmail: addEmail,
-    cancelAddEmail: cancelAddEmail
-    // END TESTING API
+
+    teardown: function() {
+      if(controller) {
+        controller.destroy();
+      }
+      reset();
+    }
   });
 
-  return AddEmail;
+  asyncTest("doOffline", function() {
+    createController({
+      ready: function() {
+        controller.doOffline();
+        ok($("#error .contents").text().length, "contents have been written");
+        ok($("#error #offline").text().length, "offline error message has been written");
+        start();
+      }
+    });
+  });
 
 }());
+

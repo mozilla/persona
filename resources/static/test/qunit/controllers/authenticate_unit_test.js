@@ -202,12 +202,10 @@
     });
 
     xhr.useResult("ajaxError");
-    controller.createUser()
-
-    setTimeout(function() {
+    controller.createUser(function() {
       equal(handlerCalled, false, "bad jiji, user_staged should not have been called with XHR error");
       start();
-    }, 50);
+    });
   });
 
 }());

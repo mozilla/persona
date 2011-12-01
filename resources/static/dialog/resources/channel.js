@@ -143,29 +143,27 @@
   }
 
 
-  if(window.BrowserID) {
-    BrowserID.Channel = {
-      /**
-       * Used to intialize the channel, mostly for unit testing to override
-       * window and navigator.
-       * @method init
-       */
-      init: init,
+  BrowserID.Channel = {
+    /**
+     * Used to intialize the channel, mostly for unit testing to override
+     * window and navigator.
+     * @method init
+     */
+    init: init,
 
-      /**
-       * Open the channel.
-       * @method open
-       * @param {object} options - contains:
-       * *   options.getVerifiedEmail {function} - function to /get
-       */
-      open: open,
+    /**
+     * Open the channel.
+     * @method open
+     * @param {object} options - contains:
+     * *   options.getVerifiedEmail {function} - function to /get
+     */
+    open: open,
 
-      /**
-       * Close the channel
-       */
-      close: close
-    };
-  }
+    /**
+     * Close the channel
+     */
+    close: close
+  };
 
   /**
    * This is here as a legacy API for addons/etc that are depending on

@@ -28,6 +28,12 @@
     calls = {};
   }
 
+  function checkNetworkError() {
+    ok($("#error .contents").text().length, "contents have been written");
+    ok($("#error #action").text().length, "action contents have been written");
+    ok($("#error #network").text().length, "network contents have been written");
+  }
+
   BrowserID.TestHelpers = {
     setup: function() {
       network.setXHR(xhr);
@@ -58,6 +64,7 @@
     register: register,
     errorVisible: function() {
       return screens.error.visible;
-    }
+    },
+    checkNetworkError: checkNetworkError
   };
 }());
