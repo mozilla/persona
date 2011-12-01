@@ -54,16 +54,22 @@
 (function() {
   var win = window,
       nav = navigator,
-      onCompleteCallback;
+      onCompleteCallback,
+      _relayWindow = null;
 
   function getRelayName() {
-    var relayID = win.location.href.slice(win.location.href.indexOf('#') + 1);
-    return "browserid_relay_" + relayID;
+    var name = win.location.hash.substring(1);
+    win.location.hash = "";
+    if (name.length > 1)
+      return name;
+    else
+      return null;
   }
 
   function getRelayWindow() {
-    var frameWindow = win.opener.frames[getRelayName()];
-    return frameWindow;
+    if (!_relayWindow)
+      _relayWindow = win.opener.frames[getRelayName()];
+    return _relayWindow;
   }
 
   function setupNativeChannel(controller) {
@@ -75,23 +81,24 @@
     // (has window.opener) as well as whether the relay function exists.
     // If these conditions are not met, then print an appropriate message.
 
-    function onsuccess(rv) {
-      onCompleteCallback(rv, null);
-    }
-
-    function onerror(error) {
-      onCompleteCallback(null, error);
-    }
-
+    var REGISTERED_METHODS = {
+      'get': function(origin, params, onsuccess, onerror) {
+        // check for old controller methods
+        // FIXME KILL THIS SOON
+        if (controller.get) {
+          return controller.get(origin, params, onsuccess, onerror);          
+        } else {
+          return controller.getVerifiedEmail(origin, onsuccess, onerror);
+        }
+      }
+    };
+    
     // The relay frame will give us the origin and a function to call when 
     // dialog processing is complete.
     var frameWindow = getRelayWindow();
+    
     if (frameWindow) {
-      frameWindow.BrowserID.Relay.registerClient(function(origin, onComplete) {
-        onCompleteCallback = onComplete;
-        controller.getVerifiedEmail(origin, onsuccess, onerror);
-      });
-      win.location.hash = '';
+      frameWindow.BrowserID.Relay.registerClient(REGISTERED_METHODS);
     }
     else {
       throw "relay frame not found";
@@ -105,6 +112,16 @@
       setupIFrameChannel(controller);
   }
 
+  function close() {
+    var frameWindow = getRelayWindow();
+    
+    if (frameWindow) {
+      frameWindow.BrowserID.Relay.unregisterClient();
+    }
+    else {
+      throw "relay frame not found";
+    }    
+  }
 
   function init(options) {
     onCompleteCallback = undefined;
@@ -134,7 +151,12 @@
        * @param {object} options - contains:
        * *   options.getVerifiedEmail {function} - function to /get
        */
-      open: open
+      open: open,
+
+      /**
+       * Close the channel
+       */
+      close: close
     };
   }
 
@@ -143,4 +165,5 @@
    * window.setupChannel;
    */
   window.setupChannel = open;
+  window.teardownChannel = close;
 }());

@@ -20,6 +20,8 @@ tar -C .. --exclude rpmbuild -czf \
 
 set +e
 
+export GIT_REVISION=$(git log -1 --oneline)
+
 rpmbuild --define "_topdir $PWD/rpmbuild" -ba scripts/browserid.spec
 rc=$?
 if [ $rc -eq 0 ]; then

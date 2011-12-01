@@ -1,5 +1,5 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global setupChannel:true, BrowserID: true, PageController: true, OpenAjax: true */ 
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*global setupChannel:true, BrowserID: true, PageController: true, OpenAjax: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -45,9 +45,15 @@
   var bid = BrowserID,
       user = bid.User,
       errors = bid.Errors,
+      dom = bid.DOM,
       offline = false,
-      win = window;
-      
+      win = window,
+      subscriptions = [],
+      hub = OpenAjax.hub;
+
+  function subscribe(message, cb) {
+     subscriptions.push(hub.subscribe(message, cb));
+  }
 
   PageController.extend("Dialog", {}, {
       init: function(el, options) {
@@ -55,7 +61,7 @@
 
         options = options || {};
 
-        if(options.window) {
+        if (options.window) {
           win = options.window;
         }
 
@@ -69,68 +75,98 @@
           win.setupChannel(self);
           self.stateMachine();
         } catch (e) {
-          self.renderError("error.ejs", {
+          self.renderError("error", {
             action: errors.relaySetup
           });
         }
       },
-        
+
+      destroy: function() {
+        var subscription;
+
+        while(subscription = subscriptions.pop()) {
+          hub.unsubscribe(subscription);
+        }
+
+        this._super();
+      },
+
       getVerifiedEmail: function(origin_url, onsuccess, onerror) {
+        return this.get(origin_url, {}, onsuccess, onerror);
+      },
+
+      get: function(origin_url, params, onsuccess, onerror) {
         var self=this;
         self.onsuccess = onsuccess;
         self.onerror = onerror;
 
-        if('onLine' in navigator && !navigator.onLine) {
+        if (typeof(params) == 'undefined') {
+          params = {};
+        }
+
+        self.allowPersistent = !!params.allowPersistent;
+        self.requiredEmail = params.requiredEmail;
+
+        if ('onLine' in navigator && !navigator.onLine) {
           self.doOffline();
           return;
         }
 
         user.setOrigin(origin_url);
-        $("#sitename").text(user.getHostname());
+        dom.setInner("#sitename", user.getHostname());
 
         self.doCheckAuth();
 
-        $(win).bind("unload", function() {
-          bid.Storage.setStagedOnBehalfOf("");
-          self.doCancel();
+        dom.bindEvent(win, "unload", function() {
+          // do this only if something else hasn't
+          // declared success
+          if (!self.success) {
+            bid.Storage.setStagedOnBehalfOf("");
+            self.doCancel();
+          }
+          window.teardownChannel();
         });
       },
 
 
       stateMachine: function() {
-        var self=this, 
-            hub = OpenAjax.hub, 
+        var self=this,
             el = this.element;
 
-        hub.subscribe("offline", function(msg, info) {
+        subscribe("offline", function(msg, info) {
           self.doOffline();
         });
 
-        hub.subscribe("xhrError", function(msg, info) {
+        subscribe("xhrError", function(msg, info) {
           //self.doXHRError(info);
           // XXX how are we going to handle this?
         });
 
-        hub.subscribe("user_staged", function(msg, info) {
+        subscribe("user_staged", function(msg, info) {
           self.doConfirmUser(info.email);
         });
 
-        hub.subscribe("user_confirmed", function() {
+        subscribe("user_confirmed", function() {
           self.doEmailConfirmed();
         });
 
-        hub.subscribe("authenticated", function(msg, info) {
+        subscribe("cancel_user_confirmed", function() {
+          user.cancelUserValidation();
+          self.returnFromStageCancel();
+        });
+
+        subscribe("authenticated", function(msg, info) {
           //self.doEmailSelected(info.email);
-          // XXX benadida, lloyd - swap these two if you want to experiment with 
+          // XXX benadida, lloyd - swap these two if you want to experiment with
           // generating assertions directly from signin.
           self.syncEmails();
         });
 
-        hub.subscribe("reset_password", function(msg, info) {
+        subscribe("reset_password", function(msg, info) {
           self.doConfirmUser(info.email);
         });
 
-        hub.subscribe("assertion_generated", function(msg, info) {
+        subscribe("assertion_generated", function(msg, info) {
           if (info.assertion !== null) {
             self.doAssertionGenerated(info.assertion);
           }
@@ -139,19 +175,24 @@
           }
         });
 
-        hub.subscribe("email_staged", function(msg, info) {
+        subscribe("email_staged", function(msg, info) {
           self.doConfirmEmail(info.email);
         });
 
-        hub.subscribe("email_confirmed", function() {
+        subscribe("email_confirmed", function() {
           self.doEmailConfirmed();
         });
 
-        hub.subscribe("notme", function() {
+        subscribe("cancel_email_confirmed", function() {
+          user.cancelEmailValidation();
+          self.returnFromStageCancel();
+        });
+
+        subscribe("notme", function() {
           self.doNotMe();
         });
 
-        hub.subscribe("auth", function(msg, info) {
+        subscribe("auth", function(msg, info) {
           info = info || {};
 
           self.doAuthenticate({
@@ -159,24 +200,24 @@
           });
         });
 
-        hub.subscribe("start", function() {
+        subscribe("start", function() {
           self.doCheckAuth();
         });
 
-        hub.subscribe("cancel", function() {
+        subscribe("cancel", function() {
           self.doCancel();
         });
 
       },
 
       doOffline: function() {
-        this.renderError("offline.ejs", {});
+        this.renderError("offline", {});
         offline = true;
       },
 
       doXHRError: function(info) {
         if (!offline) {
-          this.renderError("error.ejs", $.extend({
+          this.renderError("error", $.extend({
             action: errors.xhrError
           }, info));
         }
@@ -190,6 +231,8 @@
           verifier: "waitForUserValidation",
           verificationMessage: "user_confirmed"
         });
+        var controller = this.element.controller("checkregistration");
+        controller.startCheck();
       },
 
       doCancel: function() {
@@ -200,21 +243,35 @@
       },
 
       doPickEmail: function() {
-        this.element.pickemail({
-          // XXX ideal is to get rid of this and have a User function 
-          // that takes care of getting email addresses AND the last used email 
+        var self=this;
+        self.returnFromStageCancel = self.doPickEmail.bind(self);
+        self.element.pickemail({
+          // XXX ideal is to get rid of this and have a User function
+          // that takes care of getting email addresses AND the last used email
           // for this site.
-          origin: user.getHostname()
+          origin: user.getHostname(),
+          allow_persistent: self.allowPersistent
         });
       },
 
       doAuthenticate: function(info) {
-        this.element.authenticate(info);
+        var self = this;
+
+        // Save this off in case the user forgets their password or goes to add 
+        // a new password but has to cancel.
+        self.returnFromStageCancel = self.doAuthenticate.bind(self, info);
+        self.element.authenticate(info);
+      },
+
+      doAuthenticateWithRequiredEmail: function(info) {
+        var self=this;
+        self.returnFromStageCancel = self.doAuthenticateWithRequiredEmail.bind(self, info);
+        self.element.requiredemail(info);
       },
 
       doForgotPassword: function(email) {
         this.element.forgotpassword({
-          email: email  
+          email: email
         });
       },
 
@@ -226,6 +283,8 @@
           verifier: "waitForEmailValidation",
           verificationMessage: "email_confirmed"
         });
+        var controller = this.element.controller("checkregistration");
+        controller.startCheck();
       },
 
       doEmailConfirmed: function() {
@@ -237,10 +296,11 @@
 
       doAssertionGenerated: function(assertion) {
         var self=this;
-        // Clear onerror before the call to onsuccess - the code to onsuccess 
-        // calls window.close, which would trigger the onerror callback if we 
+        // Clear onerror before the call to onsuccess - the code to onsuccess
+        // calls window.close, which would trigger the onerror callback if we
         // tried this afterwards.
         self.onerror = null;
+        self.success = true;
         self.onsuccess(assertion);
       },
 
@@ -251,21 +311,26 @@
 
       syncEmails: function() {
         var self = this;
-        user.syncEmails(self.doPickEmail.bind(self), 
+        user.syncEmails(self.doPickEmail.bind(self),
           self.getErrorDialog(errors.signIn));
       },
 
       doCheckAuth: function() {
         var self=this;
-        user.checkAuthenticationAndSync(function onSuccess() {}, 
+        user.checkAuthenticationAndSync(function onSuccess() {},
           function onComplete(authenticated) {
-            if (authenticated) {
+            if (self.requiredEmail) {
+              self.doAuthenticateWithRequiredEmail({
+                email: self.requiredEmail,
+                authenticated: authenticated
+              });
+            }
+            else if (authenticated) {
               self.doPickEmail();
             } else {
               self.doAuthenticate();
             }
-          }, 
-          self.getErrorDialog(errors.checkAuthentication));
+          }, self.getErrorDialog(errors.checkAuthentication));
     }
 
   });

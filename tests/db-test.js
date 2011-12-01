@@ -44,8 +44,8 @@ assert = require('assert'),
 vows = require('vows'),
 fs = require('fs'),
 path = require('path'),
-db = require('db.js'),
-configuration = require('configuration.js');
+db = require('../lib/db.js'),
+configuration = require('../lib/configuration.js');
 
 var suite = vows.describe('db');
 // disable vows (often flakey?) async error behavior
@@ -115,6 +115,14 @@ suite.addBatch({
       },
       "matches expected email": function(storedEmail) {
         assert.strictEqual('lloyd@nowhe.re', storedEmail);
+      }
+    },
+    "fetch secret for email": {
+      topic: function(secret) {
+        db.verificationSecretForEmail('lloyd@nowhe.re', this.callback);
+      },
+      "matches expected secret": function(storedSecret) {
+        assert.strictEqual(storedSecret, secret);
       }
     }
   }
@@ -282,6 +290,22 @@ suite.addBatch({
     },
     "should work": function(err) {
       assert.isUndefined(err);
+    },
+    "re-opening the database": {
+      topic: function() {
+        db.open(dbCfg, this.callback);
+      },
+      "works": function(r) {
+        assert.isUndefined(r);
+      },
+      "and then purging": {
+        topic: function() {
+          db.closeAndRemove(this.callback);
+        },
+        "works": function(r) {
+          assert.isUndefined(r);
+        }
+      }
     }
   }
 });

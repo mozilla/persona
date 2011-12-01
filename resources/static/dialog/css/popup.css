@@ -117,16 +117,15 @@ section > .contents {
     height: 250px;
 }
 
-#wait, #error {
-    text-align: center;
-}
-
 #wait {
+    text-align: center;
     z-index: 1;
     background-image: url("/i/bg.png");
 }
 
 #error {
+    position: absolute;
+    text-align: center;
     display: none;
     z-index: 2;
     background-color: #fff;
@@ -245,8 +244,14 @@ section > .contents {
     text-overflow: ellipsis;
 }
 
+div#required_email {
+    padding-top: .7em;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
 #signIn .vertical {
-    padding: 15px 20px 20px 20px;
+    padding: 0 20px;
 }
 
 #signIn .vertical ul {
@@ -263,28 +268,17 @@ section > .contents {
 }
 
 #signIn .submit {
-    margin-top: 10px;
     line-height: 28px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 #signIn .submit > p {
   line-height: 13px;
   clear: right;
   text-align: center;
-}
-
-#signIn .remember {
-    display: inline-block;
-    line-height: 28px;
-}
-
-#signIn .remember .checkAlign {
-    float: left;
-}
-
-#signIn .remember label {
-    margin-left: 5px;
-    float: left;
 }
 
 #signIn label.half,
@@ -313,8 +307,11 @@ label {
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
-.inputs > li > label {
+label.selectable {
     cursor: pointer;
+}
+
+.inputs > li > label {
     color: #333;
 }
 
@@ -322,7 +319,7 @@ label {
     font-weight: bold;
 }
 
-.inputs > li:only-child > label {
+.inputs > li:only-child > label.selectable {
     cursor: default;
 }
 
@@ -362,12 +359,22 @@ input[type=password]:focus {
             box-shadow: 0 0 0 1px #549FDC inset;
 }
 
+input[type=email]:disabled,
+input[type=password]:disabled {
+    background-color: #f0f0f0;
+    color: #4f4f4f;
+}
+
+input[type=radio],
+input[type=checkbox] {
+  cursor: pointer;
+}
+
 button {
     font-size: 14px;
     height: 28px;
     padding: 0 10px;
     float: right;
-    background-color: #37A6FF;
     vertical-align: middle;
     border: 1px solid #37A6FF;
     font-family: 'Droid Serif', Georgia, serif;
@@ -386,11 +393,20 @@ button {
          -o-border-radius: 5px;
             border-radius: 5px;
     
+    background-color: #37A6FF;
     background-image: -moz-linear-gradient(center top , #76C2FF 0pt, #37A6FF 100%);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
 }
 
-button[disabled=disabled] {
+button:hover,
+button:focus {
+    background-color: #76c2ff;
+    background-image: -moz-linear-gradient(center top , #76C2FF 50%, #37A6FF 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(50%, #76C2FF), color-stop(100%, #37A6FF));
+
+}
+
+button[disabled] {
     opacity: .5;
 }
 
@@ -426,12 +442,6 @@ footer .learn a {
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-    /*
-#favicon {
-    text-align: center;
-    max-width: 940px;
-}
-*/
 header {
     padding: 20px;
     font-weight: bold;
@@ -565,17 +575,17 @@ html[xmlns] .cf {
     margin: 1em 0 .5em;
     padding: 0 1em;
     line-height: 18px;
-    min-height: 110px;
 }
 
 .pickemail .inputs {
-    height: 110px;
-    min-height: 0;
+    max-height: 110px;
     overflow-y: auto;
+    position: relative;
 }
 
 .form_section {
     height: 176px;
+    position: relative;
 }
 
 .add {
@@ -586,8 +596,27 @@ html[xmlns] .cf {
     display: none;
 }
 
+label[for=remember] {
+  display: inline;
+  margin-left: 13px;
+}
+
 #thisIsNotMe {
   margin-right: 10px;
+  float: right;
+}
+
+#useNewEmail {
+  margin-left: 0.8em;
+}
+
+.pickemail .vertical a {
+  background-color: #F0EFED;
+  color: #4E4E4E;
+  font-size: 0.75em;
+  padding: 0 5px;
+  display: inline-block;
+  line-height: 18px;
 }
 
 #addEmail {
@@ -595,7 +624,7 @@ html[xmlns] .cf {
 }
 
 .submit > button {
-    margin: 0 5px 15px 0;
+    margin: 0 5px 0 0;
 }
 
 #newEmail {

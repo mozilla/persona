@@ -39,42 +39,47 @@ window.console = window.console || {
   log: function() {}
 };
 
-steal.plugins(
-	'jquery/controller',			// a widget factory
-	'jquery/controller/subscribe',	// subscribe to OpenAjax.hub
-	'jquery/view/ejs',				// client side templates
-	'jquery/controller/view')		// lookup views with the controller's name
+steal
+  .plugins(
+              'jquery/controller',			// a widget factory
+              'jquery/controller/subscribe')	// subscribe to OpenAjax.hub
 
-	.resources('jschannel',
-               'base64',
-               'underscore-min',
-               'channel',
-               'browserid',
-               'storage',
-               'tooltip',
-               'validation',
-               'browserid-extensions',
-               'network',
-               'user',
-               'error-messages',
-               'wait-messages')					// 3rd party script's (like jQueryUI), in resources folder
+	.resources(
+               'channel')
+  .then(
+               '../lib/jschannel',
+               '../lib/base64',
+               '../lib/underscore-min',
+               '../lib/ejs',
+               '../shared/browserid',
+               '../lib/dom-jquery',
+
+               '../shared/storage',
+               '../shared/templates',
+               '../shared/renderer',
+               '../shared/error-display',
+               '../shared/screens',
+               '../shared/tooltip',
+               '../shared/validation',
+               '../shared/network',
+               '../shared/user',
+               '../shared/error-messages',
+               '../shared/browser-support',
+               '../shared/browserid-extensions',
+               '../shared/wait-messages',
+               '../shared/helpers'
+               )
 
 	.controllers('page',
                'dialog',
                'authenticate',
                'checkregistration',
-               'pickemail')					// loads files in controllers folder
+               'pickemail',
+               'required_email'
+               )					// loads files in controllers folder
 
-	.views('authenticate.ejs',
-           'confirmemail.ejs',
-           'pickemail.ejs',
-           'wait.ejs',
-           'error.ejs',
-           'offline.ejs'
-          ).
-
-          then(function() {
-            $(function() {
-              $('body').dialog().show();
-            });
-          });						// adds views to be added to build
+  .then(function() {
+    $(function() {
+      $('body').dialog().show();
+    });
+  });						// adds views to be added to build

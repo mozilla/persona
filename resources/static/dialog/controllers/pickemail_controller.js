@@ -1,5 +1,5 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global _: true, BrowserID: true, PageController: true */ 
+/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
+/*global _: true, BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -42,9 +42,9 @@
       user = bid.User,
       errors = bid.Errors,
       storage = bid.Storage,
-      origin,
+      helpers = bid.Helpers,
+      dom = bid.DOM,
       body = $("body"),
-      animationComplete = body.innerWidth() < 640,
       assertion;
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
@@ -57,9 +57,7 @@
 
 
   function cancelEvent(event) {
-    if (event) {
-      event.preventDefault();
-    }
+    if (event) event.preventDefault();
   }
 
   function pickEmailState(element, event) {
@@ -67,7 +65,7 @@
 
     var self=this;
     animateSwap("#addEmail", "#selectEmail", function() {
-      if(!self.find("input[type=radio]:checked").length) {
+      if (!self.find("input[type=radio]:checked").length) {
         // If none are already checked, select the first one.
         self.find('input[type=radio]').eq(0).attr('checked', true);
       }
@@ -88,7 +86,7 @@
 
   function checkEmail(email) {
     var identity = user.getStoredEmailKeypair(email);
-    if(!identity) {
+    if (!identity) {
       alert("The selected email is invalid or has been deleted.");
       this.close("assertion_generated", {
         assertion: null
@@ -98,82 +96,40 @@
     return !!identity;
   }
 
-  function tryClose() {
-    if(typeof assertion !== "undefined" && animationComplete) {
-      this.close("assertion_generated", {
-        assertion: assertion
-      });
-    }
-  }
-
-  function getAssertion(email) {
-    // Kick of the assertion fetching/keypair generating while we are showing 
-    // the animation, hopefully this minimizes the delay the user notices.
-    var self=this;
-    user.getAssertion(email, function(assert) {
-      // XXX make a user api call that gets the assertion and sets the site 
-      // email as well.
-      storage.setSiteEmail(origin, email);
-      assertion = assert || null;
-      startAnimation.call(self);
-    }, self.getErrorDialog(errors.getAssertion));
-  }
-
-  function startAnimation() {
-    var self=this;
-    if(!animationComplete) {
-      $("#signIn").animate({"width" : "685px"}, "slow", function () {
-        // post animation
-         body.delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
-           animationComplete = true;
-           tryClose.call(self);
-         });
-      }); 
-    }
-    else {
-      tryClose.call(self);
-    }
-
-  }
-
   function signIn(element, event) {
     cancelEvent(event);
     var self=this,
-        email = $("input[type=radio]:checked").val();
+        email = dom.getInner("input[type=radio]:checked");
 
     var valid = checkEmail.call(self, email);
     if (valid) {
-      getAssertion.call(self, email);
+      var origin = user.getOrigin();
+      storage.site.set(origin, "email", email);
+
+      if (self.allowPersistent) {
+        storage.site.set(origin, "remember", $("#remember").is(":checked"));
+      }
+
+      helpers.getAssertion.call(self, email);
     }
   }
 
   function addEmail(element, event) {
-    var email = $("#newEmail").val(),
+    var email = helpers.getAndValidateEmail("#newEmail"),
         self=this;
 
     cancelEvent(event);
 
-    if(!bid.Validation.email(email)) {
+    if (!email) {
       return;
     }
 
     user.isEmailRegistered(email, function onComplete(registered) {
-      if(registered) {
+      if (registered) {
         bid.Tooltip.showTooltip("#already_taken");
       }
       else {
-        user.addEmail(email, function(added) {
-          if (added) {
-            self.close("email_staged", {
-              email: email
-            });
-          }
-          else {
-            bid.Tooltip.showTooltip("#could_not_add");
-          }
-        }, function onFailure() {
-            bid.Tooltip.showTooltip("#could_not_add");
-        });
+        helpers.addEmail.call(self, email);
       }
     }, self.getErrorDialog(errors.isEmailRegistered));
   }
@@ -181,33 +137,42 @@
 
   PageController.extend("Pickemail", {}, {
     init: function(el, options) {
-      origin = options.origin;
+      var origin = user.getOrigin(),
+          self=this;
 
-      this._super(el, {
-        bodyTemplate: "pickemail.ejs",
+      options = options || {};
+
+      self.allowPersistent = options.allow_persistent;
+
+      self._super(el, {
+        bodyTemplate: "pickemail",
         bodyVars: {
           identities: user.getStoredEmailKeypairs(),
-          // XXX ideal is to get rid of this and have a User function 
-          // that takes care of getting email addresses AND the last used email 
-          // for this site.
-          siteemail: storage.getSiteEmail(options.origin)
+          // XXX ideal is to get rid of self and have a User function
+          // that takes care of getting email addresses AND the last used email
+          // for self site.
+          siteemail: storage.site.get(origin, "email"),
+          allow_persistent: options.allow_persistent || false,
+          remember: storage.site.get(origin, "remember") || false
         }
       });
+      body.css("opacity", "1");
 
-      $("body").css("opacity", "1");
-
-      if($("#selectEmail input[type=radio]:visible").length === 0) {
-        // If there is only one email address, the radio button is never shown, 
+      if (dom.getElements("#selectEmail input[type=radio]:visible").length === 0) {
+        // If there is only one email address, the radio button is never shown,
         // instead focus the sign in button so that the user can click enter.
         // issue #412
         $("#signInButton").focus();
       }
 
-      pickEmailState.call(this);
+      pickEmailState.call(self);
     },
 
     "#useNewEmail click": addEmailState,
-    "#cancelNewEmail click": pickEmailState
+    "#cancelNewEmail click": pickEmailState,
+
+    signIn: signIn,
+    addEmail: addEmail
   });
 
 }());

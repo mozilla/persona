@@ -4,12 +4,23 @@
         <form id="signUpForm" class="cf authform" novalidate>
             <h1 class="serif">Forgot Password</h1>
             <div class="notifications">
-                <div class="notification error doh">Doh! Something went wrong :-( </div>
-                <div class="notification error mismatchpassword">XXX: Your passwords need to match</div>
-                <div class="notification emailsent">A confirmation email has been sent to you at <strong id="sent_to_email"></strong>. Check it!</div>
+                <div class="notification emailsent">
+                  <p>
+                    We sent a confirmation email to <strong id="sentToEmail"></strong>. 
+                  </p>
+
+                  <p>
+                    To finish resetting your password just click the verify link we sent to your email address.
+                  </p>
+
+                  <br />
+                  <p>
+                    If this is a mistake, just ignore the sent email and <a href="/signup" id="back">use another</a>.
+                  </p>
+                </div>
             </div>
-            <div id="forminputs">
-            <ul class="inputs">
+
+            <ul class="inputs forminputs">
                 <li>
                     <label class="serif" for="email">Email Address</label>
                     <input class="sans" id="email" autofocus required placeholder="Your Email" type="email" autocapitalize="off" autocorrect="off" maxlength="254" />
@@ -33,12 +44,12 @@
 
 
             </ul>
-            <div class="submit cf">
+
+            <div class="submit cf forminputs">
                 <div class="remember cf">
                     <a class="signUpIn" href="/signin">Know your password? Sign in.</a>
                 </div>
                 <input type="submit" class="create" value="Reset Password"/>
-            </div>
             </div>
         </form>
     </div>

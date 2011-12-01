@@ -43,15 +43,21 @@
       errors = bid.Errors,
       validation = bid.Validation,
       tooltip = bid.Tooltip,
+      helpers = bid.Helpers,
+      dom = bid.DOM,
       lastEmail = "";
 
+  function getEmail() {
+    return helpers.getAndValidateEmail("#email");
+  }
+
   function checkEmail(el, event) {
-    var email = $("#email").val(),
+    var email = getEmail(),
         self = this;
 
     cancelEvent(event);
 
-    if (!validation.email(email)) return;
+    if (!email) return;
 
     user.isEmailRegistered(email, function onComplete(registered) {
       if (registered) {
@@ -65,56 +71,39 @@
 
   function createUser(el, event) {
     var self=this,
-        email = $("#email").val();
+        email = getEmail();
 
     cancelEvent(event);
 
-    if (!validation.email(email)) return;
-
-    user.createUser(email, function(staged) {
-      if (staged) {
-        self.close("user_staged", {
-          email: email
-        });
-      }
-      else {
-        tooltip.showTooltip("#could_not_add");
-      }
-    }, self.getErrorDialog(errors.createUser));
+    if(email) {
+      helpers.createUser.call(self, email);
+    }
   }
 
   function authenticate(el, event) {
-    var email = $("#email").val(),
-        pass = $("#password").val(),
+    var email = getEmail(),
+        pass = helpers.getAndValidatePassword("#password"),
         self = this;
 
     cancelEvent(event);
 
-    if (!validation.emailAndPassword(email, pass)) return;
-
-    user.authenticate(email, pass, 
-      function onComplete(authenticated) {
-        if (authenticated) {
-          self.close("authenticated", {
-            email: email 
-          });
-        } else {
-          bid.Tooltip.showTooltip("#cannot_authenticate");
-        }
-      }, self.getErrorDialog(errors.authenticate));
+    if(email && pass) {
+      helpers.authenticateUser.call(self, email, pass, function() {
+        self.close("authenticated", {
+          email: email
+        });
+      });
+    }
   }
 
   function resetPassword(el, event) {
-    var email = $("#email").val(),
-        self=this;
+    var email = getEmail();
 
     cancelEvent(event);
 
-    user.requestPasswordReset(email, function() {
-      self.close("reset_password", {
-        email: email
-      });
-    }, self.getErrorDialog(errors.requestPasswordReset));
+    if(email) {
+      helpers.resetPassword.call(this, email);
+    }
   }
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
@@ -140,10 +129,12 @@
 
   function enterPasswordState(el, event) {
     cancelEvent(event);
+    var self=this;
 
-    this.submit = authenticate;
+    self.publish("enter_password");
+    self.submit = authenticate;
     animateSwap(".start:visible,.newuser:visible,.forgot:visible", ".returning", function() {
-      $("#password").focus();  
+      dom.getElements("#password")[0].focus();
     });
   }
 
@@ -151,7 +142,7 @@
     cancelEvent(event);
 
     this.submit = resetPassword;
-    $("#email").attr("disabled", "disabled");
+    dom.setAttr("#email", "disabled", "disabled");
 
     animateSwap(".start:visible,.newuser:visible,.returning:visible", ".forgot");
   }
@@ -159,14 +150,17 @@
   function cancelForgotPassword(el, event) {
     cancelEvent(event);
 
-    $("#email").removeAttr("disabled");
-    enterPasswordState.call(this); 
+    dom.removeAttr("#email", "disabled");
+    enterPasswordState.call(this);
   }
 
   function createUserState(el, event) {
     cancelEvent(event);
 
-    this.submit = createUser;
+    var self=this;
+
+    self.publish("create_user");
+    self.submit = createUser;
     animateSwap(".start:visible,.returning:visible,.forgot:visible", ".newuser");
   }
 
@@ -175,12 +169,8 @@
     init: function(el, options) {
       options = options || {};
 
-      if (options.user) {
-        user = options.user;
-      }
-
       this._super(el, {
-        bodyTemplate: "authenticate.ejs",
+        bodyTemplate: "authenticate",
         bodyVars: {
           sitename: user.getHostname(),
           email: options.email || ""
@@ -188,7 +178,7 @@
       });
 
       this.submit = checkEmail;
-      // If we already have an email address, check if it is valid, if so, show 
+      // If we already have an email address, check if it is valid, if so, show
       // password.
       if (options.email) this.submit();
     },
@@ -201,7 +191,11 @@
       }
     },
     "#forgotPassword click": forgotPasswordState,
-    "#cancel_forgot_password click": cancelForgotPassword
+    "#cancel_forgot_password click": cancelForgotPassword,
+    checkEmail: checkEmail,
+    createUser: createUser,
+    authenticate: authenticate,
+    resetPassword: resetPassword
   });
 
 }());

@@ -41,20 +41,21 @@ const
 path = require('path'),
 express = require('express');
 
-// add lib/ to the require path for our own libs
-require.paths.unshift(path.join(__dirname, '..', 'lib'));
-
 const
-config = require('configuration.js'),
-validate = require('validate.js'),
-metrics = require("metrics.js"),
-logger = require("logging.js").logger,
-ca = require('keysigner/ca.js'),
-heartbeat = require('heartbeat'),
-shutdown = require('shutdown');
+config = require('../lib/configuration.js'),
+httputils = require('../lib/httputils.js'),
+validate = require('../lib/validate.js'),
+metrics = require('../lib/metrics.js'),
+logger = require('../lib/logging.js').logger,
+ca = require('../lib/keysigner/ca.js'),
+heartbeat = require('../lib/heartbeat'),
+shutdown = require('../lib/shutdown');
 
 // create an express server
 var app = express.createServer();
+
+// respond to health checks (before logging)
+heartbeat.setup(app);
 
 // our server will log
 app.use(express.logger({
@@ -73,22 +74,25 @@ app.use(function(req, resp, next) {
 // parse POST bodies
 app.use(express.bodyParser());
 
-heartbeat.setup(app);
-
 // and our single function
 app.post('/wsapi/cert_key', validate(["email", "pubkey"]), function(req, resp) {
-  // parse the pubkey
-  var pk = ca.parsePublicKey(req.body.pubkey);
+  try {
+    // parse the pubkey
+    var pk = ca.parsePublicKey(req.body.pubkey);
 
-  // same account, we certify the key
-  // we certify it for a day for now
-  var expiration = new Date();
-  expiration.setTime(new Date().valueOf() + config.get('certificate_validity_ms'));
-  var cert = ca.certify(req.body.email, pk, expiration);
+    // same account, we certify the key
+    // we certify it for a day for now
+    var expiration = new Date();
+    expiration.setTime(new Date().valueOf() + config.get('certificate_validity_ms'));
+    var cert = ca.certify(req.body.email, pk, expiration);
 
-  resp.writeHead(200, {'Content-Type': 'text/plain'});
-  resp.write(cert);
-  resp.end();
+    resp.writeHead(200, {'Content-Type': 'text/plain'});
+    resp.write(cert);
+    resp.end();
+  } catch (e) {
+    logger.error("certification generation error: " + e.toString());
+    httputils.serverError(resp, "certification generation error");
+  }
 });
 
 // shutdown when code_update is invoked

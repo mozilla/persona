@@ -103,13 +103,32 @@
     margin-top: 20px;
   }
 
+  #signIn .submit {
+    position: static;
+  }
+
   #signIn .submit > p {
     font-size: 14px;
   }
 
+  label[for=remember] {
+    display: block;
+    font-size: 15px;
+    margin: 13px;
+  }
+
   #content, .form_section, .pickemail .inputs, .vertical {
     height: auto;
+    max-height: none;
     overflow: visible;
+  }
+
+  .pickemail .vertical a {
+    font-size: 1.2em;
+  }
+
+  #useNewEmail {
+    margin-top: 18px;
   }
 
   #error .vertical, #wait .vertical {

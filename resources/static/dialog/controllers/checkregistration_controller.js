@@ -1,5 +1,5 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */                                             
-/*global BrowserID: true, PageController: true */ 
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*global BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,36 +37,51 @@
 (function() {
   "use strict";
 
-  var user = BrowserID.User;
+  var bid = BrowserID,
+      user = bid.User,
+      dom = bid.DOM,
+      errors = bid.Errors;
 
   PageController.extend("Checkregistration", {}, {
-    init: function(el, options) {
-      var me=this;
-      me._super(el, {
-        waitTemplate: "confirmemail.ejs",
-        waitVars: {
+    start: function(options) {
+      var self=this;
+      self.renderWait("confirmemail", {
           email: options.email
-        }
       });
-      me.email = options.email;
-      me.verifier = options.verifier;
-      me.verificationMessage = options.verificationMessage;
-      me.setupRegCheck();
+      self.email = options.email;
+      self.verifier = options.verifier;
+      self.verificationMessage = options.verificationMessage;
+
+      dom.bindEvent("#back", "click", self.cancel.bind(self));
+
+      self._super();
     },
 
-    setupRegCheck: function() {
-      var me=this;
-      user[me.verifier](me.email, function(status) {
+    stop: function() {
+      dom.unbindEvent("#back", "click");
+
+      this._super();
+    },
+
+    startCheck: function() {
+      var self=this;
+      user[self.verifier](self.email, function(status) {
         if (status === "complete") {
           user.syncEmails(function() {
-            me.close(me.verificationMessage);
+            self.close(self.verificationMessage);
           });
         }
         else if (status === "mustAuth") {
-          me.close("auth", { email: me.email });
+          self.close("auth", { email: self.email });
         }
-      }, me.getErrorDialog(BrowserID.Errors.registration));
+      }, self.getErrorDialog(errors.registration));
+    },
+
+    cancel: function() {
+      var self=this;
+      self.close("cancel_" + self.verificationMessage);
     }
+
   });
 
 

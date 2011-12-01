@@ -34,7 +34,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 const
-wcli = require('wsapi_client');
+wcli = require('../../lib/wsapi_client');
 
 // the client "context"
 var context = {};

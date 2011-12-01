@@ -44,15 +44,15 @@
   };
 
   BrowserID.Relay = (function() {
-    var transaction,
-        origin,
-        channel = Channel,
-        win = window,
-        registerCB;
+    var channel = Channel,
+        win = window;
 
+    // captured method calls
+    var METHODS = ["get"];
+    var registeredMethods, pendingCall;
 
     function init(options) {
-      origin = transaction = registerCB = undefined;
+      registeredMethods = pendingCall = undefined;
 
       if(options.window) {
         win = options.window;
@@ -63,6 +63,46 @@
       }
     }
 
+    // try to forward the transaction, otherwise
+    // stash it away for later. Assumes only one
+    // transaction at a time for now.
+    function forwardCall(methodCall) {
+      // forwarding pending call?
+      if (!methodCall) {
+        methodCall = pendingCall;
+        pendingCall = null;
+      }
+
+      // no call still?
+      if (!methodCall)
+        return;
+
+      // ready to go?
+      if (!registeredMethods) {
+        // no, stash it for later
+        pendingCall = methodCall;
+        return;
+      }
+
+      // ok, we can make the call
+      var method = methodCall.method;
+      var transaction = methodCall.transaction;
+      var origin = transaction.origin;
+      var params = methodCall.params;
+
+      // have the call?
+      if (registeredMethods[method]) {
+        registeredMethods[method](
+          origin, params,
+          function(result) {
+            transaction.complete(result);
+          }, function(error) {
+            transaction.error(error, getVerboseMessage(error));
+          }
+        );
+      }
+    }
+    
     function open() {
       var rpc = channel.build({
         window: win,
@@ -70,66 +110,38 @@
         scope: "mozid"
       });
 
-      rpc.bind("getVerifiedEmail", function(trans, s) {
-        trans.delayReturn(true);
-        origin = trans.origin;
-        transaction = trans;
-
-        // If the client has run early and already registered its registration 
-        // callback, call it now.
-        if (registerCB) {
-          registerCB(origin, completionCB);  
-        }
-      });
-    }
-
-    function registerClient(callback) {
-      // If the origin is ready, call the callback immediately.
-      if (origin) {
-        callback(origin, completionCB);
-      }
-      else {
-        registerCB = callback;
+      for (var i=0; i<METHODS.length; i++) {
+        var method = METHODS[i];
+        rpc.bind(method, function(trans, params) {
+          trans.delayReturn(true);
+          forwardCall({method: method, transaction: trans, params: params});
+        });
       }
     }
 
-    function errorOut(code) {
-      function getVerboseMessage(code) {
-        var msgs = {
-          "canceled": "user canceled selection",
-          "notImplemented": "the user tried to invoke behavior that's not yet implemented",
-          "serverError": "a technical problem was encountered while trying to communicate with BrowserID servers."
-        };
-        var msg = msgs[code];
-        if (!msg) {
-          alert("need verbose message for " + code);
-          msg = "unknown error";
-            }
-        return msg;
+    function registerClient(methods) {
+      registeredMethods = methods;
+      forwardCall();
+    }
+
+    function unregisterClient() {
+      registeredMethods = null;
+    }
+
+    function getVerboseMessage(code) {
+      var msgs = {
+        "canceled": "user canceled selection",
+        "notImplemented": "the user tried to invoke behavior that's not yet implemented",
+        "serverError": "a technical problem was encountered while trying to communicate with BrowserID servers."
+      };
+      var msg = msgs[code];
+      if (!msg) {
+        alert("need verbose message for " + code);
+        msg = "unknown error";
       }
-      transaction.error(code, getVerboseMessage(code));
+      return msg;
     }
-
-    /**
-     * The client calls this to relay a message back to the RP whenever it is 
-     * complete.  This function is passed to the client when the client does 
-     * its registerClient.
-     */
-    function completionCB(status, error) {
-        if(error) {
-          errorOut(error);
-        }
-        else {
-          try {
-            transaction.complete(status);
-          } catch(e) {
-            // The relay function is called a second time after the 
-            // initial success, when the window is closing.
-          }
-        }
-    }
-
-
+    
     return {
       /**
        * Initialize the relay. 
@@ -149,7 +161,8 @@
        * Register a client to use the relay
        * @method registerClient
        */
-      registerClient: registerClient
+      registerClient: registerClient,
+      unregisterClient: unregisterClient
     };
   }());
 
