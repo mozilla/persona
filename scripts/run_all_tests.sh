@@ -13,7 +13,7 @@ fi
 # vows hates absolute paths.  sheesh.
 cd $BASEDIR
 
-for env in test_json test_mysql ; do
+for env in test_mysql test_json ; do
   export NODE_ENV=$env
   $SCRIPT_DIR/test_db_connectivity.js
   if [ $? = 0 ] ; then
