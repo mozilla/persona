@@ -99,7 +99,7 @@
       equal($("#verify_address").length, 0, "verify address not shows");
       cb && cb();
       start();
-    }, 200);
+    }, 500);
   }
 
   function testVerify(email, cb) {
@@ -111,7 +111,7 @@
       testNoPasswordSection();
       cb && cb();
       start();
-    }, 200);
+    }, 500);
   }
 
   function testPasswordSection() {
@@ -125,7 +125,7 @@
   asyncTest("user who is not authenticated, email is registered", function() {
     var email = "registered@testuser.com";
     createController({
-      email: email, 
+      email: email,
       authenticated: false
     });
 
@@ -135,7 +135,7 @@
   asyncTest("user who is not authenticated, email not registered", function() {
     var email = "unregistered@testuser.com";
     createController({
-      email: email, 
+      email: email,
       authenticated: false
     });
 
@@ -146,25 +146,25 @@
     xhr.useResult("ajaxError");
     var email = "registered@testuser.com";
     createController({
-      email: email, 
+      email: email,
       authenticated: false
     });
 
     setTimeout(function() {
       ok($("#error").is(":visible"), "Error message is visible");
       start();
-    }, 100);
+    }, 500);
   });
 
   asyncTest("user who is authenticated, email belongs to user", function() {
     xhr.setContextInfo({
-      authenticated: true 
+      authenticated: true
     });
 
     var email = "registered@testuser.com";
     user.syncEmailKeypair(email, function() {
       createController({
-        email: email, 
+        email: email,
         authenticated: true
       });
     });
@@ -174,44 +174,44 @@
 
   asyncTest("user who is authenticated, email belongs to another user", function() {
     xhr.setContextInfo({
-      authenticated: true 
+      authenticated: true
     });
 
     var email = "registered@testuser.com";
     createController({
-      email: email, 
+      email: email,
       authenticated: true
     });
 
-    // This means the current user is going to take the address from the other 
+    // This means the current user is going to take the address from the other
     // account.
     testVerify(email);
   });
 
   asyncTest("user who is authenticated, but email unknown", function() {
     xhr.setContextInfo({
-      authenticated: true 
+      authenticated: true
     });
 
     var email = "unregistered@testuser.com";
     createController({
-      email: email, 
+      email: email,
       authenticated: true
     });
 
     testVerify(email);
   });
 
-  
+
   asyncTest("signIn of an authenticated user generates an assertion", function() {
     xhr.setContextInfo({
-      authenticated: true 
+      authenticated: true
     });
 
     var email = "registered@testuser.com";
     user.syncEmailKeypair(email, function() {
       createController({
-        email: email, 
+        email: email,
         authenticated: true
       });
 
@@ -231,7 +231,7 @@
 
     var email = "registered@testuser.com";
     createController({
-      email: email, 
+      email: email,
       authenticated: false
     });
 
@@ -252,7 +252,7 @@
 
     var email = "registered@testuser.com";
     createController({
-      email: email, 
+      email: email,
       authenticated: false
     });
 
@@ -268,8 +268,8 @@
     controller.signIn();
 
     setTimeout(function() {
-      // Since we are using the mock, we know the XHR result is going to be 
-      // back in less than 1000ms.  All we have to do is check whether an 
+      // Since we are using the mock, we know the XHR result is going to be
+      // back in less than 1000ms.  All we have to do is check whether an
       // assertion was generated, if so, bad jiji.
       equal(typeof assertion, "undefined", "assertion was never generated");
       start();
@@ -280,11 +280,11 @@
     var authenticated = true;
 
     xhr.setContextInfo({
-      authenticated: authenticated 
+      authenticated: authenticated
     });
 
     createController({
-      email: email, 
+      email: email,
       authenticated: authenticated
     });
 
@@ -315,11 +315,11 @@
         message = "forgot_password";
 
     xhr.setContextInfo({
-      authenticated: authenticated 
+      authenticated: authenticated
     });
 
     createController({
-      email: email, 
+      email: email,
       authenticated: authenticated
     });
 
@@ -338,11 +338,11 @@
         authenticated = false;
 
     xhr.setContextInfo({
-      authenticated: authenticated 
+      authenticated: authenticated
     });
 
     createController({
-      email: email, 
+      email: email,
       authenticated: authenticated
     });
 
