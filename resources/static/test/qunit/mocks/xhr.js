@@ -47,25 +47,25 @@ BrowserID.Mocks.xhr = (function() {
   var random_cert = "eyJhbGciOiJSUzEyOCJ9.eyJpc3MiOiJpc3N1ZXIuY29tIiwiZXhwIjoxMzE2Njk1MzY3NzA3LCJwdWJsaWMta2V5Ijp7ImFsZ29yaXRobSI6IlJTIiwibiI6IjU2MDYzMDI4MDcwNDMyOTgyMzIyMDg3NDE4MTc2ODc2NzQ4MDcyMDM1NDgyODk4MzM0ODExMzY4NDA4NTI1NTk2MTk4MjUyNTE5MjY3MTA4MTMyNjA0MTk4MDA0NzkyODQ5MDc3ODY4OTUxOTA2MTcwODEyNTQwNzEzOTgyOTU0NjUzODEwNTM5OTQ5Mzg0NzEyNzczMzkwMjAwNzkxOTQ5NTY1OTAzNDM5NTIxNDI0OTA5NTc2ODMyNDE4ODkwODE5MjA0MzU0NzI5MjE3MjA3MzYwMTA1OTA2MDM5MDIzMjk5NTYxMzc0MDk4OTQyNzg5OTk2NzgwMTAyMDczMDcxNzYwODUyODQxMDY4OTg5ODYwNDAzNDMxNzM3NDgwMTgyNzI1ODUzODk5NzMzNzA2MDY5IiwiZSI6IjY1NTM3In0sInByaW5jaXBhbCI6eyJlbWFpbCI6InRlc3R1c2VyQHRlc3R1c2VyLmNvbSJ9fQ.aVIO470S_DkcaddQgFUXciGwq2F_MTdYOJtVnEYShni7I6mqBwK3fkdWShPEgLFWUSlVUtcy61FkDnq2G-6ikSx1fUZY7iBeSCOKYlh6Kj9v43JX-uhctRSB2pI17g09EUtvmb845EHUJuoowdBLmLa4DSTdZE-h4xUQ9MsY7Ik";
 
   /**
-   * This is the results table, the keys are the request type, url, and 
-   * a "selector" for testing.  The right is the expected return value, already 
-   * decoded.  If a result is "undefined", the request's error handler will be 
+   * This is the results table, the keys are the request type, url, and
+   * a "selector" for testing.  The right is the expected return value, already
+   * decoded.  If a result is "undefined", the request's error handler will be
    * called.
    */
   var xhr = {
     results: {
       "get /wsapi/session_context valid": contextInfo,
       "get /wsapi/session_context invalid": contextInfo,
-      // We are going to test for XHR failures for session_context using 
+      // We are going to test for XHR failures for session_context using
       // call to serverTime.  We are going to use the flag contextAjaxError
-      "get /wsapi/session_context ajaxError": contextInfo, 
-      "get /wsapi/session_context complete": contextInfo, 
-      "get /wsapi/session_context throttle": contextInfo, 
-      "get /wsapi/session_context multiple": contextInfo, 
-      "get /wsapi/session_context no_identities": contextInfo, 
-      "get /wsapi/session_context contextAjaxError": undefined,  
-      "get /wsapi/email_for_token?token=token valid": { email: "testuser@testuser.com" },  
-      "get /wsapi/email_for_token?token=token invalid": { success: false },  
+      "get /wsapi/session_context ajaxError": contextInfo,
+      "get /wsapi/session_context complete": contextInfo,
+      "get /wsapi/session_context throttle": contextInfo,
+      "get /wsapi/session_context multiple": contextInfo,
+      "get /wsapi/session_context no_identities": contextInfo,
+      "get /wsapi/session_context contextAjaxError": undefined,
+      "get /wsapi/email_for_token?token=token valid": { email: "testuser@testuser.com" },
+      "get /wsapi/email_for_token?token=token invalid": { success: false },
       "post /wsapi/authenticate_user valid": { success: true },
       "post /wsapi/authenticate_user invalid": { success: false },
       "post /wsapi/authenticate_user ajaxError": undefined,
@@ -154,7 +154,7 @@ BrowserID.Mocks.xhr = (function() {
         }
       }
       else if (obj.error) {
-        // Invalid result - either invalid URL, invalid GET/POST or 
+        // Invalid result - either invalid URL, invalid GET/POST or
         // invalid resultType
         obj.error({ status: result || 400 }, "errorStatus", "errorThrown");
       }

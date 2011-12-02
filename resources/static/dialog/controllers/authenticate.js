@@ -45,6 +45,7 @@ BrowserID.Modules.Authenticate = (function() {
       tooltip = bid.Tooltip,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
+      cancelEvent = dialogHelpers.cancelEvent,
       dom = bid.DOM,
       lastEmail = "";
 
@@ -52,11 +53,9 @@ BrowserID.Modules.Authenticate = (function() {
     return helpers.getAndValidateEmail("#email");
   }
 
-  function checkEmail(event) {
+  function checkEmail() {
     var email = getEmail(),
         self = this;
-
-    cancelEvent(event);
 
     if (!email) return;
 
@@ -70,23 +69,21 @@ BrowserID.Modules.Authenticate = (function() {
     }, self.getErrorDialog(errors.isEmailRegistered));
   }
 
-  function createUser(event) {
+  function createUser(callback) {
     var self=this,
         email = getEmail();
 
-    cancelEvent(event);
-
     if (email) {
-      dialogHelpers.createUser.call(self, email);
+      dialogHelpers.createUser.call(self, email, callback);
+    } else {
+      callback && callback();
     }
   }
 
-  function authenticate(event) {
+  function authenticate() {
     var email = getEmail(),
         pass = helpers.getAndValidatePassword("#password"),
         self = this;
-
-    cancelEvent(event);
 
     if (email && pass) {
       dialogHelpers.authenticateUser.call(self, email, pass, function(authenticated) {
@@ -106,10 +103,6 @@ BrowserID.Modules.Authenticate = (function() {
     });
   }
 
-  function cancelEvent(event) {
-    if (event) event.preventDefault();
-  }
-
   function enterEmailState(el) {
     if (!el.is(":disabled")) {
       this.submit = checkEmail;
@@ -117,8 +110,7 @@ BrowserID.Modules.Authenticate = (function() {
     }
   }
 
-  function enterPasswordState(event) {
-    cancelEvent(event);
+  function enterPasswordState() {
     var self=this;
 
     self.publish("enter_password");
@@ -128,16 +120,14 @@ BrowserID.Modules.Authenticate = (function() {
     });
   }
 
-  function forgotPassword(event) {
-    cancelEvent(event);
+  function forgotPassword() {
     var email = getEmail();
     if (email) {
       this.close("forgot_password", { email: email });
     }
   }
 
-  function createUserState(event) {
-    cancelEvent(event);
+  function createUserState() {
 
     var self=this;
 
@@ -172,15 +162,18 @@ BrowserID.Modules.Authenticate = (function() {
 
 
       self.bind("#email", "keyup", emailKeyUp);
-      self.bind("#forgotPassword", "click", forgotPassword);
+      self.bind("#forgotPassword", "click", cancelEvent(forgotPassword));
 
       Authenticate.sc.start.call(self, options);
-    },
+    }
 
+    // BEGIN TESTING API
+    ,
     checkEmail: checkEmail,
     createUser: createUser,
     authenticate: authenticate,
     forgotPassword: forgotPassword
+    // END TESTING API
   });
 
   return Authenticate;

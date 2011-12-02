@@ -42,30 +42,12 @@
       bid = BrowserID,
       xhr = bid.Mocks.xhr,
       user = bid.User,
-      network = bid.Network,
-      storage = bid.Storage,
-      mediator = bid.Mediator,
-      listeners = [];
-
-  // XXX TODO Share this code with the other tests.
-  function subscribe(message, cb) {
-    listeners.push(mediator.subscribe(message, cb));
-  }
-
-  function unsubscribeAll() {
-    var registration;
-    while(registration = listeners.pop()) {
-      mediator.unsubscribe(registration);
-    }
-  }
+      register = bid.TestHelpers.register;
 
   module("controllers/required_email", {
     setup: function() {
       el = $("body");
-      $("#error").hide();
-      network.setXHR(xhr);
-      storage.clear();
-      xhr.useResult("valid");
+      bid.TestHelpers.setup();
       xhr.setContextInfo({
         authenticated: false
       });
@@ -81,8 +63,7 @@
         }
         controller = null;
       }
-      network.setXHR($);
-      unsubscribeAll();
+      bid.TestHelpers.setup();
     }
   });
 
@@ -92,26 +73,22 @@
   }
 
   function testSignIn(email, cb) {
-    setTimeout(function() {
-      var el = $("#required_email");
-      equal(el.val() || el.text(), email, "email set correctly");
-      equal($("#sign_in").length, 1, "sign in button shown");
-      equal($("#verify_address").length, 0, "verify address not shows");
-      cb && cb();
-      start();
-    }, 500);
+    var el = $("#required_email");
+    equal(el.val() || el.text(), email, "email set correctly");
+    equal($("#sign_in").length, 1, "sign in button shown");
+    equal($("#verify_address").length, 0, "verify address not shows");
+    cb && cb();
+    start();
   }
 
   function testVerify(email, cb) {
-    setTimeout(function() {
-      var el = $("#required_email");
-      equal(el.val() || el.text(), email, "email set correctly");
-      equal($("#sign_in").length, 0, "sign in button not shown");
-      equal($("#verify_address").length, 1, "verify address shows");
-      testNoPasswordSection();
-      cb && cb();
-      start();
-    }, 500);
+    var el = $("#required_email");
+    equal(el.val() || el.text(), email, "email set correctly");
+    equal($("#sign_in").length, 0, "sign in button not shown");
+    equal($("#verify_address").length, 1, "verify address shows");
+    testNoPasswordSection();
+    cb && cb();
+    start();
   }
 
   function testPasswordSection() {
@@ -126,20 +103,24 @@
     var email = "registered@testuser.com";
     createController({
       email: email,
-      authenticated: false
+      authenticated: false,
+      ready: function() {
+        testSignIn(email, testPasswordSection);
+      }
     });
 
-    testSignIn(email, testPasswordSection);
   });
 
   asyncTest("user who is not authenticated, email not registered", function() {
     var email = "unregistered@testuser.com";
     createController({
       email: email,
-      authenticated: false
+      authenticated: false,
+      ready: function() {
+        testVerify(email);
+      }
     });
 
-    testVerify(email);
   });
 
   asyncTest("user who is not authenticated, XHR error", function() {
@@ -147,7 +128,9 @@
     var email = "registered@testuser.com";
     createController({
       email: email,
-      authenticated: false
+      authenticated: false,
+      ready: function() {
+      }
     });
 
     setTimeout(function() {
@@ -165,11 +148,13 @@
     user.syncEmailKeypair(email, function() {
       createController({
         email: email,
-        authenticated: true
+        authenticated: true,
+        ready: function() {
+          testSignIn(email, testNoPasswordSection);
+        }
       });
     });
 
-    testSignIn(email, testNoPasswordSection);
   });
 
   asyncTest("user who is authenticated, email belongs to another user", function() {
@@ -180,12 +165,13 @@
     var email = "registered@testuser.com";
     createController({
       email: email,
-      authenticated: true
+      authenticated: true,
+      ready: function() {
+        // This means the current user is going to take the address from the other
+        // account.
+        testVerify(email);
+      }
     });
-
-    // This means the current user is going to take the address from the other
-    // account.
-    testVerify(email);
   });
 
   asyncTest("user who is authenticated, but email unknown", function() {
@@ -196,10 +182,11 @@
     var email = "unregistered@testuser.com";
     createController({
       email: email,
-      authenticated: true
+      authenticated: true,
+      ready: function() {
+        testVerify(email);
+      }
     });
-
-    testVerify(email);
   });
 
 
@@ -215,7 +202,7 @@
         authenticated: true
       });
 
-      subscribe("assertion_generated", function(item, info) {
+      register("assertion_generated", function(item, info) {
         ok(info.assertion, "we have an assertion");
         start();
       });
@@ -224,7 +211,7 @@
     });
   });
 
-  asyncTest("signIn of an non-authenticated user with a good password generates an assertion", function() {
+  asyncTest("signIn of a non-authenticated user with a good password generates an assertion", function() {
     xhr.setContextInfo({
       authenticated: false
     });
@@ -232,20 +219,22 @@
     var email = "registered@testuser.com";
     createController({
       email: email,
-      authenticated: false
+      authenticated: false,
+      ready: function() {
+        register("assertion_generated", function(item, info) {
+          ok(info.assertion, "we have an assertion");
+          start();
+        });
+
+        $("#password").val("password");
+        controller.signIn();
+      }
     });
 
-    subscribe("assertion_generated", function(item, info) {
-      ok(info.assertion, "we have an assertion");
-      start();
-    });
-
-    $("#password").val("password");
-    controller.signIn();
   });
 
 
-  asyncTest("signIn of an non-authenticated user with a bad password does not generate an assertion", function() {
+  asyncTest("signIn of a non-authenticated user with a bad password does not generate an assertion", function() {
     xhr.setContextInfo({
       authenticated: false
     });
@@ -253,27 +242,26 @@
     var email = "registered@testuser.com";
     createController({
       email: email,
-      authenticated: false
+      authenticated: false,
+      ready: function() {
+        var assertion;
+
+        register("assertion_generated", function(item, info) {
+          ok(false, "this should not have been called");
+          assertion = info.assertion;
+        });
+
+        xhr.useResult("invalid");
+        $("#password").val("badpassword");
+        controller.signIn(function() {
+          // Since we are using the mock, we know the XHR result is going to be
+          // back in less than 1000ms.  All we have to do is check whether an
+          // assertion was generated, if so, bad jiji.
+          equal(typeof assertion, "undefined", "assertion was never generated");
+          start();
+        });
+      }
     });
-
-    var assertion;
-
-    subscribe("assertion_generated", function(item, info) {
-      ok(false, "this should not have been called");
-      assertion = info.assertion;
-    });
-
-    xhr.useResult("invalid");
-    $("#password").val("badpassword");
-    controller.signIn();
-
-    setTimeout(function() {
-      // Since we are using the mock, we know the XHR result is going to be
-      // back in less than 1000ms.  All we have to do is check whether an
-      // assertion was generated, if so, bad jiji.
-      equal(typeof assertion, "undefined", "assertion was never generated");
-      start();
-    }, 1000);
   });
 
   function testMessageReceived(email, message) {
@@ -285,16 +273,16 @@
 
     createController({
       email: email,
-      authenticated: authenticated
+      authenticated: authenticated,
+      ready: function() {
+        register(message, function(item, info) {
+          equal(info.email, email, message + " received with correct email");
+          start();
+        });
+
+        controller.verifyAddress();
+      }
     });
-
-
-    subscribe(message, function(item, info) {
-      equal(info.email, email, message + " received with correct email");
-      start();
-    });
-
-    controller.verifyAddress();
   }
 
   asyncTest("verifyAddress of authenticated user, address belongs to another user", function() {
@@ -320,16 +308,16 @@
 
     createController({
       email: email,
-      authenticated: authenticated
+      authenticated: authenticated,
+      ready: function() {
+        register(message, function(item, info) {
+          equal(info.email, email, message + " received with correct email");
+          start();
+        });
+
+        controller.forgotPassword();
+      }
     });
-
-
-    subscribe(message, function(item, info) {
-      equal(info.email, email, message + " received with correct email");
-      start();
-    });
-
-    controller.forgotPassword();
   });
 
   asyncTest("cancel raises the cancel message", function() {
@@ -343,16 +331,16 @@
 
     createController({
       email: email,
-      authenticated: authenticated
+      authenticated: authenticated,
+      ready: function() {
+        register(message, function(item, info) {
+          ok(true, message + " received");
+          start();
+        });
+
+        controller.cancel();
+      }
     });
-
-
-    subscribe(message, function(item, info) {
-      ok(true, message + " received");
-      start();
-    });
-
-    controller.cancel();
   });
 
 }());

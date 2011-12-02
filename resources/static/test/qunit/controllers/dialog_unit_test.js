@@ -38,7 +38,6 @@
   "use strict";
 
   var bid = BrowserID,
-      mediator = bid.Mediator,
       channel = bid.Channel,
       controller,
       el,
@@ -47,16 +46,11 @@
       navMock;
 
   function reset() {
-    el = $("#controller_head");
-    el.find("#formWrap .contents").html("");
-    el.find("#wait .contents").html("");
-    el.find("#error .contents").html("");
-
     channelError = false;
   }
 
   function WinMock() {
-    this.location.hash = "#1234";  
+    this.location.hash = "#1234";
   }
 
   WinMock.prototype = {
@@ -103,6 +97,7 @@
         navigator: navMock
       });
       reset();
+      bid.TestHelpers.setup();
     },
 
     teardown: function() {
@@ -112,6 +107,7 @@
         window: window,
         navigator: navigator
       });
+      bid.TestHelpers.teardown();
     }
   });
 
@@ -163,7 +159,7 @@
   /*
   test("doCheckAuth with registered requiredEmail, authenticated", function() {
     createController({
-      requiredEmail: "registered@testuser.com" 
+      requiredEmail: "registered@testuser.com"
     });
 
     controller.doCheckAuth();
@@ -171,7 +167,7 @@
 
   test("doCheckAuth with registered requiredEmail, not authenticated", function() {
     createController({
-      requiredEmail: "registered@testuser.com" 
+      requiredEmail: "registered@testuser.com"
     });
 
     controller.doCheckAuth();
@@ -179,7 +175,7 @@
 
   test("doCheckAuth with unregistered requiredEmail, not authenticated", function() {
     createController({
-      requiredEmail: "unregistered@testuser.com" 
+      requiredEmail: "unregistered@testuser.com"
     });
 
     controller.doCheckAuth();
@@ -187,7 +183,7 @@
 
   test("doCheckAuth with unregistered requiredEmail, authenticated as other user", function() {
     createController({
-      requiredEmail: "unregistered@testuser.com" 
+      requiredEmail: "unregistered@testuser.com"
     });
 
     controller.doCheckAuth();

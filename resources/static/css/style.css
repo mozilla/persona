@@ -249,26 +249,15 @@ div.steps {
   font-weight: normal;
 }
 
-#manage .edit {
+#manage .buttonrow {
   margin: 72px 0 14px;
 }
 
-#manageAccounts,
-#cancelManage {
-  float: right;
-  display: inline-block;
-  text-align: center;
-  line-height: 21px;
-  font-weight: bold;
+#manage .buttonrow button {
+  line-height: 20px;
+  height: 24px;
   width: 48px;
   font-size: 12px;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  color: #fff;
-
-  -webkit-border-radius: 5px;
-     -moz-border-radius: 5px;
-       -o-border-radius: 5px;
-          border-radius: 5px;
 }
 
 #manageAccounts {
@@ -285,6 +274,10 @@ div.steps {
   background-image: -moz-linear-gradient(#76C2FF 0pt, #37A6FF 100%);
   background-image: -o-linear-gradient(#76C2FF 0pt, #37A6FF 100%);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
+}
+
+.edit #manageAccounts {
+  display: none;
 }
 
 #cancelManage {
@@ -304,6 +297,10 @@ div.steps {
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3AA7FF), color-stop(100%, #006EC6));
 }
 
+.edit #cancelManage {
+  display: inline-block;
+}
+
 #manage #emailList {
   list-style-type: none;
   margin: 0 0 72px 0;
@@ -318,7 +315,7 @@ div.steps {
 }
 
 #emailList .email,
-#emailList .activity {
+.activity {
   display: inline-block;
   float: left;
   white-space: nowrap;
@@ -328,19 +325,19 @@ div.steps {
   width: 275px;
 }
 
-#emailList .activity {
+.activity {
   width: 275px;
   color: #aaa;
   text-align: right;
 }
 
-#emailList .activity button,
-#emailList .activity abbr {
+.activity button,
+.activity abbr {
   float: right;
   display: inline-block;
 }
 
-#emailList .activity button {
+.activity button {
   width: 60px;
   margin-left: 10px;
   margin-right: -70px;
@@ -351,7 +348,7 @@ div.steps {
           transition: margin 0.4s ease;
 }
 
-#emailList.remove .activity button {
+.edit .activity button {
   margin-right: 0;
 }
 

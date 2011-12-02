@@ -44,8 +44,6 @@
       xhr = bid.Mocks.xhr,
       validToken = true,
       TEST_ORIGIN = "http://browserid.org",
-      TEST_DELAY = 100,
-      ERROR_DELAY = 250,
       mocks = {
         confirm: function() { return true; },
         document: { location: "" }
@@ -71,145 +69,96 @@
   });
 
   asyncTest("no email addresses are displayed if there are no children", function() {
-    xhr.useResult("noidentities");
+    xhr.useResult("no_identities");
 
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       equal($("#emailList").children().length, 0, "no children have been added");
       start();
-    }, TEST_DELAY);
-
-    
+    });
   });
 
   asyncTest("email addresses added if there are children", function() {
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       equal($("#emailList").children().length, 1, "there has been one child added");
       start();
-    }, TEST_DELAY);
-
-    
+    });
   });
 
   asyncTest("sync XHR error on startup", function() {
     xhr.useResult("ajaxError");
 
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       equal($("#error").is(":visible"), true, "error message is visible on XHR error");
       start();
-    }, ERROR_DELAY);
-
-    
+    });
   });
 
   asyncTest("removeEmail with multiple emails", function() {
     // start with multiple addresses.
     xhr.useResult("multiple");
 
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       // switch to a single address return on the sync.
       xhr.useResult("valid");
-      bid.manageAccount.removeEmail("testuser@testuser.com");
-
-      setTimeout(function() {
+      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
         equal($("#emailList").children().length, 1, "after removing an email, only one remains");
         start();
-      }, TEST_DELAY);
-    }, TEST_DELAY);
-
-    
+      });
+    });
   });
 
   asyncTest("removeEmail with multiple emails and XHR error", function() {
     // start with multiple addresses.
     xhr.useResult("multiple");
 
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       xhr.useResult("ajaxError");
-      bid.manageAccount.removeEmail("testuser@testuser.com");
-
-      setTimeout(function() {
+      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
         equal($("#error").is(":visible"), true, "error message is visible on XHR error");
         start();
-      }, ERROR_DELAY);
-    }, TEST_DELAY);
-
-    
+      });
+    });
   });
 
   asyncTest("removeEmail with single email cancels account", function() {
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
-      bid.manageAccount.removeEmail("testuser@testuser.com");
-
-      setTimeout(function() {
+    bid.manageAccount(mocks, function() {
+      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
         equal(mocks.document.location, "/", "redirection happened");
         start();
-      }, TEST_DELAY);
-    }, TEST_DELAY);
-
-    
+      });
+    });
   });
 
   asyncTest("removeEmail with single email cancels account and XHR error", function() {
     xhr.useResult("valid");
 
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       xhr.useResult("ajaxError");
 
-      bid.manageAccount.removeEmail("testuser@testuser.com");
-
-      setTimeout(function() {
+      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
         equal($("#error").is(":visible"), true, "error message is visible on XHR error");
         start();
-      }, ERROR_DELAY);
-    }, TEST_DELAY);
-
-    
+      });
+    });
   });
 
   asyncTest("cancelAccount", function() {
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
-      bid.manageAccount.cancelAccount();
-
-      setTimeout(function() {
+    bid.manageAccount(mocks, function() {
+      bid.manageAccount.cancelAccount(function() {
         equal(mocks.document.location, "/", "redirection happened");
         start();
-      }, TEST_DELAY);
-
-    }, TEST_DELAY);
-
-    
+      });
+    });
   });
 
   asyncTest("cancelAccount with XHR error", function() {
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       xhr.useResult("ajaxError");
-      bid.manageAccount.cancelAccount();
-
-      setTimeout(function() {
+      bid.manageAccount.cancelAccount(function() {
         equal($("#error").is(":visible"), true, "error message is visible on XHR error");
         start();
-      }, ERROR_DELAY);
-    }, TEST_DELAY);
-
-    
+      });
+    });
   });
 
 }());

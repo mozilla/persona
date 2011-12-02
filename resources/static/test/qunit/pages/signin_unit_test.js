@@ -41,7 +41,6 @@
       network = bid.Network,
       user = bid.User,
       xhr = bid.Mocks.xhr,
-      CHECK_DELAY = 500,
       docMock = {
         location: "signin"
       }
@@ -65,37 +64,31 @@
   });
 
   function testUserNotSignedIn(extraTests) {
-    bid.signIn.submit();
-
-    setTimeout(function() {
+    bid.signIn.submit(function() {
       equal(docMock.location, "signin", "user not signed in");
       if (extraTests) extraTests();
-      else start();
-    }, 100);
+      start();
+    });
   }
 
   asyncTest("signin with valid email and password", function() {
     $("#email").val("registered@testuser.com");
     $("#password").val("password");
 
-    bid.signIn.submit();
-
-    setTimeout(function() {
+    bid.signIn.submit(function() {
       equal(docMock.location, "/", "user signed in, page redirected");
       start();
-    }, 100);
+    });
   });
 
   asyncTest("signin with valid email with leading/trailing whitespace and password", function() {
     $("#email").val("  registered@testuser.com  ");
     $("#password").val("password");
 
-    bid.signIn.submit();
-
-    setTimeout(function() {
+    bid.signIn.submit(function() {
       equal(docMock.location, "/", "user signed in, page redirected");
       start();
-    }, 100);
+    });
   });
 
   asyncTest("signin with missing email", function() {
@@ -127,10 +120,7 @@
     $("#password").val("password");
 
     testUserNotSignedIn(function() {
-      setTimeout(function() {
         equal($("#error").is(":visible"), true, "error is visible");
-        start();
-      }, 500);
     });
   });
 
