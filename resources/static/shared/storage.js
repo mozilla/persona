@@ -34,9 +34,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 BrowserID.Storage = (function() {
-  
-  var jwk;
-  
+
+  var jwk,
+      storage = localStorage;
+
   function prepareDeps() {
     if (!jwk) {
       jwk = require("./jwk");
@@ -44,20 +45,19 @@ BrowserID.Storage = (function() {
   }
 
   function storeEmails(emails) {
-    window.localStorage.emails = JSON.stringify(emails);
+    storage.emails = JSON.stringify(emails);
   }
 
   function clear() {
     storeEmails({});
-    var localStorage = window.localStorage;
-    localStorage.removeItem("tempKeypair");
-    localStorage.removeItem("stagedOnBehalfOf");
-    localStorage.removeItem("siteInfo");
+    storage.removeItem("tempKeypair");
+    storage.removeItem("stagedOnBehalfOf");
+    storage.removeItem("siteInfo");
   }
 
   function getEmails() {
     try {
-      var emails = JSON.parse(window.localStorage.emails);
+      var emails = JSON.parse(storage.emails);
       if (emails !== null)
         return emails;
     } catch(e) {
@@ -87,13 +87,13 @@ BrowserID.Storage = (function() {
       storeEmails(emails);
 
       // remove any sites associated with this email address.
-      var siteInfo = JSON.parse(localStorage.siteInfo || "{}");
+      var siteInfo = JSON.parse(storage.siteInfo || "{}");
       for(var site in siteInfo) {
         if(siteInfo[site].email === email) {
           delete siteInfo[site].email;
         }
       }
-      localStorage.siteInfo = JSON.stringify(siteInfo);
+      storage.siteInfo = JSON.stringify(siteInfo);
     }
     else {
       throw "unknown email address";
@@ -114,15 +114,15 @@ BrowserID.Storage = (function() {
   }
 
   function storeTemporaryKeypair(keypair) {
-    window.localStorage.tempKeypair = JSON.stringify({
+    storage.tempKeypair = JSON.stringify({
       publicKey: keypair.publicKey.toSimpleObject(),
       secretKey: keypair.secretKey.toSimpleObject()
     });
   }
 
   function retrieveTemporaryKeypair() {
-    var raw_kp = JSON.parse(window.localStorage.tempKeypair);
-    window.localStorage.tempKeypair = null;
+    var raw_kp = JSON.parse(storage.tempKeypair);
+    storage.tempKeypair = null;
     if (raw_kp) {
       prepareDeps();
       var kp = new jwk.KeyPair();
@@ -135,7 +135,7 @@ BrowserID.Storage = (function() {
   }
 
   function setStagedOnBehalfOf(origin) {
-    window.localStorage.stagedOnBehalfOf = JSON.stringify({
+    storage.stagedOnBehalfOf = JSON.stringify({
       at: new Date().toString(),
       origin: origin
     });
@@ -145,7 +145,7 @@ BrowserID.Storage = (function() {
     var origin;
 
     try {
-      var staged = JSON.parse(window.localStorage.stagedOnBehalfOf);
+      var staged = JSON.parse(storage.stagedOnBehalfOf);
 
       if (staged) {
         if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw "stale";
@@ -154,14 +154,14 @@ BrowserID.Storage = (function() {
       }
     } catch (x) {
       console.log(x);
-      delete window.localStorage.stagedOnBehalfOf;
+      storage.removeItem("stagedOnBehalfOf");
     }
 
     return origin;
   }
 
   function siteSet(site, key, value) {
-    var allSiteInfo = JSON.parse(localStorage.siteInfo || "{}");
+    var allSiteInfo = JSON.parse(storage.siteInfo || "{}");
     var siteInfo = allSiteInfo[site] = allSiteInfo[site] || {};
 
     if(key === "email" && !getEmail(value)) {
@@ -170,23 +170,23 @@ BrowserID.Storage = (function() {
 
     siteInfo[key] = value;
 
-    localStorage.siteInfo = JSON.stringify(allSiteInfo);
+    storage.siteInfo = JSON.stringify(allSiteInfo);
   }
 
   function siteGet(site, key) {
-    var allSiteInfo = JSON.parse(localStorage.siteInfo || "{}");
+    var allSiteInfo = JSON.parse(storage.siteInfo || "{}");
     var siteInfo = allSiteInfo[site];
 
     return siteInfo && siteInfo[key];
   }
 
   function siteRemove(site, key) {
-    var allSiteInfo = JSON.parse(localStorage.siteInfo || "{}");
+    var allSiteInfo = JSON.parse(storage.siteInfo || "{}");
     var siteInfo = allSiteInfo[site];
 
     if (siteInfo) {
       delete siteInfo[key];
-      localStorage.siteInfo = JSON.stringify(allSiteInfo);
+      storage.siteInfo = JSON.stringify(allSiteInfo);
     }
   }
 
@@ -203,13 +203,13 @@ BrowserID.Storage = (function() {
      */
     getEmails: getEmails,
     /**
-     * Get one email address and its key pair, if found.  Returns undefined if 
+     * Get one email address and its key pair, if found.  Returns undefined if
      * not found.
      * @method getEmail
      */
     getEmail: getEmail,
     /**
-     * Remove an email address, its key pairs, and any sites associated with 
+     * Remove an email address, its key pairs, and any sites associated with
      * email address.
      * @throws "unknown email address" if email address is not known.
      * @method removeEmail
@@ -248,7 +248,7 @@ BrowserID.Storage = (function() {
     },
 
     /**
-     * Clear all stored data - email addresses, key pairs, temporary key pairs, 
+     * Clear all stored data - email addresses, key pairs, temporary key pairs,
      * site/email associations.
      * @method clear
      */
