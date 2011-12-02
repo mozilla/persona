@@ -63,45 +63,38 @@
   asyncTest("addEmailAddress with good token and site", function() {
     storage.setStagedOnBehalfOf("browserid.org");
 
-    bid.addEmailAddress("token");
-
-    setTimeout(function() {
+    bid.addEmailAddress("token", function() {
       equal($("#email").val(), "testuser@testuser.com", "email set");
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
       equal($(".website").text(), "browserid.org", "origin is updated");
       start();
-    }, 500);
+    });
   });
 
   asyncTest("addEmailAddress with good token and nosite", function() {
-    bid.addEmailAddress("token");
-
-    setTimeout(function() {
+    bid.addEmailAddress("token", function() {
       equal($("#email").val(), "testuser@testuser.com", "email set");
       equal($(".siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
       equal($(".siteinfo .website").text(), "", "origin is not updated");
       start();
-    }, 500);
+    });
   });
 
   asyncTest("addEmailAddress with bad token", function() {
     xhr.useResult("invalid");
 
-    bid.addEmailAddress("token");
-    setTimeout(function() {
+    bid.addEmailAddress("token", function() {
       ok($("#cannotconfirm").is(":visible"), "cannot confirm box is visible");
       start();
-    }, 500);
+    });
   });
 
   asyncTest("addEmailAddress with emailForVerficationToken XHR failure", function() {
     xhr.useResult("ajaxError");
-    bid.addEmailAddress("token");
-
-    setTimeout(function() {
+    bid.addEmailAddress("token", function() {
       ok($("#cannotcommunicate").is(":visible"), "cannot communicate box is visible");
       start();
-    }, 500);
+    });
   });
 
 }());

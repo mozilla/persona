@@ -47,9 +47,7 @@
     $("#signUpForm").remove();
   }
 
-  function submit(event) {
-    if (event) event.preventDefault();
-
+  function submit(oncomplete) {
     var pass = $("#password").val(),
         vpass = $("#vpassword").val();
 
@@ -64,12 +62,16 @@
         else {
           showError("#cannotcomplete");
         }
-      }, pageHelpers.getFailure(errors.completeUserRegistration));
+        oncomplete && oncomplete();
+      }, pageHelpers.getFailure(errors.completeUserRegistration, oncomplete));
+    }
+    else {
+      oncomplete && oncomplete();
     }
   }
 
-  function init(tok) {
-    $("#signUpForm").bind("submit", submit);
+  function init(tok, oncomplete) {
+    $("#signUpForm").bind("submit", pageHelpers.cancelEvent(submit));
     $(".siteinfo").hide();
     $("#congrats").hide();
     token = tok;
@@ -88,11 +90,12 @@
       else {
         showError("#cannotconfirm");
       }
-    }, pageHelpers.getFailure(errors.completeUserRegistration));
+      oncomplete && oncomplete();
+    }, pageHelpers.getFailure(errors.completeUserRegistration, oncomplete));
   }
 
   function reset() {
-    $("#signUpForm").unbind("submit", submit);
+    $("#signUpForm").unbind("submit");
   }
 
   init.submit = submit;

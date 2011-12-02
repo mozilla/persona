@@ -41,12 +41,11 @@ BrowserID.forgot = (function() {
       user = bid.User,
       helpers = bid.Helpers,
       pageHelpers = bid.PageHelpers,
+      cancelEvent = pageHelpers.cancelEvent,
       dom = bid.DOM,
       tooltip = bid.Tooltip;
 
-  function submit(event) {
-    if (event) event.preventDefault();
-
+  function submit(oncomplete) {
     // GET RID OF THIS HIDE CRAP AND USE CSS!
     $(".notifications .notification").hide();
 
@@ -61,14 +60,15 @@ BrowserID.forgot = (function() {
           var tooltipEl = info.reason === "throttle" ? "#could_not_add" : "#not_registered";
           tooltip.showTooltip(tooltipEl);
         }
-      }, pageHelpers.getFailure(bid.Errors.requestPasswordReset));
+        oncomplete && oncomplete();
+      }, pageHelpers.getFailure(bid.Errors.requestPasswordReset, oncomplete));
+    } else {
+      oncomplete && oncomplete();
     }
   };
 
-  function back(event) {
-    if (event) event.preventDefault();
-
-    pageHelpers.cancelEmailSent();
+  function back(oncomplete) {
+    pageHelpers.cancelEmailSent(oncomplete);
   }
 
   function init() {
@@ -76,18 +76,20 @@ BrowserID.forgot = (function() {
 
     pageHelpers.setupEmail();
 
-    dom.bindEvent("form", "submit", submit);
-    dom.bindEvent("#back", "click", back);
+    dom.bindEvent("form", "submit", cancelEvent(submit));
+    dom.bindEvent("#back", "click", cancelEvent(back));
   }
 
+  // BEGIN TESTING API
   function reset() {
-    dom.unbindEvent("form", "submit", submit);
-    dom.unbindEvent("#back", "click", back);
+    dom.unbindEvent("form", "submit");
+    dom.unbindEvent("#back", "click");
   }
 
-  init.submit = submit; 
+  init.submit = submit;
   init.reset = reset;
   init.back = back;
+  // END TESTING API
 
   return init;
 

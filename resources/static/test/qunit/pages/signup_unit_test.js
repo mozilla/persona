@@ -41,7 +41,6 @@
       network = bid.Network,
       user = bid.User,
       xhr = bid.Mocks.xhr,
-      CHECK_DELAY = 500,
       testOrigin = "http://browserid.org";
 
   module("pages/signup", {
@@ -65,35 +64,29 @@
   });
 
   function testNoticeNotVisible(extraTests) {
-    bid.signUp.submit();
-
-    setTimeout(function() {
+    bid.signUp.submit(function() {
       equal($(".emailsent").is(":visible"), false, "email not sent, notice not visible");
       if(extraTests) extraTests();
-      else start();
-    }, CHECK_DELAY);
+      start();
+    });
   }
 
   asyncTest("signup with valid unregistered email", function() {
     $("#email").val("unregistered@testuser.com");
 
-    bid.signUp.submit();
-
-    setTimeout(function() {
+    bid.signUp.submit(function() {
       equal($(".emailsent").is(":visible"), true, "email sent, notice visible");
       start();
-    }, CHECK_DELAY);
+    });
   });
 
   asyncTest("signup with valid unregistered email with leading/trailing whitespace", function() {
     $("#email").val(" unregistered@testuser.com ");
 
-    bid.signUp.submit();
-
-    setTimeout(function() {
+    bid.signUp.submit(function() {
       equal($(".emailsent").is(":visible"), true, "email sent, notice visible");
       start();
-    }, CHECK_DELAY);
+    });
   });
 
   asyncTest("signup with valid registered email", function() {
@@ -122,25 +115,20 @@
 
     testNoticeNotVisible(function() {
       equal($("#error").is(":visible"), true, "error message displayed");
-      start();
     });
   });
 
   asyncTest("signup with unregistered email and cancel button pressed", function() {
     $("#email").val("unregistered@testuser.com");
 
-    bid.signUp.submit();
-
-    setTimeout(function() {
-      bid.signUp.back();
-
-      setTimeout(function() {
+    bid.signUp.submit(function() {
+      bid.signUp.back(function() {
         equal($(".notification:visible").length, 0, "no notifications are visible");
         equal($(".forminputs:visible").length, 1, "form inputs are again visible");
         equal($("#email").val(), "unregistered@testuser.com", "email address restored");
         start();
-      }, 500);
-    }, 100);
+      });
+    });
   });
 
 }());

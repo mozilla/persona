@@ -40,7 +40,9 @@ BrowserID.manageAccount = (function() {
   var bid = BrowserID,
       user = bid.User,
       errors = bid.Errors,
+      dom = bid.DOM,
       pageHelpers = bid.PageHelpers,
+      cancelEvent = pageHelpers.cancelEvent,
       confirmAction = confirm,
       doc = document;
 
@@ -126,36 +128,51 @@ BrowserID.manageAccount = (function() {
     return dObj;
   }
 
-  function syncAndDisplayEmails() {
-    var emails = {};
+  function syncAndDisplayEmails(oncomplete) {
 
     user.syncEmails(function() {
-      emails = user.getStoredEmailKeypairs();
-      if (_.isEmpty(emails)) {
-        $("#content").hide();
-      } else {
-        $("#content").show();
-        $("#vAlign").hide();
-        displayEmails(emails);
-      }
-    }, pageHelpers.getFailure(errors.syncEmails));
+      displayStoredEmails(oncomplete);
+    }, pageHelpers.getFailure(errors.syncEmails, oncomplete));
   }
 
-  function onRemoveEmail(email, event) {
-    event && event.preventDefault();
-
+  function displayStoredEmails(oncomplete) {
     var emails = user.getStoredEmailKeypairs();
+    if (_.isEmpty(emails)) {
+      $("#content").hide();
+    } else {
+      $("#content").show();
+      $("#vAlign").hide();
+      displayEmails(emails);
+    }
+    oncomplete && oncomplete();
+  }
+
+  function removeEmail(email, oncomplete) {
+    var emails = user.getStoredEmailKeypairs();
+
+    function complete() {
+      oncomplete && oncomplete();
+    }
 
     if (_.size(emails) > 1) {
       if (confirmAction("Remove " + email + " from your BrowserID?")) {
-        user.removeEmail(email, syncAndDisplayEmails, pageHelpers.getFailure(errors.removeEmail));
+        user.removeEmail(email, function() {
+          displayStoredEmails(oncomplete);
+        }, pageHelpers.getFailure(errors.removeEmail, oncomplete));
+      }
+      else {
+        complete();
       }
     }
     else {
-      if (confirmAction('Removing the last address will cancel your BrowserID account.\nAre you sure you want to continue?')) {
+      if (confirmAction("Removing the last address will cancel your BrowserID account.\nAre you sure you want to continue?")) {
         user.cancelUser(function() {
           doc.location="/";
-        }, pageHelpers.getFailure(errors.cancelUser));
+          complete();
+        }, pageHelpers.getFailure(errors.cancelUser, oncomplete));
+      }
+      else {
+        complete();
       }
     }
   }
@@ -163,12 +180,12 @@ BrowserID.manageAccount = (function() {
   function displayEmails(emails) {
     var list = $("#emailList").empty();
 
-    // Set up to use mustache style templating, the normal Django style blows 
+    // Set up to use mustache style templating, the normal Django style blows
     // up the node templates
     _.templateSettings = {
         interpolate : /\{\{(.+?)\}\}/g
     };
-    var template = $('#templateUser').html();
+    var template = $("#templateUser").html();
 
     _(emails).each(function(data, e) {
       var date = relativeDate(new Date(data.created));
@@ -180,59 +197,51 @@ BrowserID.manageAccount = (function() {
       });
 
       var idEl = $(identity).appendTo(list);
-      idEl.find('.delete').click(onRemoveEmail.bind(null, e));
+      idEl.find(".delete").click(cancelEvent(removeEmail.bind(null, e)));
     });
-
   }
 
-  function cancelAccount(event) {
-    event && event.preventDefault();
-
-    if (confirmAction('Are you sure you want to cancel your BrowserID account?')) {
+  function cancelAccount(oncomplete) {
+    if (confirmAction("Are you sure you want to cancel your BrowserID account?")) {
       user.cancelUser(function() {
         doc.location="/";
-      }, pageHelpers.getFailure(errors.cancelUser));
+        oncomplete && oncomplete();
+      }, pageHelpers.getFailure(errors.cancelUser, oncomplete));
     }
   }
 
-  function manageAccounts(event) {
-      event && event.preventDefault();
-
-      $('#emailList').addClass('remove');
-      $(this).hide();
-      $("#cancelManage").show();
+  function manageAccounts() {
+      $("body").addClass("edit");
   }
 
-  function cancelManage(event) {
-      event && event.preventDefault();
-
-      $('#emailList').removeClass('remove');
-      $(this).hide();
-      $("#manageAccounts").show();
+  function cancelManage() {
+      $("body").removeClass("edit");
   }
 
-  function init(options) {
+  function init(options, oncomplete) {
     options = options || {};
 
     if (options.document) doc = options.document;
     if (options.confirm) confirmAction = options.confirm;
 
-    $('#cancelAccount').click(cancelAccount);
-    $('#manageAccounts').click(manageAccounts);
-    $('#cancelManage').click(cancelManage);
+    dom.bindEvent("#cancelAccount", "click", cancelEvent(cancelAccount));
+    dom.bindEvent("#manageAccounts", "click", cancelEvent(manageAccounts));
+    dom.bindEvent("#cancelManage", "click", cancelEvent(cancelManage));
 
-    syncAndDisplayEmails();
+    syncAndDisplayEmails(oncomplete);
   }
 
+  // BEGIN TESTING API
   function reset() {
-    $('#cancelAccount').unbind("click", cancelAccount);
-    $('#manageAccounts').unbind("click", manageAccounts);
-    $('#cancelManage').unbind("click", cancelManage);
+    dom.unbindEvent("#cancelAccount", "click");
+    dom.unbindEvent("#manageAccounts", "click");
+    dom.unbindEvent("#cancelManage", "click");
   }
 
   init.reset = reset;
   init.cancelAccount = cancelAccount;
-  init.removeEmail = onRemoveEmail;
+  init.removeEmail = removeEmail;
+  // END TESTING API
 
   return init;
 

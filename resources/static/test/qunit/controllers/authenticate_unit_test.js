@@ -46,25 +46,10 @@
       emailRegistered = false,
       userCreated = true,
       mediator = bid.Mediator,
-      registrations = [];
-
-  function register(message, cb) {
-    registrations.push(mediator.subscribe(message, cb));
-  }
-
-  function unregisterAll() {
-    var registration;
-    while(registration = registrations.pop()) {
-      mediator.unsubscribe(registration);
-    }
-  }
+      registrations = [],
+      register = bid.TestHelpers.register;
 
   function reset() {
-    el = $("#controller_head");
-    el.find("#formWrap .contents").html("");
-    el.find("#wait .contents").html("");
-    el.find("#error .contents").html("");
-
     emailRegistered = false;
     userCreated = true;
   }
@@ -75,12 +60,10 @@
     controller.start(options);
   }
 
-  module("controllers/authenticate_controller", {
+  module("controllers/authenticate", {
     setup: function() {
       reset();
-      storage.clear();
-      network.setXHR(xhr);
-      xhr.useResult("valid");
+      bid.TestHelpers.setup();
       createController();
     },
 
@@ -93,9 +76,7 @@
         }
       }
       reset();
-      storage.clear();
-      network.setXHR($);
-      unregisterAll();
+      bid.TestHelpers.teardown();
     }
   });
 
@@ -164,7 +145,7 @@
 
     register("forgot_password", function(msg, info) {
       equal(info.email, "registered@testuser.com", "forgot_password with correct email triggered");
-      start();  
+      start();
     });
 
     controller.forgotPassword();
@@ -174,11 +155,10 @@
     $("#email").val("unregistered@testuser.com");
     register("user_staged", function(msg, info) {
       equal(info.email, "unregistered@testuser.com", "user_staged with correct email triggered");
-      start();  
+      start();
     });
 
     controller.createUser();
-    
   });
 
   asyncTest("createUser with invalid email", function() {
@@ -189,13 +169,10 @@
       handlerCalled = true;
     });
 
-    controller.createUser();
-    setTimeout(function() {
+    controller.createUser(function() {
       equal(handlerCalled, false, "bad jiji, user_staged should not have been called with invalid email");
-      start();  
-    }, 100);
-
-    
+      start();
+    });
   });
 
   asyncTest("createUser with valid email but throttling", function() {
@@ -207,14 +184,13 @@
     });
 
     xhr.useResult("throttle");
-    controller.createUser();
-    setTimeout(function() {
+    controller.createUser(function() {
       equal(handlerCalled, false, "bad jiji, user_staged should not have been called with throttling");
       equal(bid.Tooltip.shown, true, "tooltip is shown");
-      start();  
-    }, 100);
+      start();
+    });
 
-    
+
   });
 
   asyncTest("createUser with valid email, XHR error", function() {
@@ -226,13 +202,12 @@
     });
 
     xhr.useResult("ajaxError");
-    controller.createUser();
+    controller.createUser()
+
     setTimeout(function() {
       equal(handlerCalled, false, "bad jiji, user_staged should not have been called with XHR error");
-      start();  
-    }, 100);
-
-    
+      start();
+    }, 50);
   });
 
 }());

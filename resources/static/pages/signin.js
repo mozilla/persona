@@ -42,11 +42,10 @@ BrowserID.signIn = (function() {
       helpers = bid.Helpers,
       dom = bid.DOM,
       pageHelpers = bid.PageHelpers,
+      cancelEvent = pageHelpers.cancelEvent,
       doc = document;
 
-  function submit(event) {
-    if (event) event.preventDefault();
-
+  function submit(oncomplete) {
     var email = helpers.getAndValidateEmail("#email"),
         password = helpers.getAndValidatePassword("#password");
 
@@ -60,7 +59,11 @@ BrowserID.signIn = (function() {
           // bad authentication
           $(".notifications .notification.badlogin").fadeIn();
         }
-      }, pageHelpers.getFailure(bid.Errors.authenticate));
+        oncomplete && oncomplete();
+      }, pageHelpers.getFailure(bid.Errors.authenticate, oncomplete));
+    }
+    else {
+      oncomplete && oncomplete();
     }
   }
 
@@ -71,15 +74,17 @@ BrowserID.signIn = (function() {
 
     pageHelpers.setupEmail();
 
-    dom.bindEvent("form", "submit", submit);
+    dom.bindEvent("form", "submit", cancelEvent(submit));
   }
 
+  // BEGIN TESTING API
   function reset() {
-    dom.unbindEvent("form", "submit", submit);
+    dom.unbindEvent("form", "submit");
   }
 
   init.submit = submit;
   init.reset = reset;
+  // END TESTING API
 
   return init;
 

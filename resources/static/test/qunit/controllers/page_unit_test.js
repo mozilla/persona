@@ -41,16 +41,7 @@
       bodyTemplate = "testBodyTemplate",
       waitTemplate = "wait",
       bid = BrowserID,
-      mediator = bid.Mediator,
-      modules = bid.Modules;
-
-  function reset() {
-    el = $("#controller_head");
-    el.find("#formWrap .contents").html("");
-    el.find("#wait .contents").html("");
-    $("#error").html("<div class='contents'></div>");
-    el.find("#error .contents").html("");
-  }
+      mediator = bid.Mediator;
 
   function createController(options) {
     controller = bid.Modules.PageModule.create(options);
@@ -59,12 +50,13 @@
 
   module("controllers/page_controller", {
     setup: function() {
-      reset();
+      el = $("#controller_head");
+      bid.TestHelpers.setup();
     },
 
     teardown: function() {
       controller.destroy();
-      reset();
+      bid.TestHelpers.teardown();
     }
   });
 
@@ -231,7 +223,7 @@
     setTimeout(function() {
       equal(listenerCalled, false, "all events are unbound, listener should not be called");
       start();
-    }, 100);
+    }, 1);
   });
 
   asyncTest("publish", function() {

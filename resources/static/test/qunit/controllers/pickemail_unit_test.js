@@ -37,41 +37,18 @@
 (function() {
   "use strict";
 
-  var controller, 
+  var controller,
       el = $("body"),
       bid = BrowserID,
       storage = bid.Storage,
       user = bid.User,
-      network = bid.Network,
-      xhr = bid.Mocks.xhr,
-      mediator = bid.Mediator,
       testOrigin = "http://browserid.org",
-      registrations = [];
-
-  function register(message, cb) {
-    registrations.push(mediator.subscribe(message, cb));
-  }
-
-  function unregisterAll() {
-    var registration;
-    while(registration = registrations.pop()) {
-      mediator.unsubscribe(registration);
-    }
-  }
-
-  function reset() {
-    el = $("#controller_head");
-    el.find("#formWrap .contents").html("");
-    el.find("#wait .contents").html("");
-    el.find("#error .contents").html("");
-  }
+      register = bid.TestHelpers.register;
 
   module("controllers/pickemail_controller", {
     setup: function() {
-      reset();
-      network.setXHR(xhr);
-      xhr.useResult("valid");
-      storage.clear();
+      el = $("#controller_head");
+      bid.TestHelpers.setup();
       user.setOrigin(testOrigin);
     },
 
@@ -83,12 +60,9 @@
         } catch(e) {
           // could already be destroyed from the close
         }
-      }    
-      network.setXHR($);
-      reset();
-      storage.clear();
-      unregisterAll();
-    } 
+      }
+      bid.TestHelpers.setup();
+    }
   });
 
 

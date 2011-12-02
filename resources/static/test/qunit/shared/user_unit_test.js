@@ -253,7 +253,7 @@ var jwcert = require("./jwcert");
       lib.cancelUserValidation();
       ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared when validation cancelled");
       start();
-    }, 1000);
+    }, 500);
   });
 
   asyncTest("verifyUser with a good token", function() {
@@ -588,7 +588,7 @@ var jwcert = require("./jwcert");
       lib.cancelUserValidation();
       ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared when validation cancelled");
       start();
-    }, 1000);
+    }, 500);
   });
 
   asyncTest("verifyEmail with a good token", function() {
@@ -840,7 +840,7 @@ var jwcert = require("./jwcert");
       }, failure("syncEmails failure"));
     }, failure("authenticate failure"));
 
-    
+
   });
 
   asyncTest("logoutUser with XHR failure", function(onSuccess) {
@@ -860,7 +860,7 @@ var jwcert = require("./jwcert");
       }, failure("syncEmails failure"));
     }, failure("authenticate failure"));
 
-    
+
   });
 
   asyncTest("cancelUser", function(onSuccess) {
@@ -870,7 +870,7 @@ var jwcert = require("./jwcert");
       start();
     });
 
-    
+
   });
 
   asyncTest("cancelUser with XHR failure", function(onSuccess) {
@@ -883,7 +883,7 @@ var jwcert = require("./jwcert");
       start();
     });
 
-    
+
   });
 
   asyncTest("getPersistentSigninAssertion with invalid login", function() {
@@ -903,7 +903,7 @@ var jwcert = require("./jwcert");
       });
     });
 
-    
+
   });
 
   asyncTest("getPersistentSigninAssertion with valid login with remember set to true but no email", function() {
@@ -919,7 +919,7 @@ var jwcert = require("./jwcert");
       start();
     });
 
-    
+
   });
 
   asyncTest("getPersistentSigninAssertion with valid login with email and remember set to false", function() {
@@ -940,7 +940,7 @@ var jwcert = require("./jwcert");
       });
     });
 
-    
+
   });
 
   asyncTest("getPersistentSigninAssertion with valid login, email, and remember set to true", function() {
@@ -961,7 +961,7 @@ var jwcert = require("./jwcert");
       });
     });
 
-    
+
   });
 
   asyncTest("getPersistentSigninAssertion with XHR failure", function() {
@@ -984,7 +984,7 @@ var jwcert = require("./jwcert");
       });
     });
 
-    
+
   });
 
   asyncTest("clearPersistentSignin with invalid login", function() {
@@ -998,7 +998,7 @@ var jwcert = require("./jwcert");
       start();
     });
 
-    
+
   });
 
   asyncTest("clearPersistentSignin with valid login with remember set to true", function() {
@@ -1014,6 +1014,6 @@ var jwcert = require("./jwcert");
       start();
     });
 
-    
+
   });
 }());

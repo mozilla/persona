@@ -130,6 +130,13 @@
     }, self.getErrorDialog(errors.addEmail));
   }
 
+  function cancelEvent(callback) {
+    return function(event) {
+      event && event.preventDefault();
+      callback.call(this);
+    };
+  }
+
   helpers.Dialog = helpers.Dialog || {};
 
   helpers.extend(helpers.Dialog, {
@@ -137,7 +144,8 @@
     authenticateUser: authenticateUser,
     createUser: createUser,
     addEmail: addEmail,
-    resetPassword: resetPassword
+    resetPassword: resetPassword,
+    cancelEvent: cancelEvent
   });
 
 }());

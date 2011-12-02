@@ -40,29 +40,7 @@
   var controller,
       el = $("body"),
       bid = BrowserID,
-      storage = bid.Storage,
-      network = bid.Network,
-      xhr = bid.Mocks.xhr,
-      mediator = bid.Mediator,
-      registrations = [];
-
-  function register(message, cb) {
-    registrations.push(mediator.subscribe(message, cb));
-  }
-
-  function unregisterAll() {
-    var registration;
-    while(registration = registrations.pop()) {
-      mediator.unsubscribe(registration);
-    }
-  }
-
-  function reset() {
-    el = $("#controller_head");
-    el.find("#formWrap .contents").html("");
-    el.find("#wait .contents").html("");
-    el.find("#error .contents").html("");
-  }
+      register = bid.TestHelpers.register;
 
   function createController(options) {
     controller = bid.Modules.ForgotPassword.create();
@@ -72,10 +50,7 @@
   module("controllers/forgotpassword_controller", {
     setup: function() {
       $("#email").val("");
-      reset();
-      storage.clear();
-      network.setXHR(xhr);
-      xhr.useResult("valid");
+      bid.TestHelpers.setup();
       createController({ email: "registered@testuser.com" });
     },
 
@@ -88,10 +63,7 @@
           // may already be destroyed from close inside of the controller.
         }
       }
-      reset();
-      storage.clear();
-      network.setXHR($);
-      unregisterAll();
+      bid.TestHelpers.setup();
     }
   });
 
@@ -106,7 +78,7 @@
     });
 
     controller.resetPassword();
-    
+
   });
 
   asyncTest("cancelResetPassword raises 'cancel_forgot_password'", function() {
@@ -116,7 +88,7 @@
     });
 
     controller.cancelResetPassword();
-    
+
   });
 }());
 
