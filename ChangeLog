@@ -25,6 +25,8 @@ train-2011.12.01:
   * keysigner and verifier now saturate multiple cores via 'compute-cluster' module: #213
   * fix spurious console error messages on sites that use postMessage and include.js: #534
   * refine language in verification email: #672
+  * (hotfix 2011.12.02) Fix regression where email rate limiting tooltips in dialog were not shown: #685
+  * (hotfix 2011.12.02) Fix regression where emails sent out had no newlines: #684
 
 train-2011.11.17:
   * frontend code restructuring and refactoring
