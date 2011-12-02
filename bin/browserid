@@ -207,12 +207,8 @@ db.open(config.get('database'), function (error) {
     // some test users
     if (process.env['CREATE_TEST_USERS']) {
       logger.warn("creating test users... this can take a while...");
-      bcrypt.gen_salt(config.get('bcrypt_work_factor'), function (err, salt) {
-        if (err) {
-          logger.error("error creating test users - bcrypt salt gen: " + err);
-          process.exit(1);
-        }
-        bcrypt.encrypt("THE PASSWORD", salt, function(err, hash) {
+      require('../lib/bcrypt').encrypt(
+        config.get('bcrypt_work_factor'), "THE PASSWORD", function(err, hash) {
           if (err) {
             logger.error("error creating test users - bcrypt encrypt pass: " + err);
             process.exit(1);
@@ -227,7 +223,6 @@ db.open(config.get('database'), function (error) {
             });
           }
         });
-      });
     }
   });
 });
