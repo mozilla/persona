@@ -9,11 +9,9 @@ cd $(dirname $0)/..    # top level of the checkout
 mkdir -p rpmbuild/SOURCES rpmbuild/SPECS rpmbuild/SOURCES
 rm -rf rpmbuild/RPMS rpmbuild/SOURCES/browserid
 
-# work around the checkout name not being "browserid"
-ln -sf $PWD rpmbuild/SOURCES/browserid
-tar -C rpmbuild/SOURCES --exclude rpmbuild --exclude .git \
-    --exclude var -czhf \
-    $PWD/rpmbuild/SOURCES/browserid-server.tar.gz browserid/
+tar --exclude rpmbuild --exclude .git \
+    --exclude var -czf \
+    $PWD/rpmbuild/SOURCES/browserid-server.tar.gz .
 
 set +e
 

@@ -18,13 +18,12 @@ BuildRequires: gcc-c++ git jre make npm openssl-devel
 browserid server & web home for browserid.org
 
 %prep
-%setup -q -n browserid
+%setup -q -c -n browserid
 
 %build
-rm -rf node_modules/jwcrypto
 npm install
 export PATH=$PWD/node_modules/.bin:$PATH
-(scripts/compress.sh)
+scripts/compress.sh
 echo "$GIT_REVISION" > resources/static/ver.txt
 
 %install
