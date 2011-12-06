@@ -48,12 +48,14 @@
         doAnimation = $("#signIn").length && body.innerWidth() > 640;
 
     if (doAnimation) {
-      $("#signIn").animate({"width" : "685px"}, "slow", function () {
-        // post animation
-         body.delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
-           callback();
-         });
+      $("#signIn").animate({"width" : "95%"}, 750, function () {
+         body.delay(500).animate({ "opacity" : "0.5"}, 500);
       });
+
+      // Call setTimeout here because on Android default browser, sometimes the
+      // callback is not correctly called, it seems as if jQuery does not know
+      // the animation is complete.
+      setTimeout(callback, 1750);
     }
     else {
       callback();
