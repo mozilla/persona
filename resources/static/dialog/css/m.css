@@ -131,15 +131,21 @@
     margin-top: 18px;
   }
 
+  #error {
+    position: static;
+  }
+
   #error .vertical, #wait .vertical {
       height: 250px;
   }
 
-  #error .vertical {
+  #error .vertical,
+  #error.unsupported .vertical {
     width: auto;
   }
 
-  #error .vertical > div {
+  #error .vertical > div,
+  #error.unsupported .vertical > div {
     display: block;
     height: auto;
     padding: 10px;
@@ -149,6 +155,4 @@
     border-left: none;
     padding: 0;
   }
-
-
 
