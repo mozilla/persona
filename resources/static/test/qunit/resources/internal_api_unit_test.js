@@ -86,7 +86,8 @@
 
   asyncTest("BrowserID.internal.get with silent: true, non-authenticated user - returns null assertion", function() {
     internal.get(origin, {
-        requiredEmail: "testuser@testuser.com"
+        requiredEmail: "testuser@testuser.com",
+        silent: true
     }, function(assertion) {
       strictEqual(assertion, null, "user not logged in, assertion impossible to get");
       start();
@@ -95,7 +96,9 @@
 
   asyncTest("BrowserID.internal.get with silent: true, authenticated user, no requiredEmail, and no email address associated with site - not enough info to generate an assertion", function() {
     user.authenticate("testuser@testuser.com", "password", function() {
-      internal.get(origin, {}, function(assertion) {
+      internal.get(origin, {
+          silent: true
+        }, function(assertion) {
         strictEqual(assertion, null, "not enough info to generate an assertion, assertion should not be generated");
         start();
       });
@@ -109,7 +112,9 @@
 
         xhr.useResult("invalid");
 
-        internal.get(origin, {}, function(assertion) {
+        internal.get(origin, {
+            silent: true
+          }, function(assertion) {
           strictEqual(assertion, null, "XHR failure while getting assertion");
           start();
         });
@@ -122,7 +127,9 @@
       user.syncEmails(function() {
         storage.site.set(origin, "email", "testuser@testuser.com");
 
-        internal.get(origin, {}, function(assertion) {
+        internal.get(origin, {
+            silent: true
+          }, function(assertion) {
           ok(assertion, "assertion generated using stored email address for site.");
           start();
         });
@@ -135,6 +142,7 @@
       // email addresses will not be synced just because we authenticated.
       // Depending on get to do the sync.
       internal.get(origin, {
+        silent: true,
         requiredEmail: "invalid@testuser.com"
       }, function(assertion) {
         strictEqual(assertion, null, "uncontrolled email address returns null assertion");
@@ -147,6 +155,7 @@
     user.authenticate("testuser@testuser.com", "password", function() {
       xhr.useResult("invalid");
       internal.get(origin, {
+        silent: true,
         requiredEmail: "invalid@testuser.com"
       }, function(assertion) {
         strictEqual(assertion, null, "unregistered email address returns null assertion");
@@ -158,6 +167,7 @@
   asyncTest("BrowserID.internal.get with silent: true, authenticated user, requiredEmail, and registered email address - return an assertion", function() {
     user.authenticate("testuser@testuser.com", "password", function() {
       internal.get(origin, {
+        silent: true,
         requiredEmail: "testuser@testuser.com"
       }, function(assertion) {
         ok(assertion, "assertion has been returned");
@@ -166,25 +176,27 @@
     });
   });
 
-  asyncTest("BrowserID.internal.get with dialog - return an assertion", function() {
+  asyncTest("BrowserID.internal.get with dialog - simulate the user return of an assertion", function() {
     moduleManager.reset();
+
+    var controllerOrigin;
 
     moduleManager.register("dialog", {
       get: function(getOrigin, options, onsuccess, onerror) {
-        equal(getOrigin, origin, "correct origin passed");
-        onsuccess("assertion");
+        controllerOrigin = getOrigin;
+        // simulate the full dialog flow.
+        onsuccess("simulated_assertion");
       }
     });
 
-    internal.get(origin, {
-      silent: false
-    }, function onComplete(assertion) {
-        equal(assertion, "assertion", "Kosher assertion");
+    internal.get(origin, {}, function onComplete(assertion) {
+        equal(controllerOrigin, origin, "correct origin passed");
+        equal(assertion, "simulated_assertion", "Kosher assertion");
         start();
     });
   });
 
-  asyncTest("BrowserID.internal.get with dialog with failure - return null assertion", function() {
+  asyncTest("BrowserID.internal.get with dialog with failure - simulate the return of a null assertion", function() {
     moduleManager.reset();
 
     moduleManager.register("dialog", {
@@ -193,9 +205,7 @@
       }
     });
 
-    internal.get(origin, {
-      silent: false
-    }, function onComplete(assertion) {
+    internal.get(origin, {}, function onComplete(assertion) {
         equal(assertion, null, "on failure, assertion is null");
         start();
     });
@@ -210,9 +220,7 @@
       }
     });
 
-    internal.get(origin, {
-      silent: false
-    }, function onComplete(assertion) {
+    internal.get(origin, {}, function onComplete(assertion) {
         equal(assertion, null, "on cancel, assertion is null");
         start();
     });

@@ -83,7 +83,13 @@
     // (has window.opener) as well as whether the relay function exists.
     // If these conditions are not met, then print an appropriate message.
     _relayName = getRelayName();
-    if(_relayName !== "NATIVE") {
+
+    // If the relay name is NATIVE, that means do nothing because the
+    // channel will be set up by the dialog implementer.
+    if(_relayName === "NATIVE") {
+      // In a native channel, do nothing.
+    }
+    else {
       var REGISTERED_METHODS = {
         'get': function(origin, params, onsuccess, onerror) {
           // check for old controller methods
@@ -104,10 +110,6 @@
         frameWindow.BrowserID.Relay.registerClient(REGISTERED_METHODS);
       }
       else {
-        // Only run if we are searching for the IFRAME.  If the relay name is
-        // NATIVE, that means that either the channel has already been set up
-        // before this or it will be set up after this.  Since the relay name is
-        // native, do not throw an exception.
         throw "relay frame not found";
       }
     }
