@@ -132,6 +132,16 @@
     });
   });
 
+  test("IFRAME channel with #NATIVE channel specified", function() {
+    winMock.location.hash = "#NATIVE";
+
+    channel.open({
+      getVerifiedEmail: function(origin, onsuccess, onerror) {
+        ok(false, "getVerifiedEmail should not be called with a native channel");
+      }
+    });
+  });
+
   asyncTest("IFRAME channel with error on open", function() {
     delete winMock.opener.frames['1234'];
 

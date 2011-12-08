@@ -642,7 +642,8 @@ BrowserID.User = (function() {
       // to avoid issues with clock drift on user's machine.
       // (issue #329)
         var storedID = storage.getEmail(email),
-            assertion;
+            assertion,
+            self=this;
 
         function createAssertion(idInfo) {
           network.serverTime(function(serverTime) {
@@ -658,6 +659,7 @@ BrowserID.User = (function() {
               // yield!
               setTimeout(function() {
                 assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
+                storage.site.set(self.getOrigin(), "email", email);
                 if (onSuccess) {
                   onSuccess(assertion);
                 }
