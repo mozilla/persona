@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then("/pages/signin", function() {
+(function() {
   "use strict";
 
   var bid = BrowserID,
@@ -72,11 +72,9 @@ steal.then("/pages/signin", function() {
       if (extraTests) extraTests();
       else start();
     }, 100);
-
-    stop();
   }
 
-  test("signin with valid email and password", function() {
+  asyncTest("signin with valid email and password", function() {
     $("#email").val("registered@testuser.com");
     $("#password").val("password");
 
@@ -86,11 +84,9 @@ steal.then("/pages/signin", function() {
       equal(docMock.location, "/", "user signed in, page redirected");
       start();
     }, 100);
-
-    stop();
   });
 
-  test("signin with valid email with leading/trailing whitespace and password", function() {
+  asyncTest("signin with valid email with leading/trailing whitespace and password", function() {
     $("#email").val("  registered@testuser.com  ");
     $("#password").val("password");
 
@@ -100,18 +96,16 @@ steal.then("/pages/signin", function() {
       equal(docMock.location, "/", "user signed in, page redirected");
       start();
     }, 100);
-
-    stop();
   });
 
-  test("signin with missing email", function() {
+  asyncTest("signin with missing email", function() {
     $("#email").val("");
     $("#password").val("password");
 
     testUserNotSignedIn();
   });
 
-  test("signin with missing password", function() {
+  asyncTest("signin with missing password", function() {
     $("#email").val("registered@testuser.com");
     $("#password").val("");
 
@@ -119,7 +113,7 @@ steal.then("/pages/signin", function() {
   });
 
 
-  test("signin with bad username/password", function() {
+  asyncTest("signin with bad username/password", function() {
     xhr.useResult("invalid");
     $("#email").val("registered@testuser.com");
     $("#password").val("password");
@@ -127,7 +121,7 @@ steal.then("/pages/signin", function() {
     testUserNotSignedIn();
   });
 
-  test("signin with XHR error", function() {
+  asyncTest("signin with XHR error", function() {
     xhr.useResult("ajaxError");
     $("#email").val("registered@testuser.com");
     $("#password").val("password");
@@ -141,4 +135,4 @@ steal.then("/pages/signin", function() {
   });
 
 
-});
+}());

@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then("/pages/verify_email_address", function() {
+(function() {
   "use strict";
 
   var bid = BrowserID,
@@ -61,7 +61,7 @@ steal.then("/pages/verify_email_address", function() {
     }
   });
 
-  test("verifyEmailAddress with good token and site", function() {
+  asyncTest("verifyEmailAddress with good token and site", function() {
     storage.setStagedOnBehalfOf("browserid.org");
 
     bid.verifyEmailAddress("token");
@@ -72,10 +72,9 @@ steal.then("/pages/verify_email_address", function() {
       equal($(".website").text(), "browserid.org", "origin is updated");
       start();
     }, 500);
-    stop();
   });
 
-  test("verifyEmailAddress with good token and nosite", function() {
+  asyncTest("verifyEmailAddress with good token and nosite", function() {
     $(".siteinfo").hide();
     storage.setStagedOnBehalfOf("");
 
@@ -88,10 +87,9 @@ steal.then("/pages/verify_email_address", function() {
       equal($(".siteinfo .website").text(), "", "origin is not updated");
       start();
     }, 500);
-    stop();
   });
 
-  test("verifyEmailAddress with bad token", function() {
+  asyncTest("verifyEmailAddress with bad token", function() {
     xhr.useResult("invalid");
 
     bid.verifyEmailAddress("token");
@@ -99,10 +97,9 @@ steal.then("/pages/verify_email_address", function() {
       ok($("#cannotconfirm").is(":visible"), "cannot confirm box is visible");
       start();
     }, 500);
-    stop();
   });
 
-  test("verifyEmailAddress with emailForVerficationToken XHR failure", function() {
+  asyncTest("verifyEmailAddress with emailForVerficationToken XHR failure", function() {
     xhr.useResult("ajaxError");
     bid.verifyEmailAddress("token");
 
@@ -110,10 +107,9 @@ steal.then("/pages/verify_email_address", function() {
       ok($("#error").is(":visible"), "cannot communicate box is visible");
       start();
     }, 500);
-    stop();
   });
 
-  test("submit with good token, both passwords", function() {
+  asyncTest("submit with good token, both passwords", function() {
     bid.verifyEmailAddress("token");
 
 
@@ -126,10 +122,9 @@ steal.then("/pages/verify_email_address", function() {
       equal($("#congrats").is(":visible"), true, "congrats is visible, we are complete");
       start();
     }, 500);
-    stop();
   });
 
-  test("submit with good token, missing password", function() {
+  asyncTest("submit with good token, missing password", function() {
     bid.verifyEmailAddress("token");
 
 
@@ -142,10 +137,10 @@ steal.then("/pages/verify_email_address", function() {
       equal($("#congrats").is(":visible"), false, "congrats is not visible, missing password");
       start();
     }, 500);
-    stop();
+    
   });
 
-  test("submit with good token, missing verification password", function() {
+  asyncTest("submit with good token, missing verification password", function() {
     bid.verifyEmailAddress("token");
 
 
@@ -158,10 +153,10 @@ steal.then("/pages/verify_email_address", function() {
       equal($("#congrats").is(":visible"), false, "congrats is not visible, missing verification password");
       start();
     }, 500);
-    stop();
+    
   });
 
-  test("submit with good token, different passwords", function() {
+  asyncTest("submit with good token, different passwords", function() {
     bid.verifyEmailAddress("token");
 
     $("#password").val("password");
@@ -173,6 +168,6 @@ steal.then("/pages/verify_email_address", function() {
       equal($("#congrats").is(":visible"), false, "congrats is not visible, different passwords");
       start();
     }, 500);
-    stop();
+    
   });
-});
+}());

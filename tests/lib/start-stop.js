@@ -70,7 +70,10 @@ function setupProc(proc) {
   proc.stdout.on('data', function(buf) {
     buf.toString().split('\n').forEach(function(x) {
       if (process.env['LOG_TO_CONSOLE'] || /^.*error.*:/.test(x)) {
-        console.log(x.toString());
+        var line = x.toString().trim();
+        if (line.length) {
+          console.log(line);
+        }
       }
       var tokenRegex = new RegExp('token=([A-Za-z0-9]+)$', 'm');
 

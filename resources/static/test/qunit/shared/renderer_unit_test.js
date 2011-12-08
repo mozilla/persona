@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then("/test/qunit/mocks/templates", "/shared/renderer", function() {
+(function() {
   "use strict";
 
   var bid = BrowserID,
@@ -77,6 +77,6 @@ steal.then("/test/qunit/mocks/templates", "/shared/renderer", function() {
     ok($("#formWrap > #templateInput").length && $("#formWrap > .contents"), "template appended to element instead of overwriting it");
 
   });
-});
+}());
 
 

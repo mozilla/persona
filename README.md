@@ -42,8 +42,8 @@ Handy for dev and QA tasks, but if you want to install from scratch...
 
 Here's the software you'll need installed:
 
-* node.js (>= 0.4.5): http://nodejs.org/
-* npm: http://npmjs.org/
+* node.js (>= 0.6.2): http://nodejs.org/
+* npm: http://npmjs.org/ (or bundled with node in 0.6.3+)
 * git
 * g++
 

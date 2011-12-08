@@ -40,8 +40,9 @@ BrowserID.Network = (function() {
   var csrf_token,
       xhr = $,
       server_time,
+      domain_key_creation_time,
       auth_status,
-      hub = window.OpenAjax && OpenAjax.hub;
+      mediator = BrowserID.Mediator;
 
   function deferResponse(cb) {
     if (cb) {
@@ -64,7 +65,7 @@ BrowserID.Network = (function() {
       network.errorThrown = errorThrown;
 
       if (cb) cb(info);
-      hub && hub.publish("xhrError", info);
+      mediator && mediator.publish("xhrError", info);
     };
   }
 
@@ -125,6 +126,7 @@ BrowserID.Network = (function() {
             remote: result.server_time,
             local: (new Date()).getTime()
           };
+          domain_key_creation_time = result.domain_key_creation_time;
           auth_status = result.authenticated;
           cb();
         },
@@ -145,7 +147,7 @@ BrowserID.Network = (function() {
 
   // Not really part of the Network API, but related to networking
   $(document).bind("offline", function() {
-    hub.publish("offline");
+    mediator.publish("offline");
   });
 
   var Network = {
@@ -527,6 +529,26 @@ BrowserID.Network = (function() {
           if (!server_time) throw "can't get server time!";
           var offset = (new Date()).getTime() - server_time.local;
           onSuccess(new Date(offset + server_time.remote));
+        } catch(e) {
+          onFailure(e.toString());
+        }
+      }, onFailure);
+    },
+
+    /**
+     * Get the time at which the domain key was last updated.
+     *
+     * Note: this function will perform a network request if
+     * during this session /wsapi/session_context has not
+     * been called.
+     *
+     * @method domainKeyCreationTime
+     */
+    domainKeyCreationTime: function(onSuccess, onFailure) {
+      withContext(function() {
+        try {
+          if (!domain_key_creation_time) throw "can't get domain key creation time!";
+          onSuccess(new Date(domain_key_creation_time));
         } catch(e) {
           onFailure(e.toString());
         }

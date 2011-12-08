@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then("/pages/manage_account", function() {
+(function() {
   "use strict";
 
   var bid = BrowserID,
@@ -70,7 +70,7 @@ steal.then("/pages/manage_account", function() {
     }
   });
 
-  test("no email addresses are displayed if there are no children", function() {
+  asyncTest("no email addresses are displayed if there are no children", function() {
     xhr.useResult("noidentities");
 
     bid.manageAccount(mocks);
@@ -80,10 +80,10 @@ steal.then("/pages/manage_account", function() {
       start();
     }, TEST_DELAY);
 
-    stop();
+    
   });
 
-  test("email addresses added if there are children", function() {
+  asyncTest("email addresses added if there are children", function() {
     bid.manageAccount(mocks);
 
     setTimeout(function() {
@@ -91,10 +91,10 @@ steal.then("/pages/manage_account", function() {
       start();
     }, TEST_DELAY);
 
-    stop();
+    
   });
 
-  test("sync XHR error on startup", function() {
+  asyncTest("sync XHR error on startup", function() {
     xhr.useResult("ajaxError");
 
     bid.manageAccount(mocks);
@@ -104,10 +104,10 @@ steal.then("/pages/manage_account", function() {
       start();
     }, ERROR_DELAY);
 
-    stop();
+    
   });
 
-  test("removeEmail with multiple emails", function() {
+  asyncTest("removeEmail with multiple emails", function() {
     // start with multiple addresses.
     xhr.useResult("multiple");
 
@@ -124,10 +124,10 @@ steal.then("/pages/manage_account", function() {
       }, TEST_DELAY);
     }, TEST_DELAY);
 
-    stop();
+    
   });
 
-  test("removeEmail with multiple emails and XHR error", function() {
+  asyncTest("removeEmail with multiple emails and XHR error", function() {
     // start with multiple addresses.
     xhr.useResult("multiple");
 
@@ -143,10 +143,10 @@ steal.then("/pages/manage_account", function() {
       }, ERROR_DELAY);
     }, TEST_DELAY);
 
-    stop();
+    
   });
 
-  test("removeEmail with single email cancels account", function() {
+  asyncTest("removeEmail with single email cancels account", function() {
     bid.manageAccount(mocks);
 
     setTimeout(function() {
@@ -158,10 +158,10 @@ steal.then("/pages/manage_account", function() {
       }, TEST_DELAY);
     }, TEST_DELAY);
 
-    stop();
+    
   });
 
-  test("removeEmail with single email cancels account and XHR error", function() {
+  asyncTest("removeEmail with single email cancels account and XHR error", function() {
     xhr.useResult("valid");
 
     bid.manageAccount(mocks);
@@ -177,10 +177,10 @@ steal.then("/pages/manage_account", function() {
       }, ERROR_DELAY);
     }, TEST_DELAY);
 
-    stop();
+    
   });
 
-  test("cancelAccount", function() {
+  asyncTest("cancelAccount", function() {
     bid.manageAccount(mocks);
 
     setTimeout(function() {
@@ -193,10 +193,10 @@ steal.then("/pages/manage_account", function() {
 
     }, TEST_DELAY);
 
-    stop();
+    
   });
 
-  test("cancelAccount with XHR error", function() {
+  asyncTest("cancelAccount with XHR error", function() {
     bid.manageAccount(mocks);
 
     setTimeout(function() {
@@ -209,7 +209,7 @@ steal.then("/pages/manage_account", function() {
       }, ERROR_DELAY);
     }, TEST_DELAY);
 
-    stop();
+    
   });
 
-});
+}());

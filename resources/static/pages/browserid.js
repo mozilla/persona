@@ -70,12 +70,13 @@ $(function() {
     $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
   }
 
-  $(".signOut").click(function(event) {
+  $("a.signOut").click(function(event) {
     event.preventDefault();
+    event.stopPropagation();
 
     user.logoutUser(function() {
       document.location = "/";
-    });
+    }, pageHelpers.getFailure(bid.Errors.logout));
   });
 
   $(".display_always,.display_auth,.display_nonauth").hide();

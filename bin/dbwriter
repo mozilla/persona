@@ -63,7 +63,13 @@ logger.info("dbwriter starting up");
 
 // Setup health check / heartbeat middleware.
 // This is in front of logging on purpose.  see issue #537
-heartbeat.setup(app);
+heartbeat.setup(app, function(cb) {
+  // ping the database to verify we're really healthy.
+  db.ping(function(e) {
+    if (e) logger.error("database ping error: " + e);
+    cb(!e);
+  });
+});
 
 // logging!  all requests other than __heartbeat__ are logged
 app.use(express.logger({
@@ -74,6 +80,16 @@ app.use(express.logger({
     }
   }
 }));
+
+var statsd_config = config.get('statsd');
+if (statsd_config && statsd_config.enabled) {
+  logger_statsd = require("connect-logger-statsd");
+  app.use(logger_statsd({
+    host: statsd_config.hostname || "localhost",
+    port: statsd_config.port || 8125,
+    prefix: statsd_config.prefix || "browserid.dbwriter."
+  }));
+}
 
 // Add Strict-Transport-Security headers if we're serving over SSL
 if (config.get('scheme') == 'https') {

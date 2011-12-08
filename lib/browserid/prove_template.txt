@@ -1,11 +1,8 @@
-Hi {{email}},
+Thanks for verifying your email address.  This message is being sent to you to complete your sign-in to {{site}}.
  
-This message is being sent to you to complete your sign-in to
-{{site}}.  Click the link below to continue:
+Finish registration by clicking this link: {{link}}
  
-{{link}}
- 
-If you are NOT trying to sign into {{site}}, just ignore this email. 
+If you are NOT trying to sign into this site, just ignore this email.
  
 Thanks,
 BrowserID

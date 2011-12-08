@@ -62,7 +62,7 @@ BrowserID.Storage = (function() {
         return emails;
     } catch(e) {
     }
-    
+
     // if we had a problem parsing or the emails are null
     clear();
     return {};
@@ -146,7 +146,7 @@ BrowserID.Storage = (function() {
 
     try {
       var staged = JSON.parse(window.localStorage.stagedOnBehalfOf);
-      
+
       if (staged) {
         if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw "stale";
         if (typeof(staged.origin) !== 'string') throw "malformed";

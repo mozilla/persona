@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
+/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then(function() {
+(function() {
   "use strict";
 
   var pageHelpers = BrowserID.PageHelpers;
@@ -76,17 +76,15 @@ steal.then(function() {
     equal(pageHelpers.getStoredEmail(), "", "clearStoredEmail clears stored email");
   });
 
-  test("replaceInputsWithNotice replaces contents", function() {
+  asyncTest("replaceInputsWithNotice replaces contents", function() {
     pageHelpers.replaceInputsWithNotice(".emailsent", function() {
       equal($(".emailsent").is(":visible"), true, "emailsent is visible");
       equal($(".forminputs").is(":visible"), false, "inputs are hidden");
       start();
     });
-
-    stop();
   });
 
-  test("showInputs hides notices and shows the inputs", function() {
+  asyncTest("showInputs hides notices and shows the inputs", function() {
     pageHelpers.replaceInputsWithNotice(".emailsent", function() {
       pageHelpers.showInputs(function() {
         equal($(".emailsent").is(":visible"), false, "emailsent is hidden");
@@ -94,12 +92,10 @@ steal.then(function() {
         start();
       });
     });
-
-    stop();
   });
 
 
-  test("showEmailSent shows correct email sent message", function() {
+  asyncTest("showEmailSent shows correct email sent message", function() {
     pageHelpers.setStoredEmail("testuser@testuser.com");
     pageHelpers.showEmailSent(function() {
       equal($("#sentToEmail").html(), "testuser@testuser.com", "correct email is set");
@@ -109,7 +105,7 @@ steal.then(function() {
     });
   });
 
-  test("cancelEmailSent restores the stored email, inputs are shown again", function() {
+  asyncTest("cancelEmailSent restores the stored email, inputs are shown again", function() {
     pageHelpers.setStoredEmail("testuser@testuser.com");
     pageHelpers.showEmailSent(function() {
       pageHelpers.cancelEmailSent(function() {
@@ -117,14 +113,12 @@ steal.then(function() {
         equal(email, "testuser@testuser.com", "stored email is reset on cancel");
         equal($(".emailsent").is(":visible"), false, "emailsent is not visible");
         equal($(".forminputs").is(":visible"), true, "inputs are visible");
-        equal($("#email").is(":focus"), true, "first element is focused");
+ //       equal($("#email").is(":focus"), true, "first element is focused (NOTE: requires your browser to be focused to work)");
         start();
       });
     });
-
-    stop();
   });
 
-});
+}());
 
 

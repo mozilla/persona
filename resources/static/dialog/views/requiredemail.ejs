@@ -1,9 +1,9 @@
-  <!--strong>Required Email Sign In</strong-->
+  <strong>The site requested you sign in with:</strong>
   <div class="form_section">
       <ul class="inputs">
 
-          The site requested you sign in with
-          <div id="required_email"><%= email %></div>
+          <label for="email" class="serif">Email</label>
+          <input id="required_email" class="sans" type="email" value="<%= email %>" disabled />
           <div id="could_not_add" class="tooltip" for="required_email">
             We just sent an email to that address! If you really want to send another, wait a minute or two and try again.
           </div>

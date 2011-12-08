@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global steal: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-steal.then("/pages/add_email_address", function() {
+(function() {
   "use strict";
 
   var bid = BrowserID,
@@ -50,6 +50,7 @@ steal.then("/pages/add_email_address", function() {
       $(".error").removeClass("error");
       $("#error").stop().hide();
       $(".website").text("");
+      $(".siteinfo").hide();
     },
     teardown: function() {
       network.setXHR($);
@@ -59,33 +60,31 @@ steal.then("/pages/add_email_address", function() {
     }
   });
 
-  test("addEmailAddress with good token and site", function() {
+  asyncTest("addEmailAddress with good token and site", function() {
     storage.setStagedOnBehalfOf("browserid.org");
 
     bid.addEmailAddress("token");
 
     setTimeout(function() {
-      equal($("#email").text(), "testuser@testuser.com", "email set");
+      equal($("#email").val(), "testuser@testuser.com", "email set");
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
       equal($(".website").text(), "browserid.org", "origin is updated");
       start();
     }, 500);
-    stop();
   });
 
-  test("addEmailAddress with good token and nosite", function() {
+  asyncTest("addEmailAddress with good token and nosite", function() {
     bid.addEmailAddress("token");
 
     setTimeout(function() {
-      equal($("#email").text(), "testuser@testuser.com", "email set");
+      equal($("#email").val(), "testuser@testuser.com", "email set");
       equal($(".siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
       equal($(".siteinfo .website").text(), "", "origin is not updated");
       start();
     }, 500);
-    stop();
   });
 
-  test("addEmailAddress with bad token", function() {
+  asyncTest("addEmailAddress with bad token", function() {
     xhr.useResult("invalid");
 
     bid.addEmailAddress("token");
@@ -93,10 +92,9 @@ steal.then("/pages/add_email_address", function() {
       ok($("#cannotconfirm").is(":visible"), "cannot confirm box is visible");
       start();
     }, 500);
-    stop();
   });
 
-  test("addEmailAddress with emailForVerficationToken XHR failure", function() {
+  asyncTest("addEmailAddress with emailForVerficationToken XHR failure", function() {
     xhr.useResult("ajaxError");
     bid.addEmailAddress("token");
 
@@ -104,7 +102,6 @@ steal.then("/pages/add_email_address", function() {
       ok($("#cannotcommunicate").is(":visible"), "cannot communicate box is visible");
       start();
     }, 500);
-    stop();
   });
 
-});
+}());

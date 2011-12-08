@@ -79,13 +79,7 @@ if (!config.get('dbwriter_url')) {
 
 // #1 - Setup health check / heartbeat middleware.
 // This is in front of logging on purpose.  see issue #537
-heartbeat.setup(app, function(cb) {
-  // let's check stuff!  first the heartbeat of our keysigner
-  heartbeat.check(config.get('keysigner_url'), function(rv) {
-    if (!rv) return cb(rv);
-    heartbeat.check(config.get('dbwriter_url'), cb);
-  });
-});
+heartbeat.setup(app);
 
 // #2 - logging!  all requests other than __heartbeat__ are logged
 app.use(express.logger({
@@ -96,6 +90,16 @@ app.use(express.logger({
     }
   }
 }));
+
+var statsd_config = config.get('statsd');
+if (statsd_config && statsd_config.enabled) {
+  logger_statsd = require("connect-logger-statsd");
+  app.use(logger_statsd({
+    host: statsd_config.hostname || "localhost",
+    port: statsd_config.port || 8125,
+    prefix: statsd_config.prefix || "browserid.webhead."
+  }));
+}
 
 // #3 - Add Strict-Transport-Security headers if we're serving over SSL
 if (config.get('scheme') == 'https') {
@@ -168,6 +172,13 @@ shutdown.installUpdateHandler(app, function(readyForShutdown) {
   db.close(readyForShutdown)
 });
 
+// #11.5 - custom 404
+app.use(function(req, res,next) {
+  res.statusCode = 404;
+  res.write("Cannot find this resource");
+  res.end();
+});
+
 // #12 if the BROWSERID_FAKE_VERIFICATION env var is defined, we'll include
 // fake_verification.js.  This is used during testing only and should
 // never be included in a production deployment
@@ -191,5 +202,32 @@ db.open(config.get('database'), function (error) {
   var bindTo = config.get('bind_to');
   app.listen(bindTo.port, bindTo.host, function() {
     logger.info("running on http://" + app.address().address + ":" + app.address().port);
+
+    // #13 if the CREATE_TEST_USERS env var is defined, we'll try to create
+    // some test users
+    if (process.env['CREATE_TEST_USERS']) {
+      logger.warn("creating test users... this can take a while...");
+      bcrypt.gen_salt(config.get('bcrypt_work_factor'), function (err, salt) {
+        if (err) {
+          logger.error("error creating test users - bcrypt salt gen: " + err);
+          process.exit(1);
+        }
+        bcrypt.encrypt("THE PASSWORD", salt, function(err, hash) {
+          if (err) {
+            logger.error("error creating test users - bcrypt encrypt pass: " + err);
+            process.exit(1);
+          }
+          var want = parseInt(process.env['CREATE_TEST_USERS']);
+          var have = 0;
+          for (i = 1; i <= want; i++) {
+            db.addTestUser(i + "@loadtest.domain", hash, function(err, email) {
+              if (++have == want) {
+                logger.warn("created " + want + " test users");
+              }
+            });
+          }
+        });
+      });
+    }
   });
 });

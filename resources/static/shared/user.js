@@ -54,39 +54,67 @@ BrowserID.User = (function() {
 
   "use strict";
   // remove identities that are no longer valid
-  function cleanupIdentities() {
-      var emails = storage.getEmails();
-      var issued_identities = {};
-      prepareDeps();
-      _(emails).each(function(email_obj, email_address) {
-        try {
-          email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
-        } catch (x) {
-          storage.invalidateEmail(email_address);
-          return;
-        }
-
-        // no cert? reset
-        if (!email_obj.cert) {
-          storage.invalidateEmail(email_address);
-        } else {
-          try {
-            // parse the cert
-            var cert = new jwcert.JWCert();
-            cert.parse(emails[email_address].cert);
-
-            // check if needs to be reset, if it expires in 5 minutes
-            var diff = cert.expires.valueOf() - new Date().valueOf();
-            if (diff < 300000)
-              storage.invalidateEmail(email_address);
-          } catch (e) {
-            // error parsing the certificate!  Maybe it's of an old/different
-            // format?  just delete it.
-            try { console.log("error parsing cert for", email_address ,":", e); } catch(e2) { }
-            storage.invalidateEmail(email_address);
+  function cleanupIdentities(cb) {
+    network.serverTime(function(serverTime) {
+      network.domainKeyCreationTime(function(creationTime) {
+        // Determine if a certificate is expired.  That will be
+        // if it was issued *before* the domain key was last updated or
+        // if the certificate expires in less that 5 minutes from now.
+        function isExpired(cert) {
+          // if it expires in less than 5 minutes, it's too old to use.
+          var diff = cert.expires.valueOf() - serverTime.valueOf();
+          if (diff < (60 * 5 * 1000)) {
+            return true;
           }
+
+          // or if it was issued before the last time the domain key
+          // was updated, it's invalid
+          if (!cert.issued_at || cert.issued_at < creationTime) {
+            return true;
+          }
+
+          return false;
         }
+
+        var emails = storage.getEmails();
+        var issued_identities = {};
+        prepareDeps();
+        _(emails).each(function(email_obj, email_address) {
+          try {
+            email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
+          } catch (x) {
+            storage.invalidateEmail(email_address);
+            return;
+          }
+
+          // no cert? reset
+          if (!email_obj.cert) {
+            storage.invalidateEmail(email_address);
+          } else {
+            try {
+              // parse the cert
+              var cert = new jwcert.JWCert();
+              cert.parse(emails[email_address].cert);
+
+              // check if this certificate is still valid.
+              if (isExpired(cert)) {
+                storage.invalidateEmail(email_address);
+              }
+
+            } catch (e) {
+              // error parsing the certificate!  Maybe it's of an old/different
+              // format?  just delete it.
+              try { console.log("error parsing cert for", email_address ,":", e); } catch(e2) { }
+              storage.invalidateEmail(email_address);
+            }
+          }
+        });
+        cb();
+      }, function(e) {
+        // we couldn't get domain key creation time!  uh oh.
+        cb();
       });
+    });
   }
 
   function setAuthenticationStatus(authenticated) {
@@ -373,40 +401,42 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     syncEmails: function(onSuccess, onFailure) {
-      cleanupIdentities();
-      var issued_identities = this.getStoredEmailKeypairs();
       var self = this;
 
-      network.listEmails(function(emails) {
-        // lists of emails
-        var client_emails = _.keys(issued_identities);
-        var server_emails = _.keys(emails);
+      cleanupIdentities(function () {
+        var issued_identities = self.getStoredEmailKeypairs();
 
-        var emails_to_add = _.difference(server_emails, client_emails);
-        var emails_to_remove = _.difference(client_emails, server_emails);
+        network.listEmails(function(emails) {
+          // lists of emails
+          var client_emails = _.keys(issued_identities);
+          var server_emails = _.keys(emails);
 
-        // remove emails
-        _.each(emails_to_remove, function(email) {
-          // if it's not a primary
-          if (!issued_identities[email].isPrimary)
-            storage.removeEmail(email);
-        });
+          var emails_to_add = _.difference(server_emails, client_emails);
+          var emails_to_remove = _.difference(client_emails, server_emails);
 
-        // keygen for new emails
-        // asynchronous
-        function addNextEmail() {
-          if (!emails_to_add || !emails_to_add.length) {
-            onSuccess();
-            return;
+          // remove emails
+          _.each(emails_to_remove, function(email) {
+            // if it's not a primary
+            if (!issued_identities[email].isPrimary)
+              storage.removeEmail(email);
+          });
+
+          // keygen for new emails
+          // asynchronous
+          function addNextEmail() {
+            if (!emails_to_add || !emails_to_add.length) {
+              onSuccess();
+              return;
+            }
+
+            var email = emails_to_add.shift();
+
+            persistEmail(email, addNextEmail, onFailure);
           }
 
-          var email = emails_to_add.shift();
-
-          persistEmail(email, addNextEmail, onFailure);
-        }
-
-        addNextEmail();
-      }, onFailure);
+          addNextEmail();
+        }, onFailure);
+      });
     },
 
     /**
@@ -587,7 +617,6 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     syncEmailKeypair: function(email, onSuccess, onFailure) {
-      // FIXME use true key sizes
       prepareDeps();
       // FIXME: parameterize!
       var keysize = 256;
@@ -613,7 +642,8 @@ BrowserID.User = (function() {
       // to avoid issues with clock drift on user's machine.
       // (issue #329)
         var storedID = storage.getEmail(email),
-            assertion;
+            assertion,
+            self=this;
 
         function createAssertion(idInfo) {
           network.serverTime(function(serverTime) {
@@ -629,6 +659,7 @@ BrowserID.User = (function() {
               // yield!
               setTimeout(function() {
                 assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
+                storage.site.set(self.getOrigin(), "email", email);
                 if (onSuccess) {
                   onSuccess(assertion);
                 }

@@ -141,7 +141,8 @@ suite.addBatch({
     "generate an assertion": {
       topic: function(r) {
         var serializedCert = r.body.toString();
-        var assertion = new jwt.JWT(null, new Date(), "rp.com");
+        var expiration = new Date(new Date().getTime() + (2 * 60 * 1000));
+        var assertion = new jwt.JWT(null, expiration, "rp.com");
         var full_assertion = {
           certificates: [serializedCert],
           assertion: assertion.sign(kp.secretKey)
@@ -160,7 +161,7 @@ suite.addBatch({
           ca.verifyChain(full_assertion.certificates, function(pk) {
             if (!pk)
               cb(false);
-            
+
             var assertion = new jwt.JWT();
             assertion.parse(full_assertion.assertion);
             cb(assertion.verify(pk));
