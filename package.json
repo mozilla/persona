@@ -29,7 +29,7 @@
     , "postprocess": "0.0.3"
     , "urlparse": "0.0.1"
     , "uglifycss": "0.0.4"
-    , "node-statsd": "https://github.com/mojodna/node-statsd/tarball/2584c08fad"
+    , "node-statsd": "https://github.com/lloyd/node-statsd/tarball/085b93"
     , "connect-logger-statsd": "0.0.1"
     , "semver": "1.0.12"
     , "compute-cluster": "0.0.4"
