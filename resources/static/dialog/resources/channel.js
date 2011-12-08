@@ -55,6 +55,7 @@
   var win = window,
       nav = navigator,
       onCompleteCallback,
+      _relayName,
       _relayWindow = null;
 
   function getRelayName() {
@@ -67,8 +68,9 @@
   }
 
   function getRelayWindow() {
-    if (!_relayWindow)
-      _relayWindow = win.opener.frames[getRelayName()];
+    if (!_relayWindow) {
+      _relayWindow = win.opener.frames[_relayName];
+    }
     return _relayWindow;
   }
 
@@ -80,28 +82,34 @@
     // TODO - Add a check for whether the dialog was opened by another window
     // (has window.opener) as well as whether the relay function exists.
     // If these conditions are not met, then print an appropriate message.
-
-    var REGISTERED_METHODS = {
-      'get': function(origin, params, onsuccess, onerror) {
-        // check for old controller methods
-        // FIXME KILL THIS SOON
-        if (controller.get) {
-          return controller.get(origin, params, onsuccess, onerror);          
-        } else {
-          return controller.getVerifiedEmail(origin, onsuccess, onerror);
+    _relayName = getRelayName();
+    if(_relayName !== "NATIVE") {
+      var REGISTERED_METHODS = {
+        'get': function(origin, params, onsuccess, onerror) {
+          // check for old controller methods
+          // FIXME KILL THIS SOON
+          if (controller.get) {
+            return controller.get(origin, params, onsuccess, onerror);
+          } else {
+            return controller.getVerifiedEmail(origin, onsuccess, onerror);
+          }
         }
+      };
+
+      // The relay frame will give us the origin and a function to call when
+      // dialog processing is complete.
+      var frameWindow = getRelayWindow();
+
+      if (frameWindow) {
+        frameWindow.BrowserID.Relay.registerClient(REGISTERED_METHODS);
       }
-    };
-    
-    // The relay frame will give us the origin and a function to call when 
-    // dialog processing is complete.
-    var frameWindow = getRelayWindow();
-    
-    if (frameWindow) {
-      frameWindow.BrowserID.Relay.registerClient(REGISTERED_METHODS);
-    }
-    else {
-      throw "relay frame not found";
+      else {
+        // Only run if we are searching for the IFRAME.  If the relay name is
+        // NATIVE, that means that either the channel has already been set up
+        // before this or it will be set up after this.  Since the relay name is
+        // native, do not throw an exception.
+        throw "relay frame not found";
+      }
     }
   }
 
@@ -114,14 +122,14 @@
 
   function close() {
     var frameWindow = getRelayWindow();
-    
+
     if (frameWindow) {
       frameWindow.BrowserID.Relay.unregisterClient();
       _relayWindow = null;
     }
     else {
       throw "relay frame not found";
-    }    
+    }
   }
 
   function init(options) {
@@ -140,7 +148,7 @@
   if(window.BrowserID) {
     BrowserID.Channel = {
       /**
-       * Used to intialize the channel, mostly for unit testing to override 
+       * Used to intialize the channel, mostly for unit testing to override
        * window and navigator.
        * @method init
        */
@@ -148,7 +156,7 @@
 
       /**
        * Open the channel.
-       * @method open 
+       * @method open
        * @param {object} options - contains:
        * *   options.getVerifiedEmail {function} - function to /get
        */
@@ -162,7 +170,7 @@
   }
 
   /**
-   * This is here as a legacy API for addons/etc that are depending on 
+   * This is here as a legacy API for addons/etc that are depending on
    * window.setupChannel;
    */
   window.setupChannel = open;
