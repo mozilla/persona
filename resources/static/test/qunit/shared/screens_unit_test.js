@@ -47,7 +47,9 @@
     },
 
     teardown: function() {
-      el.empty();
+      if (el) {
+        el.empty();
+      }
     }
   });
 
@@ -82,5 +84,18 @@
     equal($("body").hasClass("waiting"), false, "waiting class taken off of body");
     equal($("body").hasClass("form"), false, "form class taken off of body");
     equal($("body").hasClass("error"), true, "error class added to body");
+  });
+
+  test("XHR 503 (server unavailable) error", function() {
+    var el = $("#error .contents");
+    el.empty();
+
+    screens.error("error", {
+      network: {
+        status: 503
+      }
+    });
+
+    ok($("#error_503").length, "503 header is shown");
   });
 }());

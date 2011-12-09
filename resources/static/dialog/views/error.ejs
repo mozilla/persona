@@ -1,5 +1,9 @@
 
-  <h2>We are very sorry, there has been an error!</h2>
+  <% if (typeof network !== "undefined" && network.status == 503) { %>
+    <h2 id="error_503">We are very sorry, the server is under extreme load!</h2>
+  <% } else { %>
+    <h2>We are very sorry, there has been an error!</h2>
+  <% } %>
 
   <p>
   <% if (typeof dialog !== "undefined" && dialog !== false) { %>
