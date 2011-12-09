@@ -49,7 +49,6 @@
    * Set the persistent flag to true for an origin.
    * @method setPersistent
    * @param {string} origin
-   * @param {string} email
    * @param {callback} [callback] - callback to call when complete.  Called
    * with true if successful, null if user is not authenticated or failure.
    */
@@ -76,14 +75,14 @@
    * email without showing the dialog.
    * @method get
    * @param {string} origin
-   * @param {object} options.  See options block for navigator.id.get.
-   * options.silent defaults to false.
    * @param {function} callback - called when complete.  Called with assertion
    * if success, null if the user cancels.  Other conditions causing null
    * return value: silent is true and user is not authenticated.  silent is
    * true, requiredEmail is specified but user does not control email.
+   * @param {object} options.  See options block for navigator.id.get.
+   * options.silent defaults to false.
    */
-  internal.get = function(origin, options, callback) {
+  internal.get = function(origin, callback, options) {
     function complete(assertion) {
       // If no assertion, give no reason why there was a failure.
       callback && callback(assertion || null);
@@ -107,7 +106,7 @@
     else {
       // Use the standard dialog facilities to get the assertion, pass the
       // options block directly to the dialog.
-      var controller = moduleManager.getModule("dialog");
+      var controller = moduleManager.getRunningModule("dialog");
       if(controller) {
         controller.get(origin, options, complete, complete);
       }
