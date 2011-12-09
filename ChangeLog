@@ -1,3 +1,12 @@
+train-2011.12.08:
+  * improve performance of unit tests.  #686
+  * IE8 fixes.  #688
+  * logging improvements. #681
+  * loadgen fixes.  #682
+  * android fixes.  #704
+  * performance improvements. #680
+  * moar instrumentation.  #691
+
 train-2011.12.01:
   * BrowserID now requires NodeJS >= 0.6.2
   * extensive work on load generation tool: #504
