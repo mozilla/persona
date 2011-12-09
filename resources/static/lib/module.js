@@ -30,6 +30,16 @@ BrowserID.module = (function() {
     return registration[service].constructor;
   }
 
+  function getRunningModule(service) {
+    var module = running[service];
+
+    if(!module) {
+      throw "no module running for " + service;
+    }
+
+    return module;
+  }
+
   function reset() {
     registration = {};
     running = {};
@@ -88,6 +98,7 @@ BrowserID.module = (function() {
   return {
     register: register,
     getModule: getModule,
+    getRunningModule: getRunningModule,
     reset: reset,
     start: start,
     stop: stop,

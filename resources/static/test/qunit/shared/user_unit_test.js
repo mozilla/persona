@@ -96,6 +96,7 @@ var jwcert = require("./jwcert");
       xhr.useResult("valid");
       lib.clearStoredEmailKeypairs();
       lib.setOrigin(testOrigin);
+      storage.site.remove(testOrigin, "email");
     },
     teardown: function() {
       network.setXHR($);
@@ -787,6 +788,7 @@ var jwcert = require("./jwcert");
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
         testAssertion(assertion, start);
+        equal(storage.site.get(testOrigin, "email"), "testuser@testuser.com", "email address was persisted");
       }, failure("getAssertion failure"));
     }, failure("syncEmailKeypair failure"));
   });
@@ -798,6 +800,7 @@ var jwcert = require("./jwcert");
     storage.addEmail("testuser@testuser.com", {});
     lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
       testAssertion(assertion, start);
+      equal(storage.site.get(testOrigin, "email"), "testuser@testuser.com", "email address was persisted");
     }, failure("getAssertion failure"));
   });
 
@@ -806,6 +809,7 @@ var jwcert = require("./jwcert");
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser2@testuser.com", function onSuccess(assertion) {
         equal("undefined", typeof assertion, "email was unknown, we do not have an assertion");
+        equal(storage.site.get(testOrigin, "email"), undefined, "email address was not set");
         start();
       });
     }, failure("getAssertion failure"));

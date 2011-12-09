@@ -682,7 +682,7 @@
 
     function checkIE() {
       var ieVersion = getInternetExplorerVersion(),
-          ieNosupport = ieVersion > -1 && ieVersion < 8;
+          ieNosupport = ieVersion > -1 && ieVersion < 9;
 
       if(ieNosupport) {
         return "IE_VERSION";
