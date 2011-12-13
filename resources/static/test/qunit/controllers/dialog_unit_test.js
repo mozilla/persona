@@ -204,7 +204,7 @@
       error = e;
     }
 
-    equal(typeof error, "undefined", "no error thrown when unloading window");
+    equal(typeof error, "undefined", "unexpected error thrown when unloading window (" + error + ")");
   });
 
 }());

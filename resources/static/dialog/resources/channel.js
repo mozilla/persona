@@ -90,24 +90,24 @@
       // In a native channel, do nothing.
     }
     else {
-      var REGISTERED_METHODS = {
-        'get': function(origin, params, onsuccess, onerror) {
-          // check for old controller methods
-          // FIXME KILL THIS SOON
-          if (controller.get) {
-            return controller.get(origin, params, onsuccess, onerror);
-          } else {
-            return controller.getVerifiedEmail(origin, onsuccess, onerror);
+     getRelayWindow();
+
+      if (_relayWindow) {
+        var REGISTERED_METHODS = {
+          // The relay frame will give us the origin and a function to call when
+          // dialog processing is complete.
+          'get': function(origin, params, onsuccess, onerror) {
+            // check for old controller methods
+            // FIXME KILL THIS SOON
+            if (controller.get) {
+              return controller.get(origin, params, onsuccess, onerror);
+            } else {
+              return controller.getVerifiedEmail(origin, onsuccess, onerror);
+            }
           }
-        }
-      };
+        };
 
-      // The relay frame will give us the origin and a function to call when
-      // dialog processing is complete.
-      var frameWindow = getRelayWindow();
-
-      if (frameWindow) {
-        frameWindow.BrowserID.Relay.registerClient(REGISTERED_METHODS);
+        _relayWindow.BrowserID.Relay.registerClient(REGISTERED_METHODS);
       }
       else {
         throw "relay frame not found";
@@ -123,14 +123,10 @@
   }
 
   function close() {
-    var frameWindow = getRelayWindow();
-
-    if (frameWindow) {
-      frameWindow.BrowserID.Relay.unregisterClient();
+    // Only tear down if a channel has been established with a relay frame.
+    if (_relayWindow) {
+      _relayWindow.BrowserID.Relay.unregisterClient();
       _relayWindow = null;
-    }
-    else {
-      throw "relay frame not found";
     }
   }
 
