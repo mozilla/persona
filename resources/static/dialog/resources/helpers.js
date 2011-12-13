@@ -64,8 +64,11 @@
 
   function getAssertion(email, callback) {
     var self=this;
+    var wait = bid.Screens.wait;
+    wait.show("wait", bid.Wait.generateKey);
     user.getAssertion(email, function(assert) {
       assert = assert || null;
+      wait.hide();
       animateClose(function() {
         self.close("assertion_generated", {
           assertion: assert

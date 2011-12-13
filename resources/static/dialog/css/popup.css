@@ -50,20 +50,69 @@ section > .contents {
 
 #wait {
     text-align: center;
-    z-index: 1;
     background-image: url("/i/bg.png");
+    z-index: -1;
+    opacity: 0;
+
+    -webkit-transition-property: opacity;
+    -moz-transition-property: opacity;
+    -ms-transition-property: opacity;
+    -o-transition-property: opacity;
+    transition-property: opacity;
+
+    -webkit-transition-duration: 0.25s;
+    -moz-transition-duration: 0.25s;
+    -ms-transition-duration: 0.25s;
+    -o-transition-duration: 0.25s;
+    transition-duration: 0.25s;
+
+    /* Set this to .25s for Android browser, 0.5 seconds makes it so that it
+     * does not show */
+    -webkit-transition-delay: 0.25s;
+    -moz-transition-delay: 0.5s;
+    -ms-transition-delay: 0.5s;
+    -o-transition-delay: 0.5s;
+    transition-delay: 0.5s;
+}
+
+.waiting #wait {
+    z-index: 1;
+    opacity: 1;
 }
 
 #error {
-    position: absolute;
     text-align: center;
-    display: none;
-    z-index: 2;
+    z-index: -1;
     background-color: #fff;
+    display: none;
+
+    -webkit-transition-property: opacity;
+    -moz-transition-property: opacity;
+    -ms-transition-property: opacity;
+    -o-transition-property: opacity;
+    transition-property: opacity;
+
+    -webkit-transition-duration: 0.25s;
+    -moz-transition-duration: 0.25s;
+    -ms-transition-duration: 0.25s;
+    -o-transition-duration: 0.25s;
+    transition-duration: 0.25s;
+
+    -webkit-transition-delay: 0.25s;
+    -moz-transition-delay: 0.25s;
+    -ms-transition-delay: 0.25s;
+    -o-transition-delay: 0.25s;
+    transition-delay: 0.25s;
+}
+
+.error #error {
+    display: block;
+    z-index: 2;
+    opacity: 1;
 }
 
 #error ul, #error li {
-    list-style-type: none; 
+    list-style-type: none;
 }
 
 #wait strong, #error strong {
@@ -265,7 +314,7 @@ header {
     font-weight: bold;
     background-color: rgba(0,0,0,0.05);
     border-bottom: 1px solid rgba(0,0,0,0.15);
-    
+
     -webkit-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
        -moz-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
          -o-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;

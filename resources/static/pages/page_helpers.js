@@ -90,7 +90,7 @@ BrowserID.PageHelpers = (function() {
   function getFailure(error, callback) {
     return function onFailure(info) {
       info = $.extend(info, { action: error, dialog: false });
-      bid.Screens.error("error", info);
+      bid.Screens.error.show("error", info);
       $("#errorBackground").stop().fadeIn();
       $("#error").stop().fadeIn();
 

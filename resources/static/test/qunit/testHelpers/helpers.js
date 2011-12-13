@@ -4,6 +4,7 @@
       network = bid.Network,
       storage = bid.Storage,
       xhr = bid.Mocks.xhr,
+      screens = bid.Screens,
       registrations = [];
       calls = {};
 
@@ -40,6 +41,8 @@
 
       unregisterAll();
       mediator.reset();
+      screens.wait.hide();
+      screens.error.hide();
     },
 
     teardown: function() {
@@ -48,8 +51,13 @@
       network.setXHR($);
       storage.clear();
       $("#error").html("<div class='contents'></div>").hide();
+      screens.wait.hide();
+      screens.error.hide();
     },
 
-    register: register
+    register: register,
+    errorVisible: function() {
+      return screens.error.visible;
+    }
   };
 }());
