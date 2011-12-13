@@ -98,11 +98,11 @@ section > .contents {
     -o-transition-duration: 0.25s;
     transition-duration: 0.25s;
 
-    -webkit-transition-delay: 0.25s;
-    -moz-transition-delay: 0.25s;
-    -ms-transition-delay: 0.25s;
-    -o-transition-delay: 0.25s;
-    transition-delay: 0.25s;
+    -webkit-transition-delay: 0.75s;
+    -moz-transition-delay: 0.75s;
+    -ms-transition-delay: 0.75s;
+    -o-transition-delay: 0.75s;
+    transition-delay: 0.75s;
 }
 
 .error #error {

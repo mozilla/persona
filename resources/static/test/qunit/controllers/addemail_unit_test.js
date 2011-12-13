@@ -114,7 +114,25 @@
     });
   });
 
-  asyncTest("addEmail with previously registered email - allows for account consolidation", function() {
+  asyncTest("addEmail with email belonging to current user - prints tooltip", function() {
+    createController();
+
+    $("#newEmail").val("registered@testuser.com");
+
+    register("email_staged", function(msg, info) {
+      ok(false, "unexpected email_staged message");
+    });
+
+    // simulate the email being already added.
+    user.syncEmailKeypair("registered@testuser.com", function() {
+      controller.addEmail(function() {
+        ok(bid.Tooltip.shown, "tooltip should be shown");
+        start();
+      });
+    });
+  });
+
+  asyncTest("addEmail with email belonging to another user - allows for account consolidation", function() {
     createController();
 
     $("#newEmail").val("registered@testuser.com");
@@ -123,7 +141,6 @@
       start();
     });
     controller.addEmail();
-
   });
 
   asyncTest("cancelAddEmail", function() {
@@ -134,7 +151,6 @@
       start();
     });
     controller.cancelAddEmail();
-
   });
 
 }());
