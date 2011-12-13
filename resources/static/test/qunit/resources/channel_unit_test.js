@@ -159,5 +159,18 @@
     }
   });
 
+  test("close on a channel that has not been opened expects no errors", function() {
+    var error;
+
+    try {
+      channel.close();
+    }
+    catch(e) {
+      error = e;
+    }
+
+    equal(typeof error, "undefined", "unexpected error when closing channel (" + error + ")");
+  });
+
 }());
 
