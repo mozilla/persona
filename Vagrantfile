@@ -1,7 +1,7 @@
 Vagrant::Config.run do |config|
 
-    config.vm.box = "lucid32_2.box"
-    config.vm.box_url = "http://people.mozilla.org/~aking/browserid/lucid32_2.box"
+    config.vm.box = "browserid_3.box"
+    config.vm.box_url = "http://people.mozilla.org/~aking/browserid/browserid_3.box"
 
     #                      name      vagrant  desktop
     config.vm.forward_port("readme",   10000, 10000)
