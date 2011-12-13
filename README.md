@@ -26,8 +26,8 @@ or changes will be made.
 ```
 cd browserid
 vagrant up
-vagrant ssh vagrant@lucid32:browserid
-node ./run.js
+vagrant ssh
+npm start
 ```
 
 `vagrant up` will take a while. Go get a cup of coffee. This is because it downloads the 500MB VM.
@@ -44,6 +44,7 @@ Here's the software you'll need installed:
 
 * node.js (>= 0.6.2): http://nodejs.org/
 * npm: http://npmjs.org/ (or bundled with node in 0.6.3+)
+* libgmp3
 * git
 * g++
 
@@ -53,6 +54,13 @@ Here's the software you'll need installed:
 3. run `npm install` to install 3rd party libraries and generate keys
 3. run `npm start` to start the servers locally
 4. visit the demo application ('rp') in your web browser (url output on the console at runtime)
+
+You can stop the servers with a Cntl-C in the terminal.
+
+## Staying up to date:
+
+1. rm -Rf var node_modules
+2. npm install
 
 ## Testing
 
