@@ -62,7 +62,7 @@ cat ../../css/common.css popup.css m.css > production.css
 $UGLIFYCSS production.css > production.min.css
 
 cd ../../relay
-cat ../lib/jschannel.js ../shared/browserid.js relay.js > production.js
+cat ../lib/jschannel.js ../shared/browserid.js relay.js start.js > production.js
 $UGLIFY < production.js > production.min.js
 mv production.min.js production.js
 
