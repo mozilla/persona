@@ -7,26 +7,13 @@
   <body>
       Relay iframe.  Woohoo!
       <% if (production) { %>
-        <script type='text/javascript'
-          src='https://browserid.org/relay/production.js'></script>
+        <script type='text/javascript' src='https://browserid.org/relay/production.js'></script>
 
       <% } else { %>
-        <script type='text/javascript'
-          src='https://browserid.org/lib/jschannel.js'></script>
-        <script type='text/javascript'
-          src='https://browserid.org/shared/browserid.js'></script>
-        <script type='text/javascript'
-          src='https://browserid.org/relay/relay.js'></script>
+        <script type='text/javascript' src='https://browserid.org/lib/jschannel.js'></script>
+        <script type='text/javascript' src='https://browserid.org/shared/browserid.js'></script>
+        <script type='text/javascript' src='https://browserid.org/relay/relay.js'></script>
+        <script type='text/javascript' src='https://browserid.org/relay/start.js'></script>
       <% } %>
-
-      <script type="text/javascript">
-        var relay = BrowserID.Relay;
-        relay.init({
-          channel: Channel,
-          window: window.parent
-        });
-
-        relay.open();
-      </script>
 	</body>
 </html>

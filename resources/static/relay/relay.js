@@ -1,5 +1,4 @@
 /*global Channel: true, errorOut: true */
-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -102,7 +101,7 @@
         );
       }
     }
-    
+
     function open() {
       var rpc = channel.build({
         window: win,
@@ -141,12 +140,12 @@
       }
       return msg;
     }
-    
+
     return {
       /**
-       * Initialize the relay. 
+       * Initialize the relay.
        * @method init
-       * @param {object} [options] - options used to override window, channel 
+       * @param {object} [options] - options used to override window, channel
        * for unit testing.
        */
       init: init,
