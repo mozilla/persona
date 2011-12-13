@@ -3,38 +3,28 @@ BrowserID.Screens = (function() {
 
   var bid = BrowserID,
       dom = BrowserID.DOM,
-      renderer = bid.Renderer;
+      renderer = bid.Renderer,
+      BODY = "body";
 
-  function render(target, body, vars) {
-    renderer.render(target + " .contents", body, vars);
+  function Screen(target, className) {
+    return {
+      show: function(template, vars) {
+        renderer.render(target + " .contents", template, vars);
+        dom.addClass(BODY, className);
+        this.visible = true;
+      },
+
+      hide: function() {
+        dom.removeClass(BODY, className);
+        this.visible = false;
+      }
+    }
   }
 
-  function form(template, vars) {
-    render("#formWrap", template, vars);
-    dom.removeClass("body", "error");
-    dom.removeClass("body", "waiting");
-    dom.addClass("body", "form");
-  }
-
-  function wait(template, vars) {
-    render("#wait", template, vars);
-    dom.removeClass("body", "error");
-    dom.removeClass("body", "form");
-    dom.addClass("body", "waiting");
-  }
-
-  function error(template, vars) {
-    render("#error", template, vars);
-    dom.removeClass("body", "waiting");
-    dom.removeClass("body", "form");
-    dom.addClass("body", "error");
-
-    bid.ErrorDisplay.start("#error");
-  }
 
   return {
-    form: form,
-    wait: wait,
-    error: error
+    form: new Screen("#formWrap", "form"),
+    wait: new Screen("#wait", "waiting"),
+    error: new Screen("#error", "error")
   };
 }());

@@ -114,20 +114,18 @@ BrowserID.Modules.PageModule = (function() {
     },
 
     renderDialog: function(body, body_vars) {
-      screens.form(body, body_vars);
-      $("#wait, #error").stop().fadeOut(ANIMATION_TIME);
+      screens.wait.hide();
+      screens.error.hide();
+      screens.form.show(body, body_vars);
       dom.focus("input:visible:eq(0)");
     },
 
     renderWait: function(body, body_vars) {
-      screens.wait(body, body_vars);
-      $("body").css('opacity', 1);
-      $("#wait").stop().hide().fadeIn(ANIMATION_TIME);
+      screens.wait.show(body, body_vars);
     },
 
     renderError: function(body, body_vars) {
-      screens.error(body, body_vars);
-      $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
+      screens.error.show(body, body_vars);
 
       /**
        * TODO XXX - Use the error-display for this.

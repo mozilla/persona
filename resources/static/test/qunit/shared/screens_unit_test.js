@@ -56,41 +56,50 @@
   test("form", function() {
     el = $("#formWrap .contents");
     el.empty();
-    screens.form("testBodyTemplate");
+    screens.form.show("testBodyTemplate");
 
     ok($("#templateInput").length, "the template has been written");
-    equal($("body").hasClass("error"), false, "error class taken off of body");
-    equal($("body").hasClass("waiting"), false, "waiting class taken off of body");
     equal($("body").hasClass("form"), true, "form class added to body");
+    equal(screens.form.visible, true, "screen is visible");
+
+    screens.form.hide();
+    equal($("body").hasClass("form"), false, "form class removed from body");
+    equal(screens.form.visible, false, "screen is not visible");
   });
 
   test("wait", function() {
     var el = $("#wait .contents");
     el.empty();
-    screens.wait("testBodyTemplate");
+    screens.wait.show("testBodyTemplate");
 
     ok($("#templateInput").length, "the template has been written");
-    equal($("body").hasClass("error"), false, "error class taken off of body");
-    equal($("body").hasClass("form"), false, "form class taken off of body");
     equal($("body").hasClass("waiting"), true, "waiting class added to body");
+    equal(screens.wait.visible, true, "screen is visible");
+
+    screens.wait.hide();
+    equal($("body").hasClass("waiting"), false, "waiting class removed from body");
+    equal(screens.wait.visible, false, "screen is not visible");
   });
 
   test("error", function() {
     var el = $("#error .contents");
     el.empty();
-    screens.error("testBodyTemplate");
+    screens.error.show("testBodyTemplate");
 
     ok($("#templateInput").length, "the template has been written");
-    equal($("body").hasClass("waiting"), false, "waiting class taken off of body");
-    equal($("body").hasClass("form"), false, "form class taken off of body");
     equal($("body").hasClass("error"), true, "error class added to body");
+    equal(screens.error.visible, true, "screen is visible");
+
+    screens.error.hide();
+    equal($("body").hasClass("error"), false, "error class removed from body");
+    equal(screens.error.visible, false, "screen is not visible");
   });
 
   test("XHR 503 (server unavailable) error", function() {
     var el = $("#error .contents");
     el.empty();
 
-    screens.error("error", {
+    screens.error.show("error", {
       network: {
         status: 503
       }

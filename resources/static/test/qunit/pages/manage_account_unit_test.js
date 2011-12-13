@@ -38,10 +38,10 @@
   "use strict";
 
   var bid = BrowserID,
-      network = bid.Network,
-      storage = bid.Storage,
       user = bid.User,
       xhr = bid.Mocks.xhr,
+      errorScreen = bid.Screens.error,
+      testHelpers = bid.TestHelpers,
       validToken = true,
       TEST_ORIGIN = "http://browserid.org",
       mocks = {
@@ -51,20 +51,14 @@
 
   module("pages/manage_account", {
     setup: function() {
-      network.setXHR(xhr);
-      xhr.useResult("valid");
+      testHelpers.setup();
       user.setOrigin(TEST_ORIGIN);
       $("#emailList").empty();
-      $(".error").removeClass("error");
-      $("#error").hide();
       mocks.document.location = "";
-      storage.clear();
     },
     teardown: function() {
-      network.setXHR($);
       $("#emailList").empty();
-      $(".error").removeClass("error");
-      $("#error").hide();
+      testHelpers.teardown();
     }
   });
 
@@ -88,7 +82,7 @@
     xhr.useResult("ajaxError");
 
     bid.manageAccount(mocks, function() {
-      equal($("#error").is(":visible"), true, "error message is visible on XHR error");
+      equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
       start();
     });
   });
@@ -114,7 +108,7 @@
     bid.manageAccount(mocks, function() {
       xhr.useResult("ajaxError");
       bid.manageAccount.removeEmail("testuser@testuser.com", function() {
-        equal($("#error").is(":visible"), true, "error message is visible on XHR error");
+        equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
         start();
       });
     });
@@ -136,7 +130,7 @@
       xhr.useResult("ajaxError");
 
       bid.manageAccount.removeEmail("testuser@testuser.com", function() {
-        equal($("#error").is(":visible"), true, "error message is visible on XHR error");
+        equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
         start();
       });
     });
@@ -155,7 +149,7 @@
     bid.manageAccount(mocks, function() {
       xhr.useResult("ajaxError");
       bid.manageAccount.cancelAccount(function() {
-        equal($("#error").is(":visible"), true, "error message is visible on XHR error");
+        equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
         start();
       });
     });

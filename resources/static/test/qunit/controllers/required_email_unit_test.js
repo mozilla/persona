@@ -42,12 +42,13 @@
       bid = BrowserID,
       xhr = bid.Mocks.xhr,
       user = bid.User,
-      register = bid.TestHelpers.register;
+      testHelpers = bid.TestHelpers,
+      register = testHelpers.register;
 
   module("controllers/required_email", {
     setup: function() {
       el = $("body");
-      bid.TestHelpers.setup();
+      testHelpers.setup();
       xhr.setContextInfo({
         authenticated: false
       });
@@ -63,7 +64,7 @@
         }
         controller = null;
       }
-      bid.TestHelpers.setup();
+      testHelpers.setup();
     }
   });
 
@@ -134,7 +135,7 @@
     });
 
     setTimeout(function() {
-      ok($("#error").is(":visible"), "Error message is visible");
+      ok(testHelpers.errorVisible(), "Error message is visible");
       start();
     }, 500);
   });

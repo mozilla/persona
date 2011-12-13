@@ -41,7 +41,8 @@
       bid = BrowserID,
       xhr = bid.Mocks.xhr,
       network = bid.Network,
-      register = bid.TestHelpers.register;
+      testHelpers = bid.TestHelpers,
+      register = testHelpers.register;
 
   function createController(verifier, message) {
     controller = bid.Modules.CheckRegistration.create();
@@ -54,11 +55,11 @@
 
   module("controllers/checkregistration_controller", {
     setup: function() {
-      bid.TestHelpers.setup();
+      testHelpers.setup();
     },
 
     teardown: function() {
-      bid.TestHelpers.teardown();
+      testHelpers.teardown();
       if (controller) {
         try {
           // Controller may have already destroyed itself.
@@ -102,7 +103,7 @@
     controller.startCheck();
 
     setTimeout(function() {
-      ok($("#error").is(":visible"), "Error message is visible");
+      ok(testHelpers.errorVisible(), "Error message is visible");
       start();
     }, 500);
   });
