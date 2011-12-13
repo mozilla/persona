@@ -122,17 +122,24 @@
 
   function addEmail(email, callback) {
     var self=this;
-    user.addEmail(email, function(added) {
-      if (added) {
-        self.close("email_staged", {
-          email: email
-        });
-      }
-      else {
-        tooltip.showTooltip("#could_not_add");
-      }
-      if (callback) callback(added);
-    }, self.getErrorDialog(errors.addEmail));
+    if(user.getStoredEmailKeypair(email)) {
+      // User already owns this address
+      tooltip.showTooltip("#already_own_address");
+      callback(false);
+    }
+    else {
+      user.addEmail(email, function(added) {
+        if (added) {
+          self.close("email_staged", {
+            email: email
+          });
+        }
+        else {
+          tooltip.showTooltip("#could_not_add");
+        }
+        if (callback) callback(added);
+      }, self.getErrorDialog(errors.addEmail));
+    }
   }
 
   function cancelEvent(callback) {

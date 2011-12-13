@@ -38,7 +38,6 @@ BrowserID.Modules.AddEmail = (function() {
   "use strict";
 
   var bid = BrowserID,
-      user = bid.User,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
       errors = bid.Errors,

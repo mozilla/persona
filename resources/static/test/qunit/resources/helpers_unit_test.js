@@ -40,11 +40,10 @@
   var bid = BrowserID,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
-      network = bid.Network,
       xhr = bid.Mocks.xhr,
-      user = bid.User,
       storage = bid.Storage,
       tooltip = bid.Tooltip,
+      testHelpers = bid.TestHelpers,
       closeCB,
       errorCB;
 
@@ -88,15 +87,13 @@
 
   module("resources/helpers", {
     setup: function() {
-      network.setXHR(xhr);
-      xhr.useResult("valid");
-      storage.clear();
+      testHelpers.setup();
       closeCB = errorCB = null;
       errorCB = badError;
     },
 
     teardown: function() {
-      network.setXHR($);
+      testHelpers.teardown();
     }
   });
 
@@ -108,8 +105,6 @@
       ok(assertion, "assertion given to close");
       start();
     });
-
-    
   });
 
   asyncTest("getAssertion with XHR error", function() {
@@ -120,9 +115,8 @@
     storage.addEmail("registered@testuser.com", {});
     dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", function() {
       ok(false, "unexpected finish");
-      start();  
+      start();
     });
-    
   });
 
   asyncTest("authenticateUser happy case", function() {
@@ -130,8 +124,6 @@
       equal(authenticated, true, "user is authenticated");
       start();
     });
-
-    
   });
 
   asyncTest("authenticateUser invalid credentials", function() {
@@ -140,8 +132,6 @@
       equal(authenticated, false, "user is not authenticated");
       start();
     });
-
-    
   });
 
   asyncTest("authenticateUser XHR error", function() {
@@ -152,8 +142,6 @@
       ok(false, "unexpected success callback");
       start();
     });
-
-    
   });
 
   asyncTest("createUser happy case", function() {
@@ -161,10 +149,8 @@
 
     dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", function(staged) {
       equal(staged, true, "user was staged");
-      start(); 
+      start();
     });
-
-    
   });
 
   asyncTest("createUser could not create case", function() {
@@ -175,8 +161,6 @@
       equal(staged, false, "user was not staged");
       start();
     });
-
-    
   });
 
 
@@ -188,7 +172,6 @@
       ok(false, "complete should not have been called");
       start();
     });
-    
   });
 
   asyncTest("addEmail happy case", function() {
@@ -197,8 +180,6 @@
       ok(added, "email added");
       start();
     });
-
-    
   });
 
 
@@ -208,8 +189,6 @@
       equal(added, false, "email not added");
       start();
     });
-
-    
   });
 
   asyncTest("addEmail with XHR error", function() {
@@ -220,8 +199,15 @@
       ok(false, "unexpected close");
       start();
     });
+  });
 
-    
+  asyncTest("addEmail trying to add an email the user already controls - prints a tooltip", function() {
+    storage.addEmail("registered@testuser.com", {});
+    dialogHelpers.addEmail.call(controllerMock, "registered@testuser.com", function(added) {
+      equal(added, false, "email should not have been added");
+      equal(bid.Tooltip.shown, true, "tooltip should be shown");
+      start();
+    });
   });
 
   asyncTest("resetPassword happy case", function() {
@@ -230,8 +216,6 @@
       ok(reset, "password reset");
       start();
     });
-
-    
   });
 
 
@@ -241,8 +225,6 @@
       equal(reset, false, "password not reset");
       start();
     });
-
-    
   });
 
   asyncTest("resetPassword with XHR error", function() {
@@ -253,8 +235,6 @@
       ok(false, "unexpected close");
       start();
     });
-
-    
   });
 }());
 
