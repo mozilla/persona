@@ -64,7 +64,7 @@ BrowserID.Modules.Dialog = (function() {
       email: email,
       verifier: verifier,
       verificationMessage: message
-    }); 
+    });
     controller.startCheck();
   }
 
@@ -245,8 +245,7 @@ BrowserID.Modules.Dialog = (function() {
         user.checkAuthenticationAndSync(function onSuccess() {},
           function onComplete(authenticated) {
             if (self.requiredEmail) {
-              // XXX get this out of here and into the state machine!
-              self.doAuthenticateWithRequiredEmail({
+              self.publish("authenticate_with_required_email", {
                 email: self.requiredEmail,
                 authenticated: authenticated
               });
