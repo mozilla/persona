@@ -38,6 +38,7 @@ train-2011.12.01:
   * (hotfix on 2011.12.02) Fix regression where emails sent out had no newlines: #684
   * (hotfix on 2011.12.08) Fix bug where domain key update detection was not working properly, preventing users from logging in: #734
   * (hotfix on 2011.12.08) Fix bugs in "internal api" used by native code (like openwebapps stuff): #601
+  * (hotfix on 2011.12.14) Fix required email -> forgot password -> cancel button (was non-operational): #754
 
 train-2011.11.17:
   * frontend code restructuring and refactoring
