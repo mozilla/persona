@@ -55,7 +55,7 @@
     var args = [].slice.call(arguments, 1),
         controller = this.controller;
 
-    // Remember the state and the information for the state in case we have to 
+    // Remember the state and the information for the state in case we have to
     // go back to it.
     stateStack.push({
       funcName: funcName,
@@ -65,7 +65,7 @@
     controller[funcName].apply(controller, args);
   }
 
-  // Used for when the current state is being cancelled and the user wishes to 
+  // Used for when the current state is being cancelled and the user wishes to
   // go to the previous state.
   function popState() {
     // Skip the first state, it is where the user is at now.
@@ -85,7 +85,7 @@
         controller = self.controller,
         gotoState = pushState.bind(self),
         cancelState = popState.bind(self);
-       
+
     subscribe("offline", function(msg, info) {
       gotoState("doOffline");
     });
@@ -100,6 +100,10 @@
 
     subscribe("user_confirmed", function() {
       gotoState("doEmailConfirmed");
+    });
+
+    subscribe("authenticate_with_required_email", function(msg, info) {
+      gotoState("doAuthenticateWithRequiredEmail", info);
     });
 
     subscribe("pick_email", function() {
@@ -161,7 +165,7 @@
   }
 
   var StateMachine = BrowserID.Class({
-    init: function() { 
+    init: function() {
       // empty
     },
 
@@ -169,7 +173,7 @@
       options = options || {};
       this.controller = options.controller;
       startStateMachine.call(this);
-    }, 
+    },
 
     stop: function() {
       unsubscribeAll();
