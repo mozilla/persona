@@ -53,6 +53,7 @@ BrowserID.Storage = (function() {
     storage.removeItem("tempKeypair");
     storage.removeItem("stagedOnBehalfOf");
     storage.removeItem("siteInfo");
+    storage.removeItem("managePage");
   }
 
   function getEmails() {
@@ -191,6 +192,22 @@ BrowserID.Storage = (function() {
   }
 
 
+  function managePageGet(key) {
+    var allInfo = JSON.parse(storage.managePage || "{}");
+    return allInfo[key];
+  }
+
+  function managePageSet(key, value) {
+    var allInfo = JSON.parse(storage.managePage || "{}");
+    allInfo[key] = value;
+    storage.managePage = JSON.stringify(allInfo);
+  }
+
+  function managePageRemove(key) {
+    var allInfo = JSON.parse(storage.managePage || "{}");
+    delete allInfo[key];
+    storage.managePage = JSON.stringify(allInfo);
+  }
   return {
     /**
      * Add an email address and optional key pair.
@@ -245,6 +262,16 @@ BrowserID.Storage = (function() {
        * @param {string} key - key to remove
        */
       remove: siteRemove
+    },
+
+    manage_page: {
+      /**
+       * Set a data field for the manage page
+       * @method managePage.set
+       */
+      set: managePageSet,
+      get: managePageGet,
+      remove: managePageRemove
     },
 
     /**

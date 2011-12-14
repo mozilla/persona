@@ -164,6 +164,15 @@
     equal(typeof email, "undefined", "after removing an email address, email for site is no longer available");
   });
 
+  test("user.manage_page.set", function() {
+    storage.manage_page.set("user_has_visited", true);
+
+    equal(storage.manage_page.get("user_has_visited"), true, "user_has_visited set correctly");
+
+    storage.clear();
+    equal(typeof storage.manage_page.get("user_has_visited"), "undefined", "after reset, user_has_visited reset correctly");
+  });
+
   test("storeTemporaryKeypair", function() {
     // XXX needs a test
   });
