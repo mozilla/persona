@@ -164,13 +164,15 @@ views.setup(app);
 // #10 - if nothing else has caught this request, serve static files
 app.use(express.static(path.join(__dirname, "..", "resources", "static")));
 
+function doShutdown(readyForShutdownCB) {
+  require('../lib/bcrypt.js').shutdown();
+  db.close(readyForShutdownCB)
+}
+
 // #11 - calls to /code_update from localhost will restart the daemon,
 // this feature is not externally accessible and is only used by
 // the update logic
-shutdown.installUpdateHandler(app, function(readyForShutdown) {
-  logger.debug("closing database connection");
-  db.close(readyForShutdown)
-});
+shutdown.installUpdateHandler(app, doShutdown);
 
 // #11.5 - custom 404
 app.use(function(req, res,next) {
@@ -195,9 +197,7 @@ db.open(config.get('database'), function (error) {
   }
 
   // shut down express gracefully on SIGINT
-  shutdown.handleTerminationSignals(app, function(readyForShutdown) {
-    db.close(readyForShutdown)
-  });
+  shutdown.handleTerminationSignals(app, doShutdown);
 
   var bindTo = config.get('bind_to');
   app.listen(bindTo.port, bindTo.host, function() {

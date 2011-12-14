@@ -125,13 +125,15 @@ wsapi.setup({
   only_write_apis: true
 }, app);
 
+function doShutdown(readyForShutdownCB) {
+  require('../lib/bcrypt.js').shutdown();
+  db.close(readyForShutdownCB)
+}
+
 // calls to /code_update from localhost will restart the daemon,
 // this feature is not externally accessible and is only used by
 // the update logic
-shutdown.installUpdateHandler(app, function(readyForShutdown) {
-  logger.debug("closing database connection");
-  db.close(readyForShutdown)
-});
+shutdown.installUpdateHandler(app, doShutdown);
 
 // open the databse
 db.open(config.get('database'), function (error) {
@@ -142,9 +144,7 @@ db.open(config.get('database'), function (error) {
   }
 
   // shut down express gracefully on SIGINT
-  shutdown.handleTerminationSignals(app, function(readyForShutdown) {
-    db.close(readyForShutdown)
-  });
+  shutdown.handleTerminationSignals(app, doShutdown);
 
   var bindTo = config.get('bind_to');
   app.listen(bindTo.port, bindTo.host, function() {
