@@ -155,4 +155,14 @@
     });
   });
 
+  asyncTest("first time a user goes to page should see help text", function() {
+    bid.manageAccount(mocks,  function() {
+      equal($("body").hasClass("newuser"), true, "body has the newuser class on first visit");
+
+      bid.manageAccount(mocks, function() {
+        equal($("body").hasClass("newuser"), false, "body does not have the newuser class on repeat visits");
+        start();
+      });
+    });
+  });
 }());

@@ -178,6 +178,28 @@ div.steps {
   padding: 75px 125px;
 }
 
+#newuser {
+  background-color: #faca33;
+  line-height: 32px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #626160;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+  height: 0;
+  opacity: 0;
+}
+
+.newuser #newuser {
+  height: 32px;
+  opacity: 1;
+  -webkit-transition: all 500ms;
+  -moz-transition: all 500ms;
+  -ms-transition: all 500ms;
+  -o-transition: all 500ms;
+  transition: all 500ms;
+}
+
 #manage {
   padding: 75px;
 }

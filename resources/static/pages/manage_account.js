@@ -41,6 +41,7 @@ BrowserID.manageAccount = (function() {
       user = bid.User,
       errors = bid.Errors,
       dom = bid.DOM,
+      storage = bid.Storage,
       pageHelpers = bid.PageHelpers,
       cancelEvent = pageHelpers.cancelEvent,
       confirmAction = confirm,
@@ -218,6 +219,13 @@ BrowserID.manageAccount = (function() {
       $("body").removeClass("edit");
   }
 
+  function displayHelpTextToNewUser() {
+    var newUser = !storage.manage_page.get("has_visited_manage_page");
+
+    dom[newUser ? "addClass" : "removeClass"]("body", "newuser");
+    storage.manage_page.set("has_visited_manage_page", true);
+  }
+
   function init(options, oncomplete) {
     options = options || {};
 
@@ -229,6 +237,8 @@ BrowserID.manageAccount = (function() {
     dom.bindEvent("#cancelManage", "click", cancelEvent(cancelManage));
 
     syncAndDisplayEmails(oncomplete);
+
+    displayHelpTextToNewUser();
   }
 
   // BEGIN TESTING API
