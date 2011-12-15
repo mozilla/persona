@@ -101,7 +101,7 @@ BrowserID.Modules.PickEmail = (function() {
   }
 
   var PickEmail = bid.Modules.PageModule.extend({
-    start: function(options) {  
+    start: function(options) {
       var origin = user.getOrigin(),
           self=this;
 

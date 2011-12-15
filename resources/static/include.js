@@ -385,7 +385,7 @@
             }
           }, timeout);
         }
-        
+
         var onMessage = function(origin, method, m) {
           // if an observer was specified at allocation time, invoke it
           if (typeof cfg.gotMessageObserver === 'function') {
@@ -729,7 +729,7 @@
        */
       isSupported: isSupported,
       /**
-       * Called after isSupported, if isSupported returns false.  Gets the reason 
+       * Called after isSupported, if isSupported returns false.  Gets the reason
        * why browser is not supported.
        * @method getNoSupportReason
        * @returns {string}
@@ -778,7 +778,7 @@
     var window_name = "_mozid_signin";
     if (name_suffix)
       window_name += "_" + name_suffix;
-    
+
     var dialog = window.open(
       url,
       window_name,

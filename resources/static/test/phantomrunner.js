@@ -32,19 +32,19 @@ function waitFor(testFx, onReady, timeOutMillis) {
             }
         }, 100); //< repeat check every 250ms
 };
- 
+
 if (phantom.args.length === 0 || phantom.args.length > 2) {
     console.log('Usage: run-qunit.js URL');
     phantom.exit(1);
 }
- 
+
 var page = new WebPage();
- 
+
 // Route "console.log()" calls from within the Page context to the main Phantom context (i.e. current "this")
 page.onConsoleMessage = function(msg) {
     console.log(msg);
 };
- 
+
 page.open(phantom.args[0], function(status){
     if (status !== "success") {
         console.log("Unable to access network");
@@ -60,7 +60,7 @@ page.open(phantom.args[0], function(status){
             });
         }, function(){
             var failedNum = page.evaluate(function(){
- 
+
                 var tests = document.getElementById("qunit-tests").childNodes;
                 console.log("\nTest name (failed, passed, total)\n");
                 for(var i in tests){
@@ -70,7 +70,7 @@ page.open(phantom.args[0], function(status){
                         console.log(text + "\n");
                     }
                 }
- 
+
                 var el = document.getElementById('qunit-testresult');
                 console.log(el.innerText);
                 try {

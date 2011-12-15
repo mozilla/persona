@@ -68,7 +68,7 @@
 
   extend(helpers, {
     /**
-     * Extend an object with the properties of another object.  Overwrites 
+     * Extend an object with the properties of another object.  Overwrites
      * properties if they already exist.
      * @method extend
      * @param {object} target

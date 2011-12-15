@@ -39,8 +39,8 @@ BrowserID.Validation = (function() {
 
   bid.verifyEmail = function(address) {
     // Original gotten from http://blog.gerv.net/2011/05/html5_email_address_regexp/
-    // changed the requirement that there must be a ldh-str because BrowserID 
-    // is only used on internet based networks.  
+    // changed the requirement that there must be a ldh-str because BrowserID
+    // is only used on internet based networks.
     var parts = address.split("@");
 
     return /^[\w.!#$%&'*+\-/=?\^`{|}~]+@[a-z\d-]+(\.[a-z\d-]+)+$/i.test(address)
@@ -126,6 +126,6 @@ BrowserID.Validation = (function() {
     emailAndPassword: validateEmailAndPassword,
     passwordAndValidationPassword: passwordAndValidationPassword
   };
-  
+
 }());
 
