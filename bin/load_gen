@@ -93,7 +93,7 @@ var completed = {
 };
 
 // how many activies does an active user undertake per second
-const activitiesPerUserPerSecond = (40.0 / ( 24 * 60 * 60 )); 
+const activitiesPerUserPerSecond = (40.0 / ( 24 * 60 * 60 ));
 
 // activities
 var activity = {

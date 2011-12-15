@@ -61,7 +61,7 @@ exampleServer.post('/process_assertion', function(req, res, next) {
   // An "audience" argument is embedded in the assertion and must match our hostname.
   // Because this one server runs on multiple different domain names we just use
   // the host parameter out of the request.
-  var audience = req.headers['host'] ? req.headers['host'] : localHostname;   
+  var audience = req.headers['host'] ? req.headers['host'] : localHostname;
   var data = querystring.stringify({
     assertion: req.body.assertion,
     audience: audience
