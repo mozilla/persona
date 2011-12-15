@@ -7,7 +7,7 @@
     <script type="text/javascript" src="/lib/html5shim.js"></script>
   <![endif]-->
   <% if (production) { %>
-      <link href="/production/dialog.css" rel="stylesheet" type="text/css">
+      <link href="/dialog/css/production.min.css" rel="stylesheet" type="text/css">
   <% } else { %>
       <link href="/css/common.css" rel="stylesheet" type="text/css">
       <link href="/dialog/css/popup.css" rel="stylesheet" type="text/css">
@@ -47,7 +47,8 @@
 
       <% if (useJavascript !== false) { %>
         <% if (production) { %>
-          <script type="text/javascript" src="/production/dialog.js"></script>
+          <script type="text/javascript" src="/dialog/production.js"></script>
+
         <% } else { %>
           <script type="text/javascript" src="/lib/jquery-1.6.2.min.js"></script>
           <script type="text/javascript" src="/lib/jschannel.js"></script>
