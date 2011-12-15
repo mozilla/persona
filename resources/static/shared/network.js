@@ -42,6 +42,7 @@ BrowserID.Network = (function() {
       server_time,
       domain_key_creation_time,
       auth_status,
+      code_version,
       mediator = BrowserID.Mediator;
 
   function deferResponse(cb) {
@@ -73,8 +74,8 @@ BrowserID.Network = (function() {
     xhr.ajax({
       type: "GET",
       url: options.url,
-      // We defer the responses because otherwise jQuery eats any exceptions 
-      // that are thrown in the response handlers and it becomes very difficult 
+      // We defer the responses because otherwise jQuery eats any exceptions
+      // that are thrown in the response handlers and it becomes very difficult
       // to debug.
       success: deferResponse(options.success),
       error: deferResponse(xhrError(options.error, {
@@ -91,7 +92,7 @@ BrowserID.Network = (function() {
     withContext(function() {
       var data = options.data || {};
 
-      if(!data.csrf) {
+      if (!data.csrf) {
         data.csrf = csrf_token;
       }
 
@@ -99,8 +100,8 @@ BrowserID.Network = (function() {
         type: "POST",
         url: options.url,
         data: data,
-        // We defer the responses because otherwise jQuery eats any exceptions 
-        // that are thrown in the response handlers and it becomes very difficult 
+        // We defer the responses because otherwise jQuery eats any exceptions
+        // that are thrown in the response handlers and it becomes very difficult
         // to debug.
         success: deferResponse(options.success),
         error: deferResponse(xhrError(options.error, {
@@ -128,7 +129,10 @@ BrowserID.Network = (function() {
           };
           domain_key_creation_time = result.domain_key_creation_time;
           auth_status = result.authenticated;
-          cb();
+          // XXX remove the ABC123
+          code_version = result.code_version || "ABC123";
+
+          _.defer(cb);
         },
         error: deferResponse(xhrError(onFailure, {
           network: {
@@ -187,7 +191,7 @@ BrowserID.Network = (function() {
               // session, let's set it to perhaps save a network request
               // (to fetch session context).
               auth_status = authenticated;
-              if(onSuccess) onSuccess(authenticated);
+              if (onSuccess) onSuccess(authenticated);
             } catch (e) {
               onFailure("unexpected server response: " + e);
             }
@@ -200,7 +204,7 @@ BrowserID.Network = (function() {
     /**
      * Check whether a user is currently logged in.
      * @method checkAuth
-     * @param {function} [onSuccess] - Success callback, called with one 
+     * @param {function} [onSuccess] - Success callback, called with one
      * boolean parameter, whether the user is authenticated.
      * @param {function} [onFailure] - called on XHR failure.
      */
@@ -257,8 +261,8 @@ BrowserID.Network = (function() {
         },
         error: function(info) {
           // 403 is throttling.
-          if(info.network.status === 403) {
-            if (onSuccess) onSuccess(false); 
+          if (info.network.status === 403) {
+            if (onSuccess) onSuccess(false);
           }
           else if (onFailure) onFailure(info);
         }
@@ -325,7 +329,7 @@ BrowserID.Network = (function() {
      * Call with a token to prove an email address ownership.
      * @method completeEmailRegistration
      * @param {string} token - token proving email ownership.
-     * @param {function} [onSuccess] - Callback to call when complete.  Called 
+     * @param {function} [onSuccess] - Callback to call when complete.  Called
      * with one boolean parameter that specifies the validity of the token.
      * @param {function} [onFailure] - Called on XHR failure.
      */
@@ -364,7 +368,7 @@ BrowserID.Network = (function() {
      * @param {string} password - new password.
      * @param {function} [onSuccess] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
-     */ 
+     */
     resetPassword: function(password, onSuccess, onFailure) {
       // XXX fill this in.
       if (onSuccess) onSuccess();
@@ -375,10 +379,10 @@ BrowserID.Network = (function() {
      * @method changePassword
      * @param {string} oldpassword - old password.
      * @param {string} newpassword - new password.
-     * @param {function} [onSuccess] - Callback to call when complete. Will be 
+     * @param {function} [onSuccess] - Callback to call when complete. Will be
      * called with true if successful, false otw.
      * @param {function} [onFailure] - Called on XHR failure.
-     */ 
+     */
     changePassword: function(oldPassword, newPassword, onSuccess, onFailure) {
       // XXX fill this in
       if (onSuccess) {
@@ -421,8 +425,8 @@ BrowserID.Network = (function() {
         },
         error: function(info) {
           // 403 is throttling.
-          if(info.network.status === 403) {
-            if (onSuccess) onSuccess(false); 
+          if (info.network.status === 403) {
+            if (onSuccess) onSuccess(false);
           }
           else if (onFailure) onFailure(info);
         }
@@ -450,8 +454,8 @@ BrowserID.Network = (function() {
      * Check whether the email is already registered.
      * @method emailRegistered
      * @param {string} email - Email address to check.
-     * @param {function} [onSuccess] - Called with one boolean parameter when 
-     * complete.  Parameter is true if `email` is already registered, false 
+     * @param {function} [onSuccess] - Called with one boolean parameter when
+     * complete.  Parameter is true if `email` is already registered, false
      * otw.
      * @param {function} [onFailure] - Called on XHR failure.
      */
@@ -459,7 +463,7 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/have_email?email=" + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
-          if(onSuccess) onSuccess(data.email_known);
+          if (onSuccess) onSuccess(data.email_known);
         },
         error: onFailure
       });
@@ -528,9 +532,9 @@ BrowserID.Network = (function() {
         try {
           if (!server_time) throw "can't get server time!";
           var offset = (new Date()).getTime() - server_time.local;
-          onSuccess(new Date(offset + server_time.remote));
+          if (onSuccess) onSuccess(new Date(offset + server_time.remote));
         } catch(e) {
-          onFailure(e.toString());
+          if (onFailure) onFailure(e.toString());
         }
       }, onFailure);
     },
@@ -548,9 +552,29 @@ BrowserID.Network = (function() {
       withContext(function() {
         try {
           if (!domain_key_creation_time) throw "can't get domain key creation time!";
-          onSuccess(new Date(domain_key_creation_time));
+          if (onSuccess) onSuccess(new Date(domain_key_creation_time));
         } catch(e) {
-          onFailure(e.toString());
+          if (onFailure) onFailure(e.toString());
+        }
+      }, onFailure);
+    },
+
+    /**
+     * Get the most recent code version
+     *
+     * Note: this function will perform a network request if
+     * during this session /wsapi/session_context has not
+     * been called.
+     *
+     * @method codeVersion
+     */
+    codeVersion: function(onComplete, onFailure) {
+      withContext(function() {
+        try {
+          if (!code_version) throw "can't get code version!";
+          if (onComplete) onComplete(code_version);
+        } catch(e) {
+          if (onFailure) onFailure(e.toString());
         }
       }, onFailure);
     }

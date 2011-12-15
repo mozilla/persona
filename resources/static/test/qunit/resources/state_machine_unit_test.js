@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 (function() {
   "use strict";
-  
+
   var bid = BrowserID,
       mediator = bid.Mediator,
       machine,
@@ -122,12 +122,19 @@
     ok(machine, "Machine has been created");
   });
 
+  test("attempt to create a state machine without a controller", function() {
+    raises(function() {
+      var badmachine = bid.StateMachine.create();
+      badmachine.start();
+    }, "start: controller must be specified", "creating a state machine without a controller fails");
+  });
+
   test("offline does offline", function() {
     mediator.publish("offline");
 
     equal(controllerMock.offline, true, "controller is offline");
   });
-  
+
   test("user_staged", function() {
     // XXX rename user_staged to confirm_user or something to that effect.
     mediator.publish("user_staged", {
@@ -206,7 +213,7 @@
   test("cancel_state", function() {
     mediator.publish("add_email");
     mediator.publish("email_staged", {
-      email: "testuser@testuser.com" 
+      email: "testuser@testuser.com"
     });
 
     controllerMock.requestAddEmail = false;
@@ -221,9 +228,9 @@
     ok(controllerMock.notMe, "notMe has been called");
   });
 
-  test("auth", function() {
-    mediator.publish("auth", {
-      email: "testuser@testuser.com" 
+  test("authenticate", function() {
+    mediator.publish("authenticate", {
+      email: "testuser@testuser.com"
     });
 
     equal(controllerMock.email, "testuser@testuser.com", "authenticate with testuser@testuser.com");

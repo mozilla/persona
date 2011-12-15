@@ -53,10 +53,14 @@ BrowserID.Errors = (function(){
       title: "Checking Authentication"
     },
 
+    checkScriptVersion: {
+      title: "Checking Script Version"
+    },
+
     completeUserRegistration: {
       title: "Completing User Registration"
     },
-    
+
     createUser: {
       title: "Creating Account"
     },

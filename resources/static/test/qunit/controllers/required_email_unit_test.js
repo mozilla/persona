@@ -131,13 +131,10 @@
       email: email,
       authenticated: false,
       ready: function() {
+        ok(testHelpers.errorVisible(), "Error message is visible");
+        start();
       }
     });
-
-    setTimeout(function() {
-      ok(testHelpers.errorVisible(), "Error message is visible");
-      start();
-    }, 500);
   });
 
   asyncTest("user who is authenticated, email belongs to user", function() {

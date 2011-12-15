@@ -640,15 +640,26 @@
 
   });
 
-  /*
-  wrappedAsyncTest("body offline message triggers offline message", function() {
-    mediator.subscribe("offline", function() {
-      ok(true, "offline event caught and application notified");
-      start();
+  wrappedAsyncTest("codeVersion", function() {
+    network.codeVersion(function onComplete(version) {
+      equal(version, "ABC123", "version returned properly");
+      wrappedStart();
+    }, function onFailure() {
+      ok(false, "unexpected failure");
+      wrappedStart();
+    });
+  });
+
+  wrappedAsyncTest("codeVersion with XHR error", function() {
+    xhr.useResult("contextAjaxError");
+
+    network.codeVersion(function onComplete(version) {
+      ok(false, "XHR failure should never call complete");
+      wrappedStart();
+    }, function onFailure() {
+      ok(true, "XHR fialure should always return failure");
+      wrappedStart();
     });
 
-    var evt = $.Event("offline");
-    $("body").trigger(evt);
   });
-  */
 }());

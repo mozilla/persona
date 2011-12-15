@@ -123,7 +123,7 @@
     ok(html.length, "with error template specified, error text is loaded");
   });
 
-  test("renderError renders an error message", function() {
+  asyncTest("renderError renders an error message", function() {
     createController({
       waitTemplate: waitTemplate,
       waitVars: {
@@ -135,14 +135,15 @@
     controller.renderError("wait", {
       title: "error title",
       message: "error message"
+    }, function() {
+      var html = el.find("#error .contents").html();
+      // XXX underpowered test, we don't actually check the contents.
+      ok(html.length, "with error template specified, error text is loaded");
+      start();
     });
-
-    var html = el.find("#error .contents").html();
-    // XXX underpowered test, we don't actually check the contents.
-    ok(html.length, "with error template specified, error text is loaded");
   });
 
-  test("renderError allows us to open expanded error info", function() {
+  asyncTest("renderError allows us to open expanded error info", function() {
     createController();
 
     controller.renderError("error", {
@@ -150,26 +151,22 @@
         title: "expanded action info",
         message: "expanded message"
       }
+    }, function() {
+      var html = el.find("#error .contents").html();
+
+      $("#moreInfo").hide();
+
+      $("#openMoreInfo").click();
+
+      setTimeout(function() {
+        equal($("#showMoreInfo").is(":visible"), false, "button is not visible after clicking expanded info");
+        equal($("#moreInfo").is(":visible"), true, "expanded error info is visible after clicking expanded info");
+        start();
+      }, 1);
     });
-
-    var html = el.find("#error .contents").html();
-
-    $("#moreInfo").hide();
-
-    var evt = $.Event("click");
-    $("#openMoreInfo").trigger( evt );
-
-    /*
-    setTimeout(function() {
-      equal($("#showMoreInfo").is(":visible"), false, "button is not visible after clicking expanded info");
-      equal($("#moreInfo").is(":visible"), true, "expanded error info is visible after clicking expanded info");
-      start();
-    }, 500);
-    stop();
-*/
   });
 
-  test("getErrorDialog gets a function that can be used to render an error message", function() {
+  asyncTest("getErrorDialog gets a function that can be used to render an error message", function() {
     createController({
       waitTemplate: waitTemplate,
       waitVars: {
@@ -182,15 +179,16 @@
     var func = controller.getErrorDialog({
       title: "medium level info error title",
       message: "medium level info error message"
+    }, function() {
+      ok(true, "onerror callback called when returned function is called");
+      var html = el.find("#error .contents").html();
+      // XXX underpowered test, we don't actually check the contents.
+      ok(html.length, "when function is run, error text is loaded");
+      start();
     });
 
     equal(typeof func, "function", "a function was returned from getErrorDialog");
     func();
-
-    var html = el.find("#error .contents").html();
-    // XXX underpowered test, we don't actually check the contents.
-    ok(html.length, "when function is run, error text is loaded");
-
   });
 
   asyncTest("bind DOM Events", function() {
