@@ -106,7 +106,7 @@ BrowserID.BrowserSupport = (function() {
      */
     isSupported: isSupported,
     /**
-     * Called after isSupported, if isSupported returns false.  Gets the reason 
+     * Called after isSupported, if isSupported returns false.  Gets the reason
      * why browser is not supported.
      * @method getNoSupportReason
      * @returns {string}
@@ -117,6 +117,6 @@ BrowserID.BrowserSupport = (function() {
      */
     getInternetExplorerVersion: getInternetExplorerVersion
   };
-  
+
 }());
 

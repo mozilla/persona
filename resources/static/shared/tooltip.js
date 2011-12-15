@@ -77,7 +77,7 @@ BrowserID.Tooltip = (function() {
       setTimeout(function() {
         el.fadeOut(ANIMATION_TIME, function() {
           bid.Tooltip.shown = false;
-          if(complete) complete(); 
+          if(complete) complete();
         });
       }, displayTimeMS);
     });
