@@ -110,10 +110,8 @@ BrowserID.Modules.Actions = (function() {
       startService("required_email", info);
     },
 
-    doForgotPassword: function(email) {
-      startService("forgot_password", {
-        email: email
-      });
+    doForgotPassword: function(info) {
+      startService("forgot_password", info);
     },
 
     doConfirmEmail: function(email) {

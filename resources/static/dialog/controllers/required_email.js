@@ -100,7 +100,7 @@ BrowserID.Modules.RequiredEmail = (function() {
 
   function forgotPassword() {
     var self=this;
-    self.close("forgot_password", { email: self.email });
+    self.close("forgot_password", { email: self.email, requiredEmail: true });
   }
 
 

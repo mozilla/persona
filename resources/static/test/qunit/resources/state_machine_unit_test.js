@@ -65,8 +65,9 @@
       this.pickingEmail = true;
     },
 
-    doForgotPassword: function(email) {
-      this.email = email;
+    doForgotPassword: function(info) {
+      this.email = info.email;
+      this.requiredEmail = info.requiredEmail;
     },
 
     doAssertionGenerated: function(assertion) {
@@ -158,9 +159,11 @@
 
   test("forgot_password", function() {
     mediator.publish("forgot_password", {
-      email: "testuser@testuser.com"
+      email: "testuser@testuser.com",
+      requiredEmail: true
     });
-    equal(controllerMock.email, "testuser@testuser.com", "forgot password with the correct email");
+    equal(controllerMock.email, "testuser@testuser.com", "correct email passed");
+    equal(controllerMock.requiredEmail, true, "correct requiredEmail passed");
   });
 
   test("reset_password", function() {

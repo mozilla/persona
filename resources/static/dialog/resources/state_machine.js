@@ -165,7 +165,7 @@
     });
 
     subscribe("forgot_password", function(msg, info) {
-      gotoState("doForgotPassword", info.email);
+      gotoState("doForgotPassword", info);
     });
 
     subscribe("reset_password", function(msg, info) {

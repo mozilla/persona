@@ -78,7 +78,6 @@
     });
 
     controller.resetPassword();
-
   });
 
   asyncTest("cancelResetPassword raises 'cancel_forgot_password'", function() {
@@ -88,7 +87,6 @@
     });
 
     controller.cancelResetPassword();
-
   });
 }());
 
