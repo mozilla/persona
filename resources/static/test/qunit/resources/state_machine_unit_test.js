@@ -98,8 +98,11 @@
 
     doCancel: function() {
       this.cancelled = true;
-    }
+    },
 
+    doError: function() {
+      this.error = true;
+    }
   };
 
   function createMachine() {
@@ -239,8 +242,24 @@
     equal(controllerMock.email, "testuser@testuser.com", "authenticate with testuser@testuser.com");
   });
 
-  test("start", function() {
+  test("start with no required email address should go straight to checking auth", function() {
     mediator.publish("start");
+
+    equal(controllerMock.checkingAuth, true, "checking auth on start");
+  });
+
+  test("start with invalid requiredEmail prints error screen", function() {
+    mediator.publish("start", {
+      requiredEmail: "bademail"
+    });
+
+    equal(controllerMock.error, true, "error screen is shown");
+  });
+
+  test("start with valid requiredEmail goes to auth", function() {
+    mediator.publish("start", {
+      requiredEmail: "testuser@testuser.com"
+    });
 
     equal(controllerMock.checkingAuth, true, "checking auth on start");
   });

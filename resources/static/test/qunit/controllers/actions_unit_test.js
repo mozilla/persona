@@ -39,41 +39,52 @@
 
   var bid = BrowserID,
       controller,
-      el;
-
-  function reset() {
-    el = $("#controller_head");
-    el.find("#formWrap .contents").html("");
-    el.find("#wait .contents").html("");
-    el.find("#error .contents").html("");
-  }
+      el,
+      testHelpers = bid.TestHelpers;
 
   function createController(config) {
     controller = BrowserID.Modules.Actions.create();
     controller.start(config);
   }
 
-  // XXX Make a test helper class for this.
-  function checkNetworkError() {
-    ok($("#error .contents").text().length, "contents have been written");
-    ok($("#error #action").text().length, "action contents have been written");
-    ok($("#error #network").text().length, "network contents have been written");
-  }
-
   module("controllers/actions", {
     setup: function() {
-      reset();
+      testHelpers.setup();
     },
 
     teardown: function() {
       if(controller) {
         controller.destroy();
       }
-      reset();
+      testHelpers.teardown();
     }
   });
 
-  asyncTest("doOffline", function() {
+  asyncTest("doError with no template should display default error screen", function() {
+    createController({
+      ready: function() {
+        equal(testHelpers.errorVisible(), false, "Error is not yet visible");
+        controller.doError({});
+        ok(testHelpers.errorVisible(), "Error is visible");
+        equal($("#defaultError").length, 1, "default error screen is shown");
+        start();
+      }
+    });
+  });
+
+  asyncTest("doError with with template should display error screen", function() {
+    createController({
+      ready: function() {
+        equal(testHelpers.errorVisible(), false, "Error is not yet visible");
+        controller.doError("invalidRequiredEmail", {email: "email"});
+        equal($("#invalidRequiredEmail").length, 1, "default error screen is shown");
+        ok(testHelpers.errorVisible(), "Error is visible");
+        start();
+      }
+    });
+  });
+
+  asyncTest("doOffline should print offline error screen", function() {
     createController({
       ready: function() {
         controller.doOffline();

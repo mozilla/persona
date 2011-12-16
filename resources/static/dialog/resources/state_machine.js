@@ -39,7 +39,8 @@
       mediator = bid.Mediator,
       subscriptions = [],
       stateStack = [],
-      controller;
+      controller,
+      errors = bid.Errors;
 
   function subscribe(message, cb) {
     subscriptions.push(mediator.subscribe(message, cb));
@@ -92,9 +93,14 @@
 
       self.hostname = info.hostname;
       self.allowPersistent = !!info.allowPersistent;
-      self.requiredEmail = info.requiredEmail;
+      var email = self.requiredEmail = info.requiredEmail;
 
-      gotoState("doCheckAuth");
+      if(email && !(bid.verifyEmail(email))) {
+        gotoState("doError", "invalidRequiredEmail", { email: email });
+      }
+      else {
+        gotoState("doCheckAuth");
+      }
     });
 
     subscribe("cancel", function() {
