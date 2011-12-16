@@ -54,16 +54,13 @@ cp templates.js $BUILD_PATH/templates.js
 cd ../..
 
 # produce the dialog js
-cat lib/jquery-1.6.2.min.js lib/jschannel.js lib/underscore-min.js lib/vepbundle.js lib/ejs.js shared/browserid.js lib/hub.js lib/dom-jquery.js lib/module.js shared/javascript-extensions.js shared/mediator.js shared/class.js shared/storage.js $BUILD_PATH/templates.js shared/renderer.js shared/error-display.js shared/screens.js shared/tooltip.js shared/validation.js shared/network.js shared/user.js shared/error-messages.js shared/browser-support.js shared/wait-messages.js shared/helpers.js dialog/resources/internal_api.js dialog/resources/channel.js dialog/resources/helpers.js dialog/resources/state_machine.js dialog/controllers/page.js dialog/controllers/code_check.js dialog/controllers/actions.js dialog/controllers/dialog.js dialog/controllers/authenticate.js dialog/controllers/forgotpassword.js dialog/controllers/checkregistration.js dialog/controllers/pickemail.js dialog/controllers/addemail.js dialog/controllers/required_email.js dialog/start.js > $BUILD_PATH/dialog.uncompressed.js
+cat lib/jquery-1.6.2.min.js lib/winchan.js lib/underscore-min.js lib/vepbundle.js lib/ejs.js shared/browserid.js lib/hub.js lib/dom-jquery.js lib/module.js shared/javascript-extensions.js shared/mediator.js shared/class.js shared/storage.js $BUILD_PATH/templates.js shared/renderer.js shared/error-display.js shared/screens.js shared/tooltip.js shared/validation.js shared/network.js shared/user.js shared/error-messages.js shared/browser-support.js shared/wait-messages.js shared/helpers.js dialog/resources/internal_api.js dialog/resources/helpers.js dialog/resources/state_machine.js dialog/controllers/page.js dialog/controllers/code_check.js dialog/controllers/actions.js dialog/controllers/dialog.js dialog/controllers/authenticate.js dialog/controllers/forgotpassword.js dialog/controllers/checkregistration.js dialog/controllers/pickemail.js dialog/controllers/addemail.js dialog/controllers/required_email.js dialog/start.js > $BUILD_PATH/dialog.uncompressed.js
 
 # produce the dialog css
 cat css/common.css dialog/css/popup.css dialog/css/m.css > $BUILD_PATH/dialog.uncompressed.css
 
 # produce the non interactive frame js
 cat lib/jquery-1.6.2.min.js lib/jschannel.js lib/underscore-min.js lib/vepbundle.js shared/javascript-extensions.js shared/browserid.js shared/storage.js shared/network.js shared/user.js communication_iframe/start.js > $BUILD_PATH/communication_iframe.uncompressed.js
-
-# produce the relay js
-cat lib/jschannel.js shared/browserid.js relay/relay.js relay/start.js > $BUILD_PATH/relay.uncompressed.js
 
 echo ''
 echo '****Building BrowserID.org HTML, CSS, and JS****'
@@ -84,7 +81,6 @@ cd $PRODUCTION_PATH
 $UGLIFY < $BUILD_PATH/include.uncompressed.js > include.js
 $UGLIFY < $BUILD_PATH/dialog.uncompressed.js > dialog.js
 $UGLIFY < $BUILD_PATH/communication_iframe.uncompressed.js > communication_iframe.js
-$UGLIFY < $BUILD_PATH/relay.uncompressed.js > relay.js
 $UGLIFY < $BUILD_PATH/browserid.uncompressed.js > browserid.js
 
 # minify the CSS

@@ -88,10 +88,6 @@
   module("controllers/dialog", {
     setup: function() {
       winMock = new WinMock();
-      channel.init({
-        window: winMock,
-        navigator: navMock
-      });
       reset();
       bid.TestHelpers.setup();
     },
@@ -99,10 +95,6 @@
     teardown: function() {
       controller.destroy();
       reset();
-      channel.init({
-        window: window,
-        navigator: navigator
-      });
       bid.TestHelpers.teardown();
     }
   });

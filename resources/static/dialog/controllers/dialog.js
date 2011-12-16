@@ -42,7 +42,6 @@ BrowserID.Modules.Dialog = (function() {
   var bid = BrowserID,
       user = bid.User,
       errors = bid.Errors,
-      channel = bid.Channel,
       dom = bid.DOM,
       win = window;
 
@@ -76,7 +75,14 @@ BrowserID.Modules.Dialog = (function() {
     var self = this;
 
     try {
-      channel.open(self);
+      //
+      WinChan.onOpen(function(origin, args, cb) {
+        self.get(origin, args.params, function(r) {
+          cb(r);
+        }, function (e) {
+          cb(null);
+        });
+      });
     } catch (e) {
       self.renderError("error", {
         action: errors.relaySetup
@@ -91,7 +97,6 @@ BrowserID.Modules.Dialog = (function() {
 
   function onWindowUnload() {
     this.publish("window_unload");
-    channel.close();
   }
 
   var Dialog = bid.Modules.PageModule.extend({
