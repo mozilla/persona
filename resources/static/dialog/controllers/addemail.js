@@ -40,15 +40,9 @@ BrowserID.Modules.AddEmail = (function() {
   var bid = BrowserID,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
+      cancelEvent = dialogHelpers.cancelEvent,
       errors = bid.Errors,
       tooltip = bid.Tooltip;
-
-  function cancelEvent(callback) {
-    return function(event) {
-      event && event.preventDefault();
-      callback && callback();
-    }
-  }
 
   function addEmail(callback) {
     var email = helpers.getAndValidateEmail("#newEmail"),
