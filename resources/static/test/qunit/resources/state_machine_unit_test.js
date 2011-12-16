@@ -256,6 +256,14 @@
     equal(controllerMock.error, true, "error screen is shown");
   });
 
+  test("start with empty requiredEmail prints error screen", function() {
+    mediator.publish("start", {
+      requiredEmail: ""
+    });
+
+    equal(controllerMock.error, true, "error screen is shown");
+  });
+
   test("start with valid requiredEmail goes to auth", function() {
     mediator.publish("start", {
       requiredEmail: "testuser@testuser.com"

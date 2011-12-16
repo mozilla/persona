@@ -95,7 +95,7 @@
       self.allowPersistent = !!info.allowPersistent;
       var email = self.requiredEmail = info.requiredEmail;
 
-      if(email && !(bid.verifyEmail(email))) {
+      if(typeof(email) !== "undefined" && !(bid.verifyEmail(email))) {
         gotoState("doError", "invalidRequiredEmail", { email: email });
       }
       else {
