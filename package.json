@@ -11,7 +11,7 @@
     , "connect-logger-statsd": "0.0.1"
     , "ejs": "0.4.3"
     , "express": "2.5.0"
-    , "jwcrypto": "0.1.0"
+    , "jwcrypto": "0.1.1"
     , "mustache": "0.3.1-dev"
     , "mysql" : "0.9.5"
     , "node-statsd": "https://github.com/downloads/lloyd/node-statsd/3a73de.tgz"
