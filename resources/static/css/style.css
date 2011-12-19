@@ -271,38 +271,36 @@ div.steps {
   font-weight: normal;
 }
 
-#manage .buttonrow {
-  margin: 72px 0 14px;
+#manage section {
+  margin-bottom: 20px;
 }
 
-#manage .buttonrow button {
+.buttonrow {
+  margin: 0 0 14px;
+}
+
+.buttonrow > h2 {
+  display: inline-block;
+  font-size: 1em;
+}
+
+#manage button {
   line-height: 20px;
   height: 24px;
-  width: 48px;
   font-size: 12px;
 }
 
-#manageAccounts {
-  background-color: #37A6FF;
-  border: 1px solid #37A6FF;
-  text-shadow: -1px -1px 0 #37A6FF;
-  cursor: pointer;
-
-  -webkit-box-shadow: 0 0 0 1px #76C2FF inset;
-     -moz-box-shadow: 0 0 0 1px #76C2FF inset;
-       -o-box-shadow: 0 0 0 1px #76C2FF inset;
-          box-shadow: 0 0 0 1px #76C2FF inset;
-
-  background-image: -moz-linear-gradient(#76C2FF 0pt, #37A6FF 100%);
-  background-image: -o-linear-gradient(#76C2FF 0pt, #37A6FF 100%);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
+.buttonrow > button {
+  width: 48px;
 }
 
-.edit #manageAccounts {
+.buttonrow > .edit { }
+
+.edit .buttonrow > .edit {
   display: none;
 }
 
-#cancelManage {
+.buttonrow > .done {
   display: none;
   background-color: #006EC6;
   border: 1px solid #003E70;
@@ -319,13 +317,12 @@ div.steps {
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3AA7FF), color-stop(100%, #006EC6));
 }
 
-.edit #cancelManage {
+.edit .buttonrow > .done {
   display: inline-block;
 }
 
 #manage #emailList {
   list-style-type: none;
-  margin: 0 0 72px 0;
   border-top: 1px solid #eee;
 }
 
@@ -376,10 +373,7 @@ div.steps {
 
 button.delete {
   background-color: #EA7676;
-  height: 24px;
-  vertical-align: middle;
   border: 1px solid #B13D3D;
-  font-size: 12px;
   font-weight: bold;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #fff;
@@ -415,6 +409,32 @@ button.delete:active {
   background-image: -moz-linear-gradient(center top , #C84343 0%, #AA3D3D 100%);
   background-image: -o-linear-gradient(#C84343 0%, #AA3D3D 100%);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #C84343), color-stop(100%, #AA3D3D));
+}
+
+#edit_password {
+  margin-bottom: 10px;
+}
+
+#edit_password label {
+  width: 40%;
+  display: inline-block;
+}
+
+#edit_password input[type=password] {
+  width: 40%;
+}
+
+.showedit {
+  opacity: 0;
+  -webkit-transition: all 500ms;
+  -moz-transition: all 500ms;
+  -ms-transition: all 500ms;
+  -o-transition: all 500ms;
+  transition: all 500ms;
+}
+
+.edit .showedit {
+  opacity: 1;
 }
 
 #disclaimer {
@@ -683,7 +703,7 @@ a.forgot {
 }
 
 
-header {
+#wrapper > header {
   position: absolute;
   top: 0;
   font-weight: bold;
@@ -725,7 +745,7 @@ header a.signIn:hover, header a.signOut:hover {
   display: inline;
 }
 
-header,
+#wrapper > header,
 footer {
   display: block;
   width: 100%;

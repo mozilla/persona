@@ -44,7 +44,7 @@ BrowserID.Tooltip = (function() {
       bid = BrowserID,
       dom = bid.DOM,
       renderer = bid.Renderer,
-      lastTooltip;
+      hideTimer;
 
   function createTooltip(el) {
       var contents = el.html();
@@ -74,7 +74,7 @@ BrowserID.Tooltip = (function() {
 
     bid.Tooltip.shown = true;
     el.fadeIn(ANIMATION_TIME, function() {
-      setTimeout(function() {
+      hideTimer = setTimeout(function() {
         el.fadeOut(ANIMATION_TIME, function() {
           bid.Tooltip.shown = false;
           if(complete) complete();
@@ -118,7 +118,19 @@ BrowserID.Tooltip = (function() {
 
 
  return {
-    showTooltip: showTooltip
+   showTooltip: showTooltip
+   // BEGIN TESTING API
+   ,
+   reset: function() {
+     if(hideTimer) {
+       clearTimeout(hideTimer);
+       hideTimer = null;
+     }
+
+     $(".tooltip").hide();
+     bid.Tooltip.shown = false;
+   }
+   // END TESTING API
  };
 
 }());

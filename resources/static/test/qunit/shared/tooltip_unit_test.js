@@ -76,4 +76,15 @@
     });
   });
 
+  asyncTest("show tooltip, then reset - hides tooltip, resets shown status", function() {
+    tooltip.showTooltip("#shortTooltip");
+    setTimeout(function() {
+      tooltip.reset();
+
+      equal($(".tooltip:visible").length, 0, "after reset, all tooltips are hidden");
+      equal(tooltip.shown, false, "after reset, tooltip status is reset");
+      start();
+    }, 100);
+  });
+
 }());
