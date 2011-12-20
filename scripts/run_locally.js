@@ -30,6 +30,7 @@ var daemonsToRun = {
     HOST: HOST
   },
   example_primary: {
+    SHIMMED_DOMAIN: "example.domain",
     path: path.join(__dirname, "..", "scripts", "serve_example_primary.js"),
     PORT: 10005,
     HOST: HOST
