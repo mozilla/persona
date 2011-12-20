@@ -37,8 +37,11 @@
 BrowserID.Provisioning = (function() {
   "use strict";
 
-  var Provisioning = {
-
+  var Provisioning = function(args, successCB, failureCB) {
+    if (!args || !args.email || !args.url) throw "missing required arguments";
+    setTimeout(function() {
+      failureCB("not implemented");
+    }, 0);
   };
 
   return Provisioning;

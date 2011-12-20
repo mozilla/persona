@@ -60,22 +60,35 @@ BrowserID.signUp = (function() {
       }
 
       if (email) {
-        user.isEmailRegistered(email, function(registered) {
-          if (!registered) {
-            user.createUser(email, function onSuccess(success) {
-              if(success) {
-                pageHelpers.showEmailSent(oncomplete);
-              }
-              else {
-                tooltip.showTooltip("#could_not_add");
-                complete();
-              }
-            }, pageHelpers.getFailure(errors.createUser, oncomplete));
-          }
-          else {
-            $('#registeredEmail').html(email);
-            showNotice(".alreadyRegistered");
-            complete();
+        user.addressInfo(email, function(info) {
+          if (info.type === 'secondary') {
+            if (!info.known) {
+              user.createUser(email, function onSuccess(success) {
+                if(success) {
+                  pageHelpers.showEmailSent(oncomplete);
+                }
+                else {
+                  tooltip.showTooltip("#could_not_add");
+                  complete();
+                }
+              }, pageHelpers.getFailure(errors.createUser, oncomplete));
+            }
+            else {
+              $('#registeredEmail').html(email);
+              showNotice(".alreadyRegistered");
+              complete();
+            }
+          } else {
+            BrowserID.Provisioning({
+              email: email,
+              url: info.prov
+            }, function(r) {
+              // XXX: implement me
+              alert("shane!  provisioning was a success " + JSON.stringify(r));
+            }, function(e) {
+              // XXX: implement me
+              alert("shane!  provisioning was a failure: " + e);
+            });
           }
         }, pageHelpers.getFailure(errors.isEmailRegistered, oncomplete));
       }

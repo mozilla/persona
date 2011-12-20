@@ -533,6 +533,23 @@ BrowserID.User = (function() {
     },
 
     /**
+     * Get information about an email address.  Who vouches for it?
+     * (is it a primary or a secondary)
+     * @method addressInfo
+     * @param {string} email - Email address to check.
+     * @param {function} [onSuccess] - Called with an object on success,
+     *   containing these properties:
+     *     type: <secondary|primary>
+     *     known: boolean, present - present if type is secondary
+     *     auth: string - url to send users for auth - present if type is primary
+     *     prov: string - url to embed for silent provisioning - present if type is secondary
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    addressInfo: function(email, onSuccess, onFailure) {
+      network.addressInfo(email, onSuccess, onFailure);
+    },
+
+    /**
      * Add an email address to an already created account.  Sends address and
      * keypair to the server, user then needs to verify account ownership. This
      * does not add the new email address/keypair to the local list of
