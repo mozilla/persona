@@ -21,7 +21,7 @@ if (process.env['BROWSERID_URL']) {
   }));
 }
 
-exampleServer.use(express.static(path.join(__dirname, "..", "example")));
+exampleServer.use(express.static(path.join(__dirname, "..", "example", "rp")));
 
 exampleServer.use(express.bodyParser());
 
