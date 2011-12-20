@@ -53,7 +53,7 @@ BrowserID.signUp = (function() {
     }
 
     function submit(oncomplete) {
-      var email = helpers.getAndValidateEmail("#email");
+      var email = helpers.getAndValidateEmail("#emailInput");
 
       function complete(status) {
         oncomplete && oncomplete(status);
