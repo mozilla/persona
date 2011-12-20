@@ -120,7 +120,7 @@ BrowserID.Network = (function() {
     else {
       var url = "/wsapi/session_context";
       xhr.ajax({
-        url: "/wsapi/session_context",
+        url: url,
         success: function(result) {
           csrf_token = result.csrf_token;
           server_time = {
@@ -379,15 +379,22 @@ BrowserID.Network = (function() {
      * @method changePassword
      * @param {string} oldpassword - old password.
      * @param {string} newpassword - new password.
-     * @param {function} [onSuccess] - Callback to call when complete. Will be
+     * @param {function} [onComplete] - Callback to call when complete. Will be
      * called with true if successful, false otw.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    changePassword: function(oldPassword, newPassword, onSuccess, onFailure) {
-      // XXX fill this in
-      if (onSuccess) {
-        onSuccess(true);
-      }
+    changePassword: function(oldPassword, newPassword, onComplete, onFailure) {
+      post({
+        url: "/wsapi/update_password",
+        data: {
+          oldpass: oldPassword,
+          newpass: newPassword
+        },
+        success: function(response) {
+          if (onComplete) onComplete(response.success);
+        },
+        error: onFailure
+      });
     },
 
 
@@ -420,8 +427,8 @@ BrowserID.Network = (function() {
           email: email,
           site: origin
         },
-        success: function(status) {
-          if (onSuccess) onSuccess(status.success);
+        success: function(response) {
+          if (onSuccess) onSuccess(response.success);
         },
         error: function(info) {
           // 403 is throttling.
@@ -474,7 +481,7 @@ BrowserID.Network = (function() {
      * (is it a primary or a secondary)
      * @method addressInfo
      * @param {string} email - Email address to check.
-     * @param {function} [onSuccess] - Called with an object on success,
+     * @param {function} [onComplete] - Called with an object on success,
      *   containing these properties:
      *     type: <secondary|primary>
      *     known: boolean, present - present if type is secondary
@@ -482,11 +489,11 @@ BrowserID.Network = (function() {
      *     prov: string - url to embed for silent provisioning - present if type is secondary
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    addressInfo: function(email, onSuccess, onFailure) {
+    addressInfo: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/address_info?email=" + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
-          if (onSuccess) onSuccess(data);
+          if (onComplete) onComplete(data);
         },
         error: onFailure
       });

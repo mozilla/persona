@@ -1,4 +1,3 @@
-
 /*jshint browsers:true, forin: true, laxbreak: true */
 /*global BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****

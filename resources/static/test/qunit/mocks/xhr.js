@@ -56,14 +56,8 @@ BrowserID.Mocks.xhr = (function() {
   var xhr = {
     results: {
       "get /wsapi/session_context valid": contextInfo,
-      "get /wsapi/session_context invalid": contextInfo,
       // We are going to test for XHR failures for session_context using
-      // call to serverTime.  We are going to use the flag contextAjaxError
-      "get /wsapi/session_context ajaxError": contextInfo,
-      "get /wsapi/session_context complete": contextInfo,
-      "get /wsapi/session_context throttle": contextInfo,
-      "get /wsapi/session_context multiple": contextInfo,
-      "get /wsapi/session_context no_identities": contextInfo,
+      // the flag contextAjaxError.
       "get /wsapi/session_context contextAjaxError": undefined,
       "get /wsapi/email_for_token?token=token valid": { email: "testuser@testuser.com" },
       "get /wsapi/email_for_token?token=token invalid": { success: false },
@@ -76,6 +70,7 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/complete_email_addition valid": { success: true },
       "post /wsapi/complete_email_addition invalid": { success: false },
       "post /wsapi/complete_email_addition ajaxError": undefined,
+      "post /wsapi/stage_user unknown_secondary": { success: true },
       "post /wsapi/stage_user valid": { success: true },
       "post /wsapi/stage_user invalid": { success: false },
       "post /wsapi/stage_user throttle": 403,
@@ -115,7 +110,19 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/list_emails no_identities": [],
       "get /wsapi/list_emails ajaxError": undefined,
       // Used in conjunction with registration to do a complete userflow
-      "get /wsapi/list_emails complete": {"registered@testuser.com":{}}
+      "get /wsapi/list_emails complete": {"registered@testuser.com":{}},
+      "post /wsapi/update_password valid": { success: true },
+      "post /wsapi/update_password incorrectPassword": { success: false },
+      "post /wsapi/update_password invalid": undefined,
+      "get /wsapi/address_info?email=unregistered%40testuser.com invalid": undefined,
+      "get /wsapi/address_info?email=unregistered%40testuser.com throttle": { type: "secondary", known: false },
+      "get /wsapi/address_info?email=unregistered%40testuser.com unknown_secondary": { type: "secondary", known: false },
+      "get /wsapi/address_info?email=registered%40testuser.com known_secondary": { type: "secondary", known: true },
+      "get /wsapi/address_info?email=unregistered%40testuser.com primary": { type: "primary", auth: "", prov: "" },
+      "get /wsapi/address_info?email=testuser%40testuser.com unknown_secondary": { type: "secondary", known: false },
+      "get /wsapi/address_info?email=testuser%40testuser.com known_secondary": { type: "secondary", known: true },
+      "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", auth: "", prov: "" },
+      "get /wsapi/address_info?email=testuser%40testuser.com ajaxError": undefined
     },
 
     setContextInfo: function(field, value) {
@@ -145,7 +152,18 @@ BrowserID.Mocks.xhr = (function() {
         ok(false, "missing csrf token on POST request");
       }
 
-      var resName = req.type + " " + req.url + " " + xhr.resultType;
+
+      var resultType = xhr.resultType;
+
+      // Unless the contextAjaxError is specified, use the "valid" context info.
+      // This makes it so we do not have to keep adding new items for
+      // context_info for every possible result type.
+      if(req.url === "/wsapi/session_context" && resultType !== "contextAjaxError") {
+        resultType = "valid";
+      }
+
+      var resName = req.type + " " + req.url + " " + resultType;
+
       var result = xhr.results[resName];
 
       var type = typeof result;

@@ -102,6 +102,14 @@
 
     doError: function() {
       this.error = true;
+    },
+
+    doPrimaryUserVerified: function() {
+      this.primaryUserVerified = true;
+    },
+
+    doVerifyPrimaryUser: function() {
+      this.verifyPrimaryUser = true;
     }
   };
 
@@ -152,6 +160,18 @@
     mediator.publish("user_confirmed");
 
     ok(controllerMock.emailConfirmed, "user was confirmed");
+  });
+
+  // XXX make these and the messages for secondary match up so there is consistency.
+  test("primary_user_verified calls doPrimaryUserVerified", function() {
+    mediator.publish("primary_user_verified");
+
+    ok(controllerMock.primaryUserVerified, "doPrimaryUserVerified called");
+  });
+
+  test("primary_verify_user calls doVerifyPrimaryUser", function() {
+    mediator.publish("primary_verify_user");
+    ok(controllerMock.verifyPrimaryUser, "doVerifyPrimaryUser called");
   });
 
   test("authenticated", function() {

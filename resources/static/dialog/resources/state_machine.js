@@ -118,7 +118,6 @@
       var authenticated = info.authenticated;
 
       if (self.requiredEmail) {
-        // XXX get this out of here and into the state machine!
         gotoState("doAuthenticateWithRequiredEmail", {
           email: self.requiredEmail,
           authenticated: authenticated
@@ -145,6 +144,14 @@
 
     subscribe("user_confirmed", function() {
       gotoState("doEmailConfirmed");
+    });
+
+    subscribe("primary_user_verified", function(msg, info) {
+      gotoState("doPrimaryUserVerified", info);
+    });
+
+    subscribe("primary_verify_user", function(msg, info) {
+      gotoState("doVerifyPrimaryUser", info);
     });
 
     subscribe("authenticate_with_required_email", function(msg, info) {

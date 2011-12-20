@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global wrappedAsyncTest: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
+/*global asyncTest: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -37,22 +37,10 @@
 (function() {
   "use strict";
 
-  var testName,
-      bid = BrowserID,
+  var bid = BrowserID,
       mediator = bid.Mediator,
-      xhr = bid.Mocks.xhr;
-
-  function wrappedAsyncTest(name, test) {
-    asyncTest(name, function() {
-      testName = name;
-      test();
-    });
-  }
-
-  function wrappedStart() {
-    console.log("start: " + testName);
-    start();
-  }
+      xhr = bid.Mocks.xhr,
+      testHelpers = bid.TestHelpers;
 
   function notificationCheck(cb) {
     // Take the original arguments, take off the function.  Add any additional
@@ -70,7 +58,7 @@
       ok(info.network.type, "request type is in network info");
       equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
       equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
-      wrappedStart();
+      start();
       mediator.unsubscribe(handle);
     };
 
@@ -81,22 +69,29 @@
     }
   }
 
+  function unexpectedFailure() {
+    return function() {
+      ok(false, "unexpected failure");
+      start();
+    }
+  }
+
   function failureCheck(cb) {
     // Take the original arguments, take off the function.  Add any additional
     // arguments that were passed in, and then tack on the onSuccess and
     // onFailure to the end.  Then call the callback.
     var args = Array.prototype.slice.call(arguments, 1);
 
-    args.push(function onSuccess(authenticated) {
+    args.push(function onSuccess() {
       ok(false, "XHR failure should never pass");
-      wrappedStart();
+      start();
     }, function onFailure(info) {
       ok(true, "XHR failure should never pass");
       ok(info.network.url, "url is in network info");
       ok(info.network.type, "request type is in network info");
       equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
       equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
-      wrappedStart();
+      start();
     });
 
     xhr.useResult("ajaxError");
@@ -108,72 +103,71 @@
 
   module("shared/network", {
     setup: function() {
-      network.setXHR(xhr);
-      xhr.useResult("valid");
+      testHelpers.setup();
     },
     teardown: function() {
-      network.setXHR($);
+      testHelpers.teardown();
     }
   });
 
 
-  wrappedAsyncTest("authenticate with valid user", function() {
+  asyncTest("authenticate with valid user", function() {
     network.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
       equal(authenticated, true, "valid authentication");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false, "valid authentication");
-      wrappedStart();
+      start();
     });
   });
 
-  wrappedAsyncTest("authenticate with invalid user", function() {
+  asyncTest("authenticate with invalid user", function() {
     xhr.useResult("invalid");
     network.authenticate("testuser@testuser.com", "invalid", function onSuccess(authenticated) {
       equal(authenticated, false, "invalid authentication");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false, "invalid authentication");
-      wrappedStart();
+      start();
     });
   });
 
-  wrappedAsyncTest("authenticate with XHR failure, checking whether application is notified", function() {
+  asyncTest("authenticate with XHR failure, checking whether application is notified", function() {
     notificationCheck(network.authenticate, "testuser@testuser.com", "ajaxError");
   });
 
-  wrappedAsyncTest("authenticate with XHR failure after context already setup", function() {
+  asyncTest("authenticate with XHR failure after context already setup", function() {
     failureCheck(network.authenticate, "testuser@testuser.com", "ajaxError");
   });
 
 
-  wrappedAsyncTest("checkAuth with valid authentication", function() {
+  asyncTest("checkAuth with valid authentication", function() {
     xhr.setContextInfo("authenticated", true);
     network.checkAuth(function onSuccess(authenticated) {
       equal(authenticated, true, "we have an authentication");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false, "checkAuth failure");
-      wrappedStart();
+      start();
     });
   });
 
-  wrappedAsyncTest("checkAuth with invalid authentication", function() {
+  asyncTest("checkAuth with invalid authentication", function() {
     xhr.useResult("invalid");
     xhr.setContextInfo("authenticated", false);
 
     network.checkAuth(function onSuccess(authenticated) {
       equal(authenticated, false, "we are not authenticated");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false, "checkAuth failure");
-      wrappedStart();
+      start();
     });
   });
 
 
 
-  wrappedAsyncTest("checkAuth with XHR failure", function() {
+  asyncTest("checkAuth with XHR failure", function() {
     xhr.useResult("ajaxError");
     xhr.setContextInfo("authenticated", false);
 
@@ -182,428 +176,399 @@
     // request, we do not test whether the app is notified of an XHR failure
     network.checkAuth(function onSuccess() {
       ok(true, "checkAuth does not make an ajax call, all good");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false, "checkAuth does not make an ajax call, should not fail");
-      wrappedStart();
+      start();
     });
 
   });
 
 
-  wrappedAsyncTest("logout", function() {
+  asyncTest("logout", function() {
     network.logout(function onSuccess() {
       ok(true, "we can logout");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false, "logout failure");
-      wrappedStart();
+      start();
     });
   });
 
 
-  wrappedAsyncTest("logout with XHR failure", function() {
+  asyncTest("logout with XHR failure", function() {
     notificationCheck(network.logout);
   });
 
-  wrappedAsyncTest("logout with XHR failure", function() {
+  asyncTest("logout with XHR failure", function() {
     failureCheck(network.logout);
   });
 
 
-  wrappedAsyncTest("complete_email_addition valid", function() {
+  asyncTest("complete_email_addition valid", function() {
     network.completeEmailRegistration("goodtoken", function onSuccess(proven) {
       equal(proven, true, "good token proved");
-      wrappedStart();
+      start();
     }, function onFailure() {
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("complete_email_addition with invalid token", function() {
+  asyncTest("complete_email_addition with invalid token", function() {
     xhr.useResult("invalid");
     network.completeEmailRegistration("badtoken", function onSuccess(proven) {
       equal(proven, false, "bad token could not be proved");
-      wrappedStart();
+      start();
     }, function onFailure() {
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("complete_email_addition with XHR failure", function() {
+  asyncTest("complete_email_addition with XHR failure", function() {
     notificationCheck(network.completeEmailRegistration, "goodtoken");
   });
 
-  wrappedAsyncTest("complete_email_addition with XHR failure", function() {
+  asyncTest("complete_email_addition with XHR failure", function() {
     failureCheck(network.completeEmailRegistration, "goodtoken");
   });
 
-  wrappedAsyncTest("createUser with valid user", function() {
+  asyncTest("createUser with valid user", function() {
     network.createUser("validuser", "origin", function onSuccess(created) {
       ok(created);
-      wrappedStart();
+      start();
     }, function onFailure() {
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("createUser with invalid user", function() {
+  asyncTest("createUser with invalid user", function() {
     xhr.useResult("invalid");
     network.createUser("invaliduser", "origin", function onSuccess(created) {
       equal(created, false);
-      wrappedStart();
+      start();
     }, function onFailure() {
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("createUser throttled", function() {
+  asyncTest("createUser throttled", function() {
     xhr.useResult("throttle");
 
     network.createUser("validuser", "origin", function onSuccess(added) {
       equal(added, false, "throttled email returns onSuccess but with false as the value");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("createUser with XHR failure", function() {
+  asyncTest("createUser with XHR failure", function() {
     notificationCheck(network.createUser, "validuser", "origin");
   });
 
-  wrappedAsyncTest("createUser with XHR failure", function() {
+  asyncTest("createUser with XHR failure", function() {
     failureCheck(network.createUser, "validuser", "origin");
   });
 
-  wrappedAsyncTest("checkUserRegistration with pending email", function() {
+  asyncTest("checkUserRegistration with pending email", function() {
     xhr.useResult("pending");
 
     network.checkUserRegistration("registered@testuser.com", function(status) {
       equal(status, "pending");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("checkUserRegistration with complete email", function() {
+  asyncTest("checkUserRegistration with complete email", function() {
     xhr.useResult("complete");
 
     network.checkUserRegistration("registered@testuser.com", function(status) {
       equal(status, "complete");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("checkUserRegistration with XHR failure", function() {
+  asyncTest("checkUserRegistration with XHR failure", function() {
     notificationCheck(network.checkUserRegistration, "registered@testuser.com");
   });
 
-  wrappedAsyncTest("checkUserRegistration with XHR failure", function() {
+  asyncTest("checkUserRegistration with XHR failure", function() {
     failureCheck(network.checkUserRegistration, "registered@testuser.com");
   });
 
-  wrappedAsyncTest("completeUserRegistration with valid token", function() {
+  asyncTest("completeUserRegistration with valid token", function() {
     network.completeUserRegistration("token", "password", function(registered) {
       ok(registered);
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("completeUserRegistration with invalid token", function() {
+  asyncTest("completeUserRegistration with invalid token", function() {
     xhr.useResult("invalid");
 
     network.completeUserRegistration("token", "password", function(registered) {
       equal(registered, false);
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("completeUserRegistration with XHR failure", function() {
+  asyncTest("completeUserRegistration with XHR failure", function() {
     notificationCheck(network.completeUserRegistration, "token", "password");
   });
 
-  wrappedAsyncTest("completeUserRegistration with XHR failure", function() {
+  asyncTest("completeUserRegistration with XHR failure", function() {
     failureCheck(network.completeUserRegistration, "token", "password");
   });
 
-  wrappedAsyncTest("cancelUser valid", function() {
+  asyncTest("cancelUser valid", function() {
 
     network.cancelUser(function() {
       // XXX need a test here.
       ok(true);
-      wrappedStart();
+      start();
     }, function onFailure() {
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("cancelUser invalid", function() {
+  asyncTest("cancelUser invalid", function() {
     xhr.useResult("invalid");
 
     network.cancelUser(function() {
       // XXX need a test here.
       ok(true);
-      wrappedStart();
+      start();
     }, function onFailure() {
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("cancelUser with XHR failure", function() {
+  asyncTest("cancelUser with XHR failure", function() {
     notificationCheck(network.cancelUser);
   });
 
-  wrappedAsyncTest("cancelUser with XHR failure", function() {
+  asyncTest("cancelUser with XHR failure", function() {
     failureCheck(network.cancelUser);
   });
 
-  wrappedAsyncTest("emailRegistered with taken email", function() {
+  asyncTest("emailRegistered with taken email", function() {
     network.emailRegistered("registered@testuser.com", function(taken) {
       equal(taken, true, "a taken email is marked taken");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("emailRegistered with nottaken email", function() {
+  asyncTest("emailRegistered with nottaken email", function() {
     network.emailRegistered("unregistered@testuser.com", function(taken) {
       equal(taken, false, "a not taken email is not marked taken");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("emailRegistered with XHR failure", function() {
+  asyncTest("emailRegistered with XHR failure", function() {
     notificationCheck(network.emailRegistered, "registered@testuser.com");
   });
 
-  wrappedAsyncTest("emailRegistered with XHR failure", function() {
+  asyncTest("emailRegistered with XHR failure", function() {
     failureCheck(network.emailRegistered, "registered@testuser.com");
   });
 
 
-  wrappedAsyncTest("addEmail valid", function() {
+  asyncTest("addEmail valid", function() {
     network.addEmail("address", "origin", function onSuccess(added) {
       ok(added);
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("addEmail invalid", function() {
+  asyncTest("addEmail invalid", function() {
     xhr.useResult("invalid");
     network.addEmail("address", "origin", function onSuccess(added) {
       equal(added, false);
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("addEmail throttled", function() {
+  asyncTest("addEmail throttled", function() {
     xhr.useResult("throttle");
 
     network.addEmail("address", "origin", function onSuccess(added) {
       equal(added, false, "throttled email returns onSuccess but with false as the value");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("addEmail with XHR failure", function() {
+  asyncTest("addEmail with XHR failure", function() {
     notificationCheck(network.addEmail, "address", "origin");
   });
 
-  wrappedAsyncTest("addEmail with XHR failure", function() {
+  asyncTest("addEmail with XHR failure", function() {
     failureCheck(network.addEmail, "address", "origin");
   });
 
-  wrappedAsyncTest("checkEmailRegistration pending", function() {
+  asyncTest("checkEmailRegistration pending", function() {
     xhr.useResult("pending");
 
     network.checkEmailRegistration("registered@testuser.com", function(status) {
       equal(status, "pending");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("checkEmailRegistration complete", function() {
+  asyncTest("checkEmailRegistration complete", function() {
     xhr.useResult("complete");
 
     network.checkEmailRegistration("registered@testuser.com", function(status) {
       equal(status, "complete");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("checkEmailRegistration with XHR failure", function() {
+  asyncTest("checkEmailRegistration with XHR failure", function() {
     notificationCheck(network.checkEmailRegistration, "address");
   });
 
-  wrappedAsyncTest("checkEmailRegistration with XHR failure", function() {
+  asyncTest("checkEmailRegistration with XHR failure", function() {
     failureCheck(network.checkEmailRegistration, "address");
   });
 
 
-  wrappedAsyncTest("removeEmail valid", function() {
+  asyncTest("removeEmail valid", function() {
     network.removeEmail("validemail", function onSuccess() {
       // XXX need a test here;
       ok(true);
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("removeEmail invalid", function() {
+  asyncTest("removeEmail invalid", function() {
     xhr.useResult("invalid");
 
     network.removeEmail("invalidemail", function onSuccess() {
       // XXX need a test here;
       ok(true);
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("removeEmail with XHR failure", function() {
+  asyncTest("removeEmail with XHR failure", function() {
     notificationCheck(network.removeEmail, "validemail");
   });
 
-  wrappedAsyncTest("removeEmail with XHR failure", function() {
+  asyncTest("removeEmail with XHR failure", function() {
     failureCheck(network.removeEmail, "invalidemail");
   });
 
 
-  wrappedAsyncTest("requestPasswordReset", function() {
+  asyncTest("requestPasswordReset", function() {
     network.requestPasswordReset("address", "origin", function onSuccess() {
       // XXX need a test here;
       ok(true);
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("requestPasswordReset with XHR failure", function() {
+  asyncTest("requestPasswordReset with XHR failure", function() {
     notificationCheck(network.requestPasswordReset, "address", "origin");
   });
 
-  wrappedAsyncTest("requestPasswordReset with XHR failure", function() {
+  asyncTest("requestPasswordReset with XHR failure", function() {
     failureCheck(network.requestPasswordReset, "address", "origin");
   });
 
-  wrappedAsyncTest("resetPassword", function() {
+  asyncTest("resetPassword", function() {
     network.resetPassword("password", function onSuccess() {
       // XXX need a test here;
       ok(true);
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false);
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("resetPassword with XHR failure", function() {
+  asyncTest("resetPassword with XHR failure", function() {
     xhr.useResult("ajaxError");
 /*
     the body of this function is not yet written
 
     network.resetPassword("password", function onSuccess() {
       ok(false, "XHR failure should never call success");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(true, "XHR failure should always call failure");
-      wrappedStart();
+      start();
     });
 */
     start();
   });
 
-  wrappedAsyncTest("changePassword", function() {
-    network.changePassword("oldpassword", "newpassword", function onSuccess() {
-      // XXX need a real wrappedAsyncTest here.
-      ok(true);
-      wrappedStart();
-    }, function onFailure() {
-      ok(false);
-      wrappedStart();
-    });
-
-  });
-
-  wrappedAsyncTest("changePassword with XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    /*
-    the body of this function is not yet written.
-    network.changePassword("oldpassword", "newpassword", function onSuccess() {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    */
-    start();
-  });
-
-  wrappedAsyncTest("serverTime", function() {
+  asyncTest("serverTime", function() {
     // I am forcing the server time to be 1.25 seconds off.
     xhr.setContextInfo("server_time", new Date().getTime() - 1250);
     network.serverTime(function onSuccess(time) {
@@ -613,53 +578,122 @@
       // time as it is on the server, which could be more than 100ms off of
       // what the local machine says it is.
       //equal(Math.abs(diff) < 100, true, "server time and local time should be less than 100ms different (is " + diff + "ms different)");
-      wrappedStart();
+      start();
     }, function onfailure() {
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("serverTime with XHR failure before context has been setup", function() {
+  asyncTest("serverTime with XHR failure before context has been setup", function() {
     notificationCheck();
     xhr.useResult("contextAjaxError");
 
     network.serverTime();
   });
 
-  wrappedAsyncTest("serverTime with XHR failure before context has been setup", function() {
+  asyncTest("serverTime with XHR failure before context has been setup", function() {
     xhr.useResult("contextAjaxError");
 
     network.serverTime(function onSuccess(time) {
       ok(false, "XHR failure should never call success");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(true, "XHR failure should always call failure");
-      wrappedStart();
+      start();
     });
 
   });
 
-  wrappedAsyncTest("codeVersion", function() {
+  asyncTest("codeVersion", function() {
     network.codeVersion(function onComplete(version) {
       equal(version, "ABC123", "version returned properly");
-      wrappedStart();
+      start();
     }, function onFailure() {
       ok(false, "unexpected failure");
-      wrappedStart();
+      start();
     });
   });
 
-  wrappedAsyncTest("codeVersion with XHR error", function() {
+  asyncTest("codeVersion with XHR error", function() {
     xhr.useResult("contextAjaxError");
 
     network.codeVersion(function onComplete(version) {
       ok(false, "XHR failure should never call complete");
-      wrappedStart();
+      start();
     }, function onFailure() {
-      ok(true, "XHR fialure should always return failure");
-      wrappedStart();
+      ok(true, "XHR failure should always return failure");
+      start();
     });
+  });
 
+  asyncTest("addressInfo with unknown secondary email", function() {
+    xhr.useResult("unknown_secondary");
+
+    network.addressInfo("testuser@testuser.com", function onComplete(data) {
+      equal(data.type, "secondary", "type is secondary");
+      equal(data.known, false, "address is unknown to BrowserID");
+      start();
+    }, unexpectedFailure);
+  });
+
+  asyncTest("addressInfo with known seconday email", function() {
+    xhr.useResult("known_secondary");
+
+    network.addressInfo("testuser@testuser.com", function onComplete(data) {
+      equal(data.type, "secondary", "type is secondary");
+      equal(data.known, true, "address is known to BrowserID");
+      start();
+    }, unexpectedFailure);
+  });
+
+  asyncTest("addressInfo with primary email", function() {
+    xhr.useResult("primary");
+
+    network.addressInfo("testuser@testuser.com", function onComplete(data) {
+      equal(data.type, "primary", "type is primary");
+      ok("auth" in data, "auth field exists");
+      ok("prov" in data, "prov field exists");
+      start();
+    }, unexpectedFailure);
+  });
+
+  asyncTest("addressInfo with XHR error", function() {
+    xhr.useResult("ajaxError");
+    failureCheck(network.addressInfo, "testuser@testuser.com");
+  });
+
+  asyncTest("changePassword happy case, expect complete callback with true status", function() {
+    network.changePassword("oldpassword", "newpassword", function onComplete(status) {
+      equal(status, true, "calls onComplete with true status");
+      start();
+    }, function onFailure() {
+      ok(false, "unexpected failure");
+      start();
+    });
+  });
+
+  asyncTest("changePassword with incorrect old password, expect complete callback with false status", function() {
+    xhr.useResult("incorrectPassword");
+
+    network.changePassword("oldpassword", "newpassword", function onComplete(status) {
+      equal(status, false, "calls onComplete with false status");
+      start();
+    }, function onFailure() {
+      ok(false, "unexpected failure");
+      start();
+    });
+  });
+
+  asyncTest("changePassword with XHR error, expect error callback", function() {
+    xhr.useResult("ajaxError");
+
+    network.changePassword("oldpassword", "newpassword", function onComplete() {
+      ok(false, "XHR failure should never call complete");
+      start();
+    }, function onFailure() {
+      ok(true, "XHR failure should always call failure");
+      start();
+    });
   });
 }());

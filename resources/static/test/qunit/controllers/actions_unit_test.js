@@ -95,5 +95,27 @@
     });
   });
 
+  /*
+  asyncTest("doVerifyPrimaryUser does something", function() {
+    createController({
+      ready: function() {
+        controller.doVerifyPrimaryUser();
+        // XXX test something
+        start();
+      }
+    });
+  });
+
+  asyncTest("doPrimaryUserVerified does something", function() {
+    createController({
+      ready: function() {
+        controller.doPrimaryUserVerified();
+        // XXX test something
+        start();
+      }
+    });
+  });
+*/
+
 }());
 

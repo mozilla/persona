@@ -44,7 +44,9 @@ var jwcert = require("./jwcert");
       storage = bid.Storage,
       network = bid.Network,
       xhr = bid.Mocks.xhr,
-      testOrigin = "testOrigin";
+      testOrigin = "https://browserid.org",
+      testHelpers = bid.TestHelpers,
+      provisioning = bid.Mocks.Provisioning
 
   // I generated these locally, they are used nowhere else.
   var pubkey = {"algorithm":"RS","n":"56063028070432982322087418176876748072035482898334811368408525596198252519267108132604198004792849077868951906170812540713982954653810539949384712773390200791949565903439521424909576832418890819204354729217207360105906039023299561374098942789996780102073071760852841068989860403431737480182725853899733706069","e":"65537"};
@@ -92,14 +94,11 @@ var jwcert = require("./jwcert");
 
   module("shared/user", {
     setup: function() {
-      network.setXHR(xhr);
-      xhr.useResult("valid");
-      lib.clearStoredEmailKeypairs();
+      testHelpers.setup();
       lib.setOrigin(testOrigin);
-      storage.site.remove(testOrigin, "email");
     },
     teardown: function() {
-      network.setXHR($);
+      testHelpers.teardown();
     }
   });
 
@@ -116,11 +115,11 @@ var jwcert = require("./jwcert");
   });
 
   test("setOrigin, getHostname", function() {
-    var origin = "http://testorigin.com:10001";
+    var origin = "http://browserid.org";
     lib.setOrigin(origin);
 
     var hostname = lib.getHostname();
-    equal(hostname, "testorigin.com", "getHostname returns only the hostname");
+    equal(hostname, "browserid.org", "getHostname returns only the hostname");
   });
 
   test("getStoredEmailKeypairs", function() {
@@ -156,6 +155,7 @@ var jwcert = require("./jwcert");
     equal(0, count, "after clearing, there are no identities");
   });
 
+  /*
   asyncTest("createUser", function() {
     lib.createUser("testuser@testuser.com", function(status) {
       ok(status, "user created");
@@ -182,6 +182,70 @@ var jwcert = require("./jwcert");
       ok(true, "xhr failure should always be a failure");
       start();
     });
+  });
+*/
+  asyncTest("createUser with unknown secondary happy case - expect 'secondary.verify'", function() {
+    xhr.useResult("unknown_secondary");
+
+    lib.createUser("unregistered@testuser.com", function(status) {
+      equal(status, "secondary.verify", "secondary user must be verified");
+      start();
+    }, failure("createUser failure"));
+  });
+
+  asyncTest("createUser with unknown secondary, throttled - expect status='secondary.could_not_add'", function() {
+    xhr.useResult("throttle");
+
+    lib.createUser("unregistered@testuser.com", function(status) {
+      equal(status, "secondary.could_not_add", "user creation refused");
+      start();
+    }, failure("createUser failure"));
+  });
+
+  asyncTest("createUser with unknown secondary, XHR failure - expect failure call", function() {
+    xhr.useResult("ajaxError");
+
+    lib.createUser("unregistered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectXHRFailure
+    );
+  });
+
+  asyncTest("createUser with primary, user verified with primary - expect 'primary.verified'", function() {
+    xhr.useResult("primary");
+    provisioning.setSuccess(true);
+
+    lib.createUser("unregistered@testuser.com", function(status) {
+      equal(status, "primary.verified", "primary user is already verified, correct status");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("createUser with primary, user must authenticate with primary - expect 'primary.verify'", function() {
+    xhr.useResult("primary");
+
+    provisioning.setFailure({
+      code: "MUST_AUTHENTICATE",
+      msg: "Wahhooo!!"
+    });
+
+    lib.createUser("unregistered@testuser.com", function(status) {
+      equal(status, "primary.verify", "primary must verify with primary, correct status");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("createUser with primary, unknown provisioning failure, expect XHR failure callback", function() {
+    xhr.useResult("primary");
+    provisioning.setFailure({
+      code: "primaryError",
+      msg: "some error"
+    });
+
+    lib.createUser("unregistered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectXHRFailure
+    );
   });
 
   asyncTest("waitForUserValidation with `complete` response", function() {

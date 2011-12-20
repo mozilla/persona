@@ -1,4 +1,4 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
 /*global _: true, BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -168,8 +168,15 @@ BrowserID.Modules.Actions = (function() {
           authenticated: authenticated
         });
       }, self.getErrorDialog(errors.checkAuthentication));
-    }
+    },
 
+    doVerifyPrimaryUser: function(info) {
+      startService("verify_primary_user", info);
+    },
+
+    doPrimaryUserVerified: function() {
+      // XXX we've gotta do something here too.
+    }
   });
 
   sc = Module.sc;

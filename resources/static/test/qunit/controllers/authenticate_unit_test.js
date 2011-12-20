@@ -47,7 +47,9 @@
       userCreated = true,
       mediator = bid.Mediator,
       registrations = [],
-      register = bid.TestHelpers.register;
+      testHelpers = bid.TestHelpers,
+      register = testHelpers.register,
+      provisioning = bid.Mocks.Provisioning;
 
   function reset() {
     emailRegistered = false;
@@ -63,7 +65,7 @@
   module("controllers/authenticate", {
     setup: function() {
       reset();
-      bid.TestHelpers.setup();
+      testHelpers.setup();
       createController();
     },
 
@@ -76,7 +78,7 @@
         }
       }
       reset();
-      bid.TestHelpers.teardown();
+      testHelpers.teardown();
     }
   });
 
@@ -153,6 +155,9 @@
 
   asyncTest("createUser with valid email", function() {
     $("#email").val("unregistered@testuser.com");
+
+    xhr.useResult("unknown_secondary");
+
     register("user_staged", function(msg, info) {
       equal(info.email, "unregistered@testuser.com", "user_staged with correct email triggered");
       start();
@@ -189,8 +194,6 @@
       equal(bid.Tooltip.shown, true, "tooltip is shown");
       start();
     });
-
-
   });
 
   asyncTest("createUser with valid email, XHR error", function() {

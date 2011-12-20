@@ -45,7 +45,8 @@ BrowserID.manageAccount = (function() {
       pageHelpers = bid.PageHelpers,
       cancelEvent = pageHelpers.cancelEvent,
       confirmAction = confirm,
-      doc = document;
+      doc = document,
+      tooltip = bid.Tooltip;
 
   function relativeDate(date) {
     var diff = (((new Date()).getTime() - date.getTime()) / 1000),
@@ -211,12 +212,46 @@ BrowserID.manageAccount = (function() {
     }
   }
 
-  function manageAccounts() {
-      $("body").addClass("edit");
+  function startEdit(event) {
+    // XXX add some helpers in the dom library to find section.
+    event.preventDefault();
+    $(event.target).closest("section").addClass("edit");
   }
 
-  function cancelManage() {
-      $("body").removeClass("edit");
+  function cancelEdit(event) {
+    event.preventDefault();
+    $(event.target).closest("section").removeClass("edit");
+  }
+
+  function changePassword(oncomplete) {
+    var oldPassword = dom.getInner("#old_password"),
+        newPassword = dom.getInner("#new_password");
+
+    function complete(status) {
+      typeof oncomplete == "function" && oncomplete(status);
+    }
+
+    if(!oldPassword) {
+      tooltip.showTooltip("#tooltipOldRequired");
+      complete(false);
+    }
+    else if(!newPassword) {
+      tooltip.showTooltip("#tooltipNewRequired");
+      complete(false);
+    }
+    else {
+      user.changePassword(oldPassword, newPassword, function(status) {
+        if(status) {
+          dom.removeClass("#edit_password", "edit");
+        }
+        else {
+          tooltip.showTooltip("#tooltipInvalidPassword");
+        }
+
+        complete(status);
+      }, pageHelpers.getFailure(errors.updatePassword, oncomplete));
+    }
+
   }
 
   function displayHelpTextToNewUser() {
@@ -233,8 +268,10 @@ BrowserID.manageAccount = (function() {
     if (options.confirm) confirmAction = options.confirm;
 
     dom.bindEvent("#cancelAccount", "click", cancelEvent(cancelAccount));
-    dom.bindEvent("#manageAccounts", "click", cancelEvent(manageAccounts));
-    dom.bindEvent("#cancelManage", "click", cancelEvent(cancelManage));
+
+    dom.bindEvent("button.edit", "click", startEdit);
+    dom.bindEvent("button.done", "click", cancelEdit);
+    dom.bindEvent("#edit_password_form", "submit", cancelEvent(changePassword));
 
     syncAndDisplayEmails(oncomplete);
 
@@ -244,13 +281,16 @@ BrowserID.manageAccount = (function() {
   // BEGIN TESTING API
   function reset() {
     dom.unbindEvent("#cancelAccount", "click");
-    dom.unbindEvent("#manageAccounts", "click");
-    dom.unbindEvent("#cancelManage", "click");
+
+    dom.unbindEvent("button.edit", "click");
+    dom.unbindEvent("button.done", "click");
+    dom.unbindEvent("#edit_password_form", "submit");
   }
 
   init.reset = reset;
   init.cancelAccount = cancelAccount;
   init.removeEmail = removeEmail;
+  init.changePassword = changePassword;
   // END TESTING API
 
   return init;

@@ -91,17 +91,50 @@
   }
 
   function createUser(email, callback) {
+    function complete(status) {
+      callback && callback(status);
+    }
+
     var self=this;
-    user.createUser(email, function(staged) {
-      if (staged) {
-        self.close("user_staged", {
-          email: email
-        });
+    user.createUser(email, function(status) {
+      switch(status) {
+        case "secondary.already_added":
+          // XXX how to handle this - createUser should not be called on
+          // already existing addresses, so this path should not be called.
+          tooltip.showTooltip("#already_registered");
+          complete(false);
+          break;
+        case "secondary.verify":
+          self.close("user_staged", {
+            email: email
+          });
+          complete(true);
+          break;
+        case "secondary.could_not_add":
+          tooltip.showTooltip("#could_not_add");
+          complete(false);
+          break;
+        case "primary.already_added":
+          // XXX Is this status possible?
+          break;
+        case "primary.verified":
+          self.close("primary_user_verified", {
+            email: email
+          });
+          complete(true);
+          break;
+        case "primary.verify":
+          self.close("primary_verify_user", {
+            email: email
+          });
+          complete(true);
+          break;
+        case "primary.could_not_add":
+          // XXX Can this happen?
+          break;
+        default:
+          break;
       }
-      else {
-        tooltip.showTooltip("#could_not_add");
-      }
-      if (callback) callback(staged);
     }, self.getErrorDialog(errors.createUser, callback));
   }
 

@@ -128,7 +128,6 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function createUserState() {
-
     var self=this;
 
     self.publish("create_user");
