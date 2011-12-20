@@ -470,6 +470,29 @@ BrowserID.Network = (function() {
     },
 
     /**
+     * Get information about an email address.  Who vouches for it?
+     * (is it a primary or a secondary)
+     * @method addressInfo
+     * @param {string} email - Email address to check.
+     * @param {function} [onSuccess] - Called with an object on success,
+     *   containing these properties:
+     *     type: <secondary|primary>
+     *     known: boolean, present - present if type is secondary
+     *     auth: string - url to send users for auth - present if type is primary
+     *     prov: string - url to embed for silent provisioning - present if type is secondary
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    addressInfo: function(email, onSuccess, onFailure) {
+      get({
+        url: "/wsapi/address_info?email=" + encodeURIComponent(email),
+        success: function(data, textStatus, xhr) {
+          if (onSuccess) onSuccess(data);
+        },
+        error: onFailure
+      });
+    },
+
+    /**
      * Remove an email address from the current user.
      * @method removeEmail
      * @param {string} email - Email address to remove.
