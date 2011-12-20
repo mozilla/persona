@@ -37,8 +37,18 @@
 BrowserID.Provisioning = (function() {
   "use strict";
 
+  var jwk = require("./jwk");
+
   var Provisioning = function(args, successCB, failureCB) {
+    function tearDown() {
+      if (chan) chan.destroy();
+      chan = undefined;
+      if (iframe) document.body.removeChild(iframe);
+      iframe = undefined;
+    }
+
     function fail(code, msg) {
+      tearDown();
       return setTimeout(function() {
         failureCB({
           code: code,
@@ -53,11 +63,13 @@ BrowserID.Provisioning = (function() {
       return fail('internal', 'missing required arguments');
     }
 
+    args.url = args.url.replace('https://eyedee.me', 'http://127.0.0.1:9999');
+
     // extract the expected origin from the provisioning url
     // (this may be a different domain than the email domain part, if the
     //  domain delates authority)
     try {
-      var origin = /^(https:\/\/[^/]+)\//.exec(args.url)[1];
+      var origin = /^(http:\/\/[^\/]+)\//.exec(args.url)[1];
     } catch(e) { alert(e); }
     if (!origin) {
       return fail('internal', 'bad provisioning url, can\'t extract origin');
@@ -76,8 +88,41 @@ BrowserID.Provisioning = (function() {
       scope: "vep_prov"
     });
 
-    // XXX: register handlers for different messages that the provisioning iframe will send
+    var keypair;
 
+    // register handlers for different messages that the provisioning iframe will send
+    chan.bind('beginProvisioning', function(trans, s) {
+      return {
+        email: args.email,
+        // XXX: certificate duration should vary depending on a variety of factors:
+        //   * user is on a device that is not her own
+        //   * user is in an environment that can't handle the crypto
+        cert_duration_s: (24 * 60 * 60)
+      };
+    });
+
+    chan.bind('genKeyPair', function(trans, s) {
+      // this will take a little bit
+      // XXX: the key length should be controlled by higher level code.
+      keypair = jwk.KeyPair.generate("DS", 256);
+      return keypair.publicKey.toSimpleObject();
+    });
+
+    chan.bind('raiseProvisioningFailure', function(trans, s) {
+      tearDown();
+      fail('primaryError', s);
+    });
+
+    // this is what happens when there is an error
+    chan.bind('registerCertificate', function(trans, cert) {
+      // this means we have successfully completed the party!
+      // keypair is our keypair,
+      // cert is our certificate,
+      // email is the email that's vouched for.
+      // fantastic!
+      tearDown();
+      successCB(keypair, cert);
+    });
 
     // XXX: set a timeout for the amount of time that provisioning is allowed to take
   };
