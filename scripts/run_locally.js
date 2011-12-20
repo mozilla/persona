@@ -29,6 +29,11 @@ var daemonsToRun = {
     PORT: 10001,
     HOST: HOST
   },
+  example_primary: {
+    path: path.join(__dirname, "..", "scripts", "serve_example_primary.js"),
+    PORT: 10005,
+    HOST: HOST
+  },
   browserid: {
     PORT: 10002,
     HOST: HOST
