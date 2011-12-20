@@ -546,63 +546,6 @@
     failureCheck(network.requestPasswordReset, "address", "origin");
   });
 
-  wrappedAsyncTest("resetPassword", function() {
-    network.resetPassword("password", function onSuccess() {
-      // XXX need a test here;
-      ok(true);
-      wrappedStart();
-    }, function onFailure() {
-      ok(false);
-      wrappedStart();
-    });
-
-  });
-
-  wrappedAsyncTest("resetPassword with XHR failure", function() {
-    xhr.useResult("ajaxError");
-/*
-    the body of this function is not yet written
-
-    network.resetPassword("password", function onSuccess() {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-*/
-    start();
-  });
-
-  wrappedAsyncTest("changePassword", function() {
-    network.changePassword("oldpassword", "newpassword", function onSuccess() {
-      // XXX need a real wrappedAsyncTest here.
-      ok(true);
-      wrappedStart();
-    }, function onFailure() {
-      ok(false);
-      wrappedStart();
-    });
-
-  });
-
-  wrappedAsyncTest("changePassword with XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    /*
-    the body of this function is not yet written.
-    network.changePassword("oldpassword", "newpassword", function onSuccess() {
-      ok(false, "XHR failure should never call success");
-      wrappedStart();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      wrappedStart();
-    });
-
-    */
-    start();
-  });
-
   wrappedAsyncTest("serverTime", function() {
     // I am forcing the server time to be 1.25 seconds off.
     xhr.setContextInfo("server_time", new Date().getTime() - 1250);
@@ -661,5 +604,39 @@
       wrappedStart();
     });
 
+  });
+
+  asyncTest("changePassword happy case, expect complete callback with true status", function() {
+    network.changePassword("oldpassword", "newpassword", function onComplete(status) {
+      equal(status, true, "calls onComplete with true status");
+      start();
+    }, function onFailure() {
+      ok(false, "unexpected failure");
+      start();
+    });
+  });
+
+  asyncTest("changePassword with incorrect old password, expect complete callback with false status", function() {
+    xhr.useResult("incorrectPassword");
+
+    network.changePassword("oldpassword", "newpassword", function onComplete(status) {
+      equal(status, false, "calls onComplete with false status");
+      start();
+    }, function onFailure() {
+      ok(false, "unexpected failure");
+      start();
+    });
+  });
+
+  asyncTest("changePassword with XHR error, expect error callback", function() {
+    xhr.useResult("ajaxError");
+
+    network.changePassword("oldpassword", "newpassword", function onComplete() {
+      ok(false, "XHR failure should never call complete");
+      start();
+    }, function onFailure() {
+      ok(true, "XHR failure should always call failure");
+      start();
+    });
   });
 }());

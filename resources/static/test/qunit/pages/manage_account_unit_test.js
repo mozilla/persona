@@ -44,6 +44,7 @@
       testHelpers = bid.TestHelpers,
       validToken = true,
       TEST_ORIGIN = "http://browserid.org",
+      tooltip = bid.Tooltip,
       mocks = {
         confirm: function() { return true; },
         document: { location: "" }
@@ -165,4 +166,73 @@
       });
     });
   });
+
+  asyncTest("changePassword with missing old password, expect tooltip", function() {
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val("");
+      $("#new_password").val("newpassword");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "on missing old password, status is false");
+        equal(tooltip.shown, true, "tooltip is visible");
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword with missing new password, expect tooltip", function() {
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val("oldpassword");
+      $("#new_password").val("");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "on missing new password, status is false");
+        equal(tooltip.shown, true, "tooltip is visible");
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword with incorrect old password, expect tooltip", function() {
+    bid.manageAccount(mocks, function() {
+      xhr.useResult("incorrectPassword");
+
+      $("#old_password").val("incorrectpassword");
+      $("#new_password").val("newpassword");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "on incorrect old password, status is false");
+        equal(tooltip.shown, true, "tooltip is visible");
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword with XHR error, expect error message", function() {
+    bid.manageAccount(mocks, function() {
+      xhr.useResult("invalid");
+
+      $("#old_password").val("oldpassword");
+      $("#new_password").val("newpassword");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "on xhr error, status is false");
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword happy case", function() {
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val("oldpassword");
+      $("#new_password").val("newpassword");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, true, "on proper completion, status is true");
+        equal(tooltip.shown, false, "on proper completion, tooltip is not shown");
+        start();
+      });
+    });
+  });
+
 }());

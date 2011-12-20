@@ -119,6 +119,10 @@ BrowserID.Errors = (function(){
       title: "Sync Keys for Address"
     },
 
+    updatePassword: {
+      title: "Updating password"
+    },
+
     xhrError: {
       title: "Communication Error"
     }

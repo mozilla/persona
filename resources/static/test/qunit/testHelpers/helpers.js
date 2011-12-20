@@ -5,6 +5,7 @@
       storage = bid.Storage,
       xhr = bid.Mocks.xhr,
       screens = bid.Screens,
+      tooltip = bid.Tooltip,
       registrations = [];
       calls = {};
 
@@ -49,6 +50,7 @@
       mediator.reset();
       screens.wait.hide();
       screens.error.hide();
+      tooltip.reset();
     },
 
     teardown: function() {
@@ -59,6 +61,7 @@
       $("#error").html("<div class='contents'></div>").hide();
       screens.wait.hide();
       screens.error.hide();
+      tooltip.reset();
     },
 
     register: register,

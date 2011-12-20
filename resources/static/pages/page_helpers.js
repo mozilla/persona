@@ -94,7 +94,7 @@ BrowserID.PageHelpers = (function() {
       $("#errorBackground").stop().fadeIn();
       $("#error").stop().fadeIn();
 
-      callback && callback();
+      callback && callback(false);
     }
   }
 
