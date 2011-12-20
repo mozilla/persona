@@ -171,20 +171,29 @@ BrowserID.User = (function() {
    */
   function certifyEmailKeypair(email, keypair, onSuccess, onFailure) {
     network.certKey(email, keypair.publicKey, function(cert) {
-      persistEmailKeypair(email, keypair, cert, onSuccess, onFailure);
+      // emails that *we* certify are always secondary emails
+      persistEmailKeypair(email, "secondary", keypair, cert, onSuccess, onFailure);
     }, onFailure);
+  }
+
+  function checkEmailType(type) {
+    if (type !== 'secondary' && type !== 'primary')
+      throw "invalid email type (should be 'secondary' or 'primary'): " + type;
   }
 
   /**
    * Persist an email address without a keypair
    * @method persistEmail
    * @param {string} email - Email address to persist.
+   * @param {string} type - Is the email a 'primary' or a 'secondary' address?
    * @param {function} [onSuccess] - Called on successful completion.
    * @param {function} [onFailure] - Called on error.
    */
-  function persistEmail(email, onSuccess, onFailure) {
+  function persistEmail(email, type, onSuccess, onFailure) {
+    checkEmailType(type);
     storage.addEmail(email, {
-      created: new Date()
+      created: new Date(),
+      type: type
     });
 
     if (onSuccess) {
@@ -200,10 +209,12 @@ BrowserID.User = (function() {
    * @param {function} [onSuccess] - Called on successful completion.
    * @param {function} [onFailure] - Called on error.
    */
-  function persistEmailKeypair(email, keypair, cert, onSuccess, onFailure) {
+  function persistEmailKeypair(email, type, keypair, cert, onSuccess, onFailure) {
+    checkEmailType(type);
     var now = new Date();
     var email_obj = storage.getEmails()[email] || {
-      created: now
+      created: now,
+      type: type
     };
 
     _.extend(email_obj, {
@@ -493,9 +504,7 @@ BrowserID.User = (function() {
 
           // remove emails
           _.each(emails_to_remove, function(email) {
-            // if it's not a primary
-            if (!issued_identities[email].isPrimary)
-              storage.removeEmail(email);
+            storage.removeEmail(email);
           });
 
           // keygen for new emails
@@ -508,7 +517,8 @@ BrowserID.User = (function() {
 
             var email = emails_to_add.shift();
 
-            persistEmail(email, addNextEmail, onFailure);
+            // XXX: we need to get secondary/primary from the server!
+            persistEmail(email, "secondary", addNextEmail, onFailure);
           }
 
           addNextEmail();
