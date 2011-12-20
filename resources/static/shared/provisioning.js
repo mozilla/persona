@@ -38,10 +38,48 @@ BrowserID.Provisioning = (function() {
   "use strict";
 
   var Provisioning = function(args, successCB, failureCB) {
-    if (!args || !args.email || !args.url) throw "missing required arguments";
-    setTimeout(function() {
-      failureCB("not implemented");
-    }, 0);
+    function fail(code, msg) {
+      return setTimeout(function() {
+        failureCB({
+          code: code,
+          msg: msg
+        });
+      }, 0);
+    }
+
+    if (!failureCB) throw "missing required failure callback";
+
+    if (!args || !args.email || !args.url) {
+      return fail('internal', 'missing required arguments');
+    }
+
+    // extract the expected origin from the provisioning url
+    // (this may be a different domain than the email domain part, if the
+    //  domain delates authority)
+    try {
+      var origin = /^(https:\/\/[^/]+)\//.exec(args.url)[1];
+    } catch(e) { alert(e); }
+    if (!origin) {
+      return fail('internal', 'bad provisioning url, can\'t extract origin');
+    }
+
+    // time to attempt to provision the user.  we'll embed a hidden iframe from the
+    // primary
+    var iframe = document.createElement("iframe");
+    iframe.setAttribute('src', args.url);
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+
+    var chan = Channel.build({
+      window: iframe.contentWindow,
+      origin: origin,
+      scope: "vep_prov"
+    });
+
+    // XXX: register handlers for different messages that the provisioning iframe will send
+
+
+    // XXX: set a timeout for the amount of time that provisioning is allowed to take
   };
 
   return Provisioning;
