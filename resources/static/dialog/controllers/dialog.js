@@ -74,6 +74,18 @@ BrowserID.Modules.Dialog = (function() {
   function startChannel() {
     var self = this;
 
+    // first, we see if there is a local channel
+    if (win.navigator.id && win.navigator.id.channel) {
+      win.navigator.id.channel.registerController(self);
+      return;
+    }
+
+    // next, we see if the caller intends to call native APIs
+    if (win.location.hash == "#NATIVE" || win.location.hash == "#INTERNAL") {
+      // don't do winchan, let it be.
+      return;
+    }      
+
     try {
       //
       WinChan.onOpen(function(origin, args, cb) {

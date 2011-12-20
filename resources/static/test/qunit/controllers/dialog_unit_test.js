@@ -72,10 +72,10 @@
     },
 
     location: {
-    }
+    },
 
-
-  }
+    navigator: {},
+  };
 
   function createController(config) {
     var config = $.extend({
@@ -116,6 +116,49 @@
     });
   });
 
+  asyncTest("initialization with add-on navigator.id.channel", function() {
+    var ok_p = false;
+
+    // expect registerController to be called.
+    winMock.navigator.id = {
+      channel : {
+        registerController: function(controller) {
+          ok_p = controller.getVerifiedEmail && controller.get;
+        }
+      }
+    };
+
+    createController({
+      ready: function() {
+        ok(ok_p, "registerController was not called with proper controller");
+        start();
+      }
+    });
+  });
+
+  asyncTest("initialization with #NATIVE", function() {
+    winMock.location.hash = "#NATIVE";
+    
+    createController({
+      ready: function() {
+        ok($("#error .contents").text().length == 0, "no error should be reported");
+        start();
+      }
+    });
+  });
+
+
+  asyncTest("initialization with #INTERNAL", function() {
+    winMock.location.hash = "#INTERNAL";
+    
+    createController({
+      ready: function() {
+        ok($("#error .contents").text().length == 0, "no error should be reported");
+        start();
+      }
+    });
+  });
+  
   /*
   test("doXHRError while online, no network info given", function() {
     createController();
