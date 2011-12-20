@@ -87,7 +87,7 @@ BrowserID.signUp = (function() {
               alert("shane!  provisioning was a success " + JSON.stringify(r));
             }, function(e) {
               // XXX: implement me
-              alert("shane!  provisioning was a failure: " + e);
+              alert("shane!  provisioning was a failure: " + JSON.stringify(e));
             });
           }
         }, pageHelpers.getFailure(errors.isEmailRegistered, oncomplete));
