@@ -44,10 +44,6 @@
         <input id="new_password" />
         <input type="checkbox" id="remember" />
       </div>
-      <div id="congrats">Congrats!</div>
-      <span id="cannotconfirm" class="error">Cannot confirm</span>
-      <span id="cannotcommunicate" class="error">Cannot communicate</span>
-      <span class="siteinfo" class="error"><span class="website"></span></span>
       <span class="hint">Hint</span>
     </div>
 
@@ -63,8 +59,12 @@
 
 
     <ul class="notifications">
+      <li id="cannotconfirm" class="error notification">Cannot confirm</li>
+      <li id="cannotcommunicate" class="error notification">Cannot communicate</li>
+      <li class="siteinfo" class="error notification"><span class="website"></span></li>
       <li class="notification emailsent">Email Sent</li>
       <li class="notification doh">doh</li>
+      <li class="notification" id="congrats">Congratulations!</li>
     </ul>
 
     <ul id="emailList">
@@ -89,6 +89,7 @@
     <script type="text/javascript" src="qunit/mocks/mocks.js"></script>
     <script type="text/javascript" src="qunit/mocks/xhr.js"></script>
     <script type="text/javascript" src="qunit/mocks/templates.js"></script>
+    <script type="text/javascript" src="qunit/mocks/provisioning.js"></script>
     <script type="text/javascript" src="/shared/javascript-extensions.js"></script>
     <script type="text/javascript" src="/shared/renderer.js"></script>
     <script type="text/javascript" src="/shared/class.js"></script>
@@ -166,7 +167,7 @@
     <script type="text/javascript" src="qunit/controllers/authenticate_unit_test.js"></script>
     <script type="text/javascript" src="qunit/controllers/forgotpassword_unit_test.js"></script>
     <script type="text/javascript" src="qunit/controllers/required_email_unit_test.js"></script>
-    // must go last or all other tests will fail.
+    <!-- must go last or all other tests will fail. -->
     <script type="text/javascript" src="qunit/controllers/dialog_unit_test.js"></script>
 	</body>
 </html>

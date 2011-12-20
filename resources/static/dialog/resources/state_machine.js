@@ -118,7 +118,6 @@
       var authenticated = info.authenticated;
 
       if (self.requiredEmail) {
-        // XXX get this out of here and into the state machine!
         gotoState("doAuthenticateWithRequiredEmail", {
           email: self.requiredEmail,
           authenticated: authenticated

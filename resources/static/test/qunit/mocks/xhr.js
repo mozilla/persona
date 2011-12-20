@@ -70,6 +70,7 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/complete_email_addition valid": { success: true },
       "post /wsapi/complete_email_addition invalid": { success: false },
       "post /wsapi/complete_email_addition ajaxError": undefined,
+      "post /wsapi/stage_user unknown_secondary": { success: true },
       "post /wsapi/stage_user valid": { success: true },
       "post /wsapi/stage_user invalid": { success: false },
       "post /wsapi/stage_user throttle": 403,
@@ -112,7 +113,16 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/list_emails complete": {"registered@testuser.com":{}},
       "post /wsapi/update_password valid": { success: true },
       "post /wsapi/update_password incorrectPassword": { success: false },
-      "post /wsapi/update_password invalid": undefined
+      "post /wsapi/update_password invalid": undefined,
+      "get /wsapi/address_info?email=unregistered%40testuser.com invalid": undefined,
+      "get /wsapi/address_info?email=unregistered%40testuser.com throttle": { type: "secondary", known: false },
+      "get /wsapi/address_info?email=unregistered%40testuser.com unknown_secondary": { type: "secondary", known: false },
+      "get /wsapi/address_info?email=registered%40testuser.com known_secondary": { type: "secondary", known: true },
+      "get /wsapi/address_info?email=unregistered%40testuser.com primary": { type: "primary", auth: "", prov: "" },
+      "get /wsapi/address_info?email=testuser%40testuser.com unknown_secondary": { type: "secondary", known: false },
+      "get /wsapi/address_info?email=testuser%40testuser.com known_secondary": { type: "secondary", known: true },
+      "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", auth: "", prov: "" },
+      "get /wsapi/address_info?email=testuser%40testuser.com ajaxError": undefined
     },
 
     setContextInfo: function(field, value) {

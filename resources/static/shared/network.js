@@ -481,7 +481,7 @@ BrowserID.Network = (function() {
      * (is it a primary or a secondary)
      * @method addressInfo
      * @param {string} email - Email address to check.
-     * @param {function} [onSuccess] - Called with an object on success,
+     * @param {function} [onComplete] - Called with an object on success,
      *   containing these properties:
      *     type: <secondary|primary>
      *     known: boolean, present - present if type is secondary
@@ -489,11 +489,11 @@ BrowserID.Network = (function() {
      *     prov: string - url to embed for silent provisioning - present if type is secondary
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    addressInfo: function(email, onSuccess, onFailure) {
+    addressInfo: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/address_info?email=" + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
-          if (onSuccess) onSuccess(data);
+          if (onComplete) onComplete(data);
         },
         error: onFailure
       });

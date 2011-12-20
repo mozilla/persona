@@ -55,45 +55,45 @@ BrowserID.signUp = (function() {
     function submit(oncomplete) {
       var email = helpers.getAndValidateEmail("#email");
 
-      function complete() {
-        oncomplete && oncomplete();
+      function complete(status) {
+        oncomplete && oncomplete(status);
       }
 
       if (email) {
-        user.addressInfo(email, function(info) {
-          if (info.type === 'secondary') {
-            if (!info.known) {
-              user.createUser(email, function onSuccess(success) {
-                if(success) {
-                  pageHelpers.showEmailSent(oncomplete);
-                }
-                else {
-                  tooltip.showTooltip("#could_not_add");
-                  complete();
-                }
-              }, pageHelpers.getFailure(errors.createUser, oncomplete));
-            }
-            else {
+        user.createUser(email, function onComplete(status) {
+          switch(status) {
+            case "secondary.already_added":
               $('#registeredEmail').html(email);
               showNotice(".alreadyRegistered");
-              complete();
-            }
-          } else {
-            BrowserID.Provisioning({
-              email: email,
-              url: info.prov
-            }, function(r) {
-              // XXX: implement me
-              alert("shane!  provisioning was a success " + JSON.stringify(r));
-            }, function(e) {
-              // XXX: implement me
-              alert("shane!  provisioning was a failure: " + JSON.stringify(e));
-            });
+              complete(false);
+              break;
+            case "secondary.verify":
+              pageHelpers.showEmailSent(complete);
+              break;
+            case "secondary.could_not_add":
+              tooltip.showTooltip("#could_not_add");
+              complete(false);
+              break;
+            case "primary.already_added":
+              // XXX Is this status possible?
+              break;
+            case "primary.verified":
+              pageHelpers.replaceInputsWithNotice("#congrats", complete.bind(null, true));
+              break;
+            case "primary.verify":
+              // XXX What do we do here?
+              complete(false);
+              break;
+            case "primary.could_not_add":
+              // XXX Can this happen?
+              break;
+            default:
+              break;
           }
-        }, pageHelpers.getFailure(errors.isEmailRegistered, oncomplete));
+        }, pageHelpers.getFailure(errors.createUser, oncomplete));
       }
       else {
-        complete();
+        complete(false);
       }
     }
 
@@ -105,7 +105,9 @@ BrowserID.signUp = (function() {
       if (event.which !== 13) $(".notification").fadeOut(ANIMATION_SPEED);
     }
 
-    function init() {
+    function init(config) {
+      config = config || {};
+
       $("form input[autofocus]").focus();
 
       pageHelpers.setupEmail();

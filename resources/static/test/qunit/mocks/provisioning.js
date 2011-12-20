@@ -34,5 +34,21 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-BrowserID.Mocks = {};
+BrowserID.Mocks.Provisioning = (function() {
+  function Provisioning(info, onsuccess, onfailure) {
+    if(Provisioning.failure) onfailure(Provisioning.failure);
+    else onsuccess();
+  }
+
+  Provisioning.setSuccess = function(status) {
+    Provisioning.status = status;
+  };
+
+  Provisioning.setFailure = function(status) {
+    Provisioning.failure = status;
+  }
+
+  return Provisioning;
+}());
+
 

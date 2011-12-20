@@ -39,39 +39,35 @@
 
   var bid = BrowserID,
       network = bid.Network,
-      user = bid.User,
       xhr = bid.Mocks.xhr,
-      testOrigin = "http://browserid.org";
+      testOrigin = "http://browserid.org",
+      testHelpers = bid.TestHelpers,
+      provisioning = bid.Mocks.Provisioning;
 
   module("pages/signup", {
     setup: function() {
-      network.setXHR(xhr);
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      $(".notification").stop().hide();
-      xhr.useResult("valid");
-      user.setOrigin(testOrigin);
+      testHelpers.setup();
       bid.signUp();
     },
     teardown: function() {
-      network.setXHR($);
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      $(".notification").stop().hide();
-      $("#error .message").remove();
+      testHelpers.teardown();
       bid.signUp.reset();
     }
   });
 
-  function testNoticeNotVisible(extraTests) {
-    bid.signUp.submit(function() {
+  function testNotRegistered(extraTests) {
+    bid.signUp.submit(function(status) {
+      strictEqual(status, false, "address was not registered");
       equal($(".emailsent").is(":visible"), false, "email not sent, notice not visible");
+
       if(extraTests) extraTests();
       start();
     });
   }
 
-  asyncTest("signup with valid unregistered email", function() {
+  asyncTest("signup with valid unregistered secondary email", function() {
+    xhr.useResult("unknown_secondary");
+
     $("#email").val("unregistered@testuser.com");
 
     bid.signUp.submit(function() {
@@ -81,6 +77,8 @@
   });
 
   asyncTest("signup with valid unregistered email with leading/trailing whitespace", function() {
+    xhr.useResult("unknown_secondary");
+
     $("#email").val(" unregistered@testuser.com ");
 
     bid.signUp.submit(function() {
@@ -90,35 +88,37 @@
   });
 
   asyncTest("signup with valid registered email", function() {
+    xhr.useResult("known_secondary");
     $("#email").val("registered@testuser.com");
 
-    testNoticeNotVisible();
+    testNotRegistered();
   });
 
   asyncTest("signup with invalid email address", function() {
     $("#email").val("invalid");
 
-    testNoticeNotVisible();
+    testNotRegistered();
   });
 
   asyncTest("signup with throttling", function() {
     xhr.useResult("throttle");
 
-    $("#email").val("throttled@testuser.com");
+    $("#email").val("unregistered@testuser.com");
 
-    testNoticeNotVisible();
+    testNotRegistered();
   });
 
-  asyncTest("signup with invalid XHR error", function() {
+  asyncTest("signup with XHR error", function() {
     xhr.useResult("invalid");
     $("#email").val("unregistered@testuser.com");
 
-    testNoticeNotVisible(function() {
-      equal($("#error").is(":visible"), true, "error message displayed");
+    testNotRegistered(function() {
+      testHelpers.testErrorVisible();
     });
   });
 
-  asyncTest("signup with unregistered email and cancel button pressed", function() {
+  asyncTest("signup with unregistered secondary email and cancel button pressed", function() {
+    xhr.useResult("unknown_secondary");
     $("#email").val("unregistered@testuser.com");
 
     bid.signUp.submit(function() {
@@ -128,6 +128,53 @@
         equal($("#email").val(), "unregistered@testuser.com", "email address restored");
         start();
       });
+    });
+  });
+
+  asyncTest("signup with primary email address, provisioning failure - expect error screen", function() {
+    xhr.useResult("primary");
+
+    $("#email").val("unregistered@testuser.com");
+    provisioning.setFailure({
+      code: "internal",
+      msg: "doowap"
+    });
+
+    bid.signUp.submit(function(status) {
+      equal(status, false, "provisioning failure, status false");
+      testHelpers.testErrorVisible();
+      start();
+    });
+  });
+
+  asyncTest("signup with primary email address, user verified by primary - print success message", function() {
+    xhr.useResult("primary");
+
+    $("#email").val("unregistered@testuser.com");
+
+    provisioning.setSuccess(true);
+
+    bid.signUp.submit(function(status) {
+      equal(status, true, "primary addition success - true status");
+      equal($(".notification:visible").length, 1, "success notification is visible");
+      start();
+    });
+  });
+
+  // XXX what do we expect here?
+  asyncTest("signup with primary email address, user must verify with primary - ", function() {
+    xhr.useResult("primary");
+
+    $("#email").val("unregistered@testuser.com");
+
+    provisioning.setFailure({
+      code: "MUST_AUTHENTICATE",
+      msg: "Wahhooo!!"
+    });
+
+    bid.signUp.submit(function(status) {
+      equal(status, false, "user must authenticate, some action needed.");
+      start();
     });
   });
 

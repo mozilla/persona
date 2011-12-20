@@ -39,9 +39,11 @@ BrowserID.User = (function() {
   "use strict";
 
   var jwk, jwt, vep, jwcert, origin,
-      network = BrowserID.Network,
-      storage = BrowserID.Storage,
-      User, pollTimeout;
+      bid = BrowserID,
+      network = bid.Network,
+      storage = bid.Storage,
+      User, pollTimeout,
+      provisioning = bid.Provisioning;
 
   function prepareDeps() {
     if (!jwk) {
@@ -52,7 +54,6 @@ BrowserID.User = (function() {
     }
   }
 
-  "use strict";
   // remove identities that are no longer valid
   function cleanupIdentities(cb) {
     network.serverTime(function(serverTime) {
@@ -220,6 +221,16 @@ BrowserID.User = (function() {
   }
 
   User = {
+    init: function(config) {
+      if(config.provisioning) {
+        provisioning = config.provisioning;
+      }
+    },
+
+    reset: function() {
+      provisioning = BrowserID.Provisioning;
+    },
+
     /**
      * Set the interface to use for networking.  Used for unit testing.
      * @method setNetwork
@@ -259,18 +270,70 @@ BrowserID.User = (function() {
 
     /**
      * Create a user account - this creates an user account that must be verified.
-     * @method createUser
+     * @method createSecondaryUser
      * @param {string} email - Email address.
-     * @param {function} [onSuccess] - Called on successful completion.
+     * @param {function} [onComplete] - Called on completion.
      * @param {function} [onFailure] - Called on error.
      */
-    createUser: function(email, onSuccess, onFailure) {
+    createSecondaryUser: function(email, onComplete, onFailure) {
       var self=this;
 
       // remember this for later
       storage.setStagedOnBehalfOf(self.getHostname());
 
-      network.createUser(email, origin, onSuccess, onFailure);
+      network.createUser(email, origin, onComplete, onFailure);
+    },
+
+    /**
+     * Status:
+     * "already_added", "verify_secondary", "secondary_could_not_add", "verify_primary",
+     * "primary_verified"
+     */
+    createUser: function(email, onComplete, onFailure) {
+      var self=this;
+
+      function attemptAddSecondary(email, info) {
+        if (info.known) {
+          onComplete("secondary.already_added");
+        }
+        else {
+          self.createSecondaryUser(email, function(success) {
+            if(success) {
+              onComplete("secondary.verify");
+            }
+            else {
+              onComplete("secondary.could_not_add");
+            }
+          }, onFailure);
+        }
+      }
+
+      function attemptAddPrimary(email, info) {
+        // XXX Can we know if the primary is already known to us?
+        provisioning({
+          email: email,
+          url: info.prov
+        }, function(r) {
+          onComplete("primary.verified");
+        }, function(info) {
+          // XXX When do we have to redirect off to the authentication page?
+          // Would a code like this come in on the failure mode?
+          if(info.code === "MUST_AUTHENTICATE") {
+            onComplete("primary.verify");
+          }
+          else {
+            onFailure(info);
+          }
+        });
+      }
+
+      network.addressInfo(email, function(info) {
+        if (info.type === 'secondary') {
+          attemptAddSecondary(email, info);
+        } else {
+          attemptAddPrimary(email, info);
+        }
+      }, onFailure);
     },
 
     /**

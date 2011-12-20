@@ -82,6 +82,11 @@ BrowserID.Errors = (function(){
       message: "Unfortunately, BrowserID cannot communicate while offline!"
     },
 
+    provisioningPrimary: {
+      title: "Provisioning Primary",
+      message: "We had trouble communicating with your email provider, please try again!"
+    },
+
     registration: {
       title: "Registration Failed"
     },
