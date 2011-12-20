@@ -35,6 +35,7 @@ var daemonsToRun = {
     HOST: HOST
   },
   browserid: {
+    SHIMMED_PRIMARIES: "example.domain|http://" + HOST + ":10005|" + path.join(__dirname, "..", "example", "primary", ".well-known", "vep"),
     PORT: 10002,
     HOST: HOST
   }

@@ -63,13 +63,11 @@ BrowserID.Provisioning = (function() {
       return fail('internal', 'missing required arguments');
     }
 
-    args.url = args.url.replace('https://eyedee.me', 'http://127.0.0.1:9999');
-
     // extract the expected origin from the provisioning url
     // (this may be a different domain than the email domain part, if the
     //  domain delates authority)
     try {
-      var origin = /^(http:\/\/[^\/]+)\//.exec(args.url)[1];
+      var origin = /^(https?:\/\/[^\/]+)\//.exec(args.url)[1];
     } catch(e) { alert(e); }
     if (!origin) {
       return fail('internal', 'bad provisioning url, can\'t extract origin');
