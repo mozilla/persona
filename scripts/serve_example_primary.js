@@ -6,9 +6,29 @@ express = require('express'),
 path = require('path'),
 urlparse = require('urlparse'),
 postprocess = require('postprocess'),
-querystring = require('querystring');
+querystring = require('querystring'),
+sessions = require('connect-cookie-session');
 
 var exampleServer = express.createServer();
+
+exampleServer.use(express.cookieParser());
+
+exampleServer.use(function(req, res, next) {
+  if (/^\/api/.test(req.url)) {
+    return sessions({
+      secret: "this secret, isn't very secret",
+      key: 'example_browserid_primary',
+      cookie: {
+        path: '/api',
+        httpOnly: true,
+        secure: false,
+        maxAge: 1 * 60 * 60 * 1000
+      }
+    })(req, res, next);
+  } else {
+    next();
+  }
+});
 
 exampleServer.use(express.logger({ format: 'dev' }));
 
@@ -25,7 +45,21 @@ exampleServer.use(express.static(path.join(__dirname, "..", "example", "primary"
 
 exampleServer.use(express.bodyParser());
 
-// XXX: implement apis here
+exampleServer.get("/api/whoami", function (req, res) {
+  if (req.session && typeof req.session.user === 'string') return res.json(req.session.user);
+  return res.json(null);
+});
+
+exampleServer.get("/api/login", function (req, res) {
+  req.session = {user: req.query.user};
+  return res.json(null);
+});
+
+exampleServer.get("/api/logout", function (req, res) {
+  req.session = {};
+  return res.json(null);
+});
+
 
 exampleServer.listen(
   process.env['PORT'] || 10001,
