@@ -43,11 +43,11 @@
       testHelpers = bid.TestHelpers;
 
   function createController(config) {
-    controller = BrowserID.Modules.Actions.create();
+    controller = BrowserID.Modules.VerifyPrimaryUser.create();
     controller.start(config);
   }
 
-  module("controllers/actions", {
+  module("controllers/verify_primary_user", {
     setup: function() {
       testHelpers.setup();
     },
@@ -60,62 +60,6 @@
     }
   });
 
-  asyncTest("doError with no template should display default error screen", function() {
-    createController({
-      ready: function() {
-        equal(testHelpers.errorVisible(), false, "Error is not yet visible");
-        controller.doError({});
-        ok(testHelpers.errorVisible(), "Error is visible");
-        equal($("#defaultError").length, 1, "default error screen is shown");
-        start();
-      }
-    });
-  });
-
-  asyncTest("doError with with template should display error screen", function() {
-    createController({
-      ready: function() {
-        equal(testHelpers.errorVisible(), false, "Error is not yet visible");
-        controller.doError("invalidRequiredEmail", {email: "email"});
-        equal($("#invalidRequiredEmail").length, 1, "default error screen is shown");
-        ok(testHelpers.errorVisible(), "Error is visible");
-        start();
-      }
-    });
-  });
-
-  asyncTest("doOffline should print offline error screen", function() {
-    createController({
-      ready: function() {
-        controller.doOffline();
-        ok($("#error .contents").text().length, "contents have been written");
-        ok($("#error #offline").text().length, "offline error message has been written");
-        start();
-      }
-    });
-  });
-
-  /*
-  asyncTest("doVerifyPrimaryUser does something", function() {
-    createController({
-      ready: function() {
-        controller.doVerifyPrimaryUser();
-        // XXX test something
-        start();
-      }
-    });
-  });
-
-  asyncTest("doPrimaryUserVerified does something", function() {
-    createController({
-      ready: function() {
-        controller.doPrimaryUserVerified();
-        // XXX test something
-        start();
-      }
-    });
-  });
-*/
-
+  // XXX Do some tests!
 }());
 

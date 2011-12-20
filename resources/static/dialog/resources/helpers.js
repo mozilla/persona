@@ -118,13 +118,13 @@
           // XXX Is this status possible?
           break;
         case "primary.verified":
-          self.close("primay_user_verified", {
+          self.close("primary_user_verified", {
             email: email
           });
           complete(true);
           break;
         case "primary.verify":
-          self.close("primay_user_verified", {
+          self.close("primary_verify_user", {
             email: email
           });
           complete(true);

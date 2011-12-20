@@ -65,7 +65,7 @@
 
   function expectedClose(message, field, value) {
     return function(m, info) {
-      ok(m, message, "correct message: " + message);
+      equal(m, message, "correct message: " + message);
 
       if(value) {
         equal(info[field], value, field + " has correct value of " + value);

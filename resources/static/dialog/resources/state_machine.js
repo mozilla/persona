@@ -146,6 +146,14 @@
       gotoState("doEmailConfirmed");
     });
 
+    subscribe("primary_user_verified", function(msg, info) {
+      gotoState("doPrimaryUserVerified", info);
+    });
+
+    subscribe("primary_verify_user", function(msg, info) {
+      gotoState("doVerifyPrimaryUser", info);
+    });
+
     subscribe("authenticate_with_required_email", function(msg, info) {
       gotoState("doAuthenticateWithRequiredEmail", info);
     });
