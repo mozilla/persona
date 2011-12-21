@@ -155,35 +155,32 @@ var jwcert = require("./jwcert");
     equal(0, count, "after clearing, there are no identities");
   });
 
-  /*
-  asyncTest("createUser", function() {
-    lib.createUser("testuser@testuser.com", function(status) {
+  asyncTest("createSecondaryUser", function() {
+    lib.createSecondaryUser("testuser@testuser.com", function(status) {
       ok(status, "user created");
       start();
-    }, failure("createUser failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("createUser with user creation refused", function() {
+  asyncTest("createSecondaryUser with user creation refused", function() {
     xhr.useResult("throttle");
 
-    lib.createUser("testuser@testuser.com", function(status) {
+    lib.createSecondaryUser("testuser@testuser.com", function(status) {
       equal(status, false, "user creation refused");
       start();
-    }, failure("createUser failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("createUser with XHR failure", function() {
+  asyncTest("createSecondaryUser with XHR failure", function() {
     xhr.useResult("ajaxError");
 
-    lib.createUser("testuser@testuser.com", function(status) {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    lib.createSecondaryUser(
+      "testuser@testuser.com",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
-*/
+
   asyncTest("createUser with unknown secondary happy case - expect 'secondary.verify'", function() {
     xhr.useResult("unknown_secondary");
 
@@ -207,27 +204,25 @@ var jwcert = require("./jwcert");
 
     lib.createUser("unregistered@testuser.com",
       testHelpers.unexpectedSuccess,
-      testHelpers.expectXHRFailure
+      testHelpers.expectedXHRFailure
     );
   });
 
   asyncTest("createUser with primary, user verified with primary - expect 'primary.verified'", function() {
     xhr.useResult("primary");
-    provisioning.setSuccess(true);
+    provisioning.setStatus(provisioning.AUTHENTICATED);
 
     lib.createUser("unregistered@testuser.com", function(status) {
       equal(status, "primary.verified", "primary user is already verified, correct status");
-      start();
+      network.checkAuth(function(authenticated) {
+        equal(authenticated, true, "after provisioning user, user should be automatically authenticated to BrowserID");
+        start();
+      });
     }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("createUser with primary, user must authenticate with primary - expect 'primary.verify'", function() {
     xhr.useResult("primary");
-
-    provisioning.setFailure({
-      code: "MUST_AUTHENTICATE",
-      msg: "Wahhooo!!"
-    });
 
     lib.createUser("unregistered@testuser.com", function(status) {
       equal(status, "primary.verify", "primary must verify with primary, correct status");
@@ -244,7 +239,7 @@ var jwcert = require("./jwcert");
 
     lib.createUser("unregistered@testuser.com",
       testHelpers.unexpectedSuccess,
-      testHelpers.expectXHRFailure
+      testHelpers.expectedXHRFailure
     );
   });
 
@@ -339,9 +334,7 @@ var jwcert = require("./jwcert");
     xhr.useResult("invalid");
 
     lib.verifyUser("token", "password", function onSuccess(info) {
-
       equal(info.valid, false, "bad token calls onSuccess with a false validity");
-
       start();
     }, failure("verifyUser failure"));
   });

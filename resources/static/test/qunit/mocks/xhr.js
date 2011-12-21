@@ -64,6 +64,10 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/authenticate_user valid": { success: true },
       "post /wsapi/authenticate_user invalid": { success: false },
       "post /wsapi/authenticate_user ajaxError": undefined,
+      "post /wsapi/auth_with_assertion primary": { success: true },
+      "post /wsapi/auth_with_assertion valid": { success: true },
+      "post /wsapi/auth_with_assertion invalid": { success: false },
+      "post /wsapi/auth_with_assertion ajaxError": undefined,
       "post /wsapi/cert_key valid": random_cert,
       "post /wsapi/cert_key invalid": undefined,
       "post /wsapi/cert_key ajaxError": undefined,
@@ -118,10 +122,10 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/address_info?email=unregistered%40testuser.com throttle": { type: "secondary", known: false },
       "get /wsapi/address_info?email=unregistered%40testuser.com unknown_secondary": { type: "secondary", known: false },
       "get /wsapi/address_info?email=registered%40testuser.com known_secondary": { type: "secondary", known: true },
-      "get /wsapi/address_info?email=unregistered%40testuser.com primary": { type: "primary", auth: "", prov: "" },
+      "get /wsapi/address_info?email=unregistered%40testuser.com primary": { type: "primary", auth: "https://auth_url", prov: "https://prov_url" },
       "get /wsapi/address_info?email=testuser%40testuser.com unknown_secondary": { type: "secondary", known: false },
       "get /wsapi/address_info?email=testuser%40testuser.com known_secondary": { type: "secondary", known: true },
-      "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", auth: "", prov: "" },
+      "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", auth: "https://auth_url", prov: "https://prov_url" },
       "get /wsapi/address_info?email=testuser%40testuser.com ajaxError": undefined
     },
 

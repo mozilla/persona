@@ -96,7 +96,7 @@
     }
 
     var self=this;
-    user.createUser(email, function(status) {
+    user.createUser(email, function(status, info) {
       switch(status) {
         case "secondary.already_added":
           // XXX how to handle this - createUser should not be called on
@@ -125,7 +125,8 @@
           break;
         case "primary.verify":
           self.close("primary_verify_user", {
-            email: email
+            email: email,
+            auth_url: info.auth
           });
           complete(true);
           break;

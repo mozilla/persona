@@ -48,7 +48,7 @@
       provisioning = bid.Mocks.Provisioning,
       closeCB,
       errorCB,
-      expectedError = testHelpers.expectXHRFailure,
+      expectedError = testHelpers.expectedXHRFailure,
       badError = testHelpers.unexpectedXHRFailure;
 
   var controllerMock = {
@@ -182,7 +182,7 @@
     closeCB = expectedClose("primary_user_verified", "email", "unregistered@testuser.com");
 
     xhr.useResult("primary");
-    provisioning.setSuccess(true);
+    provisioning.setStatus(provisioning.AUTHENTICATED);
 
     dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", function(staged) {
       equal(staged, true, "user was staged");
@@ -192,11 +192,7 @@
 
   asyncTest("createUser with unknown primary, user must verify with IdP - expect 'primary_verify_user' message", function() {
     closeCB = expectedClose("primary_verify_user", "email", "unregistered@testuser.com");
-
     xhr.useResult("primary");
-    provisioning.setFailure({
-      code: "MUST_AUTHENTICATE"
-    });
 
     dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", function(staged) {
       equal(staged, true, "user was staged");

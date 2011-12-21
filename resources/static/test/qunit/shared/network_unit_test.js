@@ -40,7 +40,8 @@
   var bid = BrowserID,
       mediator = bid.Mediator,
       xhr = bid.Mocks.xhr,
-      testHelpers = bid.TestHelpers;
+      testHelpers = bid.TestHelpers,
+      TEST_EMAIL = "testuser@testuser.com";
 
   function notificationCheck(cb) {
     // Take the original arguments, take off the function.  Add any additional
@@ -112,7 +113,7 @@
 
 
   asyncTest("authenticate with valid user", function() {
-    network.authenticate("testuser@testuser.com", "testuser", function onSuccess(authenticated) {
+    network.authenticate(TEST_EMAIL, "testuser", function onSuccess(authenticated) {
       equal(authenticated, true, "valid authentication");
       start();
     }, function onFailure() {
@@ -123,7 +124,7 @@
 
   asyncTest("authenticate with invalid user", function() {
     xhr.useResult("invalid");
-    network.authenticate("testuser@testuser.com", "invalid", function onSuccess(authenticated) {
+    network.authenticate(TEST_EMAIL, "invalid", function onSuccess(authenticated) {
       equal(authenticated, false, "invalid authentication");
       start();
     }, function onFailure() {
@@ -133,11 +134,38 @@
   });
 
   asyncTest("authenticate with XHR failure, checking whether application is notified", function() {
-    notificationCheck(network.authenticate, "testuser@testuser.com", "ajaxError");
+    notificationCheck(network.authenticate, TEST_EMAIL, "ajaxError");
   });
 
   asyncTest("authenticate with XHR failure after context already setup", function() {
-    failureCheck(network.authenticate, "testuser@testuser.com", "ajaxError");
+    failureCheck(network.authenticate, TEST_EMAIL, "ajaxError");
+  });
+
+  asyncTest("authenticateWithAssertion with valid email/assertioni, returns true status", function() {
+    network.authenticateWithAssertion(TEST_EMAIL, "test_assertion", function(status) {
+      equal(status, true, "user authenticated, status set to true");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("authenticateWithAssertion with invalid email/assertion", function() {
+    xhr.useResult("invalid");
+
+    network.authenticateWithAssertion(TEST_EMAIL, "test_assertion", function(status) {
+      equal(status, false, "user not authenticated, status set to false");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("authenticateWithAssertion with XHR error", function() {
+    xhr.useResult("ajaxError");
+
+    network.authenticateWithAssertion(
+      TEST_EMAIL,
+      "test_assertion",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
 
 
@@ -146,10 +174,7 @@
     network.checkAuth(function onSuccess(authenticated) {
       equal(authenticated, true, "we have an authentication");
       start();
-    }, function onFailure() {
-      ok(false, "checkAuth failure");
-      start();
-    });
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("checkAuth with invalid authentication", function() {
@@ -159,10 +184,7 @@
     network.checkAuth(function onSuccess(authenticated) {
       equal(authenticated, false, "we are not authenticated");
       start();
-    }, function onFailure() {
-      ok(false, "checkAuth failure");
-      start();
-    });
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 
@@ -630,7 +652,7 @@
   asyncTest("addressInfo with unknown secondary email", function() {
     xhr.useResult("unknown_secondary");
 
-    network.addressInfo("testuser@testuser.com", function onComplete(data) {
+    network.addressInfo(TEST_EMAIL, function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
       equal(data.known, false, "address is unknown to BrowserID");
       start();
@@ -640,7 +662,7 @@
   asyncTest("addressInfo with known seconday email", function() {
     xhr.useResult("known_secondary");
 
-    network.addressInfo("testuser@testuser.com", function onComplete(data) {
+    network.addressInfo(TEST_EMAIL, function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
       equal(data.known, true, "address is known to BrowserID");
       start();
@@ -650,7 +672,7 @@
   asyncTest("addressInfo with primary email", function() {
     xhr.useResult("primary");
 
-    network.addressInfo("testuser@testuser.com", function onComplete(data) {
+    network.addressInfo(TEST_EMAIL, function onComplete(data) {
       equal(data.type, "primary", "type is primary");
       ok("auth" in data, "auth field exists");
       ok("prov" in data, "prov field exists");
@@ -660,7 +682,7 @@
 
   asyncTest("addressInfo with XHR error", function() {
     xhr.useResult("ajaxError");
-    failureCheck(network.addressInfo, "testuser@testuser.com");
+    failureCheck(network.addressInfo, TEST_EMAIL);
   });
 
   asyncTest("changePassword happy case, expect complete callback with true status", function() {
@@ -696,4 +718,5 @@
       start();
     });
   });
+
 }());

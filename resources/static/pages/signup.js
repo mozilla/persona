@@ -46,10 +46,23 @@ BrowserID.signUp = (function() {
       errors = bid.Errors,
       tooltip = BrowserID.Tooltip,
       ANIMATION_SPEED = 250,
-      storedEmail = pageHelpers;
+      storedEmail = pageHelpers,
+      win = window,
+      verifyEmail,
+      verifyURL;
 
     function showNotice(selector) {
       $(selector).fadeIn(ANIMATION_SPEED);
+    }
+
+    function verifyWithPrimary(oncomplete) {
+      if(!(verifyEmail && verifyURL)) {
+        throw "cannot verify with primary without an email address and URL"
+      }
+
+      var url = verifyURL + "?email=" + encodeURIComponent(verifyEmail);
+      win.open(url, "_moz_primary_verification", "width: 500px, height: 500px");
+      oncomplete && oncomplete();
     }
 
     function submit(oncomplete) {
@@ -60,7 +73,7 @@ BrowserID.signUp = (function() {
       }
 
       if (email) {
-        user.createUser(email, function onComplete(status) {
+        user.createUser(email, function onComplete(status, info) {
           switch(status) {
             case "secondary.already_added":
               $('#registeredEmail').html(email);
@@ -81,8 +94,10 @@ BrowserID.signUp = (function() {
               pageHelpers.replaceInputsWithNotice("#congrats", complete.bind(null, true));
               break;
             case "primary.verify":
-              // XXX What do we do here?
-              complete(false);
+              verifyEmail = email;
+              verifyURL = info.auth;
+              dom.setInner("#primary_email", email);
+              pageHelpers.replaceInputsWithNotice("#primary_verify", complete.bind(null, false));
               break;
             case "primary.could_not_add":
               // XXX Can this happen?
@@ -108,6 +123,10 @@ BrowserID.signUp = (function() {
     function init(config) {
       config = config || {};
 
+      if(config.window) {
+        win = config.window;
+      }
+
       $("form input[autofocus]").focus();
 
       pageHelpers.setupEmail();
@@ -115,6 +134,7 @@ BrowserID.signUp = (function() {
       dom.bindEvent("#email", "keyup", onEmailKeyUp);
       dom.bindEvent("form", "submit", cancelEvent(submit));
       dom.bindEvent("#back", "click", cancelEvent(back));
+      dom.bindEvent("#verifyWithPrimary", "click", cancelEvent(verifyWithPrimary));
     }
 
     // BEGIN TESTING API
@@ -122,11 +142,15 @@ BrowserID.signUp = (function() {
       dom.unbindEvent("#email", "keyup");
       dom.unbindEvent("form", "submit");
       dom.unbindEvent("#back", "click");
+      dom.unbindEvent("#verifyWithPrimary", "click");
+      win = window;
+      verifyEmail = verifyURL = null;
     }
 
     init.submit = submit;
     init.reset = reset;
     init.back = back;
+    init.verifyWithPrimary = verifyWithPrimary;
     // END TESTING API
 
     return init;

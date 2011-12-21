@@ -55,8 +55,7 @@
       screens.wait.hide();
       screens.error.hide();
       tooltip.reset();
-      provisioning.setSuccess(false);
-      provisioning.setFailure(false);
+      provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
       user.init({
         provisioning: provisioning
       });
@@ -74,8 +73,7 @@
       screens.wait.hide();
       screens.error.hide();
       tooltip.reset();
-      provisioning.setSuccess(false);
-      provisioning.setFailure(false);
+      provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
       user.reset();
     },
 
@@ -92,7 +90,7 @@
       start();
     },
 
-    expectXHRFailure: function() {
+    expectedXHRFailure: function() {
       ok(true, "expected XHR failure");
       start();
     },

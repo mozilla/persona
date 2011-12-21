@@ -40,14 +40,31 @@
   var bid = BrowserID,
       network = bid.Network,
       xhr = bid.Mocks.xhr,
-      testOrigin = "http://browserid.org",
       testHelpers = bid.TestHelpers,
-      provisioning = bid.Mocks.Provisioning;
+      provisioning = bid.Mocks.Provisioning,
+      win;
+
+  function DocumentMock() {
+    this.location = document.location;
+  }
+
+  function WindowMock() {
+    this.document = new DocumentMock();
+  }
+  WindowMock.prototype = {
+    open: function(url, name, options) {
+      this.open_url = url;
+    }
+  };
 
   module("pages/signup", {
     setup: function() {
       testHelpers.setup();
-      bid.signUp();
+
+      win = new WindowMock();
+      bid.signUp({
+        window: win
+      });
     },
     teardown: function() {
       testHelpers.teardown();
@@ -133,7 +150,6 @@
 
   asyncTest("signup with primary email address, provisioning failure - expect error screen", function() {
     xhr.useResult("primary");
-
     $("#email").val("unregistered@testuser.com");
     provisioning.setFailure({
       code: "internal",
@@ -149,32 +165,37 @@
 
   asyncTest("signup with primary email address, user verified by primary - print success message", function() {
     xhr.useResult("primary");
-
     $("#email").val("unregistered@testuser.com");
-
-    provisioning.setSuccess(true);
+    provisioning.setStatus(provisioning.AUTHENTICATED);
 
     bid.signUp.submit(function(status) {
       equal(status, true, "primary addition success - true status");
-      equal($(".notification:visible").length, 1, "success notification is visible");
+      equal($("#congrats:visible").length, 1, "success notification is visible");
       start();
     });
   });
 
-  // XXX what do we expect here?
-  asyncTest("signup with primary email address, user must verify with primary - ", function() {
+  asyncTest("signup with primary email address, user must verify with primary", function() {
     xhr.useResult("primary");
-
     $("#email").val("unregistered@testuser.com");
 
-    provisioning.setFailure({
-      code: "MUST_AUTHENTICATE",
-      msg: "Wahhooo!!"
-    });
-
     bid.signUp.submit(function(status) {
+      equal($("#primary_verify:visible").length, 1, "success notification is visible");
+      equal($("#primary_email").text(), "unregistered@testuser.com", "correct email shown");
       equal(status, false, "user must authenticate, some action needed.");
       start();
+    });
+  });
+
+  asyncTest("verifyWithPrimary opens new tab", function() {
+    xhr.useResult("primary");
+    $("#email").val("unregistered@testuser.com");
+
+    bid.signUp.submit(function(status) {
+      bid.signUp.verifyWithPrimary(function() {
+        equal(win.open_url, "https://auth_url?email=unregistered%40testuser.com", "user directed to authentication URL");
+        start();
+      });
     });
   });
 

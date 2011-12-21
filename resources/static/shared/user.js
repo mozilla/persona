@@ -296,9 +296,22 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Status:
-     * "already_added", "verify_secondary", "secondary_could_not_add", "verify_primary",
-     * "primary_verified"
+     * Create a user.  Works for both primaries and secondaries.
+     * @method createUser
+     * @param {string} email
+     * @param {function} onComplete - function to call on complettion.  Called
+     * with two parameters - status and info.
+     * Status can be:
+     *  secondary.already_added
+     *  secondary.verify
+     *  secondary.could_not_add
+     *  primary.already_added
+     *  primary.verified
+     *  primary.verify
+     *  primary.could_not_add
+     *
+     *  info is passed on primary.verify and contains the info necessary to
+     *  verify the user with the IdP
      */
     createUser: function(email, onComplete, onFailure) {
       var self=this;
@@ -324,13 +337,24 @@ BrowserID.User = (function() {
         provisioning({
           email: email,
           url: info.prov
-        }, function(r) {
-          onComplete("primary.verified");
-        }, function(info) {
-          // XXX When do we have to redirect off to the authentication page?
-          // Would a code like this come in on the failure mode?
-          if(info.code === "MUST_AUTHENTICATE") {
-            onComplete("primary.verify");
+        }, function(keypair, cert) {
+          persistEmailKeypair(email, "primary", keypair, cert, function() {
+            User.getAssertion(email, function(assertion) {
+              if(assertion) {
+                network.authenticateWithAssertion(email, assertion, function(status) {
+                  var message = status ? "primary.verified" : "primary.could_not_add";
+                  onComplete(message);
+                }, onFailure);
+              }
+              else {
+                // XXX perhaps these failure modes should call onFailure instead.
+                onComplete("primary.could_not_add");
+              }
+            }, onFailure);
+          }, onFailure);
+        }, function(error) {
+          if(error.code === "primaryError" && error.msg === "user is not authenticated as target user") {
+            onComplete("primary.verify", info);
           }
           else {
             onFailure(info);

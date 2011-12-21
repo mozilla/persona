@@ -84,16 +84,19 @@ BrowserID.Modules.Dialog = (function() {
     if (win.location.hash == "#NATIVE" || win.location.hash == "#INTERNAL") {
       // don't do winchan, let it be.
       return;
-    }      
+    }
 
     try {
-      //
       WinChan.onOpen(function(origin, args, cb) {
-        self.get(origin, args.params, function(r) {
-          cb(r);
-        }, function (e) {
-          cb(null);
-        });
+        // XXX this is called whenever the primary provisioning iframe gets
+        // added.  If there are no args, then do not do self.get.
+        if(args) {
+          self.get(origin, args.params, function(r) {
+            cb(r);
+          }, function (e) {
+            cb(null);
+          });
+        }
       });
     } catch (e) {
       self.renderError("error", {
