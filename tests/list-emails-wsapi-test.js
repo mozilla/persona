@@ -111,8 +111,10 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns an object with proper email": function(r, err) {
-      var emails = Object.keys(JSON.parse(r.body));
+      var respObj = JSON.parse(r.body);
+      var emails = Object.keys(respObj);
       assert.equal(emails[0], "syncer@somehost.com");
+      assert.equal(respObj[emails[0]].type, "secondary");
       assert.equal(emails.length, 1);
     }
   }
