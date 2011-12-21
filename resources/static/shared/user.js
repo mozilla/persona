@@ -517,8 +517,10 @@ BrowserID.User = (function() {
 
             var email = emails_to_add.shift();
 
-            // XXX: we need to get secondary/primary from the server!
-            persistEmail(email, "secondary", addNextEmail, onFailure);
+            // extract the email type from the server response, if it
+            // doesn't exist, assume secondary
+            var type = emails[email].type || "secondary";
+            persistEmail(email, type, addNextEmail, onFailure);
           }
 
           addNextEmail();
