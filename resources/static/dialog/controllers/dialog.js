@@ -146,6 +146,7 @@ BrowserID.Modules.Dialog = (function() {
 
         params.hostname = user.getHostname();
 
+        // XXX Perhaps put this into the state machine.
         self.bind(win, "unload", onWindowUnload);
 
         self.publish("start", params);

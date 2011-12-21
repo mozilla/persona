@@ -40,22 +40,10 @@
   var bid = BrowserID,
       network = bid.Network,
       xhr = bid.Mocks.xhr,
+      WindowMock = bid.Mocks.WindowMock,
       testHelpers = bid.TestHelpers,
       provisioning = bid.Mocks.Provisioning,
       win;
-
-  function DocumentMock() {
-    this.location = document.location;
-  }
-
-  function WindowMock() {
-    this.document = new DocumentMock();
-  }
-  WindowMock.prototype = {
-    open: function(url, name, options) {
-      this.open_url = url;
-    }
-  };
 
   module("pages/signup", {
     setup: function() {

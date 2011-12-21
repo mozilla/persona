@@ -154,6 +154,12 @@
       gotoState("doVerifyPrimaryUser", info);
     });
 
+    subscribe("primary_verifying_user", function(msg, info) {
+      // Keep the dialog from automatically closing when the user browses to
+      // the IdP for verification.
+      self.success = true;
+    });
+
     subscribe("authenticate_with_required_email", function(msg, info) {
       gotoState("doAuthenticateWithRequiredEmail", info);
     });

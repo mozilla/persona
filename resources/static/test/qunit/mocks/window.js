@@ -1,5 +1,5 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global _: true, BrowserID: true, PageController: true */
+/*jshint browsers:true, forin: true, laxbreak: true */
+/*global BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,43 +34,22 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-BrowserID.Modules.VerifyPrimaryUser = (function() {
+BrowserID.Mocks.WindowMock = (function() {
   "use strict";
 
-  var bid = BrowserID,
-      sc,
-      win,
-      email,
-      auth_url;
-
-  function verify(callback) {
-    this.publish("primary_verifying_user");
-
-    var url = auth_url + "?email=" + encodeURIComponent(email);
-    win.document.location = url;
-
-    callback();
+  function DocumentMock() {
+    this.location = document.location;
   }
 
-  var Module = bid.Modules.PageModule.extend({
-    start: function(data) {
-      var self=this;
-      data = data || {};
+  function WindowMock() {
+    this.document = new DocumentMock();
+  }
+  WindowMock.prototype = {
+    open: function(url, name, options) {
+      this.open_url = url;
+    }
+  };
 
-      win = data.window || window;
-      email = data.email;
-      auth_url = data.auth_url;
+  return WindowMock;
 
-      self.renderDialog("verifyWithPrimary", data);
-
-      sc.start.call(self, data);
-    },
-
-    submit: verify
-  });
-
-  sc = Module.sc;
-
-  return Module;
 }());
-

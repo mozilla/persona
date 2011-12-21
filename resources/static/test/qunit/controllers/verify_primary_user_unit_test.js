@@ -40,7 +40,10 @@
   var bid = BrowserID,
       controller,
       el,
-      testHelpers = bid.TestHelpers;
+      testHelpers = bid.TestHelpers,
+      WindowMock = bid.Mocks.WindowMock,
+      win,
+      mediator = bid.Mediator;
 
   function createController(config) {
     controller = BrowserID.Modules.VerifyPrimaryUser.create();
@@ -50,6 +53,12 @@
   module("controllers/verify_primary_user", {
     setup: function() {
       testHelpers.setup();
+      win = new WindowMock();
+      createController({
+        window: win,
+        email: "unregistered@testuser.com",
+        auth_url: "http://testuser.com/sign_in"
+      });
     },
 
     teardown: function() {
@@ -60,6 +69,17 @@
     }
   });
 
-  // XXX Do some tests!
+  asyncTest("submit opens a new tab with correct URL", function() {
+    var messageTriggered = false;
+    mediator.subscribe("primary_verifying_user", function() {
+      messageTriggered = true;
+    });
+
+    controller.submit(function() {
+      equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com");
+      equal(messageTriggered, true, "primary_verifying_user triggered");
+      start();
+    });
+  });
 }());
 

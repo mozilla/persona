@@ -61,7 +61,7 @@ BrowserID.signUp = (function() {
       }
 
       var url = verifyURL + "?email=" + encodeURIComponent(verifyEmail);
-      win.open(url, "_moz_primary_verification", "width: 500px, height: 500px");
+      win.open(url, "_moz_primary_verification", "width=500, height=500");
       oncomplete && oncomplete();
     }
 
