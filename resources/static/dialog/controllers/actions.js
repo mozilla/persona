@@ -172,10 +172,6 @@ BrowserID.Modules.Actions = (function() {
 
     doVerifyPrimaryUser: function(info) {
       startService("verify_primary_user", info);
-    },
-
-    doPrimaryUserVerified: function() {
-      // XXX we've gotta do something here too.
     }
   });
 

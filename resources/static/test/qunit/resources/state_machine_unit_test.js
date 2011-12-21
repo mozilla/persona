@@ -70,9 +70,9 @@
       this.requiredEmail = info.requiredEmail;
     },
 
-    doAssertionGenerated: function(assertion) {
+    doAssertionGenerated: function(info) {
       // XXX what a horrible horrible name for a function
-      this.assertion = assertion;
+      this.assertion = info.assertion;
     },
 
     doAddEmail: function() {
@@ -102,10 +102,6 @@
 
     doError: function() {
       this.error = true;
-    },
-
-    doPrimaryUserVerified: function() {
-      this.primaryUserVerified = true;
     },
 
     doVerifyPrimaryUser: function() {
@@ -163,10 +159,10 @@
   });
 
   // XXX make these and the messages for secondary match up so there is consistency.
-  test("primary_user_verified calls doPrimaryUserVerified", function() {
-    mediator.publish("primary_user_verified");
+  test("primary_user_verified calls doAssertionGenerated", function() {
+    mediator.publish("primary_user_verified", { email: "testuser@testuser.com", assertion: "assertion" });
 
-    ok(controllerMock.primaryUserVerified, "doPrimaryUserVerified called");
+    ok(controllerMock.assertion, "doAssertionGenerated called");
   });
 
   test("primary_verify_user calls doVerifyPrimaryUser", function() {

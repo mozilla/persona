@@ -147,7 +147,7 @@
     });
 
     subscribe("primary_user_verified", function(msg, info) {
-      gotoState("doPrimaryUserVerified", info);
+      mediator.publish("assertion_generated", info);
     });
 
     subscribe("primary_verify_user", function(msg, info) {
@@ -194,7 +194,7 @@
     subscribe("assertion_generated", function(msg, info) {
       self.success = true;
       if (info.assertion !== null) {
-        gotoState("doAssertionGenerated", info.assertion);
+        gotoState("doAssertionGenerated", info);
       }
       else {
         gotoState("doPickEmail");
