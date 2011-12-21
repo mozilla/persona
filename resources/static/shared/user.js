@@ -339,11 +339,15 @@ BrowserID.User = (function() {
           url: info.prov
         }, function(keypair, cert) {
           persistEmailKeypair(email, "primary", keypair, cert, function() {
-            User.getAssertion(email, function(assertion) {
+            // We are getting an assertion for browserid.org.
+            User.getAssertion(email, "https://browserid.org", function(assertion) {
               if(assertion) {
                 network.authenticateWithAssertion(email, assertion, function(status) {
                   var message = status ? "primary.verified" : "primary.could_not_add";
-                  onComplete(message);
+                  onComplete(message, {
+                    email: email,
+                    assertion: assertion
+                  });
                 }, onFailure);
               }
               else {
@@ -764,10 +768,11 @@ BrowserID.User = (function() {
      * Get an assertion for an identity
      * @method getAssertion
      * @param {string} email - Email to get assertion for.
+     * @param {string} audience - Audience to use for the assertion.
      * @param {function} [onSuccess] - Called with assertion on success.
      * @param {function} [onFailure] - Called on error.
      */
-    getAssertion: function(email, onSuccess, onFailure) {
+    getAssertion: function(email, audience, onSuccess, onFailure) {
       // we use the current time from the browserid servers
       // to avoid issues with clock drift on user's machine.
       // (issue #329)
@@ -784,12 +789,12 @@ BrowserID.User = (function() {
               // assertions are valid for 2 minutes
               var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
               var expirationDate = new Date(expirationMS);
-              var tok = new jwt.JWT(null, expirationDate, origin);
+              var tok = new jwt.JWT(null, expirationDate, audience);
 
               // yield!
               setTimeout(function() {
                 assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
-                storage.site.set(self.getOrigin(), "email", email);
+                storage.site.set(audience, "email", email);
                 if (onSuccess) {
                   onSuccess(assertion);
                 }
@@ -811,7 +816,7 @@ BrowserID.User = (function() {
             // we have no key for this identity, go generate the key,
             // sync it and then get the assertion recursively.
             User.syncEmailKeypair(email, function() {
-              User.getAssertion(email, onSuccess, onFailure);
+              User.getAssertion(email, audience, onSuccess, onFailure);
             }, onFailure);
           }
         }
@@ -863,7 +868,7 @@ BrowserID.User = (function() {
           var remembered = storage.site.get(origin, "remember");
           var email = storage.site.get(origin, "email");
           if (remembered && email) {
-            self.getAssertion(email, onComplete, onFailure);
+            self.getAssertion(email, origin, onComplete, onFailure);
           }
           else if (onComplete) {
             onComplete(null);

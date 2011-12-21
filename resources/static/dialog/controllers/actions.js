@@ -135,7 +135,7 @@ BrowserID.Modules.Actions = (function() {
     doEmailConfirmed: function() {
       var self=this;
       // yay!  now we need to produce an assertion.
-      user.getAssertion(self.confirmEmail, function(assertion) {
+      user.getAssertion(self.confirmEmail, user.getOrigin(), function(assertion) {
         self.publish("assertion_generated", {
           assertion: assertion
         });

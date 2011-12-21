@@ -843,7 +843,7 @@ var jwcert = require("./jwcert");
     lib.setOrigin(testOrigin);
     lib.removeEmail("testuser@testuser.com");
     lib.syncEmailKeypair("testuser@testuser.com", function() {
-      lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
+      lib.getAssertion("testuser@testuser.com", lib.getOrigin(), function onSuccess(assertion) {
         testAssertion(assertion, start);
         equal(storage.site.get(testOrigin, "email"), "testuser@testuser.com", "email address was persisted");
       }, failure("getAssertion failure"));
@@ -855,7 +855,7 @@ var jwcert = require("./jwcert");
     lib.setOrigin(testOrigin);
     lib.removeEmail("testuser@testuser.com");
     storage.addEmail("testuser@testuser.com", {});
-    lib.getAssertion("testuser@testuser.com", function onSuccess(assertion) {
+    lib.getAssertion("testuser@testuser.com", lib.getOrigin(), function onSuccess(assertion) {
       testAssertion(assertion, start);
       equal(storage.site.get(testOrigin, "email"), "testuser@testuser.com", "email address was persisted");
     }, failure("getAssertion failure"));
@@ -864,7 +864,7 @@ var jwcert = require("./jwcert");
 
   asyncTest("getAssertion with unknown email", function() {
     lib.syncEmailKeypair("testuser@testuser.com", function() {
-      lib.getAssertion("testuser2@testuser.com", function onSuccess(assertion) {
+      lib.getAssertion("testuser2@testuser.com", lib.getOrigin(), function onSuccess(assertion) {
         equal("undefined", typeof assertion, "email was unknown, we do not have an assertion");
         equal(storage.site.get(testOrigin, "email"), undefined, "email address was not set");
         start();
@@ -874,15 +874,15 @@ var jwcert = require("./jwcert");
 
   asyncTest("getAssertion with XHR failure", function() {
     lib.setOrigin(testOrigin);
-    xhr.useResult("ajaxError");
 
-    lib.syncEmailKeypair("testuser@testuser.com", function() {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    storage.addEmail("testuser@testuser.com", {});
+    xhr.useResult("ajaxError");
+    lib.getAssertion(
+      "testuser@testuser.com",
+      lib.getOrigin(),
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
 
 
