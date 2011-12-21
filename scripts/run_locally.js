@@ -36,11 +36,14 @@ var daemonsToRun = {
     HOST: HOST
   },
   browserid: {
-    SHIMMED_PRIMARIES: "example.domain|http://" + HOST + ":10005|" + path.join(__dirname, "..", "example", "primary", ".well-known", "vep"),
     PORT: 10002,
     HOST: HOST
   }
 };
+
+// all spawned process that use handle primaries should know about "shimmed"
+// primaries
+process.env['SHIMMED_PRIMARIES'] = "example.domain|http://" + HOST + ":10005|" + path.join(__dirname, "..", "example", "primary", ".well-known", "vep");
 
 // all spawned processes should log to console
 process.env['LOG_TO_CONSOLE'] = 1;
