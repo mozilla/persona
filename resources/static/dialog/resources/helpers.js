@@ -118,9 +118,7 @@
           // XXX Is this status possible?
           break;
         case "primary.verified":
-          self.close("primary_user_verified", {
-            email: email
-          });
+          self.close("primary_user_verified", info);
           complete(true);
           break;
         case "primary.verify":

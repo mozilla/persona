@@ -105,16 +105,6 @@
       }
     });
   });
-
-  asyncTest("doPrimaryUserVerified does something", function() {
-    createController({
-      ready: function() {
-        controller.doPrimaryUserVerified();
-        // XXX test something
-        start();
-      }
-    });
-  });
 */
 
 }());
