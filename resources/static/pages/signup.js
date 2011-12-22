@@ -62,7 +62,7 @@ BrowserID.signUp = (function() {
 
       var url = helpers.toURL(verifyURL, {
           email: verifyEmail,
-          return_to: "https://browserid.org/idp_auth_complete"
+          return_to: "https://browserid.org/authenticate_with_primary#complete"
       });
 
       // XXX: we should use winchan (and send user to a page that redirects to primary)!
@@ -78,11 +78,13 @@ BrowserID.signUp = (function() {
       //    silently provision again!  success means the users is signed up, failure
       //    means there was an auth problem.  they can try again?
       var win = winchan.open({
-        url: url,
+        url: "https://browserid.org/authenticate_with_primary",
         // This is the relay that will be used when the IdP redirects to sign_in_complete
         relay_url: "https://browserid.org/relay",
-        window_features: "width=700,height=375"
+        window_features: "width=700,height=375",
+        params: url
       }, primaryAuthComplete);
+
       oncomplete && oncomplete();
     }
 
