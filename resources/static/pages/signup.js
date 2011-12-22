@@ -104,7 +104,7 @@ BrowserID.signUp = (function() {
               // XXX Is this status possible?
               break;
             case "primary.verified":
-              pageHelpers.replaceInputsWithNotice("#congrats", complete.bind(null, true));
+              pageHelpers.replaceFormWithNotice("#congrats", complete.bind(null, true));
               break;
             case "primary.verify":
               verifyEmail = email;

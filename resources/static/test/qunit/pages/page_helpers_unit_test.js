@@ -37,9 +37,19 @@
 (function() {
   "use strict";
 
-  var pageHelpers = BrowserID.PageHelpers;
+  var bid = BrowserID,
+      pageHelpers = bid.PageHelpers,
+      testHelpers = bid.TestHelpers;
 
-  module("pages/page_helpers");
+  module("pages/page_helpers", {
+    setup: function() {
+      testHelpers.setup();
+    },
+
+    teardown: function() {
+      testHelpers.teardown();
+    }
+  });
 
 
   test("setStoredEmail/getStoredEmail/setupEmail prefills the email address", function() {
@@ -74,6 +84,14 @@
     pageHelpers.clearStoredEmail();
 
     equal(pageHelpers.getStoredEmail(), "", "clearStoredEmail clears stored email");
+  });
+
+  asyncTest("replaceFormWithNotice replaces contents", function() {
+    pageHelpers.replaceFormWithNotice(".emailsent", function() {
+      equal($("form").is(":visible"), false, "form has been hidden");
+      equal($(".emailsent").is(":visible"), true, "emailsent is now visible");
+      start();
+    });
   });
 
   asyncTest("replaceInputsWithNotice replaces contents", function() {

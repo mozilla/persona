@@ -98,6 +98,11 @@ BrowserID.PageHelpers = (function() {
     }
   }
 
+  function replaceFormWithNotice(selector, onComplete) {
+    $("form").hide();
+    $(selector).fadeIn(ANIMATION_SPEED, onComplete);
+  }
+
   function replaceInputsWithNotice(selector, onComplete) {
     $('.forminputs').hide();
     $(selector).stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED, onComplete);
@@ -140,6 +145,7 @@ BrowserID.PageHelpers = (function() {
     getParameterByName: getParameterByName,
     getFailure: getFailure,
     replaceInputsWithNotice: replaceInputsWithNotice,
+    replaceFormWithNotice: replaceFormWithNotice,
     showInputs: showInputs,
     showEmailSent: showEmailSent,
     cancelEmailSent: cancelEmailSent,

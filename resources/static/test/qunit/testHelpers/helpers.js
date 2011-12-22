@@ -50,6 +50,7 @@
       $(".error").removeClass("error");
       $("#error").stop().html("<div class='contents'></div>").hide();
       $(".notification").stop().hide();
+      $("form").show();
       unregisterAll();
       mediator.reset();
       screens.wait.hide();
@@ -70,6 +71,7 @@
       $(".error").removeClass("error");
       $("#error").stop().html("<div class='contents'></div>").hide();
       $(".notification").stop().hide();
+      $("form").show();
       screens.wait.hide();
       screens.error.hide();
       tooltip.reset();
