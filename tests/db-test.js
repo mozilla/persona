@@ -245,6 +245,34 @@ suite.addBatch({
   }
 });
 
+
+suite.addBatch({
+  "emailType of lloyd@anywhe.re": {
+    topic: function() {
+      db.emailType('lloyd@anywhe.re', this.callback);
+    },
+    "is null": function (r) {
+      assert.isUndefined(r);
+    }
+  },
+  "emailType of lloyd@somewhe.re": {
+    topic: function() {
+      db.emailType('lloyd@somewhe.re', this.callback);
+    },
+    "is 'secondary'": function (r) {
+      assert.strictEqual(r, 'secondary');
+    }
+  },
+  "emailType of lloyd@nowhe.re": {
+    topic: function() {
+      db.emailType('lloyd@nowhe.re', this.callback);
+    },
+    "is 'secondary'": function (r) {
+      assert.strictEqual(r, 'secondary');
+    }
+  }
+});
+
 suite.addBatch({
   "removing an existing email": {
     topic: function() {
@@ -278,6 +306,33 @@ suite.addBatch({
       },
       "to return false": function (r) {
         assert.strictEqual(r, false);
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "creating a primary account": {
+    topic: function() {
+      db.createUserWithPrimaryEmail("lloyd@primary.domain", this.callback);
+    },
+    "returns no error": function(r) {
+      assert.isUndefined(r);
+    },
+    "causes emailKnown": {
+      topic: function() {
+        db.emailKnown('lloyd@primary.domain', this.callback);
+      },
+      "to return true": function (r) {
+        assert.strictEqual(r, true);
+      }
+    },
+    "causes emailType": {
+      topic: function() {
+        db.emailType('lloyd@primary.domain', this.callback);
+      },
+      "to return 'primary'": function (r) {
+        assert.strictEqual(r, 'primary');
       }
     }
   }
