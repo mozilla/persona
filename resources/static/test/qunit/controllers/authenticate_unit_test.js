@@ -99,18 +99,23 @@
     controller.checkEmail();
   }
 
-  asyncTest("checkEmail with normal email, user not registered", function() {
+  asyncTest("checkEmail with unknown secondary email, expect 'create_user' message", function() {
     $("#email").val("unregistered@testuser.com");
+    xhr.useResult("unknown_secondary");
+
     testUserUnregistered();
   });
 
   asyncTest("checkEmail with email with leading/trailing whitespace, user not registered", function() {
     $("#email").val("    unregistered@testuser.com   ");
+    xhr.useResult("unknown_secondary");
+
     testUserUnregistered();
   });
 
   asyncTest("checkEmail with normal email, user registered", function() {
     $("#email").val("registered@testuser.com");
+    xhr.useResult("known_secondary");
 
     register("enter_password", function() {
       ok(true, "email was valid, user registered");
@@ -155,7 +160,6 @@
 
   asyncTest("createUser with valid email", function() {
     $("#email").val("unregistered@testuser.com");
-
     xhr.useResult("unknown_secondary");
 
     register("user_staged", function(msg, info) {

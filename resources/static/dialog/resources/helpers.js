@@ -90,13 +90,13 @@
       }, self.getErrorDialog(errors.authenticate));
   }
 
-  function createUser(email, callback) {
+  function createUser(email, info, callback) {
     function complete(status) {
       callback && callback(status);
     }
 
     var self=this;
-    user.createUser(email, function(status, info) {
+    user.createUserWithInfo(email, info, function(status, info) {
       switch(status) {
         case "secondary.already_added":
           // XXX how to handle this - createUser should not be called on

@@ -316,6 +316,13 @@ BrowserID.User = (function() {
     createUser: function(email, onComplete, onFailure) {
       var self=this;
 
+      network.addressInfo(email, function(info) {
+        User.createUserWithInfo(email, info, onComplete, onFailure);
+      }, onFailure);
+    },
+
+    createUserWithInfo: function(email, info, onComplete, onFailure) {
+      var self=this;
       function attemptAddSecondary(email, info) {
         if (info.known) {
           onComplete("secondary.already_added");
@@ -333,46 +340,53 @@ BrowserID.User = (function() {
       }
 
       function attemptAddPrimary(email, info) {
-        // XXX Can we know if the primary is already known to us?
-        provisioning({
-          email: email,
-          url: info.prov
-        }, function(keypair, cert) {
-          persistEmailKeypair(email, "primary", keypair, cert, function() {
-            // We are getting an assertion for browserid.org.
-            User.getAssertion(email, "https://browserid.org", function(assertion) {
-              if(assertion) {
-                network.authenticateWithAssertion(email, assertion, function(status) {
-                  var message = status ? "primary.verified" : "primary.could_not_add";
-                  onComplete(message, {
-                    email: email,
-                    assertion: assertion
-                  });
-                }, onFailure);
-              }
-              else {
-                // XXX perhaps these failure modes should call onFailure instead.
-                onComplete("primary.could_not_add");
-              }
-            }, onFailure);
-          }, onFailure);
-        }, function(error) {
-          if(error.code === "primaryError" && error.msg === "user is not authenticated as target user") {
-            onComplete("primary.verify", info);
-          }
-          else {
-            onFailure(info);
-          }
-        });
+        User.provisionPrimaryUser(email, info, onComplete, onFailure);
       }
 
-      network.addressInfo(email, function(info) {
-        if (info.type === 'secondary') {
-          attemptAddSecondary(email, info);
-        } else {
-          attemptAddPrimary(email, info);
+      if (info.type === 'secondary') {
+        attemptAddSecondary(email, info);
+      } else {
+        attemptAddPrimary(email, info);
+      }
+    },
+
+    provisionPrimaryUser: function(email, info, onComplete, onFailure) {
+      provisioning({
+        email: email,
+        url: info.prov
+      }, function(keypair, cert) {
+        persistEmailKeypair(email, "primary", keypair, cert, function() {
+          // We are getting an assertion for browserid.org.
+          User.getAssertion(email, "https://browserid.org", function(assertion) {
+            if(assertion) {
+              network.authenticateWithAssertion(email, assertion, function(status) {
+                if(status) {
+                  User.getAssertion(email, User.getOrigin(), function(assertion) {
+                    onComplete("primary.verified", {
+                      email: email,
+                      assertion: assertion
+                    });
+                  }, onFailure);
+                }
+                else {
+                  onComplete("primary.could_not_add");
+                }
+              }, onFailure);
+            }
+            else {
+              // XXX perhaps these failure modes should call onFailure instead.
+              onComplete("primary.could_not_add");
+            }
+          }, onFailure);
+        }, onFailure);
+      }, function(error) {
+        if(error.code === "primaryError" && error.msg === "user is not authenticated as target user") {
+          onComplete("primary.verify", info);
         }
-      }, onFailure);
+        else {
+          onFailure(info);
+        }
+      });
     },
 
     /**

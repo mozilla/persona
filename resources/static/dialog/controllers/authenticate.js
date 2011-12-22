@@ -47,10 +47,44 @@ BrowserID.Modules.Authenticate = (function() {
       dialogHelpers = helpers.Dialog,
       cancelEvent = dialogHelpers.cancelEvent,
       dom = bid.DOM,
-      lastEmail = "";
+      lastEmail = "",
+      emailInfo;
 
   function getEmail() {
     return helpers.getAndValidateEmail("#email");
+  }
+
+  function provisionPrimaryUser(email, info, oncomplete) {
+    var self=this;
+
+    function complete(status) {
+      oncomplete && oncomplete(status);
+    }
+
+    user.provisionPrimaryUser(email, info, function(status, status_info) {
+      switch(status) {
+        case "primary.already_added":
+          // XXX Is this status possible?
+          break;
+        case "primary.verified":
+          self.close("primary_user_verified", status_info);
+          complete(true);
+          break;
+        case "primary.verify":
+          self.close("primary_verify_user", {
+            email: email,
+            auth_url: info.auth
+          });
+          complete(true);
+          break;
+        case "primary.could_not_add":
+          // XXX Can this happen?
+          break;
+        default:
+          break;
+      }
+    }, self.getErrorDialog(errors.provisioningPrimary));
+
   }
 
   function checkEmail() {
@@ -59,22 +93,27 @@ BrowserID.Modules.Authenticate = (function() {
 
     if (!email) return;
 
-    user.isEmailRegistered(email, function onComplete(registered) {
-      if (registered) {
-        enterPasswordState.call(self);
+    user.addressInfo(email, function(info) {
+      if(info.type === "primary") {
+        provisionPrimaryUser.call(self, email, info);
       }
       else {
-        createUserState.call(self);
+        if(info.known) {
+          enterPasswordState.call(self);
+        }
+        else {
+          createSecondaryUserState.call(self);
+        }
       }
     }, self.getErrorDialog(errors.isEmailRegistered));
   }
 
-  function createUser(callback) {
+  function createSecondaryUser(callback) {
     var self=this,
         email = getEmail();
 
     if (email) {
-      dialogHelpers.createUser.call(self, email, callback);
+      dialogHelpers.createUser.call(self, email, info, callback);
     } else {
       callback && callback();
     }
@@ -127,11 +166,11 @@ BrowserID.Modules.Authenticate = (function() {
     }
   }
 
-  function createUserState() {
+  function createSecondaryUserState() {
     var self=this;
 
     self.publish("create_user");
-    self.submit = createUser;
+    self.submit = createSecondaryUser;
     animateSwap(".start:visible,.returning:visible", ".newuser");
   }
 
@@ -169,7 +208,7 @@ BrowserID.Modules.Authenticate = (function() {
     // BEGIN TESTING API
     ,
     checkEmail: checkEmail,
-    createUser: createUser,
+    createUser: createSecondaryUser,
     authenticate: authenticate,
     forgotPassword: forgotPassword
     // END TESTING API
