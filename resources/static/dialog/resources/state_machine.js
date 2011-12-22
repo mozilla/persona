@@ -194,7 +194,7 @@
     subscribe("assertion_generated", function(msg, info) {
       self.success = true;
       if (info.assertion !== null) {
-        gotoState("doAssertionGenerated", info);
+        gotoState("doAssertionGenerated", info.assertion);
       }
       else {
         gotoState("doPickEmail");
