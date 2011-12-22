@@ -87,14 +87,18 @@ BrowserID.PageHelpers = (function() {
       return decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
+  function showFailure(error, info, callback) {
+    info = $.extend(info || {}, { action: error, dialog: false });
+    bid.Screens.error.show("error", info);
+    $("#errorBackground").stop().fadeIn();
+    $("#error").stop().fadeIn();
+
+    callback && callback(false);
+  }
+
   function getFailure(error, callback) {
     return function onFailure(info) {
-      info = $.extend(info, { action: error, dialog: false });
-      bid.Screens.error.show("error", info);
-      $("#errorBackground").stop().fadeIn();
-      $("#error").stop().fadeIn();
-
-      callback && callback(false);
+      showFailure(error, info, callback);
     }
   }
 
@@ -143,6 +147,15 @@ BrowserID.PageHelpers = (function() {
     clearStoredEmail: clearStoredEmail,
     getStoredEmail: getStoredEmail,
     getParameterByName: getParameterByName,
+    /**
+     * shows a failure screen immediately
+     * @method showFailure
+     */
+    showFailure: showFailure,
+    /**
+     * get a function to show an error screen when function is called.
+     * @method getFailure
+     */
     getFailure: getFailure,
     replaceInputsWithNotice: replaceInputsWithNotice,
     replaceFormWithNotice: replaceFormWithNotice,

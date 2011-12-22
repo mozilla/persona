@@ -39,7 +39,8 @@
 
   var bid = BrowserID,
       pageHelpers = bid.PageHelpers,
-      testHelpers = bid.TestHelpers;
+      testHelpers = bid.TestHelpers,
+      errors = bid.Errors;
 
   module("pages/page_helpers", {
     setup: function() {
@@ -134,6 +135,13 @@
  //       equal($("#email").is(":focus"), true, "first element is focused (NOTE: requires your browser to be focused to work)");
         start();
       });
+    });
+  });
+
+  asyncTest("showFailure shows a failure screen", function() {
+    pageHelpers.showFailure({}, errors.offline, function() {
+      testHelpers.testErrorVisible();
+      start();
     });
   });
 

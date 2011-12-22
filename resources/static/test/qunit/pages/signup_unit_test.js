@@ -40,18 +40,18 @@
   var bid = BrowserID,
       network = bid.Network,
       xhr = bid.Mocks.xhr,
-      WindowMock = bid.Mocks.WindowMock,
+      WinChanMock = bid.Mocks.WinChan,
       testHelpers = bid.TestHelpers,
       provisioning = bid.Mocks.Provisioning,
-      win;
+      winchan;
 
   module("pages/signup", {
     setup: function() {
       testHelpers.setup();
 
-      win = new WindowMock();
+      winchan = new WinChanMock();
       bid.signUp({
-        window: win
+        winchan: winchan
       });
     },
     teardown: function() {
@@ -175,14 +175,39 @@
     });
   });
 
-  asyncTest("verifyWithPrimary opens new tab", function() {
+  asyncTest("authWithPrimary opens new tab", function() {
     xhr.useResult("primary");
     $("#email").val("unregistered@testuser.com");
 
     bid.signUp.submit(function(status) {
-      bid.signUp.verifyWithPrimary(function() {
-        equal(win.open_url, "https://auth_url?email=unregistered%40testuser.com", "user directed to authentication URL");
+      bid.signUp.authWithPrimary(function() {
+        ok(winchan.oncomplete, "winchan set up");
         start();
+      });
+    });
+  });
+
+  asyncTest("primaryAuthComplete with error, expect incorrect status", function() {
+    bid.signUp.primaryAuthComplete("error", "", function(status) {
+      equal(status, false, "correct status for could not complete");
+      testHelpers.testErrorVisible();
+      start();
+    });
+  });
+
+  asyncTest("primaryAuthComplete with successful authentication, expect correct status and congrats message", function() {
+    xhr.useResult("primary");
+    $("#email").val("unregistered@testuser.com");
+
+    bid.signUp.submit(function(status) {
+      bid.signUp.authWithPrimary(function() {
+        // In real life the user would now be authenticated.
+        provisioning.setStatus(provisioning.AUTHENTICATED);
+        bid.signUp.primaryAuthComplete(null, "success", function(status) {
+          equal(status, true, "correct status");
+          equal($("#congrats:visible").length, 1, "success notification is visible");
+          start();
+        });
       });
     });
   });

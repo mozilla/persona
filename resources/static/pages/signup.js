@@ -47,7 +47,7 @@ BrowserID.signUp = (function() {
       tooltip = BrowserID.Tooltip,
       ANIMATION_SPEED = 250,
       storedEmail = pageHelpers,
-      win = window,
+      winchan = window.WinChan,
       verifyEmail,
       verifyURL;
 
@@ -55,13 +55,16 @@ BrowserID.signUp = (function() {
       $(selector).fadeIn(ANIMATION_SPEED);
     }
 
-    function verifyWithPrimary(oncomplete) {
+    function authWithPrimary(oncomplete) {
       if(!(verifyEmail && verifyURL)) {
         throw "cannot verify with primary without an email address and URL"
       }
 
-      var url = verifyURL + "?email=" + encodeURIComponent(verifyEmail) +
-                            "&return_to=https://browserid.org/sign_in_complete";
+      var url = helpers.toURL(verifyURL, {
+          email: verifyEmail,
+          return_to: "https://browserid.org/idp_auth_complete"
+      });
+
       // XXX: we should use winchan (and send user to a page that redirects to primary)!
       // we should:
       // 1. build a page that we host and we open with winchan
@@ -74,8 +77,65 @@ BrowserID.signUp = (function() {
       // 8. we get notification that the interaction is complete in main page and try to
       //    silently provision again!  success means the users is signed up, failure
       //    means there was an auth problem.  they can try again?
-      win.open(url, "_moz_primary_verification", "width=700,height=375");
+      var win = winchan.open({
+        url: url,
+        // This is the relay that will be used when the IdP redirects to sign_in_complete
+        relay_url: "https://browserid.org/relay",
+        window_features: "width=700,height=375"
+      }, primaryAuthComplete);
       oncomplete && oncomplete();
+    }
+
+    function primaryAuthComplete(error, result, oncomplete) {
+      // XXX once we get our winchan shit figured out, remove the false &&
+      // below.
+      if(false && error) {
+        pageHelpers.showFailure(errors.primaryAuthentication, error, oncomplete);
+      }
+      else {
+        // hey ho, the user is authenticated, re-try the submit.
+        createUser(verifyEmail, oncomplete);
+      }
+    }
+
+    function createUser(email, oncomplete) {
+      function complete(status) {
+        oncomplete && oncomplete(status);
+      }
+
+      user.createUser(email, function onComplete(status, info) {
+        switch(status) {
+          case "secondary.already_added":
+            $('#registeredEmail').html(email);
+            showNotice(".alreadyRegistered");
+            complete(false);
+            break;
+          case "secondary.verify":
+            pageHelpers.showEmailSent(complete);
+            break;
+          case "secondary.could_not_add":
+            tooltip.showTooltip("#could_not_add");
+            complete(false);
+            break;
+          case "primary.already_added":
+            // XXX Is this status possible?
+            break;
+          case "primary.verified":
+            pageHelpers.replaceFormWithNotice("#congrats", complete.bind(null, true));
+            break;
+          case "primary.verify":
+            verifyEmail = email;
+            verifyURL = info.auth;
+            dom.setInner("#primary_email", email);
+            pageHelpers.replaceInputsWithNotice("#primary_verify", complete.bind(null, false));
+            break;
+          case "primary.could_not_add":
+            // XXX Can this happen?
+            break;
+          default:
+            break;
+        }
+      }, pageHelpers.getFailure(errors.createUser, complete));
     }
 
     function submit(oncomplete) {
@@ -86,39 +146,7 @@ BrowserID.signUp = (function() {
       }
 
       if (email) {
-        user.createUser(email, function onComplete(status, info) {
-          switch(status) {
-            case "secondary.already_added":
-              $('#registeredEmail').html(email);
-              showNotice(".alreadyRegistered");
-              complete(false);
-              break;
-            case "secondary.verify":
-              pageHelpers.showEmailSent(complete);
-              break;
-            case "secondary.could_not_add":
-              tooltip.showTooltip("#could_not_add");
-              complete(false);
-              break;
-            case "primary.already_added":
-              // XXX Is this status possible?
-              break;
-            case "primary.verified":
-              pageHelpers.replaceFormWithNotice("#congrats", complete.bind(null, true));
-              break;
-            case "primary.verify":
-              verifyEmail = email;
-              verifyURL = info.auth;
-              dom.setInner("#primary_email", email);
-              pageHelpers.replaceInputsWithNotice("#primary_verify", complete.bind(null, false));
-              break;
-            case "primary.could_not_add":
-              // XXX Can this happen?
-              break;
-            default:
-              break;
-          }
-        }, pageHelpers.getFailure(errors.createUser, oncomplete));
+        createUser(email, complete);
       }
       else {
         complete(false);
@@ -136,8 +164,8 @@ BrowserID.signUp = (function() {
     function init(config) {
       config = config || {};
 
-      if(config.window) {
-        win = config.window;
+      if(config.winchan) {
+        winchan = config.winchan;
       }
 
       $("form input[autofocus]").focus();
@@ -147,7 +175,7 @@ BrowserID.signUp = (function() {
       dom.bindEvent("#email", "keyup", onEmailKeyUp);
       dom.bindEvent("form", "submit", cancelEvent(submit));
       dom.bindEvent("#back", "click", cancelEvent(back));
-      dom.bindEvent("#verifyWithPrimary", "click", cancelEvent(verifyWithPrimary));
+      dom.bindEvent("#authWithPrimary", "click", cancelEvent(authWithPrimary));
     }
 
     // BEGIN TESTING API
@@ -155,15 +183,16 @@ BrowserID.signUp = (function() {
       dom.unbindEvent("#email", "keyup");
       dom.unbindEvent("form", "submit");
       dom.unbindEvent("#back", "click");
-      dom.unbindEvent("#verifyWithPrimary", "click");
-      win = window;
+      dom.unbindEvent("#authWithPrimary", "click");
+      winchan = window.WinChan;
       verifyEmail = verifyURL = null;
     }
 
     init.submit = submit;
     init.reset = reset;
     init.back = back;
-    init.verifyWithPrimary = verifyWithPrimary;
+    init.authWithPrimary = authWithPrimary;
+    init.primaryAuthComplete = primaryAuthComplete;
     // END TESTING API
 
     return init;

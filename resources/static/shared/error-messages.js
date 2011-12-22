@@ -82,8 +82,13 @@ BrowserID.Errors = (function(){
       message: "Unfortunately, BrowserID cannot communicate while offline!"
     },
 
+    primaryAuthentication: {
+      title: "Authenticating with Identity Provider",
+      message: "We had trouble communicating with your email provider, please try again!"
+    },
+
     provisioningPrimary: {
-      title: "Provisioning Primary",
+      title: "Provisioning with Identity Provider",
       message: "We had trouble communicating with your email provider, please try again!"
     },
 
