@@ -75,8 +75,10 @@
       messageTriggered = true;
     });
 
+    win.document.location = "sign_in_complete";
+
     controller.submit(function() {
-      equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com");
+      equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com&return_to=sign_in_complete");
       equal(messageTriggered, true, "primary_verifying_user triggered");
       start();
     });

@@ -40,6 +40,7 @@
       subscriptions = [],
       stateStack = [],
       controller,
+      moduleManager = bid.module,
       errors = bid.Errors;
 
   function subscribe(message, cb) {
@@ -157,6 +158,7 @@
     subscribe("primary_verifying_user", function(msg, info) {
       // Keep the dialog from automatically closing when the user browses to
       // the IdP for verification.
+      moduleManager.stopAll();
       self.success = true;
     });
 

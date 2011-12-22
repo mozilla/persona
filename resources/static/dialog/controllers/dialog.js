@@ -43,7 +43,9 @@ BrowserID.Modules.Dialog = (function() {
       user = bid.User,
       errors = bid.Errors,
       dom = bid.DOM,
-      win = window;
+      win = window,
+      channel,
+      sc;
 
   function checkOnline() {
     if ('onLine' in navigator && !navigator.onLine) {
@@ -87,7 +89,7 @@ BrowserID.Modules.Dialog = (function() {
     }
 
     try {
-      WinChan.onOpen(function(origin, args, cb) {
+      channel = WinChan.onOpen(function(origin, args, cb) {
         // XXX this is called whenever the primary provisioning iframe gets
         // added.  If there are no args, then do not do self.get.
         if(args) {
@@ -105,6 +107,10 @@ BrowserID.Modules.Dialog = (function() {
     }
   }
 
+  function stopChannel() {
+    channel && channel.detach();
+  }
+
   function setOrigin(origin) {
     user.setOrigin(origin);
     dom.setInner("#sitename", user.getHostname());
@@ -115,18 +121,23 @@ BrowserID.Modules.Dialog = (function() {
   }
 
   var Dialog = bid.Modules.PageModule.extend({
-    init: function(options) {
+    start: function(options) {
       var self=this;
 
       options = options || {};
 
       win = options.window || window;
 
-      Dialog.sc.init.call(self, options);
+      sc.start.call(self, options);
 
       startChannel.call(self);
 
       options.ready && _.defer(options.ready);
+    },
+
+    stop: function() {
+      stopChannel();
+      sc.stop.call(this);
     },
 
     getVerifiedEmail: function(origin_url, success, error) {
@@ -159,6 +170,8 @@ BrowserID.Modules.Dialog = (function() {
     // END TESTING API
 
   });
+
+  sc = Dialog.sc;
 
   return Dialog;
 

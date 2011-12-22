@@ -43,6 +43,12 @@ BrowserID.Mocks.WinChan = (function() {
     open: function(params, callback) {
       this.params = params;
       this.oncomplete = callback;
+    },
+
+    onOpen: function() {
+      return {
+        detach: function() {}
+      };
     }
   };
 

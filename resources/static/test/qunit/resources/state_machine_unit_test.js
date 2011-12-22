@@ -70,9 +70,8 @@
       this.requiredEmail = info.requiredEmail;
     },
 
-    doAssertionGenerated: function(info) {
-      // XXX what a horrible horrible name for a function
-      this.assertion = info.assertion;
+    doAssertionGenerated: function(assertion) {
+      this.assertion = assertion;
     },
 
     doAddEmail: function() {

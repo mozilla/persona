@@ -41,12 +41,17 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       sc,
       win,
       email,
-      auth_url;
+      auth_url,
+      helpers = bid.Helpers;
 
   function verify(callback) {
     this.publish("primary_verifying_user");
 
-    var url = auth_url + "?email=" + encodeURIComponent(email);
+    var url = helpers.toURL(auth_url, {
+      email: email,
+      return_to: win.document.location
+    });
+
     win.document.location = url;
 
     callback();

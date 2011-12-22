@@ -82,7 +82,8 @@
       window: winMock
     }, config);
 
-    controller = BrowserID.Modules.Dialog.create(config);
+    controller = BrowserID.Modules.Dialog.create();
+    controller.start(config);
   }
 
   module("controllers/dialog", {
@@ -138,7 +139,7 @@
 
   asyncTest("initialization with #NATIVE", function() {
     winMock.location.hash = "#NATIVE";
-    
+
     createController({
       ready: function() {
         ok($("#error .contents").text().length == 0, "no error should be reported");
@@ -150,7 +151,7 @@
 
   asyncTest("initialization with #INTERNAL", function() {
     winMock.location.hash = "#INTERNAL";
-    
+
     createController({
       ready: function() {
         ok($("#error .contents").text().length == 0, "no error should be reported");
@@ -158,7 +159,7 @@
       }
     });
   });
-  
+
   /*
   test("doXHRError while online, no network info given", function() {
     createController();
