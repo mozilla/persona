@@ -89,9 +89,7 @@ BrowserID.signUp = (function() {
     }
 
     function primaryAuthComplete(error, result, oncomplete) {
-      // XXX once we get our winchan shit figured out, remove the false &&
-      // below.
-      if(false && error) {
+      if(error) {
         pageHelpers.showFailure(errors.primaryAuthentication, error, oncomplete);
       }
       else {
