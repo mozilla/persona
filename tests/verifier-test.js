@@ -49,7 +49,8 @@ jwt = require('jwcrypto/jwt.js'),
 vep = require('jwcrypto/vep.js'),
 jwcert = require('jwcrypto/jwcert.js'),
 http = require('http'),
-querystring = require('querystring');
+querystring = require('querystring'),
+path = require('path');
 
 var suite = vows.describe('verifier');
 
@@ -657,10 +658,10 @@ suite.addBatch({
   }
 });
 
-// now verify that no-one other than browserid is allowed to issue assertions
-// (until primary support is implemented)
+// now verify that assertions from a primary who does not have browserid support
+// will fail to verify 
 suite.addBatch({
-  "generating an assertion from a cert signed by some other domain": {
+  "generating an assertion from a cert signed by a bogus primary": {
     topic: function() {
       var fakeDomainKeypair = jwk.KeyPair.generate("RS", 64);
       var newClientKeypair = jwk.KeyPair.generate("DS", 256);
@@ -686,7 +687,85 @@ suite.addBatch({
       "to return a clear error message": function (r, err) {
         var resp = JSON.parse(r.body);
         assert.strictEqual(resp.status, 'failure');
-        assert.strictEqual(resp.reason, "this verifier doesn't respect certs issued from domains other than: 127.0.0.1");
+        assert.strictEqual(resp.reason, "can't get public key for otherdomain.tld");
+      }
+    }
+  }
+});
+
+// now verify that assertions from a primary who does have browserid support
+// but has no authority to speak for an email address will fail
+suite.addBatch({
+  "generating an assertion from a cert signed by a real (simulated) primary": {
+    topic: function() {
+      var secretKey = jwk.SecretKey.fromSimpleObject(
+        JSON.parse(require('fs').readFileSync(
+          path.join(__dirname, '..', 'example', 'primary', 'sample.privatekey'))));
+
+      var newClientKeypair = jwk.KeyPair.generate("DS", 256);
+      expiration = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
+      var cert = new jwcert.JWCert("example.domain", expiration, new Date(), newClientKeypair.publicKey,
+                                   {email: TEST_EMAIL}).sign(secretKey);
+
+      var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var tok = new jwt.JWT(null, expirationDate, TEST_ORIGIN);
+      return vep.bundleCertsAndAssertion([cert], tok.sign(newClientKeypair.secretKey));
+    },
+    "yields a good looking assertion": function (r, err) {
+      assert.isString(r);
+      assert.equal(r.length > 0, true);
+    },
+    "will cause the verifier": {
+      topic: function(assertion) {
+        wsapi.post('/verify', {
+          audience: TEST_ORIGIN,
+          assertion: assertion
+        }).call(this);
+      },
+      "to return a clear error message": function (r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, "issuer issue 'example.domain' may not speak for emails from 'somedomain.com'");
+      }
+    }
+  }
+});
+
+// now verify that assertions from a primary who does have browserid support
+// and may speak for an email address will succeed
+suite.addBatch({
+  "generating an assertion from a cert signed by a real (simulated) primary": {
+    topic: function() {
+      var secretKey = jwk.SecretKey.fromSimpleObject(
+        JSON.parse(require('fs').readFileSync(
+          path.join(__dirname, '..', 'example', 'primary', 'sample.privatekey'))));
+
+      var newClientKeypair = jwk.KeyPair.generate("DS", 256);
+      expiration = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
+      var cert = new jwcert.JWCert("example.domain", expiration, new Date(), newClientKeypair.publicKey,
+                                   {email: "foo@example.domain"}).sign(secretKey);
+
+      var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var tok = new jwt.JWT(null, expirationDate, TEST_ORIGIN);
+      return vep.bundleCertsAndAssertion([cert], tok.sign(newClientKeypair.secretKey));
+    },
+    "yields a good looking assertion": function (r, err) {
+      assert.isString(r);
+      assert.equal(r.length > 0, true);
+    },
+    "will cause the verifier": {
+      topic: function(assertion) {
+        wsapi.post('/verify', {
+          audience: TEST_ORIGIN,
+          assertion: assertion
+        }).call(this);
+      },
+      "to return a clear error message": function (r, err) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'okay');
+        assert.strictEqual(resp.issuer, "example.domain");
+        assert.strictEqual(resp.audience, TEST_ORIGIN);
+        assert.strictEqual(resp.email, "foo@example.domain");
       }
     }
   }
