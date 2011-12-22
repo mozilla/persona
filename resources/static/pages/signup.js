@@ -60,8 +60,21 @@ BrowserID.signUp = (function() {
         throw "cannot verify with primary without an email address and URL"
       }
 
-      var url = verifyURL + "?email=" + encodeURIComponent(verifyEmail);
-      win.open(url, "_moz_primary_verification", "width=500, height=500");
+      var url = verifyURL + "?email=" + encodeURIComponent(verifyEmail) +
+                            "&return_to=https://browserid.org/sign_in_complete";
+      // XXX: we should use winchan (and send user to a page that redirects to primary)!
+      // we should:
+      // 1. build a page that we host and we open with winchan
+      // 2. pass that page the location to redirect the user to in-dialog
+      // 3. spawn dialog
+      // 4. page immediately redirects user to primary, passes 'email' and 'return_to' args
+      // 5. primary does thing...
+      // 6. primary redirects to our page (`return_to`)
+      // 7. return_to immediately closes after calling WinChan.onOpen()
+      // 8. we get notification that the interaction is complete in main page and try to
+      //    silently provision again!  success means the users is signed up, failure
+      //    means there was an auth problem.  they can try again?
+      win.open(url, "_moz_primary_verification", "width=700,height=375");
       oncomplete && oncomplete();
     }
 
