@@ -658,7 +658,7 @@
 
   // local embedded copy of winchan: http://github.com/lloyd/winchan
   ;WinChan = (function() {
-    var IFRAME_NAME = "_moz_vep_comm_iframe";
+    var RELAY_FRAME_NAME = "__winchan_relay_frame";
 
     // a portable addListener implementation
     function addListener(w, event, cb) {
@@ -700,70 +700,94 @@
 
     // given a URL, extract the origin
     function extractOrigin(url) {
+      if (!/^https?:\/\//.test(url)) url = window.location.href;
       var m = /^(https?:\/\/[-_a-zA-Z\.0-9:]+)/.exec(url);
       if (m) return m[1];
       return url;
     }
 
-    if (isInternetExplorer()) {
-      // find the relay iframe in the opener
-      function findRelay() {
-        var loc = window.location;
-        var frames = window.opener.frames;
-        var origin = loc.protocol + '//' + loc.host;
-        for (i = frames.length - 1; i >= 0; i++) {
-          try {
-            if (frames[i].location.href.indexOf(origin) === 0 &&
-                frames[i].name === IFRAME_NAME)
-            {
-              return frames[i];
-            }
-          } catch(e) { }
-        }
-        return;
+    // find the relay iframe in the opener
+    function findRelay() {
+      var loc = window.location;
+      var frames = window.opener.frames;
+      var origin = loc.protocol + '//' + loc.host;
+      for (i = frames.length - 1; i >= 0; i++) {
+        try {
+          if (frames[i].location.href.indexOf(origin) === 0 &&
+              frames[i].name === RELAY_FRAME_NAME)
+          {
+            return frames[i];
+          }
+        } catch(e) { }
       }
+      return;
+    }
 
-      /*  This is how we roll on IE:
-       *  0. user clicks
-       *  1. caller adds relay iframe (served from trusted domain) to DOM
-       *  2. caller opens window (with content from trusted domain)
-       *  3. window on opening adds a listener to 'message'
-       *  4. window on opening finds iframe
-       *  5. window checks if iframe is "loaded" - has a 'doPost' function yet
-       *  5a. if iframe.doPost exists, window uses it to send ready event to caller
-       *  5b. if iframe.doPost doesn't exist, window waits for frame ready
-       *   5bi. once ready, window calls iframe.doPost to send ready event
-       *  6. caller upon reciept of 'ready', sends args
+    var isIE = isInternetExplorer();
+
+    if (isSupported()) {
+      /*  General flow:
+       *                  0. user clicks
+       *  (IE SPECIFIC)   1. caller adds relay iframe (served from trusted domain) to DOM
+       *                  2. caller opens window (with content from trusted domain)
+       *                  3. window on opening adds a listener to 'message'
+       *  (IE SPECIFIC)   4. window on opening finds iframe
+       *                  5. window checks if iframe is "loaded" - has a 'doPost' function yet
+       *  (IE SPECIFIC5)  5a. if iframe.doPost exists, window uses it to send ready event to caller
+       *  (IE SPECIFIC5)  5b. if iframe.doPost doesn't exist, window waits for frame ready
+       *  (IE SPECIFIC5)  5bi. once ready, window calls iframe.doPost to send ready event
+       *                  6. caller upon reciept of 'ready', sends args
        */
       return {
-        open: function(url, relay_url, winopts, arg, cb) {
+        open: function(opts, cb) {
           if (!cb) throw "missing required callback argument";
 
-          // sanity check, are url and relay_url the same origin? 
-          var origin = extractOrigin(url);
-          if (origin !== extractOrigin(relay_url)) {
-            setTimeout(function() {
+          // test required options
+          var err;
+          if (!opts.url) err = "missing required 'url' parameter";
+          if (!opts.relay_url) err = "missing required 'relay_url' parameter";
+          if (err) setTimeout(function() { cb(err); }, 0);
+
+          // supply default options
+          if (!opts.window_features || isFennec()) opts.window_features = undefined;
+
+          // opts.params may be undefined
+
+          var iframe;
+
+          // sanity check, are url and relay_url the same origin?
+          var origin = extractOrigin(opts.url);
+          if (origin !== extractOrigin(opts.relay_url)) {
+            return setTimeout(function() {
               cb('invalid arguments: origin of url and relay_url must match');
-            })
-            return;
+            }, 0);
           }
 
-          // first we need to add a "relay" iframe to the document that's served
-          // from the target domain.  We can postmessage into a iframe, but not a
-          // window
-          var iframe = document.createElement("iframe");
-          // iframe.setAttribute('name', framename);
-          iframe.setAttribute('src', relay_url);
-          iframe.style.display = "none";
-          iframe.setAttribute('name', IFRAME_NAME);
-          document.body.appendChild(iframe);
+          var messageTarget;
 
-          var w = window.open(url, null, winopts); 
-          var req = JSON.stringify({a: 'request', d: arg});
+          if (isIE) {
+            // first we need to add a "relay" iframe to the document that's served
+            // from the target domain.  We can postmessage into a iframe, but not a
+            // window
+            iframe = document.createElement("iframe");
+            // iframe.setAttribute('name', framename);
+            iframe.setAttribute('src', opts.relay_url);
+            iframe.style.display = "none";
+            iframe.setAttribute('name', RELAY_FRAME_NAME);
+            document.body.appendChild(iframe)
+            messageTarget = iframe.contentWindow;
+          }
+
+          var w = window.open(opts.url, null, opts.window_features);
+
+          if (!messageTarget) messageTarget = w;
+
+          var req = JSON.stringify({a: 'request', d: opts.params});
 
           // cleanup on unload
           function cleanup() {
-            document.body.removeChild(iframe);
+            if (iframe) document.body.removeChild(iframe);
+            iframe = undefined;
             if (w) w.close();
             w = undefined;
           }
@@ -773,7 +797,7 @@
           function onMessage(e) {
             try {
               var d = JSON.parse(e.data);
-              if (d.a === 'ready') iframe.contentWindow.postMessage(req, origin);
+              if (d.a === 'ready') messageTarget.postMessage(req, origin);
               else if (d.a === 'error') cb(d.d);
               else if (d.a === 'response') {
                 removeListener(window, 'message', onMessage);
@@ -787,133 +811,12 @@
           addListener(window, 'message', onMessage);
 
           return {
-            close: function() {
-              if (w) w.close();
-              w = undefined;
-            },
+            close: cleanup,
             focus: function() {
               if (w) w.focus();
             }
           };
         },
-        onOpen: function(cb) {
-          var o = "*";
-          var theFrame = findRelay();
-          if (!theFrame) throw "can't find relay frame";
-
-          function onMessage(e) {
-            var d;
-            o = e.origin;
-            try {
-              d = JSON.parse(e.data);
-            } catch(e) { }
-            if (cb) cb(o, d.d, function(r) {
-              cb = undefined;
-              theFrame.doPost(JSON.stringify({a: 'response', d: r}), o);
-            });
-          }
-          addListener(theFrame, 'message', onMessage);
-
-          // we cannot post to our parent that we're ready before the iframe
-          // is loaded.
-          try {
-            theFrame.doPost('{"a": "ready"}', o);
-          } catch(e) {
-            addListener(theFrame, 'load', function(e) {
-              theFrame.doPost('{"a": "ready"}', o);
-            });
-          }
-
-          // if window is unloaded and the client hasn't called cb, it's an error
-          addListener(window, 'unload', function() {
-            if (cb) theFrame.doPost(JSON.stringify({
-              a: 'error', d: 'client closed window'
-            }), o);
-            cb = undefined;
-            // explicitly close the window, in case the client is trying to reload or nav
-            try { window.close(); } catch (e) { };
-          });
-        }
-      };
-    } else if (isSupported()) {
-      return {
-        open: function(url, relay_url, winopts, arg, cb) {
-          if (!cb) throw "missing required callback argument";
-
-          // sanity check, are url and relay_url the same origin? 
-          var origin = extractOrigin(url);
-          if (origin !== extractOrigin(relay_url)) {
-            setTimeout(function() {
-              cb('invalid arguments: origin of url and relay_url must match');
-            })
-            return;
-          }
-
-          var w = window.open(url, null, isFennec() ? undefined : winopts);
-          var req = JSON.stringify({a: 'request', d: arg});
-
-          // cleanup on unload
-          function cleanup() {
-            if (w) w.close();
-            w = undefined;
-          }
-          addListener(window, 'unload', cleanup);
-
-          function onMessage(e) {
-            try {
-              var d = JSON.parse(e.data);
-              if (d.a === 'ready') w.postMessage(req, origin);
-              else if (d.a === 'error') cb(d.d);
-              else if (d.a === 'response') {
-                removeListener(window, 'message', onMessage);
-                removeListener(window, 'unload', cleanup);
-                cleanup();
-                cb(null, d.d);
-              }
-            } catch(e) { }
-          }
-          addListener(window, 'message', onMessage);
-
-          return {
-            close: function() {
-              if (w) w.close();
-              w = undefined;
-            },
-            focus: function() {
-              if (w) w.focus();
-            }
-          };
-        },
-        onOpen: function(cb) {
-          var o = "*";
-          var parentWin = window.opener;
-          function onMessage(e) {
-            var d;
-            o = e.origin;
-            try {
-              d = JSON.parse(e.data);
-            } catch(e) {
-              // ignore
-            }
-            cb(o, d.d, function(r) {
-              cb = undefined;
-              parentWin.postMessage(JSON.stringify({a: 'response', d: r}), o);
-            });
-          }
-          addListener(window, 'message', onMessage);
-          parentWin.postMessage('{"a": "ready"}', o);
-
-          // if window is unloaded and the client hasn't called cb, it's an error
-          addListener(window, 'unload', function() {
-            if (cb) parentWin.postMessage(JSON.stringify({
-              a: 'error',
-              d: 'client closed window'
-            }), o);
-            cb = undefined;
-            // explicitly close the window, in case the client is trying to reload or nav
-            try { window.close(); } catch (e) { };
-          });
-        }
       };
     } else {
       return {
@@ -926,7 +829,6 @@
       };
     }
   })();
-
 
   var BrowserSupport = (function() {
     var win = window,
@@ -1063,21 +965,20 @@
           return;
         }
 
-        w = WinChan.open(
-          ipServer + '/sign_in',
-          ipServer + '/relay',
-          windowOpenOpts,
-          {
+        w = WinChan.open({
+          url: ipServer + '/sign_in',
+          relay_url: ipServer + '/relay',
+          window_features: windowOpenOpts,
+          params: {
             method: "get",
             params: options
-          },
-          function(err, r) {
-            // clear the window handle
-            w = undefined;
-            // ignore err!
-            callback(err ? null : (r ? r : null));
           }
-        );
+        }, function(err, r) {
+          // clear the window handle
+          w = undefined;
+          // ignore err!
+          callback(err ? null : (r ? r : null));
+        });
       }
     };
 
