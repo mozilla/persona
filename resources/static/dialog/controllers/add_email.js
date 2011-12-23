@@ -65,7 +65,7 @@ BrowserID.Modules.AddEmail = (function() {
     start: function(options) {
       var self=this;
 
-      self.renderDialog("addemail");
+      self.renderDialog("add_email");
 
       self.bind("#cancelNewEmail", "click", cancelEvent(cancelAddEmail));
       AddEmail.sc.start.call(self, options);

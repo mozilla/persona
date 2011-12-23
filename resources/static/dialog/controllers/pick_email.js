@@ -107,7 +107,7 @@ BrowserID.Modules.PickEmail = (function() {
 
       self.allowPersistent = options.allow_persistent;
       dom.addClass("body", "pickemail");
-      self.renderDialog("pickemail", {
+      self.renderDialog("pick_email", {
         identities: user.getStoredEmailKeypairs(),
         // XXX ideal is to get rid of self and have a User function
         // that takes care of getting email addresses AND the last used email

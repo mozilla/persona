@@ -76,7 +76,7 @@
     createController({
       ready: function() {
         equal(testHelpers.errorVisible(), false, "Error is not yet visible");
-        controller.doError("invalidRequiredEmail", {email: "email"});
+        controller.doError("invalid_required_email", {email: "email"});
         equal($("#invalidRequiredEmail").length, 1, "default error screen is shown");
         ok(testHelpers.errorVisible(), "Error is visible");
         start();
@@ -122,6 +122,22 @@
         }
 
         equal(error, "module not registered for verify_primary_user", "correct service started");
+        start();
+      }
+    });
+  });
+
+  asyncTest("doPrimaryUserVerified tries to start the primary_user_verified service", function() {
+    createController({
+      ready: function() {
+        var error;
+        try {
+          controller.doPrimaryUserVerified();
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for primary_user_verified", "correct service started");
         start();
       }
     });

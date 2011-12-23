@@ -143,7 +143,7 @@ BrowserID.Modules.RequiredEmail = (function() {
       }
 
       function showTemplate(requireSignin, showPassword) {
-        self.renderDialog("requiredemail", {
+        self.renderDialog("required_email", {
           email: email,
           signin: requireSignin,
           showPassword: showPassword

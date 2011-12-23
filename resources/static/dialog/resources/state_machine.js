@@ -97,7 +97,7 @@
       var email = self.requiredEmail = info.requiredEmail;
 
       if(typeof(email) !== "undefined" && !(bid.verifyEmail(email))) {
-        gotoState("doError", "invalidRequiredEmail", { email: email });
+        gotoState("doError", "invalid_required_email", { email: email });
       }
       else {
         gotoState("doCheckAuth");
@@ -147,6 +147,10 @@
       gotoState("doEmailConfirmed");
     });
 
+    subscribe("primary_user", function(msg, info) {
+      gotoState("doProvisionPrimaryUser", info);
+    });
+
     subscribe("primary_user_provisioned", function(msg, info) {
       mediator.publish("email_chosen", info);
     });
@@ -160,10 +164,6 @@
       // the IdP for verification.
       moduleManager.stopAll();
       self.success = true;
-    });
-
-    subscribe("primary_user", function(msg, info) {
-      gotoState("doProvisionPrimaryUser", info);
     });
 
     subscribe("authenticate_with_required_email", function(msg, info) {

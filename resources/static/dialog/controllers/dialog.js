@@ -161,6 +161,7 @@ BrowserID.Modules.Dialog = (function() {
         self.bind(win, "unload", onWindowUnload);
         if(hash.indexOf("#EMAIL=") === 0) {
           var email = hash.replace(/#EMAIL=/, "");
+          self.renderDialog("primary_user_verified", { email: email });
           self.close("primary_user", { email: email });
         }
         else {

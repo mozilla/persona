@@ -58,7 +58,7 @@ BrowserID.Modules.ForgotPassword = (function() {
     start: function(options) {
       var self=this;
       self.email = options.email;
-      self.renderDialog("forgotpassword", {
+      self.renderDialog("forgot_password", {
         email: options.email || "",
         requiredEmail: options.requiredEmail
       });

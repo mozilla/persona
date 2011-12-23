@@ -55,6 +55,7 @@ BrowserID.Modules.ProvisionPrimaryUser = (function() {
           // XXX Is this status possible?
           break;
         case "primary.verified":
+          self.renderDialog("primary_user_verified", { email: email });
           self.close("primary_user_provisioned", { email: email } );
           complete(true);
           break;
@@ -100,6 +101,7 @@ BrowserID.Modules.ProvisionPrimaryUser = (function() {
       else {
         provisionPrimaryUser.call(self, email, auth, prov);
       }
+
 
       ProvisionPrimaryUser.sc.start.call(self, options);
     }

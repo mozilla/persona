@@ -69,7 +69,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email = data.email;
       auth_url = data.auth_url;
 
-      self.renderDialog("verifyWithPrimary", data);
+      self.renderDialog("verify_with_primary", data);
 
       sc.start.call(self, data);
     },

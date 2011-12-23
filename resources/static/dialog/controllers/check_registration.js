@@ -45,7 +45,7 @@ BrowserID.Modules.CheckRegistration = (function() {
   var CheckRegistration = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
-      self.renderWait("confirmemail", {
+      self.renderWait("confirm_email", {
           email: options.email
       });
       self.email = options.email;
