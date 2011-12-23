@@ -147,23 +147,23 @@
       gotoState("doEmailConfirmed");
     });
 
-    subscribe("provision_primary_user", function(msg, info) {
-      gotoState("doProvisionPrimaryUser", info);
+    subscribe("primary_user_provisioned", function(msg, info) {
+      mediator.publish("email_chosen", info);
     });
 
-    subscribe("primary_user_verified", function(msg, info) {
-      mediator.publish("assertion_generated", info);
-    });
-
-    subscribe("primary_verify_user", function(msg, info) {
+    subscribe("primary_user_unauthenticated", function(msg, info) {
       gotoState("doVerifyPrimaryUser", info);
     });
 
-    subscribe("primary_verifying_user", function(msg, info) {
+    subscribe("primary_user_authenticating", function(msg, info) {
       // Keep the dialog from automatically closing when the user browses to
       // the IdP for verification.
       moduleManager.stopAll();
       self.success = true;
+    });
+
+    subscribe("primary_user", function(msg, info) {
+      gotoState("doProvisionPrimaryUser", info);
     });
 
     subscribe("authenticate_with_required_email", function(msg, info) {

@@ -161,7 +161,7 @@ BrowserID.Modules.Dialog = (function() {
         self.bind(win, "unload", onWindowUnload);
         if(hash.indexOf("#EMAIL=") === 0) {
           var email = hash.replace(/#EMAIL=/, "");
-          self.close("provision_primary_user", { email: email });
+          self.close("primary_user", { email: email });
         }
         else {
           self.publish("start", params);

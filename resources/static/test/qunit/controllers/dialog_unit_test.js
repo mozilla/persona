@@ -41,6 +41,7 @@
       channel = bid.Channel,
       network = bid.Network,
       mediator = bid.Mediator,
+      testHelpers = bid.TestHelpers,
       xhr = bid.Mocks.xhr,
       controller,
       el,
@@ -91,13 +92,13 @@
     setup: function() {
       winMock = new WinMock();
       reset();
-      bid.TestHelpers.setup();
+      testHelpers.setup();
     },
 
     teardown: function() {
       controller.destroy();
       reset();
-      bid.TestHelpers.teardown();
+      testHelpers.teardown();
     }
   });
 
@@ -166,11 +167,18 @@
 
     createController({
       ready: function() {
-        // XXX do a check here!
-        mediator.subscribe("email_chosen", function(msg, info) {
+        mediator.subscribe("primary_user", function(msg, info) {
           equal(info.email, "testuser@testuser.com", "email_chosen with correct email");
+          start();
         });
-        start();
+
+        try {
+          controller.get(testHelpers.testOrigin, {}, function() {}, function() {});
+        }
+        catch(e) {
+          // do nothing, an exception will be thrown because no modules are
+          // registered for the any services.
+        }
       }
     });
   });

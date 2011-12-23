@@ -42,28 +42,26 @@ BrowserID.Modules.ProvisionPrimaryUser = (function() {
       user = bid.User,
       errors = bid.Errors;
 
-  function provisionPrimaryUser(email, info, oncomplete) {
+  function provisionPrimaryUser(email, auth, prov, oncomplete) {
     var self=this;
 
     function complete(status) {
       oncomplete && oncomplete(status);
     }
 
-    localStorage.IdPInfo = JSON.stringify(info);
-
-    user.provisionPrimaryUser(email, info, function(status, status_info) {
+    user.provisionPrimaryUser(email, {auth: auth, prov: prov}, function(status, status_info) {
       switch(status) {
         case "primary.already_added":
           // XXX Is this status possible?
           break;
         case "primary.verified":
-          self.close("email_chosen", { email: email } );
+          self.close("primary_user_provisioned", { email: email } );
           complete(true);
           break;
         case "primary.verify":
-          self.close("primary_verify_user", {
+          self.close("primary_user_unauthenticated", {
             email: email,
-            auth_url: info.auth
+            auth_url: auth
           });
           complete(true);
           break;
@@ -82,18 +80,26 @@ BrowserID.Modules.ProvisionPrimaryUser = (function() {
 
       var self = this,
           email = options.email,
-          info = options.info;
+          auth = options.auth,
+          prov = options.prov;
 
-      if(!(info && info.auth)) {
-        info = JSON.parse(localStorage.IdPInfo);
-        localStorage.removeItem("IdPInfo");
+      if(!email) {
+        throw "missing config option: email";
       }
 
-      if(!(info.auth && info.prov)) {
-        throw "cannot provision a primary user without an auth and prov URLs";
+      if(!(auth && prov)) {
+        user.addressInfo(email, function(status) {
+          if(status.type === "primary") {
+            provisionPrimaryUser.call(self, email, status.auth, status.prov);
+          }
+          else {
+            self.renderError("error", { action: errors.provisioningBadPrimary });
+          }
+        }, self.getErrorDialog(errors.isEmailRegistered));
       }
-
-      provisionPrimaryUser.call(self, email, info);
+      else {
+        provisionPrimaryUser.call(self, email, auth, prov);
+      }
 
       ProvisionPrimaryUser.sc.start.call(self, options);
     }

@@ -40,78 +40,28 @@
   var bid = BrowserID,
       mediator = bid.Mediator,
       machine,
-      controllerMock;
+      actions;
 
-  var ControllerMock = function() {}
-  ControllerMock.prototype = {
-    doOffline: function() {
-      this.offline = true;
-    },
-
-    doConfirmUser: function(email) {
-      this.email = email;
-    },
-
-    doEmailConfirmed: function() {
-      this.emailConfirmed = true;
-    },
-
-    doSyncThenPickEmail: function() {
-      // XXX rename syncEmails to something else, or have pickEmail do this?
-      this.emailsSynced = true;
-    },
-
-    doPickEmail: function() {
-      this.pickingEmail = true;
-    },
-
-    doForgotPassword: function(info) {
-      this.email = info.email;
-      this.requiredEmail = info.requiredEmail;
-    },
-
-    doAssertionGenerated: function(assertion) {
-      this.assertion = assertion;
-    },
-
-    doAddEmail: function() {
-      this.requestAddEmail = true;
-    },
-
-    doConfirmEmail: function(email) {
-      this.email = email;
-    },
-
-    doNotMe: function() {
-      this.notMe = true;
-    },
-
-    doAuthenticate: function(info) {
-      // XXX Get rid of info and pass email directly
-      this.email = info.email;
-    },
-
-    doCheckAuth: function() {
-      this.checkingAuth = true;
-    },
-
-    doCancel: function() {
-      this.cancelled = true;
-    },
-
-    doError: function() {
-      this.error = true;
-    },
-
-    doVerifyPrimaryUser: function() {
-      this.verifyPrimaryUser = true;
+  var ActionsMock = function() {
+    this.called = {};
+    this.info = {};
+  }
+  ActionsMock.prototype = {};
+  for(var key in bid.Modules.Actions.prototype) {
+    if(bid.Modules.Actions.prototype.hasOwnProperty(key)) {
+      ActionsMock.prototype[key] = (function(key) {
+        return function(info) {
+          this.called[key] = true;
+          this.info[key] = info;
+        };
+      }(key));
     }
-  };
+  }
 
   function createMachine() {
     machine = bid.StateMachine.create();
-    controllerMock = new ControllerMock();
-    machine.start({controller: controllerMock});
+    actions = new ActionsMock();
+    machine.start({controller: actions});
   }
 
   module("resources/state_machine", {
@@ -139,7 +89,7 @@
   test("offline does offline", function() {
     mediator.publish("offline");
 
-    equal(controllerMock.offline, true, "controller is offline");
+    equal(actions.called.doOffline, true, "controller is offline");
   });
 
   test("user_staged", function() {
@@ -148,31 +98,41 @@
       email: "testuser@testuser.com"
     });
 
-    equal(controllerMock.email, "testuser@testuser.com", "waiting for email confirmation for testuser@testuser.com");
+    equal(actions.info.doConfirmUser, "testuser@testuser.com", "waiting for email confirmation for testuser@testuser.com");
   });
 
   test("user_confirmed", function() {
     mediator.publish("user_confirmed");
 
-    ok(controllerMock.emailConfirmed, "user was confirmed");
+    ok(actions.called.doEmailConfirmed, "user was confirmed");
   });
 
-  // XXX make these and the messages for secondary match up so there is consistency.
-  test("primary_user_verified calls doAssertionGenerated", function() {
-    mediator.publish("primary_user_verified", { email: "testuser@testuser.com", assertion: "assertion" });
-
-    ok(controllerMock.assertion, "doAssertionGenerated called");
+  test("primary_user_provisioned calls doEmailChosen", function() {
+    mediator.publish("primary_user_provisioned", { email: "testuser@testuser.com" });
+    ok(actions.called.doEmailChosen, "doEmailChosen called");
   });
 
-  test("primary_verify_user calls doVerifyPrimaryUser", function() {
-    mediator.publish("primary_verify_user");
-    ok(controllerMock.verifyPrimaryUser, "doVerifyPrimaryUser called");
+  test("primary_user_unauthenticated calls doVerifyPrimaryUser", function() {
+    mediator.publish("primary_user_unauthenticated");
+    ok(actions.called.doVerifyPrimaryUser, "doVerifyPrimaryUser called");
+  });
+
+  test("primary_user_authenticating stops all modules", function() {
+    mediator.publish("primary_user_authenticating");
+
+    equal(machine.success, true, "primary_user_authenticating causes module to shut down");
+  });
+
+  test("primary_user calls doProvisionPrimaryUser", function() {
+    mediator.publish("primary_user", { email: "testuser@testuser.com", assertion: "assertion" });
+
+    ok(actions.called.doProvisionPrimaryUser, "doProvisionPrimaryUser called");
   });
 
   test("authenticated", function() {
     mediator.publish("authenticated");
 
-    ok(controllerMock.emailsSynced, "emails have been synced");
+    ok(actions.called.doSyncThenPickEmail, "doSyncThenPickEmail has been called");
   });
 
   test("forgot_password", function() {
@@ -180,8 +140,8 @@
       email: "testuser@testuser.com",
       requiredEmail: true
     });
-    equal(controllerMock.email, "testuser@testuser.com", "correct email passed");
-    equal(controllerMock.requiredEmail, true, "correct requiredEmail passed");
+    equal(actions.info.doForgotPassword.email, "testuser@testuser.com", "correct email passed");
+    equal(actions.info.doForgotPassword.requiredEmail, true, "correct requiredEmail passed");
   });
 
   test("reset_password", function() {
@@ -189,7 +149,7 @@
     mediator.publish("reset_password", {
       email: "testuser@testuser.com"
     });
-    equal(controllerMock.email, "testuser@testuser.com", "reset password with the correct email");
+    equal(actions.info.doConfirmUser, "testuser@testuser.com", "reset password with the correct email");
   });
 
   test("assertion_generated with null assertion", function() {
@@ -197,7 +157,7 @@
       assertion: null
     });
 
-    equal(controllerMock.pickingEmail, true, "now picking email because of null assertion");
+    equal(actions.called.doPickEmail, true, "now picking email because of null assertion");
   });
 
   test("assertion_generated with assertion", function() {
@@ -205,48 +165,36 @@
       assertion: "assertion"
     });
 
-    equal(controllerMock.assertion, "assertion", "assertion generated with good assertion");
+    equal(actions.info.doAssertionGenerated, "assertion", "assertion generated with good assertion");
   });
 
   test("add_email", function() {
     // XXX rename add_email to request_add_email
     mediator.publish("add_email");
 
-    ok(controllerMock.requestAddEmail, "user wants to add an email");
+    ok(actions.called.doAddEmail, "user wants to add an email");
   });
 
   test("email_confirmed", function() {
     mediator.publish("email_confirmed");
 
-    ok(controllerMock.emailConfirmed, "user has confirmed the email");
+    ok(actions.called.doEmailConfirmed, "user has confirmed the email");
   });
 
-  test("cancel_state", function() {
+  test("cancel_state goes back to previous state if available", function() {
     mediator.publish("pick_email");
     mediator.publish("add_email");
 
-    controllerMock.pickingEmail = false;
+    actions.called.doPickEmail = false;
     mediator.publish("cancel_state");
 
-    ok(controllerMock.pickingEmail, "user is picking an email");
-  });
-
-  test("cancel_state", function() {
-    mediator.publish("add_email");
-    mediator.publish("email_staged", {
-      email: "testuser@testuser.com"
-    });
-
-    controllerMock.requestAddEmail = false;
-    mediator.publish("cancel_state");
-
-    ok(controllerMock.requestAddEmail, "Back to trying to add an email after cancelling stage");
+    ok(actions.called.doPickEmail, "user is picking an email");
   });
 
   test("notme", function() {
     mediator.publish("notme");
 
-    ok(controllerMock.notMe, "notMe has been called");
+    ok(actions.called.doNotMe, "doNotMe has been called");
   });
 
   test("authenticate", function() {
@@ -254,13 +202,13 @@
       email: "testuser@testuser.com"
     });
 
-    equal(controllerMock.email, "testuser@testuser.com", "authenticate with testuser@testuser.com");
+    equal(actions.info.doAuthenticate.email, "testuser@testuser.com", "authenticate with testuser@testuser.com");
   });
 
   test("start with no required email address should go straight to checking auth", function() {
     mediator.publish("start");
 
-    equal(controllerMock.checkingAuth, true, "checking auth on start");
+    equal(actions.called.doCheckAuth, true, "checking auth on start");
   });
 
   test("start with invalid requiredEmail prints error screen", function() {
@@ -268,7 +216,7 @@
       requiredEmail: "bademail"
     });
 
-    equal(controllerMock.error, true, "error screen is shown");
+    equal(actions.called.doError, true, "error screen is shown");
   });
 
   test("start with empty requiredEmail prints error screen", function() {
@@ -276,7 +224,7 @@
       requiredEmail: ""
     });
 
-    equal(controllerMock.error, true, "error screen is shown");
+    equal(actions.called.doError, true, "error screen is shown");
   });
 
   test("start with valid requiredEmail goes to auth", function() {
@@ -284,13 +232,13 @@
       requiredEmail: "testuser@testuser.com"
     });
 
-    equal(controllerMock.checkingAuth, true, "checking auth on start");
+    equal(actions.called.doCheckAuth, true, "checking auth on start");
   });
 
   test("cancel", function() {
     mediator.publish("cancel");
 
-    equal(controllerMock.cancelled, true, "cancelled everything");
+    equal(actions.called.doCancel, true, "cancelled everything");
   });
 
 }());

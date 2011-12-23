@@ -79,6 +79,8 @@
       user.reset();
     },
 
+    testOrigin: testOrigin,
+
     register: register,
     errorVisible: function() {
       return screens.error.visible;

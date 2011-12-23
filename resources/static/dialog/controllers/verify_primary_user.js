@@ -45,7 +45,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       helpers = bid.Helpers;
 
   function verify(callback) {
-    this.publish("primary_verifying_user");
+    this.publish("primary_user_authenticating");
 
     // replace any hashes that may be there already.
     var returnTo = win.document.location.href.replace(/#.*$/, "");

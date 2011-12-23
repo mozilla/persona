@@ -62,10 +62,7 @@ BrowserID.Modules.Authenticate = (function() {
 
     user.addressInfo(email, function(info) {
       if(info.type === "primary") {
-        self.close("provision_primary_user", {
-          email: email,
-          info: info
-        });
+        self.close("primary_user", _.extend(info, { email: email }));
       }
       else {
         if(info.known) {

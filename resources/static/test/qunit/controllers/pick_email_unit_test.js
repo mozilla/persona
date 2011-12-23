@@ -38,18 +38,15 @@
   "use strict";
 
   var controller,
-      el = $("body"),
       bid = BrowserID,
       storage = bid.Storage,
-      user = bid.User,
-      testOrigin = "http://browserid.org",
+      testHelpers = bid.TestHelpers,
+      testOrigin = testHelpers.testOrigin,
       register = bid.TestHelpers.register;
 
   module("controllers/pickemail_controller", {
     setup: function() {
-      el = $("#controller_head");
-      bid.TestHelpers.setup();
-      user.setOrigin(testOrigin);
+      testHelpers.setup();
     },
 
     teardown: function() {
@@ -61,7 +58,7 @@
           // could already be destroyed from the close
         }
       }
-      bid.TestHelpers.setup();
+      testHelpers.setup();
     }
   });
 
@@ -146,7 +143,6 @@
       start();
     });
     controller.signIn();
-
   });
 
   asyncTest("signIn saves email, but not remember status when allow_persistent set to false", function() {
@@ -166,7 +162,6 @@
       start();
     });
     controller.signIn();
-
   });
 
   asyncTest("addEmail triggers an 'add_email' message", function() {
@@ -177,8 +172,6 @@
       start();
     });
     controller.addEmail();
-
-
   });
 
 }());

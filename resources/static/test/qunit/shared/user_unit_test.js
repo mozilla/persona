@@ -243,6 +243,11 @@ var jwcert = require("./jwcert");
     );
   });
 
+  asyncTest("createUserWithInfo", function() {
+    ok(false, "write some tests for this");
+    start();
+  });
+
   asyncTest("waitForUserValidation with `complete` response", function() {
     storage.setStagedOnBehalfOf(testOrigin);
 

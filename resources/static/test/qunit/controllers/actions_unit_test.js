@@ -95,7 +95,23 @@
     });
   });
 
-  asyncTest("doVerifyPrimaryUser does something", function() {
+  asyncTest("doProvisionPrimaryUser tries to start the provision_primary_user service", function() {
+    createController({
+      ready: function() {
+        var error;
+        try {
+          controller.doProvisionPrimaryUser({email: "testuser@testuser.com"});
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for provision_primary_user", "correct service started");
+        start();
+      }
+    });
+  });
+
+  asyncTest("doVerifyPrimaryUser tries to start the verify_primary_user service", function() {
     createController({
       ready: function() {
         var error;
@@ -111,7 +127,7 @@
     });
   });
 
-  asyncTest("doEmailChosen does something", function() {
+  asyncTest("doEmailChosen tries to start the email_chosen service", function() {
     createController({
       ready: function() {
         var error;

@@ -92,6 +92,11 @@ BrowserID.Errors = (function(){
       message: "We had trouble communicating with your email provider, please try again!"
     },
 
+    provisioningBadPrimary: {
+      title: "Provisioning Unsupported Identity Provider",
+      message: "Unfortunately, the email address provided cannot act as a Primary Identity Provider"
+    },
+
     registration: {
       title: "Registration Failed"
     },

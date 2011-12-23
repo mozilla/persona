@@ -71,7 +71,7 @@
 
   asyncTest("submit opens a new tab with correct URL", function() {
     var messageTriggered = false;
-    mediator.subscribe("primary_verifying_user", function() {
+    mediator.subscribe("primary_user_authenticating", function() {
       messageTriggered = true;
     });
 
@@ -81,7 +81,7 @@
 
     controller.submit(function() {
       equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com&return_to=sign_in%23EMAIL%3Dunregistered%40testuser.com");
-      equal(messageTriggered, true, "primary_verifying_user triggered");
+      equal(messageTriggered, true, "primary_user_authenticating triggered");
       start();
     });
   });
