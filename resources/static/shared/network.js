@@ -132,6 +132,11 @@ BrowserID.Network = (function() {
           // XXX remove the ABC123
           code_version = result.code_version || "ABC123";
 
+          // seed the PRNG
+          // FIXME: properly abstract this out, probably by exposing a jwcrypto
+          // interface for randomness
+          require("./libs/all").sjcl.random.addEntropy(result.random_seed);
+
           _.defer(cb);
         },
         error: deferResponse(xhrError(onFailure, {
