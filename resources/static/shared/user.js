@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global _: true, BrowserID: true */
+/*global _: true, BrowserID: true, console: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -152,7 +152,7 @@ BrowserID.User = (function() {
             onFailure(status);
         }
       }, onFailure);
-    };
+    }
 
     poll();
   }
@@ -164,41 +164,9 @@ BrowserID.User = (function() {
     }
   }
 
-  /**
-   * Certify an identity with the server, persist it to storage if the server
-   * says the identity is good
-   * @method certifyEmailKeypair
-   */
-  function certifyEmailKeypair(email, keypair, onSuccess, onFailure) {
-    network.certKey(email, keypair.publicKey, function(cert) {
-      // emails that *we* certify are always secondary emails
-      persistEmailKeypair(email, "secondary", keypair, cert, onSuccess, onFailure);
-    }, onFailure);
-  }
-
   function checkEmailType(type) {
     if (type !== 'secondary' && type !== 'primary')
       throw "invalid email type (should be 'secondary' or 'primary'): " + type;
-  }
-
-  /**
-   * Persist an email address without a keypair
-   * @method persistEmail
-   * @param {string} email - Email address to persist.
-   * @param {string} type - Is the email a 'primary' or a 'secondary' address?
-   * @param {function} [onSuccess] - Called on successful completion.
-   * @param {function} [onFailure] - Called on error.
-   */
-  function persistEmail(email, type, onSuccess, onFailure) {
-    checkEmailType(type);
-    storage.addEmail(email, {
-      created: new Date(),
-      type: type
-    });
-
-    if (onSuccess) {
-      onSuccess();
-    }
   }
 
   /**
@@ -206,10 +174,10 @@ BrowserID.User = (function() {
    * @method persistEmailKeypair
    * @param {string} email - Email address to persist.
    * @param {object} keypair - Key pair to save
-   * @param {function} [onSuccess] - Called on successful completion.
+   * @param {function} [onComplete] - Called on successful completion.
    * @param {function} [onFailure] - Called on error.
    */
-  function persistEmailKeypair(email, type, keypair, cert, onSuccess, onFailure) {
+  function persistEmailKeypair(email, type, keypair, cert, onComplete, onFailure) {
     checkEmailType(type);
     var now = new Date();
     var email_obj = storage.getEmails()[email] || {
@@ -225,10 +193,37 @@ BrowserID.User = (function() {
     });
 
     storage.addEmail(email, email_obj);
+    if(onComplete) onComplete(true);
+  }
 
-    if (onSuccess) {
-      onSuccess();
-    }
+  /**
+   * Certify an identity with the server, persist it to storage if the server
+   * says the identity is good
+   * @method certifyEmailKeypair
+   */
+  function certifyEmailKeypair(email, keypair, onComplete, onFailure) {
+    network.certKey(email, keypair.publicKey, function(cert) {
+      // emails that *we* certify are always secondary emails
+      persistEmailKeypair(email, "secondary", keypair, cert, onComplete, onFailure);
+    }, onFailure);
+  }
+
+  /**
+   * Persist an email address without a keypair
+   * @method persistEmail
+   * @param {string} email - Email address to persist.
+   * @param {string} type - Is the email a 'primary' or a 'secondary' address?
+   * @param {function} [onComplete] - Called on successful completion.
+   * @param {function} [onFailure] - Called on error.
+   */
+  function persistEmail(email, type, onComplete, onFailure) {
+    checkEmailType(type);
+    storage.addEmail(email, {
+      created: new Date(),
+      type: type
+    });
+
+    if(onComplete) onComplete(true);
   }
 
   User = {
@@ -360,17 +355,8 @@ BrowserID.User = (function() {
           User.getAssertion(email, "https://browserid.org", function(assertion) {
             if(assertion) {
               network.authenticateWithAssertion(email, assertion, function(status) {
-                if(status) {
-                  User.getAssertion(email, User.getOrigin(), function(assertion) {
-                    onComplete("primary.verified", {
-                      email: email,
-                      assertion: assertion
-                    });
-                  }, onFailure);
-                }
-                else {
-                  onComplete("primary.could_not_add");
-                }
+                var message = status ? "primary.verified" : "primary.could_not_add";
+                onComplete(message);
               }, onFailure);
             }
             else {
@@ -761,10 +747,11 @@ BrowserID.User = (function() {
      * @method syncEmailKeypair
      * @param {string} email - Email address.
      * @param {string} [issuer] - Issuer of keypair.
-     * @param {function} [onSuccess] - Called on successful completion.
+     * @param {function} [onComplete] - Called on completion.  Called with
+     * status parameter - true if successful, false otw.
      * @param {function} [onFailure] - Called on error.
      */
-    syncEmailKeypair: function(email, onSuccess, onFailure) {
+    syncEmailKeypair: function(email, onComplete, onFailure) {
       prepareDeps();
       // FIXME: parameterize!
       var keysize = 256;
@@ -773,7 +760,7 @@ BrowserID.User = (function() {
         keysize = 128;
       var keypair = jwk.KeyPair.generate("DS", keysize);
       setTimeout(function() {
-        certifyEmailKeypair(email, keypair, onSuccess, onFailure);
+        certifyEmailKeypair(email, keypair, onComplete, onFailure);
       }, 0);
     },
 

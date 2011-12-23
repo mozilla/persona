@@ -1,5 +1,5 @@
-/*jshint browsers:true, forin: true, laxbreak: true */
-/*global asyncTest: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
+/*global _: true, BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,56 +34,31 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-(function() {
+BrowserID.Modules.EmailChosen = (function() {
   "use strict";
 
   var bid = BrowserID,
-      controller,
-      el,
-      testHelpers = bid.TestHelpers,
-      WindowMock = bid.Mocks.WindowMock,
-      win,
-      mediator = bid.Mediator;
+      dialogHelpers = bid.Helpers.Dialog,
+      sc;
 
-  function createController(config) {
-    controller = BrowserID.Modules.VerifyPrimaryUser.create();
-    controller.start(config);
-  }
+  var EmailChosen = bid.Modules.PageModule.extend({
+    start: function(options) {
+      var email = options.email,
+          self=this;
 
-  module("controllers/verify_primary_user", {
-    setup: function() {
-      testHelpers.setup();
-      win = new WindowMock();
-      createController({
-        window: win,
-        email: "unregistered@testuser.com",
-        auth_url: "http://testuser.com/sign_in"
-      });
-    },
-
-    teardown: function() {
-      if(controller) {
-        controller.destroy();
+      if(!email) {
+        throw "email required";
       }
-      testHelpers.teardown();
+
+      dialogHelpers.getAssertion.call(self, email, options.ready);
+
+      sc.start.call(self, options);
     }
   });
 
-  asyncTest("submit opens a new tab with correct URL", function() {
-    var messageTriggered = false;
-    mediator.subscribe("primary_verifying_user", function() {
-      messageTriggered = true;
-    });
+  sc = EmailChosen.sc;
 
-    // Also checking to make sure the NATIVE is stripped out.
-    win.document.location.href = "sign_in";
-    win.document.location.hash = "#NATIVE";
+  return EmailChosen;
 
-    controller.submit(function() {
-      equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com&return_to=sign_in%23EMAIL%3Dunregistered%40testuser.com");
-      equal(messageTriggered, true, "primary_verifying_user triggered");
-      start();
-    });
-  });
 }());
 

@@ -54,39 +54,6 @@ BrowserID.Modules.Authenticate = (function() {
     return helpers.getAndValidateEmail("#email");
   }
 
-  function provisionPrimaryUser(email, info, oncomplete) {
-    var self=this;
-
-    function complete(status) {
-      oncomplete && oncomplete(status);
-    }
-
-    user.provisionPrimaryUser(email, info, function(status, status_info) {
-      switch(status) {
-        case "primary.already_added":
-          // XXX Is this status possible?
-          break;
-        case "primary.verified":
-          self.close("primary_user_verified", status_info);
-          complete(true);
-          break;
-        case "primary.verify":
-          self.close("primary_verify_user", {
-            email: email,
-            auth_url: info.auth
-          });
-          complete(true);
-          break;
-        case "primary.could_not_add":
-          // XXX Can this happen?
-          break;
-        default:
-          break;
-      }
-    }, self.getErrorDialog(errors.provisioningPrimary));
-
-  }
-
   function checkEmail() {
     var email = getEmail(),
         self = this;
@@ -95,7 +62,10 @@ BrowserID.Modules.Authenticate = (function() {
 
     user.addressInfo(email, function(info) {
       if(info.type === "primary") {
-        provisionPrimaryUser.call(self, email, info);
+        self.close("provision_primary_user", {
+          email: email,
+          info: info
+        });
       }
       else {
         if(info.known) {
@@ -113,7 +83,7 @@ BrowserID.Modules.Authenticate = (function() {
         email = getEmail();
 
     if (email) {
-      dialogHelpers.createUser.call(self, email, info, callback);
+      dialogHelpers.createUser.call(self, email, callback);
     } else {
       callback && callback();
     }

@@ -139,10 +139,10 @@
 
     var assertion;
 
-    register("assertion_generated", function(msg, info) {
+    register("email_chosen", function(msg, info) {
       equal(storage.site.get(testOrigin, "email"), "testuser2@testuser.com", "email saved correctly");
       equal(storage.site.get(testOrigin, "remember"), true, "remember saved correctly");
-      ok(info.assertion, "assertion_generated message triggered with assertion");
+      ok(info.email, "email_chosen message triggered with email");
       start();
     });
     controller.signIn();
@@ -159,7 +159,7 @@
     $("input[type=radio]").eq(1).trigger("click");
     $("#remember").attr("checked", true);
 
-    register("assertion_generated", function(msg, info) {
+    register("email_chosen", function(msg, info) {
       equal(storage.site.get(testOrigin, "email"), "testuser2@testuser.com", "email saved correctly");
       equal(storage.site.get(testOrigin, "remember"), false, "remember saved correctly");
 

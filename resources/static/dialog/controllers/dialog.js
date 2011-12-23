@@ -74,7 +74,8 @@ BrowserID.Modules.Dialog = (function() {
   }
 
   function startChannel() {
-    var self = this;
+    var self = this,
+        hash = win.location.hash;
 
     // first, we see if there is a local channel
     if (win.navigator.id && win.navigator.id.channel) {
@@ -83,7 +84,7 @@ BrowserID.Modules.Dialog = (function() {
     }
 
     // next, we see if the caller intends to call native APIs
-    if (win.location.hash == "#NATIVE" || win.location.hash == "#INTERNAL") {
+    if (hash == "#NATIVE" || hash == "#INTERNAL") {
       // don't do winchan, let it be.
       return;
     }
@@ -129,9 +130,7 @@ BrowserID.Modules.Dialog = (function() {
       win = options.window || window;
 
       sc.start.call(self, options);
-
       startChannel.call(self);
-
       options.ready && _.defer(options.ready);
     },
 
@@ -145,7 +144,8 @@ BrowserID.Modules.Dialog = (function() {
     },
 
     get: function(origin_url, params, success, error) {
-      var self=this;
+      var self=this,
+          hash = win.location.hash;
 
       setOrigin(origin_url);
 
@@ -159,8 +159,13 @@ BrowserID.Modules.Dialog = (function() {
 
         // XXX Perhaps put this into the state machine.
         self.bind(win, "unload", onWindowUnload);
-
-        self.publish("start", params);
+        if(hash.indexOf("#EMAIL=") === 0) {
+          var email = hash.replace(/#EMAIL=/, "");
+          self.close("provision_primary_user", { email: email });
+        }
+        else {
+          self.publish("start", params);
+        }
       }
     }
 

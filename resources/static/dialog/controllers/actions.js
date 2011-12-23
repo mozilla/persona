@@ -51,8 +51,12 @@ BrowserID.Modules.Actions = (function() {
     if(runningService) {
       serviceManager.stop(runningService);
     }
-    runningService = name;
-    return serviceManager.start(name, options);
+    var module = serviceManager.start(name, options);
+    if(module) {
+      runningService = name;
+    }
+
+    return module;
   }
 
   function startRegCheckService(email, verifier, message) {
@@ -77,9 +81,7 @@ BrowserID.Modules.Actions = (function() {
 
       sc.start.call(self, data);
 
-      if(data.ready) {
-        data.ready();
-      }
+      if(data.ready) _.defer(data.ready);
     },
 
     /**
@@ -101,7 +103,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doCancel: function() {
-      onsuccess && onsuccess(null);
+      if(onsuccess) onsuccess(null);
     },
 
     doConfirmUser: function(email) {
@@ -147,7 +149,7 @@ BrowserID.Modules.Actions = (function() {
       // calls window.close, which would trigger the onerror callback if we
       // tried this afterwards.
       onerror = null;
-      onsuccess && onsuccess(assertion);
+      if(onsuccess) onsuccess(assertion);
     },
 
     doNotMe: function() {
@@ -170,8 +172,16 @@ BrowserID.Modules.Actions = (function() {
       }, self.getErrorDialog(errors.checkAuthentication));
     },
 
+    doProvisionPrimaryUser: function(info) {
+      startService("provision_primary_user", info);
+    },
+
     doVerifyPrimaryUser: function(info) {
       startService("verify_primary_user", info);
+    },
+
+    doEmailChosen: function(info) {
+      startService("email_chosen", info);
     }
   });
 

@@ -95,17 +95,37 @@
     });
   });
 
-  /*
   asyncTest("doVerifyPrimaryUser does something", function() {
     createController({
       ready: function() {
-        controller.doVerifyPrimaryUser();
-        // XXX test something
+        var error;
+        try {
+          controller.doVerifyPrimaryUser();
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for verify_primary_user", "correct service started");
         start();
       }
     });
   });
-*/
+
+  asyncTest("doEmailChosen does something", function() {
+    createController({
+      ready: function() {
+        var error;
+        try {
+          controller.doEmailChosen({email: "testuser@testuser.com"});
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for email_chosen", "correct service started");
+        start();
+      }
+    });
+  });
 
 }());
 

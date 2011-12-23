@@ -37,15 +37,13 @@
 BrowserID.Modules.PickEmail = (function() {
   "use strict";
 
-  var ANIMATION_TIME = 250,
-      bid = BrowserID,
+  var bid = BrowserID,
       user = bid.User,
       errors = bid.Errors,
       storage = bid.Storage,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
-      dom = bid.DOM,
-      assertion;
+      dom = bid.DOM;
 
   function cancelEvent(event) {
     event && event.preventDefault();
@@ -96,7 +94,7 @@ BrowserID.Modules.PickEmail = (function() {
         storage.site.set(origin, "remember", $("#remember").is(":checked"));
       }
 
-      dialogHelpers.getAssertion.call(self, email);
+      self.close("email_chosen", { email: email });
     }
   }
 
@@ -137,10 +135,13 @@ BrowserID.Modules.PickEmail = (function() {
     stop: function() {
       PickEmail.sc.stop.call(this);
       dom.removeClass("body", "pickemail");
-    },
+    }
 
+    // BEGIN TESTING API
+    ,
     signIn: signIn,
     addEmail: addEmail
+    // END TESTING API
   });
 
   return PickEmail;

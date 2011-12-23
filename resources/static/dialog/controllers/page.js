@@ -75,7 +75,7 @@ BrowserID.Modules.PageModule = (function() {
       }
     },
 
-    start: function() {
+    start: function(options) {
       var self=this;
       self.bind("form", "submit", onSubmit);
       self.bind("#thisIsNotMe", "click", self.close.bind(self, "notme"));
@@ -164,7 +164,7 @@ BrowserID.Modules.PageModule = (function() {
         self.renderError("error", $.extend({
           action: action
         }, lowLevelInfo), onerror);
-      }
+      };
     }
   });
 

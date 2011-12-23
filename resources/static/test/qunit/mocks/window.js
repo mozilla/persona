@@ -38,7 +38,10 @@ BrowserID.Mocks.WindowMock = (function() {
   "use strict";
 
   function DocumentMock() {
-    this.location = document.location;
+    this.location = {
+      href: document.location.href,
+      hash: document.location.hash
+    };
   }
 
   function WindowMock() {

@@ -147,6 +147,10 @@
       gotoState("doEmailConfirmed");
     });
 
+    subscribe("provision_primary_user", function(msg, info) {
+      gotoState("doProvisionPrimaryUser", info);
+    });
+
     subscribe("primary_user_verified", function(msg, info) {
       mediator.publish("assertion_generated", info);
     });
@@ -171,6 +175,10 @@
         origin: self.hostname,
         allow_persistent: self.allowPersistent
       });
+    });
+
+    subscribe("email_chosen", function(msg, info) {
+      gotoState("doEmailChosen", info);
     });
 
     subscribe("notme", function() {

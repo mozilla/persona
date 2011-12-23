@@ -141,16 +141,6 @@
     });
   });
 
-  asyncTest("createUser with known secondary, user not staged", function() {
-    closeCB = badClose;
-
-    xhr.useResult("known_secondary");
-    dialogHelpers.createUser.call(controllerMock, "registered@testuser.com", function(staged) {
-      equal(staged, false, "user was not staged");
-      start();
-    });
-  });
-
   asyncTest("createUser with unknown secondary happy case, expect 'user_staged' message", function() {
     xhr.useResult("unknown_secondary");
     closeCB = expectedClose("user_staged", "email", "unregistered@testuser.com");
@@ -176,28 +166,6 @@
 
     xhr.useResult("ajaxError");
     dialogHelpers.createUser.call(controllerMock, "registered@testuser.com", testHelpers.unexpectedSuccess);
-  });
-
-  asyncTest("createUser with unknown primary, user verified - expect 'primary_user_verified' message", function() {
-    closeCB = expectedClose("primary_user_verified", "email", "unregistered@testuser.com");
-
-    xhr.useResult("primary");
-    provisioning.setStatus(provisioning.AUTHENTICATED);
-
-    dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", function(staged) {
-      equal(staged, true, "user was staged");
-      start();
-    });
-  });
-
-  asyncTest("createUser with unknown primary, user must verify with IdP - expect 'primary_verify_user' message", function() {
-    closeCB = expectedClose("primary_verify_user", "email", "unregistered@testuser.com");
-    xhr.useResult("primary");
-
-    dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", function(staged) {
-      equal(staged, true, "user was staged");
-      start();
-    });
   });
 
   asyncTest("addEmail happy case", function() {

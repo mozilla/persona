@@ -47,9 +47,12 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
   function verify(callback) {
     this.publish("primary_verifying_user");
 
+    // replace any hashes that may be there already.
+    var returnTo = win.document.location.href.replace(/#.*$/, "");
+
     var url = helpers.toURL(auth_url, {
       email: email,
-      return_to: win.document.location
+      return_to: returnTo + "#EMAIL="+email
     });
 
     win.document.location = url;

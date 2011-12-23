@@ -41,24 +41,20 @@
       controller,
       el,
       testHelpers = bid.TestHelpers,
-      WindowMock = bid.Mocks.WindowMock,
-      win,
-      mediator = bid.Mediator;
+      mediator = bid.Mediator,
+      user = bid.User;
 
-  function createController(config) {
-    controller = BrowserID.Modules.VerifyPrimaryUser.create();
+  function createController(config, complete) {
+    config = config || {};
+    config.ready = complete;
+
+    controller = BrowserID.Modules.EmailChosen.create();
     controller.start(config);
   }
 
-  module("controllers/verify_primary_user", {
+  module("controllers/email_chosen", {
     setup: function() {
       testHelpers.setup();
-      win = new WindowMock();
-      createController({
-        window: win,
-        email: "unregistered@testuser.com",
-        auth_url: "http://testuser.com/sign_in"
-      });
     },
 
     teardown: function() {
@@ -69,21 +65,14 @@
     }
   });
 
-  asyncTest("submit opens a new tab with correct URL", function() {
-    var messageTriggered = false;
-    mediator.subscribe("primary_verifying_user", function() {
-      messageTriggered = true;
-    });
-
-    // Also checking to make sure the NATIVE is stripped out.
-    win.document.location.href = "sign_in";
-    win.document.location.hash = "#NATIVE";
-
-    controller.submit(function() {
-      equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com&return_to=sign_in%23EMAIL%3Dunregistered%40testuser.com");
-      equal(messageTriggered, true, "primary_verifying_user triggered");
-      start();
+  asyncTest("start with email, expect an assertion to be generated", function() {
+    user.syncEmailKeypair("testuser@testuser.com", function() {
+      createController( { email: "testuser@testuser.com" }, function(assertion) {
+        ok(assertion, "assertion generated");
+        start();
+      });
     });
   });
+
 }());
 
