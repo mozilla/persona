@@ -87,7 +87,6 @@ BrowserID.Modules.Dialog = (function() {
     }      
 
     try {
-      //
       WinChan.onOpen(function(origin, args, cb) {
         self.get(origin, args.params, function(r) {
           cb(r);

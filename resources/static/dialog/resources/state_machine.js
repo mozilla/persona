@@ -167,7 +167,10 @@
     });
 
     subscribe("authenticated", function(msg, info) {
-      gotoState("doSyncThenPickEmail");
+      gotoState("doSyncThenPickEmail", {
+        origin: self.hostname,
+        allow_persistent: self.allowPersistent
+      });
     });
 
     subscribe("forgot_password", function(msg, info) {
