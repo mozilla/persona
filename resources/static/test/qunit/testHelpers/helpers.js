@@ -102,6 +102,11 @@
     unexpectedXHRFailure: function() {
       ok(false, "unexpected XHR failure");
       start();
+    },
+
+    testTooltipVisible: function() {
+      equal(tooltip.shown, true, "tooltip is visible");
     }
+
   };
 }());

@@ -34,31 +34,62 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-BrowserID.Modules.EmailChosen = (function() {
+BrowserID.Modules.SetPassword = (function() {
   "use strict";
 
   var bid = BrowserID,
-      dialogHelpers = bid.Helpers.Dialog,
+      user = bid.User,
+      errors = bid.Errors,
+      helpers = bid.Helpers,
+      dom = bid.DOM,
       sc;
 
-  var EmailChosen = bid.Modules.PageModule.extend({
-    start: function(options) {
-      var email = options.email,
-          self=this;
 
-      if(!email) {
-        throw "email required";
-      }
-
-      dialogHelpers.getAssertion.call(self, email, options.ready);
-
-      sc.start.call(self, options);
+  function setPassword(oncomplete) {
+    function complete(status) {
+      if(oncomplete) oncomplete(status);
     }
+
+    var self = this,
+        pass = dom.getInner("#password"),
+        vpass = dom.getInner("#vpassword"),
+        valid = bid.Validation.passwordAndValidationPassword(pass, vpass);
+
+    if(valid) {
+      user.setPassword(
+        pass,
+        function(status) {
+          self.publish("password_set");
+          complete(true);
+        },
+        self.getErrorDialog(errors.setPassword, complete)
+      );
+    }
+    else {
+      complete(false);
+    }
+  }
+
+  var Module = bid.Modules.PageModule.extend({
+    start: function(options) {
+      var self=this;
+      sc.start.call(self, options);
+
+      self.renderDialog("set_password", options);
+    },
+
+    submit: setPassword
+
+    // BEGIN TESTING API
+    ,
+
+    setPassword: setPassword
+    // END TESTING API
   });
 
-  sc = EmailChosen.sc;
+  sc = Module.sc;
 
-  return EmailChosen;
+  return Module;
 
 }());
 

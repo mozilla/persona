@@ -129,7 +129,9 @@ BrowserID.Modules.PageModule = (function() {
 
       bid.ErrorDisplay.start();
 
-      $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME, oncomplete);
+      $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME, function() {
+        if(oncomplete) oncomplete(false);
+      });
     },
 
     validate: function() {

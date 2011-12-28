@@ -387,15 +387,23 @@ BrowserID.Network = (function() {
     },
 
     /**
-     * Update the password of the current user. This is for a password reseT
-     * @method resetPassword
+     * Set the password of the current user.
+     * @method setPassword
      * @param {string} password - new password.
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    resetPassword: function(password, onComplete, onFailure) {
-      // XXX fill this in.
-      if (onComplete) onComplete();
+    setPassword: function(password, onComplete, onFailure) {
+      post({
+        url: "/wsapi/set_password",
+        data: {
+          password: password
+        },
+        success: function(status) {
+          if (onComplete) onComplete(status.success);
+        },
+        error: onFailure
+      });
     },
 
     /**

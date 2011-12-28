@@ -587,32 +587,20 @@
     failureCheck(network.requestPasswordReset, "address", "origin");
   });
 
-  asyncTest("resetPassword", function() {
-    network.resetPassword("password", function onSuccess() {
-      // XXX need a test here;
-      ok(true);
+  asyncTest("setPassword happy case expects true status", function() {
+    network.setPassword("password", function onComplete(status) {
+      equal(status, true, "correct status");
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
+    }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("resetPassword with XHR failure", function() {
+  asyncTest("setPassword with XHR failure", function() {
     xhr.useResult("ajaxError");
-/*
-    the body of this function is not yet written
-
-    network.resetPassword("password", function onSuccess() {
-      ok(false, "XHR failure should never call success");
-      start();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      start();
-    });
-*/
-    start();
+    network.setPassword(
+      "password",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
 
   asyncTest("serverTime", function() {

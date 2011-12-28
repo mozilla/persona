@@ -126,6 +126,10 @@ BrowserID.Errors = (function(){
       title: "Remove Email Address from Account"
     },
 
+    setPassword: {
+      title: "Setting Password"
+    },
+
     signIn: {
       title: "Signin Failed"
     },
