@@ -24,6 +24,7 @@ train-2011.12.28 (in progress):
   * now you can change your password: #771 #114
   * load generator improvements: #782
   * improved PRNG: #789 #735
+  * fix regressions in the above: #719 & #776
 
 train-2011.12.08:
   * improve performance of unit tests.  #686
