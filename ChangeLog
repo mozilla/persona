@@ -1,4 +1,5 @@
 train-2011.01.04 (in progress):
+  * client entropy pool mixes in randomness from server for better browser RNG: #298 
 
 train-2011.12.28:
   * improve animation during cert/assertion procedures in dialog: #709
