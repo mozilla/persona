@@ -335,7 +335,21 @@ BrowserID.User = (function() {
       }
 
       function attemptAddPrimary(email, info) {
-        User.provisionPrimaryUser(email, info, onComplete, onFailure);
+        User.provisionPrimaryUser(email, info, function(status, provInfo) {
+          if(status === "primary.verified") {
+            network.authenticateWithAssertion(email, provInfo.assertion, function(status) {
+              if(status) {
+                onComplete("primary.verified");
+              }
+              else {
+                onComplete("primary.could_not_add");
+              }
+            }, onFailure);
+          }
+          else {
+            onComplete(status, provInfo);
+          }
+        }, onFailure);
       }
 
       if (info.type === 'secondary') {
@@ -354,13 +368,12 @@ BrowserID.User = (function() {
           // We are getting an assertion for browserid.org.
           User.getAssertion(email, "https://browserid.org", function(assertion) {
             if(assertion) {
-              network.authenticateWithAssertion(email, assertion, function(status) {
-                var message = status ? "primary.verified" : "primary.could_not_add";
-                onComplete(message);
-              }, onFailure);
+              onComplete("primary.verified", {
+                assertion: assertion
+              });
             }
             else {
-              // XXX perhaps these failure modes should call onFailure instead.
+              // XXX change this to could_not_provision
               onComplete("primary.could_not_add");
             }
           }, onFailure);
@@ -664,7 +677,7 @@ BrowserID.User = (function() {
      */
     addEmail: function(email, onSuccess, onFailure) {
       var self = this;
-      network.addEmail(email, origin, function(added) {
+      network.addSecondaryEmail(email, origin, function(added) {
         if (added) storage.setStagedOnBehalfOf(self.getHostname());
 
         // we no longer send the keypair, since we will certify it later.

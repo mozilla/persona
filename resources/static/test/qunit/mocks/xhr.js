@@ -100,6 +100,8 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/account_cancel invalid": { success: false },
       "post /wsapi/account_cancel ajaxError": undefined,
       "post /wsapi/stage_email valid": { success: true },
+      "post /wsapi/stage_email unknown_secondary": { success: true },
+      "post /wsapi/stage_email known_secondary": { success: true },
       "post /wsapi/stage_email invalid": { success: false },
       "post /wsapi/stage_email throttle": 403,
       "post /wsapi/stage_email ajaxError": undefined,
@@ -126,7 +128,9 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/address_info?email=testuser%40testuser.com unknown_secondary": { type: "secondary", known: false },
       "get /wsapi/address_info?email=testuser%40testuser.com known_secondary": { type: "secondary", known: true },
       "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", auth: "https://auth_url", prov: "https://prov_url" },
-      "get /wsapi/address_info?email=testuser%40testuser.com ajaxError": undefined
+      "get /wsapi/address_info?email=testuser%40testuser.com ajaxError": undefined,
+      "post /wsapi/add_email_with_assertion invalid": { success: false },
+      "post /wsapi/add_email_with_assertion valid": { success: true }
     },
 
     setContextInfo: function(field, value) {

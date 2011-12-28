@@ -180,8 +180,8 @@ BrowserID.Modules.Actions = (function() {
       startService("verify_primary_user", info);
     },
 
-    doPrimaryUserVerified: function(info) {
-      startService("primary_user_verified", info);
+    doPrimaryUserProvisioned: function(info) {
+      startService("primary_user_provisioned", info);
     },
 
     doEmailChosen: function(info) {

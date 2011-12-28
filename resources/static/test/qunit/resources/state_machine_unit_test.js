@@ -107,9 +107,13 @@
     ok(actions.called.doEmailConfirmed, "user was confirmed");
   });
 
+  test("primary_user does something", function() {
+    ok(false, "write some tests");
+  });
+
   test("primary_user_provisioned calls doEmailChosen", function() {
     mediator.publish("primary_user_provisioned", { email: "testuser@testuser.com" });
-    ok(actions.called.doEmailChosen, "doEmailChosen called");
+    ok(actions.called.doPrimaryUserProvisioned, "doPrimaryUserProvisioned called");
   });
 
   test("primary_user_unauthenticated calls doVerifyPrimaryUser", function() {

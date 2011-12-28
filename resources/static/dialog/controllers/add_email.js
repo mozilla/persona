@@ -52,7 +52,7 @@ BrowserID.Modules.AddEmail = (function() {
       dialogHelpers.addEmail.call(self, email, callback);
     }
     else {
-      callback && callback();
+      callback && callback(false);
     }
   }
 

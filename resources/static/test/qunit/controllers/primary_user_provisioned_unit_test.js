@@ -41,14 +41,15 @@
       bid = BrowserID,
       storage = bid.Storage,
       user = bid.User,
-      register = bid.TestHelpers.register,
+      network = bid.Network,
+      testHelpers = bid.TestHelpers,
+      register = testHelpers.register,
       xhr = bid.Mocks.xhr,
-      mediator = bid.Mediator,
-      provisioning = bid.Mocks.Provisioning;
+      mediator = bid.Mediator;
 
-  module("controllers/provision_primary_user", {
+  module("controllers/primary_user_provisioned", {
     setup: function() {
-      bid.TestHelpers.setup();
+      testHelpers.setup();
     },
 
     teardown: function() {
@@ -60,74 +61,106 @@
           // could already be destroyed from the close
         }
       }
-      bid.TestHelpers.setup();
+      testHelpers.setup();
     }
   });
 
 
   function createController(config) {
-    controller = bid.Modules.ProvisionPrimaryUser.create();
+    controller = bid.Modules.PrimaryUserProvisioned.create();
     controller.start(config);
   }
 
-  test("create controller with missing email throws error", function() {
+  test("starting the controller without email throws assertion", function() {
     var error;
 
     try {
-      createController({
-        auth: "https://auth_url",
-        prov: "https://prov_url"
-      });
-    } catch(e) {
+      createController({});
+    }
+    catch(e) {
       error = e;
     }
 
-    equal(error, "missing config option: email", "must specify email, auth, and prov");
+    equal(error, "missing config option: email", "correct error message printed");
   });
 
-  asyncTest("create controller with all fields specified, user authenticated with primary - expected user provisioned", function() {
-    provisioning.setStatus(provisioning.AUTHENTICATED);
+  test("starting the controller without assertion throws assertion", function() {
+    var error;
 
-    mediator.subscribe("primary_user_provisioned", function(msg, info) {
-      ok(info.assertion, "assertion available");
-      equal(info.email, "unregistered@testuser.com", "email available");
-      start();
-    });
+    try {
+      createController({email: "unregistered@testuser.com"});
+    }
+    catch(e) {
+      error = e;
+    }
+
+    equal(error, "missing config option: assertion", "correct error message printed");
+  });
+
+  asyncTest("start controller with `add: false` and XHR error displays error screen", function() {
+    xhr.useResult("ajaxError");
 
     createController({
       email: "unregistered@testuser.com",
-      auth: "https://auth_url",
-      prov: "https://prov_url"
+      assertion: "test_assertion",
+      add: false,
+      ready: function(status) {
+        equal(status, false, "correct status for XHR error");
+        testHelpers.testErrorVisible();
+        start();
+      }
     });
   });
 
-  asyncTest("create controller with all fields specified, user not authenticated with primary - expected user must authenticate", function() {
-    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
-
-    mediator.subscribe("primary_user_unauthenticated", function(msg, info) {
-      equal(info.auth_url, "https://auth_url", "primary information fetched");
-      start();
+  asyncTest("start controller with `add: false` authenticates user", function() {
+    register("email_chosen", function(msg, info) {
+      network.checkAuth(function(status) {
+        equal(status, true, "status is correct");
+        start();
+      });
     });
+
+    xhr.useResult("valid");
+    createController({
+      email: "unregistered@testuser.com",
+      add: false,
+      assertion: "test_assertion",
+      ready: function(status) {
+        equal(true, status, "valid status");
+      }
+    });
+  });
+
+  asyncTest("start controller with `add: true` and XHR error displays error screen", function() {
+    xhr.useResult("ajaxError");
 
     createController({
       email: "unregistered@testuser.com",
-      auth: "https://auth_url",
-      prov: "https://prov_url"
+      assertion: "test_assertion",
+      add: true,
+      ready: function(status) {
+        equal(status, false, "correct status for XHR error");
+        testHelpers.testErrorVisible();
+        start();
+      }
     });
   });
 
-  asyncTest("create controller with missing auth/prov, user authenticated with primary - expected to request provisioning info from backend, user provisioned", function() {
-    xhr.useResult("primary");
-    provisioning.setStatus(provisioning.AUTHENTICATED);
-
-    mediator.subscribe("primary_user_provisioned", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "user is provisioned after requesting info from backend");
+  asyncTest("start controller with `add: true` adds email to user's list", function() {
+    register("email_chosen", function(msg, info) {
       start();
     });
 
+    xhr.useResult("valid");
     createController({
-      email: "unregistered@testuser.com"
+      email: "unregistered@testuser.com",
+      add: true,
+      assertion: "test_assertion",
+      ready: function(status) {
+        equal(true, status, "valid status");
+      }
     });
   });
+
 }());
 

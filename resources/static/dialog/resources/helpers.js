@@ -133,17 +133,25 @@
       callback(false);
     }
     else {
-      user.addEmail(email, function(added) {
-        if (added) {
-          self.close("email_staged", {
-            email: email
-          });
+      user.addressInfo(email, function(info) {
+        if(info.type === "primary") {
+          self.close("primary_user", _.extend(info, { email: email, add: true }));
+          callback(true);
         }
         else {
-          tooltip.showTooltip("#could_not_add");
+          user.addEmail(email, function(added) {
+            if (added) {
+              self.close("email_staged", {
+                email: email
+              });
+            }
+            else {
+              tooltip.showTooltip("#could_not_add");
+            }
+            if (callback) callback(added);
+          }, self.getErrorDialog(errors.addEmail));
         }
-        if (callback) callback(added);
-      }, self.getErrorDialog(errors.addEmail));
+      }, self.getErrorDialog(errors.addressInfo));
     }
   }
 

@@ -37,8 +37,7 @@
 (function() {
   "use strict";
 
-  var el,
-      controller,
+  var controller,
       bid = BrowserID,
       xhr = bid.Mocks.xhr,
       user = bid.User,
@@ -47,11 +46,7 @@
 
   module("controllers/required_email", {
     setup: function() {
-      el = $("body");
       testHelpers.setup();
-      xhr.setContextInfo({
-        authenticated: false
-      });
       $("#required_email").text("");
     },
 
@@ -285,12 +280,14 @@
 
   asyncTest("verifyAddress of authenticated user, address belongs to another user", function() {
     var email = "registered@testuser.com";
+    xhr.useResult("known_secondary");
 
     testMessageReceived(email, "email_staged");
   });
 
   asyncTest("verifyAddress of authenticated user, unknown address", function() {
     var email = "unregistered@testuser.com";
+    xhr.useResult("unknown_secondary");
 
     testMessageReceived(email, "email_staged");
   });

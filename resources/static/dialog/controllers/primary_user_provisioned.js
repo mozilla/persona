@@ -34,83 +34,66 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-BrowserID.Modules.ProvisionPrimaryUser = (function() {
+BrowserID.Modules.PrimaryUserProvisioned = (function() {
   "use strict";
 
   var ANIMATION_TIME = 250,
       bid = BrowserID,
       user = bid.User,
+      network = bid.Network,
       errors = bid.Errors;
 
-  function provisionPrimaryUser(email, auth, prov, oncomplete) {
-    var self=this;
-
-    function complete(status) {
-      oncomplete && oncomplete(status);
-    }
-
-    user.provisionPrimaryUser(email, {auth: auth, prov: prov}, function(status, status_info) {
-      switch(status) {
-        case "primary.already_added":
-          // XXX Is this status possible?
-          break;
-        case "primary.verified":
-          self.close("primary_user_provisioned", { email: email, assertion: status_info.assertion } );
-          complete(true);
-          break;
-        case "primary.verify":
-          self.close("primary_user_unauthenticated", {
-            email: email,
-            auth_url: auth
-          });
-          complete(true);
-          break;
-        case "primary.could_not_add":
-          // XXX Can this happen?
-          break;
-        default:
-          break;
-      }
-    }, self.getErrorDialog(errors.provisioningPrimary));
-  }
-
-  var ProvisionPrimaryUser = bid.Modules.PageModule.extend({
+  var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       options = options || {};
 
       var self = this,
           email = options.email,
-          auth = options.auth,
-          prov = options.prov;
+          assertion = options.assertion,
+          addEmailToCurrentUser = !!options.add,
+          complete = function(status) {
+            options.ready && options.ready(status || false);
+          };
 
       if(!email) {
         throw "missing config option: email";
       }
 
-      if(!(auth && prov)) {
-        user.addressInfo(email, function(status) {
-          if(status.type === "primary") {
-            provisionPrimaryUser.call(self, email, status.auth, status.prov);
+      if(!assertion) {
+        throw "missing config option: assertion";
+      }
+
+      self.renderDialog("primary_user_verified", { email: email });
+
+      if(addEmailToCurrentUser) {
+        network.addEmailWithAssertion(assertion, function(status) {
+          if(status) {
+            self.publish("email_chosen", options);
           }
           else {
-            self.renderError("error", { action: errors.provisioningBadPrimary });
+            self.getErrorDialog(errors.addEmailWithAssertion, complete)();
           }
-        }, self.getErrorDialog(errors.isEmailRegistered));
+        }, self.getErrorDialog(errors.addEmailWithAssertion, complete));
       }
       else {
-        provisionPrimaryUser.call(self, email, auth, prov);
+        network.authenticateWithAssertion(email, assertion, function(status) {
+          if(status) {
+            self.publish("email_chosen", options);
+          }
+          else {
+            self.getErrorDialog(errors.authenticateWithAssertion, complete)();
+          }
+        }, self.getErrorDialog(errors.authenticateWithAssertion, complete));
       }
 
-
-      ProvisionPrimaryUser.sc.start.call(self, options);
+      Module.sc.start.call(self, options);
     }
 
     // BEGIN TESTING API
-    ,
-    provisionPrimaryUser: provisionPrimaryUser
+
     // END TESTING API
   });
 
-  return ProvisionPrimaryUser;
+  return Module;
 
 }());

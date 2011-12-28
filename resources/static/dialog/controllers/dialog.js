@@ -159,10 +159,15 @@ BrowserID.Modules.Dialog = (function() {
 
         // XXX Perhaps put this into the state machine.
         self.bind(win, "unload", onWindowUnload);
-        if(hash.indexOf("#EMAIL=") === 0) {
-          var email = hash.replace(/#EMAIL=/, "");
+        if(hash.indexOf("#CREATE_EMAIL=") === 0) {
+          var email = hash.replace(/#CREATE_EMAIL=/, "");
           self.renderDialog("primary_user_verified", { email: email });
-          self.close("primary_user", { email: email });
+          self.close("primary_user", { email: email, add: false });
+        }
+        else if(hash.indexOf("#ADD_EMAIL=") === 0) {
+          var email = hash.replace(/#ADD_EMAIL=/, "");
+          self.renderDialog("primary_user_verified", { email: email });
+          self.close("primary_user", { email: email, add: true });
         }
         else {
           self.publish("start", params);

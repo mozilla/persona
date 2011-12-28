@@ -40,6 +40,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
   var bid = BrowserID,
       sc,
       win,
+      add,
       email,
       auth_url,
       helpers = bid.Helpers;
@@ -50,9 +51,10 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     // replace any hashes that may be there already.
     var returnTo = win.document.location.href.replace(/#.*$/, "");
 
+    var type = add ? "ADD_EMAIL" : "CREATE_EMAIL";
     var url = helpers.toURL(auth_url, {
       email: email,
-      return_to: returnTo + "#EMAIL="+email
+      return_to: returnTo + "#" + type + "=" +email
     });
 
     win.document.location = url;
@@ -66,6 +68,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       data = data || {};
 
       win = data.window || window;
+      add = data.add;
       email = data.email;
       auth_url = data.auth_url;
 

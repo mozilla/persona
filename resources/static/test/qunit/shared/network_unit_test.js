@@ -157,7 +157,7 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("authenticateWithAssertion with XHR error", function() {
+  asyncTest("authenticateWithAssertion with XHR failure", function() {
     xhr.useResult("ajaxError");
 
     network.authenticateWithAssertion(
@@ -428,33 +428,31 @@
   });
 
 
-  asyncTest("addEmail valid", function() {
-    network.addEmail("address", "origin", function onSuccess(added) {
+  asyncTest("addSecondaryEmail valid", function() {
+    network.addSecondaryEmail("address", "origin", function onSuccess(added) {
       ok(added);
       start();
     }, function onFailure() {
       ok(false);
       start();
     });
-
   });
 
-  asyncTest("addEmail invalid", function() {
+  asyncTest("addSecondaryEmail invalid", function() {
     xhr.useResult("invalid");
-    network.addEmail("address", "origin", function onSuccess(added) {
+    network.addSecondaryEmail("address", "origin", function onSuccess(added) {
       equal(added, false);
       start();
     }, function onFailure() {
       ok(false);
       start();
     });
-
   });
 
-  asyncTest("addEmail throttled", function() {
+  asyncTest("addSecondaryEmail throttled", function() {
     xhr.useResult("throttle");
 
-    network.addEmail("address", "origin", function onSuccess(added) {
+    network.addSecondaryEmail("address", "origin", function onSuccess(added) {
       equal(added, false, "throttled email returns onSuccess but with false as the value");
       start();
     }, function onFailure() {
@@ -464,12 +462,12 @@
 
   });
 
-  asyncTest("addEmail with XHR failure", function() {
-    notificationCheck(network.addEmail, "address", "origin");
+  asyncTest("addSecondaryEmail with XHR failure", function() {
+    notificationCheck(network.addSecondaryEmail, "address", "origin");
   });
 
-  asyncTest("addEmail with XHR failure", function() {
-    failureCheck(network.addEmail, "address", "origin");
+  asyncTest("addSecondaryEmail with XHR failure", function() {
+    failureCheck(network.addSecondaryEmail, "address", "origin");
   });
 
   asyncTest("checkEmailRegistration pending", function() {
@@ -504,6 +502,33 @@
 
   asyncTest("checkEmailRegistration with XHR failure", function() {
     failureCheck(network.checkEmailRegistration, "address");
+  });
+
+
+  asyncTest("addEmailWithAssertion, user not authenticated or invalid assertion, returns false status", function() {
+    xhr.useResult("invalid");
+
+    network.addEmailWithAssertion("test_assertion", function(status) {
+      equal(status, false, "email not added, status set to false");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("addEmailWithAssertion valid asserton, returns true status", function() {
+    network.addEmailWithAssertion("test_assertion", function(status) {
+      equal(status, true, "email added, status set to true");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("addEmailWithAssertion with XHR failure", function() {
+    xhr.useResult("ajaxError");
+
+    network.addEmailWithAssertion(
+      "test_assertion",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
 
 
@@ -637,7 +662,7 @@
     });
   });
 
-  asyncTest("codeVersion with XHR error", function() {
+  asyncTest("codeVersion with XHR failure", function() {
     xhr.useResult("contextAjaxError");
 
     network.codeVersion(function onComplete(version) {
@@ -680,7 +705,7 @@
     }, unexpectedFailure);
   });
 
-  asyncTest("addressInfo with XHR error", function() {
+  asyncTest("addressInfo with XHR failure", function() {
     xhr.useResult("ajaxError");
     failureCheck(network.addressInfo, TEST_EMAIL);
   });
@@ -707,7 +732,7 @@
     });
   });
 
-  asyncTest("changePassword with XHR error, expect error callback", function() {
+  asyncTest("changePassword with XHR failure, expect error callback", function() {
     xhr.useResult("ajaxError");
 
     network.changePassword("oldpassword", "newpassword", function onComplete() {

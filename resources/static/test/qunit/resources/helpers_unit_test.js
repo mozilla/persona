@@ -67,11 +67,13 @@
     return function(m, info) {
       equal(m, message, "correct message: " + message);
 
-      if(value) {
-        equal(info[field], value, field + " has correct value of " + value);
-      }
-      else {
-        ok(info[field], field + " has a value");
+      if(field) {
+        if(value) {
+          equal(info[field], value, field + " has correct value of " + value);
+        }
+        else {
+          ok(info[field], field + " has a value");
+        }
       }
     }
   }
@@ -168,10 +170,20 @@
     dialogHelpers.createUser.call(controllerMock, "registered@testuser.com", testHelpers.unexpectedSuccess);
   });
 
-  asyncTest("addEmail happy case", function() {
+  asyncTest("addEmail with primary email happy case, expects primary_user message", function() {
+    xhr.useResult("primary");
+    closeCB = expectedClose("primary_user", "add", true);
+    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(status) {
+      ok(status, "correct status");
+      start();
+    });
+  });
+
+  asyncTest("addEmail with unknown secondary email happy case", function() {
+    xhr.useResult("unknown_secondary");
     closeCB = expectedClose("email_staged", "email", "unregistered@testuser.com");
-    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
-      ok(added, "email added");
+    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(status) {
+      ok(status, "correct status");
       start();
     });
   });

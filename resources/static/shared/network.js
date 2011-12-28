@@ -437,14 +437,34 @@ BrowserID.Network = (function() {
     },
 
     /**
-     * Add an email to the current user"s account.
-     * @method addEmail
+     * Add an email to the current user's account using an assertion.
+     * @method addEmailWithAssertion
+     * @param {string} assertion - assertion used to add user.
+     * @param {function} [onComplete] - called when complete.
+     * @param {function} [onFailure] - called on XHR failure.
+     */
+    addEmailWithAssertion: function(assertion, onComplete, onFailure) {
+      post({
+        url: "/wsapi/add_email_with_assertion",
+        data: {
+          assertion: assertion
+        },
+        success: function(status) {
+          onComplete && onComplete(status.success);
+        },
+        error: onFailure
+      });
+    },
+
+    /**
+     * Add a secondary email to the current user's account.
+     * @method addSecondaryEmail
      * @param {string} email - Email address to add.
      * @param {string} origin - site user is trying to sign in to.
      * @param {function} [onComplete] - called when complete.
      * @param {function} [onFailure] - called on xhr failure.
      */
-    addEmail: function(email, origin, onComplete, onFailure) {
+    addSecondaryEmail: function(email, origin, onComplete, onFailure) {
       post({
         url: "/wsapi/stage_email",
         data: {

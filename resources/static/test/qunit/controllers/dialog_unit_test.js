@@ -162,13 +162,36 @@
     });
   });
 
-  asyncTest("initialization with #EMAIL=testuser@testuser.com", function() {
-    winMock.location.hash = "#EMAIL=testuser@testuser.com";
+  asyncTest("initialization with #CREATE_EMAIL=testuser@testuser.com", function() {
+    winMock.location.hash = "#CREATE_EMAIL=testuser@testuser.com";
 
     createController({
       ready: function() {
         mediator.subscribe("primary_user", function(msg, info) {
           equal(info.email, "testuser@testuser.com", "email_chosen with correct email");
+          equal(info.add, false, "add is not specified with CREATE_EMAIL option");
+          start();
+        });
+
+        try {
+          controller.get(testHelpers.testOrigin, {}, function() {}, function() {});
+        }
+        catch(e) {
+          // do nothing, an exception will be thrown because no modules are
+          // registered for the any services.
+        }
+      }
+    });
+  });
+
+  asyncTest("initialization with #ADD_EMAIL=testuser@testuser.com", function() {
+    winMock.location.hash = "#ADD_EMAIL=testuser@testuser.com";
+
+    createController({
+      ready: function() {
+        mediator.subscribe("primary_user", function(msg, info) {
+          equal(info.email, "testuser@testuser.com", "email_chosen with correct email");
+          equal(info.add, true, "add is specified with ADD_EMAIL option");
           start();
         });
 

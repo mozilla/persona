@@ -20,6 +20,7 @@
         moduleManager.register("required_email", modules.RequiredEmail);
         moduleManager.register("verify_primary_user", modules.VerifyPrimaryUser);
         moduleManager.register("provision_primary_user", modules.ProvisionPrimaryUser);
+        moduleManager.register("primary_user_provisioned", modules.PrimaryUserProvisioned);
         moduleManager.register("email_chosen", modules.EmailChosen);
 
         moduleManager.start("dialog");

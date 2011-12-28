@@ -102,13 +102,6 @@ var jwcert = require("./jwcert");
     }
   });
 
-  function failure(message) {
-    return function() {
-      ok(false, message);
-      start();
-    };
-  }
-
   test("setOrigin, getOrigin", function() {
     lib.setOrigin(testOrigin);
     equal(lib.getOrigin(), testOrigin);
@@ -133,7 +126,7 @@ var jwcert = require("./jwcert");
 
       ok(identity, "we have an identity");
       start();
-    }, failure("syncEmailKeypair failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   test("getStoredEmailKeypair with unknown key", function() {
@@ -187,7 +180,7 @@ var jwcert = require("./jwcert");
     lib.createUser("unregistered@testuser.com", function(status) {
       equal(status, "secondary.verify", "secondary user must be verified");
       start();
-    }, failure("createUser failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("createUser with unknown secondary, throttled - expect status='secondary.could_not_add'", function() {
@@ -196,7 +189,7 @@ var jwcert = require("./jwcert");
     lib.createUser("unregistered@testuser.com", function(status) {
       equal(status, "secondary.could_not_add", "user creation refused");
       start();
-    }, failure("createUser failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("createUser with unknown secondary, XHR failure - expect failure call", function() {
@@ -258,7 +251,7 @@ var jwcert = require("./jwcert");
 
       ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       start();
-    }, failure("waitForUserValidation failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("waitForUserValidation with `mustAuth` response", function() {
@@ -271,7 +264,7 @@ var jwcert = require("./jwcert");
 
       ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       start();
-    }, failure("waitForUserValidation failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("waitForUserValidation with `noRegistration` response", function() {
@@ -332,7 +325,7 @@ var jwcert = require("./jwcert");
       equal(storage.getStagedOnBehalfOf(), "", "initiating origin was removed");
 
       start();
-    }, failure("verifyUser failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("verifyUser with a bad token", function() {
@@ -341,7 +334,7 @@ var jwcert = require("./jwcert");
     lib.verifyUser("token", "password", function onSuccess(info) {
       equal(info.valid, false, "bad token calls onSuccess with a false validity");
       start();
-    }, failure("verifyUser failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("verifyUser with an XHR failure", function() {
@@ -414,7 +407,7 @@ var jwcert = require("./jwcert");
     lib.authenticate("testuser@testuser.com", "testuser", function(authenticated) {
       equal(true, authenticated, "we are authenticated!");
       start();
-    }, failure("Authentication failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 
@@ -423,7 +416,7 @@ var jwcert = require("./jwcert");
     lib.authenticate("testuser@testuser.com", "testuser", function onComplete(authenticated) {
       equal(false, authenticated, "invalid authentication.");
       start();
-    }, failure("Authentication failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 
@@ -555,7 +548,7 @@ var jwcert = require("./jwcert");
       equal(storage.getStagedOnBehalfOf(), lib.getHostname(), "initiatingOrigin is stored");
 
       start();
-    }, failure("addEmail failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("addEmail with addition refused", function() {
@@ -570,7 +563,7 @@ var jwcert = require("./jwcert");
       equal(typeof storage.getStagedOnBehalfOf(), "undefined", "initiatingOrigin is not stored");
 
       start();
-    }, failure("addEmail failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("addEmail with XHR failure", function() {
@@ -593,7 +586,7 @@ var jwcert = require("./jwcert");
       ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       equal(status, "complete", "complete response expected");
       start();
-    }, failure("waitForEmailValidation failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("waitForEmailValidation `mustAuth` response", function() {
@@ -604,7 +597,7 @@ var jwcert = require("./jwcert");
       ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
       equal(status, "mustAuth", "mustAuth response expected");
       start();
-    }, failure("waitForEmailValidation failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("waitForEmailValidation with `noRegistration` response", function() {
@@ -664,7 +657,7 @@ var jwcert = require("./jwcert");
       equal(storage.getStagedOnBehalfOf(), "", "initiating origin was removed");
 
       start();
-    }, failure("verifyEmail failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("verifyEmail with a bad token", function() {
@@ -675,7 +668,7 @@ var jwcert = require("./jwcert");
       equal(info.valid, false, "bad token calls onSuccess with a false validity");
 
       start();
-    }, failure("verifyEmail failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("verifyEmail with an XHR failure", function() {
@@ -699,7 +692,7 @@ var jwcert = require("./jwcert");
       ok(identity.pub, "a private key is on the identity");
 
       start();
-    }, failure("syncEmailKeypair failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 
@@ -735,7 +728,7 @@ var jwcert = require("./jwcert");
       var identities = lib.getStoredEmailKeypairs();
       equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
       start();
-    }, failure("removeEmail failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 
@@ -745,7 +738,7 @@ var jwcert = require("./jwcert");
       var identities = lib.getStoredEmailKeypairs();
       equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
       start();
-    }, failure("removeEmail failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("removeEmail with XHR failure", function() {
@@ -771,7 +764,7 @@ var jwcert = require("./jwcert");
       ok(true, "we have synced identities");
       equal(_.size(identities), 0, "there are no identities");
       start();
-    }, failure("identity sync failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("syncEmails with no pre-loaded identities and identities to add", function() {
@@ -780,7 +773,7 @@ var jwcert = require("./jwcert");
       ok("testuser@testuser.com" in identities, "Our new email is added");
       equal(_.size(identities), 1, "there is one identity");
       start();
-    }, failure("identity sync failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("syncEmails with identities preloaded and none to add", function() {
@@ -790,7 +783,7 @@ var jwcert = require("./jwcert");
       ok("testuser@testuser.com" in identities, "Our new email is added");
       equal(_.size(identities), 1, "there is one identity");
       start();
-    }, failure("identity sync failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 
@@ -805,7 +798,7 @@ var jwcert = require("./jwcert");
       ok("testuser2@testuser.com" in identities, "Our new email is added");
       equal(_.size(identities), 2, "there are two identities");
       start();
-    }, failure("identity sync failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 
@@ -819,7 +812,7 @@ var jwcert = require("./jwcert");
       equal("testuser2@testuser.com" in identities, false, "Our unknown email is removed");
       equal(_.size(identities), 1, "there is one identity");
       start();
-    }, failure("identity sync failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("syncEmails with one to refresh", function() {
@@ -829,7 +822,7 @@ var jwcert = require("./jwcert");
       var identities = lib.getStoredEmailKeypairs();
       ok("testuser@testuser.com" in identities, "refreshed key is synced");
       start();
-    }, failure("identity sync failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("syncEmails with XHR failure", function() {
@@ -851,8 +844,8 @@ var jwcert = require("./jwcert");
       lib.getAssertion("testuser@testuser.com", lib.getOrigin(), function onSuccess(assertion) {
         testAssertion(assertion, start);
         equal(storage.site.get(testOrigin, "email"), "testuser@testuser.com", "email address was persisted");
-      }, failure("getAssertion failure"));
-    }, failure("syncEmailKeypair failure"));
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 
@@ -863,7 +856,7 @@ var jwcert = require("./jwcert");
     lib.getAssertion("testuser@testuser.com", lib.getOrigin(), function onSuccess(assertion) {
       testAssertion(assertion, start);
       equal(storage.site.get(testOrigin, "email"), "testuser@testuser.com", "email address was persisted");
-    }, failure("getAssertion failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 
@@ -874,7 +867,7 @@ var jwcert = require("./jwcert");
         equal(storage.site.get(testOrigin, "email"), undefined, "email address was not set");
         start();
       });
-    }, failure("getAssertion failure"));
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("getAssertion with XHR failure", function() {
@@ -902,9 +895,9 @@ var jwcert = require("./jwcert");
           equal(_.size(storedIdentities), 0, "All items have been removed on logout");
 
           start();
-        }, failure("logoutUser failure"));
-      }, failure("syncEmails failure"));
-    }, failure("authenticate failure"));
+        }, testHelpers.unexpectedXHRFailure);
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
 
 
   });
@@ -923,8 +916,8 @@ var jwcert = require("./jwcert");
         });
 
 
-      }, failure("syncEmails failure"));
-    }, failure("authenticate failure"));
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
 
 
   });

@@ -127,17 +127,17 @@
     });
   });
 
-  asyncTest("doPrimaryUserVerified tries to start the primary_user_verified service", function() {
+  asyncTest("doPrimaryUserProvisioned tries to start the primary_user_verified service", function() {
     createController({
       ready: function() {
         var error;
         try {
-          controller.doPrimaryUserVerified();
+          controller.doPrimaryUserProvisioned();
         } catch(e) {
           error = e;
         }
 
-        equal(error, "module not registered for primary_user_verified", "correct service started");
+        equal(error, "module not registered for primary_user_provisioned", "correct service started");
         start();
       }
     });

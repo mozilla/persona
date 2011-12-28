@@ -72,7 +72,7 @@ BrowserID.Modules.Authenticate = (function() {
           createSecondaryUserState.call(self);
         }
       }
-    }, self.getErrorDialog(errors.isEmailRegistered));
+    }, self.getErrorDialog(errors.addressInfo));
   }
 
   function createSecondaryUser(callback) {

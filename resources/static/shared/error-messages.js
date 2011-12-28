@@ -45,6 +45,18 @@ BrowserID.Errors = (function(){
       title: "Adding Address"
     },
 
+    addEmailWithAssertion: {
+      title: "Adding Primary Email Address to User"
+    },
+
+    addressInfo: {
+      title: "Checking Address Info"
+    },
+
+    authenticateWithAssertion: {
+      title: "Authenticating with Assertion"
+    },
+
     cancelUser: {
       title: "Cancelling User Account"
     },

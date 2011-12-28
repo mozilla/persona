@@ -41,7 +41,8 @@
       stateStack = [],
       controller,
       moduleManager = bid.module,
-      errors = bid.Errors;
+      errors = bid.Errors,
+      addPrimaryUser = false;
 
   function subscribe(message, cb) {
     subscriptions.push(mediator.subscribe(message, cb));
@@ -148,14 +149,20 @@
     });
 
     subscribe("primary_user", function(msg, info) {
+      addPrimaryUser = !!info.add;
+
       gotoState("doProvisionPrimaryUser", info);
     });
 
     subscribe("primary_user_provisioned", function(msg, info) {
-      mediator.publish("email_chosen", info);
+      info = info || {};
+      info.add = !!addPrimaryUser;
+      gotoState("doPrimaryUserProvisioned", info);
     });
 
     subscribe("primary_user_unauthenticated", function(msg, info) {
+      info = info || {};
+      info.add = !!addPrimaryUser;
       gotoState("doVerifyPrimaryUser", info);
     });
 
