@@ -46,7 +46,7 @@ BrowserID.Modules.Dialog = (function() {
       win = window;
 
   function checkOnline() {
-    if ('onLine' in navigator && !navigator.onLine) {
+    if (false && 'onLine' in navigator && !navigator.onLine) {
       this.publish("offline");
       return false;
     }
