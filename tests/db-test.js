@@ -245,7 +245,6 @@ suite.addBatch({
   }
 });
 
-
 suite.addBatch({
   "emailType of lloyd@anywhe.re": {
     topic: function() {
@@ -293,25 +292,6 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  "canceling an account": {
-    topic: function() {
-      db.cancelAccount("lloyd@somewhe.re", this.callback);
-    },
-    "returns no error": function(r) {
-      assert.isUndefined(r);
-    },
-    "causes emailKnown": {
-      topic: function() {
-        db.emailKnown('lloyd@somewhe.re', this.callback);
-      },
-      "to return false": function (r) {
-        assert.strictEqual(r, false);
-      }
-    }
-  }
-});
-
-suite.addBatch({
   "creating a primary account": {
     topic: function() {
       db.createUserWithPrimaryEmail("lloyd@primary.domain", this.callback);
@@ -333,6 +313,119 @@ suite.addBatch({
       },
       "to return 'primary'": function (r) {
         assert.strictEqual(r, 'primary');
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "adding a primary email to that account": {
+    topic: function() {
+      db.addPrimaryEmailToAccount("lloyd@primary.domain", "lloyd2@primary.domain", this.callback);
+    },
+    "returns no error": function(r) {
+      assert.isUndefined(r);
+    },
+    "causes emailKnown": {
+      topic: function() {
+        db.emailKnown('lloyd2@primary.domain', this.callback);
+      },
+      "to return true": function (r) {
+        assert.strictEqual(r, true);
+      }
+    },
+    "causes emailType": {
+      topic: function() {
+        db.emailType('lloyd@primary.domain', this.callback);
+      },
+      "to return 'primary'": function (r) {
+        assert.strictEqual(r, 'primary');
+      }
+    }
+  },
+  "adding a primary email to an account with only secondaries": {
+    topic: function() {
+      db.addPrimaryEmailToAccount("lloyd@somewhe.re", "lloyd3@primary.domain", this.callback);
+    },
+    "returns no error": function(r) {
+      assert.isUndefined(r);
+    },
+    "causes emailKnown": {
+      topic: function() {
+        db.emailKnown('lloyd3@primary.domain', this.callback);
+      },
+      "to return true": function (r) {
+        assert.strictEqual(r, true);
+      }
+    },
+    "causes emailType": {
+      topic: function() {
+        db.emailType('lloyd3@primary.domain', this.callback);
+      },
+      "to return 'primary'": function (r) {
+        assert.strictEqual(r, 'primary');
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "adding a registered primary email to an account": {
+    topic: function() {
+      db.addPrimaryEmailToAccount("lloyd@primary.domain", "lloyd3@primary.domain", this.callback);
+    },
+    "returns no error": function(r) {
+      assert.isUndefined(r);
+    },
+    "and emailKnown": {
+      topic: function() {
+        db.emailKnown('lloyd3@primary.domain', this.callback);
+      },
+      "still returns true": function (r) {
+        assert.strictEqual(r, true);
+      }
+    },
+    "and emailType": {
+      topic: function() {
+        db.emailType('lloyd@primary.domain', this.callback);
+      },
+      "still returns 'primary'": function (r) {
+        assert.strictEqual(r, 'primary');
+      }
+    },
+    "and email is removed": {
+      topic: function() {
+        db.emailsBelongToSameAccount('lloyd3@primary.domain', 'lloyd@somewhe.re', this.callback);
+      },
+      "from original account": function(r) {
+        assert.isFalse(r);
+      }
+    },
+    "and email is added": {
+      topic: function() {
+        db.emailsBelongToSameAccount('lloyd3@primary.domain', 'lloyd@primary.domain', this.callback);
+      },
+      "to new account": function(r) {
+        assert.isTrue(r);
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "canceling an account": {
+    topic: function() {
+      db.cancelAccount("lloyd@somewhe.re", this.callback);
+    },
+    "returns no error": function(r) {
+      assert.isUndefined(r);
+    },
+    "causes emailKnown": {
+      topic: function() {
+        db.emailKnown('lloyd@somewhe.re', this.callback);
+      },
+      "to return false": function (r) {
+        assert.strictEqual(r, false);
       }
     }
   }
