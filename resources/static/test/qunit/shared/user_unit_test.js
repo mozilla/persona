@@ -37,6 +37,7 @@
 var jwk = require("./jwk");
 var jwt = require("./jwt");
 var jwcert = require("./jwcert");
+var vep = require("./vep");
 
 (function() {
   var bid = BrowserID,
@@ -57,7 +58,9 @@ var jwcert = require("./jwcert");
     equal(typeof assertion, "string", "An assertion was correctly generated");
 
     // Decode the assertion to a bundle.
-    var bundle = JSON.parse(window.atob(assertion));
+    // var bundle = JSON.parse(window.atob(assertion));
+    // WOW, ^^ was assuming a specific format, let's fix that
+    var bundle = vep.unbundleCertsAndAssertion(assertion);
 
     // Make sure both parts of the bundle exist
     ok(bundle.certificates && bundle.certificates.length, "we have an array like object for the certificates");
