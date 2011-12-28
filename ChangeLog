@@ -1,5 +1,6 @@
 train-2011.01.04 (in progress):
-  * client entropy pool mixes in randomness from server for better browser RNG: #298 
+  * client entropy pool mixes in randomness from server for better browser RNG: #298
+  * new assertion format that avoids double (base64) encoding - 33% smaller: #507
 
 train-2011.12.28:
   * improve animation during cert/assertion procedures in dialog: #709
