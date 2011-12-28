@@ -816,7 +816,7 @@
               if (w) w.focus();
             }
           };
-        },
+        }
       };
     } else {
       return {
