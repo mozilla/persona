@@ -1,4 +1,8 @@
-train-2011.12.28 (in progress):
+train-2011.01.04 (in progress):
+  * client entropy pool mixes in randomness from server for better browser RNG: #298
+  * new assertion format that avoids double (base64) encoding - 33% smaller: #507
+
+train-2011.12.28:
   * improve animation during cert/assertion procedures in dialog: #709
   * user visible error message in dialog when under back breaking load: #738
   * cleanup and removal of stale deps from package.json
@@ -24,6 +28,8 @@ train-2011.12.28 (in progress):
   * now you can change your password: #771 #114
   * load generator improvements: #782
   * improved PRNG: #789 #735
+  * fix regressions in the above: #719 & #776
+  * CSRF token uses better RNG: #800
 
 train-2011.12.08:
   * improve performance of unit tests.  #686

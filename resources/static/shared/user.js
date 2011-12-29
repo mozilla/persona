@@ -807,7 +807,7 @@ BrowserID.User = (function() {
 
               // yield!
               setTimeout(function() {
-                assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk));
+                assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk), true);
                 storage.site.set(audience, "email", email);
                 if (onSuccess) {
                   onSuccess(assertion);
