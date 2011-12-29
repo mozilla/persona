@@ -59,8 +59,11 @@ $(function() {
   else if (path === "/forgot") {
     bid.forgot();
   }
-  else if (token && path === "/add_email_address") {
-    bid.addEmailAddress(token);
+  else if (path === "/add_email_address") {
+    var module = bid.addEmailAddress.create();
+    module.start({
+      token: token
+    });
   }
   else if(token && path === "/verify_email_address") {
     bid.verifyEmailAddress(token);

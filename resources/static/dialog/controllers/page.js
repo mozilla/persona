@@ -75,6 +75,15 @@ BrowserID.Modules.PageModule = (function() {
       }
     },
 
+    checkRequired: function(options) {
+      var list = [].slice.call(arguments, 1);
+      for(var item, index = 0; item = list[index]; ++index) {
+        if(!options.hasOwnProperty(item)) {
+          throw "missing config option: " + item;
+        }
+      }
+    },
+
     start: function(options) {
       var self=this;
       self.bind("form", "submit", onSubmit);

@@ -649,12 +649,16 @@ h1 {
           border-radius: 3px;
 }
 
-#signUpForm > .password_entry {
+#signUpForm > .siteinfo {
+  margin-bottom: 10px;
+}
+
+.siteinfo, #congrats, #signUpForm > .password_entry, .enter_password .hint {
   display: none;
 }
 
-.siteinfo, #congrats {
-  display: none;
+.enter_password #signUpForm > .password_entry {
+  display: block;
 }
 
 #congrats p {

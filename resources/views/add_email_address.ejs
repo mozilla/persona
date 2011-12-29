@@ -2,18 +2,18 @@
     <div id="signUpFormWrap">
         <ul class="notifications">
             <li class="notification error" id="cannotconfirm">Error encountered while attempting to confirm your address. Have you previously verified this address?</li>
-            <li class="notification error" id="cannotcommunicate">Error comunicating with server.</li>
             <li class="notification error" id="cannotcomplete">Error encountered trying to complete registration.</li>
         </ul>
 
         <form id="signUpForm" class="cf">
             <p class="hint siteinfo">Finish signing into: <strong><span class="website"></span></strong></p>
+
             <h1 class="serif">Email Verification</h1>
 
             <ul class="inputs password_entry">
                 <li>
                     <label class="serif" for="email">Email Address</label>
-                    <input class="youraddress sans" id="email" placeholder="Your Email" type="email" value="" disabled="disabled" maxlength="254" />
+                    <input class="youraddress sans email" id="email" placeholder="Your Email" type="email" value="" disabled="disabled" maxlength="254" />
                 </li>
                 <li>
                     <label class="serif" for="password">New Password</label>
@@ -45,13 +45,12 @@
                 <button>Finish</button>
             </div>
 
-            <p class="hint">One moment while we attempt to confirm your email address...</p>
 
         </form>
 
         <div id="congrats">
             <p class="serif">
-                <strong id="email">Your address</strong> has been verified!
+                <strong class="email">Your address</strong> has been verified!
 
                 <p class="siteinfo">
                   Your new address is set up and you should now be signed in.

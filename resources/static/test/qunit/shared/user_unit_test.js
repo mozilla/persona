@@ -317,6 +317,33 @@ var vep = require("./vep");
     }, 500);
   });
 
+  asyncTest("tokenInfo with a good token and origin info, expect origin in results", function() {
+    storage.setStagedOnBehalfOf(testOrigin);
+
+    lib.tokenInfo("token", function(info) {
+      equal(info.email, "testuser@testuser.com", "correct email");
+      equal(info.origin, testOrigin, "correct origin");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("tokenInfo with a bad token without site info, no site in results", function() {
+    lib.tokenInfo("token", function(info) {
+      equal(info.email, "testuser@testuser.com", "correct email");
+      equal(typeof info.origin, "undefined", "origin is undefined");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("tokenInfo with XHR error", function() {
+    xhr.useResult("ajaxError");
+    lib.tokenInfo(
+      "token",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
   asyncTest("verifyUser with a good token", function() {
     storage.setStagedOnBehalfOf(testOrigin);
 
@@ -650,9 +677,9 @@ var vep = require("./vep");
     }, 500);
   });
 
-  asyncTest("verifyEmail with a good token", function() {
+  asyncTest("verifyEmailNoPassword with a good token", function() {
     storage.setStagedOnBehalfOf(testOrigin);
-    lib.verifyEmail("token", function onSuccess(info) {
+    lib.verifyEmailNoPassword("token", function onSuccess(info) {
 
       ok(info.valid, "token was valid");
       equal(info.email, "testuser@testuser.com", "email part of info");
@@ -663,27 +690,58 @@ var vep = require("./vep");
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("verifyEmail with a bad token", function() {
+  asyncTest("verifyEmailNoPassword with a bad token", function() {
     xhr.useResult("invalid");
 
-    lib.verifyEmail("token", function onSuccess(info) {
-
+    lib.verifyEmailNoPassword("token", function onSuccess(info) {
       equal(info.valid, false, "bad token calls onSuccess with a false validity");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("verifyEmail with an XHR failure", function() {
+  asyncTest("verifyEmailNoPassword with an XHR failure", function() {
     xhr.useResult("ajaxError");
 
-    lib.verifyEmail("token", function onSuccess(info) {
-      ok(false, "xhr failure should never succeed");
+    lib.verifyEmailNoPassword(
+      "token",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
+  asyncTest("verifyEmailWithPassword with a good token", function() {
+    storage.setStagedOnBehalfOf(testOrigin);
+    lib.verifyEmailWithPassword("token", "password", function onSuccess(info) {
+
+      ok(info.valid, "token was valid");
+      equal(info.email, "testuser@testuser.com", "email part of info");
+      equal(info.origin, testOrigin, "origin in info");
+      equal(storage.getStagedOnBehalfOf(), "", "initiating origin was removed");
+
       start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("verifyEmailWithPassword with a bad token", function() {
+    xhr.useResult("invalid");
+
+    lib.verifyEmailWithPassword("token", "password", function onSuccess(info) {
+      equal(info.valid, false, "bad token calls onSuccess with a false validity");
+
       start();
-    });
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("verifyEmailWithPassword with an XHR failure", function() {
+    xhr.useResult("ajaxError");
+
+    lib.verifyEmailWithPassword(
+      "token",
+      "password",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
 
   asyncTest("syncEmailKeypair with successful sync", function() {

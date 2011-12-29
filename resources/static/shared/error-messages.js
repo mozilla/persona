@@ -150,8 +150,16 @@ BrowserID.Errors = (function(){
       title: "Sync Keys for Address"
     },
 
+    tokenInfo: {
+      title: "Getting Token Info"
+    },
+
     updatePassword: {
       title: "Updating password"
+    },
+
+    verifyEmail: {
+      title: "Verifying email address"
     },
 
     xhrError: {

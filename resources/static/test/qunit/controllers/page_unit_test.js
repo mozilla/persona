@@ -238,5 +238,9 @@
     });
   });
 
+  test("checkRequired", function() {
+    ok(false, "write a test for this");
+  });
+
 }());
 
