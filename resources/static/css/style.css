@@ -649,6 +649,9 @@ h1 {
           border-radius: 3px;
 }
 
+#signUpForm > .password_entry {
+  display: none;
+}
 
 .siteinfo, #congrats {
   display: none;

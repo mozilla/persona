@@ -113,7 +113,7 @@
   });
 
   asyncTest("start controller with `add: false` authenticates user", function() {
-    register("email_chosen", function(msg, info) {
+    register("primary_user_ready", function(msg, info) {
       network.checkAuth(function(status) {
         equal(status, true, "status is correct");
         start();
@@ -147,7 +147,7 @@
   });
 
   asyncTest("start controller with `add: true` adds email to user's list", function() {
-    register("email_chosen", function(msg, info) {
+    register("primary_user_ready", function(msg, info) {
       start();
     });
 

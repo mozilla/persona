@@ -107,8 +107,9 @@
     ok(actions.called.doEmailConfirmed, "user was confirmed");
   });
 
-  test("primary_user does something", function() {
-    ok(false, "write some tests");
+  test("primary_user calls doProvisionPrimaryUser", function() {
+    mediator.publish("primary_user", { email: "testuser@testuser.com" });
+    ok(actions.called.doProvisionPrimaryUser, "doPrimaryUserProvisioned called");
   });
 
   test("primary_user_provisioned calls doEmailChosen", function() {
@@ -135,6 +136,12 @@
     mediator.publish("primary_user", { email: "testuser@testuser.com", assertion: "assertion" });
 
     ok(actions.called.doProvisionPrimaryUser, "doProvisionPrimaryUser called");
+  });
+
+  test("primary_user_ready calls doEmailChosen", function() {
+    mediator.publish("primary_user_ready", { email: "testuser@testuser.com", assertion: "assertion" });
+
+    ok(actions.called.doEmailChosen, "doEmailChosen called");
   });
 
   test("authenticated", function() {

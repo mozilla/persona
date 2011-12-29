@@ -45,6 +45,8 @@
   module("pages/page_helpers", {
     setup: function() {
       testHelpers.setup();
+      bid.Renderer.render("#page_head", "site/signup", {});
+      $(".siteinfo,.emailsent").hide();
     },
 
     teardown: function() {
@@ -88,9 +90,9 @@
   });
 
   asyncTest("replaceFormWithNotice replaces contents", function() {
-    pageHelpers.replaceFormWithNotice(".emailsent", function() {
+    pageHelpers.replaceFormWithNotice("#congrats", function() {
       equal($("form").is(":visible"), false, "form has been hidden");
-      equal($(".emailsent").is(":visible"), true, "emailsent is now visible");
+      equal($("#congrats").is(":visible"), true, "congrats is now visible");
       start();
     });
   });

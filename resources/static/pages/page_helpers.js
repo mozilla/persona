@@ -114,7 +114,10 @@ BrowserID.PageHelpers = (function() {
 
   function showInputs(onComplete) {
     $('.notification').hide();
-    $('.forminputs').stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED, onComplete);
+    $('.forminputs').stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED);
+    // If there is more than one .forminputs, the onComplete callback is called
+    // multiple times, we only want once.
+    setTimeout(onComplete, ANIMATION_SPEED);
   }
 
   function showEmailSent(onComplete) {

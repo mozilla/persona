@@ -1,0 +1,63 @@
+<div id="vAlign" class="display_always">
+    <div id="signUpFormWrap">
+        <ul class="notifications">
+            <li class="notification error" id="cannotconfirm">There was a problem with your signup link.  Has this address already been registered?</li>
+            <li class="notification error" id="cannotcommunicate">Error comunicating with server.</li>
+            <li class="notification error" id="cannotcomplete">Error encountered trying to complete registration.</li>
+        </ul>
+
+        <form id="signUpForm" class="cf">
+            <p class="hint siteinfo">Finish signing into: <strong><span class="website"></span></strong></p>
+            <h1 class="serif">Last step!</h1>
+
+            <ul class="inputs">
+                <li>
+                    <label class="serif" for="email">Email Address</label>
+                    <input class="youraddress sans" id="email" placeholder="Your Email" type="email" value="" disabled="disabled" maxlength="254" />
+                </li>
+                <li>
+                    <label class="serif" for="password">New Password</label>
+                    <input class="sans" id="password" placeholder="Enter a Password" type="password" autofocus maxlength=80 />
+
+                    <div class="tooltip" id="password_required" for="password">
+                      Password is required.
+                    </div>
+
+                    <div class="tooltip" id="password_too_short" for="password">
+                      Password must be at least 8 characters long.
+                    </div>
+                </li>
+                <li>
+                    <label class="serif" for="vpassword">Verify Password</label>
+                    <input class="sans" id="vpassword" placeholder="Repeat Password" type="password" maxlength=80 />
+
+                    <div class="tooltip" id="vpassword_required" for="vpassword">
+                      Verification password is required.
+                    </div>
+
+                    <div class="tooltip" id="passwords_no_match" for="vpassword">
+                      Passwords do not match.
+                    </div>
+                </li>
+            </ul>
+
+            <div class="submit cf">
+                <button>Finish</button>
+            </div>
+
+        </form>
+
+        <div id="congrats">
+            <p class="serif">Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!
+            </p>
+
+            <p class="serif siteinfo">
+              Your new address is set up and you should now be signed in.
+              You may now close this window and go back to
+              <strong class="website"></strong>
+            </p>
+        </div>
+
+    </div>
+</div>
+

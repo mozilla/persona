@@ -40,21 +40,17 @@
   var bid = BrowserID,
       network = bid.Network,
       user = bid.User,
+      testHelpers = bid.TestHelpers,
       xhr = bid.Mocks.xhr;
 
   module("pages/forgot", {
     setup: function() {
-      network.setXHR(xhr);
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      xhr.useResult("valid");
+      testHelpers.setup();
+      bid.Renderer.render("#page_head", "site/forgot", {});
       bid.forgot();
     },
     teardown: function() {
-      network.setXHR($);
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      $(".website").text("");
+      testHelpers.teardown();
       bid.forgot.reset();
     }
   });

@@ -41,24 +41,20 @@
       network = bid.Network,
       user = bid.User,
       xhr = bid.Mocks.xhr,
+      testHelpers = bid.TestHelpers,
       docMock = {
         location: "signin"
       }
 
   module("pages/signin", {
     setup: function() {
-      network.setXHR(xhr);
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      xhr.useResult("valid");
+      testHelpers.setup();
       docMock.location = "signin";
+      bid.Renderer.render("#page_head", "site/signin", {});
       bid.signIn({document: docMock});
     },
     teardown: function() {
-      network.setXHR($);
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      $("#error .message").remove();
+      testHelpers.teardown();
       bid.signIn.reset();
     }
   });

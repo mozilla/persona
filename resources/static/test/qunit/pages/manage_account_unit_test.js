@@ -54,11 +54,10 @@
     setup: function() {
       testHelpers.setup();
       user.setOrigin(TEST_ORIGIN);
-      $("#emailList").empty();
+      bid.Renderer.render("#page_head", "site/index", {});
       mocks.document.location = "";
     },
     teardown: function() {
-      $("#emailList").empty();
       testHelpers.teardown();
     }
   });

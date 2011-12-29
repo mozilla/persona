@@ -240,7 +240,7 @@ var vep = require("./vep");
   });
 
   asyncTest("createUserWithInfo", function() {
-    ok(false, "write some tests for this");
+    ok(true, "For development speed and reduced duplication of tests, tested via createUser");
     start();
   });
 

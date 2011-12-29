@@ -316,6 +316,16 @@ BrowserID.User = (function() {
       }, onFailure);
     },
 
+    /**
+     * Attempt to create a user with the info returned from
+     * network.addressInfo.  Attempts to create both primary and secondary
+     * based users depending on info.type.
+     * @method createUserWithInfo
+     * @param {string} email
+     * @param {object} info - contains fields returned from network.addressInfo
+     * @param {function} [onComplete]
+     * @param {function} [onFailure]
+     */
     createUserWithInfo: function(email, info, onComplete, onFailure) {
       var self=this;
       function attemptAddSecondary(email, info) {

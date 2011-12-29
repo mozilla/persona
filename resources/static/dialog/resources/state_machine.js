@@ -173,6 +173,10 @@
       self.success = true;
     });
 
+    subscribe("primary_user_ready", function(msg, info) {
+      gotoState("doEmailChosen", info);
+    });
+
     subscribe("authenticate_with_required_email", function(msg, info) {
       gotoState("doAuthenticateWithRequiredEmail", info);
     });

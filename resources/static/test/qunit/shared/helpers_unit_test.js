@@ -42,10 +42,11 @@
 
   module("shared/helpers", {
     setup: function() {
-
+      bid.Renderer.render("#page_head", "site/add_email_address", {});
     },
 
     teardown: function() {
+      $("#page_head").empty();
     }
   });
 

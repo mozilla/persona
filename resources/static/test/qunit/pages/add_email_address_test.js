@@ -41,22 +41,18 @@
       network = bid.Network,
       storage = bid.Storage,
       xhr = bid.Mocks.xhr,
+      testHelpers = bid.TestHelpers,
       validToken = true;
 
   module("pages/add_email_address", {
     setup: function() {
-      network.setXHR(xhr);
-      xhr.useResult("valid");
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      $(".website").text("");
+      testHelpers.setup();
+      bid.Renderer.render("#page_head", "site/add_email_address", {});
       $(".siteinfo").hide();
     },
     teardown: function() {
-      network.setXHR($);
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      $(".website").text("");
+      testHelpers.teardown();
+      $("#page_head").empty();
     }
   });
 
@@ -66,7 +62,7 @@
     bid.addEmailAddress("token", function() {
       equal($("#email").val(), "testuser@testuser.com", "email set");
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
-      equal($(".website").text(), "browserid.org", "origin is updated");
+      equal($(".website:nth(0)").text(), "browserid.org", "origin is updated");
       start();
     });
   });
@@ -95,6 +91,10 @@
       ok($("#cannotcommunicate").is(":visible"), "cannot communicate box is visible");
       start();
     });
+  });
+
+  asyncTest("addEmailAddress - first secondary address added to account with only primaries - must enter password", function() {
+    start();
   });
 
 }());

@@ -14,68 +14,41 @@
 		<h2 id="qunit-banner"></h2>
 		<div id="qunit-testrunner-toolbar"></div>
 		<h2 id="qunit-userAgent"></h2>
-		<div id="test-content">
-    </div>
 		<ol id="qunit-tests"></ol>
 		<div id="qunit-test-area"></div>
 
-    <h3>Content below here is test content that can be ignored</h3>
+    <div style="position: absolute; top: -1000px; left: 100px; right: 100px; height: 300px;">
+        <a href="#" onclick="$('#contents').hide(); return false;">Close</a>
+        <h3>Test Contents, this will be updated and can be safely ignored</h3>
 
-    <div id="controller_head">
+        <div id="page_head">
+        </div>
 
-      <div id="formWrap">
-          <div class="contents"></div>
-      </div>
+        <div id="controller_head">
+          <div id="formWrap">
+              <div class="contents"></div>
+          </div>
 
-      <div id="wait">
-          <div class="contents"></div>
-      </div>
+          <div id="wait">
+              <div class="contents"></div>
+          </div>
 
-      <div id="error">
-          <div class="contents"></div>
-      </div>
+          <div id="error">
+              <div class="contents"></div>
+          </div>
+        </div>
 
-      <div class="forminputs">
-        <input id="email" />
-        <input id="newEmail" />
-        <input id="password" />
-        <input id="vpassword" />
-        <input id="old_password" />
-        <input id="new_password" />
-        <input type="checkbox" id="remember" />
-      </div>
-      <span class="hint">Hint</span>
+        <div id="needsTooltip">Tooltip Anchor</div>
+
+        <div id="shortTooltip" class="tooltip" for="needsTooltip">
+          short tooltip
+        </div>
+
+        <div id="longTooltip" class="tooltip" for="needsTooltip">
+          This is a long tooltip.  This should remain on the screen for about 5 seconds.
+        </div>
     </div>
 
-    <div id="needsTooltip">Tooltip Anchor</div>
-
-    <div id="shortTooltip" class="tooltip" for="needsTooltip">
-      short tooltip
-    </div>
-
-    <div id="longTooltip" class="tooltip" for="needsTooltip">
-      This is a long tooltip.  This should remain on the screen for about 5 seconds.
-    </div>
-
-
-    <form>
-      form contents
-    </form>
-
-    <ul class="notifications">
-      <li id="cannotconfirm" class="error notification">Cannot confirm</li>
-      <li id="cannotcommunicate" class="error notification">Cannot communicate</li>
-      <li class="siteinfo" class="error notification"><span class="website"></span></li>
-      <li class="notification emailsent">Email Sent</li>
-      <li class="notification doh">doh</li>
-      <li class="notification" id="congrats">Congratulations!</li>
-      <li class="notification" id="primary_verify"><span id="primary_email"></span></li>
-    </ul>
-
-    <ul id="emailList">
-    </ul>
-
-    <div id="sentToEmail"></div>
 
     <script type="text/html" id="templateUser">
       <li>{{email}}</li>
