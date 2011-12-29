@@ -67,7 +67,7 @@ echo '****Building BrowserID.org HTML, CSS, and JS****'
 echo ''
 
 #produce the main site js
-cat lib/jquery-1.6.2.min.js lib/json2.js lib/underscore-min.js lib/ejs.js shared/javascript-extensions.js shared/browserid.js lib/dom-jquery.js $BUILD_PATH/templates.js shared/renderer.js shared/error-display.js shared/screens.js shared/error-messages.js shared/storage.js shared/network.js shared/user.js shared/tooltip.js shared/validation.js shared/helpers.js pages/page_helpers.js pages/browserid.js pages/index.js pages/add_email_address.js pages/verify_email_address.js pages/forgot.js pages/manage_account.js pages/signin.js pages/signup.js > $BUILD_PATH/browserid.uncompressed.js
+cat lib/vepbundle.js lib/jquery-1.6.2.min.js lib/json2.js lib/underscore-min.js lib/ejs.js shared/javascript-extensions.js shared/browserid.js lib/dom-jquery.js $BUILD_PATH/templates.js shared/renderer.js shared/error-display.js shared/screens.js shared/error-messages.js shared/storage.js shared/network.js shared/user.js shared/tooltip.js shared/validation.js shared/helpers.js pages/page_helpers.js pages/browserid.js pages/index.js pages/add_email_address.js pages/verify_email_address.js pages/forgot.js pages/manage_account.js pages/signin.js pages/signup.js > $BUILD_PATH/browserid.uncompressed.js
 
 # produce the main site css
 cat css/common.css css/style.css css/m.css > $BUILD_PATH/browserid.uncompressed.css
