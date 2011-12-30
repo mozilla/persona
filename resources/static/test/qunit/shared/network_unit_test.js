@@ -70,6 +70,7 @@
       ok(info.network.type, "request type is in network info");
       equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
       equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
+      equal(info.network.responseText, "response text", "responseText is in response info");
       wrappedStart();
       mediator.unsubscribe(handle);
     };

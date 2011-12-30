@@ -64,6 +64,7 @@ BrowserID.Network = (function() {
       network.status = jqXHR && jqXHR.status;
       network.textStatus = textStatus;
       network.errorThrown = errorThrown;
+      network.responseText = jqXHR.responseText;
 
       if (cb) cb(info);
       mediator && mediator.publish("xhrError", info);
