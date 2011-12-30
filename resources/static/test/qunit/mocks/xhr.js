@@ -187,7 +187,7 @@ BrowserID.Mocks.xhr = (function() {
       else if (obj.error) {
         // Invalid result - either invalid URL, invalid GET/POST or
         // invalid resultType
-        obj.error({ status: result || 400 }, "errorStatus", "errorThrown");
+        obj.error({ status: result || 400, responseText: "response text" }, "errorStatus", "errorThrown");
       }
     }
   };

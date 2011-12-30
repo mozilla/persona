@@ -59,8 +59,9 @@
       ok(info.network.type, "request type is in network info");
       equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
       equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
-      start();
+      equal(info.network.responseText, "response text", "responseText is in response info");
       mediator.unsubscribe(handle);
+      start();
     };
 
     handle = mediator.subscribe("xhrError", subscriber);
