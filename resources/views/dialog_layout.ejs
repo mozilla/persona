@@ -46,10 +46,10 @@
       </div>
 
       <% if (useJavascript !== false) { %>
-        <% if (false && production) { %>
+        <% if (production) { %>
           <script type="text/javascript" src="/production/dialog.js"></script>
         <% } else { %>
-          <script type="text/javascript" src="/lib/jquery-1.7.1.js"></script>
+          <script type="text/javascript" src="/lib/jquery-1.7.1.min.js"></script>
           <script type="text/javascript" src="/lib/winchan.js"></script>
           <script type="text/javascript" src="/lib/underscore-min.js"></script>
           <script type="text/javascript" src="/lib/vepbundle.js"></script>
