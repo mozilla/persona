@@ -231,18 +231,27 @@ function poll() {
     if (activitiesToRun.indexOf(act) !== -1) {
       outstanding[act]++;
       activity[act].startFunc(configuration, function(err) {
-        if (err) winston.error(err);
         outstanding[act]--;
-        if (undefined === completed[act]) completed[act] = [ 0, 0 ];
-        completed[act][err ? 1 : 0]++;
+        if (undefined === completed[act]) completed[act] = [ 0, 0, 0 ];
+        if (err) {
+          if (err.indexOf('server is too busy') != -1) {
+            completed[act][2]++;
+          } else {
+            completed[act][1]++;
+            winston.error(err);
+          }
+        } else {
+          completed[act][0]++;
+        }
       });
     } else {
-      if (undefined === completed[act]) completed[act] = [ 0, 0 ];
+      if (undefined === completed[act]) completed[act] = [ 0, 0, 0 ];
       completed[act][0]++;
     }
   }
 
   var numErrors = 0;
+  var num503s = 0;
   var numStarted = 0;
 
   function updateAverages(elapsed) {
@@ -252,6 +261,7 @@ function poll() {
     Object.keys(completed).forEach(function(k) {
       numActCompleted += completed[k][0];
       numErrors += completed[k][1];
+      num503s += completed[k][2];
     });
     completed = { };
     var avgUsersThisPeriod = (numActCompleted / activitiesPerUserPerSecond) * (elapsed / 1000);
@@ -279,7 +289,8 @@ function poll() {
                 "\t", averages[1].toFixed(2),
                 "\t", averages[2].toFixed(2),
                 "\t", actSumString,
-                "\t", numErrors ? "(" + numErrors + " ERRORS!)" : "");
+                "\t", numErrors ? "(" + numErrors + " ERRORS!)" : "",
+                "\t", num503s ? " (" + num503s + " 503s)" : "");
   }
 
   // ** how much time has elapsed since the last poll?
