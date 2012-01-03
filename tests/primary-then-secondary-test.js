@@ -37,30 +37,31 @@
 
 require('./lib/test_env.js');
 
-const assert =
-require('assert'),
+const
+assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-db = require('../lib/db.js'),
-config = require('../lib/configuration.js'),
-http = require('http'),
-querystring = require('querystring'),
 primary = require('./lib/primary.js');
 
-var suite = vows.describe('auth-with-assertion');
+var suite = vows.describe('primary-then-secondary');
 
-// disable vows (often flakey?) async error behavior
-suite.options.error = false;
-
+// start up a pristine server
 start_stop.addStartupBatches(suite);
+
+// this test excercises the codepath whereby a user adds
+// a primary email address, then a secondary, then another
+// secondary.  It checks that the critical wsapi calls
+// along the way perform as expected
+
+// first we'll need to authenticate a user with an assertion from a
+// primary IdP
 
 const TEST_DOMAIN = 'example.domain',
       TEST_EMAIL = 'testuser@' + TEST_DOMAIN,
-      TEST_ORIGIN = 'http://127.0.0.1:10002';
-
-// here we go!  let's authenticate with an assertion from
-// a primary.
+      TEST_ORIGIN = 'http://127.0.0.1:10002',
+      TEST_PASS = 'fakepass',
+      SECONDARY_EMAIL = 'second@fakeemail.com';
 
 var primaryUser = new primary({
   email: TEST_EMAIL,
@@ -92,6 +93,85 @@ suite.addBatch({
   }
 });
 
+var token;
+
+// now we have a new account.  let's add a secondary to it
+suite.addBatch({
+  "add a new email address to our account": {
+    topic: wsapi.post('/wsapi/stage_email', {
+      email: SECONDARY_EMAIL,
+      site:'fakesite.com'
+    }),
+    "works": function(r, err) {
+      assert.strictEqual(r.code, 200);
+    },
+    "and get a token": {
+      topic: function() {
+        start_stop.waitForToken(this.callback);
+      },
+      "successfully": function (t) {
+        this._token = t;
+        assert.strictEqual(typeof t, 'string');
+      },
+      "and complete":  {
+        topic: function(t) {
+          wsapi.get('/wsapi/email_for_token', {
+            token: t
+          }).call(this);
+        },
+        "we need to set our password": function (r) {
+          r = JSON.parse(r.body);
+          assert.ok(r.needs_password);
+        },
+        "with": {
+          topic: function() {
+            wsapi.post('/wsapi/complete_email_addition', { token: this._token }).call(this);
+          },
+          "no password fails": function(r, err) {
+            assert.equal(r.code, 200);
+            assert.strictEqual(JSON.parse(r.body).success, false);
+          },
+          "a password": {
+            topic: function() {
+              wsapi.post('/wsapi/complete_email_addition', {
+                token: this._token,
+                pass: TEST_PASS
+              }).call(this);
+            },
+            "succeeds": function(r, err) {
+              assert.equal(r.code, 200);
+              assert.strictEqual(JSON.parse(r.body).success, true);
+            }
+          }
+        }
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "authentication with first email": {
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: TEST_EMAIL,
+      passwd: TEST_PASS
+    }),
+    "works": function(r, err) {
+      assert.strictEqual(r.code, 200);
+    },
+  },
+  "authentication with second email": {
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: SECONDARY_EMAIL,
+      passwd: TEST_PASS
+    }),
+    "works": function(r, err) {
+      assert.strictEqual(r.code, 200);
+    },
+  }
+});
+
+
+// shut the server down and cleanup
 start_stop.addShutdownBatches(suite);
 
 // run or export the suite.
