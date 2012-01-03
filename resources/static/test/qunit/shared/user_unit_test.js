@@ -45,8 +45,8 @@ var vep = require("./vep");
       storage = bid.Storage,
       network = bid.Network,
       xhr = bid.Mocks.xhr,
-      testOrigin = "https://browserid.org",
       testHelpers = bid.TestHelpers,
+      testOrigin = testHelpers.testOrigin,
       provisioning = bid.Mocks.Provisioning
 
   // I generated these locally, they are used nowhere else.
@@ -98,7 +98,6 @@ var vep = require("./vep");
   module("shared/user", {
     setup: function() {
       testHelpers.setup();
-      lib.setOrigin(testOrigin);
     },
     teardown: function() {
       testHelpers.teardown();
@@ -899,8 +898,6 @@ var vep = require("./vep");
   });
 
   asyncTest("getAssertion with known email that has key", function() {
-    lib.setOrigin(testOrigin);
-    lib.removeEmail("testuser@testuser.com");
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser@testuser.com", lib.getOrigin(), function onSuccess(assertion) {
         testAssertion(assertion, start);
@@ -910,10 +907,8 @@ var vep = require("./vep");
   });
 
 
-  asyncTest("getAssertion with known email that does not have a key", function() {
-    lib.setOrigin(testOrigin);
-    lib.removeEmail("testuser@testuser.com");
-    storage.addEmail("testuser@testuser.com", {});
+  asyncTest("getAssertion with known secondary email that does not have a key", function() {
+    storage.addEmail("testuser@testuser.com", { type: "secondary" });
     lib.getAssertion("testuser@testuser.com", lib.getOrigin(), function onSuccess(assertion) {
       testAssertion(assertion, start);
       equal(storage.site.get(testOrigin, "email"), "testuser@testuser.com", "email address was persisted");
@@ -921,10 +916,40 @@ var vep = require("./vep");
   });
 
 
+  asyncTest("getAssertion with known primary email, expired cert, user authenticated with IdP - expect assertion", function() {
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+    storage.addEmail("unregistered@testuser.com", { type: "primary" });
+
+    lib.getAssertion(
+      "unregistered@testuser.com",
+      lib.getOrigin(),
+      function(assertion) {
+        testAssertion(assertion, start);
+        equal(storage.site.get(testOrigin, "email"), "unregistered@testuser.com", "email address was persisted");
+      },
+      testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("getAssertion with known primary email, expired cert, user authenticated with IdP - expect null assertion", function() {
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+    storage.addEmail("unregistered@testuser.com", { type: "primary" });
+
+    lib.getAssertion(
+      "unregistered@testuser.com",
+      lib.getOrigin(),
+      function(assertion) {
+        equal(assertion, null, "user must authenticate with IdP, no assertion");
+        start();
+      },
+      testHelpers.unexpectedXHRFailure);
+  });
+
   asyncTest("getAssertion with unknown email", function() {
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       lib.getAssertion("testuser2@testuser.com", lib.getOrigin(), function onSuccess(assertion) {
-        equal("undefined", typeof assertion, "email was unknown, we do not have an assertion");
+        equal(null, assertion, "email was unknown, we do not have an assertion");
         equal(storage.site.get(testOrigin, "email"), undefined, "email address was not set");
         start();
       });
@@ -932,8 +957,6 @@ var vep = require("./vep");
   });
 
   asyncTest("getAssertion with XHR failure", function() {
-    lib.setOrigin(testOrigin);
-
     storage.addEmail("testuser@testuser.com", {});
     xhr.useResult("ajaxError");
     lib.getAssertion(
@@ -1006,7 +1029,7 @@ var vep = require("./vep");
 
   });
 
-  asyncTest("getPersistentSigninAssertion with invalid login", function() {
+  asyncTest("getPersistentSigninAssertion with invalid login - expect null assertion", function() {
     xhr.setContextInfo("authenticated", false);
 
     lib.syncEmailKeypair("testuser@testuser.com", function() {
@@ -1026,7 +1049,7 @@ var vep = require("./vep");
 
   });
 
-  asyncTest("getPersistentSigninAssertion with valid login with remember set to true but no email", function() {
+  asyncTest("getPersistentSigninAssertion without email set for site - expect null assertion", function() {
     xhr.setContextInfo("authenticated", true);
     storage.site.set(testOrigin, "remember", true);
     storage.site.remove(testOrigin, "email");
@@ -1042,7 +1065,7 @@ var vep = require("./vep");
 
   });
 
-  asyncTest("getPersistentSigninAssertion with valid login with email and remember set to false", function() {
+  asyncTest("getPersistentSigninAssertion without remember set for site - expect null assertion", function() {
     xhr.setContextInfo("authenticated", true);
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       storage.site.set(testOrigin, "remember", false);
@@ -1059,11 +1082,9 @@ var vep = require("./vep");
         start();
       });
     });
-
-
   });
 
-  asyncTest("getPersistentSigninAssertion with valid login, email, and remember set to true", function() {
+  asyncTest("getPersistentSigninAssertion with valid login, email, and remember set to true - expect assertion", function() {
     xhr.setContextInfo("authenticated", true);
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       storage.site.set(testOrigin, "remember", true);
@@ -1080,8 +1101,6 @@ var vep = require("./vep");
         start();
       });
     });
-
-
   });
 
   asyncTest("getPersistentSigninAssertion with XHR failure", function() {

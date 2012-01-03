@@ -820,13 +820,17 @@ BrowserID.User = (function() {
      * @method getAssertion
      * @param {string} email - Email to get assertion for.
      * @param {string} audience - Audience to use for the assertion.
-     * @param {function} [onSuccess] - Called with assertion on success.
+     * @param {function} [onComplete] - Called with assertion, null otw.
      * @param {function} [onFailure] - Called on error.
      */
-    getAssertion: function(email, audience, onSuccess, onFailure) {
+    getAssertion: function(email, audience, onComplete, onFailure) {
       // we use the current time from the browserid servers
       // to avoid issues with clock drift on user's machine.
       // (issue #329)
+        function complete(status) {
+          onComplete && onComplete(status);
+        }
+
         var storedID = storage.getEmail(email),
             assertion,
             self=this;
@@ -846,9 +850,7 @@ BrowserID.User = (function() {
               setTimeout(function() {
                 assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk), true);
                 storage.site.set(audience, "email", email);
-                if (onSuccess) {
-                  onSuccess(assertion);
-                }
+                complete(assertion);
               }, 0);
             }, 0);
           }, onFailure);
@@ -864,15 +866,32 @@ BrowserID.User = (function() {
             }, 0);
           }
           else {
-            // we have no key for this identity, go generate the key,
-            // sync it and then get the assertion recursively.
-            User.syncEmailKeypair(email, function() {
-              User.getAssertion(email, audience, onSuccess, onFailure);
-            }, onFailure);
+            if(storedID.type === "primary") {
+              // first we have to get the address info, then attempt
+              // a provision, then if the user is provisioned, go and get an
+              // assertion.
+              network.addressInfo(email, function(info) {
+                User.provisionPrimaryUser(email, info, function(status) {
+                  if(status === "primary.verified") {
+                    User.getAssertion(email, audience, onComplete, onFailure);
+                  }
+                  else {
+                    complete(null);
+                  }
+                }, onFailure);
+              }, onFailure);
+            }
+            else {
+              // we have no key for this identity, go generate the key,
+              // sync it and then get the assertion recursively.
+              User.syncEmailKeypair(email, function() {
+                User.getAssertion(email, audience, onComplete, onFailure);
+              }, onFailure);
+            }
           }
         }
-        else if (onSuccess) {
-          onSuccess();
+        else {
+          complete(null);
         }
     },
 
