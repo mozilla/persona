@@ -129,29 +129,30 @@ BrowserID.Modules.RequiredEmail = (function() {
         // (without a password). Otherwise, make the user verify the address
         // (which shows no password).
         var userOwnsEmail = !!user.getStoredEmailKeypair(email);
-        showTemplate({
-          signin: userOwnsEmail,
-          showPassword: false
-        });
+        showTemplate({ signin: userOwnsEmail, showPassword: false });
         ready();
       }
       else {
         user.addressInfo(email, function(info) {
           if(info.type === "primary") {
-            // For a primary, they should authenticate with the IdP, the normal
-            // process will take care of the rest.
-            self.close("primary_user", _.extend(info, { email: email }));
-            ready();
+            user.isUserAuthenticatedToPrimary(email, info, function(authed) {
+              if(authed) {
+                showTemplate({ signin: true, showPassword: false });
+              }
+              else {
+                // For unauthed primary, they should authenticate with the IdP,
+                // the normal process will take care of the rest.
+                self.close("primary_user", _.extend({ email: email }, info));
+              }
+              ready();
+            }, self.getErrorDialog(errors.addressInfo, ready));
           }
           else {
             var registered = info.known;
             // If the current email address is registered but the user is not
             // authenticated, make them sign in with it.  Otherwise, make them
             // verify ownership of the address.
-            showTemplate({
-              signin: registered,
-              showPassword: registered
-            });
+            showTemplate({ signin: registered, showPassword: registered });
             ready();
           }
         }, self.getErrorDialog(errors.addressInfo, ready));

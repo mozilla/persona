@@ -243,6 +243,110 @@ var vep = require("./vep");
     start();
   });
 
+  asyncTest("provisionPrimaryUser authenticated with IdP, expect primary.verified", function() {
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+
+    lib.provisionPrimaryUser("unregistered@testuser.com", {},
+      function(status, info) {
+        equal(status, "primary.verified", "primary user is already verified, correct status");
+        start();
+      },
+      testHelpers.unexpectedXHRFailure
+    );
+  });
+
+  asyncTest("provisionPrimaryUser not authenticated with IdP, expect primary.verify", function() {
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+
+    lib.provisionPrimaryUser("unregistered@testuser.com", {},
+      function(status, info) {
+        equal(status, "primary.verify", "primary user is not verified, correct status");
+        start();
+      },
+      testHelpers.unexpectedXHRFailure
+    );
+  });
+
+  asyncTest("provisionPrimaryUser with provisioning failure - call failure", function() {
+    xhr.useResult("primary");
+    provisioning.setFailure("failure");
+
+    lib.provisionPrimaryUser("unregistered@testuser.com", {},
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
+  asyncTest("primaryUserAuthenticationInfo, user authenticated to IdP, expect keypair, cert, authenticated status", function() {
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+
+    lib.primaryUserAuthenticationInfo("testuser@testuser.com", {},
+      function(info) {
+        equal(info.authenticated, true, "user is authenticated");
+        ok(info.keypair, "keypair passed");
+        ok(info.cert, "cert passed");
+        start();
+      },
+      testHelpers.unexpectedXHRError
+    );
+  });
+
+  asyncTest("primaryUserAuthenticationInfo, user not authenticated to IdP, expect false authenticated status", function() {
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+
+    lib.primaryUserAuthenticationInfo("testuser@testuser.com", {},
+      function(info) {
+        equal(info.authenticated, false, "user is not authenticated");
+        start();
+      },
+      testHelpers.unexpectedXHRError
+    );
+  });
+
+  asyncTest("primaryUserAuthenticationInfo with XHR failure", function() {
+    provisioning.setFailure("failure");
+
+    lib.primaryUserAuthenticationInfo("testuser@testuser.com", {},
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
+  asyncTest("isUserAuthenticatedToPrimary with authed user, expect true status", function() {
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+
+    lib.isUserAuthenticatedToPrimary("testuser@testuser.com", {},
+      function(status) {
+        equal(status, true, "user is authenticated, correct status");
+        start();
+      },
+      testHelpers.unexpectedXHRError
+    );
+  });
+
+  asyncTest("isUserAuthenticatedToPrimary with non-authed user, expect false status", function() {
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+
+    lib.isUserAuthenticatedToPrimary("testuser@testuser.com", {},
+      function(status) {
+        equal(status, false, "user is not authenticated, correct status");
+        start();
+      },
+      testHelpers.unexpectedXHRError
+    );
+  });
+
+  asyncTest("isUserAuthenticatedToPrimary with failure", function() {
+    provisioning.setFailure("failure");
+
+    lib.isUserAuthenticatedToPrimary("testuser@testuser.com", {},
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
   asyncTest("waitForUserValidation with `complete` response", function() {
     storage.setStagedOnBehalfOf(testOrigin);
 
@@ -533,7 +637,6 @@ var vep = require("./vep");
       start();
     });
   });
-
 
   asyncTest("isEmailRegistered with registered email", function() {
     lib.isEmailRegistered("registered@testuser.com", function(registered) {

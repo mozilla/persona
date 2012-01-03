@@ -369,33 +369,99 @@ BrowserID.User = (function() {
       }
     },
 
+    /**
+     * A full provision a primary user, if they are authenticated, save their
+     * cert/keypair, and authenticate them to BrowserID.
+     * @method provisionPrimaryUser
+     * @param {string} email
+     * @param {object} info - provisioning info
+     * @param {function} [onComplete] - called when complete.  Called with
+     * status field and info. Status can be:
+     *  primary.already_added
+     *  primary.verified
+     *  primary.verify
+     *  primary.could_not_add
+     * @param {function} [onFailure] - called on failure
+     */
     provisionPrimaryUser: function(email, info, onComplete, onFailure) {
-      provisioning({
-        email: email,
-        url: info.prov
-      }, function(keypair, cert) {
-        persistEmailKeypair(email, "primary", keypair, cert, function() {
-          // We are getting an assertion for browserid.org.
-          User.getAssertion(email, "https://browserid.org", function(assertion) {
-            if (assertion) {
-              onComplete("primary.verified", {
-                assertion: assertion
-              });
+      User.primaryUserAuthenticationInfo(email, info, function(authInfo) {
+        if(authInfo.authenticated) {
+          persistEmailKeypair(email, "primary", authInfo.keypair, authInfo.cert,
+            function() {
+              // We are getting an assertion for browserid.org.
+              User.getAssertion(email, "https://browserid.org", function(assertion) {
+                if (assertion) {
+                  onComplete("primary.verified", {
+                    assertion: assertion
+                  });
+                }
+                else {
+                  // XXX change this to could_not_provision
+                  onComplete("primary.could_not_add");
+                }
+              }, onFailure);
             }
-            else {
-              // XXX change this to could_not_provision
-              onComplete("primary.could_not_add");
-            }
-          }, onFailure);
-        }, onFailure);
-      }, function(error) {
-        if (error.code === "primaryError" && error.msg === "user is not authenticated as target user") {
-          onComplete("primary.verify", info);
+          );
         }
         else {
-          onFailure(info);
+          onComplete("primary.verify", info);
         }
-      });
+      }, onFailure);
+    },
+
+    /**
+     * Get the IdP authentication info for a user.
+     * @method primaryUserAuthenticationInfo
+     * @param {string} email
+     * @param {object} info - provisioning info
+     * @param {function} [onComplete] - called when complete.  Called with
+     * provisioning info as well as keypair, cert, and authenticated.
+     *   authenticated - boolean, true if user is authenticated with primary.
+     *    false otw.
+     *   keypair - returned if user is authenticated.
+     *   cert - returned if user is authenticated.
+     * @param {function} [onFailure] - called on failure
+     */
+    primaryUserAuthenticationInfo: function(email, info, onComplete, onFailure) {
+      provisioning(
+        { email: email, url: info.prov },
+        function(keypair, cert) {
+          var userInfo = _.extend({
+            keypair: keypair,
+            cert: cert,
+            authenticated: true
+          }, info);
+
+          onComplete(userInfo);
+        },
+        function(error) {
+          if (error.code === "primaryError" && error.msg === "user is not authenticated as target user") {
+            var userInfo = _.extend({
+              authenticated: false
+            }, info);
+            onComplete(userInfo);
+          }
+          else {
+            onFailure(info);
+          }
+        }
+      );
+
+    },
+
+    /**
+     * Get the IdP authentication status for a user.
+     * @method isUserAuthenticatedToPrimary
+     * @param {string} email
+     * @param {object} info - provisioning info
+     * @param {function} [onComplete] - called when complete.  Called with
+     *   status field - true if user authenticated with IdP, false otw.
+     * @param {function} [onFailure] - called on failure
+     */
+    isUserAuthenticatedToPrimary: function(email, info, onComplete, onFailure) {
+      User.primaryUserAuthenticationInfo(email, info, function(authInfo) {
+        onComplete(authInfo.authenticated);
+      }, onFailure);
     },
 
     /**

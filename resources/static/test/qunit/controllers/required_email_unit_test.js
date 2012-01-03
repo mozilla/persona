@@ -43,7 +43,8 @@
       user = bid.User,
       testHelpers = bid.TestHelpers,
       register = testHelpers.register,
-      mediator = bid.Mediator;
+      provisioning = bid.Mocks.Provisioning;
+
 
   module("controllers/required_email", {
     setup: function() {
@@ -123,22 +124,38 @@
     });
   });
 
-  asyncTest("user who is not authenticated, primary - user must validate with IdP.", function() {
-    var email = "unregistered@testuser.com",
-        msgInfo;
-
-    mediator.subscribe("primary_user", function(msg, info) {
-      msgInfo = info;
-    });
+  asyncTest("user who is not authenticated, authenticated with IdP - user sees sign in screen.", function() {
+    var email = "unregistered@testuser.com";
 
     xhr.useResult("primary");
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+
     createController({
       email: email,
       authenticated: false,
       ready: function() {
-        equal(msgInfo.email, "unregistered@testuser.com", "correct email address");
-        start();
+        testSignIn(email, testNoPasswordSection);
+      }
+    });
+  });
 
+  asyncTest("user who is not authenticated, not authenticated with IdP - user sees verification screen.", function() {
+    var email = "unregistered@testuser.com",
+        msgInfo;
+
+    register("primary_user", function(msg, info) {
+      msgInfo = info;
+    });
+
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+
+    createController({
+      email: email,
+      authenticated: false,
+      ready: function() {
+        equal(msgInfo && msgInfo.email, "unregistered@testuser.com", "correct email address");
+        start();
       }
     });
   });
