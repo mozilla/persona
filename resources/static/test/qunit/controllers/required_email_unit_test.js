@@ -42,7 +42,8 @@
       xhr = bid.Mocks.xhr,
       user = bid.User,
       testHelpers = bid.TestHelpers,
-      register = testHelpers.register;
+      register = testHelpers.register,
+      mediator = bid.Mediator;
 
   module("controllers/required_email", {
     setup: function() {
@@ -95,8 +96,10 @@
     equal($("#password_section").length, 0, "password section is not there");
   }
 
-  asyncTest("user who is not authenticated, email is registered", function() {
+  asyncTest("user who is not authenticated, known secondary - show password form", function() {
     var email = "registered@testuser.com";
+    xhr.useResult("known_secondary");
+
     createController({
       email: email,
       authenticated: false,
@@ -107,8 +110,10 @@
 
   });
 
-  asyncTest("user who is not authenticated, email not registered", function() {
+  asyncTest("user who is not authenticated, unknown secondary - user must verify", function() {
     var email = "unregistered@testuser.com";
+    xhr.useResult("unknown_secondary");
+
     createController({
       email: email,
       authenticated: false,
@@ -116,7 +121,26 @@
         testVerify(email);
       }
     });
+  });
 
+  asyncTest("user who is not authenticated, primary - user must validate with IdP.", function() {
+    var email = "unregistered@testuser.com",
+        msgInfo;
+
+    mediator.subscribe("primary_user", function(msg, info) {
+      msgInfo = info;
+    });
+
+    xhr.useResult("primary");
+    createController({
+      email: email,
+      authenticated: false,
+      ready: function() {
+        equal(msgInfo.email, "unregistered@testuser.com", "correct email address");
+        start();
+
+      }
+    });
   });
 
   asyncTest("user who is not authenticated, XHR error", function() {
@@ -210,6 +234,8 @@
     });
 
     var email = "registered@testuser.com";
+    xhr.useResult("known_secondary");
+
     createController({
       email: email,
       authenticated: false,
@@ -218,6 +244,8 @@
           ok(info.assertion, "we have an assertion");
           start();
         });
+
+        xhr.useResult("valid");
 
         $("#password").val("password");
         controller.signIn();
@@ -233,6 +261,8 @@
     });
 
     var email = "registered@testuser.com";
+    xhr.useResult("known_secondary");
+
     createController({
       email: email,
       authenticated: false,

@@ -129,25 +129,36 @@ BrowserID.Modules.RequiredEmail = (function() {
         // (without a password). Otherwise, make the user verify the address
         // (which shows no password).
         var userOwnsEmail = !!user.getStoredEmailKeypair(email);
-        showTemplate(userOwnsEmail, false);
+        showTemplate({
+          signin: userOwnsEmail,
+          showPassword: false
+        });
         ready();
       }
       else {
-        user.isEmailRegistered(email, function(registered) {
-          // If the current email address is registered but the user is not
-          // authenticated, make them sign in with it.  Otherwise, make them
-          // verify ownership of the address.
-          showTemplate(registered, registered);
-          ready();
-        }, self.getErrorDialog(errors.isEmailRegistered, ready));
+        user.addressInfo(email, function(info) {
+          if(info.type === "primary") {
+            // For a primary, they should authenticate with the IdP, the normal
+            // process will take care of the rest.
+            self.close("primary_user", _.extend(info, { email: email }));
+            ready();
+          }
+          else {
+            var registered = info.known;
+            // If the current email address is registered but the user is not
+            // authenticated, make them sign in with it.  Otherwise, make them
+            // verify ownership of the address.
+            showTemplate({
+              signin: registered,
+              showPassword: registered
+            });
+            ready();
+          }
+        }, self.getErrorDialog(errors.addressInfo, ready));
       }
 
-      function showTemplate(requireSignin, showPassword) {
-        self.renderDialog("required_email", {
-          email: email,
-          signin: requireSignin,
-          showPassword: showPassword
-        });
+      function showTemplate(options) {
+        self.renderDialog("required_email", _.extend({email: email}, options));
 
         self.bind("#sign_in", "click", cancelEvent(signIn));
         self.bind("#verify_address", "click", cancelEvent(verifyAddress));

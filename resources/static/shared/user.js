@@ -193,7 +193,7 @@ BrowserID.User = (function() {
     });
 
     storage.addEmail(email, email_obj);
-    if(onComplete) onComplete(true);
+    if (onComplete) onComplete(true);
   }
 
   /**
@@ -223,12 +223,12 @@ BrowserID.User = (function() {
       type: type
     });
 
-    if(onComplete) onComplete(true);
+    if (onComplete) onComplete(true);
   }
 
   User = {
     init: function(config) {
-      if(config.provisioning) {
+      if (config.provisioning) {
         provisioning = config.provisioning;
       }
     },
@@ -334,7 +334,7 @@ BrowserID.User = (function() {
         }
         else {
           self.createSecondaryUser(email, function(success) {
-            if(success) {
+            if (success) {
               onComplete("secondary.verify");
             }
             else {
@@ -346,9 +346,9 @@ BrowserID.User = (function() {
 
       function attemptAddPrimary(email, info) {
         User.provisionPrimaryUser(email, info, function(status, provInfo) {
-          if(status === "primary.verified") {
+          if (status === "primary.verified") {
             network.authenticateWithAssertion(email, provInfo.assertion, function(status) {
-              if(status) {
+              if (status) {
                 onComplete("primary.verified");
               }
               else {
@@ -377,7 +377,7 @@ BrowserID.User = (function() {
         persistEmailKeypair(email, "primary", keypair, cert, function() {
           // We are getting an assertion for browserid.org.
           User.getAssertion(email, "https://browserid.org", function(assertion) {
-            if(assertion) {
+            if (assertion) {
               onComplete("primary.verified", {
                 assertion: assertion
               });
@@ -389,7 +389,7 @@ BrowserID.User = (function() {
           }, onFailure);
         }, onFailure);
       }, function(error) {
-        if(error.code === "primaryError" && error.msg === "user is not authenticated as target user") {
+        if (error.code === "primaryError" && error.msg === "user is not authenticated as target user") {
           onComplete("primary.verify", info);
         }
         else {
@@ -645,16 +645,16 @@ BrowserID.User = (function() {
      * @method authenticate
      * @param {string} email - Email address to authenticate.
      * @param {string} password - Password.
-     * @param {function} [onComplete] - Called on sync completion.
+     * @param {function} [onComplete] - Called on completion with status. true
+     * if user is authenticated, false otw.
      * @param {function} [onFailure] - Called on error.
      */
     authenticate: function(email, password, onComplete, onFailure) {
       var self=this;
       network.authenticate(email, password, function(authenticated) {
         setAuthenticationStatus(authenticated);
-        if (onComplete) {
+        if (onComplete)
           onComplete(authenticated);
-        }
       }, onFailure);
     },
 
@@ -760,7 +760,7 @@ BrowserID.User = (function() {
     verifyEmailWithPassword: function(token, pass, onComplete, onFailure) {
       User.verifyEmailNoPassword(token, function(userInfo) {
         var invalidInfo = { valid: false };
-        if(userInfo.status !== false) {
+        if (userInfo.status !== false) {
           User.setPassword(pass, function(status) {
             onComplete(status ? userInfo : invalidInfo);
           }, onFailure);
@@ -866,13 +866,13 @@ BrowserID.User = (function() {
             }, 0);
           }
           else {
-            if(storedID.type === "primary") {
+            if (storedID.type === "primary") {
               // first we have to get the address info, then attempt
               // a provision, then if the user is provisioned, go and get an
               // assertion.
               network.addressInfo(email, function(info) {
                 User.provisionPrimaryUser(email, info, function(status) {
-                  if(status === "primary.verified") {
+                  if (status === "primary.verified") {
                     User.getAssertion(email, audience, onComplete, onFailure);
                   }
                   else {
