@@ -54,7 +54,8 @@ var tokenStack = [];
 
 exports.waitForToken = function(cb) {
   if (tokenStack.length) {
-    cb(tokenStack.shift());
+    var t = tokenStack.shift();
+    process.nextTick(function() { cb(t); });
   }
   else {
     if (nextTokenFunction) throw "can't wait for a verification token when someone else is!";

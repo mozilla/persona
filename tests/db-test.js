@@ -113,8 +113,8 @@ suite.addBatch({
       topic: function(secret) {
         db.emailForVerificationSecret(secret, this.callback);
       },
-      "matches expected email": function(storedEmail) {
-        assert.strictEqual('lloyd@nowhe.re', storedEmail);
+      "matches expected email": function(err, r) {
+        assert.strictEqual(r.email, 'lloyd@nowhe.re');
       }
     },
     "fetch secret for email": {
