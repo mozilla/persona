@@ -47,20 +47,19 @@ BrowserID.addEmailAddress = (function() {
       token,
       sc;
 
-  function showError(el) {
+  function showError(el, oncomplete) {
     $(".hint,#signUpForm").hide();
-    $(el).fadeIn(ANIMATION_TIME);
+    $(el).fadeIn(ANIMATION_TIME, oncomplete);
   }
 
   function emailRegistrationComplete(oncomplete, info) {
     var valid = info.valid;
     if (valid) {
-      emailRegistrationSuccess(info);
+      emailRegistrationSuccess(info, oncomplete.bind(null, true));
     }
     else {
-      showError("#cannotconfirm");
+      showError("#cannotconfirm", oncomplete.bind(null, false));
     }
-    oncomplete && oncomplete(valid);
   }
 
   function showRegistrationInfo(info) {
@@ -72,13 +71,13 @@ BrowserID.addEmailAddress = (function() {
     }
   }
 
-  function emailRegistrationSuccess(info) {
+  function emailRegistrationSuccess(info, oncomplete) {
     dom.addClass("body", "complete");
 
     showRegistrationInfo(info);
 
     setTimeout(function() {
-      pageHelpers.replaceFormWithNotice("#congrats");
+      pageHelpers.replaceFormWithNotice("#congrats", oncomplete);
     }, 2000);
   }
 

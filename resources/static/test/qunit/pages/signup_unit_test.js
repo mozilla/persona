@@ -48,9 +48,9 @@
   module("pages/signup", {
     setup: function() {
       testHelpers.setup();
-
       bid.Renderer.render("#page_head", "site/signup", {});
       $(".emailsent").hide();
+      $(".notification").hide()
       winchan = new WinChanMock();
       bid.signUp({
         winchan: winchan
@@ -130,7 +130,7 @@
 
     bid.signUp.submit(function() {
       bid.signUp.back(function() {
-        equal($(".notification:visible").length, 0, "no notifications are visible");
+        equal($(".notification:visible").length, 0, "no notifications are visible - visible: " + $(".notification:visible").attr("id"));
         ok($(".forminputs:visible").length, "form inputs are again visible");
         equal($("#email").val(), "unregistered@testuser.com", "email address restored");
         start();

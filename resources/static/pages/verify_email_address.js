@@ -75,11 +75,11 @@
     bid.Network.emailForVerificationToken(token, function(email) {
       if (email) {
         $('#email').val(email);
+        oncomplete && oncomplete();
       }
       else {
-        pageHelpers.replaceFormWithNotice("#cannotconfirm");
+        pageHelpers.replaceFormWithNotice("#cannotconfirm", oncomplete);
       }
-      oncomplete && oncomplete();
     }, pageHelpers.getFailure(errors.completeUserRegistration, oncomplete));
   }
 

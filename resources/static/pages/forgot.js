@@ -54,13 +54,12 @@ BrowserID.forgot = (function() {
     if (email) {
       user.requestPasswordReset(email, function onSuccess(info) {
         if (info.success) {
-          pageHelpers.showEmailSent();
+          pageHelpers.showEmailSent(oncomplete);
         }
         else {
           var tooltipEl = info.reason === "throttle" ? "#could_not_add" : "#not_registered";
-          tooltip.showTooltip(tooltipEl);
+          tooltip.showTooltip(tooltipEl, oncomplete);
         }
-        oncomplete && oncomplete();
       }, pageHelpers.getFailure(bid.Errors.requestPasswordReset, oncomplete));
     } else {
       oncomplete && oncomplete();
