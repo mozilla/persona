@@ -61,7 +61,7 @@ const TEST_DOMAIN = 'example.domain',
       TEST_EMAIL = 'testuser@' + TEST_DOMAIN,
       TEST_ORIGIN = 'http://127.0.0.1:10002',
       TEST_PASS = 'fakepass',
-      SECONDARY_EMAIL = 'second@fakeemail.com';
+      SECONDARY_EMAIL = 'secondary@notexample.domain';
 
 var primaryUser = new primary({
   email: TEST_EMAIL,
@@ -153,7 +153,7 @@ suite.addBatch({
   "authentication with first email": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: TEST_EMAIL,
-      passwd: TEST_PASS
+      pass: TEST_PASS
     }),
     "works": function(r, err) {
       assert.strictEqual(r.code, 200);
@@ -162,7 +162,7 @@ suite.addBatch({
   "authentication with second email": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: SECONDARY_EMAIL,
-      passwd: TEST_PASS
+      pass: TEST_PASS
     }),
     "works": function(r, err) {
       assert.strictEqual(r.code, 200);
