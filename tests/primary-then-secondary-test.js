@@ -61,7 +61,8 @@ const TEST_DOMAIN = 'example.domain',
       TEST_EMAIL = 'testuser@' + TEST_DOMAIN,
       TEST_ORIGIN = 'http://127.0.0.1:10002',
       TEST_PASS = 'fakepass',
-      SECONDARY_EMAIL = 'second@fakeemail.com';
+      SECONDARY_EMAIL = 'secondary@notexample.domain',
+      SECOND_SECONDARY_EMAIL = 'secondsecondary@notexample.domain';
 
 var primaryUser = new primary({
   email: TEST_EMAIL,
@@ -149,11 +150,64 @@ suite.addBatch({
   }
 });
 
+// adding a second secondary will not let us set the password
+suite.addBatch({
+  "add a new email address to our account": {
+    topic: wsapi.post('/wsapi/stage_email', {
+      email: SECOND_SECONDARY_EMAIL,
+      site:'fakesite.com'
+    }),
+    "works": function(r, err) {
+      assert.strictEqual(r.code, 200);
+    },
+    "and get a token": {
+      topic: function() {
+        start_stop.waitForToken(this.callback);
+      },
+      "successfully": function (t) {
+        this._token = t;
+        assert.strictEqual(typeof t, 'string');
+      },
+      "and to complete":  {
+        topic: function(t) {
+          wsapi.get('/wsapi/email_for_token', {
+            token: t
+          }).call(this);
+        },
+        "we do not need to set our password": function (r) {
+          r = JSON.parse(r.body);
+          assert.isFalse(r.needs_password);
+        },
+        "with": {
+          topic: function() {
+            wsapi.post('/wsapi/complete_email_addition', { token: this._token, pass: TEST_PASS }).call(this);
+          },
+          "a password fails": function(r, err) {
+            assert.equal(r.code, 200);
+            assert.strictEqual(JSON.parse(r.body).success, false);
+          },
+          "no password succeeds": {
+            topic: function() {
+              wsapi.post('/wsapi/complete_email_addition', {
+                token: this._token
+              }).call(this);
+            },
+            "succeeds": function(r, err) {
+              assert.equal(r.code, 200);
+              assert.strictEqual(JSON.parse(r.body).success, true);
+            }
+          }
+        }
+      }
+    }
+  }
+});
+
 suite.addBatch({
   "authentication with first email": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: TEST_EMAIL,
-      passwd: TEST_PASS
+      pass: TEST_PASS
     }),
     "works": function(r, err) {
       assert.strictEqual(r.code, 200);
@@ -162,7 +216,7 @@ suite.addBatch({
   "authentication with second email": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: SECONDARY_EMAIL,
-      passwd: TEST_PASS
+      pass: TEST_PASS
     }),
     "works": function(r, err) {
       assert.strictEqual(r.code, 200);
