@@ -59,23 +59,32 @@ BrowserID.Modules.RequiredEmail = (function() {
       dialogHelpers.getAssertion.call(self, email, callback);
     }
     else {
-      // If the user is not already authenticated, but they potentially own
-      // this address, try and sign them in and generate an assertion if they
-      // get the password right.
-      var password = helpers.getAndValidatePassword("#password");
-      if (password) {
-        dialogHelpers.authenticateUser.call(self, email, password, function(authenticated) {
-          if (authenticated) {
-            // Now that the user has authenticated, sync their emails and get an
-            // assertion for the email we care about.
-            user.syncEmailKeypair(email, function() {
-              dialogHelpers.getAssertion.call(self, email, callback);
-            }, self.getErrorDialog(errors.syncEmailKeypair));
-          }
-          else {
-            callback && callback();
-          }
-        });
+      if(primaryInfo) {
+        self.close("primary_user", _.extend(primaryInfo, {
+          email: email,
+          requiredEmail: true
+        }));
+        callback && callback();
+      }
+      else {
+        // If the user is not already authenticated, but they potentially own
+        // this address, try and sign them in and generate an assertion if they
+        // get the password right.
+        var password = helpers.getAndValidatePassword("#password");
+        if (password) {
+          dialogHelpers.authenticateUser.call(self, email, password, function(authenticated) {
+            if (authenticated) {
+              // Now that the user has authenticated, sync their emails and get an
+              // assertion for the email we care about.
+              user.syncEmailKeypair(email, function() {
+                dialogHelpers.getAssertion.call(self, email, callback);
+              }, self.getErrorDialog(errors.syncEmailKeypair));
+            }
+            else {
+              callback && callback();
+            }
+          });
+        }
       }
     }
   }
@@ -129,14 +138,33 @@ BrowserID.Modules.RequiredEmail = (function() {
         // if the current user owns the required email, sign in with it
         // (without a password). Otherwise, make the user verify the address
         // (which shows no password).
-        var userOwnsEmail = !!user.getStoredEmailKeypair(email);
-        if (userOwnsEmail) {
-          showTemplate({ signin: true });
+        var emailInfo = user.getStoredEmailKeypair(email);
+        if (emailInfo) {
+          if(emailInfo.type === "secondary" || emailInfo.cert) {
+            // secondary user or cert is valid, user can sign in normally.
+            showTemplate({ signin: true });
+          }
+          else {
+            // Uh oh, certificate is expired, take care of that.
+            self.close("primary_user", { email: email, requiredEmail: true });
+          }
+          ready();
         }
         else {
-          showTemplate({ verify: true });
+          // User does not control address, time to verify.
+          user.addressInfo(email, function(info) {
+            // authenticated user who does not own primary address, make them
+            // verify it.
+            if(info.type === "primary") {
+              self.close("primary_user",
+                _.extend(info, { email: email, requiredEmail: true }));
+            }
+            else {
+              showTemplate({ verify: true });
+            }
+            ready();
+          });
         }
-        ready();
       }
       else {
         user.addressInfo(email, function(info) {
@@ -150,11 +178,10 @@ BrowserID.Modules.RequiredEmail = (function() {
               }
               else {
                 // If the user is not authenticated with their IdP, pass them
-                // off to the unauthenticated primary user flow.
-                self.close("primary_user_unauthenticated", {
+                // off to the primary user flow.
+                self.close("primary_user", {
                   email: email,
-                  auth_url: primaryInfo.auth,
-                  requiredEmail: true
+                  auth_url: primaryInfo.auth
                 });
               }
               ready();

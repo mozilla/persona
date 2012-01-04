@@ -42,7 +42,9 @@
       controller,
       moduleManager = bid.module,
       errors = bid.Errors,
-      addPrimaryUser = false;
+      addPrimaryUser = false,
+      email,
+      requiredEmail;
 
   function subscribe(message, cb) {
     subscriptions.push(mediator.subscribe(message, cb));
@@ -57,7 +59,7 @@
   function gotoState(push, funcName) {
     var args = [].slice.call(arguments, 1);
 
-    if(typeof push === "boolean") {
+    if (typeof push === "boolean") {
       // Must take the push param off to get to funcName and then the remaining
       // arguments.
       args = [].slice.call(args, 1);
@@ -67,7 +69,7 @@
       push = true;
     }
 
-    if(push) {
+    if (push) {
       pushState(funcName, args);
     }
 
@@ -90,7 +92,7 @@
     stateStack.pop();
 
     var state = stateStack[stateStack.length - 1];
-    if(state) {
+    if (state) {
       controller[state.funcName].apply(controller, state.args);
     }
   }
@@ -109,10 +111,12 @@
 
       self.hostname = info.hostname;
       self.allowPersistent = !!info.allowPersistent;
-      var email = self.requiredEmail = info.requiredEmail;
+      requiredEmail = info.requiredEmail;
 
-      if(typeof(email) !== "undefined" && !(bid.verifyEmail(email))) {
-        startState("doError", "invalid_required_email", { email: email });
+      if ((typeof(requiredEmail) !== "undefined")
+       && (!bid.verifyEmail(requiredEmail))) {
+        // Invalid format
+        startState("doError", "invalid_required_email", {email: requiredEmail});
       }
       else {
         startState("doCheckAuth");
@@ -124,7 +128,7 @@
     });
 
     subscribe("window_unload", function() {
-      if(!self.success) {
+      if (!self.success) {
         bid.Storage.setStagedOnBehalfOf("");
         startState("doCancel");
       }
@@ -133,9 +137,9 @@
     subscribe("authentication_checked", function(msg, info) {
       var authenticated = info.authenticated;
 
-      if (self.requiredEmail) {
+      if (requiredEmail) {
         startState("doAuthenticateWithRequiredEmail", {
-          email: self.requiredEmail,
+          email: requiredEmail,
           authenticated: authenticated
         });
       }
@@ -164,7 +168,7 @@
 
     subscribe("primary_user", function(msg, info) {
       addPrimaryUser = !!info.add;
-
+      email = info.email;
       // We don't want to put the provisioning step on the stack, instead when
       // a user cancels this step, they should go back to the step before the
       // provisioning.
@@ -180,6 +184,8 @@
     subscribe("primary_user_unauthenticated", function(msg, info) {
       info = info || {};
       info.add = !!addPrimaryUser;
+      info.email = email;
+      info.requiredEmail = !!requiredEmail;
       startState("doVerifyPrimaryUser", info);
     });
 
@@ -269,7 +275,7 @@
       options = options || {};
 
       controller = options.controller;
-      if(!controller) {
+      if (!controller) {
         throw "start: controller must be specified";
       }
 

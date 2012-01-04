@@ -41,6 +41,7 @@
       bid = BrowserID,
       xhr = bid.Mocks.xhr,
       user = bid.User,
+      storage = bid.Storage,
       testHelpers = bid.TestHelpers,
       register = testHelpers.register,
       provisioning = bid.Mocks.Provisioning;
@@ -124,9 +125,63 @@
     });
   });
 
+  asyncTest("primary: user who is authenticated, owns address, cert valid - sees signin screen", function() {
+    var email = "testuser@testuser.com";
+
+    storage.addEmail(email, { type: "primary", cert: "cert" });
+    createController({
+      email: email,
+      authenticated: true,
+      ready: function() {
+        testSignIn(email);
+      }
+    });
+
+  });
+
+  asyncTest("primary: user who is authenticated, owns address, cert expired or invalid - redirected to 'primary_user'", function() {
+    var email = "registered@testuser.com",
+        msgInfo;
+
+    storage.addEmail(email, { type: "primary" });
+
+    register("primary_user", function(msg, info) {
+      msgInfo = info;
+    });
+
+    createController({
+      email: email,
+      authenticated: true,
+      ready: function() {
+        equal(msgInfo.email, email, "correct email passed");
+        start();
+      }
+    });
+  });
+
+  asyncTest("primary: user who is authenticated, does not own address - redirected to 'primary_user'", function() {
+    var email = "unregistered@testuser.com",
+        msgInfo;
+
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+
+    register("primary_user", function(msg, info) {
+      msgInfo = info;
+    });
+
+    createController({
+      email: email,
+      authenticated: true,
+      ready: function() {
+        equal(msgInfo.email, email, "correct email passed");
+        start();
+      }
+    });
+  });
+
   asyncTest("primary: user who is not authenticated, authenticated with IdP - user sees sign in screen.", function() {
     var email = "unregistered@testuser.com";
-
     xhr.useResult("primary");
     provisioning.setStatus(provisioning.AUTHENTICATED);
 
@@ -139,11 +194,11 @@
     });
   });
 
-  asyncTest("primary: user who is not authenticated, not authenticated with IdP - redirects to 'primary_user_unauthenticated'", function() {
+  asyncTest("primary: user who is not authenticated, not authenticated with IdP - redirects to 'primary_user'", function() {
     var email = "unregistered@testuser.com",
         msgInfo;
 
-    register("primary_user_unauthenticated", function(msg, info) {
+    register("primary_user", function(msg, info) {
       msgInfo = info;
     });
 
@@ -188,7 +243,6 @@
         }
       });
     });
-
   });
 
   asyncTest("known_secondary: user who is authenticated, email belongs to another user - user sees verify screen", function() {
@@ -197,6 +251,8 @@
     });
 
     var email = "registered@testuser.com";
+    xhr.useResult("known_secondary");
+
     createController({
       email: email,
       authenticated: true,
@@ -212,8 +268,10 @@
     xhr.setContextInfo({
       authenticated: true
     });
+    xhr.useResult("unknown_secondary");
 
     var email = "unregistered@testuser.com";
+
     createController({
       email: email,
       authenticated: true,
