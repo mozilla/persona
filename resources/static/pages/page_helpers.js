@@ -107,7 +107,7 @@ BrowserID.PageHelpers = (function() {
     $(selector).fadeIn(ANIMATION_SPEED);
     // If there is more than one .forminputs, the onComplete callback is called
     // multiple times, we only want once.
-    setTimeout(onComplete, ANIMATION_SPEED);
+    onComplete && setTimeout(onComplete, ANIMATION_SPEED);
   }
 
   function replaceInputsWithNotice(selector, onComplete) {
@@ -115,7 +115,7 @@ BrowserID.PageHelpers = (function() {
     $(selector).stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED);
     // If there is more than one .forminputs, the onComplete callback is called
     // multiple times, we only want once.
-    setTimeout(onComplete, ANIMATION_SPEED);
+    onComplete && setTimeout(onComplete, ANIMATION_SPEED);
   }
 
   function showInputs(onComplete) {
@@ -123,7 +123,7 @@ BrowserID.PageHelpers = (function() {
     $('.forminputs').stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED);
     // If there is more than one .forminputs, the onComplete callback is called
     // multiple times, we only want once.
-    setTimeout(onComplete, ANIMATION_SPEED);
+    onComplete && setTimeout(onComplete, ANIMATION_SPEED);
   }
 
   function showEmailSent(onComplete) {
