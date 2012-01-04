@@ -224,7 +224,7 @@
   });
 
 
-  asyncTest("signIn of an authenticated user generates an assertion", function() {
+  asyncTest("secondary: signIn of an authenticated user generates an assertion", function() {
     xhr.setContextInfo({
       authenticated: true
     });
@@ -245,7 +245,7 @@
     });
   });
 
-  asyncTest("signIn of a non-authenticated user with a good password generates an assertion", function() {
+  asyncTest("secondary: signIn of a non-authenticated user with a good password generates an assertion", function() {
     xhr.setContextInfo({
       authenticated: false
     });
@@ -272,7 +272,7 @@
   });
 
 
-  asyncTest("signIn of a non-authenticated user with a bad password does not generate an assertion", function() {
+  asyncTest("secondary: signIn of a non-authenticated user with a bad password does not generate an assertion", function() {
     xhr.setContextInfo({
       authenticated: false
     });
@@ -302,6 +302,30 @@
         });
       }
     });
+  });
+
+  asyncTest("primary: signIn of an non-authenticated BID, authenticated IdP user redirects to 'primary_user'", function() {
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+    var email = "unregistered@testuser.com";
+
+    createController({
+      email: email,
+      authenticated: false,
+      ready: function() {
+        var primaryEmail;
+
+        register("primary_user", function(item, info) {
+          primaryEmail = info.email;
+        });
+
+        controller.signIn(function() {
+          equal(primaryEmail, email, "correct email passed to primary_user");
+          start();
+        });
+      }
+    });
+
   });
 
   function testMessageReceived(email, message) {

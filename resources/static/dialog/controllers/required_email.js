@@ -45,15 +45,21 @@ BrowserID.Modules.RequiredEmail = (function() {
       dialogHelpers = helpers.Dialog,
       dom = bid.DOM,
       assertion,
-      cancelEvent = dialogHelpers.cancelEvent;
+      cancelEvent = dialogHelpers.cancelEvent,
+      email,
+      authenticated,
+      primaryInfo;
 
   function signIn(callback) {
-    var self = this,
-        email = self.email;
+    var self = this;
 
     // If the user is already authenticated and they own this address, sign
     // them right in.
-    if(self.authenticated) {
+    if(primaryInfo) {
+      self.close("primary_user", _.extend({ email: email }, primaryInfo));
+      callback && callback();
+    }
+    else if(authenticated) {
       dialogHelpers.getAssertion.call(self, email, callback);
     }
     else {
@@ -85,22 +91,22 @@ BrowserID.Modules.RequiredEmail = (function() {
     // registration.
 
     var self=this;
-    if(self.authenticated) {
+    if(authenticated) {
       // If we are veryifying an address and the user is authenticated, it
       // means that the current user does not have control of the address.
       // If the address is registered, it means another account has control of
       // the address and we are consolidating.  If the email is not registered
       // then it means add the address to the current user's account.
-      dialogHelpers.addEmail.call(self, self.email);
+      dialogHelpers.addEmail.call(self, email);
     }
     else {
-      dialogHelpers.createUser.call(self, self.email);
+      dialogHelpers.createUser.call(self, email);
     }
   }
 
   function forgotPassword() {
     var self=this;
-    self.close("forgot_password", { email: self.email, requiredEmail: true });
+    self.close("forgot_password", { email: email, requiredEmail: true });
   }
 
 
@@ -110,12 +116,11 @@ BrowserID.Modules.RequiredEmail = (function() {
 
   var RequiredEmail = bid.Modules.PageModule.extend({
     start: function(options) {
-      var self=this,
-          email = options.email || "",
-          authenticated = options.authenticated || false;
+      var self=this;
 
-      self.email = email;
-      self.authenticated = authenticated;
+      email = options.email || "",
+      authenticated = options.authenticated || false;
+      primaryInfo = null;
 
       function ready() {
         options.ready && options.ready();
@@ -137,6 +142,9 @@ BrowserID.Modules.RequiredEmail = (function() {
           if(info.type === "primary") {
             user.isUserAuthenticatedToPrimary(email, info, function(authed) {
               if(authed) {
+                // If the user is authenticated with their primary, show the
+                // sign in button to give the user the chance to abort.
+                primaryInfo = info;
                 showTemplate({ signin: true, showPassword: false });
               }
               else {
