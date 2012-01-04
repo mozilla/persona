@@ -104,5 +104,22 @@
       start();
     });
   });
+
+  asyncTest("cancel triggers the cancel_state", function() {
+    createController({
+      window: win,
+      add: true,
+      email: "unregistered@testuser.com",
+      auth_url: "http://testuser.com/sign_in"
+    });
+
+    testHelpers.register("cancel_state");
+
+    controller.cancel(function() {
+      equal(testHelpers.isTriggered("cancel_state"), true, "cancel_state is triggered");
+      start();
+    });
+  });
+
 }());
 

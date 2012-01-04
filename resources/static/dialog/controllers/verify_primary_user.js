@@ -43,7 +43,8 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       add,
       email,
       auth_url,
-      helpers = bid.Helpers;
+      helpers = bid.Helpers,
+      cancelEvent = helpers.Dialog.cancelEvent;
 
   function verify(callback) {
     this.publish("primary_user_authenticating");
@@ -62,6 +63,11 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     callback();
   }
 
+  function cancel(callback) {
+    this.close("cancel_state");
+    callback && callback();
+  }
+
   var Module = bid.Modules.PageModule.extend({
     start: function(data) {
       var self=this;
@@ -72,12 +78,20 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email = data.email;
       auth_url = data.auth_url;
 
-      self.renderDialog("verify_with_primary", data);
+      data.requiredEmail = data.requiredEmail || false;
+      self.renderDialog("verify_primary_user", data);
+
+      self.bind("#cancel", "click", cancelEvent(cancel));
 
       sc.start.call(self, data);
     },
 
     submit: verify
+
+    // BEGIN TESTING API
+    ,
+    cancel: cancel
+    // END TESTING API
   });
 
   sc = Module.sc;

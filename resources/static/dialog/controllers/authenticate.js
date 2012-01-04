@@ -62,6 +62,8 @@ BrowserID.Modules.Authenticate = (function() {
 
     user.addressInfo(email, function(info) {
       if(info.type === "primary") {
+        // XXX this will redirect already users already signed in to their IdP
+        // without ever giving them a cancel option.  Kind of crappy.
         self.close("primary_user", _.extend(info, { email: email }));
       }
       else {

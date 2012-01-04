@@ -19,7 +19,7 @@
       }
       calls[msg] = true;
 
-      cb(msg, info);
+      cb && cb(msg, info);
     }));
   }
 
@@ -82,6 +82,9 @@
     testOrigin: testOrigin,
 
     register: register,
+    isTriggered: function(message) {
+      return calls[message];
+    },
     errorVisible: function() {
       return screens.error.visible;
     },

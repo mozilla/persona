@@ -97,7 +97,7 @@
     equal($("#password_section").length, 0, "password section is not there");
   }
 
-  asyncTest("user who is not authenticated, known secondary - show password form", function() {
+  asyncTest("known_secondary: user who is not authenticated - show password form", function() {
     var email = "registered@testuser.com";
     xhr.useResult("known_secondary");
 
@@ -111,7 +111,7 @@
 
   });
 
-  asyncTest("user who is not authenticated, unknown secondary - user must verify", function() {
+  asyncTest("unknown_secondary: user who is not authenticated - user must verify", function() {
     var email = "unregistered@testuser.com";
     xhr.useResult("unknown_secondary");
 
@@ -124,7 +124,7 @@
     });
   });
 
-  asyncTest("user who is not authenticated, authenticated with IdP - user sees sign in screen.", function() {
+  asyncTest("primary: user who is not authenticated, authenticated with IdP - user sees sign in screen.", function() {
     var email = "unregistered@testuser.com";
 
     xhr.useResult("primary");
@@ -139,11 +139,11 @@
     });
   });
 
-  asyncTest("user who is not authenticated, not authenticated with IdP - user sees verification screen.", function() {
+  asyncTest("primary: user who is not authenticated, not authenticated with IdP - redirects to 'primary_user_unauthenticated'", function() {
     var email = "unregistered@testuser.com",
         msgInfo;
 
-    register("primary_user", function(msg, info) {
+    register("primary_user_unauthenticated", function(msg, info) {
       msgInfo = info;
     });
 
@@ -173,7 +173,7 @@
     });
   });
 
-  asyncTest("user who is authenticated, email belongs to user", function() {
+  asyncTest("known_secondary: user who is authenticated, email belongs to user - user sees sign in screen.", function() {
     xhr.setContextInfo({
       authenticated: true
     });
@@ -191,7 +191,7 @@
 
   });
 
-  asyncTest("user who is authenticated, email belongs to another user", function() {
+  asyncTest("known_secondary: user who is authenticated, email belongs to another user - user sees verify screen", function() {
     xhr.setContextInfo({
       authenticated: true
     });
@@ -208,7 +208,7 @@
     });
   });
 
-  asyncTest("user who is authenticated, but email unknown", function() {
+  asyncTest("unknown_secondary: user who is authenticated, but email unknown - user sees verify screen", function() {
     xhr.setContextInfo({
       authenticated: true
     });
@@ -224,7 +224,7 @@
   });
 
 
-  asyncTest("secondary: signIn of an authenticated user generates an assertion", function() {
+  asyncTest("secondary: signIn of an authenticated user - generates an assertion, redirects to assertion_generated", function() {
     xhr.setContextInfo({
       authenticated: true
     });
@@ -245,7 +245,7 @@
     });
   });
 
-  asyncTest("secondary: signIn of a non-authenticated user with a good password generates an assertion", function() {
+  asyncTest("secondary: signIn of a non-authenticated user with a good password - generates an assertion, redirects to assertion_generated", function() {
     xhr.setContextInfo({
       authenticated: false
     });
@@ -304,7 +304,7 @@
     });
   });
 
-  asyncTest("primary: signIn of an non-authenticated BID, authenticated IdP user redirects to 'primary_user'", function() {
+  asyncTest("primary: signIn of an non-authenticated user who is authenticated w/ IdP - redirects to 'primary_user'", function() {
     xhr.useResult("primary");
     provisioning.setStatus(provisioning.AUTHENTICATED);
     var email = "unregistered@testuser.com";
@@ -349,21 +349,21 @@
     });
   }
 
-  asyncTest("verifyAddress of authenticated user, address belongs to another user", function() {
+  asyncTest("verifyAddress of authenticated user, address belongs to another user - redirects to 'email_staged'", function() {
     var email = "registered@testuser.com";
     xhr.useResult("known_secondary");
 
     testMessageReceived(email, "email_staged");
   });
 
-  asyncTest("verifyAddress of authenticated user, unknown address", function() {
+  asyncTest("verifyAddress of authenticated user, unknown address - redirects to 'email_staged'", function() {
     var email = "unregistered@testuser.com";
     xhr.useResult("unknown_secondary");
 
     testMessageReceived(email, "email_staged");
   });
 
-  asyncTest("verifyAddress of un-authenticated user, forgot password", function() {
+  asyncTest("verifyAddress of un-authenticated user, forgot password - redirect to 'forgot_password'", function() {
     var email = "registered@testuser.com",
         authenticated = false,
         message = "forgot_password";
