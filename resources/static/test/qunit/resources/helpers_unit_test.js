@@ -188,7 +188,6 @@
     });
   });
 
-
   asyncTest("addEmail throttled", function() {
     xhr.useResult("throttle");
     dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
