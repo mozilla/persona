@@ -193,6 +193,37 @@
     });
   });
 
+  asyncTest("changePassword with too short of a password, expect tooltip", function() {
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val("oldpassword");
+      $("#new_password").val("pass");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "on too short of a password, status is false");
+        equal(tooltip.shown, true, "tooltip is visible");
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword with too long of a password, expect tooltip", function() {
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val("oldpassword");
+      var tooLong = "";
+      for(var i = 0; i < 81; i++) {
+        tooLong += (i % 10);
+      }
+      $("#new_password").val(tooLong);
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "on too short of a password, status is false");
+        equal(tooltip.shown, true, "tooltip is visible");
+        start();
+      });
+    });
+  });
+
+
   asyncTest("changePassword with incorrect old password, expect tooltip", function() {
     bid.manageAccount(mocks, function() {
       xhr.useResult("incorrectPassword");
