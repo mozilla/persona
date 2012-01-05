@@ -117,7 +117,10 @@ suite.addBatch({
 suite.addBatch({
   "the password": {
     topic: function() {
-      db.checkAuth(TEST_EMAIL, this.callback);
+      var cb = this.callback;
+      db.emailToUID(TEST_EMAIL, function(uid) {
+        db.checkAuth(uid, cb);
+      });
     },
     "is bcrypted with the expected number of rounds": function(r, err) {
       assert.equal(typeof r, 'string');
@@ -161,7 +164,10 @@ suite.addBatch({
     },
     "if we recheck the auth hash": {
       topic: function() {
-        db.checkAuth(TEST_EMAIL, this.callback);
+        var cb = this.callback;
+        db.emailToUID(TEST_EMAIL, function(uid) {
+          db.checkAuth(uid, cb);
+        });
       },
       "its bcrypted with 8 rounds": function(r, err) {
         assert.equal(typeof r, 'string');
