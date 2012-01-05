@@ -3,7 +3,7 @@
   , "version": "0.0.1"
   , "private": true
   , "dependencies": {
-      "JSONSelect": "0.2.1"
+      "JSONSelect": "0.3.0"
     , "bcrypt": "0.4.1"
     , "compute-cluster": "0.0.6"
     , "connect": "1.7.2"
