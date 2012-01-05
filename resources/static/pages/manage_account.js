@@ -239,6 +239,10 @@ BrowserID.manageAccount = (function() {
       tooltip.showTooltip("#tooltipNewRequired");
       complete(false);
     }
+    else if(newPassword.length < 8 || 80 < newPassword.length) {
+      tooltip.showTooltip("tooltipPasswordLength");
+      complete(false);
+    }
     else {
       user.changePassword(oldPassword, newPassword, function(status) {
         if(status) {
