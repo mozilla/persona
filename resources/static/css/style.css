@@ -20,6 +20,9 @@ noscript {
   display: none;
   z-index: 1000;
   background-color: rgba(0,0,0,.6);
+  -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000,endColorstr=#99000000);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000,endColorstr=#99000000);
+  zoom: 1;
 }
 
 #error {
@@ -645,6 +648,9 @@ h1 {
   margin-top: 20px;
   color: red;
   background-color: rgba(255,0,0,0.25);
+  -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#3fff0000,endColorstr=#3fff0000);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#3fff0000,endColorstr=#3fff0000);
+  zoom: 1;
   padding: 5px;
   line-height: 16px;
 

@@ -309,12 +309,20 @@ footer .learn a {
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
+header,
+footer {
+    display: block;
+    width: 100%;
+}
+
 header {
     padding: 20px;
     font-weight: bold;
+    border-bottom: 1px solid #c7c6c1;
     background-color: rgba(0,0,0,0.05);
-    border-bottom: 1px solid rgba(0,0,0,0.15);
-
+    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
+    zoom: 1;
     -webkit-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
        -moz-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
          -o-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
@@ -332,14 +340,8 @@ header ul li {
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
-header,
 footer {
-    display: block;
-    width: 100%;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-footer {
+    border-top: 1px solid #c7c6c1;
     padding: 20px;
 }
 
