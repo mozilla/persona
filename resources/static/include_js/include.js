@@ -817,13 +817,10 @@
             }
           };
         }
-      };
+      }
     } else {
       return {
         open: function(url, winopts, arg, cb) {
-          setTimeout(function() { cb("unsupported browser"); }, 0);
-        },
-        onOpen: function(cb) {
           setTimeout(function() { cb("unsupported browser"); }, 0);
         }
       };
