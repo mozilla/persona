@@ -232,6 +232,7 @@ header a.home {
   display: block;
   background-position: left 4px;
   background-repeat: no-repeat;
+  text-indent: -999px;
 }
 
 footer {
