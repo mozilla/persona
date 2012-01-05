@@ -22,7 +22,6 @@ heartbeat = require('../lib/heartbeat.js'),
 metrics = require('../lib/metrics.js'),
 logger = require('../lib/logging.js').logger,
 shutdown = require('../lib/shutdown'),
-views = require('../lib/browserid/views.js');
 
 var app = undefined;
 
