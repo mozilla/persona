@@ -89,6 +89,10 @@ BrowserID.Errors = (function(){
       title: "Checking Email Address"
     },
 
+    isUserAuthenticatedToPrimary: {
+      title: "Checking Whether User is Authenticated with IdP"
+    },
+
     logoutUser: {
       title: "Logout Failed"
     },

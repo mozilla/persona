@@ -44,16 +44,27 @@
       storage = bid.Storage,
       testHelpers = bid.TestHelpers,
       register = testHelpers.register,
-      provisioning = bid.Mocks.Provisioning;
+      provisioning = bid.Mocks.Provisioning,
+      origStart;
 
 
   module("controllers/required_email", {
     setup: function() {
+      origStart = start;
+      var count = 0;
+      start = function() {
+        if(count) {
+          throw "multiple starts in a test";
+        }
+        count++;
+        origStart();
+      };
       testHelpers.setup();
       $("#required_email").text("");
     },
 
     teardown: function() {
+      start = origStart;
       if (controller) {
         try {
           controller.destroy();
@@ -71,11 +82,19 @@
     controller.start(options);
   }
 
+  function testPasswordSection() {
+    equal($("#password_section").length, 1, "password section is there");
+  }
+
+  function testNoPasswordSection() {
+    equal($("#password_section").length, 0, "password section is not there");
+  }
+
   function testSignIn(email, cb) {
     var el = $("#required_email");
     equal(el.val() || el.text(), email, "email set correctly");
     equal($("#sign_in").length, 1, "sign in button shown");
-    equal($("#verify_address").length, 0, "verify address not shows");
+    equal($("#verify_address").length, 0, "verify address not shown");
     cb && cb();
     start();
   }
@@ -90,14 +109,6 @@
     start();
   }
 
-  function testPasswordSection() {
-    equal($("#password_section").length, 1, "password section is there");
-  }
-
-  function testNoPasswordSection() {
-    equal($("#password_section").length, 0, "password section is not there");
-  }
-
   asyncTest("known_secondary: user who is not authenticated - show password form", function() {
     var email = "registered@testuser.com";
     xhr.useResult("known_secondary");
@@ -109,7 +120,6 @@
         testSignIn(email, testPasswordSection);
       }
     });
-
   });
 
   asyncTest("unknown_secondary: user who is not authenticated - user must verify", function() {
@@ -129,6 +139,8 @@
     var email = "testuser@testuser.com";
 
     storage.addEmail(email, { type: "primary", cert: "cert" });
+    xhr.useResult("primary");
+
     createController({
       email: email,
       authenticated: true,
@@ -136,13 +148,31 @@
         testSignIn(email);
       }
     });
-
   });
 
-  asyncTest("primary: user who is authenticated, owns address, cert expired or invalid - redirected to 'primary_user'", function() {
+  asyncTest("primary: user who is authenticated, owns address, cert expired or invalid, authed with IdP - sees signin screen", function() {
     var email = "registered@testuser.com",
         msgInfo;
 
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+    storage.addEmail(email, { type: "primary" });
+
+    createController({
+      email: email,
+      authenticated: true,
+      ready: function() {
+        testSignIn(email);
+      }
+    });
+  });
+
+  asyncTest("primary: user who is authenticated, owns address, cert expired or invalid, not authed with IdP - redirected to 'primary_user'", function() {
+    var email = "registered@testuser.com",
+        msgInfo;
+
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
     storage.addEmail(email, { type: "primary" });
 
     register("primary_user", function(msg, info) {
@@ -159,7 +189,23 @@
     });
   });
 
-  asyncTest("primary: user who is authenticated, does not own address - redirected to 'primary_user'", function() {
+  asyncTest("primary: user who is authenticated, does not own address, authed with IdP - user sees signin screen", function() {
+    var email = "unregistered@testuser.com",
+        msgInfo;
+
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+
+    createController({
+      email: email,
+      authenticated: true,
+      ready: function() {
+        testSignIn(email);
+      }
+    });
+  });
+
+  asyncTest("primary: user who is authenticated, does not own address, not authed with IdP - redirected to 'primary_user'", function() {
     var email = "unregistered@testuser.com",
         msgInfo;
 
@@ -294,12 +340,15 @@
         authenticated: true
       });
 
+      var assertion;
       register("assertion_generated", function(item, info) {
-        ok(info.assertion, "we have an assertion");
-        start();
+        assertion = info.assertion;
       });
 
-      controller.signIn();
+      controller.signIn(function() {
+        ok(assertion, "we have an assertion");
+        start();
+      });
     });
   });
 
@@ -315,15 +364,18 @@
       email: email,
       authenticated: false,
       ready: function() {
+        var assertion;
         register("assertion_generated", function(item, info) {
-          ok(info.assertion, "we have an assertion");
-          start();
+          assertion = info.assertion;
         });
 
         xhr.useResult("valid");
 
         $("#password").val("password");
-        controller.signIn();
+        controller.signIn(function() {
+          ok(assertion, "we have an assertion");
+          start();
+        });
       }
     });
 

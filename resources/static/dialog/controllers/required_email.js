@@ -50,21 +50,32 @@ BrowserID.Modules.RequiredEmail = (function() {
       authenticated,
       primaryInfo;
 
+  function closePrimaryUser(callback) {
+    this.close("primary_user", _.extend(primaryInfo, {
+      email: email,
+      requiredEmail: true,
+      add: authenticated
+    }));
+
+    callback && callback();
+  }
+
   function signIn(callback) {
     var self = this;
 
     // If the user is already authenticated and they own this address, sign
     // them in.
     if (authenticated) {
-      dialogHelpers.getAssertion.call(self, email, callback);
+      if(primaryInfo) {
+        closePrimaryUser.call(self, callback);
+      }
+      else {
+        dialogHelpers.getAssertion.call(self, email, callback);
+      }
     }
     else {
       if(primaryInfo) {
-        self.close("primary_user", _.extend(primaryInfo, {
-          email: email,
-          requiredEmail: true
-        }));
-        callback && callback();
+        closePrimaryUser.call(self, callback);
       }
       else {
         // If the user is not already authenticated, but they potentially own
@@ -78,7 +89,7 @@ BrowserID.Modules.RequiredEmail = (function() {
               // assertion for the email we care about.
               user.syncEmailKeypair(email, function() {
                 dialogHelpers.getAssertion.call(self, email, callback);
-              }, self.getErrorDialog(errors.syncEmailKeypair));
+              }, self.getErrorDialog(errors.syncEmailKeypair, callback));
             }
             else {
               callback && callback();
@@ -143,12 +154,25 @@ BrowserID.Modules.RequiredEmail = (function() {
           if(emailInfo.type === "secondary" || emailInfo.cert) {
             // secondary user or cert is valid, user can sign in normally.
             showTemplate({ signin: true });
+            ready();
           }
           else {
-            // Uh oh, certificate is expired, take care of that.
-            self.close("primary_user", { email: email, requiredEmail: true });
+            // Uh oh, this is a primary user whose certificate is expired, take care of that.
+            user.addressInfo(email, function(info) {
+              primaryInfo = info;
+              if (info.authed) {
+                // If the user is authed with the IdP, give them the opportunity to press
+                // "signin" before passing them off to the primary user flow
+                showTemplate({ signin: true });
+              }
+              else {
+                // User is not authed with IdP, start the verification flow,
+                // add address to current user.
+                closePrimaryUser.call(self);
+              }
+              ready();
+            }, self.getErrorDialog(errors.addressInfo, ready));
           }
-          ready();
         }
         else {
           // User does not control address, time to verify.
@@ -156,36 +180,39 @@ BrowserID.Modules.RequiredEmail = (function() {
             // authenticated user who does not own primary address, make them
             // verify it.
             if(info.type === "primary") {
-              self.close("primary_user",
-                _.extend(info, { email: email, requiredEmail: true }));
+              primaryInfo = info;
+              if (info.authed) {
+                // If the user is authed with the IdP, give them the opportunity to press
+                // "signin" before passing them off to the primary user flow
+                showTemplate({ signin: true });
+              }
+              else {
+                // If user is not authed with IdP, kick them through the
+                // primary_user flow to get them verified.
+                closePrimaryUser.call(self);
+              }
             }
             else {
               showTemplate({ verify: true });
             }
             ready();
-          });
+          }, self.getErrorDialog(errors.addressInfo, ready));
         }
       }
       else {
         user.addressInfo(email, function(info) {
           if (info.type === "primary") {
-            user.isUserAuthenticatedToPrimary(email, info, function(authed) {
-              primaryInfo = info;
-              if (authed) {
-                // If the user is authenticated with their IdP, show the
-                // sign in button to give the user the chance to abort.
-                showTemplate({ signin: true, primary: true });
-              }
-              else {
-                // If the user is not authenticated with their IdP, pass them
-                // off to the primary user flow.
-                self.close("primary_user", {
-                  email: email,
-                  auth_url: primaryInfo.auth
-                });
-              }
-              ready();
-            }, self.getErrorDialog(errors.addressInfo, ready));
+            primaryInfo = info;
+            if (info.authed) {
+              // If the user is authenticated with their IdP, show the
+              // sign in button to give the user the chance to abort.
+              showTemplate({ signin: true, primary: true });
+            }
+            else {
+              // If the user is not authenticated with their IdP, pass them
+              // off to the primary user flow.
+              closePrimaryUser.call(self);
+            }
           }
           else {
             // If the current email address is registered but the user is not
@@ -197,8 +224,8 @@ BrowserID.Modules.RequiredEmail = (function() {
             else {
               showTemplate({ verify: true });
             }
-            ready();
           }
+          ready();
         }, self.getErrorDialog(errors.addressInfo, ready));
       }
 

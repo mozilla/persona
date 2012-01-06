@@ -43,7 +43,8 @@ BrowserID.User = (function() {
       network = bid.Network,
       storage = bid.Storage,
       User, pollTimeout,
-      provisioning = bid.Provisioning;
+      provisioning = bid.Provisioning,
+      addressCache = {};
 
   function prepareDeps() {
     if (!jwk) {
@@ -235,6 +236,7 @@ BrowserID.User = (function() {
 
     reset: function() {
       provisioning = BrowserID.Provisioning;
+      addressCache = {};
     },
 
     /**
@@ -311,7 +313,7 @@ BrowserID.User = (function() {
     createUser: function(email, onComplete, onFailure) {
       var self=this;
 
-      network.addressInfo(email, function(info) {
+      User.addressInfo(email, function(info) {
         User.createUserWithInfo(email, info, onComplete, onFailure);
       }, onFailure);
     },
@@ -750,7 +752,27 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     addressInfo: function(email, onSuccess, onFailure) {
-      network.addressInfo(email, onSuccess, onFailure);
+      function success(info) {
+        addressCache[email] = info;
+        onSuccess && onSuccess(info);
+      }
+
+      if(addressCache[email]) {
+        success(addressCache[email]);
+      }
+      else {
+        network.addressInfo(email, function(info) {
+          if(info.type === "primary") {
+            User.isUserAuthenticatedToPrimary(email, info, function(authed) {
+              info.authed = authed;
+              success(info);
+            }, onFailure);
+          }
+          else {
+            success(info);
+          }
+        }, onFailure);
+      }
     },
 
     /**
@@ -927,7 +949,7 @@ BrowserID.User = (function() {
               // first we have to get the address info, then attempt
               // a provision, then if the user is provisioned, go and get an
               // assertion.
-              network.addressInfo(email, function(info) {
+              User.addressInfo(email, function(info) {
                 User.provisionPrimaryUser(email, info, function(status) {
                   if (status === "primary.verified") {
                     User.getAssertion(email, audience, onComplete, onFailure);

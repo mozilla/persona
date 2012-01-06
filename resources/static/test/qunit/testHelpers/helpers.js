@@ -57,6 +57,7 @@
       screens.error.hide();
       tooltip.reset();
       provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+      user.reset();
       user.init({
         provisioning: provisioning
       });

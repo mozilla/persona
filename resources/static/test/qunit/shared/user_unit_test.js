@@ -1094,19 +1094,12 @@ var vep = require("./vep");
       lib.syncEmails(function() {
          xhr.useResult("ajaxError");
 
-        lib.logoutUser(function() {
-          ok(false, "xhr failure should never succeed");
-          start();
-        }, function() {
-          ok(true, "xhr failure should always be a failure");
-          start();
-        });
-
-
+        lib.logoutUser(
+          testHelpers.unexpectedSuccess,
+          testHelpers.expectedXHRFailure
+        );
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
-
-
   });
 
   asyncTest("cancelUser", function(onSuccess) {
@@ -1114,22 +1107,15 @@ var vep = require("./vep");
       var storedIdentities = storage.getEmails();
       equal(_.size(storedIdentities), 0, "All items have been removed");
       start();
-    });
-
-
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("cancelUser with XHR failure", function(onSuccess) {
     xhr.useResult("ajaxError");
-    lib.cancelUser(function() {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
-
-
+    lib.cancelUser(
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
 
   asyncTest("getPersistentSigninAssertion with invalid login - expect null assertion", function() {
@@ -1143,13 +1129,8 @@ var vep = require("./vep");
       lib.getPersistentSigninAssertion(function onComplete(assertion) {
         strictEqual(assertion, null, "assertion with invalid login is null");
         start();
-      }, function onFailure() {
-        ok(false, "no expected XHR failure");
-        start();
-      });
-    });
-
-
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("getPersistentSigninAssertion without email set for site - expect null assertion", function() {
@@ -1160,12 +1141,7 @@ var vep = require("./vep");
     lib.getPersistentSigninAssertion(function onComplete(assertion) {
       strictEqual(assertion, null, "assertion with no email is null");
       start();
-    }, function onFailure() {
-      ok(false, "no expected XHR failure");
-      start();
-    });
-
-
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("getPersistentSigninAssertion without remember set for site - expect null assertion", function() {
@@ -1180,10 +1156,7 @@ var vep = require("./vep");
       lib.getPersistentSigninAssertion(function onComplete(assertion) {
         strictEqual(assertion, null, "assertion with remember=false is null");
         start();
-      }, function onFailure() {
-        ok(false, "no expected XHR failure");
-        start();
-      });
+      }, testHelpers.unexpectedXHRFailure);
     });
   });
 
@@ -1199,10 +1172,7 @@ var vep = require("./vep");
       lib.getPersistentSigninAssertion(function onComplete(assertion) {
         ok(assertion, "we have an assertion!");
         start();
-      }, function onFailure() {
-        ok(false, "no expected XHR failure");
-        start();
-      });
+      }, testHelpers.unexpectedXHRFailure);
     });
   });
 
@@ -1217,13 +1187,10 @@ var vep = require("./vep");
 
       xhr.useResult("ajaxError");
 
-      lib.getPersistentSigninAssertion(function onComplete(assertion) {
-        ok(false, "ajax error should not pass");
-        start();
-      }, function onFailure() {
-        ok(true, "ajax error should not pass");
-        start();
-      });
+      lib.getPersistentSigninAssertion(
+        testHelpers.unexpectedSuccess,
+        testHelpers.expectedXHRFailure
+      );
     });
 
 
@@ -1235,12 +1202,7 @@ var vep = require("./vep");
     lib.clearPersistentSignin(function onComplete(success) {
       strictEqual(success, false, "success with invalid login is false");
       start();
-    }, function onFailure() {
-      ok(false, "no expected XHR failure");
-      start();
-    });
-
-
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("clearPersistentSignin with valid login with remember set to true", function() {
@@ -1251,11 +1213,27 @@ var vep = require("./vep");
       strictEqual(success, true, "success flag good");
       strictEqual(storage.site.get(testOrigin, "remember"), false, "remember flag set to false");
       start();
-    }, function onFailure() {
-      ok(false, "no expected XHR failure");
-      start();
-    });
-
-
+    }, testHelpers.unexpectedXHRFailure);
   });
+
+  asyncTest("addressInfo with XHR Error", function() {
+    ok(false, "write some tests");
+    start();
+  });
+
+  asyncTest("addressInfo with secondary user", function() {
+    ok(false, "write some tests");
+    start();
+  });
+
+  asyncTest("addressInfo with primary authenticated user", function() {
+    ok(false, "write some tests");
+    start();
+  });
+
+  asyncTest("addressInfo with primary unauthenticated user", function() {
+    ok(false, "write some tests");
+    start();
+  });
+
 }());
