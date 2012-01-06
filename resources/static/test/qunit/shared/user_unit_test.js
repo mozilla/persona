@@ -47,6 +47,7 @@ var vep = require("./vep");
       xhr = bid.Mocks.xhr,
       testHelpers = bid.TestHelpers,
       testOrigin = testHelpers.testOrigin,
+      failureCheck = testHelpers.failureCheck,
       provisioning = bid.Mocks.Provisioning
 
   // I generated these locally, they are used nowhere else.
@@ -167,13 +168,7 @@ var vep = require("./vep");
   });
 
   asyncTest("createSecondaryUser with XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    lib.createSecondaryUser(
-      "testuser@testuser.com",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
+    failureCheck(lib.createSecondaryUser, "testuser@testuser.com");
   });
 
   asyncTest("createUser with unknown secondary happy case - expect 'secondary.verify'", function() {
@@ -195,12 +190,7 @@ var vep = require("./vep");
   });
 
   asyncTest("createUser with unknown secondary, XHR failure - expect failure call", function() {
-    xhr.useResult("ajaxError");
-
-    lib.createUser("unregistered@testuser.com",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
+    failureCheck(lib.createUser, "unregistered@testuser.com");
   });
 
   asyncTest("createUser with primary, user verified with primary - expect 'primary.verified'", function() {
@@ -308,7 +298,9 @@ var vep = require("./vep");
   asyncTest("primaryUserAuthenticationInfo with XHR failure", function() {
     provisioning.setFailure("failure");
 
-    lib.primaryUserAuthenticationInfo("testuser@testuser.com", {},
+    lib.primaryUserAuthenticationInfo(
+      "testuser@testuser.com",
+      {},
       testHelpers.unexpectedSuccess,
       testHelpers.expectedXHRFailure
     );
@@ -377,41 +369,42 @@ var vep = require("./vep");
     xhr.useResult("noRegistration");
 
     storage.setStagedOnBehalfOf(testOrigin);
-    lib.waitForUserValidation("registered@testuser.com", function(status) {
-      ok(false, "not expecting success")
-
-      start();
-    }, function(status) {
-      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared for noRegistration response");
-      ok(status, "noRegistration", "noRegistration response causes failure");
-      start();
-    });
+    lib.waitForUserValidation(
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      function(status) {
+        ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared for noRegistration response");
+        ok(status, "noRegistration", "noRegistration response causes failure");
+        start();
+      }
+    );
   });
 
 
   asyncTest("waitForUserValidation with XHR failure", function() {
-    xhr.useResult("ajaxError");
-
     storage.setStagedOnBehalfOf(testOrigin);
-    lib.waitForUserValidation("registered@testuser.com", function(status) {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared on XHR failure");
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    lib.waitForUserValidation(
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      function() {
+        ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared on XHR failure");
+        ok(true, "xhr failure should always be a failure");
+        start();
+      }
+    );
   });
 
   asyncTest("cancelUserValidation: ~1 second", function() {
     xhr.useResult("pending");
 
     storage.setStagedOnBehalfOf(testOrigin);
-    lib.waitForUserValidation("registered@testuser.com", function(status) {
-      ok(false, "not expecting success")
-    }, function(status) {
-      ok(false, "not expecting failure");
-    });
+    // yes, we are neither expected succes nor failure because we are
+    // cancelling the wait.
+    lib.waitForUserValidation(
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      testHelpers.unexpectedXHRFailure
+    );
 
     setTimeout(function() {
       lib.cancelUserValidation();
@@ -439,12 +432,7 @@ var vep = require("./vep");
   });
 
   asyncTest("tokenInfo with XHR error", function() {
-    xhr.useResult("ajaxError");
-    lib.tokenInfo(
-      "token",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
+    failureCheck(lib.tokenInfo, "token");
   });
 
   asyncTest("verifyUser with a good token", function() {
@@ -473,13 +461,12 @@ var vep = require("./vep");
   asyncTest("verifyUser with an XHR failure", function() {
     xhr.useResult("ajaxError");
 
-    lib.verifyUser("token", "password", function onSuccess(info) {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    lib.verifyUser(
+      "token",
+      "password",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
 
   /*
@@ -495,10 +482,7 @@ var vep = require("./vep");
     lib.requestPasswordReset("registered@testuser.com", function(status) {
       equal(status.success, true, "password reset for known user");
       start();
-    }, function() {
-      ok(false, "onFailure should not be called");
-      start();
-    });
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("requestPasswordReset with unknown email", function() {
@@ -506,10 +490,7 @@ var vep = require("./vep");
       equal(status.success, false, "password not reset for unknown user");
       equal(status.reason, "invalid_user", "invalid_user is the reason");
       start();
-    }, function() {
-      ok(false, "onFailure should not be called");
-      start();
-    });
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("requestPasswordReset with throttle", function() {
@@ -518,21 +499,11 @@ var vep = require("./vep");
       equal(status.success, false, "password not reset for throttle");
       equal(status.reason, "throttle", "password reset was throttled");
       start();
-    }, function() {
-      ok(false, "onFailure should not be called");
-      start();
-    });
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("requestPasswordReset with XHR failure", function() {
-    xhr.useResult("ajaxError");
-    lib.requestPasswordReset("registered@testuser.com", function(status) {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    failureCheck(lib.requestPasswordReset, "registered@testuser.com");
   });
 
 
@@ -554,14 +525,7 @@ var vep = require("./vep");
 
 
   asyncTest("authenticate with XHR failure", function() {
-    xhr.useResult("ajaxError");
-    lib.authenticate("testuser@testuser.com", "testuser", function onComplete(authenticated) {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    failureCheck(lib.authenticate, "testuser@testuser.com", "testuser");
   });
 
 
@@ -587,13 +551,7 @@ var vep = require("./vep");
 
   asyncTest("checkAuthentication with XHR failure", function() {
     xhr.useResult("contextAjaxError");
-    lib.checkAuthentication(function(authenticated) {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    failureCheck(lib.checkAuthentication);
   });
 
 
@@ -601,11 +559,10 @@ var vep = require("./vep");
   asyncTest("checkAuthenticationAndSync with valid authentication", function() {
     xhr.setContextInfo("authenticated", true);
 
-    lib.checkAuthenticationAndSync(function onSuccess() {},
-    function onComplete(authenticated) {
+    lib.checkAuthenticationAndSync(function(authenticated) {
       equal(authenticated, true, "We are authenticated!");
       start();
-    });
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 
@@ -613,61 +570,35 @@ var vep = require("./vep");
   asyncTest("checkAuthenticationAndSync with invalid authentication", function() {
     xhr.setContextInfo("authenticated", false);
 
-    lib.checkAuthenticationAndSync(function onSuccess() {
-        ok(false, "We are not authenticated!");
-        start();
-      }, function onComplete(authenticated) {
+    lib.checkAuthenticationAndSync(function onComplete(authenticated) {
       equal(authenticated, false, "We are not authenticated!");
       start();
-    });
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 
   asyncTest("checkAuthenticationAndSync with XHR failure", function() {
     xhr.setContextInfo("authenticated", true);
-    xhr.useResult("ajaxError");
 
-    lib.checkAuthenticationAndSync(function onSuccess() {
-    }, function onComplete() {
-      ok(false, "xhr failure should never succeed");
-
-      start();
-    }, function onFailure() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    failureCheck(lib.checkAuthenticationAndSync);
   });
 
   asyncTest("isEmailRegistered with registered email", function() {
     lib.isEmailRegistered("registered@testuser.com", function(registered) {
       ok(registered);
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("isEmailRegistered with unregistered email", function() {
     lib.isEmailRegistered("unregistered@testuser.com", function(registered) {
       equal(registered, false);
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("isEmailRegistered with XHR failure", function() {
-    xhr.useResult("ajaxError");
-    lib.isEmailRegistered("registered", function(registered) {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    failureCheck(lib.isEmailRegistered, "registered");
   });
 
   asyncTest("addEmail", function() {
@@ -699,14 +630,7 @@ var vep = require("./vep");
   });
 
   asyncTest("addEmail with XHR failure", function() {
-    xhr.useResult("ajaxError");
-    lib.addEmail("testemail@testemail.com", function(added) {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    failureCheck(lib.addEmail, "testemail@testemail.com");
   });
 
 
@@ -736,14 +660,14 @@ var vep = require("./vep");
     storage.setStagedOnBehalfOf(testOrigin);
     xhr.useResult("noRegistration");
 
-    lib.waitForEmailValidation("registered@testuser.com", function(status) {
-      ok(false, "not expecting success")
-      start();
-    }, function(status) {
-      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
-      ok(status, "noRegistration", "noRegistration response causes failure");
-      start();
-    });
+    lib.waitForEmailValidation(
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      function(status) {
+        ok(storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
+        ok(status, "noRegistration", "noRegistration response causes failure");
+        start();
+      });
   });
 
 
@@ -751,14 +675,11 @@ var vep = require("./vep");
     storage.setStagedOnBehalfOf(testOrigin);
     xhr.useResult("ajaxError");
 
-    lib.waitForEmailValidation("registered@testuser.com", function(status) {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    lib.waitForEmailValidation(
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
 
 
@@ -766,11 +687,11 @@ var vep = require("./vep");
     xhr.useResult("pending");
 
     storage.setStagedOnBehalfOf(testOrigin);
-    lib.waitForEmailValidation("registered@testuser.com", function(status) {
-      ok(false, "not expecting success")
-    }, function(status) {
-      ok(false, "not expecting failure");
-    });
+    lib.waitForEmailValidation(
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      testHelpers.unexpectedXHRFailure
+    );
 
     setTimeout(function() {
       lib.cancelUserValidation();
@@ -861,26 +782,20 @@ var vep = require("./vep");
 
   asyncTest("syncEmailKeypair with invalid sync", function() {
     xhr.useResult("invalid");
-    lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
-      ok(false, "sync was invalid, this should have failed");
-      start();
-    }, function() {
-      var identity = lib.getStoredEmailKeypair("testemail@testemail.com");
-      equal(typeof identity, "undefined", "Invalid email is not synced");
+    lib.syncEmailKeypair(
+      "testemail@testemail.com",
+      testHelpers.unexpectedSuccess,
+      function() {
+        var identity = lib.getStoredEmailKeypair("testemail@testemail.com");
+        equal(typeof identity, "undefined", "Invalid email is not synced");
 
-      start();
-    });
+        start();
+      }
+    );
   });
 
   asyncTest("syncEmailKeypair with XHR failure", function() {
-    xhr.useResult("ajaxError");
-    lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    failureCheck(lib.syncEmailKeypair, "testemail@testemail.com");
   });
 
 
@@ -907,14 +822,7 @@ var vep = require("./vep");
   asyncTest("removeEmail with XHR failure", function() {
     storage.addEmail("testemail@testemail.com", {pub: "pub", priv: "priv"});
 
-    xhr.useResult("ajaxError");
-    lib.removeEmail("testemail@testemail.com", function() {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    failureCheck(lib.removeEmail, "testemail@testemail.com");
   });
 
 
@@ -989,15 +897,7 @@ var vep = require("./vep");
   });
 
   asyncTest("syncEmails with XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    lib.syncEmails(function onSuccess() {
-      ok(false, "xhr failure should never succeed");
-      start();
-    }, function() {
-      ok(true, "xhr failure should always be a failure");
-      start();
-    });
+    failureCheck(lib.syncEmails);
   });
 
   asyncTest("getAssertion with known email that has key", function() {
@@ -1061,13 +961,7 @@ var vep = require("./vep");
 
   asyncTest("getAssertion with XHR failure", function() {
     storage.addEmail("testuser@testuser.com", {});
-    xhr.useResult("ajaxError");
-    lib.getAssertion(
-      "testuser@testuser.com",
-      lib.getOrigin(),
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
+    failureCheck(lib.getAssertion, "testuser@testuser.com", lib.getOrigin());
   });
 
 
@@ -1092,12 +986,7 @@ var vep = require("./vep");
   asyncTest("logoutUser with XHR failure", function(onSuccess) {
     lib.authenticate("testuser@testuser.com", "testuser", function(authenticated) {
       lib.syncEmails(function() {
-         xhr.useResult("ajaxError");
-
-        lib.logoutUser(
-          testHelpers.unexpectedSuccess,
-          testHelpers.expectedXHRFailure
-        );
+        failureCheck(lib.logoutUser);
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -1111,11 +1000,7 @@ var vep = require("./vep");
   });
 
   asyncTest("cancelUser with XHR failure", function(onSuccess) {
-    xhr.useResult("ajaxError");
-    lib.cancelUser(
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
+    failureCheck(lib.cancelUser);
   });
 
   asyncTest("getPersistentSigninAssertion with invalid login - expect null assertion", function() {
@@ -1185,12 +1070,7 @@ var vep = require("./vep");
       // the server
       storage.invalidateEmail("testuser@testuser.com");
 
-      xhr.useResult("ajaxError");
-
-      lib.getPersistentSigninAssertion(
-        testHelpers.unexpectedSuccess,
-        testHelpers.expectedXHRFailure
-      );
+      failureCheck(lib.getPersistentSigninAssertion);
     });
 
 
@@ -1217,23 +1097,65 @@ var vep = require("./vep");
   });
 
   asyncTest("addressInfo with XHR Error", function() {
-    ok(false, "write some tests");
-    start();
+    failureCheck(lib.addressInfo, "testuser@testuser.com");
   });
 
-  asyncTest("addressInfo with secondary user", function() {
-    ok(false, "write some tests");
-    start();
+  asyncTest("addressInfo with unknown secondary user", function() {
+    xhr.useResult("unknown_secondary");
+    lib.addressInfo(
+      "unregistered@testuser.com",
+      function(info) {
+        equal(info.type, "secondary", "correct type");
+        equal(info.email, "unregistered@testuser.com", "correct email");
+        equal(info.known, false, "address not known to BrowserID");
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
+  });
+
+  asyncTest("addressInfo with known secondary user", function() {
+    xhr.useResult("known_secondary");
+    lib.addressInfo(
+      "registered@testuser.com",
+      function(info) {
+        equal(info.type, "secondary", "correct type");
+        equal(info.email, "registered@testuser.com", "correct email");
+        equal(info.known, true, "address known to BrowserID");
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
   });
 
   asyncTest("addressInfo with primary authenticated user", function() {
-    ok(false, "write some tests");
-    start();
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+    lib.addressInfo(
+      "registered@testuser.com",
+      function(info) {
+        equal(info.type, "primary", "correct type");
+        equal(info.email, "registered@testuser.com", "correct email");
+        equal(info.authed, true, "user is authenticated with IdP");
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
   });
 
   asyncTest("addressInfo with primary unauthenticated user", function() {
-    ok(false, "write some tests");
-    start();
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+    lib.addressInfo(
+      "registered@testuser.com",
+      function(info) {
+        equal(info.type, "primary", "correct type");
+        equal(info.email, "registered@testuser.com", "correct email");
+        equal(info.authed, false, "user is not authenticated with IdP");
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
   });
 
 }());

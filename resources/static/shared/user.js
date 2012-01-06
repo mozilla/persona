@@ -284,10 +284,8 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     createSecondaryUser: function(email, onComplete, onFailure) {
-      var self=this;
-
       // remember this for later
-      storage.setStagedOnBehalfOf(self.getHostname());
+      storage.setStagedOnBehalfOf(User.getHostname());
 
       network.createUser(email, origin, onComplete, onFailure);
     },
@@ -311,8 +309,6 @@ BrowserID.User = (function() {
      *  verify the user with the IdP
      */
     createUser: function(email, onComplete, onFailure) {
-      var self=this;
-
       User.addressInfo(email, function(info) {
         User.createUserWithInfo(email, info, onComplete, onFailure);
       }, onFailure);
@@ -329,13 +325,12 @@ BrowserID.User = (function() {
      * @param {function} [onFailure]
      */
     createUserWithInfo: function(email, info, onComplete, onFailure) {
-      var self=this;
       function attemptAddSecondary(email, info) {
         if (info.known) {
           onComplete("secondary.already_added");
         }
         else {
-          self.createSecondaryUser(email, function(success) {
+          User.createSecondaryUser(email, function(success) {
             if (success) {
               onComplete("secondary.verify");
             }
@@ -562,7 +557,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     requestPasswordReset: function(email, onComplete, onFailure) {
-      this.isEmailRegistered(email, function(registered) {
+      User.isEmailRegistered(email, function(registered) {
         if (registered) {
           network.requestPasswordReset(email, origin, function(reset) {
             var status = {
@@ -600,14 +595,14 @@ BrowserID.User = (function() {
     /**
      * Log the current user out.
      * @method logoutUser
-     * @param {function} [onSuccess] - Called whenever complete.
+     * @param {function} [onComplete] - Called whenever complete.
      * @param {function} [onFailure] - called on error.
      */
-    logoutUser: function(onSuccess, onFailure) {
+    logoutUser: function(onComplete, onFailure) {
       network.logout(function() {
         setAuthenticationStatus(false);
-        if (onSuccess) {
-          onSuccess();
+        if (onComplete) {
+          onComplete();
         }
       }, onFailure);
     },
@@ -616,14 +611,12 @@ BrowserID.User = (function() {
      * Sync local identities with browserid.org.  Generally should not need to
      * be called.
      * @method syncEmails
-     * @param {function} [onSuccess] - Called whenever complete.
+     * @param {function} [onComplete] - Called whenever complete.
      * @param {function} [onFailure] - Called on error.
      */
-    syncEmails: function(onSuccess, onFailure) {
-      var self = this;
-
+    syncEmails: function(onComplete, onFailure) {
       cleanupIdentities(function () {
-        var issued_identities = self.getStoredEmailKeypairs();
+        var issued_identities = User.getStoredEmailKeypairs();
 
         network.listEmails(function(emails) {
           // lists of emails
@@ -642,7 +635,7 @@ BrowserID.User = (function() {
           // asynchronous
           function addNextEmail() {
             if (!emails_to_add || !emails_to_add.length) {
-              onSuccess();
+              onComplete();
               return;
             }
 
@@ -662,16 +655,16 @@ BrowserID.User = (function() {
     /**
      * Check whether the current user is authenticated.
      * @method checkAuthentication
-     * @param {function} [onSuccess] - Called when check is complete with one
+     * @param {function} [onComplete] - Called when check is complete with one
      * boolean parameter, authenticated.  authenticated will be true if user is
      * authenticated, false otw.
      * @param {function} [onFailure] - Called on error.
      */
-    checkAuthentication: function(onSuccess, onFailure) {
+    checkAuthentication: function(onComplete, onFailure) {
       network.checkAuth(function(authenticated) {
         setAuthenticationStatus(authenticated);
-        if (onSuccess) {
-          onSuccess(authenticated);
+        if (onComplete) {
+          onComplete(authenticated);
         }
       }, onFailure);
     },
@@ -680,29 +673,19 @@ BrowserID.User = (function() {
      * Check whether the current user is authenticated.  If authenticated, sync
      * identities.
      * @method checkAuthenticationAndSync
-     * @param {function} [onSuccess] - Called if authentication check succeeds
-     * but before sync starts.  Useful for displaying status messages about the
-     * sync taking a moment.
      * @param {function} [onComplete] - Called on sync completion.
      * @param {function} [onFailure] - Called on error.
      */
-    checkAuthenticationAndSync: function(onSuccess, onComplete, onFailure) {
-      var self=this;
+    checkAuthenticationAndSync: function(onComplete, onFailure) {
       network.checkAuth(function(authenticated) {
         setAuthenticationStatus(authenticated);
         if (authenticated) {
-          if (onSuccess) {
-            onSuccess(authenticated);
-          }
-
-          self.syncEmails(function() {
-            if (onComplete) {
-              onComplete(authenticated);
-            }
+          User.syncEmails(function() {
+            onComplete && onComplete(authenticated);
           }, onFailure);
         }
         else {
-          onComplete(authenticated);
+          onComplete && onComplete(authenticated);
         }
       }, onFailure);
     },
@@ -717,7 +700,6 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     authenticate: function(email, password, onComplete, onFailure) {
-      var self=this;
       network.authenticate(email, password, function(authenticated) {
         setAuthenticationStatus(authenticated);
         if (onComplete)
@@ -729,13 +711,13 @@ BrowserID.User = (function() {
      * Check whether the email is already registered.
      * @method emailRegistered
      * @param {string} email - Email address to check.
-     * @param {function} [onSuccess] - Called with one boolean parameter when
+     * @param {function} [onComplete] - Called with one boolean parameter when
      * complete.  Parameter is true if `email` is already registered, false
      * otw.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    isEmailRegistered: function(email, onSuccess, onFailure) {
-      network.emailRegistered(email, onSuccess, onFailure);
+    isEmailRegistered: function(email, onComplete, onFailure) {
+      network.emailRegistered(email, onComplete, onFailure);
     },
 
     /**
@@ -743,33 +725,40 @@ BrowserID.User = (function() {
      * (is it a primary or a secondary)
      * @method addressInfo
      * @param {string} email - Email address to check.
-     * @param {function} [onSuccess] - Called with an object on success,
+     * @param {function} [onComplete] - Called with an object on success,
      *   containing these properties:
      *     type: <secondary|primary>
-     *     known: boolean, present - present if type is secondary
-     *     auth: string - url to send users for auth - present if type is primary
-     *     prov: string - url to embed for silent provisioning - present if type is secondary
+     *     known: boolean, present if type is secondary.  True if email
+     *        address is registered with BrowserID.
+     *     authed: boolean, present if type is primary - whether the user
+     *        is authenticated to the IdP as this user.
+     *     auth: string - url to send users for auth - present if type is
+     *        primary.
+     *     prov: string - url to embed for silent provisioning - present
+     *        if type is secondary.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    addressInfo: function(email, onSuccess, onFailure) {
-      function success(info) {
+    addressInfo: function(email, onComplete, onFailure) {
+      function complete(info) {
+        info.email = email;
+
         addressCache[email] = info;
-        onSuccess && onSuccess(info);
+        onComplete && onComplete(info);
       }
 
       if(addressCache[email]) {
-        success(addressCache[email]);
+        complete(addressCache[email]);
       }
       else {
         network.addressInfo(email, function(info) {
           if(info.type === "primary") {
             User.isUserAuthenticatedToPrimary(email, info, function(authed) {
               info.authed = authed;
-              success(info);
+              complete(info);
             }, onFailure);
           }
           else {
-            success(info);
+            complete(info);
           }
         }, onFailure);
       }
@@ -782,16 +771,15 @@ BrowserID.User = (function() {
      * valid identities.
      * @method addEmail
      * @param {string} email - Email address.
-     * @param {function} [onSuccess] - Called on successful completion.
+     * @param {function} [onComplete] - Called on successful completion.
      * @param {function} [onFailure] - Called on error.
      */
-    addEmail: function(email, onSuccess, onFailure) {
-      var self = this;
+    addEmail: function(email, onComplete, onFailure) {
       network.addSecondaryEmail(email, origin, function(added) {
-        if (added) storage.setStagedOnBehalfOf(self.getHostname());
+        if (added) storage.setStagedOnBehalfOf(User.getHostname());
 
         // we no longer send the keypair, since we will certify it later.
-        if (onSuccess) onSuccess(added);
+        if (onComplete) onComplete(added);
       }, onFailure);
     },
 
@@ -854,19 +842,19 @@ BrowserID.User = (function() {
      * Remove an email address.
      * @method removeEmail
      * @param {string} email - Email address to remove.
-     * @param {function} [onSuccess] - Called when complete.
+     * @param {function} [onComplete] - Called when complete.
      * @param {function} [onFailure] - Called on error.
      */
-    removeEmail: function(email, onSuccess, onFailure) {
+    removeEmail: function(email, onComplete, onFailure) {
       if (storage.getEmail(email)) {
         network.removeEmail(email, function() {
           storage.removeEmail(email);
-          if (onSuccess) {
-            onSuccess();
+          if (onComplete) {
+            onComplete();
           }
         }, onFailure);
-      } else if (onSuccess) {
-        onSuccess();
+      } else if (onComplete) {
+        onComplete();
       }
     },
 
@@ -1010,14 +998,12 @@ BrowserID.User = (function() {
      * @param {function} onFailure - called on XHR failure.
      */
     getPersistentSigninAssertion: function(onComplete, onFailure) {
-      var self=this;
-
-      self.checkAuthentication(function(authenticated) {
+      User.checkAuthentication(function(authenticated) {
         if (authenticated) {
           var remembered = storage.site.get(origin, "remember");
           var email = storage.site.get(origin, "email");
           if (remembered && email) {
-            self.getAssertion(email, origin, onComplete, onFailure);
+            User.getAssertion(email, origin, onComplete, onFailure);
           }
           else if (onComplete) {
             onComplete(null);
@@ -1037,9 +1023,7 @@ BrowserID.User = (function() {
      * @param {function} onFailure - called on XHR failure.
      */
     clearPersistentSignin: function(onComplete, onFailure) {
-      var self=this;
-
-      self.checkAuthentication(function(authenticated) {
+      User.checkAuthentication(function(authenticated) {
         if (authenticated) {
           storage.site.set(origin, "remember", false);
           if (onComplete) {

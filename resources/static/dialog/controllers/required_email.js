@@ -157,12 +157,14 @@ BrowserID.Modules.RequiredEmail = (function() {
             ready();
           }
           else {
-            // Uh oh, this is a primary user whose certificate is expired, take care of that.
+            // Uh oh, this is a primary user whose certificate is expired,
+            // take care of that.
             user.addressInfo(email, function(info) {
               primaryInfo = info;
               if (info.authed) {
-                // If the user is authed with the IdP, give them the opportunity to press
-                // "signin" before passing them off to the primary user flow
+                // If the user is authed with the IdP, give them the
+                // opportunity to press "signin" before passing them off
+                // to the primary user flow
                 showTemplate({ signin: true });
               }
               else {
@@ -182,8 +184,9 @@ BrowserID.Modules.RequiredEmail = (function() {
             if(info.type === "primary") {
               primaryInfo = info;
               if (info.authed) {
-                // If the user is authed with the IdP, give them the opportunity to press
-                // "signin" before passing them off to the primary user flow
+                // If the user is authed with the IdP, give them the
+                // opportunity to press "signin" before passing them off to
+                // the primary user flow
                 showTemplate({ signin: true });
               }
               else {

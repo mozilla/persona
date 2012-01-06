@@ -110,6 +110,40 @@
 
     testTooltipVisible: function() {
       equal(tooltip.shown, true, "tooltip is visible");
+    },
+
+    failureCheck: function failureCheck(cb) {
+      // Take the original arguments, take off the function.  Add any additional
+      // arguments that were passed in, and then tack on the onSuccess and
+      // onFailure to the end.  Then call the callback.
+      var args = [].slice.call(arguments, 1);
+
+      var errorInfo;
+      mediator.subscribe("xhrError", function(message, info) {
+        errorInfo = info;
+      });
+
+      args.push(bid.TestHelpers.unexpectedSuccess, function onFailure(info) {
+        ok(true, "XHR failure should never pass");
+        ok(info.network.url, "url is in network info");
+        ok(info.network.type, "request type is in network info");
+        equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
+        equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
+
+        ok(errorInfo.network.url, "url is in network errorInfo");
+        ok(errorInfo.network.type, "request type is in network errorInfo");
+        equal(errorInfo.network.textStatus, "errorStatus", "textStatus is in network errorInfo");
+        equal(errorInfo.network.errorThrown, "errorThrown", "errorThrown is in response errorInfo");
+        equal(errorInfo.network.responseText, "response text", "responseText is in response errorInfo");
+
+        start();
+      });
+
+      if(xhr.resultType === "valid") {
+        xhr.useResult("ajaxError");
+      }
+
+      cb && cb.apply(null, args);
     }
 
   };

@@ -165,7 +165,7 @@ BrowserID.Modules.Actions = (function() {
 
     doCheckAuth: function() {
       var self=this;
-      user.checkAuthenticationAndSync(function onSuccess() {}, function onComplete(authenticated) {
+      user.checkAuthenticationAndSync(function(authenticated) {
         self.publish("authentication_checked", {
           authenticated: authenticated
         });

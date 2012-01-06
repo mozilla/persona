@@ -63,7 +63,7 @@
       }
 
       complete(authenticated || null);
-    }, complete.bind(null, null));
+    }, complete.curry(null));
   };
 
   /**
@@ -124,18 +124,18 @@
       callback && callback(assertion);
     }
 
-    user.checkAuthenticationAndSync(function onSuccess() {}, function onComplete(authenticated) {
+    user.checkAuthenticationAndSync(function(authenticated) {
       // User must be authenticated to get an assertion.
       if(authenticated) {
         user.setOrigin(origin);
         user.getAssertion(email, user.getOrigin(), function(assertion) {
           complete(assertion || null);
-        }, complete.bind(null, null));
+        }, complete.curry(null));
       }
       else {
         complete(null);
       }
-    }, complete.bind(null, null));
+    }, complete.curry(null));
   }
 
 }());
