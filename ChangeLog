@@ -1,6 +1,15 @@
-train-2011.01.04 (in progress):
-  * client entropy pool mixes in randomness from server for better browser RNG: #298
+train-2011.01.11 (in progress):
+
+train-2011.01.05:
+  * client entropy pool mixes in randomness from server for better browser RNG: #298, #800
   * new assertion format that avoids double (base64) encoding - 33% smaller: #507
+  * Turn license URL in ToS into a clickable link: #382
+  * limit post requests to 10kb: #822
+  * improved password length checks, check in client and server code more often
+  * after authenticating we store your userid rather than email in the session (many issues/possible attacks relate to this): #388
+  * session cookies are now encrypted, sent only when required, and generally more awesome: #416, #832
+  * IE8 display tweaks
+  * primary support 90% implemented but disabled in this train (*major* changes including schema, but not user visible)
 
 train-2011.12.28:
   * improve animation during cert/assertion procedures in dialog: #709
