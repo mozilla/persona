@@ -1,3 +1,5 @@
+train-2011.01.11 (in progress):
+
 train-2011.01.05:
   * client entropy pool mixes in randomness from server for better browser RNG: #298, #800
   * new assertion format that avoids double (base64) encoding - 33% smaller: #507
