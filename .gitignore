@@ -5,4 +5,5 @@
 /var
 /rpmbuild
 /npm-debug.log
-
+/resources/static/build
+/resources/static/production

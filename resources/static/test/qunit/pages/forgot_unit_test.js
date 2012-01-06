@@ -40,8 +40,7 @@
   var bid = BrowserID,
       network = bid.Network,
       user = bid.User,
-      xhr = bid.Mocks.xhr,
-      CHECK_DELAY = 500;
+      xhr = bid.Mocks.xhr;
 
   module("pages/forgot", {
     setup: function() {
@@ -61,13 +60,11 @@
   });
 
   function testEmailNotSent(extraTests) {
-    bid.forgot.submit();
-
-    setTimeout(function() {
+    bid.forgot.submit(function() {
       equal($(".emailsent").is(":visible"), false, "email not sent");
       if (extraTests) extraTests();
       else start();
-    }, CHECK_DELAY);
+    });
   }
 
   asyncTest("requestPasswordReset with invalid email", function() {
@@ -80,22 +77,18 @@
 
   asyncTest("requestPasswordReset with known email", function() {
     $("#email").val("registered@testuser.com");
-    bid.forgot.submit();
-
-    setTimeout(function() {
+    bid.forgot.submit(function() {
       ok($(".emailsent").is(":visible"), "email sent successfully");
       start();
-    }, CHECK_DELAY);
+    });
   });
 
   asyncTest("requestPasswordReset with known email with leading/trailing whitespace", function() {
     $("#email").val("   registered@testuser.com  ");
-    bid.forgot.submit();
-
-    setTimeout(function() {
+    bid.forgot.submit(function() {
       ok($(".emailsent").is(":visible"), "email sent successfully");
       start();
-    }, CHECK_DELAY);
+    });
   });
 
   asyncTest("requestPasswordReset with unknown email", function() {
@@ -122,23 +115,5 @@
       start();
     });
   });
-
-  asyncTest("signup with unregistered email and cancel button pressed", function() {
-    $("#email").val("unregistered@testuser.com");
-
-    bid.signUp.submit();
-
-    setTimeout(function() {
-      bid.forgot.back();
-
-      setTimeout(function() {
-        equal($(".notification:visible").length, 0, "no notifications are visible");
-        equal($(".forminputs:visible").length, 1, "form inputs are again visible");
-        equal($("#email").val(), "unregistered@testuser.com", "email address restored");
-        start();
-      }, 500);
-    }, 100);
-  });
-
 
 }());

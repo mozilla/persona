@@ -123,6 +123,18 @@ suite.addBatch({
 });
 
 suite.addBatch({
+  "updating the password without specifying a proper old password": {
+    topic: wsapi.post('/wsapi/update_password', {
+      oldpass: "bogus ass password",
+      newpass: NEW_PASSWORD
+    }),
+    "fails as expected": function(r, err) {
+      assert.strictEqual(JSON.parse(r.body).success, false);
+    }
+  }
+});
+
+suite.addBatch({
   "updating the password": {
     topic: wsapi.post('/wsapi/update_password', {
       oldpass: OLD_PASSWORD,

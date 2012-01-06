@@ -40,6 +40,8 @@
         <input id="newEmail" />
         <input id="password" />
         <input id="vpassword" />
+        <input id="old_password" />
+        <input id="new_password" />
         <input type="checkbox" id="remember" />
       </div>
       <div id="congrats">Congrats!</div>
@@ -93,6 +95,7 @@
     <script type="text/javascript" src="/shared/mediator.js"></script>
     <script type="text/javascript" src="/shared/screens.js"></script>
     <script type="text/javascript" src="/shared/browser-support.js"></script>
+    <script type="text/javascript" src="/shared/wait-messages.js"></script>
     <script type="text/javascript" src="/shared/error-messages.js"></script>
     <script type="text/javascript" src="/shared/error-display.js"></script>
     <script type="text/javascript" src="/shared/storage.js"></script>
@@ -103,11 +106,12 @@
     <script type="text/javascript" src="/shared/helpers.js"></script>
 
     <script type="text/javascript" src="/dialog/resources/internal_api.js"></script>
-    <script type="text/javascript" src="/dialog/resources/channel.js"></script>
     <script type="text/javascript" src="/dialog/resources/helpers.js"></script>
     <script type="text/javascript" src="/dialog/resources/state_machine.js"></script>
 
     <script type="text/javascript" src="/dialog/controllers/page.js"></script>
+    <script type="text/javascript" src="/dialog/controllers/code_check.js"></script>
+    <script type="text/javascript" src="/dialog/controllers/actions.js"></script>
     <script type="text/javascript" src="/dialog/controllers/pickemail.js"></script>
     <script type="text/javascript" src="/dialog/controllers/addemail.js"></script>
     <script type="text/javascript" src="/dialog/controllers/dialog.js"></script>
@@ -124,10 +128,9 @@
     <script type="text/javascript" src="/pages/signup.js"></script>
     <script type="text/javascript" src="/pages/verify_email_address.js"></script>
 
-    <script type="text/javascript" src="/relay/relay.js"></script>
+    <script type="text/javascript" src="qunit/testHelpers/helpers.js"></script>
 
     <script type="text/javascript" src="qunit/include_unit_test.js"></script>
-    <script type="text/javascript" src="qunit/relay/relay_unit_test.js"></script>
 
     <script type="text/javascript" src="qunit/pages/browserid_unit_test.js"></script>
     <script type="text/javascript" src="qunit/pages/page_helpers_unit_test.js"></script>
@@ -152,9 +155,10 @@
     <script type="text/javascript" src="qunit/resources/internal_api_unit_test.js"></script>
     <script type="text/javascript" src="qunit/resources/helpers_unit_test.js"></script>
     <script type="text/javascript" src="qunit/resources/state_machine_unit_test.js"></script>
-    <script type="text/javascript" src="qunit/resources/channel_unit_test.js"></script>
 
     <script type="text/javascript" src="qunit/controllers/page_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/controllers/code_check_unit_test.js"></script>
+    <script type="text/javascript" src="qunit/controllers/actions_unit_test.js"></script>
     <script type="text/javascript" src="qunit/controllers/pickemail_unit_test.js"></script>
     <script type="text/javascript" src="qunit/controllers/addemail_unit_test.js"></script>
     <script type="text/javascript" src="qunit/controllers/checkregistration_unit_test.js"></script>

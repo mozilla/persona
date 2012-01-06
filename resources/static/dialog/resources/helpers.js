@@ -48,12 +48,14 @@
         doAnimation = $("#signIn").length && body.innerWidth() > 640;
 
     if (doAnimation) {
-      $("#signIn").animate({"width" : "685px"}, "slow", function () {
-        // post animation
-         body.delay(500).animate({ "opacity" : "0.5"}, "fast", function () {
-           callback();
-         });
+      $("#signIn").animate({"width" : "95%"}, 750, function () {
+         body.delay(500).animate({ "opacity" : "0.5"}, 500);
       });
+
+      // Call setTimeout here because on Android default browser, sometimes the
+      // callback is not correctly called, it seems as if jQuery does not know
+      // the animation is complete.
+      setTimeout(callback, 1750);
     }
     else {
       callback();
@@ -62,8 +64,11 @@
 
   function getAssertion(email, callback) {
     var self=this;
+    var wait = bid.Screens.wait;
+    wait.show("wait", bid.Wait.generateKey);
     user.getAssertion(email, function(assert) {
       assert = assert || null;
+      wait.hide();
       animateClose(function() {
         self.close("assertion_generated", {
           assertion: assert
@@ -97,7 +102,7 @@
         tooltip.showTooltip("#could_not_add");
       }
       if (callback) callback(staged);
-    }, self.getErrorDialog(errors.createUser));
+    }, self.getErrorDialog(errors.createUser, callback));
   }
 
   function resetPassword(email, callback) {
@@ -117,17 +122,31 @@
 
   function addEmail(email, callback) {
     var self=this;
-    user.addEmail(email, function(added) {
-      if (added) {
-        self.close("email_staged", {
-          email: email
-        });
-      }
-      else {
-        tooltip.showTooltip("#could_not_add");
-      }
-      if (callback) callback(added);
-    }, self.getErrorDialog(errors.addEmail));
+    if(user.getStoredEmailKeypair(email)) {
+      // User already owns this address
+      tooltip.showTooltip("#already_own_address");
+      callback(false);
+    }
+    else {
+      user.addEmail(email, function(added) {
+        if (added) {
+          self.close("email_staged", {
+            email: email
+          });
+        }
+        else {
+          tooltip.showTooltip("#could_not_add");
+        }
+        if (callback) callback(added);
+      }, self.getErrorDialog(errors.addEmail));
+    }
+  }
+
+  function cancelEvent(callback) {
+    return function(event) {
+      event && event.preventDefault();
+      callback.call(this);
+    };
   }
 
   helpers.Dialog = helpers.Dialog || {};
@@ -137,7 +156,8 @@
     authenticateUser: authenticateUser,
     createUser: createUser,
     addEmail: addEmail,
-    resetPassword: resetPassword
+    resetPassword: resetPassword,
+    cancelEvent: cancelEvent
   });
 
 }());

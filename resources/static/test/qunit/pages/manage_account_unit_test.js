@@ -38,14 +38,13 @@
   "use strict";
 
   var bid = BrowserID,
-      network = bid.Network,
-      storage = bid.Storage,
       user = bid.User,
       xhr = bid.Mocks.xhr,
+      errorScreen = bid.Screens.error,
+      testHelpers = bid.TestHelpers,
       validToken = true,
       TEST_ORIGIN = "http://browserid.org",
-      TEST_DELAY = 100,
-      ERROR_DELAY = 250,
+      tooltip = bid.Tooltip,
       mocks = {
         confirm: function() { return true; },
         document: { location: "" }
@@ -53,163 +52,187 @@
 
   module("pages/manage_account", {
     setup: function() {
-      network.setXHR(xhr);
-      xhr.useResult("valid");
+      testHelpers.setup();
       user.setOrigin(TEST_ORIGIN);
       $("#emailList").empty();
-      $(".error").removeClass("error");
-      $("#error").hide();
       mocks.document.location = "";
-      storage.clear();
     },
     teardown: function() {
-      network.setXHR($);
       $("#emailList").empty();
-      $(".error").removeClass("error");
-      $("#error").hide();
+      testHelpers.teardown();
     }
   });
 
   asyncTest("no email addresses are displayed if there are no children", function() {
-    xhr.useResult("noidentities");
+    xhr.useResult("no_identities");
 
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       equal($("#emailList").children().length, 0, "no children have been added");
       start();
-    }, TEST_DELAY);
-
-    
+    });
   });
 
   asyncTest("email addresses added if there are children", function() {
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       equal($("#emailList").children().length, 1, "there has been one child added");
       start();
-    }, TEST_DELAY);
-
-    
+    });
   });
 
   asyncTest("sync XHR error on startup", function() {
     xhr.useResult("ajaxError");
 
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
-      equal($("#error").is(":visible"), true, "error message is visible on XHR error");
+    bid.manageAccount(mocks, function() {
+      equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
       start();
-    }, ERROR_DELAY);
-
-    
+    });
   });
 
   asyncTest("removeEmail with multiple emails", function() {
     // start with multiple addresses.
     xhr.useResult("multiple");
 
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       // switch to a single address return on the sync.
       xhr.useResult("valid");
-      bid.manageAccount.removeEmail("testuser@testuser.com");
-
-      setTimeout(function() {
+      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
         equal($("#emailList").children().length, 1, "after removing an email, only one remains");
         start();
-      }, TEST_DELAY);
-    }, TEST_DELAY);
-
-    
+      });
+    });
   });
 
   asyncTest("removeEmail with multiple emails and XHR error", function() {
     // start with multiple addresses.
     xhr.useResult("multiple");
 
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       xhr.useResult("ajaxError");
-      bid.manageAccount.removeEmail("testuser@testuser.com");
-
-      setTimeout(function() {
-        equal($("#error").is(":visible"), true, "error message is visible on XHR error");
+      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
+        equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
         start();
-      }, ERROR_DELAY);
-    }, TEST_DELAY);
-
-    
+      });
+    });
   });
 
   asyncTest("removeEmail with single email cancels account", function() {
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
-      bid.manageAccount.removeEmail("testuser@testuser.com");
-
-      setTimeout(function() {
+    bid.manageAccount(mocks, function() {
+      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
         equal(mocks.document.location, "/", "redirection happened");
         start();
-      }, TEST_DELAY);
-    }, TEST_DELAY);
-
-    
+      });
+    });
   });
 
   asyncTest("removeEmail with single email cancels account and XHR error", function() {
     xhr.useResult("valid");
 
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       xhr.useResult("ajaxError");
 
-      bid.manageAccount.removeEmail("testuser@testuser.com");
-
-      setTimeout(function() {
-        equal($("#error").is(":visible"), true, "error message is visible on XHR error");
+      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
+        equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
         start();
-      }, ERROR_DELAY);
-    }, TEST_DELAY);
-
-    
+      });
+    });
   });
 
   asyncTest("cancelAccount", function() {
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
-      bid.manageAccount.cancelAccount();
-
-      setTimeout(function() {
+    bid.manageAccount(mocks, function() {
+      bid.manageAccount.cancelAccount(function() {
         equal(mocks.document.location, "/", "redirection happened");
         start();
-      }, TEST_DELAY);
-
-    }, TEST_DELAY);
-
-    
+      });
+    });
   });
 
   asyncTest("cancelAccount with XHR error", function() {
-    bid.manageAccount(mocks);
-
-    setTimeout(function() {
+    bid.manageAccount(mocks, function() {
       xhr.useResult("ajaxError");
-      bid.manageAccount.cancelAccount();
-
-      setTimeout(function() {
-        equal($("#error").is(":visible"), true, "error message is visible on XHR error");
+      bid.manageAccount.cancelAccount(function() {
+        equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
         start();
-      }, ERROR_DELAY);
-    }, TEST_DELAY);
+      });
+    });
+  });
 
-    
+  asyncTest("first time a user goes to page should see help text", function() {
+    bid.manageAccount(mocks,  function() {
+      equal($("body").hasClass("newuser"), true, "body has the newuser class on first visit");
+
+      bid.manageAccount(mocks, function() {
+        equal($("body").hasClass("newuser"), false, "body does not have the newuser class on repeat visits");
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword with missing old password, expect tooltip", function() {
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val("");
+      $("#new_password").val("newpassword");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "on missing old password, status is false");
+        equal(tooltip.shown, true, "tooltip is visible");
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword with missing new password, expect tooltip", function() {
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val("oldpassword");
+      $("#new_password").val("");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "on missing new password, status is false");
+        equal(tooltip.shown, true, "tooltip is visible");
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword with incorrect old password, expect tooltip", function() {
+    bid.manageAccount(mocks, function() {
+      xhr.useResult("incorrectPassword");
+
+      $("#old_password").val("incorrectpassword");
+      $("#new_password").val("newpassword");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "on incorrect old password, status is false");
+        equal(tooltip.shown, true, "tooltip is visible");
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword with XHR error, expect error message", function() {
+    bid.manageAccount(mocks, function() {
+      xhr.useResult("invalid");
+
+      $("#old_password").val("oldpassword");
+      $("#new_password").val("newpassword");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "on xhr error, status is false");
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword happy case", function() {
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val("oldpassword");
+      $("#new_password").val("newpassword");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, true, "on proper completion, status is true");
+        equal(tooltip.shown, false, "on proper completion, tooltip is not shown");
+        start();
+      });
+    });
   });
 
 }());

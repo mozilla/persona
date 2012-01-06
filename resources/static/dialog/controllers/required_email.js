@@ -44,52 +44,52 @@ BrowserID.Modules.RequiredEmail = (function() {
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
       dom = bid.DOM,
-      assertion;
+      assertion,
+      cancelEvent = dialogHelpers.cancelEvent;
 
-  function signIn(event) {
-    event && event.preventDefault();
-
+  function signIn(callback) {
     var self = this,
         email = self.email;
 
-    // If the user is already authenticated and they own this address, sign 
+    // If the user is already authenticated and they own this address, sign
     // them right in.
     if(self.authenticated) {
-      dialogHelpers.getAssertion.call(self, email);
+      dialogHelpers.getAssertion.call(self, email, callback);
     }
     else {
-      // If the user is not already authenticated, but they potentially own 
-      // this address, try and sign them in and generate an assertion if they 
+      // If the user is not already authenticated, but they potentially own
+      // this address, try and sign them in and generate an assertion if they
       // get the password right.
       var password = helpers.getAndValidatePassword("#password");
       if (password) {
         dialogHelpers.authenticateUser.call(self, email, password, function(authenticated) {
           if (authenticated) {
-            // Now that the user has authenticated, sync their emails and get an 
+            // Now that the user has authenticated, sync their emails and get an
             // assertion for the email we care about.
             user.syncEmailKeypair(email, function() {
-              dialogHelpers.getAssertion.call(self, email);
+              dialogHelpers.getAssertion.call(self, email, callback);
             }, self.getErrorDialog(errors.syncEmailKeypair));
+          }
+          else {
+            callback && callback();
           }
         });
       }
     }
   }
 
-  function verifyAddress(event) {
-    // By being in the verifyAddress, we know that the current user  has not 
-    // been shown the password box and we have to do a verification of some 
-    // sort.  This will be either an add email to the current account or a new 
-    // registration.  
-    
-    event && event.preventDefault();
+  function verifyAddress() {
+    // By being in the verifyAddress, we know that the current user  has not
+    // been shown the password box and we have to do a verification of some
+    // sort.  This will be either an add email to the current account or a new
+    // registration.
 
     var self=this;
     if(self.authenticated) {
-      // If we are veryifying an address and the user is authenticated, it 
+      // If we are veryifying an address and the user is authenticated, it
       // means that the current user does not have control of the address.
-      // If the address is registered, it means another account has control of 
-      // the address and we are consolidating.  If the email is not registered 
+      // If the address is registered, it means another account has control of
+      // the address and we are consolidating.  If the email is not registered
       // then it means add the address to the current user's account.
       dialogHelpers.addEmail.call(self, self.email);
     }
@@ -98,17 +98,13 @@ BrowserID.Modules.RequiredEmail = (function() {
     }
   }
 
-  function forgotPassword(event) {
-    event && event.preventDefault();
-
+  function forgotPassword() {
     var self=this;
-    self.close("forgot_password", { email: self.email });
+    self.close("forgot_password", { email: self.email, requiredEmail: true });
   }
 
 
-  function cancel(event) {
-    event && event.preventDefault();
-
+  function cancel() {
     this.close("cancel");
   }
 
@@ -121,23 +117,29 @@ BrowserID.Modules.RequiredEmail = (function() {
       self.email = email;
       self.authenticated = authenticated;
 
-      // NOTE: When the app first starts and the user's authentication is 
-      // checked, all email addresses for authenticated users are synced.  We 
+      function ready() {
+        options.ready && options.ready();
+      }
+
+      // NOTE: When the app first starts and the user's authentication is
+      // checked, all email addresses for authenticated users are synced.  We
       // can be assured by this point that our addresses are up to date.
       if(authenticated) {
-        // if the current user owns the required email, sign in with it 
+        // if the current user owns the required email, sign in with it
         // (without a password). Otherwise, make the user verify the address
         // (which shows no password).
         var userOwnsEmail = !!user.getStoredEmailKeypair(email);
         showTemplate(userOwnsEmail, false);
+        ready();
       }
       else {
         user.isEmailRegistered(email, function(registered) {
-          // If the current email address is registered but the user is not 
-          // authenticated, make them sign in with it.  Otherwise, make them 
+          // If the current email address is registered but the user is not
+          // authenticated, make them sign in with it.  Otherwise, make them
           // verify ownership of the address.
           showTemplate(registered, registered);
-        }, self.getErrorDialog(errors.isEmailRegistered));
+          ready();
+        }, self.getErrorDialog(errors.isEmailRegistered, ready));
       }
 
       function showTemplate(requireSignin, showPassword) {
@@ -147,19 +149,22 @@ BrowserID.Modules.RequiredEmail = (function() {
           showPassword: showPassword
         });
 
-        self.bind("#sign_in", "click", signIn);
-        self.bind("#verify_address", "click", verifyAddress);
-        self.bind("#forgotPassword", "click", forgotPassword);
-        self.bind("#cancel", "click", cancel);
+        self.bind("#sign_in", "click", cancelEvent(signIn));
+        self.bind("#verify_address", "click", cancelEvent(verifyAddress));
+        self.bind("#forgotPassword", "click", cancelEvent(forgotPassword));
+        self.bind("#cancel", "click", cancelEvent(cancel));
       }
 
       RequiredEmail.sc.start.call(self, options);
-    },
+    }
 
+    // BEGIN TEST API
+    ,
     signIn: signIn,
     verifyAddress: verifyAddress,
     forgotPassword: forgotPassword,
     cancel: cancel
+    // END TEST API
   });
 
   return RequiredEmail;

@@ -42,7 +42,7 @@
     background-color: #549FDC;
     color: #fff;
     display: block;
-    
+
     -webkit-border-radius: 3px;
        -moz-border-radius: 3px;
          -o-border-radius: 3px;
@@ -67,7 +67,7 @@
   }
 
   #header ul.nav li:first-child a {
-    
+
     -webkit-border-radius: 3px 0 0 3px;
        -moz-border-radius: 3px 0 0 3px;
          -o-border-radius: 3px 0 0 3px;
@@ -110,7 +110,7 @@
     position: relative;
     margin: 0 20px 20px;
     top: auto;
-    
+
     -webkit-transition: none;
        -moz-transition: none;
          -o-transition: none;
@@ -139,7 +139,7 @@
   #legal {
     padding: 20px;
     text-align: left;
-  } 
+  }
 
   #legal li {
     list-style-position: inside;
@@ -199,7 +199,7 @@
     margin: 0 0 36px;
   }
 
-  #emails .email, 
+  #emails .email,
   #emails .activity {
     display: block;
     width: 260px;

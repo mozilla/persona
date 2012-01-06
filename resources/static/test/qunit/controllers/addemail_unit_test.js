@@ -37,35 +37,22 @@
 (function() {
   "use strict";
 
-  var controller, 
+  var controller,
       el = $("body"),
       bid = BrowserID,
       storage = bid.Storage,
       user = bid.User,
       network = bid.Network,
-      xhr = bid.Mocks.xhr,
-      mediator = bid.Mediator, 
       modules = bid.Modules,
       testOrigin = "http://browserid.org",
-      registrations = [];
+      register = bid.TestHelpers.register;
 
-  function register(message, cb) {
-    registrations.push(mediator.subscribe(message, cb));
-  }
 
-  function unregisterAll() {
-    var registration;
-    while(registration = registrations.pop()) {
-      mediator.unsubscribe(registration);
-    }
-  }
-
-  module("controllers/addemail_controller", {
+  module("controllers/addemail", {
     setup: function() {
-      network.setXHR(xhr);
-      xhr.useResult("valid");
-      storage.clear();
+      $("#newEmail").val("");
       user.setOrigin(testOrigin);
+      bid.TestHelpers.setup();
     },
 
     teardown: function() {
@@ -76,10 +63,8 @@
         } catch(e) {
           // could already be destroyed from the close
         }
-      }    
-      network.setXHR($);
-      storage.clear();
-      unregisterAll();
+      }
+      bid.TestHelpers.teardown();
     }
   });
 
@@ -94,12 +79,13 @@
     equal($("#addEmail").length, 1, "control rendered correctly");
 
     $("#newEmail").val("unregistered@testuser.com");
+
     register("email_staged", function(msg, info) {
       equal(info.email, "unregistered@testuser.com", "email_staged called with correct email");
       start();
     });
+
     controller.addEmail();
-    
   });
 
   asyncTest("addEmail with valid email with leading/trailing whitespace", function() {
@@ -111,7 +97,6 @@
       start();
     });
     controller.addEmail();
-    
   });
 
   asyncTest("addEmail with invalid email", function() {
@@ -122,17 +107,32 @@
     register("email_staged", function(msg, info) {
       handlerCalled = true;
       ok(false, "email_staged should not be called on invalid email");
-      start();
     });
-    controller.addEmail();
-    setTimeout(function() {
+    controller.addEmail(function() {
       equal(handlerCalled, false, "the email_staged handler should have never been called");
       start();
-    }, 100);
-    
+    });
   });
 
-  asyncTest("addEmail with previously registered email - allows for account consolidation", function() {
+  asyncTest("addEmail with email belonging to current user - prints tooltip", function() {
+    createController();
+
+    $("#newEmail").val("registered@testuser.com");
+
+    register("email_staged", function(msg, info) {
+      ok(false, "unexpected email_staged message");
+    });
+
+    // simulate the email being already added.
+    user.syncEmailKeypair("registered@testuser.com", function() {
+      controller.addEmail(function() {
+        ok(bid.Tooltip.shown, "tooltip should be shown");
+        start();
+      });
+    });
+  });
+
+  asyncTest("addEmail with email belonging to another user - allows for account consolidation", function() {
     createController();
 
     $("#newEmail").val("registered@testuser.com");
@@ -141,7 +141,6 @@
       start();
     });
     controller.addEmail();
-    
   });
 
   asyncTest("cancelAddEmail", function() {
@@ -152,7 +151,6 @@
       start();
     });
     controller.cancelAddEmail();
-    
   });
 
 }());

@@ -42,8 +42,8 @@ BrowserID.Wait = (function(){
     },
 
     generateKey: {
-      title: "Finishing Sign In...",
-      message: "Please wait just a moment while your account is authenticated."
+      title: "Hardcore Crypto Action...",
+      message: "Please wait just a moment while we generate an authentication token for this site."
     }
 
   };

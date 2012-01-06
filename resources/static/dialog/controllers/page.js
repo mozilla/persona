@@ -114,30 +114,22 @@ BrowserID.Modules.PageModule = (function() {
     },
 
     renderDialog: function(body, body_vars) {
-      screens.form(body, body_vars);
-      $("#wait, #error").stop().fadeOut(ANIMATION_TIME);
+      screens.wait.hide();
+      screens.error.hide();
+      screens.form.show(body, body_vars);
       dom.focus("input:visible:eq(0)");
     },
 
     renderWait: function(body, body_vars) {
-      screens.wait(body, body_vars);
-      $("body").css('opacity', 1);
-      $("#wait").stop().hide().fadeIn(ANIMATION_TIME);
+      screens.wait.show(body, body_vars);
     },
 
-    renderError: function(body, body_vars) {
-      screens.error(body, body_vars);
-      $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME);
+    renderError: function(body, body_vars, oncomplete) {
+      screens.error.show(body, body_vars);
 
-      /**
-       * TODO XXX - Use the error-display for this.
-       */
-      this.bind("#openMoreInfo", "click", function(event) {
-        event.preventDefault();
+      bid.ErrorDisplay.start();
 
-        $("#moreInfo").slideDown();
-        $("#openMoreInfo").css({visibility: "hidden"});
-      });
+      $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME, oncomplete);
     },
 
     validate: function() {
@@ -162,14 +154,16 @@ BrowserID.Modules.PageModule = (function() {
      * Get a curried function to an error dialog.
      * @method getErrorDialog
      * @method {object} action - info to use for the error dialog.  Should have
+     * @method {function} [onerror] - callback to call after the
+     * error has been displayed.
      * two fields, message, description.
      */
-    getErrorDialog: function(action) {
+    getErrorDialog: function(action, onerror) {
       var self=this;
       return function(lowLevelInfo) {
         self.renderError("error", $.extend({
           action: action
-        }, lowLevelInfo));
+        }, lowLevelInfo), onerror);
       }
     }
   });

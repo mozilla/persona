@@ -38,32 +38,22 @@
   "use strict";
 
   var bid = BrowserID,
-      mediator = bid.Mediator,
       channel = bid.Channel,
+      network = bid.Network,
+      xhr = bid.Mocks.xhr,
       controller,
       el,
-      channelError = false,
       winMock,
       navMock;
 
   function reset() {
-    el = $("#controller_head");
-    el.find("#formWrap .contents").html("");
-    el.find("#wait .contents").html("");
-    el.find("#error .contents").html("");
-
-    channelError = false;
   }
 
   function WinMock() {
-    this.location.hash = "#1234";  
+    this.location.hash = "#1234";
   }
 
   WinMock.prototype = {
-    setupChannel: function() {
-      if (channelError) throw "Channel error";
-    },
-
     // Oh so beautiful.
     opener: {
       frames: {
@@ -82,53 +72,94 @@
     },
 
     location: {
-    }
+    },
 
-
-  }
+    navigator: {},
+  };
 
   function createController(config) {
-    var config = $.extend(config, {
+    var config = $.extend({
       window: winMock
-    });
+    }, config);
 
     controller = BrowserID.Modules.Dialog.create(config);
   }
 
-  module("controllers/dialog_controller", {
+  module("controllers/dialog", {
     setup: function() {
       winMock = new WinMock();
-      channel.init({
-        window: winMock,
-        navigator: navMock
-      });
       reset();
+      bid.TestHelpers.setup();
     },
 
     teardown: function() {
       controller.destroy();
       reset();
-      channel.init({
-        window: window,
-        navigator: navigator
-      });
+      bid.TestHelpers.teardown();
     }
   });
 
-  test("initialization with channel error", function() {
-    channelError = true;
-    createController();
-
+  function checkNetworkError() {
     ok($("#error .contents").text().length, "contents have been written");
+    ok($("#error #action").text().length, "action contents have been written");
+    ok($("#error #network").text().length, "network contents have been written");
+  }
+
+  asyncTest("initialization with channel error", function() {
+    // Set the hash so that the channel cannot be found.
+    winMock.location.hash = "#1235";
+    createController({
+      ready: function() {
+        ok($("#error .contents").text().length, "contents have been written");
+        start();
+      }
+    });
   });
 
-  test("doOffline", function() {
-    createController();
-    controller.doOffline();
-    ok($("#error .contents").text().length, "contents have been written");
-    ok($("#error #offline").text().length, "offline error message has been written");
+  asyncTest("initialization with add-on navigator.id.channel", function() {
+    var ok_p = false;
+
+    // expect registerController to be called.
+    winMock.navigator.id = {
+      channel : {
+        registerController: function(controller) {
+          ok_p = controller.getVerifiedEmail && controller.get;
+        }
+      }
+    };
+
+    createController({
+      ready: function() {
+        ok(ok_p, "registerController was not called with proper controller");
+        start();
+      }
+    });
   });
 
+  asyncTest("initialization with #NATIVE", function() {
+    winMock.location.hash = "#NATIVE";
+    
+    createController({
+      ready: function() {
+        ok($("#error .contents").text().length == 0, "no error should be reported");
+        start();
+      }
+    });
+  });
+
+
+  asyncTest("initialization with #INTERNAL", function() {
+    winMock.location.hash = "#INTERNAL";
+    
+    createController({
+      ready: function() {
+        ok($("#error .contents").text().length == 0, "no error should be reported");
+        start();
+      }
+    });
+  });
+  
+  /*
   test("doXHRError while online, no network info given", function() {
     createController();
     controller.doXHRError();
@@ -145,9 +176,7 @@
         url: "browserid.org/verify"
       }
     });
-    ok($("#error .contents").text().length, "contents have been written");
-    ok($("#error #action").text().length, "action contents have been written");
-    ok($("#error #network").text().length, "network contents have been written");
+    checkNetworkError();
   });
 
   test("doXHRError while offline does not update contents", function() {
@@ -158,12 +187,12 @@
     controller.doXHRError();
     ok(!$("#error #action").text().length, "XHR error is not reported if the user is offline.");
   });
-
+*/
 
   /*
   test("doCheckAuth with registered requiredEmail, authenticated", function() {
     createController({
-      requiredEmail: "registered@testuser.com" 
+      requiredEmail: "registered@testuser.com"
     });
 
     controller.doCheckAuth();
@@ -171,7 +200,7 @@
 
   test("doCheckAuth with registered requiredEmail, not authenticated", function() {
     createController({
-      requiredEmail: "registered@testuser.com" 
+      requiredEmail: "registered@testuser.com"
     });
 
     controller.doCheckAuth();
@@ -179,7 +208,7 @@
 
   test("doCheckAuth with unregistered requiredEmail, not authenticated", function() {
     createController({
-      requiredEmail: "unregistered@testuser.com" 
+      requiredEmail: "unregistered@testuser.com"
     });
 
     controller.doCheckAuth();
@@ -187,28 +216,30 @@
 
   test("doCheckAuth with unregistered requiredEmail, authenticated as other user", function() {
     createController({
-      requiredEmail: "unregistered@testuser.com" 
+      requiredEmail: "unregistered@testuser.com"
     });
 
     controller.doCheckAuth();
   });
 */
 
-  test("doWinUnload", function() {
+  asyncTest("onWindowUnload", function() {
     createController({
-      requiredEmail: "registered@testuser.com"
+      requiredEmail: "registered@testuser.com",
+      ready: function() {
+        var error;
+
+        try {
+          controller.onWindowUnload();
+        }
+        catch(e) {
+          error = e;
+        }
+
+        equal(typeof error, "undefined", "unexpected error thrown when unloading window (" + error + ")");
+        start();
+      }
     });
-
-    var error;
-
-    try {
-      controller.doWinUnload();
-    }
-    catch(e) {
-      error = e;
-    }
-
-    equal(typeof error, "undefined", "no error thrown when unloading window");
   });
 
 }());

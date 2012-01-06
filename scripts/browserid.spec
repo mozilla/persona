@@ -1,8 +1,8 @@
 %define _rootdir /opt/browserid
 
 Name:          browserid-server
-Version:       0.2011.12.01
-Release:       4%{?dist}
+Version:       0.2011.12.28
+Release:       1%{?dist}
 Summary:       BrowserID server
 Packager:      Pete Fritchman <petef@mozilla.com>
 Group:         Development/Libraries
@@ -18,13 +18,12 @@ BuildRequires: gcc-c++ git jre make npm openssl-devel
 browserid server & web home for browserid.org
 
 %prep
-%setup -q -n browserid
+%setup -q -c -n browserid
 
 %build
-rm -rf node_modules/jwcrypto
 npm install
 export PATH=$PWD/node_modules/.bin:$PATH
-(scripts/compress.sh)
+scripts/compress.sh
 echo "$GIT_REVISION" > resources/static/ver.txt
 
 %install

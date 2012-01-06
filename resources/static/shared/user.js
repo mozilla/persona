@@ -322,7 +322,7 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Set the password of the current user.
+     * Set the initial password of the current user.
      * @method setPassword
      * @param {string} password - password to set
      * @param {function} [onComplete] - Called on successful completion.
@@ -330,6 +330,20 @@ BrowserID.User = (function() {
      */
     setPassword: function(password, onComplete, onFailure) {
       network.setPassword(password, onComplete, onFailure);
+    },
+
+    /**
+     * update the password of the current user.
+     * @method changePassword
+     * @param {string} oldpassword - the old password.
+     * @param {string} newpassword - the new password.
+     * @param {function} [onComplete] - called on completion.  Called with one
+     * parameter, status - set to true if password update is successful, false
+     * otw.
+     * @param {function} [onFailure] - called on XHR failure.
+     */
+    changePassword: function(oldpassword, newpassword, onComplete, onFailure) {
+      network.changePassword(oldpassword, newpassword, onComplete, onFailure);
     },
 
     /**

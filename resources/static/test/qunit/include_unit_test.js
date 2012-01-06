@@ -38,7 +38,7 @@
   "use strict";
 
   module("include.js");
-  
+
   test("navigator.id is available", function() {
     equal(typeof navigator.id, "object", "navigator.id namespace is available");
   });

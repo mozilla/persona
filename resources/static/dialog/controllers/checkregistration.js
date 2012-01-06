@@ -57,23 +57,25 @@ BrowserID.Modules.CheckRegistration = (function() {
       CheckRegistration.sc.start.call(self, options);
     },
 
-    startCheck: function() {
+    startCheck: function(oncomplete) {
       var self=this;
       user[self.verifier](self.email, function(status) {
         if (status === "complete") {
           user.syncEmails(function() {
             self.close(self.verificationMessage);
+            oncomplete && oncomplete();
           });
         }
         else if (status === "mustAuth") {
           self.close("auth", { email: self.email });
+          oncomplete && oncomplete();
         }
-      }, self.getErrorDialog(errors.registration));
+      }, self.getErrorDialog(errors.registration, oncomplete));
     },
 
     cancel: function() {
       var self=this;
-      // XXX this should change to cancelEmailValidation for email, but this 
+      // XXX this should change to cancelEmailValidation for email, but this
       // will work.
       user.cancelUserValidation();
       self.close("cancel_state");

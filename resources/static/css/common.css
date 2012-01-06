@@ -86,15 +86,15 @@ input[type=password] {
     font-size: 14px;
     padding: 5px;
     border-width: 1px;
-    border-style: solid; 
-    border-color: #A3A29D #C6C3B4 #C6C3B4 #A3A29D; 
+    border-style: solid;
+    border-color: #A3A29D #C6C3B4 #C6C3B4 #A3A29D;
     outline: none;
-    
+
     -webkit-border-radius: 3px;
        -moz-border-radius: 3px;
          -o-border-radius: 3px;
             border-radius: 3px;
-    
+
     -webkit-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
        -moz-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
          -o-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
@@ -104,12 +104,12 @@ input[type=password] {
 input[type=email]:focus,
 input[type=password]:focus {
     border: 1px solid #549FDC;
-    
+
     -webkit-border-radius: 0;
        -moz-border-radius: 0;
          -o-border-radius: 0;
             border-radius: 0;
-    
+
     -webkit-box-shadow: 0 0 0 1px #549FDC inset;
        -moz-box-shadow: 0 0 0 1px #549FDC inset;
          -o-box-shadow: 0 0 0 1px #549FDC inset;
@@ -140,17 +140,17 @@ button,
     text-shadow: -1px -1px 0 #37A6FF;
     text-transform: lowercase;
     cursor: pointer;
-    
+
     -webkit-box-shadow: 0 0 0 1px #76C2FF inset;
        -moz-box-shadow: 0 0 0 1px #76C2FF inset;
          -o-box-shadow: 0 0 0 1px #76C2FF inset;
             box-shadow: 0 0 0 1px #76C2FF inset;
-    
+
     -webkit-border-radius: 5px;
        -moz-border-radius: 5px;
          -o-border-radius: 5px;
             border-radius: 5px;
-    
+
     background-color: #37A6FF;
     background-image: -moz-linear-gradient(center top , #76C2FF 0pt, #37A6FF 100%);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
@@ -172,12 +172,12 @@ button:active,
     border: 1px solid #003E70;
     color: #EEEEEE;
     text-shadow: -1px -1px 0 #006EC6;
-    
+
     -webkit-box-shadow: 0 0 5px #003763 inset;
        -moz-box-shadow: 0 0 5px #003763 inset;
          -o-box-shadow: 0 0 5px #003763 inset;
             box-shadow: 0 0 5px #003763 inset;
-    
+
     background-image: -moz-linear-gradient(center top , #3AA7FF 0%, #006EC6 100%);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3AA7FF), color-stop(100%, #006EC6));
 }

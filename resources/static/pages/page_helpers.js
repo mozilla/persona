@@ -87,12 +87,14 @@ BrowserID.PageHelpers = (function() {
       return decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
-  function getFailure(error) {
+  function getFailure(error, callback) {
     return function onFailure(info) {
       info = $.extend(info, { action: error, dialog: false });
-      bid.Screens.error("error", info);
+      bid.Screens.error.show("error", info);
       $("#errorBackground").stop().fadeIn();
       $("#error").stop().fadeIn();
+
+      callback && callback(false);
     }
   }
 
@@ -119,8 +121,15 @@ BrowserID.PageHelpers = (function() {
     setStoredEmail(origStoredEmail);
 
     showInputs(onComplete);
-    
+
     dom.focus("input:visible:eq(0)");
+  }
+
+  function cancelEvent(callback) {
+    return function(event) {
+      event && event.preventDefault();
+      callback && callback();
+    };
   }
 
   return {
@@ -133,6 +142,7 @@ BrowserID.PageHelpers = (function() {
     replaceInputsWithNotice: replaceInputsWithNotice,
     showInputs: showInputs,
     showEmailSent: showEmailSent,
-    cancelEmailSent: cancelEmailSent
+    cancelEmailSent: cancelEmailSent,
+    cancelEvent: cancelEvent
   };
 }());

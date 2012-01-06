@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 (function() {
   "use strict";
-  
+
   var bid = BrowserID,
       mediator = bid.Mediator,
       machine,
@@ -65,8 +65,9 @@
       this.pickingEmail = true;
     },
 
-    doForgotPassword: function(email) {
-      this.email = email;
+    doForgotPassword: function(info) {
+      this.email = info.email;
+      this.requiredEmail = info.requiredEmail;
     },
 
     doAssertionGenerated: function(assertion) {
@@ -97,8 +98,11 @@
 
     doCancel: function() {
       this.cancelled = true;
-    }
+    },
 
+    doError: function() {
+      this.error = true;
+    }
   };
 
   function createMachine() {
@@ -122,12 +126,19 @@
     ok(machine, "Machine has been created");
   });
 
+  test("attempt to create a state machine without a controller", function() {
+    raises(function() {
+      var badmachine = bid.StateMachine.create();
+      badmachine.start();
+    }, "start: controller must be specified", "creating a state machine without a controller fails");
+  });
+
   test("offline does offline", function() {
     mediator.publish("offline");
 
     equal(controllerMock.offline, true, "controller is offline");
   });
-  
+
   test("user_staged", function() {
     // XXX rename user_staged to confirm_user or something to that effect.
     mediator.publish("user_staged", {
@@ -151,9 +162,11 @@
 
   test("forgot_password", function() {
     mediator.publish("forgot_password", {
-      email: "testuser@testuser.com"
+      email: "testuser@testuser.com",
+      requiredEmail: true
     });
-    equal(controllerMock.email, "testuser@testuser.com", "forgot password with the correct email");
+    equal(controllerMock.email, "testuser@testuser.com", "correct email passed");
+    equal(controllerMock.requiredEmail, true, "correct requiredEmail passed");
   });
 
   test("reset_password", function() {
@@ -206,7 +219,7 @@
   test("cancel_state", function() {
     mediator.publish("add_email");
     mediator.publish("email_staged", {
-      email: "testuser@testuser.com" 
+      email: "testuser@testuser.com"
     });
 
     controllerMock.requestAddEmail = false;
@@ -221,16 +234,40 @@
     ok(controllerMock.notMe, "notMe has been called");
   });
 
-  test("auth", function() {
-    mediator.publish("auth", {
-      email: "testuser@testuser.com" 
+  test("authenticate", function() {
+    mediator.publish("authenticate", {
+      email: "testuser@testuser.com"
     });
 
     equal(controllerMock.email, "testuser@testuser.com", "authenticate with testuser@testuser.com");
   });
 
-  test("start", function() {
+  test("start with no required email address should go straight to checking auth", function() {
     mediator.publish("start");
+
+    equal(controllerMock.checkingAuth, true, "checking auth on start");
+  });
+
+  test("start with invalid requiredEmail prints error screen", function() {
+    mediator.publish("start", {
+      requiredEmail: "bademail"
+    });
+
+    equal(controllerMock.error, true, "error screen is shown");
+  });
+
+  test("start with empty requiredEmail prints error screen", function() {
+    mediator.publish("start", {
+      requiredEmail: ""
+    });
+
+    equal(controllerMock.error, true, "error screen is shown");
+  });
+
+  test("start with valid requiredEmail goes to auth", function() {
+    mediator.publish("start", {
+      requiredEmail: "testuser@testuser.com"
+    });
 
     equal(controllerMock.checkingAuth, true, "checking auth on start");
   });

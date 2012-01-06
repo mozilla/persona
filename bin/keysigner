@@ -39,7 +39,8 @@
 
 const
 path = require('path'),
-express = require('express');
+express = require('express'),
+statsd = require('../lib/statsd');
 
 const
 config = require('../lib/configuration.js'),
@@ -107,10 +108,14 @@ try {
 
 // and our single function
 app.post('/wsapi/cert_key', validate(["email", "pubkey"]), function(req, resp) {
+  var startTime = new Date();
   cc.enqueue({
     pubkey: req.body.pubkey,
     email: req.body.email
   }, function (err, r) {
+    var reqTime = new Date - startTime;
+    statsd.timing('certification_time', reqTime);
+
     // consider "application" errors to be the same as harder errors
     if (!err && r && r.error) err = r.error;
     else if (!r || !r.success) err = "no certificate returned from child process";

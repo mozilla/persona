@@ -58,19 +58,17 @@ var argv = require('optimist')
 .describe('o', 'when enabled, only dynamic WSAPI calls will be simulated, not static resource requests')
 .default('o', false)
 .alias('s', 'server')
+.string('s')
 .describe('s', 'base URL to browserid server')
-.demand('s')
+.check(function(argv) {
+  return (typeof argv.s === 'string' || argv.l) != undefined;
+})
 .alias('v', 'verifier')
 .describe('v', 'base URL to verifier service (default is browserid server + \'/verify\')')
 .alias('u', 'user-range')
 .describe('u', 'rather than creating users, assume a range of users exist #@loadtest.domain (with password "THE PASSWORD")');
 
 var args = argv.argv;
-
-if (args.h) {
-  argv.showHelp();
-  process.exit(1);
-}
 
 // global configuration
 const configuration = {
@@ -93,7 +91,7 @@ var completed = {
 };
 
 // how many activies does an active user undertake per second
-const activitiesPerUserPerSecond = (40.0 / ( 24 * 60 * 60 )); 
+const activitiesPerUserPerSecond = (40.0 / ( 24 * 60 * 60 ));
 
 // activities
 var activity = {
@@ -137,6 +135,11 @@ var activity = {
 if (args.l) {
   console.log("available activities:", Object.keys(activity).join(", "));
   process.exit(0);
+}
+
+if (args.h) {
+  argv.showHelp();
+  process.exit(1);
 }
 
 var activitiesToRun = Object.keys(activity);

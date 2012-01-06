@@ -64,80 +64,65 @@
   asyncTest("verifyEmailAddress with good token and site", function() {
     storage.setStagedOnBehalfOf("browserid.org");
 
-    bid.verifyEmailAddress("token");
-
-    setTimeout(function() {
+    bid.verifyEmailAddress("token", function() {
       equal($("#email").val(), "testuser@testuser.com", "email set");
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
       equal($(".website").text(), "browserid.org", "origin is updated");
       start();
-    }, 500);
+    });
   });
 
   asyncTest("verifyEmailAddress with good token and nosite", function() {
     $(".siteinfo").hide();
     storage.setStagedOnBehalfOf("");
 
-    bid.verifyEmailAddress("token");
-
-
-    setTimeout(function() {
+    bid.verifyEmailAddress("token", function() {
       equal($("#email").val(), "testuser@testuser.com", "email set");
       equal($(".siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
       equal($(".siteinfo .website").text(), "", "origin is not updated");
       start();
-    }, 500);
+    });
   });
 
   asyncTest("verifyEmailAddress with bad token", function() {
     xhr.useResult("invalid");
 
-    bid.verifyEmailAddress("token");
-    setTimeout(function() {
+    bid.verifyEmailAddress("token", function() {
       ok($("#cannotconfirm").is(":visible"), "cannot confirm box is visible");
       start();
-    }, 500);
+    });
   });
 
   asyncTest("verifyEmailAddress with emailForVerficationToken XHR failure", function() {
     xhr.useResult("ajaxError");
-    bid.verifyEmailAddress("token");
-
-    setTimeout(function() {
+    bid.verifyEmailAddress("token", function() {
       ok($("#error").is(":visible"), "cannot communicate box is visible");
       start();
-    }, 500);
+    });
   });
 
   asyncTest("submit with good token, both passwords", function() {
-    bid.verifyEmailAddress("token");
+    bid.verifyEmailAddress("token", function() {
+      $("#password").val("password");
+      $("#vpassword").val("password");
 
-
-    $("#password").val("password");
-    $("#vpassword").val("password");
-
-    bid.verifyEmailAddress.submit();
-
-    setTimeout(function() {
-      equal($("#congrats").is(":visible"), true, "congrats is visible, we are complete");
-      start();
-    }, 500);
+      bid.verifyEmailAddress.submit(function() {
+        equal($("#congrats").is(":visible"), true, "congrats is visible, we are complete");
+        start();
+      });
+    });
   });
 
   asyncTest("submit with good token, missing password", function() {
-    bid.verifyEmailAddress("token");
+    bid.verifyEmailAddress("token", function() {
+      $("#password").val("");
+      $("#vpassword").val("password");
 
-
-    $("#password").val("");
-    $("#vpassword").val("password");
-
-    bid.verifyEmailAddress.submit();
-
-    setTimeout(function() {
-      equal($("#congrats").is(":visible"), false, "congrats is not visible, missing password");
-      start();
-    }, 500);
-    
+      bid.verifyEmailAddress.submit(function() {
+        equal($("#congrats").is(":visible"), false, "congrats is not visible, missing password");
+        start();
+      });
+    });
   });
 
   asyncTest("submit with good token, missing verification password", function() {
@@ -147,13 +132,11 @@
     $("#password").val("password");
     $("#vpassword").val("");
 
-    bid.verifyEmailAddress.submit();
-
-    setTimeout(function() {
+    bid.verifyEmailAddress.submit(function() {
       equal($("#congrats").is(":visible"), false, "congrats is not visible, missing verification password");
       start();
-    }, 500);
-    
+    });
+
   });
 
   asyncTest("submit with good token, different passwords", function() {
@@ -162,12 +145,10 @@
     $("#password").val("password");
     $("#vpassword").val("pass");
 
-    bid.verifyEmailAddress.submit();
-
-    setTimeout(function() {
+    bid.verifyEmailAddress.submit(function() {
       equal($("#congrats").is(":visible"), false, "congrats is not visible, different passwords");
       start();
-    }, 500);
-    
+    });
+
   });
 }());

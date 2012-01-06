@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global setupChannel:true, BrowserID: true */
+/*global BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -43,55 +43,57 @@ BrowserID.Modules.Dialog = (function() {
       user = bid.User,
       errors = bid.Errors,
       dom = bid.DOM,
-      offline = false,
-      win = window,
-      serviceManager = bid.module,
-      runningService;
-
-  function startService(name, options) {
-    // Only one service outside of the main dialog allowed.
-    if(runningService) {
-      serviceManager.stop(runningService);
-    }
-    runningService = name;
-    return serviceManager.start(name, options);
-  }
-
-  function startRegCheckService(email, verifier, message) {
-    this.confirmEmail = email;
-
-    var controller = startService("check_registration", {
-      email: email,
-      verifier: verifier,
-      verificationMessage: message
-    });
-    controller.startCheck();
-  }
+      win = window;
 
   function checkOnline() {
-    if ('onLine' in navigator && !navigator.onLine) {
-      this.doOffline();
+    if (false && 'onLine' in navigator && !navigator.onLine) {
+      this.publish("offline");
       return false;
     }
 
     return true;
   }
 
-  function onWinUnload() {
-    // do this only if something else hasn't declared success
-    var self=this;
-    if (!self.success) {
-      bid.Storage.setStagedOnBehalfOf("");
-      self.doCancel();
-    }
-    window.teardownChannel();
+  function startActions(onsuccess, onerror) {
+    var actions = BrowserID.Modules.Actions.create();
+    actions.start({
+      onsuccess: onsuccess,
+      onerror: onerror
+    });
+    return actions;
   }
 
-  function setupChannel() {
+  function startStateMachine(controller) {
+    // start this directly because it should always be running.
+    var machine = BrowserID.StateMachine.create();
+    machine.start({
+      controller: controller
+    });
+  }
+
+  function startChannel() {
     var self = this;
 
+    // first, we see if there is a local channel
+    if (win.navigator.id && win.navigator.id.channel) {
+      win.navigator.id.channel.registerController(self);
+      return;
+    }
+
+    // next, we see if the caller intends to call native APIs
+    if (win.location.hash == "#NATIVE" || win.location.hash == "#INTERNAL") {
+      // don't do winchan, let it be.
+      return;
+    }      
+
     try {
-      win.setupChannel(self);
+      WinChan.onOpen(function(origin, args, cb) {
+        self.get(origin, args.params, function(r) {
+          cb(r);
+        }, function (e) {
+          cb(null);
+        });
+      });
     } catch (e) {
       self.renderError("error", {
         action: errors.relaySetup
@@ -104,161 +106,52 @@ BrowserID.Modules.Dialog = (function() {
     dom.setInner("#sitename", user.getHostname());
   }
 
+  function onWindowUnload() {
+    this.publish("window_unload");
+  }
+
   var Dialog = bid.Modules.PageModule.extend({
-      init: function(options) {
-        offline = false;
+    init: function(options) {
+      var self=this;
 
-        options = options || {};
+      options = options || {};
 
-        if (options.window) {
-          win = options.window;
-        }
+      win = options.window || window;
 
-        var self=this;
+      Dialog.sc.init.call(self, options);
 
-        Dialog.sc.init.call(self, options);
+      startChannel.call(self);
 
-        // keep track of where we are and what we do on success and error
-        self.onsuccess = null;
-        self.onerror = null;
-
-        // start this directly because it should always be running.
-        var machine = BrowserID.StateMachine.create();
-        machine.start({
-          controller: this
-        });
-
-        setupChannel.call(self);
-      },
-
-      getVerifiedEmail: function(origin_url, onsuccess, onerror) {
-        return this.get(origin_url, {}, onsuccess, onerror);
-      },
-
-      get: function(origin_url, params, onsuccess, onerror) {
-        var self=this;
-
-        if(checkOnline.call(self)) {
-          self.onsuccess = onsuccess;
-          self.onerror = onerror;
-
-          params = params || {};
-
-          self.allowPersistent = !!params.allowPersistent;
-          self.requiredEmail = params.requiredEmail;
-
-          setOrigin(origin_url);
-
-          self.bind(win, "unload", onWinUnload);
-
-          self.doCheckAuth();
-        }
-      },
-
-      doOffline: function() {
-        this.renderError("offline", {});
-        offline = true;
-      },
-
-      doXHRError: function(info) {
-        if (!offline) {
-          this.renderError("error", $.extend({
-            action: errors.xhrError
-          }, info));
-        }
-      },
-
-      doConfirmUser: function(email) {
-        startRegCheckService.call(this, email, "waitForUserValidation", "user_confirmed");
-      },
-
-      doCancel: function() {
-        var self=this;
-        if (self.onsuccess) {
-          self.onsuccess(null);
-        }
-      },
-
-      doPickEmail: function() {
-        var self=this;
-        startService("pick_email", {
-          // XXX ideal is to get rid of this and have a User function
-          // that takes care of getting email addresses AND the last used email
-          // for this site.
-          origin: user.getHostname(),
-          allow_persistent: self.allowPersistent
-        });
-      },
-
-      doAddEmail: function() {
-        startService("add_email", {});
-      },
-
-      doAuthenticate: function(info) {
-        startService("authenticate", info);
-      },
-
-      doAuthenticateWithRequiredEmail: function(info) {
-        startService("required_email", info);
-      },
-
-      doForgotPassword: function(email) {
-        startService("forgot_password", {
-          email: email
-        });
-      },
-
-      doConfirmEmail: function(email) {
-        startRegCheckService.call(this, email, "waitForEmailValidation", "email_confirmed");
-      },
-
-      doEmailConfirmed: function() {
-        var self=this;
-        // yay!  now we need to produce an assertion.
-        user.getAssertion(self.confirmEmail, self.doAssertionGenerated.bind(self),
-          self.getErrorDialog(errors.getAssertion));
-      },
-
-      doAssertionGenerated: function(assertion) {
-        var self=this;
-        // Clear onerror before the call to onsuccess - the code to onsuccess
-        // calls window.close, which would trigger the onerror callback if we
-        // tried this afterwards.
-        self.onerror = null;
-        self.success = true;
-        self.onsuccess(assertion);
-      },
-
-      doNotMe: function() {
-        var self=this;
-        user.logoutUser(self.publish.bind(self, "auth"), self.getErrorDialog(errors.logoutUser));
-      },
-
-      doSyncThenPickEmail: function() {
-        var self = this;
-        user.syncEmails(self.doPickEmail.bind(self),
-          self.getErrorDialog(errors.signIn));
-      },
-
-      doCheckAuth: function() {
-        var self=this;
-        user.checkAuthenticationAndSync(function onSuccess() {},
-          function onComplete(authenticated) {
-            if (self.requiredEmail) {
-              self.publish("authenticate_with_required_email", {
-                email: self.requiredEmail,
-                authenticated: authenticated
-              });
-            }
-            else if (authenticated) {
-              self.publish("pick_email");
-            } else {
-              self.publish("auth");
-            }
-          }, self.getErrorDialog(errors.checkAuthentication));
+      options.ready && _.defer(options.ready);
     },
 
-    doWinUnload: onWinUnload
+    getVerifiedEmail: function(origin_url, success, error) {
+      return this.get(origin_url, {}, success, error);
+    },
+
+    get: function(origin_url, params, success, error) {
+      var self=this;
+
+      setOrigin(origin_url);
+
+      var actions = startActions.call(self, success, error);
+      startStateMachine.call(self, actions);
+
+      if(checkOnline.call(self)) {
+        params = params || {};
+
+        params.hostname = user.getHostname();
+
+        self.bind(win, "unload", onWindowUnload);
+
+        self.publish("start", params);
+      }
+    }
+
+    // BEGIN TESTING API
+    ,
+    onWindowUnload: onWindowUnload
+    // END TESTING API
 
   });
 

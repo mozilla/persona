@@ -47,7 +47,8 @@ metrics = require('../lib/metrics'),
 heartbeat = require('../lib/heartbeat'),
 logger = require('../lib/logging').logger,
 config = require('../lib/configuration'),
-shutdown = require('../lib/shutdown');
+shutdown = require('../lib/shutdown'),
+statsd = require('../lib/statsd');
 
 logger.info("verifier server starting up");
 
@@ -118,10 +119,14 @@ app.post('/verify', function(req, resp, next) {
     return resp.json({ status: "failure", reason: "need assertion and audience" });
   }
 
+  var startTime = new Date();
   cc.enqueue({
     assertion: assertion,
     audience: audience
   }, function (err, r) {
+    var reqTime = new Date - startTime;
+    statsd.timing('assertion_verification_time', reqTime);
+
     // consider "application" errors to be the same as harder errors
     if (!err && r && r.error) err = r.error;
     else if (!r || !r.success) err = "no response returned from child process";

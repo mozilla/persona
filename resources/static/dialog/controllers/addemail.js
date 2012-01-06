@@ -38,31 +38,26 @@ BrowserID.Modules.AddEmail = (function() {
   "use strict";
 
   var bid = BrowserID,
-      user = bid.User,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
+      cancelEvent = dialogHelpers.cancelEvent,
       errors = bid.Errors,
       tooltip = bid.Tooltip;
 
-  function cancelEvent(event) {
-    event && event.preventDefault();
-  }
-
-  function addEmail(event) {
+  function addEmail(callback) {
     var email = helpers.getAndValidateEmail("#newEmail"),
         self=this;
 
-    cancelEvent(event);
-
     if (email) {
-      dialogHelpers.addEmail.call(self, email);
+      dialogHelpers.addEmail.call(self, email, callback);
+    }
+    else {
+      callback && callback();
     }
   }
 
 
-  function cancelAddEmail(event) {
-    cancelEvent(event);
-
+  function cancelAddEmail() {
     this.close("cancel_state");
   }
 
@@ -72,12 +67,15 @@ BrowserID.Modules.AddEmail = (function() {
 
       self.renderDialog("addemail");
 
-      self.bind("#cancelNewEmail", "click", cancelAddEmail);
+      self.bind("#cancelNewEmail", "click", cancelEvent(cancelAddEmail));
       AddEmail.sc.start.call(self, options);
     },
-    submit: addEmail,
+    submit: addEmail
+    // BEGIN TESTING API
+    ,
     addEmail: addEmail,
     cancelAddEmail: cancelAddEmail
+    // END TESTING API
   });
 
   return AddEmail;

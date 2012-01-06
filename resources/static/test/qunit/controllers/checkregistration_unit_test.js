@@ -41,19 +41,8 @@
       bid = BrowserID,
       xhr = bid.Mocks.xhr,
       network = bid.Network,
-      mediator = bid.Mediator,
-      listeners = [];
-
-  function subscribe(message, cb) {
-    listeners.push(mediator.subscribe(message, cb));
-  }
-
-  function unsubscribeAll() {
-    var registration;
-    while(registration = listeners.pop()) {
-      mediator.unsubscribe(registration);
-    }
-  }
+      testHelpers = bid.TestHelpers,
+      register = testHelpers.register;
 
   function createController(verifier, message) {
     controller = bid.Modules.CheckRegistration.create();
@@ -66,27 +55,23 @@
 
   module("controllers/checkregistration_controller", {
     setup: function() {
-      xhr.useResult("valid");
-      network.setXHR(xhr);
-      $("#error").hide();
+      testHelpers.setup();
     },
 
     teardown: function() {
-      network.setXHR($);
+      testHelpers.teardown();
       if (controller) {
         try {
           // Controller may have already destroyed itself.
           controller.destroy();
         } catch(e) {}
       }
-      unsubscribeAll();
-      $("#error").hide();
-    } 
+    }
   });
 
   function testVerifiedUserEvent(event_name, message) {
     createController("waitForUserValidation", event_name);
-    subscribe(event_name, function() {
+    register(event_name, function() {
       ok(true, message);
       start();
     });
@@ -103,38 +88,34 @@
     xhr.useResult("pending");
 
     testVerifiedUserEvent("user_verified", "User verified");
+    // use setTimeout to simulate a delay in the user opening the email.
     setTimeout(function() {
       xhr.useResult("complete");
-    }, 1000);
+    }, 500);
   });
 
   asyncTest("user validation with XHR error", function() {
     xhr.useResult("ajaxError");
 
     createController("waitForUserValidation", "user_verified");
-    subscribe("user_verified", function() {
-      ok(false, "on XHR error, should not complete");
-    });
-    controller.startCheck();
-    
-    setTimeout(function() {
-      ok($("#error").is(":visible"), "Error message is visible");
+    controller.startCheck(function() {
+      register("user_verified", function() {
+        ok(false, "on XHR error, should not complete");
+      });
+      ok(testHelpers.errorVisible(), "Error message is visible");
       start();
-    }, 1000);
-
-    
+    });
   });
 
   asyncTest("cancel raises cancel_state", function() {
     createController("waitForUserValidation", "user_verified");
-    subscribe("cancel_state", function() {
-      ok(true, "on cancel, cancel_state is triggered");
-      start();
+    controller.startCheck(function() {
+      register("cancel_state", function() {
+        ok(true, "on cancel, cancel_state is triggered");
+        start();
+      });
+      controller.cancel();
     });
-    controller.startCheck();
-    controller.cancel();
-
-    
   });
 
 }());

@@ -42,6 +42,7 @@ BrowserID.signUp = (function() {
       dom = bid.DOM,
       helpers = bid.Helpers,
       pageHelpers = bid.PageHelpers,
+      cancelEvent = pageHelpers.cancelEvent,
       errors = bid.Errors,
       tooltip = BrowserID.Tooltip,
       ANIMATION_SPEED = 250,
@@ -51,34 +52,40 @@ BrowserID.signUp = (function() {
       $(selector).fadeIn(ANIMATION_SPEED);
     }
 
-    function submit(event) { 
-      if (event) event.preventDefault();
-
+    function submit(oncomplete) {
       var email = helpers.getAndValidateEmail("#email");
+
+      function complete() {
+        oncomplete && oncomplete();
+      }
+
       if (email) {
         user.isEmailRegistered(email, function(registered) {
           if (!registered) {
             user.createUser(email, function onSuccess(success) {
               if(success) {
-                pageHelpers.showEmailSent();
+                pageHelpers.showEmailSent(oncomplete);
               }
               else {
                 tooltip.showTooltip("#could_not_add");
+                complete();
               }
-            }, pageHelpers.getFailure(errors.createUser));
+            }, pageHelpers.getFailure(errors.createUser, oncomplete));
           }
           else {
             $('#registeredEmail').html(email);
             showNotice(".alreadyRegistered");
+            complete();
           }
-        }, pageHelpers.getFailure(errors.isEmailRegistered));
+        }, pageHelpers.getFailure(errors.isEmailRegistered, oncomplete));
+      }
+      else {
+        complete();
       }
     }
 
-    function back(event) {
-      if (event) event.preventDefault();
-
-      pageHelpers.cancelEmailSent();
+    function back(oncomplete) {
+      pageHelpers.cancelEmailSent(oncomplete);
     }
 
     function onEmailKeyUp(event) {
@@ -91,19 +98,21 @@ BrowserID.signUp = (function() {
       pageHelpers.setupEmail();
 
       dom.bindEvent("#email", "keyup", onEmailKeyUp);
-      dom.bindEvent("form", "submit", submit);
-      dom.bindEvent("#back", "click", back);
+      dom.bindEvent("form", "submit", cancelEvent(submit));
+      dom.bindEvent("#back", "click", cancelEvent(back));
     }
 
+    // BEGIN TESTING API
     function reset() {
-      dom.unbindEvent("#email", "keyup", onEmailKeyUp);
-      dom.unbindEvent("form", "submit", submit);
-      dom.unbindEvent("#back", "click", back);
+      dom.unbindEvent("#email", "keyup");
+      dom.unbindEvent("form", "submit");
+      dom.unbindEvent("#back", "click");
     }
 
     init.submit = submit;
     init.reset = reset;
     init.back = back;
+    // END TESTING API
 
     return init;
 }());

@@ -36,14 +36,15 @@
 
 (function() {
   "use strict";
-  
+
   var ANIMATION_TIME=250,
-      dom = BrowserID.DOM;
+      bid = BrowserID,
+      dom = bid.DOM;
 
   function emailRegistrationSuccess(info) {
 
     dom.setInner("#email", info.email);
-    
+
     if (info.origin) {
       dom.setInner(".website", info.origin);
       $(".siteinfo").show();
@@ -59,7 +60,7 @@
     $(el).fadeIn(ANIMATION_TIME);
   }
 
-  BrowserID.addEmailAddress = function(token) {
+  BrowserID.addEmailAddress = function(token, oncomplete) {
     var user = BrowserID.User;
 
     user.verifyEmail(token, function onSuccess(info) {
@@ -69,8 +70,11 @@
       else {
         showError("#cannotconfirm");
       }
+      oncomplete && oncomplete();
     }, function onFailure() {
+      // XXX This should use a real error page.
       showError("#cannotcommunicate");
+      oncomplete && oncomplete();
     });
   };
 }());
