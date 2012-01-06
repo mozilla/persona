@@ -238,7 +238,7 @@ function poll() {
             completed[act][2]++;
           } else {
             completed[act][1]++;
-            winston.error(err);
+            winston.error('('+act+') ' + err);
           }
         } else {
           completed[act][0]++;
