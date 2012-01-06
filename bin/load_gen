@@ -377,8 +377,7 @@ if (args.u) {
   // now create all them users!
   console.log("Runing with", (end - start + 1), "pre-created users (XXX@loadtest.domain)");
   for (var i = start; i < end; i++) {
-    var user = userdb.getNewUser(i + "@loadtest.domain", "THE PASSWORD");
-    userdb.releaseUser(user);
+    userdb.addNewUser(userdb.getNewUser(i + "@loadtest.domain", "THE PASSWORD"));
   }
   console.log("users created!  applying load...");
   poll();
