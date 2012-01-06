@@ -60,13 +60,6 @@
     }
   });
 
-  function createPrimaryUser() {
-    storage.addEmail("testuser@testuser.com", {
-      created: new Date(),
-      type: "primary"
-    });
-  }
-
   function createController(options, callback) {
     controller = BrowserID.addEmailAddress.create();
     options = options || {};
@@ -75,7 +68,7 @@
   }
 
   function expectTooltipVisible() {
-    createPrimaryUser();
+    xhr.useResult("needsPassword");
     createController(config, function() {
       controller.submit(function() {
         testHelpers.testTooltipVisible();
@@ -142,7 +135,7 @@
   });
 
   asyncTest("password: first secondary address added", function() {
-    createPrimaryUser();
+    xhr.useResult("needsPassword");
     createController(config, function() {
       equal($("body").hasClass("enter_password"), true, "enter_password added to body");
       testEmail();
@@ -193,7 +186,6 @@
     $("#password").val("password");
     $("#vpassword").val("password");
 
-    createPrimaryUser();
     createController(config, function() {
       controller.submit(function(status) {
         equal(status, true, "correct status");
@@ -208,7 +200,6 @@
     $("#vpassword").val("password");
 
     xhr.useResult("invalid");
-    createPrimaryUser();
     createController(config, function() {
       testCannotConfirm();
       start();

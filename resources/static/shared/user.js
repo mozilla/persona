@@ -491,13 +491,12 @@ BrowserID.User = (function() {
      * @param {function} [onFailure]
      */
     tokenInfo: function(token, onComplete, onFailure) {
-      network.emailForVerificationToken(token, function (email) {
-        var info = email ? {
-          email: email,
-          origin: storage.getStagedOnBehalfOf()
-        } : null;
+      network.emailForVerificationToken(token, function (info) {
+        if(info) {
+          info = _.extend(info, { origin: storage.getStagedOnBehalfOf() });
+        }
 
-        onComplete(info);
+        onComplete && onComplete(info);
       }, onFailure);
 
     },
@@ -803,36 +802,28 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     verifyEmailNoPassword: function(token, onComplete, onFailure) {
-      network.emailForVerificationToken(token, function (email) {
-        var invalidInfo = { valid: false };
-        if (email) {
-          network.completeEmailRegistration(token, function (valid) {
-            var info = valid ? {
-              valid: valid,
-              email: email,
-              origin: storage.getStagedOnBehalfOf()
-            } : invalidInfo;
-
-            storage.setStagedOnBehalfOf("");
-
-            if (onComplete) onComplete(info);
-          }, onFailure);
-        } else if (onComplete) {
-          onComplete(invalidInfo);
-        }
-      }, onFailure);
+      User.verifyEmailWithPassword(token, undefined, onComplete, onFailure);
     },
 
     verifyEmailWithPassword: function(token, pass, onComplete, onFailure) {
-      User.verifyEmailNoPassword(token, function(userInfo) {
+      function complete(status) {
+        onComplete && onComplete(status);
+      }
+      network.emailForVerificationToken(token, function (info) {
         var invalidInfo = { valid: false };
-        if (userInfo.status !== false) {
-          User.setPassword(pass, function(status) {
-            onComplete(status ? userInfo : invalidInfo);
+        if (info) {
+          network.completeEmailRegistration(token, pass, function (valid) {
+            var result = invalidInfo;
+
+            if(valid) {
+              result = _.extend({ valid: valid, origin: storage.getStagedOnBehalfOf() }, info);
+              storage.setStagedOnBehalfOf("");
+            }
+
+            complete(result);
           }, onFailure);
-        }
-        else {
-          onComplete(invalidInfo);
+        } else {
+          complete(invalidInfo);
         }
       }, onFailure);
     },

@@ -81,6 +81,10 @@ BrowserID.Errors = (function(){
       title: "Getting Assertion"
     },
 
+    getTokenInfo: {
+      title: "Checking Registration Token"
+    },
+
     isEmailRegistered: {
       title: "Checking Email Address"
     },

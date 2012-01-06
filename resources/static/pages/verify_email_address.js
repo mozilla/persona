@@ -72,9 +72,9 @@
     }
 
     // go get the email address
-    bid.Network.emailForVerificationToken(token, function(email) {
-      if (email) {
-        $('#email').val(email);
+    bid.Network.emailForVerificationToken(token, function(info) {
+      if (info) {
+        $('#email').val(info.email);
         oncomplete && oncomplete();
       }
       else {

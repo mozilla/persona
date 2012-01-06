@@ -779,7 +779,7 @@ var vep = require("./vep");
     }, 500);
   });
 
-  asyncTest("verifyEmailNoPassword with a good token", function() {
+  asyncTest("verifyEmailNoPassword with a good token - callback with email, orgiin, and valid", function() {
     storage.setStagedOnBehalfOf(testOrigin);
     lib.verifyEmailNoPassword("token", function onSuccess(info) {
 
@@ -792,7 +792,7 @@ var vep = require("./vep");
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("verifyEmailNoPassword with a bad token", function() {
+  asyncTest("verifyEmailNoPassword with a bad token - callback with valid: false", function() {
     xhr.useResult("invalid");
 
     lib.verifyEmailNoPassword("token", function onSuccess(info) {
@@ -812,7 +812,7 @@ var vep = require("./vep");
     );
   });
 
-  asyncTest("verifyEmailWithPassword with a good token", function() {
+  asyncTest("verifyEmailWithPassword with a good token - callback with email, origin, valid", function() {
     storage.setStagedOnBehalfOf(testOrigin);
     lib.verifyEmailWithPassword("token", "password", function onSuccess(info) {
 
@@ -825,7 +825,7 @@ var vep = require("./vep");
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("verifyEmailWithPassword with a bad token", function() {
+  asyncTest("verifyEmailWithPassword with a bad token - callback with valid: false", function() {
     xhr.useResult("invalid");
 
     lib.verifyEmailWithPassword("token", "password", function onSuccess(info) {

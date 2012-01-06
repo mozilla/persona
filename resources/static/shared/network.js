@@ -66,8 +66,8 @@ BrowserID.Network = (function() {
       network.errorThrown = errorThrown;
       network.responseText = jqXHR.responseText;
 
-      if (cb) cb(info);
       mediator && mediator.publish("xhrError", info);
+      if (cb) cb(info);
     };
   }
 
@@ -310,8 +310,13 @@ BrowserID.Network = (function() {
     emailForVerificationToken: function(token, onComplete, onFailure) {
       get({
         url : "/wsapi/email_for_token?token=" + encodeURIComponent(token),
-        success: function(data) {
-          if (onComplete) onComplete(data.email);
+        success: function(result) {
+          var data = null;
+          if(result.success !== false) {
+            // force needs_password to be set;
+            data = _.extend({ needs_password: false }, result);
+          }
+          if (onComplete) onComplete(data);
         },
         error: onFailure
       });
@@ -359,15 +364,17 @@ BrowserID.Network = (function() {
      * Call with a token to prove an email address ownership.
      * @method completeEmailRegistration
      * @param {string} token - token proving email ownership.
+     * @param {string} password - password to set if necessary.  If not necessary, set to undefined.
      * @param {function} [onComplete] - Callback to call when complete.  Called
      * with one boolean parameter that specifies the validity of the token.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeEmailRegistration: function(token, onComplete, onFailure) {
+    completeEmailRegistration: function(token, password, onComplete, onFailure) {
       post({
         url: "/wsapi/complete_email_addition",
         data: {
-          token: token
+          token: token,
+          pass: password
         },
         success: function(status, textStatus, jqXHR) {
           if (onComplete) onComplete(status.success);

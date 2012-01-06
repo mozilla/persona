@@ -61,6 +61,7 @@ BrowserID.Mocks.xhr = (function() {
       // the flag contextAjaxError.
       "get /wsapi/session_context contextAjaxError": undefined,
       "get /wsapi/email_for_token?token=token valid": { email: "testuser@testuser.com" },
+      "get /wsapi/email_for_token?token=token needsPassword": { email: "testuser@testuser.com", needs_password: true },
       "get /wsapi/email_for_token?token=token invalid": { success: false },
       "post /wsapi/authenticate_user valid": { success: true },
       "post /wsapi/authenticate_user invalid": { success: false },

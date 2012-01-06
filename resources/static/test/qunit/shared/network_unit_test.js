@@ -43,62 +43,38 @@
       testHelpers = bid.TestHelpers,
       TEST_EMAIL = "testuser@testuser.com";
 
-  function notificationCheck(cb) {
-    // Take the original arguments, take off the function.  Add any additional
-    // arguments that were passed in, and then tack on the onSuccess and
-    // onFailure to the end.  Then call the callback.
-    var args = Array.prototype.slice.call(arguments, 1);
-
-    xhr.useResult("ajaxError");
-
-    var handle;
-
-    var subscriber = function(message, info) {
-      ok(true, "xhr error notified application");
-      ok(info.network.url, "url is in network info");
-      ok(info.network.type, "request type is in network info");
-      equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
-      equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
-      equal(info.network.responseText, "response text", "responseText is in response info");
-      mediator.unsubscribe(handle);
-      start();
-    };
-
-    handle = mediator.subscribe("xhrError", subscriber);
-
-    if (cb) {
-      cb.apply(null, args);
-    }
-  }
-
-  function unexpectedFailure() {
-    return function() {
-      ok(false, "unexpected failure");
-      start();
-    }
-  }
-
   function failureCheck(cb) {
     // Take the original arguments, take off the function.  Add any additional
     // arguments that were passed in, and then tack on the onSuccess and
     // onFailure to the end.  Then call the callback.
-    var args = Array.prototype.slice.call(arguments, 1);
+    var args = [].slice.call(arguments, 1);
 
-    args.push(function onSuccess() {
-      ok(false, "XHR failure should never pass");
-      start();
-    }, function onFailure(info) {
+    var errorInfo;
+    mediator.subscribe("xhrError", function(message, info) {
+      errorInfo = info;
+    });
+
+    args.push(testHelpers.unexpectedSuccess, function onFailure(info) {
       ok(true, "XHR failure should never pass");
       ok(info.network.url, "url is in network info");
       ok(info.network.type, "request type is in network info");
       equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
       equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
+
+      ok(errorInfo.network.url, "url is in network errorInfo");
+      ok(errorInfo.network.type, "request type is in network errorInfo");
+      equal(errorInfo.network.textStatus, "errorStatus", "textStatus is in network errorInfo");
+      equal(errorInfo.network.errorThrown, "errorThrown", "errorThrown is in response errorInfo");
+      equal(errorInfo.network.responseText, "response text", "responseText is in response errorInfo");
+
       start();
     });
 
-    xhr.useResult("ajaxError");
+    if(xhr.resultType === "valid") {
+      xhr.useResult("ajaxError");
+    }
 
-    cb.apply(null, args);
+    cb && cb.apply(null, args);
   }
 
   var network = BrowserID.Network;
@@ -117,10 +93,7 @@
     network.authenticate(TEST_EMAIL, "testuser", function onSuccess(authenticated) {
       equal(authenticated, true, "valid authentication");
       start();
-    }, function onFailure() {
-      ok(false, "valid authentication");
-      start();
-    });
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("authenticate with invalid user", function() {
@@ -128,14 +101,7 @@
     network.authenticate(TEST_EMAIL, "invalid", function onSuccess(authenticated) {
       equal(authenticated, false, "invalid authentication");
       start();
-    }, function onFailure() {
-      ok(false, "invalid authentication");
-      start();
-    });
-  });
-
-  asyncTest("authenticate with XHR failure, checking whether application is notified", function() {
-    notificationCheck(network.authenticate, TEST_EMAIL, "ajaxError");
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("authenticate with XHR failure after context already setup", function() {
@@ -159,16 +125,8 @@
   });
 
   asyncTest("authenticateWithAssertion with XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    network.authenticateWithAssertion(
-      TEST_EMAIL,
-      "test_assertion",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
+    failureCheck(network.authenticateWithAssertion, TEST_EMAIL, "test_assertion");
   });
-
 
   asyncTest("checkAuth with valid authentication", function() {
     xhr.setContextInfo("authenticated", true);
@@ -200,11 +158,7 @@
     network.checkAuth(function onSuccess() {
       ok(true, "checkAuth does not make an ajax call, all good");
       start();
-    }, function onFailure() {
-      ok(false, "checkAuth does not make an ajax call, should not fail");
-      start();
-    });
-
+    }, testHelpers.unexpectedFailure);
   });
 
 
@@ -212,59 +166,39 @@
     network.logout(function onSuccess() {
       ok(true, "we can logout");
       start();
-    }, function onFailure() {
-      ok(false, "logout failure");
-      start();
-    });
+    }, testHelpers.unexpectedFailure);
   });
 
-
-  asyncTest("logout with XHR failure", function() {
-    notificationCheck(network.logout);
-  });
 
   asyncTest("logout with XHR failure", function() {
     failureCheck(network.logout);
   });
 
 
-  asyncTest("complete_email_addition valid", function() {
-    network.completeEmailRegistration("goodtoken", function onSuccess(proven) {
+  asyncTest("completeEmailRegistration valid", function() {
+    network.completeEmailRegistration("goodtoken", "password", function onSuccess(proven) {
       equal(proven, true, "good token proved");
       start();
-    }, function onFailure() {
-      start();
-    });
-
+    }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("complete_email_addition with invalid token", function() {
+  asyncTest("completeEmailRegistration with invalid token", function() {
     xhr.useResult("invalid");
-    network.completeEmailRegistration("badtoken", function onSuccess(proven) {
+    network.completeEmailRegistration("badtoken", "password", function onSuccess(proven) {
       equal(proven, false, "bad token could not be proved");
       start();
-    }, function onFailure() {
-      start();
-    });
-
+    }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("complete_email_addition with XHR failure", function() {
-    notificationCheck(network.completeEmailRegistration, "goodtoken");
-  });
-
-  asyncTest("complete_email_addition with XHR failure", function() {
-    failureCheck(network.completeEmailRegistration, "goodtoken");
+  asyncTest("completeEmailRegistration with XHR failure", function() {
+    failureCheck(network.completeEmailRegistration, "goodtoken", "password");
   });
 
   asyncTest("createUser with valid user", function() {
     network.createUser("validuser", "origin", function onSuccess(created) {
       ok(created);
       start();
-    }, function onFailure() {
-      start();
-    });
-
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("createUser with invalid user", function() {
@@ -272,10 +206,7 @@
     network.createUser("invaliduser", "origin", function onSuccess(created) {
       equal(created, false);
       start();
-    }, function onFailure() {
-      start();
-    });
-
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("createUser throttled", function() {
@@ -284,15 +215,7 @@
     network.createUser("validuser", "origin", function onSuccess(added) {
       equal(added, false, "throttled email returns onSuccess but with false as the value");
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
-  });
-
-  asyncTest("createUser with XHR failure", function() {
-    notificationCheck(network.createUser, "validuser", "origin");
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("createUser with XHR failure", function() {
@@ -305,11 +228,7 @@
     network.checkUserRegistration("registered@testuser.com", function(status) {
       equal(status, "pending");
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("checkUserRegistration with complete email", function() {
@@ -318,15 +237,7 @@
     network.checkUserRegistration("registered@testuser.com", function(status) {
       equal(status, "complete");
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
-  });
-
-  asyncTest("checkUserRegistration with XHR failure", function() {
-    notificationCheck(network.checkUserRegistration, "registered@testuser.com");
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("checkUserRegistration with XHR failure", function() {
@@ -337,11 +248,7 @@
     network.completeUserRegistration("token", "password", function(registered) {
       ok(registered);
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("completeUserRegistration with invalid token", function() {
@@ -350,15 +257,7 @@
     network.completeUserRegistration("token", "password", function(registered) {
       equal(registered, false);
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
-  });
-
-  asyncTest("completeUserRegistration with XHR failure", function() {
-    notificationCheck(network.completeUserRegistration, "token", "password");
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("completeUserRegistration with XHR failure", function() {
@@ -371,10 +270,7 @@
       // XXX need a test here.
       ok(true);
       start();
-    }, function onFailure() {
-      start();
-    });
-
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("cancelUser invalid", function() {
@@ -384,14 +280,7 @@
       // XXX need a test here.
       ok(true);
       start();
-    }, function onFailure() {
-      start();
-    });
-
-  });
-
-  asyncTest("cancelUser with XHR failure", function() {
-    notificationCheck(network.cancelUser);
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("cancelUser with XHR failure", function() {
@@ -402,26 +291,14 @@
     network.emailRegistered("registered@testuser.com", function(taken) {
       equal(taken, true, "a taken email is marked taken");
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("emailRegistered with nottaken email", function() {
     network.emailRegistered("unregistered@testuser.com", function(taken) {
       equal(taken, false, "a not taken email is not marked taken");
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
-  });
-
-  asyncTest("emailRegistered with XHR failure", function() {
-    notificationCheck(network.emailRegistered, "registered@testuser.com");
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("emailRegistered with XHR failure", function() {
@@ -433,10 +310,7 @@
     network.addSecondaryEmail("address", "origin", function onSuccess(added) {
       ok(added);
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("addSecondaryEmail invalid", function() {
@@ -444,10 +318,7 @@
     network.addSecondaryEmail("address", "origin", function onSuccess(added) {
       equal(added, false);
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("addSecondaryEmail throttled", function() {
@@ -456,15 +327,7 @@
     network.addSecondaryEmail("address", "origin", function onSuccess(added) {
       equal(added, false, "throttled email returns onSuccess but with false as the value");
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
-  });
-
-  asyncTest("addSecondaryEmail with XHR failure", function() {
-    notificationCheck(network.addSecondaryEmail, "address", "origin");
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("addSecondaryEmail with XHR failure", function() {
@@ -477,11 +340,7 @@
     network.checkEmailRegistration("registered@testuser.com", function(status) {
       equal(status, "pending");
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("checkEmailRegistration complete", function() {
@@ -495,10 +354,6 @@
       start();
     });
 
-  });
-
-  asyncTest("checkEmailRegistration with XHR failure", function() {
-    notificationCheck(network.checkEmailRegistration, "address");
   });
 
   asyncTest("checkEmailRegistration with XHR failure", function() {
@@ -523,26 +378,47 @@
   });
 
   asyncTest("addEmailWithAssertion with XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    network.addEmailWithAssertion(
-      "test_assertion",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
+    failureCheck(network.addEmailWithAssertion, "test_assertion");
   });
 
+
+  asyncTest("emailForVerificationToken with XHR failure", function() {
+    failureCheck(network.emailForVerificationToken, "token");
+  });
+
+  asyncTest("emailForVerificationToken with invalid token - returns null result", function() {
+    xhr.useResult("invalid");
+
+    network.emailForVerificationToken("token", function(result) {
+      equal(result, null, "invalid token returns null result");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("emailForVerificationToken that needs password - returns needs_password and email address", function() {
+    xhr.useResult("needsPassword");
+
+    network.emailForVerificationToken("token", function(result) {
+      equal(result.needs_password, true, "needs_password correctly set to true");
+      equal(result.email, "testuser@testuser.com", "email address correctly added");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("emailForVerificationToken that does not need password", function() {
+    network.emailForVerificationToken("token", function(result) {
+      equal(result.needs_password, false, "needs_password correctly set to false");
+      equal(result.email, "testuser@testuser.com", "email address correctly added");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
 
   asyncTest("removeEmail valid", function() {
     network.removeEmail("validemail", function onSuccess() {
       // XXX need a test here;
       ok(true);
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("removeEmail invalid", function() {
@@ -552,15 +428,7 @@
       // XXX need a test here;
       ok(true);
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
-  });
-
-  asyncTest("removeEmail with XHR failure", function() {
-    notificationCheck(network.removeEmail, "validemail");
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("removeEmail with XHR failure", function() {
@@ -573,15 +441,7 @@
       // XXX need a test here;
       ok(true);
       start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
-  });
-
-  asyncTest("requestPasswordReset with XHR failure", function() {
-    notificationCheck(network.requestPasswordReset, "address", "origin");
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("requestPasswordReset with XHR failure", function() {
@@ -596,12 +456,7 @@
   });
 
   asyncTest("setPassword with XHR failure", function() {
-    xhr.useResult("ajaxError");
-    network.setPassword(
-      "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
+    failureCheck(network.setPassword, "password");
   });
 
   asyncTest("serverTime", function() {
@@ -622,45 +477,22 @@
   });
 
   asyncTest("serverTime with XHR failure before context has been setup", function() {
-    notificationCheck();
     xhr.useResult("contextAjaxError");
 
-    network.serverTime();
-  });
-
-  asyncTest("serverTime with XHR failure before context has been setup", function() {
-    xhr.useResult("contextAjaxError");
-
-    network.serverTime(function onSuccess(time) {
-      ok(false, "XHR failure should never call success");
-      start();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      start();
-    });
-
+    failureCheck(network.serverTime);
   });
 
   asyncTest("codeVersion", function() {
     network.codeVersion(function onComplete(version) {
       equal(version, "ABC123", "version returned properly");
       start();
-    }, function onFailure() {
-      ok(false, "unexpected failure");
-      start();
-    });
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("codeVersion with XHR failure", function() {
     xhr.useResult("contextAjaxError");
 
-    network.codeVersion(function onComplete(version) {
-      ok(false, "XHR failure should never call complete");
-      start();
-    }, function onFailure() {
-      ok(true, "XHR failure should always return failure");
-      start();
-    });
+    failureCheck(network.codeVersion);
   });
 
   asyncTest("addressInfo with unknown secondary email", function() {
@@ -670,7 +502,7 @@
       equal(data.type, "secondary", "type is secondary");
       equal(data.known, false, "address is unknown to BrowserID");
       start();
-    }, unexpectedFailure);
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("addressInfo with known seconday email", function() {
@@ -680,7 +512,7 @@
       equal(data.type, "secondary", "type is secondary");
       equal(data.known, true, "address is known to BrowserID");
       start();
-    }, unexpectedFailure);
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("addressInfo with primary email", function() {
@@ -691,11 +523,10 @@
       ok("auth" in data, "auth field exists");
       ok("prov" in data, "prov field exists");
       start();
-    }, unexpectedFailure);
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("addressInfo with XHR failure", function() {
-    xhr.useResult("ajaxError");
     failureCheck(network.addressInfo, TEST_EMAIL);
   });
 
@@ -703,10 +534,7 @@
     network.changePassword("oldpassword", "newpassword", function onComplete(status) {
       equal(status, true, "calls onComplete with true status");
       start();
-    }, function onFailure() {
-      ok(false, "unexpected failure");
-      start();
-    });
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("changePassword with incorrect old password, expect complete callback with false status", function() {
@@ -715,22 +543,11 @@
     network.changePassword("oldpassword", "newpassword", function onComplete(status) {
       equal(status, false, "calls onComplete with false status");
       start();
-    }, function onFailure() {
-      ok(false, "unexpected failure");
-      start();
-    });
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("changePassword with XHR failure, expect error callback", function() {
-    xhr.useResult("ajaxError");
-
-    network.changePassword("oldpassword", "newpassword", function onComplete() {
-      ok(false, "XHR failure should never call complete");
-      start();
-    }, function onFailure() {
-      ok(true, "XHR failure should always call failure");
-      start();
-    });
+    failureCheck(network.changePassword, "oldpassword", "newpassword");
   });
 
 }());

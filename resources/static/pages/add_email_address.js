@@ -53,12 +53,16 @@ BrowserID.addEmailAddress = (function() {
   }
 
   function emailRegistrationComplete(oncomplete, info) {
+    function complete(status) {
+      oncomplete && oncomplete(status);
+    }
+
     var valid = info.valid;
     if (valid) {
-      emailRegistrationSuccess(info, oncomplete.bind(null, true));
+      emailRegistrationSuccess(info, complete.curry(true));
     }
     else {
-      showError("#cannotconfirm", oncomplete.bind(null, false));
+      showError("#cannotconfirm", complete.curry(false));
     }
   }
 
@@ -81,17 +85,13 @@ BrowserID.addEmailAddress = (function() {
     }, 2000);
   }
 
-  function userMustEnterPassword() {
-    var emails = storage.getEmails(),
-        length = 0,
-        anySecondaries = _.find(emails, function(item) { length++; return item.type === "secondary"; });
-
-    return length && !anySecondaries;
+  function userMustEnterPassword(info) {
+    return !!info.needs_password;
   }
 
   function verifyWithoutPassword(oncomplete) {
     user.verifyEmailNoPassword(token,
-      emailRegistrationComplete.bind(null, oncomplete),
+      emailRegistrationComplete.curry(oncomplete),
       pageHelpers.getFailure(errors.verifyEmail, oncomplete)
     );
   }
@@ -103,7 +103,7 @@ BrowserID.addEmailAddress = (function() {
 
     if(valid) {
       user.verifyEmailWithPassword(token, pass,
-        emailRegistrationComplete.bind(null, oncomplete),
+        emailRegistrationComplete.curry(oncomplete),
         pageHelpers.getFailure(errors.verifyEmail, oncomplete)
       );
     }
@@ -117,7 +117,7 @@ BrowserID.addEmailAddress = (function() {
       if(info) {
         showRegistrationInfo(info);
 
-        if(userMustEnterPassword()) {
+        if(userMustEnterPassword(info)) {
           dom.addClass("body", "enter_password");
           oncomplete(true);
         }
