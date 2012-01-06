@@ -36,7 +36,9 @@
  * ***** END LICENSE BLOCK ***** */
 (function() {
   var bid = BrowserID,
+      storage = bid.Storage,
       mediator = bid.Mediator,
+      publish = mediator.publish.bind(mediator),
       subscriptions = [],
       stateStack = [],
       controller,
@@ -144,9 +146,9 @@
         });
       }
       else if (authenticated) {
-        mediator.publish("pick_email");
+        publish("pick_email");
       } else {
-        mediator.publish("authenticate");
+        publish("authenticate");
       }
     });
 
@@ -212,7 +214,24 @@
     });
 
     subscribe("email_chosen", function(msg, info) {
-      startState("doEmailChosen", info);
+      var idInfo = storage.getEmail(info.email);
+      if(idInfo) {
+        if(idInfo.type === "primary") {
+          // If the email is a primary, throw the user down the primary flow.
+          // Doing so will catch cases where the primary certificate is expired
+          // and the user must re-verify with their IdP. This flow will
+          // generate its own assertion when ready.  For efficiency, we could
+          // check here whether the cert is ready, but it is early days yet and
+          // the format may change.
+          publish("primary_user", info);
+        }
+        else {
+          startState("doEmailChosen", info);
+        }
+      }
+      else {
+        throw "invalid email";
+      }
     });
 
     subscribe("notme", function() {
@@ -220,7 +239,7 @@
     });
 
     subscribe("logged_out", function() {
-      mediator.publish("authenticate");
+      publish("authenticate");
     });
 
     subscribe("authenticated", function(msg, info) {

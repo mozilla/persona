@@ -40,7 +40,9 @@
   var bid = BrowserID,
       mediator = bid.Mediator,
       machine,
-      actions;
+      actions,
+      storage = bid.Storage,
+      testHelpers = bid.TestHelpers;
 
   var ActionsMock = function() {
     this.called = {};
@@ -66,10 +68,12 @@
 
   module("resources/state_machine", {
     setup: function() {
+      testHelpers.setup();
       createMachine();
     },
 
     teardown: function() {
+      testHelpers.teardown();
       machine.stop();
     }
   });
@@ -254,6 +258,43 @@
     mediator.publish("cancel");
 
     equal(actions.called.doCancel, true, "cancelled everything");
+  });
+
+
+  test("email_chosen with secondary email - call doEmailChosen", function() {
+    var email = "testuser@testuser.com";
+    storage.addEmail(email, { type: "secondary" });
+    mediator.publish("email_chosen", { email: email });
+
+    equal(actions.called.doEmailChosen, true, "doEmailChosen called");
+
+  });
+
+  test("email_chosen with primary email - call doProvisionPrimaryUser", function() {
+    // If the email is a primary, throw the user down the primary flow.
+    // Doing so will catch cases where the primary certificate is expired
+    // and the user must re-verify with their IdP. This flow will
+    // generate its own assertion when ready.  For efficiency, we could
+    // check here whether the cert is ready, but it is early days yet and
+    // the format may change.
+    var email = "testuser@testuser.com";
+    storage.addEmail(email, { type: "primary" });
+    mediator.publish("email_chosen", { email: email });
+
+    equal(actions.called.doProvisionPrimaryUser, true, "doProvisionPrimaryUser called");
+  });
+
+  test("email_chosen with invalid email - throw exception", function() {
+    var email = "testuser@testuser.com",
+        error;
+
+    try {
+      mediator.publish("email_chosen", { email: email });
+    } catch(e) {
+      error = e;
+    }
+
+    equal(error, "invalid email", "expected exception thrown");
   });
 
 }());
