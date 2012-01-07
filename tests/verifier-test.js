@@ -604,9 +604,12 @@ function make_crazy_assertion_tests(new_style) {
         tok.sign(g_keypair.secretKey),
         new_style);
     },
-    "and removing the last char from it": {
+    "and removing the last two chars from it": {
       topic: function(assertion) {
-        assertion = assertion.substr(0, assertion.length - 1);
+        // we used to chop off one char, but because of
+        // robustness in base64-decoding, that still worked 25%
+        // of the time. No need to build this knowledge in here.
+        assertion = assertion.substr(0, assertion.length - 2);
         wsapi.post('/verify', {
           audience: TEST_ORIGIN,
           assertion: assertion
