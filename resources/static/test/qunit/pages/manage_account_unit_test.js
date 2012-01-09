@@ -38,12 +38,10 @@
   "use strict";
 
   var bid = BrowserID,
-      user = bid.User,
       xhr = bid.Mocks.xhr,
       errorScreen = bid.Screens.error,
+      storage = bid.Storage,
       testHelpers = bid.TestHelpers,
-      validToken = true,
-      TEST_ORIGIN = "http://browserid.org",
       tooltip = bid.Tooltip,
       mocks = {
         confirm: function() { return true; },
@@ -53,7 +51,6 @@
   module("pages/manage_account", {
     setup: function() {
       testHelpers.setup();
-      user.setOrigin(TEST_ORIGIN);
       bid.Renderer.render("#page_head", "site/index", {});
       mocks.document.location = "";
     },
@@ -163,6 +160,24 @@
         equal($("body").hasClass("newuser"), false, "body does not have the newuser class on repeat visits");
         start();
       });
+    });
+  });
+
+  asyncTest("user with only primary emails should not have 'canSetPassword' class", function() {
+    xhr.useResult("primary");
+
+    bid.manageAccount(mocks, function() {
+      equal($("body").hasClass("canSetPassword"), false, "canSetPassword class not added to body");
+      start();
+    });
+  });
+
+  asyncTest("user with >= 1 secondary email should see have 'canSetPassword' class", function() {
+    storage.addEmail("primary_user@primaryuser.com", { type: "secondary" });
+
+    bid.manageAccount(mocks, function() {
+      equal($("body").hasClass("canSetPassword"), true, "canSetPassword class added to body");
+      start();
     });
   });
 

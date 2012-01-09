@@ -131,7 +131,6 @@ BrowserID.manageAccount = (function() {
   }
 
   function syncAndDisplayEmails(oncomplete) {
-
     user.syncEmails(function() {
       displayStoredEmails(oncomplete);
     }, pageHelpers.getFailure(errors.syncEmails, oncomplete));
@@ -265,6 +264,13 @@ BrowserID.manageAccount = (function() {
     storage.manage_page.set("has_visited_manage_page", true);
   }
 
+  function displayChangePassword(oncomplete) {
+    user.canSetPassword(function(canSetPassword) {
+      dom[canSetPassword ? "addClass" : "removeClass"]("body", "canSetPassword");
+      oncomplete && oncomplete();
+    }, pageHelpers.getFailure(errors.hasSecondary));
+  }
+
   function init(options, oncomplete) {
     options = options || {};
 
@@ -277,9 +283,10 @@ BrowserID.manageAccount = (function() {
     dom.bindEvent("button.done", "click", cancelEdit);
     dom.bindEvent("#edit_password_form", "submit", cancelEvent(changePassword));
 
-    syncAndDisplayEmails(oncomplete);
-
-    displayHelpTextToNewUser();
+    syncAndDisplayEmails(function() {
+      displayHelpTextToNewUser();
+      displayChangePassword(oncomplete);
+    });
   }
 
   // BEGIN TESTING API

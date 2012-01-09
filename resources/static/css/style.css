@@ -419,6 +419,11 @@ button.delete:active {
 
 #edit_password {
   margin-bottom: 10px;
+  display: none;
+}
+
+.canSetPassword #edit_password {
+  display: block;
 }
 
 #edit_password label {

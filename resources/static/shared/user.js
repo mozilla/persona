@@ -522,6 +522,18 @@ BrowserID.User = (function() {
     },
 
     /**
+     * Check if the user can set their password.  Only returns true for users
+     * with secondary accounts
+     * @method canSetPassword
+     * @param {function} [onComplete] - Called on with boolean flag on
+     * successful completion.
+     * @param {function} [onFailure] - Called on error.
+     */
+    canSetPassword: function(onComplete, onFailure) {
+      User.hasSecondary(onComplete, onFailure);
+    },
+
+    /**
      * Set the initial password of the current user.
      * @method setPassword
      * @param {string} password - password to set
@@ -1033,7 +1045,30 @@ BrowserID.User = (function() {
           onComplete(false);
         }
       }, onFailure);
+    },
+
+    /**
+     * Check if the user has any secondary addresses.
+     * @method hasSecondary
+     * @param {function} onComplete - called with true if user has at least one
+     * email address, false otw.
+     * @param {function} onFailure - called on XHR failure.
+     */
+    hasSecondary: function(onComplete, onFailure) {
+      var hasSecondary = false,
+          emails = storage.getEmails();
+
+      for(var key in emails) {
+        if(emails[key].type === "secondary") {
+          hasSecondary = true;
+          break;
+        }
+      }
+
+      onComplete(hasSecondary);
     }
+
+
   };
 
   User.setOrigin(document.location.host);

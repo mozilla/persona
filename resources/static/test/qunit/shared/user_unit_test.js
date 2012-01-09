@@ -469,15 +469,45 @@ var vep = require("./vep");
     );
   });
 
-  /*
-  asyncTest("setPassword", function() {
-    lib.setPassword("password", function() {
-      // XXX fill this in.
-      ok(true);
+  asyncTest("canSetPassword with only primary addresses - expect false", function() {
+    storage.addEmail("testuser@testuser.com", { type: "primary" });
+
+    lib.canSetPassword(function(status) {
+      equal(false, status, "status is false with user with only primaries");
       start();
-    });
+    }, testHelpers.unexpectedFailure);
   });
-  */
+
+  asyncTest("canSetPassword with secondary addresses - expect true", function() {
+    storage.addEmail("testuser@testuser.com", { type: "secondary" });
+
+    lib.canSetPassword(function(status) {
+      equal(true, status, "status is true with user with secondaries");
+      start();
+    }, testHelpers.unexpectedFailure);
+  });
+
+  asyncTest("setPassword with XHR failure", function() {
+    xhr.useResult("ajaxError");
+
+    lib.setPassword(
+      "password",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
+  asyncTest("setPassword success", function() {
+    lib.setPassword(
+      "password",
+      function(status) {
+        ok(status, true, "status is true for success");
+        start();
+      },
+      testHelpers.expectedXHRFailure
+    );
+  });
+
   asyncTest("requestPasswordReset with known email", function() {
     lib.requestPasswordReset("registered@testuser.com", function(status) {
       equal(status.success, true, "password reset for known user");
@@ -1156,6 +1186,21 @@ var vep = require("./vep");
       },
       testHelpers.unexpectedFailure
     );
+  });
+
+  asyncTest("hasSecondary returns false if the user has 0 secondary email address", function() {
+    lib.hasSecondary(function(hasSecondary) {
+      equal(hasSecondary, false, "hasSecondary is false");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("hasSecondary returns true if the user has at least one secondary email address", function() {
+    storage.addEmail("testuser@testuser.com", { type: "secondary" });
+    lib.hasSecondary(function(hasSecondary) {
+      equal(hasSecondary, true, "hasSecondary is true");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 }());

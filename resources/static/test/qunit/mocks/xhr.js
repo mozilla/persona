@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global wrappedAsyncTest: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
+/*global start: true, stop: true, module: true, ok: true, equal: true, BrowserID: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -114,8 +114,9 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/email_addition_status?email=registered%40testuser.com noRegistration": { status: "noRegistration" },
       "get /wsapi/email_addition_status?email=registered%40testuser.com ajaxError": undefined,
       "get /wsapi/list_emails valid": {"testuser@testuser.com":{}},
+      "get /wsapi/list_emails primary": {"testuser@testuser.com": { type: "primary" }},
       "get /wsapi/list_emails multiple": {"testuser@testuser.com":{}, "testuser2@testuser.com":{}},
-      "get /wsapi/list_emails no_identities": [],
+      "get /wsapi/list_emails no_identities": {},
       "get /wsapi/list_emails ajaxError": undefined,
       // Used in conjunction with registration to do a complete userflow
       "get /wsapi/list_emails complete": {"registered@testuser.com":{}},
