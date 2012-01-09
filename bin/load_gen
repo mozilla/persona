@@ -61,7 +61,7 @@ var argv = require('optimist')
 .string('s')
 .describe('s', 'base URL to browserid server')
 .check(function(argv) {
-  return (typeof argv.s === 'string' || argv.l) != undefined;
+  return (argv.h || typeof argv.s === 'string' || argv.l) != undefined;
 })
 .alias('v', 'verifier')
 .describe('v', 'base URL to verifier service (default is browserid server + \'/verify\')')

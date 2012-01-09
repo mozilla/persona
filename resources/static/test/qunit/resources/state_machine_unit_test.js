@@ -151,7 +151,7 @@
   test("authenticated", function() {
     mediator.publish("authenticated");
 
-    ok(actions.called.doSyncThenPickEmail, "doSyncThenPickEmail has been called");
+    ok(actions.called.doPickEmail, "doPickEmail has been called");
   });
 
   test("forgot_password", function() {
@@ -261,13 +261,16 @@
   });
 
 
-  test("email_chosen with secondary email - call doEmailChosen", function() {
+  test("email_chosen with secondary email, user must authenticate - call doAuthenticateWithRequiredEmail", function() {
+
+  });
+
+  test("email_chosen with secondary email, user authenticated to secondary - call doEmailChosen", function() {
     var email = "testuser@testuser.com";
     storage.addEmail(email, { type: "secondary" });
     mediator.publish("email_chosen", { email: email });
 
     equal(actions.called.doEmailChosen, true, "doEmailChosen called");
-
   });
 
   test("email_chosen with primary email - call doProvisionPrimaryUser", function() {

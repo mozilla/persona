@@ -357,7 +357,7 @@
       authenticated: false
     });
 
-    var email = "registered@testuser.com";
+    var email = "testuser@testuser.com";
     xhr.useResult("known_secondary");
 
     createController({

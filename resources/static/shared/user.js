@@ -522,6 +522,18 @@ BrowserID.User = (function() {
     },
 
     /**
+     * Check if the user can set their password.  Only returns true for users
+     * with secondary accounts
+     * @method canSetPassword
+     * @param {function} [onComplete] - Called on with boolean flag on
+     * successful completion.
+     * @param {function} [onFailure] - Called on error.
+     */
+    canSetPassword: function(onComplete, onFailure) {
+      User.hasSecondary(onComplete, onFailure);
+    },
+
+    /**
      * Set the initial password of the current user.
      * @method setPassword
      * @param {string} password - password to set
@@ -691,7 +703,8 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Authenticate the user with the given email and password.
+     * Authenticate the user with the given email and password.  This will sync
+     * the user's addresses.
      * @method authenticate
      * @param {string} email - Email address to authenticate.
      * @param {string} password - Password.
@@ -702,8 +715,14 @@ BrowserID.User = (function() {
     authenticate: function(email, password, onComplete, onFailure) {
       network.authenticate(email, password, function(authenticated) {
         setAuthenticationStatus(authenticated);
-        if (onComplete)
+
+        if(authenticated) {
+          User.syncEmails(function() {
+            onComplete && onComplete(authenticated);
+          }, onFailure);
+        } else if (onComplete) {
           onComplete(authenticated);
+        }
       }, onFailure);
     },
 
@@ -951,7 +970,7 @@ BrowserID.User = (function() {
             else {
               // we have no key for this identity, go generate the key,
               // sync it and then get the assertion recursively.
-              User.syncEmailKeypair(email, function() {
+              User.syncEmailKeypair(email, function(status) {
                 User.getAssertion(email, audience, onComplete, onFailure);
               }, onFailure);
             }
@@ -1033,7 +1052,30 @@ BrowserID.User = (function() {
           onComplete(false);
         }
       }, onFailure);
+    },
+
+    /**
+     * Check if the user has any secondary addresses.
+     * @method hasSecondary
+     * @param {function} onComplete - called with true if user has at least one
+     * email address, false otw.
+     * @param {function} onFailure - called on XHR failure.
+     */
+    hasSecondary: function(onComplete, onFailure) {
+      var hasSecondary = false,
+          emails = storage.getEmails();
+
+      for(var key in emails) {
+        if(emails[key].type === "secondary") {
+          hasSecondary = true;
+          break;
+        }
+      }
+
+      onComplete(hasSecondary);
     }
+
+
   };
 
   User.setOrigin(document.location.host);

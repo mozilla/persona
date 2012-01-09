@@ -157,12 +157,6 @@ BrowserID.Modules.Actions = (function() {
       user.logoutUser(self.publish.bind(self, "logged_out"), self.getErrorDialog(errors.logoutUser));
     },
 
-    doSyncThenPickEmail: function(options) {
-      var self = this;
-      user.syncEmails(self.doPickEmail.bind(self, options),
-        self.getErrorDialog(errors.syncEmails));
-    },
-
     doCheckAuth: function() {
       var self=this;
       user.checkAuthenticationAndSync(function(authenticated) {
