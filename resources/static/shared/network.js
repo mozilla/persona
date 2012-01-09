@@ -117,7 +117,7 @@ BrowserID.Network = (function() {
   }
 
   function withContext(cb, onFailure) {
-    if (typeof auth_status !== 'undefined' && typeof csrf_token !== 'undefined') cb();
+    if (typeof csrf_token !== 'undefined') cb();
     else {
       var url = "/wsapi/session_context";
       xhr.ajax({
@@ -129,7 +129,7 @@ BrowserID.Network = (function() {
             local: (new Date()).getTime()
           };
           domain_key_creation_time = result.domain_key_creation_time;
-          auth_status = result.authenticated;
+          auth_status = result.auth_level;
           // XXX remove the ABC123
           code_version = result.code_version || "ABC123";
 
@@ -241,7 +241,6 @@ BrowserID.Network = (function() {
     checkAuth: function(onComplete, onFailure) {
       withContext(function() {
         try {
-          if (typeof auth_status === 'undefined') throw "can't get authentication status!";
           if (onComplete) onComplete(auth_status);
         } catch(e) {
           if (onFailure) onFailure(e.toString());

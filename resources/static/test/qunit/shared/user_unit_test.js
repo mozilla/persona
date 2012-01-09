@@ -562,9 +562,9 @@ var vep = require("./vep");
 
 
   asyncTest("checkAuthentication with valid authentication", function() {
-    xhr.setContextInfo("authenticated", true);
+    xhr.setContextInfo("auth_level", "primary");
     lib.checkAuthentication(function(authenticated) {
-      equal(authenticated, true, "We are authenticated!");
+      equal(authenticated, "primary", "We are authenticated!");
       start();
     });
   });
@@ -572,9 +572,9 @@ var vep = require("./vep");
 
 
   asyncTest("checkAuthentication with invalid authentication", function() {
-    xhr.setContextInfo("authenticated", false);
+    xhr.setContextInfo("auth_level", undefined);
     lib.checkAuthentication(function(authenticated) {
-      equal(authenticated, false, "We are not authenticated!");
+      equal(authenticated, undefined, "We are not authenticated!");
       start();
     });
   });
@@ -589,10 +589,10 @@ var vep = require("./vep");
 
 
   asyncTest("checkAuthenticationAndSync with valid authentication", function() {
-    xhr.setContextInfo("authenticated", true);
+    xhr.setContextInfo("auth_level", "primary");
 
     lib.checkAuthenticationAndSync(function(authenticated) {
-      equal(authenticated, true, "We are authenticated!");
+      equal(authenticated, "primary", "We are authenticated!");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -600,17 +600,17 @@ var vep = require("./vep");
 
 
   asyncTest("checkAuthenticationAndSync with invalid authentication", function() {
-    xhr.setContextInfo("authenticated", false);
+    xhr.setContextInfo("auth_level", undefined);
 
     lib.checkAuthenticationAndSync(function onComplete(authenticated) {
-      equal(authenticated, false, "We are not authenticated!");
+      equal(authenticated, undefined, "We are not authenticated!");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
 
   asyncTest("checkAuthenticationAndSync with XHR failure", function() {
-    xhr.setContextInfo("authenticated", true);
+    xhr.setContextInfo("auth_level", "primary");
 
     failureCheck(lib.checkAuthenticationAndSync);
   });
@@ -1036,7 +1036,7 @@ var vep = require("./vep");
   });
 
   asyncTest("getPersistentSigninAssertion with invalid login - expect null assertion", function() {
-    xhr.setContextInfo("authenticated", false);
+    xhr.setContextInfo("auth_level", undefined);
 
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       storage.site.set(testOrigin, "remember", false);
@@ -1051,7 +1051,7 @@ var vep = require("./vep");
   });
 
   asyncTest("getPersistentSigninAssertion without email set for site - expect null assertion", function() {
-    xhr.setContextInfo("authenticated", true);
+    xhr.setContextInfo("auth_level", "primary");
     storage.site.set(testOrigin, "remember", true);
     storage.site.remove(testOrigin, "email");
 
@@ -1062,7 +1062,7 @@ var vep = require("./vep");
   });
 
   asyncTest("getPersistentSigninAssertion without remember set for site - expect null assertion", function() {
-    xhr.setContextInfo("authenticated", true);
+    xhr.setContextInfo("auth_level", "primary");
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       storage.site.set(testOrigin, "remember", false);
       storage.site.set(testOrigin, "email", "testuser@testuser.com");
@@ -1078,7 +1078,7 @@ var vep = require("./vep");
   });
 
   asyncTest("getPersistentSigninAssertion with valid login, email, and remember set to true - expect assertion", function() {
-    xhr.setContextInfo("authenticated", true);
+    xhr.setContextInfo("auth_level", "primary");
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       storage.site.set(testOrigin, "remember", true);
       storage.site.set(testOrigin, "email", "testuser@testuser.com");
@@ -1094,7 +1094,7 @@ var vep = require("./vep");
   });
 
   asyncTest("getPersistentSigninAssertion with XHR failure", function() {
-    xhr.setContextInfo("authenticated", true);
+    xhr.setContextInfo("auth_level", "primary");
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       storage.site.set(testOrigin, "remember", true);
       storage.site.set(testOrigin, "email", "testuser@testuser.com");
@@ -1109,7 +1109,7 @@ var vep = require("./vep");
   });
 
   asyncTest("clearPersistentSignin with invalid login", function() {
-    xhr.setContextInfo("authenticated", false);
+    xhr.setContextInfo("auth_level", undefined);
 
     lib.clearPersistentSignin(function onComplete(success) {
       strictEqual(success, false, "success with invalid login is false");
@@ -1118,7 +1118,7 @@ var vep = require("./vep");
   });
 
   asyncTest("clearPersistentSignin with valid login with remember set to true", function() {
-    xhr.setContextInfo("authenticated", true);
+    xhr.setContextInfo("auth_level", "primary");
     storage.site.set(testOrigin, "remember", true);
 
     lib.clearPersistentSignin(function onComplete(success) {

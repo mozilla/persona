@@ -57,7 +57,7 @@
     setup: function() {
       network.setXHR(xhr);
       xhr.useResult("valid");
-      xhr.setContextInfo("authenticated", false);
+      xhr.setContextInfo("auth_level", undefined);
       storage.clear();
       moduleManager.reset();
       moduleManager.register("dialog", ModuleMock);
@@ -73,7 +73,7 @@
     ok(bid.internal, "BrowserID.internal exists");
   });
 
-  asyncTest("BrowserID.internal.setPersistent with the user not authenticated", function() {
+  asyncTest("BrowserID.internal.setPersistent unauthenticated user", function() {
     internal.setPersistent(origin, function(status) {
       strictEqual(status, null, "user is not authenticated should not succeed in setting persistent");
 

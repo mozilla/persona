@@ -266,7 +266,7 @@
     var email = "testuser@testuser.com";
     storage.addEmail(email, { type: "secondary" });
 
-    xhr.setContextInfo("authenticated", "assertion");
+    xhr.setContextInfo("auth_level", "assertion");
 
     mediator.publish("email_chosen", {
       email: email,
@@ -280,7 +280,7 @@
   asyncTest("email_chosen with secondary email, user authenticated to secondary - call doEmailChosen", function() {
     var email = "testuser@testuser.com";
     storage.addEmail(email, { type: "secondary" });
-    xhr.setContextInfo("authenticated", "password");
+    xhr.setContextInfo("auth_level", "password");
 
     mediator.publish("email_chosen", {
       email: email,

@@ -96,19 +96,19 @@
   });
 
   asyncTest("checkAuth with valid authentication", function() {
-    xhr.setContextInfo("authenticated", true);
+    xhr.setContextInfo("auth_level", "primary");
     network.checkAuth(function onSuccess(authenticated) {
-      equal(authenticated, true, "we have an authentication");
+      equal(authenticated, "primary", "we have an authentication");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("checkAuth with invalid authentication", function() {
     xhr.useResult("invalid");
-    xhr.setContextInfo("authenticated", false);
+    xhr.setContextInfo("auth_level", undefined);
 
     network.checkAuth(function onSuccess(authenticated) {
-      equal(authenticated, false, "we are not authenticated");
+      equal(authenticated, undefined, "we are not authenticated");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -117,7 +117,7 @@
 
   asyncTest("checkAuth with XHR failure", function() {
     xhr.useResult("ajaxError");
-    xhr.setContextInfo("authenticated", false);
+    xhr.setContextInfo("auth_level", undefined);
 
     // Do not convert this to failureCheck, we do this manually because
     // checkAuth does not make an XHR request.  Since it does not make an XHR

@@ -41,6 +41,7 @@ BrowserID.Mocks.xhr = (function() {
       domain_key_creation_time: (new Date().getTime() - (30 * 24 * 60 * 60 * 1000)),
       csrf_token: "csrf",
       authenticated: false,
+      auth_level: undefined,
       code_version: "ABC123",
       random_seed: "H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo="
     };
