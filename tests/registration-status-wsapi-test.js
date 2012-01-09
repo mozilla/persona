@@ -175,7 +175,7 @@ suite.addBatch({
     topic: wsapi.get("/wsapi/session_context"),
     "we're authenticated": function (r, err) {
       assert.strictEqual(r.code, 200);
-      assert.strictEqual(JSON.parse(r.body).authenticated, true);
+      assert.strictEqual(JSON.parse(r.body).auth_level, 'password');
     },
     "but we can easily clear cookies on the client to change that!": function(r, err) {
       wsapi.clearCookies();
