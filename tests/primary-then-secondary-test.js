@@ -94,6 +94,17 @@ suite.addBatch({
   }
 });
 
+// now we have an account, and we're authenticated with an assertion.
+// check auth_level with session_context
+suite.addBatch({
+  "auth_level": {
+    topic: wsapi.get('/wsapi/session_context'),
+    "is 'assertion' after authenticating with assertion" : function(r, err) {
+      assert.strictEqual(JSON.parse(r.body).auth_level, 'assertion');
+    }
+  }
+});
+
 var token;
 
 // now we have a new account.  let's add a secondary to it
@@ -149,6 +160,17 @@ suite.addBatch({
     }
   }
 });
+
+// after adding a secondary and setting password, we're password auth'd
+suite.addBatch({
+  "auth_level": {
+    topic: wsapi.get('/wsapi/session_context'),
+    "is 'password' after authenticating with password" : function(r, err) {
+      assert.strictEqual(JSON.parse(r.body).auth_level, 'password');
+    }
+  }
+});
+
 
 // adding a second secondary will not let us set the password
 suite.addBatch({
