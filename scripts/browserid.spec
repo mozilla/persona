@@ -2,7 +2,7 @@
 
 Name:          browserid-server
 Version:       0.2012.01.05
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       BrowserID server
 Packager:      Pete Fritchman <petef@mozilla.com>
 Group:         Development/Libraries

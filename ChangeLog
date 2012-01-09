@@ -8,6 +8,7 @@ train-2011.01.05:
   * session cookies are now encrypted, sent only when required, and generally more awesome: #416, #832
   * IE8 display tweaks
   * primary support 90% implemented but disabled in this train (*major* changes including schema, but not user visible)
+  * (hotfix on 2012.01.09) explicitly call .removeAllListeners() during http forwarding to eliminate memory leak: #839
 
 train-2011.12.28:
   * improve animation during cert/assertion procedures in dialog: #709
