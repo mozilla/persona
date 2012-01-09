@@ -703,7 +703,8 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Authenticate the user with the given email and password.
+     * Authenticate the user with the given email and password.  This will sync
+     * the user's addresses.
      * @method authenticate
      * @param {string} email - Email address to authenticate.
      * @param {string} password - Password.
@@ -714,8 +715,14 @@ BrowserID.User = (function() {
     authenticate: function(email, password, onComplete, onFailure) {
       network.authenticate(email, password, function(authenticated) {
         setAuthenticationStatus(authenticated);
-        if (onComplete)
+
+        if(authenticated) {
+          User.syncEmails(function() {
+            onComplete && onComplete(authenticated);
+          }, onFailure);
+        } else if (onComplete) {
           onComplete(authenticated);
+        }
       }, onFailure);
     },
 
@@ -963,7 +970,7 @@ BrowserID.User = (function() {
             else {
               // we have no key for this identity, go generate the key,
               // sync it and then get the assertion recursively.
-              User.syncEmailKeypair(email, function() {
+              User.syncEmailKeypair(email, function(status) {
                 User.getAssertion(email, audience, onComplete, onFailure);
               }, onFailure);
             }

@@ -202,10 +202,6 @@
       startState("doEmailChosen", info);
     });
 
-    subscribe("authenticate_with_required_email", function(msg, info) {
-      startState("doAuthenticateWithRequiredEmail", info);
-    });
-
     subscribe("pick_email", function() {
       startState("doPickEmail", {
         origin: self.hostname,
@@ -216,13 +212,18 @@
     subscribe("email_chosen", function(msg, info) {
       var idInfo = storage.getEmail(info.email);
       if(idInfo) {
-        if(idInfo.type === "primary" && !idInfo.cert) {
-          // If the email is a primary, and their cert is not available,
-          // throw the user down the primary flow.
-          // Doing so will catch cases where the primary certificate is expired
-          // and the user must re-verify with their IdP.  This flow will
-          // generate its own assertion when ready.
-          publish("primary_user", info);
+        if(idInfo.type === "primary") {
+          if(idInfo.cert) {
+            startState("doEmailChosen", info);
+          }
+          else {
+            // If the email is a primary, and their cert is not available,
+            // throw the user down the primary flow.
+            // Doing so will catch cases where the primary certificate is expired
+            // and the user must re-verify with their IdP.  This flow will
+            // generate its own assertion when ready.
+            publish("primary_user", info);
+          }
         }
         else {
           startState("doEmailChosen", info);
@@ -242,10 +243,7 @@
     });
 
     subscribe("authenticated", function(msg, info) {
-      startState("doSyncThenPickEmail", {
-        origin: self.hostname,
-        allow_persistent: self.allowPersistent
-      });
+      mediator.publish("pick_email");
     });
 
     subscribe("forgot_password", function(msg, info) {

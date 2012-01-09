@@ -537,9 +537,11 @@ var vep = require("./vep");
   });
 
 
-  asyncTest("authenticate with valid credentials", function() {
+  asyncTest("authenticate with valid credentials, also syncs email with server", function() {
     lib.authenticate("testuser@testuser.com", "testuser", function(authenticated) {
       equal(true, authenticated, "we are authenticated!");
+      var emails = lib.getStoredEmailKeypairs();
+      equal(_.size(emails) > 0, true, "emails have been synced to server");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });

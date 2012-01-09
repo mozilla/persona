@@ -63,39 +63,34 @@ BrowserID.Modules.RequiredEmail = (function() {
   function signIn(callback) {
     var self = this;
 
-    // If the user is already authenticated and they own this address, sign
-    // them in.
-    if (authenticated) {
-      if(primaryInfo) {
-        closePrimaryUser.call(self, callback);
-      }
-      else {
-        dialogHelpers.getAssertion.call(self, email, callback);
-      }
+    function getAssertion() {
+      dialogHelpers.getAssertion.call(self, email, callback);
+    }
+
+    if(primaryInfo) {
+      // With a primary, just go to the primary flow, it'll be taken care of.
+      closePrimaryUser.call(self, callback);
+    }
+    else if (authenticated) {
+      // If the user is already authenticated and they own this address, sign
+      // them in.
+      getAssertion();
     }
     else {
-      if(primaryInfo) {
-        closePrimaryUser.call(self, callback);
-      }
-      else {
-        // If the user is not already authenticated, but they potentially own
-        // this address, try and sign them in and generate an assertion if they
-        // get the password right.
-        var password = helpers.getAndValidatePassword("#password");
-        if (password) {
-          dialogHelpers.authenticateUser.call(self, email, password, function(authenticated) {
-            if (authenticated) {
-              // Now that the user has authenticated, sync their emails and get an
-              // assertion for the email we care about.
-              user.syncEmailKeypair(email, function() {
-                dialogHelpers.getAssertion.call(self, email, callback);
-              }, self.getErrorDialog(errors.syncEmailKeypair, callback));
-            }
-            else {
-              callback && callback();
-            }
-          });
-        }
+      // If the user is not already authenticated, but they potentially own
+      // this address, try and sign them in and generate an assertion if they
+      // get the password right.
+      var password = helpers.getAndValidatePassword("#password");
+      if (password) {
+        dialogHelpers.authenticateUser.call(self, email, password, function(authenticated) {
+          if (authenticated) {
+            // Now that the user has authenticated, we can get an assertion.
+            getAssertion();
+          }
+          else {
+            callback && callback();
+          }
+        });
       }
     }
   }
