@@ -62,7 +62,7 @@
         storage.site.set(origin, "remember", true);
       }
 
-      complete(authenticated || null);
+      complete(!!authenticated || null);
     }, complete.curry(null));
   };
 

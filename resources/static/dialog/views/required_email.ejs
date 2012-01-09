@@ -1,4 +1,10 @@
-  <strong>The site requested you sign in using</strong>
+  <strong>
+    <% if(secondary_auth) { %>
+      Sign in using
+    <% } else { %>
+      The site requested you sign in using
+    <% } %>
+  </strong>
   <div class="form_section">
       <ul class="inputs">
 

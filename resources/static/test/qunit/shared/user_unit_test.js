@@ -200,7 +200,7 @@ var vep = require("./vep");
     lib.createUser("unregistered@testuser.com", function(status) {
       equal(status, "primary.verified", "primary user is already verified, correct status");
       network.checkAuth(function(authenticated) {
-        equal(authenticated, true, "after provisioning user, user should be automatically authenticated to BrowserID");
+        equal(authenticated, "assertion", "after provisioning user, user should be automatically authenticated to BrowserID");
         start();
       });
     }, testHelpers.unexpectedXHRFailure);

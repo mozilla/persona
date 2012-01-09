@@ -233,6 +233,7 @@ BrowserID.Modules.RequiredEmail = (function() {
           verify: false,
           signin: false,
           password: false,
+          secondary_auth: false,
           primary: false
         }, options);
         self.renderDialog("required_email", options);

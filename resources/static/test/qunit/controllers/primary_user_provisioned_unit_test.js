@@ -115,7 +115,7 @@
   asyncTest("start controller with `add: false` authenticates user", function() {
     register("primary_user_ready", function(msg, info) {
       network.checkAuth(function(status) {
-        equal(status, true, "status is correct");
+        equal(status, "assertion", "status is correct");
         start();
       });
     });

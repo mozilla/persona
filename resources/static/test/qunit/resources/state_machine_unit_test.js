@@ -42,7 +42,8 @@
       machine,
       actions,
       storage = bid.Storage,
-      testHelpers = bid.TestHelpers;
+      testHelpers = bid.TestHelpers,
+      xhr = bid.Mocks.xhr;
 
   var ActionsMock = function() {
     this.called = {};
@@ -261,16 +262,33 @@
   });
 
 
-  test("email_chosen with secondary email, user must authenticate - call doAuthenticateWithRequiredEmail", function() {
-
-  });
-
-  test("email_chosen with secondary email, user authenticated to secondary - call doEmailChosen", function() {
+  asyncTest("email_chosen with secondary email, user must authenticate - call doAuthenticateWithRequiredEmail", function() {
     var email = "testuser@testuser.com";
     storage.addEmail(email, { type: "secondary" });
-    mediator.publish("email_chosen", { email: email });
 
-    equal(actions.called.doEmailChosen, true, "doEmailChosen called");
+    xhr.setContextInfo("authenticated", "assertion");
+
+    mediator.publish("email_chosen", {
+      email: email,
+      complete: function() {
+        equal(actions.called.doAuthenticateWithRequiredEmail, true, "doAuthenticateWithRequiredEmail called");
+        start();
+      }
+    });
+  });
+
+  asyncTest("email_chosen with secondary email, user authenticated to secondary - call doEmailChosen", function() {
+    var email = "testuser@testuser.com";
+    storage.addEmail(email, { type: "secondary" });
+    xhr.setContextInfo("authenticated", "password");
+
+    mediator.publish("email_chosen", {
+      email: email,
+      complete: function() {
+        equal(actions.called.doEmailChosen, true, "doEmailChosen called");
+        start();
+      }
+    });
   });
 
   test("email_chosen with primary email - call doProvisionPrimaryUser", function() {

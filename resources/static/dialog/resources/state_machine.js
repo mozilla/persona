@@ -38,6 +38,7 @@
   var bid = BrowserID,
       storage = bid.Storage,
       mediator = bid.Mediator,
+      user = bid.User,
       publish = mediator.publish.bind(mediator),
       subscriptions = [],
       stateStack = [],
@@ -210,7 +211,13 @@
     });
 
     subscribe("email_chosen", function(msg, info) {
-      var idInfo = storage.getEmail(info.email);
+      var email = info.email
+          idInfo = storage.getEmail(email);
+
+      function complete() {
+        info.complete && info.complete();
+      }
+
       if(idInfo) {
         if(idInfo.type === "primary") {
           if(idInfo.cert) {
@@ -226,7 +233,19 @@
           }
         }
         else {
-          startState("doEmailChosen", info);
+          user.checkAuthentication(function(authentication) {
+            if(authentication === "assertion") {
+              startState("doAuthenticateWithRequiredEmail", {
+                email: email,
+                authenticated: false,
+                secondary_auth: true
+              });
+            }
+            else {
+              startState("doEmailChosen", info);
+            }
+            complete();
+          }, complete);
         }
       }
       else {

@@ -117,7 +117,7 @@ BrowserID.Network = (function() {
   }
 
   function withContext(cb, onFailure) {
-    if (typeof auth_status === 'boolean' && typeof csrf_token !== 'undefined') cb();
+    if (typeof auth_status !== 'undefined' && typeof csrf_token !== 'undefined') cb();
     else {
       var url = "/wsapi/session_context";
       xhr.ajax({
@@ -155,7 +155,7 @@ BrowserID.Network = (function() {
     csrf_token = server_time = auth_status = undef;
   }
 
-  function handleAuthenticationResponse(onComplete, onFailure, status) {
+  function handleAuthenticationResponse(type, onComplete, onFailure, status) {
     if (onComplete) {
       try {
         var authenticated = status.success;
@@ -165,7 +165,7 @@ BrowserID.Network = (function() {
         // at this point we know the authentication status of the
         // session, let's set it to perhaps save a network request
         // (to fetch session context).
-        auth_status = authenticated;
+        auth_status = authenticated && type;
         if (onComplete) onComplete(authenticated);
       } catch (e) {
         onFailure("unexpected server response: " + e);
@@ -205,7 +205,7 @@ BrowserID.Network = (function() {
           email: email,
           pass: password
         },
-        success: handleAuthenticationResponse.bind(null, onComplete, onFailure),
+        success: handleAuthenticationResponse.curry("password", onComplete, onFailure),
         error: onFailure
       });
     },
@@ -226,7 +226,7 @@ BrowserID.Network = (function() {
           email: email,
           assertion: assertion
         },
-        success: handleAuthenticationResponse.bind(null, onComplete, onFailure),
+        success: handleAuthenticationResponse.curry("assertion", onComplete, onFailure),
         error: onFailure
       });
     },
@@ -241,7 +241,7 @@ BrowserID.Network = (function() {
     checkAuth: function(onComplete, onFailure) {
       withContext(function() {
         try {
-          if (typeof auth_status !== 'boolean') throw "can't get authentication status!";
+          if (typeof auth_status === 'undefined') throw "can't get authentication status!";
           if (onComplete) onComplete(auth_status);
         } catch(e) {
           if (onFailure) onFailure(e.toString());
