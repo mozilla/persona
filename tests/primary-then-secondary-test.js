@@ -75,7 +75,7 @@ suite.addBatch({
     topic: function() {
       return primaryUser.getAssertion(TEST_ORIGIN);
     },
-    "succeeds": function(r, err) {
+    "succeeds": function(r) {
       assert.isString(r);
     },
     "and logging in with the assertion succeeds": {
@@ -85,7 +85,7 @@ suite.addBatch({
           assertion: assertion
         }).call(this);
       },
-      "works": function(r, err) {
+      "works": function(err, r) {
         var resp = JSON.parse(r.body);
         assert.isObject(resp);
         assert.isTrue(resp.success);
@@ -99,7 +99,7 @@ suite.addBatch({
 suite.addBatch({
   "auth_level": {
     topic: wsapi.get('/wsapi/session_context'),
-    "is 'assertion' after authenticating with assertion" : function(r, err) {
+    "is 'assertion' after authenticating with assertion" : function(err, r) {
       assert.strictEqual(JSON.parse(r.body).auth_level, 'assertion');
     }
   }
@@ -114,7 +114,7 @@ suite.addBatch({
       email: SECONDARY_EMAIL,
       site:'fakesite.com'
     }),
-    "works": function(r, err) {
+    "works": function(err, r) {
       assert.strictEqual(r.code, 200);
     },
     "and get a token": {
@@ -131,7 +131,7 @@ suite.addBatch({
             token: t
           }).call(this);
         },
-        "we need to set our password": function (r) {
+        "we need to set our password": function (err, r) {
           r = JSON.parse(r.body);
           assert.ok(r.needs_password);
         },
@@ -139,7 +139,7 @@ suite.addBatch({
           topic: function() {
             wsapi.post('/wsapi/complete_email_addition', { token: this._token }).call(this);
           },
-          "no password fails": function(r, err) {
+          "no password fails": function(err, r) {
             assert.equal(r.code, 200);
             assert.strictEqual(JSON.parse(r.body).success, false);
           },
@@ -150,7 +150,7 @@ suite.addBatch({
                 pass: TEST_PASS
               }).call(this);
             },
-            "succeeds": function(r, err) {
+            "succeeds": function(err, r) {
               assert.equal(r.code, 200);
               assert.strictEqual(JSON.parse(r.body).success, true);
             }
@@ -165,7 +165,7 @@ suite.addBatch({
 suite.addBatch({
   "auth_level": {
     topic: wsapi.get('/wsapi/session_context'),
-    "is 'password' after authenticating with password" : function(r, err) {
+    "is 'password' after authenticating with password" : function(err, r) {
       assert.strictEqual(JSON.parse(r.body).auth_level, 'password');
     }
   }
@@ -179,7 +179,7 @@ suite.addBatch({
       email: SECOND_SECONDARY_EMAIL,
       site:'fakesite.com'
     }),
-    "works": function(r, err) {
+    "works": function(err, r) {
       assert.strictEqual(r.code, 200);
     },
     "and get a token": {
@@ -196,7 +196,7 @@ suite.addBatch({
             token: t
           }).call(this);
         },
-        "we do not need to set our password": function (r) {
+        "we do not need to set our password": function (err, r) {
           r = JSON.parse(r.body);
           assert.isFalse(r.needs_password);
         },
@@ -204,7 +204,7 @@ suite.addBatch({
           topic: function() {
             wsapi.post('/wsapi/complete_email_addition', { token: this._token, pass: TEST_PASS }).call(this);
           },
-          "a password fails": function(r, err) {
+          "a password fails": function(err, r) {
             assert.equal(r.code, 200);
             assert.strictEqual(JSON.parse(r.body).success, false);
           },
@@ -214,7 +214,7 @@ suite.addBatch({
                 token: this._token
               }).call(this);
             },
-            "succeeds": function(r, err) {
+            "succeeds": function(err, r) {
               assert.equal(r.code, 200);
               assert.strictEqual(JSON.parse(r.body).success, true);
             }
@@ -231,7 +231,7 @@ suite.addBatch({
       email: TEST_EMAIL,
       pass: TEST_PASS
     }),
-    "works": function(r, err) {
+    "works": function(err, r) {
       assert.strictEqual(r.code, 200);
     },
   },
@@ -240,7 +240,7 @@ suite.addBatch({
       email: SECONDARY_EMAIL,
       pass: TEST_PASS
     }),
-    "works": function(r, err) {
+    "works": function(err, r) {
       assert.strictEqual(r.code, 200);
     },
   }

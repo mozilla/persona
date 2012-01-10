@@ -55,7 +55,7 @@ start_stop.addStartupBatches(suite);
 
 // Taken from the vows page.
 function assertStatus(code) {
-  return function (res, err) {
+  return function (err, res) {
     assert.equal(res.code, code);
   };
 }

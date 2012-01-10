@@ -67,14 +67,14 @@ suite.addBatch({
         },
         method: "POST"
       }, function (res) {
-        cb(res);
+        cb(null, res);
       }).on('error', function (e) {
-        cb(undefined, e);
+        cb(e);
       });
       req.write(secrets.weakGenerate(1024 * 10 + 1));
       req.end();
     },
-    "fails": function (r, err) {
+    "fails": function (err, r) {
       assert.ok(/socket hang up/.test(err.toString()));
     }
   }
@@ -95,14 +95,14 @@ suite.addBatch({
         },
         method: "POST"
       }, function (res) {
-        cb(res);
+        cb(null, res);
       }).on('error', function (e) {
-        cb(undefined, e);
+        cb(e);
       });
       req.write(secrets.weakGenerate(1024 * 10 + 1));
       req.end();
     },
-    "fails": function (r, err) {
+    "fails": function (err, r) {
       assert.strictEqual(413, r.statusCode);
     }
   }

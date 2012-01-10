@@ -62,7 +62,7 @@ var token = undefined;
 suite.addBatch({
   "get csrf token": {
     topic: wsapi.get('/wsapi/session_context'),
-    "works": function (r, err) {
+    "works": function (err, r) {
       assert.equal(typeof r.body, 'string');
       var v = JSON.parse(r.body);
       assert.equal(typeof v, 'object');
@@ -79,7 +79,7 @@ suite.addBatch({
       email: TEST_EMAIL,
       site:'fakesite.com'
     }),
-    "works":     function(r, err) {
+    "works":     function(err, r) {
       assert.equal(r.code, 200);
     }
   }
@@ -107,7 +107,7 @@ suite.addBatch({
         pass: TEST_PASSWORD
       }).call(this);
     },
-    "works just fine": function(r, err) {
+    "works just fine": function(err, r) {
       assert.equal(r.code, 200);
     }
   }
@@ -122,7 +122,7 @@ suite.addBatch({
         db.checkAuth(uid, cb);
       });
     },
-    "is bcrypted with the expected number of rounds": function(r, err) {
+    "is bcrypted with the expected number of rounds": function(r) {
       assert.equal(typeof r, 'string');
       assert.equal(config.get('bcrypt_work_factor'), bcrypt.get_rounds(r));
     }
@@ -149,7 +149,7 @@ suite.addBatch({
       email: TEST_EMAIL,
       pass: TEST_PASSWORD
     }),
-    "should work": function(r, err) {
+    "should work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
   }
@@ -169,7 +169,7 @@ suite.addBatch({
           db.checkAuth(uid, cb);
         });
       },
-      "its bcrypted with 8 rounds": function(r, err) {
+      "its bcrypted with 8 rounds": function(r) {
         assert.equal(typeof r, 'string');
         assert.equal(8, bcrypt.get_rounds(r));
       }
@@ -184,7 +184,7 @@ suite.addBatch({
       email: TEST_EMAIL,
       pass: TEST_PASSWORD
     }),
-    "should still work": function(r, err) {
+    "should still work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
   }

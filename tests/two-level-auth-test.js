@@ -66,7 +66,7 @@ suite.addBatch({
     topic: function() {
       return primaryUser.getAssertion(TEST_ORIGIN);
     },
-    "succeeds": function(r, err) {
+    "succeeds": function(r) {
       assert.isString(r);
     },
     "and logging in with the assertion": {
@@ -76,7 +76,7 @@ suite.addBatch({
           assertion: assertion
         }).call(this);
       },
-      "succeeds": function(r, err) {
+      "succeeds": function(err, r) {
         var resp = JSON.parse(r.body);
         assert.isObject(resp);
         assert.isTrue(resp.success);
@@ -88,19 +88,19 @@ suite.addBatch({
 suite.addBatch({
   "updating our password": {
     topic: wsapi.post('/wsapi/update_password', { oldpass: '', newpass: 'frobaztastic' }),
-    "won't work": function(r) {
+    "won't work": function(err, r) {
       assert.strictEqual(r.code, 400);
     }
   },
   "certifying a key": {
     topic: wsapi.post('/wsapi/cert_key', { email: TEST_EMAIL, pubkey: 'fake_key' }),
-    "won't work": function(r) {
+    "won't work": function(err, r) {
       assert.strictEqual(r.code, 400);
     }
   },
   "listing emails": {
     topic: wsapi.get('/wsapi/list_emails'),
-    "works fine": function(r) {
+    "works fine": function(err, r) {
       assert.strictEqual(r.code, 200);
       assert.equal(Object.keys(JSON.parse(r.body)).length, 1);
     }

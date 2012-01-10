@@ -67,7 +67,7 @@ suite.addBatch({
       email: TEST_EMAIL,
       site: 'fakesite.com'
     }),
-    "works":     function(r, err) {
+    "works":     function(err, r) {
       assert.equal(r.code, 200);
     }
   }
@@ -95,7 +95,7 @@ suite.addBatch({
         pass: OLD_PASSWORD
       }).call(this);
     },
-    "works just fine": function(r, err) {
+    "works just fine": function(err, r) {
       assert.equal(r.code, 200);
     }
   }
@@ -107,7 +107,7 @@ suite.addBatch({
       email: TEST_EMAIL,
       pass: OLD_PASSWORD
     }),
-    "works as expected": function(r, err) {
+    "works as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
   },
@@ -116,7 +116,7 @@ suite.addBatch({
       email: TEST_EMAIL,
       pass: NEW_PASSWORD
     }),
-    "fails as expected": function(r, err) {
+    "fails as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, false);
     }
   }
@@ -128,7 +128,7 @@ suite.addBatch({
       oldpass: "bogus ass password",
       newpass: NEW_PASSWORD
     }),
-    "fails as expected": function(r, err) {
+    "fails as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, false);
     }
   }
@@ -140,7 +140,7 @@ suite.addBatch({
       oldpass: OLD_PASSWORD,
       newpass: 'bogus' // too short
     }),
-    "fails as expected": function(r, err) {
+    "fails as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, false);
     }
   }
@@ -152,7 +152,7 @@ suite.addBatch({
       oldpass: OLD_PASSWORD,
       newpass: NEW_PASSWORD
     }),
-    "works as expected": function(r, err) {
+    "works as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
   }
@@ -164,7 +164,7 @@ suite.addBatch({
       email: TEST_EMAIL,
       pass: NEW_PASSWORD
     }),
-    "works as expected": function(r, err) {
+    "works as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
   },
@@ -173,7 +173,7 @@ suite.addBatch({
       email: TEST_EMAIL,
       pass: OLD_PASSWORD
     }),
-    "fails as expected": function(r, err) {
+    "fails as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, false);
     }
   }

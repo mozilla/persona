@@ -67,7 +67,7 @@ function stripExpires(cookieString) {
 suite.addBatch({
   "get context": {
     topic: wsapi.get('/wsapi/session_context'),
-    "has a cookie because of CSRF setting" : function(r, err) {
+    "has a cookie because of CSRF setting" : function(err, r) {
       // make sure there's NO cookie
       var cookie = r.headers["set-cookie"];
       assert.isNotNull(cookie[0]);
@@ -75,14 +75,14 @@ suite.addBatch({
     },
     "and then session context again": {
       topic: wsapi.get('/wsapi/logout'),
-      "should not set-cookie": function(r, err) {
+      "should not set-cookie": function(err, r) {
         var cookie = r.headers["set-cookie"];
         assert.isUndefined(cookie);
       },
       "then let's screw it up": {
         topic: function() {
           wsapi.clearCookies();
-          
+
           // mess up the cookie
           var the_match = first_cookie.match(/browserid_state=([^;]*);/);
           assert.isNotNull(the_match);
@@ -92,7 +92,7 @@ suite.addBatch({
         },
         "and then get context": {
           topic: wsapi.get('/wsapi/session_context'),
-          "and result should have a new cookie for session reset": function(r, err) {
+          "and result should have a new cookie for session reset": function(err, r) {
             var cookie = r.headers["set-cookie"];
             assert.isNotNull(cookie);
             assert.isNotNull(cookie[0]);

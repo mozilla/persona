@@ -57,7 +57,7 @@ suite.addBatch({
       email: 'first@fakeemail.com',
       site:'fakesite.com'
     }),
-    "returns 200": function(r, err) {
+    "returns 200": function(err, r) {
       assert.strictEqual(r.code, 200);
     }
   }
@@ -82,7 +82,7 @@ suite.addBatch({
       email: 'first@fakeemail.com',
       site:'fakesite.com'
     }),
-    "is throttled": function(r, err) {
+    "is throttled": function(err, r) {
       assert.strictEqual(r.code, 403);
     }
   }
@@ -93,7 +93,7 @@ suite.addBatch({
     topic: function() {
       wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'firstfakepass' }).call(this);
     },
-    "works": function(r, err) {
+    "works": function(err, r) {
       assert.equal(r.code, 200);
       assert.strictEqual(true, JSON.parse(r.body).success);
       token = undefined;
@@ -107,7 +107,7 @@ suite.addBatch({
       email: 'second@fakeemail.com',
       site:'fakesite.com'
     }),
-    "works": function(r, err) {
+    "works": function(err, r) {
       assert.strictEqual(r.code, 200);
     }
   }
@@ -132,7 +132,7 @@ suite.addBatch({
       email: 'second@fakeemail.com',
       site:'fakesite.com'
     }),
-    "is throttled with a 403": function(r, err) {
+    "is throttled with a 403": function(err, r) {
       assert.strictEqual(r.code, 403);
     }
   }
@@ -143,7 +143,7 @@ suite.addBatch({
     topic: function() {
       wsapi.post('/wsapi/complete_email_addition', { token: token }).call(this);
     },
-    "it works swimmingly": function(r, err) {
+    "it works swimmingly": function(err, r) {
       assert.equal(r.code, 200);
       assert.strictEqual(JSON.parse(r.body).success, true);
       token = undefined;

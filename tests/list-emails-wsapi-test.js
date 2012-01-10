@@ -60,7 +60,7 @@ suite.addBatch({
       email: 'syncer@somehost.com',
       site:'fakesite.com'
     }),
-    "works": function(r, err) {
+    "works": function(err, r) {
       assert.strictEqual(r.code, 200);
     }
   }
@@ -84,7 +84,7 @@ suite.addBatch({
     topic: function() {
       wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'fakepass' }).call(this);
     },
-    "works": function(r, err) {
+    "works": function(err, r) {
       assert.equal(r.code, 200);
       assert.strictEqual(JSON.parse(r.body).success, true);
       token = undefined;
@@ -95,10 +95,10 @@ suite.addBatch({
 suite.addBatch({
   "calling user_creation_status after a creation is complete": {
     topic: wsapi.get("/wsapi/user_creation_status", { email: 'syncer@somehost.com' }),
-    "yields a HTTP 200": function (r, err) {
+    "yields a HTTP 200": function (err, r) {
       assert.strictEqual(r.code, 200);
     },
-    "returns a json encoded string - `complete`": function (r, err) {
+    "returns a json encoded string - `complete`": function (err, r) {
       assert.strictEqual(JSON.parse(r.body).status, "complete");
     }
   }
@@ -107,10 +107,10 @@ suite.addBatch({
 suite.addBatch({
   "list emails API": {
     topic: wsapi.get('/wsapi/list_emails', {}),
-    "succeeds with HTTP 200" : function(r, err) {
+    "succeeds with HTTP 200" : function(err, r) {
       assert.strictEqual(r.code, 200);
     },
-    "returns an object with proper email": function(r, err) {
+    "returns an object with proper email": function(err, r) {
       var respObj = JSON.parse(r.body);
       var emails = Object.keys(respObj);
       assert.equal(emails[0], "syncer@somehost.com");

@@ -152,7 +152,7 @@ exports.addStartupBatches = function(suite) {
       },
       "server should be running": {
         topic: wsapi.get('/__heartbeat__'),
-        "server is running": function (r, err) {
+        "server is running": function (err, r) {
           assert.equal(r.code, 200);
           assert.equal(r.body, 'ok');
         }
@@ -186,7 +186,7 @@ exports.addRestartBatch = function(suite) {
       },
       "server should be running": {
         topic: wsapi.get('/__heartbeat__'),
-        "server is running": function (r, err) {
+        "server is running": function (err, r) {
           assert.equal(r.code, 200);
           assert.equal(r.body, 'ok');
         }

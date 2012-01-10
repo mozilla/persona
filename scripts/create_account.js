@@ -68,14 +68,19 @@ wcli.post({
 }, '/wsapi/stage_user', ctx, {
   email: args.e,
   site: args.d
-}, function(response) {
-  try {
-    var body = JSON.parse(response.body);
-    if (body.success !== true)
-      throw "request failed: " + response.body;
-  } catch(e) {
+}, function(err, response) {
+  function doError(e) {
     process.stderr.write("error: " + e.toString() + "\n");
     process.stderr.write("response: " + response.body  + "\n");
     process.exit(1);
+  }
+  if (err) return doError(err);
+  try {
+    var body = JSON.parse(response.body);
+    if (body.success !== true) {
+      throw "request failed: " + response.body;
+    }
+  } catch(e) {
+    return doError(e);
   }
 });

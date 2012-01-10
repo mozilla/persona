@@ -60,7 +60,7 @@ start_stop.browserid.on('token', function(secret) {
 suite.addBatch({
   "get csrf token": {
     topic: wsapi.get('/wsapi/session_context'),
-    "works": function (r, err) {
+    "works": function (err, r) {
       assert.equal(typeof r.body, 'string');
       var v = JSON.parse(r.body);
       assert.equal(typeof v, 'object');
@@ -77,7 +77,7 @@ suite.addBatch({
       email: 'first@fakeemail.com',
       site:'fakesite.com'
     }),
-    "works":     function(r, err) {
+    "works":     function(err, r) {
       assert.equal(r.code, 200);
     }
   }
@@ -90,7 +90,7 @@ suite.addBatch({
       token: token,
       pass: '0123456' // less than 8 chars, invalid
     }),
-    "causes a HTTP error response": function(r, err) {
+    "causes a HTTP error response": function(err, r) {
       assert.equal(r.code, 400);
       assert.equal(r.body, "Bad Request: valid passwords are between 8 and 80 chars");
     }
@@ -100,7 +100,7 @@ suite.addBatch({
       token: token,
       pass: '012345678901234567890123456789012345678901234567890123456789012345678901234567891', // more than 81 chars, invalid.
     }),
-    "causes a HTTP error response": function(r, err) {
+    "causes a HTTP error response": function(err, r) {
       assert.equal(r.code, 400);
       assert.equal(r.body, "Bad Request: valid passwords are between 8 and 80 chars");
     }
@@ -110,7 +110,7 @@ suite.addBatch({
       token: token,
       pass: 'ahhh.  this is just right.'
     }),
-    "works just fine": function(r, err) {
+    "works just fine": function(err, r) {
       assert.equal(r.code, 200);
     }
   }

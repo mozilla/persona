@@ -68,7 +68,7 @@ suite.addBatch({
       pubkey: 'fakekey',
       site:'fakesite.com'
     }),
-    "succeeds": function(r, err) {
+    "succeeds": function(err, r) {
       assert.strictEqual(r.code, 200);
     }
   }
@@ -92,7 +92,7 @@ suite.addBatch({
     topic: function() {
       wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'fakepass' }).call(this);
     },
-    "works": function(r, err) {
+    "works": function(err, r) {
       assert.equal(r.code, 200);
       assert.strictEqual(true, JSON.parse(r.body).success);
     }
@@ -108,38 +108,38 @@ var kp = jwk.KeyPair.generate("RS",64);
 suite.addBatch({
   "check the public key": {
     topic: wsapi.get("/pk"),
-    "returns a 200": function(r, err) {
+    "returns a 200": function(err, r) {
       assert.strictEqual(r.code, 200);
     },
-    "returns the right public key": function(r, err) {
+    "returns the right public key": function(err, r) {
       var pk = jwk.PublicKey.deserialize(r.body);
       assert.ok(pk);
     }
   },
   "cert key with no parameters": {
     topic: wsapi.post(cert_key_url, {}),
-    "fails with HTTP 400" : function(r, err) {
+    "fails with HTTP 400" : function(err, r) {
       assert.strictEqual(r.code, 400);
     }
   },
   "cert key invoked with just an email": {
     topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com' }),
-    "returns a 400" : function(r, err) {
+    "returns a 400" : function(err, r) {
       assert.strictEqual(r.code, 400);
     }
   },
   "cert key invoked with proper argument": {
     topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com', pubkey: kp.publicKey.serialize() }),
-    "returns a response with a proper content-type" : function(r, err) {
+    "returns a response with a proper content-type" : function(err, r) {
       assert.strictEqual(r.code, 200);
     },
-    "returns a proper cert": function(r, err) {
+    "returns a proper cert": function(err, r) {
       ca.verifyChain([r.body], function(pk) {
         assert.isTrue(kp.publicKey.equals(pk));
       });
     },
     "generate an assertion": {
-      topic: function(r) {
+      topic: function(err, r) {
         var serializedCert = r.body.toString();
         var expiration = new Date(new Date().getTime() + (2 * 60 * 1000));
         var assertion = new jwt.JWT(null, expiration, "rp.com");
@@ -173,9 +173,9 @@ suite.addBatch({
       }
     }
   },
-  "cert key invoked proper arguments but incorrect email address": {  
+  "cert key invoked proper arguments but incorrect email address": {
     topic: wsapi.post(cert_key_url, { email: 'syncer2@somehost.com', pubkey: kp.publicKey.serialize() }),
-    "returns a response with a proper error content-type" : function(r, err) {
+    "returns a response with a proper error content-type" : function(err, r) {
       assert.strictEqual(r.code, 400);
     }
   }

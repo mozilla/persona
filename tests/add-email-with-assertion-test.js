@@ -132,7 +132,7 @@ suite.addBatch({
         assertion: g_assertion
       }).call(this);
     },
-    "fails if not authenticated": function(r, err) {
+    "fails if not authenticated": function(err, r) {
       assert.strictEqual(r.code, 400);
     }
   }
@@ -145,7 +145,7 @@ suite.addBatch({
       email: TEST_FIRST_ACCT,
       site:'fakesite.com'
     }),
-    "works": function(r, err) {
+    "works": function(err, r) {
       assert.strictEqual(r.code, 200);
     },
     "and a token": {
@@ -159,7 +159,7 @@ suite.addBatch({
         topic: function(token) {
           wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'fakepass' }).call(this);
         },
-        "to verify email ownership": function(r, err) {
+        "to verify email ownership": function(err, r) {
           assert.equal(r.code, 200);
           assert.strictEqual(JSON.parse(r.body).success, true);
           token = undefined;
@@ -176,7 +176,7 @@ suite.addBatch({
         assertion: g_assertion
       }).call(this);
     },
-    "works once we are authenticated": function(r, err) {
+    "works once we are authenticated": function(err, r) {
       var resp = JSON.parse(r.body);
       assert.isObject(resp);
       assert.isTrue(resp.success);
@@ -187,10 +187,10 @@ suite.addBatch({
 suite.addBatch({
   "list emails": {
     topic: wsapi.get('/wsapi/list_emails', {}),
-    "succeeds with HTTP 200" : function(r, err) {
+    "succeeds with HTTP 200" : function(err, r) {
       assert.strictEqual(r.code, 200);
     },
-    "returns an object with what we'd expect": function(r, err) {
+    "returns an object with what we'd expect": function(err, r) {
       var respObj = JSON.parse(r.body);
       var emails = Object.keys(respObj);
       assert.strictEqual(emails.length, 2)

@@ -83,7 +83,7 @@ suite.addBatch({
           assertion: assertion
         }).call(this);
       },
-      "works": function(r, err) {
+      "works": function(err, r) {
         var resp = JSON.parse(r.body);
         assert.isObject(resp);
         assert.isTrue(resp.success);
