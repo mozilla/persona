@@ -15,6 +15,7 @@
     , "jwcrypto": "0.1.1"
     , "mustache": "0.3.1-dev"
     , "mysql" : "0.9.5"
+    , "node-gettext": "0.1.1"
     , "node-statsd": "https://github.com/downloads/lloyd/node-statsd/3a73de.tgz"
     , "nodemailer": "0.1.18"
     , "optimist" : "0.2.8"
