@@ -66,6 +66,7 @@ BrowserID.PageHelpers = (function() {
       if ($("#password").length) $("#password").focus();
     }
 
+    dom.bindEvent("#email", "change", onEmailChange);
     dom.bindEvent("#email", "keyup", onEmailChange);
   }
 
