@@ -1,5 +1,5 @@
 /*jshint browsers:true, forin: true, laxbreak: true */
-/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global asyncTest: true, test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -109,13 +109,29 @@
     start();
   }
 
+  function testMessageReceived(email, message) {
+    xhr.setContextInfo("auth_level", "assertion");
+
+    createController({
+      email: email,
+      ready: function() {
+        register(message, function(item, info) {
+          equal(info.email, email, message + " received with correct email");
+          start();
+        });
+
+        controller.verifyAddress();
+      }
+    });
+  }
+
+
   asyncTest("known_secondary: user who is not authenticated - show password form", function() {
     var email = "registered@testuser.com";
     xhr.useResult("known_secondary");
 
     createController({
       email: email,
-      authenticated: false,
       ready: function() {
         testSignIn(email, testPasswordSection);
       }
@@ -128,7 +144,6 @@
 
     createController({
       email: email,
-      authenticated: false,
       ready: function() {
         testVerify(email);
       }
@@ -138,12 +153,12 @@
   asyncTest("primary: user who is authenticated, owns address, cert valid - sees signin screen", function() {
     var email = "testuser@testuser.com";
 
+    xhr.setContextInfo("auth_level",  "assertion");
     storage.addEmail(email, { type: "primary", cert: "cert" });
     xhr.useResult("primary");
 
     createController({
       email: email,
-      authenticated: true,
       ready: function() {
         testSignIn(email);
       }
@@ -160,7 +175,6 @@
 
     createController({
       email: email,
-      authenticated: true,
       ready: function() {
         testSignIn(email);
       }
@@ -181,7 +195,6 @@
 
     createController({
       email: email,
-      authenticated: true,
       ready: function() {
         equal(msgInfo.email, email, "correct email passed");
         start();
@@ -198,7 +211,6 @@
 
     createController({
       email: email,
-      authenticated: true,
       ready: function() {
         testSignIn(email);
       }
@@ -218,7 +230,6 @@
 
     createController({
       email: email,
-      authenticated: true,
       ready: function() {
         equal(msgInfo.email, email, "correct email passed");
         start();
@@ -233,7 +244,6 @@
 
     createController({
       email: email,
-      authenticated: false,
       ready: function() {
         testSignIn(email, testNoPasswordSection);
       }
@@ -253,7 +263,6 @@
 
     createController({
       email: email,
-      authenticated: false,
       ready: function() {
         equal(msgInfo && msgInfo.email, "unregistered@testuser.com", "correct email address");
         start();
@@ -266,7 +275,6 @@
     var email = "registered@testuser.com";
     createController({
       email: email,
-      authenticated: false,
       ready: function() {
         ok(testHelpers.errorVisible(), "Error message is visible");
         start();
@@ -274,16 +282,27 @@
     });
   });
 
-  asyncTest("known_secondary: user who is authenticated, email belongs to user - user sees sign in screen.", function() {
-    xhr.setContextInfo({
-      authenticated: true
-    });
+  asyncTest("known_secondary: assertion authenticated, email belongs to user - user sees sign in screen with password field.", function() {
+    xhr.setContextInfo("auth_level",  "assertion");
 
     var email = "registered@testuser.com";
     user.syncEmailKeypair(email, function() {
       createController({
         email: email,
-        authenticated: true,
+        ready: function() {
+          testSignIn(email, testPasswordSection);
+        }
+      });
+    });
+  });
+
+  asyncTest("known_secondary: password authenticated, email belongs to user - user sees sign in screen, no password.", function() {
+    xhr.setContextInfo("auth_level",  "password");
+
+    var email = "registered@testuser.com";
+    user.syncEmailKeypair(email, function() {
+      createController({
+        email: email,
         ready: function() {
           testSignIn(email, testNoPasswordSection);
         }
@@ -292,16 +311,13 @@
   });
 
   asyncTest("known_secondary: user who is authenticated, email belongs to another user - user sees verify screen", function() {
-    xhr.setContextInfo({
-      authenticated: true
-    });
+    xhr.setContextInfo("auth_level",  "password");
 
     var email = "registered@testuser.com";
     xhr.useResult("known_secondary");
 
     createController({
       email: email,
-      authenticated: true,
       ready: function() {
         // This means the current user is going to take the address from the other
         // account.
@@ -311,16 +327,14 @@
   });
 
   asyncTest("unknown_secondary: user who is authenticated, but email unknown - user sees verify screen", function() {
-    xhr.setContextInfo({
-      authenticated: true
-    });
+    xhr.setContextInfo("auth_level",  "password");
     xhr.useResult("unknown_secondary");
 
     var email = "unregistered@testuser.com";
 
     createController({
       email: email,
-      authenticated: true,
+      auth_level: "password",
       ready: function() {
         testVerify(email);
       }
@@ -329,15 +343,12 @@
 
 
   asyncTest("secondary: signIn of an authenticated user - generates an assertion, redirects to assertion_generated", function() {
-    xhr.setContextInfo({
-      authenticated: true
-    });
+    xhr.setContextInfo("auth_level",  "password");
 
     var email = "registered@testuser.com";
     user.syncEmailKeypair(email, function() {
       createController({
-        email: email,
-        authenticated: true
+        email: email
       });
 
       var assertion;
@@ -353,16 +364,11 @@
   });
 
   asyncTest("secondary: signIn of a non-authenticated user with a good password - generates an assertion, redirects to assertion_generated", function() {
-    xhr.setContextInfo({
-      authenticated: false
-    });
-
     var email = "testuser@testuser.com";
     xhr.useResult("known_secondary");
 
     createController({
       email: email,
-      authenticated: false,
       ready: function() {
         var assertion;
         register("assertion_generated", function(item, info) {
@@ -383,16 +389,11 @@
 
 
   asyncTest("secondary: signIn of a non-authenticated user with a bad password does not generate an assertion", function() {
-    xhr.setContextInfo({
-      authenticated: false
-    });
-
     var email = "registered@testuser.com";
     xhr.useResult("known_secondary");
 
     createController({
       email: email,
-      authenticated: false,
       ready: function() {
         var assertion;
 
@@ -421,7 +422,6 @@
 
     createController({
       email: email,
-      authenticated: false,
       ready: function() {
         var primaryEmail;
 
@@ -437,27 +437,6 @@
     });
 
   });
-
-  function testMessageReceived(email, message) {
-    var authenticated = true;
-
-    xhr.setContextInfo({
-      authenticated: authenticated
-    });
-
-    createController({
-      email: email,
-      authenticated: authenticated,
-      ready: function() {
-        register(message, function(item, info) {
-          equal(info.email, email, message + " received with correct email");
-          start();
-        });
-
-        controller.verifyAddress();
-      }
-    });
-  }
 
   asyncTest("verifyAddress of authenticated user, address belongs to another user - redirects to 'email_staged'", function() {
     var email = "registered@testuser.com";
@@ -475,16 +454,10 @@
 
   asyncTest("verifyAddress of un-authenticated user, forgot password - redirect to 'forgot_password'", function() {
     var email = "registered@testuser.com",
-        authenticated = false,
         message = "forgot_password";
-
-    xhr.setContextInfo({
-      authenticated: authenticated
-    });
 
     createController({
       email: email,
-      authenticated: authenticated,
       ready: function() {
         register(message, function(item, info) {
           equal(info.email, email, message + " received with correct email");
@@ -496,18 +469,12 @@
     });
   });
 
-  asyncTest("cancel raises the cancel message", function() {
+  asyncTest("cancel normally raises the 'cancel' message", function() {
     var email = "registered@testuser.com",
-        message = "cancel",
-        authenticated = false;
-
-    xhr.setContextInfo({
-      authenticated: authenticated
-    });
+        message = "cancel";
 
     createController({
       email: email,
-      authenticated: authenticated,
       ready: function() {
         register(message, function(item, info) {
           ok(true, message + " received");
@@ -518,6 +485,25 @@
       }
     });
   });
+
+  asyncTest("cancel with 'secondary_auth' raises the 'cancel_state' message", function() {
+    var email = "registered@testuser.com",
+        message = "cancel_state";
+
+    createController({
+      email: email,
+      secondary_auth: true,
+      ready: function() {
+        register(message, function(item, info) {
+          ok(true, message + " received");
+          start();
+        });
+
+        controller.cancel();
+      }
+    });
+  });
+
 
 }());
 

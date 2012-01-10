@@ -56,6 +56,8 @@
             <button id="verify_address" tabindex="3">verify email</button>
           <% } %>
 
-          <!--button id="cancel" tabindex="4">cancel</button-->
+          <% if (secondary_auth) { %>
+            <button id="cancel" tabindex="4">cancel</button>
+          <% } %>
       </div>
   </div>

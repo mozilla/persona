@@ -41,7 +41,7 @@
   BrowserID.TestHelpers = {
     setup: function() {
       network.setXHR(xhr);
-      //xhr.setContextInfo("authenticated", false);
+      xhr.setContextInfo("auth_level", undefined);
       xhr.useResult("valid");
       storage.clear();
 

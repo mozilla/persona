@@ -142,8 +142,7 @@
 
       if (requiredEmail) {
         startState("doAuthenticateWithRequiredEmail", {
-          email: requiredEmail,
-          authenticated: authenticated
+          email: requiredEmail
         });
       }
       else if (authenticated) {
@@ -235,9 +234,10 @@
         else {
           user.checkAuthentication(function(authentication) {
             if(authentication === "assertion") {
+              // user not authenticated, kick them over to the required email
+              // screen.
               startState("doAuthenticateWithRequiredEmail", {
                 email: email,
-                authenticated: false,
                 secondary_auth: true
               });
             }
