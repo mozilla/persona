@@ -54,4 +54,9 @@ code testing is still possible (it just uses a little json database).
 
 **contributions** - please issue pull requests targeted at the `dev` branch
 
+## LICENSE
 
+All source code here is available under the [MPL 2][] license, unless
+otherwise indicated.
+
+  [MPL 2]: https://mozilla.org/MPL/
