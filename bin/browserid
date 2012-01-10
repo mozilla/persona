@@ -13,6 +13,7 @@ urlparse = require('urlparse'),
 express = require('express');
 
 const
+i18n = require('../lib/i18n.js'),
 wsapi = require('../lib/wsapi.js'),
 httputils = require('../lib/httputils.js'),
 secrets = require('../lib/secrets.js'),
@@ -58,6 +59,13 @@ app.use(express.logger({
       logger.info(typeof x === 'string' ? x.trim() : x);
     }
   }
+}));
+
+// #2.1 - localization
+app.use(i18n.abide({
+  supported_languages: config.get('supported_languages'),
+  default_lang: config.get('default_lang'),
+  locale_directory: config.get('locale_directory')
 }));
 
 // limit all content bodies to 10kb, at which point we'll forcefully

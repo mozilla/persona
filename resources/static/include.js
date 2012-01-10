@@ -1,1 +1,1 @@
-include_js/include.js
+production/include.js

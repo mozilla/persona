@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+/* This is a helper script for compress.sh */
+
+// configuration will create directories under VAR_PATH
+process.env['VAR_PATH'] = '/tmp/browserid';
+
+// Pick up production languages
+process.env['NODE_ENV'] = 'production';
+
+var path = require('path'),
+    format = require('util').format,
+
+    config = require(path.join(__dirname, '../lib/configuration.js')),
+    i18n = require(path.join(__dirname, '../lib/i18n.js'));
+
+var langs = config.get('supported_languages');
+
+process.stdout.write(format("%s\n", langs.map(i18n.localeFrom).join(' ')));

@@ -24,7 +24,15 @@ BrowserID.Renderer = (function() {
         url: "/dialog/views/" + body + ".ejs"
       };
     }
-
+    if (vars) {
+      var params = {
+            "domain" : "client",
+            "locale_data" : json_locale_data
+      };      
+      var gt = new Gettext(params);
+      vars['gettext'] = gt.gettext.bind(gt);
+      vars['strargs'] = gt.strargs.bind(gt);
+    }
     var html = new EJS(config).render(vars);
     return html;
   }
@@ -42,6 +50,5 @@ BrowserID.Renderer = (function() {
   return {
     render: render,
     append: append
-  }
+  };
 }());
-
