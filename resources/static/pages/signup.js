@@ -56,34 +56,7 @@ BrowserID.signUp = (function() {
     }
 
     function authWithPrimary(oncomplete) {
-      if(!(verifyEmail && verifyURL)) {
-        throw "cannot verify with primary without an email address and URL"
-      }
-
-      var url = helpers.toURL(verifyURL, {
-          email: verifyEmail,
-          return_to: "https://browserid.org/authenticate_with_primary#complete"
-      });
-
-      // XXX: we should use winchan (and send user to a page that redirects to primary)!
-      // we should:
-      // 1. build a page that we host and we open with winchan
-      // 2. pass that page the location to redirect the user to in-dialog
-      // 3. spawn dialog
-      // 4. page immediately redirects user to primary, passes 'email' and 'return_to' args
-      // 5. primary does thing...
-      // 6. primary redirects to our page (`return_to`)
-      // 7. return_to immediately closes after calling WinChan.onOpen()
-      // 8. we get notification that the interaction is complete in main page and try to
-      //    silently provision again!  success means the users is signed up, failure
-      //    means there was an auth problem.  they can try again?
-      var win = winchan.open({
-        url: "https://browserid.org/authenticate_with_primary",
-        // This is the relay that will be used when the IdP redirects to sign_in_complete
-        relay_url: "https://browserid.org/relay",
-        window_features: "width=700,height=375",
-        params: url
-      }, primaryAuthComplete);
+      pageHelpers.openPrimaryAuth(winchan, verifyEmail, verifyURL, primaryAuthComplete);
 
       oncomplete && oncomplete();
     }

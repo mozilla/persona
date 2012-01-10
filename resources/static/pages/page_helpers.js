@@ -40,6 +40,7 @@ BrowserID.PageHelpers = (function() {
   var win = window,
       locStorage = win.localStorage,
       bid = BrowserID,
+      helpers = bid.Helpers,
       dom = bid.DOM,
       errorDisplay = bid.ErrorDisplay,
       ANIMATION_SPEED = 250,
@@ -49,7 +50,7 @@ BrowserID.PageHelpers = (function() {
     locStorage.signInEmail = email;
   }
 
-  function onEmailKeyUp(event) {
+  function onEmailChange(event) {
     var email = dom.getInner("#email");
     setStoredEmail(email);
   }
@@ -65,7 +66,7 @@ BrowserID.PageHelpers = (function() {
       if ($("#password").length) $("#password").focus();
     }
 
-    el.keyup(onEmailKeyUp);
+    dom.bindEvent("#email", "keyup", onEmailChange);
   }
 
   function clearStoredEmail() {
@@ -150,6 +151,25 @@ BrowserID.PageHelpers = (function() {
     };
   }
 
+  function openPrimaryAuth(winchan, email, baseURL, callback) {
+    if(!(email && baseURL)) {
+      throw "cannot verify with primary without an email address and URL"
+    }
+
+    var url = helpers.toURL(baseURL, {
+        email: email,
+        return_to: "https://browserid.org/authenticate_with_primary#complete"
+    });
+
+    var win = winchan.open({
+      url: "https://browserid.org/authenticate_with_primary",
+      // This is the relay that will be used when the IdP redirects to sign_in_complete
+      relay_url: "https://browserid.org/relay",
+      window_features: "width=700,height=375",
+      params: url
+    }, callback);
+  }
+
   return {
     setupEmail: prefillEmail,
     setStoredEmail: setStoredEmail,
@@ -171,6 +191,7 @@ BrowserID.PageHelpers = (function() {
     showInputs: showInputs,
     showEmailSent: showEmailSent,
     cancelEmailSent: cancelEmailSent,
-    cancelEvent: cancelEvent
+    cancelEvent: cancelEvent,
+    openPrimaryAuth: openPrimaryAuth
   };
 }());

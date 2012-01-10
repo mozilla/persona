@@ -47,8 +47,7 @@ BrowserID.Modules.Authenticate = (function() {
       dialogHelpers = helpers.Dialog,
       cancelEvent = dialogHelpers.cancelEvent,
       dom = bid.DOM,
-      lastEmail = "",
-      emailInfo;
+      lastEmail = "";
 
   function getEmail() {
     return helpers.getAndValidateEmail("#email");

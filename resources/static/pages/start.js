@@ -51,7 +51,8 @@ $(function() {
     bid.index();
   }
   else if (path === "/signin") {
-    bid.signIn();
+    var module = bid.signIn.create();
+    module.start({});
   }
   else if (path === "/signup") {
     bid.signUp();

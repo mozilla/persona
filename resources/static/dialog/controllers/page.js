@@ -126,7 +126,7 @@ BrowserID.Modules.PageModule = (function() {
       screens.wait.hide();
       screens.error.hide();
       screens.form.show(body, body_vars);
-      dom.focus("input:visible:eq(0)");
+      dom.focus("input:visible:not(:disabled):eq(0)");
     },
 
     renderWait: function(body, body_vars) {
