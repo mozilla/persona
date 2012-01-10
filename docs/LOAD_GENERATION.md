@@ -1,3 +1,7 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
 This directory contains a standalone tool that analyzes the capacity of a browserid
 server.  The tool is run from the command line, applies load to the target server,
 and outputs the number of "active users" it is simulating at the moment.  

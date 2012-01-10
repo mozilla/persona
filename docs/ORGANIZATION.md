@@ -1,3 +1,7 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
 Several node.js servers are implemented in this repostiory, each is
 implemented on top of the [express](http://expressjs.com) framework
 and should obey roughly the following directory structure:
