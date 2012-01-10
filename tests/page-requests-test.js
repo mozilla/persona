@@ -64,6 +64,7 @@ suite.addBatch({
   'GET /verify_email_address':   respondsWith(200),
   'GET /add_email_address':      respondsWith(200),
   'GET /pk':                     respondsWith(200),
+  'GET /.well-known/browserid':  respondsWith(200),
   'GET /signin':                 respondsWith(200),
   'GET /unsupported_dialog':     respondsWith(200),
   'GET /developers':             respondsWith(200),
