@@ -24,13 +24,7 @@ BrowserID.Modules.PrimaryUserProvisioned = (function() {
             options.ready && options.ready(status || false);
           };
 
-      if(!email) {
-        throw "missing config option: email";
-      }
-
-      if(!assertion) {
-        throw "missing config option: assertion";
-      }
+      self.checkRequired(options, "email", "assertion");
 
       self.renderDialog("primary_user_verified", { email: email });
 

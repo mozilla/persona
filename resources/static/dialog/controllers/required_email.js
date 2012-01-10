@@ -99,8 +99,9 @@ BrowserID.Modules.RequiredEmail = (function() {
     start: function(options) {
       var self=this;
 
-      email = options.email || "",
+      email = options.email || "";
       secondaryAuth = options.secondary_auth;
+      primaryInfo = null;
 
       function ready() {
         options.ready && options.ready();
@@ -108,108 +109,63 @@ BrowserID.Modules.RequiredEmail = (function() {
 
       user.checkAuthentication(function(checked_auth_level) {
         auth_level = checked_auth_level;
-        primaryInfo = null;
 
         // NOTE: When the app first starts and the user's authentication is
         // checked, all email addresses for authenticated users are synced.  We
-        // can be assured by this point that our addresses are up to date.
-        if (auth_level) {
-          // if the current user owns the required email, sign in with it
-          // (without a password). Otherwise, make the user verify the address
-          // (which shows no password).
-          var emailInfo = user.getStoredEmailKeypair(email);
-          if (emailInfo) {
-            if(emailInfo.type === "secondary") {
-              // secondary user, show the password field if they are not
-              // authenticated to the "password" level.
-              showTemplate({
-                signin: true,
-                password: auth_level !== "password",
-                secondary_auth: secondaryAuth
-              });
-              ready();
-            }
-            else if(emailInfo.cert) {
-              // primary user with valid cert, user can sign in normally.
-              showTemplate({ signin: true });
-              ready();
-            }
-            else {
-              // Uh oh, this is a primary user whose certificate is expired,
-              // take care of that.
-              user.addressInfo(email, function(info) {
-                primaryInfo = info;
-                if (info.authed) {
-                  // If the user is authed with the IdP, give them the
-                  // opportunity to press "signin" before passing them off
-                  // to the primary user flow
-                  showTemplate({ signin: true });
-                }
-                else {
-                  // User is not authed with IdP, start the verification flow,
-                  // add address to current user.
-                  closePrimaryUser.call(self);
-                }
-                ready();
-              }, self.getErrorDialog(errors.addressInfo, ready));
-            }
-          }
-          else {
-            // User does not control address, time to verify.
-            user.addressInfo(email, function(info) {
-              // authenticated user who does not own primary address, make them
-              // verify it.
-              if(info.type === "primary") {
-                primaryInfo = info;
-                if (info.authed) {
-                  // If the user is authed with the IdP, give them the
-                  // opportunity to press "signin" before passing them off to
-                  // the primary user flow
-                  showTemplate({ signin: true });
-                }
-                else {
-                  // If user is not authed with IdP, kick them through the
-                  // primary_user flow to get them verified.
-                  closePrimaryUser.call(self);
-                }
-              }
-              else {
-                showTemplate({ verify: true });
-              }
-              ready();
-            }, self.getErrorDialog(errors.addressInfo, ready));
-          }
+        // can be assured by this point that our addresses are up to date.  If
+        // the user is not authenticated, all addresses are wiped, meaning
+        // a user could not be looking at stale data and/or authenticate as
+        // somebody else.
+        var emailInfo = user.getStoredEmailKeypair(email);
+        if(emailInfo && emailInfo.type === "secondary") {
+          // secondary user, show the password field if they are not
+          // authenticated to the "password" level.
+          showTemplate({
+            signin: true,
+            password: auth_level !== "password",
+            secondary_auth: secondaryAuth
+          });
+          ready();
         }
         else {
+          // At this point, there are several possibilities:
+          // 1) Authenticated primary user who has valid cert.
+          // 2) Authenticated primary user who has an expired cert.
+          // 3) Authenticated user who does not control address.
+          // 4) Unauthenticated user.
           user.addressInfo(email, function(info) {
-            if (info.type === "primary") {
-              primaryInfo = info;
-              if (info.authed) {
-                // If the user is authenticated with their IdP, show the
-                // sign in button to give the user the chance to abort.
-                showTemplate({ signin: true, primary: true });
-              }
-              else {
-                // If the user is not authenticated with their IdP, pass them
-                // off to the primary user flow.
-                closePrimaryUser.call(self);
-              }
+            if(info.type === "primary") primaryInfo = info;
+
+            if (info.authed || (emailInfo && emailInfo.cert)) {
+              // primary user with valid cert, user can sign in normally.
+              // OR
+              // this is a primary user who is authenticated with their IdP.
+              // We know the user has control of this address, give them
+              // a chance to hit "sign in" before we kick them off to the
+              // primary flow account.
+              showTemplate({ signin: true, primary: true });
+            }
+            else if(emailInfo || info.type === "primary") {
+              // If there is emailInfo, this is a primary user who has
+              // control of the address, but whose cert is expired and the user
+              // is not authenticated with their IdP.
+              // OR
+              // User who does not control a primary address.
+              closePrimaryUser.call(self);
+            } else if(auth_level || !info.known) {
+              // user is authenticated, but does not control address
+              // OR
+              // address is unknown, make the user verify.
+              showTemplate({ verify: true });
             }
             else {
-              // If the current email address is registered but the user is not
-              // authenticated, make them sign in with it.  Otherwise, make them
-              // verify ownership of the address.
-              if (info.known) {
-                showTemplate({ signin: true, password: true });
-              }
-              else {
-                showTemplate({ verify: true });
-              }
+              // We've made it all this way.  It is a user who is not logged in
+              // at all and the address is known.  Make the user log in.
+              showTemplate({ signin: true, password: true });
             }
             ready();
           }, self.getErrorDialog(errors.addressInfo, ready));
         }
-
       }, self.getErrorDialog(errors.checkAuthentication, ready));
 
       function showTemplate(options) {
