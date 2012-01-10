@@ -21,7 +21,7 @@ config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
 metrics = require('../lib/metrics.js'),
 logger = require('../lib/logging.js').logger,
-shutdown = require('../lib/shutdown'),
+shutdown = require('../lib/shutdown');
 
 var app = undefined;
 
