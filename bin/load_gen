@@ -234,6 +234,7 @@ function poll() {
         outstanding[act]--;
         if (undefined === completed[act]) completed[act] = [ 0, 0, 0 ];
         if (err) {
+          if (typeof err != 'string') err = err.toString();
           if (err.indexOf('server is too busy') != -1) {
             completed[act][2]++;
           } else {
