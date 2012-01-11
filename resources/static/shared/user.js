@@ -343,7 +343,10 @@ BrowserID.User = (function() {
 
     /**
      * A full provision a primary user, if they are authenticated, save their
-     * cert/keypair, and authenticate them to BrowserID.
+     * cert/keypair.  Note, we do not authenticate to browserid.org but
+     * merely get an assertion for browserid.org so that we can either add the
+     * email to the current account or authenticate the user if not
+     * authenticated.
      * @method provisionPrimaryUser
      * @param {string} email
      * @param {object} info - provisioning info
@@ -368,7 +371,6 @@ BrowserID.User = (function() {
                   });
                 }
                 else {
-                  // XXX change this to could_not_provision
                   onComplete("primary.could_not_add");
                 }
               }, onFailure);
