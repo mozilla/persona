@@ -21,6 +21,7 @@
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/index", {});
+      xhr.setContextInfo("auth_level", "password");
       mocks.document.location = "";
     },
     teardown: function() {
@@ -157,7 +158,7 @@
 
       bid.manageAccount.changePassword(function(status) {
         equal(status, false, "on missing old password, status is false");
-        equal(tooltip.shown, true, "tooltip is visible");
+        testHelpers.testTooltipVisible();
         start();
       });
     });
@@ -170,7 +171,7 @@
 
       bid.manageAccount.changePassword(function(status) {
         equal(status, false, "on missing new password, status is false");
-        equal(tooltip.shown, true, "tooltip is visible");
+        testHelpers.testTooltipVisible();
         start();
       });
     });
@@ -183,7 +184,7 @@
 
       bid.manageAccount.changePassword(function(status) {
         equal(status, false, "on too short of a password, status is false");
-        equal(tooltip.shown, true, "tooltip is visible");
+        testHelpers.testTooltipVisible();
         start();
       });
     });
@@ -200,7 +201,7 @@
 
       bid.manageAccount.changePassword(function(status) {
         equal(status, false, "on too short of a password, status is false");
-        equal(tooltip.shown, true, "tooltip is visible");
+        testHelpers.testTooltipVisible();
         start();
       });
     });
@@ -216,7 +217,7 @@
 
       bid.manageAccount.changePassword(function(status) {
         equal(status, false, "on incorrect old password, status is false");
-        equal(tooltip.shown, true, "tooltip is visible");
+        testHelpers.testTooltipVisible();
         start();
       });
     });
@@ -236,7 +237,39 @@
     });
   });
 
-  asyncTest("changePassword happy case", function() {
+  asyncTest("changePassword with user authenticated to password level, happy case", function() {
+
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val("oldpassword");
+      $("#new_password").val("newpassword");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, true, "on proper completion, status is true");
+        equal(tooltip.shown, false, "on proper completion, tooltip is not shown");
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword with user authenticated to assertion level level, incorrect password - show tooltip", function() {
+    xhr.setContextInfo("auth_level", "assertion");
+
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val("oldpassword");
+      $("#new_password").val("newpassword");
+      xhr.useResult("incorrectPassword");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "bad password, status is false");
+        testHelpers.testTooltipVisible();
+        start();
+      });
+    });
+  });
+
+  asyncTest("changePassword with user authenticated to assertion level level, correct password - log user in, change password", function() {
+    xhr.setContextInfo("auth_level", "assertion");
+
     bid.manageAccount(mocks, function() {
       $("#old_password").val("oldpassword");
       $("#new_password").val("newpassword");

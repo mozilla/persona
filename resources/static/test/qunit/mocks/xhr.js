@@ -35,6 +35,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/email_for_token?token=token invalid": { success: false },
       "post /wsapi/authenticate_user valid": { success: true },
       "post /wsapi/authenticate_user invalid": { success: false },
+      "post /wsapi/authenticate_user incorrectPassword": { success: false },
       "post /wsapi/authenticate_user ajaxError": undefined,
       "post /wsapi/auth_with_assertion primary": { success: true },
       "post /wsapi/auth_with_assertion valid": { success: true },

@@ -8,6 +8,7 @@ BrowserID.manageAccount = (function() {
 
   var bid = BrowserID,
       user = bid.User,
+      network = bid.Network,
       errors = bid.Errors,
       dom = bid.DOM,
       storage = bid.Storage,
@@ -16,7 +17,8 @@ BrowserID.manageAccount = (function() {
       cancelEvent = pageHelpers.cancelEvent,
       confirmAction = confirm,
       doc = document,
-      tooltip = bid.Tooltip;
+      tooltip = bid.Tooltip,
+      authLevel;
 
   function syncAndDisplayEmails(oncomplete) {
     user.syncEmails(function() {
@@ -118,19 +120,7 @@ BrowserID.manageAccount = (function() {
       typeof oncomplete == "function" && oncomplete(status);
     }
 
-    if(!oldPassword) {
-      tooltip.showTooltip("#tooltipOldRequired");
-      complete(false);
-    }
-    else if(!newPassword) {
-      tooltip.showTooltip("#tooltipNewRequired");
-      complete(false);
-    }
-    else if(newPassword.length < 8 || 80 < newPassword.length) {
-      tooltip.showTooltip("tooltipPasswordLength");
-      complete(false);
-    }
-    else {
+    function changePassword() {
       user.changePassword(oldPassword, newPassword, function(status) {
         if(status) {
           dom.removeClass("#edit_password", "edit");
@@ -143,7 +133,38 @@ BrowserID.manageAccount = (function() {
       }, pageHelpers.getFailure(errors.updatePassword, oncomplete));
     }
 
+    if(!oldPassword) {
+      tooltip.showTooltip("#tooltipOldRequired");
+      complete(false);
+    }
+    else if(!newPassword) {
+      tooltip.showTooltip("#tooltipNewRequired");
+      complete(false);
+    }
+    else if(newPassword.length < 8 || 80 < newPassword.length) {
+      tooltip.showTooltip("#tooltipPasswordLength");
+      complete(false);
+    }
+    else if(authLevel !== "password") {
+      var email = getSecondary();
+      // go striaght to the network level instead of user level so that if
+      // the user gets the password wrong, we don't clear their info.
+      network.authenticate(email, oldPassword, function(status) {
+        if(status) {
+          authLevel = "password";
+          changePassword();
+        }
+        else {
+          tooltip.showTooltip("#tooltipInvalidPassword");
+          complete(false);
+        }
+      }, pageHelpers.getFailure(errors.authenticate, oncomplete));
+    }
+    else {
+      changePassword();
+    }
   }
+
 
   function displayHelpTextToNewUser() {
     var newUser = !storage.manage_page.get("has_visited_manage_page");
@@ -153,10 +174,19 @@ BrowserID.manageAccount = (function() {
   }
 
   function displayChangePassword(oncomplete) {
-    user.canSetPassword(function(canSetPassword) {
-      dom[canSetPassword ? "addClass" : "removeClass"]("body", "canSetPassword");
-      oncomplete && oncomplete();
-    }, pageHelpers.getFailure(errors.hasSecondary));
+    var canSetPassword = !!getSecondary();
+    dom[canSetPassword ? "addClass" : "removeClass"]("body", "canSetPassword");
+    oncomplete && oncomplete();
+  }
+
+  function getSecondary() {
+    var emails = storage.getEmails();
+
+    for(var key in emails) {
+      if(emails[key].type === "secondary") {
+        return key;
+      }
+    }
   }
 
   function init(options, oncomplete) {
@@ -171,10 +201,14 @@ BrowserID.manageAccount = (function() {
     dom.bindEvent("button.done", "click", cancelEdit);
     dom.bindEvent("#edit_password_form", "submit", cancelEvent(changePassword));
 
-    syncAndDisplayEmails(function() {
-      displayHelpTextToNewUser();
-      displayChangePassword(oncomplete);
-    });
+    user.checkAuthentication(function(auth_level) {
+      authLevel = auth_level;
+
+      syncAndDisplayEmails(function() {
+        displayHelpTextToNewUser();
+        displayChangePassword(oncomplete);
+      });
+    }, pageHelpers.getFailure(errors.checkAuthentication, oncomplete));
   }
 
   // BEGIN TESTING API
