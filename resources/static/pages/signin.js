@@ -37,7 +37,8 @@ BrowserID.signIn = (function() {
         }, pageHelpers.getFailure(errors.authenticateWithAssertion, callback));
       }
       else {
-        $("#primary_no_login").fadeIn();
+        $("#primary_no_login").fadeIn(250);
+        setTimeout(complete.curry(callback), 250);
       }
     }, pageHelpers.getFailure(errors.provisioningPrimary, callback));
   }

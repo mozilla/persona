@@ -9,6 +9,7 @@ BrowserID.PageHelpers = (function() {
   var win = window,
       locStorage = win.localStorage,
       bid = BrowserID,
+      user = bid.User,
       helpers = bid.Helpers,
       dom = bid.DOM,
       errorDisplay = bid.ErrorDisplay,
@@ -137,7 +138,16 @@ BrowserID.PageHelpers = (function() {
       relay_url: "https://browserid.org/relay",
       window_features: "width=700,height=375",
       params: url
-    }, callback);
+    }, function(error, result) {
+      // We have to force a reset of the primary caches because the user's
+      // authentication status may be incorrect.
+      // XXX a better solution here would be to change the authentication
+      // status of the user inside of the cache.
+      if(!error) {
+        user.resetCaches();
+      }
+      callback && callback(error, result);
+    });
   }
 
   return {

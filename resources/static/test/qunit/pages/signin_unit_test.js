@@ -179,6 +179,9 @@
     controller.emailSubmit(function() {
       controller.authWithPrimary(function() {
         provisioning.setStatus(provisioning.AUTHENTICATED);
+        // Before primaryAuthComplete is called, we reset the user caches to
+        // force re-fetching of what could have been stale user data.
+        user.resetCaches();
 
         controller.primaryAuthComplete(null, "yar", function() {
           network.checkAuth(function(status) {

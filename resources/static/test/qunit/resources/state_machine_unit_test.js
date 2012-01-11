@@ -81,7 +81,13 @@
     ok(actions.called.doEmailConfirmed, "user was confirmed");
   });
 
-  test("primary_user calls doProvisionPrimaryUser", function() {
+  test("primary_user with already provisioned primary user calls doEmailChosen", function() {
+    storage.addEmail("testuser@testuser.com", { type: "primary", cert: "cert" });
+    mediator.publish("primary_user", { email: "testuser@testuser.com" });
+    ok(actions.called.doEmailChosen, "doEmailChosen called");
+  });
+
+  test("primary_user with unprovisioned primary user doProvisionPrimaryUser", function() {
     mediator.publish("primary_user", { email: "testuser@testuser.com" });
     ok(actions.called.doProvisionPrimaryUser, "doPrimaryUserProvisioned called");
   });

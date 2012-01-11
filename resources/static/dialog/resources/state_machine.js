@@ -143,7 +143,13 @@
       // We don't want to put the provisioning step on the stack, instead when
       // a user cancels this step, they should go back to the step before the
       // provisioning.
-      startState(false, "doProvisionPrimaryUser", info);
+      var idInfo = storage.getEmail(email);
+      if(idInfo && idInfo.cert) {
+        mediator.publish("primary_user_ready", info);
+      }
+      else {
+        startState(false, "doProvisionPrimaryUser", info);
+      }
     });
 
     subscribe("primary_user_provisioned", function(msg, info) {

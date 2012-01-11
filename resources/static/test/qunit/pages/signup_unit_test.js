@@ -7,6 +7,7 @@
   "use strict";
 
   var bid = BrowserID,
+      user = bid.User,
       network = bid.Network,
       xhr = bid.Mocks.xhr,
       WinChanMock = bid.Mocks.WinChan,
@@ -174,6 +175,10 @@
       bid.signUp.authWithPrimary(function() {
         // In real life the user would now be authenticated.
         provisioning.setStatus(provisioning.AUTHENTICATED);
+
+        // Before primaryAuthComplete is called, we reset the user caches to
+        // force re-fetching of what could have been stale user data.
+        user.resetCaches();
         bid.signUp.primaryAuthComplete(null, "success", function(status) {
           equal(status, true, "correct status");
           equal($("#congrats:visible").length, 1, "success notification is visible");

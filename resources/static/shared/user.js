@@ -13,7 +13,8 @@ BrowserID.User = (function() {
       storage = bid.Storage,
       User, pollTimeout,
       provisioning = bid.Provisioning,
-      addressCache = {};
+      addressCache = {},
+      primaryAuthCache = {};
 
   function prepareDeps() {
     if (!jwk) {
@@ -205,7 +206,12 @@ BrowserID.User = (function() {
 
     reset: function() {
       provisioning = BrowserID.Provisioning;
+      User.resetCaches();
+    },
+
+    resetCaches: function() {
       addressCache = {};
+      primaryAuthCache = {};
     },
 
     /**
@@ -389,6 +395,31 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - called on failure
      */
     primaryUserAuthenticationInfo: function(email, info, onComplete, onFailure) {
+      var idInfo = storage.getEmail(email),
+          self=this;
+
+      primaryAuthCache = primaryAuthCache || {};
+
+      function complete(info) {
+        primaryAuthCache[email] = info;
+        onComplete && _.defer(onComplete.curry(info));
+      }
+
+      if(primaryAuthCache[email]) {
+        // If we have the info in our cache, we most definitely do not have to
+        // ask for it.
+        complete(primaryAuthCache[email]);
+        return;
+      }
+      else if(idInfo && idInfo.cert) {
+        // If we already have the info in storage, we know the user has a valid
+        // cert with their IdP, we say they are authenticated and pass back the
+        // appropriate info.
+        var userInfo = _.extend({authenticated: true}, idInfo, info);
+        complete(userInfo);
+        return;
+      }
+
       provisioning(
         { email: email, url: info.prov },
         function(keypair, cert) {
@@ -398,14 +429,14 @@ BrowserID.User = (function() {
             authenticated: true
           }, info);
 
-          onComplete(userInfo);
+          complete(userInfo);
         },
         function(error) {
           if (error.code === "primaryError" && error.msg === "user is not authenticated as target user") {
             var userInfo = _.extend({
               authenticated: false
             }, info);
-            onComplete(userInfo);
+            complete(userInfo);
           }
           else {
             onFailure(info);

@@ -127,6 +127,12 @@ BrowserID.Modules.RequiredEmail = (function() {
           });
           ready();
         }
+        else if(emailInfo && emailInfo.cert) {
+          // primary user with valid cert, user can sign in normally.
+          primaryInfo = emailInfo;
+          showTemplate({ signin: true, primary: true });
+          ready();
+        }
         else {
           // At this point, there are several possibilities:
           // 1) Authenticated primary user who has valid cert.
@@ -136,9 +142,7 @@ BrowserID.Modules.RequiredEmail = (function() {
           user.addressInfo(email, function(info) {
             if(info.type === "primary") primaryInfo = info;
 
-            if (info.authed || (emailInfo && emailInfo.cert)) {
-              // primary user with valid cert, user can sign in normally.
-              // OR
+            if (info.authed) {
               // this is a primary user who is authenticated with their IdP.
               // We know the user has control of this address, give them
               // a chance to hit "sign in" before we kick them off to the
