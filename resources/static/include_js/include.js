@@ -782,7 +782,14 @@
           return {
             close: cleanup,
             focus: function() {
-              if (w) w.focus();
+              if (w) {
+                try {
+                  w.focus();
+                }
+                catch(e) {
+                  /* IE7 blows up here, do nothing */
+                }
+              }
             }
           };
         }
@@ -925,7 +932,12 @@
       } else {
         // focus an existing window
         if (w) {
-          w.focus();
+          try {
+            w.focus();
+          }
+          catch(e) {
+            /* IE7 blows up here, do nothing */
+          }
           return;
         }
 
