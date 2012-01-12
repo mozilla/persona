@@ -27,7 +27,7 @@ BrowserID.Storage = (function() {
 
   function getEmails() {
     try {
-      var emails = JSON.parse(storage.emails);
+      var emails = JSON.parse(storage.emails || "{}");
       if (emails !== null)
         return emails;
     } catch(e) {
@@ -91,7 +91,7 @@ BrowserID.Storage = (function() {
   }
 
   function retrieveTemporaryKeypair() {
-    var raw_kp = JSON.parse(storage.tempKeypair);
+    var raw_kp = JSON.parse(storage.tempKeypair || "");
     storage.tempKeypair = null;
     if (raw_kp) {
       prepareDeps();
@@ -123,7 +123,6 @@ BrowserID.Storage = (function() {
         origin = staged.origin;
       }
     } catch (x) {
-      console.log(x);
       storage.removeItem("stagedOnBehalfOf");
     }
 

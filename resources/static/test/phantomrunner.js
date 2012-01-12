@@ -83,6 +83,6 @@ page.open(phantom.args[0], function(status){
                 return 10000;
             });
             phantom.exit((parseInt(failedNum, 10) > 0) ? 1 : 0);
-        }, 60*1000);
+        }, 90*1000);
     }
 });
