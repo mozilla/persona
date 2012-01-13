@@ -397,6 +397,15 @@ label[for=remember] {
   line-height: 18px;
 }
 
+.waiting .vertical a {
+  background-color: transparent;
+  color: #549FDC;
+  font-size: 1em;
+  font-weight: normal;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+  padding: 0;
+}
+
 .submit > button {
     margin: 0 5px 0 0;
 }
