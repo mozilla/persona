@@ -102,9 +102,18 @@
     network.logout(function onSuccess() {
       ok(true, "we can logout");
       start();
-    }, testHelpers.unexpectedFailure);
+    }, testHelpers.unexpectedXHRFailure);
   });
 
+
+  asyncTest("logout with 400 failure - user already logged out", function() {
+    xhr.useResult("not_authenticated");
+
+    network.logout(function onSuccess() {
+      ok(true, "we can logout");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
 
   asyncTest("logout with XHR failure", function() {
     failureCheck(network.logout);
