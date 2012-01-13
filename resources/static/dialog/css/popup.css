@@ -397,7 +397,7 @@ label[for=remember] {
   line-height: 18px;
 }
 
-.waiting .vertical a {
+#back.cancelVerify {
   background-color: transparent;
   color: #549FDC;
   font-size: 1em;
