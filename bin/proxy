@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+// I proxy requests.  That's what I do.
+
+const
+http = require('http'),
+forward = require('../lib/http_forward.js');
+
+var port = process.env['PORT'] || 0; 
+var addy = process.env['IP_ADDRESS'] || '127.0.0.1'; 
+
+const allowed = /^https:\/\/[a-zA-Z\.\-_]+\/\.well-known\/browserid$/;
+
+var server = http.createServer(function (req, res) {
+  var url = req.url;
+  if (!allowed.test(url)) {
+    console.log('there');
+    res.writeHead(400);
+    res.end('You can\'t get there from here');
+    return;
+  }
+  
+  forward(url, req, res, function(err) {
+    if (err) {
+      res.writeHead(400);
+      res.end('Oops: ' + err.toString());
+      return;
+    }
+  });
+}).listen(port, addy, function () {
+  var a = server.address();
+  console.log("lil' HTTP proxy running: http://" + a.address + ":" + a.port);
+});
