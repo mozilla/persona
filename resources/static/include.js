@@ -1,1 +1,1 @@
-production/include.js
+resources/static/include_js/include.js
