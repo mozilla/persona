@@ -35,7 +35,8 @@ noscript {
 
 #error > div {
   background-color: #fff;
-  position: absolute;
+  position: absolute;  /* For a couple of browsers without position: fixed support */
+  position: fixed;
   top: 35%;
   border: 2px solid #000;
   border-radius: 5px;
