@@ -23,7 +23,7 @@ BrowserID.forgot = (function() {
     if (email) {
       user.requestPasswordReset(email, function onSuccess(info) {
         if (info.success) {
-          pageHelpers.showEmailSent(oncomplete);
+          pageHelpers.emailSent(oncomplete);
         }
         else {
           var tooltipEl = info.reason === "throttle" ? "#could_not_add" : "#not_registered";

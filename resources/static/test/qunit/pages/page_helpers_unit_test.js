@@ -9,17 +9,24 @@
   var bid = BrowserID,
       pageHelpers = bid.PageHelpers,
       testHelpers = bid.TestHelpers,
+      user = bid.User,
+      WindowMock = bid.Mocks.WindowMock,
+      winMock,
+      xhr = bid.Mocks.xhr,
       errors = bid.Errors;
 
   module("pages/page_helpers", {
     setup: function() {
       testHelpers.setup();
+      winMock = new WindowMock();
+      pageHelpers.init({ window: winMock });
       bid.Renderer.render("#page_head", "site/signup", {});
       $(".siteinfo,.emailsent").hide();
     },
 
     teardown: function() {
       testHelpers.teardown();
+      pageHelpers.reset();
     }
   });
 
@@ -85,22 +92,53 @@
   });
 
 
-  asyncTest("showEmailSent shows correct email sent message", function() {
-    pageHelpers.setStoredEmail("testuser@testuser.com");
-    pageHelpers.showEmailSent(function() {
-      equal($("#sentToEmail").html(), "testuser@testuser.com", "correct email is set");
+  asyncTest("emailSent shows correct email sent message, starts waiting for user validation", function() {
+    pageHelpers.setStoredEmail("registered@testuser.com");
+
+    // set the result to complete to immediately return.  We'll test each case
+    // below.
+    xhr.useResult("complete");
+
+    pageHelpers.emailSent(function() {
+      equal($("#sentToEmail").html(), "registered@testuser.com", "correct email is set");
       equal($(".emailsent").is(":visible"), true, "emailsent is visible");
       equal($(".forminputs").is(":visible"), false, "inputs are hidden");
       start();
     });
+
+  });
+
+  test("userValidationComplete with status=pending - do nothing", function() {
+    pageHelpers.userValidationComplete("pending");
+
+    equal(winMock.document.location.href, document.location.href, "with pending status, no change");
+  });
+
+  test("userValidationComplete with status=noRegistration - do nothing", function() {
+    pageHelpers.userValidationComplete("noRegistration");
+
+    equal(winMock.document.location.href, document.location.href, "with noRegistration status, no change");
+  });
+
+  test("userValidationComplete with status=mustAuth - redirect to /signin", function() {
+    pageHelpers.userValidationComplete("mustAuth");
+
+    equal(winMock.document.location.href, "/signin", "with mustAuth status, redirect to signin");
+  });
+
+  test("userValidationComplete with status=complete - redirect to /", function() {
+    pageHelpers.userValidationComplete("complete");
+
+    equal(winMock.document.location.href, "/", "with complete status, redirect to /");
   });
 
   asyncTest("cancelEmailSent restores the stored email, inputs are shown again", function() {
-    pageHelpers.setStoredEmail("testuser@testuser.com");
-    pageHelpers.showEmailSent(function() {
+    pageHelpers.setStoredEmail("registered@testuser.com");
+    xhr.useResult("complete");
+    pageHelpers.emailSent(function() {
       pageHelpers.cancelEmailSent(function() {
         var email = pageHelpers.getStoredEmail();
-        equal(email, "testuser@testuser.com", "stored email is reset on cancel");
+        equal(email, "registered@testuser.com", "stored email is reset on cancel");
         equal($(".emailsent").is(":visible"), false, "emailsent is not visible");
         equal($(".forminputs").is(":visible"), true, "inputs are visible");
  //       equal($("#email").is(":focus"), true, "first element is focused (NOTE: requires your browser to be focused to work)");

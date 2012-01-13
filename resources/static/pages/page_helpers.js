@@ -7,6 +7,7 @@ BrowserID.PageHelpers = (function() {
   "use strict";
 
   var win = window,
+      doc = win.document,
       locStorage = win.localStorage,
       bid = BrowserID,
       user = bid.User,
@@ -52,7 +53,7 @@ BrowserID.PageHelpers = (function() {
     name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
     var regexS = "[\\?&]"+name+"=([^&#]*)";
     var regex = new RegExp( regexS );
-    var results = regex.exec( win.location.href );
+    var results = regex.exec( doc.location.href );
     if( results === null )
       return "";
     else
@@ -98,19 +99,36 @@ BrowserID.PageHelpers = (function() {
     onComplete && setTimeout(onComplete, ANIMATION_SPEED);
   }
 
-  function showEmailSent(onComplete) {
+  function emailSent(onComplete) {
     origStoredEmail = getStoredEmail();
     dom.setInner('#sentToEmail', origStoredEmail);
 
     clearStoredEmail();
 
-    replaceInputsWithNotice(".emailsent", onComplete);
+    replaceInputsWithNotice(".emailsent");
+
+    user.waitForUserValidation(origStoredEmail, function(status) {
+      userValidationComplete(status);
+      onComplete && onComplete(status);
+    });
+  }
+
+  function userValidationComplete(status) {
+    var loc = doc.location;
+    if(status === "complete") {
+      loc.href = "/";
+    }
+    else if(status === "mustAuth") {
+      loc.href = "/signin";
+    }
   }
 
   function cancelEmailSent(onComplete) {
     setStoredEmail(origStoredEmail);
 
     showInputs(onComplete);
+
+    user.cancelEmailValidation();
 
     dom.focus("input:visible:eq(0)");
   }
@@ -132,7 +150,7 @@ BrowserID.PageHelpers = (function() {
         return_to: "https://browserid.org/authenticate_with_primary#complete"
     });
 
-    var win = winchan.open({
+    winchan.open({
       url: "https://browserid.org/authenticate_with_primary",
       // This is the relay that will be used when the IdP redirects to sign_in_complete
       relay_url: "https://browserid.org/relay",
@@ -151,6 +169,14 @@ BrowserID.PageHelpers = (function() {
   }
 
   return {
+    init: function(config) {
+      win = config.window || window;
+      doc = win.document;
+    },
+    reset: function() {
+      win = window;
+      doc = win.document;
+    },
     setupEmail: prefillEmail,
     setStoredEmail: setStoredEmail,
     clearStoredEmail: clearStoredEmail,
@@ -169,8 +195,9 @@ BrowserID.PageHelpers = (function() {
     replaceInputsWithNotice: replaceInputsWithNotice,
     replaceFormWithNotice: replaceFormWithNotice,
     showInputs: showInputs,
-    showEmailSent: showEmailSent,
+    emailSent: emailSent,
     cancelEmailSent: cancelEmailSent,
+    userValidationComplete: userValidationComplete,
     cancelEvent: cancelEvent,
     openPrimaryAuth: openPrimaryAuth
   };
