@@ -39,11 +39,18 @@ var daemonsToRun = {
     PORT: 10005,
     HOST: HOST
   },
+  proxy: {
+    PORT: 10006,
+    HOST: HOST
+  },
   browserid: {
     PORT: 10002,
     HOST: HOST
   }
 };
+
+// route outbound HTTP through our in-tree proxy to always test said codepath
+process.env['HTTP_PROXY'] = HOST + ":10006"; 
 
 // all spawned process that use handle primaries should know about "shimmed"
 // primaries

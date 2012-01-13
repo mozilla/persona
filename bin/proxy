@@ -33,5 +33,5 @@ var server = http.createServer(function (req, res) {
   });
 }).listen(port, addy, function () {
   var a = server.address();
-  console.log("lil' HTTP proxy running: http://" + a.address + ":" + a.port);
+  console.log("running on http://" + a.address + ":" + a.port);
 });
