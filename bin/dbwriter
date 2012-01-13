@@ -15,7 +15,6 @@ express = require('express');
 const
 wsapi = require('../lib/wsapi.js'),
 httputils = require('../lib/httputils.js'),
-i18n = require('../lib/i18n.js'),
 secrets = require('../lib/secrets.js'),
 db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
@@ -59,12 +58,6 @@ if (statsd_config && statsd_config.enabled) {
     prefix: statsd_config.prefix || "browserid.dbwriter."
   }));
 }
-
-app.use(i18n.abide({
-  supported_languages: config.get('supported_languages'),
-  default_lang: config.get('default_lang'),
-  locale_directory: config.get('locale_directory')
-}));
 
 // Add Strict-Transport-Security headers if we're serving over SSL
 if (config.get('scheme') == 'https') {
