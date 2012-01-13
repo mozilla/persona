@@ -388,7 +388,7 @@ label[for=remember] {
   margin-left: 0.8em;
 }
 
-.authenticated .vertical a {
+a.emphasize {
   background-color: #F0EFED;
   color: #4E4E4E;
   font-size: 0.75em;
