@@ -17,7 +17,7 @@
     controller.start();
   }
 
-  module("controllers/page_controller", {
+  module("shared/page_controller", {
     setup: function() {
       el = $("#controller_head");
       bid.TestHelpers.setup();
@@ -193,7 +193,19 @@
     }, 1);
   });
 
-  asyncTest("publish", function() {
+  asyncTest("subscribe - listens to messages from the mediator", function() {
+    createController();
+    controller.subscribe("message", function(msg, data) {
+      strictEqual(this, controller, "context set to the controller");
+      equal(msg, "message", "correct message passed");
+      equal(data.field, 1, "correct data passed");
+      start();
+    });
+
+    mediator.publish("message", { field: 1 });
+  });
+
+  asyncTest("publish - publish messages to the mediator", function() {
     createController();
 
     mediator.subscribe("message", function(msg, data) {

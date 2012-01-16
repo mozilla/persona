@@ -13,6 +13,12 @@ BrowserID.Wait = (function(){
     generateKey: {
       title: "Finishing Sign In...",
       message: "Please wait a few seconds while we sign you into the site."
+    },
+
+    slowXHR: {
+      title: "We are sorry, this request is taking a LOOOOOOOOOONG time.",
+      message: "You can continue to wait while the request completes (this will go away when complete), or you could shut close the BrowserID window and try again.",
+      id: "slowXHR"
     }
 
   };

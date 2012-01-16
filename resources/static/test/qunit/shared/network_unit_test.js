@@ -64,9 +64,53 @@
     failureCheck(network.authenticateWithAssertion, TEST_EMAIL, "test_assertion");
   });
 
+  asyncTest("checkAuth: simulate a delayed request - xhr_delay and xhr_complete both triggered", function() {
+    xhr.setContextInfo("auth_level", "primary");
+    xhr.setDelay(200);
+    network.init({
+      time_until_delay: 100
+    });
+
+    var delayInfo;
+    mediator.subscribe("xhr_delay", function(msg, delay_info) {
+      delayInfo = delay_info;
+    });
+
+    var completeInfo
+    mediator.subscribe("xhr_complete", function(msg, complete_info) {
+      completeInfo = complete_info;
+    });
+
+    network.checkAuth(function onSuccess(authenticated) {
+      equal(authenticated, "primary", "we have an authentication");
+      equal(delayInfo.network.url, "/wsapi/session_context", "delay info correct");
+      equal(completeInfo.network.url, "/wsapi/session_context", "complete info correct");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("checkAuth: immediate success return - no xhr_delay triggered", function() {
+    xhr.setContextInfo("auth_level", "primary");
+
+    xhr.setDelay(50);
+    network.init({
+      time_until_delay: 100
+    });
+
+    mediator.subscribe("xhr_delay", function(msg, delay_info) {
+      ok(false, "unexpected call to xhr_delay");
+    });
+
+    network.checkAuth(function onSuccess(authenticated) {
+      // a wait to happen to give xhr_delay a chance to return
+      setTimeout(start, 150);
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
   asyncTest("checkAuth with valid authentication", function() {
     xhr.setContextInfo("auth_level", "primary");
     network.checkAuth(function onSuccess(authenticated) {
+      // a wait to happen to give xhr_delay a chance to return
       equal(authenticated, "primary", "we have an authentication");
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -407,6 +451,7 @@
   asyncTest("serverTime", function() {
     // I am forcing the server time to be 1.25 seconds off.
     xhr.setContextInfo("server_time", new Date().getTime() - 1250);
+
     network.serverTime(function onSuccess(time) {
       var diff = Math.abs((new Date()) - time);
       equal(1245 < diff && diff < 1255, true, "server time and local time should be less than 100ms different (is " + diff + "ms different)");

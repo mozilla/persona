@@ -17,7 +17,7 @@
   var ActionsMock = function() {
     this.called = {};
     this.info = {};
-  }
+  };
   ActionsMock.prototype = {};
   for(var key in bid.Modules.Actions.prototype) {
     if(bid.Modules.Actions.prototype.hasOwnProperty(key)) {

@@ -23,7 +23,7 @@ BrowserID.Modules.PageModule = (function() {
      return false;
    }
 
-  var PageController = BrowserID.Class({
+  var Module = BrowserID.Class({
     init: function(options) {
       options = options || {};
 
@@ -92,14 +92,21 @@ BrowserID.Modules.PageModule = (function() {
     },
 
     renderDialog: function(body, body_vars) {
-      screens.wait.hide();
-      screens.error.hide();
+      var self=this;
+
+      self.hideWait();
+      self.hideError();
+
       screens.form.show(body, body_vars);
       dom.focus("input:visible:not(:disabled):eq(0)");
     },
 
     renderWait: function(body, body_vars) {
       screens.wait.show(body, body_vars);
+    },
+
+    hideWait: function() {
+      screens.wait.hide();
     },
 
     renderError: function(body, body_vars, oncomplete) {
@@ -110,6 +117,10 @@ BrowserID.Modules.PageModule = (function() {
       $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME, function() {
         if(oncomplete) oncomplete(false);
       });
+    },
+
+    hideError: function() {
+      screens.error.hide();
     },
 
     validate: function() {
@@ -130,6 +141,10 @@ BrowserID.Modules.PageModule = (function() {
       mediator.publish(message, data);
     },
 
+    subscribe: function(message, callback) {
+      mediator.subscribe(message, callback.bind(this));
+    },
+
     /**
      * Get a curried function to an error dialog.
      * @method getErrorDialog
@@ -148,6 +163,6 @@ BrowserID.Modules.PageModule = (function() {
     }
   });
 
-  return PageController;
+  return Module;
 
 }());

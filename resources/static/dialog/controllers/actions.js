@@ -11,6 +11,7 @@ BrowserID.Modules.Actions = (function() {
       serviceManager = bid.module,
       user = bid.User,
       errors = bid.Errors,
+      wait = bid.Wait,
       runningService,
       onsuccess,
       onerror;

@@ -21,35 +21,64 @@ noscript {
   right: 0;
   bottom: 0;
   left: 0;
-  display: none;
-  z-index: 1000;
-  background-color: rgba(0,0,0,.6);
+  opacity: 0;
+  z-index: -2;
+  background: #000;
+  zoom: 1;
+  -webkit-transition: opacity 750ms;
+  -moz-transition: opacity 750ms;
+  -ms-transition: opacity 750ms;
+  -o-transition: opacity 750ms;
+  transition: opacity 750ms;
+}
+
+.waiting #errorBackground, .error #errorBackground {
+  z-index: 1001;
+  display: block;
   -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000,endColorstr=#99000000);
   filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000,endColorstr=#99000000);
-  zoom: 1;
+  opacity: .6;
 }
 
-#error {
-  display: none;
-}
-
-#error > div {
+#error, #wait {
+  z-index: -2;
+  opacity: 0;
+  -webkit-transition: opacity 750ms;
+  -moz-transition: opacity 750ms;
+  -ms-transition: opacity 750ms;
+  -o-transition: opacity 750ms;
+  transition: opacity 750ms;
   background-color: #fff;
   position: absolute;  /* For a couple of browsers without position: fixed support */
   position: fixed;
   top: 35%;
+  left: 15%;
+  right: 15%;
   border: 2px solid #000;
   border-radius: 5px;
+  text-align: center;
+}
+
+.waiting #wait {
+  z-index: 1002;
+  opacity: 1;
+}
+
+.error #error {
+  z-index: 1003;
+  opacity: 1;
+}
+
+#error > div, #wait > div {
   padding: 10px;
   z-index: 1001;
-  text-align: center;
 }
 
 #error ul, #error li {
     list-style-type: none;
 }
 
-#wait strong, #error strong {
+#error strong, #wait strong {
     color: #222;
     font-weight: bold;
 }

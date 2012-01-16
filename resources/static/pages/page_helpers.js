@@ -63,9 +63,6 @@ BrowserID.PageHelpers = (function() {
   function showFailure(error, info, callback) {
     info = $.extend(info || {}, { action: error, dialog: false });
     bid.Screens.error.show("error", info);
-    $("#errorBackground").stop().fadeIn();
-    $("#error").stop().fadeIn();
-
     callback && callback(false);
   }
 
@@ -109,8 +106,8 @@ BrowserID.PageHelpers = (function() {
 
     user.waitForUserValidation(origStoredEmail, function(status) {
       userValidationComplete(status);
-      onComplete && onComplete(status);
     });
+    onComplete && onComplete();
   }
 
   function userValidationComplete(status) {
