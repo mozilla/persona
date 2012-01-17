@@ -235,7 +235,15 @@ BrowserID.Network = (function() {
           auth_status = false;
           if (onComplete) onComplete();
         },
-        error: onFailure
+        error: function(info, xhr, textStatus) {
+          if (info.network.status === 400) {
+            auth_status = false;
+            if (onComplete) onComplete();
+          }
+          else {
+            onFailure && onFailure(info);
+          }
+        }
       });
     },
 

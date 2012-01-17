@@ -7,11 +7,12 @@ BrowserID.Renderer = (function() {
   "use strict";
 
   var bid = BrowserID,
-      dom = bid.DOM;
+      dom = bid.DOM,
+      templateCache = {};
 
-  function getTemplateHTML(body, vars) {
+  function getTemplateHTML(templateName, vars) {
     var config,
-        templateText = bid.Templates[body];
+        templateText = bid.Templates[templateName];
 
     if(templateText) {
       config = {
@@ -21,29 +22,37 @@ BrowserID.Renderer = (function() {
     else {
       // TODO - be able to set the directory
       config = {
-        url: "/dialog/views/" + body + ".ejs"
+        url: "/dialog/views/" + templateName + ".ejs"
       };
     }
+    // TODO(aok) Do caching like EJS below
     if (vars) {
       var params = {
             "domain" : "client",
             "locale_data" : json_locale_data
-      };      
+      };
       var gt = new Gettext(params);
       vars['gettext'] = gt.gettext.bind(gt);
       vars['strargs'] = gt.strargs.bind(gt);
     }
-    var html = new EJS(config).render(vars);
+
+    var template = templateCache[templateName];
+    if(!template) {
+      template = new EJS(config);
+      templateCache[templateName] = template;
+    }
+
+    var html = template.render(vars);
     return html;
   }
 
-  function render(target, body, vars) {
-    var html = getTemplateHTML(body, vars);
+  function render(target, templateName, vars) {
+    var html = getTemplateHTML(templateName, vars);
     return dom.setInner(target, html);
   }
 
-  function append(target, body, vars) {
-    var html = getTemplateHTML(body, vars);
+  function append(target, templateName, vars) {
+    var html = getTemplateHTML(templateName, vars);
     return dom.appendTo(html, target);
   }
 

@@ -1,8 +1,8 @@
+<!DOCTYPE html>
 <!-- This Source Code Form is subject to the terms of the Mozilla Public
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -58,7 +58,7 @@ pre {
   <p>
     <input type="checkbox" id="silent">&nbsp;Silent <br/>
     <input type="checkbox" id="allowPersistent">&nbsp;Allow persistent sign-in <br/>
-    <input type="text" id="requiredEmail" width="80">&nbsp;Require a specific email <br/>    
+    <input type="text" id="requiredEmail" width="80">&nbsp;Require a specific email <br/>
     <button>Get an assertion</button>
   </p>
 </div>
@@ -105,7 +105,7 @@ $(document).ready(function() {
 
     navigator.id.get(function(assertion) {
       if (!assertion) {
-        $(".assertion pre").text("navigator.id.get() returns NULL"); 
+        $(".assertion pre").text("navigator.id.get() returns NULL");
       } else {
         $(".assertion pre").text(assertion);
         checkAssertion(assertion);

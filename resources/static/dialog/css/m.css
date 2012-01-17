@@ -121,7 +121,7 @@
     margin: 13px;
   }
 
-  #content, .form_section, .pickemail .inputs, .vertical {
+  #content, .form_section, .inputs, .vertical {
     height: auto;
     max-height: none;
     overflow: visible;

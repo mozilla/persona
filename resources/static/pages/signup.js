@@ -53,7 +53,7 @@ BrowserID.signUp = (function() {
             complete(false);
             break;
           case "secondary.verify":
-            pageHelpers.showEmailSent(complete);
+            pageHelpers.emailSent(complete);
             break;
           case "secondary.could_not_add":
             tooltip.showTooltip("#could_not_add");

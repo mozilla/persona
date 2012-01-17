@@ -353,11 +353,11 @@ footer {
     margin: 1em 0 .5em;
     padding: 0 1em;
     line-height: 18px;
+    max-height: 110px;
+    overflow-y: auto;
 }
 
 .pickemail .inputs {
-    max-height: 110px;
-    overflow-y: auto;
     position: relative;
 }
 
@@ -388,13 +388,22 @@ label[for=remember] {
   margin-left: 0.8em;
 }
 
-.authenticated .vertical a {
+a.emphasize {
   background-color: #F0EFED;
   color: #4E4E4E;
   font-size: 0.75em;
   padding: 0 5px;
   display: inline-block;
   line-height: 18px;
+}
+
+#back.cancelVerify {
+  background-color: transparent;
+  color: #549FDC;
+  font-size: 1em;
+  font-weight: normal;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+  padding: 0;
 }
 
 .submit > button {
