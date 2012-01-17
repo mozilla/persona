@@ -130,13 +130,6 @@ BrowserID.PageHelpers = (function() {
     dom.focus("input:visible:eq(0)");
   }
 
-  function cancelEvent(callback) {
-    return function(event) {
-      event && event.preventDefault();
-      callback && callback();
-    };
-  }
-
   function openPrimaryAuth(winchan, email, baseURL, callback) {
     if(!(email && baseURL)) {
       throw "cannot verify with primary without an email address and URL"
@@ -195,7 +188,7 @@ BrowserID.PageHelpers = (function() {
     emailSent: emailSent,
     cancelEmailSent: cancelEmailSent,
     userValidationComplete: userValidationComplete,
-    cancelEvent: cancelEvent,
+    cancelEvent: helpers.cancelEvent,
     openPrimaryAuth: openPrimaryAuth
   };
 }());

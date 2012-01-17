@@ -11,13 +11,12 @@ BrowserID.Modules.PageModule = (function() {
       bid = BrowserID,
       dom = bid.DOM,
       screens = bid.Screens,
+      helpers = bid.Helpers,
+      cancelEvent = helpers.cancelEvent,
       mediator = bid.Mediator;
 
-   function onSubmit(event) {
-     event.stopPropagation();
-     event.preventDefault();
-
-     if (this.validate()) {
+   function onSubmit() {
+     if (!dom.hasClass("body", "submit_disabled") && this.validate()) {
        this.submit();
      }
      return false;
@@ -55,8 +54,8 @@ BrowserID.Modules.PageModule = (function() {
 
     start: function(options) {
       var self=this;
-      self.bind("form", "submit", onSubmit);
-      self.bind("#thisIsNotMe", "click", self.close.bind(self, "notme"));
+      self.bind("form", "submit", cancelEvent(onSubmit));
+      self.bind("#thisIsNotMe", "click", cancelEvent(self.close.bind(self, "notme")));
     },
 
     stop: function() {
@@ -69,6 +68,14 @@ BrowserID.Modules.PageModule = (function() {
       this.stop();
     },
 
+    /**
+     * Bind a dom event
+     * @method bind
+     * @param {string} target - css selector
+     * @param {string} type - event type
+     * @param {function} callback
+     * @param {object} [context] - optional context, if not given, use this.
+     */
     bind: function(target, type, callback, context) {
       var self=this,
           cb = callback.bind(context || this);
@@ -123,10 +130,20 @@ BrowserID.Modules.PageModule = (function() {
       screens.error.hide();
     },
 
+    /**
+     * Validate the form, if returns false when called, submit will not be
+     * called on click.
+     * @method validate.
+     */
     validate: function() {
       return true;
     },
 
+    /**
+     * Submit the form.  Can be called to force override the
+     * disableSubmit function.
+     * @method submit
+     */
     submit: function() {
     },
 
@@ -137,12 +154,25 @@ BrowserID.Modules.PageModule = (function() {
       }
     },
 
+    /**
+     * Publish a message to the mediator.
+     * @method publish
+     * @param {string} message
+     * @param {object} data
+     */
     publish: function(message, data) {
       mediator.publish(message, data);
     },
 
-    subscribe: function(message, callback) {
-      mediator.subscribe(message, callback.bind(this));
+    /**
+     * Subscribe to a message on the mediator.
+     * @method subscribe
+     * @param {string} message
+     * @param {function} callback
+     * @param {object} [context] - context, if not given, use this.
+     */
+    subscribe: function(message, callback, context) {
+      mediator.subscribe(message, callback.bind(context || this));
     },
 
     /**
@@ -161,6 +191,11 @@ BrowserID.Modules.PageModule = (function() {
         }, lowLevelInfo), onerror);
       };
     }
+
+    // BEGIN TESTING API
+    ,
+    onSubmit: onSubmit
+    // END TESTING API
   });
 
   return Module;

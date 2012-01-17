@@ -17,7 +17,7 @@
     controller.start();
   }
 
-  module("shared/page_controller", {
+  module("shared/page_module", {
     setup: function() {
       el = $("#controller_head");
       bid.TestHelpers.setup();
@@ -51,11 +51,6 @@
     var html = el.find("#formWrap .contents").html();
     ok(html.length, "with template specified, form text is loaded");
 
-/*
-
-    var input = el.find("input").eq(0);
-    ok(input.is(":focus"), "make sure the first input is focused");
-*/
     html = el.find("#wait .contents").html();
     equal(html, "", "with body template specified, wait text is not loaded");
   });
@@ -233,5 +228,23 @@
     equal(error, "missing config option: requiredField");
   });
 
+  test("form is not submitted when 'submit_disabled' class is added to body", function() {
+    createController();
+
+    var submitCalled = false;
+    controller.submit = function() {
+      submitCalled = true;
+    };
+
+    $("body").addClass("submit_disabled");
+    controller.onSubmit();
+
+    equal(submitCalled, false, "submit was prevented from being called");
+
+
+    $("body").removeClass("submit_disabled");
+    controller.onSubmit();
+    equal(submitCalled, true, "submit permitted to complete");
+  })
 }());
 
