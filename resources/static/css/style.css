@@ -52,8 +52,8 @@ noscript {
   position: absolute;  /* For a couple of browsers without position: fixed support */
   position: fixed;
   top: 35%;
-  left: 15%;
-  right: 15%;
+  left: 20%;
+  right: 20%;
   border: 2px solid #000;
   border-radius: 5px;
   text-align: center;
