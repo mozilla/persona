@@ -132,6 +132,12 @@
     return dObj;
   }
 
+  function cancelEvent(callback) {
+    return function(event) {
+      event && event.preventDefault();
+      callback.call(this);
+    };
+  }
 
   extend(helpers, {
     /**
@@ -175,8 +181,14 @@
      * @param {Date} date
      * @returns {string} date relative to now.
      */
-    relativeDate: relativeDate
-
+    relativeDate: relativeDate,
+    /**
+     * Return a function that calls preventDefault on the event and then calls
+     * the callback with the arguments.
+     * @method cancelEvent
+     * @param {function} function to call after the event is cancelled.
+     */
+    cancelEvent: cancelEvent
   });
 
 

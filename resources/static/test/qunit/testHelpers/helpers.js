@@ -103,12 +103,15 @@ BrowserID.TestHelpers = (function() {
     isTriggered: function(message) {
       return calls[message];
     },
+
     errorVisible: function() {
       return screens.error.visible;
     },
+
     testErrorVisible: function() {
-      equal(this.errorVisible(), true, "error screen is visible");
+      equal(TestHelpers.errorVisible(), true, "error screen is visible");
     },
+
     checkNetworkError: checkNetworkError,
     unexpectedSuccess: function() {
       ok(false, "unexpected success");

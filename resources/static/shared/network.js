@@ -84,6 +84,7 @@ BrowserID.Network = (function() {
       delayTimeout = setTimeout(xhrDelay.curry(reqInfo), time_until_delay);
     };
 
+    mediator.publish("xhr_start", reqInfo);
     xhr.ajax(req);
   }
 

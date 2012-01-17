@@ -58,7 +58,7 @@
   asyncTest("verifyEmailAddress with emailForVerficationToken XHR failure", function() {
     xhr.useResult("ajaxError");
     bid.verifyEmailAddress("token", function() {
-      ok($("#error").is(":visible"), "cannot communicate box is visible");
+      testHelpers.testErrorVisible();
       start();
     });
   });

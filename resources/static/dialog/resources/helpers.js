@@ -125,13 +125,6 @@
     }
   }
 
-  function cancelEvent(callback) {
-    return function(event) {
-      event && event.preventDefault();
-      callback.call(this);
-    };
-  }
-
   helpers.Dialog = helpers.Dialog || {};
 
   helpers.extend(helpers.Dialog, {
@@ -140,7 +133,7 @@
     createUser: createUser,
     addEmail: addEmail,
     resetPassword: resetPassword,
-    cancelEvent: cancelEvent
+    cancelEvent: helpers.cancelEvent
   });
 
 }());

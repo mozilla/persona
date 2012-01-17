@@ -14,7 +14,7 @@ BrowserID.Modules.Authenticate = (function() {
       tooltip = bid.Tooltip,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
-      cancelEvent = dialogHelpers.cancelEvent,
+      cancelEvent = helpers.cancelEvent,
       dom = bid.DOM,
       lastEmail = "";
 

@@ -76,7 +76,7 @@
     $("#email").val("testuser@testuser.com");
 
     testEmailNotSent(function() {
-      equal($("#error").is(":visible"), true, "error is visible");
+      testHelpers.testErrorVisible();
       start();
     });
   });

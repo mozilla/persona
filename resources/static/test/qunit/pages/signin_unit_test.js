@@ -155,9 +155,7 @@
     $("#email").val("registered@testuser.com");
     $("#password").val("password");
 
-    testUserNotSignedIn(function() {
-        equal($("#error").is(":visible"), true, "error is visible");
-    });
+    testUserNotSignedIn(testHelpers.testErrorVisible);
   });
 
   asyncTest("authWithPrimary opens winchan", function() {
