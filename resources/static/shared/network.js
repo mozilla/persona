@@ -6,24 +6,15 @@
 BrowserID.Network = (function() {
   "use strict";
 
-  var csrf_token,
+  var bid = BrowserID,
+      mediator = bid.Mediator,
+      csrf_token,
       xhr = $,
       server_time,
       domain_key_creation_time,
       auth_status,
       code_version,
-      mediator = BrowserID.Mediator;
-
-  function deferResponse(cb) {
-    if (cb) {
-      return function() {
-        var args = _.toArray(arguments);
-        _.defer(function() {
-          cb.apply(null, args);
-        });
-      };
-    }
-  }
+      time_until_delay
 
   function xhrError(cb, info) {
     return function(jqXHR, textStatus, errorThrown) {
@@ -35,62 +26,84 @@ BrowserID.Network = (function() {
       network.errorThrown = errorThrown;
       network.responseText = jqXHR.responseText;
 
-      mediator && mediator.publish("xhrError", info);
       if (cb) cb(info);
     };
   }
 
-  function get(options) {
-    xhr.ajax({
-      type: "GET",
-      url: options.url,
-      // We defer the responses because otherwise jQuery eats any exceptions
-      // that are thrown in the response handlers and it becomes very difficult
-      // to debug.
-      success: deferResponse(options.success),
-      error: deferResponse(xhrError(options.error, {
-        network: {
-          type: "GET",
-          url: options.url
-        }
-      })),
-      dataType: "json"
-    });
+  function xhrDelay(reqInfo) {
+    mediator.publish("xhr_delay", reqInfo);
   }
 
-  function post(options) {
-    withContext(function() {
-      var data = options.data || {};
+  function xhrComplete(reqInfo) {
+    mediator.publish("xhr_complete", reqInfo);
+  }
 
-      if (!data.csrf) {
-        data.csrf = csrf_token;
-      }
-
-      xhr.ajax({
-        type: "POST",
-        url: options.url,
-        data: data,
-        // We defer the responses because otherwise jQuery eats any exceptions
-        // that are thrown in the response handlers and it becomes very difficult
-        // to debug.
-        success: deferResponse(options.success),
-        error: deferResponse(xhrError(options.error, {
+  function request(options) {
+    // We defer the responses because otherwise jQuery eats any exceptions
+    // that are thrown in the response handlers and it becomes very difficult
+    // to debug.
+    var successCB = options.success,
+        errorCB = options.error,
+        delayTimeout,
+        reqInfo = {
           network: {
-            type: "POST",
-            url: options.url,
-            data: options.data
+            type: options.type.toUpperCase(),
+            url: options.url
           }
-        }))
-      });
-    }, options.error);
+        },
+        success = function(resp, jqXHR, textResponse) {
+          if(delayTimeout) {
+            clearTimeout(delayTimeout);
+            delayTimeout = null;
+          }
+
+          xhrComplete(reqInfo);
+          if(options.defer_success) {
+            _.defer(successCB.curry(resp, jqXHR, textResponse));
+          }
+          else {
+            successCB(resp, jqXHR, textResponse);
+          }
+        },
+        error = function(resp, jqXHR, textResponse) {
+          if(delayTimeout) {
+            clearTimeout(delayTimeout);
+            delayTimeout = null;
+          }
+
+          xhrComplete(reqInfo);
+          _.defer(xhrError(errorCB, reqInfo).curry(resp, jqXHR, textResponse));
+        }
+
+    var req = _.extend({}, options, {
+      success: success,
+      error: error
+    });
+
+    if(time_until_delay) {
+      delayTimeout = setTimeout(xhrDelay.curry(reqInfo), time_until_delay);
+    };
+
+    mediator.publish("xhr_start", reqInfo);
+    xhr.ajax(req);
+  }
+
+  function get(options) {
+    var req = _.extend(options, {
+      type: "GET",
+      defer_success: true
+    });
+    request(req);
   }
 
   function withContext(cb, onFailure) {
-    if (typeof csrf_token !== 'undefined') cb();
+    if (typeof csrf_token === 'string') cb();
     else {
-      var url = "/wsapi/session_context";
-      xhr.ajax({
-        url: url,
+      // We do not use get because the success response is deferred making our
+      // local/server time offset calculations skewed.
+      request({
+        type: "GET",
+        url: "/wsapi/session_context",
         success: function(result) {
           csrf_token = result.csrf_token;
           server_time = {
@@ -109,12 +122,7 @@ BrowserID.Network = (function() {
 
           _.defer(cb);
         },
-        error: deferResponse(xhrError(onFailure, {
-          network: {
-            type: "GET",
-            url: url
-          }
-        }))
+        error: onFailure
       });
     }
   }
@@ -122,6 +130,20 @@ BrowserID.Network = (function() {
   function clearContext() {
     var undef;
     csrf_token = server_time = auth_status = undef;
+  }
+
+  function post(options) {
+    withContext(function() {
+      var data = options.data || {};
+      data.csrf = data.csrf || csrf_token;
+
+      var req = _.extend(options, {
+        type: "POST",
+        data: data,
+        defer_success: true
+      });
+      request(req);
+    }, options.error);
   }
 
   function handleAuthenticationResponse(type, onComplete, onFailure, status) {
@@ -142,19 +164,24 @@ BrowserID.Network = (function() {
     }
   }
 
-  // Not really part of the Network API, but related to networking
-  $(document).bind("offline", function() {
-    mediator.publish("offline");
-  });
-
   var Network = {
     /**
-     * Set the XHR object and clear all context info.  Used for testing.
-     * @method setXHR
-     * @param {object} xhr - xhr object.
+     * Initialize - set the XHR object and clear all context info.
+     * Used for testing.
+     * @method init
+     * @param {object} config - takes parameters:
+     *   config.xhr - xhr object.
+     *   config.time_until_delay - ms a request can run before it is
+     *     considered delayed.
      */
-    setXHR: function(newXHR) {
-      xhr = newXHR;
+    init: function(config) {
+      if(config.hasOwnProperty("xhr")) {
+        xhr = config.xhr;
+      }
+
+      if(config.hasOwnProperty("time_until_delay")) {
+        time_until_delay = config.time_until_delay;
+      }
       clearContext();
     },
 
@@ -571,8 +598,15 @@ BrowserID.Network = (function() {
           email: email,
           pubkey: pubkey.serialize()
         },
-        success: onComplete,
-        error: onFailure
+        success: function(info) {
+          var b=true;
+          onComplete.apply(null, arguments);
+        },
+        error: function(info) {
+          var b=true;
+
+          onFailure.apply(null, arguments);
+        }
       });
     },
 

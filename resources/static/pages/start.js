@@ -12,9 +12,18 @@ $(function() {
 
   var bid = BrowserID,
       pageHelpers = bid.PageHelpers,
+      network = bid.Network,
       user = bid.User,
       token = pageHelpers.getParameterByName("token"),
-      path = document.location.pathname;
+      path = document.location.pathname,
+      XHRDelay = bid.Modules.XHRDelay,
+      XHRDisableForm = bid.Modules.XHRDisableForm;
+
+  network.init({ time_until_delay: 10 * 1000 });
+  var xhrDelay = XHRDelay.create({});
+  xhrDelay.start();
+  var xhrDisableForm = XHRDisableForm.create({});
+  xhrDisableForm.start();
 
   if (!path || path === "/") {
     bid.index();

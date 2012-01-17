@@ -1,8 +1,13 @@
+/*jshint browsers: true laxbreak: true, expr: true */
+/*global BrowserID: true, ok: true, equal: true, start: true */
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-(function() {
+BrowserID.TestHelpers = (function() {
+  "use strict";
+
   var bid = BrowserID,
       mediator = bid.Mediator,
       network = bid.Network,
@@ -12,7 +17,7 @@
       provisioning = bid.Mocks.Provisioning,
       screens = bid.Screens,
       tooltip = bid.Tooltip,
-      registrations = [];
+      registrations = [],
       calls = {},
       testOrigin = "https://browserid.org";
 
@@ -28,7 +33,6 @@
   }
 
   function unregisterAll() {
-    var registration;
     for(var i = 0, registration; registration = registrations[i]; ++i) {
       mediator.unsubscribe(registration);
     }
@@ -42,9 +46,14 @@
     ok($("#error #network").text().length, "network contents have been written");
   }
 
-  BrowserID.TestHelpers = {
+  var TestHelpers = {
+    XHR_TIME_UNTIL_DELAY: 100,
     setup: function() {
-      network.setXHR(xhr);
+      network.init({
+        xhr: xhr,
+        time_until_delay: TestHelpers.XHR_TIME_UNTIL_DELAY
+      });
+      xhr.setDelay(0);
       xhr.setContextInfo("auth_level", undefined);
       xhr.useResult("valid");
       storage.clear();
@@ -72,7 +81,10 @@
     teardown: function() {
       unregisterAll();
       mediator.reset();
-      network.setXHR($);
+      network.init({
+        xhr: $,
+        time_until_delay: 10 * 1000
+      });
       storage.clear();
       $(".error").removeClass("error");
       $("#error").stop().html("<div class='contents'></div>").hide();
@@ -91,12 +103,15 @@
     isTriggered: function(message) {
       return calls[message];
     },
+
     errorVisible: function() {
       return screens.error.visible;
     },
+
     testErrorVisible: function() {
-      equal(this.errorVisible(), true, "error screen is visible");
+      equal(TestHelpers.errorVisible(), true, "error screen is visible");
     },
+
     checkNetworkError: checkNetworkError,
     unexpectedSuccess: function() {
       ok(false, "unexpected success");
@@ -124,9 +139,6 @@
       var args = [].slice.call(arguments, 1);
 
       var errorInfo;
-      mediator.subscribe("xhrError", function(message, info) {
-        errorInfo = info;
-      });
 
       args.push(bid.TestHelpers.unexpectedSuccess, function onFailure(info) {
         ok(true, "XHR failure should never pass");
@@ -134,12 +146,6 @@
         ok(info.network.type, "request type is in network info");
         equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
         equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
-
-        ok(errorInfo.network.url, "url is in network errorInfo");
-        ok(errorInfo.network.type, "request type is in network errorInfo");
-        equal(errorInfo.network.textStatus, "errorStatus", "textStatus is in network errorInfo");
-        equal(errorInfo.network.errorThrown, "errorThrown", "errorThrown is in response errorInfo");
-        equal(errorInfo.network.responseText, "response text", "responseText is in response errorInfo");
 
         start();
       });
@@ -150,6 +156,7 @@
 
       cb && cb.apply(null, args);
     }
-
   };
+
+  return TestHelpers;
 }());

@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 BrowserID.Mocks.xhr = (function() {
-  var  contextInfo = {
+  var delay = 0,
+      contextInfo = {
       server_time: new Date().getTime(),
       domain_key_creation_time: (new Date().getTime() - (30 * 24 * 60 * 60 * 1000)),
       csrf_token: "csrf",
@@ -117,6 +118,10 @@ BrowserID.Mocks.xhr = (function() {
       contextInfo[field] = value;
     },
 
+    setDelay: function(delay_ms) {
+      delay = delay_ms;
+    },
+
     useResult: function(result) {
       xhr.resultType = result;
     },
@@ -155,9 +160,18 @@ BrowserID.Mocks.xhr = (function() {
       var result = xhr.results[resName];
 
       var type = typeof result;
-      if(!(type == "number" || type == "undefined")) {
+      if(type === "function") {
+        result(obj.success);
+      }
+      else if(!(type == "number" || type == "undefined")) {
         if(obj.success) {
-          obj.success(result);
+          if(delay) {
+            // simulate response delay
+            _.delay(obj.success, delay, result);
+          }
+          else {
+            obj.success(result);
+          }
         }
       }
       else if (obj.error) {

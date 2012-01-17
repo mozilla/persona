@@ -5,7 +5,12 @@
 (function() {
   var bid = BrowserID,
       moduleManager = bid.module,
-      modules = bid.Modules;
+      modules = bid.Modules,
+      network = bid.Network;
+
+
+  // A request that takes more than 10 seconds is considered delayed.
+  network.init({ time_until_delay: 10 * 1000 });
 
   moduleManager.register("code_check", modules.CodeCheck);
 
@@ -26,7 +31,12 @@
         moduleManager.register("provision_primary_user", modules.ProvisionPrimaryUser);
         moduleManager.register("primary_user_provisioned", modules.PrimaryUserProvisioned);
         moduleManager.register("email_chosen", modules.EmailChosen);
+        moduleManager.register("xhr_delay", modules.XHRDelay);
+        moduleManager.register("xhr_disable_form", modules.XHRDisableForm);
 
+
+        moduleManager.start("xhr_delay");
+        moduleManager.start("xhr_disable_form");
         moduleManager.start("dialog");
       }
     }

@@ -195,12 +195,15 @@ button::-moz-focus-inner, .button::-moz-focus-inner {
   border: 0
 }
 
-button[disabled] {
-    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
-    opacity: .5;
+button[disabled], .submit_disabled button, .submit_disabled .button,
+.submit_disabled button:focus, .submit_disabled .button:focus,
+.submit_disabled button:active, .submit_disabled .button:active {
+  background-color: #37A6FF;
+  background-image: -moz-linear-gradient(center top , #76C2FF 0pt, #37A6FF 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  opacity: .5;
 }
-
-
 
 hr {
   height: 1px;

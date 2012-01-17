@@ -13,7 +13,8 @@
       xhr = bid.Mocks.xhr,
       origin = "https://browserid.org",
       storage = bid.Storage,
-      moduleManager = bid.module;
+      moduleManager = bid.module,
+      testHelpers = bid.TestHelpers;
 
   function ModuleMock() {}
 
@@ -24,17 +25,14 @@
 
   module("resources/internal_api", {
     setup: function() {
-      network.setXHR(xhr);
-      xhr.useResult("valid");
-      xhr.setContextInfo("auth_level", undefined);
-      storage.clear();
+      testHelpers.setup();
       moduleManager.reset();
       moduleManager.register("dialog", ModuleMock);
       moduleManager.start("dialog");
     },
 
     teardown: function() {
-      network.setXHR($);
+      testHelpers.teardown();
     }
   });
 

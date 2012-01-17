@@ -63,9 +63,6 @@ BrowserID.PageHelpers = (function() {
   function showFailure(error, info, callback) {
     info = $.extend(info || {}, { action: error, dialog: false });
     bid.Screens.error.show("error", info);
-    $("#errorBackground").stop().fadeIn();
-    $("#error").stop().fadeIn();
-
     callback && callback(false);
   }
 
@@ -109,8 +106,8 @@ BrowserID.PageHelpers = (function() {
 
     user.waitForUserValidation(origStoredEmail, function(status) {
       userValidationComplete(status);
-      onComplete && onComplete(status);
     });
+    onComplete && onComplete();
   }
 
   function userValidationComplete(status) {
@@ -131,13 +128,6 @@ BrowserID.PageHelpers = (function() {
     user.cancelEmailValidation();
 
     dom.focus("input:visible:eq(0)");
-  }
-
-  function cancelEvent(callback) {
-    return function(event) {
-      event && event.preventDefault();
-      callback && callback();
-    };
   }
 
   function openPrimaryAuth(winchan, email, baseURL, callback) {
@@ -198,7 +188,7 @@ BrowserID.PageHelpers = (function() {
     emailSent: emailSent,
     cancelEmailSent: cancelEmailSent,
     userValidationComplete: userValidationComplete,
-    cancelEvent: cancelEvent,
+    cancelEvent: helpers.cancelEvent,
     openPrimaryAuth: openPrimaryAuth
   };
 }());

@@ -18,7 +18,6 @@ const allowed = /^https:\/\/[a-zA-Z\.\-_]+\/\.well-known\/browserid$/;
 var server = http.createServer(function (req, res) {
   var url = req.url;
   if (!allowed.test(url)) {
-    console.log('there');
     res.writeHead(400);
     res.end('You can\'t get there from here');
     return;
