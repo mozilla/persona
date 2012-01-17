@@ -35,7 +35,7 @@ BrowserID.Modules.CodeCheck = (function() {
   function loadScript(version, oncomplete) {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src = "https://browserid.org/dialog/production_v" + version + ".js";
+    script.src = "https://browserid.org/production/dialog_v" + version + ".js";
     document.head.appendChild(script);
 
     oncomplete();
