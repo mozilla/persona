@@ -40,7 +40,11 @@
       subscriptions = [],
       stateStack = [],
       controller,
-      errors = bid.Errors;
+      moduleManager = bid.module,
+      errors = bid.Errors,
+      addPrimaryUser = false,
+      email,
+      requiredEmail;
 
   function subscribe(message, cb) {
     subscriptions.push(mediator.subscribe(message, cb));
@@ -52,17 +56,33 @@
     }
   }
 
-  function pushState(funcName) {
+  function gotoState(push, funcName) {
     var args = [].slice.call(arguments, 1);
 
+    if (typeof push === "boolean") {
+      // Must take the push param off to get to funcName and then the remaining
+      // arguments.
+      args = [].slice.call(args, 1);
+    }
+    else {
+      funcName = push;
+      push = true;
+    }
+
+    if (push) {
+      pushState(funcName, args);
+    }
+
+    controller[funcName].apply(controller, args);
+  }
+
+  function pushState(funcName, args) {
     // Remember the state and the information for the state in case we have to
     // go back to it.
     stateStack.push({
       funcName: funcName,
       args: args
     });
-
-    controller[funcName].apply(controller, args);
   }
 
   // Used for when the current state is being cancelled and the user wishes to
@@ -71,21 +91,19 @@
     // Skip the first state, it is where the user is at now.
     stateStack.pop();
 
-    // When popping, go to the second state back.
-    var gotoState = stateStack[stateStack.length - 1];
-
-    if(gotoState) {
-      controller[gotoState.funcName].apply(controller, gotoState.args);
+    var state = stateStack[stateStack.length - 1];
+    if (state) {
+      controller[state.funcName].apply(controller, state.args);
     }
   }
 
   function startStateMachine() {
     var self = this,
-        gotoState = pushState.bind(self),
+        startState = gotoState.bind(self),
         cancelState = popState.bind(self);
 
     subscribe("offline", function(msg, info) {
-      gotoState("doOffline");
+      startState("doOffline");
     });
 
     subscribe("start", function(msg, info) {
@@ -93,34 +111,35 @@
 
       self.hostname = info.hostname;
       self.allowPersistent = !!info.allowPersistent;
-      var email = self.requiredEmail = info.requiredEmail;
+      requiredEmail = info.requiredEmail;
 
-      if(typeof(email) !== "undefined" && !(bid.verifyEmail(email))) {
-        gotoState("doError", "invalidRequiredEmail", { email: email });
+      if ((typeof(requiredEmail) !== "undefined")
+       && (!bid.verifyEmail(requiredEmail))) {
+        // Invalid format
+        startState("doError", "invalid_required_email", {email: requiredEmail});
       }
       else {
-        gotoState("doCheckAuth");
+        startState("doCheckAuth");
       }
     });
 
     subscribe("cancel", function() {
-      gotoState("doCancel");
+      startState("doCancel");
     });
 
     subscribe("window_unload", function() {
-      if(!self.success) {
+      if (!self.success) {
         bid.Storage.setStagedOnBehalfOf("");
-        gotoState("doCancel");
+        startState("doCancel");
       }
     });
 
     subscribe("authentication_checked", function(msg, info) {
       var authenticated = info.authenticated;
 
-      if (self.requiredEmail) {
-        // XXX get this out of here and into the state machine!
-        gotoState("doAuthenticateWithRequiredEmail", {
-          email: self.requiredEmail,
+      if (requiredEmail) {
+        startState("doAuthenticateWithRequiredEmail", {
+          email: requiredEmail,
           authenticated: authenticated
         });
       }
@@ -134,32 +153,70 @@
     subscribe("authenticate", function(msg, info) {
       info = info || {};
 
-      gotoState("doAuthenticate", {
+      startState("doAuthenticate", {
         email: info.email
       });
     });
 
     subscribe("user_staged", function(msg, info) {
-      gotoState("doConfirmUser", info.email);
+      startState("doConfirmUser", info.email);
     });
 
     subscribe("user_confirmed", function() {
-      gotoState("doEmailConfirmed");
+      startState("doEmailConfirmed");
+    });
+
+    subscribe("primary_user", function(msg, info) {
+      addPrimaryUser = !!info.add;
+      email = info.email;
+      // We don't want to put the provisioning step on the stack, instead when
+      // a user cancels this step, they should go back to the step before the
+      // provisioning.
+      startState(false, "doProvisionPrimaryUser", info);
+    });
+
+    subscribe("primary_user_provisioned", function(msg, info) {
+      info = info || {};
+      info.add = !!addPrimaryUser;
+      startState("doPrimaryUserProvisioned", info);
+    });
+
+    subscribe("primary_user_unauthenticated", function(msg, info) {
+      info = info || {};
+      info.add = !!addPrimaryUser;
+      info.email = email;
+      info.requiredEmail = !!requiredEmail;
+      startState("doVerifyPrimaryUser", info);
+    });
+
+    subscribe("primary_user_authenticating", function(msg, info) {
+      // Keep the dialog from automatically closing when the user browses to
+      // the IdP for verification.
+      moduleManager.stopAll();
+      self.success = true;
+    });
+
+    subscribe("primary_user_ready", function(msg, info) {
+      startState("doEmailChosen", info);
     });
 
     subscribe("authenticate_with_required_email", function(msg, info) {
-      gotoState("doAuthenticateWithRequiredEmail", info);
+      startState("doAuthenticateWithRequiredEmail", info);
     });
 
     subscribe("pick_email", function() {
-      gotoState("doPickEmail", {
+      startState("doPickEmail", {
         origin: self.hostname,
         allow_persistent: self.allowPersistent
       });
     });
 
+    subscribe("email_chosen", function(msg, info) {
+      startState("doEmailChosen", info);
+    });
+
     subscribe("notme", function() {
-      gotoState("doNotMe");
+      startState("doNotMe");
     });
 
     subscribe("logged_out", function() {
@@ -167,40 +224,40 @@
     });
 
     subscribe("authenticated", function(msg, info) {
-      gotoState("doSyncThenPickEmail", {
+      startState("doSyncThenPickEmail", {
         origin: self.hostname,
         allow_persistent: self.allowPersistent
       });
     });
 
     subscribe("forgot_password", function(msg, info) {
-      gotoState("doForgotPassword", info);
+      startState("doForgotPassword", info);
     });
 
     subscribe("reset_password", function(msg, info) {
-      gotoState("doConfirmUser", info.email);
+      startState("doConfirmUser", info.email);
     });
 
     subscribe("assertion_generated", function(msg, info) {
       self.success = true;
       if (info.assertion !== null) {
-        gotoState("doAssertionGenerated", info.assertion);
+        startState("doAssertionGenerated", info.assertion);
       }
       else {
-        gotoState("doPickEmail");
+        startState("doPickEmail");
       }
     });
 
     subscribe("add_email", function(msg, info) {
-      gotoState("doAddEmail");
+      startState("doAddEmail");
     });
 
     subscribe("email_staged", function(msg, info) {
-      gotoState("doConfirmEmail", info.email);
+      startState("doConfirmEmail", info.email);
     });
 
     subscribe("email_confirmed", function() {
-      gotoState("doEmailConfirmed");
+      startState("doEmailConfirmed");
     });
 
     subscribe("cancel_state", function(msg, info) {
@@ -218,7 +275,7 @@
       options = options || {};
 
       controller = options.controller;
-      if(!controller) {
+      if (!controller) {
         throw "start: controller must be specified";
       }
 

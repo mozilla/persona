@@ -37,9 +37,22 @@
 (function() {
   "use strict";
 
-  var pageHelpers = BrowserID.PageHelpers;
+  var bid = BrowserID,
+      pageHelpers = bid.PageHelpers,
+      testHelpers = bid.TestHelpers,
+      errors = bid.Errors;
 
-  module("pages/page_helpers");
+  module("pages/page_helpers", {
+    setup: function() {
+      testHelpers.setup();
+      bid.Renderer.render("#page_head", "site/signup", {});
+      $(".siteinfo,.emailsent").hide();
+    },
+
+    teardown: function() {
+      testHelpers.teardown();
+    }
+  });
 
 
   test("setStoredEmail/getStoredEmail/setupEmail prefills the email address", function() {
@@ -74,6 +87,14 @@
     pageHelpers.clearStoredEmail();
 
     equal(pageHelpers.getStoredEmail(), "", "clearStoredEmail clears stored email");
+  });
+
+  asyncTest("replaceFormWithNotice replaces contents", function() {
+    pageHelpers.replaceFormWithNotice("#congrats", function() {
+      equal($("form").is(":visible"), false, "form has been hidden");
+      equal($("#congrats").is(":visible"), true, "congrats is now visible");
+      start();
+    });
   });
 
   asyncTest("replaceInputsWithNotice replaces contents", function() {
@@ -116,6 +137,13 @@
  //       equal($("#email").is(":focus"), true, "first element is focused (NOTE: requires your browser to be focused to work)");
         start();
       });
+    });
+  });
+
+  asyncTest("showFailure shows a failure screen", function() {
+    pageHelpers.showFailure({}, errors.offline, function() {
+      testHelpers.testErrorVisible();
+      start();
     });
   });
 

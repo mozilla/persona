@@ -38,61 +38,179 @@
   "use strict";
 
   var bid = BrowserID,
-      network = bid.Network,
       storage = bid.Storage,
       xhr = bid.Mocks.xhr,
-      validToken = true;
+      dom = bid.DOM,
+      testHelpers = bid.TestHelpers,
+      validToken = true,
+      controller,
+      config = {
+        token: "token"
+      };
 
   module("pages/add_email_address", {
     setup: function() {
-      network.setXHR(xhr);
-      xhr.useResult("valid");
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      $(".website").text("");
-      $(".siteinfo").hide();
+      testHelpers.setup();
+      bid.Renderer.render("#page_head", "site/add_email_address", {});
+      $(".siteinfo,.password_entry").hide();
     },
     teardown: function() {
-      network.setXHR($);
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      $(".website").text("");
+      testHelpers.teardown();
+      $("#page_head").empty();
     }
   });
 
-  asyncTest("addEmailAddress with good token and site", function() {
+  function createPrimaryUser() {
+    storage.addEmail("testuser@testuser.com", {
+      created: new Date(),
+      type: "primary"
+    });
+  }
+
+  function createController(options, callback) {
+    controller = BrowserID.addEmailAddress.create();
+    options = options || {};
+    options.ready = callback;
+    controller.start(options);
+  }
+
+  function expectTooltipVisible() {
+    createPrimaryUser();
+    createController(config, function() {
+      controller.submit(function() {
+        testHelpers.testTooltipVisible();
+        start();
+      });
+    });
+  }
+
+  function testEmail() {
+    equal(dom.getInner(".email"), "testuser@testuser.com", "correct email shown");
+  }
+
+  function testCannotConfirm() {
+    ok($("#cannotconfirm").is(":visible"), "cannot confirm box is visible");
+  }
+
+  test("start with missing token", function() {
+    var error;
+    try {
+      createController({});
+    } catch(e) {
+      error = e;
+    }
+
+    equal(error, "missing config option: token", "correct error thrown");
+  });
+
+  asyncTest("no password: start with good token and site", function() {
     storage.setStagedOnBehalfOf("browserid.org");
 
-    bid.addEmailAddress("token", function() {
-      equal($("#email").val(), "testuser@testuser.com", "email set");
+    createController(config, function() {
+      testEmail();
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
-      equal($(".website").text(), "browserid.org", "origin is updated");
+      equal($(".website:nth(0)").text(), "browserid.org", "origin is updated");
+      equal($("body").hasClass("complete"), true, "body has complete class");
       start();
     });
   });
 
-  asyncTest("addEmailAddress with good token and nosite", function() {
-    bid.addEmailAddress("token", function() {
-      equal($("#email").val(), "testuser@testuser.com", "email set");
+  asyncTest("no password: start with good token and nosite", function() {
+    createController(config, function() {
+      testEmail();
       equal($(".siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
       equal($(".siteinfo .website").text(), "", "origin is not updated");
       start();
     });
   });
 
-  asyncTest("addEmailAddress with bad token", function() {
+  asyncTest("no password: start with bad token", function() {
     xhr.useResult("invalid");
 
-    bid.addEmailAddress("token", function() {
-      ok($("#cannotconfirm").is(":visible"), "cannot confirm box is visible");
+    createController(config, function() {
+      testCannotConfirm();
       start();
     });
   });
 
-  asyncTest("addEmailAddress with emailForVerficationToken XHR failure", function() {
+  asyncTest("no password: start with emailForVerficationToken XHR failure", function() {
     xhr.useResult("ajaxError");
-    bid.addEmailAddress("token", function() {
-      ok($("#cannotcommunicate").is(":visible"), "cannot communicate box is visible");
+    createController(config, function() {
+      testHelpers.testErrorVisible();
+      start();
+    });
+  });
+
+  asyncTest("password: first secondary address added", function() {
+    createPrimaryUser();
+    createController(config, function() {
+      equal($("body").hasClass("enter_password"), true, "enter_password added to body");
+      testEmail();
+      start();
+    });
+  });
+
+  asyncTest("password: missing password", function() {
+    $("#password").val();
+    $("#vpassword").val("password");
+
+    expectTooltipVisible();
+  });
+
+  asyncTest("password: missing verify password", function() {
+    $("#password").val("password");
+    $("#vpassword").val();
+
+    expectTooltipVisible();
+  });
+
+  asyncTest("password: too short of a password", function() {
+    $("#password").val("pass");
+    $("#vpassword").val("pass");
+
+    expectTooltipVisible();
+  });
+
+  asyncTest("password: too long of a password", function() {
+    var tooLong = "";
+    for(var i = 0; i < 81; i++) {
+      tooLong += (i % 10);
+    }
+    $("#password").val(tooLong);
+    $("#vpassword").val(tooLong);
+
+    expectTooltipVisible();
+  });
+
+  asyncTest("password: mismatched passwords", function() {
+    $("#password").val("passwords");
+    $("#vpassword").val("password");
+
+    expectTooltipVisible();
+  });
+
+  asyncTest("password: good password", function() {
+    $("#password").val("password");
+    $("#vpassword").val("password");
+
+    createPrimaryUser();
+    createController(config, function() {
+      controller.submit(function(status) {
+        equal(status, true, "correct status");
+        equal($("body").hasClass("complete"), true, "body has complete class");
+        start();
+      });
+    });
+  });
+
+  asyncTest("password: good password bad token", function() {
+    $("#password").val("password");
+    $("#vpassword").val("password");
+
+    xhr.useResult("invalid");
+    createPrimaryUser();
+    createController(config, function() {
+      testCannotConfirm();
       start();
     });
   });

@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global BrowserID: true, PageController: true */
+/*global _: true, BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,55 +34,68 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-BrowserID.Modules.CheckRegistration = (function() {
+BrowserID.Modules.VerifyPrimaryUser = (function() {
   "use strict";
 
   var bid = BrowserID,
-      user = bid.User,
-      dom = bid.DOM,
-      errors = bid.Errors;
+      sc,
+      win,
+      add,
+      email,
+      auth_url,
+      helpers = bid.Helpers,
+      cancelEvent = helpers.Dialog.cancelEvent;
 
-  var CheckRegistration = bid.Modules.PageModule.extend({
-    start: function(options) {
+  function verify(callback) {
+    this.publish("primary_user_authenticating");
+
+    // replace any hashes that may be there already.
+    var returnTo = win.document.location.href.replace(/#.*$/, "");
+
+    var type = add ? "ADD_EMAIL" : "CREATE_EMAIL";
+    var url = helpers.toURL(auth_url, {
+      email: email,
+      return_to: returnTo + "#" + type + "=" +email
+    });
+
+    win.document.location = url;
+
+    callback();
+  }
+
+  function cancel(callback) {
+    this.close("cancel_state");
+    callback && callback();
+  }
+
+  var Module = bid.Modules.PageModule.extend({
+    start: function(data) {
       var self=this;
-      self.renderWait("confirmemail", {
-          email: options.email
-      });
-      self.email = options.email;
-      self.verifier = options.verifier;
-      self.verificationMessage = options.verificationMessage;
+      data = data || {};
 
-      self.bind("#back", "click", self.cancel);
+      win = data.window || window;
+      add = data.add;
+      email = data.email;
+      auth_url = data.auth_url;
 
-      CheckRegistration.sc.start.call(self, options);
+      data.requiredEmail = data.requiredEmail || false;
+      self.renderDialog("verify_primary_user", data);
+
+      self.bind("#cancel", "click", cancelEvent(cancel));
+
+      sc.start.call(self, data);
     },
 
-    startCheck: function(oncomplete) {
-      var self=this;
-      user[self.verifier](self.email, function(status) {
-        if (status === "complete") {
-          user.syncEmails(function() {
-            self.close(self.verificationMessage);
-            oncomplete && oncomplete();
-          });
-        }
-        else if (status === "mustAuth") {
-          self.close("auth", { email: self.email });
-          oncomplete && oncomplete();
-        }
-      }, self.getErrorDialog(errors.registration, oncomplete));
-    },
+    submit: verify
 
-    cancel: function() {
-      var self=this;
-      // XXX this should change to cancelEmailValidation for email, but this
-      // will work.
-      user.cancelUserValidation();
-      self.close("cancel_state");
-    }
-
+    // BEGIN TESTING API
+    ,
+    cancel: cancel
+    // END TESTING API
   });
 
-  return CheckRegistration;
+  sc = Module.sc;
 
+  return Module;
 }());
+

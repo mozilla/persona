@@ -38,6 +38,10 @@ html[xmlns] .cf {
   height: 1%;
 }
 
+header, section, footer {
+  display: block;
+}
+
 .sans {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -188,6 +192,7 @@ button::-moz-focus-inner, .button::-moz-focus-inner {
 }
 
 button[disabled] {
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
     opacity: .5;
 }
 
@@ -227,6 +232,7 @@ header a.home {
   display: block;
   background-position: left 4px;
   background-repeat: no-repeat;
+  text-indent: -999px;
 }
 
 footer {

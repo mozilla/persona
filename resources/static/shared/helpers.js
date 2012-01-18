@@ -66,6 +66,22 @@
     return password;
   }
 
+  function toURL(base, params) {
+    var url = base,
+        getParams = [];
+
+    for(var key in params) {
+      getParams.push(key + "=" + encodeURIComponent(params[key]));
+    }
+
+    if(getParams.length) {
+      url += "?" + getParams.join("&");
+    }
+
+    return url;
+  }
+
+
   extend(helpers, {
     /**
      * Extend an object with the properties of another object.  Overwrites
@@ -90,7 +106,17 @@
      * @param {string} target - target containing the password
      * @return {string} password if password is valid, null otw.
      */
-    getAndValidatePassword: getAndValidatePassword
+    getAndValidatePassword: getAndValidatePassword,
+
+    /**
+     * Convert a base URL and an object to a URL with GET parameters.  All
+     * keys/values are converted as <key>=encodeURIComponent(<value>)
+     * method @toURL
+     * @param {string} base_url - base url
+     * @param {object} [params] - object to convert to GET parameters.
+     * @returns {string}
+     */
+    toURL: toURL
 
   });
 

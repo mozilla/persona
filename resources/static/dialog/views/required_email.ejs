@@ -1,0 +1,55 @@
+  <strong>The site requested you sign in using</strong>
+  <div class="form_section">
+      <ul class="inputs">
+
+          <li>
+              <label for="email" class="serif">Email</label>
+              <input id="required_email" class="sans" type="email" value="<%= email %>" disabled />
+              <div id="could_not_add" class="tooltip" for="required_email">
+                We just sent an email to that address! If you really want to send another, wait a minute or two and try again.
+              </div>
+          </li>
+
+          <% if (verify && primary) { %>
+              <li>
+                  To verify that you own this address, you must
+                  sign in with your provider.  This window will be redirected to
+
+                  <p>
+                      <strong>http://192.168.1.88:10005/sign_in.html</strong>.
+                  </p>
+              </li>
+          <% } %>
+
+          <% if (password) { %>
+              <li id="password_section">
+                  <label for="password" class="half serif">Password</label>
+                  <div class="half right">
+                      <a id="forgotPassword" href="#" tabindex="4">forgot your password?</a>
+                  </div>
+
+                  <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
+
+                  <div id="password_required" class="tooltip" for="password">
+                    The password field is required.
+                  </div>
+
+                  <div id="cannot_authenticate" class="tooltip" for="password">
+                    The account cannot be logged in with this username and password.
+                  </div>
+
+              </li>
+          <% } %>
+
+      </ul>
+
+      <div class="submit cf">
+          <% if (signin) { %>
+            <button id="sign_in" tabindex="3">sign in</button>
+          <% } else if (verify) { %>
+            <button id="verify_address" tabindex="3">verify email</button>
+          <% } %>
+
+          <!--button id="cancel" tabindex="4">cancel</button-->
+      </div>
+  </div>

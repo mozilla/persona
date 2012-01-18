@@ -238,5 +238,19 @@
     });
   });
 
+  test("checkRequired", function() {
+    createController();
+
+    var error;
+    try {
+      controller.checkRequired({}, "requiredField");
+    }
+    catch(e) {
+      error = e;
+    }
+
+    equal(error, "missing config option: requiredField");
+  });
+
 }());
 

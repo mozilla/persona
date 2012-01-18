@@ -40,6 +40,8 @@
   var bid = BrowserID,
       channel = bid.Channel,
       network = bid.Network,
+      mediator = bid.Mediator,
+      testHelpers = bid.TestHelpers,
       xhr = bid.Mocks.xhr,
       controller,
       el,
@@ -82,20 +84,21 @@
       window: winMock
     }, config);
 
-    controller = BrowserID.Modules.Dialog.create(config);
+    controller = BrowserID.Modules.Dialog.create();
+    controller.start(config);
   }
 
   module("controllers/dialog", {
     setup: function() {
       winMock = new WinMock();
       reset();
-      bid.TestHelpers.setup();
+      testHelpers.setup();
     },
 
     teardown: function() {
       controller.destroy();
       reset();
-      bid.TestHelpers.teardown();
+      testHelpers.teardown();
     }
   });
 
@@ -138,7 +141,7 @@
 
   asyncTest("initialization with #NATIVE", function() {
     winMock.location.hash = "#NATIVE";
-    
+
     createController({
       ready: function() {
         ok($("#error .contents").text().length == 0, "no error should be reported");
@@ -150,7 +153,7 @@
 
   asyncTest("initialization with #INTERNAL", function() {
     winMock.location.hash = "#INTERNAL";
-    
+
     createController({
       ready: function() {
         ok($("#error .contents").text().length == 0, "no error should be reported");
@@ -158,70 +161,50 @@
       }
     });
   });
-  
-  /*
-  test("doXHRError while online, no network info given", function() {
-    createController();
-    controller.doXHRError();
-    ok($("#error .contents").text().length, "contents have been written");
-    ok($("#error #action").text().length, "action contents have been written");
-    equal($("#error #network").text().length, 0, "no network contents to be written");
-  });
 
-  test("doXHRError while online, network info given", function() {
-    createController();
-    controller.doXHRError({
-      network: {
-        type: "POST",
-        url: "browserid.org/verify"
+  asyncTest("initialization with #CREATE_EMAIL=testuser@testuser.com", function() {
+    winMock.location.hash = "#CREATE_EMAIL=testuser@testuser.com";
+
+    createController({
+      ready: function() {
+        mediator.subscribe("primary_user", function(msg, info) {
+          equal(info.email, "testuser@testuser.com", "email_chosen with correct email");
+          equal(info.add, false, "add is not specified with CREATE_EMAIL option");
+          start();
+        });
+
+        try {
+          controller.get(testHelpers.testOrigin, {}, function() {}, function() {});
+        }
+        catch(e) {
+          // do nothing, an exception will be thrown because no modules are
+          // registered for the any services.
+        }
       }
     });
-    checkNetworkError();
   });
 
-  test("doXHRError while offline does not update contents", function() {
-    createController();
-    controller.doOffline();
-    $("#error #action").remove();
+  asyncTest("initialization with #ADD_EMAIL=testuser@testuser.com", function() {
+    winMock.location.hash = "#ADD_EMAIL=testuser@testuser.com";
 
-    controller.doXHRError();
-    ok(!$("#error #action").text().length, "XHR error is not reported if the user is offline.");
-  });
-*/
-
-  /*
-  test("doCheckAuth with registered requiredEmail, authenticated", function() {
     createController({
-      requiredEmail: "registered@testuser.com"
+      ready: function() {
+        mediator.subscribe("primary_user", function(msg, info) {
+          equal(info.email, "testuser@testuser.com", "email_chosen with correct email");
+          equal(info.add, true, "add is specified with ADD_EMAIL option");
+          start();
+        });
+
+        try {
+          controller.get(testHelpers.testOrigin, {}, function() {}, function() {});
+        }
+        catch(e) {
+          // do nothing, an exception will be thrown because no modules are
+          // registered for the any services.
+        }
+      }
     });
-
-    controller.doCheckAuth();
   });
-
-  test("doCheckAuth with registered requiredEmail, not authenticated", function() {
-    createController({
-      requiredEmail: "registered@testuser.com"
-    });
-
-    controller.doCheckAuth();
-  });
-
-  test("doCheckAuth with unregistered requiredEmail, not authenticated", function() {
-    createController({
-      requiredEmail: "unregistered@testuser.com"
-    });
-
-    controller.doCheckAuth();
-  });
-
-  test("doCheckAuth with unregistered requiredEmail, authenticated as other user", function() {
-    createController({
-      requiredEmail: "unregistered@testuser.com"
-    });
-
-    controller.doCheckAuth();
-  });
-*/
 
   asyncTest("onWindowUnload", function() {
     createController({
@@ -241,6 +224,7 @@
       }
     });
   });
+
 
 }());
 

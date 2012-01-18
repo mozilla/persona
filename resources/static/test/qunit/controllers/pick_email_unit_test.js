@@ -38,18 +38,15 @@
   "use strict";
 
   var controller,
-      el = $("body"),
       bid = BrowserID,
       storage = bid.Storage,
-      user = bid.User,
-      testOrigin = "http://browserid.org",
+      testHelpers = bid.TestHelpers,
+      testOrigin = testHelpers.testOrigin,
       register = bid.TestHelpers.register;
 
   module("controllers/pickemail_controller", {
     setup: function() {
-      el = $("#controller_head");
-      bid.TestHelpers.setup();
-      user.setOrigin(testOrigin);
+      testHelpers.setup();
     },
 
     teardown: function() {
@@ -61,7 +58,7 @@
           // could already be destroyed from the close
         }
       }
-      bid.TestHelpers.setup();
+      testHelpers.setup();
     }
   });
 
@@ -139,14 +136,13 @@
 
     var assertion;
 
-    register("assertion_generated", function(msg, info) {
+    register("email_chosen", function(msg, info) {
       equal(storage.site.get(testOrigin, "email"), "testuser2@testuser.com", "email saved correctly");
       equal(storage.site.get(testOrigin, "remember"), true, "remember saved correctly");
-      ok(info.assertion, "assertion_generated message triggered with assertion");
+      ok(info.email, "email_chosen message triggered with email");
       start();
     });
     controller.signIn();
-
   });
 
   asyncTest("signIn saves email, but not remember status when allow_persistent set to false", function() {
@@ -159,14 +155,13 @@
     $("input[type=radio]").eq(1).trigger("click");
     $("#remember").attr("checked", true);
 
-    register("assertion_generated", function(msg, info) {
+    register("email_chosen", function(msg, info) {
       equal(storage.site.get(testOrigin, "email"), "testuser2@testuser.com", "email saved correctly");
       equal(storage.site.get(testOrigin, "remember"), false, "remember saved correctly");
 
       start();
     });
     controller.signIn();
-
   });
 
   asyncTest("addEmail triggers an 'add_email' message", function() {
@@ -177,8 +172,6 @@
       start();
     });
     controller.addEmail();
-
-
   });
 
 }());

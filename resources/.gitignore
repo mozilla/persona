@@ -1,14 +1,1 @@
-/static/css/browserid.css
-/static/css/browserid.min.css
-/static/dialog/css/production.css
-/static/dialog/css/production.min.css
-/static/dialog/production.js
-/static/communication_iframe/production.js
-/static/include.orig.js
-/static/pages/lib.js
-/static/pages/lib.min.js
-/static/js/lib.js
-/static/js/lib.min.js
-/static/relay/production.js
-/static/dialog/views/templates.js
-/static/shared/templates.js.orig
+static/dialog/views/templates.js

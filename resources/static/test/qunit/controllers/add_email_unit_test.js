@@ -40,19 +40,18 @@
   var controller,
       el = $("body"),
       bid = BrowserID,
-      storage = bid.Storage,
       user = bid.User,
-      network = bid.Network,
+      xhr = bid.Mocks.xhr,
+      //provisioning = bid.Mocks.Provisioning,
       modules = bid.Modules,
-      testOrigin = "http://browserid.org",
-      register = bid.TestHelpers.register;
+      testHelpers = bid.TestHelpers,
+      register = testHelpers.register;
 
 
-  module("controllers/addemail", {
+  module("controllers/add_email", {
     setup: function() {
       $("#newEmail").val("");
-      user.setOrigin(testOrigin);
-      bid.TestHelpers.setup();
+      testHelpers.setup();
     },
 
     teardown: function() {
@@ -64,7 +63,7 @@
           // could already be destroyed from the close
         }
       }
-      bid.TestHelpers.teardown();
+      testHelpers.teardown();
     }
   });
 
@@ -73,8 +72,9 @@
     controller.start(options);
   }
 
-  asyncTest("addEmail with valid email", function() {
+  asyncTest("addEmail with valid unknown secondary email", function() {
     createController();
+    xhr.useResult("unknown_secondary");
 
     equal($("#addEmail").length, 1, "control rendered correctly");
 
@@ -88,8 +88,9 @@
     controller.addEmail();
   });
 
-  asyncTest("addEmail with valid email with leading/trailing whitespace", function() {
+  asyncTest("addEmail with valid unknown secondary email with leading/trailing whitespace", function() {
     createController();
+    xhr.useResult("unknown_secondary");
 
     $("#newEmail").val("   unregistered@testuser.com  ");
     register("email_staged", function(msg, info) {
@@ -125,6 +126,9 @@
 
     // simulate the email being already added.
     user.syncEmailKeypair("registered@testuser.com", function() {
+      // Set result to known_secondary in here so that we do not have to add
+      // another line to the XHR mock for syncEmailKeypair.
+      xhr.useResult("known_secondary");
       controller.addEmail(function() {
         ok(bid.Tooltip.shown, "tooltip should be shown");
         start();
@@ -132,8 +136,9 @@
     });
   });
 
-  asyncTest("addEmail with email belonging to another user - allows for account consolidation", function() {
+  asyncTest("addEmail with secondary email belonging to another user - allows for account consolidation", function() {
     createController();
+    xhr.useResult("known_secondary");
 
     $("#newEmail").val("registered@testuser.com");
     register("email_staged", function(msg, info) {
@@ -151,6 +156,40 @@
       start();
     });
     controller.cancelAddEmail();
+  });
+
+
+  asyncTest("addEmail with unknown primary email", function() {
+    createController();
+    xhr.useResult("primary");
+    $("#newEmail").val("unregistered@testuser.com");
+
+    register("primary_user", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "email set correctly");
+      equal(info.add, true, "true flag specified");
+      ok(info.auth, "auth URL exists in info");
+      ok(info.prov, "prov URL exists in info");
+      start();
+    });
+
+    controller.addEmail(function(status) {
+      equal(status, true, "user added, correct status");
+    });
+  });
+
+  asyncTest("addEmail after having an account with primary email keeps both email addresses", function() {
+    createController();
+
+    xhr.useResult("primary");
+    $("#newEmail").val("unregistered@testuser.com");
+
+    controller.addEmail(function(status) {
+      $("#newEmail").val("testuser@testuser.com");
+      controller.addEmail(function(status) {
+        equal(status, true, "user added, correct status");
+        start();
+      });
+    });
   });
 
 }());

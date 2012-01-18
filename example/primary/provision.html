@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="https://browserid.org/provisioning_api.js"></script>
+<script type="text/javascript" src="/jquery.js"></script>
+<script type="text/javascript">
+
+  // an alias
+  var fail = navigator.id.raiseProvisioningFailure;
+
+  // begin provisioning!  This both gives us indicated to browserid that we're
+  // a well formed provisioning page and gives us the parameters of the provisioning
+  navigator.id.beginProvisioning(function(email, cert_duration) {
+    var user = /^([^@]+)@/.exec(email)[1];
+
+    // now we have the email address that wishes to be provisioned!
+    // is he authenticated to eyedee.me?
+    $.get('/api/whoami')
+      .success(function(who) {
+        if (user != who) {
+          return fail('user is not authenticated as target user');
+        }
+
+        // Awesome!  The user is authenticated as who we want to provision.  let's
+        // generate a keypair
+        navigator.id.genKeyPair(function(pubkey) {
+          // finally, once we have a public key from the browser, we'll certify it, and
+          // go pass it back
+          $.ajax({
+            url: '/api/cert_key',
+            data: JSON.stringify({
+              pubkey: pubkey,
+              duration: cert_duration
+            }),
+            type: 'POST',
+            headers: { "Content-Type": 'application/json' },
+            dataType: 'json',
+            success: function(r) {
+              // all done!  woo!
+              navigator.id.registerCertificate(r.cert);
+            },
+            error: function(r) {
+              fail("couldn't certify key");
+            }
+          });
+        });
+      })
+      .error(function() {
+        fail('user is not authenticated');
+      });
+  });
+</script>
+</head>
+</html>

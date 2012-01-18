@@ -1,5 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global BrowserID:true, PageController: true */
+/*globals BrowserID: true, _: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,49 +33,72 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-BrowserID.Modules.ForgotPassword = (function() {
+
+$(function() {
   "use strict";
 
-  var ANIMATION_TIME = 250,
-      bid = BrowserID,
-      helpers = bid.Helpers,
-      dialogHelpers = helpers.Dialog,
-      cancelEvent = dialogHelpers.cancelEvent,
-      dom = bid.DOM,
-      lastEmail = "";
+  /**
+   * For the main page
+   */
 
-  function resetPassword() {
-    var self=this;
-    dialogHelpers.resetPassword.call(self, self.email);
+  var bid = BrowserID,
+      pageHelpers = bid.PageHelpers,
+      user = bid.User,
+      token = pageHelpers.getParameterByName("token"),
+      path = document.location.pathname;
+
+  if (!path || path === "/") {
+    bid.index();
+  }
+  else if (path === "/signin") {
+    bid.signIn();
+  }
+  else if (path === "/signup") {
+    bid.signUp();
+  }
+  else if (path === "/forgot") {
+    bid.forgot();
+  }
+  else if (path === "/add_email_address") {
+    var module = bid.addEmailAddress.create();
+    module.start({
+      token: token
+    });
+  }
+  else if(token && path === "/verify_email_address") {
+    bid.verifyEmailAddress(token);
   }
 
-  function cancelResetPassword() {
-    this.close("cancel_state");
+  if ($('#vAlign').length) {
+    $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
   }
 
-  var ForgotPassword = bid.Modules.PageModule.extend({
-    start: function(options) {
-      var self=this;
-      self.email = options.email;
-      self.renderDialog("forgotpassword", {
-        email: options.email || "",
-        requiredEmail: options.requiredEmail
-      });
+  $("a.signOut").click(function(event) {
+    event.preventDefault();
+    event.stopPropagation();
 
-      self.bind("#cancel_forgot_password", "click", cancelEvent(cancelResetPassword));
-
-      ForgotPassword.sc.start.call(self, options);
-    },
-
-    submit: cancelEvent(resetPassword)
-
-    // BEGIN TESTING API
-    ,
-    resetPassword: resetPassword,
-    cancelResetPassword: cancelResetPassword
-    // END TESTING API
+    user.logoutUser(function() {
+      document.location = "/";
+    }, pageHelpers.getFailure(bid.Errors.logout));
   });
 
-  return ForgotPassword;
+  $(".display_always,.display_auth,.display_nonauth").hide();
 
-}());
+  var ANIMATION_TIME = 500;
+  user.checkAuthentication(function(authenticated) {
+    $(".display_always").fadeIn(ANIMATION_TIME);
+
+    if (authenticated) {
+      $(".display_auth").fadeIn(ANIMATION_TIME);
+      if ($('#emailList').length) {
+        bid.manageAccount();
+      }
+    }
+    else {
+      $(".display_nonauth").fadeIn(ANIMATION_TIME);
+    }
+  });
+
+
+});
+

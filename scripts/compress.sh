@@ -54,20 +54,20 @@ cp templates.js $BUILD_PATH/templates.js
 cd ../..
 
 # produce the dialog js
-cat lib/jquery-1.6.2.min.js lib/winchan.js lib/underscore-min.js lib/vepbundle.js lib/ejs.js shared/browserid.js lib/hub.js lib/dom-jquery.js lib/module.js shared/javascript-extensions.js shared/mediator.js shared/class.js shared/storage.js $BUILD_PATH/templates.js shared/renderer.js shared/error-display.js shared/screens.js shared/tooltip.js shared/validation.js shared/network.js shared/user.js shared/error-messages.js shared/browser-support.js shared/wait-messages.js shared/helpers.js dialog/resources/internal_api.js dialog/resources/helpers.js dialog/resources/state_machine.js dialog/controllers/page.js dialog/controllers/code_check.js dialog/controllers/actions.js dialog/controllers/dialog.js dialog/controllers/authenticate.js dialog/controllers/forgotpassword.js dialog/controllers/checkregistration.js dialog/controllers/pickemail.js dialog/controllers/addemail.js dialog/controllers/required_email.js dialog/start.js > $BUILD_PATH/dialog.uncompressed.js
+cat lib/jquery-1.7.1.min.js lib/winchan.js lib/underscore-min.js lib/vepbundle.js lib/ejs.js shared/browserid.js lib/hub.js lib/dom-jquery.js lib/module.js lib/jschannel.js shared/javascript-extensions.js shared/mediator.js shared/class.js shared/storage.js $BUILD_PATH/templates.js shared/renderer.js shared/error-display.js shared/screens.js shared/tooltip.js shared/validation.js shared/provisioning.js shared/network.js shared/user.js shared/error-messages.js shared/browser-support.js shared/wait-messages.js shared/helpers.js dialog/resources/internal_api.js dialog/resources/helpers.js dialog/resources/state_machine.js dialog/controllers/page.js dialog/controllers/code_check.js dialog/controllers/actions.js dialog/controllers/dialog.js dialog/controllers/authenticate.js dialog/controllers/forgot_password.js dialog/controllers/check_registration.js dialog/controllers/pick_email.js dialog/controllers/add_email.js dialog/controllers/required_email.js dialog/controllers/verify_primary_user.js dialog/controllers/provision_primary_user.js dialog/controllers/primary_user_provisioned.js dialog/controllers/set_password.js dialog/controllers/email_chosen.js dialog/start.js > $BUILD_PATH/dialog.uncompressed.js
 
 # produce the dialog css
 cat css/common.css dialog/css/popup.css dialog/css/m.css > $BUILD_PATH/dialog.uncompressed.css
 
 # produce the non interactive frame js
-cat lib/jquery-1.6.2.min.js lib/jschannel.js lib/underscore-min.js lib/vepbundle.js shared/javascript-extensions.js shared/browserid.js shared/storage.js shared/network.js shared/user.js communication_iframe/start.js > $BUILD_PATH/communication_iframe.uncompressed.js
+cat lib/jquery-1.7.1.min.js lib/jschannel.js lib/winchan.js lib/underscore-min.js lib/vepbundle.js shared/javascript-extensions.js shared/browserid.js shared/storage.js shared/network.js shared/user.js communication_iframe/start.js > $BUILD_PATH/communication_iframe.uncompressed.js
 
 echo ''
 echo '****Building BrowserID.org HTML, CSS, and JS****'
 echo ''
 
 #produce the main site js
-cat lib/jquery-1.6.2.min.js lib/json2.js lib/underscore-min.js lib/ejs.js shared/javascript-extensions.js shared/browserid.js lib/dom-jquery.js $BUILD_PATH/templates.js shared/renderer.js shared/error-display.js shared/screens.js shared/error-messages.js shared/storage.js shared/network.js shared/user.js shared/tooltip.js shared/validation.js shared/helpers.js pages/page_helpers.js pages/browserid.js pages/index.js pages/add_email_address.js pages/verify_email_address.js pages/forgot.js pages/manage_account.js pages/signin.js pages/signup.js > $BUILD_PATH/browserid.uncompressed.js
+cat lib/vepbundle.js lib/jquery-1.7.1.min.js lib/underscore-min.js lib/ejs.js shared/javascript-extensions.js shared/browserid.js lib/dom-jquery.js lib/jschannel.js lib/winchan.js $BUILD_PATH/templates.js shared/renderer.js shared/error-display.js shared/screens.js shared/error-messages.js shared/storage.js shared/network.js shared/provisioning.js shared/user.js shared/tooltip.js shared/validation.js shared/helpers.js shared/class.js dialog/controllers/page.js pages/page_helpers.js pages/start.js pages/index.js pages/add_email_address.js pages/verify_email_address.js pages/forgot.js pages/manage_account.js pages/signin.js pages/signup.js > $BUILD_PATH/browserid.uncompressed.js
 
 # produce the main site css
 cat css/common.css css/style.css css/m.css > $BUILD_PATH/browserid.uncompressed.css

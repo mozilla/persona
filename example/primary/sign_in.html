@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
+<title>
+BrowserID Example Primary
+</title>
+<style type="text/css">
+body { margin: auto; font: 13px/1.5 Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; }
+.title { font-size: 2em; font-weight: bold; text-align: center; margin: 1.5em; }
+.intro { font-size: 1.2em; width: 600px; margin: auto; }
+.main { text-align: center; margin-top: 2em; font-size: 1.2em; width: 500px; margin: auto; }
+#who { font-weight: bold; }
+
+</style>
+</head>
+<body>
+<div class="title">
+  Sign into our example primary!
+</div>
+
+<div class="main" id="logged_out">
+  Sign in as <span id="who">...</span>
+  <button>doit</button>
+</div>
+
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript">
+
+function getParameterByName(name)
+{
+  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexS = "[\\?&]" + name + "=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(window.location.href);
+  if(results == null)
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+$(document).ready(function() {
+  try {
+    var who = getParameterByName("email").replace(/@.*$/, "");
+    $('#who').text(who);
+  } catch(e) {
+    alert("uh oh: " + e);
+  }
+  $("button").click(function(e) {
+    $.get('/api/login', { user: who })
+      .success(function(r) {
+        window.location = getParameterByName('return_to');
+      });
+  });
+});
+</script>
+</body>
+</html>

@@ -42,11 +42,6 @@
       pageHelpers = bid.PageHelpers,
       token;
 
-  function showError(el) {
-    $(el).fadeIn(250);
-    $("#signUpForm").remove();
-  }
-
   function submit(oncomplete) {
     var pass = $("#password").val(),
         vpass = $("#vpassword").val();
@@ -55,14 +50,8 @@
 
     if (valid) {
       bid.Network.completeUserRegistration(token, pass, function onSuccess(registered) {
-        if (registered) {
-          $("#signUpForm").hide();
-          $("#congrats").fadeIn(250);
-        }
-        else {
-          showError("#cannotcomplete");
-        }
-        oncomplete && oncomplete();
+        var selector = registered ? "#congrats" : "#cannotcomplete";
+        pageHelpers.replaceFormWithNotice(selector, oncomplete);
       }, pageHelpers.getFailure(errors.completeUserRegistration, oncomplete));
     }
     else {
@@ -86,20 +75,22 @@
     bid.Network.emailForVerificationToken(token, function(email) {
       if (email) {
         $('#email').val(email);
+        oncomplete && oncomplete();
       }
       else {
-        showError("#cannotconfirm");
+        pageHelpers.replaceFormWithNotice("#cannotconfirm", oncomplete);
       }
-      oncomplete && oncomplete();
     }, pageHelpers.getFailure(errors.completeUserRegistration, oncomplete));
   }
 
+  // BEGIN TESTING API
   function reset() {
     $("#signUpForm").unbind("submit");
   }
 
   init.submit = submit;
   init.reset = reset;
+  // END TESTING API;
 
   bid.verifyEmailAddress = init;
 

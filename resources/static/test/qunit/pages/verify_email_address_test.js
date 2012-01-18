@@ -41,23 +41,16 @@
       network = bid.Network,
       storage = bid.Storage,
       xhr = bid.Mocks.xhr,
+      testHelpers = bid.TestHelpers,
       validToken = true;
 
   module("pages/verify_email_address", {
     setup: function() {
-      network.setXHR(xhr);
-      xhr.useResult("valid");
-      $("body").removeClass("error");
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      $(".website").text("");
+      testHelpers.setup();
+      bid.Renderer.render("#page_head", "site/verify_email_address", {});
     },
     teardown: function() {
-      network.setXHR($);
-      $("body").removeClass("error");
-      $(".error").removeClass("error");
-      $("#error").stop().hide();
-      $(".website").text("");
+      testHelpers.teardown();
     }
   });
 
@@ -67,7 +60,7 @@
     bid.verifyEmailAddress("token", function() {
       equal($("#email").val(), "testuser@testuser.com", "email set");
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
-      equal($(".website").text(), "browserid.org", "origin is updated");
+      equal($(".website:nth(0)").text(), "browserid.org", "origin is updated");
       start();
     });
   });

@@ -60,42 +60,44 @@ function stripExpires(cookieString) {
   return cookieString.replace(/expires=[^;]*;/, '');
 }
 
+// changed tests that assumed that cookies were coming back in every request
+// because they're not anymore! (2011-12-29)
+
 // certify a key
 suite.addBatch({
   "get context": {
     topic: wsapi.get('/wsapi/session_context'),
-    "parses" : function(r, err) {
-      // make sure there's a cookie
+    "has a cookie because of CSRF setting" : function(r, err) {
+      // make sure there's NO cookie
       var cookie = r.headers["set-cookie"];
-      assert.isNotNull(cookie);
       assert.isNotNull(cookie[0]);
       first_cookie = cookie[0];
     },
-    "with nothing": {
-      topic: wsapi.get('/wsapi/session_context'),
-      "still the same": function(r, err) {
+    "and then session context again": {
+      topic: wsapi.get('/wsapi/logout'),
+      "should not set-cookie": function(r, err) {
         var cookie = r.headers["set-cookie"];
-        // make sure the cookies are the same, but strip out the expires
-        // portion, as the time may have changed! issue #531
-        assert.equal(stripExpires(first_cookie), stripExpires(cookie[0]));
-      }
-    },
-    "let's screw it up": {
-      topic: function() {
-        wsapi.clearCookies();
-
-        // mess up the cookie
-        var the_match = first_cookie.match(/browserid_state=([^;]*);/);
-        assert.isNotNull(the_match);
-        var new_cookie_val = the_match[1].substring(0, the_match[1].length - 1);
-        wsapi.injectCookies({browserid_state: new_cookie_val});
-        return "next";
+        assert.isUndefined(cookie);
       },
-      "and then": {
-        topic: wsapi.get('/wsapi/session_context'),
-        "and result": function(r, err) {
-          var cookie = r.headers["set-cookie"];
-          assert.notEqual(first_cookie, cookie[0]);
+      "then let's screw it up": {
+        topic: function() {
+          wsapi.clearCookies();
+          
+          // mess up the cookie
+          var the_match = first_cookie.match(/browserid_state=([^;]*);/);
+          assert.isNotNull(the_match);
+          var new_cookie_val = the_match[1].substring(0, the_match[1].length - 1);
+          wsapi.injectCookies({browserid_state: new_cookie_val});
+          return "next";
+        },
+        "and then get context": {
+          topic: wsapi.get('/wsapi/session_context'),
+          "and result should have a new cookie for session reset": function(r, err) {
+            var cookie = r.headers["set-cookie"];
+            assert.isNotNull(cookie);
+            assert.isNotNull(cookie[0]);
+            assert.notEqual(first_cookie, cookie[0]);
+          }
         }
       }
     }

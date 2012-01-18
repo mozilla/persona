@@ -43,7 +43,9 @@ BrowserID.Modules.Dialog = (function() {
       user = bid.User,
       errors = bid.Errors,
       dom = bid.DOM,
-      win = window;
+      win = window,
+      channel,
+      sc;
 
   function checkOnline() {
     if (false && 'onLine' in navigator && !navigator.onLine) {
@@ -72,7 +74,8 @@ BrowserID.Modules.Dialog = (function() {
   }
 
   function startChannel() {
-    var self = this;
+    var self = this,
+        hash = win.location.hash;
 
     // first, we see if there is a local channel
     if (win.navigator.id && win.navigator.id.channel) {
@@ -81,24 +84,32 @@ BrowserID.Modules.Dialog = (function() {
     }
 
     // next, we see if the caller intends to call native APIs
-    if (win.location.hash == "#NATIVE" || win.location.hash == "#INTERNAL") {
+    if (hash == "#NATIVE" || hash == "#INTERNAL") {
       // don't do winchan, let it be.
       return;
-    }      
+    }
 
     try {
-      WinChan.onOpen(function(origin, args, cb) {
-        self.get(origin, args.params, function(r) {
-          cb(r);
-        }, function (e) {
-          cb(null);
-        });
+      channel = WinChan.onOpen(function(origin, args, cb) {
+        // XXX this is called whenever the primary provisioning iframe gets
+        // added.  If there are no args, then do not do self.get.
+        if(args) {
+          self.get(origin, args.params, function(r) {
+            cb(r);
+          }, function (e) {
+            cb(null);
+          });
+        }
       });
     } catch (e) {
       self.renderError("error", {
         action: errors.relaySetup
       });
     }
+  }
+
+  function stopChannel() {
+    channel && channel.detach();
   }
 
   function setOrigin(origin) {
@@ -111,18 +122,21 @@ BrowserID.Modules.Dialog = (function() {
   }
 
   var Dialog = bid.Modules.PageModule.extend({
-    init: function(options) {
+    start: function(options) {
       var self=this;
 
       options = options || {};
 
       win = options.window || window;
 
-      Dialog.sc.init.call(self, options);
-
+      sc.start.call(self, options);
       startChannel.call(self);
-
       options.ready && _.defer(options.ready);
+    },
+
+    stop: function() {
+      stopChannel();
+      sc.stop.call(this);
     },
 
     getVerifiedEmail: function(origin_url, success, error) {
@@ -130,7 +144,8 @@ BrowserID.Modules.Dialog = (function() {
     },
 
     get: function(origin_url, params, success, error) {
-      var self=this;
+      var self=this,
+          hash = win.location.hash;
 
       setOrigin(origin_url);
 
@@ -142,9 +157,21 @@ BrowserID.Modules.Dialog = (function() {
 
         params.hostname = user.getHostname();
 
+        // XXX Perhaps put this into the state machine.
         self.bind(win, "unload", onWindowUnload);
-
-        self.publish("start", params);
+        if(hash.indexOf("#CREATE_EMAIL=") === 0) {
+          var email = hash.replace(/#CREATE_EMAIL=/, "");
+          self.renderDialog("primary_user_verified", { email: email });
+          self.close("primary_user", { email: email, add: false });
+        }
+        else if(hash.indexOf("#ADD_EMAIL=") === 0) {
+          var email = hash.replace(/#ADD_EMAIL=/, "");
+          self.renderDialog("primary_user_verified", { email: email });
+          self.close("primary_user", { email: email, add: true });
+        }
+        else {
+          self.publish("start", params);
+        }
       }
     }
 
@@ -154,6 +181,8 @@ BrowserID.Modules.Dialog = (function() {
     // END TESTING API
 
   });
+
+  sc = Dialog.sc;
 
   return Dialog;
 

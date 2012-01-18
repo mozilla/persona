@@ -1,4 +1,5 @@
-/*globals BrowserID: true, _: true */
+#!/usr/bin/env node
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -34,68 +35,65 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-$(function() {
-  "use strict";
+require('./lib/test_env.js');
 
-  /**
-   * For the main page
-   */
+const assert =
+require('assert'),
+vows = require('vows'),
+start_stop = require('./lib/start-stop.js'),
+wsapi = require('./lib/wsapi.js'),
+db = require('../lib/db.js'),
+config = require('../lib/configuration.js'),
+http = require('http'),
+querystring = require('querystring'),
+primary = require('./lib/primary.js');
 
-  var bid = BrowserID,
-      pageHelpers = bid.PageHelpers,
-      user = bid.User,
-      token = pageHelpers.getParameterByName("token"),
-      path = document.location.pathname;
+var suite = vows.describe('auth-with-assertion');
 
-  if (!path || path === "/") {
-    bid.index();
-  }
-  else if (path === "/signin") {
-    bid.signIn();
-  }
-  else if (path === "/signup") {
-    bid.signUp();
-  }
-  else if (path === "/forgot") {
-    bid.forgot();
-  }
-  else if (token && path === "/add_email_address") {
-    bid.addEmailAddress(token);
-  }
-  else if(token && path === "/verify_email_address") {
-    bid.verifyEmailAddress(token);
-  }
+// disable vows (often flakey?) async error behavior
+suite.options.error = false;
 
-  if ($('#vAlign').length) {
-    $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
-  }
+start_stop.addStartupBatches(suite);
 
-  $("a.signOut").click(function(event) {
-    event.preventDefault();
-    event.stopPropagation();
+const TEST_DOMAIN = 'example.domain',
+      TEST_EMAIL = 'testuser@' + TEST_DOMAIN,
+      TEST_ORIGIN = 'http://127.0.0.1:10002';
 
-    user.logoutUser(function() {
-      document.location = "/";
-    }, pageHelpers.getFailure(bid.Errors.logout));
-  });
+// here we go!  let's authenticate with an assertion from
+// a primary.
 
-  $(".display_always,.display_auth,.display_nonauth").hide();
-
-  var ANIMATION_TIME = 500;
-  user.checkAuthentication(function(authenticated) {
-    $(".display_always").fadeIn(ANIMATION_TIME);
-
-    if (authenticated) {
-      $(".display_auth").fadeIn(ANIMATION_TIME);
-      if ($('#emailList').length) {
-        bid.manageAccount();
-      }
-    }
-    else {
-      $(".display_nonauth").fadeIn(ANIMATION_TIME);
-    }
-  });
-
-
+var primaryUser = new primary({
+  email: TEST_EMAIL,
+  domain: TEST_DOMAIN
 });
 
+// now let's generate an assertion using this user
+suite.addBatch({
+  "generating an assertion": {
+    topic: function() {
+      return primaryUser.getAssertion(TEST_ORIGIN);
+    },
+    "succeeds": function(r, err) {
+      assert.isString(r);
+    },
+    "and logging in with the assertion succeeds": {
+      topic: function(assertion)  {
+        wsapi.post('/wsapi/auth_with_assertion', {
+          email: TEST_EMAIL,
+          assertion: assertion
+        }).call(this);
+      },
+      "works": function(r, err) {
+        var resp = JSON.parse(r.body);
+        assert.isObject(resp);
+        assert.isTrue(resp.success);
+      }
+    }
+  }
+});
+
+start_stop.addShutdownBatches(suite);
+
+// run or export the suite.
+if (process.argv[1] === __filename) suite.run();
+else suite.export(module);

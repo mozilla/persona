@@ -44,8 +44,12 @@
       storage = bid.Storage,
       tooltip = bid.Tooltip,
       testHelpers = bid.TestHelpers,
+      user = bid.User,
+      provisioning = bid.Mocks.Provisioning,
       closeCB,
-      errorCB;
+      errorCB,
+      expectedError = testHelpers.expectedXHRFailure,
+      badError = testHelpers.unexpectedXHRFailure;
 
   var controllerMock = {
     close: function(message, info) {
@@ -61,25 +65,19 @@
 
   function expectedClose(message, field, value) {
     return function(m, info) {
-      ok(m, message, "correct message: " + message);
+      equal(m, message, "correct message: " + message);
 
-      if(value) {
-        equal(info[field], value, field + " has correct value of " + value);
-      }
-      else {
-        ok(info[field], field + " has a value");
+      if(field) {
+        if(value) {
+          equal(info[field], value, field + " has correct value of " + value);
+        }
+        else {
+          ok(info[field], field + " has a value");
+        }
       }
     }
   }
 
-  function badError() {
-    ok(false, "error should have never been called");
-  }
-
-  function expectedError() {
-    ok(true, "error condition expected");
-    start();
-  }
 
   function badClose() {
     ok(false, "close should have never been called");
@@ -90,10 +88,14 @@
       testHelpers.setup();
       closeCB = errorCB = null;
       errorCB = badError;
+      user.init({
+        provisioning: provisioning
+      });
     },
 
     teardown: function() {
       testHelpers.teardown();
+      user.reset();
     }
   });
 
@@ -113,10 +115,7 @@
 
     xhr.useResult("ajaxError");
     storage.addEmail("registered@testuser.com", {});
-    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", function() {
-      ok(false, "unexpected finish");
-      start();
-    });
+    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", testHelpers.unexpectedSuccess);
   });
 
   asyncTest("authenticateUser happy case", function() {
@@ -144,7 +143,8 @@
     });
   });
 
-  asyncTest("createUser happy case", function() {
+  asyncTest("createUser with unknown secondary happy case, expect 'user_staged' message", function() {
+    xhr.useResult("unknown_secondary");
     closeCB = expectedClose("user_staged", "email", "unregistered@testuser.com");
 
     dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", function(staged) {
@@ -153,35 +153,40 @@
     });
   });
 
-  asyncTest("createUser could not create case", function() {
+  asyncTest("createUser with unknown secondary, user throttled", function() {
     closeCB = badClose;
 
-    xhr.useResult("invalid");
-    dialogHelpers.createUser.call(controllerMock, "registered@testuser.com", function(staged) {
+    xhr.useResult("throttle");
+    dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", function(staged) {
       equal(staged, false, "user was not staged");
       start();
     });
   });
 
-
   asyncTest("createUser with XHR error", function() {
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
-    dialogHelpers.createUser.call(controllerMock, "registered@testuser.com", function(staged) {
-      ok(false, "complete should not have been called");
+    dialogHelpers.createUser.call(controllerMock, "registered@testuser.com", testHelpers.unexpectedSuccess);
+  });
+
+  asyncTest("addEmail with primary email happy case, expects primary_user message", function() {
+    xhr.useResult("primary");
+    closeCB = expectedClose("primary_user", "add", true);
+    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(status) {
+      ok(status, "correct status");
       start();
     });
   });
 
-  asyncTest("addEmail happy case", function() {
+  asyncTest("addEmail with unknown secondary email happy case", function() {
+    xhr.useResult("unknown_secondary");
     closeCB = expectedClose("email_staged", "email", "unregistered@testuser.com");
-    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
-      ok(added, "email added");
+    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(status) {
+      ok(status, "correct status");
       start();
     });
   });
-
 
   asyncTest("addEmail throttled", function() {
     xhr.useResult("throttle");

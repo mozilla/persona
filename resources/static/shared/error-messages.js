@@ -45,6 +45,18 @@ BrowserID.Errors = (function(){
       title: "Adding Address"
     },
 
+    addEmailWithAssertion: {
+      title: "Adding Primary Email Address to User"
+    },
+
+    addressInfo: {
+      title: "Checking Address Info"
+    },
+
+    authenticateWithAssertion: {
+      title: "Authenticating with Assertion"
+    },
+
     cancelUser: {
       title: "Cancelling User Account"
     },
@@ -82,6 +94,21 @@ BrowserID.Errors = (function(){
       message: "Unfortunately, BrowserID cannot communicate while offline!"
     },
 
+    primaryAuthentication: {
+      title: "Authenticating with Identity Provider",
+      message: "We had trouble communicating with your email provider, please try again!"
+    },
+
+    provisioningPrimary: {
+      title: "Provisioning with Identity Provider",
+      message: "We had trouble communicating with your email provider, please try again!"
+    },
+
+    provisioningBadPrimary: {
+      title: "Provisioning Unsupported Identity Provider",
+      message: "Unfortunately, the email address provided cannot act as a Primary Identity Provider"
+    },
+
     registration: {
       title: "Registration Failed"
     },
@@ -97,6 +124,10 @@ BrowserID.Errors = (function(){
 
     removeEmail: {
       title: "Remove Email Address from Account"
+    },
+
+    setPassword: {
+      title: "Setting Password"
     },
 
     signIn: {
@@ -119,8 +150,16 @@ BrowserID.Errors = (function(){
       title: "Sync Keys for Address"
     },
 
+    tokenInfo: {
+      title: "Getting Token Info"
+    },
+
     updatePassword: {
       title: "Updating password"
+    },
+
+    verifyEmail: {
+      title: "Verifying email address"
     },
 
     xhrError: {

@@ -816,7 +816,7 @@
               if (w) w.focus();
             }
           };
-        },
+        }
       };
     } else {
       return {
@@ -879,8 +879,14 @@
       }
     }
 
+    function checkJSON() {
+      if(!(window.JSON && window.JSON.stringify && window.JSON.parse)) {
+        return "JSON";
+      }
+    }
+
     function isSupported() {
-      reason = checkLocalStorage() || checkPostMessage() || explicitNosupport();
+      reason = checkLocalStorage() || checkPostMessage() || checkJSON() || explicitNosupport();
 
       return !reason;
     }

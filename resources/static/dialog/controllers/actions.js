@@ -1,4 +1,4 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
 /*global _: true, BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -51,8 +51,12 @@ BrowserID.Modules.Actions = (function() {
     if(runningService) {
       serviceManager.stop(runningService);
     }
-    runningService = name;
-    return serviceManager.start(name, options);
+    var module = serviceManager.start(name, options);
+    if(module) {
+      runningService = name;
+    }
+
+    return module;
   }
 
   function startRegCheckService(email, verifier, message) {
@@ -77,9 +81,7 @@ BrowserID.Modules.Actions = (function() {
 
       sc.start.call(self, data);
 
-      if(data.ready) {
-        data.ready();
-      }
+      if(data.ready) _.defer(data.ready);
     },
 
     /**
@@ -101,7 +103,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doCancel: function() {
-      onsuccess && onsuccess(null);
+      if(onsuccess) onsuccess(null);
     },
 
     doConfirmUser: function(email) {
@@ -135,7 +137,7 @@ BrowserID.Modules.Actions = (function() {
     doEmailConfirmed: function() {
       var self=this;
       // yay!  now we need to produce an assertion.
-      user.getAssertion(self.confirmEmail, function(assertion) {
+      user.getAssertion(self.confirmEmail, user.getOrigin(), function(assertion) {
         self.publish("assertion_generated", {
           assertion: assertion
         });
@@ -147,7 +149,7 @@ BrowserID.Modules.Actions = (function() {
       // calls window.close, which would trigger the onerror callback if we
       // tried this afterwards.
       onerror = null;
-      onsuccess && onsuccess(assertion);
+      if(onsuccess) onsuccess(assertion);
     },
 
     doNotMe: function() {
@@ -168,8 +170,23 @@ BrowserID.Modules.Actions = (function() {
           authenticated: authenticated
         });
       }, self.getErrorDialog(errors.checkAuthentication));
-    }
+    },
 
+    doProvisionPrimaryUser: function(info) {
+      startService("provision_primary_user", info);
+    },
+
+    doVerifyPrimaryUser: function(info) {
+      startService("verify_primary_user", info);
+    },
+
+    doPrimaryUserProvisioned: function(info) {
+      startService("primary_user_provisioned", info);
+    },
+
+    doEmailChosen: function(info) {
+      startService("email_chosen", info);
+    }
   });
 
   sc = Module.sc;

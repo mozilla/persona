@@ -47,7 +47,9 @@
       userCreated = true,
       mediator = bid.Mediator,
       registrations = [],
-      register = bid.TestHelpers.register;
+      testHelpers = bid.TestHelpers,
+      register = testHelpers.register,
+      provisioning = bid.Mocks.Provisioning;
 
   function reset() {
     emailRegistered = false;
@@ -63,7 +65,7 @@
   module("controllers/authenticate", {
     setup: function() {
       reset();
-      bid.TestHelpers.setup();
+      testHelpers.setup();
       createController();
     },
 
@@ -76,7 +78,7 @@
         }
       }
       reset();
-      bid.TestHelpers.teardown();
+      testHelpers.teardown();
     }
   });
 
@@ -97,21 +99,40 @@
     controller.checkEmail();
   }
 
-  asyncTest("checkEmail with normal email, user not registered", function() {
+  asyncTest("checkEmail with unknown secondary email, expect 'create_user' message", function() {
     $("#email").val("unregistered@testuser.com");
+    xhr.useResult("unknown_secondary");
+
     testUserUnregistered();
   });
 
-  asyncTest("checkEmail with email with leading/trailing whitespace, user not registered", function() {
+  asyncTest("checkEmail with email with leading/trailing whitespace, user not registered, expect 'create_user' message", function() {
     $("#email").val("    unregistered@testuser.com   ");
+    xhr.useResult("unknown_secondary");
+
     testUserUnregistered();
   });
 
-  asyncTest("checkEmail with normal email, user registered", function() {
+  asyncTest("checkEmail with normal email, user registered, expect 'enter_password' message", function() {
     $("#email").val("registered@testuser.com");
+    xhr.useResult("known_secondary");
 
     register("enter_password", function() {
       ok(true, "email was valid, user registered");
+      start();
+    });
+
+    controller.checkEmail();
+  });
+
+  asyncTest("checkEmail with email that has IdP support, expect 'primary_user' message", function() {
+    $("#email").val("unregistered@testuser.com");
+    xhr.useResult("primary");
+
+    register("primary_user", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "email correctly passed");
+      equal(info.auth, "https://auth_url", "IdP authentication URL passed");
+      equal(info.prov, "https://prov_url", "IdP provisioning URL passed");
       start();
     });
 
@@ -127,17 +148,17 @@
   }
 
   asyncTest("normal authentication is kosher", function() {
-      $("#email").val("registered@testuser.com");
-      $("#password").val("password");
+    $("#email").val("registered@testuser.com");
+    $("#password").val("password");
 
-      testAuthenticated();
+    testAuthenticated();
   });
 
   asyncTest("leading/trailing whitespace on the username is stripped for authentication", function() {
-      $("#email").val("    registered@testuser.com    ");
-      $("#password").val("password");
+    $("#email").val("    registered@testuser.com    ");
+    $("#password").val("password");
 
-      testAuthenticated();
+    testAuthenticated();
   });
 
   asyncTest("forgotPassword triggers forgot_password message", function() {
@@ -153,6 +174,8 @@
 
   asyncTest("createUser with valid email", function() {
     $("#email").val("unregistered@testuser.com");
+    xhr.useResult("unknown_secondary");
+
     register("user_staged", function(msg, info) {
       equal(info.email, "unregistered@testuser.com", "user_staged with correct email triggered");
       start();
@@ -189,8 +212,6 @@
       equal(bid.Tooltip.shown, true, "tooltip is shown");
       start();
     });
-
-
   });
 
   asyncTest("createUser with valid email, XHR error", function() {

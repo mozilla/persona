@@ -41,7 +41,8 @@ BrowserID.Mocks.xhr = (function() {
       domain_key_creation_time: (new Date().getTime() - (30 * 24 * 60 * 60 * 1000)),
       csrf_token: "csrf",
       authenticated: false,
-      code_version: "ABC123"
+      code_version: "ABC123",
+      random_seed: "H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo="
     };
 
   // this cert is meaningless, but it has the right format
@@ -64,12 +65,17 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/authenticate_user valid": { success: true },
       "post /wsapi/authenticate_user invalid": { success: false },
       "post /wsapi/authenticate_user ajaxError": undefined,
+      "post /wsapi/auth_with_assertion primary": { success: true },
+      "post /wsapi/auth_with_assertion valid": { success: true },
+      "post /wsapi/auth_with_assertion invalid": { success: false },
+      "post /wsapi/auth_with_assertion ajaxError": undefined,
       "post /wsapi/cert_key valid": random_cert,
       "post /wsapi/cert_key invalid": undefined,
       "post /wsapi/cert_key ajaxError": undefined,
       "post /wsapi/complete_email_addition valid": { success: true },
       "post /wsapi/complete_email_addition invalid": { success: false },
       "post /wsapi/complete_email_addition ajaxError": undefined,
+      "post /wsapi/stage_user unknown_secondary": { success: true },
       "post /wsapi/stage_user valid": { success: true },
       "post /wsapi/stage_user invalid": { success: false },
       "post /wsapi/stage_user throttle": 403,
@@ -95,6 +101,8 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/account_cancel invalid": { success: false },
       "post /wsapi/account_cancel ajaxError": undefined,
       "post /wsapi/stage_email valid": { success: true },
+      "post /wsapi/stage_email unknown_secondary": { success: true },
+      "post /wsapi/stage_email known_secondary": { success: true },
       "post /wsapi/stage_email invalid": { success: false },
       "post /wsapi/stage_email throttle": 403,
       "post /wsapi/stage_email ajaxError": undefined,
@@ -110,9 +118,23 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/list_emails ajaxError": undefined,
       // Used in conjunction with registration to do a complete userflow
       "get /wsapi/list_emails complete": {"registered@testuser.com":{}},
+      "post /wsapi/set_password valid": { success: true },
+      "post /wsapi/set_password invalid": { success: false },
+      "post /wsapi/set_password ajaxError": undefined,
       "post /wsapi/update_password valid": { success: true },
       "post /wsapi/update_password incorrectPassword": { success: false },
-      "post /wsapi/update_password invalid": undefined
+      "post /wsapi/update_password invalid": undefined,
+      "get /wsapi/address_info?email=unregistered%40testuser.com invalid": undefined,
+      "get /wsapi/address_info?email=unregistered%40testuser.com throttle": { type: "secondary", known: false },
+      "get /wsapi/address_info?email=unregistered%40testuser.com unknown_secondary": { type: "secondary", known: false },
+      "get /wsapi/address_info?email=registered%40testuser.com known_secondary": { type: "secondary", known: true },
+      "get /wsapi/address_info?email=unregistered%40testuser.com primary": { type: "primary", auth: "https://auth_url", prov: "https://prov_url" },
+      "get /wsapi/address_info?email=testuser%40testuser.com unknown_secondary": { type: "secondary", known: false },
+      "get /wsapi/address_info?email=testuser%40testuser.com known_secondary": { type: "secondary", known: true },
+      "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", auth: "https://auth_url", prov: "https://prov_url" },
+      "get /wsapi/address_info?email=testuser%40testuser.com ajaxError": undefined,
+      "post /wsapi/add_email_with_assertion invalid": { success: false },
+      "post /wsapi/add_email_with_assertion valid": { success: true }
     },
 
     setContextInfo: function(field, value) {
@@ -165,7 +187,7 @@ BrowserID.Mocks.xhr = (function() {
       else if (obj.error) {
         // Invalid result - either invalid URL, invalid GET/POST or
         // invalid resultType
-        obj.error({ status: result || 400 }, "errorStatus", "errorThrown");
+        obj.error({ status: result || 400, responseText: "response text" }, "errorStatus", "errorThrown");
       }
     }
   };

@@ -76,7 +76,7 @@
     createController({
       ready: function() {
         equal(testHelpers.errorVisible(), false, "Error is not yet visible");
-        controller.doError("invalidRequiredEmail", {email: "email"});
+        controller.doError("invalid_required_email", {email: "email"});
         equal($("#invalidRequiredEmail").length, 1, "default error screen is shown");
         ok(testHelpers.errorVisible(), "Error is visible");
         start();
@@ -90,6 +90,70 @@
         controller.doOffline();
         ok($("#error .contents").text().length, "contents have been written");
         ok($("#error #offline").text().length, "offline error message has been written");
+        start();
+      }
+    });
+  });
+
+  asyncTest("doProvisionPrimaryUser tries to start the provision_primary_user service", function() {
+    createController({
+      ready: function() {
+        var error;
+        try {
+          controller.doProvisionPrimaryUser({email: "testuser@testuser.com"});
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for provision_primary_user", "correct service started");
+        start();
+      }
+    });
+  });
+
+  asyncTest("doVerifyPrimaryUser tries to start the verify_primary_user service", function() {
+    createController({
+      ready: function() {
+        var error;
+        try {
+          controller.doVerifyPrimaryUser();
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for verify_primary_user", "correct service started");
+        start();
+      }
+    });
+  });
+
+  asyncTest("doPrimaryUserProvisioned tries to start the primary_user_verified service", function() {
+    createController({
+      ready: function() {
+        var error;
+        try {
+          controller.doPrimaryUserProvisioned();
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for primary_user_provisioned", "correct service started");
+        start();
+      }
+    });
+  });
+
+  asyncTest("doEmailChosen tries to start the email_chosen service", function() {
+    createController({
+      ready: function() {
+        var error;
+        try {
+          controller.doEmailChosen({email: "testuser@testuser.com"});
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for email_chosen", "correct service started");
         start();
       }
     });

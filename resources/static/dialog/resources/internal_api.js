@@ -128,7 +128,7 @@
       // User must be authenticated to get an assertion.
       if(authenticated) {
         user.setOrigin(origin);
-        user.getAssertion(email, function(assertion) {
+        user.getAssertion(email, user.getOrigin(), function(assertion) {
           complete(assertion || null);
         }, complete.bind(null, null));
       }

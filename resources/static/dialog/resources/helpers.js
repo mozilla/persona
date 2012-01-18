@@ -43,6 +43,10 @@
       tooltip = bid.Tooltip,
       errors = bid.Errors;
 
+  function complete(callback, status) {
+    callback && callback(status);
+  }
+
   function animateClose(callback) {
     var body = $("body"),
         doAnimation = $("#signIn").length && body.innerWidth() > 640;
@@ -55,10 +59,10 @@
       // Call setTimeout here because on Android default browser, sometimes the
       // callback is not correctly called, it seems as if jQuery does not know
       // the animation is complete.
-      setTimeout(callback, 1750);
+      setTimeout(complete.curry(callback), 1750);
     }
     else {
-      callback();
+      complete(callback);
     }
   }
 
@@ -66,7 +70,7 @@
     var self=this;
     var wait = bid.Screens.wait;
     wait.show("wait", bid.Wait.generateKey);
-    user.getAssertion(email, function(assert) {
+    user.getAssertion(email, user.getOrigin(), function(assert) {
       assert = assert || null;
       wait.hide();
       animateClose(function() {
@@ -74,41 +78,42 @@
           assertion: assert
         });
 
-        if (callback) callback(assert);
+        complete(callback, assert);
       });
-    }, self.getErrorDialog(errors.getAssertion));
+    }, self.getErrorDialog(errors.getAssertion, complete));
   }
 
   function authenticateUser(email, pass, callback) {
     var self=this;
     user.authenticate(email, pass,
-      function onComplete(authenticated) {
+      function (authenticated) {
         if (!authenticated) {
           tooltip.showTooltip("#cannot_authenticate");
         }
-        if (callback) callback(authenticated);
-      }, self.getErrorDialog(errors.authenticate));
+        complete(callback, authenticated);
+      }, self.getErrorDialog(errors.authenticate, callback));
   }
 
   function createUser(email, callback) {
     var self=this;
-    user.createUser(email, function(staged) {
-      if (staged) {
+    user.createSecondaryUser(email, function(status) {
+      if (status) {
         self.close("user_staged", {
           email: email
         });
+        complete(callback, true);
       }
       else {
         tooltip.showTooltip("#could_not_add");
+        complete(callback, false);
       }
-      if (callback) callback(staged);
     }, self.getErrorDialog(errors.createUser, callback));
   }
 
   function resetPassword(email, callback) {
     var self=this;
     user.requestPasswordReset(email, function(status) {
-      if(status.success) {
+      if (status.success) {
         self.close("reset_password", {
           email: email
         });
@@ -116,29 +121,38 @@
       else {
         tooltip.showTooltip("#could_not_add");
       }
-      if (callback) callback(status.success);
-    }, self.getErrorDialog(errors.requestPasswordReset));
+      complete(callback, status.success);
+    }, self.getErrorDialog(errors.requestPasswordReset, callback));
   }
 
   function addEmail(email, callback) {
     var self=this;
-    if(user.getStoredEmailKeypair(email)) {
+
+    if (user.getStoredEmailKeypair(email)) {
       // User already owns this address
       tooltip.showTooltip("#already_own_address");
-      callback(false);
+      complete(callback, false);
     }
     else {
-      user.addEmail(email, function(added) {
-        if (added) {
-          self.close("email_staged", {
-            email: email
-          });
+      user.addressInfo(email, function(info) {
+        if (info.type === "primary") {
+          self.close("primary_user", _.extend(info, { email: email, add: true }));
+          complete(callback, true);
         }
         else {
-          tooltip.showTooltip("#could_not_add");
+          user.addEmail(email, function(added) {
+            if (added) {
+              self.close("email_staged", {
+                email: email
+              });
+            }
+            else {
+              tooltip.showTooltip("#could_not_add");
+            }
+            complete(callback, added);
+          }, self.getErrorDialog(errors.addEmail, callback));
         }
-        if (callback) callback(added);
-      }, self.getErrorDialog(errors.addEmail));
+      }, self.getErrorDialog(errors.addressInfo, callback));
     }
   }
 

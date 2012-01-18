@@ -47,7 +47,8 @@ BrowserID.Modules.Authenticate = (function() {
       dialogHelpers = helpers.Dialog,
       cancelEvent = dialogHelpers.cancelEvent,
       dom = bid.DOM,
-      lastEmail = "";
+      lastEmail = "",
+      emailInfo;
 
   function getEmail() {
     return helpers.getAndValidateEmail("#email");
@@ -59,17 +60,24 @@ BrowserID.Modules.Authenticate = (function() {
 
     if (!email) return;
 
-    user.isEmailRegistered(email, function onComplete(registered) {
-      if (registered) {
-        enterPasswordState.call(self);
+    user.addressInfo(email, function(info) {
+      if(info.type === "primary") {
+        // XXX this will redirect already users already signed in to their IdP
+        // without ever giving them a cancel option.  Kind of crappy.
+        self.close("primary_user", _.extend(info, { email: email }));
       }
       else {
-        createUserState.call(self);
+        if(info.known) {
+          enterPasswordState.call(self);
+        }
+        else {
+          createSecondaryUserState.call(self);
+        }
       }
-    }, self.getErrorDialog(errors.isEmailRegistered));
+    }, self.getErrorDialog(errors.addressInfo));
   }
 
-  function createUser(callback) {
+  function createSecondaryUser(callback) {
     var self=this,
         email = getEmail();
 
@@ -127,12 +135,11 @@ BrowserID.Modules.Authenticate = (function() {
     }
   }
 
-  function createUserState() {
-
+  function createSecondaryUserState() {
     var self=this;
 
     self.publish("create_user");
-    self.submit = createUser;
+    self.submit = createSecondaryUser;
     animateSwap(".start:visible,.returning:visible", ".newuser");
   }
 
@@ -170,7 +177,7 @@ BrowserID.Modules.Authenticate = (function() {
     // BEGIN TESTING API
     ,
     checkEmail: checkEmail,
-    createUser: createUser,
+    createUser: createSecondaryUser,
     authenticate: authenticate,
     forgotPassword: forgotPassword
     // END TESTING API

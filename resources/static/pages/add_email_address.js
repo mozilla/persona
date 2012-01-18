@@ -34,47 +34,123 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-(function() {
+BrowserID.addEmailAddress = (function() {
   "use strict";
 
   var ANIMATION_TIME=250,
       bid = BrowserID,
-      dom = bid.DOM;
+      user = bid.User,
+      storage = bid.Storage,
+      errors = bid.Errors,
+      pageHelpers = bid.PageHelpers,
+      dom = bid.DOM,
+      token,
+      sc;
 
-  function emailRegistrationSuccess(info) {
+  function showError(el, oncomplete) {
+    $(".hint,#signUpForm").hide();
+    $(el).fadeIn(ANIMATION_TIME, oncomplete);
+  }
 
-    dom.setInner("#email", info.email);
+  function emailRegistrationComplete(oncomplete, info) {
+    var valid = info.valid;
+    if (valid) {
+      emailRegistrationSuccess(info, oncomplete.bind(null, true));
+    }
+    else {
+      showError("#cannotconfirm", oncomplete.bind(null, false));
+    }
+  }
+
+  function showRegistrationInfo(info) {
+    dom.setInner(".email", info.email);
 
     if (info.origin) {
       dom.setInner(".website", info.origin);
       $(".siteinfo").show();
     }
-
-    $("#signUpForm").delay(2000).fadeOut(ANIMATION_TIME, function() {
-      $("#congrats").fadeIn(ANIMATION_TIME);
-    });
   }
 
-  function showError(el) {
-    $(".hint").hide();
-    $(el).fadeIn(ANIMATION_TIME);
+  function emailRegistrationSuccess(info, oncomplete) {
+    dom.addClass("body", "complete");
+
+    showRegistrationInfo(info);
+
+    setTimeout(function() {
+      pageHelpers.replaceFormWithNotice("#congrats", oncomplete);
+    }, 2000);
   }
 
-  BrowserID.addEmailAddress = function(token, oncomplete) {
-    var user = BrowserID.User;
+  function userMustEnterPassword() {
+    var emails = storage.getEmails(),
+        length = 0,
+        anySecondaries = _.find(emails, function(item) { length++; return item.type === "secondary"; });
 
-    user.verifyEmail(token, function onSuccess(info) {
-      if (info.valid) {
-        emailRegistrationSuccess(info);
+    return length && !anySecondaries;
+  }
+
+  function verifyWithoutPassword(oncomplete) {
+    user.verifyEmailNoPassword(token,
+      emailRegistrationComplete.bind(null, oncomplete),
+      pageHelpers.getFailure(errors.verifyEmail, oncomplete)
+    );
+  }
+
+  function verifyWithPassword(oncomplete) {
+    var pass = dom.getInner("#password"),
+        vpass = dom.getInner("#vpassword"),
+        valid = bid.Validation.passwordAndValidationPassword(pass, vpass);
+
+    if(valid) {
+      user.verifyEmailWithPassword(token, pass,
+        emailRegistrationComplete.bind(null, oncomplete),
+        pageHelpers.getFailure(errors.verifyEmail, oncomplete)
+      );
+    }
+    else {
+      oncomplete && oncomplete(false);
+    }
+  }
+
+  function startVerification(oncomplete) {
+    user.tokenInfo(token, function(info) {
+      if(info) {
+        showRegistrationInfo(info);
+
+        if(userMustEnterPassword()) {
+          dom.addClass("body", "enter_password");
+          oncomplete(true);
+        }
+        else {
+          verifyWithoutPassword(oncomplete);
+        }
       }
       else {
         showError("#cannotconfirm");
+        oncomplete(false);
       }
-      oncomplete && oncomplete();
-    }, function onFailure() {
-      // XXX This should use a real error page.
-      showError("#cannotcommunicate");
-      oncomplete && oncomplete();
-    });
-  };
+    }, pageHelpers.getFailure(errors.getTokenInfo, oncomplete));
+  }
+
+  var Module = bid.Modules.PageModule.extend({
+    start: function(options) {
+      function oncomplete(status) {
+        options.ready && options.ready(status);
+      }
+
+      this.checkRequired(options, "token");
+
+      token = options.token;
+
+      startVerification(oncomplete);
+
+      sc.start.call(this, options);
+    },
+
+    submit: verifyWithPassword
+  });
+
+  sc = Module.sc;
+
+  return Module;
 }());

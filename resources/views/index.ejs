@@ -32,13 +32,14 @@
             </div>
 
             <form id="edit_password_form" class="showedit">
-              <input type="password" id="old_password" name="old_password" placeholder="old password"/>
-              <input type="password" id="new_password" name="new_password" placeholder="new password"/>
+              <input type="password" id="old_password" name="old_password" placeholder="old password" maxlength="80"/>
+              <input type="password" id="new_password" name="new_password" placeholder="new password" maxlength="80"/>
               <button id="changePassword">done</button>
 
-              <div class="tooltip" for="old_password" id="tooltipOldRequired">Old password is required</div>
-              <div class="tooltip" for="old_password" id="tooltipInvalidPassword">Incorrect old password, password not updated</div>
-              <div class="tooltip" for="new_password" id="tooltipNewRequired">New password is required</div>
+              <div class="tooltip" for="old_password" id="tooltipOldRequired">Old password is required.</div>
+              <div class="tooltip" for="old_password" id="tooltipInvalidPassword">Incorrect old password, password not updated.</div>
+              <div class="tooltip" for="new_password" id="tooltipNewRequired">New password is required.</div>
+              <div class="tooltip" for="new_password" id="tooltipPasswordLength">Password must be between 8 and 80 characters long.</div>
             </form>
           </section>
 

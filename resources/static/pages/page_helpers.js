@@ -87,25 +87,43 @@ BrowserID.PageHelpers = (function() {
       return decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
+  function showFailure(error, info, callback) {
+    info = $.extend(info || {}, { action: error, dialog: false });
+    bid.Screens.error.show("error", info);
+    $("#errorBackground").stop().fadeIn();
+    $("#error").stop().fadeIn();
+
+    callback && callback(false);
+  }
+
   function getFailure(error, callback) {
     return function onFailure(info) {
-      info = $.extend(info, { action: error, dialog: false });
-      bid.Screens.error.show("error", info);
-      $("#errorBackground").stop().fadeIn();
-      $("#error").stop().fadeIn();
-
-      callback && callback(false);
+      showFailure(error, info, callback);
     }
+  }
+
+  function replaceFormWithNotice(selector, onComplete) {
+    $("form").hide();
+    $(selector).fadeIn(ANIMATION_SPEED);
+    // If there is more than one .forminputs, the onComplete callback is called
+    // multiple times, we only want once.
+    onComplete && setTimeout(onComplete, ANIMATION_SPEED);
   }
 
   function replaceInputsWithNotice(selector, onComplete) {
     $('.forminputs').hide();
-    $(selector).stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED, onComplete);
+    $(selector).stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED);
+    // If there is more than one .forminputs, the onComplete callback is called
+    // multiple times, we only want once.
+    onComplete && setTimeout(onComplete, ANIMATION_SPEED);
   }
 
   function showInputs(onComplete) {
     $('.notification').hide();
-    $('.forminputs').stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED, onComplete);
+    $('.forminputs').stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED);
+    // If there is more than one .forminputs, the onComplete callback is called
+    // multiple times, we only want once.
+    onComplete && setTimeout(onComplete, ANIMATION_SPEED);
   }
 
   function showEmailSent(onComplete) {
@@ -138,8 +156,18 @@ BrowserID.PageHelpers = (function() {
     clearStoredEmail: clearStoredEmail,
     getStoredEmail: getStoredEmail,
     getParameterByName: getParameterByName,
+    /**
+     * shows a failure screen immediately
+     * @method showFailure
+     */
+    showFailure: showFailure,
+    /**
+     * get a function to show an error screen when function is called.
+     * @method getFailure
+     */
     getFailure: getFailure,
     replaceInputsWithNotice: replaceInputsWithNotice,
+    replaceFormWithNotice: replaceFormWithNotice,
     showInputs: showInputs,
     showEmailSent: showEmailSent,
     cancelEmailSent: cancelEmailSent,

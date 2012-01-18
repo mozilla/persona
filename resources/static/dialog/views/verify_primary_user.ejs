@@ -1,0 +1,47 @@
+<% if (requiredEmail) { %>
+  <strong>The site requested you sign in using</strong>
+  <div class="form_section">
+      <ul class="inputs">
+
+          <li>
+              <label for="email" class="serif">Email</label>
+              <input id="required_email" class="sans" type="email" value="<%= email %>" disabled />
+              <div id="could_not_add" class="tooltip" for="required_email">
+                We just sent an email to that address! If you really want to send another, wait a minute or two and try again.
+              </div>
+          </li>
+
+          <li>
+              To verify that you own this address, you must
+              sign in with your provider.  This window will be redirected to
+
+              <p>
+                  <strong>http://192.168.1.88:10005/sign_in.html</strong>.
+              </p>
+          </li>
+      </ul>
+
+      <div class="submit cf">
+          <button id="VerifyWithPrimary">Verify</button>
+      </div>
+  </div>
+
+<% } else { %>
+  <strong>Verify With Email Provider</strong>
+
+  <div class="cf form_section">
+    To verify that you own <strong id="primary_email"><%= email %></strong>, you must
+    sign in with your provider.  This window will be redirected to
+
+    <p>
+      <strong><%= auth_url %></strong>.
+    </p>
+
+    <div class="submit cf">
+      <button id="verifyWithPrimary">Verify</button>
+      <button id="cancel">Cancel</button>
+    </div>
+
+  </div>
+<% } %>
+

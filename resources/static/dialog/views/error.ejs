@@ -37,12 +37,17 @@
           <strong>Response Code - </strong> <%= network.textStatus %>
         </p>
 
+        <% if (network.responseText) { %>
+          <p>
+            <strong>Response Text:</strong> <%= network.responseText %>
+          </p>
+        <% } %>
+
         <% if (network.errorThrown) { %>
           <p>
             <strong>Error Type:</strong> <%= network.errorThrown %>
           </p>
         <% } %>
-
       </li>
 
     <% } %>

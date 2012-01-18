@@ -1,4 +1,4 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
 /*global _: true, BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -34,50 +34,31 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-BrowserID.Modules.AddEmail = (function() {
+BrowserID.Modules.EmailChosen = (function() {
   "use strict";
 
   var bid = BrowserID,
-      helpers = bid.Helpers,
-      dialogHelpers = helpers.Dialog,
-      cancelEvent = dialogHelpers.cancelEvent,
-      errors = bid.Errors,
-      tooltip = bid.Tooltip;
+      dialogHelpers = bid.Helpers.Dialog,
+      sc;
 
-  function addEmail(callback) {
-    var email = helpers.getAndValidateEmail("#newEmail"),
-        self=this;
-
-    if (email) {
-      dialogHelpers.addEmail.call(self, email, callback);
-    }
-    else {
-      callback && callback();
-    }
-  }
-
-
-  function cancelAddEmail() {
-    this.close("cancel_state");
-  }
-
-  var AddEmail = bid.Modules.PageModule.extend({
+  var EmailChosen = bid.Modules.PageModule.extend({
     start: function(options) {
-      var self=this;
+      var email = options.email,
+          self=this;
 
-      self.renderDialog("addemail");
+      if(!email) {
+        throw "email required";
+      }
 
-      self.bind("#cancelNewEmail", "click", cancelEvent(cancelAddEmail));
-      AddEmail.sc.start.call(self, options);
-    },
-    submit: addEmail
-    // BEGIN TESTING API
-    ,
-    addEmail: addEmail,
-    cancelAddEmail: cancelAddEmail
-    // END TESTING API
+      dialogHelpers.getAssertion.call(self, email, options.ready);
+
+      sc.start.call(self, options);
+    }
   });
 
-  return AddEmail;
+  sc = EmailChosen.sc;
+
+  return EmailChosen;
 
 }());
+

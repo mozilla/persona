@@ -1,4 +1,4 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
 /*global _: true, BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -37,15 +37,13 @@
 BrowserID.Modules.PickEmail = (function() {
   "use strict";
 
-  var ANIMATION_TIME = 250,
-      bid = BrowserID,
+  var bid = BrowserID,
       user = bid.User,
       errors = bid.Errors,
       storage = bid.Storage,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
-      dom = bid.DOM,
-      assertion;
+      dom = bid.DOM;
 
   function cancelEvent(event) {
     event && event.preventDefault();
@@ -96,7 +94,7 @@ BrowserID.Modules.PickEmail = (function() {
         storage.site.set(origin, "remember", $("#remember").is(":checked"));
       }
 
-      dialogHelpers.getAssertion.call(self, email);
+      self.close("email_chosen", { email: email });
     }
   }
 
@@ -109,7 +107,7 @@ BrowserID.Modules.PickEmail = (function() {
 
       self.allowPersistent = options.allow_persistent;
       dom.addClass("body", "pickemail");
-      self.renderDialog("pickemail", {
+      self.renderDialog("pick_email", {
         identities: user.getStoredEmailKeypairs(),
         // XXX ideal is to get rid of self and have a User function
         // that takes care of getting email addresses AND the last used email
@@ -137,10 +135,13 @@ BrowserID.Modules.PickEmail = (function() {
     stop: function() {
       PickEmail.sc.stop.call(this);
       dom.removeClass("body", "pickemail");
-    },
+    }
 
+    // BEGIN TESTING API
+    ,
     signIn: signIn,
     addEmail: addEmail
+    // END TESTING API
   });
 
   return PickEmail;

@@ -1,4 +1,4 @@
-/*jshint brgwser:true, jQuery: true, forin: true, laxbreak:true */
+/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
 /*global _: true, BrowserID: true, PageController: true */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -45,35 +45,46 @@ BrowserID.Modules.RequiredEmail = (function() {
       dialogHelpers = helpers.Dialog,
       dom = bid.DOM,
       assertion,
-      cancelEvent = dialogHelpers.cancelEvent;
+      cancelEvent = dialogHelpers.cancelEvent,
+      email,
+      authenticated,
+      primaryInfo;
 
   function signIn(callback) {
-    var self = this,
-        email = self.email;
+    var self = this;
 
     // If the user is already authenticated and they own this address, sign
-    // them right in.
-    if(self.authenticated) {
+    // them in.
+    if (authenticated) {
       dialogHelpers.getAssertion.call(self, email, callback);
     }
     else {
-      // If the user is not already authenticated, but they potentially own
-      // this address, try and sign them in and generate an assertion if they
-      // get the password right.
-      var password = helpers.getAndValidatePassword("#password");
-      if (password) {
-        dialogHelpers.authenticateUser.call(self, email, password, function(authenticated) {
-          if (authenticated) {
-            // Now that the user has authenticated, sync their emails and get an
-            // assertion for the email we care about.
-            user.syncEmailKeypair(email, function() {
-              dialogHelpers.getAssertion.call(self, email, callback);
-            }, self.getErrorDialog(errors.syncEmailKeypair));
-          }
-          else {
-            callback && callback();
-          }
-        });
+      if(primaryInfo) {
+        self.close("primary_user", _.extend(primaryInfo, {
+          email: email,
+          requiredEmail: true
+        }));
+        callback && callback();
+      }
+      else {
+        // If the user is not already authenticated, but they potentially own
+        // this address, try and sign them in and generate an assertion if they
+        // get the password right.
+        var password = helpers.getAndValidatePassword("#password");
+        if (password) {
+          dialogHelpers.authenticateUser.call(self, email, password, function(authenticated) {
+            if (authenticated) {
+              // Now that the user has authenticated, sync their emails and get an
+              // assertion for the email we care about.
+              user.syncEmailKeypair(email, function() {
+                dialogHelpers.getAssertion.call(self, email, callback);
+              }, self.getErrorDialog(errors.syncEmailKeypair));
+            }
+            else {
+              callback && callback();
+            }
+          });
+        }
       }
     }
   }
@@ -85,22 +96,22 @@ BrowserID.Modules.RequiredEmail = (function() {
     // registration.
 
     var self=this;
-    if(self.authenticated) {
+    if (authenticated) {
       // If we are veryifying an address and the user is authenticated, it
       // means that the current user does not have control of the address.
       // If the address is registered, it means another account has control of
       // the address and we are consolidating.  If the email is not registered
       // then it means add the address to the current user's account.
-      dialogHelpers.addEmail.call(self, self.email);
+      dialogHelpers.addEmail.call(self, email);
     }
     else {
-      dialogHelpers.createUser.call(self, self.email);
+      dialogHelpers.createUser.call(self, email);
     }
   }
 
   function forgotPassword() {
     var self=this;
-    self.close("forgot_password", { email: self.email, requiredEmail: true });
+    self.close("forgot_password", { email: email, requiredEmail: true });
   }
 
 
@@ -110,12 +121,11 @@ BrowserID.Modules.RequiredEmail = (function() {
 
   var RequiredEmail = bid.Modules.PageModule.extend({
     start: function(options) {
-      var self=this,
-          email = options.email || "",
-          authenticated = options.authenticated || false;
+      var self=this;
 
-      self.email = email;
-      self.authenticated = authenticated;
+      email = options.email || "",
+      authenticated = options.authenticated || false;
+      primaryInfo = null;
 
       function ready() {
         options.ready && options.ready();
@@ -124,30 +134,83 @@ BrowserID.Modules.RequiredEmail = (function() {
       // NOTE: When the app first starts and the user's authentication is
       // checked, all email addresses for authenticated users are synced.  We
       // can be assured by this point that our addresses are up to date.
-      if(authenticated) {
+      if (authenticated) {
         // if the current user owns the required email, sign in with it
         // (without a password). Otherwise, make the user verify the address
         // (which shows no password).
-        var userOwnsEmail = !!user.getStoredEmailKeypair(email);
-        showTemplate(userOwnsEmail, false);
-        ready();
+        var emailInfo = user.getStoredEmailKeypair(email);
+        if (emailInfo) {
+          if(emailInfo.type === "secondary" || emailInfo.cert) {
+            // secondary user or cert is valid, user can sign in normally.
+            showTemplate({ signin: true });
+          }
+          else {
+            // Uh oh, certificate is expired, take care of that.
+            self.close("primary_user", { email: email, requiredEmail: true });
+          }
+          ready();
+        }
+        else {
+          // User does not control address, time to verify.
+          user.addressInfo(email, function(info) {
+            // authenticated user who does not own primary address, make them
+            // verify it.
+            if(info.type === "primary") {
+              self.close("primary_user",
+                _.extend(info, { email: email, requiredEmail: true }));
+            }
+            else {
+              showTemplate({ verify: true });
+            }
+            ready();
+          });
+        }
       }
       else {
-        user.isEmailRegistered(email, function(registered) {
-          // If the current email address is registered but the user is not
-          // authenticated, make them sign in with it.  Otherwise, make them
-          // verify ownership of the address.
-          showTemplate(registered, registered);
-          ready();
-        }, self.getErrorDialog(errors.isEmailRegistered, ready));
+        user.addressInfo(email, function(info) {
+          if (info.type === "primary") {
+            user.isUserAuthenticatedToPrimary(email, info, function(authed) {
+              primaryInfo = info;
+              if (authed) {
+                // If the user is authenticated with their IdP, show the
+                // sign in button to give the user the chance to abort.
+                showTemplate({ signin: true, primary: true });
+              }
+              else {
+                // If the user is not authenticated with their IdP, pass them
+                // off to the primary user flow.
+                self.close("primary_user", {
+                  email: email,
+                  auth_url: primaryInfo.auth
+                });
+              }
+              ready();
+            }, self.getErrorDialog(errors.addressInfo, ready));
+          }
+          else {
+            // If the current email address is registered but the user is not
+            // authenticated, make them sign in with it.  Otherwise, make them
+            // verify ownership of the address.
+            if (info.known) {
+              showTemplate({ signin: true, password: true });
+            }
+            else {
+              showTemplate({ verify: true });
+            }
+            ready();
+          }
+        }, self.getErrorDialog(errors.addressInfo, ready));
       }
 
-      function showTemplate(requireSignin, showPassword) {
-        self.renderDialog("requiredemail", {
+      function showTemplate(options) {
+        options = _.extend({
           email: email,
-          signin: requireSignin,
-          showPassword: showPassword
-        });
+          verify: false,
+          signin: false,
+          password: false,
+          primary: false
+        }, options);
+        self.renderDialog("required_email", options);
 
         self.bind("#sign_in", "click", cancelEvent(signIn));
         self.bind("#verify_address", "click", cancelEvent(verifyAddress));

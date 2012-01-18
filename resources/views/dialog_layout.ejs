@@ -20,7 +20,7 @@
       <div id="wrapper">
           <header id="header" class="cf">
               <ul>
-                  <li><a class="home" target="_blank" href="/"></a></li>
+                  <li><a class="home" target="_blank" href="/">BrowserID Home</a></li>
               </ul>
           </header>
 
@@ -49,7 +49,7 @@
         <% if (production) { %>
           <script type="text/javascript" src="/production/dialog.js"></script>
         <% } else { %>
-          <script type="text/javascript" src="/lib/jquery-1.6.2.min.js"></script>
+          <script type="text/javascript" src="/lib/jquery-1.7.1.min.js"></script>
           <script type="text/javascript" src="/lib/winchan.js"></script>
           <script type="text/javascript" src="/lib/underscore-min.js"></script>
           <script type="text/javascript" src="/lib/vepbundle.js"></script>
@@ -58,6 +58,7 @@
           <script type="text/javascript" src="/lib/hub.js"></script>
           <script type="text/javascript" src="/lib/dom-jquery.js"></script>
           <script type="text/javascript" src="/lib/module.js"></script>
+          <script type="text/javascript" src="/lib/jschannel.js"></script>
           <script type="text/javascript" src="/shared/javascript-extensions.js"></script>
           <script type="text/javascript" src="/shared/mediator.js"></script>
           <script type="text/javascript" src="/shared/class.js"></script>
@@ -68,6 +69,7 @@
           <script type="text/javascript" src="/shared/screens.js"></script>
           <script type="text/javascript" src="/shared/tooltip.js"></script>
           <script type="text/javascript" src="/shared/validation.js"></script>
+          <script type="text/javascript" src="/shared/provisioning.js"></script>
           <script type="text/javascript" src="/shared/network.js"></script>
           <script type="text/javascript" src="/shared/user.js"></script>
           <script type="text/javascript" src="/shared/error-messages.js"></script>
@@ -84,11 +86,16 @@
           <script type="text/javascript" src="/dialog/controllers/actions.js"></script>
           <script type="text/javascript" src="/dialog/controllers/dialog.js"></script>
           <script type="text/javascript" src="/dialog/controllers/authenticate.js"></script>
-          <script type="text/javascript" src="/dialog/controllers/forgotpassword.js"></script>
-          <script type="text/javascript" src="/dialog/controllers/checkregistration.js"></script>
-          <script type="text/javascript" src="/dialog/controllers/pickemail.js"></script>
-          <script type="text/javascript" src="/dialog/controllers/addemail.js"></script>
+          <script type="text/javascript" src="/dialog/controllers/forgot_password.js"></script>
+          <script type="text/javascript" src="/dialog/controllers/check_registration.js"></script>
+          <script type="text/javascript" src="/dialog/controllers/pick_email.js"></script>
+          <script type="text/javascript" src="/dialog/controllers/add_email.js"></script>
           <script type="text/javascript" src="/dialog/controllers/required_email.js"></script>
+          <script type="text/javascript" src="/dialog/controllers/verify_primary_user.js"></script>
+          <script type="text/javascript" src="/dialog/controllers/provision_primary_user.js"></script>
+          <script type="text/javascript" src="/dialog/controllers/primary_user_provisioned.js"></script>
+          <script type="text/javascript" src="/dialog/controllers/set_password.js"></script>
+          <script type="text/javascript" src="/dialog/controllers/email_chosen.js"></script>
           <script type="text/javascript" src="/dialog/start.js"></script>
         <% } %>
       <% } %>

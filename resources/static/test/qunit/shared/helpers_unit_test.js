@@ -42,10 +42,11 @@
 
   module("shared/helpers", {
     setup: function() {
-
+      bid.Renderer.render("#page_head", "site/add_email_address", {});
     },
 
     teardown: function() {
+      $("#page_head").empty();
     }
   });
 
@@ -105,5 +106,20 @@
     var password = helpers.getAndValidatePassword("#nonexistent");
 
     strictEqual(password, null, "invalid target returns null");
+  });
+
+  test("toURL with no GET parameters", function() {
+    var url = helpers.toURL("https://browserid.org");
+
+    equal(url, "https://browserid.org", "correct URL without GET parameters");
+  });
+
+  test("toURL with GET parameters", function() {
+    var url = helpers.toURL("https://browserid.org", {
+      email: "testuser@testuser.com",
+      status: "complete"
+    });
+
+    equal(url, "https://browserid.org?email=testuser%40testuser.com&status=complete", "correct URL with GET parameters");
   });
 }());

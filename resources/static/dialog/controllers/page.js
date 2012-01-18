@@ -75,7 +75,16 @@ BrowserID.Modules.PageModule = (function() {
       }
     },
 
-    start: function() {
+    checkRequired: function(options) {
+      var list = [].slice.call(arguments, 1);
+      for(var item, index = 0; item = list[index]; ++index) {
+        if(!options.hasOwnProperty(item)) {
+          throw "missing config option: " + item;
+        }
+      }
+    },
+
+    start: function(options) {
       var self=this;
       self.bind("form", "submit", onSubmit);
       self.bind("#thisIsNotMe", "click", self.close.bind(self, "notme"));
@@ -129,7 +138,9 @@ BrowserID.Modules.PageModule = (function() {
 
       bid.ErrorDisplay.start();
 
-      $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME, oncomplete);
+      $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME, function() {
+        if(oncomplete) oncomplete(false);
+      });
     },
 
     validate: function() {
@@ -164,7 +175,7 @@ BrowserID.Modules.PageModule = (function() {
         self.renderError("error", $.extend({
           action: action
         }, lowLevelInfo), onerror);
-      }
+      };
     }
   });
 

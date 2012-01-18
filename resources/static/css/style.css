@@ -20,6 +20,9 @@ noscript {
   display: none;
   z-index: 1000;
   background-color: rgba(0,0,0,.6);
+  -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000,endColorstr=#99000000);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000,endColorstr=#99000000);
+  zoom: 1;
 }
 
 #error {
@@ -187,11 +190,13 @@ div.steps {
   color: #626160;
   text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
   height: 0;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   opacity: 0;
 }
 
 .newuser #newuser {
   height: 32px;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   opacity: 1;
   -webkit-transition: all 500ms;
   -moz-transition: all 500ms;
@@ -290,10 +295,11 @@ div.steps {
   font-size: 12px;
 }
 
+/*
 .buttonrow > button {
   width: 48px;
 }
-
+*/
 .buttonrow > .edit { }
 
 .edit .buttonrow > .edit {
@@ -425,6 +431,7 @@ button.delete:active {
 }
 
 .showedit {
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   opacity: 0;
   -webkit-transition: all 500ms;
   -moz-transition: all 500ms;
@@ -434,6 +441,7 @@ button.delete:active {
 }
 
 .edit .showedit {
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   opacity: 1;
 }
 
@@ -583,7 +591,7 @@ h1 {
 
 #signUpForm, #congrats {
   padding: 20px;
-  background-color: rgba(0,0,0,0.035);
+  background-color: #e1deda;
 
   -webkit-border-radius: 5px;
      -moz-border-radius: 5px;
@@ -640,6 +648,9 @@ h1 {
   margin-top: 20px;
   color: red;
   background-color: rgba(255,0,0,0.25);
+  -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#3fff0000,endColorstr=#3fff0000);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#3fff0000,endColorstr=#3fff0000);
+  zoom: 1;
   padding: 5px;
   line-height: 16px;
 
@@ -649,9 +660,16 @@ h1 {
           border-radius: 3px;
 }
 
+#signUpForm > .siteinfo {
+  margin-bottom: 10px;
+}
 
-.siteinfo, #congrats {
+.siteinfo, #congrats, #signUpForm > .password_entry, .enter_password .hint {
   display: none;
+}
+
+.enter_password #signUpForm > .password_entry {
+  display: block;
 }
 
 #congrats p {
@@ -723,7 +741,7 @@ header ul.nav li {
 
 
 header a.signIn, header a.signOut {
-  background-color: rgba(0,0,0,0.1);
+  background-color: #d1ceca;
   padding: 4px 8px;
 
   -webkit-border-radius: 3px;
@@ -733,7 +751,7 @@ header a.signIn, header a.signOut {
 }
 
 header a.signIn:hover, header a.signOut:hover {
-  background-color: rgba(0,0,0,0.25);
+  background-color: #b0afae;
   text-decoration: none;
 }
 
