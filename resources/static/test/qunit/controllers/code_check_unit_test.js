@@ -14,7 +14,8 @@
 
   function createController(config) {
     var config = $.extend({
-      code_ver: "ABC123"
+      code_ver: "ABC123",
+      environment: "PRODUCTION"
     }, config);
 
     controller = BrowserID.Modules.CodeCheck.create();
@@ -33,6 +34,29 @@
     }
   });
 
+  asyncTest("create controller with 'environment: DEBUG' - no code check performed", function() {
+    var scriptCount = $("head > script").length;
+
+    createController({
+      environment: "DEBUG",
+      ready: function(mostRecent) {
+        equal(mostRecent, true, "working on the most recent version");
+
+        var scripts = $("head > script");
+        var scriptAdded = scripts.length !== scriptCount;
+
+        equal(scriptAdded, false, "a script was not added");
+
+        if(scriptAdded) {
+          // Only remove the last script if the script was actually added.
+          scripts.last().remove();
+        }
+
+        start();
+      }
+    });
+  });
+
   asyncTest("create controller with most recent scripts", function() {
     createController({
       ready: function(mostRecent) {
@@ -40,14 +64,6 @@
         start();
       }
     });
-  });
-
-  test("create controller without code_ver specified", function() {
-    raises(function() {
-      createController({
-        code_ver: null
-      });
-    }, "init: code_ver must be defined", "code version not specified throws exception");
   });
 
   asyncTest("create controller with out of date scripts", function() {
