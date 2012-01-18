@@ -5,7 +5,13 @@
 function Gettext(params) {
     return {
       gettext: function (msgid) {
-        return msgid;
+        if (json_locale_data && json_locale_data["client"]) {
+        var dict = json_locale_data["client"];
+          if (dict[msgid]) {
+            return dict[msgid];
+          }
+      }
+      return msgid;
       },
       strargs: function (fmt, args) {
         return fmt;
