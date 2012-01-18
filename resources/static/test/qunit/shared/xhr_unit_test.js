@@ -177,7 +177,18 @@
         start();
       }
     });
+  });
 
+  asyncTest("withContext with has_cookies set to false - trigger 'no_cookies'", function() {
+    transport.setContextInfo("has_cookies", false);
+
+    var noCookiesCalled;
+    testHelpers.register("no_cookies");
+
+    xhr.withContext(function() {
+      testHelpers.testTriggered("no_cookies");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
   });
 
 

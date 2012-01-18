@@ -59,6 +59,7 @@ BrowserID.TestHelpers = (function() {
 
       transport.setDelay(0);
       transport.setContextInfo("auth_level", undefined);
+      transport.setContextInfo("has_cookies", true);
       transport.useResult("valid");
 
       network.init();
@@ -107,6 +108,10 @@ BrowserID.TestHelpers = (function() {
     register: register,
     isTriggered: function(message) {
       return calls[message];
+    },
+
+    testTriggered: function(message) {
+      equal(calls[message], true, message + " was triggered");
     },
 
     errorVisible: function() {

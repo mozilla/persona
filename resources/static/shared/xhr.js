@@ -29,21 +29,19 @@ BrowserID.XHR = (function() {
     clearContext();
   }
 
-  function xhrError(cb, info) {
-    return function(jqXHR, textStatus, errorThrown) {
-      info = info || {};
-      var network = _.extend(info.network || {}, {
-        status: jqXHR && jqXHR.status,
-        textStatus: textStatus,
-        errorThrown: errorThrown,
-        responseText: jqXHR.responseText
-      });
+  function xhrError(cb, info, jqXHR, textStatus, errorThrown) {
+    info = info || {};
+    var network = _.extend(info.network || {}, {
+      status: jqXHR && jqXHR.status,
+      textStatus: textStatus,
+      errorThrown: errorThrown,
+      responseText: jqXHR.responseText
+    });
 
-      info.network = network;
-      mediator.publish("xhr_error", info);
+    info.network = network;
+    mediator.publish("xhr_error", info);
 
-      if (cb) cb(info);
-    };
+    if (cb) cb(info);
   }
 
   function xhrDelay(reqInfo) {
@@ -88,7 +86,7 @@ BrowserID.XHR = (function() {
           }
 
           xhrComplete(reqInfo);
-          _.defer(xhrError(errorCB, reqInfo).curry(resp, jqXHR, textResponse));
+          _.defer(xhrError.curry(errorCB, reqInfo, resp, jqXHR, textResponse));
         };
 
     var req = _.extend({}, options, {
@@ -115,8 +113,6 @@ BrowserID.XHR = (function() {
   function withContext(cb, onFailure) {
     if (typeof context !== 'undefined') cb(context);
     else {
-      // We do not use get because the success response is deferred making our
-      // local/server time offset calculations skewed.
       request({
         type: "GET",
         url: "/wsapi/session_context",
@@ -125,6 +121,10 @@ BrowserID.XHR = (function() {
           context = result;
 
           mediator.publish("context_info", result);
+
+          if(!result.has_cookies) {
+            mediator.publish("no_cookies");
+          }
 
           cb && cb(result);
         },
