@@ -18,6 +18,7 @@
   module("shared/network", {
     setup: function() {
       testHelpers.setup();
+      network.init();
     },
     teardown: function() {
       testHelpers.teardown();

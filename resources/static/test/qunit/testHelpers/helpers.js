@@ -13,7 +13,8 @@ BrowserID.TestHelpers = (function() {
       network = bid.Network,
       user = bid.User,
       storage = bid.Storage,
-      xhr = bid.Mocks.xhr,
+      xhr = bid.XHR,
+      transport = bid.Mocks.xhr,
       provisioning = bid.Mocks.Provisioning,
       screens = bid.Screens,
       tooltip = bid.Tooltip,
@@ -49,13 +50,18 @@ BrowserID.TestHelpers = (function() {
   var TestHelpers = {
     XHR_TIME_UNTIL_DELAY: 100,
     setup: function() {
-      network.init({
-        xhr: xhr,
+      unregisterAll();
+      mediator.reset();
+      xhr.init({
+        transport: transport,
         time_until_delay: TestHelpers.XHR_TIME_UNTIL_DELAY
       });
-      xhr.setDelay(0);
-      xhr.setContextInfo("auth_level", undefined);
-      xhr.useResult("valid");
+
+      transport.setDelay(0);
+      transport.setContextInfo("auth_level", undefined);
+      transport.useResult("valid");
+
+      network.init();
       storage.clear();
 
       var el = $("#controller_head");
@@ -65,8 +71,6 @@ BrowserID.TestHelpers = (function() {
       $("#error").stop().html("<div class='contents'></div>").hide();
       $(".notification").stop().hide();
       $("form").show();
-      unregisterAll();
-      mediator.reset();
       screens.wait.hide();
       screens.error.hide();
       tooltip.reset();
@@ -81,10 +85,11 @@ BrowserID.TestHelpers = (function() {
     teardown: function() {
       unregisterAll();
       mediator.reset();
-      network.init({
-        xhr: $,
+      xhr.init({
+        transport: $,
         time_until_delay: 10 * 1000
       });
+      network.init();
       storage.clear();
       $(".error").removeClass("error");
       $("#error").stop().html("<div class='contents'></div>").hide();
@@ -166,8 +171,8 @@ BrowserID.TestHelpers = (function() {
         start();
       });
 
-      if(xhr.resultType === "valid") {
-        xhr.useResult("ajaxError");
+      if(transport.resultType === "valid") {
+        transport.useResult("ajaxError");
       }
 
       cb && cb.apply(null, args);

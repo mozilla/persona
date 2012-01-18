@@ -6,11 +6,13 @@
   var bid = BrowserID,
       moduleManager = bid.module,
       modules = bid.Modules,
-      network = bid.Network;
+      network = bid.Network,
+      xhr = bid.XHR;
 
 
   // A request that takes more than 10 seconds is considered delayed.
-  network.init({ time_until_delay: 10 * 1000 });
+  xhr.init({ time_until_delay: 10 * 1000 });
+  network.init();
 
   moduleManager.register("code_check", modules.CodeCheck);
 
