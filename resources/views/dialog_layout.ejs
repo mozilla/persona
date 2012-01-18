@@ -2,7 +2,7 @@
 <!-- This Source Code Form is subject to the terms of the Mozilla Public
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
-<html>
+<html LANG="<%= lang %>" dir="<%= lang_dir %>">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,width=device-width" />
@@ -19,7 +19,7 @@
       <link href="/dialog/css/m.css" rel="stylesheet" type="text/css">
   <% } %>
   <link href="https://fonts.googleapis.com/css?family=Droid+Serif:400,400italic,700,700italic" rel="stylesheet" type="text/css">
-  <title>Browser ID</title>
+  <title><%= gettext('Browser ID') %></title>
 </head>
   <body class="waiting">
       <div id="wrapper">
@@ -43,7 +43,7 @@
                 </ul-->
 
                 <div class="learn">
-                    BrowserID is the fast and secure way to sign in &mdash; <a target="_blank" href="/about">learn more</a>
+<%- gettext('BrowserID is the fast and secure way to sign in &mdash; <a target="_blank" href="/about">learn more</a>') %>
                 </div>
 
           </footer>
@@ -52,13 +52,15 @@
 
       <% if (useJavascript !== false) { %>
         <% if (production) { %>
-          <script src="/production/dialog.js"></script>
+          <script src="/production/<%= locale %>/dialog.js"></script>
         <% } else { %>
           <script src="/lib/jquery-1.7.1.min.js"></script>
           <script src="/lib/winchan.js"></script>
           <script src="/lib/underscore-min.js"></script>
           <script src="/lib/vepbundle.js"></script>
           <script src="/lib/ejs.js"></script>
+          <script src="/i18n/<%= locale %>/client.json"></script>
+          <script src="/shared/gettext.js"></script>
           <script src="/shared/browserid.js"></script>
           <script src="/lib/hub.js"></script>
           <script src="/lib/dom-jquery.js"></script>

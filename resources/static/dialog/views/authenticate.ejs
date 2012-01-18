@@ -1,25 +1,24 @@
-<!-- This Source Code Form is subject to the terms of the Mozilla Public
-   - License, v. 2.0. If a copy of the MPL was not distributed with this
-   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
-
-  <strong>Sign in using</strong>
+<% /* This Source Code Form is subject to the terms of the Mozilla Public
+      License, v. 2.0. If a copy of the MPL was not distributed with this
+      file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
+  <strong><%= gettext('Sign in using') %></strong>
   <div class="form_section">
       <ul class="inputs">
 
           <li>
-              <label for="email" class="serif">Email</label>
+              <label for="email" class="serif"><%= gettext('Email') %></label>
               <input id="email" class="sans" type="email" autocapitalize="off" autocorrect="off" value="<%= email %>" maxlength="254" tabindex="1"/>
 
               <div id="email_format" class="tooltip" for="email">
-                This field must be an email address.
+                <%= gettext('This field must be an email address.') %>
               </div>
 
               <div id="email_required" class="tooltip" for="email">
-                The email field is required.
+                <%= gettext('The email field is required.') %>
               </div>
 
               <div id="could_not_add" class="tooltip" for="email">
-                We just sent an email to that address!  If you really want to send another, wait a minute or two and try again.
+                <%= gettext('We just sent an email to that address!  If you really want to send another, wait a minute or two and try again.') %>
               </div>
 
               <div id="already_registered" class="tooltip" for="email">
@@ -28,37 +27,38 @@
           </li>
 
           <li id="hint_section" class="start">
-              <p>Enter your email address to sign in to <strong><%= sitename %></strong></p>
+              <p><%= strargs(gettext('Enter your email address to sign in to <strong>%1</strong>'),
+                             [sitename]) %></p>
           </li>
 
           <li id="create_text_section" class="newuser">
-              <p><strong>Welcome to BrowserID!</strong></p>
-              <p>This email looks new, so let&apos;s get you set up.</p>
+              <p><strong><%= gettext('Welcome to BrowserID!') %></strong></p>
+              <p><%= gettext('This email looks new, so let&apos;s get you set up.') %></p>
           </li>
 
           <li class="returning">
 
-              <label for="password" class="half serif">Password</label>
+              <label for="password" class="half serif"><%= gettext('Password') %></label>
               <div class="half right">
-                  <a id="forgotPassword" href="#" tabindex="4">forgot your password?</a>
+                  <a id="forgotPassword" href="#" tabindex="4"><%= gettext('forgot your password?') %></a>
               </div>
               <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
 
               <div id="password_required" class="tooltip" for="password">
-                The password field is required.
+                <%= gettext('The password field is required.') %>
               </div>
 
               <div id="cannot_authenticate" class="tooltip" for="password">
-                The account cannot be logged in with this username and password.
+                <%= gettext('The account cannot be logged in with this username and password.') %>
               </div>
           </li>
 
       </ul>
 
       <div class="submit cf">
-          <button class="start" tabindex="3">next</button>
-          <button class="newuser" tabindex="3">verify email</button>
+          <button class="start" tabindex="3"><%= gettext('next') %></button>
+          <button class="newuser" tabindex="3"><%= gettext('verify email') %></button>
 
-          <button class="returning" tabindex="3">select email</button>
+          <button class="returning" tabindex="3"><%= gettext('select email') %></button>
       </div>
   </div>

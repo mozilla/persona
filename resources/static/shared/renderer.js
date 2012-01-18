@@ -25,6 +25,16 @@ BrowserID.Renderer = (function() {
         url: "/dialog/views/" + templateName + ".ejs"
       };
     }
+    // TODO(aok) Do caching like EJS below
+    if (vars) {
+      var params = {
+            "domain" : "client",
+            "locale_data" : json_locale_data
+      };
+      var gt = new Gettext(params);
+      vars['gettext'] = gt.gettext.bind(gt);
+      vars['strargs'] = gt.strargs.bind(gt);
+    }
 
     var template = templateCache[templateName];
     if(!template) {
@@ -49,6 +59,5 @@ BrowserID.Renderer = (function() {
   return {
     render: render,
     append: append
-  }
+  };
 }());
-

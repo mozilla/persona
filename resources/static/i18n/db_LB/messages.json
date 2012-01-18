@@ -1,0 +1,140 @@
+var json_locale_data = {
+   "messages" : {
+      "Error encountered trying to complete registration." : [
+         null,
+         "‮Ǝɹɹoɹ ǝuɔonuʇǝɹǝp ʇɹʎıuƃ ʇo ɔoɯdʅǝʇǝ ɹǝƃısʇɹɐʇıou·"
+      ],
+      "" : {
+         "MIME-Version" : " 1.0",
+         "POT-Creation-Date" : " 2012-01-11 16:41-0800",
+         "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
+         "Content-Type" : " text/plain; charset=UTF-8",
+         "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
+         "Language-Team" : " LANGUAGE <LL@li.org>",
+         "Content-Transfer-Encoding" : " 8bit",
+         "Project-Id-Version" : " PACKAGE VERSION",
+         "Report-Msgid-Bugs-To" : " "
+      },
+      "Verification password is required." : [
+         null,
+         "‮Ʌǝɹıɟıɔɐʇıou dɐssʍoɹp ıs ɹǝbnıɹǝp·"
+      ],
+      "BrowserID" : [
+         null,
+         "‮ԐɹoʍsǝɹIᗡ"
+      ],
+      "Finish signing into: " : [
+         null,
+         "‮Ⅎıuısɥ sıƃuıuƃ ıuʇo: "
+      ],
+      "Your Email" : [
+         null,
+         "‮⅄onɹ Ǝɯɐıʅ"
+      ],
+      "Error comunicating with server." : [
+         null,
+         "‮Ǝɹɹoɹ ɔoɯnuıɔɐʇıuƃ ʍıʇɥ sǝɹʌǝɹ·"
+      ],
+      "Last step!" : [
+         null,
+         "‮⅂ɐsʇ sʇǝd¡"
+      ],
+      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>" : [
+         null,
+         "‮ԐɹoʍsǝɹIᗡ ıs ʇɥǝ ɟɐsʇ ɐup sǝɔnɹǝ ʍɐʎ ʇo sıƃu ıu &mdash;‮ <a target=\"_blank\" href=\"/about\">‮ʅǝɐɹu ɯoɹǝ</a>"
+      ],
+      "Your new address is set up and you should now be signed in. You may now close this window and go back to" : [
+         null,
+         "‮⅄onɹ uǝʍ ɐppɹǝss ıs sǝʇ nd ɐup ʎon sɥonʅp uoʍ qǝ sıƃuǝp ıu· ⅄on ɯɐʎ uoʍ ɔʅosǝ ʇɥıs ʍıupoʍ ɐup ƃo qɐɔʞ ʇo"
+      ],
+      "Verify Password" : [
+         null,
+         "‮Ʌǝɹıɟʎ Ԁɐssʍoɹp"
+      ],
+      "Password must be between 8 and 80 characters long." : [
+         null,
+         "‮Ԁɐssʍoɹp ɯnsʇ qǝ qǝʇʍǝǝu 8‮ ɐup 80‮ ɔɥɐɹɐɔʇǝɹs ʅouƃ·"
+      ],
+      "Complete Login to %1 using BrowserID" : [
+         null,
+         "‮Ↄoɯdʅǝʇǝ ⅂oƃıu ʇo %1‮ nsıuƃ ԐɹoʍsǝɹIᗡ"
+      ],
+      "(A better way to sign in)" : [
+         null,
+         "‮(∀ qǝʇʇǝɹ ʍɐʎ ʇo sıƃu ıu)"
+      ],
+      "Finish registration by clicking this link:" : [
+         null,
+         "‮Ⅎıuısɥ ɹǝƃısʇɹɐʇıou qʎ ɔʅıɔʞıuƃ ʇɥıs ʅıuʞ:"
+      ],
+      "Thanks," : [
+         null,
+         "‮⊥ɥɐuʞs´"
+      ],
+      "Communicating with server" : [
+         null,
+         "‮Ↄoɯɯnuıɔɐʇıuƃ ʍıʇɥ sǝɹʌǝɹ"
+      ],
+      "Enter a Password" : [
+         null,
+         "‮Ǝuʇǝɹ ɐ Ԁɐssʍoɹp"
+      ],
+      "Error encountered while attempting to confirm your address. Have you previously verified this address?" : [
+         null,
+         "‮Ǝɹɹoɹ ǝuɔonuʇǝɹǝp ʍɥıʅǝ ɐʇʇǝɯdʇıuƃ ʇo ɔouɟıɹɯ ʎonɹ ɐppɹǝss· Hɐʌǝ ʎon dɹǝʌıonsʅʎ ʌǝɹıɟıǝp ʇɥıs ɐppɹǝss?"
+      ],
+      "Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!" : [
+         null,
+         "‮⊥ɥɐuʞ ʎon ɟoɹ sıƃuıuƃ nd ʍıʇɥ <strong>‮ԐɹoʍsǝɹIᗡ</strong>‮· ⅄on ɔɐu uoʍ nsǝ ʎonɹ <strong>‮ԐɹoʍsǝɹIᗡ</strong>‮ ɐɔɔonuʇ ʇo <em>‮Sıƃu Iu</em>‮ oɹ <em>‮Sıƃu ∩d</em>‮ ʇo ʍǝqsıʇǝs ɐʅʅ ɐɔɹoss ʇɥǝ ʍǝq¡"
+      ],
+      "Email Verification" : [
+         null,
+         "‮Ǝɯɐıʅ Ʌǝɹıɟıɔɐʇıou"
+      ],
+      "<strong class=\"email\">Your address</strong> has been verified!" : [
+         null,
+         "<strong class=\"email\">‮⅄onɹ ɐppɹǝss</strong>‮ ɥɐs qǝǝu ʌǝɹıɟıǝp¡"
+      ],
+      "Browser ID" : [
+         null,
+         "‮Ԑɹoʍsǝɹ Iᗡ"
+      ],
+      "Finish" : [
+         null,
+         "‮Ⅎıuısɥ"
+      ],
+      "There was a problem with your signup link.  Has this address already been registered?" : [
+         null,
+         "‮⊥ɥǝɹǝ ʍɐs ɐ dɹoqʅǝɯ ʍıʇɥ ʎonɹ sıƃund ʅıuʞ·  Hɐs ʇɥıs ɐppɹǝss ɐʅɹǝɐpʎ qǝǝu ɹǝƃısʇǝɹǝp?"
+      ],
+      "Password is required." : [
+         null,
+         "‮Ԁɐssʍoɹp ıs ɹǝbnıɹǝp·"
+      ],
+      "Passwords do not match." : [
+         null,
+         "‮Ԁɐssʍoɹps po uoʇ ɯɐʇɔɥ·"
+      ],
+      "New Password" : [
+         null,
+         "‮Nǝʍ Ԁɐssʍoɹp"
+      ],
+      "Repeat Password" : [
+         null,
+         "‮ᴚǝdǝɐʇ Ԁɐssʍoɹp"
+      ],
+      "Just a moment while we talk with the server." : [
+         null,
+         "‮ſnsʇ ɐ ɯoɯǝuʇ ʍɥıʅǝ ʍǝ ʇɐʅʞ ʍıʇɥ ʇɥǝ sǝɹʌǝɹ·"
+      ],
+      "Email Address" : [
+         null,
+         "‮Ǝɯɐıʅ ∀ppɹǝss"
+      ],
+      "If you are NOT trying to sign into this site, just ignore this email." : [
+         null,
+         "‮Iɟ ʎon ɐɹǝ NO⊥ ʇɹʎıuƃ ʇo sıƃu ıuʇo ʇɥıs sıʇǝ´ ɾnsʇ ıƃuoɹǝ ʇɥıs ǝɯɐıʅ·"
+      ]
+   }
+}
+;
