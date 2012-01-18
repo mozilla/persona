@@ -1,4 +1,15 @@
-train-2011.01.11 (in progress):
+train-2011.01.18:
+  * support for 3rd party primary identity providers: #761, #904, #865
+  * loadgen improvements
+  * Re-license under MPL2: #859 (& #827)
+  * clean up unused developer tools (vagrant): #861
+  * (primary support) declaration of support now hosted in .well-known/browserid (was 'vep'): #865
+  * unit test fixes: #889 & #851
+  * help link opens in new window: #728
+  * fix 'not supported' display in IE7: #831
+  * language/rendering refinements: #850, #439, #622, #818, #901, #630, #888, #345, #815
+  * front end performance improvements: #899, #910
+  * better UX for network timeouts: #905
 
 train-2011.01.05:
   * client entropy pool mixes in randomness from server for better browser RNG: #298, #800

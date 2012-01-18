@@ -1,12 +1,12 @@
 %define _rootdir /opt/browserid
 
 Name:          browserid-server
-Version:       0.2012.01.11
+Version:       0.2012.01.18
 Release:       1%{?dist}
 Summary:       BrowserID server
 Packager:      Pete Fritchman <petef@mozilla.com>
 Group:         Development/Libraries
-License:       MPL 1.1+/GPL 2.0+/LGPL 2.1+
+License:       MPL 2.0
 URL:           https://github.com/mozilla/browserid
 Source0:       %{name}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root
