@@ -8,7 +8,7 @@
 
   var bid = BrowserID,
       mediator = bid.Mediator,
-      xhr = bid.Mocks.xhr,
+      transport = bid.Mocks.xhr,
       testHelpers = bid.TestHelpers,
       TEST_EMAIL = "testuser@testuser.com",
       failureCheck = testHelpers.failureCheck;
@@ -34,7 +34,7 @@
   });
 
   asyncTest("authenticate with invalid user", function() {
-    xhr.useResult("invalid");
+    transport.useResult("invalid");
     network.authenticate(TEST_EMAIL, "invalid", function onSuccess(authenticated) {
       equal(authenticated, false, "invalid authentication");
       start();
@@ -53,7 +53,7 @@
   });
 
   asyncTest("authenticateWithAssertion with invalid email/assertion", function() {
-    xhr.useResult("invalid");
+    transport.useResult("invalid");
 
     network.authenticateWithAssertion(TEST_EMAIL, "test_assertion", function(status) {
       equal(status, false, "user not authenticated, status set to false");
@@ -66,8 +66,8 @@
   });
 
   asyncTest("checkAuth: simulate a delayed request - xhr_delay and xhr_complete both triggered", function() {
-    xhr.setContextInfo("auth_level", "primary");
-    xhr.setDelay(200);
+    transport.setContextInfo("auth_level", "primary");
+    transport.setDelay(200);
     network.init({
       time_until_delay: 100
     });
@@ -91,9 +91,9 @@
   });
 
   asyncTest("checkAuth: immediate success return - no xhr_delay triggered", function() {
-    xhr.setContextInfo("auth_level", "primary");
+    transport.setContextInfo("auth_level", "primary");
 
-    xhr.setDelay(50);
+    transport.setDelay(50);
     network.init({
       time_until_delay: 100
     });
@@ -109,7 +109,7 @@
   });
 
   asyncTest("checkAuth with valid authentication", function() {
-    xhr.setContextInfo("auth_level", "primary");
+    transport.setContextInfo("auth_level", "primary");
     network.checkAuth(function onSuccess(authenticated) {
       // a wait to happen to give xhr_delay a chance to return
       equal(authenticated, "primary", "we have an authentication");
@@ -118,8 +118,8 @@
   });
 
   asyncTest("checkAuth with invalid authentication", function() {
-    xhr.useResult("invalid");
-    xhr.setContextInfo("auth_level", undefined);
+    transport.useResult("invalid");
+    transport.setContextInfo("auth_level", undefined);
 
     network.checkAuth(function onSuccess(authenticated) {
       equal(authenticated, undefined, "we are not authenticated");
@@ -130,8 +130,8 @@
 
 
   asyncTest("checkAuth with XHR failure", function() {
-    xhr.useResult("ajaxError");
-    xhr.setContextInfo("auth_level", undefined);
+    transport.useResult("ajaxError");
+    transport.setContextInfo("auth_level", undefined);
 
     // Do not convert this to failureCheck, we do this manually because
     // checkAuth does not make an XHR request.  Since it does not make an XHR
@@ -152,7 +152,7 @@
 
 
   asyncTest("logout with 400 failure - user already logged out", function() {
-    xhr.useResult("not_authenticated");
+    transport.useResult("not_authenticated");
 
     network.logout(function onSuccess() {
       ok(true, "we can logout");
@@ -173,7 +173,7 @@
   });
 
   asyncTest("completeEmailRegistration with invalid token", function() {
-    xhr.useResult("invalid");
+    transport.useResult("invalid");
     network.completeEmailRegistration("badtoken", "password", function onSuccess(proven) {
       equal(proven, false, "bad token could not be proved");
       start();
@@ -192,7 +192,7 @@
   });
 
   asyncTest("createUser with invalid user", function() {
-    xhr.useResult("invalid");
+    transport.useResult("invalid");
     network.createUser("invaliduser", "origin", function onSuccess(created) {
       equal(created, false);
       start();
@@ -200,7 +200,7 @@
   });
 
   asyncTest("createUser throttled", function() {
-    xhr.useResult("throttle");
+    transport.useResult("throttle");
 
     network.createUser("validuser", "origin", function onSuccess(added) {
       equal(added, false, "throttled email returns onSuccess but with false as the value");
@@ -213,7 +213,7 @@
   });
 
   asyncTest("checkUserRegistration with pending email", function() {
-    xhr.useResult("pending");
+    transport.useResult("pending");
 
     network.checkUserRegistration("registered@testuser.com", function(status) {
       equal(status, "pending");
@@ -222,7 +222,7 @@
   });
 
   asyncTest("checkUserRegistration with complete email", function() {
-    xhr.useResult("complete");
+    transport.useResult("complete");
 
     network.checkUserRegistration("registered@testuser.com", function(status) {
       equal(status, "complete");
@@ -242,7 +242,7 @@
   });
 
   asyncTest("completeUserRegistration with invalid token", function() {
-    xhr.useResult("invalid");
+    transport.useResult("invalid");
 
     network.completeUserRegistration("token", "password", function(registered) {
       equal(registered, false);
@@ -264,7 +264,7 @@
   });
 
   asyncTest("cancelUser invalid", function() {
-    xhr.useResult("invalid");
+    transport.useResult("invalid");
 
     network.cancelUser(function() {
       // XXX need a test here.
@@ -304,7 +304,7 @@
   });
 
   asyncTest("addSecondaryEmail invalid", function() {
-    xhr.useResult("invalid");
+    transport.useResult("invalid");
     network.addSecondaryEmail("address", "origin", function onSuccess(added) {
       equal(added, false);
       start();
@@ -312,7 +312,7 @@
   });
 
   asyncTest("addSecondaryEmail throttled", function() {
-    xhr.useResult("throttle");
+    transport.useResult("throttle");
 
     network.addSecondaryEmail("address", "origin", function onSuccess(added) {
       equal(added, false, "throttled email returns onSuccess but with false as the value");
@@ -325,7 +325,7 @@
   });
 
   asyncTest("checkEmailRegistration pending", function() {
-    xhr.useResult("pending");
+    transport.useResult("pending");
 
     network.checkEmailRegistration("registered@testuser.com", function(status) {
       equal(status, "pending");
@@ -334,7 +334,7 @@
   });
 
   asyncTest("checkEmailRegistration complete", function() {
-    xhr.useResult("complete");
+    transport.useResult("complete");
 
     network.checkEmailRegistration("registered@testuser.com", function(status) {
       equal(status, "complete");
@@ -352,7 +352,7 @@
 
 
   asyncTest("addEmailWithAssertion, user not authenticated or invalid assertion, returns false status", function() {
-    xhr.useResult("invalid");
+    transport.useResult("invalid");
 
     network.addEmailWithAssertion("test_assertion", function(status) {
       equal(status, false, "email not added, status set to false");
@@ -377,7 +377,7 @@
   });
 
   asyncTest("emailForVerificationToken with invalid token - returns null result", function() {
-    xhr.useResult("invalid");
+    transport.useResult("invalid");
 
     network.emailForVerificationToken("token", function(result) {
       equal(result, null, "invalid token returns null result");
@@ -386,7 +386,7 @@
   });
 
   asyncTest("emailForVerificationToken that needs password - returns needs_password and email address", function() {
-    xhr.useResult("needsPassword");
+    transport.useResult("needsPassword");
 
     network.emailForVerificationToken("token", function(result) {
       equal(result.needs_password, true, "needs_password correctly set to true");
@@ -412,7 +412,7 @@
   });
 
   asyncTest("removeEmail invalid", function() {
-    xhr.useResult("invalid");
+    transport.useResult("invalid");
 
     network.removeEmail("invalidemail", function onSuccess() {
       // XXX need a test here;
@@ -451,7 +451,7 @@
 
   asyncTest("serverTime", function() {
     // I am forcing the server time to be 1.25 seconds off.
-    xhr.setContextInfo("server_time", new Date().getTime() - 1250);
+    transport.setContextInfo("server_time", new Date().getTime() - 1250);
 
     network.serverTime(function onSuccess(time) {
       var diff = Math.abs((new Date()) - time);
@@ -468,7 +468,7 @@
   });
 
   asyncTest("serverTime with XHR failure before context has been setup", function() {
-    xhr.useResult("contextAjaxError");
+    transport.useResult("contextAjaxError");
 
     failureCheck(network.serverTime);
   });
@@ -481,13 +481,13 @@
   });
 
   asyncTest("codeVersion with XHR failure", function() {
-    xhr.useResult("contextAjaxError");
+    transport.useResult("contextAjaxError");
 
     failureCheck(network.codeVersion);
   });
 
   asyncTest("addressInfo with unknown secondary email", function() {
-    xhr.useResult("unknown_secondary");
+    transport.useResult("unknown_secondary");
 
     network.addressInfo(TEST_EMAIL, function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
@@ -497,7 +497,7 @@
   });
 
   asyncTest("addressInfo with known seconday email", function() {
-    xhr.useResult("known_secondary");
+    transport.useResult("known_secondary");
 
     network.addressInfo(TEST_EMAIL, function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
@@ -507,7 +507,7 @@
   });
 
   asyncTest("addressInfo with primary email", function() {
-    xhr.useResult("primary");
+    transport.useResult("primary");
 
     network.addressInfo(TEST_EMAIL, function onComplete(data) {
       equal(data.type, "primary", "type is primary");
@@ -529,7 +529,7 @@
   });
 
   asyncTest("changePassword with incorrect old password, expect complete callback with false status", function() {
-    xhr.useResult("incorrectPassword");
+    transport.useResult("incorrectPassword");
 
     network.changePassword("oldpassword", "newpassword", function onComplete(status) {
       equal(status, false, "calls onComplete with false status");
@@ -539,6 +539,20 @@
 
   asyncTest("changePassword with XHR failure, expect error callback", function() {
     failureCheck(network.changePassword, "oldpassword", "newpassword");
+  });
+
+  asyncTest("cookiesEnabled with cookies enabled", function() {
+    transport.setContextInfo("cookies_enabled", true);
+
+    network.cookiesEnabled(function(status) {
+      equal(status, true, "cookies are enabled, correct status");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("cookiesEnabled with XHR failure", function() {
+    transport.useResult("contextAjaxError");
+    failureCheck(network.cookiesEnabled);
   });
 
 }());

@@ -122,10 +122,6 @@ BrowserID.XHR = (function() {
 
           mediator.publish("context_info", result);
 
-          if(!result.has_cookies) {
-            mediator.publish("no_cookies");
-          }
-
           cb && cb(result);
         },
         error: onFailure

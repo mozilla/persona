@@ -7,11 +7,13 @@ BrowserID.Network = (function() {
   "use strict";
 
   var bid = BrowserID,
+      complete = bid.Helpers.complete,
       context,
       server_time,
       domain_key_creation_time,
       auth_status,
       code_version,
+      cookies_enabled,
       time_until_delay,
       mediator = bid.Mediator,
       xhr = bid.XHR,
@@ -27,6 +29,7 @@ BrowserID.Network = (function() {
     domain_key_creation_time = result.domain_key_creation_time;
     auth_status = result.auth_level;
     code_version = result.code_version;
+    cookies_enabled = result.cookies_enabled || true;
 
     // seed the PRNG
     // FIXME: properly abstract this out, probably by exposing a jwcrypto
@@ -57,7 +60,7 @@ BrowserID.Network = (function() {
       // session, let's set it to perhaps save a network request
       // (to fetch session context).
       auth_status = authenticated && type;
-      if (onComplete) onComplete(authenticated);
+      complete(onComplete, authenticated);
     } catch (e) {
       onFailure("unexpected server response: " + e);
     }
@@ -127,9 +130,9 @@ BrowserID.Network = (function() {
     checkAuth: function(onComplete, onFailure) {
       withContext(function() {
         try {
-          if (onComplete) onComplete(auth_status);
+          complete(onComplete, auth_status);
         } catch(e) {
-          if (onFailure) onFailure(e.toString());
+          complete(onFailure, e.toString());
         }
       }, onFailure);
     },
@@ -150,12 +153,12 @@ BrowserID.Network = (function() {
           // FIXME: we should return a confirmation that the
           // user was successfully logged out.
           auth_status = false;
-          if (onComplete) onComplete();
+          complete(onComplete);
         },
         error: function(info, xhr, textStatus) {
           if (info.network.status === 400) {
             auth_status = false;
-            if (onComplete) onComplete();
+            complete(onComplete);
           }
           else {
             onFailure && onFailure(info);
@@ -180,14 +183,14 @@ BrowserID.Network = (function() {
           site : origin
         },
         success: function(status) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: function(info) {
           // 403 is throttling.
           if (info.network.status === 403) {
-            if (onComplete) onComplete(false);
+            complete(onComplete, false);
           }
-          else if (onFailure) onFailure(info);
+          else complete(onFailure, info);
         }
       });
     },
@@ -209,7 +212,7 @@ BrowserID.Network = (function() {
             // force needs_password to be set;
             data = _.extend({ needs_password: false }, result);
           }
-          if (onComplete) onComplete(data);
+          complete(onComplete, data);
         },
         error: onFailure
       });
@@ -225,7 +228,7 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/user_creation_status?email=" + encodeURIComponent(email),
         success: function(status, textStatus, jqXHR) {
-          if (onComplete) onComplete(status.status);
+          complete(onComplete, status.status);
         },
         error: onFailure
       });
@@ -247,7 +250,7 @@ BrowserID.Network = (function() {
           pass: password
         },
         success: function(status, textStatus, jqXHR) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -270,7 +273,7 @@ BrowserID.Network = (function() {
           pass: password
         },
         success: function(status, textStatus, jqXHR) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -306,7 +309,7 @@ BrowserID.Network = (function() {
           password: password
         },
         success: function(status) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -329,7 +332,7 @@ BrowserID.Network = (function() {
           newpass: newPassword
         },
         success: function(status) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -364,7 +367,7 @@ BrowserID.Network = (function() {
           assertion: assertion
         },
         success: function(status) {
-          onComplete && onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -386,14 +389,14 @@ BrowserID.Network = (function() {
           site: origin
         },
         success: function(response) {
-          if (onComplete) onComplete(response.success);
+          complete(onComplete, response.success);
         },
         error: function(info) {
           // 403 is throttling.
           if (info.network.status === 403) {
-            if (onComplete) onComplete(false);
+            complete(onComplete, false);
           }
-          else if (onFailure) onFailure(info);
+          else complete(onFailure, info);
         }
       });
     },
@@ -409,7 +412,7 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
         success: function(status, textStatus, jqXHR) {
-          if (onComplete) onComplete(status.status);
+          complete(onComplete, status.status);
         },
         error: onFailure
       });
@@ -428,7 +431,7 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/have_email?email=" + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
-          if (onComplete) onComplete(data.email_known);
+          complete(onComplete, data.email_known);
         },
         error: onFailure
       });
@@ -451,7 +454,7 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/address_info?email=" + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
-          if (onComplete) onComplete(data);
+          complete(onComplete, data);
         },
         error: onFailure
       });
@@ -471,7 +474,7 @@ BrowserID.Network = (function() {
           email: email
         },
         success: function(status, textStatus, jqXHR) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -488,15 +491,8 @@ BrowserID.Network = (function() {
           email: email,
           pubkey: pubkey.serialize()
         },
-        success: function(info) {
-          var b=true;
-          onComplete.apply(null, arguments);
-        },
-        error: function(info) {
-          var b=true;
-
-          onFailure.apply(null, arguments);
-        }
+        success: onComplete,
+        error: onFailure
       });
     },
 
@@ -527,9 +523,9 @@ BrowserID.Network = (function() {
         try {
           if (!server_time) throw "can't get server time!";
           var offset = (new Date()).getTime() - server_time.local;
-          if (onComplete) onComplete(new Date(offset + server_time.remote));
+          complete(onComplete, new Date(offset + server_time.remote));
         } catch(e) {
-          if (onFailure) onFailure(e.toString());
+          complete(onFailure, e.toString());
         }
       }, onFailure);
     },
@@ -547,9 +543,9 @@ BrowserID.Network = (function() {
       withContext(function() {
         try {
           if (!domain_key_creation_time) throw "can't get domain key creation time!";
-          if (onComplete) onComplete(new Date(domain_key_creation_time));
+          complete(onComplete, new Date(domain_key_creation_time));
         } catch(e) {
-          if (onFailure) onFailure(e.toString());
+          complete(onFailure, e.toString());
         }
       }, onFailure);
     },
@@ -565,11 +561,17 @@ BrowserID.Network = (function() {
      */
     codeVersion: function(onComplete, onFailure) {
       withContext(function() {
-        try {
-          if (onComplete) onComplete(code_version);
-        } catch(e) {
-          if (onFailure) onFailure(e.toString());
-        }
+        complete(onComplete, code_version);
+      }, onFailure);
+    },
+
+    /**
+     * Check if the user's cookies are enabled
+     * @method cookiesEnabled
+     */
+    cookiesEnabled: function(onComplete, onFailure) {
+      withContext(function() {
+        complete(onComplete, cookies_enabled);
       }, onFailure);
     }
   };

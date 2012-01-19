@@ -80,7 +80,7 @@ section > .contents {
 }
 
 #error {
-    background-color: #fff;
+    background: #fff;
 }
 
 .waiting #wait {

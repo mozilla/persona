@@ -7,9 +7,6 @@
 
   var bid = BrowserID,
       dom = bid.DOM,
-      user = bid.User,
-      errors = bid.Errors,
-      tooltip = bid.Tooltip,
       validation = bid.Validation,
       helpers = bid.Helpers = bid.Helpers || {};
 
@@ -139,6 +136,13 @@
     };
   }
 
+  function complete(callback) {
+    if(callback) {
+      var args = [].slice.call(arguments, 1);
+      callback.apply(null, args);
+    }
+  }
+
   extend(helpers, {
     /**
      * Extend an object with the properties of another object.  Overwrites
@@ -188,7 +192,14 @@
      * @method cancelEvent
      * @param {function} function to call after the event is cancelled.
      */
-    cancelEvent: cancelEvent
+    cancelEvent: cancelEvent,
+    /**
+     * @method complete
+     * @param {function} [callback] - callback to call.  Only called if
+     * parameter is a function.
+     * @param {variant} [params] - parameters to pass to callback.
+     */
+    complete: complete
   });
 
 
