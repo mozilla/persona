@@ -58,7 +58,11 @@ cp templates.js $BUILD_PATH/templates.js
 cd ../..
 
 # produce the dialog js
-for locale in `../../scripts/production_locales`; do
+locales=`../../scripts/production_locales`
+echo "generating for the following locales:"
+echo $locales
+
+for locale in $locales; do
     mkdir -p $BUILD_PATH/$locale
     cat lib/jquery-1.7.1.min.js lib/winchan.js lib/underscore-min.js lib/vepbundle.js lib/ejs.js i18n/${locale}/client.json shared/gettext.js shared/browserid.js lib/hub.js lib/dom-jquery.js lib/module.js lib/jschannel.js shared/javascript-extensions.js shared/mediator.js shared/class.js shared/storage.js $BUILD_PATH/templates.js shared/renderer.js shared/error-display.js shared/screens.js shared/tooltip.js shared/validation.js shared/provisioning.js shared/network.js shared/user.js shared/error-messages.js shared/browser-support.js shared/wait-messages.js shared/helpers.js shared/modules/page_module.js shared/modules/xhr_delay.js shared/modules/xhr_disable_form.js shared/modules/code_check.js dialog/resources/internal_api.js dialog/resources/helpers.js dialog/resources/state_machine.js dialog/controllers/actions.js dialog/controllers/dialog.js dialog/controllers/authenticate.js dialog/controllers/forgot_password.js dialog/controllers/check_registration.js dialog/controllers/pick_email.js dialog/controllers/add_email.js dialog/controllers/required_email.js dialog/controllers/verify_primary_user.js dialog/controllers/provision_primary_user.js dialog/controllers/primary_user_provisioned.js dialog/controllers/email_chosen.js dialog/start.js > $BUILD_PATH/$locale/dialog.uncompressed.js
 done

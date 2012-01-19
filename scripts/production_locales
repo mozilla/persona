@@ -9,10 +9,8 @@ process.env['NODE_ENV'] = 'production';
 
 var path = require('path'),
     format = require('util').format,
-
     config = require(path.join(__dirname, '../lib/configuration.js')),
     i18n = require(path.join(__dirname, '../lib/i18n.js'));
 
 var langs = config.get('supported_languages');
-
 process.stdout.write(format("%s\n", langs.map(i18n.localeFrom).join(' ')));
