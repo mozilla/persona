@@ -7,7 +7,7 @@
     , "bcrypt": "0.4.1"
     , "compute-cluster": "0.0.6"
     , "connect": "1.7.2"
-    , "client-sessions": "0.0.2"
+    , "client-sessions": "0.0.3"
     , "connect-cookie-session": "0.0.2"
     , "connect-logger-statsd": "0.0.1"
     , "ejs": "0.4.3"
