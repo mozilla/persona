@@ -3,7 +3,7 @@ var json_locale_data = {
       "" : {
          "Plural-Forms" : " nplurals=2; plural=(n != 1);",
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-11 16:41-0800",
+         "POT-Creation-Date" : " 2012-01-18 16:46-0800",
          "Last-Translator" : " Austin King <ozten@mozilla.com>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " 2012-01-10 17:32-0800",
@@ -20,9 +20,9 @@ var json_locale_data = {
          null,
          "next"
       ],
-      "add" : [
+      "Enter your email address to sign in to <strong>%s</strong>" : [
          null,
-         ""
+         "Enter your email address to sign in to <strong>%s</strong>"
       ],
       "This email looks new, so let&apos;s get you set up." : [
          null,
@@ -31,10 +31,6 @@ var json_locale_data = {
       "The email field is required." : [
          null,
          "The email field is required."
-      ],
-      "New email address" : [
-         null,
-         ""
       ],
       "verify email" : [
          null,
@@ -48,9 +44,9 @@ var json_locale_data = {
          null,
          "Password"
       ],
-      "You already own that address!" : [
+      "We sent a confirmation email to <strong>%s</strong>" : [
          null,
-         ""
+         "Enter your email address to sign in to <strong>%s</strong>"
       ],
       "To finish signing in just click the verify link we sent to your email address." : [
          null,
@@ -67,10 +63,6 @@ var json_locale_data = {
       "Email" : [
          null,
          "Email"
-      ],
-      "We sent a confirmation email to <strong>%1</strong>" : [
-         null,
-         "Enter your email address to sign in to <strong>%1</strong>"
       ],
       "sign in" : [
          null,
@@ -92,23 +84,15 @@ var json_locale_data = {
          null,
          "Welcome to BrowserID!"
       ],
-      "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
-         null,
-         ""
-      ],
       "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
          null,
          "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again."
       ],
-      "Check your email!" : [
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
          null,
          ""
       ],
-      "Enter your email address to sign in to <strong>%1</strong>" : [
-         null,
-         "Enter your email address to sign in to <strong>%1</strong>"
-      ],
-      "cancel" : [
+      "Check your email!" : [
          null,
          ""
       ],

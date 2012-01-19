@@ -2,7 +2,7 @@ var json_locale_data = {
    "client" : {
       "" : {
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-11 16:41-0800",
+         "POT-Creation-Date" : " 2012-01-18 16:46-0800",
          "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
@@ -19,9 +19,9 @@ var json_locale_data = {
          null,
          "‮uǝxʇ"
       ],
-      "add" : [
+      "Enter your email address to sign in to <strong>%s</strong>" : [
          null,
-         ""
+         "‮Ǝuʇǝɹ ʎonɹ ǝɯɐıʅ ɐppɹǝss ʇo sıƃu ıu ʇo <strong>%s</strong>"
       ],
       "This email looks new, so let&apos;s get you set up." : [
          null,
@@ -30,10 +30,6 @@ var json_locale_data = {
       "The email field is required." : [
          null,
          "‮⊥ɥǝ ǝɯɐıʅ ɟıǝʅp ıs ɹǝbnıɹǝp·"
-      ],
-      "New email address" : [
-         null,
-         ""
       ],
       "verify email" : [
          null,
@@ -47,9 +43,9 @@ var json_locale_data = {
          null,
          "‮Ԁɐssʍoɹp"
       ],
-      "You already own that address!" : [
+      "We sent a confirmation email to <strong>%s</strong>" : [
          null,
-         ""
+         "‮Ｍǝ sǝuʇ ɐ ɔouɟıɹɯɐʇıou ǝɯɐıʅ ʇo <strong>%s</strong>"
       ],
       "To finish signing in just click the verify link we sent to your email address." : [
          null,
@@ -67,13 +63,9 @@ var json_locale_data = {
          null,
          "‮Ǝɯɐıʅ"
       ],
-      "We sent a confirmation email to <strong>%1</strong>" : [
-         null,
-         "‮Ｍǝ sǝuʇ ɐ ɔouɟıɹɯɐʇıou ǝɯɐıʅ ʇo <strong>%1</strong>"
-      ],
       "sign in" : [
          null,
-         "‮sıƃu ıu"
+         "\"‮sıƃu ıu"
       ],
       "The account cannot be logged in with this username and password." : [
          null,
@@ -91,25 +83,17 @@ var json_locale_data = {
          null,
          "‮Ｍǝʅɔoɯǝ ʇo ԐɹoʍsǝɹIᗡ¡"
       ],
-      "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
-         null,
-         "‮Iɟ ʇɥıs ıs ɐ ɯısʇɐʞǝ´ ɾnsʇ ıƃuoɹǝ ʇɥǝ sǝuʇ ǝɯɐıʅ ɐup <a href=\"#\" class=\"cancelVerify\" id=\"back\">‮nsǝ ɐuoʇɥǝɹ ǝɯɐıʅ ɐppɹǝss</a>‮·"
-      ],
       "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
          null,
          "‮Ｍǝ ɾnsʇ sǝuʇ ɐu ǝɯɐıʅ ʇo ʇɥɐʇ ɐppɹǝss¡  Iɟ ʎon ɹǝɐʅʅʎ ʍɐuʇ ʇo sǝup ɐuoʇɥǝɹ´ ʍɐıʇ ɐ ɯıunʇǝ oɹ ʇʍo ɐup ʇɹʎ ɐƃɐıu·"
       ],
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
+         null,
+         "‮Iɟ ʇɥıs ıs ɐ ɯısʇɐʞǝ´ ɾnsʇ ıƃuoɹǝ ʇɥǝ sǝuʇ ǝɯɐıʅ ɐup <a href=\"#\" class=\"cancelVerify\" id=\"back\">‮nsǝ ɐuoʇɥǝɹ ǝɯɐıʅ ɐppɹǝss</a>‮·"
+      ],
       "Check your email!" : [
          null,
          "‮Ↄɥǝɔʞ ʎonɹ ǝɯɐıʅ¡"
-      ],
-      "Enter your email address to sign in to <strong>%1</strong>" : [
-         null,
-         "‮Ǝuʇǝɹ ʎonɹ ǝɯɐıʅ ɐppɹǝss ʇo sıƃu ıu ʇo <strong>%1</strong>"
-      ],
-      "cancel" : [
-         null,
-         ""
       ],
       "The password field is required." : [
          null,

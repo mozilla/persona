@@ -7,14 +7,23 @@ function Gettext(params) {
       gettext: function (msgid) {
         if (json_locale_data && json_locale_data["client"]) {
         var dict = json_locale_data["client"];
-          if (dict[msgid]) {
-            return dict[msgid];
+          if (dict[msgid] && dict[msgid].length >= 2) {
+            return dict[msgid][1];
           }
       }
       return msgid;
       },
-      strargs: function (fmt, args) {
-        return fmt;
+      // See lib/i18n.js format docs
+      format: function (fmt, obj, named) {
+        if (! fmt.replace) {
+          console.log("format called with", fmt);
+          return fmt;
+        }
+        if (named) {
+          return fmt.replace(/%\(\w+\)s/g, function(match){return String(obj[match.slice(2,-2)])});
+        } else {
+          return fmt.replace(/%s/g, function(match){return String(obj.shift())});
+        }
       }
     };
 };

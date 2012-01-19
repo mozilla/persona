@@ -33,7 +33,7 @@ BrowserID.Renderer = (function() {
       };
       var gt = new Gettext(params);
       vars['gettext'] = gt.gettext.bind(gt);
-      vars['strargs'] = gt.strargs.bind(gt);
+      vars['format'] = gt.format.bind(gt);
     }
 
     var template = templateCache[templateName];

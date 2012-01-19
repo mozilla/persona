@@ -6,7 +6,7 @@ var json_locale_data = {
       ],
       "" : {
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-11 16:41-0800",
+         "POT-Creation-Date" : " 2012-01-18 16:46-0800",
          "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
@@ -15,13 +15,13 @@ var json_locale_data = {
          "Project-Id-Version" : " PACKAGE VERSION",
          "Report-Msgid-Bugs-To" : " "
       },
-      "Verification password is required." : [
-         null,
-         "‮Ʌǝɹıɟıɔɐʇıou dɐssʍoɹp ıs ɹǝbnıɹǝp·"
-      ],
       "BrowserID" : [
          null,
          "‮ԐɹoʍsǝɹIᗡ"
+      ],
+      "Verification password is required." : [
+         null,
+         "‮Ʌǝɹıɟıɔɐʇıou dɐssʍoɹp ıs ɹǝbnıɹǝp·"
       ],
       "Finish signing into: " : [
          null,
@@ -55,13 +55,9 @@ var json_locale_data = {
          null,
          "‮Ԁɐssʍoɹp ɯnsʇ qǝ qǝʇʍǝǝu 8‮ ɐup 80‮ ɔɥɐɹɐɔʇǝɹs ʅouƃ·"
       ],
-      "Complete Login to %1 using BrowserID" : [
-         null,
-         "‮Ↄoɯdʅǝʇǝ ⅂oƃıu ʇo %1‮ nsıuƃ ԐɹoʍsǝɹIᗡ"
-      ],
       "(A better way to sign in)" : [
          null,
-         "‮(∀ qǝʇʇǝɹ ʍɐʎ ʇo sıƃu ıu)"
+         "\"‮(∀ qǝʇʇǝɹ ʍɐʎ ʇo sıƃu ıu)"
       ],
       "Finish registration by clicking this link:" : [
          null,
@@ -95,29 +91,33 @@ var json_locale_data = {
          null,
          "<strong class=\"email\">‮⅄onɹ ɐppɹǝss</strong>‮ ɥɐs qǝǝu ʌǝɹıɟıǝp¡"
       ],
-      "Browser ID" : [
-         null,
-         "‮Ԑɹoʍsǝɹ Iᗡ"
-      ],
       "Finish" : [
          null,
          "‮Ⅎıuısɥ"
+      ],
+      "Browser ID" : [
+         null,
+         "‮Ԑɹoʍsǝɹ Iᗡ"
       ],
       "There was a problem with your signup link.  Has this address already been registered?" : [
          null,
          "‮⊥ɥǝɹǝ ʍɐs ɐ dɹoqʅǝɯ ʍıʇɥ ʎonɹ sıƃund ʅıuʞ·  Hɐs ʇɥıs ɐppɹǝss ɐʅɹǝɐpʎ qǝǝu ɹǝƃısʇǝɹǝp?"
       ],
-      "Password is required." : [
-         null,
-         "‮Ԁɐssʍoɹp ıs ɹǝbnıɹǝp·"
-      ],
       "Passwords do not match." : [
          null,
          "‮Ԁɐssʍoɹps po uoʇ ɯɐʇɔɥ·"
       ],
+      "Password is required." : [
+         null,
+         "‮Ԁɐssʍoɹp ıs ɹǝbnıɹǝp·"
+      ],
       "New Password" : [
          null,
          "‮Nǝʍ Ԁɐssʍoɹp"
+      ],
+      "Complete Login to %s using BrowserID" : [
+         null,
+         "‮Ↄoɯdʅǝʇǝ ⅂oƃıu ʇo %s‮ nsıuƃ ԐɹoʍsǝɹIᗡ"
       ],
       "Repeat Password" : [
          null,

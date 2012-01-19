@@ -6,7 +6,7 @@ var json_locale_data = {
       ],
       "" : {
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-11 16:41-0800",
+         "POT-Creation-Date" : " 2012-01-18 16:46-0800",
          "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
@@ -15,11 +15,11 @@ var json_locale_data = {
          "Project-Id-Version" : " PACKAGE VERSION",
          "Report-Msgid-Bugs-To" : " "
       },
-      "Verification password is required." : [
+      "BrowserID" : [
          null,
          ""
       ],
-      "BrowserID" : [
+      "Verification password is required." : [
          null,
          ""
       ],
@@ -52,10 +52,6 @@ var json_locale_data = {
          ""
       ],
       "Password must be between 8 and 80 characters long." : [
-         null,
-         ""
-      ],
-      "Complete Login to %1 using BrowserID" : [
          null,
          ""
       ],
@@ -95,11 +91,11 @@ var json_locale_data = {
          null,
          ""
       ],
-      "Browser ID" : [
+      "Finish" : [
          null,
          ""
       ],
-      "Finish" : [
+      "Browser ID" : [
          null,
          ""
       ],
@@ -107,15 +103,19 @@ var json_locale_data = {
          null,
          ""
       ],
-      "Password is required." : [
-         null,
-         ""
-      ],
       "Passwords do not match." : [
          null,
          ""
       ],
+      "Password is required." : [
+         null,
+         ""
+      ],
       "New Password" : [
+         null,
+         ""
+      ],
+      "Complete Login to %s using BrowserID" : [
          null,
          ""
       ],
