@@ -11,7 +11,8 @@ BrowserID.Modules.CodeCheck = (function() {
   var bid = BrowserID,
       dom = bid.DOM,
       sc,
-      expectedCodeVer;
+      expectedCodeVer,
+      fileNamePrefix;
 
   function getMostRecentCodeVersion(oncomplete) {
     bid.Network.codeVersion(oncomplete, this.getErrorDialog(bid.Errors.checkScriptVersion, oncomplete));
@@ -35,7 +36,7 @@ BrowserID.Modules.CodeCheck = (function() {
   function loadScript(version, oncomplete) {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src = "https://browserid.org/production/dialog_v" + version + ".js";
+    script.src = "https://browserid.org/production/" + fileNamePrefix + "_v" + version + ".js";
     document.head.appendChild(script);
 
     oncomplete();
@@ -51,22 +52,19 @@ BrowserID.Modules.CodeCheck = (function() {
 
         data = data || {};
 
-        self.checkRequired(data, "code_ver", "environment");
+        self.checkRequired(data, "code_ver", "file_name_prefix");
         expectedCodeVer = data.code_ver;
+        fileNamePrefix = data.file_name_prefix;
 
-        if(data.environment === "PRODUCTION") {
-          getMostRecentCodeVersion.call(self, function(version) {
-            if(version) {
-              updateCodeIfNeeded.call(self, complete, version);
-            }
-            else {
-              complete();
-            }
-          });
-        }
-        else {
-          complete(true);
-        }
+        getMostRecentCodeVersion.call(self, function(version) {
+          if(version) {
+            updateCodeIfNeeded.call(self, complete, version);
+          }
+          else {
+            complete(true);
+          }
+        });
+
         sc.start.call(self, data);
       }
   });

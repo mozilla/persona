@@ -22,6 +22,15 @@ BrowserID.Modules.PageModule = (function() {
      return false;
    }
 
+  function showScreen(screen, template, vars, oncomplete) {
+    screen.show(template, vars);
+    oncomplete && oncomplete();
+  }
+
+  function hideScreen(screen) {
+    screen.hide();
+  }
+
   var Module = BrowserID.Class({
     init: function(options) {
       options = options || {};
@@ -98,37 +107,31 @@ BrowserID.Modules.PageModule = (function() {
       }
     },
 
-    renderDialog: function(body, body_vars) {
+    renderDialog: function(template, data) {
       var self=this;
 
       self.hideWait();
       self.hideError();
+      self.hideDelay();
 
-      screens.form.show(body, body_vars);
+      screens.form.show(template, data);
       dom.focus("input:visible:not(:disabled):eq(0)");
     },
 
-    renderWait: function(body, body_vars) {
-      screens.wait.show(body, body_vars);
-    },
+    renderWait: showScreen.curry(screens.wait),
+    hideWait: hideScreen.curry(screens.wait),
 
-    hideWait: function() {
-      screens.wait.hide();
-    },
-
-    renderError: function(body, body_vars, oncomplete) {
-      screens.error.show(body, body_vars);
+    renderError: function(template, data, oncomplete) {
+      screens.error.show(template, data);
 
       bid.ErrorDisplay.start();
 
-      $("#error").stop().css('opacity', 1).hide().fadeIn(ANIMATION_TIME, function() {
-        if(oncomplete) oncomplete(false);
-      });
+      oncomplete && oncomplete(false);
     },
 
-    hideError: function() {
-      screens.error.hide();
-    },
+    hideError: hideScreen.curry(screens.error),
+    renderDelay: showScreen.curry(screens.delay),
+    hideDelay: hideScreen.curry(screens.delay),
 
     /**
      * Validate the form, if returns false when called, submit will not be

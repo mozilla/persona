@@ -32,7 +32,7 @@ noscript {
   transition: opacity 750ms;
 }
 
-.waiting #errorBackground, .error #errorBackground {
+.waiting #errorBackground, .error #errorBackground, .delay #errorBackground {
   z-index: 1001;
   display: block;
   -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000,endColorstr=#99000000);
@@ -40,7 +40,7 @@ noscript {
   opacity: .6;
 }
 
-#error, #wait {
+#error, #wait, #delay {
   z-index: -2;
   opacity: 0;
   -webkit-transition: opacity 750ms;
@@ -64,12 +64,18 @@ noscript {
   opacity: 1;
 }
 
-.error #error {
+.delay #delay {
   z-index: 1003;
   opacity: 1;
 }
 
-#error > div, #wait > div {
+.error #error {
+  z-index: 1004;
+  opacity: 1;
+}
+
+
+#error > div, #wait > div, #delay > div {
   padding: 10px;
   z-index: 1001;
 }

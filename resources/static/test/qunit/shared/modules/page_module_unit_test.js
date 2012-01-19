@@ -17,7 +17,7 @@
     controller.start();
   }
 
-  module("shared/page_module", {
+  module("shared/modules/page_module", {
     setup: function() {
       el = $("#controller_head");
       bid.TestHelpers.setup();
@@ -87,57 +87,31 @@
     ok(html.length, "with error template specified, error text is loaded");
   });
 
-  asyncTest("renderError renders an error message", function() {
-    createController({
-      waitTemplate: waitTemplate,
-      waitVars: {
-        title: "Test title",
-        message: "Test message"
-      }
-    });
+  test("renderError renders an error message", function() {
+    createController();
 
     controller.renderError("wait", {
       title: "error title",
       message: "error message"
-    }, function() {
-      var html = el.find("#error .contents").html();
-      // XXX underpowered test, we don't actually check the contents.
-      ok(html.length, "with error template specified, error text is loaded");
-      start();
     });
+    var html = el.find("#error .contents").html();
+    ok(html.length, "with error template specified, error text is loaded");
   });
 
-  asyncTest("renderError allows us to open expanded error info", function() {
+  test("renderDelay renders a delay", function() {
     createController();
 
-    controller.renderError("error", {
-      action: {
-        title: "expanded action info",
-        message: "expanded message"
-      }
-    }, function() {
-      var html = el.find("#error .contents").html();
-
-      $("#moreInfo").hide();
-
-      $("#openMoreInfo").click();
-
-      setTimeout(function() {
-        equal($("#showMoreInfo").is(":visible"), false, "button is not visible after clicking expanded info");
-        equal($("#moreInfo").is(":visible"), true, "expanded error info is visible after clicking expanded info");
-        start();
-      }, 1);
+    controller.renderDelay("wait", {
+      title: "delay title",
+      message: "delay message"
     });
+
+    var html = el.find("#delay .contents").html();
+    ok(html.length, "with delay template specified, delay text is loaded");
   });
 
   asyncTest("getErrorDialog gets a function that can be used to render an error message", function() {
-    createController({
-      waitTemplate: waitTemplate,
-      waitVars: {
-        title: "Test title",
-        message: "Test message"
-      }
-    });
+    createController();
 
     // This is the medium level info.
     var func = controller.getErrorDialog({

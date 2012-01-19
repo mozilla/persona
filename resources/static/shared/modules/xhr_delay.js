@@ -7,20 +7,33 @@ BrowserID.Modules.XHRDelay = (function() {
 
   var bid = BrowserID,
       wait = bid.Wait,
+      delayed,
       sc;
+
+  function delayStart() {
+    delayed = true;
+    this.renderDelay("wait", wait.slowXHR);
+  }
+
+  function delayStop() {
+    if(delayed) {
+      delayed = false;
+      this.hideDelay();
+    }
+  }
 
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
 
-      self.subscribe("xhr_delay", this.renderWait.curry("wait", wait.slowXHR));
-      self.subscribe("xhr_complete", this.hideWait);
+      self.subscribe("xhr_delay", delayStart);
+      self.subscribe("xhr_complete", delayStop);
 
       sc.start.call(self, options);
     },
 
     stop: function() {
-      this.hideWait();
+      this.hideDelay();
       sc.stop.call(this);
     }
   });

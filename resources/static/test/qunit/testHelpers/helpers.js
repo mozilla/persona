@@ -112,6 +112,22 @@ BrowserID.TestHelpers = (function() {
       equal(TestHelpers.errorVisible(), true, "error screen is visible");
     },
 
+    waitVisible: function() {
+      return screens.wait.visible;
+    },
+
+    testWaitVisible: function() {
+      equal(TestHelpers.waitVisible(), true, "wait screen is visible");
+    },
+
+    delayVisible: function() {
+      return screens.delay.visible;
+    },
+
+    testDelayVisible: function() {
+      equal(TestHelpers.delayVisible(), true, "delay screen is visible");
+    },
+
     checkNetworkError: checkNetworkError,
     unexpectedSuccess: function() {
       ok(false, "unexpected success");

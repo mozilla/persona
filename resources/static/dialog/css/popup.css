@@ -52,7 +52,7 @@ section > .contents {
     height: 250px;
 }
 
-#wait {
+#wait, #error, #delay {
     text-align: center;
     background-image: url("/i/bg.png");
     z-index: -1;
@@ -79,38 +79,21 @@ section > .contents {
     transition-delay: 0.5s;
 }
 
+#error {
+    background-color: #fff;
+}
+
 .waiting #wait {
     z-index: 1;
     opacity: 1;
 }
 
-#error {
-    text-align: center;
-    z-index: -1;
-    background-color: #fff;
-    display: none;
-
-    -webkit-transition-property: opacity;
-    -moz-transition-property: opacity;
-    -ms-transition-property: opacity;
-    -o-transition-property: opacity;
-    transition-property: opacity;
-
-    -webkit-transition-duration: 0.25s;
-    -moz-transition-duration: 0.25s;
-    -ms-transition-duration: 0.25s;
-    -o-transition-duration: 0.25s;
-    transition-duration: 0.25s;
-
-    -webkit-transition-delay: 0.75s;
-    -moz-transition-delay: 0.75s;
-    -ms-transition-delay: 0.75s;
-    -o-transition-delay: 0.75s;
-    transition-delay: 0.75s;
+.error #error {
+    z-index: 3;
+    opacity: 1;
 }
 
-.error #error {
-    display: block;
+.delay #delay {
     z-index: 2;
     opacity: 1;
 }
@@ -119,7 +102,7 @@ section > .contents {
     list-style-type: none;
 }
 
-#wait strong, #error strong {
+#wait strong, #error strong, #delay strong {
     color: #222;
     font-weight: bold;
 }

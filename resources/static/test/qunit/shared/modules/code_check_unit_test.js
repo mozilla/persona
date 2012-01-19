@@ -7,22 +7,21 @@
   "use strict";
 
   var bid = BrowserID,
-      network = bid.Network,
-      xhr = bid.Mocks.xhr,
+      transport = bid.Mocks.xhr,
       helpers = bid.TestHelpers,
       controller;
 
   function createController(config) {
     var config = $.extend({
-      code_ver: "ABC123",
-      environment: "PRODUCTION"
+      file_name_prefix: "dialog",
+      code_ver: "ABC123"
     }, config);
 
     controller = BrowserID.Modules.CodeCheck.create();
     controller.start(config);
   }
 
-  module("controllers/code_check", {
+  module("shared/modules/code_check", {
     setup: function() {
       helpers.setup();
     },
@@ -34,18 +33,29 @@
     }
   });
 
-  asyncTest("create controller with 'environment: DEBUG' - no code check performed", function() {
+  asyncTest("create controller with most recent scripts", function() {
+    createController({
+      ready: function(mostRecent) {
+        equal(mostRecent, true, "scripts are the most recent");
+        start();
+      }
+    });
+  });
+
+  asyncTest("create controller with no 'current' code_version given - do not update scripts", function() {
+
+    transport.setContextInfo("code_version", undefined);
+
     var scriptCount = $("head > script").length;
 
     createController({
-      environment: "DEBUG",
+      code_ver: "ABC123",
       ready: function(mostRecent) {
-        equal(mostRecent, true, "working on the most recent version");
-
+        equal(mostRecent, true, "scripts are the most recent");
         var scripts = $("head > script");
         var scriptAdded = scripts.length !== scriptCount;
 
-        equal(scriptAdded, false, "a script was not added");
+        equal(scriptAdded, false, "a script was not added to the dom");
 
         if(scriptAdded) {
           // Only remove the last script if the script was actually added.
@@ -56,18 +66,9 @@
       }
     });
   });
-
-  asyncTest("create controller with most recent scripts", function() {
-    createController({
-      ready: function(mostRecent) {
-        equal(mostRecent, true, "scripts are the most recent");
-        start();
-      }
-    });
-  });
-
   asyncTest("create controller with out of date scripts", function() {
     var scriptCount = $("head > script").length;
+    transport.setContextInfo("code_version", "ABC123");
 
     createController({
       code_ver: "ABC122",
@@ -89,7 +90,7 @@
   });
 
   asyncTest("create controller with XHR error during script check", function() {
-    xhr.useResult("contextAjaxError");
+    transport.useResult("contextAjaxError");
     var scriptCount = $("head > script").length;
 
     createController({
