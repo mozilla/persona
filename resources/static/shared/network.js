@@ -112,8 +112,7 @@ BrowserID.Network = (function() {
           };
           domain_key_creation_time = result.domain_key_creation_time;
           auth_status = result.auth_level;
-          // XXX remove the ABC123
-          code_version = result.code_version || "ABC123";
+          code_version = result.code_version;
 
           // seed the PRNG
           // FIXME: properly abstract this out, probably by exposing a jwcrypto
@@ -676,7 +675,6 @@ BrowserID.Network = (function() {
     codeVersion: function(onComplete, onFailure) {
       withContext(function() {
         try {
-          if (!code_version) throw "can't get code version!";
           if (onComplete) onComplete(code_version);
         } catch(e) {
           if (onFailure) onFailure(e.toString());

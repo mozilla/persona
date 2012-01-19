@@ -51,22 +51,18 @@ BrowserID.Modules.CodeCheck = (function() {
 
         data = data || {};
 
-        self.checkRequired(data, "code_ver", "environment");
+        self.checkRequired(data, "code_ver");
         expectedCodeVer = data.code_ver;
 
-        if(data.environment === "PRODUCTION") {
-          getMostRecentCodeVersion.call(self, function(version) {
-            if(version) {
-              updateCodeIfNeeded.call(self, complete, version);
-            }
-            else {
-              complete();
-            }
-          });
-        }
-        else {
-          complete(true);
-        }
+        getMostRecentCodeVersion.call(self, function(version) {
+          if(version) {
+            updateCodeIfNeeded.call(self, complete, version);
+          }
+          else {
+            complete(true);
+          }
+        });
+
         sc.start.call(self, data);
       }
   });
