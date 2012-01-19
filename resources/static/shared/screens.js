@@ -29,6 +29,7 @@ BrowserID.Screens = (function() {
   return {
     form: new Screen("#formWrap", "form"),
     wait: new Screen("#wait", "waiting"),
-    error: new Screen("#error", "error")
+    error: new Screen("#error", "error"),
+    delay: new Screen("#delay", "delay")
   };
 }());

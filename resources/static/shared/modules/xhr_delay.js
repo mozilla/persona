@@ -12,18 +12,13 @@ BrowserID.Modules.XHRDelay = (function() {
 
   function delayStart() {
     delayed = true;
-    // XXX - This has a flaw in it.  If the user is waiting for at the email
-    // validation screen and an XHR delay occurs, it will overwrite the waiting
-    // for validation screen.  When the xhr delay completes, then it will take
-    // away all wait screens and show the add email screen.  Perhaps we need
-    // a new screen/layer to avoid this.
-    this.renderWait("wait", wait.slowXHR);
+    this.renderDelay("wait", wait.slowXHR);
   }
 
   function delayStop() {
     if(delayed) {
       delayed = false;
-      this.hideWait();
+      this.hideDelay();
     }
   }
 
@@ -38,7 +33,7 @@ BrowserID.Modules.XHRDelay = (function() {
     },
 
     stop: function() {
-      this.hideWait();
+      this.hideDelay();
       sc.stop.call(this);
     }
   });

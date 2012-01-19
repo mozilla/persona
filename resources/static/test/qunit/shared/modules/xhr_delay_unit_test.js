@@ -30,20 +30,20 @@
     }
   });
 
-  test("xhr_delay shows the wait screen, xhr_complete hides the wait screen", function() {
+  test("xhr_delay shows the delay screen, xhr_complete hides the delay screen", function() {
     mediator.publish("xhr_delay");
     ok($("#slowXHR:visible").length, "slowXHR screen is shown");
-    testHelpers.testWaitVisible();
+    testHelpers.testDelayVisible();
 
     mediator.publish("xhr_complete");
-    equal(testHelpers.waitVisible(), false, "slowXHR screen no longer visible");
+    equal(testHelpers.delayVisible(), false, "slowXHR screen no longer visible");
   });
 
-  test("xhr_complete does not hide wait screen if wait screen not started by xhr_delay", function() {
+  test("xhr_complete does not hide delay screen if delay screen not started by xhr_delay", function() {
 
-    screens.wait.show("wait", {title: "test wait", message: "testing"});
+    screens.delay.show("wait", {title: "test delay", message: "testing"});
 
     mediator.publish("xhr_complete");
-    testHelpers.testWaitVisible();
+    testHelpers.testDelayVisible();
   });
 }());
