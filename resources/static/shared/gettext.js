@@ -16,8 +16,8 @@ function Gettext(params) {
       },
       // See lib/i18n.js format docs
       format: function (fmt, obj, named) {
+        if (! fmt) return "";
         if (! fmt.replace) {
-          console.log("format called with", fmt);
           return fmt;
         }
         if (named) {
