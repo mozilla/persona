@@ -15,7 +15,7 @@
   moduleManager.register("code_check", modules.CodeCheck);
 
   moduleManager.start("code_check", {
-    environment: "__BROWSERID_ENVIRONMENT__",
+    file_name_prefix: "dialog",
     code_ver: "__BROWSERID_CODE_VERSION__",
     ready: function(status) {
       // if status is false, that means the javascript is out of date and we

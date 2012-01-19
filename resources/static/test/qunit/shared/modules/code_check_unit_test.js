@@ -13,6 +13,7 @@
 
   function createController(config) {
     var config = $.extend({
+      file_name_prefix: "dialog",
       code_ver: "ABC123"
     }, config);
 
