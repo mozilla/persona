@@ -10,6 +10,7 @@
       Module = bid.Modules.XHRDelay,
       testHelpers = bid.TestHelpers,
       mediator = bid.Mediator,
+      screens = bid.Screens,
       mod;
 
   function createModule(options) {
@@ -31,10 +32,18 @@
 
   test("xhr_delay shows the wait screen, xhr_complete hides the wait screen", function() {
     mediator.publish("xhr_delay");
-    ok($("#slowXHR:visible").length, "slowXHR error screen is shown");
-    equal($("body").hasClass("waiting"), true, "waiting screen shown");
+    ok($("#slowXHR:visible").length, "slowXHR screen is shown");
+    testHelpers.testWaitVisible();
 
     mediator.publish("xhr_complete");
-    equal($("body").hasClass("waiting"), false, "waiting screen not shown");
+    equal(testHelpers.waitVisible(), false, "slowXHR screen no longer visible");
+  });
+
+  test("xhr_complete does not hide wait screen if wait screen not started by xhr_delay", function() {
+
+    screens.wait.show("wait", {title: "test wait", message: "testing"});
+
+    mediator.publish("xhr_complete");
+    testHelpers.testWaitVisible();
   });
 }());
