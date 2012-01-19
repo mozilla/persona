@@ -54,7 +54,8 @@ process.env['HTTP_PROXY'] = HOST + ":10006";
 
 // all spawned process that use handle primaries should know about "shimmed"
 // primaries
-process.env['SHIMMED_PRIMARIES'] = "example.domain|http://" + HOST + ":10005|" + path.join(__dirname, "..", "example", "primary", ".well-known", "browserid");
+var oldShims = process.env['SHIMMED_PRIMARIES'] ? process.env['SHIMMED_PRIMARIES'] + "," : "";
+process.env['SHIMMED_PRIMARIES'] = oldShims + "example.domain|http://" + HOST + ":10005|" + path.join(__dirname, "..", "example", "primary", ".well-known", "browserid");
 
 // all spawned processes should log to console
 process.env['LOG_TO_CONSOLE'] = 1;
