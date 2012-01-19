@@ -18,35 +18,35 @@ var json_locale_data = {
       ],
       "next" : [
          null,
-         "next"
+         ""
       ],
       "Enter your email address to sign in to <strong>%s</strong>" : [
          null,
-         "Enter your email address to sign in to <strong>%s</strong>"
+         ""
       ],
       "This email looks new, so let&apos;s get you set up." : [
          null,
-         "This email looks new, so let&apos;s get you set up."
+         ""
       ],
       "The email field is required." : [
          null,
-         "The email field is required."
+         ""
       ],
       "verify email" : [
          null,
-         "verify email"
+         ""
       ],
       "Sign in using" : [
          null,
-         "Sign in using"
+         ""
       ],
       "Password" : [
          null,
-         "Password"
+         ""
       ],
       "We sent a confirmation email to <strong>%s</strong>" : [
          null,
-         "Enter your email address to sign in to <strong>%s</strong>"
+         ""
       ],
       "To finish signing in just click the verify link we sent to your email address." : [
          null,
@@ -54,27 +54,27 @@ var json_locale_data = {
       ],
       "forgot your password?" : [
          null,
-         "forgot your password?"
+         ""
       ],
       "This field must be an email address." : [
          null,
-         "This field must be an email address."
+         ""
       ],
       "Email" : [
          null,
-         "Email"
+         ""
       ],
       "sign in" : [
          null,
-         "Sign in using"
+         ""
       ],
       "The account cannot be logged in with this username and password." : [
          null,
-         "The account cannot be logged in with this username and password."
+         ""
       ],
       "select email" : [
          null,
-         "select email"
+         ""
       ],
       "This is not me..." : [
          null,
@@ -82,11 +82,11 @@ var json_locale_data = {
       ],
       "Welcome to BrowserID!" : [
          null,
-         "Welcome to BrowserID!"
+         ""
       ],
       "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
          null,
-         "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again."
+         ""
       ],
       "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
          null,
@@ -98,11 +98,11 @@ var json_locale_data = {
       ],
       "The password field is required." : [
          null,
-         "The password field is required."
+         ""
       ],
       "Use a different email" : [
          null,
-         "select email"
+         ""
       ]
    }
 }
