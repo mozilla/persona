@@ -1,20 +1,17 @@
 var json_locale_data = {
    "client" : {
-      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again." : [
-         null,
-         "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again."
-      ],
       "" : {
          "Plural-Forms" : " nplurals=2; plural=(n != 1);",
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-19 17:47-0800",
+         "POT-Creation-Date" : " 2012-01-20 12:38+0000",
+         "Language" : " ",
          "Last-Translator" : " Austin King <ozten@mozilla.com>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " 2012-01-10 17:32-0800",
          "Language-Team" : " English",
          "Content-Transfer-Encoding" : " 8bit",
-         "Project-Id-Version" : " PACKAGE VERSION",
-         "Report-Msgid-Bugs-To" : " "
+         "Report-Msgid-Bugs-To" : " ",
+         "Project-Id-Version" : " PACKAGE VERSION"
       },
       "Always sign in using this email" : [
          null,
@@ -24,25 +21,17 @@ var json_locale_data = {
          null,
          "next"
       ],
-      "Enter your email address to sign in to <strong>%s</strong>" : [
-         null,
-         ""
-      ],
       "This email looks new, so let&apos;s get you set up." : [
          null,
          "This email looks new, so let&apos;s get you set up."
       ],
-      "The email field is required." : [
-         null,
-         "The email field is required."
-      ],
-      "verify email" : [
-         null,
-         "verify email"
-      ],
       "Sign in using" : [
          null,
          "Sign in using"
+      ],
+      "You are offline!" : [
+         null,
+         ""
       ],
       "Password" : [
          null,
@@ -60,6 +49,10 @@ var json_locale_data = {
          null,
          "forgot your password?"
       ],
+      "We are sorry, but we cannot communicate with BrowserID while you are offline." : [
+         null,
+         ""
+      ],
       "This field must be an email address." : [
          null,
          "This field must be an email address."
@@ -72,9 +65,81 @@ var json_locale_data = {
          null,
          "Email"
       ],
+      "To verify that you own <strong id='primary_email'>%s</strong>, you must sign in with your provider.  This window will be redirected to" : [
+         null,
+         ""
+      ],
       "Reset Password" : [
          null,
          "Password"
+      ],
+      "select email" : [
+         null,
+         "select email"
+      ],
+      "To verify that you own this address, you must sign in with your provider.  This window will be redirected to" : [
+         null,
+         ""
+      ],
+      "Verify With Email Provider" : [
+         null,
+         ""
+      ],
+      "This is not me..." : [
+         null,
+         ""
+      ],
+      "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
+         null,
+         "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again."
+      ],
+      "cancel" : [
+         null,
+         ""
+      ],
+      "The password field is required." : [
+         null,
+         "The password field is required."
+      ],
+      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again." : [
+         null,
+         "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again."
+      ],
+      "To continue, please close the window and enter a valid address." : [
+         null,
+         ""
+      ],
+      "add" : [
+         null,
+         ""
+      ],
+      "Enter your email address to sign in to <strong>%s</strong>" : [
+         null,
+         ""
+      ],
+      "translated text" : [
+         null,
+         ""
+      ],
+      "The email field is required." : [
+         null,
+         "The email field is required."
+      ],
+      "verify email" : [
+         null,
+         "verify email"
+      ],
+      "New email address" : [
+         null,
+         ""
+      ],
+      "That address is already added to your account!" : [
+         null,
+         ""
+      ],
+      "Verify" : [
+         null,
+         ""
       ],
       "sign in" : [
          null,
@@ -84,21 +149,13 @@ var json_locale_data = {
          null,
          "The account cannot be logged in with this username and password."
       ],
-      "select email" : [
-         null,
-         "select email"
-      ],
-      "This is not me..." : [
-         null,
-         ""
-      ],
       "Welcome to BrowserID!" : [
          null,
          "Welcome to BrowserID!"
       ],
-      "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
+      "*%s* is not a valid email address!" : [
          null,
-         "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again."
+         "This field must be an email address."
       ],
       "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
          null,
@@ -111,10 +168,6 @@ var json_locale_data = {
       "The site requested you sign in using" : [
          null,
          ""
-      ],
-      "The password field is required." : [
-         null,
-         "The password field is required."
       ],
       "Use a different email" : [
          null,

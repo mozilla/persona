@@ -12,7 +12,8 @@ BrowserID.Renderer = (function() {
 
   function getTemplateHTML(templateName, vars) {
     var config,
-        templateText = bid.Templates[templateName];
+        templateText = bid.Templates[templateName],
+        vars = vars || {};
 
     if(templateText) {
       config = {
@@ -26,15 +27,13 @@ BrowserID.Renderer = (function() {
       };
     }
     // TODO(aok) Do caching like EJS below
-    if (vars) {
-      var params = {
-            "domain" : "client",
-            "locale_data" : json_locale_data
-      };
-      var gt = new Gettext(params);
-      vars['gettext'] = gt.gettext.bind(gt);
-      vars['format'] = gt.format.bind(gt);
-    }
+    var params = {
+          "domain" : "client",
+          "locale_data" : json_locale_data
+    };
+    var gt = new Gettext(params);
+    vars['gettext'] = gt.gettext.bind(gt);
+    vars['format'] = gt.format.bind(gt);
 
     var template = templateCache[templateName];
     if(!template) {

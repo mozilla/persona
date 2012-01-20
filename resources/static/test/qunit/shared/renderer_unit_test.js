@@ -46,6 +46,7 @@
     ok($("#formWrap > #templateInput").length && $("#formWrap > .contents"), "template appended to element instead of overwriting it");
 
   });
+
 }());
 
 

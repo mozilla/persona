@@ -3,10 +3,10 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 
-  <h2 id="invalidRequiredEmail">*<%= email %>* is not a valid email address!</h2>
+  <h2 id="invalidRequiredEmail"><%= format(gettext('*%s* is not a valid email address!'), [email]) %></h2>
 
   <p>
-    To continue, please close the window and enter a valid address.
+    <%= gettext('To continue, please close the window and enter a valid address.') %>
   </p>
 
 

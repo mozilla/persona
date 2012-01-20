@@ -2,36 +2,36 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-  <strong>Sign in using</strong>
+  <strong><%= gettext('Sign in using') %></strong>
 
   <div id="addEmail" class="cf form_section">
 
       <ul class="inputs">
           <li>
-              <label for="newEmail" class="serif">New email address</label>
+              <label for="newEmail" class="serif"><%= gettext('New email address') %></label>
               <input id="newEmail" name="newEmail" type="email" class="sans" autocapitalize="off" autocorrect="off" maxlength="254"/>
 
               <div id="email_format" class="tooltip" for="newEmail">
-                This field must be an email address.
+                <%= gettext('This field must be an email address.') %>
               </div>
 
               <div id="email_required" class="tooltip" for="newEmail">
-                The email field is required.
+                <%= gettext('The email field is required.') %>
               </div>
 
               <div id="could_not_add" class="tooltip" for="newEmail">
-                We just sent an email to that address!  If you really want to send another, wait a minute or two and try again.
+                <%= gettext('We just sent an email to that address!  If you really want to send another, wait a minute or two and try again.') %>
               </div>
 
               <div id="already_own_address" class="tooltip" for="newEmail">
-                That address is already added to your account!
+                <%= gettext('That address is already added to your account!') %>
               </div>
           </li>
       </ul>
 
       <div class="submit cf">
-          <button id="addNewEmail">add</button>
-          <button id="cancelNewEmail">cancel</button>
+          <button id="addNewEmail"><%= gettext('add') %></button>
+          <button id="cancelNewEmail"><%= gettext('cancel') %></button>
       </div>
 
   </div>
