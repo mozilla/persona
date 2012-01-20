@@ -79,12 +79,8 @@ BrowserID.manageAccount = (function() {
     var template = $("#templateUser").html();
 
     _(emails).each(function(data, e) {
-      var date = helpers.relativeDate(new Date(data.created));
-
       var identity = _.template(template, {
-        email: e,
-        relative: date.friendly,
-        created: date.locale
+        email: e
       });
 
       var idEl = $(identity).appendTo(list);
