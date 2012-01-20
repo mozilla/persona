@@ -32,8 +32,8 @@ BrowserID.Renderer = (function() {
           "locale_data" : json_locale_data
     };
     var gt = new Gettext(params);
-    vars['gettext'] = gt.gettext.bind(gt);
-    vars['format'] = gt.format.bind(gt);
+    window.gettext = gt.gettext.bind(gt);
+    window.format = gt.format.bind(gt);
 
     var template = templateCache[templateName];
     if(!template) {

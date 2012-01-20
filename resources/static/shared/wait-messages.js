@@ -6,18 +6,18 @@ BrowserID.Wait = (function(){
 
   var Wait = {
     authentication: {
-      title: "Finishing Sign In...",
-      message: "In just a moment you'll be signed into BrowserID."
+      title: gettext("Finishing Sign In..."),
+      message:  gettext("In just a moment you'll be signed into BrowserID.")
     },
 
     generateKey: {
-      title: "Finishing Sign In...",
-      message: "Please wait a few seconds while we sign you into the site."
+      title:  gettext("Finishing Sign In..."),
+      message:  gettext("Please wait a few seconds while we sign you into the site.")
     },
 
     slowXHR: {
-      title: "We are sorry, this request is taking a LOOONG time.",
-      message: "This message will go away when the request completes (hopefully soon).  If you wait too long, close this window and try again.",
+      title:  gettext("We are sorry, this request is taking a LOOONG time."),
+      message:  gettext("This message will go away when the request completes (hopefully soon).  If you wait too long, close this window and try again."),
       id: "slowXHR"
     }
 
