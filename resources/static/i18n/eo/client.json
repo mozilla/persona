@@ -2,8 +2,7 @@ var json_locale_data = {
    "client" : {
       "" : {
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-20 12:38+0000",
-         "Language" : " ",
+         "POT-Creation-Date" : " 2012-01-20 13:06-0800",
          "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
@@ -14,19 +13,19 @@ var json_locale_data = {
       },
       "Always sign in using this email" : [
          null,
-         "‮∀ʅʍɐʎs sıƃu ıu nsıuƃ ʇɥıs ǝɯɐıʅ"
+         ""
       ],
       "next" : [
          null,
-         "‮uǝxʇ"
+         ""
       ],
       "This email looks new, so let&apos;s get you set up." : [
          null,
-         "‮⊥ɥıs ǝɯɐıʅ ʅooʞs uǝʍ´ so ʅǝʇ&apos;‮s ƃǝʇ ʎon sǝʇ nd·"
+         ""
       ],
       "Sign in using" : [
          null,
-         "‮Sıƃu ıu nsıuƃ"
+         ""
       ],
       "You are offline!" : [
          null,
@@ -34,19 +33,19 @@ var json_locale_data = {
       ],
       "Password" : [
          null,
-         "‮Ԁɐssʍoɹp"
+         ""
       ],
       "We sent a confirmation email to <strong>%s</strong>" : [
          null,
-         "‮Ｍǝ sǝuʇ ɐ ɔouɟıɹɯɐʇıou ǝɯɐıʅ ʇo <strong>%s</strong>"
+         ""
       ],
       "To finish signing in just click the verify link we sent to your email address." : [
          null,
-         "‮⊥o ɟıuısɥ sıƃuıuƃ ıu ɾnsʇ ɔʅıɔʞ ʇɥǝ ʌǝɹıɟʎ ʅıuʞ ʍǝ sǝuʇ ʇo ʎonɹ ǝɯɐıʅ ɐppɹǝss·"
+         ""
       ],
       "forgot your password?" : [
          null,
-         "‮ɟoɹƃoʇ ʎonɹ dɐssʍoɹp?"
+         ""
       ],
       "We are sorry, but we cannot communicate with BrowserID while you are offline." : [
          null,
@@ -54,7 +53,7 @@ var json_locale_data = {
       ],
       "This field must be an email address." : [
          null,
-         "‮⊥ɥıs ɟıǝʅp ɯnsʇ qǝ ɐu ǝɯɐıʅ ɐppɹǝss·"
+         ""
       ],
       "Cancel" : [
          null,
@@ -62,19 +61,23 @@ var json_locale_data = {
       ],
       "Email" : [
          null,
-         "‮Ǝɯɐıʅ"
+         ""
       ],
       "To verify that you own <strong id='primary_email'>%s</strong>, you must sign in with your provider.  This window will be redirected to" : [
          null,
          ""
       ],
+      "Finishing Sign In..." : [
+         null,
+         ""
+      ],
       "Reset Password" : [
          null,
-         "‮Ԁɐssʍoɹp"
+         ""
       ],
       "select email" : [
          null,
-         "‮sǝʅǝɔʇ ǝɯɐıʅ"
+         ""
       ],
       "To verify that you own this address, you must sign in with your provider.  This window will be redirected to" : [
          null,
@@ -86,11 +89,15 @@ var json_locale_data = {
       ],
       "This is not me..." : [
          null,
-         "‮⊥ɥıs ıs uoʇ ɯǝ···"
+         ""
+      ],
+      "In just a moment you'll be signed into BrowserID." : [
+         null,
+         ""
       ],
       "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
          null,
-         "‮Ｍǝ ɾnsʇ sǝuʇ ɐu ǝɯɐıʅ ʇo ʇɥɐʇ ɐppɹǝss¡  Iɟ ʎon ɹǝɐʅʅʎ ʍɐuʇ ʇo sǝup ɐuoʇɥǝɹ´ ʍɐıʇ ɐ ɯıunʇǝ oɹ ʇʍo ɐup ʇɹʎ ɐƃɐıu·"
+         ""
       ],
       "cancel" : [
          null,
@@ -98,11 +105,19 @@ var json_locale_data = {
       ],
       "The password field is required." : [
          null,
-         "‮⊥ɥǝ dɐssʍoɹp ɟıǝʅp ıs ɹǝbnıɹǝp·"
+         ""
       ],
       "We just sent an email to that address! If you really want to send another, wait a minute or two and try again." : [
          null,
-         "‮Ｍǝ ɾnsʇ sǝuʇ ɐu ǝɯɐıʅ ʇo ʇɥɐʇ ɐppɹǝss¡  Iɟ ʎon ɹǝɐʅʅʎ ʍɐuʇ ʇo sǝup ɐuoʇɥǝɹ´ ʍɐıʇ ɐ ɯıunʇǝ oɹ ʇʍo ɐup ʇɹʎ ɐƃɐıu·"
+         ""
+      ],
+      "We are sorry, this request is taking a LOOONG time." : [
+         null,
+         ""
+      ],
+      "This message will go away when the request completes (hopefully soon).  If you wait too long, close this window and try again." : [
+         null,
+         ""
       ],
       "To continue, please close the window and enter a valid address." : [
          null,
@@ -114,7 +129,7 @@ var json_locale_data = {
       ],
       "Enter your email address to sign in to <strong>%s</strong>" : [
          null,
-         "‮Ǝuʇǝɹ ʎonɹ ǝɯɐıʅ ɐppɹǝss ʇo sıƃu ıu ʇo <strong>%s</strong>"
+         ""
       ],
       "translated text" : [
          null,
@@ -122,13 +137,13 @@ var json_locale_data = {
       ],
       "The email field is required." : [
          null,
-         "‮⊥ɥǝ ǝɯɐıʅ ɟıǝʅp ıs ɹǝbnıɹǝp·"
-      ],
-      "verify email" : [
-         null,
-         "‮ʌǝɹıɟʎ ǝɯɐıʅ"
+         ""
       ],
       "New email address" : [
+         null,
+         ""
+      ],
+      "verify email" : [
          null,
          ""
       ],
@@ -142,27 +157,31 @@ var json_locale_data = {
       ],
       "sign in" : [
          null,
-         "‮sıƃu ıu"
+         ""
       ],
       "The account cannot be logged in with this username and password." : [
          null,
-         "‮⊥ɥǝ ɐɔɔonuʇ ɔɐuuoʇ qǝ ʅoƃƃǝp ıu ʍıʇɥ ʇɥıs nsǝɹuɐɯǝ ɐup dɐssʍoɹp·"
+         ""
       ],
       "Welcome to BrowserID!" : [
          null,
-         "‮Ｍǝʅɔoɯǝ ʇo ԐɹoʍsǝɹIᗡ¡"
+         ""
       ],
       "*%s* is not a valid email address!" : [
          null,
-         "‮⊥ɥıs ɟıǝʅp ɯnsʇ qǝ ɐu ǝɯɐıʅ ɐppɹǝss·"
+         ""
       ],
       "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
          null,
-         "‮Iɟ ʇɥıs ıs ɐ ɯısʇɐʞǝ´ ɾnsʇ ıƃuoɹǝ ʇɥǝ sǝuʇ ǝɯɐıʅ ɐup <a href=\"#\" class=\"cancelVerify\" id=\"back\">‮nsǝ ɐuoʇɥǝɹ ǝɯɐıʅ ɐppɹǝss</a>‮·"
+         ""
       ],
       "Check your email!" : [
          null,
-         "‮Ↄɥǝɔʞ ʎonɹ ǝɯɐıʅ¡"
+         ""
+      ],
+      "Please wait a few seconds while we sign you into the site." : [
+         null,
+         ""
       ],
       "The site requested you sign in using" : [
          null,
@@ -170,7 +189,7 @@ var json_locale_data = {
       ],
       "Use a different email" : [
          null,
-         "‮∩sǝ ɐ pıɟɟǝɹǝuʇ ǝɯɐıʅ"
+         ""
       ]
    }
 }

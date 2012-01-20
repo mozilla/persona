@@ -3,15 +3,14 @@ var json_locale_data = {
       "" : {
          "Plural-Forms" : " nplurals=2; plural=(n != 1);",
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-20 12:38+0000",
-         "Language" : " ",
+         "POT-Creation-Date" : " 2012-01-20 13:06-0800",
          "Last-Translator" : " Austin King <ozten@mozilla.com>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " 2012-01-10 17:32-0800",
          "Language-Team" : " English",
          "Content-Transfer-Encoding" : " 8bit",
-         "Report-Msgid-Bugs-To" : " ",
-         "Project-Id-Version" : " PACKAGE VERSION"
+         "Project-Id-Version" : " PACKAGE VERSION",
+         "Report-Msgid-Bugs-To" : " "
       },
       "Always sign in using this email" : [
          null,
@@ -69,6 +68,10 @@ var json_locale_data = {
          null,
          ""
       ],
+      "Finishing Sign In..." : [
+         null,
+         ""
+      ],
       "Reset Password" : [
          null,
          "Password"
@@ -89,6 +92,10 @@ var json_locale_data = {
          null,
          ""
       ],
+      "In just a moment you'll be signed into BrowserID." : [
+         null,
+         ""
+      ],
       "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
          null,
          "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again."
@@ -104,6 +111,14 @@ var json_locale_data = {
       "We just sent an email to that address! If you really want to send another, wait a minute or two and try again." : [
          null,
          "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again."
+      ],
+      "We are sorry, this request is taking a LOOONG time." : [
+         null,
+         ""
+      ],
+      "This message will go away when the request completes (hopefully soon).  If you wait too long, close this window and try again." : [
+         null,
+         ""
       ],
       "To continue, please close the window and enter a valid address." : [
          null,
@@ -125,13 +140,13 @@ var json_locale_data = {
          null,
          "The email field is required."
       ],
-      "verify email" : [
-         null,
-         "verify email"
-      ],
       "New email address" : [
          null,
          ""
+      ],
+      "verify email" : [
+         null,
+         "verify email"
       ],
       "That address is already added to your account!" : [
          null,
@@ -162,6 +177,10 @@ var json_locale_data = {
          ""
       ],
       "Check your email!" : [
+         null,
+         ""
+      ],
+      "Please wait a few seconds while we sign you into the site." : [
          null,
          ""
       ],
