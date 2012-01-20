@@ -1,8 +1,12 @@
 var json_locale_data = {
    "client" : {
+      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again." : [
+         null,
+         "‮Ｍǝ ɾnsʇ sǝuʇ ɐu ǝɯɐıʅ ʇo ʇɥɐʇ ɐppɹǝss¡ Iɟ ʎon ɹǝɐʅʅʎ ʍɐuʇ ʇo sǝup ɐuoʇɥǝɹ´ ʍɐıʇ ɐ ɯıunʇǝ oɹ ʇʍo ɐup ʇɹʎ ɐƃɐıu·"
+      ],
       "" : {
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-18 16:46-0800",
+         "POT-Creation-Date" : " 2012-01-19 17:47-0800",
          "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
@@ -59,13 +63,21 @@ var json_locale_data = {
          null,
          "‮⊥ɥıs ɟıǝʅp ɯnsʇ qǝ ɐu ǝɯɐıʅ ɐppɹǝss·"
       ],
+      "Cancel" : [
+         null,
+         "‮Ↄɐuɔǝʅ"
+      ],
       "Email" : [
          null,
          "‮Ǝɯɐıʅ"
       ],
+      "Reset Password" : [
+         null,
+         "‮ᴚǝsǝʇ Ԁɐssʍoɹp"
+      ],
       "sign in" : [
          null,
-         "\"‮sıƃu ıu"
+         "‮sıƃu ıu"
       ],
       "The account cannot be logged in with this username and password." : [
          null,
@@ -94,6 +106,10 @@ var json_locale_data = {
       "Check your email!" : [
          null,
          "‮Ↄɥǝɔʞ ʎonɹ ǝɯɐıʅ¡"
+      ],
+      "The site requested you sign in using" : [
+         null,
+         "‮⊥ɥǝ sıʇǝ ɹǝbnǝsʇǝp ʎon sıƃu ıu nsıuƃ"
       ],
       "The password field is required." : [
          null,
