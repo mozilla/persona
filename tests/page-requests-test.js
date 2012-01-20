@@ -73,7 +73,12 @@ suite.addBatch({
   'GET /users/':                 respondsWith(302),
   'GET /primaries':              respondsWith(302),
   'GET /primaries/':             respondsWith(302),
-  'GET /developers':             respondsWith(302)
+  'GET /developers':             respondsWith(302),
+  'GET /developers/':            respondsWith(302),
+  'GET /test':                   respondsWith(200),
+  'GET /test/':                  respondsWith(200),
+  'GET /include.js':             respondsWith(200),
+  'GET /include.orig.js':        respondsWith(200)
 });
 
 // shut the server down and cleanup

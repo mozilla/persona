@@ -107,7 +107,3 @@ $UGLIFY < $BUILD_PATH/communication_iframe.uncompressed.js > communication_ifram
 $UGLIFYCSS $BUILD_PATH/browserid.uncompressed.css > browserid.css
 $UGLIFYCSS $BUILD_PATH/dialog.uncompressed.css > dialog.css
 
-# set up new simlink for include.js.  How can this part be better?
-cd ..
-rm include.js
-ln -s production/include.js
