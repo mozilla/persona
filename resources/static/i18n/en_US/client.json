@@ -7,15 +7,14 @@ var json_locale_data = {
       "" : {
          "Plural-Forms" : " nplurals=2; plural=(n != 1);",
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-20 21:33+0000",
-         "Language" : " ",
+         "POT-Creation-Date" : " 2012-01-20 13:45-0800",
          "Last-Translator" : " Austin King <ozten@mozilla.com>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " 2012-01-10 17:32-0800",
          "Language-Team" : " English",
          "Content-Transfer-Encoding" : " 8bit",
-         "Report-Msgid-Bugs-To" : " ",
-         "Project-Id-Version" : " PACKAGE VERSION"
+         "Project-Id-Version" : " PACKAGE VERSION",
+         "Report-Msgid-Bugs-To" : " "
       },
       "Always sign in using this email" : [
          null,
@@ -89,11 +88,11 @@ var json_locale_data = {
          null,
          ""
       ],
-      "In just a moment you'll be signed into BrowserID." : [
+      "We are sorry, BrowserID requires cookies" : [
          null,
          ""
       ],
-      "We are sorry, BrowserID requires cookies" : [
+      "In just a moment you'll be signed into BrowserID." : [
          null,
          ""
       ],
@@ -121,13 +120,13 @@ var json_locale_data = {
          null,
          "The email field is required."
       ],
-      "verify email" : [
-         null,
-         "verify email"
-      ],
       "New email address" : [
          null,
          ""
+      ],
+      "verify email" : [
+         null,
+         "verify email"
       ],
       "Checking if Cookies are Enabled" : [
          null,

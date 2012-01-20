@@ -2,12 +2,11 @@ var json_locale_data = {
    "messages" : {
       "Error encountered trying to complete registration." : [
          null,
-         "‮Ǝɹɹoɹ ǝuɔonuʇǝɹǝp ʇɹʎıuƃ ʇo ɔoɯdʅǝʇǝ ɹǝƃısʇɹɐʇıou˙"
+         "‮Ǝɹɹoɹ ǝuɔonuʇǝɹǝp ʇɹʎıuƃ ʇo ɔoɯdʅǝʇǝ ɹǝƃısʇɹɐʇıou·"
       ],
       "" : {
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-20 21:33+0000",
-         "Language" : " ",
+         "POT-Creation-Date" : " 2012-01-20 13:45-0800",
          "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
@@ -22,7 +21,7 @@ var json_locale_data = {
       ],
       "Verification password is required." : [
          null,
-         "‮Ʌǝɹıɟıɔɐʇıou dɐssʍoɹp ıs ɹǝbnıɹǝp˙"
+         "‮Ʌǝɹıɟıɔɐʇıou dɐssʍoɹp ıs ɹǝbnıɹǝp·"
       ],
       "Finish signing into: " : [
          null,
@@ -32,9 +31,21 @@ var json_locale_data = {
          null,
          "‮⅄onɹ Ǝɯɐıʅ"
       ],
+      "TOS" : [
+         null,
+         "‮⊥OS"
+      ],
+      "Need Help?" : [
+         null,
+         "‮Nǝǝp Hǝʅd?"
+      ],
+      "BrowserID: %s" : [
+         null,
+         "‮ԐɹoʍsǝɹIᗡ: %s"
+      ],
       "Error comunicating with server." : [
          null,
-         "‮Ǝɹɹoɹ ɔoɯnuıɔɐʇıuƃ ʍıʇɥ sǝɹʌǝɹ˙"
+         "‮Ǝɹɹoɹ ɔoɯnuıɔɐʇıuƃ ʍıʇɥ sǝɹʌǝɹ·"
       ],
       "Last step!" : [
          null,
@@ -46,15 +57,19 @@ var json_locale_data = {
       ],
       "Your new address is set up and you should now be signed in. You may now close this window and go back to" : [
          null,
-         "‮⅄onɹ uǝʍ ɐppɹǝss ıs sǝʇ nd ɐup ʎon sɥonʅp uoʍ qǝ sıƃuǝp ıu˙ ⅄on ɯɐʎ uoʍ ɔʅosǝ ʇɥıs ʍıupoʍ ɐup ƃo qɐɔʞ ʇo"
+         "‮⅄onɹ uǝʍ ɐppɹǝss ıs sǝʇ nd ɐup ʎon sɥonʅp uoʍ qǝ sıƃuǝp ıu· ⅄on ɯɐʎ uoʍ ɔʅosǝ ʇɥıs ʍıupoʍ ɐup ƃo qɐɔʞ ʇo"
       ],
       "Verify Password" : [
          null,
          "‮Ʌǝɹıɟʎ Ԁɐssʍoɹp"
       ],
+      "BrowserID Home" : [
+         null,
+         "‮ԐɹoʍsǝɹIᗡ Hoɯǝ"
+      ],
       "Password must be between 8 and 80 characters long." : [
          null,
-         "‮Ԁɐssʍoɹp ɯnsʇ qǝ qǝʇʍǝǝu 8‮ ɐup 80‮ ɔɥɐɹɐɔʇǝɹs ʅouƃ˙"
+         "‮Ԁɐssʍoɹp ɯnsʇ qǝ qǝʇʍǝǝu 8‮ ɐup 80‮ ɔɥɐɹɐɔʇǝɹs ʅouƃ·"
       ],
       "(A better way to sign in)" : [
          null,
@@ -68,6 +83,10 @@ var json_locale_data = {
          null,
          "‮⊥ɥɐuʞs´"
       ],
+      "Developers" : [
+         null,
+         "‮ᗡǝʌǝʅodǝɹs"
+      ],
       "Communicating with server" : [
          null,
          "‮Ↄoɯɯnuıɔɐʇıuƃ ʍıʇɥ sǝɹʌǝɹ"
@@ -78,11 +97,11 @@ var json_locale_data = {
       ],
       "Error encountered while attempting to confirm your address. Have you previously verified this address?" : [
          null,
-         "‮Ǝɹɹoɹ ǝuɔonuʇǝɹǝp ʍɥıʅǝ ɐʇʇǝɯdʇıuƃ ʇo ɔouɟıɹɯ ʎonɹ ɐppɹǝss˙ Hɐʌǝ ʎon dɹǝʌıonsʅʎ ʌǝɹıɟıǝp ʇɥıs ɐppɹǝss¿"
+         "‮Ǝɹɹoɹ ǝuɔonuʇǝɹǝp ʍɥıʅǝ ɐʇʇǝɯdʇıuƃ ʇo ɔouɟıɹɯ ʎonɹ ɐppɹǝss· Hɐʌǝ ʎon dɹǝʌıonsʅʎ ʌǝɹıɟıǝp ʇɥıs ɐppɹǝss?"
       ],
       "Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!" : [
          null,
-         "‮⊥ɥɐuʞ ʎon ɟoɹ sıƃuıuƃ nd ʍıʇɥ <strong>‮ԐɹoʍsǝɹIᗡ</strong>‮˙ ⅄on ɔɐu uoʍ nsǝ ʎonɹ <strong>‮ԐɹoʍsǝɹIᗡ</strong>‮ ɐɔɔonuʇ ʇo <em>‮Sıƃu Iu</em>‮ oɹ <em>‮Sıƃu ∩d</em>‮ ʇo ʍǝqsıʇǝs ɐʅʅ ɐɔɹoss ʇɥǝ ʍǝq¡"
+         "‮⊥ɥɐuʞ ʎon ɟoɹ sıƃuıuƃ nd ʍıʇɥ <strong>‮ԐɹoʍsǝɹIᗡ</strong>‮· ⅄on ɔɐu uoʍ nsǝ ʎonɹ <strong>‮ԐɹoʍsǝɹIᗡ</strong>‮ ɐɔɔonuʇ ʇo <em>‮Sıƃu Iu</em>‮ oɹ <em>‮Sıƃu ∩d</em>‮ ʇo ʍǝqsıʇǝs ɐʅʅ ɐɔɹoss ʇɥǝ ʍǝq¡"
       ],
       "Email Verification" : [
          null,
@@ -91,6 +110,10 @@ var json_locale_data = {
       "<strong class=\"email\">Your address</strong> has been verified!" : [
          null,
          "<strong class=\"email\">‮⅄onɹ ɐppɹǝss</strong>‮ ɥɐs qǝǝu ʌǝɹıɟıǝp¡"
+      ],
+      "Sign In" : [
+         null,
+         "‮Sıƃu Iu"
       ],
       "Finish" : [
          null,
@@ -102,15 +125,19 @@ var json_locale_data = {
       ],
       "There was a problem with your signup link.  Has this address already been registered?" : [
          null,
-         "‮⊥ɥǝɹǝ ʍɐs ɐ dɹoqʅǝɯ ʍıʇɥ ʎonɹ sıƃund ʅıuʞ˙  Hɐs ʇɥıs ɐppɹǝss ɐʅɹǝɐpʎ qǝǝu ɹǝƃısʇǝɹǝp¿"
+         "‮⊥ɥǝɹǝ ʍɐs ɐ dɹoqʅǝɯ ʍıʇɥ ʎonɹ sıƃund ʅıuʞ·  Hɐs ʇɥıs ɐppɹǝss ɐʅɹǝɐpʎ qǝǝu ɹǝƃısʇǝɹǝp?"
       ],
       "Passwords do not match." : [
          null,
-         "‮Ԁɐssʍoɹps po uoʇ ɯɐʇɔɥ˙"
+         "‮Ԁɐssʍoɹps po uoʇ ɯɐʇɔɥ·"
       ],
       "Password is required." : [
          null,
-         "‮Ԁɐssʍoɹp ıs ɹǝbnıɹǝp˙"
+         "‮Ԁɐssʍoɹp ıs ɹǝbnıɹǝp·"
+      ],
+      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>" : [
+         null,
+         "‮Ԑʎ ʇɥǝ <a href=\"%s\" target=\"_blank\">‮Ipǝuʇıʇʎ ⊥ǝɐɯ</a>‮ @ <a href=\"%s\" target=\"_blank\">‮Wozıʅʅɐ ⅂ɐqs</a>"
       ],
       "New Password" : [
          null,
@@ -120,21 +147,33 @@ var json_locale_data = {
          null,
          "‮Ↄoɯdʅǝʇǝ ⅂oƃıu ʇo %s‮ nsıuƃ ԐɹoʍsǝɹIᗡ"
       ],
+      "How it works" : [
+         null,
+         "‮Hoʍ ıʇ ʍoɹʞs"
+      ],
+      "Privacy" : [
+         null,
+         "‮Ԁɹıʌɐɔʎ"
+      ],
       "Repeat Password" : [
          null,
          "‮ᴚǝdǝɐʇ Ԁɐssʍoɹp"
       ],
       "Just a moment while we talk with the server." : [
          null,
-         "‮ſnsʇ ɐ ɯoɯǝuʇ ʍɥıʅǝ ʍǝ ʇɐʅʞ ʍıʇɥ ʇɥǝ sǝɹʌǝɹ˙"
+         "‮ſnsʇ ɐ ɯoɯǝuʇ ʍɥıʅǝ ʍǝ ʇɐʅʞ ʍıʇɥ ʇɥǝ sǝɹʌǝɹ·"
       ],
       "Email Address" : [
          null,
          "‮Ǝɯɐıʅ ∀ppɹǝss"
       ],
+      "Sign Out" : [
+         null,
+         "‮Sıƃu Onʇ"
+      ],
       "If you are NOT trying to sign into this site, just ignore this email." : [
          null,
-         "‮Iɟ ʎon ɐɹǝ NO⊥ ʇɹʎıuƃ ʇo sıƃu ıuʇo ʇɥıs sıʇǝ´ ɾnsʇ ıƃuoɹǝ ʇɥıs ǝɯɐıʅ˙"
+         "‮Iɟ ʎon ɐɹǝ NO⊥ ʇɹʎıuƃ ʇo sıƃu ıuʇo ʇɥıs sıʇǝ´ ɾnsʇ ıƃuoɹǝ ʇɥıs ǝɯɐıʅ·"
       ]
    }
 }

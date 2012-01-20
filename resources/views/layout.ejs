@@ -23,7 +23,7 @@
     <script src="/lib/jquery-1.7.1.min.js"></script>
     <script src="/lib/underscore-min.js"></script>
     <script src="/lib/ejs.js"></script>
-    <script src="/i18n/en_US/client.json"></script>
+    <script src="/i18n/<%= locale %>/client.json"></script>
     <script src="/shared/gettext.js"></script>
     <script src="/shared/javascript-extensions.js"></script>
     <script src="/shared/browserid.js"></script>
@@ -67,7 +67,7 @@
     <script src="/pages/signin.js"></script>
     <script src="/pages/signup.js"></script>
   <% } %>
-  <title>BrowserID: <%- title %></title>
+  <title><%= format(gettext("BrowserID: %s"), [title]) %></title>
 </head>
 <body>
 
@@ -77,15 +77,15 @@
 
     <header id="header" class="cf">
         <ul class="cf">
-            <li><a class="home" href="/">BrowserID Home</a></li>
+            <li><a class="home" href="/"><%= gettext("BrowserID Home") %></a></li>
         </ul>
 
         <ul class="nav cf">
-            <li><a href="/about">How it works</a></li>
-            <li><a href="https://github.com/mozilla/browserid/wiki/How-to-Use-BrowserID-on-Your-Site" target="_blank">Developers</a></li>
+            <li><a href="/about"><%= gettext("How it works") %></a></li>
+            <li><a href="https://github.com/mozilla/browserid/wiki/How-to-Use-BrowserID-on-Your-Site" target="_blank"><%= gettext("Developers") %></a></li>
 
-            <li class="signIn"><a class="signIn" href="/signin">Sign In</a></li>
-            <li class="signOut"><a class="signOut" href="/">Sign Out</a></li>
+            <li class="signIn"><a class="signIn" href="/signin"><%= gettext("Sign In") %></a></li>
+            <li class="signOut"><a class="signOut" href="/"><%= gettext("Sign Out") %></a></li>
         </ul>
     </header>
 
@@ -97,11 +97,12 @@
 
     <footer id="footer">
         <ul class="cf">
-            <li>By the <a href="http://identity.mozilla.com" target="_blank">Identity Team</a> @ <a href="http://mozillalabs.com" target="_blank">Mozilla Labs</a></li>
+            <li><%- format(gettext('By the <a href="%s" target="_blank">Identity Team</a> @ <a href="%s" target="_blank">Mozilla Labs</a>'),
+                           ['http://identity.mozilla.com', 'http://mozillalabs.com']) %></li>
             <li>&mdash;</li>
-            <li><a href="/privacy">Privacy</a></li>
-            <li><a href="/tos">TOS</a></li>
-            <li class="help"><a href="https://support.mozilla.com/en-US/kb/what-browserid-and-how-does-it-work" target="_blank">Need Help?</a></li>
+            <li><a href="/privacy"><%= gettext('Privacy') %></a></li>
+            <li><a href="/tos"><%= gettext('TOS') %></a></li>
+            <li class="help"><a href="https://support.mozilla.com/en-US/kb/what-browserid-and-how-does-it-work" target="_blank"><%= gettext('Need Help?') %></a></li>
         </ul>
     </footer>
 

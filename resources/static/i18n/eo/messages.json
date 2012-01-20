@@ -6,8 +6,7 @@ var json_locale_data = {
       ],
       "" : {
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-20 21:33+0000",
-         "Language" : " ",
+         "POT-Creation-Date" : " 2012-01-20 13:45-0800",
          "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
@@ -32,6 +31,18 @@ var json_locale_data = {
          null,
          ""
       ],
+      "TOS" : [
+         null,
+         ""
+      ],
+      "Need Help?" : [
+         null,
+         ""
+      ],
+      "BrowserID: %s" : [
+         null,
+         ""
+      ],
       "Error comunicating with server." : [
          null,
          ""
@@ -52,6 +63,10 @@ var json_locale_data = {
          null,
          ""
       ],
+      "BrowserID Home" : [
+         null,
+         ""
+      ],
       "Password must be between 8 and 80 characters long." : [
          null,
          ""
@@ -65,6 +80,10 @@ var json_locale_data = {
          ""
       ],
       "Thanks," : [
+         null,
+         ""
+      ],
+      "Developers" : [
          null,
          ""
       ],
@@ -92,6 +111,10 @@ var json_locale_data = {
          null,
          ""
       ],
+      "Sign In" : [
+         null,
+         ""
+      ],
       "Finish" : [
          null,
          ""
@@ -112,11 +135,23 @@ var json_locale_data = {
          null,
          ""
       ],
+      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>" : [
+         null,
+         ""
+      ],
       "New Password" : [
          null,
          ""
       ],
       "Complete Login to %s using BrowserID" : [
+         null,
+         ""
+      ],
+      "How it works" : [
+         null,
+         ""
+      ],
+      "Privacy" : [
          null,
          ""
       ],
@@ -129,6 +164,10 @@ var json_locale_data = {
          ""
       ],
       "Email Address" : [
+         null,
+         ""
+      ],
+      "Sign Out" : [
          null,
          ""
       ],

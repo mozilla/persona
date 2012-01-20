@@ -6,8 +6,7 @@ var json_locale_data = {
       ],
       "" : {
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-20 21:33+0000",
-         "Language" : " ",
+         "POT-Creation-Date" : " 2012-01-20 13:45-0800",
          "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
@@ -88,11 +87,11 @@ var json_locale_data = {
          null,
          ""
       ],
-      "In just a moment you'll be signed into BrowserID." : [
+      "We are sorry, BrowserID requires cookies" : [
          null,
          ""
       ],
-      "We are sorry, BrowserID requires cookies" : [
+      "In just a moment you'll be signed into BrowserID." : [
          null,
          ""
       ],
@@ -120,11 +119,11 @@ var json_locale_data = {
          null,
          ""
       ],
-      "verify email" : [
+      "New email address" : [
          null,
          ""
       ],
-      "New email address" : [
+      "verify email" : [
          null,
          ""
       ],
