@@ -16,8 +16,8 @@ BrowserID.Wait = (function(){
     },
 
     slowXHR: {
-      title: "We are sorry, this request is taking a LOOOOOOOOOONG time.",
-      message: "You can continue to wait while the request completes (this will go away when complete), or you could shut close the BrowserID window and try again.",
+      title: "We are sorry, this request is taking a LOOONG time.",
+      message: "This message will go away when the request completes (hopefully soon).  If you wait too long, close this window and try again.",
       id: "slowXHR"
     }
 
