@@ -1,4 +1,4 @@
-/*global BrowserID: true*/
+/*global BrowserID: true, gettext: true*/
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,149 +7,149 @@ BrowserID.Errors = (function(){
 
   var Errors = {
     authenticate: {
-      title: "Authenticating User"
+      title: gettext("Authenticating User")
     },
 
     addEmail: {
-      title: "Adding Address"
+      title: gettext("Adding Address")
     },
 
     addEmailWithAssertion: {
-      title: "Adding Primary Email Address to User"
+      title: gettext("Adding Primary Email Address to User")
     },
 
     addressInfo: {
-      title: "Checking Address Info"
+      title: gettext("Checking Address Info")
     },
 
     authenticateWithAssertion: {
-      title: "Authenticating with Assertion"
+      title: gettext("Authenticating with Assertion")
     },
 
     cancelUser: {
-      title: "Cancelling User Account"
+      title: gettext("Cancelling User Account")
     },
 
     checkAuthentication: {
-      title: "Checking Authentication"
+      title: gettext("Checking Authentication")
     },
 
     checkScriptVersion: {
-      title: "Checking Script Version"
+      title: gettext("Checking Script Version")
     },
 
     completeUserRegistration: {
-      title: "Completing User Registration"
+      title: gettext("Completing User Registration")
     },
 
     cookiesDisabled: {
-      title: "We are sorry, BrowserID requires cookies",
-      message: "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again"
+      title: gettext("We are sorry, BrowserID requires cookies"),
+      message: gettext("BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again")
     },
 
     cookiesEnabled: {
-      title: "Checking if Cookies are Enabled"
+      title: gettext("Checking if Cookies are Enabled")
     },
 
     createUser: {
-      title: "Creating Account"
+      title: gettext("Creating Account")
     },
 
     getAssertion: {
-      title: "Getting Assertion"
+      title: gettext("Getting Assertion")
     },
 
     getTokenInfo: {
-      title: "Checking Registration Token"
+      title: gettext("Checking Registration Token")
     },
 
     isEmailRegistered: {
-      title: "Checking Email Address"
+      title: gettext("Checking Email Address")
     },
 
     isUserAuthenticatedToPrimary: {
-      title: "Checking Whether User is Authenticated with IdP"
+      title: gettext("Checking Whether User is Authenticated with IdP")
     },
 
     logoutUser: {
-      title: "Logout Failed"
+      title: gettext("Logout Failed")
     },
 
     offline: {
-      title: "You are offline!",
-      message: "Unfortunately, BrowserID cannot communicate while offline!"
+      title: gettext("You are offline!"),
+      message: gettext("Unfortunately, BrowserID cannot communicate while offline!")
     },
 
     primaryAuthentication: {
-      title: "Authenticating with Identity Provider",
-      message: "We had trouble communicating with your email provider, please try again!"
+      title: gettext("Authenticating with Identity Provider"),
+      message: gettext("We had trouble communicating with your email provider, please try again!")
     },
 
     provisioningPrimary: {
-      title: "Provisioning with Identity Provider",
-      message: "We had trouble communicating with your email provider, please try again!"
+      title: gettext("Provisioning with Identity Provider"),
+      message: gettext("We had trouble communicating with your email provider, please try again!")
     },
 
     provisioningBadPrimary: {
-      title: "Provisioning Unsupported Identity Provider",
-      message: "Unfortunately, the email address provided cannot act as a Primary Identity Provider"
+      title: gettext("Provisioning Unsupported Identity Provider"),
+      message: gettext("Unfortunately, the email address provided cannot act as a Primary Identity Provider")
     },
 
     registration: {
-      title: "Registration Failed"
+      title: gettext("Registration Failed")
     },
 
     relaySetup: {
-      title: "Establishing Relay",
-      message: "Relay frame could not be found"
+      title: gettext("Establishing Relay"),
+      message: gettext("Relay frame could not be found")
     },
 
     requestPasswordReset: {
-      title: "Resetting Password"
+      title: gettext("Resetting Password")
     },
 
     removeEmail: {
-      title: "Remove Email Address from Account"
+      title: gettext("Remove Email Address from Account")
     },
 
     setPassword: {
-      title: "Setting Password"
+      title: gettext("Setting Password")
     },
 
     signIn: {
-      title: "Signin Failed"
+      title: gettext("Signin Failed")
     },
 
     signUp: {
-      title: "Signup Failed"
+      title: gettext("Signup Failed")
     },
 
     syncAddress: {
-      title: "Syncing Address"
+      title: gettext("Syncing Address")
     },
 
     syncEmails: {
-      title: "Syncing Email Addresses"
+      title: gettext("Syncing Email Addresses")
     },
 
     syncEmailKeypair: {
-      title: "Sync Keys for Address"
+      title: gettext("Sync Keys for Address")
     },
 
     tokenInfo: {
-      title: "Getting Token Info"
+      title: gettext("Getting Token Info")
     },
 
     updatePassword: {
-      title: "Updating password"
+      title: gettext("Updating password")
     },
 
     verifyEmail: {
-      title: "Verifying email address"
+      title: gettext("Verifying email address")
     },
 
     xhrError: {
-      title: "Communication Error"
+      title: gettext("Communication Error")
     }
 
   };

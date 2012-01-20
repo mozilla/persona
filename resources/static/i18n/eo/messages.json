@@ -6,7 +6,8 @@ var json_locale_data = {
       ],
       "" : {
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-20 13:06-0800",
+         "POT-Creation-Date" : " 2012-01-20 21:33+0000",
+         "Language" : " ",
          "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
@@ -23,15 +24,51 @@ var json_locale_data = {
          null,
          ""
       ],
-      "Communicating with server" : [
-         null,
-         ""
-      ],
       "Finish signing into: " : [
          null,
          ""
       ],
       "Your Email" : [
+         null,
+         ""
+      ],
+      "Error comunicating with server." : [
+         null,
+         ""
+      ],
+      "Last step!" : [
+         null,
+         ""
+      ],
+      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>" : [
+         null,
+         ""
+      ],
+      "Your new address is set up and you should now be signed in. You may now close this window and go back to" : [
+         null,
+         ""
+      ],
+      "Verify Password" : [
+         null,
+         ""
+      ],
+      "Password must be between 8 and 80 characters long." : [
+         null,
+         ""
+      ],
+      "(A better way to sign in)" : [
+         null,
+         ""
+      ],
+      "Finish registration by clicking this link:" : [
+         null,
+         ""
+      ],
+      "Thanks," : [
+         null,
+         ""
+      ],
+      "Communicating with server" : [
          null,
          ""
       ],
@@ -47,19 +84,11 @@ var json_locale_data = {
          null,
          ""
       ],
-      "<strong class=\"email\">Your address</strong> has been verified!" : [
-         null,
-         ""
-      ],
       "Email Verification" : [
          null,
          ""
       ],
-      "Error comunicating with server." : [
-         null,
-         ""
-      ],
-      "Browser ID" : [
+      "<strong class=\"email\">Your address</strong> has been verified!" : [
          null,
          ""
       ],
@@ -67,7 +96,7 @@ var json_locale_data = {
          null,
          ""
       ],
-      "Last step!" : [
+      "Browser ID" : [
          null,
          ""
       ],
@@ -75,7 +104,7 @@ var json_locale_data = {
          null,
          ""
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>" : [
+      "Passwords do not match." : [
          null,
          ""
       ],
@@ -83,27 +112,11 @@ var json_locale_data = {
          null,
          ""
       ],
-      "Passwords do not match." : [
-         null,
-         ""
-      ],
-      "Your new address is set up and you should now be signed in. You may now close this window and go back to" : [
-         null,
-         ""
-      ],
       "New Password" : [
          null,
          ""
       ],
-      "Verify Password" : [
-         null,
-         ""
-      ],
       "Complete Login to %s using BrowserID" : [
-         null,
-         ""
-      ],
-      "Password must be between 8 and 80 characters long." : [
          null,
          ""
       ],
@@ -116,18 +129,6 @@ var json_locale_data = {
          ""
       ],
       "Email Address" : [
-         null,
-         ""
-      ],
-      "(A better way to sign in)" : [
-         null,
-         ""
-      ],
-      "Finish registration by clicking this link:" : [
-         null,
-         ""
-      ],
-      "Thanks," : [
          null,
          ""
       ],
