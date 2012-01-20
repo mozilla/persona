@@ -18,7 +18,7 @@
     return mod;
   }
 
-  module("shared/xhr_disable_form", {
+  module("shared/modules/xhr_disable_form", {
     setup: function() {
       testHelpers.setup();
       createModule();

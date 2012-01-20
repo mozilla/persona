@@ -19,7 +19,7 @@
     return mod;
   }
 
-  module("shared/xhr_delay", {
+  module("shared/modules/xhr_delay", {
     setup: function() {
       testHelpers.setup();
       createModule();

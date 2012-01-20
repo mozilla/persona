@@ -7,180 +7,74 @@ BrowserID.Network = (function() {
   "use strict";
 
   var bid = BrowserID,
-      mediator = bid.Mediator,
-      csrf_token,
-      xhr = $,
+      complete = bid.Helpers.complete,
+      context,
       server_time,
       domain_key_creation_time,
       auth_status,
       code_version,
-      time_until_delay
+      cookies_enabled,
+      time_until_delay,
+      mediator = bid.Mediator,
+      xhr = bid.XHR,
+      post = xhr.post,
+      get = xhr.get;
 
-  function xhrError(cb, info) {
-    return function(jqXHR, textStatus, errorThrown) {
-      info = info || {};
-      var network = info.network = info.network || {};
-
-      network.status = jqXHR && jqXHR.status;
-      network.textStatus = textStatus;
-      network.errorThrown = errorThrown;
-      network.responseText = jqXHR.responseText;
-
-      if (cb) cb(info);
+  function onContextChange(msg, result) {
+    context = result;
+    server_time = {
+      remote: result.server_time,
+      local: (new Date()).getTime()
     };
-  }
+    domain_key_creation_time = result.domain_key_creation_time;
+    auth_status = result.auth_level;
+    code_version = result.code_version;
+    cookies_enabled = result.cookies_enabled || true;
 
-  function xhrDelay(reqInfo) {
-    mediator.publish("xhr_delay", reqInfo);
-  }
-
-  function xhrComplete(reqInfo) {
-    mediator.publish("xhr_complete", reqInfo);
-  }
-
-  function request(options) {
-    // We defer the responses because otherwise jQuery eats any exceptions
-    // that are thrown in the response handlers and it becomes very difficult
-    // to debug.
-    var successCB = options.success,
-        errorCB = options.error,
-        delayTimeout,
-        reqInfo = {
-          network: {
-            type: options.type.toUpperCase(),
-            url: options.url
-          }
-        },
-        success = function(resp, jqXHR, textResponse) {
-          if(delayTimeout) {
-            clearTimeout(delayTimeout);
-            delayTimeout = null;
-          }
-
-          xhrComplete(reqInfo);
-          if(options.defer_success) {
-            _.defer(successCB.curry(resp, jqXHR, textResponse));
-          }
-          else {
-            successCB(resp, jqXHR, textResponse);
-          }
-        },
-        error = function(resp, jqXHR, textResponse) {
-          if(delayTimeout) {
-            clearTimeout(delayTimeout);
-            delayTimeout = null;
-          }
-
-          xhrComplete(reqInfo);
-          _.defer(xhrError(errorCB, reqInfo).curry(resp, jqXHR, textResponse));
-        }
-
-    var req = _.extend({}, options, {
-      success: success,
-      error: error
-    });
-
-    if(time_until_delay) {
-      delayTimeout = setTimeout(xhrDelay.curry(reqInfo), time_until_delay);
-    };
-
-    mediator.publish("xhr_start", reqInfo);
-    xhr.ajax(req);
-  }
-
-  function get(options) {
-    var req = _.extend(options, {
-      type: "GET",
-      defer_success: true
-    });
-    request(req);
+    // seed the PRNG
+    // FIXME: properly abstract this out, probably by exposing a jwcrypto
+    // interface for randomness
+    require("./libs/all").sjcl.random.addEntropy(result.random_seed);
   }
 
   function withContext(cb, onFailure) {
-    if (typeof csrf_token === 'string') cb();
+    if(typeof context !== "undefined") cb(context);
     else {
-      // We do not use get because the success response is deferred making our
-      // local/server time offset calculations skewed.
-      request({
-        type: "GET",
-        url: "/wsapi/session_context",
-        success: function(result) {
-          csrf_token = result.csrf_token;
-          server_time = {
-            remote: result.server_time,
-            local: (new Date()).getTime()
-          };
-          domain_key_creation_time = result.domain_key_creation_time;
-          auth_status = result.auth_level;
-          code_version = result.code_version;
-
-          // seed the PRNG
-          // FIXME: properly abstract this out, probably by exposing a jwcrypto
-          // interface for randomness
-          require("./libs/all").sjcl.random.addEntropy(result.random_seed);
-
-          _.defer(cb);
-        },
-        error: onFailure
-      });
+      xhr.withContext(cb, onFailure);
     }
   }
 
   function clearContext() {
+    xhr.clearContext();
     var undef;
-    csrf_token = server_time = auth_status = undef;
-  }
-
-  function post(options) {
-    withContext(function() {
-      var data = options.data || {};
-      data.csrf = data.csrf || csrf_token;
-
-      var req = _.extend(options, {
-        type: "POST",
-        data: data,
-        defer_success: true
-      });
-      request(req);
-    }, options.error);
+    context = server_time = auth_status = undef;
   }
 
   function handleAuthenticationResponse(type, onComplete, onFailure, status) {
-    if (onComplete) {
-      try {
-        var authenticated = status.success;
+    try {
+      var authenticated = status.success;
 
-        if (typeof authenticated !== 'boolean') throw status;
+      if (typeof authenticated !== 'boolean') throw status;
 
-        // at this point we know the authentication status of the
-        // session, let's set it to perhaps save a network request
-        // (to fetch session context).
-        auth_status = authenticated && type;
-        if (onComplete) onComplete(authenticated);
-      } catch (e) {
-        onFailure("unexpected server response: " + e);
-      }
+      // at this point we know the authentication status of the
+      // session, let's set it to perhaps save a network request
+      // (to fetch session context).
+      auth_status = authenticated && type;
+      complete(onComplete, authenticated);
+    } catch (e) {
+      onFailure("unexpected server response: " + e);
     }
   }
 
   var Network = {
     /**
-     * Initialize - set the XHR object and clear all context info.
-     * Used for testing.
+     * Initialize - Clear all context info. Used for testing.
      * @method init
-     * @param {object} config - takes parameters:
-     *   config.xhr - xhr object.
-     *   config.time_until_delay - ms a request can run before it is
-     *     considered delayed.
      */
     init: function(config) {
-      if(config.hasOwnProperty("xhr")) {
-        xhr = config.xhr;
-      }
+      // Any time the context info changes, we want to know about it.
+      mediator.subscribe('context_info', onContextChange);
 
-      if(config.hasOwnProperty("time_until_delay")) {
-        time_until_delay = config.time_until_delay;
-      }
       clearContext();
     },
 
@@ -236,9 +130,9 @@ BrowserID.Network = (function() {
     checkAuth: function(onComplete, onFailure) {
       withContext(function() {
         try {
-          if (onComplete) onComplete(auth_status);
+          complete(onComplete, auth_status);
         } catch(e) {
-          if (onFailure) onFailure(e.toString());
+          complete(onFailure, e.toString());
         }
       }, onFailure);
     },
@@ -259,12 +153,12 @@ BrowserID.Network = (function() {
           // FIXME: we should return a confirmation that the
           // user was successfully logged out.
           auth_status = false;
-          if (onComplete) onComplete();
+          complete(onComplete);
         },
         error: function(info, xhr, textStatus) {
           if (info.network.status === 400) {
             auth_status = false;
-            if (onComplete) onComplete();
+            complete(onComplete);
           }
           else {
             onFailure && onFailure(info);
@@ -289,14 +183,14 @@ BrowserID.Network = (function() {
           site : origin
         },
         success: function(status) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: function(info) {
           // 403 is throttling.
           if (info.network.status === 403) {
-            if (onComplete) onComplete(false);
+            complete(onComplete, false);
           }
-          else if (onFailure) onFailure(info);
+          else complete(onFailure, info);
         }
       });
     },
@@ -318,7 +212,7 @@ BrowserID.Network = (function() {
             // force needs_password to be set;
             data = _.extend({ needs_password: false }, result);
           }
-          if (onComplete) onComplete(data);
+          complete(onComplete, data);
         },
         error: onFailure
       });
@@ -334,7 +228,7 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/user_creation_status?email=" + encodeURIComponent(email),
         success: function(status, textStatus, jqXHR) {
-          if (onComplete) onComplete(status.status);
+          complete(onComplete, status.status);
         },
         error: onFailure
       });
@@ -356,7 +250,7 @@ BrowserID.Network = (function() {
           pass: password
         },
         success: function(status, textStatus, jqXHR) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -379,7 +273,7 @@ BrowserID.Network = (function() {
           pass: password
         },
         success: function(status, textStatus, jqXHR) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -415,7 +309,7 @@ BrowserID.Network = (function() {
           password: password
         },
         success: function(status) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -438,7 +332,7 @@ BrowserID.Network = (function() {
           newpass: newPassword
         },
         success: function(status) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -473,7 +367,7 @@ BrowserID.Network = (function() {
           assertion: assertion
         },
         success: function(status) {
-          onComplete && onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -495,14 +389,14 @@ BrowserID.Network = (function() {
           site: origin
         },
         success: function(response) {
-          if (onComplete) onComplete(response.success);
+          complete(onComplete, response.success);
         },
         error: function(info) {
           // 403 is throttling.
           if (info.network.status === 403) {
-            if (onComplete) onComplete(false);
+            complete(onComplete, false);
           }
-          else if (onFailure) onFailure(info);
+          else complete(onFailure, info);
         }
       });
     },
@@ -518,7 +412,7 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
         success: function(status, textStatus, jqXHR) {
-          if (onComplete) onComplete(status.status);
+          complete(onComplete, status.status);
         },
         error: onFailure
       });
@@ -537,7 +431,7 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/have_email?email=" + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
-          if (onComplete) onComplete(data.email_known);
+          complete(onComplete, data.email_known);
         },
         error: onFailure
       });
@@ -560,7 +454,7 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/address_info?email=" + encodeURIComponent(email),
         success: function(data, textStatus, xhr) {
-          if (onComplete) onComplete(data);
+          complete(onComplete, data);
         },
         error: onFailure
       });
@@ -580,7 +474,7 @@ BrowserID.Network = (function() {
           email: email
         },
         success: function(status, textStatus, jqXHR) {
-          if (onComplete) onComplete(status.success);
+          complete(onComplete, status.success);
         },
         error: onFailure
       });
@@ -597,15 +491,8 @@ BrowserID.Network = (function() {
           email: email,
           pubkey: pubkey.serialize()
         },
-        success: function(info) {
-          var b=true;
-          onComplete.apply(null, arguments);
-        },
-        error: function(info) {
-          var b=true;
-
-          onFailure.apply(null, arguments);
-        }
+        success: onComplete,
+        error: onFailure
       });
     },
 
@@ -636,9 +523,9 @@ BrowserID.Network = (function() {
         try {
           if (!server_time) throw "can't get server time!";
           var offset = (new Date()).getTime() - server_time.local;
-          if (onComplete) onComplete(new Date(offset + server_time.remote));
+          complete(onComplete, new Date(offset + server_time.remote));
         } catch(e) {
-          if (onFailure) onFailure(e.toString());
+          complete(onFailure, e.toString());
         }
       }, onFailure);
     },
@@ -656,9 +543,9 @@ BrowserID.Network = (function() {
       withContext(function() {
         try {
           if (!domain_key_creation_time) throw "can't get domain key creation time!";
-          if (onComplete) onComplete(new Date(domain_key_creation_time));
+          complete(onComplete, new Date(domain_key_creation_time));
         } catch(e) {
-          if (onFailure) onFailure(e.toString());
+          complete(onFailure, e.toString());
         }
       }, onFailure);
     },
@@ -674,11 +561,17 @@ BrowserID.Network = (function() {
      */
     codeVersion: function(onComplete, onFailure) {
       withContext(function() {
-        try {
-          if (onComplete) onComplete(code_version);
-        } catch(e) {
-          if (onFailure) onFailure(e.toString());
-        }
+        complete(onComplete, code_version);
+      }, onFailure);
+    },
+
+    /**
+     * Check if the user's cookies are enabled
+     * @method cookiesEnabled
+     */
+    cookiesEnabled: function(onComplete, onFailure) {
+      withContext(function() {
+        complete(onComplete, cookies_enabled);
       }, onFailure);
     }
   };

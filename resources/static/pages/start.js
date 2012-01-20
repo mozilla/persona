@@ -12,9 +12,10 @@ $(function() {
 
   var bid = BrowserID,
       pageHelpers = bid.PageHelpers,
-      network = bid.Network,
       user = bid.User,
       dom = bid.DOM,
+      xhr = bid.XHR,
+      network = bid.Network,
       token = pageHelpers.getParameterByName("token"),
       path = document.location.pathname,
       moduleManager = bid.module,
@@ -23,7 +24,9 @@ $(function() {
       XHRDelay = modules.XHRDelay,
       XHRDisableForm = modules.XHRDisableForm;
 
-  network.init({ time_until_delay: 10 * 1000 });
+
+  xhr.init({ time_until_delay: 10 * 1000 });
+  network.init();
 
   moduleManager.register("code_check", CodeCheck);
 

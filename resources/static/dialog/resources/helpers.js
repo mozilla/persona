@@ -8,13 +8,10 @@
 
   var bid = BrowserID,
       helpers = bid.Helpers,
+      complete = helpers.complete,
       user = bid.User,
       tooltip = bid.Tooltip,
       errors = bid.Errors;
-
-  function complete(callback, status) {
-    callback && callback(status);
-  }
 
   function animateClose(callback) {
     var body = $("body"),

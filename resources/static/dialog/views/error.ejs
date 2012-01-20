@@ -17,43 +17,45 @@
   <% } %>
   </p>
 
-  <a href="#" id="openMoreInfo">See more info</a>
+  <% if(typeof action !== "undefined" || typeof network !== "undefined") { %>
+    <a href="#" id="openMoreInfo">See more info</a>
 
-  <ul id="moreInfo">
-    <% if (typeof action !== "undefined") { %>
-      <li>
-        <strong id="action">Action: </strong><%= action.title %>
+    <ul id="moreInfo">
+      <% if (typeof action !== "undefined") { %>
+        <li>
+          <strong id="action">Action: </strong><%= action.title %>
 
-        <% if (action.message) { %>
+          <% if (action.message) { %>
+            <p>
+              <%= action.message %>
+            </p>
+          <% } %>
+        </li>
+      <% } %>
+
+      <% if (typeof network !== "undefined") { %>
+        <li>
+
+          <strong id="network">Network Info:</strong> <%= network.type %>: <%= network.url %>
+
           <p>
-            <%= action.message %>
+            <strong>Response Code - </strong> <%= network.textStatus %>
           </p>
-        <% } %>
-      </li>
-    <% } %>
 
-    <% if (typeof network !== "undefined") { %>
-      <li>
+          <% if (network.responseText) { %>
+            <p>
+              <strong>Response Text:</strong> <%= network.responseText %>
+            </p>
+          <% } %>
 
-        <strong id="network">Network Info:</strong> <%= network.type %>: <%= network.url %>
+          <% if (network.errorThrown) { %>
+            <p>
+              <strong>Error Type:</strong> <%= network.errorThrown %>
+            </p>
+          <% } %>
+        </li>
 
-        <p>
-          <strong>Response Code - </strong> <%= network.textStatus %>
-        </p>
-
-        <% if (network.responseText) { %>
-          <p>
-            <strong>Response Text:</strong> <%= network.responseText %>
-          </p>
-        <% } %>
-
-        <% if (network.errorThrown) { %>
-          <p>
-            <strong>Error Type:</strong> <%= network.errorThrown %>
-          </p>
-        <% } %>
-      </li>
-
+      <% } %>
     <% } %>
 
   </ul>
