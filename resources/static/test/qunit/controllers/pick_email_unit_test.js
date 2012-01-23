@@ -13,7 +13,7 @@
       testOrigin = testHelpers.testOrigin,
       register = bid.TestHelpers.register;
 
-  module("controllers/pickemail_controller", {
+  module("controllers/pick_email", {
     setup: function() {
       testHelpers.setup();
     },

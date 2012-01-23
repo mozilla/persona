@@ -12,7 +12,8 @@ BrowserID.Modules.PickEmail = (function() {
       storage = bid.Storage,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
-      dom = bid.DOM;
+      dom = bid.DOM,
+      sc;
 
   function cancelEvent(event) {
     event && event.preventDefault();
@@ -67,7 +68,7 @@ BrowserID.Modules.PickEmail = (function() {
     }
   }
 
-  var PickEmail = bid.Modules.PageModule.extend({
+  var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var origin = user.getOrigin(),
           self=this;
@@ -96,13 +97,13 @@ BrowserID.Modules.PickEmail = (function() {
 
       self.bind("#useNewEmail", "click", addEmail);
 
-      PickEmail.sc.start.call(self, options);
+      sc.start.call(self, options);
 
       pickEmailState.call(self);
     },
 
     stop: function() {
-      PickEmail.sc.stop.call(this);
+      sc.stop.call(this);
       dom.removeClass("body", "pickemail");
     }
 
@@ -113,6 +114,8 @@ BrowserID.Modules.PickEmail = (function() {
     // END TESTING API
   });
 
-  return PickEmail;
+  sc = Module.sc;
+
+  return Module;
 
 }());
