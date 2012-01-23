@@ -13,8 +13,8 @@ BrowserID.Modules.XHRDelay = (function() {
     start: function(options) {
       var self=this;
 
-      self.subscribe("xhr_delay", this.renderWait.curry("wait", wait.slowXHR));
-      self.subscribe("xhr_complete", this.hideWait);
+      //self.subscribe("xhr_delay", this.renderWait.curry("wait", wait.slowXHR));
+      //self.subscribe("xhr_complete", this.hideWait);
 
       sc.start.call(self, options);
     },
