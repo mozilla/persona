@@ -14,7 +14,7 @@ xgettext -j -L PHP --keyword=_ --output-dir=locale/templates/LC_MESSAGES --outpu
 # js
 xgettext -j -L Perl --output-dir=locale/templates/LC_MESSAGES --from-code=utf-8 --output=client.pot\
  `find resources/static -name '*.js' | grep -v /lib/ | grep -v /build/ | grep -v /production/ | grep -v 'gettext.js'`
-xgettext -j -L Perl --output-dir=locale/templates/LC_MESSAGES --output=client.pot `find resources/static/dialog/ -name '*.js'`
+xgettext -j -L Perl --output-dir=locale/templates/LC_MESSAGES --output=client.pot `find resources/static/dialog/ -name '*.js' | grep -v include.js`
 # ejs
 xgettext -j -L PHP --keyword=_ --output-dir=locale/templates/LC_MESSAGES --output=client.pot `find resources/static -name '*.ejs'`
 
