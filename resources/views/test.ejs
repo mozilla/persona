@@ -6,7 +6,7 @@
 <html>
 	<head>
     <meta charset="utf-8">
-		<link rel="stylesheet" type="text/css" href="qunit.css" />
+		<link rel="stylesheet" type="text/css" href="qunit/qunit.css" />
 		<title>BrowserID QUnit Test</title>
   <!--[if lt IE 9]>
     <script src="/lib/html5shim.js"></script>
@@ -61,7 +61,7 @@
     <script type="text/html" id="templateUser">
       <li>{{email}}</li>
     </script>
-    <script src="qunit.js"></script>
+    <script src="qunit/qunit.js"></script>
     <script src="/include.js"></script>
     <script src="/lib/jquery-1.7.1.min.js"></script>
     <script src="/lib/underscore-min.js"></script>
@@ -76,12 +76,12 @@
     <script src="/lib/module.js"></script>
     <script src="/lib/jschannel.js"></script>
     <script src="/shared/javascript-extensions.js"></script>
-    <script src="qunit/mocks/mocks.js"></script>
-    <script src="qunit/mocks/xhr.js"></script>
-    <script src="qunit/mocks/templates.js"></script>
-    <script src="qunit/mocks/provisioning.js"></script>
-    <script src="qunit/mocks/window.js"></script>
-    <script src="qunit/mocks/winchan.js"></script>
+    <script src="mocks/mocks.js"></script>
+    <script src="mocks/xhr.js"></script>
+    <script src="mocks/templates.js"></script>
+    <script src="mocks/provisioning.js"></script>
+    <script src="mocks/window.js"></script>
+    <script src="mocks/winchan.js"></script>
 
     <script src="/shared/renderer.js"></script>
     <script src="/shared/class.js"></script>
@@ -131,54 +131,54 @@
     <script src="/pages/signup.js"></script>
     <script src="/pages/verify_email_address.js"></script>
 
-    <script src="qunit/testHelpers/helpers.js"></script>
+    <script src="testHelpers/helpers.js"></script>
 
-    <script src="qunit/include_unit_test.js"></script>
+    <script src="cases/include.js"></script>
 
-    <script src="qunit/shared/helpers_unit_test.js"></script>
-    <script src="qunit/shared/renderer_unit_test.js"></script>
-    <script src="qunit/shared/screens_unit_test.js"></script>
-    <script src="qunit/shared/tooltip_unit_test.js"></script>
-    <script src="qunit/shared/error-display_unit_test.js"></script>
-    <script src="qunit/shared/browser-support_unit_test.js"></script>
-    <script src="qunit/shared/validation_unit_test.js"></script>
-    <script src="qunit/shared/storage_unit_test.js"></script>
-    <script src="qunit/shared/xhr_unit_test.js"></script>
-    <script src="qunit/shared/network_unit_test.js"></script>
-    <script src="qunit/shared/user_unit_test.js"></script>
+    <script src="cases/shared/helpers.js"></script>
+    <script src="cases/shared/renderer.js"></script>
+    <script src="cases/shared/screens.js"></script>
+    <script src="cases/shared/tooltip.js"></script>
+    <script src="cases/shared/error-display.js"></script>
+    <script src="cases/shared/browser-support.js"></script>
+    <script src="cases/shared/validation.js"></script>
+    <script src="cases/shared/storage.js"></script>
+    <script src="cases/shared/xhr.js"></script>
+    <script src="cases/shared/network.js"></script>
+    <script src="cases/shared/user.js"></script>
 
-    <script src="qunit/shared/modules/page_module_unit_test.js"></script>
-    <script src="qunit/shared/modules/xhr_delay_unit_test.js"></script>
-    <script src="qunit/shared/modules/xhr_disable_form_unit_test.js"></script>
-    <script src="qunit/shared/modules/code_check_unit_test.js"></script>
-    <script src="qunit/shared/modules/cookie_check_unit_test.js"></script>
+    <script src="cases/shared/modules/page_module.js"></script>
+    <script src="cases/shared/modules/xhr_delay.js"></script>
+    <script src="cases/shared/modules/xhr_disable_form.js"></script>
+    <script src="cases/shared/modules/code_check.js"></script>
+    <script src="cases/shared/modules/cookie_check.js"></script>
 
-    <script src="qunit/pages/browserid_unit_test.js"></script>
-    <script src="qunit/pages/page_helpers_unit_test.js"></script>
-    <script src="qunit/pages/add_email_address_test.js"></script>
-    <script src="qunit/pages/verify_email_address_test.js"></script>
-    <script src="qunit/pages/forgot_unit_test.js"></script>
-    <script src="qunit/pages/signin_unit_test.js"></script>
-    <script src="qunit/pages/signup_unit_test.js"></script>
-    <script src="qunit/pages/manage_account_unit_test.js"></script>
+    <script src="cases/pages/browserid.js"></script>
+    <script src="cases/pages/page_helpers.js"></script>
+    <script src="cases/pages/add_email_address_test.js"></script>
+    <script src="cases/pages/verify_email_address_test.js"></script>
+    <script src="cases/pages/forgot.js"></script>
+    <script src="cases/pages/signin.js"></script>
+    <script src="cases/pages/signup.js"></script>
+    <script src="cases/pages/manage_account.js"></script>
 
-    <script src="qunit/resources/internal_api_unit_test.js"></script>
-    <script src="qunit/resources/helpers_unit_test.js"></script>
-    <script src="qunit/resources/state_machine_unit_test.js"></script>
+    <script src="cases/resources/internal_api.js"></script>
+    <script src="cases/resources/helpers.js"></script>
+    <script src="cases/resources/state_machine.js"></script>
 
-    <script src="qunit/controllers/actions_unit_test.js"></script>
-    <script src="qunit/controllers/pick_email_unit_test.js"></script>
-    <script src="qunit/controllers/add_email_unit_test.js"></script>
-    <script src="qunit/controllers/check_registration_unit_test.js"></script>
-    <script src="qunit/controllers/authenticate_unit_test.js"></script>
-    <script src="qunit/controllers/forgot_password_unit_test.js"></script>
-    <script src="qunit/controllers/required_email_unit_test.js"></script>
-    <script src="qunit/controllers/verify_primary_user_unit_test.js"></script>
-    <script src="qunit/controllers/email_chosen_unit_test.js"></script>
-    <script src="qunit/controllers/provision_primary_user_unit_test.js"></script>
-    <script src="qunit/controllers/primary_user_provisioned_unit_test.js"></script>
+    <script src="cases/controllers/actions.js"></script>
+    <script src="cases/controllers/pick_email.js"></script>
+    <script src="cases/controllers/add_email.js"></script>
+    <script src="cases/controllers/check_registration.js"></script>
+    <script src="cases/controllers/authenticate.js"></script>
+    <script src="cases/controllers/forgot_password.js"></script>
+    <script src="cases/controllers/required_email.js"></script>
+    <script src="cases/controllers/verify_primary_user.js"></script>
+    <script src="cases/controllers/email_chosen.js"></script>
+    <script src="cases/controllers/provision_primary_user.js"></script>
+    <script src="cases/controllers/primary_user_provisioned.js"></script>
 
     <!-- must go last or all other tests will fail. -->
-    <script src="qunit/controllers/dialog_unit_test.js"></script>
+    <script src="cases/controllers/dialog.js"></script>
 	</body>
 </html>
