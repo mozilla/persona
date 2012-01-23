@@ -21,6 +21,7 @@ noscript {
   right: 0;
   bottom: 0;
   left: 0;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   opacity: 0;
   z-index: -2;
   background: #000;
@@ -42,6 +43,7 @@ noscript {
 
 #error, #wait, #delay {
   z-index: -2;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   opacity: 0;
   -webkit-transition: opacity 750ms;
   -moz-transition: opacity 750ms;
@@ -61,16 +63,19 @@ noscript {
 
 .waiting #wait {
   z-index: 1002;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   opacity: 1;
 }
 
 .delay #delay {
   z-index: 1003;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   opacity: 1;
 }
 
 .error #error {
   z-index: 1004;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   opacity: 1;
 }
 
