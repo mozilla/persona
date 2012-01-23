@@ -142,9 +142,6 @@ wsapi.setup({
 // #9 - handle views for dynamicish content
 views.setup(app);
 
-// #10 - if nothing else has caught this request, serve static files
-app.use(express.static(path.join(__dirname, "..", "resources", "static")));
-
 function doShutdown(readyForShutdownCB) {
   require('../lib/bcrypt.js').shutdown();
   db.close(readyForShutdownCB)
@@ -155,19 +152,28 @@ function doShutdown(readyForShutdownCB) {
 // the update logic
 shutdown.installUpdateHandler(app, doShutdown);
 
-// #11.5 - custom 404
-app.use(function(req, res,next) {
-  res.statusCode = 404;
-  res.write("Cannot find this resource");
-  res.end();
-});
-
 // #12 if the BROWSERID_FAKE_VERIFICATION env var is defined, we'll include
 // fake_verification.js.  This is used during testing only and should
 // never be included in a production deployment
 if (process.env['BROWSERID_FAKE_VERIFICATION']) {
   require('../lib/browserid/fake_verification.js').addVerificationWSAPI(app);
 }
+
+// if nothing else has caught this request, serve static files, but ensure
+// that proper vary headers are installed to prevent unwanted caching
+app.use(function(req, res, next) {
+  res.setHeader('Vary', 'Accept-Encoding,Accept-Language');
+  next();
+});
+
+app.use(express.static(path.join(__dirname, "..", "resources", "static")));
+
+// custom 404 page
+app.use(function(req, res,next) {
+  res.statusCode = 404;
+  res.write("Cannot find this resource");
+  res.end();
+});
 
 // open the databse
 db.open(config.get('database'), function (error) {
