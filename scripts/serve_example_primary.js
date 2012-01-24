@@ -51,6 +51,15 @@ exampleServer.use(express.static(path.join(__dirname, "..", "example", "primary"
 
 exampleServer.use(express.bodyParser());
 
+const API_PREFIX = '/api/';
+
+exampleServer.use(function(req, resp, next) {
+  if (req.url.substr(0, API_PREFIX.length) === API_PREFIX) {
+    resp.setHeader('Cache-Control', 'no-store, max-age=0');
+  }
+  next();
+});
+
 exampleServer.get("/api/whoami", function (req, res) {
   if (req.session && typeof req.session.user === 'string') return res.json(req.session.user);
   return res.json(null);
