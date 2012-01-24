@@ -29,7 +29,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
 
     win.document.location = url;
 
-    callback();
+    callback && callback();
   }
 
   function cancel(callback) {
