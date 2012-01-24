@@ -13,6 +13,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email,
       auth_url,
       helpers = bid.Helpers,
+      complete = helpers.complete,
       cancelEvent = helpers.Dialog.cancelEvent;
 
   function verify(callback) {
@@ -29,7 +30,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
 
     win.document.location = url;
 
-    callback();
+    complete(callback);
   }
 
   function cancel(callback) {

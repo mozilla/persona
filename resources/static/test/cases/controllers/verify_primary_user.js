@@ -74,6 +74,25 @@
     });
   });
 
+  test("submit with no callback", function() {
+    createController({
+      window: win,
+      add: true,
+      email: "unregistered@testuser.com",
+      auth_url: "http://testuser.com/sign_in"
+    });
+
+    var error;
+    try {
+      controller.submit();
+    }
+    catch(e) {
+      error = e;
+    }
+
+    equal(typeof error, "undefined", "error is undefined");
+  });
+
   asyncTest("cancel triggers the cancel_state", function() {
     createController({
       window: win,
