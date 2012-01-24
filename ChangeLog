@@ -15,6 +15,10 @@ train-2011.01.18:
   * (hotfix 2012.01.23) Remove unwanted scrollbar in dialog: issue #947 
   * (hotfix 2012.01.23) Fix black backgrounds on IE8: issue #929
   * (hotfix 2012.01.23) fix broken transition to "check your email": #933, #934, #935
+  * (hotfix 2012.01.24) Fix "slow script" error on IE8 during keygen on behalf of primary: #956
+  * (hotfix 2012.01.24) Publish javascript API to provide a native-support compatible for primaries' auth pages: #909
+  * (hotfix 2012.01.24) Allow load testing hooks to be enabled with minified resources: #939
+  * (hotfix 2012.01.24) IE8 fixes for primary flow: #962, #961, #958, #955
 
 train-2011.01.05:
   * client entropy pool mixes in randomness from server for better browser RNG: #298, #800
