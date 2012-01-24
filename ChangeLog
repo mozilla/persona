@@ -12,6 +12,9 @@ train-2011.01.18:
   * language/rendering refinements: #850, #439, #622, #818, #901, #630, #888, #345, #815
   * front end performance improvements: #899, #910
   * better UX for network timeouts: #905
+  * (hotfix 2012.01.23) Remove unwanted scrollbar in dialog: issue #947 
+  * (hotfix 2012.01.23) Fix black backgrounds on IE8: issue #929
+  * (hotfix 2012.01.23) fix broken transition to "check your email": #933, #934, #935
 
 train-2011.01.05:
   * client entropy pool mixes in randomness from server for better browser RNG: #298, #800
