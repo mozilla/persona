@@ -10,7 +10,6 @@ const assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-wcli = require('../lib/wsapi_client.js');
 email = require('../lib/email.js'),
 jwcert = require('jwcrypto/jwcert'),
 jwk = require('jwcrypto/jwk'),
