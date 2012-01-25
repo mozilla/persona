@@ -71,7 +71,7 @@ done
 cat css/common.css dialog/css/popup.css dialog/css/m.css > $BUILD_PATH/dialog.uncompressed.css
 
 # produce the non interactive frame js
-cat lib/jquery-1.7.1.min.js lib/jschannel.js lib/winchan.js lib/underscore-min.js lib/vepbundle.js shared/javascript-extensions.js shared/browserid.js shared/storage.js shared/xhr.js shared/network.js shared/user.js communication_iframe/start.js > $BUILD_PATH/communication_iframe.uncompressed.js
+cat lib/jquery-1.7.1.min.js lib/jschannel.js lib/winchan.js lib/underscore-min.js lib/vepbundle.js lib/hub.js shared/javascript-extensions.js shared/browserid.js shared/helpers.js shared/storage.js shared/xhr.js shared/network.js shared/user.js communication_iframe/start.js > $BUILD_PATH/communication_iframe.uncompressed.js
 
 echo ''
 echo '****Building BrowserID.org HTML, CSS, and JS****'
