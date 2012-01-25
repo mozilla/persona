@@ -64,14 +64,18 @@ BrowserID.Provisioning = (function() {
         // XXX: certificate duration should vary depending on a variety of factors:
         //   * user is on a device that is not her own
         //   * user is in an environment that can't handle the crypto
-        cert_duration_s: (24 * 60 * 60)
+        cert_duration_s: (6 * 60 * 60)
       };
     });
 
     chan.bind('genKeyPair', function(trans, s) {
       // this will take a little bit
-      // XXX: the key length should be controlled by higher level code.
-      keypair = jwk.KeyPair.generate("DS", 256);
+      // FIXME: refactor so code that makes this decision is shared.
+      var keysize = 256;
+      var ie_version = BrowserID.BrowserSupport.getInternetExplorerVersion();
+      if (ie_version > -1 && ie_version < 9)
+        keysize = 128;
+      keypair = jwk.KeyPair.generate("DS", keysize);
       return keypair.publicKey.toSimpleObject();
     });
 
