@@ -7,14 +7,15 @@ var json_locale_data = {
       "" : {
          "Plural-Forms" : " nplurals=2; plural=(n != 1);",
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-20 13:45-0800",
+         "POT-Creation-Date" : " 2012-01-26 13:22+0000",
+         "Language" : " ",
          "Last-Translator" : " Austin King <ozten@mozilla.com>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " 2012-01-10 17:32-0800",
          "Language-Team" : " English",
          "Content-Transfer-Encoding" : " 8bit",
-         "Project-Id-Version" : " PACKAGE VERSION",
-         "Report-Msgid-Bugs-To" : " "
+         "Report-Msgid-Bugs-To" : " ",
+         "Project-Id-Version" : " PACKAGE VERSION"
       },
       "Always sign in using this email" : [
          null,
@@ -88,11 +89,11 @@ var json_locale_data = {
          null,
          ""
       ],
-      "We are sorry, BrowserID requires cookies" : [
+      "In just a moment you'll be signed into BrowserID." : [
          null,
          ""
       ],
-      "In just a moment you'll be signed into BrowserID." : [
+      "We are sorry, BrowserID requires cookies" : [
          null,
          ""
       ],
@@ -120,13 +121,13 @@ var json_locale_data = {
          null,
          "The email field is required."
       ],
-      "New email address" : [
-         null,
-         ""
-      ],
       "verify email" : [
          null,
          "verify email"
+      ],
+      "New email address" : [
+         null,
+         ""
       ],
       "Checking if Cookies are Enabled" : [
          null,
@@ -227,6 +228,10 @@ var json_locale_data = {
       "Authenticating User" : [
          null,
          ""
+      ],
+      "This email looks new, so let&#39;s get you set up." : [
+         null,
+         "This email looks new, so let&apos;s get you set up."
       ],
       "Email" : [
          null,

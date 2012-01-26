@@ -6,7 +6,8 @@ var json_locale_data = {
       ],
       "" : {
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-20 13:45-0800",
+         "POT-Creation-Date" : " 2012-01-26 13:22+0000",
+         "Language" : " ",
          "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
          "Content-Type" : " text/plain; charset=UTF-8",
          "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
@@ -49,7 +50,7 @@ var json_locale_data = {
       ],
       "To finish signing in just click the verify link we sent to your email address." : [
          null,
-         "‮⊥o ɟıuısɥ sıƃuıuƃ ıu ɾnsʇ ɔʅıɔʞ ʇɥǝ ʌǝɹıɟʎ ʅıuʞ ʍǝ sǝuʇ ʇo ʎonɹ ǝɯɐıʅ ɐppɹǝss·"
+         "‮⊥o ɟıuısɥ sıƃuıuƃ ıu ɾnsʇ ɔʅıɔʞ ʇɥǝ ʌǝɹıɟʎ ʅıuʞ ʍǝ sǝuʇ ʇo ʎonɹ ǝɯɐıʅ ɐppɹǝss˙"
       ],
       "Cancel" : [
          null,
@@ -57,7 +58,7 @@ var json_locale_data = {
       ],
       "To verify that you own <strong id='primary_email'>%s</strong>, you must sign in with your provider.  This window will be redirected to" : [
          null,
-         "‮⊥o ʌǝɹıɟʎ ʇɥɐʇ ʎon oʍu <sʇɹouƃ ıp=,dɹıɯɐɹʎ_ǝɯɐıʅ,>%s</strong>‮´ ʎon ɯnsʇ sıƃu ıu ʍıʇɥ ʎonɹ dɹoʌıpǝɹ·  ⊥ɥıs ʍıupoʍ ʍıʅʅ qǝ ɹǝpıɹǝɔʇǝp ʇo"
+         "‮⊥o ʌǝɹıɟʎ ʇɥɐʇ ʎon oʍu <strong id='primary_email'>%s</strong>‮´ ʎon ɯnsʇ sıƃu ıu ʍıʇɥ ʎonɹ dɹoʌıpǝɹ˙  ⊥ɥıs ʍıupoʍ ʍıʅʅ qǝ ɹǝpıɹǝɔʇǝp ʇo"
       ],
       "Authenticating with Assertion" : [
          null,
@@ -81,19 +82,19 @@ var json_locale_data = {
       ],
       "To verify that you own this address, you must sign in with your provider.  This window will be redirected to" : [
          null,
-         "‮⊥o ʌǝɹıɟʎ ʇɥɐʇ ʎon oʍu ʇɥıs ɐppɹǝss´ ʎon ɯnsʇ sıƃu ıu ʍıʇɥ ʎonɹ dɹoʌıpǝɹ·  ⊥ɥıs ʍıupoʍ ʍıʅʅ qǝ ɹǝpıɹǝɔʇǝp ʇo"
+         "‮⊥o ʌǝɹıɟʎ ʇɥɐʇ ʎon oʍu ʇɥıs ɐppɹǝss´ ʎon ɯnsʇ sıƃu ıu ʍıʇɥ ʎonɹ dɹoʌıpǝɹ˙  ⊥ɥıs ʍıupoʍ ʍıʅʅ qǝ ɹǝpıɹǝɔʇǝp ʇo"
       ],
       "This is not me..." : [
          null,
-         "‮⊥ɥıs ıs uoʇ ɯǝ···"
+         "‮⊥ɥıs ıs uoʇ ɯǝ˙˙˙"
+      ],
+      "In just a moment you'll be signed into BrowserID." : [
+         null,
+         "‮Iu ɾnsʇ ɐ ɯoɯǝuʇ ʎon,ʅʅ qǝ sıƃuǝp ıuʇo ԐɹoʍsǝɹIᗡ˙"
       ],
       "We are sorry, BrowserID requires cookies" : [
          null,
          "‮Ｍǝ ɐɹǝ soɹɹʎ´ ԐɹoʍsǝɹIᗡ ɹǝbnıɹǝs ɔooʞıǝs"
-      ],
-      "In just a moment you'll be signed into BrowserID." : [
-         null,
-         "‮Iu ɾnsʇ ɐ ɯoɯǝuʇ ʎon,ʅʅ qǝ sıƃuǝp ıuʇo ԐɹoʍsǝɹIᗡ·"
       ],
       "Getting Assertion" : [
          null,
@@ -109,7 +110,7 @@ var json_locale_data = {
       ],
       "This message will go away when the request completes (hopefully soon).  If you wait too long, close this window and try again." : [
          null,
-         "‮⊥ɥıs ɯǝssɐƃǝ ʍıʅʅ ƃo ɐʍɐʎ ʍɥǝu ʇɥǝ ɹǝbnǝsʇ ɔoɯdʅǝʇǝs (ɥodǝɟnʅʅʎ soou)·  Iɟ ʎon ʍɐıʇ ʇoo ʅouƃ´ ɔʅosǝ ʇɥıs ʍıupoʍ ɐup ʇɹʎ ɐƃɐıu·"
+         "‮⊥ɥıs ɯǝssɐƃǝ ʍıʅʅ ƃo ɐʍɐʎ ʍɥǝu ʇɥǝ ɹǝbnǝsʇ ɔoɯdʅǝʇǝs (ɥodǝɟnʅʅʎ soou)˙  Iɟ ʎon ʍɐıʇ ʇoo ʅouƃ´ ɔʅosǝ ʇɥıs ʍıupoʍ ɐup ʇɹʎ ɐƃɐıu˙"
       ],
       "translated text" : [
          null,
@@ -117,15 +118,15 @@ var json_locale_data = {
       ],
       "The email field is required." : [
          null,
-         "‮⊥ɥǝ ǝɯɐıʅ ɟıǝʅp ıs ɹǝbnıɹǝp·"
-      ],
-      "New email address" : [
-         null,
-         "‮Nǝʍ ǝɯɐıʅ ɐppɹǝss"
+         "‮⊥ɥǝ ǝɯɐıʅ ɟıǝʅp ıs ɹǝbnıɹǝp˙"
       ],
       "verify email" : [
          null,
          "‮ʌǝɹıɟʎ ǝɯɐıʅ"
+      ],
+      "New email address" : [
+         null,
+         "‮Nǝʍ ǝɯɐıʅ ɐppɹǝss"
       ],
       "Checking if Cookies are Enabled" : [
          null,
@@ -189,7 +190,7 @@ var json_locale_data = {
       ],
       "This email looks new, so let&apos;s get you set up." : [
          null,
-         "‮⊥ɥıs ǝɯɐıʅ ʅooʞs uǝʍ´ so ʅǝʇ&apos;‮s ƃǝʇ ʎon sǝʇ nd·"
+         "‮⊥ɥıs ǝɯɐıʅ ʅooʞs uǝʍ´ so ʅǝʇ&apos;‮s ƃǝʇ ʎon sǝʇ nd˙"
       ],
       "Checking Script Version" : [
          null,
@@ -213,19 +214,23 @@ var json_locale_data = {
       ],
       "forgot your password?" : [
          null,
-         "‮ɟoɹƃoʇ ʎonɹ dɐssʍoɹp?"
+         "‮ɟoɹƃoʇ ʎonɹ dɐssʍoɹp¿"
       ],
       "This field must be an email address." : [
          null,
-         "‮⊥ɥıs ɟıǝʅp ɯnsʇ qǝ ɐu ǝɯɐıʅ ɐppɹǝss·"
+         "‮⊥ɥıs ɟıǝʅp ɯnsʇ qǝ ɐu ǝɯɐıʅ ɐppɹǝss˙"
       ],
       "We are sorry, but we cannot communicate with BrowserID while you are offline." : [
          null,
-         "‮Ｍǝ ɐɹǝ soɹɹʎ´ qnʇ ʍǝ ɔɐuuoʇ ɔoɯɯnuıɔɐʇǝ ʍıʇɥ ԐɹoʍsǝɹIᗡ ʍɥıʅǝ ʎon ɐɹǝ oɟɟʅıuǝ·"
+         "‮Ｍǝ ɐɹǝ soɹɹʎ´ qnʇ ʍǝ ɔɐuuoʇ ɔoɯɯnuıɔɐʇǝ ʍıʇɥ ԐɹoʍsǝɹIᗡ ʍɥıʅǝ ʎon ɐɹǝ oɟɟʅıuǝ˙"
       ],
       "Authenticating User" : [
          null,
          "‮∀nʇɥǝuʇıɔɐʇıuƃ ∩sǝɹ"
+      ],
+      "This email looks new, so let&#39;s get you set up." : [
+         null,
+         "‮⊥ɥıs ǝɯɐıʅ ʅooʞs uǝʍ´ so ʅǝʇ&#39;‮s ƃǝʇ ʎon sǝʇ nd˙"
       ],
       "Email" : [
          null,
@@ -237,7 +242,7 @@ var json_locale_data = {
       ],
       "Finishing Sign In..." : [
          null,
-         "‮Ⅎıuısɥıuƃ Sıƃu Iu···"
+         "‮Ⅎıuısɥıuƃ Sıƃu Iu˙˙˙"
       ],
       "select email" : [
          null,
@@ -265,11 +270,11 @@ var json_locale_data = {
       ],
       "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
          null,
-         "‮Ｍǝ ɾnsʇ sǝuʇ ɐu ǝɯɐıʅ ʇo ʇɥɐʇ ɐppɹǝss¡  Iɟ ʎon ɹǝɐʅʅʎ ʍɐuʇ ʇo sǝup ɐuoʇɥǝɹ´ ʍɐıʇ ɐ ɯıunʇǝ oɹ ʇʍo ɐup ʇɹʎ ɐƃɐıu·"
+         "‮Ｍǝ ɾnsʇ sǝuʇ ɐu ǝɯɐıʅ ʇo ʇɥɐʇ ɐppɹǝss¡  Iɟ ʎon ɹǝɐʅʅʎ ʍɐuʇ ʇo sǝup ɐuoʇɥǝɹ´ ʍɐıʇ ɐ ɯıunʇǝ oɹ ʇʍo ɐup ʇɹʎ ɐƃɐıu˙"
       ],
       "The password field is required." : [
          null,
-         "‮⊥ɥǝ dɐssʍoɹp ɟıǝʅp ıs ɹǝbnıɹǝp·"
+         "‮⊥ɥǝ dɐssʍoɹp ɟıǝʅp ıs ɹǝbnıɹǝp˙"
       ],
       "cancel" : [
          null,
@@ -285,15 +290,15 @@ var json_locale_data = {
       ],
       "We are sorry, this request is taking a LOOONG time." : [
          null,
-         "‮Ｍǝ ɐɹǝ soɹɹʎ´ ʇɥıs ɹǝbnǝsʇ ıs ʇɐʞıuƃ ɐ ⅂OOON⅁ ʇıɯǝ·"
+         "‮Ｍǝ ɐɹǝ soɹɹʎ´ ʇɥıs ɹǝbnǝsʇ ıs ʇɐʞıuƃ ɐ ⅂OOON⅁ ʇıɯǝ˙"
       ],
       "We just sent an email to that address! If you really want to send another, wait a minute or two and try again." : [
          null,
-         "‮Ｍǝ ɾnsʇ sǝuʇ ɐu ǝɯɐıʅ ʇo ʇɥɐʇ ɐppɹǝss¡ Iɟ ʎon ɹǝɐʅʅʎ ʍɐuʇ ʇo sǝup ɐuoʇɥǝɹ´ ʍɐıʇ ɐ ɯıunʇǝ oɹ ʇʍo ɐup ʇɹʎ ɐƃɐıu·"
+         "‮Ｍǝ ɾnsʇ sǝuʇ ɐu ǝɯɐıʅ ʇo ʇɥɐʇ ɐppɹǝss¡ Iɟ ʎon ɹǝɐʅʅʎ ʍɐuʇ ʇo sǝup ɐuoʇɥǝɹ´ ʍɐıʇ ɐ ɯıunʇǝ oɹ ʇʍo ɐup ʇɹʎ ɐƃɐıu˙"
       ],
       "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again" : [
          null,
-         "‮ԐɹoʍsǝɹIᗡ ɹǝbnıɹǝs ʎonɹ qɹoʍsǝɹ,s ɔooʞıǝs ʇo qǝ ǝuɐqʅǝp ʇo odǝɹɐʇǝ·  Ԁʅǝɐsǝ ǝuɐqʅǝ ʎonɹ qɹoʍsǝɹ,s ɔooʞıǝs ɐup ʇɹʎ ɐƃɐıu"
+         "‮ԐɹoʍsǝɹIᗡ ɹǝbnıɹǝs ʎonɹ qɹoʍsǝɹ,s ɔooʞıǝs ʇo qǝ ǝuɐqʅǝp ʇo odǝɹɐʇǝ˙  Ԁʅǝɐsǝ ǝuɐqʅǝ ʎonɹ qɹoʍsǝɹ,s ɔooʞıǝs ɐup ʇɹʎ ɐƃɐıu"
       ],
       "Checking Registration Token" : [
          null,
@@ -305,7 +310,7 @@ var json_locale_data = {
       ],
       "To continue, please close the window and enter a valid address." : [
          null,
-         "‮⊥o ɔouʇıunǝ´ dʅǝɐsǝ ɔʅosǝ ʇɥǝ ʍıupoʍ ɐup ǝuʇǝɹ ɐ ʌɐʅıp ɐppɹǝss·"
+         "‮⊥o ɔouʇıunǝ´ dʅǝɐsǝ ɔʅosǝ ʇɥǝ ʍıupoʍ ɐup ǝuʇǝɹ ɐ ʌɐʅıp ɐppɹǝss˙"
       ],
       "Enter your email address to sign in to <strong>%s</strong>" : [
          null,
@@ -329,7 +334,7 @@ var json_locale_data = {
       ],
       "The account cannot be logged in with this username and password." : [
          null,
-         "‮⊥ɥǝ ɐɔɔonuʇ ɔɐuuoʇ qǝ ʅoƃƃǝp ıu ʍıʇɥ ʇɥıs nsǝɹuɐɯǝ ɐup dɐssʍoɹp·"
+         "‮⊥ɥǝ ɐɔɔonuʇ ɔɐuuoʇ qǝ ʅoƃƃǝp ıu ʍıʇɥ ʇɥıs nsǝɹuɐɯǝ ɐup dɐssʍoɹp˙"
       ],
       "Welcome to BrowserID!" : [
          null,
@@ -337,7 +342,7 @@ var json_locale_data = {
       ],
       "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
          null,
-         "‮Iɟ ʇɥıs ıs ɐ ɯısʇɐʞǝ´ ɾnsʇ ıƃuoɹǝ ʇɥǝ sǝuʇ ǝɯɐıʅ ɐup <a href=\"#\" class=\"cancelVerify\" id=\"back\">‮nsǝ ɐuoʇɥǝɹ ǝɯɐıʅ ɐppɹǝss</a>‮·"
+         "‮Iɟ ʇɥıs ıs ɐ ɯısʇɐʞǝ´ ɾnsʇ ıƃuoɹǝ ʇɥǝ sǝuʇ ǝɯɐıʅ ɐup <a href=\"#\" class=\"cancelVerify\" id=\"back\">‮nsǝ ɐuoʇɥǝɹ ǝɯɐıʅ ɐppɹǝss</a>‮˙"
       ],
       "*%s* is not a valid email address!" : [
          null,
@@ -345,7 +350,7 @@ var json_locale_data = {
       ],
       "Please wait a few seconds while we sign you into the site." : [
          null,
-         "‮Ԁʅǝɐsǝ ʍɐıʇ ɐ ɟǝʍ sǝɔoups ʍɥıʅǝ ʍǝ sıƃu ʎon ıuʇo ʇɥǝ sıʇǝ·"
+         "‮Ԁʅǝɐsǝ ʍɐıʇ ɐ ɟǝʍ sǝɔoups ʍɥıʅǝ ʍǝ sıƃu ʎon ıuʇo ʇɥǝ sıʇǝ˙"
       ]
    }
 }
