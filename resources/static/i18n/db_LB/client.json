@@ -6,7 +6,7 @@ var json_locale_data = {
       ],
       "" : {
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-26 13:22+0000",
+         "POT-Creation-Date" : " 2012-01-26 14:25+0000",
          "Language" : " ",
          "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
          "Content-Type" : " text/plain; charset=UTF-8",
@@ -216,6 +216,10 @@ var json_locale_data = {
          null,
          "‮ɟoɹƃoʇ ʎonɹ dɐssʍoɹp¿"
       ],
+      "Address Verified!" : [
+         null,
+         "‮∀ppɹǝss Ʌǝɹıɟıǝp¡"
+      ],
       "This field must be an email address." : [
          null,
          "‮⊥ɥıs ɟıǝʅp ɯnsʇ qǝ ɐu ǝɯɐıʅ ɐppɹǝss˙"
@@ -255,6 +259,10 @@ var json_locale_data = {
       "Adding Primary Email Address to User" : [
          null,
          "‮∀ppıuƃ Ԁɹıɯɐɹʎ Ǝɯɐıʅ ∀ppɹǝss ʇo ∩sǝɹ"
+      ],
+      "Your identity has been verified with your email provider, we will now try to sign you in." : [
+         null,
+         "‮⅄onɹ ıpǝuʇıʇʎ ɥɐs qǝǝu ʌǝɹıɟıǝp ʍıʇɥ ʎonɹ ǝɯɐıʅ dɹoʌıpǝɹ´ ʍǝ ʍıʅʅ uoʍ ʇɹʎ ʇo sıƃu ʎon ıu˙"
       ],
       "Verify With Email Provider" : [
          null,

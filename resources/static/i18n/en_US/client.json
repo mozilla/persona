@@ -7,7 +7,7 @@ var json_locale_data = {
       "" : {
          "Plural-Forms" : " nplurals=2; plural=(n != 1);",
          "MIME-Version" : " 1.0",
-         "POT-Creation-Date" : " 2012-01-26 13:22+0000",
+         "POT-Creation-Date" : " 2012-01-26 14:25+0000",
          "Language" : " ",
          "Last-Translator" : " Austin King <ozten@mozilla.com>",
          "Content-Type" : " text/plain; charset=UTF-8",
@@ -217,6 +217,10 @@ var json_locale_data = {
          null,
          "forgot your password?"
       ],
+      "Address Verified!" : [
+         null,
+         ""
+      ],
       "This field must be an email address." : [
          null,
          "This field must be an email address."
@@ -254,6 +258,10 @@ var json_locale_data = {
          ""
       ],
       "Adding Primary Email Address to User" : [
+         null,
+         ""
+      ],
+      "Your identity has been verified with your email provider, we will now try to sign you in." : [
          null,
          ""
       ],
