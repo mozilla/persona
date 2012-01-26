@@ -37,6 +37,8 @@
 
   function createController(config) {
     controller = bid.Modules.PrimaryUserProvisioned.create();
+    config = config || {};
+    config.complete_delay = 1;
     controller.start(config);
   }
 

@@ -22,7 +22,8 @@ BrowserID.Modules.PrimaryUserProvisioned = (function() {
           addEmailToCurrentUser = !!options.add,
           complete = function(status) {
             options.ready && options.ready(status || false);
-          };
+          },
+          delay = options.complete_delay || 3000;
 
       self.checkRequired(options, "email", "assertion");
 
@@ -31,7 +32,9 @@ BrowserID.Modules.PrimaryUserProvisioned = (function() {
       if(addEmailToCurrentUser) {
         network.addEmailWithAssertion(assertion, function(status) {
           if(status) {
-            self.publish("primary_user_ready", options);
+            setTimeout(function() {
+              self.publish("primary_user_ready", options);
+            }, delay);
           }
           else {
             self.getErrorDialog(errors.addEmailWithAssertion, complete)();
@@ -41,7 +44,9 @@ BrowserID.Modules.PrimaryUserProvisioned = (function() {
       else {
         network.authenticateWithAssertion(email, assertion, function(status) {
           if(status) {
-            self.publish("primary_user_ready", options);
+            setTimeout(function() {
+              self.publish("primary_user_ready", options);
+            }, delay);
           }
           else {
             self.getErrorDialog(errors.authenticateWithAssertion, complete)();
