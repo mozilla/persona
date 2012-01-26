@@ -7,7 +7,7 @@
   "use strict";
 
   var controller, el,
-      bodyTemplate = "testBodyTemplate",
+      bodyTemplate = "test_template_with_input",
       waitTemplate = "wait",
       bid = BrowserID,
       mediator = bid.Mediator;
@@ -39,13 +39,12 @@
     equal(html, "", "with no template specified, no text is loaded");
   });
 
-  test("page controller with body template renders in #formWrap .contents", function() {
-    createController({
-      bodyTemplate: bodyTemplate,
-      bodyVars: {
-        title: "Test title",
-        message: "Test message"
-      }
+  test("renderDialog with template with input element - render the correct dialog, focus first input element", function() {
+    createController();
+
+    controller.renderDialog("test_template_with_input", {
+      title: "Test title",
+      message: "Test message"
     });
 
     var html = el.find("#formWrap .contents").html();
@@ -53,38 +52,6 @@
 
     html = el.find("#wait .contents").html();
     equal(html, "", "with body template specified, wait text is not loaded");
-  });
-
-  test("page controller with wait template renders in #wait .contents", function() {
-    createController({
-      waitTemplate: waitTemplate,
-      waitVars: {
-        title: "Test title",
-        message: "Test message"
-      }
-    });
-
-    var html = el.find("#formWrap .contents").html();
-    equal(html, "", "with wait template specified, form is ignored");
-
-    html = el.find("#wait .contents").html();
-    ok(html.length, "with wait template specified, wait text is loaded");
-  });
-
-  test("page controller with error template renders in #error .contents", function() {
-    createController({
-      errorTemplate: waitTemplate,
-      errorVars: {
-        title: "Test title",
-        message: "Test message"
-      }
-    });
-
-    var html = el.find("#formWrap .contents").html();
-    equal(html, "", "with error template specified, form is ignored");
-
-    html = el.find("#error .contents").html();
-    ok(html.length, "with error template specified, error text is loaded");
   });
 
   test("renderError renders an error message", function() {

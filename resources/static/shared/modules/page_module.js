@@ -38,18 +38,6 @@ BrowserID.Modules.PageModule = (function() {
       var self=this;
 
       self.domEvents = [];
-
-      if(options.bodyTemplate) {
-        self.renderDialog(options.bodyTemplate, options.bodyVars);
-      }
-
-      if(options.waitTemplate) {
-        self.renderWait(options.waitTemplate, options.waitVars);
-      }
-
-      if(options.errorTemplate) {
-        self.renderError(options.errorTemplate, options.errorVars);
-      }
     },
 
     checkRequired: function(options) {
@@ -116,6 +104,10 @@ BrowserID.Modules.PageModule = (function() {
 
       screens.form.show(template, data);
       dom.focus("input:visible:not(:disabled):eq(0)");
+      // XXX jQuery.  bleck.
+      if($("*:focus").length === 0) {
+        dom.focus("button:visible:eq(0)");
+      }
     },
 
     renderWait: showScreen.curry(screens.wait),

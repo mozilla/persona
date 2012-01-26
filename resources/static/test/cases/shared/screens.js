@@ -25,7 +25,7 @@
   test("form", function() {
     el = $("#formWrap .contents");
     el.empty();
-    screens.form.show("testBodyTemplate");
+    screens.form.show("test_template_with_input");
 
     ok($("#templateInput").length, "the template has been written");
     equal($("body").hasClass("form"), true, "form class added to body");
@@ -39,7 +39,7 @@
   test("wait", function() {
     var el = $("#wait .contents");
     el.empty();
-    screens.wait.show("testBodyTemplate");
+    screens.wait.show("test_template_with_input");
 
     ok($("#templateInput").length, "the template has been written");
     equal($("body").hasClass("waiting"), true, "waiting class added to body");
@@ -53,7 +53,7 @@
   test("error", function() {
     var el = $("#error .contents");
     el.empty();
-    screens.error.show("testBodyTemplate");
+    screens.error.show("test_template_with_input");
 
     ok($("#templateInput").length, "the template has been written");
     equal($("body").hasClass("error"), true, "error class added to body");

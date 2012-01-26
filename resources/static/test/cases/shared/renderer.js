@@ -23,7 +23,7 @@
     $("#formWrap .contents").empty();
     $("#templateInput").remove();
 
-    renderer.render("#formWrap .contents", "testBodyTemplate");
+    renderer.render("#formWrap .contents", "test_template_with_input");
 
     ok($("#templateInput").length, "template written when loaded using XHR");
   });
