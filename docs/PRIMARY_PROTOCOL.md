@@ -3,16 +3,16 @@
 ## 1. Overview
 
 The BrowserID protocol is designed to allow identity providers to
-directly vouch for their users ownership of email addresses that they
-issue.  The means by which they do this is by implementing the BrowserID
+directly vouch for their users' ownership of email addresses that they
+issue.  They do this by implementing the BrowserID
 Primary IdP Protocol.  Concretely, this involves the publication
 resources which advertise support, perform headless certificate
 provisioning, and expose a web based user interface to allow for
-authentication to their service from within a window rendered by
-BrowserID.
+authentication to their service from within UI rendered by
+the browser.
 
-Finally, the protocol is designed to be compatible with both an HTML
-implementation of BrowserID, or a native browser implementation.
+The protocol is designed to be compatible with both an HTML
+implementation of BrowserID and a native browser implementation.
 
 ## 2. Requirements
 
@@ -20,12 +20,12 @@ A BrowserID primary identity authority must implement the following:
 
   1. **A declaration of support**: An IdP must explicitly declare, in
      the form of a document hosted on their domain, that they support
-     BrowserID.  This contents of this document may include paths
-     supporting resources, as well as a public key which allows other
-     sites to verify assertions generated using certificates that the
+     BrowserID.  The contents of this document may include paths to
+     supporting resources, as well as a public key which allows for
+     the verification of assertions generated using certificates that the
      primary has issued.
   2. **Authentication page**: A user must be able to interact with
-     their IdP at the time that they are logging into a website to prove
+     their IdP at the time that they are signing into a website to prove
      their identity to the IdP and establish a session.
   3. **Provisioning page**: A webpage must be provided which is
      capable of provisioning a user that is authenticated to the IdP with
@@ -37,9 +37,9 @@ The remainder of this document discusses these requirements.
 
 In order to make it possible for the browser to determine if there is
 primary support available for a given domain, there must be a well
-knonw location where an expression of support is published.  [RFC
+known location where an expression of support is published.  [RFC
 5785][] proposes a convention for well-known resources, such as that
-required by BrowserID, which is a `.well-known` directory under
+required by BrowserID, which is a `.well-known` directory under the
 document root.  Applying this convention, primaries must serve a JSON
 document under `.well-known/browserid`.
 
@@ -55,9 +55,9 @@ This document should:
 The top level keys present have the following contents and meaning:
 
   * **public-key** is a public key that can be used to
-    verify that certificates issued from the primary are authentic.
+    verify that certificates issued by the primary are authentic.
   * **authentication** is a path that serves web content that can be
-    rendered by UI rendered by the browser to allow the user to
+    rendered by the browser to allow the user to
     authenticate to the IdP.
   * **provisioning** is a path to content that is capable of
     attaining a certificate given an established session with the
@@ -77,7 +77,7 @@ In the event that a domain wishes to have primary support for email
 addresses underneath it, but wishes for that support to be implemented
 by a domain other than its own, it may explicity delegate
 authentication and provisioning to another host.  Delegation occurs
-when a `authority` property is present in the declaration of support
+when an `authority` property is present in the declaration of support
 which contains a domain name (in which case, all other properties
 present are ignored).
 
@@ -88,7 +88,7 @@ An example declaration of supporty which delegates is thus:
     }
 
 In attempting to determine whether primary BrowserID support exists
-for an email address `lloyd@mozilla.com`, a browser will first pull
+for an email address `user@somehost.tld`, a browser will first pull
 `https://somehost.tld/.well-known/browserid`, upon discovery of delegated
 authority, the browser would next check
 `https://otherhost.tld/.well-known/browserid`.
@@ -121,18 +121,18 @@ keys as a value, and update the verification algorithm and formats to
 support simple but efficient determination of which public key to use
 in the event there are multiple.
 
-## 4. Provisioning Content
+## 4. Provisioning Page
 
-Provisioning content are web resources served by the IdP that can
+The provisioning page is a resource served by the IdP that can
 interact with the primary provider and the BrowserID JavaScript API to
 check if the user is authenticated, generated a keypair, sign the public
 key to create a certificate, and return that certificate to BrowserID
-via the JavaScript API.
+via the API.
 
-Provisioning content is a web resource that is designed to run in a
-headless javascript environment (the DOM of the content is not displayed,
-and it MAY be run in a sandbox allocated by the browser without access
-to `window.*` properties available to normal web content).
+The provisioning page will run in a headless javascript environment
+(the DOM of the content is not displayed), and it may be run in a
+sandbox allocated by the browser without access to `window.*`
+properties available to normal web content.
 
 ### 4.1. Example
 
@@ -162,7 +162,7 @@ to `window.*` properties available to normal web content).
 To support browsers without native BrowserID support, the provisioning
 content should include the a javascript shim, hosted at:
 
-    https://browserid.org/provisioning_api..js
+    https://browserid.org/provisioning_api.js
 
 ### 4.3. BrowserID API
 
@@ -174,14 +174,14 @@ content should include the a javascript shim, hosted at:
     // and return the public key for signing.
     navigator.id.genKeyPair(function(pubkey) { });
 
-    // upon successful certificate signing, register the certificate
+    // upon successful certificate generation, register the certificate
     // with the browser.
     navigator.id.registerCertificate(certificate);
 
     // in the event of a failure, the provisioning code should
     // invoke this function to terminate the provisioning process,
-    // providing a developer readable string
-    navigator.id.raiseProvisioningFailure(string);
+    // providing a developer readable reason for the failure.
+    navigator.id.raiseProvisioningFailure(string reason);
 
 ### 4.4. Certificate Duration
 
@@ -189,11 +189,11 @@ The primary should consider the certificate duration provided by BrowserID
 to be an upper bound on duration.  Under scenarios where the user is on a
 shared device that is not their own, certificate duration will be shorter.
 Further, depending on the capabilities of the device, the public key generated
-maybe be weaker.
+maybe be weaker, warranting a reduced duration of validity
 
-Given that these factors that are not known to the provisioning page weigh into
+Given that these factors, not known to the provisioning page, weigh into
 certificate duration, the primary should defer to this value, and BrowserID may
-delete before their expiration if it exceeds the maximum.
+delete certificates before their expiration if it exceeds the maximum.
 
 ### 4.5. Considerations
 
@@ -210,8 +210,8 @@ browsers with this featuere.
 When a fatal error that will prevent provisioning from completing successfully
 is detected, the provisioning content should invoke
 `navigator.id.raiseProvisioningFailure()`.  This ends the provisioning attempt
-and indicates that the evaluation contenxt in which the provisioning code is
-running can be immediately torn down.
+and indicates that the evaluation context in which the provisioning code is
+running can be immediately destroyed.
 
 The primary may provide a developer readable error string that may be
 outputted on a browser-specific error console to facilitate debugging.
@@ -230,7 +230,7 @@ false positives:
 
 ## 5. Authentication Page
 
-The authentication page is displayed from within the BrowserID dialog
+The authentication page is displayed from within UI rendered by the browser
 after silent provisioning fails, and is intended to allow the user to
 provide authentication credentials to the primary as part of
 authenticating to a website.
@@ -245,10 +245,26 @@ user has successfully authenticated with the primary.
 
 ### 5.1 Example
 
+  // set up UI
+  navigator.id.beginAuthentication(function(email) {
+    // update UI to display the email address
+  });
+
+  //
+  function onAuthentication() {
+    // check if the user authenticated successfully, if not, tell them
+    // it's a bad password. otherwise..
+    navigator.id.completeAuthentication();
+  }
+
+  function onCancel() {
+    navigator.id.cancelAuthentication();
+  }
+
 ### 5.2 JavaScript Shim
 
 To support browsers without native BrowserID support, the
-authentication page should include the a javascript shim, hosted at:
+authentication page should include a javascript shim, hosted at:
 
     https://browserid.org/authentication_api.js
 
