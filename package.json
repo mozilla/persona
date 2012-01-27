@@ -1,39 +1,42 @@
 {
-    "name": "browserid"
-  , "version": "0.0.1"
-  , "private": true
-  , "dependencies": {
-      "JSONSelect": "0.3.0"
-    , "bcrypt": "0.4.1"
-    , "compute-cluster": "0.0.6"
-    , "connect": "1.7.2"
-    , "client-sessions": "0.0.3"
-    , "connect-cookie-session": "0.0.2"
-    , "connect-logger-statsd": "0.0.1"
-    , "ejs": "0.4.3"
-    , "express": "2.5.0"
-    , "jwcrypto": "0.1.1"
-    , "mustache": "0.3.1-dev"
-    , "mysql" : "0.9.5"
-    , "node-gettext": "0.1.1"
-    , "node-statsd": "https://github.com/downloads/lloyd/node-statsd/3a73de.tgz"
-    , "nodemailer": "0.1.18"
-    , "optimist" : "0.2.8"
-    , "postprocess": "0.0.3"
-    , "semver": "1.0.12"
-    , "temp": "0.2.0"
-    , "uglify-js": "1.0.6"
-    , "uglifycss": "0.0.4"
-    , "urlparse": "0.0.1"
-    , "vows": "0.5.13"
-    , "winston" : "0.5.6"
-  }
-  , "scripts": {
-    "postinstall": "./scripts/generate_ephemeral_keys.sh",
-    "test": "./scripts/run_all_tests.sh",
-    "start": "./scripts/run_locally.js"
-  },
-  "engines": {
-    "node": ">= 0.6.2"
-  }
+    "name": "browserid",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "JSONSelect": "0.4.0",
+        "bcrypt": "0.4.1",
+        "compute-cluster": "0.0.6",
+        "connect": "1.7.2",
+        "client-sessions": "0.0.3",
+        "connect-cookie-session": "0.0.2",
+        "connect-logger-statsd": "0.0.1",
+        "ejs": "0.4.3",
+        "express": "2.5.0",
+        "jwcrypto": "0.1.1",
+        "mustache": "0.3.1-dev",
+        "mysql": "0.9.5",
+        "node-gettext": "0.1.1",
+        "node-statsd": "https://github.com/downloads/lloyd/node-statsd/3a73de.tgz",
+        "nodemailer": "0.1.18",
+        "optimist": "0.2.8",
+        "postprocess": "0.0.3",
+        "semver": "1.0.12",
+        "temp": "0.2.0",
+        "uglify-js": "1.0.6",
+        "uglifycss": "0.0.4",
+        "urlparse": "0.0.1",
+        "winston": "0.5.6"
+    },
+    "devDependencies": {
+        "vows": "0.5.13",
+        "aws-lib": "0.0.5"
+    }, 
+    "scripts": {
+        "postinstall": "./scripts/generate_ephemeral_keys.sh",
+        "test": "./scripts/run_all_tests.sh",
+        "start": "./scripts/run_locally.js"
+    },
+    "engines": {
+        "node": ">= 0.6.2"
+    }
 }
