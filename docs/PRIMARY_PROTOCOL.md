@@ -245,21 +245,20 @@ user has successfully authenticated with the primary.
 
 ### 5.1 Example
 
-  // set up UI
-  navigator.id.beginAuthentication(function(email) {
-    // update UI to display the email address
-  });
-
-  //
-  function onAuthentication() {
-    // check if the user authenticated successfully, if not, tell them
-    // it's a bad password. otherwise..
-    navigator.id.completeAuthentication();
-  }
-
-  function onCancel() {
-    navigator.id.cancelAuthentication();
-  }
+    // set up UI
+    navigator.id.beginAuthentication(function(email) {
+      // update UI to display the email address
+    });
+    
+    function onAuthentication() {
+      // check if the user authenticated successfully, if not, tell them
+      // it's a bad password. otherwise..
+      navigator.id.completeAuthentication();
+    }
+    
+    function onCancel() {
+      navigator.id.cancelAuthentication();
+    }
 
 ### 5.2 JavaScript Shim
 
