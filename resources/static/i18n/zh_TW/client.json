@@ -1,0 +1,367 @@
+var json_locale_data = {
+   "client" : {
+      "Cancelling User Account" : [
+         null,
+         ""
+      ],
+      "" : {
+         "Plural-Forms" : " nplurals=1; plural=0;",
+         "MIME-Version" : " 1.0",
+         "X-Generator" : " Pootle 2.1.6",
+         "POT-Creation-Date" : " 2012-01-26 17:37-0800",
+         "Language" : " zh_TW",
+         "Last-Translator" : " Peter <petercpg@mail.moztw.org>",
+         "Content-Type" : " text/plain; charset=UTF-8",
+         "PO-Revision-Date" : " 2012-01-27 20:45+0200",
+         "Language-Team" : " LANGUAGE <LL@li.org>",
+         "Content-Transfer-Encoding" : " 8bit",
+         "Report-Msgid-Bugs-To" : " ",
+         "Project-Id-Version" : " PACKAGE VERSION"
+      },
+      "Always sign in using this email" : [
+         null,
+         "總是使用此電子郵件地址登入"
+      ],
+      "Sync Keys for Address" : [
+         null,
+         "同步電子郵件地址的金鑰"
+      ],
+      "Syncing Email Addresses" : [
+         null,
+         "正在同步電子郵件地址"
+      ],
+      "Unfortunately, BrowserID cannot communicate while offline!" : [
+         null,
+         ""
+      ],
+      "Sign in using" : [
+         null,
+         ""
+      ],
+      "Relay frame could not be found" : [
+         null,
+         ""
+      ],
+      "Password" : [
+         null,
+         "密碼"
+      ],
+      "We sent a confirmation email to <strong>%s</strong>" : [
+         null,
+         "我們已寄出確認信到 <strong>%s</strong>"
+      ],
+      "To finish signing in just click the verify link we sent to your email address." : [
+         null,
+         ""
+      ],
+      "Cancel" : [
+         null,
+         "取消"
+      ],
+      "To verify that you own <strong id='primary_email'>%s</strong>, you must sign in with your provider.  This window will be redirected to" : [
+         null,
+         ""
+      ],
+      "Authenticating with Assertion" : [
+         null,
+         ""
+      ],
+      "Reset Password" : [
+         null,
+         "重設密碼"
+      ],
+      "Resetting Password" : [
+         null,
+         "正在重設密碼"
+      ],
+      "Logout Failed" : [
+         null,
+         "登出失敗"
+      ],
+      "Checking Email Address" : [
+         null,
+         "正在檢查電子郵件地址"
+      ],
+      "To verify that you own this address, you must sign in with your provider.  This window will be redirected to" : [
+         null,
+         ""
+      ],
+      "This is not me..." : [
+         null,
+         "這不是我..."
+      ],
+      "We are sorry, BrowserID requires cookies" : [
+         null,
+         "很抱歉，必須要啟用 Cookie 才能使用 BrowserID"
+      ],
+      "In just a moment you'll be signed into BrowserID." : [
+         null,
+         ""
+      ],
+      "Getting Assertion" : [
+         null,
+         ""
+      ],
+      "Completing User Registration" : [
+         null,
+         "正在完成使用者註冊"
+      ],
+      "Registration Failed" : [
+         null,
+         "註冊失敗"
+      ],
+      "This message will go away when the request completes (hopefully soon).  If you wait too long, close this window and try again." : [
+         null,
+         ""
+      ],
+      "translated text" : [
+         null,
+         "已翻譯字串"
+      ],
+      "The email field is required." : [
+         null,
+         "必須輸入電子郵件欄位。"
+      ],
+      "New email address" : [
+         null,
+         ""
+      ],
+      "verify email" : [
+         null,
+         "驗證電子郵件"
+      ],
+      "Checking if Cookies are Enabled" : [
+         null,
+         ""
+      ],
+      "Provisioning Unsupported Identity Provider" : [
+         null,
+         ""
+      ],
+      "That address is already added to your account!" : [
+         null,
+         ""
+      ],
+      "Authenticating with Identity Provider" : [
+         null,
+         ""
+      ],
+      "Remove Email Address from Account" : [
+         null,
+         "自帳號當中移除電子郵件地址"
+      ],
+      "Communication Error" : [
+         null,
+         "傳輸錯誤"
+      ],
+      "Provisioning with Identity Provider" : [
+         null,
+         ""
+      ],
+      "Adding Address" : [
+         null,
+         "新增電子郵件地址"
+      ],
+      "Check your email!" : [
+         null,
+         "請檢查信箱！"
+      ],
+      "The site requested you sign in using" : [
+         null,
+         ""
+      ],
+      "Syncing Address" : [
+         null,
+         "正在同步電子郵件地址"
+      ],
+      "Use a different email" : [
+         null,
+         "使用不同的電子郵件地址"
+      ],
+      "next" : [
+         null,
+         "下一步"
+      ],
+      "Verifying email address" : [
+         null,
+         "正在確認電子郵件地址"
+      ],
+      "Signup Failed" : [
+         null,
+         "註冊失敗"
+      ],
+      "This email looks new, so let&apos;s get you set up." : [
+         null,
+         ""
+      ],
+      "Checking Script Version" : [
+         null,
+         "正在檢查指令碼版本"
+      ],
+      "You are offline!" : [
+         null,
+         "您不在線上！"
+      ],
+      "Unfortunately, the email address provided cannot act as a Primary Identity Provider" : [
+         null,
+         ""
+      ],
+      "Checking Authentication" : [
+         null,
+         "正在檢查授權"
+      ],
+      "Getting Token Info" : [
+         null,
+         "正在取得令牌 (Token) 資訊"
+      ],
+      "forgot your password?" : [
+         null,
+         "忘記密碼了嗎？"
+      ],
+      "Address Verified!" : [
+         null,
+         "已驗證電子郵件地址！"
+      ],
+      "This field must be an email address." : [
+         null,
+         "此欄位必須為電子郵件地址。"
+      ],
+      "We are sorry, but we cannot communicate with BrowserID while you are offline." : [
+         null,
+         ""
+      ],
+      "Authenticating User" : [
+         null,
+         "正在驗證使用者"
+      ],
+      "This email looks new, so let&#39;s get you set up." : [
+         null,
+         ""
+      ],
+      "Email" : [
+         null,
+         ""
+      ],
+      "Setting Password" : [
+         null,
+         "正在設定密碼"
+      ],
+      "Finishing Sign In..." : [
+         null,
+         "正在完成登入..."
+      ],
+      "select email" : [
+         null,
+         "選擇電子郵件信箱"
+      ],
+      "Checking Address Info" : [
+         null,
+         ""
+      ],
+      "Adding Primary Email Address to User" : [
+         null,
+         ""
+      ],
+      "Your identity has been verified with your email provider, we will now try to sign you in." : [
+         null,
+         ""
+      ],
+      "Verify With Email Provider" : [
+         null,
+         ""
+      ],
+      "Checking Whether User is Authenticated with IdP" : [
+         null,
+         ""
+      ],
+      "Updating password" : [
+         null,
+         "正在更新密碼"
+      ],
+      "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
+         null,
+         ""
+      ],
+      "The password field is required." : [
+         null,
+         "必須輸入密碼欄位。"
+      ],
+      "cancel" : [
+         null,
+         "取消"
+      ],
+      "We had trouble communicating with your email provider, please try again!" : [
+         null,
+         ""
+      ],
+      "Creating Account" : [
+         null,
+         ""
+      ],
+      "We are sorry, this request is taking a LOOONG time." : [
+         null,
+         ""
+      ],
+      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again." : [
+         null,
+         ""
+      ],
+      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again" : [
+         null,
+         ""
+      ],
+      "Checking Registration Token" : [
+         null,
+         ""
+      ],
+      "add" : [
+         null,
+         "新增"
+      ],
+      "To continue, please close the window and enter a valid address." : [
+         null,
+         ""
+      ],
+      "Enter your email address to sign in to <strong>%s</strong>" : [
+         null,
+         ""
+      ],
+      "Establishing Relay" : [
+         null,
+         ""
+      ],
+      "Signin Failed" : [
+         null,
+         "登入失敗"
+      ],
+      "Verify" : [
+         null,
+         ""
+      ],
+      "sign in" : [
+         null,
+         "登入"
+      ],
+      "The account cannot be logged in with this username and password." : [
+         null,
+         ""
+      ],
+      "Welcome to BrowserID!" : [
+         null,
+         "歡迎使用 BrowserID！"
+      ],
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
+         null,
+         ""
+      ],
+      "*%s* is not a valid email address!" : [
+         null,
+         "「%s」是無效的電子郵件地址！"
+      ],
+      "Please wait a few seconds while we sign you into the site." : [
+         null,
+         ""
+      ]
+   }
+}
+;

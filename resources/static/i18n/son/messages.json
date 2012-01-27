@@ -1,0 +1,182 @@
+var json_locale_data = {
+   "messages" : {
+      "Error encountered trying to complete registration." : [
+         null,
+         ""
+      ],
+      "" : {
+         "MIME-Version" : " 1.0",
+         "X-Generator" : " Translate Toolkit 1.9.0",
+         "POT-Creation-Date" : " 2012-01-26 17:37-0800",
+         "Language" : " son",
+         "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
+         "Content-Type" : " text/plain; charset=UTF-8",
+         "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
+         "Language-Team" : " LANGUAGE <LL@li.org>",
+         "Content-Transfer-Encoding" : " 8bit",
+         "Report-Msgid-Bugs-To" : " ",
+         "Project-Id-Version" : " PACKAGE VERSION"
+      },
+      "BrowserID" : [
+         null,
+         ""
+      ],
+      "Verification password is required." : [
+         null,
+         ""
+      ],
+      "Finish signing into: " : [
+         null,
+         ""
+      ],
+      "Your Email" : [
+         null,
+         ""
+      ],
+      "TOS" : [
+         null,
+         ""
+      ],
+      "Need Help?" : [
+         null,
+         ""
+      ],
+      "BrowserID: %s" : [
+         null,
+         ""
+      ],
+      "Error comunicating with server." : [
+         null,
+         ""
+      ],
+      "Last step!" : [
+         null,
+         ""
+      ],
+      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>" : [
+         null,
+         ""
+      ],
+      "Your new address is set up and you should now be signed in. You may now close this window and go back to" : [
+         null,
+         ""
+      ],
+      "Verify Password" : [
+         null,
+         ""
+      ],
+      "BrowserID Home" : [
+         null,
+         ""
+      ],
+      "Password must be between 8 and 80 characters long." : [
+         null,
+         ""
+      ],
+      "(A better way to sign in)" : [
+         null,
+         ""
+      ],
+      "Finish registration by clicking this link:" : [
+         null,
+         ""
+      ],
+      "Thanks," : [
+         null,
+         ""
+      ],
+      "Developers" : [
+         null,
+         ""
+      ],
+      "Communicating with server" : [
+         null,
+         ""
+      ],
+      "Enter a Password" : [
+         null,
+         ""
+      ],
+      "Error encountered while attempting to confirm your address. Have you previously verified this address?" : [
+         null,
+         ""
+      ],
+      "Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!" : [
+         null,
+         ""
+      ],
+      "Email Verification" : [
+         null,
+         ""
+      ],
+      "<strong class=\"email\">Your address</strong> has been verified!" : [
+         null,
+         ""
+      ],
+      "Sign In" : [
+         null,
+         ""
+      ],
+      "Finish" : [
+         null,
+         ""
+      ],
+      "Browser ID" : [
+         null,
+         ""
+      ],
+      "There was a problem with your signup link.  Has this address already been registered?" : [
+         null,
+         ""
+      ],
+      "Passwords do not match." : [
+         null,
+         ""
+      ],
+      "Password is required." : [
+         null,
+         ""
+      ],
+      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>" : [
+         null,
+         ""
+      ],
+      "New Password" : [
+         null,
+         ""
+      ],
+      "Complete Login to %s using BrowserID" : [
+         null,
+         ""
+      ],
+      "How it works" : [
+         null,
+         ""
+      ],
+      "Privacy" : [
+         null,
+         ""
+      ],
+      "Repeat Password" : [
+         null,
+         ""
+      ],
+      "Just a moment while we talk with the server." : [
+         null,
+         ""
+      ],
+      "Email Address" : [
+         null,
+         ""
+      ],
+      "Sign Out" : [
+         null,
+         ""
+      ],
+      "If you are NOT trying to sign into this site, just ignore this email." : [
+         null,
+         ""
+      ]
+   }
+}
+;

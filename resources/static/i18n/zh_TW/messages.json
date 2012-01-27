@@ -1,0 +1,183 @@
+var json_locale_data = {
+   "messages" : {
+      "Error encountered trying to complete registration." : [
+         null,
+         ""
+      ],
+      "" : {
+         "Plural-Forms" : " nplurals=1; plural=0;",
+         "MIME-Version" : " 1.0",
+         "X-Generator" : " Pootle 2.1.6",
+         "POT-Creation-Date" : " 2012-01-26 17:37-0800",
+         "Language" : " zh_TW",
+         "Last-Translator" : " Peter <petercpg@mail.moztw.org>",
+         "Content-Type" : " text/plain; charset=UTF-8",
+         "PO-Revision-Date" : " 2012-01-27 20:46+0200",
+         "Language-Team" : " LANGUAGE <LL@li.org>",
+         "Content-Transfer-Encoding" : " 8bit",
+         "Report-Msgid-Bugs-To" : " ",
+         "Project-Id-Version" : " PACKAGE VERSION"
+      },
+      "BrowserID" : [
+         null,
+         "BrowserID"
+      ],
+      "Verification password is required." : [
+         null,
+         "需要輸入兩次密碼。"
+      ],
+      "Finish signing into: " : [
+         null,
+         ""
+      ],
+      "Your Email" : [
+         null,
+         "您的電子郵件地址"
+      ],
+      "TOS" : [
+         null,
+         "服務條款"
+      ],
+      "Need Help?" : [
+         null,
+         "需要幫助嗎？"
+      ],
+      "BrowserID: %s" : [
+         null,
+         "BrowserID: %s"
+      ],
+      "Error comunicating with server." : [
+         null,
+         ""
+      ],
+      "Last step!" : [
+         null,
+         "最後一步了！"
+      ],
+      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>" : [
+         null,
+         ""
+      ],
+      "Your new address is set up and you should now be signed in. You may now close this window and go back to" : [
+         null,
+         ""
+      ],
+      "Verify Password" : [
+         null,
+         "驗證密碼"
+      ],
+      "BrowserID Home" : [
+         null,
+         "BrowserID 首頁"
+      ],
+      "Password must be between 8 and 80 characters long." : [
+         null,
+         "密碼長度必須在 8 到 80 個字元符號之間。"
+      ],
+      "(A better way to sign in)" : [
+         null,
+         "（更好的登入機制）"
+      ],
+      "Finish registration by clicking this link:" : [
+         null,
+         ""
+      ],
+      "Thanks," : [
+         null,
+         "感謝您"
+      ],
+      "Developers" : [
+         null,
+         "開發者"
+      ],
+      "Communicating with server" : [
+         null,
+         "正在聯絡伺服器"
+      ],
+      "Enter a Password" : [
+         null,
+         "輸入一組密碼"
+      ],
+      "Error encountered while attempting to confirm your address. Have you previously verified this address?" : [
+         null,
+         ""
+      ],
+      "Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!" : [
+         null,
+         ""
+      ],
+      "Email Verification" : [
+         null,
+         ""
+      ],
+      "<strong class=\"email\">Your address</strong> has been verified!" : [
+         null,
+         ""
+      ],
+      "Sign In" : [
+         null,
+         "登入"
+      ],
+      "Finish" : [
+         null,
+         "完成"
+      ],
+      "Browser ID" : [
+         null,
+         ""
+      ],
+      "There was a problem with your signup link.  Has this address already been registered?" : [
+         null,
+         ""
+      ],
+      "Passwords do not match." : [
+         null,
+         "輸入的密碼不相同。"
+      ],
+      "Password is required." : [
+         null,
+         "必須輸入密碼。"
+      ],
+      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>" : [
+         null,
+         ""
+      ],
+      "New Password" : [
+         null,
+         "新密碼"
+      ],
+      "Complete Login to %s using BrowserID" : [
+         null,
+         ""
+      ],
+      "How it works" : [
+         null,
+         "技術原理"
+      ],
+      "Privacy" : [
+         null,
+         "隱私"
+      ],
+      "Repeat Password" : [
+         null,
+         "重新輸入密碼"
+      ],
+      "Just a moment while we talk with the server." : [
+         null,
+         ""
+      ],
+      "Email Address" : [
+         null,
+         ""
+      ],
+      "Sign Out" : [
+         null,
+         "登出"
+      ],
+      "If you are NOT trying to sign into this site, just ignore this email." : [
+         null,
+         ""
+      ]
+   }
+}
+;
