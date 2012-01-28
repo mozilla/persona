@@ -1,7 +1,8 @@
 const
 aws = require('./aws.js');
 jsel = require('JSONSelect'),
-key = require('./key.js');
+key = require('./key.js'),
+sec = require('./sec.js');
 
 const BROWSERID_TEMPLATE_IMAGE_ID = 'ami-51ac7d38';
 
@@ -41,14 +42,18 @@ function returnSingleImageInfo(result, cb) {
 exports.startImage = function(cb) {
   key.getName(function(err, keyName) {
     if (err) return cb(err);
-    aws.call('RunInstances', {
-      ImageId: BROWSERID_TEMPLATE_IMAGE_ID,
-      KeyName: keyName,
-      InstanceType: 't1.micro',
-      MinCount: 1,
-      MaxCount: 1
-    }, function (result) {
-      returnSingleImageInfo(result, cb);
+    sec.getName(function(err, groupName) {
+      if (err) return cb(err);
+      aws.call('RunInstances', {
+        ImageId: BROWSERID_TEMPLATE_IMAGE_ID,
+        KeyName: keyName,
+        SecurityGroup: groupName,
+        InstanceType: 't1.micro',
+        MinCount: 1,
+        MaxCount: 1
+      }, function (result) {
+        returnSingleImageInfo(result, cb);
+      });
     });
   });
 };
