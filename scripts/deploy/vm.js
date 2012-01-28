@@ -19,11 +19,12 @@ function extractInstanceDeets(horribleBlob) {
 
 exports.list = function(cb) {
   aws.call('DescribeInstances', {}, function(result) {
-    console.log(JSON.stringify(result, null, 2));
     var instances = [];
-    jsel.forEach(".instancesSet > .item", result, function(item) {
-      instances.push(extractInstanceDeets(item));
-    });
+    jsel.forEach(
+      '.instancesSet > .item:has(.instanceState .name:val("running"))',
+      result, function(item) {
+        instances.push(extractInstanceDeets(item));
+      });
     cb(null, instances);
   });
 };
@@ -32,7 +33,7 @@ function returnSingleImageInfo(result, cb) {
   if (!result) return cb('no results from ec2 api');
   try { return cb(result.Errors.Error.Message); } catch(e) {};
   try { 
-    result = jsel.match(".instancesSet > .item", result)[0];
+    result = jsel.match('.instancesSet > .item', result)[0];
     cb(null, extractInstanceDeets(result));
   } catch(e) {
     return cb("couldn't extract new instance details from ec2 response: " + e);
