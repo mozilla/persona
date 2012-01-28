@@ -16,10 +16,17 @@ function checkErr(err) {
 }
 
 verbs['deploy'] = function(args) {
+  if (!args || args.length != 1) {
+    throw 'missing required argument: name of instance';
+  }
+
   vm.startImage(function(err, r) {
     checkErr(err);
     vm.waitForInstance(r.instanceId, function(err, r) {
-      console.log(err, r);
+      checkErr(err);
+      vm.setName(r.instanceId, args[0], function(err) {
+        console.log(err, r);
+      });
     });
   });
 };
@@ -37,7 +44,11 @@ if (!error) {
   var verb = process.argv[2];
   if (!verbs[verb]) error = "no such command: " + verb;
   else {
-    verbs[verb](process.argv.slice(2));
+    try {
+      verbs[verb](process.argv.slice(3));
+    } catch(e) {
+      error = "error running '" + verb + "' command: " + e;
+    }
   }
 }
 

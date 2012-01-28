@@ -11,11 +11,14 @@ function extractInstanceDeets(horribleBlob) {
    "ipAddress"].forEach(function(key) {
      if (horribleBlob[key]) instance[key] = horribleBlob[key];
    });
+  var name = jsel.match('.tagSet :has(.key:val("Name")) > .value', horribleBlob);
+  if (name.length) instance.name = name[0];
   return instance;
 }
 
 exports.list = function(cb) {
   aws.call('DescribeInstances', {}, function(result) {
+    console.log(JSON.stringify(result, null, 2));
     var instances = [];
     jsel.forEach(".instancesSet > .item", result, function(item) {
       instances.push(extractInstanceDeets(item));
@@ -36,11 +39,11 @@ function returnSingleImageInfo(result, cb) {
 }
 
 exports.startImage = function(cb) {
-  key.getName(function(err, r) {
+  key.getName(function(err, keyName) {
     if (err) return cb(err);
     aws.call('RunInstances', {
       ImageId: BROWSERID_TEMPLATE_IMAGE_ID,
-      KeyName: r,
+      KeyName: keyName,
       InstanceType: 't1.micro',
       MinCount: 1,
       MaxCount: 1
@@ -65,5 +68,19 @@ exports.waitForInstance = function(id, cb) {
       }
     }
     setTimeout(function(){ exports.waitForInstance(id, cb); }, 1000);
+  });
+};
+
+exports.setName = function(id, name, cb) {
+  name = 'browserid deployment (' + name + ')';
+
+  aws.call('CreateTags', {
+    "ResourceId.0": id,
+    "Tag.0.Key": 'Name',
+    "Tag.0.Value": name
+  }, function(result) {
+    if (result && result.return === 'true') return cb(null);
+    try { return cb(result.Errors.Error.Message); } catch(e) {};
+    return cb('unknown error setting instance name');
   });
 };
