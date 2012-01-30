@@ -16,7 +16,7 @@
           </li>
 
           <li>
-              <%= gettext("To verify that you own this address, you must sign in with your provider.  This window will be redirected to") %>
+              <%= format(gettext("To verify that you own <strong id='primary_email'>%s</strong>, you must sign in with your provider.  This window will be redirected to"), [email]) %>
 
               <p>
                   <strong><%= auth_url %></strong>.
