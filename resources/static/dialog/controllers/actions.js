@@ -100,6 +100,10 @@ BrowserID.Modules.Actions = (function() {
       startService("forgot_password", info);
     },
 
+    doResetPassword: function(info) {
+      this.doConfirmUser(info.email);
+    },
+
     doConfirmEmail: function(email) {
       startRegCheckService.call(this, email, "waitForEmailValidation", "email_confirmed");
     },

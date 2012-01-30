@@ -139,12 +139,24 @@
     equal(actions.info.doForgotPassword.requiredEmail, true, "correct requiredEmail passed");
   });
 
-  test("reset_password", function() {
+  test("reset_password - call doResetPassword", function() {
     // XXX how is this different from forgot_password?
     mediator.publish("reset_password", {
       email: "testuser@testuser.com"
     });
-    equal(actions.info.doConfirmUser, "testuser@testuser.com", "reset password with the correct email");
+    equal(actions.info.doResetPassword.email, "testuser@testuser.com", "reset password with the correct email");
+  });
+
+  test("cancel reset_password flow - go two steps back", function() {
+    // we want to skip the "verify" screen of reset password and instead go two
+    // screens back.  Do do this, we are simulating the steps necessary to get
+    // to the reset_password flow.
+    mediator.publish("authenticate");
+    mediator.publish("forgot_password", { email: "testuser@testuser.com" });
+    mediator.publish("reset_password");
+    actions.info.doAuthenticate = {};
+    mediator.publish("cancel_state");
+    equal(actions.info.doAuthenticate.email, "testuser@testuser.com", "authenticate called with the correct email");
   });
 
   test("assertion_generated with null assertion", function() {
