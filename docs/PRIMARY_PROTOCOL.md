@@ -160,7 +160,7 @@ properties available to normal web content.
 ### 4.2 JavaScript Shim
 
 To support browsers without native BrowserID support, the provisioning
-content should include the a javascript shim, hosted at:
+content should include a javascript shim, hosted at:
 
     https://browserid.org/provisioning_api.js
 
