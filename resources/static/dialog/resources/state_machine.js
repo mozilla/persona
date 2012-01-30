@@ -62,8 +62,8 @@
   function popState(info) {
     // Skip the first state, it is where the user is at now.
     stateStack.pop();
-
     var state = stateStack[stateStack.length - 1];
+
     if (state) {
       state.args[0] = state.args[0] || {};
       _.extend(state.args[0], info);
@@ -88,7 +88,6 @@
         _.extend(stateInfo, info);
       }
     }
-
 
     subscribe("offline", function(msg, info) {
       startState("doOffline");
@@ -152,14 +151,17 @@
     subscribe("primary_user", function(msg, info) {
       addPrimaryUser = !!info.add;
       email = info.email;
-      // We don't want to put the provisioning step on the stack, instead when
-      // a user cancels this step, they should go back to the step before the
-      // provisioning.
+
+      updateCurrentStateInfo(info);
+
       var idInfo = storage.getEmail(email);
       if(idInfo && idInfo.cert) {
         mediator.publish("primary_user_ready", info);
       }
       else {
+        // We don't want to put the provisioning step on the stack, instead when
+        // a user cancels this step, they should go back to the step before the
+        // provisioning.
         startState(false, "doProvisionPrimaryUser", info);
       }
     });
@@ -253,12 +255,15 @@
     });
 
     subscribe("forgot_password", function(msg, info) {
+      // forgot password initiates the forgotten password flow.
       updateCurrentStateInfo(info);
       startState("doForgotPassword", info);
     });
 
     subscribe("reset_password", function(msg, info) {
-      startState("doConfirmUser", info.email);
+      // reset password says the password has been reset, now waiting for
+      // confirmation.
+      startState(false, "doResetPassword", info);
     });
 
     subscribe("assertion_generated", function(msg, info) {
