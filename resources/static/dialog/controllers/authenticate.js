@@ -16,33 +16,39 @@ BrowserID.Modules.Authenticate = (function() {
       dialogHelpers = helpers.Dialog,
       cancelEvent = helpers.cancelEvent,
       dom = bid.DOM,
-      lastEmail = "";
+      lastEmail = "",
+      addressInfo;
 
   function getEmail() {
     return helpers.getAndValidateEmail("#email");
   }
 
-  function checkEmail() {
+  function checkEmail(info) {
     var email = getEmail(),
         self = this;
 
     if (!email) return;
 
-    user.addressInfo(email, function(info) {
+    if(info && info.type) {
+      onAddressInfo(info);
+    }
+    else {
+      user.addressInfo(email, onAddressInfo,
+        self.getErrorDialog(errors.addressInfo));
+    }
+
+    function onAddressInfo(info) {
+      addressInfo = info;
+
       if(info.type === "primary") {
-        // XXX this will redirect already users already signed in to their IdP
-        // without ever giving them a cancel option.  Kind of crappy.
-        self.close("primary_user", _.extend(info, { email: email }));
+        self.close("primary_user", info);
       }
-      else {
-        if(info.known) {
-          enterPasswordState.call(self);
-        }
-        else {
-          createSecondaryUserState.call(self);
-        }
+      else if(info.known) {
+        enterPasswordState.call(self);
+      } else {
+        createSecondaryUserState.call(self);
       }
-    }, self.getErrorDialog(errors.addressInfo));
+    }
   }
 
   function createSecondaryUser(callback) {
@@ -74,13 +80,12 @@ BrowserID.Modules.Authenticate = (function() {
 
   function animateSwap(fadeOutSelector, fadeInSelector, callback) {
     // XXX instead of using jQuery here, think about using CSS animations.
-    $(fadeOutSelector).fadeOut(ANIMATION_TIME, function() {
-      $(fadeInSelector).fadeIn(ANIMATION_TIME, callback);
-    });
+    $(fadeOutSelector).hide();
+    $(fadeInSelector).fadeIn(ANIMATION_TIME, callback);
   }
 
   function enterEmailState(el) {
-    if (!el.is(":disabled")) {
+    if (!$("#email").is(":disabled")) {
       this.submit = checkEmail;
       animateSwap(".returning:visible,.newuser:visible", ".start");
     }
@@ -89,17 +94,17 @@ BrowserID.Modules.Authenticate = (function() {
   function enterPasswordState() {
     var self=this;
 
-    self.publish("enter_password");
+    self.publish("enter_password", addressInfo);
     self.submit = authenticate;
     animateSwap(".start:visible,.newuser:visible,.forgot:visible", ".returning", function() {
-      dom.getElements("#password")[0].focus();
+      dom.focus("#password");
     });
   }
 
   function forgotPassword() {
     var email = getEmail();
     if (email) {
-      this.close("forgot_password", { email: email });
+      this.close("forgot_password", addressInfo || { email: email });
     }
   }
 
@@ -112,34 +117,36 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
 
-  function emailKeyUp(event) {
-    var newEmail = dom.getInner(event.target);
+  function emailKeyUp() {
+    var newEmail = dom.getInner("#email");
     if (newEmail !== lastEmail) {
       lastEmail = newEmail;
-      enterEmailState.call(this, $(event.target));
+      enterEmailState.call(this);
     }
   }
 
-  var Authenticate = bid.Modules.PageModule.extend({
+  var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       options = options || {};
+
+      lastEmail = options.email || "";
 
       var self=this;
       self.renderDialog("authenticate", {
         sitename: user.getHostname(),
-        email: options.email || ""
+        email: lastEmail
       });
 
       self.submit = checkEmail;
       // If we already have an email address, check if it is valid, if so, show
       // password.
-      if (options.email) self.submit();
+      if (options.email) self.checkEmail(options);
 
 
       self.bind("#email", "keyup", emailKeyUp);
       self.bind("#forgotPassword", "click", cancelEvent(forgotPassword));
 
-      Authenticate.sc.start.call(self, options);
+      Module.sc.start.call(self, options);
     }
 
     // BEGIN TESTING API
@@ -151,6 +158,6 @@ BrowserID.Modules.Authenticate = (function() {
     // END TESTING API
   });
 
-  return Authenticate;
+  return Module;
 
 }());

@@ -53,26 +53,42 @@
     // go back to it.
     stateStack.push({
       funcName: funcName,
-      args: args
+      args: args || []
     });
   }
 
   // Used for when the current state is being cancelled and the user wishes to
   // go to the previous state.
-  function popState() {
+  function popState(info) {
     // Skip the first state, it is where the user is at now.
     stateStack.pop();
 
     var state = stateStack[stateStack.length - 1];
     if (state) {
+      state.args[0] = state.args[0] || {};
+      _.extend(state.args[0], info);
       controller[state.funcName].apply(controller, state.args);
     }
+  }
+
+  function getCurrentState() {
+    return stateStack[stateStack.length - 1];
   }
 
   function startStateMachine() {
     var self = this,
         startState = gotoState.bind(self),
-        cancelState = popState.bind(self);
+        cancelState = popState.bind(self),
+        currentState = getCurrentState.bind(self);
+
+    function updateCurrentStateInfo(info) {
+      if(info) {
+        var args = currentState().args;
+        var stateInfo = args[0] = args[0] || {};
+        _.extend(stateInfo, info);
+      }
+    }
+
 
     subscribe("offline", function(msg, info) {
       startState("doOffline");
@@ -122,11 +138,7 @@
     });
 
     subscribe("authenticate", function(msg, info) {
-      info = info || {};
-
-      startState("doAuthenticate", {
-        email: info.email
-      });
+      startState("doAuthenticate", info);
     });
 
     subscribe("user_staged", function(msg, info) {
@@ -241,6 +253,7 @@
     });
 
     subscribe("forgot_password", function(msg, info) {
+      updateCurrentStateInfo(info);
       startState("doForgotPassword", info);
     });
 
@@ -271,7 +284,7 @@
     });
 
     subscribe("cancel_state", function(msg, info) {
-      cancelState();
+      cancelState(info);
     });
 
   }

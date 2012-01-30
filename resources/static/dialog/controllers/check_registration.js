@@ -11,7 +11,7 @@ BrowserID.Modules.CheckRegistration = (function() {
       dom = bid.DOM,
       errors = bid.Errors;
 
-  var CheckRegistration = bid.Modules.PageModule.extend({
+  var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
       self.renderWait("confirm_email", {
@@ -23,7 +23,7 @@ BrowserID.Modules.CheckRegistration = (function() {
 
       self.bind("#back", "click", self.cancel);
 
-      CheckRegistration.sc.start.call(self, options);
+      Module.sc.start.call(self, options);
     },
 
     startCheck: function(oncomplete) {
@@ -52,6 +52,6 @@ BrowserID.Modules.CheckRegistration = (function() {
 
   });
 
-  return CheckRegistration;
+  return Module;
 
 }());

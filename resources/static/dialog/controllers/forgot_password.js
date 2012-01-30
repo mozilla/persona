@@ -11,8 +11,7 @@ BrowserID.Modules.ForgotPassword = (function() {
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
       cancelEvent = dialogHelpers.cancelEvent,
-      dom = bid.DOM,
-      lastEmail = "";
+      dom = bid.DOM;
 
   function resetPassword() {
     var self=this;
@@ -20,10 +19,10 @@ BrowserID.Modules.ForgotPassword = (function() {
   }
 
   function cancelResetPassword() {
-    this.close("cancel_state");
+    this.close("cancel_state", { email: this.email });
   }
 
-  var ForgotPassword = bid.Modules.PageModule.extend({
+  var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
       self.email = options.email;
@@ -34,10 +33,10 @@ BrowserID.Modules.ForgotPassword = (function() {
 
       self.bind("#cancel_forgot_password", "click", cancelEvent(cancelResetPassword));
 
-      ForgotPassword.sc.start.call(self, options);
+      Module.sc.start.call(self, options);
     },
 
-    submit: cancelEvent(resetPassword)
+    submit: resetPassword
 
     // BEGIN TESTING API
     ,
@@ -46,6 +45,6 @@ BrowserID.Modules.ForgotPassword = (function() {
     // END TESTING API
   });
 
-  return ForgotPassword;
+  return Module;
 
 }());
