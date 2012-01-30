@@ -772,6 +772,7 @@ BrowserID.User = (function() {
       }
       else {
         network.addressInfo(email, function(info) {
+          info.email = email;
           if(info.type === "primary") {
             User.isUserAuthenticatedToPrimary(email, info, function(authed) {
               info.authed = authed;

@@ -51,12 +51,11 @@
     }
   });
 
-
   test("setting email address prefills address field", function() {
-      controller.destroy();
-      $("#email").val("");
-      createController({ email: "registered@testuser.com" });
-      equal($("#email").val(), "registered@testuser.com", "email prefilled");
+    controller.destroy();
+    $("#email").val("");
+    createController({ email: "registered@testuser.com" });
+    equal($("#email").val(), "registered@testuser.com", "email prefilled");
   });
 
   function testUserUnregistered() {
