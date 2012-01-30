@@ -84,16 +84,13 @@ exports.addStartupBatches = function(suite) {
   suite.addBatch({
     "specifying an ephemeral database": {
       topic: function() {
-        if (config.get('database').driver === 'mysql') {
-          process.env['MYSQL_DATABASE_NAME'] = config.get('database').database;
-        } else if (config.get('database').driver === 'json') {
-          process.env['JSON_DATABASE_PATH'] = config.get('database').path;
-        }
+        config.set("database.name", process.env['DATABASE_NAME']);
         return true;
       },
       "should work": function(x) {
-        var cfg = process.env['MYSQL_DATABASE_NAME'] || process.env['JSON_DATABASE_PATH'];
-        assert.equal(typeof cfg, 'string');
+        assert.equal(typeof config.get('database.name'), 'string');
+        assert.equal(typeof process.env['DATABASE_NAME'], 'string');
+        assert.equal(process.env['DATABASE_NAME'], config.get('database.name'));
       }
     }
   });
