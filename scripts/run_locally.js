@@ -3,10 +3,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-const
+const path = require('path'),
 spawn = require('child_process').spawn,
-path = require('path'),
 config = require('../lib/configuration.js'),
 temp = require('temp'),
 secrets = require('../lib/secrets.js');
@@ -16,18 +14,9 @@ exports.daemons = daemons = {};
 const HOST = process.env['IP_ADDRESS'] || process.env['HOST'] || "127.0.0.1";
 
 var daemonsToRun = {
-  verifier: {
-    PORT: 10000,
-    HOST: HOST
-  },
-  keysigner: {
-    PORT: 10003,
-    HOST: HOST
-  },
-  dbwriter: {
-    PORT: 10004,
-    HOST: HOST
-  },
+  verifier: { },
+  keysigner: { },
+  dbwriter: { },
   example: {
     path: path.join(__dirname, "..", "scripts", "serve_example.js"),
     PORT: 10001,
@@ -39,18 +28,17 @@ var daemonsToRun = {
     PORT: 10005,
     HOST: HOST
   },
-  proxy: {
-    PORT: 10006,
-    HOST: HOST
-  },
-  browserid: {
-    PORT: 10002,
-    HOST: HOST
-  }
+  proxy: { },
+  browserid: { }
 };
 
 // route outbound HTTP through our in-tree proxy to always test said codepath
-process.env['HTTP_PROXY'] = HOST + ":10006"; 
+process.env['HTTP_PROXY'] = HOST + ":10006";
+
+process.env['HOST'] = HOST
+
+// use the "local" configuration
+process.env['CONFIG_FILES'] = path.join(__dirname, '..', 'config', 'local.json');
 
 // all spawned process that use handle primaries should know about "shimmed"
 // primaries
@@ -66,16 +54,18 @@ process.env['BROWSERID_URL'] = 'http://' + HOST + ":10002";
 process.env['VERIFIER_URL'] = 'http://' + HOST + ":10000/verify";
 process.env['KEYSIGNER_URL'] = 'http://' + HOST + ":10003";
 
+process.env['URL'] = process.env['BROWSERID_URL'];
+
 // if the environment is a 'test_' environment, then we'll use an
 // ephemeral database
 if (config.get('env').substr(0,5) === 'test_') {
   if (config.get('database').driver === 'mysql') {
-    process.env['MYSQL_DATABASE_NAME'] =
-      process.env['MYSQL_DATABASE_NAME'] ||"browserid_tmp_" + secrets.generate(6);
-    console.log("temp mysql database:", process.env['MYSQL_DATABASE_NAME']);
+    process.env['DATABASE_NAME'] =
+      process.env['DATABASE_NAME'] || "browserid_tmp_" + secrets.generate(6);
+    console.log("temp mysql database:", process.env['DATABASE_NAME']);
   } else if (config.get('database').driver === 'json') {
-    process.env['JSON_DATABASE_PATH'] =  process.env['JSON_DATABASE_PATH'] || temp.path({suffix: '.db'});
-    console.log("temp json database:", process.env['JSON_DATABASE_PATH']);
+    process.env['DATABASE_NAME'] =  process.env['DATABASE_NAME'] || temp.path({suffix: '.db'});
+    console.log("temp json database:", process.env['DATABASE_NAME']);
   }
 }
 

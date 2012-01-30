@@ -101,10 +101,11 @@ app.use(function(req, resp, next) {
 // #5 - redirection!  redirect requests to the "verifier" or to the "dbwriter"
 // processes
 if (config.get('verifier_url')) {
+  var verifier_url = urlparse(config.get('verifier_url')).validate().normalize();
   app.use(function(req, res, next) {
     if (/^\/verify$/.test(req.url)) {
       forward(
-        config.get('verifier_url'), req, res,
+        verifier_url, req, res,
         function(err) {
           if (err) {
             logger.error("error forwarding request:", err);
@@ -136,7 +137,7 @@ config.performSubstitution(app);
 
 // #8 - handle /wsapi requests
 wsapi.setup({
-  forward_writes: config.get('dbwriter_url')
+  forward_writes: urlparse(config.get('dbwriter_url')).validate().normalize().originOnly()
 }, app);
 
 // #9 - handle views for dynamicish content

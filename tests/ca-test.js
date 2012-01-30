@@ -32,7 +32,7 @@ suite.addBatch({
     topic: function() {
       var expiration = new Date();
       expiration.setTime(new Date().valueOf() + 5000);
-      return ca.certify(email_addr, kp.publicKey, expiration);
+      return ca.certify('127.0.0.1', email_addr, kp.publicKey, expiration);
     },
     "parses" : function(cert_raw, err) {
       var cert = ca.parseCert(cert_raw);
@@ -42,7 +42,7 @@ suite.addBatch({
       // FIXME we might want to turn this into a true async test
       // rather than one that is assumed to be synchronous although
       // it has an async structure
-      ca.verifyChain([cert_raw], function(pk) {
+      ca.verifyChain('127.0.0.1', [cert_raw], function(pk) {
         assert.isTrue(kp.publicKey.equals(pk));
       });
     }

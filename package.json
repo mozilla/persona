@@ -7,6 +7,8 @@
         "bcrypt": "0.4.1",
         "compute-cluster": "0.0.6",
         "connect": "1.7.2",
+        "convict": "0.0.6",
+        "cjson": "0.0.6",
         "client-sessions": "0.0.3",
         "connect-cookie-session": "0.0.2",
         "connect-logger-statsd": "0.0.1",
@@ -30,7 +32,7 @@
     "devDependencies": {
         "vows": "0.5.13",
         "aws-lib": "0.0.5"
-    }, 
+    },
     "scripts": {
         "postinstall": "./scripts/generate_ephemeral_keys.sh",
         "test": "./scripts/run_all_tests.sh",
