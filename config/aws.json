@@ -27,7 +27,7 @@
   "var_path": "/home/app/var",
 
   "verifier": { "bind_to": { "port": 10000 } },
-  "verifier_url": "http://127.0.0.1:10000",
+  "verifier_url": "http://127.0.0.1:10000/verify",
   "keysigner": { "bind_to": { "port": 10003 } },
   "keysigner_url": "http://127.0.0.1:10003",
   "dbwriter": { "bind_to": { "port": 10004 } },
