@@ -51,6 +51,18 @@ verbs['destroy'] = function(args) {
   });
 }
 
+verbs['test'] = function() {
+  // let's see if we can contact aws and zerigo
+  process.stdout.write("Checking DNS management access: "); 
+  dns.inUse("somerandomname", function(err) {
+    console.log(err ? "NOT ok: " + err : "good");
+    process.stdout.write("Checking AWS access: "); 
+    vm.list(function(err) {
+      console.log(err ? "NOT ok: " + err : "good");      
+    });
+  });
+}
+
 verbs['deploy'] = function(args) {
   if (!args || args.length != 1) {
     throw 'missing required argument: name of instance';
