@@ -6,6 +6,11 @@
 
 // a simple script to test to see if we can connect to
 // the database using the present configuration.
+const path = require('path');
+
+if (!process.env['CONFIG_FILES']) {
+  process.env['CONFIG_FILES'] = path.join(__dirname, "..", "config", "local.json");
+}
 
 const
 configuration = require('../lib/configuration.js'),

@@ -10,13 +10,11 @@ path = require('path'),
 url = require('url'),
 http = require('http');
 urlparse = require('urlparse'),
-express = require('express');
-
-const
+express = require('express'),
 wsapi = require('../lib/wsapi.js'),
-httputils = require('../lib/httputils.js'),
+httputils = require('../lib/httputils.js');
 secrets = require('../lib/secrets.js'),
-db = require('../lib/db.js'),
+db = require('../lib/db.js');
 config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
 metrics = require('../lib/metrics.js'),
@@ -108,7 +106,7 @@ db.open(config.get('database'), function (error) {
   if (error) {
     logger.error("can't open database: " + error);
     // let async logging flush, then exit 1
-    return setTimeout(function() { process.exit(1); }, 0);
+    return process.nextTick(function() { process.exit(1); });
   }
 
   // shut down express gracefully on SIGINT

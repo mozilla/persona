@@ -103,7 +103,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns a proper cert": function(err, r) {
-      ca.verifyChain([r.body], function(pk) {
+      ca.verifyChain('127.0.0.1', [r.body], function(pk) {
         assert.isTrue(kp.publicKey.equals(pk));
       });
     },
@@ -127,7 +127,7 @@ suite.addBatch({
         topic: function(full_assertion) {
           var cb = this.callback;
           // extract public key at the tail of the chain
-          ca.verifyChain(full_assertion.certificates, function(pk) {
+          ca.verifyChain('127.0.0.1', full_assertion.certificates, function(pk) {
             if (!pk)
               cb(false);
 
