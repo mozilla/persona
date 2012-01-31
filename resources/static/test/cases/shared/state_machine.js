@@ -92,5 +92,28 @@
     mediator.publish("message", { item2: "value2" }, { item: "value" });
   });
 
+  asyncTest("multiple calls to gotoState save states to stack correctly", function() {
+    var active = false;
+
+    stateMachine.gotoState(function() {
+      if(active) {
+        ok(true, "original state saved, re-gone to");
+        start();
+      }
+    });
+
+    // First item should go on stack.
+    stateMachine.gotoState(false, function() {});
+
+    // After this, no items on stack.
+    stateMachine.popState();
+
+    // First item should go on stack.
+    stateMachine.gotoState(false, function() {});
+
+    active = true;
+    // After this, no items should be on stack, first item should be called.
+    stateMachine.popState();
+  });
 
 }());

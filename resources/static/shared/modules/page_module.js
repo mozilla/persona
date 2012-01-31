@@ -142,10 +142,10 @@ BrowserID.Modules.PageModule = (function() {
     submit: function() {
     },
 
-    close: function(message, data) {
+    close: function(message) {
       this.destroy();
       if (message) {
-        this.publish(message, data);
+        this.publish.apply(this, arguments);
       }
     },
 
@@ -155,9 +155,7 @@ BrowserID.Modules.PageModule = (function() {
      * @param {string} message
      * @param {object} data
      */
-    publish: function(message, data) {
-      mediator.publish(message, data);
-    },
+    publish: mediator.publish.bind(mediator),
 
     /**
      * Subscribe to a message on the mediator.

@@ -84,8 +84,8 @@ BrowserID.Modules.Actions = (function() {
       startService("pick_email", info);
     },
 
-    doAddEmail: function() {
-      startService("add_email", {});
+    doAddEmail: function(info) {
+      startService("add_email", info);
     },
 
     doAuthenticate: function(info) {

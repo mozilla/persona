@@ -15,12 +15,26 @@ BrowserID.Modules.Authenticate = (function() {
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
       cancelEvent = helpers.cancelEvent,
+      complete = helpers.complete,
       dom = bid.DOM,
       lastEmail = "",
       addressInfo;
 
   function getEmail() {
     return helpers.getAndValidateEmail("#email");
+  }
+
+  function initialState(info) {
+    var self=this;
+
+    self.submit = checkEmail;
+    if(info && info.email && info.type === "secondary" && info.known) {
+      enterPasswordState.call(self, info.ready);
+    }
+    else {
+      animateSwap(".newuser,.forgot,.returning", ".start");
+      complete(info.ready);
+    }
   }
 
   function checkEmail(info) {
@@ -41,7 +55,7 @@ BrowserID.Modules.Authenticate = (function() {
       addressInfo = info;
 
       if(info.type === "primary") {
-        self.close("primary_user", info);
+        self.close("primary_user", info, info);
       }
       else if(info.known) {
         enterPasswordState.call(self);
@@ -91,7 +105,7 @@ BrowserID.Modules.Authenticate = (function() {
     }
   }
 
-  function enterPasswordState() {
+  function enterPasswordState(callback) {
     var self=this;
 
     self.publish("enter_password", addressInfo);
@@ -99,12 +113,14 @@ BrowserID.Modules.Authenticate = (function() {
     animateSwap(".start:visible,.newuser:visible,.forgot:visible", ".returning", function() {
       dom.focus("#password");
     });
+    complete(callback);
   }
 
   function forgotPassword() {
     var email = getEmail();
     if (email) {
-      this.close("forgot_password", addressInfo || { email: email });
+      var info = addressInfo || { email: email };
+      this.close("forgot_password", info, info );
     }
   }
 
@@ -138,16 +154,13 @@ BrowserID.Modules.Authenticate = (function() {
         email: lastEmail
       });
 
-      self.submit = checkEmail;
-      // If we already have an email address, check if it is valid, if so, show
-      // password.
-      if (options.email) self.checkEmail(options);
-
+      $(".newuser,.forgot,.returning,.start").hide();
 
       self.bind("#email", "keyup", emailKeyUp);
       self.bind("#forgotPassword", "click", cancelEvent(forgotPassword));
 
       Module.sc.start.call(self, options);
+      initialState.call(self, options);
     }
 
     // BEGIN TESTING API

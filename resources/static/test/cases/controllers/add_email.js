@@ -41,6 +41,12 @@
     controller.start(options);
   }
 
+  test("addEmail with specified email address - fill in email", function() {
+    createController({ email: "testuser@testuser.com" });
+    ok($("#newEmail").val(), "testuser@testuser.com", "email prepopulated");
+
+  });
+
   asyncTest("addEmail with valid unknown secondary email", function() {
     createController();
     xhr.useResult("unknown_secondary");

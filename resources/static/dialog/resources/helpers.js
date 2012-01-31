@@ -64,9 +64,8 @@
     var self=this;
     user.createSecondaryUser(email, function(status) {
       if (status) {
-        self.close("user_staged", {
-          email: email
-        });
+        var info = { email: email };
+        self.close("user_staged", info, info);
         complete(callback, true);
       }
       else {
@@ -102,15 +101,15 @@
     else {
       user.addressInfo(email, function(info) {
         if (info.type === "primary") {
-          self.close("primary_user", _.extend(info, { email: email, add: true }));
+          var info = _.extend(info, { email: email, add: true });
+          self.close("primary_user", info, info);
           complete(callback, true);
         }
         else {
           user.addEmail(email, function(added) {
             if (added) {
-              self.close("email_staged", {
-                email: email
-              });
+              var info = { email: email };
+              self.close("email_staged", info, info );
             }
             else {
               tooltip.showTooltip("#could_not_add");

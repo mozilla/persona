@@ -34,9 +34,7 @@
   module("controllers/authenticate", {
     setup: function() {
       reset();
-      $("input[type=password]").hide();
       testHelpers.setup();
-      createController();
     },
 
     teardown: function() {
@@ -52,20 +50,20 @@
     }
   });
 
-  asyncTest("email declared in options - prefill address field", function() {
-    controller.destroy();
+  asyncTest("providing primary email address - only show email address", function() {
     $("#email").val("");
-    createController({ email: "registered@testuser.com",
+    createController({
+      email: "registered@testuser.com",
+      type: "primary",
       ready: function() {
         equal($("#email").val(), "registered@testuser.com", "email prefilled");
-        equal($("input[type=password]").is(":visible"), false, "password is not shown");
+        equal(false, "need a test");
         start();
       }
     });
   });
 
-  asyncTest("known secondary email declared in options - show password field", function() {
-    controller.destroy();
+  asyncTest("providing known secondary - show password", function() {
     $("#email").val("");
     createController({
       email: "registered@testuser.com",
@@ -73,7 +71,21 @@
       known: true,
       ready: function() {
         equal($("#email").val(), "registered@testuser.com", "email prefilled");
-        equal($("input[type=password]").is(":visible"), true, "password is shown");
+        equal(false, "need a test");
+        start();
+      }
+    });
+  });
+
+  asyncTest("providing unknown secondary address - show email address, nothing more", function() {
+    $("#email").val("");
+    createController({
+      email: "unregistered@testuser.com",
+      type: "secondary",
+      known: false,
+      ready: function() {
+        equal($("#email").val(), "unregistered@testuser.com", "email prefilled");
+        equal(false, "need a test");
         start();
       }
     });
@@ -88,7 +100,20 @@
     controller.checkEmail();
   }
 
+  function testUserUnregistered() {
+    var createUserCalled = false;
+    register("create_user", function() {
+      createUserCalled = true;
+    });
+
+    controller.checkEmail(function() {
+      equal(createUserCalled, true, "create_user was triggered");
+      start();
+    });
+  }
+
   asyncTest("checkEmail with unknown secondary email, expect 'create_user' message", function() {
+    createController();
     $("#email").val("unregistered@testuser.com");
     xhr.useResult("unknown_secondary");
 
@@ -96,6 +121,7 @@
   });
 
   asyncTest("checkEmail with email with leading/trailing whitespace, user not registered, expect 'create_user' message", function() {
+    createController();
     $("#email").val("    unregistered@testuser.com   ");
     xhr.useResult("unknown_secondary");
 
@@ -103,6 +129,7 @@
   });
 
   asyncTest("checkEmail with normal email, user registered, expect 'enter_password' message", function() {
+    createController();
     $("#email").val("registered@testuser.com");
     xhr.useResult("known_secondary");
 
@@ -115,6 +142,7 @@
   });
 
   asyncTest("checkEmail with email that has IdP support, expect 'primary_user' message", function() {
+    createController();
     $("#email").val("unregistered@testuser.com");
     xhr.useResult("primary");
 
@@ -137,6 +165,7 @@
   }
 
   asyncTest("normal authentication is kosher", function() {
+    createController();
     $("#email").val("registered@testuser.com");
     $("#password").val("password");
 
@@ -144,13 +173,15 @@
   });
 
   asyncTest("leading/trailing whitespace on the username is stripped for authentication", function() {
+    createController();
     $("#email").val("    registered@testuser.com    ");
     $("#password").val("password");
 
     testAuthenticated();
   });
 
-  asyncTest("forgotPassword - trigger forgot_password message", function() {
+  asyncTest("forgotPassword triggers forgot_password message", function() {
+    createController();
     $("#email").val("registered@testuser.com");
 
     register("forgot_password", function(msg, info) {
@@ -162,6 +193,7 @@
   });
 
   asyncTest("createUser with valid email", function() {
+    createController();
     $("#email").val("unregistered@testuser.com");
     xhr.useResult("unknown_secondary");
 
@@ -174,6 +206,7 @@
   });
 
   asyncTest("createUser with invalid email", function() {
+    createController();
     $("#email").val("unregistered");
 
     var handlerCalled = false;
@@ -188,6 +221,7 @@
   });
 
   asyncTest("createUser with valid email but throttling", function() {
+    createController();
     $("#email").val("unregistered@testuser.com");
 
     var handlerCalled = false;
@@ -204,6 +238,7 @@
   });
 
   asyncTest("createUser with valid email, XHR error", function() {
+    createController();
     $("#email").val("unregistered@testuser.com");
 
     var handlerCalled = false;
