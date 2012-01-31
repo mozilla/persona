@@ -6,7 +6,8 @@ path = require('path');
 vm = require('./deploy/vm.js'),
 key = require('./deploy/key.js'),
 ssh = require('./deploy/ssh.js'),
-git = require('./deploy/git.js');
+git = require('./deploy/git.js'),
+dns = require('./deploy/dns.js');
 
 var verbs = {};
 
@@ -60,6 +61,12 @@ verbs['deploy'] = function(args) {
         });
       });
     });
+  });
+};
+
+verbs['test'] = function(args) {
+  dns.addRecord('foo', "1.2.3.4", function(err, r) {
+    console.log(err, r);
   });
 };
 

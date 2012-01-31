@@ -30,6 +30,7 @@
         "winston": "0.5.6"
     },
     "devDependencies": {
+        "xml2json": "0.2.4",
         "vows": "0.5.13",
         "aws-lib": "0.0.5"
     },
