@@ -22,8 +22,8 @@ function printInstructions(name, deets) {
   console.log(" 1. deploy your code:  git push " + name + " <mybranch>:master");
   console.log(" 2. visit your server on the web: https://" + name + ".hacksign.in");
   console.log(" 3. test via a website: http://" + name + ".myfavoritebeer.org");
-  console.log(" 4. ssh in with sudo: ssh ec2-user@" + name + "hacksign.in");
-  console.log(" 5. ssh as the deployment user: ssh app@" + name + "hacksign.in\n");
+  console.log(" 4. ssh in with sudo: ssh ec2-user@" + name + ".hacksign.in");
+  console.log(" 5. ssh as the deployment user: ssh app@" + name + ".hacksign.in\n");
   console.log("enjoy!  Here's your server details", JSON.stringify(deets, null, 4));
 }
 
