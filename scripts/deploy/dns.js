@@ -75,7 +75,7 @@ exports.deleteRecord = function (hostname, cb) {
 exports.inUse = function (hostname, cb) {
   doRequest('GET', '/api/1.1/hosts.xml?fqdn=' + hostname + ".hacksign.in", null, function(err, r) {
     if (err) return cb(err);
-    var m = jsel.match('.host array object', r);
+    var m = jsel.match('.hosts object:.host', r);
     // we shouldn't have multiple!  oops!  let's return the first one
     if (m.length) return cb(null, m[0]);
     cb(null, null);
