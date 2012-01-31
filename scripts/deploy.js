@@ -32,7 +32,7 @@ verbs['deploy'] = function(args) {
     throw 'missing required argument: name of instance';
   }
   var name = args[0];
-  if (!/^[a-z][0-9a-z_\-]+$/.test(name)) {
+  if (!/^[a-z][0-9a-z_\-]*$/.test(name)) {
     throw "invalid name!  must be a valid dns fragment ([z-a0-9\-_])";
   }
   console.log("attempting to set up " + name + ".hacksign.in");
