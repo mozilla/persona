@@ -129,7 +129,7 @@
     testAuthenticated();
   });
 
-  asyncTest("forgotPassword triggers forgot_password message", function() {
+  asyncTest("forgotPassword - trigger forgot_password message", function() {
     $("#email").val("registered@testuser.com");
 
     register("forgot_password", function(msg, info) {

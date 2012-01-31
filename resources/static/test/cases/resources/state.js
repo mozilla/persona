@@ -8,6 +8,7 @@
 
   var bid = BrowserID,
       mediator = bid.Mediator,
+      State = bid.State,
       machine,
       actions,
       storage = bid.Storage,
@@ -31,12 +32,12 @@
   }
 
   function createMachine() {
-    machine = bid.StateMachine.create();
+    machine = bid.State.create();
     actions = new ActionsMock();
     machine.start({controller: actions});
   }
 
-  module("resources/state_machine", {
+  module("resources/state", {
     setup: function() {
       testHelpers.setup();
       createMachine();
@@ -54,10 +55,15 @@
   });
 
   test("attempt to create a state machine without a controller", function() {
-    raises(function() {
-      var badmachine = bid.StateMachine.create();
+    var error;
+    try {
+      var badmachine = State.create();
       badmachine.start();
-    }, "start: controller must be specified", "creating a state machine without a controller fails");
+    }
+    catch(e) {
+      error = e;
+    }
+    equal(error, "start: controller must be specified", "creating a state machine without a controller fails");
   });
 
   test("offline does offline", function() {
@@ -152,7 +158,7 @@
     // screens back.  Do do this, we are simulating the steps necessary to get
     // to the reset_password flow.
     mediator.publish("authenticate");
-    mediator.publish("forgot_password", { email: "testuser@testuser.com" });
+    mediator.publish("forgot_password", undefined, { email: "testuser@testuser.com" });
     mediator.publish("reset_password");
     actions.info.doAuthenticate = {};
     mediator.publish("cancel_state");

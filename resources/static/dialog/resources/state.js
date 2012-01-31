@@ -3,91 +3,32 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-(function() {
+BrowserID.State = (function() {
   var bid = BrowserID,
       storage = bid.Storage,
       mediator = bid.Mediator,
-      user = bid.User,
       publish = mediator.publish.bind(mediator),
-      subscriptions = [],
-      stateStack = [],
+      user = bid.User,
       controller,
       moduleManager = bid.module,
-      errors = bid.Errors,
       addPrimaryUser = false,
       email,
       requiredEmail;
 
-  function subscribe(message, cb) {
-    subscriptions.push(mediator.subscribe(message, cb));
-  }
-
-  function unsubscribeAll() {
-    while(subscription = subscriptions.pop()) {
-      mediator.unsubscribe(subscription);
-    }
-  }
-
-  function gotoState(push, funcName) {
-    var args = [].slice.call(arguments, 1);
-
-    if (typeof push === "boolean") {
-      // Must take the push param off to get to funcName and then the remaining
-      // arguments.
-      args = [].slice.call(args, 1);
-    }
-    else {
-      funcName = push;
-      push = true;
-    }
-
-    if (push) {
-      pushState(funcName, args);
-    }
-
-    controller[funcName].apply(controller, args);
-  }
-
-  function pushState(funcName, args) {
-    // Remember the state and the information for the state in case we have to
-    // go back to it.
-    stateStack.push({
-      funcName: funcName,
-      args: args || []
-    });
-  }
-
-  // Used for when the current state is being cancelled and the user wishes to
-  // go to the previous state.
-  function popState(info) {
-    // Skip the first state, it is where the user is at now.
-    stateStack.pop();
-    var state = stateStack[stateStack.length - 1];
-
-    if (state) {
-      state.args[0] = state.args[0] || {};
-      _.extend(state.args[0], info);
-      controller[state.funcName].apply(controller, state.args);
-    }
-  }
-
-  function getCurrentState() {
-    return stateStack[stateStack.length - 1];
-  }
-
   function startStateMachine() {
     var self = this,
-        startState = gotoState.bind(self),
-        cancelState = popState.bind(self),
-        currentState = getCurrentState.bind(self);
+        subscribe = self.subscribe.bind(self),
+        startState = function(save, msg, options) {
+          if(typeof save !== "boolean") {
+            options = msg;
+            msg = save;
+            save = true;
+          }
 
-    function updateCurrentStateInfo(info) {
-      if(info) {
-        var args = currentState().args;
-        var stateInfo = args[0] = args[0] || {};
-        _.extend(stateInfo, info);
-      }
-    }
+          var func = controller[msg].bind(controller);
+          self.gotoState(save, func, options);
+        }
+        cancelState = self.popState.bind(self);
 
     subscribe("offline", function(msg, info) {
       startState("doOffline");
@@ -152,11 +93,11 @@
       addPrimaryUser = !!info.add;
       email = info.email;
 
-      updateCurrentStateInfo(info);
+      //updateCurrentStateInfo(info);
 
       var idInfo = storage.getEmail(email);
       if(idInfo && idInfo.cert) {
-        mediator.publish("primary_user_ready", info);
+        publish("primary_user_ready", info);
       }
       else {
         // We don't want to put the provisioning step on the stack, instead when
@@ -251,13 +192,12 @@
     });
 
     subscribe("authenticated", function(msg, info) {
-      mediator.publish("pick_email");
+      publish("pick_email");
     });
 
     subscribe("forgot_password", function(msg, info) {
       // forgot password initiates the forgotten password flow.
-      updateCurrentStateInfo(info);
-      startState("doForgotPassword", info);
+      startState(false, "doForgotPassword", info);
     });
 
     subscribe("reset_password", function(msg, info) {
@@ -294,11 +234,7 @@
 
   }
 
-  var StateMachine = BrowserID.Class({
-    init: function() {
-      // empty
-    },
-
+  var State = BrowserID.StateMachine.extend({
     start: function(options) {
       options = options || {};
 
@@ -307,15 +243,11 @@
         throw "start: controller must be specified";
       }
 
+      State.sc.start.call(this, options);
       startStateMachine.call(this);
-    },
-
-    stop: function() {
-      unsubscribeAll();
     }
   });
 
-
-  bid.StateMachine = StateMachine;
+  return State;
 }());
 
