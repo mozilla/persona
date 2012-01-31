@@ -43,9 +43,8 @@ exports.destroy = function(name, cb) {
     aws.call('TerminateInstances', {
       InstanceId: r[name].instanceId
     }, function(result) {
-      console.log(result);
       try { return cb(result.Errors.Error.Message); } catch(e) {};
-      return null;
+      cb(null);
     });
   });
 };

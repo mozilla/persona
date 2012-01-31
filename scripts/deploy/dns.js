@@ -40,7 +40,6 @@ function doRequest(method, path, body, cb) {
 };
 
 exports.updateRecord = function (hostname, ip, cb) {
-  exports.deleteRecord(hostname, function() {} );
   doRequest('GET', '/api/1.1/zones.xml', null, function(err, r) {
     if (err) return cb(err);
     var m = jsel.match('object:has(:root > .domain:val(?)) > .id .$t',
@@ -60,6 +59,7 @@ exports.deleteRecord = function (hostname, cb) {
   doRequest('GET', '/api/1.1/hosts.xml?fqdn=' + hostname + ".hacksign.in", null, function(err, r) {
     if (err) return cb(err);
     var m = jsel.match('.host .id > .$t', r);
+    if (!m.length) return cb("no such DNS record");
     function deleteOne() {
       if (!m.length) return cb(null);
       var one = m.shift();

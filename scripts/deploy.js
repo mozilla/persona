@@ -42,10 +42,10 @@ verbs['destroy'] = function(args) {
   validateName(name);
 
   process.stdout.write("trying to destroy VM for " + name + ".hacksign.in: "); 
-  vm.destroy(name, function(cb, err) {
-    console.log(err ? "failed: " + err : "done");
+  vm.destroy(name, function(err) {
+    console.log(err ? ("failed: " + err) : "done");
     process.stdout.write("trying to remove DNS for " + name + ".hacksign.in: "); 
-    dns.deleteRecord(name, function(cb, err) {
+    dns.deleteRecord(name, function(err) {
       console.log(err ? "failed: " + err : "done");
     });
   });
@@ -84,7 +84,13 @@ verbs['deploy'] = function(args) {
               checkErr(err);
               console.log("   ... victory!  server is accessible and configured");
               git.addRemote(name, deets.ipAddress, function(err, r) {
-                checkErr(err);
+                if (err && /already exists/.test(err)) {
+                  console.log("OOPS! you already have a git remote named 'test'!");
+                  console.log("to create a new one: git remote add <name> " +
+                              "app@" + deets.ipAddress + ":git");  
+                } else {
+                  checkErr(err);
+                }
                 console.log("   ... and your git remote is all set up");
                 console.log("");
                 printInstructions(name, deets);
