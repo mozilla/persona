@@ -20,17 +20,18 @@ function doRequest(method, path, body, cb) {
     method: method,
     headers: {
       'Content-Type': 'application/xml',
-      'Content-Length': body ? body.length : 0 
+      'Content-Length': body ? body.length : 0
     }
   }, function(r) {
-    console.log(r.headers);
-//    if (r.statusCode != 200) return cb("non 200 status: " + r.statusCode);
+    if ((r.statusCode / 100).toFixed(0) != 2 &&
+        r.statusCode != 404) {
+      return cb("non 200 status: " + r.statusCode);
+    }
     buf = "";
     r.on('data', function(chunk) {
       buf += chunk;
     });
     r.on('end', function() {
-      console.log(buf);
       cb(null, JSON.parse(xml2json.toJson(buf)));
     });
   });
@@ -38,7 +39,8 @@ function doRequest(method, path, body, cb) {
   req.end();
 };
 
-exports.addRecord = function (hostname, ip, cb) {
+exports.updateRecord = function (hostname, ip, cb) {
+  exports.deleteRecord(hostname, function() {} );
   doRequest('GET', '/api/1.1/zones.xml', null, function(err, r) {
     if (err) return cb(err);
     var m = jsel.match('object:has(:root > .domain:val(?)) > .id .$t',
@@ -46,15 +48,36 @@ exports.addRecord = function (hostname, ip, cb) {
     if (m.length != 1) return cb("couldn't extract domain id from zerigo"); 
     var path = '/api/1.1/hosts.xml?zone_id=' + m[0];
     var body = '<host><data>' + ip + '</data><host-type>A</host-type>';
-    body += '<hostname>' + hostname + '.hacksign.in</hostname>'
-    body += '<priority type="integer" nil="true"/>';
-    body += '<ttl type="integer" nil="true"/></host>';
-    console.log(xml2json.toJson(body));
-    doRequest('POST', '/api/1.1/zones.xml', body, function(err, r) {
-      console.log(err, JSON.stringify(r, null, 2));
+    body += '<hostname>' + hostname + '</hostname>'
+    body += '</host>';
+    doRequest('POST', path, body, function(err, r) {
+      cb(err);
     });
   });
 };
 
+exports.deleteRecord = function (hostname, cb) {
+  doRequest('GET', '/api/1.1/hosts.xml?fqdn=' + hostname + ".hacksign.in", null, function(err, r) {
+    if (err) return cb(err);
+    var m = jsel.match('.host .id > .$t', r);
+    function deleteOne() {
+      if (!m.length) return cb(null);
+      var one = m.shift();
+      doRequest('DELETE', '/api/1.1/hosts/' + one + '.xml', null, function(err) {
+        if (err) return cb(err);
+        deleteOne();
+      });
+    }
+    deleteOne();
+  });
+};
 
-
+exports.inUse = function (hostname, cb) {
+  doRequest('GET', '/api/1.1/hosts.xml?fqdn=' + hostname + ".hacksign.in", null, function(err, r) {
+    if (err) return cb(err);
+    var m = jsel.match('.host array object', r);
+    // we shouldn't have multiple!  oops!  let's return the first one
+    if (m.length) return cb(null, m[0]);
+    cb(null, null);
+  });
+}

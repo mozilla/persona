@@ -32,12 +32,12 @@ exports.list = function(cb) {
 function returnSingleImageInfo(result, cb) {
   if (!result) return cb('no results from ec2 api');
   try { return cb(result.Errors.Error.Message); } catch(e) {};
-  try { 
+  try {
     result = jsel.match('.instancesSet > .item', result)[0];
     cb(null, extractInstanceDeets(result));
   } catch(e) {
     return cb("couldn't extract new instance details from ec2 response: " + e);
-  } 
+  }
 }
 
 exports.startImage = function(cb) {

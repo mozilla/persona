@@ -37,26 +37,37 @@ verbs['deploy'] = function(args) {
     throw "invalid name!  must be a valid dns fragment ([z-a0-9\-_])";
   }
   console.log("attempting to set up " + name + ".hacksign.in");
-      
-  vm.startImage(function(err, r) {
-    checkErr(err);
-    console.log("   ... VM launched, waiting for startup (should take about 20s)");
-    vm.waitForInstance(r.instanceId, function(err, deets) {
-      checkErr(err);
-      console.log("   ... Instance ready, setting name");
-      vm.setName(r.instanceId, args[0], function(err) {
-        checkErr(err);
-        console.log("   ... name set, waiting for ssh access and configuring");
-        var config = { public_url: "https://" + name + ".hacksign.in"};
 
-        ssh.copyUpConfig(deets.ipAddress, config, function(err, r) {
+  dns.inUse(name, function(err, r) {
+    checkErr(err);
+    if (r) checkErr("sorry!  that name '" + name + "' is already being used.  so sad");
+
+    vm.startImage(function(err, r) {
+      checkErr(err);
+      console.log("   ... VM launched, waiting for startup (should take about 20s)");
+
+      vm.waitForInstance(r.instanceId, function(err, deets) {
+        checkErr(err);
+        console.log("   ... Instance ready, setting up DNS");
+        dns.updateRecord(name, deets.ipAddress, function(err) {
           checkErr(err);
-          console.log("   ... victory!  server is accessible and configured");
-          git.addRemote(name, deets.ipAddress, function(err, r) {
+          console.log("   ... DNS set up, setting human readable name in aws");
+
+          vm.setName(r.instanceId, args[0], function(err) {
             checkErr(err);
-            console.log("   ... and your git remote is all set up");
-            console.log("");
-            printInstructions(name, deets);
+            console.log("   ... name set, waiting for ssh access and configuring");
+            var config = { public_url: "https://" + name + ".hacksign.in"};
+
+            ssh.copyUpConfig(deets.ipAddress, config, function(err, r) {
+              checkErr(err);
+              console.log("   ... victory!  server is accessible and configured");
+              git.addRemote(name, deets.ipAddress, function(err, r) {
+                checkErr(err);
+                console.log("   ... and your git remote is all set up");
+                console.log("");
+                printInstructions(name, deets);
+              });
+            });
           });
         });
       });
@@ -65,7 +76,7 @@ verbs['deploy'] = function(args) {
 };
 
 verbs['test'] = function(args) {
-  dns.addRecord('foo', "1.2.3.4", function(err, r) {
+  dns.updateRecord('foo', "1.2.3.4", function(err, r) {
     console.log(err, r);
   });
 };
@@ -77,7 +88,7 @@ verbs['list'] = function(args) {
   });
 };
 
-var error = (process.argv.length <= 2); 
+var error = (process.argv.length <= 2);
 
 if (!error) {
   var verb = process.argv[2];
