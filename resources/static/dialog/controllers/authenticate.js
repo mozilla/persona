@@ -129,6 +129,7 @@ BrowserID.Modules.Authenticate = (function() {
     start: function(options) {
       options = options || {};
 
+      addressInfo = null;
       lastEmail = options.email || "";
 
       var self=this;
