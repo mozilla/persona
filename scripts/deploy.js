@@ -28,14 +28,36 @@ function printInstructions(name, deets) {
   console.log("enjoy!  Here's your server details", JSON.stringify(deets, null, 4));
 }
 
+function validateName(name) {
+  if (!/^[a-z][0-9a-z_\-]*$/.test(name)) {
+    throw "invalid name!  must be a valid dns fragment ([z-a0-9\-_])";
+  }
+}
+
+verbs['destroy'] = function(args) {
+  if (!args || args.length != 1) {
+    throw 'missing required argument: name of instance';
+  }
+  var name = args[0];
+  validateName(name);
+
+  process.stdout.write("trying to destroy VM for " + name + ".hacksign.in: "); 
+  vm.destroy(name, function(cb, err) {
+    console.log(err ? "failed: " + err : "done");
+    process.stdout.write("trying to remove DNS for " + name + ".hacksign.in: "); 
+    dns.deleteRecord(name, function(cb, err) {
+      console.log(err ? "failed: " + err : "done");
+    });
+  });
+}
+
 verbs['deploy'] = function(args) {
   if (!args || args.length != 1) {
     throw 'missing required argument: name of instance';
   }
   var name = args[0];
-  if (!/^[a-z][0-9a-z_\-]*$/.test(name)) {
-    throw "invalid name!  must be a valid dns fragment ([z-a0-9\-_])";
-  }
+  validateName(name);
+
   console.log("attempting to set up " + name + ".hacksign.in");
 
   dns.inUse(name, function(err, r) {

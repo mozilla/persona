@@ -4,7 +4,7 @@ jsel = require('JSONSelect'),
 key = require('./key.js'),
 sec = require('./sec.js');
 
-const BROWSERID_TEMPLATE_IMAGE_ID = 'ami-1f14c576';
+const BROWSERID_TEMPLATE_IMAGE_ID = 'ami-bb1ccdd2';
 
 function extractInstanceDeets(horribleBlob) {
   var instance = {};
@@ -13,19 +13,40 @@ function extractInstanceDeets(horribleBlob) {
      if (horribleBlob[key]) instance[key] = horribleBlob[key];
    });
   var name = jsel.match('.tagSet :has(.key:val("Name")) > .value', horribleBlob);
-  if (name.length) instance.name = name[0];
+  if (name.length) {
+    instance.fullName = name[0];
+    instance.name = name[0].replace('browserid deployment (', '')
+                           .replace(/\)$/, '');
+  }
   return instance;
 }
 
 exports.list = function(cb) {
   aws.call('DescribeInstances', {}, function(result) {
-    var instances = [];
+    var instances = {};
+    var i = 1;
     jsel.forEach(
       '.instancesSet > .item:has(.instanceState .name:val("running"))',
       result, function(item) {
-        instances.push(extractInstanceDeets(item));
+        var deets = extractInstanceDeets(item);
+        instances[deets.name || 'unknown ' + i++] = deets;
       });
     cb(null, instances);
+  });
+};
+
+exports.destroy = function(name, cb) {
+  exports.list(function(err, r) {
+    if (err) return cb('failed to list vms: ' + err);
+    if (!r[name]) return cb('no such vm');
+
+    aws.call('TerminateInstances', {
+      InstanceId: r[name].instanceId
+    }, function(result) {
+      console.log(result);
+      try { return cb(result.Errors.Error.Message); } catch(e) {};
+      return null;
+    });
   });
 };
 
