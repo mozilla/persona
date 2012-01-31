@@ -11,8 +11,7 @@ BrowserID.StateMachine = (function() {
       History = bid.History,
       history,
       mediator = bid.Mediator,
-      subscriptions = [],
-      saveLast;
+      subscriptions = []
 
   var StateMachine = bid.Class({
     init: function() {},
@@ -51,13 +50,14 @@ BrowserID.StateMachine = (function() {
         save = true;
       }
 
-      if(saveLast) {
+      // only save the current state when a new state comes in.
+      var cmd = history.getCurrent();
+      if(cmd && cmd.save) {
         history.saveState();
       }
 
-      saveLast = save;
-
       var cmd = history.createState(callback, options);
+      cmd.save = save;
       cmd.run();
     },
 
