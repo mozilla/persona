@@ -4,7 +4,9 @@ const
 aws = require('./deploy/aws.js');
 path = require('path');
 vm = require('./deploy/vm.js'),
-key = require('./deploy/key.js');
+key = require('./deploy/key.js'),
+ssh = require('./deploy/ssh.js'),
+git = require('./deploy/git.js');
 
 var verbs = {};
 
@@ -15,17 +17,47 @@ function checkErr(err) {
   }
 }
 
+function printInstructions(name, deets) {
+  console.log("Yay!  You have your very own deployment.  Here's the basics:\n");
+  console.log(" 1. deploy your code:  git push " + name + " <mybranch>:master");
+  console.log(" 2. visit your server on the web: https://" + name + ".hacksign.in");
+  console.log(" 3. test via a website: http://" + name + ".myfavoritebeer.org");
+  console.log(" 4. ssh in with sudo: ssh ec2-user@" + name + "hacksign.in");
+  console.log(" 5. ssh as the deployment user: ssh app@" + name + "hacksign.in\n");
+  console.log("enjoy!  Here's your server details", JSON.stringify(deets, null, 4));
+}
+
 verbs['deploy'] = function(args) {
   if (!args || args.length != 1) {
     throw 'missing required argument: name of instance';
   }
-
+  var name = args[0];
+  if (!/^[a-z][0-9a-z_\-]+$/.test(name)) {
+    throw "invalid name!  must be a valid dns fragment ([z-a0-9\-_])";
+  }
+  console.log("attempting to set up " + name + ".hacksign.in");
+      
   vm.startImage(function(err, r) {
     checkErr(err);
-    vm.waitForInstance(r.instanceId, function(err, r) {
+    console.log("   ... VM launched, waiting for startup (should take about 20s)");
+    vm.waitForInstance(r.instanceId, function(err, deets) {
       checkErr(err);
+      console.log("   ... Instance ready, setting name");
       vm.setName(r.instanceId, args[0], function(err) {
-        console.log(err, r);
+        checkErr(err);
+        console.log("   ... name set, waiting for ssh access and configuring");
+        var config = { public_url: "https://" + name + ".hacksign.in"};
+
+        ssh.copyUpConfig(deets.ipAddress, config, function(err, r) {
+          checkErr(err);
+          console.log("   ... victory!  server is accessible and configured");
+          git.addRemote(name, deets.ipAddress, function(err, r) {
+            checkErr(err);
+            console.log("   ... and your git remote is all set up");
+            console.log("");
+            printInstructions(name, deets);
+          });
+        });
       });
     });
   });
