@@ -21,6 +21,12 @@
   "default_lang": [
     "en-US"
   ],
+  // for amazon deployments, enable it-CH which is the trigger language
+  // for localization tests, and en-US
+  // this can be overridden by adding more to config.json on the VM
+  "supported_languages": [
+    "en-US", "it-CH"
+  ],
   "locale_directory": "/home/app/code/locale",
   "express_log_format": "default",
   "email_to_console": false,
