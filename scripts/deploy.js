@@ -103,12 +103,6 @@ verbs['deploy'] = function(args) {
   });
 };
 
-verbs['test'] = function(args) {
-  dns.updateRecord('foo', "1.2.3.4", function(err, r) {
-    console.log(err, r);
-  });
-};
-
 verbs['list'] = function(args) {
   vm.list(function(err, r) {
     checkErr(err);
