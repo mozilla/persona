@@ -84,7 +84,7 @@ exports.waitForInstance = function(id, cb) {
     InstanceId: id
   }, function(r) {
     if (!r) return cb('no response from ec2');
-    if (!r.instanceStatusSet) return cb('malformed response from ec2');
+    if (!r.instanceStatusSet) return cb('malformed response from ec2' + JSON.stringify(r, null, 2));
     if (Object.keys(r.instanceStatusSet).length) {
       var deets = extractInstanceDeets(r.instanceStatusSet.item);
       if (deets && deets.instanceState && deets.instanceState.name === 'running') {
