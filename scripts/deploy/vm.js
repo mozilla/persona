@@ -4,7 +4,7 @@ jsel = require('JSONSelect'),
 key = require('./key.js'),
 sec = require('./sec.js');
 
-const BROWSERID_TEMPLATE_IMAGE_ID = 'ami-1553827c';
+const BROWSERID_TEMPLATE_IMAGE_ID = 'ami-fd558494';
 
 function extractInstanceDeets(horribleBlob) {
   var instance = {};
@@ -44,7 +44,7 @@ exports.destroy = function(name, cb) {
       InstanceId: r[name].instanceId
     }, function(result) {
       try { return cb(result.Errors.Error.Message); } catch(e) {};
-      cb(null);
+      cb(null, r[name]);
     });
   });
 };

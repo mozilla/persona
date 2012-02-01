@@ -41,24 +41,30 @@ verbs['destroy'] = function(args) {
   var name = args[0];
   validateName(name);
 
-  process.stdout.write("trying to destroy VM for " + name + ".hacksign.in: "); 
-  vm.destroy(name, function(err) {
+  process.stdout.write("trying to destroy VM for " + name + ".hacksign.in: ");
+  vm.destroy(name, function(err, deets) {
     console.log(err ? ("failed: " + err) : "done");
-    process.stdout.write("trying to remove DNS for " + name + ".hacksign.in: "); 
+    process.stdout.write("trying to remove DNS for " + name + ".hacksign.in: ");
     dns.deleteRecord(name, function(err) {
       console.log(err ? "failed: " + err : "done");
+      if (deets && deets.ipAddress) {
+        process.stdout.write("trying to remove git remote: ");
+        git.removeRemote(name, deets.ipAddress, function(err) {
+          console.log(err ? "failed: " + err : "done");
+        });
+      }
     });
   });
 }
 
 verbs['test'] = function() {
   // let's see if we can contact aws and zerigo
-  process.stdout.write("Checking DNS management access: "); 
+  process.stdout.write("Checking DNS management access: ");
   dns.inUse("somerandomname", function(err) {
     console.log(err ? "NOT ok: " + err : "good");
-    process.stdout.write("Checking AWS access: "); 
+    process.stdout.write("Checking AWS access: ");
     vm.list(function(err) {
-      console.log(err ? "NOT ok: " + err : "good");      
+      console.log(err ? "NOT ok: " + err : "good");
     });
   });
 }
