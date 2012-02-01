@@ -205,6 +205,25 @@ button[disabled], .submit_disabled button, .submit_disabled .button,
   opacity: .5;
 }
 
+#cancel, #back {
+  background-color: transparent;
+  color: #549FDC;
+  font-size: 1em;
+  font-weight: normal;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+  padding: 0;
+}
+
+
+.submit > a {
+  float: right;
+  margin-right: 15px;
+}
+
+a.secondary[disabled], .submit_disabled a.secondary, .submit_disabled a.secondary:focus, .submit_disabled a.secondary:active {
+  color: #999;
+}
+
 hr {
   height: 1px;
   border: none;

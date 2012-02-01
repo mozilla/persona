@@ -37,7 +37,7 @@ BrowserID.Modules.AddEmail = (function() {
 
       self.renderDialog("add_email", options);
 
-      self.bind("#cancelNewEmail", "click", cancelEvent(cancelAddEmail));
+      self.bind("#cancel", "click", cancelEvent(cancelAddEmail));
       Module.sc.start.call(self, options);
     },
     submit: addEmail
