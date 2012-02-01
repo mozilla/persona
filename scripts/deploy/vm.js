@@ -44,7 +44,7 @@ exports.destroy = function(name, cb) {
       InstanceId: r[name].instanceId
     }, function(result) {
       try { return cb(result.Errors.Error.Message); } catch(e) {};
-      cb(null);
+      cb(null, r[name]);
     });
   });
 };
