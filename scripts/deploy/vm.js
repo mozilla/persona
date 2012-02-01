@@ -84,6 +84,13 @@ exports.waitForInstance = function(id, cb) {
     InstanceId: id
   }, function(r) {
     if (!r) return cb('no response from ec2');
+    // we're waiting and amazon might not have created the image yet!  that's
+    // not an error, just an api timing quirk
+    var waiting = jsel.match('.Error .Code:val("InvalidInstanceID.NotFound")', r);
+    if (waiting.length) {
+      return setTimeout(function(){ exports.waitForInstance(id, cb); }, 1000);
+    }
+
     if (!r.instanceStatusSet) return cb('malformed response from ec2' + JSON.stringify(r, null, 2));
     if (Object.keys(r.instanceStatusSet).length) {
       var deets = extractInstanceDeets(r.instanceStatusSet.item);
