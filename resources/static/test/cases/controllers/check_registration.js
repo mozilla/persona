@@ -22,7 +22,7 @@
     });
   }
 
-  module("controllers/checkregistration_controller", {
+  module("controllers/check_registration", {
     setup: function() {
       testHelpers.setup();
     },
@@ -63,7 +63,7 @@
     }, 500);
   });
 
-  asyncTest("user validation with XHR error", function() {
+  asyncTest("user validation with XHR error - show error message", function() {
     xhr.useResult("ajaxError");
 
     createController("waitForUserValidation", "user_verified");
@@ -76,11 +76,22 @@
     });
   });
 
-  asyncTest("cancel raises cancel_state", function() {
+  asyncTest("back - raise cancel_state", function() {
     createController("waitForUserValidation", "user_verified");
     controller.startCheck(function() {
       register("cancel_state", function() {
-        ok(true, "on cancel, cancel_state is triggered");
+        ok(true, "cancel_state is triggered");
+        start();
+      });
+      controller.back();
+    });
+  });
+
+  asyncTest("cancel - raise cancel", function() {
+    createController("waitForUserValidation", "user_verified");
+    controller.startCheck(function() {
+      register("cancel", function() {
+        ok(true, "cancel is triggered");
         start();
       });
       controller.cancel();

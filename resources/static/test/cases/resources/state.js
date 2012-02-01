@@ -72,19 +72,38 @@
     equal(actions.called.doOffline, true, "controller is offline");
   });
 
-  test("user_staged", function() {
-    // XXX rename user_staged to confirm_user or something to that effect.
+  test("user_staged - call doConfirmUser", function() {
     mediator.publish("user_staged", {
       email: "testuser@testuser.com"
     });
 
-    equal(actions.info.doConfirmUser, "testuser@testuser.com", "waiting for email confirmation for testuser@testuser.com");
+    equal(actions.info.doConfirmUser.email, "testuser@testuser.com", "waiting for email confirmation for testuser@testuser.com");
   });
 
-  test("user_confirmed", function() {
+  test("user_staged with required email - call doConfirmUser with required = true", function() {
+    mediator.publish("start", { requiredEmail: "testuser@testuser.com" });
+    mediator.publish("user_staged", { email: "testuser@testuser.com" });
+
+    equal(actions.info.doConfirmUser.required, true, "doConfirmUser called with required flag");
+  });
+
+  test("user_confirmed - call doEmailConfirmed", function() {
     mediator.publish("user_confirmed");
 
     ok(actions.called.doEmailConfirmed, "user was confirmed");
+  });
+
+  test("email_staged - call doConfirmEmail", function() {
+    mediator.publish("email_staged", { email: "testuser@testuser.com" });
+
+    equal(actions.info.doConfirmEmail.required, false, "doConfirmEmail called without required flag");
+  });
+
+  test("email_staged with required email - call doConfirmEmail with required = true", function() {
+    mediator.publish("start", { requiredEmail: "testuser@testuser.com" });
+    mediator.publish("email_staged", { email: "testuser@testuser.com" });
+
+    equal(actions.info.doConfirmEmail.required, true, "doConfirmEmail called with required flag");
   });
 
   test("primary_user with already provisioned primary user calls doEmailChosen", function() {
