@@ -84,8 +84,8 @@ BrowserID.Modules.Actions = (function() {
       startService("pick_email", info);
     },
 
-    doAddEmail: function() {
-      startService("add_email", {});
+    doAddEmail: function(info) {
+      startService("add_email", info);
     },
 
     doAuthenticate: function(info) {
@@ -98,6 +98,10 @@ BrowserID.Modules.Actions = (function() {
 
     doForgotPassword: function(info) {
       startService("forgot_password", info);
+    },
+
+    doResetPassword: function(info) {
+      this.doConfirmUser(info.email);
     },
 
     doConfirmEmail: function(email) {

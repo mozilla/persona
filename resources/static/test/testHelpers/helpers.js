@@ -65,6 +65,9 @@ BrowserID.TestHelpers = (function() {
       network.init();
       storage.clear();
 
+      $("body").stop().show();
+      $("body")[0].className = "";
+
       var el = $("#controller_head");
       el.find("#formWrap .contents").html("");
       el.find("#wait .contents").html("");
@@ -81,6 +84,7 @@ BrowserID.TestHelpers = (function() {
         provisioning: provisioning
       });
       user.setOrigin(testOrigin);
+
     },
 
     teardown: function() {

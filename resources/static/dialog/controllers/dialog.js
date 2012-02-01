@@ -36,7 +36,7 @@ BrowserID.Modules.Dialog = (function() {
 
   function startStateMachine(controller) {
     // start this directly because it should always be running.
-    var machine = BrowserID.StateMachine.create();
+    var machine = BrowserID.State.create();
     machine.start({
       controller: controller
     });

@@ -3,76 +3,32 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-(function() {
+BrowserID.State = (function() {
   var bid = BrowserID,
       storage = bid.Storage,
       mediator = bid.Mediator,
-      user = bid.User,
       publish = mediator.publish.bind(mediator),
-      subscriptions = [],
-      stateStack = [],
+      user = bid.User,
       controller,
       moduleManager = bid.module,
-      errors = bid.Errors,
       addPrimaryUser = false,
       email,
       requiredEmail;
 
-  function subscribe(message, cb) {
-    subscriptions.push(mediator.subscribe(message, cb));
-  }
-
-  function unsubscribeAll() {
-    while(subscription = subscriptions.pop()) {
-      mediator.unsubscribe(subscription);
-    }
-  }
-
-  function gotoState(push, funcName) {
-    var args = [].slice.call(arguments, 1);
-
-    if (typeof push === "boolean") {
-      // Must take the push param off to get to funcName and then the remaining
-      // arguments.
-      args = [].slice.call(args, 1);
-    }
-    else {
-      funcName = push;
-      push = true;
-    }
-
-    if (push) {
-      pushState(funcName, args);
-    }
-
-    controller[funcName].apply(controller, args);
-  }
-
-  function pushState(funcName, args) {
-    // Remember the state and the information for the state in case we have to
-    // go back to it.
-    stateStack.push({
-      funcName: funcName,
-      args: args
-    });
-  }
-
-  // Used for when the current state is being cancelled and the user wishes to
-  // go to the previous state.
-  function popState() {
-    // Skip the first state, it is where the user is at now.
-    stateStack.pop();
-
-    var state = stateStack[stateStack.length - 1];
-    if (state) {
-      controller[state.funcName].apply(controller, state.args);
-    }
-  }
-
   function startStateMachine() {
     var self = this,
-        startState = gotoState.bind(self),
-        cancelState = popState.bind(self);
+        subscribe = self.subscribe.bind(self),
+        startState = function(save, msg, options) {
+          if(typeof save !== "boolean") {
+            options = msg;
+            msg = save;
+            save = true;
+          }
+
+          var func = controller[msg].bind(controller);
+          self.gotoState(save, func, options);
+        }
+        cancelState = self.popState.bind(self);
 
     subscribe("offline", function(msg, info) {
       startState("doOffline");
@@ -122,11 +78,7 @@
     });
 
     subscribe("authenticate", function(msg, info) {
-      info = info || {};
-
-      startState("doAuthenticate", {
-        email: info.email
-      });
+      startState("doAuthenticate", info);
     });
 
     subscribe("user_staged", function(msg, info) {
@@ -140,14 +92,17 @@
     subscribe("primary_user", function(msg, info) {
       addPrimaryUser = !!info.add;
       email = info.email;
-      // We don't want to put the provisioning step on the stack, instead when
-      // a user cancels this step, they should go back to the step before the
-      // provisioning.
+
+      //updateCurrentStateInfo(info);
+
       var idInfo = storage.getEmail(email);
       if(idInfo && idInfo.cert) {
-        mediator.publish("primary_user_ready", info);
+        publish("primary_user_ready", info);
       }
       else {
+        // We don't want to put the provisioning step on the stack, instead when
+        // a user cancels this step, they should go back to the step before the
+        // provisioning.
         startState(false, "doProvisionPrimaryUser", info);
       }
     });
@@ -237,15 +192,18 @@
     });
 
     subscribe("authenticated", function(msg, info) {
-      mediator.publish("pick_email");
+      publish("pick_email");
     });
 
     subscribe("forgot_password", function(msg, info) {
-      startState("doForgotPassword", info);
+      // forgot password initiates the forgotten password flow.
+      startState(false, "doForgotPassword", info);
     });
 
     subscribe("reset_password", function(msg, info) {
-      startState("doConfirmUser", info.email);
+      // reset password says the password has been reset, now waiting for
+      // confirmation.
+      startState(false, "doResetPassword", info);
     });
 
     subscribe("assertion_generated", function(msg, info) {
@@ -271,16 +229,12 @@
     });
 
     subscribe("cancel_state", function(msg, info) {
-      cancelState();
+      cancelState(info);
     });
 
   }
 
-  var StateMachine = BrowserID.Class({
-    init: function() {
-      // empty
-    },
-
+  var State = BrowserID.StateMachine.extend({
     start: function(options) {
       options = options || {};
 
@@ -289,15 +243,11 @@
         throw "start: controller must be specified";
       }
 
+      State.sc.start.call(this, options);
       startStateMachine.call(this);
-    },
-
-    stop: function() {
-      unsubscribeAll();
     }
   });
 
-
-  bid.StateMachine = StateMachine;
+  return State;
 }());
 
