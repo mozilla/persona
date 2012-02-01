@@ -50,7 +50,7 @@
   asyncTest("user validation with mustAuth result", function() {
     xhr.useResult("mustAuth");
 
-    testVerifiedUserEvent("auth", "User Must Auth");
+    testVerifiedUserEvent("authenticate", "User Must Auth");
   });
 
   asyncTest("user validation with pending->complete result ~3 seconds", function() {

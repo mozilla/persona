@@ -36,7 +36,7 @@ BrowserID.Modules.CheckRegistration = (function() {
           });
         }
         else if (status === "mustAuth") {
-          self.close("auth", { email: self.email });
+          self.close("authenticate", { email: self.email });
           oncomplete && oncomplete();
         }
       }, self.getErrorDialog(errors.registration, oncomplete));
