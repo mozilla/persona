@@ -31,7 +31,7 @@ BrowserID.Modules.ForgotPassword = (function() {
         requiredEmail: options.requiredEmail
       });
 
-      self.bind("#cancel_forgot_password", "click", cancelEvent(cancelResetPassword));
+      self.bind("#cancel", "click", cancelEvent(cancelResetPassword));
 
       Module.sc.start.call(self, options);
     },
