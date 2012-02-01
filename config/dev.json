@@ -22,9 +22,7 @@
   "max_compute_duration": 10,
   "disable_primary_support": false,
   "enable_code_version": false,
-  "default_lang": [
-    "en-US"
-  ],
+  "default_lang": "en-US",
   "locale_directory": "/home/browserid/code/locale",
   "supported_languages": [
     "af", "ca", "cs", "db-LB", "de", "en-US", "eo", "es", "es-MX", "eu", "fr", 
