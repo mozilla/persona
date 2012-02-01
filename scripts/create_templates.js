@@ -7,7 +7,7 @@
 const fs = require("fs");
 
 var dir = process.env.TEMPLATE_DIR || process.cwd();
-console.log(dir);
+var output_dir = process.env.BUILD_DIR || dir;
 
 var templates = {};
 
@@ -23,6 +23,6 @@ fs.readdir(dir, function(err, fileNames) {
 
   var templateData = "BrowserID.Templates =" + JSON.stringify(templates) + ";";
 
-  fs.writeFileSync(dir + "/templates.js", templateData, "utf8");
+  fs.writeFileSync(output_dir + "/templates.js", templateData, "utf8");
 });
 

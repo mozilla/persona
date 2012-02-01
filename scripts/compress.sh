@@ -53,8 +53,7 @@ echo ''
 ## resources/templates.js and included into the minified bundle.
 
 cd dialog/views
-../../../../scripts/create_templates.js
-cp templates.js $BUILD_PATH/templates.js
+`BUILD_DIR=$BUILD_PATH ../../../../scripts/create_templates.js`
 cd ../..
 
 # produce the dialog js
