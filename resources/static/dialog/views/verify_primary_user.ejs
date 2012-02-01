@@ -16,7 +16,7 @@
           </li>
 
           <li>
-              <%= format(gettext("To verify that you own <strong id='primary_email'>%s</strong>, you must sign in with your provider.  This window will be redirected to"), [email]) %>
+              <%= gettext("You must sign in with your email provider to verify ownership of this address.  This window will be redirected to") %>
 
               <p>
                   <strong><%= auth_url %></strong>.
@@ -33,7 +33,7 @@
   <strong><%= gettext("Verify With Email Provider") %></strong>
 
   <div class="cf form_section">
-    <%= format(gettext("To verify that you own <strong id='primary_email'>%s</strong>, you must sign in with your provider.  This window will be redirected to"), [email]) %>
+    <%= gettext("You must sign in with your email provider to verify ownership of this address.  This window will be redirected to") %>
 
     <p>
       <strong><%= auth_url %></strong>.
