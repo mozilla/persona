@@ -16,7 +16,7 @@ if [ ! -x "$UGLIFY" ]; then
 fi
 
 UGLIFYCSS=`which uglifycss 2> /dev/null`
-if [ ! -x "$UGLIFY" ]; then
+if [ ! -x "$UGLIFYCSS" ]; then
     echo "uglifycss not found in your path.  Have you npm installed lately?"
     exit 1
 fi
@@ -62,6 +62,7 @@ echo "generating for the following locales:"
 echo $locales
 
 for locale in $locales; do
+    mkdir -p $BUILD_PATH/$locale
     mkdir -p $BUILD_PATH/../i18n/$locale
     # Touch as the trigger locale doesn't really exist
     touch $BUILD_PATH/../i18n/${locale}/client.json
@@ -92,7 +93,7 @@ echo ''
 
 cd $PRODUCTION_PATH
 
-pwd 
+pwd
 # minify the JS
 $UGLIFY < $BUILD_PATH/include.uncompressed.js > include.js
 for locale in $locales; do
@@ -106,4 +107,3 @@ $UGLIFY < $BUILD_PATH/communication_iframe.uncompressed.js > communication_ifram
 # minify the CSS
 $UGLIFYCSS $BUILD_PATH/browserid.uncompressed.css > browserid.css
 $UGLIFYCSS $BUILD_PATH/dialog.uncompressed.css > dialog.css
-
