@@ -14,14 +14,16 @@ BrowserID.Modules.CheckRegistration = (function() {
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
-      self.renderWait("confirm_email", {
-          email: options.email
-      });
+      options = options || {};
+      options.required = !!options.required;
+
+      self.renderWait("confirm_email", options);
       self.email = options.email;
       self.verifier = options.verifier;
       self.verificationMessage = options.verificationMessage;
 
-      self.bind("#back", "click", self.cancel);
+      self.bind("#back", "click", self.back);
+      self.bind("#cancel", "click", self.cancel);
 
       Module.sc.start.call(self, options);
     },
@@ -42,12 +44,15 @@ BrowserID.Modules.CheckRegistration = (function() {
       }, self.getErrorDialog(errors.registration, oncomplete));
     },
 
-    cancel: function() {
-      var self=this;
+    back: function() {
       // XXX this should change to cancelEmailValidation for email, but this
       // will work.
       user.cancelUserValidation();
-      self.close("cancel_state");
+      this.close("cancel_state");
+    },
+
+    cancel: function() {
+      this.close("cancel");
     }
 
   });

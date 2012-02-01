@@ -9,8 +9,8 @@ BrowserID.State = (function() {
       mediator = bid.Mediator,
       publish = mediator.publish.bind(mediator),
       user = bid.User,
-      controller,
       moduleManager = bid.module,
+      controller,
       addPrimaryUser = false,
       email,
       requiredEmail;
@@ -82,11 +82,13 @@ BrowserID.State = (function() {
     });
 
     subscribe("user_staged", function(msg, info) {
-      startState("doConfirmUser", info.email);
+      self.stagedEmail = info.email;
+      info.required = !!requiredEmail;
+      startState("doConfirmUser", info);
     });
 
     subscribe("user_confirmed", function() {
-      startState("doEmailConfirmed");
+      startState("doEmailConfirmed", { email: self.stagedEmail} );
     });
 
     subscribe("primary_user", function(msg, info) {
@@ -221,11 +223,13 @@ BrowserID.State = (function() {
     });
 
     subscribe("email_staged", function(msg, info) {
-      startState("doConfirmEmail", info.email);
+      self.stagedEmail = info.email;
+      info.required = !!requiredEmail;
+      startState("doConfirmEmail", info);
     });
 
     subscribe("email_confirmed", function() {
-      startState("doEmailConfirmed");
+      startState("doEmailConfirmed", { email: self.stagedEmail} );
     });
 
     subscribe("cancel_state", function(msg, info) {
@@ -242,6 +246,9 @@ BrowserID.State = (function() {
       if (!controller) {
         throw "start: controller must be specified";
       }
+
+      addPrimaryUser = false;
+      email = requiredEmail = null;
 
       State.sc.start.call(this, options);
       startStateMachine.call(this);

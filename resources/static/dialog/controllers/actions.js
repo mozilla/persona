@@ -29,11 +29,10 @@ BrowserID.Modules.Actions = (function() {
     return module;
   }
 
-  function startRegCheckService(email, verifier, message) {
-    this.confirmEmail = email;
-
+  function startRegCheckService(options, verifier, message) {
     var controller = startService("check_registration", {
-      email: email,
+      email: options.email,
+      required: options.required,
       verifier: verifier,
       verificationMessage: message
     });
@@ -76,8 +75,8 @@ BrowserID.Modules.Actions = (function() {
       if(onsuccess) onsuccess(null);
     },
 
-    doConfirmUser: function(email) {
-      startRegCheckService.call(this, email, "waitForUserValidation", "user_confirmed");
+    doConfirmUser: function(info) {
+      startRegCheckService.call(this, info, "waitForUserValidation", "user_confirmed");
     },
 
     doPickEmail: function(info) {
@@ -104,14 +103,14 @@ BrowserID.Modules.Actions = (function() {
       this.doConfirmUser(info.email);
     },
 
-    doConfirmEmail: function(email) {
-      startRegCheckService.call(this, email, "waitForEmailValidation", "email_confirmed");
+    doConfirmEmail: function(info) {
+      startRegCheckService.call(this, info, "waitForEmailValidation", "email_confirmed");
     },
 
-    doEmailConfirmed: function() {
+    doEmailConfirmed: function(info) {
       var self=this;
       // yay!  now we need to produce an assertion.
-      user.getAssertion(self.confirmEmail, user.getOrigin(), function(assertion) {
+      user.getAssertion(info.email, user.getOrigin(), function(assertion) {
         self.publish("assertion_generated", {
           assertion: assertion
         });

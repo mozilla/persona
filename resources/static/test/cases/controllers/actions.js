@@ -7,6 +7,7 @@
   "use strict";
 
   var bid = BrowserID,
+      user = bid.User,
       controller,
       el,
       testHelpers = bid.TestHelpers;
@@ -29,7 +30,7 @@
     }
   });
 
-  asyncTest("doError with no template should display default error screen", function() {
+  asyncTest("doError with no template - display default error screen", function() {
     createController({
       ready: function() {
         equal(testHelpers.errorVisible(), false, "Error is not yet visible");
@@ -41,7 +42,7 @@
     });
   });
 
-  asyncTest("doError with with template should display error screen", function() {
+  asyncTest("doError with with template - display error screen", function() {
     createController({
       ready: function() {
         equal(testHelpers.errorVisible(), false, "Error is not yet visible");
@@ -53,7 +54,7 @@
     });
   });
 
-  asyncTest("doOffline should print offline error screen", function() {
+  asyncTest("doOffline - print offline error screen", function() {
     createController({
       ready: function() {
         controller.doOffline();
@@ -64,7 +65,7 @@
     });
   });
 
-  asyncTest("doProvisionPrimaryUser tries to start the provision_primary_user service", function() {
+  asyncTest("doProvisionPrimaryUser - start the provision_primary_user service", function() {
     createController({
       ready: function() {
         var error;
@@ -80,7 +81,7 @@
     });
   });
 
-  asyncTest("doVerifyPrimaryUser tries to start the verify_primary_user service", function() {
+  asyncTest("doVerifyPrimaryUser - start the verify_primary_user service", function() {
     createController({
       ready: function() {
         var error;
@@ -96,7 +97,7 @@
     });
   });
 
-  asyncTest("doPrimaryUserProvisioned tries to start the primary_user_verified service", function() {
+  asyncTest("doPrimaryUserProvisioned - start the primary_user_verified service", function() {
     createController({
       ready: function() {
         var error;
@@ -112,7 +113,7 @@
     });
   });
 
-  asyncTest("doEmailChosen tries to start the email_chosen service", function() {
+  asyncTest("doEmailChosen - start the email_chosen service", function() {
     createController({
       ready: function() {
         var error;
@@ -128,5 +129,52 @@
     });
   });
 
+  asyncTest("doConfirmUser - start the check_registration service", function() {
+    createController({
+      ready: function() {
+        var error;
+        try {
+          controller.doConfirmUser({email: "testuser@testuser.com"});
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for check_registration", "correct service started");
+        start();
+      }
+    });
+  });
+
+  asyncTest("doConfirmEmail - start the check_registration service", function() {
+    createController({
+      ready: function() {
+        var error;
+        try {
+          controller.doConfirmEmail({email: "testuser@testuser.com"});
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for check_registration", "correct service started");
+        start();
+      }
+    });
+
+  });
+
+  asyncTest("doEmailConfirmed - generate an assertion for the email", function() {
+    createController({
+      ready: function() {
+        testHelpers.register("assertion_generated", function(msg, info) {
+          ok(info.assertion, "assertion generated");
+          start();
+        });
+
+        user.syncEmailKeypair("testuser@testuser.com", function() {
+          controller.doEmailConfirmed({email: "testuser@testuser.com"});
+        });
+      }
+    });
+  });
 }());
 
