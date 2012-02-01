@@ -3,6 +3,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# compress.sh creates all artifacts from browserid.rpm
+
 
 cd $(dirname "$0")/..
 
@@ -56,19 +58,6 @@ cd dialog/views
 `BUILD_DIR=$BUILD_PATH ../../../../scripts/create_templates.js`
 cd ../..
 
-# produce the dialog js
-locales=`../../scripts/production_locales`
-echo "generating for the following locales:"
-echo $locales
-
-for locale in $locales; do
-    mkdir -p $BUILD_PATH/$locale
-    mkdir -p $BUILD_PATH/../i18n/$locale
-    # Touch as the trigger locale doesn't really exist
-    touch $BUILD_PATH/../i18n/${locale}/client.json
-    cat lib/jquery-1.7.1.min.js lib/winchan.js lib/underscore-min.js lib/vepbundle.js lib/ejs.js shared/javascript-extensions.js i18n/${locale}/client.json shared/gettext.js shared/browserid.js lib/hub.js lib/dom-jquery.js lib/module.js lib/jschannel.js $BUILD_PATH/templates.js shared/renderer.js shared/class.js shared/mediator.js shared/tooltip.js shared/validation.js shared/helpers.js shared/screens.js shared/browser-support.js shared/wait-messages.js shared/error-messages.js shared/error-display.js shared/storage.js shared/xhr.js shared/network.js shared/provisioning.js shared/user.js shared/command.js shared/history.js shared/state_machine.js shared/modules/page_module.js shared/modules/xhr_delay.js shared/modules/xhr_disable_form.js shared/modules/code_check.js shared/modules/cookie_check.js dialog/resources/internal_api.js dialog/resources/helpers.js dialog/resources/state.js dialog/controllers/actions.js dialog/controllers/dialog.js dialog/controllers/authenticate.js dialog/controllers/forgot_password.js dialog/controllers/check_registration.js dialog/controllers/pick_email.js dialog/controllers/add_email.js dialog/controllers/required_email.js dialog/controllers/verify_primary_user.js dialog/controllers/provision_primary_user.js dialog/controllers/primary_user_provisioned.js dialog/controllers/email_chosen.js dialog/start.js > $BUILD_PATH/$locale/dialog.uncompressed.js
-done
-
 # produce the dialog css
 cat css/common.css dialog/css/popup.css dialog/css/m.css > $BUILD_PATH/dialog.uncompressed.css
 
@@ -76,13 +65,8 @@ cat css/common.css dialog/css/popup.css dialog/css/m.css > $BUILD_PATH/dialog.un
 cat lib/jquery-1.7.1.min.js lib/jschannel.js lib/winchan.js lib/underscore-min.js lib/vepbundle.js lib/hub.js shared/javascript-extensions.js shared/browserid.js shared/mediator.js shared/helpers.js shared/storage.js shared/xhr.js shared/network.js shared/user.js communication_iframe/start.js > $BUILD_PATH/communication_iframe.uncompressed.js
 
 echo ''
-echo '****Building BrowserID.org HTML, CSS, and JS****'
+echo '****Building BrowserID.org CSS****'
 echo ''
-
-#produce the main site js
-for locale in $locales; do
-    cat lib/vepbundle.js lib/jquery-1.7.1.min.js lib/underscore-min.js lib/ejs.js shared/javascript-extensions.js i18n/${locale}/client.json shared/gettext.js shared/browserid.js lib/dom-jquery.js lib/module.js lib/jschannel.js lib/winchan.js lib/hub.js $BUILD_PATH/templates.js shared/renderer.js shared/class.js shared/mediator.js shared/tooltip.js shared/validation.js shared/helpers.js shared/screens.js shared/browser-support.js shared/wait-messages.js shared/error-messages.js shared/error-display.js shared/mediator.js shared/storage.js shared/xhr.js shared/network.js shared/provisioning.js shared/user.js shared/modules/page_module.js shared/modules/xhr_delay.js shared/modules/xhr_disable_form.js shared/modules/code_check.js shared/modules/cookie_check.js pages/page_helpers.js pages/start.js pages/index.js pages/add_email_address.js pages/verify_email_address.js pages/forgot.js pages/manage_account.js pages/signin.js pages/signup.js > $BUILD_PATH/$locale/browserid.uncompressed.js
-done
 
 # produce the main site css
 cat css/common.css css/style.css css/m.css > $BUILD_PATH/browserid.uncompressed.css
@@ -94,13 +78,6 @@ echo ''
 cd $PRODUCTION_PATH
 
 pwd
-# minify the JS
-$UGLIFY < $BUILD_PATH/include.uncompressed.js > include.js
-for locale in $locales; do
-    mkdir -p $locale
-    $UGLIFY < $BUILD_PATH/$locale/dialog.uncompressed.js > $locale/dialog.js
-    $UGLIFY < $BUILD_PATH/$locale/browserid.uncompressed.js > $locale/browserid.js
-done
 $UGLIFY < $BUILD_PATH/communication_iframe.uncompressed.js > communication_iframe.js
 
 
