@@ -20,6 +20,7 @@ train-2011.01.18:
   * (hotfix 2012.01.24) Allow load testing hooks to be enabled with minified resources: #939
   * (hotfix 2012.01.24) IE8 fixes for primary flow: #962, #961, #958, #955
   * (hotfix 2012.01.24) print correct url for where the user will be directed: #964
+  * (hotfix 2012.01.31) fix silent assertions: #972
 
 train-2011.01.05:
   * client entropy pool mixes in randomness from server for better browser RNG: #298, #800
