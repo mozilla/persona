@@ -39,11 +39,11 @@ function doRequest(method, path, body, cb) {
   req.end();
 };
 
-exports.updateRecord = function (hostname, ip, cb) {
+exports.updateRecord = function (hostname, zone, ip, cb) {
   doRequest('GET', '/api/1.1/zones.xml', null, function(err, r) {
     if (err) return cb(err);
     var m = jsel.match('object:has(:root > .domain:val(?)) > .id .$t',
-                       [ 'hacksign.in' ], r);
+                       [ zone ], r);
     if (m.length != 1) return cb("couldn't extract domain id from zerigo"); 
     var path = '/api/1.1/hosts.xml?zone_id=' + m[0];
     var body = '<host><data>' + ip + '</data><host-type>A</host-type>';
@@ -56,7 +56,7 @@ exports.updateRecord = function (hostname, ip, cb) {
 };
 
 exports.deleteRecord = function (hostname, cb) {
-  doRequest('GET', '/api/1.1/hosts.xml?fqdn=' + hostname + ".hacksign.in", null, function(err, r) {
+  doRequest('GET', '/api/1.1/hosts.xml?fqdn=' + hostname, null, function(err, r) {
     if (err) return cb(err);
     var m = jsel.match('.host .id > .$t', r);
     if (!m.length) return cb("no such DNS record");
@@ -73,7 +73,7 @@ exports.deleteRecord = function (hostname, cb) {
 };
 
 exports.inUse = function (hostname, cb) {
-  doRequest('GET', '/api/1.1/hosts.xml?fqdn=' + hostname + ".hacksign.in", null, function(err, r) {
+  doRequest('GET', '/api/1.1/hosts.xml?fqdn=' + hostname, null, function(err, r) {
     if (err) return cb(err);
     var m = jsel.match('.hosts object:.host', r);
     // we shouldn't have multiple!  oops!  let's return the first one

@@ -1,5 +1,6 @@
 const
 child_process = require('child_process');
+spawn = child_process.spawn;
 
 exports.addRemote = function(name, host, cb) {
   var cmd = 'git remote add ' + name  + ' app@'+ host + ':git';
@@ -29,5 +30,41 @@ exports.removeRemote = function(name, host, cb) {
     } catch(e) {
       cb(e);
     }
+  });
+};
+
+exports.currentSHA = function(dir, cb) {
+  if (typeof dir === 'function' && cb === undefined) {
+    cb = dir;
+    dir = path.join(__dirname, '..', '..');
+  }
+
+  var p = spawn('git', [ 'log', '--pretty=%h', '-1' ], { cwd: dir });
+  var buf = "";
+  p.stdout.on('data', function(d) {
+    buf += d;
+  });
+  p.on('exit', function(code, signal) {
+    var gitsha = buf.toString().trim();
+    if (gitsha && gitsha.length === 7) {
+      return cb(null, gitsha);
+    }
+    cb("can't extract git sha from " + dir);
+  });
+};
+
+exports.push = function(dir, host, pr, cb) {
+  if (typeof host === 'function' && cb === undefined) {
+    cb = pr;
+    pr = host;
+    host = dir;
+    dir = path.join(__dirname, '..', '..');
+  }
+
+  var p = spawn('git', [ 'push', 'app@' + host + ":git", 'dev:master' ], { cwd: dir });
+  p.stdout.on('data', pr);
+  p.stderr.on('data', pr);
+  p.on('exit', function(code, signal) {
+    return cb(code = 0);
   });
 };

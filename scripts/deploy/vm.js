@@ -4,7 +4,7 @@ jsel = require('JSONSelect'),
 key = require('./key.js'),
 sec = require('./sec.js');
 
-const BROWSERID_TEMPLATE_IMAGE_ID = 'ami-fd558494';
+const BROWSERID_TEMPLATE_IMAGE_ID = 'ami-f972a390';
 
 function extractInstanceDeets(horribleBlob) {
   var instance = {};
@@ -105,8 +105,6 @@ exports.waitForInstance = function(id, cb) {
 };
 
 exports.setName = function(id, name, cb) {
-  name = 'browserid deployment (' + name + ')';
-
   aws.call('CreateTags', {
     "ResourceId.0": id,
     "Tag.0.Key": 'Name',

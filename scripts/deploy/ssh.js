@@ -24,3 +24,15 @@ exports.copyUpConfig = function(host, config, cb) {
     oneTry();
   });
 };
+
+exports.copySSL = function(host, pub, priv, cb) {
+  var cmd = 'scp -o "StrictHostKeyChecking no" ' + pub + ' ec2-user@' + host + ":/etc/ssl/certs/hacksign.in.crt";
+  child_process.exec(cmd, function(err, r) {
+    if (err) return cb(err);
+    var cmd = 'scp -o "StrictHostKeyChecking no" ' + priv + ' ec2-user@' + host + ":/etc/ssl/certs/hacksign.in.key";
+    child_process.exec(cmd, function(err, r) {
+      var cmd = 'ssh -o "StrictHostKeyChecking no" ec2-user@' + host + " 'sudo /etc/init.d/nginx restart'";
+      child_process.exec(cmd, cb);
+    });
+  });
+};
