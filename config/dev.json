@@ -26,9 +26,10 @@
   "debug_lang": "it-CH",
   "locale_directory": "/home/browserid/code/locale",
   "supported_languages": [
-    "af", "ca", "cs", "db-LB", "de", "en-US", "eo", "es", "es-MX", "eu", "fr", 
-    "fy", "gd", "gl", "hr", "it", "ja", "lij", "lt", "ml", "nl", "pl", "rm", 
-    "ro", "ru", "sk", "sl", "son", "sq", "sr", "tr", "zh-CN", "zh-TW",
+    "af", "ca", "cs","de", "el", "en-US", "eo", "es", "es-MX", "et", "eu",
+    "fi", "fr", "fy", "ga", "gd", "gl", "hr", "it", "ja", "lij", "lt",
+    "ml", "nl", "pl", "pt", "pt-BR", "rm", "ro", "ru", "sk", "sl", "son",
+    "sq", "sr", "tr", "zh-CN", "zh-TW",
     "it-CH", "db-LB"
   ],
   "express_log_format": "default",
