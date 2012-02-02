@@ -1,4 +1,22 @@
-train-2011.01.25 (in progress):
+train-2011.02.08 (in progress):
+
+train-2011.02.02:
+  * i18n support, now BrowserID speaks your language: #926, #936, #977, #1013, #1031
+  * improved error screens on slow server responses: #913, #915
+  * better cache headers on all html resources (which Vary by Accept-Languages): #226, #620, #920, #938
+  * cosmetic fixes: #918, #947, #966, #981, #1020, #987
+  * preliminary work to improve messaging when cookies are disabled: #835
+  * remove dead code: #925
+  * fix include.orig.js: #921, #911
+  * load testing compatibility and minified resources are no longer mutually exclusive: #939
+  * improve usability via default button focus (just hit enter in more places): #946, #960
+  * scripts to deploy to an amazon EC2 instance.
+  * improve configuration mechanism: #582, #1006
+  * limit post bodies to verifier: #878
+  * cancel from forgot password doesn't cause your email to be, uh, forgotten: #1001
+  * remember the users email as they move from screen to screen in the dialog: #984, #1001, #1002, #1003, #1004
+  * secondary "cancel" style buttons have a smaller font: #1020
+  * build fixes: #1021, #1024
 
 train-2011.01.18:
   * support for 3rd party primary identity providers: #761, #904, #865
@@ -12,7 +30,7 @@ train-2011.01.18:
   * language/rendering refinements: #850, #439, #622, #818, #901, #630, #888, #345, #815
   * front end performance improvements: #899, #910
   * better UX for network timeouts: #905
-  * (hotfix 2012.01.23) Remove unwanted scrollbar in dialog: issue #947 
+  * (hotfix 2012.01.23) Remove unwanted scrollbar in dialog: issue #947
   * (hotfix 2012.01.23) Fix black backgrounds on IE8: issue #929
   * (hotfix 2012.01.23) fix broken transition to "check your email": #933, #934, #935
   * (hotfix 2012.01.24) Fix "slow script" error on IE8 during keygen on behalf of primary: #956
