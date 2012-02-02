@@ -16,6 +16,8 @@ body { margin: auto; font: 13px/1.5 Helvetica, Arial, 'Liberation Sans', FreeSan
 .intro { font-size: 1.2em; width: 600px; margin: auto; }
 .main { text-align: center; margin-top: 2em; font-size: 1.2em; width: 500px; margin: auto; }
 #who { font-weight: bold; }
+#cancel { font-size: small; }
+button { line-height: 20px; }
 
 </style>
 </head>
@@ -27,6 +29,7 @@ body { margin: auto; font: 13px/1.5 Helvetica, Arial, 'Liberation Sans', FreeSan
 <div class="main" id="logged_out">
   Sign in as <span id="who">...</span>
   <button>doit</button>
+  <a href="#" id="cancel">cancel</a>
 </div>
 
 <script type="text/javascript" src="jquery.js"></script>
@@ -56,6 +59,11 @@ $(document).ready(function() {
       .success(function(r) {
         window.location = getParameterByName('return_to');
       });
+  });
+
+  $("#cancel").click(function(e) {
+    e.preventDefault();
+    window.location = getParameterByName('return_to');
   });
 });
 </script>

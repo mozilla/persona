@@ -131,12 +131,13 @@
     });
   });
 
-  asyncTest("initialization with #CREATE_EMAIL=testuser@testuser.com", function() {
+  asyncTest("initialization with #CREATE_EMAIL=testuser@testuser.com - trigger start with correct params", function() {
     winMock.location.hash = "#CREATE_EMAIL=testuser@testuser.com";
 
     createController({
       ready: function() {
-        mediator.subscribe("primary_user", function(msg, info) {
+        mediator.subscribe("start", function(msg, info) {
+          equal(info.type, "primary", "correct type");
           equal(info.email, "testuser@testuser.com", "email_chosen with correct email");
           equal(info.add, false, "add is not specified with CREATE_EMAIL option");
           start();
@@ -153,12 +154,13 @@
     });
   });
 
-  asyncTest("initialization with #ADD_EMAIL=testuser@testuser.com", function() {
+  asyncTest("initialization with #ADD_EMAIL=testuser@testuser.com - trigger start with correct params", function() {
     winMock.location.hash = "#ADD_EMAIL=testuser@testuser.com";
 
     createController({
       ready: function() {
-        mediator.subscribe("primary_user", function(msg, info) {
+        mediator.subscribe("start", function(msg, info) {
+          equal(info.type, "primary", "correct type");
           equal(info.email, "testuser@testuser.com", "email_chosen with correct email");
           equal(info.add, true, "add is specified with ADD_EMAIL option");
           start();
