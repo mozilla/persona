@@ -65,6 +65,7 @@ app.use(express.logger({
 app.use(i18n.abide({
   supported_languages: config.get('supported_languages'),
   default_lang: config.get('default_lang'),
+  debug_lang: config.get('debug_lang'),
   locale_directory: config.get('locale_directory')
 }));
 
