@@ -53,6 +53,16 @@ exports.currentSHA = function(dir, cb) {
   });
 };
 
+function splitAndEmit(chunk, cb) {
+  if (chunk) chunk = chunk.toString();
+  if (typeof chunk === 'string') {
+    chunk.split('\n').forEach(function (line) {
+      line = line.trim();
+      if (line.length) cb(line);
+    });
+  }
+}
+
 exports.push = function(dir, host, pr, cb) {
   if (typeof host === 'function' && cb === undefined) {
     cb = pr;
@@ -62,8 +72,26 @@ exports.push = function(dir, host, pr, cb) {
   }
 
   var p = spawn('git', [ 'push', 'app@' + host + ":git", 'dev:master' ], { cwd: dir });
-  p.stdout.on('data', pr);
-  p.stderr.on('data', pr);
+  p.stdout.on('data', function(c) { splitAndEmit(c, pr); });
+  p.stderr.on('data', function(c) { splitAndEmit(c, pr); });
+  p.on('exit', function(code, signal) {
+    return cb(code = 0);
+  });
+};
+
+exports.pull = function(dir, remote, branch, pr, cb) {
+  var p = spawn('git', [ 'pull', "-f", remote, branch ], { cwd: dir });
+
+  p.stdout.on('data', function(c) { splitAndEmit(c, pr); });
+  p.stderr.on('data', function(c) { splitAndEmit(c, pr); });
+
+  p.on('exit', function(code, signal) {
+    return cb(code = 0);
+  });
+}
+
+exports.init = function(dir, cb) {
+  var p = spawn('git', [ 'init' ], { cwd: dir });  
   p.on('exit', function(code, signal) {
     return cb(code = 0);
   });
