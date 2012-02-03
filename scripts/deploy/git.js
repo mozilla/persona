@@ -93,8 +93,10 @@ exports.pull = function(dir, remote, branch, pr, cb) {
   var p = spawn('git', [ 'pull', "-f", remote, branch + ":" + branch ], {
     env: {
       GIT_DIR: path.join(dir, ".git"),
-      GIT_WORK_TREE: dir
-    }
+      GIT_WORK_TREE: dir,
+      PWD: dir
+    },
+    cwd: dir
   });
 
   p.stdout.on('data', function(c) { splitAndEmit(c, pr); });
