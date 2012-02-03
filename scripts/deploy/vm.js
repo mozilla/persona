@@ -73,7 +73,7 @@ exports.startImage = function(cb) {
         ImageId: BROWSERID_TEMPLATE_IMAGE_ID,
         KeyName: keyName,
         SecurityGroup: groupName,
-        InstanceType: 'm1.large',
+        InstanceType: 't1.micro',
         MinCount: 1,
         MaxCount: 1
       }, function (result) {
