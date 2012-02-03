@@ -15,8 +15,12 @@ function extractInstanceDeets(horribleBlob) {
   var name = jsel.match('.tagSet :has(.key:val("Name")) > .value', horribleBlob);
   if (name.length) {
     instance.fullName = name[0];
-    instance.name = name[0].replace('browserid deployment (', '')
-                           .replace(/\)$/, '');
+    // if this is a 'browserid deployment', we'll only display the hostname chosen by the
+    // user
+    var m = /^browserid deployment \((.*)\)$/.exec(instance.fullName);
+    instance.name = m ? m[1] : instance.fullName;
+  } else {
+    instance.name = instance.instanceId;
   }
   return instance;
 }

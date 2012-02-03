@@ -80,7 +80,7 @@ exports.push = function(dir, host, pr, cb) {
 };
 
 exports.pull = function(dir, remote, branch, pr, cb) {
-  var p = spawn('git', [ 'pull', "-f", remote, branch ], { cwd: dir });
+  var p = spawn('git', [ 'pull', "-f", remote, branch + ":" + branch ], { cwd: dir });
 
   p.stdout.on('data', function(c) { splitAndEmit(c, pr); });
   p.stderr.on('data', function(c) { splitAndEmit(c, pr); });
