@@ -60,3 +60,4 @@ All source code here is available under the [MPL 2][] license, unless
 otherwise indicated.
 
   [MPL 2]: https://mozilla.org/MPL/
+
