@@ -10,10 +10,12 @@ BrowserID.State = (function() {
       publish = mediator.publish.bind(mediator),
       user = bid.User,
       moduleManager = bid.module,
+      complete = bid.Helpers.complete,
       controller,
       addPrimaryUser = false,
       email,
-      requiredEmail;
+      requiredEmail,
+      primaryVerificationInfo;
 
   function startStateMachine() {
     var self = this,
@@ -27,7 +29,7 @@ BrowserID.State = (function() {
 
           var func = controller[msg].bind(controller);
           self.gotoState(save, func, options);
-        }
+        },
         cancelState = self.popState.bind(self);
 
     subscribe("offline", function(msg, info) {
@@ -41,10 +43,13 @@ BrowserID.State = (function() {
       self.allowPersistent = !!info.allowPersistent;
       requiredEmail = info.requiredEmail;
 
-      if ((typeof(requiredEmail) !== "undefined")
-       && (!bid.verifyEmail(requiredEmail))) {
+      if ((typeof(requiredEmail) !== "undefined") && (!bid.verifyEmail(requiredEmail))) {
         // Invalid format
         startState("doError", "invalid_required_email", {email: requiredEmail});
+      }
+      else if(info.email && info.type === "primary") {
+        primaryVerificationInfo = info;
+        publish("primary_user", info);
       }
       else {
         startState("doCheckAuth");
@@ -95,8 +100,6 @@ BrowserID.State = (function() {
       addPrimaryUser = !!info.add;
       email = info.email;
 
-      //updateCurrentStateInfo(info);
-
       var idInfo = storage.getEmail(email);
       if(idInfo && idInfo.cert) {
         publish("primary_user_ready", info);
@@ -120,7 +123,24 @@ BrowserID.State = (function() {
       info.add = !!addPrimaryUser;
       info.email = email;
       info.requiredEmail = !!requiredEmail;
-      startState("doVerifyPrimaryUser", info);
+      if(primaryVerificationInfo) {
+        primaryVerificationInfo = null;
+        if(requiredEmail) {
+          startState("doCannotVerifyRequiredPrimary", info);
+        }
+        else if(info.add) {
+          // Add the pick_email in case the user cancels the add_email screen.
+          // The user needs something to go "back" to.
+          publish("pick_email", info);
+          publish("add_email", info);
+        }
+        else {
+          publish("authenticate", info);
+        }
+      }
+      else {
+        startState("doVerifyPrimaryUser", info);
+      }
     });
 
     subscribe("primary_user_authenticating", function(msg, info) {
@@ -142,11 +162,11 @@ BrowserID.State = (function() {
     });
 
     subscribe("email_chosen", function(msg, info) {
-      var email = info.email
+      var email = info.email,
           idInfo = storage.getEmail(email);
 
-      function complete() {
-        info.complete && info.complete();
+      function oncomplete() {
+        complete(info.complete);
       }
 
       if(idInfo) {
@@ -176,8 +196,8 @@ BrowserID.State = (function() {
             else {
               startState("doEmailChosen", info);
             }
-            complete();
-          }, complete);
+            oncomplete();
+          }, oncomplete);
         }
       }
       else {
@@ -219,7 +239,7 @@ BrowserID.State = (function() {
     });
 
     subscribe("add_email", function(msg, info) {
-      startState("doAddEmail");
+      startState("doAddEmail", info);
     });
 
     subscribe("email_staged", function(msg, info) {

@@ -147,6 +147,10 @@ BrowserID.Modules.Actions = (function() {
       startService("verify_primary_user", info);
     },
 
+    doCannotVerifyRequiredPrimary: function(info) {
+      this.renderError("cannot_verify_required_email", info);
+    },
+
     doPrimaryUserProvisioned: function(info) {
       startService("primary_user_provisioned", info);
     },

@@ -40,25 +40,32 @@ verbs['destroy'] = function(args) {
   }
   var name = args[0];
   validateName(name);
+  var hostname =  name + ".hacksign.in";
 
-  process.stdout.write("trying to destroy VM for " + name + ".hacksign.in: "); 
-  vm.destroy(name, function(err) {
+  process.stdout.write("trying to destroy VM for " + hostname + ": ");
+  vm.destroy(name, function(err, deets) {
     console.log(err ? ("failed: " + err) : "done");
-    process.stdout.write("trying to remove DNS for " + name + ".hacksign.in: "); 
-    dns.deleteRecord(name, function(err) {
+    process.stdout.write("trying to remove DNS for " + hostname + ": ");
+    dns.deleteRecord(hostname, function(err) {
       console.log(err ? "failed: " + err : "done");
+      if (deets && deets.ipAddress) {
+        process.stdout.write("trying to remove git remote: ");
+        git.removeRemote(name, deets.ipAddress, function(err) {
+          console.log(err ? "failed: " + err : "done");
+        });
+      }
     });
   });
 }
 
 verbs['test'] = function() {
   // let's see if we can contact aws and zerigo
-  process.stdout.write("Checking DNS management access: "); 
+  process.stdout.write("Checking DNS management access: ");
   dns.inUse("somerandomname", function(err) {
     console.log(err ? "NOT ok: " + err : "good");
-    process.stdout.write("Checking AWS access: "); 
+    process.stdout.write("Checking AWS access: ");
     vm.list(function(err) {
-      console.log(err ? "NOT ok: " + err : "good");      
+      console.log(err ? "NOT ok: " + err : "good");
     });
   });
 }
@@ -69,10 +76,12 @@ verbs['deploy'] = function(args) {
   }
   var name = args[0];
   validateName(name);
+  var hostname =  name + ".hacksign.in";
+  var longName = 'browserid deployment (' + name + ')';
 
   console.log("attempting to set up " + name + ".hacksign.in");
 
-  dns.inUse(name, function(err, r) {
+  dns.inUse(hostname, function(err, r) {
     checkErr(err);
     if (r) checkErr("sorry!  that name '" + name + "' is already being used.  so sad");
 
@@ -83,11 +92,11 @@ verbs['deploy'] = function(args) {
       vm.waitForInstance(r.instanceId, function(err, deets) {
         checkErr(err);
         console.log("   ... Instance ready, setting up DNS");
-        dns.updateRecord(name, deets.ipAddress, function(err) {
+        dns.updateRecord(name, "hacksign.in", deets.ipAddress, function(err) {
           checkErr(err);
           console.log("   ... DNS set up, setting human readable name in aws");
 
-          vm.setName(r.instanceId, args[0], function(err) {
+          vm.setName(r.instanceId, longName, function(err) {
             checkErr(err);
             console.log("   ... name set, waiting for ssh access and configuring");
             var config = { public_url: "https://" + name + ".hacksign.in"};
@@ -99,7 +108,7 @@ verbs['deploy'] = function(args) {
                 if (err && /already exists/.test(err)) {
                   console.log("OOPS! you already have a git remote named 'test'!");
                   console.log("to create a new one: git remote add <name> " +
-                              "app@" + deets.ipAddress + ":git");  
+                              "app@" + deets.ipAddress + ":git");
                 } else {
                   checkErr(err);
                 }

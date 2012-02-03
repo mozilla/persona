@@ -9,6 +9,7 @@
   var bid = BrowserID,
       mediator = bid.Mediator,
       State = bid.State,
+      user = bid.User,
       machine,
       actions,
       storage = bid.Storage,
@@ -106,25 +107,45 @@
     equal(actions.info.doConfirmEmail.required, true, "doConfirmEmail called with required flag");
   });
 
-  test("primary_user with already provisioned primary user calls doEmailChosen", function() {
+  test("primary_user with already provisioned primary user - call doEmailChosen", function() {
     storage.addEmail("testuser@testuser.com", { type: "primary", cert: "cert" });
     mediator.publish("primary_user", { email: "testuser@testuser.com" });
     ok(actions.called.doEmailChosen, "doEmailChosen called");
   });
 
-  test("primary_user with unprovisioned primary user doProvisionPrimaryUser", function() {
+  test("primary_user with unprovisioned primary user - call doProvisionPrimaryUser", function() {
     mediator.publish("primary_user", { email: "testuser@testuser.com" });
     ok(actions.called.doProvisionPrimaryUser, "doPrimaryUserProvisioned called");
   });
 
-  test("primary_user_provisioned calls doEmailChosen", function() {
+  test("primary_user_provisioned - call doEmailChosen", function() {
     mediator.publish("primary_user_provisioned", { email: "testuser@testuser.com" });
     ok(actions.called.doPrimaryUserProvisioned, "doPrimaryUserProvisioned called");
   });
 
-  test("primary_user_unauthenticated calls doVerifyPrimaryUser", function() {
+  test("primary_user_unauthenticated before verification - call doVerifyPrimaryUser", function() {
+    mediator.publish("start");
     mediator.publish("primary_user_unauthenticated");
     ok(actions.called.doVerifyPrimaryUser, "doVerifyPrimaryUser called");
+  });
+
+  test("primary_user_unauthenticated after required email - call doCannotVerifyRequiredPrimary", function() {
+    mediator.publish("start", { requiredEmail: "testuser@testuser.com", type: "primary", add: false, email: "testuser@testuser.com" });
+    mediator.publish("primary_user_unauthenticated");
+    ok(actions.called.doCannotVerifyRequiredPrimary, "doCannotVerifyRequiredPrimary called");
+  });
+
+  test("primary_user_unauthenticated after verification of new user - call doAuthenticate", function() {
+    mediator.publish("start", { email: "testuser@testuser.com", type: "primary", add: false });
+    mediator.publish("primary_user_unauthenticated");
+    ok(actions.called.doAuthenticate, "doAuthenticate called");
+  });
+
+  test("primary_user_unauthenticated after verification of additional email to current user - call doPickEmail and doAddEmail", function() {
+    mediator.publish("start", { email: "testuser@testuser.com", type: "primary", add: true });
+    mediator.publish("primary_user_unauthenticated");
+    ok(actions.called.doPickEmail, "doPickEmail called");
+    ok(actions.called.doAddEmail, "doAddEmail called");
   });
 
   test("primary_user_authenticating stops all modules", function() {
@@ -137,13 +158,13 @@
     }
   });
 
-  test("primary_user calls doProvisionPrimaryUser", function() {
+  test("primary_user - call doProvisionPrimaryUser", function() {
     mediator.publish("primary_user", { email: "testuser@testuser.com", assertion: "assertion" });
 
     ok(actions.called.doProvisionPrimaryUser, "doProvisionPrimaryUser called");
   });
 
-  test("primary_user_ready calls doEmailChosen", function() {
+  test("primary_user_ready - call doEmailChosen", function() {
     mediator.publish("primary_user_ready", { email: "testuser@testuser.com", assertion: "assertion" });
 
     ok(actions.called.doEmailChosen, "doEmailChosen called");
@@ -200,11 +221,11 @@
     equal(actions.info.doAssertionGenerated, "assertion", "assertion generated with good assertion");
   });
 
-  test("add_email", function() {
-    // XXX rename add_email to request_add_email
-    mediator.publish("add_email");
+  test("add_email - call doAddEmail", function() {
+    mediator.publish("add_email", { email: "testuser@testuser.com" });
 
     ok(actions.called.doAddEmail, "user wants to add an email");
+    ok(actions.info.doAddEmail.email, "testuser@testuser.com", "correct email passed");
   });
 
   test("email_confirmed", function() {
@@ -237,13 +258,13 @@
     equal(actions.info.doAuthenticate.email, "testuser@testuser.com", "authenticate with testuser@testuser.com");
   });
 
-  test("start with no required email address should go straight to checking auth", function() {
+  test("start with no special parameters - go straight to checking auth", function() {
     mediator.publish("start");
 
     equal(actions.called.doCheckAuth, true, "checking auth on start");
   });
 
-  test("start with invalid requiredEmail prints error screen", function() {
+  test("start with invalid requiredEmail - print error screen", function() {
     mediator.publish("start", {
       requiredEmail: "bademail"
     });
@@ -251,7 +272,7 @@
     equal(actions.called.doError, true, "error screen is shown");
   });
 
-  test("start with empty requiredEmail prints error screen", function() {
+  test("start with empty requiredEmail - prints error screen", function() {
     mediator.publish("start", {
       requiredEmail: ""
     });
@@ -259,12 +280,20 @@
     equal(actions.called.doError, true, "error screen is shown");
   });
 
-  test("start with valid requiredEmail goes to auth", function() {
-    mediator.publish("start", {
-      requiredEmail: "testuser@testuser.com"
-    });
+  test("start with valid requiredEmail - go to doCheckAuth", function() {
+    mediator.publish("start", { requiredEmail: "testuser@testuser.com" });
 
     equal(actions.called.doCheckAuth, true, "checking auth on start");
+  });
+
+  asyncTest("start to complete successful primary email verification - goto 'primary_user'", function() {
+    mediator.subscribe("primary_user", function(msg, info) {
+      equal(info.email, "testuser@testuser.com", "correct email given");
+      equal(info.add, true, "correct add flag");
+      start();
+    });
+
+    mediator.publish("start", { email: "testuser@testuser.com", type: "primary", add: true });
   });
 
   test("cancel", function() {

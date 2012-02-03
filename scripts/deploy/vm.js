@@ -4,7 +4,7 @@ jsel = require('JSONSelect'),
 key = require('./key.js'),
 sec = require('./sec.js');
 
-const BROWSERID_TEMPLATE_IMAGE_ID = 'ami-1553827c';
+const BROWSERID_TEMPLATE_IMAGE_ID = 'ami-6978a900';
 
 function extractInstanceDeets(horribleBlob) {
   var instance = {};
@@ -44,7 +44,7 @@ exports.destroy = function(name, cb) {
       InstanceId: r[name].instanceId
     }, function(result) {
       try { return cb(result.Errors.Error.Message); } catch(e) {};
-      cb(null);
+      cb(null, r[name]);
     });
   });
 };
@@ -105,8 +105,6 @@ exports.waitForInstance = function(id, cb) {
 };
 
 exports.setName = function(id, name, cb) {
-  name = 'browserid deployment (' + name + ')';
-
   aws.call('CreateTags', {
     "ResourceId.0": id,
     "Tag.0.Key": 'Name',
