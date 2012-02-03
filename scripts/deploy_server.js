@@ -10,7 +10,8 @@ https = require('https'),
 vm = require('./deploy/vm.js'),
 jsel = require('JSONSelect'),
 fs = require('fs'),
-express = require('express');
+express = require('express'),
+irc = require('irc');
 
 console.log("deploy server starting up");
 
@@ -141,7 +142,7 @@ Deployer.prototype._pullLatest = function(cb) {
             // deployment is complete!
             self.emit('deployment_complete', {
               sha: latest,
-              time: (startTime - new Date())
+              time: (new Date() - startTime)
             });
             // finally, let's clean up old servers
             self._cleanUpOldVMs();
@@ -191,11 +192,39 @@ console.log("deployment log dir is:", deployLogDir);
   });
 });
 
+// irc integration!
+var ircClient = null;
+const ircChannel = '#identity_test';
+function ircSend(msg) {
+  if (!ircClient) {
+    ircClient = new irc.Client('irc.mozilla.org', 'browserid_deployer', {
+      channels: [ircChannel]
+    });
+    ircClient.on('error', function(e) {
+      console.log('irc error: ', e);
+    });
+    ircClient.once('join' + ircChannel, function(e) {
+      ircClient.say(ircChannel, msg);
+    });
+  } else {
+    ircClient.say(ircChannel, msg);
+  }
+}
+
+function ircDisconnect() {
+  setTimeout(function() {
+    ircClient.disconnect();
+    ircClient = null;
+  }, 1000);
+}
+
+
 // now when deployment begins, we log all events
 deployer.on('deployment_begins', function(r) {
   currentLogFile = fs.createWriteStream(path.join(deployLogDir, r.sha + ".txt"));
   currentLogFile.write("deployment of " + r.sha + " begins\n");
   deployingSHA = r.sha;
+  ircSend("deploying " + r.sha + " - status https://deployer.hacksign.in/" + r.sha + ".txt");
 });
 
 function closeLogFile() {
@@ -206,6 +235,10 @@ function closeLogFile() {
 }
 
 deployer.on('deployment_complete', function(r) {
+  ircSend("deployment of " + deployingSHA + " completed successfully in " +
+          (r.time / 100000.0).toFixed(2) + "s");
+  ircDisconnect();
+
   closeLogFile();
   deployingSHA = null;
 
@@ -215,6 +248,9 @@ deployer.on('deployment_complete', function(r) {
 });
 
 deployer.on('error', function(r) {
+  ircSend("deployment of " + deployingSHA + " failed.  check logs for deets");
+  ircDisconnect();
+
   closeLogFile();
   deployingSHA = null;
 
