@@ -1,0 +1,57 @@
+// production.js is the common base configuration for
+// all hosted deployments (non-local)
+{
+  "env": "production",
+  "bind_to": {
+    "host": "127.0.0.1"
+  },
+  "use_minified_resources": true,
+  "database": {
+    "driver": "mysql",
+    "user": "browserid",
+    "name": "browserid",
+    "create_schema": true
+  },
+  "statsd": {
+    "enabled": true
+  },
+  "bcrypt_work_factor": 12,
+  "max_compute_processes": null,
+  "max_compute_duration": 10,
+  "disable_primary_support": false,
+  "enable_code_version": false,
+  "default_lang": "en-US",
+  // supported_languages should be overridded with what is appropriate for the
+  // deployment.  That is environment dependent:
+  //  * in l10 preview env it's all available locales
+  //  * in staging or dev envs it depends, but should include at least
+  //    testing locales:  "it-CH", "db-LB"
+  //  * in production it's reviews locales that have been signed off
+  "supported_languages": [
+    "en-US"
+  ],
+  "debug_lang": "it-CH",
+  // locale directory should be overridden
+  "locale_directory": "/home/app/code/locale",
+  "express_log_format": "default",
+  "email_to_console": false,
+  // var path should be overridded
+  // "var_path": "xxx",
+
+  // this is daemon specific configuration to bind the
+  // ports we've traditionally bound different daemons to,
+  // may be overridden if desired
+  "verifier": { "bind_to": { "port": 62800 } },
+  "verifier_url": "http://127.0.0.1:62800",
+  "keysigner": { "bind_to": { "port": 62600 } },
+  "keysigner_url": "http://127.0.0.1:62600",
+  "dbwriter": { "bind_to": { "port": 62900 } },
+  "dbwriter_url": "http://127.0.0.1:62900",
+  "browserid": { "bind_to": { "port": 62700 } }
+
+  // http_proxy should be overridded per env
+  //"http_proxy": {
+  //  "host": "127.0.0.1",
+  //  "port": 10006
+  //},
+}

@@ -33,7 +33,8 @@
     "devDependencies": {
         "xml2json": "0.2.4",
         "vows": "0.5.13",
-        "aws-lib": "0.0.5"
+        "aws-lib": "0.0.5",
+        "irc": "0.3.3"
     },
     "scripts": {
         "postinstall": "./scripts/generate_ephemeral_keys.sh",
