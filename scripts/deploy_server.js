@@ -177,6 +177,9 @@ var deployer = new Deployer();
 var currentLogFile = null;
 // a directory where we'll deployment logs
 var deployLogDir = process.env['DEPLOY_LOG_DIR'] || temp.mkdirSync();
+
+var deployingSHA = null;
+
 console.log("deployment log dir is:", deployLogDir);
 
 [ 'info', 'ready', 'error', 'deployment_begins', 'deployment_complete', 'progress' ].forEach(function(evName) {
@@ -192,6 +195,7 @@ console.log("deployment log dir is:", deployLogDir);
 deployer.on('deployment_begins', function(r) {
   currentLogFile = fs.createWriteStream(path.join(deployLogDir, r.sha + ".txt"));
   currentLogFile.write("deployment of " + r.sha + " begins\n");
+  deployingSHA = r.sha;
 });
 
 function closeLogFile() {
@@ -203,6 +207,7 @@ function closeLogFile() {
 
 deployer.on('deployment_complete', function(r) {
   closeLogFile();
+  deployingSHA = null;
 
   // always check to see if we should try another deployment after one succeeds to handle rapid fire
   // commits
@@ -211,6 +216,8 @@ deployer.on('deployment_complete', function(r) {
 
 deployer.on('error', function(r) {
   closeLogFile();
+  deployingSHA = null;
+
   // on error, try again in 2 minutes
   setTimeout(function () {
     deployer.checkForUpdates();
@@ -232,6 +239,12 @@ deployer.on('ready', function() {
   app.get('/check', function(req, res) {
     deployer.checkForUpdates();
     res.send('ok');
+  });
+
+  app.get('/', function(req, res) {
+    var what = "idle";
+    if (deployingSHA) what = "deploying " + deployingSHA;
+    res.send(what);
   });
 
   app.use(express.static(deployLogDir));
