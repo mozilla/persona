@@ -12,6 +12,8 @@ jsel = require('JSONSelect'),
 fs = require('fs'),
 express = require('express');
 
+console.log("deploy server starting up");
+
 // a class capable of deploying and emmitting events along the way
 function Deployer() {
   events.EventEmitter.call(this);
@@ -42,7 +44,7 @@ Deployer.prototype._getLatestRunningSHA = function(cb) {
   }
 
   https.get({ host: 'dev.diresworb.org', path: '/ver.txt' }, function(res) {
-    var buf = ""; 
+    var buf = "";
     res.on('data', function (c) { buf += c });
     res.on('end', function() {
       try {
@@ -73,7 +75,7 @@ Deployer.prototype._cleanUpOldVMs = function() {
       jsel.forEach("object:has(:root > .name:contains(?))", [ "dev.diresworb.org" ], r, function(o) {
         // don't delete the current one
         if (o.name.indexOf(latest) == -1) {
-          self.emit('info', 'decommissioning VM: ' + o.name + ' - ' + o.instanceId); 
+          self.emit('info', 'decommissioning VM: ' + o.name + ' - ' + o.instanceId);
           vm.destroy(o.name, function(err, r) {
             if (err) self.emit('info', 'decomissioning failed: ' + err);
             else self.emit('info', 'decomissioning succeeded of ' + r);
@@ -98,7 +100,7 @@ Deployer.prototype._deployNewCode = function(cb) {
   }
 
   var npmInstall = spawn('npm', [ 'install' ], { cwd: self._codeDir });
-  
+
   npmInstall.stdout.on('data', splitAndEmit);
   npmInstall.stderr.on('data', splitAndEmit);
 
@@ -108,7 +110,7 @@ Deployer.prototype._deployNewCode = function(cb) {
       return;
     }
     var p = spawn('scripts/deploy_dev.js', [], { cwd: self._codeDir });
-  
+
     p.stdout.on('data', splitAndEmit);
     p.stderr.on('data', splitAndEmit);
 
@@ -210,15 +212,15 @@ deployer.on('deployment_complete', function(r) {
 deployer.on('error', function(r) {
   closeLogFile();
   // on error, try again in 2 minutes
-  setTimeout(function () { 
-    deployer.checkForUpdates();  
+  setTimeout(function () {
+    deployer.checkForUpdates();
   }, 2 * 60 * 1000);
 });
 
 
 // we check every 30 minutes no mattah what. (checks are cheap)
-setInterval(function () { 
-  deployer.checkForUpdates();  
+setInterval(function () {
+  deployer.checkForUpdates();
 }, (1000 * 60 * 30));
 
 // check for updates at startup
@@ -226,13 +228,15 @@ deployer.on('ready', function() {
   deployer.checkForUpdates();
 
   var app = express.createServer();
-  
+
   app.get('/check', function(req, res) {
-    deployer.checkForUpdates();    
+    deployer.checkForUpdates();
     res.send('ok');
   });
-  
+
   app.use(express.static(deployLogDir));
 
-  app.listen(process.env['PORT'] || 8080);
+  app.listen(process.env['PORT'] || 8080, function() {
+    console.log("deploy server bound");
+  });
 });
