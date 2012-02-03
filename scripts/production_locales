@@ -7,7 +7,7 @@ var path = require('path');
 process.env['VAR_PATH'] = '/tmp/browserid';
 
 // Pick up production languages
-process.env['CONFIG_FILES'] = path.join(__dirname, '..', 'config', 'local.json');
+process.env['CONFIG_FILES'] = process.env['CONFIG_FILES'] || path.join(__dirname, '..', 'config', 'local.json');
 
 var path = require('path'),
     format = require('util').format,
