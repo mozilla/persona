@@ -194,7 +194,7 @@ console.log("deployment log dir is:", deployLogDir);
 
 // irc integration!
 var ircClient = null;
-const ircChannel = '#identity_test';
+const ircChannel = '#identity';
 function ircSend(msg) {
   if (!ircClient) {
     ircClient = new irc.Client('irc.mozilla.org', 'browserid_deployer', {
@@ -238,7 +238,7 @@ function closeLogFile() {
 
 deployer.on('deployment_complete', function(r) {
   ircSend("deployment of " + deployingSHA + " completed successfully in " +
-          (r.time / 100000.0).toFixed(2) + "s");
+          (r.time / 1000.0).toFixed(2) + "s");
   ircDisconnect();
 
   closeLogFile();
