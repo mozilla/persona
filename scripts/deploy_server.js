@@ -213,8 +213,10 @@ function ircSend(msg) {
 
 function ircDisconnect() {
   setTimeout(function() {
-    ircClient.disconnect();
-    ircClient = null;
+    if (ircClient) {
+      ircClient.disconnect();
+      ircClient = null;
+    }
   }, 1000);
 }
 

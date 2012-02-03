@@ -1,6 +1,7 @@
 const
 child_process = require('child_process');
-spawn = child_process.spawn;
+spawn = child_process.spawn,
+path = require('path');
 
 exports.addRemote = function(name, host, cb) {
   var cmd = 'git remote add ' + name  + ' app@'+ host + ':git';
@@ -38,13 +39,17 @@ exports.currentSHA = function(dir, cb) {
     cb = dir;
     dir = path.join(__dirname, '..', '..');
   }
+  console.log(dir);
 
-  var p = spawn('git', [ 'log', '--pretty=%h', '-1' ], { cwd: dir });
+  var p = spawn('git', [ 'log', '--pretty=%h', '-1' ], {
+    env: { GIT_DIR: path.join(dir, ".git") }
+  });
   var buf = "";
   p.stdout.on('data', function(d) {
     buf += d;
   });
   p.on('exit', function(code, signal) {
+    console.log(buf);
     var gitsha = buf.toString().trim();
     if (gitsha && gitsha.length === 7) {
       return cb(null, gitsha);
@@ -71,7 +76,12 @@ exports.push = function(dir, host, pr, cb) {
     dir = path.join(__dirname, '..', '..');
   }
 
-  var p = spawn('git', [ 'push', 'app@' + host + ":git", 'dev:master' ], { cwd: dir });
+  var p = spawn('git', [ 'push', 'app@' + host + ":git", 'dev:master' ], {
+    env: {
+      GIT_DIR: path.join(dir, ".git"),
+      GIT_WORK_TREE: dir
+    }
+  });
   p.stdout.on('data', function(c) { splitAndEmit(c, pr); });
   p.stderr.on('data', function(c) { splitAndEmit(c, pr); });
   p.on('exit', function(code, signal) {
@@ -80,7 +90,12 @@ exports.push = function(dir, host, pr, cb) {
 };
 
 exports.pull = function(dir, remote, branch, pr, cb) {
-  var p = spawn('git', [ 'pull', "-f", remote, branch + ":" + branch ], { cwd: dir });
+  var p = spawn('git', [ 'pull', "-f", remote, branch + ":" + branch ], {
+    env: {
+      GIT_DIR: path.join(dir, ".git"),
+      GIT_WORK_TREE: dir
+    }
+  });
 
   p.stdout.on('data', function(c) { splitAndEmit(c, pr); });
   p.stderr.on('data', function(c) { splitAndEmit(c, pr); });
@@ -91,7 +106,12 @@ exports.pull = function(dir, remote, branch, pr, cb) {
 }
 
 exports.init = function(dir, cb) {
-  var p = spawn('git', [ 'init' ], { cwd: dir });  
+  var p = spawn('git', [ 'init' ], {
+    env: {
+      GIT_DIR: path.join(dir, ".git"),
+      GIT_WORK_TREE: dir
+    }
+  });
   p.on('exit', function(code, signal) {
     return cb(code = 0);
   });
