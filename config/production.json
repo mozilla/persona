@@ -42,7 +42,7 @@
   // ports we've traditionally bound different daemons to,
   // may be overridden if desired
   "verifier": { "bind_to": { "port": 62800 } },
-  "verifier_url": "http://127.0.0.1:62800",
+  "verifier_url": "http://127.0.0.1:62800/verify",
   "keysigner": { "bind_to": { "port": 62600 } },
   "keysigner_url": "http://127.0.0.1:62600",
   "dbwriter": { "bind_to": { "port": 62900 } },
