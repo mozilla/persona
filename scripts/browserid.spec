@@ -2,7 +2,7 @@
 
 Name:          browserid-server
 Version:       0.2012.02.02
-Release:       1%{?dist}
+Release:       1%{?dist}_%{svnrev}
 Summary:       BrowserID server
 Packager:      Pete Fritchman <petef@mozilla.com>
 Group:         Development/Libraries
@@ -12,7 +12,7 @@ Source0:       %{name}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root
 AutoReqProv:   no
 Requires:      openssl nodejs
-BuildRequires: gcc-c++ git jre make npm openssl-devel
+BuildRequires: gcc-c++ git jre make npm openssl-devel expat-devel perl perl-JSON perl-Locale-PO
 
 %description
 browserid server & web home for browserid.org
@@ -23,8 +23,13 @@ browserid server & web home for browserid.org
 %build
 npm install
 export PATH=$PWD/node_modules/.bin:$PATH
+./locale/compile-mo.sh locale/
+./locale/compile-json.sh locale/ resources/static/i18n/
 scripts/compress.sh
+scripts/compress-locales.sh
+rm -r resources/static/build resources/static/test
 echo "$GIT_REVISION" > resources/static/ver.txt
+echo "locale svn r$SVN_REVISION" >> resources/static/ver.txt
 
 %install
 rm -rf %{buildroot}
