@@ -26,7 +26,7 @@
   "debug_lang": "it-CH",
   "locale_directory": "/home/browserid/code/locale",
   "supported_languages": [
-    "af", "ca", "cs","de", "el", "en-US", "eo", "es", "es-MX", "et", "eu",
+    "af", "ca", "cs", "da", "de", "el", "en-US", "eo", "es", "es-MX", "et", "eu",
     "fi", "fr", "fy", "ga", "gd", "gl", "hr", "it", "ja", "lij", "lt",
     "ml", "nl", "pl", "pt", "pt-BR", "rm", "ro", "ru", "sk", "sl", "son",
     "sq", "sr", "tr", "zh-CN", "zh-TW",
