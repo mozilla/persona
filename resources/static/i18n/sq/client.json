@@ -1,365 +1,362 @@
-var json_locale_data = {
-   "client" : {
-      "Cancelling User Account" : [
-         null,
-         ""
-      ],
-      "" : {
-         "MIME-Version" : " 1.0",
-         "X-Generator" : " Translate Toolkit 1.9.0",
-         "POT-Creation-Date" : " 2012-01-26 17:37-0800",
-         "Language" : " sq",
-         "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
-         "Content-Type" : " text/plain; charset=UTF-8",
-         "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
-         "Language-Team" : " LANGUAGE <LL@li.org>",
-         "Content-Transfer-Encoding" : " 8bit",
-         "Report-Msgid-Bugs-To" : " ",
-         "Project-Id-Version" : " PACKAGE VERSION"
+;var json_locale_data = {
+   "client": {
+      "": {
+         "Project-Id-Version": " PACKAGE VERSION",
+         "Report-Msgid-Bugs-To": " ",
+         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "PO-Revision-Date": " 2012-02-03 13:54+0200",
+         "Last-Translator": " Besnik <besnik@programeshqip.org>",
+         "Language-Team": " LANGUAGE <LL@li.org>",
+         "Language": " sq",
+         "MIME-Version": " 1.0",
+         "Content-Type": " text/plain; charset=UTF-8",
+         "Content-Transfer-Encoding": " 8bit",
+         "Plural-Forms": " nplurals=2; plural=(n != 1);",
+         "X-Generator": " Pootle 2.1.6"
       },
-      "Always sign in using this email" : [
+      "Authenticating User": [
          null,
-         ""
+         "Po Kryhet Mirëfilltësimi i Përdoruesit"
       ],
-      "Sync Keys for Address" : [
+      "Adding Address": [
          null,
-         ""
+         "Po Shtohet Adresa"
       ],
-      "Syncing Email Addresses" : [
+      "Adding Primary Email Address to User": [
          null,
-         ""
+         "Po Shtohet Te Përdoruesi Adresa Email Parësore"
       ],
-      "Unfortunately, BrowserID cannot communicate while offline!" : [
+      "Checking Address Info": [
          null,
-         ""
+         "Po Kontrollohen Të Dhëna Adrese"
       ],
-      "Sign in using" : [
+      "Authenticating with Assertion": [
          null,
          ""
       ],
-      "Relay frame could not be found" : [
+      "Cancelling User Account": [
          null,
-         ""
+         "Po Anulohet Llogaria e Përdoruesit"
       ],
-      "Password" : [
+      "Checking Authentication": [
          null,
-         ""
+         "Po Kontrollohet Mirëfilltësimi"
       ],
-      "We sent a confirmation email to <strong>%s</strong>" : [
+      "Checking Script Version": [
          null,
-         ""
+         "Po Kontrollohet Versioni i Programit"
       ],
-      "To finish signing in just click the verify link we sent to your email address." : [
+      "Completing User Registration": [
          null,
-         ""
+         "Po Plotësohet Regjistrimi i Përdoruesit"
       ],
-      "Cancel" : [
+      "We are sorry, BrowserID requires cookies": [
          null,
-         ""
+         "Na ndjeni, BrowserID lyp \"cookies\""
       ],
-      "To verify that you own <strong id='primary_email'>%s</strong>, you must sign in with your provider.  This window will be redirected to" : [
+      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
          null,
-         ""
+         "BrowserID lyp që &quot;cookie&quot;-t te shfletuesi juaj të jenë në gjendje të funksionojnë.  Ju lutem, aktivizoni &quot;cookie&quot;-t te shfletuesi juaj dhe riprovoni"
       ],
-      "Authenticating with Assertion" : [
+      "Checking if Cookies are Enabled": [
          null,
-         ""
+         "Po Kontrollohet Nëse Cookie-t Janë të Aktivizuara"
       ],
-      "Reset Password" : [
+      "Creating Account": [
          null,
-         ""
+         "Po krijohet Llogaria"
       ],
-      "Resetting Password" : [
+      "Getting Assertion": [
          null,
          ""
       ],
-      "Logout Failed" : [
+      "Checking Registration Token": [
          null,
          ""
       ],
-      "Checking Email Address" : [
+      "Checking Email Address": [
          null,
-         ""
+         "Po Kontrollohet Adresa Email"
       ],
-      "To verify that you own this address, you must sign in with your provider.  This window will be redirected to" : [
+      "Checking Whether User is Authenticated with IdP": [
          null,
-         ""
+         "Po Kontrollohet Nëse Përdoruesi është Mirëfilltësuar me IdP"
       ],
-      "This is not me..." : [
+      "Logout Failed": [
          null,
-         ""
+         "Dalja Dështoi"
       ],
-      "We are sorry, BrowserID requires cookies" : [
+      "You are offline!": [
          null,
-         ""
+         "Jeni \"offline\"!"
       ],
-      "In just a moment you'll be signed into BrowserID." : [
+      "Unfortunately, BrowserID cannot communicate while offline!": [
          null,
-         ""
+         "Për fat të keq, BrowserID nuk mund të komunikojë po nuk qetë të lidhur!"
       ],
-      "Getting Assertion" : [
+      "Authenticating with Identity Provider": [
          null,
-         ""
+         "Po Mirëfilltësohet me Mundësuesin e Identitetit"
       ],
-      "Completing User Registration" : [
+      "We had trouble communicating with your email provider, please try again!": [
          null,
-         ""
+         "Patëm probleme në komunikimin me mundësuesin tuaj të email-it, ju lutem, riprovoni!"
       ],
-      "Registration Failed" : [
+      "Provisioning with Identity Provider": [
          null,
          ""
       ],
-      "This message will go away when the request completes (hopefully soon).  If you wait too long, close this window and try again." : [
+      "Provisioning Unsupported Identity Provider": [
          null,
          ""
       ],
-      "translated text" : [
+      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
          null,
-         ""
+         "Për fat të keq, adresa email e dhënë nuk mund të funksionojë si Mundësues Parësor Identiteti"
       ],
-      "The email field is required." : [
+      "Registration Failed": [
          null,
-         ""
+         "Regjistrimi Dështoi"
       ],
-      "New email address" : [
+      "Establishing Relay": [
          null,
          ""
       ],
-      "verify email" : [
+      "Relay frame could not be found": [
          null,
          ""
       ],
-      "Checking if Cookies are Enabled" : [
+      "Resetting Password": [
          null,
-         ""
+         "Po Ricaktohet Fjalëkalimi"
       ],
-      "Provisioning Unsupported Identity Provider" : [
+      "Remove Email Address from Account": [
          null,
-         ""
+         "Hiqe Adresën Email Prej Llogarisë"
       ],
-      "That address is already added to your account!" : [
+      "Setting Password": [
          null,
-         ""
+         "Po Caktohet Fjalëkalimi"
       ],
-      "Authenticating with Identity Provider" : [
+      "Signin Failed": [
          null,
-         ""
+         "Hyrja Dështoi"
       ],
-      "Remove Email Address from Account" : [
+      "Signup Failed": [
          null,
-         ""
+         "Regjistrimi Dështoi"
       ],
-      "Communication Error" : [
+      "Syncing Address": [
          null,
-         ""
+         "Po Njëkohësohet Adresa"
       ],
-      "Provisioning with Identity Provider" : [
+      "Syncing Email Addresses": [
          null,
-         ""
+         "Po Njëkohësohen Adresat Email"
       ],
-      "Adding Address" : [
+      "Sync Keys for Address": [
          null,
-         ""
+         "Njëkohëso Kyça për Adresën"
       ],
-      "Check your email!" : [
+      "Getting Token Info": [
          null,
          ""
       ],
-      "The site requested you sign in using" : [
+      "Updating password": [
          null,
-         ""
+         "Po përditësohet fjalëkalimi"
       ],
-      "Syncing Address" : [
+      "Verifying email address": [
          null,
-         ""
+         "Po verifikohet adresa email"
       ],
-      "Use a different email" : [
+      "Communication Error": [
          null,
-         ""
+         "Gabim Ndërlidhjeje"
       ],
-      "next" : [
+      "Finishing Sign In...": [
          null,
-         ""
+         "Po përfundohet Hyrja..."
       ],
-      "Verifying email address" : [
+      "In just a moment you'll be signed into BrowserID.": [
          null,
-         ""
+         "Do të jeni futur te BrowserID në çast."
       ],
-      "Signup Failed" : [
+      "Please wait a few seconds while we sign you into the site.": [
          null,
-         ""
+         "Ju lutem prisni pak sekonda, ndërkohë që ju fusim te &quot;site&quot;-i."
       ],
-      "This email looks new, so let&apos;s get you set up." : [
+      "We are sorry, this request is taking a LOOONG time.": [
          null,
-         ""
+         "Na ndjeni, kjo kërkesë po merr SHUUUUMË kohë."
       ],
-      "Checking Script Version" : [
+      "This message will go away when the request completes (hopefully soon). If you wait too long, close this window and try again.": [
          null,
-         ""
+         "Ky mesazh do të zhduket kur të plotësohet kërkesa (shpresojmë sa më shpejt). Nëse prisni shumë gjatë, mbylleni këtë dritare dhe riprovoni."
       ],
-      "You are offline!" : [
+      "Sign in using": [
          null,
-         ""
+         "Hyni duke përdorur"
       ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider" : [
+      "New email address": [
          null,
-         ""
+         "Adresë email e re"
       ],
-      "Checking Authentication" : [
+      "This field must be an email address.": [
          null,
-         ""
+         "Kjo fushë duhet plotësuar me një adresë email."
       ],
-      "Getting Token Info" : [
+      "The email field is required.": [
          null,
-         ""
+         "Fusha e email-it është e domosdoshme."
       ],
-      "forgot your password?" : [
+      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again.": [
          null,
-         ""
+         "Sapo dërguam një email te ajo adresë! Nëse doni vërtet të dërgohet një tjetër, prisni një a dy minuta dhe riprovoni."
       ],
-      "Address Verified!" : [
+      "That address is already added to your account!": [
          null,
-         ""
+         "Ajo adresë është shtuar një herë te llogaria juaj!"
       ],
-      "This field must be an email address." : [
+      "add": [
          null,
-         ""
+         "shtoni"
       ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline." : [
+      "cancel": [
          null,
-         ""
+         "anuloje"
       ],
-      "Authenticating User" : [
+      "Email": [
          null,
-         ""
+         "Email"
       ],
-      "This email looks new, so let&#39;s get you set up." : [
+      "Enter your email address to sign in to <strong>%s</strong>": [
          null,
-         ""
+         "Jepni adresën tuaj email që të hyni te <strong>%s</strong>"
       ],
-      "Email" : [
+      "Welcome to BrowserID!": [
          null,
-         ""
+         "Mirë se vini te BrowserID!"
       ],
-      "Setting Password" : [
+      "This email looks new, so let&#39;s get you set up.": [
          null,
-         ""
+         "Ky email duket i ri, ndaj le t&quot;ju shërbejmë."
       ],
-      "Finishing Sign In..." : [
+      "Password": [
          null,
-         ""
+         "Fjalëkalim"
       ],
-      "select email" : [
+      "forgot your password?": [
          null,
-         ""
+         "harruat fjalëkalimin tuaj?"
       ],
-      "Checking Address Info" : [
+      "The password field is required.": [
          null,
-         ""
+         "Fusha e fjalëkalimit është e domosdoshme."
       ],
-      "Adding Primary Email Address to User" : [
+      "The account cannot be logged in with this username and password.": [
          null,
-         ""
+         "Te llogaria nuk hyhet dot me këtë emër përdoruesi dhe fjalëkalim."
       ],
-      "Your identity has been verified with your email provider, we will now try to sign you in." : [
+      "next": [
          null,
-         ""
+         "pasuesi"
       ],
-      "Verify With Email Provider" : [
+      "verify email": [
          null,
-         ""
+         "verifikoni email-in"
       ],
-      "Checking Whether User is Authenticated with IdP" : [
+      "select email": [
          null,
-         ""
+         "përzgjidhni email"
       ],
-      "Updating password" : [
+      "Cannot verify %s": [
          null,
-         ""
+         "Nuk verifikohet dot %s"
       ],
-      "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
+      "%s is a required address, but we cannot verify that you own this address.": [
          null,
-         ""
+         "%s është adresë e domosdoshme, por nuk verifikojmë dot që jeni i zoti i kësaj adrese."
       ],
-      "The password field is required." : [
+      "Check your email!": [
          null,
-         ""
+         "Kontrolloni email-in tuaj!"
       ],
-      "cancel" : [
+      "We sent a confirmation email to <strong>%s</strong>": [
          null,
-         ""
+         "Ju dërguam një email ripohimi te <strong>%s</strong>"
       ],
-      "We had trouble communicating with your email provider, please try again!" : [
+      "To finish signing in just click the verify link we sent to your email address.": [
          null,
-         ""
+         "Për të përfunduar hyrjen, thjesht klikoni lidhjen e verifikimit që ju dërguam te adresa juaj email."
       ],
-      "Creating Account" : [
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"cancel\">cancel</a>.": [
          null,
-         ""
+         "Nëse bëhet fjalë për gabim, thjesht shpërfilleni email-ine dërguar dhe <a href=\"#\" id=\"cancel\">anulojeni</a> krejt këtë."
       ],
-      "We are sorry, this request is taking a LOOONG time." : [
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"back\">use another email address</a>.": [
          null,
-         ""
+         "Nëse bëhet fjalë për gabim, thjesht shpërfilleni email-ine dërguar dhe <a href=\"#\" id=\"back\">përdorni një tjetër adresë email</a>."
       ],
-      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again." : [
+      "The site requested you sign in using": [
          null,
-         ""
+         "Site-i kërkoi që të hyni duke përdorur"
       ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again" : [
+      "Reset Password": [
          null,
-         ""
+         "Ricaktoni Fjalëkalimin"
       ],
-      "Checking Registration Token" : [
+      "Cancel": [
          null,
-         ""
+         "Anuloje"
       ],
-      "add" : [
+      "*%s* is not a valid email address!": [
          null,
-         ""
+         "*%s* nuk është adresë email e vlefshme!"
       ],
-      "To continue, please close the window and enter a valid address." : [
+      "To continue, please close the window and enter a valid address.": [
          null,
-         ""
+         "Që të vazhdohet, ju lutem, mbylleni dritaren dhe jepni si adresë të vlefshme."
       ],
-      "Enter your email address to sign in to <strong>%s</strong>" : [
+      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
          null,
-         ""
+         "Na ndjeni, por nuk mund të lidhemi me BrowserID sa kohë që nuk jeni i lidhur."
       ],
-      "Establishing Relay" : [
+      "This is not me...": [
          null,
-         ""
+         "Ky nuk jam unë..."
       ],
-      "Signin Failed" : [
+      "Use a different email": [
          null,
-         ""
+         "Përdorni një email tjetër"
       ],
-      "Verify" : [
+      "Always sign in using this email": [
          null,
-         ""
+         "Hyni gjithmonë duke përdorur këtë email"
       ],
-      "sign in" : [
+      "sign in": [
          null,
-         ""
+         "hyni"
       ],
-      "The account cannot be logged in with this username and password." : [
+      "Address Verified!": [
          null,
-         ""
+         "Adresa u Verifikua!"
       ],
-      "Welcome to BrowserID!" : [
+      "Your identity has been verified with your email provider, we will now try to sign you in.": [
          null,
-         ""
+         "Identiteti juaj është verifikuar me mundësuesin tuaj të email-it , tani do të përpiqemi të bëjmë hyrjen tuaj."
       ],
-      "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
+      "You must sign in with your email provider to verify ownership of this address. This window will be redirected to": [
          null,
-         ""
+         "Që të verifikohet pronësia e kësaj adrese, duhet të hyni me të dhënat nga mundësuesi juaj i email-i. Kjo dritare do t'ju ridrejtojë tek"
       ],
-      "*%s* is not a valid email address!" : [
+      "Verify": [
          null,
-         ""
+         "Verifikoje"
       ],
-      "Please wait a few seconds while we sign you into the site." : [
+      "Verify With Email Provider": [
          null,
-         ""
+         "Verifikoje me Mundësuesin e Email-it"
       ]
    }
 }

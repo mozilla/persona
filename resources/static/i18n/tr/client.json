@@ -1,365 +1,362 @@
-var json_locale_data = {
-   "client" : {
-      "Cancelling User Account" : [
-         null,
-         ""
-      ],
-      "" : {
-         "MIME-Version" : " 1.0",
-         "X-Generator" : " Translate Toolkit 1.9.0",
-         "POT-Creation-Date" : " 2012-01-26 17:37-0800",
-         "Language" : " tr",
-         "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
-         "Content-Type" : " text/plain; charset=UTF-8",
-         "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
-         "Language-Team" : " LANGUAGE <LL@li.org>",
-         "Content-Transfer-Encoding" : " 8bit",
-         "Report-Msgid-Bugs-To" : " ",
-         "Project-Id-Version" : " PACKAGE VERSION"
+;var json_locale_data = {
+   "client": {
+      "": {
+         "Project-Id-Version": " PACKAGE VERSION",
+         "Report-Msgid-Bugs-To": " ",
+         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "PO-Revision-Date": " 2012-02-06 15:48+0200",
+         "Last-Translator": " Selim <selim@sum.lu>",
+         "Language-Team": " LANGUAGE <LL@li.org>",
+         "Language": " tr",
+         "MIME-Version": " 1.0",
+         "Content-Type": " text/plain; charset=UTF-8",
+         "Content-Transfer-Encoding": " 8bit",
+         "Plural-Forms": " nplurals=1; plural=0;",
+         "X-Generator": " Pootle 2.1.6"
       },
-      "Always sign in using this email" : [
+      "Authenticating User": [
          null,
-         ""
+         "Kullanıcı doğrulanıyor"
       ],
-      "Sync Keys for Address" : [
+      "Adding Address": [
          null,
-         ""
+         "Adres ekleniyor"
       ],
-      "Syncing Email Addresses" : [
+      "Adding Primary Email Address to User": [
          null,
-         ""
+         "Kullanıcıya birincil e-posta adresi ekleniyor"
       ],
-      "Unfortunately, BrowserID cannot communicate while offline!" : [
+      "Checking Address Info": [
          null,
-         ""
+         "Adres bilgisi denetleniyor"
       ],
-      "Sign in using" : [
+      "Authenticating with Assertion": [
          null,
-         ""
+         "Doğrulama teyit ediliyor"
       ],
-      "Relay frame could not be found" : [
+      "Cancelling User Account": [
          null,
-         ""
+         "Kullanıcı hesabı iptal ediliyor"
       ],
-      "Password" : [
+      "Checking Authentication": [
          null,
-         ""
+         "Doğrulama denetleniyor"
       ],
-      "We sent a confirmation email to <strong>%s</strong>" : [
+      "Checking Script Version": [
          null,
-         ""
+         "Betik sürümü denetleniyor"
       ],
-      "To finish signing in just click the verify link we sent to your email address." : [
+      "Completing User Registration": [
          null,
-         ""
+         "Kullanıcı kaydı tamamlanıyor"
       ],
-      "Cancel" : [
+      "We are sorry, BrowserID requires cookies": [
          null,
-         ""
+         "Üzgünüz, BrowserID için çerez kullanımı şarttır"
       ],
-      "To verify that you own <strong id='primary_email'>%s</strong>, you must sign in with your provider.  This window will be redirected to" : [
+      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
          null,
-         ""
+         "BrowserID'nin çalışması için tarayıcınızda çerezleri etkinleştirmeniz gerekir. Lütfen çerezleri etkinleştirip tekrar deneyin"
       ],
-      "Authenticating with Assertion" : [
+      "Checking if Cookies are Enabled": [
          null,
-         ""
+         "Çerezlerin etkin olup olmadığı denetleniyor"
       ],
-      "Reset Password" : [
+      "Creating Account": [
          null,
-         ""
+         "Hesap açılıyor"
       ],
-      "Resetting Password" : [
+      "Getting Assertion": [
          null,
-         ""
+         "Tasdik alınıyor"
       ],
-      "Logout Failed" : [
+      "Checking Registration Token": [
          null,
-         ""
+         "Kayıt jetonu denetleniyor"
       ],
-      "Checking Email Address" : [
+      "Checking Email Address": [
          null,
-         ""
+         "E-posta adresi denetleniyor"
       ],
-      "To verify that you own this address, you must sign in with your provider.  This window will be redirected to" : [
+      "Checking Whether User is Authenticated with IdP": [
          null,
-         ""
+         "Kullanıcının IdP ile doğrulanıp doğrulanmadığı denetleniyor"
       ],
-      "This is not me..." : [
+      "Logout Failed": [
          null,
-         ""
+         "Çıkış başarısız oldu"
       ],
-      "We are sorry, BrowserID requires cookies" : [
+      "You are offline!": [
          null,
-         ""
+         "Çevrim dışısınız!"
       ],
-      "In just a moment you'll be signed into BrowserID." : [
+      "Unfortunately, BrowserID cannot communicate while offline!": [
          null,
-         ""
+         "Ne yazık ki çevrim dışıyken BrowserID ile iletişim kurulamaz."
       ],
-      "Getting Assertion" : [
+      "Authenticating with Identity Provider": [
          null,
-         ""
+         "Kimlik Sağlayıcısı ile doğrulanıyor"
       ],
-      "Completing User Registration" : [
+      "We had trouble communicating with your email provider, please try again!": [
          null,
-         ""
+         "E-posta sağlayıcınıza erişemedik. Lütfen tekrar deneyin!"
       ],
-      "Registration Failed" : [
+      "Provisioning with Identity Provider": [
          null,
-         ""
+         "Kimlik Sağlayıcısından provizyon alınıyor"
       ],
-      "This message will go away when the request completes (hopefully soon).  If you wait too long, close this window and try again." : [
+      "Provisioning Unsupported Identity Provider": [
          null,
-         ""
+         "Desteklenmeyen Kimlik Sağlayıcısından provizyon alınıyor"
       ],
-      "translated text" : [
+      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
          null,
-         ""
+         "Belirtilen e-posta adresi ne yazık ki Birincil Kimlik Sağlayıcı olarak görev yapamaz"
       ],
-      "The email field is required." : [
+      "Registration Failed": [
          null,
-         ""
+         "Kayıt başarısız oldu"
       ],
-      "New email address" : [
+      "Establishing Relay": [
          null,
-         ""
+         "Röle kuruluyor"
       ],
-      "verify email" : [
+      "Relay frame could not be found": [
          null,
-         ""
+         "Röle çerçevesi bulunamadı"
       ],
-      "Checking if Cookies are Enabled" : [
+      "Resetting Password": [
          null,
-         ""
+         "Parola sıfırlanıyor"
       ],
-      "Provisioning Unsupported Identity Provider" : [
+      "Remove Email Address from Account": [
          null,
-         ""
+         "E-posta adresini hesaptan kaldır"
       ],
-      "That address is already added to your account!" : [
+      "Setting Password": [
          null,
-         ""
+         "Parola ayarlanıyor"
       ],
-      "Authenticating with Identity Provider" : [
+      "Signin Failed": [
          null,
-         ""
+         "Oturum açma başarısız oldu"
       ],
-      "Remove Email Address from Account" : [
+      "Signup Failed": [
          null,
-         ""
+         "Kayıt başarısız oldu"
       ],
-      "Communication Error" : [
+      "Syncing Address": [
          null,
-         ""
+         "Adres eşitleniyor"
       ],
-      "Provisioning with Identity Provider" : [
+      "Syncing Email Addresses": [
          null,
-         ""
+         "E-posta adresleri eşitleniyor"
       ],
-      "Adding Address" : [
+      "Sync Keys for Address": [
          null,
-         ""
+         "Adres anahtarlarını eşitle"
       ],
-      "Check your email!" : [
+      "Getting Token Info": [
          null,
-         ""
+         "Jeton bilgisi alınıyor"
       ],
-      "The site requested you sign in using" : [
+      "Updating password": [
          null,
-         ""
+         "Parola güncelleniyor"
       ],
-      "Syncing Address" : [
+      "Verifying email address": [
          null,
-         ""
+         "E-posta adresi güncelleniyor"
       ],
-      "Use a different email" : [
+      "Communication Error": [
          null,
-         ""
+         "İletişim hatası"
       ],
-      "next" : [
+      "Finishing Sign In...": [
          null,
-         ""
+         "Oturum açma tamamlanıyor..."
       ],
-      "Verifying email address" : [
+      "In just a moment you'll be signed into BrowserID.": [
          null,
-         ""
+         "Birazdan BrowserID oturumunuz açılacak."
       ],
-      "Signup Failed" : [
+      "Please wait a few seconds while we sign you into the site.": [
          null,
-         ""
+         "Sitedeki oturumunuz açılırken lütfen birkaç saniye bekleyin."
       ],
-      "This email looks new, so let&apos;s get you set up." : [
+      "We are sorry, this request is taking a LOOONG time.": [
          null,
-         ""
+         "Üzgünüz, bu istek biraz FAZLA uzun sürdü."
       ],
-      "Checking Script Version" : [
+      "This message will go away when the request completes (hopefully soon). If you wait too long, close this window and try again.": [
          null,
-         ""
+         "İstek tamamlandığında (umuyoruz ki kısa sürede) bu mesaj kaybolacaktır. Çok fazla beklerseniz bu pencereyi kapatıp tekrar deneyin."
       ],
-      "You are offline!" : [
+      "Sign in using": [
          null,
-         ""
+         "Bunu kullanarak oturum aç"
       ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider" : [
+      "New email address": [
          null,
-         ""
+         "Yeni e-posta adresi"
       ],
-      "Checking Authentication" : [
+      "This field must be an email address.": [
          null,
-         ""
+         "Bu alanda bir e-posta adresi olmalıdır."
       ],
-      "Getting Token Info" : [
+      "The email field is required.": [
          null,
-         ""
+         "E-posta alanını doldurmak zorunludur."
       ],
-      "forgot your password?" : [
+      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again.": [
          null,
-         ""
+         "Bu adrese biraz önce e-posta gönderdik! Gerçekten bir tane daha göndermek istiyorsanız birkaç dakika bekleyip tekrar deneyin."
       ],
-      "Address Verified!" : [
+      "That address is already added to your account!": [
          null,
-         ""
+         "Bu adres zaten hesabınızda mevcut!"
       ],
-      "This field must be an email address." : [
+      "add": [
          null,
-         ""
+         "ekle"
       ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline." : [
+      "cancel": [
          null,
-         ""
+         "iptal"
       ],
-      "Authenticating User" : [
+      "Email": [
          null,
-         ""
+         "E-posta"
       ],
-      "This email looks new, so let&#39;s get you set up." : [
+      "Enter your email address to sign in to <strong>%s</strong>": [
          null,
-         ""
+         "<strong>%s</strong> adresine oturum açmak için e-posta adresinizi girin"
       ],
-      "Email" : [
+      "Welcome to BrowserID!": [
          null,
-         ""
+         "BrowserID'ye hoş geldiniz!"
       ],
-      "Setting Password" : [
+      "This email looks new, so let&#39;s get you set up.": [
          null,
-         ""
+         "Bu e-posta yeni görünüyor. Kuruluma geçelim."
       ],
-      "Finishing Sign In..." : [
+      "Password": [
          null,
-         ""
+         "Parola"
       ],
-      "select email" : [
+      "forgot your password?": [
          null,
-         ""
+         "parolanızı mı unuttunuz?"
       ],
-      "Checking Address Info" : [
+      "The password field is required.": [
          null,
-         ""
+         "Parola alanını doldurmanız zorunludur."
       ],
-      "Adding Primary Email Address to User" : [
+      "The account cannot be logged in with this username and password.": [
          null,
-         ""
+         "Bu kullanıcı adı ve parola ile hesaba giriş yapılamadı."
       ],
-      "Your identity has been verified with your email provider, we will now try to sign you in." : [
+      "next": [
          null,
-         ""
+         "ileri"
       ],
-      "Verify With Email Provider" : [
+      "verify email": [
          null,
-         ""
+         "e-postayı doğrulayın"
       ],
-      "Checking Whether User is Authenticated with IdP" : [
+      "select email": [
          null,
-         ""
+         "e-posta seçin"
       ],
-      "Updating password" : [
+      "Cannot verify %s": [
          null,
-         ""
+         "%s doğrulanamadı"
       ],
-      "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
+      "%s is a required address, but we cannot verify that you own this address.": [
          null,
-         ""
+         "%s gerekli bir adres, fakat bu adresin size ait olduğunu doğrulayamadık."
       ],
-      "The password field is required." : [
+      "Check your email!": [
          null,
-         ""
+         "E-postanızı kontrol edin!"
       ],
-      "cancel" : [
+      "We sent a confirmation email to <strong>%s</strong>": [
          null,
-         ""
+         "<strong>%s</strong> adresine bir onay e-postası gönderdik"
       ],
-      "We had trouble communicating with your email provider, please try again!" : [
+      "To finish signing in just click the verify link we sent to your email address.": [
          null,
-         ""
+         "Kaydınızı tamamlamak için e-posta adresinize gönderilen doğrulama bağlantısına tıklayın."
       ],
-      "Creating Account" : [
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"cancel\">cancel</a>.": [
          null,
-         ""
+         "Bunun bir hata olduğunu düşünüyorsanız, gönderilen e-postayı görmezden gelin ve <a href=\"#\" id=\"cancel\">iptal edin</a>."
       ],
-      "We are sorry, this request is taking a LOOONG time." : [
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"back\">use another email address</a>.": [
          null,
-         ""
+         "Bunun bir hata olduğunu düşünüyorsanız, gönderilen e-postayı görmezden gelin ve <a href=\"#\" id=\"back\">başka bir e-posta adresi kullanın</a>."
       ],
-      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again." : [
+      "The site requested you sign in using": [
          null,
-         ""
+         "Site, şunu kullanarak oturum açmanızı istedi"
       ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again" : [
+      "Reset Password": [
          null,
-         ""
+         "Parolayı sıfırla"
       ],
-      "Checking Registration Token" : [
+      "Cancel": [
          null,
-         ""
+         "Vazgeç"
       ],
-      "add" : [
+      "*%s* is not a valid email address!": [
          null,
-         ""
+         "*%s* geçerli bir e-posta adresi değil!"
       ],
-      "To continue, please close the window and enter a valid address." : [
+      "To continue, please close the window and enter a valid address.": [
          null,
-         ""
+         "Devam etmek için lütfen pencereyi kapatın ve geçerli bir adres girin."
       ],
-      "Enter your email address to sign in to <strong>%s</strong>" : [
+      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
          null,
-         ""
+         "Üzgünüz, çevrim dışı olduğunuzda BrowserID ile iletişim kurulması mümkün değildir."
       ],
-      "Establishing Relay" : [
+      "This is not me...": [
          null,
-         ""
+         "Bu ben değilim..."
       ],
-      "Signin Failed" : [
+      "Use a different email": [
          null,
-         ""
+         "Farklı bir e-posta kullan"
       ],
-      "Verify" : [
+      "Always sign in using this email": [
          null,
-         ""
+         "Her zaman bu e-posta adresiyle oturum aç"
       ],
-      "sign in" : [
+      "sign in": [
          null,
-         ""
+         "oturum aç"
       ],
-      "The account cannot be logged in with this username and password." : [
+      "Address Verified!": [
          null,
-         ""
+         "Adres doğrulandı!"
       ],
-      "Welcome to BrowserID!" : [
+      "Your identity has been verified with your email provider, we will now try to sign you in.": [
          null,
-         ""
+         "E-posta sağlayıcınız üzerinden kimliğiniz doğrulandı. Şimdi oturumunuzu açmayı deneyeceğiz."
       ],
-      "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
+      "You must sign in with your email provider to verify ownership of this address. This window will be redirected to": [
          null,
-         ""
+         "Bu adresin sahipliği doğrulamak için e-posta sağlayıcınızla oturum açmalısınız. Bu pencere şuray yönlendirilecek:"
       ],
-      "*%s* is not a valid email address!" : [
+      "Verify": [
          null,
-         ""
+         "Doğrula"
       ],
-      "Please wait a few seconds while we sign you into the site." : [
+      "Verify With Email Provider": [
          null,
-         ""
+         "E-posta sağlayıcısı ile doğrula"
       ]
    }
 }

@@ -1,181 +1,182 @@
-var json_locale_data = {
-   "messages" : {
-      "Error encountered trying to complete registration." : [
-         null,
-         ""
-      ],
-      "" : {
-         "MIME-Version" : " 1.0",
-         "X-Generator" : " Translate Toolkit 1.9.0",
-         "POT-Creation-Date" : " 2012-01-26 17:37-0800",
-         "Language" : " af",
-         "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
-         "Content-Type" : " text/plain; charset=UTF-8",
-         "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
-         "Language-Team" : " LANGUAGE <LL@li.org>",
-         "Content-Transfer-Encoding" : " 8bit",
-         "Report-Msgid-Bugs-To" : " ",
-         "Project-Id-Version" : " PACKAGE VERSION"
+;var json_locale_data = {
+   "messages": {
+      "": {
+         "Project-Id-Version": " PACKAGE VERSION",
+         "Report-Msgid-Bugs-To": " ",
+         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "PO-Revision-Date": " 2012-02-04 23:58+0200",
+         "Last-Translator": " Friedel <friedel@translate.org.za>",
+         "Language-Team": " LANGUAGE <LL@li.org>",
+         "Language": " af",
+         "MIME-Version": " 1.0",
+         "Content-Type": " text/plain; charset=UTF-8",
+         "Content-Transfer-Encoding": " 8bit",
+         "Plural-Forms": " nplurals=2; plural=(n != 1);",
+         "X-Generator": " Pootle 2.1.6"
       },
-      "BrowserID" : [
+      "Complete Login to %s using BrowserID": [
+         null,
+         "Voltooi aanmelding by %s m.b.v. BrowserID"
+      ],
+      "Error encountered while attempting to confirm your address. Have you previously verified this address?": [
+         null,
+         "Kon nie die e-posadres bevestig nie. Het u dit al vroeër bevestig?"
+      ],
+      "Error encountered trying to complete registration.": [
+         null,
+         "Kon nie registrasie voltooi nie."
+      ],
+      "Finish signing into: ": [
+         null,
+         "Voltooi aanmelding by:"
+      ],
+      "Email Verification": [
+         null,
+         "E-posbevestiging"
+      ],
+      "Email Address": [
+         null,
+         "E-posadres"
+      ],
+      "Your Email": [
+         null,
+         "U e-posadres"
+      ],
+      "New Password": [
+         null,
+         "Nuwe wagwoord"
+      ],
+      "Enter a Password": [
+         null,
+         "Gee 'n wagwoord"
+      ],
+      "Password is required.": [
+         null,
+         "'n Wagwoord word benodig"
+      ],
+      "Password must be between 8 and 80 characters long.": [
+         null,
+         "Die wagwoord moet tussen 8 en 80 karakters lank wees."
+      ],
+      "Verify Password": [
+         null,
+         "Bevestig wagwoord"
+      ],
+      "Repeat Password": [
+         null,
+         "Herhaal wagwoord"
+      ],
+      "Verification password is required.": [
+         null,
+         "Wagwoord vir bevestiging is nodig."
+      ],
+      "Passwords do not match.": [
+         null,
+         "Wagwoorde stem nie ooreen nie."
+      ],
+      "Finish": [
          null,
          ""
       ],
-      "Verification password is required." : [
+      "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
-         ""
+         "<strong class=\"email\">U adres</strong> is bevestig!"
       ],
-      "Finish signing into: " : [
+      "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
-         ""
+         "Die nuwe adres is opgestel en u kan nou aanmeld. Sluit gerus dié venster en gaan terug na"
       ],
-      "Your Email" : [
+      "Communicating with server": [
          null,
-         ""
+         "Kommunikeer tans met bediener"
       ],
-      "TOS" : [
+      "Just a moment while we talk with the server.": [
          null,
-         ""
+         "Net 'n oomblik terwyl ons praat met die bediener."
       ],
-      "Need Help?" : [
+      "BrowserID": [
          null,
-         ""
+         "BrowserID"
       ],
-      "BrowserID: %s" : [
+      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
          null,
-         ""
+         "BrowserID is die vinnige en veilige manier om mee aan te meld &mdash; <a target=\"_blank\" href=\"/about\">Meer inligting</a>"
       ],
-      "Error comunicating with server." : [
+      "BrowserID: %s": [
          null,
-         ""
+         "BrowserID: %s"
       ],
-      "Last step!" : [
+      "BrowserID Home": [
          null,
-         ""
+         "Tuiste van BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>" : [
+      "How it works": [
          null,
-         ""
+         "Hoe dit werk"
       ],
-      "Your new address is set up and you should now be signed in. You may now close this window and go back to" : [
+      "Developers": [
          null,
-         ""
+         "Programmeerders"
       ],
-      "Verify Password" : [
+      "Sign In": [
          null,
-         ""
+         "Meld aan"
       ],
-      "BrowserID Home" : [
+      "Sign Out": [
          null,
-         ""
+         "Meld af"
       ],
-      "Password must be between 8 and 80 characters long." : [
+      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
          null,
-         ""
+         "Deur die <a href=\"%s\" target=\"_blank\">Identiteitspan</a> by <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
       ],
-      "(A better way to sign in)" : [
+      "Privacy": [
          null,
-         ""
+         "Privaatheid"
       ],
-      "Finish registration by clicking this link:" : [
+      "TOS": [
          null,
-         ""
+         "Diensbepalings"
       ],
-      "Thanks," : [
+      "Need Help?": [
          null,
-         ""
+         "Benodig hulp?"
       ],
-      "Developers" : [
+      "There was a problem with your signup link. Has this address already been registered?": [
          null,
-         ""
+         "Daar was 'n probleem met die inskrywingskakel. Is dié adres dalk reeds geregistreer?"
       ],
-      "Communicating with server" : [
+      "Error comunicating with server.": [
          null,
-         ""
+         "Fout met kommunikasie met bediener."
       ],
-      "Enter a Password" : [
+      "Last step!": [
          null,
-         ""
+         "Laaste stap!"
       ],
-      "Error encountered while attempting to confirm your address. Have you previously verified this address?" : [
+      "Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!": [
          null,
-         ""
+         "Dankie dat u inskryf vir <strong>BrowserID</strong>. Gebruik gerus nou u <strong>BrowserID</strong>-rekening om <em>Aan te meld</em> of <em>In te skryf</em> by webwerwe regoor die web!"
       ],
-      "Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!" : [
+      "Thanks for verifying your email address. This message is being sent to you to complete your sign-in to %s.": [
          null,
-         ""
+         "Dankie vir bevestiging van u e-posadres. Dié boodskap word gestuur om u aanmelding by %s te voltooi."
       ],
-      "Email Verification" : [
+      "Finish registration by clicking this link:": [
          null,
-         ""
+         "Voltooi registrasie deur dié skakel te klik:"
       ],
-      "<strong class=\"email\">Your address</strong> has been verified!" : [
+      "If you are NOT trying to sign into this site, just ignore this email.": [
          null,
-         ""
+         "Indien u nié probeer aanmeld by dié werf nie, ignoreer bloot dié boodskap."
       ],
-      "Sign In" : [
+      "Thanks,": [
          null,
-         ""
+         "Dankie,"
       ],
-      "Finish" : [
+      "(A better way to sign in)": [
          null,
-         ""
-      ],
-      "Browser ID" : [
-         null,
-         ""
-      ],
-      "There was a problem with your signup link.  Has this address already been registered?" : [
-         null,
-         ""
-      ],
-      "Passwords do not match." : [
-         null,
-         ""
-      ],
-      "Password is required." : [
-         null,
-         ""
-      ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>" : [
-         null,
-         ""
-      ],
-      "New Password" : [
-         null,
-         ""
-      ],
-      "Complete Login to %s using BrowserID" : [
-         null,
-         ""
-      ],
-      "How it works" : [
-         null,
-         ""
-      ],
-      "Privacy" : [
-         null,
-         ""
-      ],
-      "Repeat Password" : [
-         null,
-         ""
-      ],
-      "Just a moment while we talk with the server." : [
-         null,
-         ""
-      ],
-      "Email Address" : [
-         null,
-         ""
-      ],
-      "Sign Out" : [
-         null,
-         ""
-      ],
-      "If you are NOT trying to sign into this site, just ignore this email." : [
-         null,
-         ""
+         "('n Beter manier om mee aan te meld)"
       ]
    }
 }

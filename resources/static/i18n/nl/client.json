@@ -1,365 +1,378 @@
-var json_locale_data = {
-   "client" : {
-      "Cancelling User Account" : [
-         null,
-         ""
-      ],
-      "" : {
-         "MIME-Version" : " 1.0",
-         "X-Generator" : " Translate Toolkit 1.9.0",
-         "POT-Creation-Date" : " 2012-01-26 17:37-0800",
-         "Language" : " nl",
-         "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
-         "Content-Type" : " text/plain; charset=UTF-8",
-         "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
-         "Language-Team" : " LANGUAGE <LL@li.org>",
-         "Content-Transfer-Encoding" : " 8bit",
-         "Report-Msgid-Bugs-To" : " ",
-         "Project-Id-Version" : " PACKAGE VERSION"
+;var json_locale_data = {
+   "client": {
+      "": {
+         "Project-Id-Version": " PACKAGE VERSION",
+         "Report-Msgid-Bugs-To": " ",
+         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "PO-Revision-Date": " 2012-02-04 11:34+0200",
+         "Last-Translator": " Ton <tonnes.mb@gmail.com>",
+         "Language-Team": " LANGUAGE <LL@li.org>",
+         "Language": " nl",
+         "MIME-Version": " 1.0",
+         "Content-Type": " text/plain; charset=UTF-8",
+         "Content-Transfer-Encoding": " 8bit",
+         "Plural-Forms": " nplurals=2; plural=(n != 1);",
+         "X-Generator": " Pootle 2.1.6"
       },
-      "Always sign in using this email" : [
+      "Authenticating User": [
          null,
-         ""
+         "Gebruiker verifiëren"
       ],
-      "Sync Keys for Address" : [
+      "Adding Address": [
          null,
-         ""
+         "Adres toevoegen"
       ],
-      "Syncing Email Addresses" : [
+      "Adding Primary Email Address to User": [
          null,
-         ""
+         "Primair e-mailadres aan gebruiker toevoegen"
       ],
-      "Unfortunately, BrowserID cannot communicate while offline!" : [
+      "Checking Address Info": [
          null,
-         ""
+         "Adresinformatie controleren"
       ],
-      "Sign in using" : [
+      "Authenticating with Assertion": [
          null,
-         ""
+         "Verifiëren met bevestiging"
       ],
-      "Relay frame could not be found" : [
+      "Cancelling User Account": [
          null,
-         ""
+         "Gebruikersaccount annuleren"
       ],
-      "Password" : [
+      "Checking Authentication": [
          null,
-         ""
+         "Verificatie controleren"
       ],
-      "We sent a confirmation email to <strong>%s</strong>" : [
+      "Checking Script Version": [
          null,
-         ""
+         "Scriptversie controleren"
       ],
-      "To finish signing in just click the verify link we sent to your email address." : [
+      "Completing User Registration": [
          null,
-         ""
+         "Gebruikersregistratie voltooien"
       ],
-      "Cancel" : [
+      "We are sorry, BrowserID requires cookies": [
          null,
-         ""
+         "Sorry, BrowserID vereist cookies"
       ],
-      "To verify that you own <strong id='primary_email'>%s</strong>, you must sign in with your provider.  This window will be redirected to" : [
+      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
          null,
-         ""
+         "Voor BrowserID moeten de cookies van uw browser zijn ingeschakeld en kunnen werken. Schakel de cookies van uw browser in en probeer het opnieuw"
       ],
-      "Authenticating with Assertion" : [
+      "Checking if Cookies are Enabled": [
          null,
-         ""
+         "Controleren of cookies zijn ingeschakeld"
       ],
-      "Reset Password" : [
+      "Creating Account": [
          null,
-         ""
+         "Account aanmaken"
       ],
-      "Resetting Password" : [
+      "Getting Assertion": [
          null,
-         ""
+         "Bevestiging verkrijgen"
       ],
-      "Logout Failed" : [
+      "Checking Registration Token": [
          null,
-         ""
+         "Registratietoken controleren"
       ],
-      "Checking Email Address" : [
+      "Checking Email Address": [
          null,
-         ""
+         "E-mailadres controleren"
       ],
-      "To verify that you own this address, you must sign in with your provider.  This window will be redirected to" : [
+      "Checking Whether User is Authenticated with IdP": [
          null,
-         ""
+         "Controleren of gebruiker is geverifieerd met IdP"
       ],
-      "This is not me..." : [
+      "Logout Failed": [
          null,
-         ""
+         "Afmelden mislukt"
       ],
-      "We are sorry, BrowserID requires cookies" : [
+      "You are offline!": [
          null,
-         ""
+         "U bent offline!"
       ],
-      "In just a moment you'll be signed into BrowserID." : [
+      "Unfortunately, BrowserID cannot communicate while offline!": [
          null,
-         ""
+         "Helaas kan BrowserID niet offline communiceren!"
       ],
-      "Getting Assertion" : [
+      "Authenticating with Identity Provider": [
          null,
-         ""
+         "Verifiëren met identityprovider"
       ],
-      "Completing User Registration" : [
+      "We had trouble communicating with your email provider, please try again!": [
          null,
-         ""
+         "Er was een probleem bij het communiceren met uw e-mailprovider, probeer het opnieuw!"
       ],
-      "Registration Failed" : [
+      "Provisioning with Identity Provider": [
          null,
-         ""
+         "Provisioning met identityprovider"
       ],
-      "This message will go away when the request completes (hopefully soon).  If you wait too long, close this window and try again." : [
+      "Provisioning Unsupported Identity Provider": [
          null,
-         ""
+         "Provisioning met niet-ondersteunde identityprovider"
       ],
-      "translated text" : [
+      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
          null,
-         ""
+         "Helaas kan het opgegeven e-mailadres niet als primaire identityprovider worden gebruikt"
       ],
-      "The email field is required." : [
+      "Registration Failed": [
          null,
-         ""
+         "Registratie mislukt"
       ],
-      "New email address" : [
+      "Establishing Relay": [
          null,
-         ""
+         "Relay opzetten"
       ],
-      "verify email" : [
+      "Relay frame could not be found": [
          null,
-         ""
+         "Relayframe is niet gevonden"
       ],
-      "Checking if Cookies are Enabled" : [
+      "Resetting Password": [
          null,
-         ""
+         "Wachtwoord herinitialiseren"
       ],
-      "Provisioning Unsupported Identity Provider" : [
+      "Remove Email Address from Account": [
          null,
-         ""
+         "E-mailadres van account verwijderen"
       ],
-      "That address is already added to your account!" : [
+      "Setting Password": [
          null,
-         ""
+         "Wachtwoord instellen"
       ],
-      "Authenticating with Identity Provider" : [
+      "Signin Failed": [
          null,
-         ""
+         "Aanmelden mislukt"
       ],
-      "Remove Email Address from Account" : [
+      "Signup Failed": [
          null,
-         ""
+         "Registratie mislukt"
       ],
-      "Communication Error" : [
+      "Syncing Address": [
          null,
-         ""
+         "Adres synchroniseren"
       ],
-      "Provisioning with Identity Provider" : [
+      "Syncing Email Addresses": [
          null,
-         ""
+         "E-mailadres synchroniseren"
       ],
-      "Adding Address" : [
+      "Sync Keys for Address": [
          null,
-         ""
+         "Sync-sleutels voor adres"
       ],
-      "Check your email!" : [
+      "Getting Token Info": [
          null,
-         ""
+         "Tokeninformatie verkrijgen"
       ],
-      "The site requested you sign in using" : [
+      "Updating password": [
          null,
-         ""
+         "Wachtwoord bijwerken"
       ],
-      "Syncing Address" : [
+      "Verifying email address": [
          null,
-         ""
+         "E-mailadres verifiëren"
       ],
-      "Use a different email" : [
+      "Communication Error": [
          null,
-         ""
+         "Communicatiefout"
       ],
-      "next" : [
+      "Finishing Sign In...": [
          null,
-         ""
+         "Aanmelden voltooien…"
       ],
-      "Verifying email address" : [
+      "In just a moment you'll be signed into BrowserID.": [
          null,
-         ""
+         "Over enkele ogenblikken bent u bij BrowserID aangemeld."
       ],
-      "Signup Failed" : [
+      "Please wait a few seconds while we sign you into the site.": [
          null,
-         ""
+         "Wacht enkele seconden terwijl we u aanmelden bij de website."
       ],
-      "This email looks new, so let&apos;s get you set up." : [
+      "We are sorry, this request is taking a LOOONG time.": [
          null,
-         ""
+         "Sorry, dit verzoek kost VEEEEL tijd."
       ],
-      "Checking Script Version" : [
+      "This message will go away when the request completes (hopefully soon). If you wait too long, close this window and try again.": [
          null,
-         ""
+         "Dit bericht zal verdwijnen zodra uw verzoek is voltooid (hopelijk snel). Als u te lang wacht, sluit dan dit venster en probeer het opnieuw."
       ],
-      "You are offline!" : [
+      "Sign in using": [
          null,
-         ""
+         "Aanmelden met"
       ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider" : [
+      "New email address": [
          null,
-         ""
+         "Nieuw e-mailadres"
       ],
-      "Checking Authentication" : [
+      "This field must be an email address.": [
          null,
-         ""
+         "Dit veld moet een e-mailadres zijn."
       ],
-      "Getting Token Info" : [
+      "The email field is required.": [
          null,
-         ""
+         "Het e-mailveld is verplicht."
       ],
-      "forgot your password?" : [
+      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again.": [
          null,
-         ""
+         "We hebben zojuist een e-mail naar dat adres gestuurd! Als u er echt nog een wilt sturen, wacht dan een paar minuten en probeer het opnieuw."
       ],
-      "Address Verified!" : [
+      "That address is already added to your account!": [
          null,
-         ""
+         "Dat adres is al aan uw account toegevoegd!"
       ],
-      "This field must be an email address." : [
+      "add": [
          null,
-         ""
+         "toevoegen"
       ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline." : [
+      "cancel": [
          null,
-         ""
+         "annuleren"
       ],
-      "Authenticating User" : [
+      "Email": [
          null,
-         ""
+         "E-mailadres"
       ],
-      "This email looks new, so let&#39;s get you set up." : [
+      "Enter your email address to sign in to <strong>%s</strong>": [
          null,
-         ""
+         "Voer uw e-mailadres in om u aan te melden bij <strong>%s</strong>"
       ],
-      "Email" : [
+      "Welcome to BrowserID!": [
          null,
-         ""
+         "Welkom bij BrowserID!"
       ],
-      "Setting Password" : [
+      "This email looks new, so let&#39;s get you set up.": [
          null,
-         ""
+         "Dit e-mailadres lijkt nieuw, dus laten we de boel gaan instellen."
       ],
-      "Finishing Sign In..." : [
+      "Password": [
          null,
-         ""
+         "Wachtwoord"
       ],
-      "select email" : [
+      "forgot your password?": [
          null,
-         ""
+         "wachtwoord vergeten?"
       ],
-      "Checking Address Info" : [
+      "The password field is required.": [
          null,
-         ""
+         "Het wachtwoordveld is verplicht."
       ],
-      "Adding Primary Email Address to User" : [
+      "The account cannot be logged in with this username and password.": [
          null,
-         ""
+         "De account kan met deze gebruikersnaam en dit wachtwoord niet worden aangemeld."
       ],
-      "Your identity has been verified with your email provider, we will now try to sign you in." : [
+      "next": [
          null,
-         ""
+         "volgende"
       ],
-      "Verify With Email Provider" : [
+      "verify email": [
          null,
-         ""
+         "e-mailadres verifiëren"
       ],
-      "Checking Whether User is Authenticated with IdP" : [
+      "select email": [
          null,
-         ""
+         "e-mailadres selecteren"
       ],
-      "Updating password" : [
+      "Cannot verify %s": [
          null,
-         ""
+         "Kan %s niet verifiëren"
       ],
-      "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
+      "%s is a required address, but we cannot verify that you own this address.": [
          null,
-         ""
+         "%s is een verplicht adres, maar we kunnen niet verifiëren dat dit adres van u is."
       ],
-      "The password field is required." : [
+      "Check your email!": [
          null,
-         ""
+         "Controleer uw e-mail!"
       ],
-      "cancel" : [
+      "We sent a confirmation email to <strong>%s</strong>": [
          null,
-         ""
+         "We hebben een bevestigings-e-mail naar <strong>%s</strong> gestuurd"
       ],
-      "We had trouble communicating with your email provider, please try again!" : [
+      "To finish signing in just click the verify link we sent to your email address.": [
          null,
-         ""
+         "Klik op de verificatiekoppeling die we naar uw e-mailadres hebben gestuurd om het aanmelden te voltooien."
       ],
-      "Creating Account" : [
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"cancel\">cancel</a>.": [
          null,
-         ""
+         "Als dit een vergissing is, negeer dan het verzonden e-mailbericht en <a href=\"#\" id=\"cancel\">annuleer</a>."
       ],
-      "We are sorry, this request is taking a LOOONG time." : [
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"back\">use another email address</a>.": [
          null,
-         ""
+         "Als dit een vergissing is, negeer dan het verzonden e-mailbericht en <a href=\"#\" id=\"back\">gebruik een ander e-mailadres</a>."
       ],
-      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again." : [
+      "The site requested you sign in using": [
          null,
-         ""
+         "De website vroeg u zich aan te melden met"
       ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again" : [
+      "Reset Password": [
          null,
-         ""
+         "Wachtwoord herinitialiseren"
       ],
-      "Checking Registration Token" : [
+      "Cancel": [
          null,
-         ""
+         "Annuleren"
       ],
-      "add" : [
+      "*%s* is not a valid email address!": [
          null,
-         ""
+         "*%s* is geen geldig e-mailadres!"
       ],
-      "To continue, please close the window and enter a valid address." : [
+      "To continue, please close the window and enter a valid address.": [
          null,
-         ""
+         "Sluit het venster en voer een geldig adres in om door te gaan."
       ],
-      "Enter your email address to sign in to <strong>%s</strong>" : [
+      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
          null,
-         ""
+         "Sorry, we kunnen niet met BrowserID communiceren terwijl u offline bent."
       ],
-      "Establishing Relay" : [
+      "This is not me...": [
          null,
-         ""
+         "Dit ben ik niet…"
       ],
-      "Signin Failed" : [
+      "Use a different email": [
          null,
-         ""
+         "Gebruik een ander e-mailadres"
       ],
-      "Verify" : [
+      "Always sign in using this email": [
          null,
-         ""
+         "Altijd aanmelden met dit e-mailadres"
       ],
-      "sign in" : [
+      "sign in": [
          null,
-         ""
+         "aanmelden"
       ],
-      "The account cannot be logged in with this username and password." : [
+      "Address Verified!": [
          null,
-         ""
+         "Adres geverifieerd!"
       ],
-      "Welcome to BrowserID!" : [
+      "Your identity has been verified with your email provider, we will now try to sign you in.": [
          null,
-         ""
+         "Uw identiteit is geverifieerd via uw e-mailprovider. We gaan u nu proberen aan te melden."
       ],
-      "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
+      "You must sign in with your email provider to verify ownership of this address. This window will be redirected to": [
          null,
-         ""
+         "Om te verifiëren dat u de eigenaar van dit adres bent moet u zich aanmelden met uw e-mailprovider. Dit venster wordt doorgestuurd naar"
       ],
-      "*%s* is not a valid email address!" : [
+      "Verify": [
          null,
-         ""
+         "Verifiëren"
       ],
-      "Please wait a few seconds while we sign you into the site." : [
+      "Verify With Email Provider": [
          null,
-         ""
+         "Verifiëren met e-mailprovider"
+      ],
+      "#~ \"We just sent an email to that address!  If you really want to send \"#~ \"another, wait a minute or two and try again.\"": [
+         null,
+         "#~ \"We hebben zojuist een e-mail naar dat adres gestuurd!  Als u er echt nog \"#~ \"een wilt sturen, wacht dan een minuut of twee en probeer het opnieuw.\""
+      ],
+      "This email looks new, so let&apos;s get you set up.": [
+         null,
+         "Dit e-mailadres lijkt nieuw, dus laten we de boel gaan instellen."
+      ],
+      "#~ \"To verify that you own <strong id='primary_email'>%s</strong>, you must \"#~ \"sign in with your provider.  This window will be redirected to\"": [
+         null,
+         "#~ \"Om te verifiëren dat u de eigenaar van <strong id='primary_email'>%s</\"#~ \"strong> bent moet u zich aanmelden met uw provider.  Dit venster wordt \"#~ \"doorgestuurd naar\""
+      ],
+      "translated text": [
+         null,
+         "vertaalde tekst"
       ]
    }
 }

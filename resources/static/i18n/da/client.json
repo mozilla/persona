@@ -1,0 +1,361 @@
+;var json_locale_data = {
+   "client": {
+      "": {
+         "Project-Id-Version": " PACKAGE VERSION",
+         "Report-Msgid-Bugs-To": " ",
+         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "PO-Revision-Date": " 2012-02-05 15:04+0100",
+         "Last-Translator": " Dan Storm <storm@catalystcode.net>",
+         "Language-Team": " LANGUAGE <LL@li.org>",
+         "Language": " ",
+         "MIME-Version": " 1.0",
+         "Content-Type": " text/plain; charset=UTF-8",
+         "Content-Transfer-Encoding": " 8bit"
+      },
+      "Authenticating User": [
+         null,
+         "Godkender bruger"
+      ],
+      "Adding Address": [
+         null,
+         "Tilføjer adresse"
+      ],
+      "Adding Primary Email Address to User": [
+         null,
+         "Tilføjer primær mailadresse til bruger"
+      ],
+      "Checking Address Info": [
+         null,
+         "Kontrollerer adresseinformation"
+      ],
+      "Authenticating with Assertion": [
+         null,
+         "Godkender med påstand"
+      ],
+      "Cancelling User Account": [
+         null,
+         "Annullerer brugerkonto"
+      ],
+      "Checking Authentication": [
+         null,
+         "Kontrollerer godkendelse"
+      ],
+      "Checking Script Version": [
+         null,
+         "Kontrollerer script-version"
+      ],
+      "Completing User Registration": [
+         null,
+         "Afslutter brugertilmelding."
+      ],
+      "We are sorry, BrowserID requires cookies": [
+         null,
+         "Vi beklager, men BrowserID kræver cookies"
+      ],
+      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
+         null,
+         "BrowserID kræver, at din browser accepterer cookies, for at virke. Aktiver cookies i din browser, og prøv igen."
+      ],
+      "Checking if Cookies are Enabled": [
+         null,
+         "Kontrollerer at cookies er aktiveret"
+      ],
+      "Creating Account": [
+         null,
+         "Opretter konto"
+      ],
+      "Getting Assertion": [
+         null,
+         "Henter påstand"
+      ],
+      "Checking Registration Token": [
+         null,
+         "Kontrollerer registreringsnøgle"
+      ],
+      "Checking Email Address": [
+         null,
+         "Kontrollerer mailadresse"
+      ],
+      "Checking Whether User is Authenticated with IdP": [
+         null,
+         "Kontrollerer om brugeren er godkendt gennem IdP"
+      ],
+      "Logout Failed": [
+         null,
+         "Log ud mislykkedes"
+      ],
+      "You are offline!": [
+         null,
+         "Du er offline!"
+      ],
+      "Unfortunately, BrowserID cannot communicate while offline!": [
+         null,
+         "BrowserID kan beklageligvis ikke kommunikere i offline tilstand!"
+      ],
+      "Authenticating with Identity Provider": [
+         null,
+         "Godkender med identitetsudbyder"
+      ],
+      "We had trouble communicating with your email provider, please try again!": [
+         null,
+         "Vi kunne ikke kommunikere med din mailudbyder. Prøv igen!"
+      ],
+      "Provisioning with Identity Provider": [
+         null,
+         "Provisionerer med identitetsudbyder"
+      ],
+      "Provisioning Unsupported Identity Provider": [
+         null,
+         "Provisionerer ikke-understøttet identitetsudbyder"
+      ],
+      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
+         null,
+         "Den angivne mailadresse kan desværre ikke agere som primær identitetsudbyder"
+      ],
+      "Registration Failed": [
+         null,
+         "Tilmeldingen mislykkedes"
+      ],
+      "Establishing Relay": [
+         null,
+         "Etablerer relay"
+      ],
+      "Relay frame could not be found": [
+         null,
+         "Relay ramme kunne ikke findes"
+      ],
+      "Resetting Password": [
+         null,
+         "Nulstiller adgangskode"
+      ],
+      "Remove Email Address from Account": [
+         null,
+         "Fjerner mailadresse fra konto"
+      ],
+      "Setting Password": [
+         null,
+         "Indstiller adgangskode"
+      ],
+      "Signin Failed": [
+         null,
+         "Log ind mislykkkedes"
+      ],
+      "Signup Failed": [
+         null,
+         "Tilmelding mislykkedes"
+      ],
+      "Syncing Address": [
+         null,
+         "Synkroniserer adresse"
+      ],
+      "Syncing Email Addresses": [
+         null,
+         "Synkroniserer mailadresser"
+      ],
+      "Sync Keys for Address": [
+         null,
+         "Synkroniserer nøgler for adresser"
+      ],
+      "Getting Token Info": [
+         null,
+         "Henter nøgleinformation"
+      ],
+      "Updating password": [
+         null,
+         "Opdaterer adgangskode"
+      ],
+      "Verifying email address": [
+         null,
+         "Bekræfter mailadresse"
+      ],
+      "Communication Error": [
+         null,
+         "Kommunikationsfejl"
+      ],
+      "Finishing Sign In...": [
+         null,
+         "Afslutter log ind..."
+      ],
+      "In just a moment you'll be signed into BrowserID.": [
+         null,
+         "Om et øjeblik vil du være logget ind via BrowserID."
+      ],
+      "Please wait a few seconds while we sign you into the site.": [
+         null,
+         "Vent et øjeblik mens vi logger dig ind på sitet."
+      ],
+      "We are sorry, this request is taking a LOOONG time.": [
+         null,
+         "Vi beklager at forespørgslen tager så LAAAAANG tid."
+      ],
+      "This message will go away when the request completes (hopefully soon). If you wait too long, close this window and try again.": [
+         null,
+         "Denne besked vil forsvinde når forespørgslen er færdig (hvilket forhåbentligt er snart). Hvis du har ventet for længe, så luk dette vindue og prøv igen."
+      ],
+      "Sign in using": [
+         null,
+         "Log ind med"
+      ],
+      "New email address": [
+         null,
+         "Ny mailadresse"
+      ],
+      "This field must be an email address.": [
+         null,
+         "Dette felt skal være en mailadresse."
+      ],
+      "The email field is required.": [
+         null,
+         "Mailfeltet er påkrævet."
+      ],
+      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again.": [
+         null,
+         "Vi har netop sendt en mail den adresse. Hvis du virkelig vil sende en til, så vent et minut eller to og prøv igen."
+      ],
+      "That address is already added to your account!": [
+         null,
+         "Den adresse er allerede tilknyttet din konto."
+      ],
+      "add": [
+         null,
+         "tilføj"
+      ],
+      "cancel": [
+         null,
+         "annuller"
+      ],
+      "Email": [
+         null,
+         "Mailadresse"
+      ],
+      "Enter your email address to sign in to <strong>%s</strong>": [
+         null,
+         "Indtast din mailadresse for at logge ind på <strong>%s</strong>"
+      ],
+      "Welcome to BrowserID!": [
+         null,
+         "Velkommen til BrowserID"
+      ],
+      "This email looks new, so let&#39;s get you set up.": [
+         null,
+         "Denne mailadresse ser ny ud, så lad os få dig i gang."
+      ],
+      "Password": [
+         null,
+         "Adgangskode"
+      ],
+      "forgot your password?": [
+         null,
+         "Glemt din adgangskode?"
+      ],
+      "The password field is required.": [
+         null,
+         "Adgangskodefeltet er påkrævet."
+      ],
+      "The account cannot be logged in with this username and password.": [
+         null,
+         "Du kan ikke logge ind på denne konto med det angivne brugernavn og adgangskode."
+      ],
+      "next": [
+         null,
+         "næste"
+      ],
+      "verify email": [
+         null,
+         "bekræft mailadresse"
+      ],
+      "select email": [
+         null,
+         "vælg mailadresse"
+      ],
+      "Cannot verify %s": [
+         null,
+         "Kan ikke bekræfte %s"
+      ],
+      "%s is a required address, but we cannot verify that you own this address.": [
+         null,
+         "%s er en påkrævet adresse, men vi kan ikke bekræfte, at du ejer den."
+      ],
+      "Check your email!": [
+         null,
+         "Check din mail!"
+      ],
+      "We sent a confirmation email to <strong>%s</strong>": [
+         null,
+         "Vi har sendt en bekræftelsesmail til <strong>%s</strong>"
+      ],
+      "To finish signing in just click the verify link we sent to your email address.": [
+         null,
+         "For at færdiggøre dit log ind, skal du klikke på det bekræftelseslink, vi sendte til din mailadresse."
+      ],
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"cancel\">cancel</a>.": [
+         null,
+         "Hvis dette er en fejl, kan du ignorere den sendte mail og <a href=\"#\" id=\"cancel\">annullere</a>."
+      ],
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"back\">use another email address</a>.": [
+         null,
+         "Hvis dette er en fejl, kan du ignorere den sendte mail og <a href=\"#\" id=\"back\">bruge en anden mailadresse</a>."
+      ],
+      "The site requested you sign in using": [
+         null,
+         "Websitet ønsker, at du logger ind ved at bruge"
+      ],
+      "Reset Password": [
+         null,
+         "Nulstil adgangskode"
+      ],
+      "Cancel": [
+         null,
+         "Annuller"
+      ],
+      "*%s* is not a valid email address!": [
+         null,
+         "*%s* er ikke en gyldig mailadresse!"
+      ],
+      "To continue, please close the window and enter a valid address.": [
+         null,
+         "For at fortsætte skal du lukke vinduet og indtaste en gyldig adresse."
+      ],
+      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
+         null,
+         "Vi kan beklageligvis ikke kommunikere med BrowserID mens du er offline."
+      ],
+      "This is not me...": [
+         null,
+         "Dette er ikke mig..."
+      ],
+      "Use a different email": [
+         null,
+         "Brug en anden mailadresse"
+      ],
+      "Always sign in using this email": [
+         null,
+         "Brug altid denne mailadresse"
+      ],
+      "sign in": [
+         null,
+         "log ind"
+      ],
+      "Address Verified!": [
+         null,
+         "Adresse bekræftet!"
+      ],
+      "Your identity has been verified with your email provider, we will now try to sign you in.": [
+         null,
+         "Din identitet er blevet bekræftet med din mailudbyder. Vi vil nu forsøge at logge dig ind."
+      ],
+      "You must sign in with your email provider to verify ownership of this address. This window will be redirected to": [
+         null,
+         "Du skal logge ind med din mailudbyder for at bekræfte ejerskab over denne adresse. Dette vindue vil nu stille videre til"
+      ],
+      "Verify": [
+         null,
+         "Bekræft"
+      ],
+      "Verify With Email Provider": [
+         null,
+         "Bekræft med mailudbyder"
+      ]
+   }
+}
+;

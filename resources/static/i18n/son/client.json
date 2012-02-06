@@ -1,363 +1,359 @@
-var json_locale_data = {
-   "client" : {
-      "Cancelling User Account" : [
-         null,
-         ""
-      ],
-      "" : {
-         "MIME-Version" : " 1.0",
-         "X-Generator" : " Translate Toolkit 1.9.0",
-         "POT-Creation-Date" : " 2012-01-26 17:37-0800",
-         "Language" : " son",
-         "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
-         "Content-Type" : " text/plain; charset=UTF-8",
-         "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
-         "Language-Team" : " LANGUAGE <LL@li.org>",
-         "Content-Transfer-Encoding" : " 8bit",
-         "Report-Msgid-Bugs-To" : " ",
-         "Project-Id-Version" : " PACKAGE VERSION"
+;var json_locale_data = {
+   "client": {
+      "": {
+         "Project-Id-Version": " PACKAGE VERSION",
+         "Report-Msgid-Bugs-To": " ",
+         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "PO-Revision-Date": " YEAR-MO-DA HO:MI+ZONE",
+         "Last-Translator": " FULL NAME <EMAIL@ADDRESS>",
+         "Language-Team": " LANGUAGE <LL@li.org>",
+         "Language": " son",
+         "MIME-Version": " 1.0",
+         "Content-Type": " text/plain; charset=UTF-8",
+         "Content-Transfer-Encoding": " 8bit",
+         "X-Generator": " Translate Toolkit 1.9.0"
       },
-      "Always sign in using this email" : [
+      "Authenticating User": [
          null,
          ""
       ],
-      "Sync Keys for Address" : [
+      "Adding Address": [
          null,
          ""
       ],
-      "Syncing Email Addresses" : [
+      "Adding Primary Email Address to User": [
          null,
          ""
       ],
-      "Unfortunately, BrowserID cannot communicate while offline!" : [
+      "Checking Address Info": [
          null,
          ""
       ],
-      "Sign in using" : [
+      "Authenticating with Assertion": [
          null,
          ""
       ],
-      "Relay frame could not be found" : [
+      "Cancelling User Account": [
          null,
          ""
       ],
-      "Password" : [
+      "Checking Authentication": [
          null,
          ""
       ],
-      "We sent a confirmation email to <strong>%s</strong>" : [
+      "Checking Script Version": [
          null,
          ""
       ],
-      "To finish signing in just click the verify link we sent to your email address." : [
+      "Completing User Registration": [
          null,
          ""
       ],
-      "Cancel" : [
+      "We are sorry, BrowserID requires cookies": [
          null,
          ""
       ],
-      "To verify that you own <strong id='primary_email'>%s</strong>, you must sign in with your provider.  This window will be redirected to" : [
+      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
          null,
          ""
       ],
-      "Authenticating with Assertion" : [
+      "Checking if Cookies are Enabled": [
          null,
          ""
       ],
-      "Reset Password" : [
+      "Creating Account": [
          null,
          ""
       ],
-      "Resetting Password" : [
+      "Getting Assertion": [
          null,
          ""
       ],
-      "Logout Failed" : [
+      "Checking Registration Token": [
          null,
          ""
       ],
-      "Checking Email Address" : [
+      "Checking Email Address": [
          null,
          ""
       ],
-      "To verify that you own this address, you must sign in with your provider.  This window will be redirected to" : [
+      "Checking Whether User is Authenticated with IdP": [
          null,
          ""
       ],
-      "This is not me..." : [
+      "Logout Failed": [
          null,
          ""
       ],
-      "We are sorry, BrowserID requires cookies" : [
+      "You are offline!": [
          null,
          ""
       ],
-      "In just a moment you'll be signed into BrowserID." : [
+      "Unfortunately, BrowserID cannot communicate while offline!": [
          null,
          ""
       ],
-      "Getting Assertion" : [
+      "Authenticating with Identity Provider": [
          null,
          ""
       ],
-      "Completing User Registration" : [
+      "We had trouble communicating with your email provider, please try again!": [
          null,
          ""
       ],
-      "Registration Failed" : [
+      "Provisioning with Identity Provider": [
          null,
          ""
       ],
-      "This message will go away when the request completes (hopefully soon).  If you wait too long, close this window and try again." : [
+      "Provisioning Unsupported Identity Provider": [
          null,
          ""
       ],
-      "translated text" : [
+      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
          null,
          ""
       ],
-      "The email field is required." : [
+      "Registration Failed": [
          null,
          ""
       ],
-      "New email address" : [
+      "Establishing Relay": [
          null,
          ""
       ],
-      "verify email" : [
+      "Relay frame could not be found": [
          null,
          ""
       ],
-      "Checking if Cookies are Enabled" : [
+      "Resetting Password": [
          null,
          ""
       ],
-      "Provisioning Unsupported Identity Provider" : [
+      "Remove Email Address from Account": [
          null,
          ""
       ],
-      "That address is already added to your account!" : [
+      "Setting Password": [
          null,
          ""
       ],
-      "Authenticating with Identity Provider" : [
+      "Signin Failed": [
          null,
          ""
       ],
-      "Remove Email Address from Account" : [
+      "Signup Failed": [
          null,
          ""
       ],
-      "Communication Error" : [
+      "Syncing Address": [
          null,
          ""
       ],
-      "Provisioning with Identity Provider" : [
+      "Syncing Email Addresses": [
          null,
          ""
       ],
-      "Adding Address" : [
+      "Sync Keys for Address": [
          null,
          ""
       ],
-      "Check your email!" : [
+      "Getting Token Info": [
          null,
          ""
       ],
-      "The site requested you sign in using" : [
+      "Updating password": [
          null,
          ""
       ],
-      "Syncing Address" : [
+      "Verifying email address": [
          null,
          ""
       ],
-      "Use a different email" : [
+      "Communication Error": [
          null,
          ""
       ],
-      "next" : [
+      "Finishing Sign In...": [
          null,
          ""
       ],
-      "Verifying email address" : [
+      "In just a moment you'll be signed into BrowserID.": [
          null,
          ""
       ],
-      "Signup Failed" : [
+      "Please wait a few seconds while we sign you into the site.": [
          null,
          ""
       ],
-      "This email looks new, so let&apos;s get you set up." : [
+      "We are sorry, this request is taking a LOOONG time.": [
          null,
          ""
       ],
-      "Checking Script Version" : [
+      "This message will go away when the request completes (hopefully soon). If you wait too long, close this window and try again.": [
          null,
          ""
       ],
-      "You are offline!" : [
+      "Sign in using": [
          null,
          ""
       ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider" : [
+      "New email address": [
          null,
          ""
       ],
-      "Checking Authentication" : [
+      "This field must be an email address.": [
          null,
          ""
       ],
-      "Getting Token Info" : [
+      "The email field is required.": [
          null,
          ""
       ],
-      "forgot your password?" : [
+      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again.": [
          null,
          ""
       ],
-      "Address Verified!" : [
+      "That address is already added to your account!": [
          null,
          ""
       ],
-      "This field must be an email address." : [
+      "add": [
          null,
          ""
       ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline." : [
+      "cancel": [
          null,
          ""
       ],
-      "Authenticating User" : [
+      "Email": [
          null,
          ""
       ],
-      "This email looks new, so let&#39;s get you set up." : [
+      "Enter your email address to sign in to <strong>%s</strong>": [
          null,
          ""
       ],
-      "Email" : [
+      "Welcome to BrowserID!": [
          null,
          ""
       ],
-      "Setting Password" : [
+      "This email looks new, so let&#39;s get you set up.": [
          null,
          ""
       ],
-      "Finishing Sign In..." : [
+      "Password": [
          null,
          ""
       ],
-      "select email" : [
+      "forgot your password?": [
          null,
          ""
       ],
-      "Checking Address Info" : [
+      "The password field is required.": [
          null,
          ""
       ],
-      "Adding Primary Email Address to User" : [
+      "The account cannot be logged in with this username and password.": [
          null,
          ""
       ],
-      "Your identity has been verified with your email provider, we will now try to sign you in." : [
+      "next": [
          null,
          ""
       ],
-      "Verify With Email Provider" : [
+      "verify email": [
          null,
          ""
       ],
-      "Checking Whether User is Authenticated with IdP" : [
+      "select email": [
          null,
          ""
       ],
-      "Updating password" : [
+      "Cannot verify %s": [
          null,
          ""
       ],
-      "We just sent an email to that address!  If you really want to send another, wait a minute or two and try again." : [
+      "%s is a required address, but we cannot verify that you own this address.": [
          null,
          ""
       ],
-      "The password field is required." : [
+      "Check your email!": [
          null,
          ""
       ],
-      "cancel" : [
+      "We sent a confirmation email to <strong>%s</strong>": [
          null,
          ""
       ],
-      "We had trouble communicating with your email provider, please try again!" : [
+      "To finish signing in just click the verify link we sent to your email address.": [
          null,
          ""
       ],
-      "Creating Account" : [
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"cancel\">cancel</a>.": [
          null,
          ""
       ],
-      "We are sorry, this request is taking a LOOONG time." : [
+      "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"back\">use another email address</a>.": [
          null,
          ""
       ],
-      "We just sent an email to that address! If you really want to send another, wait a minute or two and try again." : [
+      "The site requested you sign in using": [
          null,
          ""
       ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again" : [
+      "Reset Password": [
          null,
          ""
       ],
-      "Checking Registration Token" : [
+      "Cancel": [
          null,
          ""
       ],
-      "add" : [
+      "*%s* is not a valid email address!": [
          null,
          ""
       ],
-      "To continue, please close the window and enter a valid address." : [
+      "To continue, please close the window and enter a valid address.": [
          null,
          ""
       ],
-      "Enter your email address to sign in to <strong>%s</strong>" : [
+      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
          null,
          ""
       ],
-      "Establishing Relay" : [
+      "This is not me...": [
          null,
          ""
       ],
-      "Signin Failed" : [
+      "Use a different email": [
          null,
          ""
       ],
-      "Verify" : [
+      "Always sign in using this email": [
          null,
          ""
       ],
-      "sign in" : [
+      "sign in": [
          null,
          ""
       ],
-      "The account cannot be logged in with this username and password." : [
+      "Address Verified!": [
          null,
          ""
       ],
-      "Welcome to BrowserID!" : [
+      "Your identity has been verified with your email provider, we will now try to sign you in.": [
          null,
          ""
       ],
-      "If this is a mistake, just ignore the sent email and <a href=\"#\" class=\"cancelVerify\" id=\"back\">use another email address</a>." : [
+      "You must sign in with your email provider to verify ownership of this address. This window will be redirected to": [
          null,
          ""
       ],
-      "*%s* is not a valid email address!" : [
+      "Verify": [
          null,
          ""
       ],
-      "Please wait a few seconds while we sign you into the site." : [
+      "Verify With Email Provider": [
          null,
          ""
       ]

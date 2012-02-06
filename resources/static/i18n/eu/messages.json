@@ -1,179 +1,179 @@
-var json_locale_data = {
-   "messages" : {
-      "Error encountered trying to complete registration." : [
-         null,
-         ""
-      ],
-      "" : {
-         "MIME-Version" : " 1.0",
-         "X-Generator" : " Translate Toolkit 1.9.0",
-         "POT-Creation-Date" : " 2012-01-26 17:37-0800",
-         "Language" : " eu",
-         "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
-         "Content-Type" : " text/plain; charset=UTF-8",
-         "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
-         "Language-Team" : " LANGUAGE <LL@li.org>",
-         "Content-Transfer-Encoding" : " 8bit",
-         "Report-Msgid-Bugs-To" : " ",
-         "Project-Id-Version" : " PACKAGE VERSION"
+;var json_locale_data = {
+   "messages": {
+      "": {
+         "Project-Id-Version": " PACKAGE VERSION",
+         "Report-Msgid-Bugs-To": " ",
+         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "PO-Revision-Date": " YEAR-MO-DA HO:MI+ZONE",
+         "Last-Translator": " FULL NAME <EMAIL@ADDRESS>",
+         "Language-Team": " LANGUAGE <LL@li.org>",
+         "Language": " eu",
+         "MIME-Version": " 1.0",
+         "Content-Type": " text/plain; charset=UTF-8",
+         "Content-Transfer-Encoding": " 8bit",
+         "X-Generator": " Translate Toolkit 1.9.0"
       },
-      "BrowserID" : [
+      "Complete Login to %s using BrowserID": [
          null,
          ""
       ],
-      "Verification password is required." : [
+      "Error encountered while attempting to confirm your address. Have you previously verified this address?": [
          null,
          ""
       ],
-      "Finish signing into: " : [
+      "Error encountered trying to complete registration.": [
          null,
          ""
       ],
-      "Your Email" : [
+      "Finish signing into: ": [
          null,
          ""
       ],
-      "TOS" : [
+      "Email Verification": [
          null,
          ""
       ],
-      "Need Help?" : [
+      "Email Address": [
          null,
          ""
       ],
-      "BrowserID: %s" : [
+      "Your Email": [
          null,
          ""
       ],
-      "Error comunicating with server." : [
+      "New Password": [
          null,
          ""
       ],
-      "Last step!" : [
+      "Enter a Password": [
          null,
          ""
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>" : [
+      "Password is required.": [
          null,
          ""
       ],
-      "Your new address is set up and you should now be signed in. You may now close this window and go back to" : [
+      "Password must be between 8 and 80 characters long.": [
          null,
          ""
       ],
-      "Verify Password" : [
+      "Verify Password": [
          null,
          ""
       ],
-      "BrowserID Home" : [
+      "Repeat Password": [
          null,
          ""
       ],
-      "Password must be between 8 and 80 characters long." : [
+      "Verification password is required.": [
          null,
          ""
       ],
-      "(A better way to sign in)" : [
+      "Passwords do not match.": [
          null,
          ""
       ],
-      "Finish registration by clicking this link:" : [
+      "Finish": [
          null,
          ""
       ],
-      "Thanks," : [
+      "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
          ""
       ],
-      "Developers" : [
+      "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          ""
       ],
-      "Communicating with server" : [
+      "Communicating with server": [
          null,
          ""
       ],
-      "Enter a Password" : [
+      "Just a moment while we talk with the server.": [
          null,
          ""
       ],
-      "Error encountered while attempting to confirm your address. Have you previously verified this address?" : [
+      "BrowserID": [
          null,
          ""
       ],
-      "Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!" : [
+      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
          null,
          ""
       ],
-      "Email Verification" : [
+      "BrowserID: %s": [
          null,
          ""
       ],
-      "<strong class=\"email\">Your address</strong> has been verified!" : [
+      "BrowserID Home": [
          null,
          ""
       ],
-      "Sign In" : [
+      "How it works": [
          null,
          ""
       ],
-      "Finish" : [
+      "Developers": [
          null,
          ""
       ],
-      "Browser ID" : [
+      "Sign In": [
          null,
          ""
       ],
-      "There was a problem with your signup link.  Has this address already been registered?" : [
+      "Sign Out": [
          null,
          ""
       ],
-      "Passwords do not match." : [
+      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
          null,
          ""
       ],
-      "Password is required." : [
+      "Privacy": [
          null,
          ""
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>" : [
+      "TOS": [
          null,
          ""
       ],
-      "New Password" : [
+      "Need Help?": [
          null,
          ""
       ],
-      "Complete Login to %s using BrowserID" : [
+      "There was a problem with your signup link. Has this address already been registered?": [
          null,
          ""
       ],
-      "How it works" : [
+      "Error comunicating with server.": [
          null,
          ""
       ],
-      "Privacy" : [
+      "Last step!": [
          null,
          ""
       ],
-      "Repeat Password" : [
+      "Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!": [
          null,
          ""
       ],
-      "Just a moment while we talk with the server." : [
+      "Thanks for verifying your email address. This message is being sent to you to complete your sign-in to %s.": [
          null,
          ""
       ],
-      "Email Address" : [
+      "Finish registration by clicking this link:": [
          null,
          ""
       ],
-      "Sign Out" : [
+      "If you are NOT trying to sign into this site, just ignore this email.": [
          null,
          ""
       ],
-      "If you are NOT trying to sign into this site, just ignore this email." : [
+      "Thanks,": [
+         null,
+         ""
+      ],
+      "(A better way to sign in)": [
          null,
          ""
       ]

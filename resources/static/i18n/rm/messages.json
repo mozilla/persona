@@ -1,181 +1,186 @@
-var json_locale_data = {
-   "messages" : {
-      "Error encountered trying to complete registration." : [
-         null,
-         ""
-      ],
-      "" : {
-         "MIME-Version" : " 1.0",
-         "X-Generator" : " Translate Toolkit 1.9.0",
-         "POT-Creation-Date" : " 2012-01-26 17:37-0800",
-         "Language" : " rm",
-         "Last-Translator" : " FULL NAME <EMAIL@ADDRESS>",
-         "Content-Type" : " text/plain; charset=UTF-8",
-         "PO-Revision-Date" : " YEAR-MO-DA HO:MI+ZONE",
-         "Language-Team" : " LANGUAGE <LL@li.org>",
-         "Content-Transfer-Encoding" : " 8bit",
-         "Report-Msgid-Bugs-To" : " ",
-         "Project-Id-Version" : " PACKAGE VERSION"
+;var json_locale_data = {
+   "messages": {
+      "": {
+         "Project-Id-Version": " PACKAGE VERSION",
+         "Report-Msgid-Bugs-To": " ",
+         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "PO-Revision-Date": " 2012-02-03 18:18+0200",
+         "Last-Translator": " Gion-Andri <gion-andri@gmx.ch>",
+         "Language-Team": " LANGUAGE <LL@li.org>",
+         "Language": " rm",
+         "MIME-Version": " 1.0",
+         "Content-Type": " text/plain; charset=UTF-8",
+         "Content-Transfer-Encoding": " 8bit",
+         "Plural-Forms": " nplurals=2; plural=(n != 1) ;",
+         "X-Generator": " Pootle 2.1.6"
       },
-      "BrowserID" : [
+      "Complete Login to %s using BrowserID": [
          null,
-         ""
+         "S'annunziar tar %s cun BrowserID"
       ],
-      "Verification password is required." : [
+      "Error encountered while attempting to confirm your address. Have you previously verified this address?": [
          null,
-         ""
+         "Ina errur è cumparida durant confermar tia adressa. Has ti gia confermà pli baud questa adressa?"
       ],
-      "Finish signing into: " : [
+      "Error encountered trying to complete registration.": [
          null,
-         ""
+         "Ina errur è cumparida durant l'emprova da terminar la registraziun."
       ],
-      "Your Email" : [
+      "Finish signing into: ": [
          null,
-         ""
+         "Terminar da s'annunziar tar: "
       ],
-      "TOS" : [
+      "Email Verification": [
          null,
-         ""
+         "Verificaziun da l'adressa dad e-mail"
       ],
-      "Need Help?" : [
+      "Email Address": [
          null,
-         ""
+         "Adresa dad e-mail"
       ],
-      "BrowserID: %s" : [
+      "Your Email": [
          null,
-         ""
+         "Tia adressa dad e-mail"
       ],
-      "Error comunicating with server." : [
+      "New Password": [
          null,
-         ""
+         "Nov pled-clav"
       ],
-      "Last step!" : [
+      "Enter a Password": [
          null,
-         ""
+         "Endatescha in pled-clav"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>" : [
+      "Password is required.": [
          null,
-         ""
+         "Il pled-clav è necessari."
       ],
-      "Your new address is set up and you should now be signed in. You may now close this window and go back to" : [
+      "Password must be between 8 and 80 characters long.": [
          null,
-         ""
+         "Il pled-clav sto cuntegnair tranter 8 ed 80 caracters."
       ],
-      "Verify Password" : [
+      "Verify Password": [
          null,
-         ""
+         "Verifitgar il pled-clav"
       ],
-      "BrowserID Home" : [
+      "Repeat Password": [
          null,
-         ""
+         "Repeter il pled-clav"
       ],
-      "Password must be between 8 and 80 characters long." : [
+      "Verification password is required.": [
          null,
-         ""
+         "La verificaziun dal pled-clav è necessaria."
       ],
-      "(A better way to sign in)" : [
+      "Passwords do not match.": [
          null,
-         ""
+         "Ils pleds-clav na correspundan betg."
       ],
-      "Finish registration by clicking this link:" : [
+      "Finish": [
          null,
-         ""
+         "Terminar"
       ],
-      "Thanks," : [
+      "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
-         ""
+         "<strong class=\"email\">Tia adressa</strong> è vegnida verifitgada!"
       ],
-      "Developers" : [
+      "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
-         ""
+         "Tia nova adressa è registrada e ti duessas ussa esser t'annunzià. Ti pos ussa serrar questa fanestra e returnar a "
       ],
-      "Communicating with server" : [
+      "Communicating with server": [
          null,
-         ""
+         "Communicar cun il server"
       ],
-      "Enter a Password" : [
+      "Just a moment while we talk with the server.": [
          null,
-         ""
+         "Be in mument durant che nus communitgain cun il server."
       ],
-      "Error encountered while attempting to confirm your address. Have you previously verified this address?" : [
+      "BrowserID": [
          null,
-         ""
+         "BrowserID"
       ],
-      "Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!" : [
+      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
          null,
-         ""
+         "BrowserID è la via sperta e segira per s'annunziar &mdash; <a target=\"_blank\" href=\"/about\">ulteriuras infurmaziuns</a>"
       ],
-      "Email Verification" : [
+      "BrowserID: %s": [
          null,
-         ""
+         "BrowserID: %s"
       ],
-      "<strong class=\"email\">Your address</strong> has been verified!" : [
+      "BrowserID Home": [
          null,
-         ""
+         "Partenza da BrowserID"
       ],
-      "Sign In" : [
+      "How it works": [
          null,
-         ""
+         "Co ch'ei funcziunescha"
       ],
-      "Finish" : [
+      "Developers": [
          null,
-         ""
+         "Sviluppaders"
       ],
-      "Browser ID" : [
+      "Sign In": [
          null,
-         ""
+         "S'annunziar"
       ],
-      "There was a problem with your signup link.  Has this address already been registered?" : [
+      "Sign Out": [
          null,
-         ""
+         "Partir"
       ],
-      "Passwords do not match." : [
+      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
          null,
-         ""
+         "Dal <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
       ],
-      "Password is required." : [
+      "Privacy": [
          null,
-         ""
+         "Sfera privata"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>" : [
+      "TOS": [
          null,
-         ""
+         "Cundiziuns d'utilisaziun"
       ],
-      "New Password" : [
+      "Need Help?": [
          null,
-         ""
+         "Dovras agid?"
       ],
-      "Complete Login to %s using BrowserID" : [
+      "There was a problem with your signup link. Has this address already been registered?": [
          null,
-         ""
+         "Ina errur è cumparida cun tes link da s'annunziar. È questa adressa gia vegnida registrada?"
       ],
-      "How it works" : [
+      "Error comunicating with server.": [
          null,
-         ""
+         "Errur durant communitgar cun il server."
       ],
-      "Privacy" : [
+      "Last step!": [
          null,
-         ""
+         "Ultim pass!"
       ],
-      "Repeat Password" : [
+      "Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!": [
          null,
-         ""
+         "Grazia per sa registrar tar <strong>BrowserID</strong>. Ti pos ussa utilisar tes conto da <strong>BrowserID</strong> per <em>s'annunziar</em> u <em>ta registrar</em> tar websites en l'entir internet!"
       ],
-      "Just a moment while we talk with the server." : [
+      "Thanks for verifying your email address. This message is being sent to you to complete your sign-in to %s.": [
          null,
-         ""
+         "Grazia per verifitgar tia adressa dad e-mail. Quest messadi ta vegn tramess per cumplettar tia annunzia tar %s."
       ],
-      "Email Address" : [
+      "Finish registration by clicking this link:": [
          null,
-         ""
+         "Terminescha la registraziun cun suandar a questa colliaziun:"
       ],
-      "Sign Out" : [
+      "If you are NOT trying to sign into this site, just ignore this email.": [
          null,
-         ""
+         "Sche ti n'emprovas BETG da s'annunziar tar questa pagina, ignorescha simplamain quest e-mail."
       ],
-      "If you are NOT trying to sign into this site, just ignore this email." : [
+      "Thanks,": [
          null,
-         ""
+         "Grazia,"
+      ],
+      "(A better way to sign in)": [
+         null,
+         "(Ina megliera via per s'annunziar)"
+      ],
+      "Browser ID": [
+         null,
+         "BrowserID"
       ]
    }
 }
