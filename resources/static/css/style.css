@@ -50,7 +50,6 @@ noscript {
   -ms-transition: opacity 750ms;
   -o-transition: opacity 750ms;
   transition: opacity 750ms;
-  background-color: #fff;
   position: absolute;  /* For a couple of browsers without position: fixed support */
   position: fixed;
   top: 35%;
@@ -60,6 +59,7 @@ noscript {
   border-radius: 5px;
   text-align: center;
 }
+
 
 .waiting #wait {
   z-index: 1002;
@@ -83,24 +83,6 @@ noscript {
 #error > div, #wait > div, #delay > div {
   padding: 10px;
   z-index: 1001;
-}
-
-#error ul, #error li {
-    list-style-type: none;
-}
-
-#error strong, #wait strong {
-    color: #222;
-    font-weight: bold;
-}
-
-#error #moreInfo {
-    display: none;
-}
-
-#error a {
-    color: #549FDC;
-    text-decoration: underline;
 }
 
 

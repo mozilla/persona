@@ -54,7 +54,6 @@ section > .contents {
 
 #wait, #error, #delay {
     text-align: center;
-    background-image: url("/i/bg.png");
     z-index: -1;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
     opacity: 0;
@@ -80,10 +79,6 @@ section > .contents {
     transition-delay: 0.5s;
 }
 
-#error {
-    background: #fff;
-}
-
 .waiting #wait {
     z-index: 1;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
@@ -101,14 +96,6 @@ section > .contents {
     opacity: 1;
 }
 
-#error ul, #error li {
-    list-style-type: none;
-}
-
-#wait strong, #error strong, #delay strong {
-    color: #222;
-    font-weight: bold;
-}
 
 
 #error.unsupported .vertical {
@@ -123,15 +110,6 @@ section > .contents {
     vertical-align: middle;
     padding: 0 10px;
     height: 250px;
-}
-
-#error #moreInfo {
-    display: none;
-}
-
-#error a {
-    color: #549FDC;
-    text-decoration: underline;
 }
 
 #error #borderbox {
