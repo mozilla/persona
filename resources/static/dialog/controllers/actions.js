@@ -100,7 +100,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doResetPassword: function(info) {
-      this.doConfirmUser(info.email);
+      this.doConfirmUser(info);
     },
 
     doConfirmEmail: function(info) {
