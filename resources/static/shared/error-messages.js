@@ -44,7 +44,7 @@ BrowserID.Errors = (function(){
 
     cookiesDisabled: {
       title: gettext("We are sorry, BrowserID requires cookies"),
-      message: gettext("BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again")
+      message: gettext("BrowserID requires your browser's cookies to be enabled to operate. Please enable your browser's cookies and try again")
     },
 
     cookiesEnabled: {
