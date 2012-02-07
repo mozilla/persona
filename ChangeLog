@@ -15,9 +15,10 @@ train-2011.02.02:
   * remember the users email as they move from screen to screen in the dialog: #984, #1001, #1002, #1003, #1004
   * secondary "cancel" style buttons have a smaller font: #1020
   * build fixes: #1021, #1024
+  * (hotfix 2012.02.07) add a l10n-all.json which holds all locales we'll be shipping to production
   * (hotfix 2012.02.07) Fix the missing email address in the "check your email" screen for the forgot password flow.  #1058
   * (hotfix 2012.02.07) Modify build process to pick up locales from a .json file
-
+  * (hotfix 2012.02.07) fix production-locales.sh script to defer to the environment for configuration
 
 train-2011.01.18:
   * support for 3rd party primary identity providers: #761, #904, #865
