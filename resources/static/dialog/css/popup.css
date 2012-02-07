@@ -79,6 +79,10 @@ section > .contents {
     transition-delay: 0.5s;
 }
 
+#wait, #delay {
+  background-image: url("/i/bg.png");
+}
+
 .waiting #wait {
     z-index: 1;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
