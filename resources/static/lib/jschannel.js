@@ -250,7 +250,7 @@
                 var oMatch;
                 if (cfg.origin === "*") validOrigin = true;
                 // allow valid domains under http and https.  Also, trim paths off otherwise valid origins.
-                else if (null !== (oMatch = cfg.origin.match(/^https?:\/\/(?:[-a-zA-Z0-9\.])+(?::\d+)?/))) {
+                else if (null !== (oMatch = cfg.origin.match(/^https?:\/\/(?:[-a-zA-Z0-9_\.])+(?::\d+)?/))) {
                     cfg.origin = oMatch[0].toLowerCase();
                     validOrigin = true;
                 }
