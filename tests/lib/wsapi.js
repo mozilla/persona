@@ -32,3 +32,10 @@ exports.post = function (path, postArgs) {
     wcli.post(configuration, path, context, postArgs, this.callback);
   };
 };
+
+exports.getCSRF = function() {
+  if (context && context.session && context.session.csrf_token) {
+    return context.session.csrf_token;
+  }
+  return null;
+};
