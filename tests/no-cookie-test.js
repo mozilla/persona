@@ -88,10 +88,10 @@ suite.addBatch({
       }));
       req.end();
     },
-    "returns a 400 with 'no cookie' as the body": function(err, r) {
+    "returns a 403 with 'no cookie' as the body": function(err, r) {
       assert.equal(err, null);
-      assert.equal(r.code, 400);
-      assert.equal(r.body, 'Bad Request: no cookie');
+      assert.equal(r.code, 403);
+      assert.equal(r.body, 'Forbidden: no cookie');
     }
   }
 });
