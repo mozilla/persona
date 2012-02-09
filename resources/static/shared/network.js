@@ -186,8 +186,8 @@ BrowserID.Network = (function() {
           complete(onComplete, status.success);
         },
         error: function(info) {
-          // 403 is throttling.
-          if (info.network.status === 403) {
+          // 429 is throttling.
+          if (info.network.status === 429) {
             complete(onComplete, false);
           }
           else complete(onFailure, info);
@@ -392,8 +392,8 @@ BrowserID.Network = (function() {
           complete(onComplete, response.success);
         },
         error: function(info) {
-          // 403 is throttling.
-          if (info.network.status === 403) {
+          // 429 is throttling.
+          if (info.network.status === 429) {
             complete(onComplete, false);
           }
           else complete(onFailure, info);

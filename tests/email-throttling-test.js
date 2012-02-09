@@ -52,7 +52,7 @@ suite.addBatch({
       site:'fakesite.com'
     }),
     "is throttled": function(err, r) {
-      assert.strictEqual(r.code, 403);
+      assert.strictEqual(r.code, 429);
     }
   }
 });
@@ -101,8 +101,8 @@ suite.addBatch({
       email: 'second@fakeemail.com',
       site:'fakesite.com'
     }),
-    "is throttled with a 403": function(err, r) {
-      assert.strictEqual(r.code, 403);
+    "is throttled with a 429": function(err, r) {
+      assert.strictEqual(r.code, 429);
     }
   }
 });
