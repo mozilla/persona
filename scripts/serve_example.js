@@ -20,7 +20,7 @@ if (process.env['BROWSERID_URL']) {
   var burl = urlparse(process.env['BROWSERID_URL']).validate().normalize().originOnly().toString();
   console.log('using browserid server at ' + burl);
 
-  exampleServer.use(postprocess.middleware(function(req, buffer) {
+  exampleServer.use(postprocess(function(req, buffer) {
     return buffer.toString().replace(new RegExp('https://browserid.org', 'g'), burl);
   }));
 }
