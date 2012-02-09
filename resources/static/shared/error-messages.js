@@ -5,74 +5,77 @@
 BrowserID.Errors = (function(){
   "use strict";
 
+  // NOTE: The majority of these strings do not have gettext because they are
+  // not immediately user facing.  These strings are used in the error dialog
+  // and are only shown after the user clicks on "show more info"
   var Errors = {
     authenticate: {
-      title: gettext("Authenticating User")
+      title: "Authenticating User"
     },
 
     addEmail: {
-      title: gettext("Adding Address")
+      title: "Adding Address"
     },
 
     addEmailWithAssertion: {
-      title: gettext("Adding Primary Email Address to User")
+      title: "Adding Primary Email Address to User"
     },
 
     addressInfo: {
-      title: gettext("Checking Address Info")
+      title: "Checking Address Info"
     },
 
     authenticateWithAssertion: {
-      title: gettext("Authenticating with Assertion")
+      title: "Authenticating with Assertion"
     },
 
     cancelUser: {
-      title: gettext("Cancelling User Account")
+      title: "Cancelling User Account"
     },
 
     checkAuthentication: {
-      title: gettext("Checking Authentication")
+      title: "Checking Authentication"
     },
 
     checkScriptVersion: {
-      title: gettext("Checking Script Version")
+      title: "Checking Script Version"
     },
 
     completeUserRegistration: {
-      title: gettext("Completing User Registration")
+      title: "Completing User Registration"
     },
 
     cookiesDisabled: {
       title: gettext("We are sorry, BrowserID requires cookies"),
-      message: gettext("BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again")
+      message: gettext("BrowserID requires your browser's cookies to be enabled to operate. Please enable your browser's cookies and try again")
     },
 
     cookiesEnabled: {
-      title: gettext("Checking if Cookies are Enabled")
+      title: "Checking if Cookies are Enabled"
     },
 
     createUser: {
-      title: gettext("Creating Account")
+      title: "Creating Account"
     },
 
     getAssertion: {
-      title: gettext("Getting Assertion")
+      title: "Getting Assertion"
     },
 
     getTokenInfo: {
-      title: gettext("Checking Registration Token")
+      title: "Checking Registration Token"
     },
 
     isEmailRegistered: {
-      title: gettext("Checking Email Address")
+      title: "Checking Email Address"
     },
 
     isUserAuthenticatedToPrimary: {
-      title: gettext("Checking Whether User is Authenticated with IdP")
+      title: "Checking Whether User is Authenticated with IdP"
     },
 
     logoutUser: {
-      title: gettext("Logout Failed")
+      title: "Logout Failed"
     },
 
     offline: {
@@ -81,71 +84,71 @@ BrowserID.Errors = (function(){
     },
 
     primaryAuthentication: {
-      title: gettext("Authenticating with Identity Provider"),
-      message: gettext("We had trouble communicating with your email provider, please try again!")
+      title: "Authenticating with Identity Provider",
+      message: "We had trouble communicating with your email provider, please try again!"
     },
 
     provisioningPrimary: {
-      title: gettext("Provisioning with Identity Provider"),
-      message: gettext("We had trouble communicating with your email provider, please try again!")
+      title: "Provisioning with Identity Provider",
+      message: "We had trouble communicating with your email provider, please try again!"
     },
 
     provisioningBadPrimary: {
-      title: gettext("Provisioning Unsupported Identity Provider"),
-      message: gettext("Unfortunately, the email address provided cannot act as a Primary Identity Provider")
+      title: "Provisioning Unsupported Identity Provider",
+      message: "Unfortunately, the email address provided cannot act as a Primary Identity Provider"
     },
 
     registration: {
-      title: gettext("Registration Failed")
+      title: "Registration Failed"
     },
 
     relaySetup: {
-      title: gettext("Establishing Relay"),
-      message: gettext("Relay frame could not be found")
+      title: "Establishing Relay",
+      message: "Relay frame could not be found"
     },
 
     requestPasswordReset: {
-      title: gettext("Resetting Password")
+      title: "Resetting Password"
     },
 
     removeEmail: {
-      title: gettext("Remove Email Address from Account")
+      title: "Remove Email Address from Account"
     },
 
     setPassword: {
-      title: gettext("Setting Password")
+      title: "Setting Password"
     },
 
     signIn: {
-      title: gettext("Signin Failed")
+      title: "Signin Failed"
     },
 
     signUp: {
-      title: gettext("Signup Failed")
+      title: "Signup Failed"
     },
 
     syncAddress: {
-      title: gettext("Syncing Address")
+      title: "Syncing Address"
     },
 
     syncEmails: {
-      title: gettext("Syncing Email Addresses")
+      title: "Syncing Email Addresses"
     },
 
     syncEmailKeypair: {
-      title: gettext("Sync Keys for Address")
+      title: "Sync Keys for Address"
     },
 
     tokenInfo: {
-      title: gettext("Getting Token Info")
+      title: "Getting Token Info"
     },
 
     updatePassword: {
-      title: gettext("Updating password")
+      title: "Updating password"
     },
 
     verifyEmail: {
-      title: gettext("Verifying email address")
+      title: "Verifying email address"
     },
 
     xhrError: {

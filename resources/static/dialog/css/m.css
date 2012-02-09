@@ -35,6 +35,7 @@
 
   .inputs > li > label {
     font-size: 18px;
+    margin-bottom: 10px;
   }
 
   .vertical > strong {
@@ -109,6 +110,8 @@
 
   #signIn .submit {
     position: static;
+    line-height: 40px;
+    margin-top: 40px;
   }
 
   #signIn .submit > p {
@@ -121,13 +124,17 @@
     margin: 13px;
   }
 
+  .form_section {
+    margin-top: 20px;
+  }
+
   #content, .form_section, .inputs, .vertical {
     height: auto;
     max-height: none;
     overflow: visible;
   }
 
-  .authenticated .vertical a {
+  .authenticated .vertical a, #cancel {
     font-size: 1.2em;
   }
 

@@ -68,7 +68,7 @@
   </div>
 
   <script type="text/html" id="templateUser">
-    <li class="identity cf">
+    <li class="identity cf" id="{{ email.replace('@', '_').replace('.', '_') }}">
       <div class="email">{{ email }}</div>
       <div class="activity cf">
         <button class="delete">remove</button>

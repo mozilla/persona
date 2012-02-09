@@ -11,17 +11,12 @@ BrowserID.Modules.PickEmail = (function() {
       errors = bid.Errors,
       storage = bid.Storage,
       helpers = bid.Helpers,
+      cancelEvent = helpers.cancelEvent,
       dialogHelpers = helpers.Dialog,
       dom = bid.DOM,
       sc;
 
-  function cancelEvent(event) {
-    event && event.preventDefault();
-  }
-
   function pickEmailState(event) {
-    cancelEvent(event);
-
     var self=this;
     if (!dom.getElements("input[type=radio]:checked").length) {
       // If none are already checked, select the first one.
@@ -32,9 +27,7 @@ BrowserID.Modules.PickEmail = (function() {
     self.submit = signIn;
   }
 
-  function addEmail(event) {
-    cancelEvent(event);
-
+  function addEmail() {
     this.close("add_email");
   }
 
@@ -50,8 +43,7 @@ BrowserID.Modules.PickEmail = (function() {
     return !!identity;
   }
 
-  function signIn(event) {
-    cancelEvent(event);
+  function signIn() {
     var self=this,
         email = dom.getInner("input[type=radio]:checked");
 
@@ -68,6 +60,11 @@ BrowserID.Modules.PickEmail = (function() {
     }
   }
 
+  function getSortedIdentities() {
+    var identities = user.getSortedEmailKeypairs();
+    return identities;
+  }
+
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var origin = user.getOrigin(),
@@ -77,11 +74,9 @@ BrowserID.Modules.PickEmail = (function() {
 
       self.allowPersistent = options.allow_persistent;
       dom.addClass("body", "pickemail");
+
       self.renderDialog("pick_email", {
-        identities: user.getStoredEmailKeypairs(),
-        // XXX ideal is to get rid of self and have a User function
-        // that takes care of getting email addresses AND the last used email
-        // for self site.
+        identities: getSortedIdentities(),
         siteemail: storage.site.get(origin, "email"),
         allow_persistent: options.allow_persistent || false,
         remember: storage.site.get(origin, "remember") || false
@@ -95,7 +90,7 @@ BrowserID.Modules.PickEmail = (function() {
         dom.focus("#signInButton");
       }
 
-      self.bind("#useNewEmail", "click", addEmail);
+      self.bind("#useNewEmail", "click", cancelEvent(addEmail));
 
       sc.start.call(self, options);
 

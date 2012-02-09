@@ -284,3 +284,37 @@ footer .help {
 .cancelVerify {
   font-weight: bold;
 }
+
+
+
+#wait, #delay {
+  background-color: #fff;
+}
+
+#error {
+    background: #ffe4d5;
+}
+
+#error h2 {
+    color: #ff0000;
+}
+
+#error ul, #error li {
+    list-style-type: none;
+}
+
+#wait strong, #error strong, #delay strong {
+    color: #222;
+    font-weight: bold;
+}
+
+#error #moreInfo {
+    display: none;
+}
+
+#error a {
+    color: #549FDC;
+    text-decoration: underline;
+}
+
+
