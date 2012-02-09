@@ -27,7 +27,7 @@
           // could already be destroyed from the close
         }
       }
-      testHelpers.setup();
+      testHelpers.teardown();
     }
   });
 
@@ -39,15 +39,29 @@
     });
   }
 
-  test("pickemail controller with email associated with site", function() {
+  test("multiple emails - print emails in alphabetical order", function() {
+    storage.addEmail("third@testuser.com", {});
+    storage.addEmail("second@testuser.com", {});
+    storage.addEmail("first@testuser.com", {});
+
+    createController();
+
+    var firstLI = $("#first_testuser_com").closest("li");
+    var secondLI = $("#second_testuser_com").closest("li");
+    var thirdLI = $("#third_testuser_com").closest("li");
+
+    equal(firstLI.next().is(secondLI), true, "first is before second");
+    equal(secondLI.next().is(thirdLI), true, "second is before third");
+  });
+
+  test("pickemail controller with email associated with site - check correct email", function() {
     storage.addEmail("testuser@testuser.com", {});
     storage.addEmail("testuser2@testuser.com", {});
     storage.site.set(testOrigin, "email", "testuser2@testuser.com");
 
     createController();
-    ok(controller, "controller created");
 
-    var radioButton = $("input[type=radio]").eq(1);
+    var radioButton = $("input[type=radio]").eq(0);
     ok(radioButton.is(":checked"), "the email address we specified is checked");
 
     var label = radioButton.parent();
@@ -58,7 +72,6 @@
     storage.addEmail("testuser@testuser.com", {});
 
     createController();
-    ok(controller, "controller created");
 
     var radioButton = $("input[type=radio]").eq(0);
     equal(radioButton.is(":checked"), true, "The email address is not checked");
@@ -73,7 +86,6 @@
     storage.site.set(testOrigin, "remember", remember);
 
     createController(allowPersistent);
-    ok(controller, "controller created");
 
     // remember can only be checked if allowPersistent is allowed
     var rememberChecked = allowPersistent ? remember : false;
@@ -100,7 +112,7 @@
 
     createController(true);
 
-    $("input[type=radio]").eq(1).trigger("click");
+    $("input[type=radio]").eq(0).trigger("click");
     $("#remember").attr("checked", true);
 
     var assertion;
@@ -121,7 +133,7 @@
 
     createController(false);
 
-    $("input[type=radio]").eq(1).trigger("click");
+    $("input[type=radio]").eq(0).trigger("click");
     $("#remember").attr("checked", true);
 
     register("email_chosen", function(msg, info) {

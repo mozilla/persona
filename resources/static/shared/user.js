@@ -1007,6 +1007,27 @@ BrowserID.User = (function() {
     },
 
     /**
+     * Get the list of identities sorted by address.
+     * @method getSortedEmailKeypairs
+     * @return {array} of objects, with two fields, address, data
+     */
+    getSortedEmailKeypairs: function() {
+      var identities = User.getStoredEmailKeypairs(),
+          sortedIdentities = [];
+
+      for(var key in identities) {
+        sortedIdentities.push({ address: key, info: identities[key] });
+      }
+
+      sortedIdentities.sort(function(a, b) {
+        var retval = a.address > b.address ? 1 : a.address < b.address ? -1 : 0;
+        return retval;
+      });
+
+      return sortedIdentities;
+    },
+
+    /**
      * Get an individual stored identity.
      * @method getStoredEmailKeypair
      * @return {object} identity information for email, if exists, undefined
