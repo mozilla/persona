@@ -13,6 +13,8 @@ urlparse = require('urlparse'),
 express = require('express');
 
 const
+assets = require('../lib/static_resources').all,
+cachify = require('connect-cachify'),
 i18n = require('../lib/i18n.js'),
 wsapi = require('../lib/wsapi.js'),
 httputils = require('../lib/httputils.js'),
@@ -131,6 +133,16 @@ app.use(function(req, resp, next) {
   return next();
 });
 
+var static_root = path.join(__dirname, "..", "resources", "static");
+
+app.use(cachify.setup(assets(config.get('supported_languages')), 
+        {
+          prefix: 'v',
+          production: config.get('use_minified_resources'),
+          root: static_root,
+        }));
+
+
 // #7 - perform response substitution to support local/dev/beta environments
 // (specifically, this replaces URLs in responses, e.g. https://browserid.org
 //  with https://diresworb.org)
@@ -168,7 +180,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(express.static(path.join(__dirname, "..", "resources", "static")));
+app.use(express.static(static_root));
 
 // open the databse
 db.open(config.get('database'), function (error) {

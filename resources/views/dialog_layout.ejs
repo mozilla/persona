@@ -12,13 +12,7 @@
   <!--[if lt IE 9]>
     <script src="/lib/html5shim.js"></script>
   <![endif]-->
-  <% if (production) { %>
-      <link href="/production/dialog.css" rel="stylesheet" type="text/css">
-  <% } else { %>
-      <link href="/css/common.css" rel="stylesheet" type="text/css">
-      <link href="/dialog/css/popup.css" rel="stylesheet" type="text/css">
-      <link href="/dialog/css/m.css" rel="stylesheet" type="text/css">
-  <% } %>
+  <%- cachify_css('/production/dialog.css') %>
   <link href="https://fonts.googleapis.com/css?family=Droid+Serif:400,400italic,700,700italic" rel="stylesheet" type="text/css">
   <title><%= gettext('BrowserID') %></title>
 </head>
@@ -52,67 +46,7 @@
       </div>
 
       <% if (useJavascript !== false) { %>
-        <% if (production) { %>
-          <script src="/production/<%= locale %>/dialog.js"></script>
-        <% } else { %>
-          <script src="/lib/jquery-1.7.1.min.js"></script>
-          <script src="/lib/winchan.js"></script>
-          <script src="/lib/underscore-min.js"></script>
-          <script src="/lib/vepbundle.js"></script>
-          <script src="/lib/ejs.js"></script>
-          <script src="/shared/javascript-extensions.js"></script>
-          <script src="/i18n/<%= locale %>/client.json"></script>
-          <script src="/shared/gettext.js"></script>
-          <script src="/shared/browserid.js"></script>
-          <script src="/lib/hub.js"></script>
-          <script src="/lib/dom-jquery.js"></script>
-          <script src="/lib/module.js"></script>
-          <script src="/lib/jschannel.js"></script>
-
-          <script src="/shared/templates.js"></script>
-          <script src="/shared/renderer.js"></script>
-          <script src="/shared/class.js"></script>
-          <script src="/shared/mediator.js"></script>
-          <script src="/shared/tooltip.js"></script>
-          <script src="/shared/validation.js"></script>
-          <script src="/shared/helpers.js"></script>
-          <script src="/shared/screens.js"></script>
-          <script src="/shared/browser-support.js"></script>
-          <script src="/shared/wait-messages.js"></script>
-          <script src="/shared/error-messages.js"></script>
-          <script src="/shared/error-display.js"></script>
-          <script src="/shared/storage.js"></script>
-          <script src="/shared/xhr.js"></script>
-          <script src="/shared/network.js"></script>
-          <script src="/shared/provisioning.js"></script>
-          <script src="/shared/user.js"></script>
-          <script src="/shared/command.js"></script>
-          <script src="/shared/history.js"></script>
-          <script src="/shared/state_machine.js"></script>
-
-          <script src="/shared/modules/page_module.js"></script>
-          <script src="/shared/modules/xhr_delay.js"></script>
-          <script src="/shared/modules/xhr_disable_form.js"></script>
-          <script src="/shared/modules/cookie_check.js"></script>
-
-          <script src="/dialog/resources/internal_api.js"></script>
-          <script src="/dialog/resources/helpers.js"></script>
-          <script src="/dialog/resources/state.js"></script>
-
-          <script src="/dialog/controllers/actions.js"></script>
-          <script src="/dialog/controllers/dialog.js"></script>
-          <script src="/dialog/controllers/authenticate.js"></script>
-          <script src="/dialog/controllers/forgot_password.js"></script>
-          <script src="/dialog/controllers/check_registration.js"></script>
-          <script src="/dialog/controllers/pick_email.js"></script>
-          <script src="/dialog/controllers/add_email.js"></script>
-          <script src="/dialog/controllers/required_email.js"></script>
-          <script src="/dialog/controllers/verify_primary_user.js"></script>
-          <script src="/dialog/controllers/provision_primary_user.js"></script>
-          <script src="/dialog/controllers/primary_user_provisioned.js"></script>
-          <script src="/dialog/controllers/email_chosen.js"></script>
-          <script src="/dialog/start.js"></script>
-        <% } %>
+        <%- cachify_js(util.format('/production/%s/dialog.js', locale)) %>
       <% } %>
 	</body>
 </html>

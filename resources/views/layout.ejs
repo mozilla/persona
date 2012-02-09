@@ -11,62 +11,8 @@
     <script src="/lib/html5shim.js"></script>
   <![endif]-->
   <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
-  <% if (production) { %>
-    <link rel="stylesheet" type="text/css" href="/production/browserid.css">
-    <script src="/production/<%= locale %>/browserid.js"></script>
-  <% } else { %>
-    <link rel="stylesheet" href="/css/common.css" type="text/css" media="screen">
-    <link rel="stylesheet" href="/css/style.css" type="text/css" media="screen">
-    <link rel="stylesheet" href="/css/m.css" type="text/css" media="screen">
-
-    <script src="/lib/vepbundle.js"></script>
-    <script src="/lib/jquery-1.7.1.min.js"></script>
-    <script src="/lib/underscore-min.js"></script>
-    <script src="/lib/ejs.js"></script>
-    <script src="/shared/javascript-extensions.js"></script>
-    <script src="/i18n/<%= locale %>/client.json"></script>
-    <script src="/shared/gettext.js"></script>
-    <script src="/shared/browserid.js"></script>
-    <script src="/lib/dom-jquery.js"></script>
-    <script src="/lib/module.js"></script>
-    <script src="/lib/jschannel.js"></script>
-    <script src="/lib/winchan.js"></script>
-    <script src="/lib/hub.js"></script>
-
-    <script src="/shared/templates.js"></script>
-    <script src="/shared/renderer.js"></script>
-    <script src="/shared/class.js"></script>
-    <script src="/shared/mediator.js"></script>
-    <script src="/shared/tooltip.js"></script>
-    <script src="/shared/validation.js"></script>
-    <script src="/shared/helpers.js"></script>
-    <script src="/shared/screens.js"></script>
-    <script src="/shared/browser-support.js"></script>
-    <script src="/shared/wait-messages.js"></script>
-    <script src="/shared/error-messages.js"></script>
-    <script src="/shared/error-display.js"></script>
-    <script src="/shared/mediator.js"></script>
-    <script src="/shared/storage.js"></script>
-    <script src="/shared/xhr.js"></script>
-    <script src="/shared/network.js"></script>
-    <script src="/shared/provisioning.js"></script>
-    <script src="/shared/user.js"></script>
-
-    <script src="/shared/modules/page_module.js"></script>
-    <script src="/shared/modules/xhr_delay.js"></script>
-    <script src="/shared/modules/xhr_disable_form.js"></script>
-    <script src="/shared/modules/cookie_check.js"></script>
-
-    <script src="/pages/page_helpers.js"></script>
-    <script src="/pages/index.js"></script>
-    <script src="/pages/start.js"></script>
-    <script src="/pages/add_email_address.js"></script>
-    <script src="/pages/verify_email_address.js"></script>
-    <script src="/pages/forgot.js"></script>
-    <script src="/pages/manage_account.js"></script>
-    <script src="/pages/signin.js"></script>
-    <script src="/pages/signup.js"></script>
-  <% } %>
+  <%- cachify_css('/production/browserid.css') %>
+  <%- cachify_js(util.format('/production/%s/browserid.js', locale)) %>
   <title><%= format(gettext("BrowserID: %s"), [title]) %></title>
 </head>
 <body>
