@@ -170,10 +170,11 @@
     ok(actions.called.doEmailChosen, "doEmailChosen called");
   });
 
-  test("authenticated", function() {
-    mediator.publish("authenticated");
+  test("authenticated - call doEmailChosen", function() {
+    storage.addEmail("testuser@testuser.com", {});
+    mediator.publish("authenticated", { email: "testuser@testuser.com" });
 
-    ok(actions.called.doPickEmail, "doPickEmail has been called");
+    ok(actions.called.doEmailChosen, "doEmailChosen has been called");
   });
 
   test("forgot_password", function() {
