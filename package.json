@@ -22,7 +22,7 @@
         "node-statsd": "https://github.com/downloads/lloyd/node-statsd/3a73de.tgz",
         "nodemailer": "0.1.18",
         "optimist": "0.2.8",
-        "postprocess": "0.2.3",
+        "postprocess": "0.2.4",
         "semver": "1.0.12",
         "temp": "0.2.0",
         "uglify-js": "1.0.6",
