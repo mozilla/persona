@@ -90,7 +90,7 @@ section > .contents {
     opacity: 1;
 }
 
-.error #error {
+.error #error, #error.unsupported {
     z-index: 3;
     opacity: 1;
 }
