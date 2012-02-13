@@ -34,6 +34,8 @@ h2 {
     position: relative;
     height: 250px;
     overflow: hidden;
+    /* Fix for IE6 not displaying the unsupported dialog correctly */
+    _width: 100%;
 }
 
 section {
@@ -91,6 +93,7 @@ section > .contents {
 
 .error #error, #error.unsupported {
     z-index: 3;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
 }
 
@@ -102,30 +105,25 @@ section > .contents {
 
 
 
-#error.unsupported .vertical {
-    width: 630px;
-    margin: 0 auto;
-    display: block;
+#error.unsupported {
+  padding: 20px 0;
+  /*
+   * These next two are fixes for IE6 not displaying the unsupported browser
+   * dialog correctly
+   */
+  _width: 100%;
+  _height: 100%;
 }
 
-
-#error.unsupported .vertical > div {
-    display: table-cell;
-    vertical-align: middle;
-    padding: 0 10px;
-    height: 250px;
+#error.unsupported h2 {
+  margin: 0 0 20px;
 }
 
-#error #borderbox {
-    border-left: 1px solid #777;
-    padding: 20px 0;
-}
-
-#error #borderbox img {
+#error img {
     border: none;
 }
 
-#error #alternative .lighter {
+#error .lighter {
     color: #777;
 }
 
