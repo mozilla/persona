@@ -90,8 +90,9 @@ section > .contents {
     opacity: 1;
 }
 
-.error #error {
+.error #error, #error.unsupported {
     z-index: 3;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
 }
 
