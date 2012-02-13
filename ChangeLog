@@ -21,6 +21,7 @@ train-2011.02.02:
   * (hotfix 2012.02.07) Fix the missing email address in the "check your email" screen for the forgot password flow.  #1058
   * (hotfix 2012.02.07) Modify build process to pick up locales from a .json file
   * (hotfix 2012.02.07) fix production-locales.sh script to defer to the environment for configuration
+  * (hotfix 2012.02.13) fix for IE users not seeing error screens sometimes: #1087
 
 train-2011.01.18:
   * support for 3rd party primary identity providers: #761, #904, #865
