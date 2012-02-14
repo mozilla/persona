@@ -109,6 +109,18 @@
    $("body").trigger("click");
   });
 
+  asyncTest("click - bind a click handler, handler does not get event", function() {
+    createController();
+
+    controller.click("body", function(event) {
+      equal(typeof event, "undefined", "event is undefined");
+      strictEqual(this, controller, "context is correct");
+      start();
+    });
+
+    $("body").trigger("click");
+  });
+
   asyncTest("unbindAll removes all listeners", function() {
     createController();
     var listenerCalled = false;

@@ -9,7 +9,6 @@ BrowserID.Modules.AddEmail = (function() {
   var bid = BrowserID,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
-      cancelEvent = dialogHelpers.cancelEvent,
       errors = bid.Errors,
       complete = helpers.complete,
       tooltip = bid.Tooltip;
@@ -37,7 +36,7 @@ BrowserID.Modules.AddEmail = (function() {
 
       self.renderDialog("add_email", options);
 
-      self.bind("#cancel", "click", cancelEvent(cancelAddEmail));
+      self.click("#cancel", cancelAddEmail);
       Module.sc.start.call(self, options);
     },
     submit: addEmail
