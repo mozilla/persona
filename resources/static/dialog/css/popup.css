@@ -107,10 +107,15 @@ section > .contents {
 
 #error.unsupported {
   padding: 20px 0;
+}
+
+.unsupported {
   /*
-   * These next two are fixes for IE6 not displaying the unsupported browser
-   * dialog correctly
+   * These are fixes for IE6 - IE6 does not support the combination #id.class
+   * selector, so we have to use just the class, and then prepend the css
+   * attributes with _ so only IE6 renders them.
    */
+  _padding: 20px 0;
   _width: 100%;
   _height: 100%;
 }
