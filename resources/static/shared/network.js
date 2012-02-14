@@ -13,7 +13,6 @@ BrowserID.Network = (function() {
       domain_key_creation_time,
       auth_status,
       code_version,
-      cookies_enabled,
       time_until_delay,
       mediator = bid.Mediator,
       xhr = bid.XHR,
@@ -29,7 +28,6 @@ BrowserID.Network = (function() {
     domain_key_creation_time = result.domain_key_creation_time;
     auth_status = result.auth_level;
     code_version = result.code_version;
-    cookies_enabled = result.cookies_enabled || true;
 
     // seed the PRNG
     // FIXME: properly abstract this out, probably by exposing a jwcrypto
@@ -570,8 +568,19 @@ BrowserID.Network = (function() {
      * @method cookiesEnabled
      */
     cookiesEnabled: function(onComplete, onFailure) {
+      // Make sure we get context first or else we will needlessly send
+      // a cookie to the server.
       withContext(function() {
-        complete(onComplete, cookies_enabled);
+        try {
+          // set a test cookie with a duration of 1 second.
+          // NOTE - The Android 3.3 default browser will still pass this.
+          // http://stackoverflow.com/questions/8509387/android-browser-not-respecting-cookies-disabled/9264996#9264996
+          document.cookie = "test=true; max-age=1";
+          var enabled = document.cookie.indexOf("test") > -1;
+          complete(onComplete, enabled);
+        } catch(e) {
+          complete(onComplete, false);
+        }
       }, onFailure);
     }
   };
