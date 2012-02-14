@@ -76,4 +76,17 @@
 
     ok($("#error_503").length, "503 header is shown");
   });
+
+  test("XHR 403 (Forbidden) error - show the 403, cookies required error", function() {
+    var el = $("#error .contents");
+    el.empty();
+
+    screens.error.show("error", {
+      network: {
+        status: 403
+      }
+    });
+
+    ok($("#error_403").length, "403 header is shown");
+  });
 }());
