@@ -541,18 +541,11 @@
     failureCheck(network.changePassword, "oldpassword", "newpassword");
   });
 
-  asyncTest("cookiesEnabled with cookies enabled", function() {
-    transport.setContextInfo("cookies_enabled", true);
-
+  asyncTest("cookiesEnabled with cookies enabled - return true status", function() {
     network.cookiesEnabled(function(status) {
       equal(status, true, "cookies are enabled, correct status");
       start();
     }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("cookiesEnabled with XHR failure", function() {
-    transport.useResult("contextAjaxError");
-    failureCheck(network.cookiesEnabled);
   });
 
 }());

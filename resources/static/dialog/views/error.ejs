@@ -7,6 +7,11 @@
     <h2 id="error_503">
       <%= gettext("We are very sorry, the server is under extreme load!") %>
     </h2>
+  <% } else if (typeof network !== "undefined" && network.status == 403) { %>
+    <h2 id="error_403">
+      <%= gettext("We are sorry, BrowserID required cookies") %>
+    </h2>
+    <%= gettext("BrowserID requires your browser's cookies to be enabled to operate. Please enable your browser's cookies.") %>
   <% } else { %>
     <h2 id="defaultError">
       <%= gettext("We are very sorry, there has been an error!") %>
@@ -45,7 +50,7 @@
           <strong id="network">Network Info:</strong> <%= network.type %>: <%= network.url %>
 
           <p>
-            <strong>Response Code - </strong> <%= network.textStatus %>
+            <strong>Response Code - </strong> <%= network.status %>
           </p>
 
           <% if (network.responseText) { %>

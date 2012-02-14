@@ -354,7 +354,7 @@
             }
           }, timeout);
         }
-        
+
         var onMessage = function(origin, method, m) {
           // if an observer was specified at allocation time, invoke it
           if (typeof cfg.gotMessageObserver === 'function') {
@@ -840,9 +840,33 @@
     }
 
     function checkLocalStorage() {
-      var localStorage = 'localStorage' in win && win['localStorage'] !== null;
-      if(!localStorage) {
-        return "LOCALSTORAGE";
+      // Firefox/Fennec/Chrome blow up when trying to access or
+      // write to localStorage. We must do two explicit checks, first
+      // whether the browser has localStorage.  Second, we must check
+      // whether the localStorage can be written to.  Firefox (at v11)
+      // throws an exception when querying win['localStorage']
+      // when cookies are disabled. Chrome (v17) excepts when trying to
+      // write to localStorage when cookies are disabled. If an
+      // exception is thrown, then localStorage is disabled. If no
+      // exception is thrown, hasLocalStorage will be true if the
+      // browser supports localStorage and it can be written to.
+      try {
+        var hasLocalStorage = 'localStorage' in win
+                        // Firefox will except here if cookies are disabled.
+                        && win['localStorage'] !== null;
+
+        if(hasLocalStorage) {
+          // browser has localStorage, check if it can be written to. If
+          // cookies are disabled, some browsers (Chrome) will except here.
+          win['localStorage'].setItem("test", "true");
+          win['localStorage'].removeItem("test");
+        }
+        else {
+          // Browser does not have local storage.
+          return "LOCALSTORAGE";
+        }
+      } catch(e) {
+          return "LOCALSTORAGE_DISABLED";
       }
     }
 
@@ -859,10 +883,11 @@
     }
 
     function isSupported() {
-      reason = checkLocalStorage() || checkPostMessage() || checkJSON() || explicitNosupport();
+      reason = explicitNosupport() || checkLocalStorage() || checkPostMessage() || checkJSON();
 
       return !reason;
     }
+
 
     function getNoSupportReason() {
       return reason;
@@ -942,8 +967,15 @@
         }
 
         if (!BrowserSupport.isSupported()) {
+          var reason = BrowserSupport.getNoSupportReason(),
+              url = "unsupported_dialog";
+
+          if(reason === "LOCALSTORAGE_DISABLED") {
+            url = "cookies_disabled";
+          }
+
           w = window.open(
-            ipServer + "/unsupported_dialog",
+            ipServer + "/" + url,
             null,
             windowOpenOpts);
           return;
