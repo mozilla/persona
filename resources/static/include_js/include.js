@@ -831,7 +831,7 @@
           ieNosupport = ieVersion > -1 && ieVersion < 8;
 
       if(ieNosupport) {
-        return "IE_VERSION";
+        return "BAD_IE_VERSION";
       }
     }
 
@@ -863,7 +863,7 @@
         }
         else {
           // Browser does not have local storage.
-          return "LOCALSTORAGE";
+          return "LOCALSTORAGE_MISSING";
         }
       } catch(e) {
           return "LOCALSTORAGE_DISABLED";
@@ -872,13 +872,13 @@
 
     function checkPostMessage() {
       if(!win.postMessage) {
-        return "POSTMESSAGE";
+        return "POSTMESSAGE_MISSING";
       }
     }
 
     function checkJSON() {
       if(!(window.JSON && window.JSON.stringify && window.JSON.parse)) {
-        return "JSON";
+        return "JSON_MISSING";
       }
     }
 

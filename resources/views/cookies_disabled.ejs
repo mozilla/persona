@@ -6,14 +6,11 @@
       <div class="table">
         <div class="vertical contents">
           <h2 id="reason">
-            <%= gettext("We are sorry, BrowserID requires cookies") %>
+            <%= gettext("BrowserID requires cookies") %>
           </h2>
 
           <p>
-            <%= gettext("BrowserID requires your browser's cookies to be enabled to operate. Please enable your browser's cookies and try again") %>
-          </p>
-          <p>
-            <%= gettext("To retry, you will have to close this window and try again.") %>
+            <%- gettext("Please close this window, <a target='_blank' href='http://support.mozilla.org/en-US/kb/Websites%20say%20cookies%20are%20blocked'>enable cookies</a> and try again") %>
           </p>
         </div>
       </div>
