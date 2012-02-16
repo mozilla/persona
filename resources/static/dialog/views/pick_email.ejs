@@ -9,11 +9,10 @@
       <ul class="inputs">
           <% _.each(identities, function(item) { var emailAddress = item.address; var cleanedEmail = emailAddress.replace("@","_").replace(".", "_"); %>
               <li>
-
-                  <label for="<%= cleanedEmail %>" class="serif<% if (emailAddress === siteemail) { %> preselected<% } %> selectable">
+                  <label for="<%= cleanedEmail %>" class="serif<% if (emailAddress === siteemail) { %> preselected<% } %> selectable" title="<%= emailAddress %>">
                     <input type="radio" name="email" id="<%= cleanedEmail %>" value="<%= emailAddress %>"
-                      <% if (emailAddress === siteemail) { %> checked="checked" <% } %>
-                    />
+                        <% if (emailAddress === siteemail) { %> checked="checked" <% } %>
+                      />
                     <%= emailAddress %>
                   </label>
               </li>
