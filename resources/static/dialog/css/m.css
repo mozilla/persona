@@ -51,13 +51,11 @@
   }
 
   #signIn {
-      max-width: none;
       padding: 10px;
   }
 
-  #signIn .table {
+  #signIn .container {
       width: 100%;
-      margin: 0;
   }
 
   #signIn form {
@@ -101,11 +99,16 @@
   }
 
   #signIn .vertical {
-    padding-bottom: 0;
+    padding: 10px;
   }
 
   #signIn .vertical ul li {
     margin-top: 20px;
+  }
+
+  #selectEmail > .inputs > li > label {
+    margin: 0;
+    padding: 15px 1px;
   }
 
   #signIn .submit {

@@ -18,16 +18,18 @@ h2 {
 }
 
 
+.vertical {
+    height: 250px;
+}
+
 .table {
     display: table;
     width: 100%;
 }
 
-.vertical {
-    height: 250px;
+.table .vertical {
     display: table-cell;
     vertical-align: middle;
-    width: 100%;
 }
 
 #content {
@@ -84,6 +86,7 @@ section > .contents {
 #wait, #delay {
   background-image: url("/i/bg.png");
 }
+
 
 .waiting #wait {
     z-index: 1;
@@ -146,9 +149,12 @@ section > .contents {
     top: 0;
 }
 
-#signIn .table {
+#signIn .container {
+    /**
+     * Set the width of the container for when the arrow animation happens
+     * otherwise the buttons slide right with the arrow
+     */
     width: 325px;
-    margin-right: 40px;
 }
 
 .arrow {
@@ -196,12 +202,12 @@ div#required_email {
 }
 
 #signIn .vertical {
-    padding: 0 20px;
+    padding: 20px 52px 20px 20px;
+    position: relative;
 }
 
 #signIn .vertical ul {
   list-style-type: none;
-  position: relative;
 }
 
 #signIn .vertical ul li {
@@ -215,9 +221,9 @@ div#required_email {
 #signIn .submit {
     line-height: 28px;
     position: absolute;
-    bottom: 0;
+    bottom: 20px;
     left: 0;
-    right: 0;
+    right: 52px;
 }
 
 #signIn .submit > p {
@@ -258,6 +264,17 @@ label.selectable {
 
 .inputs > li > label {
     color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#signIn #selectEmail > .inputs > li {
+    margin: 0;
+}
+
+#selectEmail > .inputs > li > label {
+    padding: 5px 1px;
+    white-space: nowrap;
 }
 
 .inputs > li > label.preselected {
@@ -322,19 +339,9 @@ footer {
 
 .inputs {
     margin: 1em 0 .5em;
-    padding: 0 1em;
     line-height: 18px;
     max-height: 130px;
     overflow-y: auto;
-}
-
-.pickemail .inputs {
-    position: relative;
-}
-
-.form_section {
-    height: 176px;
-    position: relative;
 }
 
 .add {
@@ -351,12 +358,7 @@ label[for=remember] {
 }
 
 #thisIsNotMe {
-  margin-right: 10px;
   float: right;
-}
-
-#useNewEmail {
-  margin-left: 0.8em;
 }
 
 a.emphasize {
@@ -369,7 +371,7 @@ a.emphasize {
 }
 
 .submit > button {
-    margin: 0 5px 0 0;
+    margin: 0 0 0 5px;
 }
 
 #newEmail {
