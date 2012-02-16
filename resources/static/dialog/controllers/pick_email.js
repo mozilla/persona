@@ -65,6 +65,13 @@ BrowserID.Modules.PickEmail = (function() {
     return identities;
   }
 
+  function selectEmail(event) {
+    var target = dom.getAttr(event.currentTarget, "for");
+    if(target) {
+      dom.setAttr("#" + target, "checked", "checked");
+    }
+  }
+
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var origin = user.getOrigin(),
@@ -91,6 +98,7 @@ BrowserID.Modules.PickEmail = (function() {
       }
 
       self.bind("#useNewEmail", "click", cancelEvent(addEmail));
+      self.bind("#selectEmail label", "click", selectEmail);
 
       sc.start.call(self, options);
 
