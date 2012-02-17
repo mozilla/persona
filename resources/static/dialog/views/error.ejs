@@ -11,7 +11,7 @@
     <h2 id="error_403">
       <%= gettext("BrowserID required cookies") %>
     </h2>
-    <%= gettext("Please close this window, <a target='_blank' href='http://support.mozilla.org/en-US/kb/Websites%20say%20cookies%20are%20blocked'>enable cookies</a> and try again") %>
+    <%= format(gettext("Please close this window, <a target='_blank' href='%s'>enable cookies</a> and try again"), ['http://support.mozilla.org/en-US/kb/Websites%20say%20cookies%20are%20blocked']) %>
   <% } else { %>
     <h2 id="defaultError">
       <%= gettext("We are very sorry, there has been an error!") %>
