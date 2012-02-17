@@ -147,10 +147,22 @@
     });
   });
 
-  asyncTest("showFailure shows a failure screen", function() {
-    pageHelpers.showFailure({}, errors.offline, function() {
+  asyncTest("showFailure - show a failure screen, extended info can be opened", function() {
+    pageHelpers.showFailure("error", { network: 400, status: "error"}, function() {
       testHelpers.testErrorVisible();
-      start();
+
+      // We have to make sure the error screen itself is visible and that the
+      // extra info is hidden so when we click on the extra info it opens.
+      $("#error").show();
+      $("#moreInfo").hide();
+      $("#openMoreInfo").trigger("click");
+
+      // Add a bit of delay to wait for the animation
+      setTimeout(function() {
+        equal($("#moreInfo").is(":visible"), true, "extra info is visible after click");
+        start();
+      }, 100);
+
     });
   });
 
