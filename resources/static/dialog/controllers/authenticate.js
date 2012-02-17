@@ -14,7 +14,6 @@ BrowserID.Modules.Authenticate = (function() {
       tooltip = bid.Tooltip,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
-      cancelEvent = helpers.cancelEvent,
       complete = helpers.complete,
       dom = bid.DOM,
       lastEmail = "",
@@ -157,7 +156,7 @@ BrowserID.Modules.Authenticate = (function() {
       $(".newuser,.forgot,.returning,.start").hide();
 
       self.bind("#email", "keyup", emailKeyUp);
-      self.bind("#forgotPassword", "click", cancelEvent(forgotPassword));
+      self.click("#forgotPassword", forgotPassword);
 
       Module.sc.start.call(self, options);
       initialState.call(self, options);
