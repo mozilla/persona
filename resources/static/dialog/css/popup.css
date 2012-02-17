@@ -347,6 +347,15 @@ footer {
     overflow-y: auto;
 }
 
+/* Some languages have long text for the "sign in" and "use a different email"
+ * buttons.  If the user >= 6 emails in these languages, the buttons overlap.
+ * This shrinks the email address box by one address to prevent this overlap.
+ */
+#selectEmail .inputs {
+    max-height: 115px;
+}
+
+
 .add {
     font-size: 80%;
 }
