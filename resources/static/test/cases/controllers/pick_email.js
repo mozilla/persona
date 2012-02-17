@@ -155,5 +155,17 @@
     controller.addEmail();
   });
 
+  test("click on an email label - select corresponding radio button", function() {
+    storage.addEmail("testuser@testuser.com", {});
+    storage.addEmail("testuser2@testuser.com", {});
+
+    createController(false);
+
+    equal($("#testuser_testuser_com").is(":checked"), false, "radio button is not selected before click.");
+    $("label[for=testuser_testuser_com]").trigger("click");
+
+    equal($("#testuser_testuser_com").is(":checked"), true, "radio button is correctly selected");
+  });
+
 }());
 
