@@ -94,7 +94,7 @@ section > .contents {
     opacity: 1;
 }
 
-.error #error, #error.unsupported {
+.error #error, #error.unsupported, #error.cookies_disabled {
     z-index: 3;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;

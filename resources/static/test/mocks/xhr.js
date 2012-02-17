@@ -13,8 +13,7 @@ BrowserID.Mocks.xhr = (function() {
       authenticated: false,
       auth_level: undefined,
       code_version: "ABC123",
-      random_seed: "H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo=",
-      cookies_enabled: true
+      random_seed: "H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo="
     };
 
   // this cert is meaningless, but it has the right format

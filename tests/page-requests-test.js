@@ -67,6 +67,7 @@ suite.addBatch({
   'GET /.well-known/browserid':  respondsWith(200),
   'GET /signin':                 respondsWith(200),
   'GET /unsupported_dialog':     respondsWith(200),
+  'GET /cookies_disabled':       respondsWith(200),
   'GET /developers':             respondsWith(200),
   'GET /manage':                 respondsWith(302),
   'GET /users':                  respondsWith(302),
