@@ -354,7 +354,7 @@
             }
           }, timeout);
         }
-        
+
         var onMessage = function(origin, method, m) {
           // if an observer was specified at allocation time, invoke it
           if (typeof cfg.gotMessageObserver === 'function') {
@@ -914,7 +914,7 @@
     var isFennec = navigator.userAgent.indexOf('Fennec/') != -1;
     var windowOpenOpts =
       (isFennec ? undefined :
-       "menubar=0,location=1,resizable=0,scrollbars=0,status=0,dialog=1,width=700,height=375");
+       "menubar=0,location=1,resizable=1,scrollbars=1,status=0,dialog=1,width=700,height=375");
 
     var w;
 
