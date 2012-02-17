@@ -863,7 +863,7 @@
         }
         else {
           // Browser does not have local storage.
-          return "LOCALSTORAGE_MISSING";
+          return "LOCALSTORAGE_NOT_SUPPORTED";
         }
       } catch(e) {
           return "LOCALSTORAGE_DISABLED";
@@ -872,13 +872,13 @@
 
     function checkPostMessage() {
       if(!win.postMessage) {
-        return "POSTMESSAGE_MISSING";
+        return "POSTMESSAGE_NOT_SUPPORTED";
       }
     }
 
     function checkJSON() {
       if(!(window.JSON && window.JSON.stringify && window.JSON.parse)) {
-        return "JSON_MISSING";
+        return "JSON_NOT_SUPPORTED";
       }
     }
 
