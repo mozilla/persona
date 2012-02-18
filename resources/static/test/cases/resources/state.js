@@ -358,5 +358,13 @@
 
     equal(error, "invalid email", "expected exception thrown");
   });
+  
+  test("null assertion generated - preserve original options in doPickEmail", function() {
+    mediator.publish("start", { allowPersistent: true });
+    mediator.publish("assertion_generated", { assertion: null });
+
+    equal(actions.called.doPickEmail, true, "doPickEmail callled");
+    equal(actions.info.doPickEmail.allow_persistent, true, "allow_persistent preserved");
+  });
 
 }());
