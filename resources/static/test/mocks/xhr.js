@@ -70,6 +70,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/have_email?email=unregistered%40testuser.com valid": { email_known: false },
       "post /wsapi/remove_email valid": { success: true },
       "post /wsapi/remove_email invalid": { success: false },
+      "post /wsapi/remove_email multiple": { success: true },
       "post /wsapi/remove_email ajaxError": undefined,
       "post /wsapi/account_cancel valid": { success: true },
       "post /wsapi/account_cancel invalid": { success: false },
