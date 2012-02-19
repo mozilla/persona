@@ -100,7 +100,7 @@ BrowserID.Modules.PickEmail = (function() {
       // The click function does not pass the event to the function.  The event
       // is needed for the label handler so that the correct radio button is
       // selected.
-      self.bind("#selectEmail label", "click", selectEmail);
+      self.bind("#selectEmail > ul label", "click", selectEmail);
 
       sc.start.call(self, options);
 

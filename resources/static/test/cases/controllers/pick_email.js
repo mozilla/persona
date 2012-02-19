@@ -144,6 +144,15 @@
     });
     controller.signIn();
   });
+  
+  test("can uncheck the persistence checkbox", function() {
+    createController(false);
+    
+    $("#remember").attr("checked", true);
+    $("label[for=remember]").trigger("click");
+
+    equal($("#remember").is(":checked"), false, "checkbox properly unchecked");
+  });
 
   asyncTest("addEmail triggers an 'add_email' message", function() {
     createController(false);
