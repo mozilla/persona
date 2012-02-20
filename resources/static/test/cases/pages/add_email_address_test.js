@@ -25,7 +25,6 @@
     },
     teardown: function() {
       testHelpers.teardown();
-      $("#page_head").empty();
     }
   });
 
