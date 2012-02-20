@@ -234,7 +234,7 @@ BrowserID.State = (function() {
         startState("doAssertionGenerated", info.assertion);
       }
       else {
-        startState("doPickEmail");
+        publish("pick_email");
       }
     });
 
