@@ -46,8 +46,8 @@ BrowserID.Errors = (function(){
     },
 
     cookiesDisabled: {
-      title: gettext("We are sorry, BrowserID requires cookies"),
-      message: gettext("BrowserID requires your browser's cookies to be enabled to operate. Please enable your browser's cookies and try again")
+      title: gettext("BrowserID requires cookies"),
+      message: format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='http://support.mozilla.org/en-US/kb/Websites%20say%20cookies%20are%20blocked'"])
     },
 
     cookiesEnabled: {

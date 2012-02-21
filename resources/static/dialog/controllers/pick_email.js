@@ -11,7 +11,6 @@ BrowserID.Modules.PickEmail = (function() {
       errors = bid.Errors,
       storage = bid.Storage,
       helpers = bid.Helpers,
-      cancelEvent = helpers.cancelEvent,
       dialogHelpers = helpers.Dialog,
       dom = bid.DOM,
       sc;
@@ -97,7 +96,10 @@ BrowserID.Modules.PickEmail = (function() {
         dom.focus("#signInButton");
       }
 
-      self.bind("#useNewEmail", "click", cancelEvent(addEmail));
+      self.click("#useNewEmail", addEmail);
+      // The click function does not pass the event to the function.  The event
+      // is needed for the label handler so that the correct radio button is
+      // selected.
       self.bind("#selectEmail label", "click", selectEmail);
 
       sc.start.call(self, options);

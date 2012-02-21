@@ -7,15 +7,17 @@
   "use strict";
 
   var bid = BrowserID,
-      helpers = bid.Helpers;
+      helpers = bid.Helpers,
+      testHelpers = bid.TestHelpers;
 
   module("shared/helpers", {
     setup: function() {
+      testHelpers.setup();
       bid.Renderer.render("#page_head", "site/add_email_address", {});
     },
 
     teardown: function() {
-      $("#page_head").empty();
+      testHelpers.teardown();
     }
   });
 

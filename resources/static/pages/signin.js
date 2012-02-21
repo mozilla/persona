@@ -13,7 +13,6 @@ BrowserID.signIn = (function() {
       helpers = bid.Helpers,
       errors = bid.Errors,
       pageHelpers = bid.PageHelpers,
-      cancelEvent = pageHelpers.cancelEvent,
       doc = document,
       winchan = window.WinChan,
       verifyEmail,
@@ -144,7 +143,7 @@ BrowserID.signIn = (function() {
 
       pageHelpers.setupEmail();
 
-      self.bind("#authWithPrimary", "click", cancelEvent(authWithPrimary));
+      self.click("#authWithPrimary", authWithPrimary);
       self.bind("#email", "change", onEmailChange);
       self.bind("#email", "keyup", onEmailChange);
 

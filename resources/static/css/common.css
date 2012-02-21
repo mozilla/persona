@@ -21,7 +21,7 @@ body {
   font-size: 13px;
   line-height: 21px;
   background-image: url('/i/bg.png');
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 /* for floats */

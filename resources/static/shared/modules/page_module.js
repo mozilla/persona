@@ -52,7 +52,7 @@ BrowserID.Modules.PageModule = (function() {
     start: function(options) {
       var self=this;
       self.bind("form", "submit", cancelEvent(onSubmit));
-      self.bind("#thisIsNotMe", "click", cancelEvent(self.close.bind(self, "notme")));
+      self.click("#thisIsNotMe", self.close.bind(self, "notme"));
     },
 
     stop: function() {
@@ -84,6 +84,17 @@ BrowserID.Modules.PageModule = (function() {
         type: type,
         cb: cb
       });
+    },
+
+    /**
+     * Shortcut to bind a click handler
+     * @method click
+     * @param {string}
+     * @param {function} callback
+     * @param {object} [context] - optional context, if not given, use this.
+     */
+    click: function(target, callback, context) {
+      this.bind(target, "click", cancelEvent(callback), context);
     },
 
     unbindAll: function() {
