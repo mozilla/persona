@@ -12,7 +12,7 @@ Source0:       %{name}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root
 AutoReqProv:   no
 Requires:      openssl nodejs
-BuildRequires: gcc-c++ git jre make npm openssl-devel expat-devel perl perl-JSON perl-Locale-PO
+BuildRequires: gcc-c++ git jre make npm openssl-devel expat-devel
 
 %description
 browserid server & web home for browserid.org
@@ -34,7 +34,7 @@ echo "locale svn r$SVN_REVISION" >> resources/static/ver.txt
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_rootdir}
-for f in bin lib locale node_modules resources scripts *.json; do
+for f in bin config lib locale node_modules resources scripts *.json; do
     cp -rp $f %{buildroot}%{_rootdir}/
 done
 
