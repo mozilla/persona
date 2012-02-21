@@ -64,7 +64,7 @@
     var radioButton = $("input[type=radio]").eq(0);
     ok(radioButton.is(":checked"), "the email address we specified is checked");
 
-    var label = radioButton.parent();
+    var label = $("label[for=" + radioButton.attr("id") + "]");
     ok(label.hasClass("preselected"), "the label has the preselected class");
   });
 
@@ -144,15 +144,6 @@
     });
     controller.signIn();
   });
-  
-  test("can uncheck the persistence checkbox", function() {
-    createController(true);
-    
-    $("#remember").attr("checked", true);
-    $("label[for=remember]").trigger("click");
-
-    equal($("#remember").is(":checked"), false, "checkbox properly unchecked");
-  });
 
   asyncTest("addEmail triggers an 'add_email' message", function() {
     createController(false);
@@ -164,25 +155,46 @@
     controller.addEmail();
   });
 
-  test("click on an email label - select corresponding radio button", function() {
+  test("click on an email label and radio button - select corresponding radio button", function() {
     storage.addEmail("testuser@testuser.com", {});
     storage.addEmail("testuser2@testuser.com", {});
 
     createController(false);
 
     equal($("#testuser_testuser_com").is(":checked"), false, "radio button is not selected before click.");
-    $("label[for=testuser_testuser_com]").trigger("click");
 
+    // selects testuser@testuser.com
+    $("label[for=testuser_testuser_com]").trigger("click");
     equal($("#testuser_testuser_com").is(":checked"), true, "radio button is correctly selected");
+
+    // selects testuser2@testuser.com
+    $("#testuser2_testuser_com").trigger("click");
+    equal($("#testuser2_testuser_com").is(":checked"), true, "radio button is correctly selected");
   });
 
-  test("click on the 'Always sign in...' label - check the checkbox", function() {
+  test("click on the 'Always sign in...' label and checkbox - correct toggling", function() {
     createController(true);
 
-    equal($("#remember").is(":checked"), false, "checkbox is not checked");
-    $("label[for=remember]").trigger("click");
+    var label = $("label[for=remember]"),
+        checkbox = $("#remember").removeAttr("checked");
 
-    equal($("#remember").is(":checked"), true, "checkbox is correctly checked");
+    equal(checkbox.is(":checked"), false, "checkbox is not yet checked");
+
+    // toggle checkbox to on clicking on label
+    label.trigger("click");
+    equal(checkbox.is(":checked"), true, "checkbox is correctly checked");
+
+    // toggle checkbox to off clicking on label
+    label.trigger("click");
+    equal(checkbox.is(":checked"), false, "checkbox is correctly unchecked");
+
+    // toggle checkbox to on clicking on checkbox
+    checkbox.trigger("click");
+    equal(checkbox.is(":checked"), true, "checkbox is correctly checked");
+
+    // toggle checkbox to off clicking on checkbox
+    checkbox.trigger("click");
+    equal(checkbox.is(":checked"), false, "checkbox is correctly unchecked");
   });
 
 }());

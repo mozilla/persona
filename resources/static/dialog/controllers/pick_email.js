@@ -64,14 +64,23 @@ BrowserID.Modules.PickEmail = (function() {
     return identities;
   }
 
-  function selectInput(event) {
-    var target = dom.getAttr(event.currentTarget, "for");
-    if (target == "remember" && dom.hasAttr("#" + target, "checked")) {
-      dom.removeAttr("#" + target, "checked");
-    } else {
-      dom.setAttr("#" + target, "checked", true);
+  function proxyEventToInput(event) {
+    // iOS will not select a radio/checkbox button if the user clicks on the
+    // corresponding label.  Because of this, if the user clicks on the label,
+    // an even is manually fired on the the radio button.  This only applies
+    // if the user clicks on the actual label, not on any input elements
+    // contained within the label. This restriction is necessary or else we
+    // would be in a never ending loop that would continually toggle the state
+    // of any check boxes.
+    if(dom.is(event.target, "label")) {
+      // Must prevent standard acting browsers from taking care of the click or
+      // else it acts like two consecutive clicks.  For radio buttons this will
+      // just toggle state.
+      event.preventDefault();
+
+      var target = dom.getAttr(event.target, "for");
+      dom.fireEvent("#" + target, event.type);
     }
-    event.preventDefault();
   }
 
   var Module = bid.Modules.PageModule.extend({
@@ -103,7 +112,7 @@ BrowserID.Modules.PickEmail = (function() {
       // The click function does not pass the event to the function.  The event
       // is needed for the label handler so that the correct radio button is
       // selected.
-      self.bind("#selectEmail label", "click", selectInput);
+      self.bind("#selectEmail label", "click", proxyEventToInput);
 
       sc.start.call(self, options);
 
