@@ -8,23 +8,21 @@
 
   var bid = BrowserID,
       screens = bid.Screens,
+      testHelpers = bid.TestHelpers,
       el;
 
   module("shared/screens", {
     setup: function() {
-
+      testHelpers.setup();
     },
 
     teardown: function() {
-      if (el) {
-        el.empty();
-      }
+      testHelpers.teardown();
     }
   });
 
   test("form", function() {
     el = $("#formWrap .contents");
-    el.empty();
     screens.form.show("test_template_with_input");
 
     ok($("#templateInput").length, "the template has been written");
@@ -38,7 +36,6 @@
 
   test("wait", function() {
     var el = $("#wait .contents");
-    el.empty();
     screens.wait.show("test_template_with_input");
 
     ok($("#templateInput").length, "the template has been written");
@@ -52,7 +49,6 @@
 
   test("error", function() {
     var el = $("#error .contents");
-    el.empty();
     screens.error.show("test_template_with_input");
 
     ok($("#templateInput").length, "the template has been written");
@@ -66,7 +62,6 @@
 
   test("XHR 503 (server unavailable) error", function() {
     var el = $("#error .contents");
-    el.empty();
 
     screens.error.show("error", {
       network: {
@@ -79,7 +74,6 @@
 
   test("XHR 403 (Forbidden) error - show the 403, cookies required error", function() {
     var el = $("#error .contents");
-    el.empty();
 
     screens.error.show("error", {
       network: {
