@@ -43,8 +43,8 @@
 
     <footer id="footer">
         <ul class="cf">
-            <li><%- format(gettext('By the <a href="%s" target="_blank">Identity Team</a> @ <a href="%s" target="_blank">Mozilla Labs</a>'),
-                           ['http://identity.mozilla.com', 'http://mozillalabs.com']) %></li>
+            <li><%- format(gettext('By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>'),
+                           [" href='http://identity.mozilla.com' target='_blank'", " href='http://mozillalabs.com' target='_blank'"]) %></li>
             <li>&mdash;</li>
             <li><a href="/privacy"><%= gettext('Privacy') %></a></li>
             <li><a href="/tos"><%= gettext('TOS') %></a></li>
