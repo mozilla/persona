@@ -34,9 +34,11 @@ echo "locale svn r$SVN_REVISION" >> resources/static/ver.txt
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_rootdir}
-for f in bin config lib locale node_modules resources scripts *.json; do
+for f in bin lib locale node_modules resources scripts *.json; do
     cp -rp $f %{buildroot}%{_rootdir}/
 done
+mkdir -p %{buildroot}%{_rootdir}/config
+cp -p config/l10n-all.json %{buildroot}%{_rootdir}/config
 
 %clean
 rm -rf %{buildroot}
