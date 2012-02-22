@@ -180,6 +180,17 @@ BrowserID.TestHelpers = (function() {
       }
 
       cb && cb.apply(null, args);
+    },
+
+    /**
+     * Generate a long string
+     */
+    generateString: function(length) {
+      var str = "";
+      for(var i = 0; i < length; i++) {
+        str += (i % 10);
+      }
+      return str;
     }
   };
 
