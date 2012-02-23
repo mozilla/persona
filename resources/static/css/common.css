@@ -21,7 +21,7 @@ body {
   font-size: 13px;
   line-height: 21px;
   background-image: url('/i/bg.png');
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 /* for floats */
@@ -146,7 +146,6 @@ button,
     font-family: 'Droid Serif', Georgia, serif;
     color: #fff;
     text-shadow: -1px -1px 0 #37A6FF;
-    text-transform: lowercase;
     cursor: pointer;
 
     -webkit-box-shadow: 0 0 0 1px #76C2FF inset;
@@ -284,3 +283,37 @@ footer .help {
 .cancelVerify {
   font-weight: bold;
 }
+
+
+
+#wait, #delay {
+  background-color: #fff;
+}
+
+#error {
+    background: #ffe4d5;
+}
+
+#error h2 {
+    color: #ff0000;
+}
+
+#error ul, #error li {
+    list-style-type: none;
+}
+
+#wait strong, #error strong, #delay strong {
+    color: #222;
+    font-weight: bold;
+}
+
+#error #moreInfo {
+    display: none;
+}
+
+#error a {
+    color: #549FDC;
+    text-decoration: underline;
+}
+
+

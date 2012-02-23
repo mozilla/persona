@@ -1,24 +1,9 @@
+// this is configuration specific to aws deployments
 {
-  "env": "production",
-  "bind_to": {
-    "host": "127.0.0.1"
-  },
-  "use_minified_resources": true,
-  "database": {
-    "driver": "mysql",
-    "user": "browserid",
-    "name": "browserid",
-    "create_schema": true
-  },
+  // disable statsd for aws
   "statsd": {
     "enabled": false
   },
-  "bcrypt_work_factor": 12,
-  "max_compute_processes": null,
-  "max_compute_duration": 10,
-  "disable_primary_support": false,
-  "enable_code_version": false,
-  "default_lang": "en-US",
   // for amazon deployments, enable it-CH which is the trigger language
   // for localization tests db-LB (which is a testing language where chars
   // are inverted and reversed), and en-US.
@@ -27,20 +12,12 @@
     "en-US", "it-CH", "db-LB"
   ],
   "locale_directory": "/home/app/code/locale",
-  "express_log_format": "default",
-  "email_to_console": false,
   "var_path": "/home/app/var",
 
-  "verifier": { "bind_to": { "port": 10000 } },
-  "verifier_url": "http://127.0.0.1:10000/verify",
-  "keysigner": { "bind_to": { "port": 10003 } },
-  "keysigner_url": "http://127.0.0.1:10003",
-  "dbwriter": { "bind_to": { "port": 10004 } },
-  "dbwriter_url": "http://127.0.0.1:10004",
-  "proxy": { "bind_to": { "port": 10006 } },
   "http_proxy": {
     "host": "127.0.0.1",
     "port": 10006
   },
+  "proxy": { "bind_to": { "port": 10006 } },
   "browserid": { "bind_to": { "port": 8080 } }
 }

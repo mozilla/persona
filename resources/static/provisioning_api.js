@@ -44,7 +44,7 @@
    *    + string method
    *    + (optional) any params
    */
-   var Channel = (function() {
+  var Channel = (function() {
     "use strict";
 
     // current transaction id, start out at a random *odd* number between 1 and a million
@@ -258,7 +258,7 @@
           var oMatch;
           if (cfg.origin === "*") validOrigin = true;
           // allow valid domains under http and https.  Also, trim paths off otherwise valid origins.
-          else if (null !== (oMatch = cfg.origin.match(/^https?:\/\/(?:[-a-zA-Z0-9\.])+(?::\d+)?/))) {
+          else if (null !== (oMatch = cfg.origin.match(/^https?:\/\/(?:[-a-zA-Z0-9_\.])+(?::\d+)?/))) {
             cfg.origin = oMatch[0].toLowerCase();
             validOrigin = true;
           }
@@ -350,7 +350,7 @@
             }
           }, timeout);
         }
-
+        
         var onMessage = function(origin, method, m) {
           // if an observer was specified at allocation time, invoke it
           if (typeof cfg.gotMessageObserver === 'function') {

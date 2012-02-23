@@ -14,7 +14,6 @@ BrowserID.Modules.RequiredEmail = (function() {
       dialogHelpers = helpers.Dialog,
       dom = bid.DOM,
       assertion,
-      cancelEvent = dialogHelpers.cancelEvent,
       email,
       auth_level,
       primaryInfo,
@@ -183,10 +182,10 @@ BrowserID.Modules.RequiredEmail = (function() {
         }, options);
         self.renderDialog("required_email", options);
 
-        self.bind("#sign_in", "click", cancelEvent(signIn));
-        self.bind("#verify_address", "click", cancelEvent(verifyAddress));
-        self.bind("#forgotPassword", "click", cancelEvent(forgotPassword));
-        self.bind("#cancel", "click", cancelEvent(cancel));
+        self.click("#sign_in", signIn);
+        self.click("#verify_address", verifyAddress);
+        self.click("#forgotPassword", forgotPassword);
+        self.click("#cancel", cancel);
       }
 
       RequiredEmail.sc.start.call(self, options);

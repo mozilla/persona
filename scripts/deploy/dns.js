@@ -1,6 +1,6 @@
 const
 http = require('http'),
-xml2json = require('xml2json'),
+xml2js = new (require('xml2js')).Parser(),
 jsel = require('JSONSelect');
 
 const envVar = 'BROWSERID_DEPLOY_DNS_KEY';
@@ -32,7 +32,7 @@ function doRequest(method, path, body, cb) {
       buf += chunk;
     });
     r.on('end', function() {
-      cb(null, JSON.parse(xml2json.toJson(buf)));
+      xml2js.parseString(buf, cb);
     });
   });
   if (body) req.write(body);
@@ -42,7 +42,7 @@ function doRequest(method, path, body, cb) {
 exports.updateRecord = function (hostname, zone, ip, cb) {
   doRequest('GET', '/api/1.1/zones.xml', null, function(err, r) {
     if (err) return cb(err);
-    var m = jsel.match('object:has(:root > .domain:val(?)) > .id .$t',
+    var m = jsel.match('object:has(:root > .domain:val(?)) > .id .#',
                        [ zone ], r);
     if (m.length != 1) return cb("couldn't extract domain id from zerigo"); 
     var path = '/api/1.1/hosts.xml?zone_id=' + m[0];
@@ -58,7 +58,7 @@ exports.updateRecord = function (hostname, zone, ip, cb) {
 exports.deleteRecord = function (hostname, cb) {
   doRequest('GET', '/api/1.1/hosts.xml?fqdn=' + hostname, null, function(err, r) {
     if (err) return cb(err);
-    var m = jsel.match('.host .id > .$t', r);
+    var m = jsel.match('.host .id > .#', r);
     if (!m.length) return cb("no such DNS record");
     function deleteOne() {
       if (!m.length) return cb(null);
@@ -75,7 +75,7 @@ exports.deleteRecord = function (hostname, cb) {
 exports.inUse = function (hostname, cb) {
   doRequest('GET', '/api/1.1/hosts.xml?fqdn=' + hostname, null, function(err, r) {
     if (err) return cb(err);
-    var m = jsel.match('.hosts object:.host', r);
+    var m = jsel.match('.host', r);
     // we shouldn't have multiple!  oops!  let's return the first one
     if (m.length) return cb(null, m[0]);
     cb(null, null);

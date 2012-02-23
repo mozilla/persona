@@ -27,7 +27,7 @@ BrowserID.manageAccount = (function() {
   }
 
   function displayStoredEmails(oncomplete) {
-    var emails = user.getStoredEmailKeypairs();
+    var emails = user.getSortedEmailKeypairs();
     if (_.isEmpty(emails)) {
       $("#content").hide();
     } else {
@@ -78,10 +78,9 @@ BrowserID.manageAccount = (function() {
     };
     var template = $("#templateUser").html();
 
-    _(emails).each(function(data, e) {
-      var identity = _.template(template, {
-        email: e
-      });
+    _(emails).each(function(item) {
+      var e = item.address,
+          identity = _.template(template, { email: e });
 
       var idEl = $(identity).appendTo(list);
       idEl.find(".delete").click(cancelEvent(removeEmail.bind(null, e)));

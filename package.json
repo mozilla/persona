@@ -10,6 +10,7 @@
         "convict": "0.0.6",
         "cjson": "0.0.6",
         "client-sessions": "0.0.3",
+        "connect-cachify": "0.0.8",
         "connect-cookie-session": "0.0.2",
         "connect-logger-statsd": "0.0.1",
         "ejs": "0.4.3",
@@ -22,18 +23,20 @@
         "node-statsd": "https://github.com/downloads/lloyd/node-statsd/3a73de.tgz",
         "nodemailer": "0.1.18",
         "optimist": "0.2.8",
-        "postprocess": "0.0.3",
+        "postprocess": "0.2.4",
         "semver": "1.0.12",
         "temp": "0.2.0",
         "uglify-js": "1.0.6",
         "uglifycss": "0.0.4",
+        "underscore": "1.3.1",
         "urlparse": "0.0.1",
         "winston": "0.5.6"
     },
     "devDependencies": {
-        "xml2json": "0.2.4",
+        "xml2js": "0.1.13",
         "vows": "0.5.13",
-        "aws-lib": "0.0.5"
+        "aws-lib": "0.0.5",
+        "irc": "0.3.3"
     },
     "scripts": {
         "postinstall": "./scripts/generate_ephemeral_keys.sh",

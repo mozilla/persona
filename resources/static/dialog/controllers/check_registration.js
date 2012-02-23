@@ -22,8 +22,8 @@ BrowserID.Modules.CheckRegistration = (function() {
       self.verifier = options.verifier;
       self.verificationMessage = options.verificationMessage;
 
-      self.bind("#back", "click", self.back);
-      self.bind("#cancel", "click", self.cancel);
+      self.click("#back", self.back);
+      self.click("#cancel", self.cancel);
 
       Module.sc.start.call(self, options);
     },

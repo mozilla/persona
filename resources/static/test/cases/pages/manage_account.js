@@ -38,9 +38,17 @@
     });
   });
 
-  asyncTest("email addresses added if there are children", function() {
+  asyncTest("show sorted email addresses", function() {
+    xhr.useResult("multiple");
+
     bid.manageAccount(mocks, function() {
-      equal($("#emailList").children().length, 1, "there has been one child added");
+      equal($("#emailList").children().length, 2, "there two children added");
+
+      var firstLI = $("#testuser2_testuser_com");
+      var secondLI = $("#testuser_testuser_com");
+
+      equal(firstLI.next().is(secondLI), true, "names are in alphabetical order");
+
       start();
     });
   });
@@ -151,7 +159,7 @@
     });
   });
 
-  asyncTest("changePassword with missing old password, expect tooltip", function() {
+  asyncTest("changePassword with missing old password - tooltip", function() {
     bid.manageAccount(mocks, function() {
       $("#old_password").val("");
       $("#new_password").val("newpassword");
@@ -164,7 +172,7 @@
     });
   });
 
-  asyncTest("changePassword with missing new password, expect tooltip", function() {
+  asyncTest("changePassword with missing new password - tooltip", function() {
     bid.manageAccount(mocks, function() {
       $("#old_password").val("oldpassword");
       $("#new_password").val("");
@@ -177,7 +185,7 @@
     });
   });
 
-  asyncTest("changePassword with too short of a password, expect tooltip", function() {
+  asyncTest("changePassword with too short of a password - tooltip", function() {
     bid.manageAccount(mocks, function() {
       $("#old_password").val("oldpassword");
       $("#new_password").val("pass");
@@ -190,17 +198,13 @@
     });
   });
 
-  asyncTest("changePassword with too long of a password, expect tooltip", function() {
+  asyncTest("changePassword with too long of a password - tooltip", function() {
     bid.manageAccount(mocks, function() {
       $("#old_password").val("oldpassword");
-      var tooLong = "";
-      for(var i = 0; i < 81; i++) {
-        tooLong += (i % 10);
-      }
-      $("#new_password").val(tooLong);
+      $("#new_password").val(testHelpers.generateString(81));
 
       bid.manageAccount.changePassword(function(status) {
-        equal(status, false, "on too short of a password, status is false");
+        equal(status, false, "on too long of a password, status is false");
         testHelpers.testTooltipVisible();
         start();
       });
@@ -208,7 +212,7 @@
   });
 
 
-  asyncTest("changePassword with incorrect old password, expect tooltip", function() {
+  asyncTest("changePassword with incorrect old password - tooltip", function() {
     bid.manageAccount(mocks, function() {
       xhr.useResult("incorrectPassword");
 
@@ -223,7 +227,7 @@
     });
   });
 
-  asyncTest("changePassword with XHR error, expect error message", function() {
+  asyncTest("changePassword with XHR error - error message", function() {
     bid.manageAccount(mocks, function() {
       xhr.useResult("invalid");
 

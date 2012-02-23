@@ -7,14 +7,13 @@
 
   <div id="selectEmail" class="form_section">
       <ul class="inputs">
-          <% _.each(identities, function(email_obj, email_address) { %>
+          <% _.each(identities, function(item) { var emailAddress = item.address; var cleanedEmail = emailAddress.replace("@","_").replace(".", "_"); %>
               <li>
-
-                  <label for="<%= email_address %>" class="serif<% if (email_address === siteemail) { %> preselected<% } %> selectable">
-                    <input type="radio" name="email" id="<%= email_address %>" value="<%= email_address %>"
-                      <% if (email_address === siteemail) { %> checked="checked" <% } %>
-                    />
-                    <%= email_address %>
+                  <label for="<%= cleanedEmail %>" class="serif<% if (emailAddress === siteemail) { %> preselected<% } %> selectable" title="<%= emailAddress %>">
+                    <input type="radio" name="email" id="<%= cleanedEmail %>" value="<%= emailAddress %>"
+                        <% if (emailAddress === siteemail) { %> checked="checked" <% } %>
+                      />
+                    <%= emailAddress %>
                   </label>
               </li>
           <% }); %>
@@ -31,9 +30,6 @@
           <% } %>
 
           <button id="signInButton"><%= gettext('sign in') %></button>
-
-          <p>
-          </p>
       </div>
   </div>
 

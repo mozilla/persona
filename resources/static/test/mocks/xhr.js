@@ -13,8 +13,7 @@ BrowserID.Mocks.xhr = (function() {
       authenticated: false,
       auth_level: undefined,
       code_version: "ABC123",
-      random_seed: "H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo=",
-      cookies_enabled: true
+      random_seed: "H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo="
     };
 
   // this cert is meaningless, but it has the right format
@@ -52,7 +51,7 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/stage_user unknown_secondary": { success: true },
       "post /wsapi/stage_user valid": { success: true },
       "post /wsapi/stage_user invalid": { success: false },
-      "post /wsapi/stage_user throttle": 403,
+      "post /wsapi/stage_user throttle": 429,
       "post /wsapi/stage_user ajaxError": undefined,
       "get /wsapi/user_creation_status?email=registered%40testuser.com pending": { status: "pending" },
       "get /wsapi/user_creation_status?email=registered%40testuser.com complete": { status: "complete" },
@@ -79,7 +78,7 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/stage_email unknown_secondary": { success: true },
       "post /wsapi/stage_email known_secondary": { success: true },
       "post /wsapi/stage_email invalid": { success: false },
-      "post /wsapi/stage_email throttle": 403,
+      "post /wsapi/stage_email throttle": 429,
       "post /wsapi/stage_email ajaxError": undefined,
       "post /wsapi/cert_key ajaxError": undefined,
       "get /wsapi/email_addition_status?email=registered%40testuser.com pending": { status: "pending" },

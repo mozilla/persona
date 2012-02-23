@@ -18,22 +18,26 @@ h2 {
 }
 
 
+.vertical {
+    height: 250px;
+}
+
 .table {
     display: table;
     width: 100%;
 }
 
-.vertical {
-    height: 250px;
+.table .vertical {
     display: table-cell;
     vertical-align: middle;
-    width: 100%;
 }
 
 #content {
     position: relative;
     height: 250px;
     overflow: hidden;
+    /* Fix for IE6 not displaying the unsupported dialog correctly */
+    _width: 100%;
 }
 
 section {
@@ -54,7 +58,6 @@ section > .contents {
 
 #wait, #error, #delay {
     text-align: center;
-    background-image: url("/i/bg.png");
     z-index: -1;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
     opacity: 0;
@@ -80,9 +83,10 @@ section > .contents {
     transition-delay: 0.5s;
 }
 
-#error {
-    background: #fff;
+#wait, #delay {
+  background-image: url("/i/bg.png");
 }
+
 
 .waiting #wait {
     z-index: 1;
@@ -90,8 +94,9 @@ section > .contents {
     opacity: 1;
 }
 
-.error #error {
+.error #error, #error.unsupported, #error.cookies_disabled {
     z-index: 3;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
 }
 
@@ -101,52 +106,38 @@ section > .contents {
     opacity: 1;
 }
 
-#error ul, #error li {
-    list-style-type: none;
+
+
+#error.unsupported {
+  padding: 20px 0;
 }
 
-#wait strong, #error strong, #delay strong {
-    color: #222;
-    font-weight: bold;
+.unsupported {
+  /*
+   * These are fixes for IE6 - IE6 does not support the combination #id.class
+   * selector, so we have to use just the class, and then prepend the css
+   * attributes with _ so only IE6 renders them.
+   */
+  _padding: 20px 0;
+  _width: 100%;
+  _height: 100%;
 }
 
-
-#error.unsupported .vertical {
-    width: 630px;
-    margin: 0 auto;
-    display: block;
+#error.unsupported h2 {
+  margin: 0 0 20px;
 }
 
-
-#error.unsupported .vertical > div {
-    display: table-cell;
-    vertical-align: middle;
-    padding: 0 10px;
-    height: 250px;
-}
-
-#error #moreInfo {
-    display: none;
-}
-
-#error a {
-    color: #549FDC;
-    text-decoration: underline;
-}
-
-#error #borderbox {
-    border-left: 1px solid #777;
-    padding: 20px 0;
-}
-
-#error #borderbox img {
+#error img {
     border: none;
 }
 
-#error #alternative .lighter {
+#error .lighter {
     color: #777;
 }
 
+#wait .vertical, #error .vertical, #delay .vertical {
+    padding: 0 20px;
+}
 
 #formWrap {
     background-color: #fff;
@@ -161,9 +152,12 @@ section > .contents {
     top: 0;
 }
 
-#signIn .table {
+#signIn .container {
+    /**
+     * Set the width of the container for when the arrow animation happens
+     * otherwise the buttons slide right with the arrow
+     */
     width: 325px;
-    margin-right: 40px;
 }
 
 .arrow {
@@ -211,12 +205,12 @@ div#required_email {
 }
 
 #signIn .vertical {
-    padding: 0 20px;
+    padding: 20px 52px 20px 20px;
+    position: relative;
 }
 
 #signIn .vertical ul {
   list-style-type: none;
-  position: relative;
 }
 
 #signIn .vertical ul li {
@@ -230,9 +224,9 @@ div#required_email {
 #signIn .submit {
     line-height: 28px;
     position: absolute;
-    bottom: 0;
+    bottom: 20px;
     left: 0;
-    right: 0;
+    right: 52px;
 }
 
 #signIn .submit > p {
@@ -273,6 +267,17 @@ label.selectable {
 
 .inputs > li > label {
     color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#signIn #selectEmail > .inputs > li {
+    margin: 0;
+}
+
+#selectEmail > .inputs > li > label {
+    padding: 5px 1px;
+    white-space: nowrap;
 }
 
 .inputs > li > label.preselected {
@@ -337,20 +342,19 @@ footer {
 
 .inputs {
     margin: 1em 0 .5em;
-    padding: 0 1em;
     line-height: 18px;
     max-height: 130px;
     overflow-y: auto;
 }
 
-.pickemail .inputs {
-    position: relative;
+/* Some languages have long text for the "sign in" and "use a different email"
+ * buttons.  If the user >= 6 emails in these languages, the buttons overlap.
+ * This shrinks the email address box by one address to prevent this overlap.
+ */
+#selectEmail .inputs {
+    max-height: 115px;
 }
 
-.form_section {
-    height: 176px;
-    position: relative;
-}
 
 .add {
     font-size: 80%;
@@ -366,12 +370,7 @@ label[for=remember] {
 }
 
 #thisIsNotMe {
-  margin-right: 10px;
   float: right;
-}
-
-#useNewEmail {
-  margin-left: 0.8em;
 }
 
 a.emphasize {
@@ -384,7 +383,7 @@ a.emphasize {
 }
 
 .submit > button {
-    margin: 0 5px 0 0;
+    margin: 0 0 0 5px;
 }
 
 #newEmail {

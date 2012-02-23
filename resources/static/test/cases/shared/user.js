@@ -87,12 +87,23 @@ var vep = require("./vep");
     equal(hostname, "browserid.org", "getHostname returns only the hostname");
   });
 
-  test("getStoredEmailKeypairs", function() {
+  test("getStoredEmailKeypairs without key - return all identities", function() {
     var identities = lib.getStoredEmailKeypairs();
-    equal("object", typeof identities, "we have some identities");
+    equal("object", typeof identities, "object returned");
   });
 
-  asyncTest("getStoredEmailKeypair with known key", function() {
+  test("getSortedEmailKeypairs - return array sorted by address", function() {
+    storage.addEmail("third", {});
+    storage.addEmail("second", {});
+    storage.addEmail("first", {});
+
+    var sortedIdentities = lib.getSortedEmailKeypairs();
+
+    equal(sortedIdentities[0].address, "first", "correct first address");
+    equal(sortedIdentities[2].address, "third", "correct third address");
+  });
+
+  asyncTest("getStoredEmailKeypair with known key - return identity", function() {
     lib.syncEmailKeypair("testuser@testuser.com", function() {
       var identity = lib.getStoredEmailKeypair("testuser@testuser.com");
 

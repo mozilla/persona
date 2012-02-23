@@ -4,21 +4,36 @@
 
 
   <% if (typeof network !== "undefined" && network.status == 503) { %>
-    <h2 id="error_503">We are very sorry, the server is under extreme load!</h2>
+    <h2 id="error_503">
+      <%= gettext("We are very sorry, the server is under extreme load!") %>
+    </h2>
+  <% } else if (typeof network !== "undefined" && network.status == 403) { %>
+    <h2 id="error_403">
+      <%= gettext("BrowserID required cookies") %>
+    </h2>
+    <%= format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='http://support.mozilla.org/en-US/kb/Websites%20say%20cookies%20are%20blocked'"]) %>
   <% } else { %>
-    <h2 id="defaultError">We are very sorry, there has been an error!</h2>
+    <h2 id="defaultError">
+      <%= gettext("We are very sorry, there has been an error!") %>
+    </h2>
   <% } %>
 
-  <p>
-  <% if (typeof dialog !== "undefined" && dialog !== false) { %>
-    To retry, you will have to reload the page and try again.  More info can be found by opening the expanded info below.
-  <% } else { %>
-    To retry, you will have to close BrowserID and try again.  More info can be found by opening the expanded info below.
+  <% if (!(typeof network !== "undefined" && network.status == 403)) { %>
+    <p>
+      <% if (typeof dialog !== "undefined" && dialog !== false) { %>
+        <%= gettext("To retry, you will have to reload the page and try again.") %>
+      <% } else { %>
+        <%= gettext("To retry, you will have to close this window and try again.") %>
+      <% } %>
+    </p>
   <% } %>
-  </p>
 
   <% if(typeof action !== "undefined" || typeof network !== "undefined") { %>
-    <a href="#" id="openMoreInfo">See more info</a>
+    <p>
+      <a href="#" id="openMoreInfo">
+        <%= gettext("See more info") %>
+      </a>
+    </p>
 
     <ul id="moreInfo">
       <% if (typeof action !== "undefined") { %>
@@ -39,7 +54,7 @@
           <strong id="network">Network Info:</strong> <%= network.type %>: <%= network.url %>
 
           <p>
-            <strong>Response Code - </strong> <%= network.textStatus %>
+            <strong>Response Code - </strong> <%= network.status %>
           </p>
 
           <% if (network.responseText) { %>
