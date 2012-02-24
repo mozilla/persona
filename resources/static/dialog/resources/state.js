@@ -162,6 +162,8 @@ BrowserID.State = (function() {
     });
 
     subscribe("email_chosen", function(msg, info) {
+      info = info || {};
+
       var email = info.email,
           idInfo = storage.getEmail(email);
 
@@ -214,7 +216,7 @@ BrowserID.State = (function() {
     });
 
     subscribe("authenticated", function(msg, info) {
-      publish("pick_email");
+      publish("email_chosen", info);
     });
 
     subscribe("forgot_password", function(msg, info) {

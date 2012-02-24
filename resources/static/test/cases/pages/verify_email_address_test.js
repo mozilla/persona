@@ -11,6 +11,7 @@
       storage = bid.Storage,
       xhr = bid.Mocks.xhr,
       testHelpers = bid.TestHelpers,
+      testTooltipVisible = testHelpers.testTooltipVisible,
       validToken = true;
 
   module("pages/verify_email_address", {
@@ -82,6 +83,35 @@
 
       bid.verifyEmailAddress.submit(function() {
         equal($("#congrats").is(":visible"), false, "congrats is not visible, missing password");
+        testTooltipVisible();
+        start();
+      });
+    });
+  });
+
+  asyncTest("submit with good token, too short of a password", function() {
+    bid.verifyEmailAddress("token", function() {
+      var pass = testHelpers.generateString(6);
+      $("#password").val(pass);
+      $("#vpassword").val(pass);
+
+      bid.verifyEmailAddress.submit(function() {
+        equal($("#congrats").is(":visible"), false, "congrats is not visible, too short of a password");
+        testTooltipVisible();
+        start();
+      });
+    });
+  });
+
+  asyncTest("submit with good token, too long of a password", function() {
+    bid.verifyEmailAddress("token", function() {
+      var pass = testHelpers.generateString(81);
+      $("#password").val(pass);
+      $("#vpassword").val(pass);
+
+      bid.verifyEmailAddress.submit(function() {
+        equal($("#congrats").is(":visible"), false, "congrats is not visible, too long of a password");
+        testTooltipVisible();
         start();
       });
     });
@@ -96,6 +126,7 @@
 
     bid.verifyEmailAddress.submit(function() {
       equal($("#congrats").is(":visible"), false, "congrats is not visible, missing verification password");
+      testTooltipVisible();
       start();
     });
 
@@ -109,6 +140,7 @@
 
     bid.verifyEmailAddress.submit(function() {
       equal($("#congrats").is(":visible"), false, "congrats is not visible, different passwords");
+      testTooltipVisible();
       start();
     });
 

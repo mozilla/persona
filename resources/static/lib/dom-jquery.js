@@ -296,6 +296,20 @@ BrowserID.DOM = ( function() {
          */
         focus: function( elementToFocus ) {
           jQuery( elementToFocus ).focus();
+        },
+
+        /**
+         * Check the current matched set of elements against
+         * a selector or element and return true if at least
+         * one of these elements matches the given arguments.
+         * @method is
+         * @param {selector || element} elementToCheck
+         * @param {string} type
+         * @returns {boolean} true if elementToCheck matches the specified
+         * type, false otw.
+         */
+        is: function( elementToCheck, type ) {
+          return jQuery( elementToCheck ).is( type );
         }
 
 
