@@ -32,10 +32,6 @@ BrowserID.State = (function() {
         },
         cancelState = self.popState.bind(self);
 
-    subscribe("offline", function(msg, info) {
-      startState("doOffline");
-    });
-
     subscribe("start", function(msg, info) {
       info = info || {};
 
