@@ -7,7 +7,7 @@
         "bcrypt": "0.4.1",
         "compute-cluster": "0.0.6",
         "connect": "1.7.2",
-        "convict": "0.0.7",
+        "convict": "0.0.6",
         "cjson": "0.0.6",
         "client-sessions": "0.0.3",
         "connect-cachify": "0.0.8",
