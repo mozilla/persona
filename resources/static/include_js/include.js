@@ -656,7 +656,10 @@
     // checking Mobile Firefox (Fennec)
     function isFennec() {
       try {
-        return (navigator.userAgent.indexOf('Fennec/') != -1);
+        // We must check for both XUL and Java versions of Fennec.  Both have
+        // distinct UA strings.
+        return (userAgent.indexOf('Fennec/') != -1) ||  // XUL
+                 (userAgent.indexOf('Firefox/') != -1 && userAgent.indexOf('Android') != -1);   // Java
       } catch(e) {};
       return false;
     }
@@ -936,7 +939,12 @@
 
   if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed) {
     var ipServer = "https://browserid.org";
-    var isFennec = navigator.userAgent.indexOf('Fennec/') != -1;
+    var userAgent = navigator.userAgent;
+    // We must check for both XUL and Java versions of Fennec.  Both have
+    // distinct UA strings.
+    var isFennec = (userAgent.indexOf('Fennec/') != -1) ||  // XUL
+                     (userAgent.indexOf('Firefox/') != -1 && userAgent.indexOf('Android') != -1);   // Java
+
     var windowOpenOpts =
       (isFennec ? undefined :
        "menubar=0,location=1,resizable=1,scrollbars=1,status=0,dialog=1,width=700,height=375");
