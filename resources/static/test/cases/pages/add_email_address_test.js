@@ -133,10 +133,7 @@
   });
 
   asyncTest("password: too long of a password", function() {
-    var tooLong = "";
-    for(var i = 0; i < 81; i++) {
-      tooLong += (i % 10);
-    }
+    var tooLong = testHelpers.generateString(81);
     $("#password").val(tooLong);
     $("#vpassword").val(tooLong);
 

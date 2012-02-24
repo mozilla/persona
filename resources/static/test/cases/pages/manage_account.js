@@ -201,14 +201,10 @@
   asyncTest("changePassword with too long of a password - tooltip", function() {
     bid.manageAccount(mocks, function() {
       $("#old_password").val("oldpassword");
-      var tooLong = "";
-      for(var i = 0; i < 81; i++) {
-        tooLong += (i % 10);
-      }
-      $("#new_password").val(tooLong);
+      $("#new_password").val(testHelpers.generateString(81));
 
       bid.manageAccount.changePassword(function(status) {
-        equal(status, false, "on too short of a password, status is false");
+        equal(status, false, "on too long of a password, status is false");
         testHelpers.testTooltipVisible();
         start();
       });
