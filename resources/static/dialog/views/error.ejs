@@ -21,9 +21,9 @@
   <% if (!(typeof network !== "undefined" && network.status == 403)) { %>
     <p>
       <% if (typeof dialog !== "undefined" && dialog !== false) { %>
-        <%= gettext("To retry, you will have to reload the page and try again.") %>
+        <%= gettext("Please reload the page and try again.") %>
       <% } else { %>
-        <%= gettext("To retry, you will have to close this window and try again.") %>
+        <%= gettext("Please close this window and try again.") %>
       <% } %>
     </p>
   <% } %>
