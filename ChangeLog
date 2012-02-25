@@ -38,6 +38,7 @@ train-2012.02.02:
   * (hotfix 2012.02.07) Modify build process to pick up locales from a .json file
   * (hotfix 2012.02.07) fix production-locales.sh script to defer to the environment for configuration
   * (hotfix 2012.02.13) fix for IE users not seeing error screens sometimes: #1087
+  * (hotfix 2012.02.22) add banner announcing brand change
 
 train-2012.01.18:
   * support for 3rd party primary identity providers: #761, #904, #865
