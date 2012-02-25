@@ -67,12 +67,6 @@
     equal(error, "start: controller must be specified", "creating a state machine without a controller fails");
   });
 
-  test("offline does offline", function() {
-    mediator.publish("offline");
-
-    equal(actions.called.doOffline, true, "controller is offline");
-  });
-
   test("user_staged - call doConfirmUser", function() {
     mediator.publish("user_staged", {
       email: "testuser@testuser.com"
@@ -359,7 +353,7 @@
 
     equal(error, "invalid email", "expected exception thrown");
   });
-  
+
   test("null assertion generated - preserve original options in doPickEmail", function() {
     mediator.publish("start", { allowPersistent: true });
     mediator.publish("assertion_generated", { assertion: null });

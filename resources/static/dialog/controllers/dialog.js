@@ -16,15 +16,6 @@ BrowserID.Modules.Dialog = (function() {
       channel,
       sc;
 
-  function checkOnline() {
-    if (false && 'onLine' in navigator && !navigator.onLine) {
-      this.publish("offline");
-      return false;
-    }
-
-    return true;
-  }
-
   function startActions(onsuccess, onerror) {
     var actions = BrowserID.Modules.Actions.create();
     actions.start({
@@ -121,35 +112,26 @@ BrowserID.Modules.Dialog = (function() {
       var actions = startActions.call(self, success, error);
       startStateMachine.call(self, actions);
 
-      if(checkOnline.call(self)) {
-        params = params || {};
+      params = params || {};
+      params.hostname = user.getHostname();
 
-        params.hostname = user.getHostname();
+      // XXX Perhaps put this into the state machine.
+      self.bind(win, "unload", onWindowUnload);
 
-        // XXX Perhaps put this into the state machine.
-        self.bind(win, "unload", onWindowUnload);
-
-        if(hash.indexOf("#CREATE_EMAIL=") === 0) {
-          var email = hash.replace(/#CREATE_EMAIL=/, "");
-          params.type = "primary";
-          params.email = email;
-          params.add = false;
-        }
-        else if(hash.indexOf("#ADD_EMAIL=") === 0) {
-          var email = hash.replace(/#ADD_EMAIL=/, "");
-          params.type = "primary";
-          params.email = email;
-          params.add = true;
-        }
-
-        /*
-        if(hash.indexOf("REQUIRED=true") > -1) {
-          params.requiredEmail = params.email;
-        }
-        */
-
-        self.publish("start", params);
+      if(hash.indexOf("#CREATE_EMAIL=") === 0) {
+        var email = hash.replace(/#CREATE_EMAIL=/, "");
+        params.type = "primary";
+        params.email = email;
+        params.add = false;
       }
+      else if(hash.indexOf("#ADD_EMAIL=") === 0) {
+        var email = hash.replace(/#ADD_EMAIL=/, "");
+        params.type = "primary";
+        params.email = email;
+        params.add = true;
+      }
+
+      self.publish("start", params);
     }
 
     // BEGIN TESTING API
