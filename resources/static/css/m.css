@@ -99,7 +99,7 @@
     padding: 0 10px;
     font-size: 16px;
     line-height: 21px;
-    margin: 122px 0 122px;
+    margin: 0 0 90px;  /* Add a bottom margin so the footer is never overlapped. */
   }
 
   #signUp p {
@@ -231,4 +231,8 @@
     float: right;
   }
 
+  #newsbanner {
+    margin: 115px 0 28px 0; /* put a margin-top on so that it does not go under the header */
+
+  }
 }

@@ -809,6 +809,7 @@ footer {
 }
 
 #newsbanner {
+  margin-top: 60px; /* put a margin-top on so that it does not go under the header */
   background-color: #faca33;
   line-height: 32px;
   border-radius: 4px;
