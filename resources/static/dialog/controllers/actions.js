@@ -67,10 +67,6 @@ BrowserID.Modules.Actions = (function() {
       this.renderError(template, info);
     },
 
-    doOffline: function() {
-      this.renderError("offline", {});
-    },
-
     doCancel: function() {
       if(onsuccess) onsuccess(null);
     },

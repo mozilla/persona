@@ -46,7 +46,7 @@ Unit tests can be run by invoking `npm test` at the top level, and you
 should run them often.  Like before committing code.  To fully test
 the code you should install mysql and have a well permissions `test`
 user (can create and drop databases).  If you don't have mysql installed,
-code testing is still possible (it just uses a little json database).
+code testing is still possible (it just uses a little JSON database).
 
 ## Development model
 

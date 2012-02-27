@@ -78,11 +78,6 @@ BrowserID.Errors = (function(){
       title: "Logout Failed"
     },
 
-    offline: {
-      title: gettext("You are offline!"),
-      message: gettext("Unfortunately, BrowserID cannot communicate while offline!")
-    },
-
     primaryAuthentication: {
       title: "Authenticating with Identity Provider",
       message: "We had trouble communicating with your email provider, please try again!"

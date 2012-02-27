@@ -54,17 +54,6 @@
     });
   });
 
-  asyncTest("doOffline - print offline error screen", function() {
-    createController({
-      ready: function() {
-        controller.doOffline();
-        ok($("#error .contents").text().length, "contents have been written");
-        ok($("#error #offline").text().length, "offline error message has been written");
-        start();
-      }
-    });
-  });
-
   asyncTest("doProvisionPrimaryUser - start the provision_primary_user service", function() {
     createController({
       ready: function() {
