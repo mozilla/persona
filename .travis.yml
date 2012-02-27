@@ -1,10 +1,20 @@
 language: node_js
- 
+
 before_install:
  - sudo apt-get install libgmp3-dev
+ - "mysql -e 'create database browserid;'"
 
 node_js:
  - 0.6
 
 notifications:
   irc: "irc.mozilla.org#identity"
+
+env:
+ - MYSQL_USER=root
+
+mysql:
+  adapter: mysql2
+  username: root
+  encoding: utf8
+  database: browserid
