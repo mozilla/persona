@@ -9,7 +9,7 @@
     </h2>
   <% } else if (typeof network !== "undefined" && network.status == 403) { %>
     <h2 id="error_403">
-      <%= gettext("BrowserID required cookies") %>
+      <%= gettext("BrowserID requires cookies") %>
     </h2>
     <%= format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='http://support.mozilla.org/en-US/kb/Websites%20say%20cookies%20are%20blocked'"]) %>
   <% } else { %>
