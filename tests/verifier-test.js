@@ -721,7 +721,7 @@ function make_other_issuer_tests(new_style) {
       var fakeDomainKeypair = jwk.KeyPair.generate("RS", 64);
       var newClientKeypair = jwk.KeyPair.generate("DS", 256);
       expiration = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
-      var cert = new jwcert.JWCert("lloyd.io", expiration, new Date(), newClientKeypair.publicKey,
+      var cert = new jwcert.JWCert("no.such.domain", expiration, new Date(), newClientKeypair.publicKey,
                                    {email: TEST_EMAIL}).sign(fakeDomainKeypair.secretKey);
 
       var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
@@ -744,7 +744,7 @@ function make_other_issuer_tests(new_style) {
       "to return a clear error message": function (err, r) {
         var resp = JSON.parse(r.body);
         assert.strictEqual(resp.status, 'failure');
-        assert.strictEqual(resp.reason, "can't get public key for lloyd.io");
+        assert.strictEqual(resp.reason, "can't get public key for no.such.domain");
       }
     }
   };
