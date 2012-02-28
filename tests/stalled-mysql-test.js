@@ -88,7 +88,7 @@ suite.addBatch({
   },
   "address_info": {
     topic: wsapi.get('/wsapi/address_info', {
-      email: 'test@hilaiel.com'
+      email: 'test@non-existant.domain'
     }),
     "fails with 503": function(err, r) {
       assert.strictEqual(r.code, 503);
