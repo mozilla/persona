@@ -46,6 +46,14 @@ function addStallDriverBatch(stall) {
       topic: function() {
         if (stall) fs.writeFileSync(stallFile, "");
         else fs.unlinkSync(stallFile);
+
+        // After changing the file which indicates to child
+        // processes whether the driver should simulate a stalled
+        // state or not, we need to wait for them to detect the
+        // change.  because we use `fs.watchFile()` on a short poll,
+        // this should be nearly instantaneous.  300ms is a magic number
+        // which is hoped to allow plenty of time even on a loaded
+        // machine
         setTimeout(this.callback, 300);
       },
       "completes": function(err, r) { }
