@@ -64,7 +64,7 @@
     var radioButton = $("input[type=radio]").eq(0);
     ok(radioButton.is(":checked"), "the email address we specified is checked");
 
-    var label = radioButton.parent();
+    var label = $("label[for=" + radioButton.attr("id") + "]");
     ok(label.hasClass("preselected"), "the label has the preselected class");
   });
 
@@ -153,6 +153,48 @@
       start();
     });
     controller.addEmail();
+  });
+
+  test("click on an email label and radio button - select corresponding radio button", function() {
+    storage.addEmail("testuser@testuser.com", {});
+    storage.addEmail("testuser2@testuser.com", {});
+
+    createController(false);
+
+    equal($("#testuser_testuser_com").is(":checked"), false, "radio button is not selected before click.");
+
+    // selects testuser@testuser.com
+    $("label[for=testuser_testuser_com]").trigger("click");
+    equal($("#testuser_testuser_com").is(":checked"), true, "radio button is correctly selected");
+
+    // selects testuser2@testuser.com
+    $("#testuser2_testuser_com").trigger("click");
+    equal($("#testuser2_testuser_com").is(":checked"), true, "radio button is correctly selected");
+  });
+
+  test("click on the 'Always sign in...' label and checkbox - correct toggling", function() {
+    createController(true);
+
+    var label = $("label[for=remember]"),
+        checkbox = $("#remember").removeAttr("checked");
+
+    equal(checkbox.is(":checked"), false, "checkbox is not yet checked");
+
+    // toggle checkbox to on clicking on label
+    label.trigger("click");
+    equal(checkbox.is(":checked"), true, "checkbox is correctly checked");
+
+    // toggle checkbox to off clicking on label
+    label.trigger("click");
+    equal(checkbox.is(":checked"), false, "checkbox is correctly unchecked");
+
+    // toggle checkbox to on clicking on checkbox
+    checkbox.trigger("click");
+    equal(checkbox.is(":checked"), true, "checkbox is correctly checked");
+
+    // toggle checkbox to off clicking on checkbox
+    checkbox.trigger("click");
+    equal(checkbox.is(":checked"), false, "checkbox is correctly unchecked");
   });
 
 }());

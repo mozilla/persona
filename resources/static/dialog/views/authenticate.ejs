@@ -32,7 +32,7 @@
 
           <li id="create_text_section" class="newuser">
               <p><strong><%= gettext('Welcome to BrowserID!') %></strong></p>
-              <p><%= gettext('This email looks new, so let&#39;s get you set up.') %></p>
+              <p><%= gettext("This email looks new, so let's get you set up.") %></p>
           </li>
 
           <li class="returning">
@@ -55,9 +55,19 @@
       </ul>
 
       <div class="submit cf">
+        <% if (privacy_url && tos_url) { %>
+          <p class="tospp">
+            <%= format(
+                  gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
+                       [ gettext('next'), 
+                         format(' href="%s" target="_new"', [tos_url]), 
+                         format(' href="%s" target="_new"', [privacy_url])
+                       ]) %>
+          </p>
+      <% } %>
           <button class="start" tabindex="3"><%= gettext('next') %></button>
           <button class="newuser" tabindex="3"><%= gettext('verify email') %></button>
 
-          <button class="returning" tabindex="3"><%= gettext('select email') %></button>
+          <button class="returning" tabindex="3"><%= gettext('sign in') %></button>
       </div>
   </div>

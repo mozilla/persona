@@ -16,15 +16,6 @@ BrowserID.Modules.Dialog = (function() {
       channel,
       sc;
 
-  function checkOnline() {
-    if (false && 'onLine' in navigator && !navigator.onLine) {
-      this.publish("offline");
-      return false;
-    }
-
-    return true;
-  }
-
   function startActions(onsuccess, onerror) {
     var actions = BrowserID.Modules.Actions.create();
     actions.start({
@@ -90,6 +81,14 @@ BrowserID.Modules.Dialog = (function() {
     this.publish("window_unload");
   }
 
+  function fixupURL(origin, url) {
+    var u;
+    if (/^http/.test(url)) u = URLParse(url);
+    else if (/^\//.test(url)) u = URLParse(origin + url);
+    else throw "relative urls not allowed: (" + url + ")";
+    return u.validate().normalize().toString();
+  }
+
   var Dialog = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
@@ -121,35 +120,41 @@ BrowserID.Modules.Dialog = (function() {
       var actions = startActions.call(self, success, error);
       startStateMachine.call(self, actions);
 
-      if(checkOnline.call(self)) {
-        params = params || {};
+      params = params || {};
+      params.hostname = user.getHostname();
 
-        params.hostname = user.getHostname();
-
-        // XXX Perhaps put this into the state machine.
-        self.bind(win, "unload", onWindowUnload);
-
-        if(hash.indexOf("#CREATE_EMAIL=") === 0) {
-          var email = hash.replace(/#CREATE_EMAIL=/, "");
-          params.type = "primary";
-          params.email = email;
-          params.add = false;
+      // verify params
+      if (params.tosURL && params.privacyURL) {
+        try {
+          params.tosURL = fixupURL(origin_url, params.tosURL);
+          params.privacyURL = fixupURL(origin_url, params.privacyURL);
+        } catch(e) {
+          return self.renderError("error", {
+            action: {
+              title: "error in " + origin_url,
+              message: "improper usage of API: " + e
+            }
+          });
         }
-        else if(hash.indexOf("#ADD_EMAIL=") === 0) {
-          var email = hash.replace(/#ADD_EMAIL=/, "");
-          params.type = "primary";
-          params.email = email;
-          params.add = true;
-        }
-
-        /*
-        if(hash.indexOf("REQUIRED=true") > -1) {
-          params.requiredEmail = params.email;
-        }
-        */
-
-        self.publish("start", params);
       }
+
+      // XXX Perhaps put this into the state machine.
+      self.bind(win, "unload", onWindowUnload);
+
+      if(hash.indexOf("#CREATE_EMAIL=") === 0) {
+        var email = hash.replace(/#CREATE_EMAIL=/, "");
+        params.type = "primary";
+        params.email = email;
+        params.add = false;
+      }
+      else if(hash.indexOf("#ADD_EMAIL=") === 0) {
+        var email = hash.replace(/#ADD_EMAIL=/, "");
+        params.type = "primary";
+        params.email = email;
+        params.add = true;
+      }
+
+      self.publish("start", params);
     }
 
     // BEGIN TESTING API

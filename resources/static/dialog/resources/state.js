@@ -32,15 +32,13 @@ BrowserID.State = (function() {
         },
         cancelState = self.popState.bind(self);
 
-    subscribe("offline", function(msg, info) {
-      startState("doOffline");
-    });
-
     subscribe("start", function(msg, info) {
       info = info || {};
 
       self.hostname = info.hostname;
       self.allowPersistent = !!info.allowPersistent;
+      self.privacyURL = info.privacyURL;
+      self.tosURL = info.tosURL;
       requiredEmail = info.requiredEmail;
 
       if ((typeof(requiredEmail) !== "undefined") && (!bid.verifyEmail(requiredEmail))) {
@@ -72,7 +70,9 @@ BrowserID.State = (function() {
 
       if (requiredEmail) {
         startState("doAuthenticateWithRequiredEmail", {
-          email: requiredEmail
+          email: requiredEmail,
+          privacyURL: self.privacyURL,
+          tosURL: self.tosURL
         });
       }
       else if (authenticated) {
@@ -83,6 +83,9 @@ BrowserID.State = (function() {
     });
 
     subscribe("authenticate", function(msg, info) {
+      info = info || {};
+      info.privacyURL = self.privacyURL;
+      info.tosURL = self.tosURL;
       startState("doAuthenticate", info);
     });
 
@@ -131,7 +134,7 @@ BrowserID.State = (function() {
         else if(info.add) {
           // Add the pick_email in case the user cancels the add_email screen.
           // The user needs something to go "back" to.
-          publish("pick_email", info);
+          publish("pick_email");
           publish("add_email", info);
         }
         else {
@@ -157,11 +160,15 @@ BrowserID.State = (function() {
     subscribe("pick_email", function() {
       startState("doPickEmail", {
         origin: self.hostname,
-        allow_persistent: self.allowPersistent
+        allow_persistent: self.allowPersistent,
+        privacyURL: self.privacyURL,
+        tosURL: self.tosURL
       });
     });
 
     subscribe("email_chosen", function(msg, info) {
+      info = info || {};
+
       var email = info.email,
           idInfo = storage.getEmail(email);
 
@@ -190,7 +197,9 @@ BrowserID.State = (function() {
               // screen.
               startState("doAuthenticateWithRequiredEmail", {
                 email: email,
-                secondary_auth: true
+                secondary_auth: true,
+                privacyURL: self.privacyURL,
+                tosURL: self.tosURL
               });
             }
             else {
@@ -214,7 +223,7 @@ BrowserID.State = (function() {
     });
 
     subscribe("authenticated", function(msg, info) {
-      publish("pick_email");
+      publish("email_chosen", info);
     });
 
     subscribe("forgot_password", function(msg, info) {
@@ -234,7 +243,7 @@ BrowserID.State = (function() {
         startState("doAssertionGenerated", info.assertion);
       }
       else {
-        startState("doPickEmail");
+        publish("pick_email");
       }
     });
 

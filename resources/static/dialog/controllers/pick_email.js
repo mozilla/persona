@@ -11,7 +11,6 @@ BrowserID.Modules.PickEmail = (function() {
       errors = bid.Errors,
       storage = bid.Storage,
       helpers = bid.Helpers,
-      cancelEvent = helpers.cancelEvent,
       dialogHelpers = helpers.Dialog,
       dom = bid.DOM,
       sc;
@@ -65,6 +64,25 @@ BrowserID.Modules.PickEmail = (function() {
     return identities;
   }
 
+  function proxyEventToInput(event) {
+    // iOS will not select a radio/checkbox button if the user clicks on the
+    // corresponding label.  Because of this, if the user clicks on the label,
+    // an even is manually fired on the the radio button.  This only applies
+    // if the user clicks on the actual label, not on any input elements
+    // contained within the label. This restriction is necessary or else we
+    // would be in a never ending loop that would continually toggle the state
+    // of any check boxes.
+    if(dom.is(event.target, "label")) {
+      // Must prevent standard acting browsers from taking care of the click or
+      // else it acts like two consecutive clicks.  For radio buttons this will
+      // just toggle state.
+      event.preventDefault();
+
+      var target = dom.getAttr(event.target, "for");
+      dom.fireEvent("#" + target, event.type);
+    }
+  }
+
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var origin = user.getOrigin(),
@@ -79,10 +97,12 @@ BrowserID.Modules.PickEmail = (function() {
         identities: getSortedIdentities(),
         siteemail: storage.site.get(origin, "email"),
         allow_persistent: options.allow_persistent || false,
-        remember: storage.site.get(origin, "remember") || false
+        remember: storage.site.get(origin, "remember") || false,
+        privacy_url: options.privacyURL,
+        tos_url: options.tosURL
       });
       dom.getElements("body").css("opacity", "1");
-
+      $('p.tospp').css('width', (240 - $('#signIn button:visible').outerWidth()) + 'px');
       if (dom.getElements("#selectEmail input[type=radio]:visible").length === 0) {
         // If there is only one email address, the radio button is never shown,
         // instead focus the sign in button so that the user can click enter.
@@ -90,7 +110,11 @@ BrowserID.Modules.PickEmail = (function() {
         dom.focus("#signInButton");
       }
 
-      self.bind("#useNewEmail", "click", cancelEvent(addEmail));
+      self.click("#useNewEmail", addEmail);
+      // The click function does not pass the event to the function.  The event
+      // is needed for the label handler so that the correct radio button is
+      // selected.
+      self.bind("#selectEmail label", "click", proxyEventToInput);
 
       sc.start.call(self, options);
 

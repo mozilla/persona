@@ -13,8 +13,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email,
       auth_url,
       helpers = bid.Helpers,
-      complete = helpers.complete,
-      cancelEvent = helpers.Dialog.cancelEvent;
+      complete = helpers.complete;
 
   function verify(callback) {
     this.publish("primary_user_authenticating");
@@ -51,7 +50,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       data.requiredEmail = data.requiredEmail || false;
       self.renderDialog("verify_primary_user", data);
 
-      self.bind("#cancel", "click", cancelEvent(cancel));
+      self.click("#cancel", cancel);
 
       sc.start.call(self, data);
     },

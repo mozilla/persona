@@ -6,12 +6,12 @@
     <div id="signUpFormWrap">
         <ul class="notifications">
             <li class="notification error" id="cannotconfirm"><%= gettext('There was a problem with your signup link. Has this address already been registered?') %></li>
-            <li class="notification error" id="cannotcommunicate"><%= gettext('Error comunicating with server.') %></li>
+            <li class="notification error" id="cannotcommunicate"><%= gettext('Error communicating with server.') %></li>
             <li class="notification error" id="cannotcomplete"><%= gettext('Error encountered trying to complete registration.') %></li>
         </ul>
 
         <form id="signUpForm" class="cf">
-            <p class="hint siteinfo"><%= gettext('Finish signing into: ') %><strong><span class="website"></span></strong></p>
+            <p class="hint siteinfo"><%= gettext('Finish signing into:') %> <strong><span class="website"></span></strong></p>
             <h1 class="serif"><%= gettext('Last step!') %></h1>
 
             <ul class="inputs">
@@ -46,7 +46,7 @@
             </ul>
 
             <div class="submit cf">
-                <button><%= gettext('Finish') %></button>
+                <button><%= gettext('finish') %></button>
             </div>
 
         </form>

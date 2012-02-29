@@ -1,7 +1,7 @@
 %define _rootdir /opt/browserid
 
 Name:          browserid-server
-Version:       0.2012.02.08
+Version:       0.2012.02.29
 Release:       1%{?dist}_%{svnrev}
 Summary:       BrowserID server
 Packager:      Pete Fritchman <petef@mozilla.com>
@@ -12,7 +12,7 @@ Source0:       %{name}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root
 AutoReqProv:   no
 Requires:      openssl nodejs
-BuildRequires: gcc-c++ git jre make npm openssl-devel expat-devel perl perl-JSON perl-Locale-PO
+BuildRequires: gcc-c++ git jre make npm openssl-devel expat-devel
 
 %description
 browserid server & web home for browserid.org
@@ -37,6 +37,8 @@ mkdir -p %{buildroot}%{_rootdir}
 for f in bin lib locale node_modules resources scripts *.json; do
     cp -rp $f %{buildroot}%{_rootdir}/
 done
+mkdir -p %{buildroot}%{_rootdir}/config
+cp -p config/l10n-all.json %{buildroot}%{_rootdir}/config
 
 %clean
 rm -rf %{buildroot}

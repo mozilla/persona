@@ -87,11 +87,12 @@ suite.addBatch({
   "the password": {
     topic: function() {
       var cb = this.callback;
-      db.emailToUID(TEST_EMAIL, function(uid) {
+      db.emailToUID(TEST_EMAIL, function(err, uid) {
         db.checkAuth(uid, cb);
       });
     },
-    "is bcrypted with the expected number of rounds": function(r) {
+    "is bcrypted with the expected number of rounds": function(err, r) {
+      assert.isNull(err);
       assert.equal(typeof r, 'string');
       assert.equal(config.get('bcrypt_work_factor'), bcrypt.get_rounds(r));
     }
@@ -134,11 +135,12 @@ suite.addBatch({
     "if we recheck the auth hash": {
       topic: function() {
         var cb = this.callback;
-        db.emailToUID(TEST_EMAIL, function(uid) {
+        db.emailToUID(TEST_EMAIL, function(err, uid) {
           db.checkAuth(uid, cb);
         });
       },
-      "its bcrypted with 8 rounds": function(r) {
+      "its bcrypted with 8 rounds": function(err, r) {
+        assert.isNull(err);
         assert.equal(typeof r, 'string');
         assert.equal(8, bcrypt.get_rounds(r));
       }

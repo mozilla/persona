@@ -10,7 +10,6 @@ BrowserID.Modules.ForgotPassword = (function() {
       bid = BrowserID,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
-      cancelEvent = dialogHelpers.cancelEvent,
       dom = bid.DOM;
 
   function resetPassword() {
@@ -31,7 +30,7 @@ BrowserID.Modules.ForgotPassword = (function() {
         requiredEmail: options.requiredEmail
       });
 
-      self.bind("#cancel", "click", cancelEvent(cancelResetPassword));
+      self.click("#cancel", cancelResetPassword);
 
       Module.sc.start.call(self, options);
     },

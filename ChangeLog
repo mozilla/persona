@@ -1,6 +1,24 @@
-train-2011.02.08 (in progress):
+train-2012.02.29 (in progress):
 
-train-2011.02.02:
+train-2012.02.16:
+  * improve failure mode when cookies are disabled (especially on iOS): #1056
+  * serve static css/js resources from perma URLs to improve load times - #620
+  * improve UI flows concerning cancelation during primary sign in: #983 #1036
+  * localization improvements: #1040, #1045, #1048, #1062, #1081, #1113
+  * cosmetic dialog fixes: #1062, #1058, #892, #1117
+  * fix bug preventing email addresses with under-bars in hostnames: #1074
+  * Mobile specific cosmetic improvements: #1072
+  * don't localize developer targeted error strings: #1051
+  * remove obsolete code: #1082
+  * sort email addresses alphabetically in dialog picker: #130
+  * improve error messages: #835, #1056
+  * improve log messages: #1069
+  * wsapi semantic improvements: #1083, #835
+  * logging in with a primary email address no longer forces you to re-enter your password when subsequently using a secondary address: #1049
+  * Fix IE specific issue where cookies with same name on domain and subdomain would collide: #296
+  * long emails look better: #1100
+
+train-2012.02.02:
   * i18n support, now BrowserID speaks your language: #926, #936, #977, #1013, #1031
   * improved error screens on slow server responses: #913, #915
   * better cache headers on all html resources (which Vary by Accept-Languages): #226, #620, #920, #938
@@ -21,8 +39,10 @@ train-2011.02.02:
   * (hotfix 2012.02.07) Fix the missing email address in the "check your email" screen for the forgot password flow.  #1058
   * (hotfix 2012.02.07) Modify build process to pick up locales from a .json file
   * (hotfix 2012.02.07) fix production-locales.sh script to defer to the environment for configuration
+  * (hotfix 2012.02.13) fix for IE users not seeing error screens sometimes: #1087
+  * (hotfix 2012.02.22) add banner announcing brand change
 
-train-2011.01.18:
+train-2012.01.18:
   * support for 3rd party primary identity providers: #761, #904, #865
   * loadgen improvements
   * Re-license under MPL2: #859 (& #827)
@@ -45,7 +65,7 @@ train-2011.01.18:
   * (hotfix 2012.01.31) fix silent assertions: #972
   * (hotfix 2012.02.01) fix verification of email on a browser other than the initiator: #973, #1026 (and maybe others)
 
-train-2011.01.05:
+train-2012.01.05:
   * client entropy pool mixes in randomness from server for better browser RNG: #298, #800
   * new assertion format that avoids double (base64) encoding - 33% smaller: #507
   * Turn license URL in ToS into a clickable link: #382

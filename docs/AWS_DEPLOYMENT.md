@@ -19,8 +19,11 @@ Once you have these things, you'll need to relay them to deployment
 scripts via your environment.  you might put something like this
 in your .bashrc:
 
+    # This is your Access Key ID from your AWS Security Credentials
     export AWS_ID=<your id>
+    # This is your Secret Access Key from your AWS Security Credentials
     export AWS_SECRET=<your secret>
+    # This is a magic credential you get from lloyd
     export BROWSERID_DEPLOY_DNS_KEY=98...33
 
 ## test!

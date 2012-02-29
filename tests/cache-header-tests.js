@@ -93,6 +93,7 @@ suite.addBatch({
   '/sign_in': hasProperCacheHeaders('/sign_in'),
   '/communication_iframe': hasProperCacheHeaders('/communication_iframe'),
   '/unsupported_dialog': hasProperCacheHeaders('/unsupported_dialog'),
+  '/cookies_disabled': hasProperCacheHeaders('/cookies_disabled'),
   '/relay': hasProperCacheHeaders('/relay'),
   '/authenticate_with_primary': hasProperCacheHeaders('/authenticate_with_primary'),
   '/signup': hasProperCacheHeaders('/signup'),

@@ -103,7 +103,7 @@ exports.addStartupBatches = function(suite) {
         db.open(cfg, this.callback);
       },
       "should work fine": function(r) {
-        assert.isUndefined(r);
+        assert.isNull(r);
       }
     }
   });
@@ -184,7 +184,7 @@ exports.addShutdownBatches = function(suite) {
         db.closeAndRemove(this.callback);
       },
       "should work": function(err) {
-        assert.isUndefined(err);
+        assert.isNull(err);
       }
     }
   });

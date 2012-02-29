@@ -1,0 +1,17 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+  <section id="error" class="cookies_disabled">
+      <div class="table">
+        <div class="vertical contents">
+          <h2 id="reason">
+            <%= gettext("BrowserID requires cookies") %>
+          </h2>
+
+          <p>
+            <%- format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='http://support.mozilla.org/en-US/kb/Websites%20say%20cookies%20are%20blocked'"]) %>
+          </p>
+        </div>
+      </div>
+  </section>

@@ -129,13 +129,6 @@ app.post('/verify', function(req, resp, next) {
 // shutdown when /code_update is invoked
 shutdown.installUpdateHandler(app);
 
-// custom 404
-app.use(function(req, res,next) {
-  res.statusCode = 404;
-  res.write("Cannot find this resource");
-  res.end();
-});
-
 // shutdown nicely on signals
 shutdown.handleTerminationSignals(app, function() {
   cc.exit();

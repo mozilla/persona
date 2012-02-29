@@ -52,7 +52,7 @@ suite.addBatch({
           wsapi.clearCookies();
 
           // mess up the cookie
-          var the_match = first_cookie.match(/browserid_state=([^;]*);/);
+          var the_match = first_cookie.match(/browserid_state(?:_[a-z0-9]+)?=([^;]*);/);
           assert.isNotNull(the_match);
           var new_cookie_val = the_match[1].substring(0, the_match[1].length - 1);
           wsapi.injectCookies({browserid_state: new_cookie_val});

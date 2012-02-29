@@ -354,7 +354,7 @@
             }
           }, timeout);
         }
-        
+
         var onMessage = function(origin, method, m) {
           // if an observer was specified at allocation time, invoke it
           if (typeof cfg.gotMessageObserver === 'function') {
@@ -656,7 +656,10 @@
     // checking Mobile Firefox (Fennec)
     function isFennec() {
       try {
-        return (navigator.userAgent.indexOf('Fennec/') != -1);
+        // We must check for both XUL and Java versions of Fennec.  Both have
+        // distinct UA strings.
+        return (userAgent.indexOf('Fennec/') != -1) ||  // XUL
+                 (userAgent.indexOf('Firefox/') != -1 && userAgent.indexOf('Android') != -1);   // Java
       } catch(e) {};
       return false;
     }
@@ -831,7 +834,7 @@
           ieNosupport = ieVersion > -1 && ieVersion < 8;
 
       if(ieNosupport) {
-        return "IE_VERSION";
+        return "BAD_IE_VERSION";
       }
     }
 
@@ -840,29 +843,54 @@
     }
 
     function checkLocalStorage() {
-      var localStorage = 'localStorage' in win && win['localStorage'] !== null;
-      if(!localStorage) {
-        return "LOCALSTORAGE";
+      // Firefox/Fennec/Chrome blow up when trying to access or
+      // write to localStorage. We must do two explicit checks, first
+      // whether the browser has localStorage.  Second, we must check
+      // whether the localStorage can be written to.  Firefox (at v11)
+      // throws an exception when querying win['localStorage']
+      // when cookies are disabled. Chrome (v17) excepts when trying to
+      // write to localStorage when cookies are disabled. If an
+      // exception is thrown, then localStorage is disabled. If no
+      // exception is thrown, hasLocalStorage will be true if the
+      // browser supports localStorage and it can be written to.
+      try {
+        var hasLocalStorage = 'localStorage' in win
+                        // Firefox will except here if cookies are disabled.
+                        && win['localStorage'] !== null;
+
+        if(hasLocalStorage) {
+          // browser has localStorage, check if it can be written to. If
+          // cookies are disabled, some browsers (Chrome) will except here.
+          win['localStorage'].setItem("test", "true");
+          win['localStorage'].removeItem("test");
+        }
+        else {
+          // Browser does not have local storage.
+          return "LOCALSTORAGE_NOT_SUPPORTED";
+        }
+      } catch(e) {
+          return "LOCALSTORAGE_DISABLED";
       }
     }
 
     function checkPostMessage() {
       if(!win.postMessage) {
-        return "POSTMESSAGE";
+        return "POSTMESSAGE_NOT_SUPPORTED";
       }
     }
 
     function checkJSON() {
       if(!(window.JSON && window.JSON.stringify && window.JSON.parse)) {
-        return "JSON";
+        return "JSON_NOT_SUPPORTED";
       }
     }
 
     function isSupported() {
-      reason = checkLocalStorage() || checkPostMessage() || checkJSON() || explicitNosupport();
+      reason = explicitNosupport() || checkLocalStorage() || checkPostMessage() || checkJSON();
 
       return !reason;
     }
+
 
     function getNoSupportReason() {
       return reason;
@@ -911,10 +939,15 @@
 
   if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed) {
     var ipServer = "https://browserid.org";
-    var isFennec = navigator.userAgent.indexOf('Fennec/') != -1;
+    var userAgent = navigator.userAgent;
+    // We must check for both XUL and Java versions of Fennec.  Both have
+    // distinct UA strings.
+    var isFennec = (userAgent.indexOf('Fennec/') != -1) ||  // XUL
+                     (userAgent.indexOf('Firefox/') != -1 && userAgent.indexOf('Android') != -1);   // Java
+
     var windowOpenOpts =
       (isFennec ? undefined :
-       "menubar=0,location=1,resizable=0,scrollbars=0,status=0,dialog=1,width=700,height=375");
+       "menubar=0,location=1,resizable=1,scrollbars=1,status=0,dialog=1,width=700,height=375");
 
     var w;
 
@@ -942,8 +975,15 @@
         }
 
         if (!BrowserSupport.isSupported()) {
+          var reason = BrowserSupport.getNoSupportReason(),
+              url = "unsupported_dialog";
+
+          if(reason === "LOCALSTORAGE_DISABLED") {
+            url = "cookies_disabled";
+          }
+
           w = window.open(
-            ipServer + "/unsupported_dialog",
+            ipServer + "/" + url,
             null,
             windowOpenOpts);
           return;

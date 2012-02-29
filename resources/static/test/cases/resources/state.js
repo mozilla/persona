@@ -67,12 +67,6 @@
     equal(error, "start: controller must be specified", "creating a state machine without a controller fails");
   });
 
-  test("offline does offline", function() {
-    mediator.publish("offline");
-
-    equal(actions.called.doOffline, true, "controller is offline");
-  });
-
   test("user_staged - call doConfirmUser", function() {
     mediator.publish("user_staged", {
       email: "testuser@testuser.com"
@@ -170,10 +164,11 @@
     ok(actions.called.doEmailChosen, "doEmailChosen called");
   });
 
-  test("authenticated", function() {
-    mediator.publish("authenticated");
+  test("authenticated - call doEmailChosen", function() {
+    storage.addEmail("testuser@testuser.com", {});
+    mediator.publish("authenticated", { email: "testuser@testuser.com" });
 
-    ok(actions.called.doPickEmail, "doPickEmail has been called");
+    ok(actions.called.doEmailChosen, "doEmailChosen has been called");
   });
 
   test("forgot_password", function() {
@@ -357,6 +352,14 @@
     }
 
     equal(error, "invalid email", "expected exception thrown");
+  });
+
+  test("null assertion generated - preserve original options in doPickEmail", function() {
+    mediator.publish("start", { allowPersistent: true });
+    mediator.publish("assertion_generated", { assertion: null });
+
+    equal(actions.called.doPickEmail, true, "doPickEmail callled");
+    equal(actions.info.doPickEmail.allow_persistent, true, "allow_persistent preserved");
   });
 
 }());

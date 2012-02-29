@@ -68,15 +68,13 @@ BrowserID.TestHelpers = (function() {
       $("body").stop().show();
       $("body")[0].className = "";
 
-      var el = $("#controller_head");
-      el.find("#formWrap .contents").html("");
-      el.find("#wait .contents").html("");
       $(".error").removeClass("error");
-      $("#error").stop().html("<div class='contents'></div>").hide();
+      $("#error").hide();
       $(".notification").stop().hide();
       $("form").show();
       screens.wait.hide();
       screens.error.hide();
+      screens.delay.hide();
       tooltip.reset();
       provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
       user.reset();
@@ -96,12 +94,9 @@ BrowserID.TestHelpers = (function() {
       });
       network.init();
       storage.clear();
-      $(".error").removeClass("error");
-      $("#error").stop().html("<div class='contents'></div>").hide();
-      $(".notification").stop().hide();
-      $("form").show();
       screens.wait.hide();
       screens.error.hide();
+      screens.delay.hide();
       tooltip.reset();
       provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
       user.reset();
@@ -185,6 +180,17 @@ BrowserID.TestHelpers = (function() {
       }
 
       cb && cb.apply(null, args);
+    },
+
+    /**
+     * Generate a long string
+     */
+    generateString: function(length) {
+      var str = "";
+      for(var i = 0; i < length; i++) {
+        str += (i % 10);
+      }
+      return str;
     }
   };
 
