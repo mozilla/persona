@@ -301,12 +301,12 @@ label.selectable {
 
 #signIn .submit > p.tospp {
     /* width comes from controller/<page>.js p.tospp.css('width') update */
+    bottom: 0px;
     color: #333;
     font-size: 11px;
-    line-height: 1.3;
+    line-height: 1.2;
     position: absolute; 
     text-align: justify;
-    bottom: 0px;
     left; 0px;
 }
 
@@ -384,8 +384,8 @@ footer {
 }
 
 label[for=remember] {
-  display: inline;
-  margin-left: 13px;
+  display: inline-block;
+  margin-bottom: 10px;
 }
 
 #thisIsNotMe {
