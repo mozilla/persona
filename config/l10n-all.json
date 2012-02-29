@@ -1,10 +1,10 @@
 {
-  "supported_languages": [
+"supported_languages": [
     "af", "ca", "cs", "da", "de", "el", "en-US", "eo", "es", "es-MX",
     "et", "eu", "fi", "fr", "fy", "ga", "gd", "gl", "he", "hr", "hu",
     "it", "ja", "lij", "lt", "ml", "nl", "pa", "pl", "pt", "pt-BR",
-    "rm", "ro", "ru", "sk", "sl", "son", "sq", "sr", "sv", "tr", "zh-CN",
-    "zh-TW",
+    "rm", "ro", "ru", "sk", "sl", "son", "sq", "sr", "sv", "tr", "uk",
+    "zh-CN", "zh-TW",
     "it-CH", "db-LB"
   ]
 }
