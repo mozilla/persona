@@ -263,10 +263,10 @@ deployer.on('error', function(r) {
 });
 
 
-// we check every 30 minutes no mattah what. (checks are cheap)
+// we check every 3 minutes no mattah what. (checks are cheap, github webhooks are flakey)
 setInterval(function () {
   deployer.checkForUpdates();
-}, (1000 * 60 * 30));
+}, (1000 * 60 * 3));
 
 // check for updates at startup
 deployer.on('ready', function() {
