@@ -229,6 +229,10 @@ div#required_email {
     right: 52px;
 }
 
+#signIn .submit {
+  margin-left: 20px;
+}
+
 #signIn .submit > p {
   line-height: 13px;
   clear: right;
@@ -293,6 +297,21 @@ label.selectable {
     font-size: 12px;
     color: #62615F;
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+}
+
+#signIn .submit > p.tospp {
+    /* width comes from controller/<page>.js p.tospp.css('width') update */
+    color: #333;
+    font-size: 11px;
+    line-height: 1.3;
+    position: absolute; 
+    text-align: justify;
+    bottom: 0px;
+    left; 0px;
+}
+
+.tospp a {
+    color: #549FDC;
 }
 
 footer .learn a {
@@ -403,4 +422,3 @@ a.emphasize {
 #checkemail {
     text-align: center;
 }
-

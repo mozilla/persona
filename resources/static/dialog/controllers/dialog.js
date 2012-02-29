@@ -81,6 +81,14 @@ BrowserID.Modules.Dialog = (function() {
     this.publish("window_unload");
   }
 
+  function fixupURL(origin, url) {
+    var u;
+    if (/^http/.test(url)) u = URLParse(url);
+    else if (/^\//.test(url)) u = URLParse(origin + url);
+    else throw "relative urls not allowed: (" + url + ")";
+    return u.validate().normalize().toString();
+  }
+
   var Dialog = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
@@ -114,6 +122,21 @@ BrowserID.Modules.Dialog = (function() {
 
       params = params || {};
       params.hostname = user.getHostname();
+
+      // verify params
+      if (params.tosURL && params.privacyURL) {
+        try {
+          params.tosURL = fixupURL(origin_url, params.tosURL);
+          params.privacyURL = fixupURL(origin_url, params.privacyURL);
+        } catch(e) {
+          return self.renderError("error", {
+            action: {
+              title: "error in " + origin_url,
+              message: "improper usage of API: " + e
+            }
+          });
+        }
+      }
 
       // XXX Perhaps put this into the state machine.
       self.bind(win, "unload", onWindowUnload);

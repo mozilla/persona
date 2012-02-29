@@ -55,6 +55,16 @@
       </ul>
 
       <div class="submit cf">
+        <% if (privacy_url && tos_url) { %>
+          <p class="tospp">
+            <%= format(
+                  gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
+                       [ gettext('next'), 
+                         format(' href="%s" target="_new"', [tos_url]), 
+                         format(' href="%s" target="_new"', [privacy_url])
+                       ]) %>
+          </p>
+      <% } %>
           <button class="start" tabindex="3"><%= gettext('next') %></button>
           <button class="newuser" tabindex="3"><%= gettext('verify email') %></button>
 
