@@ -116,13 +116,16 @@ BrowserID.Modules.RequiredEmail = (function() {
         // a user could not be looking at stale data and/or authenticate as
         // somebody else.
         var emailInfo = user.getStoredEmailKeypair(email);
+        //alert(auth_level + ' ' + JSON.stringify(emailInfo) + JSON.stringify(options));
         if(emailInfo && emailInfo.type === "secondary") {
           // secondary user, show the password field if they are not
           // authenticated to the "password" level.
           showTemplate({
             signin: true,
             password: auth_level !== "password",
-            secondary_auth: secondaryAuth
+            secondary_auth: secondaryAuth,
+            privacy_url: options.privacyURL,
+            tos_url: options.tosURL
           });
           ready();
         }
@@ -159,7 +162,9 @@ BrowserID.Modules.RequiredEmail = (function() {
               // user is authenticated, but does not control address
               // OR
               // address is unknown, make the user verify.
-              showTemplate({ verify: true });
+              showTemplate({ verify: true,
+                             privacy_url: options.privacyURL,
+                             tos_url: options.tosURL  });
             }
             else {
               // We've made it all this way.  It is a user who is not logged in
@@ -178,14 +183,19 @@ BrowserID.Modules.RequiredEmail = (function() {
           signin: false,
           password: false,
           secondary_auth: false,
-          primary: false
+          primary: false,
+          privacy_url: undefined,
+          tos_url: undefined
         }, options);
+
         self.renderDialog("required_email", options);
 
         self.click("#sign_in", signIn);
         self.click("#verify_address", verifyAddress);
         self.click("#forgotPassword", forgotPassword);
         self.click("#cancel", cancel);
+
+        $('p.tospp').css('width', (240 - $('#signIn button:visible').outerWidth()) + 'px');
       }
 
       RequiredEmail.sc.start.call(self, options);

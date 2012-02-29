@@ -35,6 +35,9 @@ pre {
   word-wrap: break-word;
 }
 
+.specify ul { padding-left: 0px; }
+.specify li { list-style: none; }
+
 @media screen and (max-width: 640px) {
   .intro, .output, .step {
     width: 90%;
@@ -54,13 +57,26 @@ pre {
 </div>
 
 <div class="specify">
-  What flavor of assertion would you like? <br/>
-  <p>
-    <input type="checkbox" id="silent">&nbsp;Silent <br/>
-    <input type="checkbox" id="allowPersistent">&nbsp;Allow persistent sign-in <br/>
-    <input type="text" id="requiredEmail" width="80">&nbsp;Require a specific email <br/>
+  <p>What flavor of assertion would you like?</p>
+  <ul>
+    <li>
+      <input type="checkbox" id="silent"> 
+      <label for="silent">Silent</label>
+    </li><li>
+      <input type="checkbox" id="allowPersistent">
+      <label for="allowPersistent">Allow persistent sign-in</label>
+    </li><li>
+      <input type="checkbox" id="privacy">
+      <label for="privacy">Supply a privacy policy</label>
+    </li><li>
+      <input type="checkbox" id="tos">
+      <label for="tos">Supply a ToS</label>
+    </li><li>
+      <input type="text" id="requiredEmail" width="80">
+      <label for="requiredEmail">Require a specific email</label><br />
+    </li>
+  </ul>
     <button>Get an assertion</button>
-  </p>
 </div>
 
 <div class="verifierResp">
@@ -113,6 +129,8 @@ $(document).ready(function() {
     }, {
       silent: $('#silent').attr('checked'),
       allowPersistent: $('#allowPersistent').attr('checked'),
+      privacyURL: $('#privacy').attr('checked') ? "/privacy.html" : undefined,
+      tosURL: $('#tos').attr('checked') ? "/TOS.html" : undefined,
       requiredEmail: requiredEmail
     });
   });
