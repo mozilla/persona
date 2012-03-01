@@ -25,8 +25,7 @@ npm install
 export PATH=$PWD/node_modules/.bin:$PATH
 ./locale/compile-mo.sh locale/
 ./locale/compile-json.sh locale/ resources/static/i18n/
-scripts/compress.sh
-env CONFIG_FILES=$PWD/config/l10n-all.json scripts/compress-locales.sh
+env CONFIG_FILES=$PWD/config/l10n-all.json scripts/compress
 rm -r resources/static/build resources/static/test
 echo "$GIT_REVISION" > resources/static/ver.txt
 echo "locale svn r$SVN_REVISION" >> resources/static/ver.txt
