@@ -1,4 +1,6 @@
-train-2012.02.29:
+train-2012.03.14 (in progress):
+
+train-2012.03.01:
   * When the user authenticates log them in automatically without going to the email picker: #198
   * database (mysql) improvements, handle temporary outages without taking down the server: #990, #1211
   * improved error flows when cookies are disabled: #835
