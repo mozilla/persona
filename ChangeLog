@@ -22,6 +22,7 @@ train-2012.03.01:
   * rpm fixes: #1165, #1177
   * devtool fixes: #1219
   * fix string extraction: #1170, #1194
+  * (hotfix 2012.03.01) fix compress script to not attempt to build the "debug" language: #1235
 
 train-2012.02.16:
   * improve failure mode when cookies are disabled (especially on iOS): #1056
