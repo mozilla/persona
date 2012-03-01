@@ -12,6 +12,10 @@ const staticPath = path.join(__dirname, '..', 'resources', 'static');
 
 var langs = config.get('supported_languages');
 
+// remove the "debug" language.
+var i = langs.indexOf(config.get('debug_lang'));
+if (i != -1) langs.splice(i, 1);
+
 var all = resources.all(langs);
 
 var cc = new computecluster({
