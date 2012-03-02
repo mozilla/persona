@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+
+// a script to RUN TESTS.  You can specify WHAT TESTS to run by
+// populating an environment variable 'WHAT_TESTS'.  Values include:
+//   * 'front' - frontend unit tests
+//   * 'back' - backend unit tests
+//   * 'all' - of it
+
+const
+spawn = require('child_process').spawn,
+path = require('path');
+
+// WHAT TESTS are we running?
+var whatTests = [];
+if (process.env['WHAT_TESTS']) {
+  whatTests.push(process.env['WHAT_TESTS']);
+  if (whatTests[0] == 'all') whatTests = [ 'front', 'back' ];
+} else {
+  whatTests = [ 'back' ];
+}
+
+var ec = 0;
+function run() {
+  if (!whatTests.length) process.exit(ec);
+
+  var script = {
+    front: 'test_frontend',
+    back: 'test_backend'
+  }[whatTests.shift()];
+
+  console.log(script);
+  var kid = spawn(path.join(__dirname, script));
+  kid.stdout.on('data', function(d) { process.stdout.write(d); });
+  kid.stderr.on('data', function(d) { process.stderr.write(d); });
+  kid.on('exit', function(code) {
+    if (code) process.exit(code);
+    run();
+  });
+}
+
+run();
