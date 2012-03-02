@@ -28,7 +28,7 @@ function generateTemplates() {
     console.log("templates.js is up to date");
     return;
   } catch (e) {
-    console.log("creating templates.js (" + e + ")");
+    console.log("creating templates.js");
   }
 
   for(var index = 0, max = fileNames.length; index < max; index++) {
