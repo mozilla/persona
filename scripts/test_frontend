@@ -23,17 +23,8 @@ start_stop.addStartupBatches(suite);
 suite.addBatch({
   "frontend unit tests": {
     topic: function() {
-      // what phantom.js binary?
-      var bin = 'phantomjs';
-      try {
-        var maybe = '/usr/local/bin/phantomjs';
-        if (!fs.statSync(maybe).isFile()) throw "meh";
-        bin = maybe;
-      } catch(e) {};
-
-      var kid = spawn(
-        bin, [ path.join(__dirname, '..', 'resources', 'static', 'test', 'phantomrunner.js'),
-               'http://127.0.0.1:10002/test' ]);
+      var kid = spawn('phantomjs', [ path.join(__dirname, '..', 'resources', 'static', 'test', 'phantomrunner.js'),
+                                     'http://127.0.0.1:10002/test' ]);
       kid.stdout.on('data', function(d) { process.stdout.write(d); });
       kid.stderr.on('data', function(d) { process.stderr.write(d); });
       kid.on('exit', this.callback);
