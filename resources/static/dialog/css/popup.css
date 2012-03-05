@@ -388,10 +388,6 @@ label[for=remember] {
   margin-bottom: 10px;
 }
 
-#thisIsNotMe {
-  float: right;
-}
-
 a.emphasize {
   background-color: #F0EFED;
   color: #4E4E4E;
