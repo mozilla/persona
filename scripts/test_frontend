@@ -23,7 +23,7 @@ start_stop.addStartupBatches(suite);
 suite.addBatch({
   "frontend unit tests": {
     topic: function() {
-      var kid = spawn('phantomjs', [ path.join(__dirname, '..', 'resources', 'static', 'test', 'phantomrunner.js'),
+      var kid = spawn('phantomjs', [ path.join(__dirname, 'phantomrunner.js'),
                                      'http://127.0.0.1:10002/test' ]);
       kid.stdout.on('data', function(d) { process.stdout.write(d); });
       kid.stderr.on('data', function(d) { process.stderr.write(d); });
