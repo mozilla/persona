@@ -21,20 +21,24 @@ function compressResource(staticPath, name, files, cb) {
   }
 
   function compress() {
-    var final_code;
-    if (/\.js$/.test(name)) {
-      // compress javascript
-      var ast = jsp.parse(orig_code); // parse code and get the initial AST
-      ast = pro.ast_mangle(ast); // get a new AST with mangled names
-      ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
-      final_code = pro.split_lines(pro.gen_code(ast), 32 * 1024); // compressed code here
-    } else if (/\.css$/.test(name)) {
-      // compress css
-      final_code = uglifycss.processString(orig_code);
-    } else {
-      return cb("can't determine content type: " + name);
+    try {
+      var final_code;
+      if (/\.js$/.test(name)) {
+        // compress javascript
+        var ast = jsp.parse(orig_code); // parse code and get the initial AST
+        ast = pro.ast_mangle(ast); // get a new AST with mangled names
+        ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
+        final_code = pro.split_lines(pro.gen_code(ast), 32 * 1024); // compressed code here
+      } else if (/\.css$/.test(name)) {
+        // compress css
+        final_code = uglifycss.processString(orig_code);
+      } else {
+        return cb("can't determine content type: " + name);
+      }
+      writeFile(final_code);
+    } catch(e) {
+      cb("error compressing: " + e.toString() + "\n");
     }
-    writeFile(final_code);
   }
 
   function readNext() {
