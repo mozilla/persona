@@ -41,6 +41,7 @@ train-2012.02.16:
   * logging in with a primary email address no longer forces you to re-enter your password when subsequently using a secondary address: #1049
   * Fix IE specific issue where cookies with same name on domain and subdomain would collide: #296
   * long emails look better: #1100
+  * (hotfix 2012.03.05) add have_email wsapi on dbwriter for monitoring purposes: issue #1258
 
 train-2012.02.02:
   * i18n support, now BrowserID speaks your language: #926, #936, #977, #1013, #1031
