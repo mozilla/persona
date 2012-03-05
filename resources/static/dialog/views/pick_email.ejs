@@ -2,7 +2,7 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-  <a id="thisIsNotMe" class="emphasize" href="#"><%= gettext('This is not me...') %></a>
+  
   <strong><%= gettext('Sign in using') %></strong>
 
   <div id="selectEmail" class="form_section">
@@ -18,7 +18,9 @@
               </li>
           <% }); %>
       </ul>
-      <a id="useNewEmail" class="emphasize" href="#"><%= gettext('Use a different email') %></a>
+      <a id="useNewEmail" class="emphasize" href="#"><%= gettext('Add another email') %></a>
+      <a id="thisIsNotMe" class="emphasize" href="#"><%= gettext('This is not me...') %></a>
+
 
       <div class="submit add cf">
       <% if (allow_persistent || (privacy_url && tos_url)) { %>
