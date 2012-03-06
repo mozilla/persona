@@ -27,5 +27,8 @@ if [ $? = 0 ] ; then
         fi
     done
 else
-    echo "CANNOT TEST '$env' ENVIRONMENT: can't connect to the database"
+    echo
+    echo "Can't run tests: can't connect to the database"
+    echo
+    exit 1
 fi

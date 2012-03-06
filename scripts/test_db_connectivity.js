@@ -22,8 +22,8 @@ var dbCfg = configuration.get('database');
 delete dbCfg.create_schema;
 
 db.open(dbCfg, function (err, r) {
-  if (err && err.message === "Unknown database 'browserid'") r = undefined;
-  function end() { process.exit(r === undefined ? 0 : 1); }
-  if (r === undefined) db.close(end);
+  if (err && err.message === "Unknown database 'browserid'") err = undefined;
+  function end() { process.exit(err ? 1 : 0); }
+  if (!err) db.close(end);
   else end();
 });

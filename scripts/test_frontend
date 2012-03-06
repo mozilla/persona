@@ -18,6 +18,18 @@ var suite = vows.describe('frontend-tests');
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
+suite.addBatch({
+  "PhantomJS binary": {
+    topic: function() {
+      var kid = spawn('phantomjs', [ '--version' ]);
+      kid.on('exit', this.callback);
+    },
+    "is in path and executable": function(code) {
+      assert.strictEqual(code, 0);
+    }
+  }
+});
+
 start_stop.addStartupBatches(suite);
 
 suite.addBatch({

@@ -42,11 +42,15 @@ You can stop the servers with a Cntl-C in the terminal.
 
 ## Testing
 
-Unit tests can be run by invoking `npm test` at the top level, and you
-should run them often.  Like before committing code.  To fully test
-the code you should install mysql and have a well permissions `test`
-user (can create and drop databases).  If you don't have mysql installed,
-code testing is still possible (it just uses a little JSON database).
+Unit tests can be run by invoking `npm test` at the top level.  At present,
+there are three classes of unit tests to be run:
+
+  * Backend unit tests against a custom, zero-dependency JSON database
+  * Backend unit tests against MySQL, what we use in production
+  * Frontend unit tests run headlessly against PhantomJS
+
+You can control which tests are run using the `WHAT_TESTS` env var, see
+`scripts/test` for details.
 
 ## Development model
 
