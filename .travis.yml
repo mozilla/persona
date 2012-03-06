@@ -1,3 +1,7 @@
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+
 language: node_js
 
 before_install:
@@ -11,7 +15,9 @@ notifications:
   irc: "irc.mozilla.org#identity"
 
 env:
- - MYSQL_USER=root
+ - WHAT_TESTS=front MYSQL_USER=root
+ - WHAT_TESTS=back NODE_ENV=test_mysql MYSQL_USER=root
+ - WHAT_TESTS=back NODE_ENV=test_json
 
 mysql:
   adapter: mysql2
