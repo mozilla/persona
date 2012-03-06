@@ -16,8 +16,8 @@ notifications:
 
 env:
  - WHAT_TESTS=front MYSQL_USER=root
- - WHAT_TESTS=back NODE_ENV=test_mysql MYSQL_USER=root
- - WHAT_TESTS=back NODE_ENV=test_json
+ - WHAT_TESTS=back_mysql MYSQL_USER=root
+ - WHAT_TESTS=back
 
 mysql:
   adapter: mysql2
