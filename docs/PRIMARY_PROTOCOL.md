@@ -285,7 +285,8 @@ authentication page should include a javascript shim, hosted at:
 
 ### 6.1 Public Key Format
 
-XXX: write me or point to another document
+BrowserID public keys make use of Cryptographic Algorithms for JWS as [listed here](http://self-issued.info/docs/draft-ietf-jose-json-web-algorithms-00.html#SigningAlgs).
+The private/public key pair can be generated using OpenSSL.
 
 ### 6.2 Certificate Format
 
