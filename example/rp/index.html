@@ -122,12 +122,13 @@ navigator.id.addEventListener('login', function(event) {
 
 navigator.id.addEventListener('logout', function(event) {
   var txt = 'got event at ' + (new Date).toString();
-  $(".logoutEvents > .pre").text(txt);
+  $(".logoutEvents > pre").text(txt);
 });
 
 navigator.id.addEventListener('loginCanceled', function(event) {
+alert("");
   var txt = 'got event at ' + (new Date).toString();
-  $(".logingCanceledEvents > .pre").text(txt);
+  $(".loginCanceledEvents > pre").text(txt);
 });
 
 $(document).ready(function() {

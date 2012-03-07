@@ -918,26 +918,15 @@
     };
   }());
 
-
-  // this is for calls that are non-interactive
-  function _open_hidden_iframe(doc) {
-    var iframe = doc.createElement("iframe");
-    iframe.style.display = "none";
-    doc.body.appendChild(iframe);
-    iframe.src = ipServer + "/communication_iframe";
-    return iframe;
-  }
-
   /**
    * The meat and potatoes of the verified email protocol
    */
-
 
   if (!navigator.id) {
     navigator.id = {};
   }
 
-  if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed) {
+  if (!navigator.id.request || navigator.id._shimmed) {
     var ipServer = "https://browserid.org";
     var userAgent = navigator.userAgent;
     // We must check for both XUL and Java versions of Fennec.  Both have
@@ -951,105 +940,142 @@
 
     var w;
 
-    navigator.id.get = function(callback, options) {
-      if (typeof callback !== 'function') {
-        throw "navigator.id.get() requires a callback argument";
-      }
+    // table of registered event listeners
+    var listeners = {
+      login: [ ],
+      logout: [ ],
+      loginCanceled: [ ]
+    };
 
-      if (options && options.silent) {
-        _noninteractiveCall('getPersistentAssertion', { }, function(rv) {
-          callback(rv);
-        }, function(e, msg) {
-          callback(null);
-        });
-      } else {
-        // focus an existing window
-        if (w) {
+    function emitEvent(type, params) {
+      if (listeners[type]) {
+        var evt = document.createEvent('Event');
+        evt.initEvent(type, true, true);
+        // XXX: we should probably implement .stopImmediatePropagation()
+        if (params) {
+          for (var k in params) {
+            if (params.hasOwnProperty(k)) {
+              evt[k] = params[k];
+            }
+          }
+        }
+        for (var i = 0; i < listeners[type].length; i++) {
           try {
-            w.focus();
+            listeners[type][i](evt);
+          } catch(e) {
+            // XXX: what shall we do when an exception is raised by an event handler?
           }
-          catch(e) {
-            /* IE7 blows up here, do nothing */
-          }
-          return;
         }
+      }
+    }
 
-        if (!BrowserSupport.isSupported()) {
-          var reason = BrowserSupport.getNoSupportReason(),
-              url = "unsupported_dialog";
+    var commChan;
 
-          if(reason === "LOCALSTORAGE_DISABLED") {
-            url = "cookies_disabled";
-          }
+    // this is for calls that are non-interactive
+    function _open_hidden_iframe() {
+      if (!commChan) {
+        var doc = window.document;
+        var iframe = doc.createElement("iframe");
+        iframe.style.display = "none";
+        doc.body.appendChild(iframe);
+        iframe.src = ipServer + "/communication_iframe";
+        commChan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid_ni"});
 
-          w = window.open(
-            ipServer + "/" + url,
-            null,
-            windowOpenOpts);
-          return;
-        }
+        commChan.bind('logout', function(trans, params) {
+          emitEvent('logout');
+        });
 
-        w = WinChan.open({
-          url: ipServer + '/sign_in',
-          relay_url: ipServer + '/relay',
-          window_features: windowOpenOpts,
-          params: {
-            method: "get",
-            params: options
-          }
-        }, function(err, r) {
-          // clear the window handle
-          w = undefined;
-          // ignore err!
-          callback(err ? null : (r ? r : null));
+        commChan.bind('login', function(trans, params) {
+          emitEvent('login', { assertion: params });
         });
       }
-    };
+    }
 
-    navigator.id.getVerifiedEmail = function (callback, options) {
-      if (options) {
-        throw "getVerifiedEmail doesn't accept options.  use navigator.id.get() instead.";
+    navigator.id.addEventListener = function(type, listener/*, useCapture */) {
+      // 1. allocate iframe if it is not allocated
+      _open_hidden_iframe();
+
+      // 2. add event to listeners table if it's not there already
+      // XXX: should we throw or silently ignore?
+      if (!listeners[type]) throw "unsupported event type: '" + type + "'";
+
+      // is the function already registered?
+      for (var i = 0; i < listeners[type].length; i++) {
+        if (listeners[type][i] === listener) return;
       }
-      navigator.id.get(callback);
+      listeners[type].push(listener);
     };
 
-    navigator.id.logout = function(callback) {
-      _noninteractiveCall('logout', { }, function(rv) {
-        callback(rv);
-      }, function() {
-        callback(null);
-      });
+    navigator.id.removeEventListener = function(type, listener/*, useCapture */) {
+      if (!useCapture) useCapture = false;
+
+      // 1. remove event from listeners table
     };
 
-    var _noninteractiveCall = function(method, args, onsuccess, onerror) {
-      var doc = window.document;
-      var ni_iframe = _open_hidden_iframe(doc);
+    navigator.id.logout = function() {
+      // 1. allocate iframe if it is not allocated
+      _open_hidden_iframe();
 
-      var chan = Channel.build({window: ni_iframe.contentWindow, origin: ipServer, scope: "mozid_ni"});
+      // 2. send logout message
+      commChan.notify({ method: 'logout', params: email });
+    };
 
-      function cleanup() {
-        chan.destroy();
-        chan = undefined;
-        doc.body.removeChild(ni_iframe);
-      }
+    navigator.id.setLoggedInUser = function(email) {
+      // 1. allocate iframe if it is not allocated
+      _open_hidden_iframe();
 
-      chan.call({
-        method: method,
-        params: args,
-        success: function(rv) {
-          if (onsuccess) {
-            onsuccess(rv);
-          }
-          cleanup();
-        },
-        error: function(code, msg) {
-          if (onerror) onerror(code, msg);
-          cleanup();
+      // 2. send a "loggedInUser" message to iframe
+      commChan.notify({ method: 'loggedInUser', params: email });
+    };
+
+    navigator.id.get = function(callback, options) {
+      // backwards compatibility function
+    };
+
+    navigator.id.request = function(options) {
+      // focus an existing window
+      if (w) {
+        try {
+          w.focus();
         }
+        catch(e) {
+          /* IE7 blows up here, do nothing */
+        }
+        return;
+      }
+
+      if (!BrowserSupport.isSupported()) {
+        var reason = BrowserSupport.getNoSupportReason(),
+        url = "unsupported_dialog";
+
+        if(reason === "LOCALSTORAGE_DISABLED") {
+          url = "cookies_disabled";
+        }
+
+        w = window.open(
+          ipServer + "/" + url,
+          null,
+          windowOpenOpts);
+        return;
+      }
+
+      w = WinChan.open({
+        url: ipServer + '/sign_in',
+        relay_url: ipServer + '/relay',
+        window_features: windowOpenOpts,
+        params: {
+          method: "get",
+          params: options
+        }
+      }, function(err, r) {
+        // clear the window handle
+        w = undefined;
+        if (!err && r) emitEvent('login', { assertion: r });
+        else emitEvent('loginCanceled');
       });
     };
 
-    navigator.id._getVerifiedEmailIsShimmed = true;
+    navigator.id._shimmed = true;
   }
 }());
 
