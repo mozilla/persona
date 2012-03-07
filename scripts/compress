@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+
+var
+path = require('path')
+resources = require('../lib/static_resources.js'),
+config = require('../lib/configuration.js'),
+i18n = require('../lib/i18n'),
+mkdirp = require('mkdirp'),
+computecluster = require('compute-cluster');
+
+const staticPath = path.join(__dirname, '..', 'resources', 'static');
+
+var langs = config.get('supported_languages');
+
+// remove the "debug" language.
+var i = langs.indexOf(config.get('debug_lang'));
+if (i != -1) langs.splice(i, 1);
+
+var all = resources.all(langs);
+
+var cc = new computecluster({
+  module: path.join(__dirname, 'compress-worker.js'),
+  max_backlog: -1
+});
+
+// first and foremost we'll "generate templates" - which is to concatenate
+// a bunch of ejs into a javascript file
+// NOTE: env setting could be cleaned up here, this is like this to minimally
+// change things during migration of compress{,-locales}.sh to javascript
+process.env['BUILD_DIR'] = path.join(staticPath, "build");
+mkdirp.sync(process.env['BUILD_DIR']);
+process.env['TEMPLATE_DIR'] = path.join(staticPath, "dialog", "views");
+require('./create_templates.js')();
+
+var leftToBuild = Object.keys(all).length;
+var errors = 0;
+
+Object.keys(all).forEach(function(resource) {
+  // in dev, '/shared/templates.js' creates an empty object and templates
+  // are fetched on demand.
+  // in prod '/build/templates.js' has all templates glommed into it,
+  // and is bundled into the Big Minified Piles Of Resources we ship.
+  // Here we sub the former with the latter.
+  var ix = all[resource].indexOf('/shared/templates.js');
+  if (ix != -1) all[resource].splice(ix, 1, '/build/templates.js');
+
+  cc.enqueue({
+    file: resource,
+    deps: all[resource],
+    staticPath: staticPath
+  }, function(err, r) {
+    if (err || r.error) {
+      console.log("failed to build", resource,":", err || r.error);
+      errors++;
+    } else {
+      console.log("built", resource, "in", r.time + "s" + (r.info ? " (" + r.info + ")" : ""));
+    }
+    if (--leftToBuild == 0) {
+      cc.exit();
+      if (errors) process.exit(1);
+    }
+  });
+});

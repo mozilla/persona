@@ -17,19 +17,18 @@ fi
 # vows hates absolute paths.  sheesh.
 cd $BASEDIR
 
-for env in test_mysql test_json ; do
-  export NODE_ENV=$env
-  $SCRIPT_DIR/test_db_connectivity.js
-  if [ $? = 0 ] ; then
-      echo "Testing with NODE_ENV=$env"
-      for file in tests/*.js ; do
-          echo $file
-          vows $file
-          if [[ $? != 0 ]] ; then
-              exit 1
-          fi
-      done
-  else
-      echo "CANNOT TEST '$env' ENVIRONMENT: can't connect to the database"
-  fi
-done
+$SCRIPT_DIR/test_db_connectivity.js
+if [ $? = 0 ] ; then
+    for file in tests/*.js ; do
+        echo $file
+        vows $file
+        if [[ $? != 0 ]] ; then
+            exit 1
+        fi
+    done
+else
+    echo
+    echo "Can't run tests: can't connect to the database"
+    echo
+    exit 1
+fi

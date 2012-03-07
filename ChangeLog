@@ -1,4 +1,29 @@
-train-2012.02.29 (in progress):
+train-2012.03.14 (in progress):
+
+train-2012.03.01:
+  * When the user authenticates log them in automatically without going to the email picker: #198
+  * database (mysql) improvements, handle temporary outages without taking down the server: #990, #1211
+  * improved error flows when cookies are disabled: #835
+  * travis-ci support: #1166, #1197 - http://travis-ci.org/#!/mozilla/browserid
+  * clicking label in picker in iOS toggles radio button: #1133, #1137
+  * dialog zooming and scrolling fixed: #423
+  * Mobile firefox fixes: #1176
+  * websites can now provide a ToS and PP for display in-dialog: #841
+  * caching improvements: #1143, #1141
+  * fix webhead crash when keysigner is unreachable: #1011
+  * fix to allow viewing of error details on browserid.org: #1139
+  * disable unit tests in production in the application: #1044
+  * fix cases where 'keep me signed in' can disappear: #871
+  * fix cases where 'keep me signed in' can't be unchecked: #1155
+  * more password length checking in more places: #1173
+  * rewrite compression scripts in nodejs, improve performance: #660, #1009
+  * cosmetic and language fixes: #1105, #1154, #1160, #1178, #1179, #1184, #1185, #1189, #1209
+  * documentation fixes: #1043
+  * code cleanup: #1108, #1147, #1157, #1188
+  * test cleanup: #1156
+  * rpm fixes: #1165, #1177
+  * devtool fixes: #1219
+  * fix string extraction: #1170, #1194
 
 train-2012.02.16:
   * improve failure mode when cookies are disabled (especially on iOS): #1056
