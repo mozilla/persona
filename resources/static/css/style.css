@@ -655,20 +655,6 @@ h1 {
   height: 28px;
 }
 
-#signUpForm .remember {
-  display: inline-block;
-  line-height: 28px;
-}
-
-#signUpForm .remember .checkAlign {
-  float: left;
-}
-
-#signUpForm .remember label {
-  margin-left: 5px;
-  float: left;
-}
-
 #signUpForm .error {
   margin-top: 20px;
   color: red;

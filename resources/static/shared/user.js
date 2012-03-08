@@ -1046,27 +1046,27 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Get an assertion for the current domain, as long as the user has
-     * selected that they want the email/site remembered
+     * Get an assertion for the current domain if the user is signed into it
      * @method getPersistentSigninAssertion
      * @param {function} onComplete - called on completion.  Called with an
      * assertion if successful, null otw.
      * @param {function} onFailure - called on XHR failure.
      */
-    getPersistentSigninAssertion: function(onComplete, onFailure) {
+    getSilentAssertion: function(siteSpecifiedEmail, onComplete, onFailure) {
       User.checkAuthentication(function(authenticated) {
         if (authenticated) {
-          var remembered = storage.site.get(origin, "remember");
-          var email = storage.site.get(origin, "email");
-          if (remembered && email) {
-            User.getAssertion(email, origin, onComplete, onFailure);
+          var loggedInEmail = storage.getLoggedIn(origin);
+          if (loggedInEmail && siteSpecifiedEmail != loggedInEmail) {
+            User.getAssertion(loggedInEmail, origin, function(assertion) {
+              onComplete(loggedInEmail, assertion);
+            }, onFailure);
           }
           else if (onComplete) {
-            onComplete(null);
+            onComplete(loggedInEmail, null);
           }
         }
         else if (onComplete) {
-          onComplete(null);
+          onComplete(null, null);
         }
       }, onFailure);
     },
@@ -1078,10 +1078,10 @@ BrowserID.User = (function() {
      * a boolean, true if successful, false otw.
      * @param {function} onFailure - called on XHR failure.
      */
-    clearPersistentSignin: function(onComplete, onFailure) {
+    logout: function(onComplete, onFailure) {
       User.checkAuthentication(function(authenticated) {
         if (authenticated) {
-          storage.site.set(origin, "remember", false);
+          storage.setLoggedIn(origin, false);
           if (onComplete) {
             onComplete(true);
           }
@@ -1111,8 +1111,6 @@ BrowserID.User = (function() {
 
       onComplete(hasSecondary);
     }
-
-
   };
 
   User.setOrigin(document.location.host);

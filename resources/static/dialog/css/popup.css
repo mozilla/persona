@@ -372,11 +372,6 @@ footer {
     display: none;
 }
 
-label[for=remember] {
-  display: inline-block;
-  margin-bottom: 10px;
-}
-
 a.emphasize {
   background-color: #F0EFED;
   color: #4E4E4E;

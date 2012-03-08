@@ -27,7 +27,7 @@
     }
 
     user.checkAuthentication(function onComplete(authenticated) {
-      if(authenticated) {
+      if (authenticated) {
         storage.site.set(origin, "remember", true);
       }
 

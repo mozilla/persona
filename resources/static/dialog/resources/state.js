@@ -37,7 +37,6 @@ BrowserID.State = (function() {
       info = info || {};
 
       self.hostname = info.hostname;
-      self.allowPersistent = !!info.allowPersistent;
       self.privacyURL = info.privacyURL;
       self.tosURL = info.tosURL;
       requiredEmail = info.requiredEmail;
@@ -70,6 +69,7 @@ BrowserID.State = (function() {
       var authenticated = info.authenticated;
 
       if (requiredEmail) {
+        self.email = requiredEmail;
         startState("doAuthenticateWithRequiredEmail", {
           email: requiredEmail,
           privacyURL: self.privacyURL,
@@ -97,6 +97,7 @@ BrowserID.State = (function() {
     });
 
     subscribe("user_confirmed", function() {
+      self.email = self.stagedEmail;
       startState("doEmailConfirmed", { email: self.stagedEmail} );
     });
 
@@ -165,7 +166,6 @@ BrowserID.State = (function() {
     subscribe("pick_email", function() {
       startState("doPickEmail", {
         origin: self.hostname,
-        allow_persistent: self.allowPersistent,
         privacyURL: self.privacyURL,
         tosURL: self.tosURL
       });
@@ -176,6 +176,8 @@ BrowserID.State = (function() {
 
       var email = info.email,
           idInfo = storage.getEmail(email);
+
+      self.email = email;
 
       function oncomplete() {
         complete(info.complete);
@@ -245,6 +247,7 @@ BrowserID.State = (function() {
     subscribe("assertion_generated", function(msg, info) {
       self.success = true;
       if (info.assertion !== null) {
+        bid.Storage.setLoggedIn(user.getOrigin(), self.email);
         startState("doAssertionGenerated", info.assertion);
       }
       else {

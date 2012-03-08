@@ -979,7 +979,17 @@
         iframe.style.display = "none";
         doc.body.appendChild(iframe);
         iframe.src = ipServer + "/communication_iframe";
-        commChan = Channel.build({window: iframe.contentWindow, origin: ipServer, scope: "mozid_ni"});
+        commChan = Channel.build({
+          window: iframe.contentWindow,
+          origin: ipServer,
+          scope: "mozid_ni",
+          onReady: function() {
+            // once the channel is set up, we'll fire a loaded message.  this is the
+            // cutoff point where we'll say if 'setLoggedInUser' was not called before
+            // this point, then it wont be called (XXX: optimize and improve me)
+            commChan.call({ method: 'loaded', success: function(){}, error: function() {} });
+          }
+        });
 
         commChan.bind('logout', function(trans, params) {
           emitEvent('logout');
@@ -992,11 +1002,10 @@
     }
 
     navigator.id.addEventListener = function(type, listener/*, useCapture */) {
-      // 1. allocate iframe if it is not allocated
+      // allocate iframe if it is not allocated
       _open_hidden_iframe();
 
-      // 2. add event to listeners table if it's not there already
-      // XXX: should we throw or silently ignore?
+      // add event to listeners table if it's not there already
       if (!listeners[type]) throw "unsupported event type: '" + type + "'";
 
       // is the function already registered?
@@ -1009,14 +1018,21 @@
     navigator.id.removeEventListener = function(type, listener/*, useCapture */) {
       if (!useCapture) useCapture = false;
 
-      // 1. remove event from listeners table
+      // remove event from listeners table
+      var i;
+      for (i = 0; i < listeners[type].length; i++) {
+        if (listeners[type][i] === listener) break;
+      }
+      if (i < listeners[type][i] === listener) {
+        listeners[type].splice(i, 1);
+      }
     };
 
     navigator.id.logout = function() {
-      // 1. allocate iframe if it is not allocated
+      // allocate iframe if it is not allocated
       _open_hidden_iframe();
 
-      // 2. send logout message
+      // send logout message
       commChan.notify({ method: 'logout', params: email });
     };
 

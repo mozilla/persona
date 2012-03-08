@@ -126,7 +126,6 @@ navigator.id.addEventListener('logout', function(event) {
 });
 
 navigator.id.addEventListener('loginCanceled', function(event) {
-alert("");
   var txt = 'got event at ' + (new Date).toString();
   $(".loginCanceledEvents > pre").text(txt);
 });
@@ -145,7 +144,7 @@ $(document).ready(function() {
     });
   });
 
-  // explicitly trigger events at document ready
+  // explicitly trigger events at document load
   navigator.id.setLoggedInUser(null);
 });
 

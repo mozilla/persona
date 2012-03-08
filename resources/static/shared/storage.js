@@ -159,7 +159,6 @@ BrowserID.Storage = (function() {
     }
   }
 
-
   function managePageGet(key) {
     var allInfo = JSON.parse(storage.managePage || "{}");
     return allInfo[key];
@@ -176,6 +175,22 @@ BrowserID.Storage = (function() {
     delete allInfo[key];
     storage.managePage = JSON.stringify(allInfo);
   }
+
+  function setLoggedIn(origin, email) {
+    var allInfo = JSON.parse(storage.loggedIn || "{}");
+    if (email) allInfo[origin] = email;
+    else delete allInfo[origin];
+    storage.loggedIn = JSON.stringify(allInfo);
+  }
+  function getLoggedIn(origin) {
+    var allInfo = JSON.parse(storage.loggedIn || "{}");
+    return allInfo[origin];
+  }
+  function watchLoggedIn(origin, callback) {
+    throw "not yet implemented";
+  }
+
+
   return {
     /**
      * Add an email address and optional key pair.
@@ -241,6 +256,24 @@ BrowserID.Storage = (function() {
       get: managePageGet,
       remove: managePageRemove
     },
+
+    /** set logged in state for a site
+     * @param {string} origin - the site to set logged in state for
+     * @param {string} email - the email that the user is logged in with or falsey if login state should be cleared
+     */
+    setLoggedIn: setLoggedIn,
+
+    /** check if the user is logged into a site
+     * @param {string} origin - the site to set check the logged in state of
+     * @returns the email with which the user is logged in
+     */
+    getLoggedIn: getLoggedIn,
+
+    /** watch for changes in the logged in state of a page
+     * @param {string} origin - the site to watch the status of
+     * @param {function} callback - a callback to invoke when state changes
+     */
+    watchLoggedIn: watchLoggedIn,
 
     /**
      * Clear all stored data - email addresses, key pairs, temporary key pairs,

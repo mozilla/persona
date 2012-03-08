@@ -51,10 +51,6 @@ BrowserID.Modules.PickEmail = (function() {
       var origin = user.getOrigin();
       storage.site.set(origin, "email", email);
 
-      if (self.allowPersistent) {
-        storage.site.set(origin, "remember", $("#remember").is(":checked"));
-      }
-
       self.close("email_chosen", { email: email });
     }
   }
@@ -90,14 +86,11 @@ BrowserID.Modules.PickEmail = (function() {
 
       options = options || {};
 
-      self.allowPersistent = options.allow_persistent;
       dom.addClass("body", "pickemail");
 
       self.renderDialog("pick_email", {
         identities: getSortedIdentities(),
         siteemail: storage.site.get(origin, "email"),
-        allow_persistent: options.allow_persistent || false,
-        remember: storage.site.get(origin, "remember") || false,
         privacy_url: options.privacyURL,
         tos_url: options.tosURL
       });
