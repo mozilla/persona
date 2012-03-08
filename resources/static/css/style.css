@@ -404,6 +404,13 @@ div.steps {
   margin-right: 0;
 }
 
+#logout_everywhere .completion_text {
+    float: right;
+    display: none;
+    color: #090;
+}
+
+
 button.delete {
   background-color: #EA7676;
   border: 1px solid #B13D3D;

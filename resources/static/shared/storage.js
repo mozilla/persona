@@ -187,9 +187,23 @@ BrowserID.Storage = (function() {
     return allInfo[origin];
   }
   function watchLoggedIn(origin, callback) {
-    throw "not yet implemented";
-  }
+    var lastState = getLoggedIn(origin);
 
+    function checkState() {
+      var currentState = getLoggedIn(origin);
+      if (lastState !== currentState) {
+        callback();
+        lastState = currentState;
+      };
+    }
+
+    // does IE8 not have addEventListener, nor does it support storage events.
+    if (window.addEventListener) window.addEventListener('storage', checkState, false);
+    else window.setInterval(checkState, 2000);
+  }
+  function logoutEverywhere() {
+    storage.loggedIn = "{}";
+  }
 
   return {
     /**
@@ -274,6 +288,12 @@ BrowserID.Storage = (function() {
      * @param {function} callback - a callback to invoke when state changes
      */
     watchLoggedIn: watchLoggedIn,
+
+    /** clear all logged in preferences
+     * @param {string} origin - the site to watch the status of
+     * @param {function} callback - a callback to invoke when state changes
+     */
+    logoutEverywhere: logoutEverywhere,
 
     /**
      * Clear all stored data - email addresses, key pairs, temporary key pairs,
