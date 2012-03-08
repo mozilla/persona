@@ -16,10 +16,10 @@ if (process.argv.length !== 3) {
   process.exit(1);
 }
 
-primary.checkSupport(process.argv[2], function(err, rv) {
+primary.checkSupport(process.argv[2], function(err, urls, publicKey) {
   if (err) {
     process.stderr.write("error: " + err + "\n");
     process.exit(1);
   }
-  console.log(rv);
+  console.log(urls, publicKey);
 });
