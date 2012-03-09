@@ -1060,12 +1060,15 @@ BrowserID.User = (function() {
       User.checkAuthentication(function(authenticated) {
         if (authenticated) {
           var loggedInEmail = storage.getLoggedIn(origin);
-          if (loggedInEmail && siteSpecifiedEmail != loggedInEmail) {
-            User.getAssertion(loggedInEmail, origin, function(assertion) {
-              onComplete(loggedInEmail, assertion);
-            }, onFailure);
-          }
-          else if (onComplete) {
+          if (loggedInEmail !== siteSpecifiedEmail) {
+            if (loggedInEmail) {
+              User.getAssertion(loggedInEmail, origin, function(assertion) {
+                onComplete(assertion ? loggedInEmail : null, assertion);
+              }, onFailure);
+            } else {
+              onComplete(null, null);
+            }
+          } else {
             onComplete(loggedInEmail, null);
           }
         }

@@ -60,7 +60,7 @@ BrowserID.State = (function() {
 
     subscribe("window_unload", function() {
       if (!self.success) {
-        bid.Storage.setStagedOnBehalfOf("");
+        storage.setStagedOnBehalfOf("");
         startState("doCancel");
       }
     });
@@ -247,7 +247,7 @@ BrowserID.State = (function() {
     subscribe("assertion_generated", function(msg, info) {
       self.success = true;
       if (info.assertion !== null) {
-        bid.Storage.setLoggedIn(user.getOrigin(), self.email);
+        storage.setLoggedIn(user.getOrigin(), self.email);
         startState("doAssertionGenerated", info.assertion);
       }
       else {

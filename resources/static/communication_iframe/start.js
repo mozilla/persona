@@ -28,7 +28,8 @@
 
   var loggedInUser = undefined;
 
-  function checkAndEmit() {
+  function checkAndEmit(oncomplete) {
+    // XXX: seemless re-certification!
     user.getSilentAssertion(loggedInUser, function(email, assertion) {
       if (email) {
         // only send login events when the assertion is defined - when
@@ -43,9 +44,11 @@
         chan.notify({ method: 'logout' });
         loggedInUser = null;
       }
+      oncomplete && oncomplete();
     }, function(err) {
       chan.notify({ method: 'logout' });
       loggedInUser = null;
+      oncomplete && oncomplete();
     });
   }
 
@@ -62,14 +65,14 @@
 
   chan.bind("loaded", function(trans, params) {
     setRemoteOrigin(trans.origin);
-    checkAndEmit();
-    watchState();
+    checkAndEmit(watchState);
     trans.complete();
   });
 
   chan.bind("logout", function(trans, params) {
-    setRemoteOrigin(trans.origin);
-    storage.setLoggedIn(remoteOrigin, false);
-    trans.complete();
+    if (loggedInUser != null) {
+      storage.setLoggedIn(remoteOrigin, false);
+      chan.notify({ method: 'logout' });
+    }
   });
 }());

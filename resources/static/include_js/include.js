@@ -1033,7 +1033,7 @@
       _open_hidden_iframe();
 
       // send logout message
-      commChan.notify({ method: 'logout', params: email });
+      commChan.notify({ method: 'logout' });
     };
 
     navigator.id.setLoggedInUser = function(email) {

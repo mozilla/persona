@@ -70,7 +70,8 @@ pre {
       <label for="requiredEmail">Require a specific email</label><br />
     </li>
   </ul>
-    <button>Get an assertion</button>
+    <button class="assertion">Get an assertion</button>
+    <button class="logout">logout</button>
 </div>
 
 <div class="loginEvents">
@@ -131,7 +132,7 @@ navigator.id.addEventListener('loginCanceled', function(event) {
 });
 
 $(document).ready(function() {
-  $(".specify button").click(function() {
+  $(".specify button.assertion").click(function() {
     $("pre").text("... waiting ...");
 
     var requiredEmail = $.trim($('#requiredEmail').val());
@@ -143,6 +144,8 @@ $(document).ready(function() {
       requiredEmail: requiredEmail
     });
   });
+
+  $(".specify button.logout").click(navigator.id.logout);
 });
 
 </script>
