@@ -285,8 +285,17 @@ authentication page should include a javascript shim, hosted at:
 
 ### 6.1 Public Key Format
 
-BrowserID public keys make use of Cryptographic Algorithms for JWS as [listed here](http://self-issued.info/docs/draft-ietf-jose-json-web-algorithms-00.html#SigningAlgs).
-The private/public key pair can be generated using OpenSSL.
+The public key is a JSON Web Algorihtms (JWA) public key as [listed here](http://self-issued.info/docs/draft-ietf-jose-json-web-algorithms-00.html#SigningAlgs).
+The EyeDeeMe service has a [.well-known/browserid document](https://eyedee.me/.well-known/browserid)
+that shows exactly what the [Mozilla Wiki](https://wiki.mozilla.org/Identity/BrowserID#Public_Key)
+means in the example. The EyeDeeMee key is an [RSA public key](http://www.di-mgt.com.au/rsa_alg.html#keygen) than can be generated using OpenSSL.
+
+Generate a public key JSON document in Ruby:
+
+    private_key = OpenSSL::PKey::RSA.new(1024)
+    public_key = private_key.public_key
+    {"algorithm"=> "RS", "n" => public_key.n.to_s, "e" => public_key.e.to_s }.to_json
+    
 
 ### 6.2 Certificate Format
 
