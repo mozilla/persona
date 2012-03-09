@@ -286,10 +286,9 @@ authentication page should include a javascript shim, hosted at:
 ### 6.1 Public Key Format
 
 The public key is a JSON Web Algorihtms (JWA) public key as [listed here](http://self-issued.info/docs/draft-ietf-jose-json-web-algorithms-00.html#SigningAlgs).
-This is a private/public key pair than can be generated using OpenSSL. The
-EyeDeeMe service has a [.well-known/browserid document](https://eyedee.me/.well-known/browserid)
+The EyeDeeMe service has a [.well-known/browserid document](https://eyedee.me/.well-known/browserid)
 that shows exactly what the [Mozilla Wiki](https://wiki.mozilla.org/Identity/BrowserID#Public_Key)
-means in the example.
+means in the example. The EyeDeeMee key is an [RSA public key](http://www.di-mgt.com.au/rsa_alg.html#keygen) than can be generated using OpenSSL.
 
 Generate a public key JSON document in Ruby:
 
