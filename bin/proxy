@@ -14,7 +14,7 @@ config = require('../lib/configuration.js');
 var port = config.has('bind_to.port') ? config.get('bind_to.port') : 0;
 var addy = config.has('bind_to.host') ? config.get('bind_to.host') : "127.0.0.1";
 
-const allowed = /^https:\/\/[a-zA-Z\.\-_]+\/\.well-known\/browserid$/;
+const allowed = /^https:\/\/[a-zA-Z0-9\.\-_]+\/\.well-known\/browserid$/;
 
 var server = http.createServer(function (req, res) {
   var url = req.url;
