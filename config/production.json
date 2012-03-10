@@ -33,7 +33,7 @@
   "debug_lang": "it-CH",
   // locale directory should be overridden
   "locale_directory": "/home/app/code/locale",
-  "express_log_format": "default",
+  "express_log_format": "default_bid",
   "email_to_console": false,
   // var path should be overridded
   // "var_path": "xxx",
