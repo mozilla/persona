@@ -7,6 +7,7 @@
 const
 https = require('https'),
 und = require('underscore'),
+util = require('util'),
 
 primary = require('../lib/primary'),
 logging = require('../lib/logging.js');
@@ -27,22 +28,43 @@ primary.checkSupport(domain, function(err, urls, publicKey) {
   }
   console.log('Priary domain: ', domain);
   console.log('Public Key: ', publicKey);
-  getResource(urls.auth, urls);
-  getResource(urls.prov, urls);
+
+  getResource('auth', urls.auth, urls, function () {
+    getResource('prov', urls.prov, urls);
+  });
+
 });
 
 /**
  * Retrieve one of their urls and examine aspects of it for issues
  */
-function getResource(url, urls) {
-    console.log('Checking ', urls.auth);
-  var r = https.request({
+function getResource(mode, url, urls, cb) {
+    console.log('Checking ', url);
+  var body = "",
+      r = https.request({
     host: domain,
     path: url,
     method: 'GET'
-  }, checkResource(urls));
+  }, checkResource(urls, body));
+  r.on('data', function (chunk) {
+    body += chunk;
+  });
   r.on('error', function (e) {
     console.log("ERROR: ", e.message);
+  });
+  r.on('close', function () {
+    var includes = {
+      'auth': '/authentication_api.js',
+      'prov': '/provisioning_api.js'
+    };
+    if (body.indexOf(util.format("https://browserid.org%s", includes[mode])) == -1 &&
+        body.indexOf(util.format("https://diresworb.org%s", includes[mode])) == -1 &&
+        body.indexOf(util.format("https://dev.diresworb.org%s", includes[mode])) == -1) {
+        console.log(util.format("WARNING: No https://browserid.org/%s script tag detected", includes[mode]));
+    }
+    if (cb) {
+        cb();
+    }
   });
   r.end();
 };
@@ -52,7 +74,7 @@ function getResource(url, urls) {
  *
  * Do the provisioning and signin resources look kosher?
  */
-function checkResource (urls) {
+function checkResource (urls, body) {
   return function (resp) {
     // Their are no X-Frame options
     if (resp.statusCode != 200) {
@@ -65,6 +87,8 @@ function checkResource (urls) {
         console.log("ERROR: X-Frame-Options=", resp.headers[xframe[0]], ", BrowserID will not be able to communicate with your site." +
             " Suppress X-Frame-Options for /.well-known/browserid, " + urls.auth + ' and ' + urls.prov);
       }
+
+      resp.setEncoding('utf8');
     }
   };
 };
