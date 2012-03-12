@@ -17,7 +17,8 @@ BrowserID.Network = (function() {
       mediator = bid.Mediator,
       xhr = bid.XHR,
       post = xhr.post,
-      get = xhr.get;
+      get = xhr.get,
+      storage = bid.Storage;
 
   function onContextChange(msg, result) {
     context = result;
@@ -28,6 +29,12 @@ BrowserID.Network = (function() {
     domain_key_creation_time = result.domain_key_creation_time;
     auth_status = result.auth_level;
     code_version = result.code_version;
+
+    // when session context returns with an authenticated user, update localstorage
+    // to indicate we've seen this user on this device
+    if (result && result.userid) {
+      storage.usersComputer.setSeen(result.userid);
+    }
 
     // seed the PRNG
     // FIXME: properly abstract this out, probably by exposing a jwcrypto
