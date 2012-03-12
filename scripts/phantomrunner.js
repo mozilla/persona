@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+const TIMEOUT_SECONDS = 120;
+
 /**
  * Wait until the test condition is true or a timeout occurs. Useful for waiting
  * on a server response or for a ui change (fadeIn, etc.) to occur.
@@ -83,6 +85,6 @@ page.open(phantom.args[0], function(status){
                 return 10000;
             });
             phantom.exit((parseInt(failedNum, 10) > 0) ? 1 : 0);
-        }, 90*1000);
+        }, TIMEOUT_SECONDS*1000);
     }
 });

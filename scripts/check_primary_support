@@ -5,6 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const
+https = require('https'),
+und = require('underscore'),
+util = require('util'),
+
 primary = require('../lib/primary'),
 logging = require('../lib/logging.js');
 
@@ -15,11 +19,76 @@ if (process.argv.length !== 3) {
   console.log('Usage:', process.argv[1], '<domain>');
   process.exit(1);
 }
+var domain = process.argv[2];
 
-primary.checkSupport(process.argv[2], function(err, urls, publicKey) {
+primary.checkSupport(domain, function(err, urls, publicKey) {
   if (err) {
     process.stderr.write("error: " + err + "\n");
     process.exit(1);
   }
-  console.log(urls, publicKey);
+  console.log('Priary domain: ', domain);
+  console.log('Public Key: ', publicKey);
+
+  getResource('auth', urls.auth, urls, function () {
+    getResource('prov', urls.prov, urls);
+  });
+
 });
+
+/**
+ * Retrieve one of their urls and examine aspects of it for issues
+ */
+function getResource(mode, url, urls, cb) {
+    console.log('Checking ', url);
+  var body = "",
+      r = https.request({
+    host: domain,
+    path: url,
+    method: 'GET'
+  }, checkResource(urls, body));
+  r.on('data', function (chunk) {
+    body += chunk;
+  });
+  r.on('error', function (e) {
+    console.log("ERROR: ", e.message);
+  });
+  r.on('close', function () {
+    var includes = {
+      'auth': '/authentication_api.js',
+      'prov': '/provisioning_api.js'
+    };
+    if (body.indexOf(util.format("https://browserid.org%s", includes[mode])) == -1 &&
+        body.indexOf(util.format("https://diresworb.org%s", includes[mode])) == -1 &&
+        body.indexOf(util.format("https://dev.diresworb.org%s", includes[mode])) == -1) {
+        console.log(util.format("WARNING: No https://browserid.org/%s script tag detected", includes[mode]));
+    }
+    if (cb) {
+        cb();
+    }
+  });
+  r.end();
+};
+
+/**
+ * Called once we have a response.
+ *
+ * Do the provisioning and signin resources look kosher?
+ */
+function checkResource (urls, body) {
+  return function (resp) {
+    // Their are no X-Frame options
+    if (resp.statusCode != 200) {
+      console.log("ERROR: HTTP status code=", resp.statusCode);
+    } else {
+      var xframe = und.filter(Object.keys(resp.headers), function (header) {
+        return header.toLowerCase() == 'x-frame-options';
+      });
+      if (xframe.length == 1) {
+        console.log("ERROR: X-Frame-Options=", resp.headers[xframe[0]], ", BrowserID will not be able to communicate with your site." +
+            " Suppress X-Frame-Options for /.well-known/browserid, " + urls.auth + ' and ' + urls.prov);
+      }
+
+      resp.setEncoding('utf8');
+    }
+  };
+};
