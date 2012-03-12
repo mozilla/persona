@@ -33,9 +33,9 @@ BrowserID.User = (function() {
         // if it was issued *before* the domain key was last updated or
         // if the certificate expires in less that 5 minutes from now.
         function isExpired(cert) {
-          // if it expires in less than 5 minutes, it's too old to use.
+          // if it expires in less than 2 minutes, it's too old to use.
           var diff = cert.expires.valueOf() - serverTime.valueOf();
-          if (diff < (60 * 5 * 1000)) {
+          if (diff < (60 * 2 * 1000)) {
             return true;
           }
 
@@ -458,7 +458,6 @@ BrowserID.User = (function() {
           }
         }
       );
-
     },
 
     /**
@@ -909,12 +908,8 @@ BrowserID.User = (function() {
      */
     syncEmailKeypair: function(email, onComplete, onFailure) {
       prepareDeps();
-      // FIXME: parameterize!
-      var keysize = 256;
-      var ie_version = BrowserID.BrowserSupport.getInternetExplorerVersion();
-      if (ie_version > -1 && ie_version < 9)
-        keysize = 128;
-      var keypair = jwk.KeyPair.generate("DS", keysize);
+      // always use 1024 DSA keys - see issue #1293
+      var keypair = jwk.KeyPair.generate("DS", 128);
       setTimeout(function() {
         certifyEmailKeypair(email, keypair, onComplete, onFailure);
       }, 0);

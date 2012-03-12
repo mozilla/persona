@@ -69,13 +69,8 @@ BrowserID.Provisioning = (function() {
     });
 
     chan.bind('genKeyPair', function(trans, s) {
-      // this will take a little bit
-      // FIXME: refactor so code that makes this decision is shared.
-      var keysize = 256;
-      var ie_version = BrowserID.BrowserSupport.getInternetExplorerVersion();
-      if (ie_version > -1 && ie_version < 9)
-        keysize = 128;
-      keypair = jwk.KeyPair.generate("DS", keysize);
+      // always use 1024 DSA keys - see issue #1293
+      var keypair = jwk.KeyPair.generate("DS", 128);
       return keypair.publicKey.toSimpleObject();
     });
 
