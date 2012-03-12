@@ -13,6 +13,7 @@ BrowserID.Network = (function() {
       domain_key_creation_time,
       auth_status,
       code_version,
+      userid,
       time_until_delay,
       mediator = bid.Mediator,
       xhr = bid.XHR,
@@ -29,11 +30,12 @@ BrowserID.Network = (function() {
     domain_key_creation_time = result.domain_key_creation_time;
     auth_status = result.auth_level;
     code_version = result.code_version;
+    userid = result.userid;
 
     // when session context returns with an authenticated user, update localstorage
     // to indicate we've seen this user on this device
-    if (result && result.userid) {
-      storage.usersComputer.setSeen(result.userid);
+    if (userid) {
+      storage.usersComputer.setSeen(userid);
     }
 
     // seed the PRNG
@@ -97,7 +99,8 @@ BrowserID.Network = (function() {
         url: "/wsapi/authenticate_user",
         data: {
           email: email,
-          pass: password
+          pass: password,
+          ephemeral: !storage.usersComputer.confirmed(email)
         },
         success: handleAuthenticationResponse.curry("password", onComplete, onFailure),
         error: onFailure
@@ -508,7 +511,14 @@ BrowserID.Network = (function() {
     listEmails: function(onComplete, onFailure) {
       get({
         url: "/wsapi/list_emails",
-        success: onComplete,
+        success: function(emails) {
+          // update our local storage map of email addresses to user ids
+          if (userid) {
+            storage.updateEmailToUserIDMapping(userid, _.keys(emails));
+          }
+
+          onComplete && onComplete(emails);
+        },
         error: onFailure
       });
     },

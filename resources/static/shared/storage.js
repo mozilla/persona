@@ -205,17 +205,26 @@ BrowserID.Storage = (function() {
     storage.loggedIn = "{}";
   }
 
+  function mapEmailToUserID(emailOrUserID) {
+    if (typeof(emailOrUserID) === 'number') return emailOrUserID;
+    var allInfo = JSON.parse(storage.emailToUserID || "{}");
+    return allInfo[emailOrUserID];
+  }
+
   // tools to manage knowledge of whether this is the user's computer, which helps
   // us set appropriate authentication duration.
   function userConfirmedOnComputer(userid) {
+    userid = mapEmailToUserID(userid);
     var allInfo = JSON.parse(storage.usersComputer || "{}");
     return allInfo[userid] === 'confirmed';
   }
   function userSeenOnComputer(userid) {
+    userid = mapEmailToUserID(userid);
     var allInfo = JSON.parse(storage.usersComputer || "{}");
     return !!(allInfo[userid]); // "seen" or "confirmed"
   }
   function setUserSeenOnComputer(userid) {
+    userid = mapEmailToUserID(userid);
     var allInfo = JSON.parse(storage.usersComputer || "{}");
     if (!allInfo[userid]) {
       allInfo[userid] = "seen";
@@ -223,11 +232,24 @@ BrowserID.Storage = (function() {
     }
   }
   function setUserConfirmedOnComputer(userid) {
+    userid = mapEmailToUserID(userid);
     var allInfo = JSON.parse(storage.usersComputer || "{}");
     if (allInfo[userid] !== 'confirmed') {
       allInfo[userid] = 'confirmed';
       storage.usersComputer = JSON.stringify(allInfo);
     }
+  }
+
+  // update our local storage based mapping of email addresses to userids,
+  // this map helps us determine whether a specific email address belongs
+  // to a user who has already confirmed their ownership of a computer.
+  function updateEmailToUserIDMapping(userid, emails) {
+    var allInfo = JSON.parse(storage.emailToUserID || "{}");
+    console.log(emails);
+    _.each(emails, function(email) {
+      allInfo[email] = userid;
+    });
+    storage.emailToUserID = JSON.stringify(allInfo);
   }
 
   return {
@@ -315,6 +337,14 @@ BrowserID.Storage = (function() {
        * @method usersComputer.setSeen */
       setSeen: setUserSeenOnComputer
     },
+
+    /** add email addresses to the email addy to userid mapping used when we're trying to determine
+     * if a user has used this computer before and what their auth duration should be
+     * @param {number} userid - the userid of the user
+     * @param {array} emails - a list of email addresses belonging to the user
+     * @returns zilch
+     */
+    updateEmailToUserIDMapping: updateEmailToUserIDMapping,
 
     /** set logged in state for a site
      * @param {string} origin - the site to set logged in state for
