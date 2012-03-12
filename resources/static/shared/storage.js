@@ -197,12 +197,37 @@ BrowserID.Storage = (function() {
       };
     }
 
-    // does IE8 not have addEventListener, nor does it support storage events.
+    // IE8 does not have addEventListener, nor does it support storage events.
     if (window.addEventListener) window.addEventListener('storage', checkState, false);
     else window.setInterval(checkState, 2000);
   }
   function logoutEverywhere() {
     storage.loggedIn = "{}";
+  }
+
+  // tools to manage knowledge of whether this is the user's computer, which helps
+  // us set appropriate authentication duration.
+  function userConfirmedOnComputer(userid) {
+    var allInfo = JSON.parse(storage.usersComputer || "{}");
+    return allInfo[userid] === 'confirmed';
+  }
+  function userSeenOnComputer(userid) {
+    var allInfo = JSON.parse(storage.usersComputer || "{}");
+    return !!(allInfo[userid]); // "seen" or "confirmed"
+  }
+  function setUserSeenOnComputer(userid) {
+    var allInfo = JSON.parse(storage.usersComputer || "{}");
+    if (!allInfo[userid]) {
+      allInfo[userid] = "seen";
+      storage.usersComputer = JSON.stringify(allInfo);
+    }
+  }
+  function setUserConfirmedOnComputer(userid) {
+    var allInfo = JSON.parse(storage.usersComputer || "{}");
+    if (allInfo[userid] !== 'confirmed') {
+      allInfo[userid] = 'confirmed';
+      storage.usersComputer = JSON.stringify(allInfo);
+    }
   }
 
   return {
@@ -269,6 +294,26 @@ BrowserID.Storage = (function() {
       set: managePageSet,
       get: managePageGet,
       remove: managePageRemove
+    },
+
+    usersComputer: {
+      /** Query whether the user has confirmed that this is their computer
+       * @param {string} userid - the user's numeric id, returned from session_context when authed.
+       * @method usersComputer.confirmed */
+      confirmed: userConfirmedOnComputer,
+      /** Save the fact that a user confirmed that this is their computer
+       * @param {string} userid - the user's numeric id, returned from session_context when authed.
+       * @method usersComputer.setConfirmed */
+      setConfirmed: setUserConfirmedOnComputer,
+      /** Query whether a user has been "seen" on this computer before
+       * @param {string} userid - the user's numeric id, returned from session_context when authed.
+       * @method usersComputer.seen */
+      seen: userSeenOnComputer,
+      /** Save the fact that a user has been seen on this computer before, but do not overwrite
+       *  existing state
+       * @param {string} userid - the user's numeric id, returned from session_context when authed.
+       * @method usersComputer.setSeen */
+      setSeen: setUserSeenOnComputer
     },
 
     /** set logged in state for a site
