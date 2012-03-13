@@ -3,8 +3,8 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-03 21:40+0200",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-02 17:15+0200",
          "Last-Translator": " Michael <michael.koehler1@gmx.de>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " de",
@@ -26,9 +26,9 @@
          null,
          "Es ist ein Fehler aufgetreten beim Versuch die Registrierung abzuschließen."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
-         "Anmeldung wird abgeschlossen bei: "
+         "Anmeldung wird abgeschlossen bei:"
       ],
       "Email Verification": [
          null,
@@ -74,7 +74,7 @@
          null,
          "Passwörter stimmen nicht überein."
       ],
-      "Finish": [
+      "finish": [
          null,
          "Abschließen"
       ],
@@ -86,21 +86,29 @@
          null,
          "Ihre neue Adresse wurde eingerichtet und Sie sollten jetzt angemeldet sein. Sie können dieses Fenster jetzt schließen und zurückkehren zu"
       ],
+      "BrowserID requires cookies": [
+         null,
+         "BrowserID erfordert Cookies"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         "Bitte schließen Sie dieses Fenster, <a %s>aktivieren Sie Cookies</a> und versuchen Sie es erneut"
+      ],
       "Communicating with server": [
          null,
          "Kommunikation mit dem Server"
       ],
       "Just a moment while we talk with the server.": [
          null,
-         "Einen Moment bitte, währen wir mit dem Server sprechen."
+         "Einen Moment bitte, während wir mit dem Server sprechen."
       ],
       "BrowserID": [
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
-         "BrowserID ist die schnelle und sichere Möglichkeit zur Anmeldung &ndash; <a target=\"_blank\" href=\"/about\">erfahren Sie mehr</a>"
+         "BrowserID ist die schnelle und sichere Möglichkeit zur Anmeldung &mdash; <a %s>erfahren Sie mehr</a>"
       ],
       "BrowserID: %s": [
          null,
@@ -126,9 +134,9 @@
          null,
          "Abmelden"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
-         "Vom <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
+         "Vom <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>"
       ],
       "Privacy": [
          null,
@@ -146,9 +154,9 @@
          null,
          "Bei Ihrem Registrierungslink ist ein Fehler aufgetreten. Wurde diese Adresse bereits registriert?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
-         "Bei der Kommunikation mit dem Server ist ein Fehler aufgetreten."
+         "Fehler bei Kommunikation mit dem Server."
       ],
       "Last step!": [
          null,

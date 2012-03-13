@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
          "PO-Revision-Date": " 2012-02-05 14:29+0100",
          "Last-Translator": " Dan Storm <storm@catalystcode.net>",
          "Language-Team": " LANGUAGE <LL@li.org>",
@@ -24,7 +24,7 @@
          null,
          "Der opstod en fejl under registreringen."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
          "Log ind på:"
       ],
@@ -72,9 +72,9 @@
          null,
          "Adgangskoder stemmer ikke overens."
       ],
-      "Finish": [
+      "finish": [
          null,
-         "Afslut"
+         "afslut"
       ],
       "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
@@ -83,6 +83,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Din nye adresse er nu sat op og du skulle nu være logget ind. Du kan lukke dette vindue og gå tilbage til"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "BrowserID Hjem"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         ""
       ],
       "Communicating with server": [
          null,
@@ -96,7 +104,7 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
          "BrowserID er den hurtige og sikre måde at logge ind på &mdash; <a target=\"_blank\" href=\"/about\">lær mere</a>"
       ],
@@ -124,7 +132,7 @@
          null,
          "Log ud"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
          "Af <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
       ],
@@ -144,7 +152,7 @@
          null,
          "Der opstod en fejl med dit tilmeldingslink. Er denne adresse allerede registreret?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Der opstod en fejl under kommunikationen med serveren."
       ],

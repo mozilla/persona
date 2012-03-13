@@ -3,9 +3,9 @@
       "": {
          "Project-Id-Version": " BrowserID 1.0",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 12:35+0100",
-         "PO-Revision-Date": " 2012-02-03 22:22+0200",
-         "Last-Translator": " Wim <fryskefirefox@gmail.com>",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-08 19:51+0200",
+         "Last-Translator": " Matjaž <m@owca.info>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " fy",
          "MIME-Version": " 1.0",
@@ -26,9 +26,9 @@
          null,
          "Der is in flater bard by it foltôgjen fan de registraasje."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
-         "Oanmelden beëinigje by: "
+         "Oanmelden foltôgje by: "
       ],
       "Email Verification": [
          null,
@@ -74,9 +74,9 @@
          null,
          "Wachtwurden komme net oerien."
       ],
-      "Finish": [
+      "finish": [
          null,
-         "Foltôgje"
+         "foltôgje"
       ],
       "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
@@ -85,6 +85,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Jo nije e-mailadres is ynsteld en jo binne no oanmeld. Jo kinne dit finster no slute en weromgean nei"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "BrowserID fereasket cookies"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         "Slút dit finster, <a %s>skeakel cookies yn</a> en probearje it nochris"
       ],
       "Communicating with server": [
          null,
@@ -98,9 +106,9 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
-         "BrowserID is de flugge en feilige manier fan oanmelden &ndash; <a target=\"_blank\" href=\"/about\">Mear ynfo</a>"
+         "BrowserID is de flugge en feilige manier fan oanmelden &ndash; <a %s>mear ynfo</a>"
       ],
       "BrowserID: %s": [
          null,
@@ -126,9 +134,9 @@
          null,
          "Ofmelde"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
-         "Troch it <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
+         "Troch it <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>"
       ],
       "Privacy": [
          null,
@@ -146,7 +154,7 @@
          null,
          "Der is in probleem mei jo registraasjekeppeling. Is dit adres al registrearre?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Flater by kommunikaasje mei tsjinner."
       ],

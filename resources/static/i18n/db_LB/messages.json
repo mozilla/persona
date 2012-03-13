@@ -3,13 +3,13 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
          "PO-Revision-Date": " YEAR-MO-DA HO:MI+ZONE",
          "Last-Translator": " FULL NAME <EMAIL@ADDRESS>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " ",
          "MIME-Version": " 1.0",
-         "Content-Type": " text/plain; charset=UTF-8",
+         "Content-Type": " text/plain; charset=CHARSET",
          "Content-Transfer-Encoding": " 8bit"
       },
       "Complete Login to %s using BrowserID": [
@@ -24,9 +24,9 @@
          null,
          "‮Ǝɹɹoɹ ǝuɔonuʇǝɹǝp ʇɹʎıuƃ ʇo ɔoɯdʅǝʇǝ ɹǝƃısʇɹɐʇıou·"
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
-         "‮Ⅎıuısɥ sıƃuıuƃ ıuʇo: "
+         "‮Ⅎıuısɥ sıƃuıuƃ ıuʇo:"
       ],
       "Email Verification": [
          null,
@@ -72,9 +72,9 @@
          null,
          "‮Ԁɐssʍoɹps po uoʇ ɯɐʇɔɥ·"
       ],
-      "Finish": [
+      "finish": [
          null,
-         "‮Ⅎıuısɥ"
+         "‮ɟıuısɥ"
       ],
       "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
@@ -83,6 +83,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "‮⅄onɹ uǝʍ ɐppɹǝss ıs sǝʇ nd ɐup ʎon sɥonʅp uoʍ qǝ sıƃuǝp ıu· ⅄on ɯɐʎ uoʍ ɔʅosǝ ʇɥıs ʍıupoʍ ɐup ƃo qɐɔʞ ʇo"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "‮ԐɹoʍsǝɹIᗡ ɹǝbnıɹǝs ɔooʞıǝs"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         "‮Ԁʅǝɐsǝ ɔʅosǝ ʇɥıs ʍıupoʍ´ <ɐ %s‮>ǝuɐqʅǝ ɔooʞıǝs</a>‮ ɐup ʇɹʎ ɐƃɐıu"
       ],
       "Communicating with server": [
          null,
@@ -96,9 +104,9 @@
          null,
          "‮ԐɹoʍsǝɹIᗡ"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
-         "‮ԐɹoʍsǝɹIᗡ ıs ʇɥǝ ɟɐsʇ ɐup sǝɔnɹǝ ʍɐʎ ʇo sıƃu ıu &mdash;‮ <a target=\"_blank\" href=\"/about\">‮ʅǝɐɹu ɯoɹǝ</a>"
+         "‮ԐɹoʍsǝɹIᗡ ıs ʇɥǝ ɟɐsʇ ɐup sǝɔnɹǝ ʍɐʎ ʇo sıƃu ıu &mdash;‮ <ɐ %s‮>ʅǝɐɹu ɯoɹǝ</a>"
       ],
       "BrowserID: %s": [
          null,
@@ -124,9 +132,9 @@
          null,
          "‮Sıƃu Onʇ"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
-         "‮Ԑʎ ʇɥǝ <a href=\"%s\" target=\"_blank\">‮Ipǝuʇıʇʎ ⊥ǝɐɯ</a>‮ @ <a href=\"%s\" target=\"_blank\">‮Wozıʅʅɐ ⅂ɐqs</a>"
+         "‮Ԑʎ ʇɥǝ <ɐ %s‮>Ipǝuʇıʇʎ ⊥ǝɐɯ</a>‮ @ <ɐ %s‮>Wozıʅʅɐ ⅂ɐqs</a>"
       ],
       "Privacy": [
          null,
@@ -144,9 +152,9 @@
          null,
          "‮⊥ɥǝɹǝ ʍɐs ɐ dɹoqʅǝɯ ʍıʇɥ ʎonɹ sıƃund ʅıuʞ· Hɐs ʇɥıs ɐppɹǝss ɐʅɹǝɐpʎ qǝǝu ɹǝƃısʇǝɹǝp?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
-         "‮Ǝɹɹoɹ ɔoɯnuıɔɐʇıuƃ ʍıʇɥ sǝɹʌǝɹ·"
+         "‮Ǝɹɹoɹ ɔoɯɯnuıɔɐʇıuƃ ʍıʇɥ sǝɹʌǝɹ·"
       ],
       "Last step!": [
          null,

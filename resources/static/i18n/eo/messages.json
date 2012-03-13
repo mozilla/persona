@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
          "PO-Revision-Date": " YEAR-MO-DA HO:MI+ZONE",
          "Last-Translator": " FULL NAME <EMAIL@ADDRESS>",
          "Language-Team": " LANGUAGE <LL@li.org>",
@@ -25,7 +25,7 @@
          null,
          ""
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
          ""
       ],
@@ -73,7 +73,7 @@
          null,
          ""
       ],
-      "Finish": [
+      "finish": [
          null,
          ""
       ],
@@ -82,6 +82,14 @@
          ""
       ],
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
+         null,
+         ""
+      ],
+      "BrowserID requires cookies": [
+         null,
+         ""
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
          null,
          ""
       ],
@@ -97,7 +105,7 @@
          null,
          ""
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
          ""
       ],
@@ -125,7 +133,7 @@
          null,
          ""
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
          ""
       ],
@@ -145,7 +153,7 @@
          null,
          ""
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          ""
       ],

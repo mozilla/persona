@@ -1,173 +1,25 @@
 ;var json_locale_data = {
    "client": {
       "": {
-         "Project-Id-Version": " PACKAGE VERSION",
+         "Project-Id-Version": " BrowserID 1",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-05 13:59+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-03 15:29+0100",
          "Last-Translator": " Hans Wallanger <hasse@jasajudeju.se>",
          "Language-Team": " Swedish",
          "Language": " sv",
          "MIME-Version": " 1.0",
          "Content-Type": " text/plain; charset=UTF-8",
          "Content-Transfer-Encoding": " 8bit",
-         "X-Generator": " Translate Toolkit 1.9.0"
+         "Plural-Forms": " nplurals=2; plural=(n != 1);"
       },
-      "Authenticating User": [
+      "BrowserID requires cookies": [
          null,
-         "Autentiserar användaren"
+         "BrowserID använder kakor"
       ],
-      "Adding Address": [
+      "Please close this window, <a %s>enable cookies</a> and try again": [
          null,
-         "Lägger till adress"
-      ],
-      "Adding Primary Email Address to User": [
-         null,
-         "Lägger till en primär e-postadress till användaren"
-      ],
-      "Checking Address Info": [
-         null,
-         "Kontrollerar adressuppgifter"
-      ],
-      "Authenticating with Assertion": [
-         null,
-         "Autentiserar med påstående"
-      ],
-      "Cancelling User Account": [
-         null,
-         "Återkallar användarkonto"
-      ],
-      "Checking Authentication": [
-         null,
-         "Kontrollerar autentisering"
-      ],
-      "Checking Script Version": [
-         null,
-         "Kontrollerar skriptversion"
-      ],
-      "Completing User Registration": [
-         null,
-         "Slutför användarregistrering"
-      ],
-      "We are sorry, BrowserID requires cookies": [
-         null,
-         "Tyvärr, det krävs kakor för BrowserID"
-      ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
-         null,
-         "För att BrowserID ska fungera måste kakor i webbläsaren användas. Tillåt kakor i webbläsaren och försök igen"
-      ],
-      "Checking if Cookies are Enabled": [
-         null,
-         "Kontrollerar om kakor är aktiverade"
-      ],
-      "Creating Account": [
-         null,
-         "Skapar konto"
-      ],
-      "Getting Assertion": [
-         null,
-         "Tar emot påstående"
-      ],
-      "Checking Registration Token": [
-         null,
-         "Kontrollerar registreringstoken"
-      ],
-      "Checking Email Address": [
-         null,
-         "Kontrollerar e-postadress"
-      ],
-      "Checking Whether User is Authenticated with IdP": [
-         null,
-         "Kontrollerar om användaren är autentiserad med IdP"
-      ],
-      "Logout Failed": [
-         null,
-         "Utloggning misslyckades"
-      ],
-      "You are offline!": [
-         null,
-         "Du är nedkopplad!"
-      ],
-      "Unfortunately, BrowserID cannot communicate while offline!": [
-         null,
-         "Tyvärr kan inte BrowserID kommunicera när du är nedkopplad!"
-      ],
-      "Authenticating with Identity Provider": [
-         null,
-         "Autentiserar med identitetsleverantör"
-      ],
-      "We had trouble communicating with your email provider, please try again!": [
-         null,
-         "Vi kunde inte kommunicera med din e-postleverantör, försök igen!"
-      ],
-      "Provisioning with Identity Provider": [
-         null,
-         "Förbereder med identitetsleverantören"
-      ],
-      "Provisioning Unsupported Identity Provider": [
-         null,
-         "Förbereder ej stödd identitetsleverantör"
-      ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
-         null,
-         "Tyvärr kan inte e-postadressen användas som en primär identitetsleverantör"
-      ],
-      "Registration Failed": [
-         null,
-         "Registreringen misslyckades"
-      ],
-      "Establishing Relay": [
-         null,
-         "Etablerar vidaresändning"
-      ],
-      "Relay frame could not be found": [
-         null,
-         "Vidaresändningsramen kunde inte hittas"
-      ],
-      "Resetting Password": [
-         null,
-         "Återställer lösenord"
-      ],
-      "Remove Email Address from Account": [
-         null,
-         "Ta bort e-postadress från kontot"
-      ],
-      "Setting Password": [
-         null,
-         "Ställer in lösenord"
-      ],
-      "Signin Failed": [
-         null,
-         "Inloggningen misslyckades"
-      ],
-      "Signup Failed": [
-         null,
-         "Anmälan misslyckades"
-      ],
-      "Syncing Address": [
-         null,
-         "Synkar adress"
-      ],
-      "Syncing Email Addresses": [
-         null,
-         "Synkar e-postadresser"
-      ],
-      "Sync Keys for Address": [
-         null,
-         "Synkar nycklar för adress"
-      ],
-      "Getting Token Info": [
-         null,
-         "Hämtar tokeninformation"
-      ],
-      "Updating password": [
-         null,
-         "Uppdaterar lösenord"
-      ],
-      "Verifying email address": [
-         null,
-         "Verifierar e-postadress"
+         "Stäng det här fönstret, <a %s>aktivera kakor</a> och försök igen"
       ],
       "Communication Error": [
          null,
@@ -237,7 +89,7 @@
          null,
          "Välkommen till BrowserID!"
       ],
-      "This email looks new, so let&#39;s get you set up.": [
+      "This email looks new, so let's get you set up.": [
          null,
          "Den här e-postadressen verkar ny så den kan du använda."
       ],
@@ -257,6 +109,10 @@
          null,
          "Du kan inte logga in kontot med det här användarnamnet och lösenordet."
       ],
+      "By clicking %s, you confirm that you accept this site's <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.": [
+         null,
+         "Genom att klicka på %s godkänner du webbplatsens <a %s>användarvillkor</a> och <a %s>sekretesspolicy</a>."
+      ],
       "next": [
          null,
          "nästa"
@@ -265,9 +121,9 @@
          null,
          "verifiera e-postadress"
       ],
-      "select email": [
+      "sign in": [
          null,
-         "välj e-postadress"
+         "logga in"
       ],
       "Cannot verify %s": [
          null,
@@ -297,17 +153,33 @@
          null,
          "Om det här är ett misstag, ignorera det skickade mejlet och <a href=\"#\" id=\"back\">använd en annan e-postadress</a>."
       ],
+      "We are very sorry, the server is under extreme load!": [
+         null,
+         "Vi är ledsna, men servern är under hård belastning!"
+      ],
+      "We are very sorry, there has been an error!": [
+         null,
+         "Vi är ledsna, men ett fel har uppstått"
+      ],
+      "Please reload the page and try again.": [
+         null,
+         "Uppdatera sidan för att försöka igen."
+      ],
+      "Please close this window and try again.": [
+         null,
+         "Stäng fönstret och försök igen."
+      ],
+      "See more info": [
+         null,
+         "Se mer info"
+      ],
       "The site requested you sign in using": [
          null,
          "Webbplatsen vill att du loggar in med"
       ],
-      "Reset Password": [
+      "reset password": [
          null,
-         "Återställ lösenord"
-      ],
-      "Cancel": [
-         null,
-         "Avbryt"
+         "återställ lösenord"
       ],
       "*%s* is not a valid email address!": [
          null,
@@ -316,10 +188,6 @@
       "To continue, please close the window and enter a valid address.": [
          null,
          "Stäng fönstret och ange en giltig e-postadress för att fortsätta."
-      ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
-         null,
-         "Tyvärr kan vi inte kommunicera med BrowserID när du nedkopplad."
       ],
       "This is not me...": [
          null,
@@ -333,10 +201,6 @@
          null,
          "Logga alltid in med denna e-postadress"
       ],
-      "sign in": [
-         null,
-         "logga in"
-      ],
       "Address Verified!": [
          null,
          "Adressen är verifierad!"
@@ -349,13 +213,177 @@
          null,
          "För att verifiera att du äger den här adressen måste du logga in till din e-postleverantör. Det här fönstret kommer att dirigeras om till"
       ],
-      "Verify": [
+      "verify": [
          null,
-         "Verifiera"
+         "verifiera"
       ],
       "Verify With Email Provider": [
          null,
          "Verifiera med e-postleverantören"
+      ],
+      "#~ \"BrowserID requires your browser's cookies to be enabled to operate. \"#~ \"Please enable your browser's cookies and try again\"": [
+         null,
+         "#~ \"För att BrowserID ska fungera måste kakor i webbläsaren användas. Tillåt \"#~ \"kakor i webbläsaren och försök igen\""
+      ],
+      "You are offline!": [
+         null,
+         "Du är nedkopplad!"
+      ],
+      "Unfortunately, BrowserID cannot communicate while offline!": [
+         null,
+         "Tyvärr kan inte BrowserID kommunicera när du är nedkopplad!"
+      ],
+      "select email": [
+         null,
+         "välj e-postadress"
+      ],
+      "#~ \"We are sorry, but we cannot communicate with BrowserID while you are \"#~ \"offline.\"": [
+         null,
+         "Tyvärr kan vi inte kommunicera med BrowserID när du nedkopplad."
+      ],
+      "Authenticating User": [
+         null,
+         "Autentiserar användaren"
+      ],
+      "Adding Address": [
+         null,
+         "Lägger till adress"
+      ],
+      "Adding Primary Email Address to User": [
+         null,
+         "Lägger till en primär e-postadress till användaren"
+      ],
+      "Checking Address Info": [
+         null,
+         "Kontrollerar adressuppgifter"
+      ],
+      "Authenticating with Assertion": [
+         null,
+         "Autentiserar med påstående"
+      ],
+      "Cancelling User Account": [
+         null,
+         "Återkallar användarkonto"
+      ],
+      "Checking Authentication": [
+         null,
+         "Kontrollerar autentisering"
+      ],
+      "Checking Script Version": [
+         null,
+         "Kontrollerar skriptversion"
+      ],
+      "Completing User Registration": [
+         null,
+         "Slutför användarregistrering"
+      ],
+      "Checking if Cookies are Enabled": [
+         null,
+         "Kontrollerar om kakor är aktiverade"
+      ],
+      "Creating Account": [
+         null,
+         "Skapar konto"
+      ],
+      "Getting Assertion": [
+         null,
+         "Tar emot påstående"
+      ],
+      "Checking Registration Token": [
+         null,
+         "Kontrollerar registreringstoken"
+      ],
+      "Checking Email Address": [
+         null,
+         "Kontrollerar e-postadress"
+      ],
+      "Checking Whether User is Authenticated with IdP": [
+         null,
+         "Kontrollerar om användaren är autentiserad med IdP"
+      ],
+      "Logout Failed": [
+         null,
+         "Utloggning misslyckades"
+      ],
+      "Authenticating with Identity Provider": [
+         null,
+         "Autentiserar med identitetsleverantör"
+      ],
+      "#~ \"We had trouble communicating with your email provider, please try again!\"": [
+         null,
+         "Vi kunde inte kommunicera med din e-postleverantör, försök igen!"
+      ],
+      "Provisioning with Identity Provider": [
+         null,
+         "Förbereder med identitetsleverantören"
+      ],
+      "Provisioning Unsupported Identity Provider": [
+         null,
+         "Förbereder ej stödd identitetsleverantör"
+      ],
+      "#~ \"Unfortunately, the email address provided cannot act as a Primary \"#~ \"Identity Provider\"": [
+         null,
+         "#~ \"Tyvärr kan inte e-postadressen användas som en primär identitetsleverantör\""
+      ],
+      "Registration Failed": [
+         null,
+         "Registreringen misslyckades"
+      ],
+      "Establishing Relay": [
+         null,
+         "Etablerar vidaresändning"
+      ],
+      "Relay frame could not be found": [
+         null,
+         "Vidaresändningsramen kunde inte hittas"
+      ],
+      "Resetting Password": [
+         null,
+         "Återställer lösenord"
+      ],
+      "Remove Email Address from Account": [
+         null,
+         "Ta bort e-postadress från kontot"
+      ],
+      "Setting Password": [
+         null,
+         "Ställer in lösenord"
+      ],
+      "Signin Failed": [
+         null,
+         "Inloggningen misslyckades"
+      ],
+      "Signup Failed": [
+         null,
+         "Anmälan misslyckades"
+      ],
+      "Syncing Address": [
+         null,
+         "Synkar adress"
+      ],
+      "Syncing Email Addresses": [
+         null,
+         "Synkar e-postadresser"
+      ],
+      "Sync Keys for Address": [
+         null,
+         "Synkar nycklar för adress"
+      ],
+      "Getting Token Info": [
+         null,
+         "Hämtar tokeninformation"
+      ],
+      "Updating password": [
+         null,
+         "Uppdaterar lösenord"
+      ],
+      "Verifying email address": [
+         null,
+         "Verifierar e-postadress"
+      ],
+      "Cancel": [
+         null,
+         "Avbryt"
       ]
    }
 }

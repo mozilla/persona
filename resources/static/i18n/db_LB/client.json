@@ -3,170 +3,22 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
          "PO-Revision-Date": " YEAR-MO-DA HO:MI+ZONE",
          "Last-Translator": " FULL NAME <EMAIL@ADDRESS>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " ",
          "MIME-Version": " 1.0",
-         "Content-Type": " text/plain; charset=UTF-8",
+         "Content-Type": " text/plain; charset=CHARSET",
          "Content-Transfer-Encoding": " 8bit"
       },
-      "Authenticating User": [
+      "BrowserID requires cookies": [
          null,
-         "‮∀nʇɥǝuʇıɔɐʇıuƃ ∩sǝɹ"
+         "‮ԐɹoʍsǝɹIᗡ ɹǝbnıɹǝs ɔooʞıǝs"
       ],
-      "Adding Address": [
+      "Please close this window, <a %s>enable cookies</a> and try again": [
          null,
-         "‮∀ppıuƃ ∀ppɹǝss"
-      ],
-      "Adding Primary Email Address to User": [
-         null,
-         "‮∀ppıuƃ Ԁɹıɯɐɹʎ Ǝɯɐıʅ ∀ppɹǝss ʇo ∩sǝɹ"
-      ],
-      "Checking Address Info": [
-         null,
-         "‮Ↄɥǝɔʞıuƃ ∀ppɹǝss Iuɟo"
-      ],
-      "Authenticating with Assertion": [
-         null,
-         "‮∀nʇɥǝuʇıɔɐʇıuƃ ʍıʇɥ ∀ssǝɹʇıou"
-      ],
-      "Cancelling User Account": [
-         null,
-         "‮Ↄɐuɔǝʅʅıuƃ ∩sǝɹ ∀ɔɔonuʇ"
-      ],
-      "Checking Authentication": [
-         null,
-         "‮Ↄɥǝɔʞıuƃ ∀nʇɥǝuʇıɔɐʇıou"
-      ],
-      "Checking Script Version": [
-         null,
-         "‮Ↄɥǝɔʞıuƃ Sɔɹıdʇ Ʌǝɹsıou"
-      ],
-      "Completing User Registration": [
-         null,
-         "‮Ↄoɯdʅǝʇıuƃ ∩sǝɹ ᴚǝƃısʇɹɐʇıou"
-      ],
-      "We are sorry, BrowserID requires cookies": [
-         null,
-         "‮Ｍǝ ɐɹǝ soɹɹʎ´ ԐɹoʍsǝɹIᗡ ɹǝbnıɹǝs ɔooʞıǝs"
-      ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
-         null,
-         "‮ԐɹoʍsǝɹIᗡ ɹǝbnıɹǝs ʎonɹ qɹoʍsǝɹ,s ɔooʞıǝs ʇo qǝ ǝuɐqʅǝp ʇo odǝɹɐʇǝ·  Ԁʅǝɐsǝ ǝuɐqʅǝ ʎonɹ qɹoʍsǝɹ,s ɔooʞıǝs ɐup ʇɹʎ ɐƃɐıu"
-      ],
-      "Checking if Cookies are Enabled": [
-         null,
-         "‮Ↄɥǝɔʞıuƃ ıɟ Ↄooʞıǝs ɐɹǝ Ǝuɐqʅǝp"
-      ],
-      "Creating Account": [
-         null,
-         "‮Ↄɹǝɐʇıuƃ ∀ɔɔonuʇ"
-      ],
-      "Getting Assertion": [
-         null,
-         "‮⅁ǝʇʇıuƃ ∀ssǝɹʇıou"
-      ],
-      "Checking Registration Token": [
-         null,
-         "‮Ↄɥǝɔʞıuƃ ᴚǝƃısʇɹɐʇıou ⊥oʞǝu"
-      ],
-      "Checking Email Address": [
-         null,
-         "‮Ↄɥǝɔʞıuƃ Ǝɯɐıʅ ∀ppɹǝss"
-      ],
-      "Checking Whether User is Authenticated with IdP": [
-         null,
-         "‮Ↄɥǝɔʞıuƃ Ｍɥǝʇɥǝɹ ∩sǝɹ ıs ∀nʇɥǝuʇıɔɐʇǝp ʍıʇɥ IpԀ"
-      ],
-      "Logout Failed": [
-         null,
-         "‮⅂oƃonʇ Ⅎɐıʅǝp"
-      ],
-      "You are offline!": [
-         null,
-         "‮⅄on ɐɹǝ oɟɟʅıuǝ¡"
-      ],
-      "Unfortunately, BrowserID cannot communicate while offline!": [
-         null,
-         "‮∩uɟoɹʇnuɐʇǝʅʎ´ ԐɹoʍsǝɹIᗡ ɔɐuuoʇ ɔoɯɯnuıɔɐʇǝ ʍɥıʅǝ oɟɟʅıuǝ¡"
-      ],
-      "Authenticating with Identity Provider": [
-         null,
-         "‮∀nʇɥǝuʇıɔɐʇıuƃ ʍıʇɥ Ipǝuʇıʇʎ Ԁɹoʌıpǝɹ"
-      ],
-      "We had trouble communicating with your email provider, please try again!": [
-         null,
-         "‮Ｍǝ ɥɐp ʇɹonqʅǝ ɔoɯɯnuıɔɐʇıuƃ ʍıʇɥ ʎonɹ ǝɯɐıʅ dɹoʌıpǝɹ´ dʅǝɐsǝ ʇɹʎ ɐƃɐıu¡"
-      ],
-      "Provisioning with Identity Provider": [
-         null,
-         "‮Ԁɹoʌısıouıuƃ ʍıʇɥ Ipǝuʇıʇʎ Ԁɹoʌıpǝɹ"
-      ],
-      "Provisioning Unsupported Identity Provider": [
-         null,
-         "‮Ԁɹoʌısıouıuƃ ∩usnddoɹʇǝp Ipǝuʇıʇʎ Ԁɹoʌıpǝɹ"
-      ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
-         null,
-         "‮∩uɟoɹʇnuɐʇǝʅʎ´ ʇɥǝ ǝɯɐıʅ ɐppɹǝss dɹoʌıpǝp ɔɐuuoʇ ɐɔʇ ɐs ɐ Ԁɹıɯɐɹʎ Ipǝuʇıʇʎ Ԁɹoʌıpǝɹ"
-      ],
-      "Registration Failed": [
-         null,
-         "‮ᴚǝƃısʇɹɐʇıou Ⅎɐıʅǝp"
-      ],
-      "Establishing Relay": [
-         null,
-         "‮Ǝsʇɐqʅısɥıuƃ ᴚǝʅɐʎ"
-      ],
-      "Relay frame could not be found": [
-         null,
-         "‮ᴚǝʅɐʎ ɟɹɐɯǝ ɔonʅp uoʇ qǝ ɟonup"
-      ],
-      "Resetting Password": [
-         null,
-         "‮ᴚǝsǝʇʇıuƃ Ԁɐssʍoɹp"
-      ],
-      "Remove Email Address from Account": [
-         null,
-         "‮ᴚǝɯoʌǝ Ǝɯɐıʅ ∀ppɹǝss ɟɹoɯ ∀ɔɔonuʇ"
-      ],
-      "Setting Password": [
-         null,
-         "‮Sǝʇʇıuƃ Ԁɐssʍoɹp"
-      ],
-      "Signin Failed": [
-         null,
-         "‮Sıƃuıu Ⅎɐıʅǝp"
-      ],
-      "Signup Failed": [
-         null,
-         "‮Sıƃund Ⅎɐıʅǝp"
-      ],
-      "Syncing Address": [
-         null,
-         "‮Sʎuɔıuƃ ∀ppɹǝss"
-      ],
-      "Syncing Email Addresses": [
-         null,
-         "‮Sʎuɔıuƃ Ǝɯɐıʅ ∀ppɹǝssǝs"
-      ],
-      "Sync Keys for Address": [
-         null,
-         "‮Sʎuɔ Ӽǝʎs ɟoɹ ∀ppɹǝss"
-      ],
-      "Getting Token Info": [
-         null,
-         "‮⅁ǝʇʇıuƃ ⊥oʞǝu Iuɟo"
-      ],
-      "Updating password": [
-         null,
-         "‮∩dpɐʇıuƃ dɐssʍoɹp"
-      ],
-      "Verifying email address": [
-         null,
-         "‮Ʌǝɹıɟʎıuƃ ǝɯɐıʅ ɐppɹǝss"
+         "‮Ԁʅǝɐsǝ ɔʅosǝ ʇɥıs ʍıupoʍ´ <ɐ %s‮>ǝuɐqʅǝ ɔooʞıǝs</a>‮ ɐup ʇɹʎ ɐƃɐıu"
       ],
       "Communication Error": [
          null,
@@ -236,9 +88,9 @@
          null,
          "‮Ｍǝʅɔoɯǝ ʇo ԐɹoʍsǝɹIᗡ¡"
       ],
-      "This email looks new, so let&#39;s get you set up.": [
+      "This email looks new, so let's get you set up.": [
          null,
-         "‮⊥ɥıs ǝɯɐıʅ ʅooʞs uǝʍ´ so ʅǝʇ&#39;‮s ƃǝʇ ʎon sǝʇ nd·"
+         "‮⊥ɥıs ǝɯɐıʅ ʅooʞs uǝʍ´ so ʅǝʇ,s ƃǝʇ ʎon sǝʇ nd·"
       ],
       "Password": [
          null,
@@ -256,6 +108,10 @@
          null,
          "‮⊥ɥǝ ɐɔɔonuʇ ɔɐuuoʇ qǝ ʅoƃƃǝp ıu ʍıʇɥ ʇɥıs nsǝɹuɐɯǝ ɐup dɐssʍoɹp·"
       ],
+      "By clicking %s, you confirm that you accept this site's <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.": [
+         null,
+         "‮Ԑʎ ɔʅıɔʞıuƃ %s‮´ ʎon ɔouɟıɹɯ ʇɥɐʇ ʎon ɐɔɔǝdʇ ʇɥıs sıʇǝ,s <ɐ %s‮>⊥ǝɹɯs oɟ ∩sǝ</a>‮ ɐup <ɐ %s‮>Ԁɹıʌɐɔʎ Ԁoʅıɔʎ</a>‮·"
+      ],
       "next": [
          null,
          "‮uǝxʇ"
@@ -264,9 +120,9 @@
          null,
          "‮ʌǝɹıɟʎ ǝɯɐıʅ"
       ],
-      "select email": [
+      "sign in": [
          null,
-         "‮sǝʅǝɔʇ ǝɯɐıʅ"
+         "‮sıƃu ıu"
       ],
       "Cannot verify %s": [
          null,
@@ -296,17 +152,33 @@
          null,
          "‮Iɟ ʇɥıs ıs ɐ ɯısʇɐʞǝ´ ɾnsʇ ıƃuoɹǝ ʇɥǝ sǝuʇ ǝɯɐıʅ ɐup <a href=\"#\" id=\"back\">‮nsǝ ɐuoʇɥǝɹ ǝɯɐıʅ ɐppɹǝss</a>‮·"
       ],
+      "We are very sorry, the server is under extreme load!": [
+         null,
+         "‮Ｍǝ ɐɹǝ ʌǝɹʎ soɹɹʎ´ ʇɥǝ sǝɹʌǝɹ ıs nupǝɹ ǝxʇɹǝɯǝ ʅoɐp¡"
+      ],
+      "We are very sorry, there has been an error!": [
+         null,
+         "‮Ｍǝ ɐɹǝ ʌǝɹʎ soɹɹʎ´ ʇɥǝɹǝ ɥɐs qǝǝu ɐu ǝɹɹoɹ¡"
+      ],
+      "Please reload the page and try again.": [
+         null,
+         "‮Ԁʅǝɐsǝ ɹǝʅoɐp ʇɥǝ dɐƃǝ ɐup ʇɹʎ ɐƃɐıu·"
+      ],
+      "Please close this window and try again.": [
+         null,
+         "‮Ԁʅǝɐsǝ ɔʅosǝ ʇɥıs ʍıupoʍ ɐup ʇɹʎ ɐƃɐıu·"
+      ],
+      "See more info": [
+         null,
+         "‮Sǝǝ ɯoɹǝ ıuɟo"
+      ],
       "The site requested you sign in using": [
          null,
          "‮⊥ɥǝ sıʇǝ ɹǝbnǝsʇǝp ʎon sıƃu ıu nsıuƃ"
       ],
-      "Reset Password": [
+      "reset password": [
          null,
-         "‮ᴚǝsǝʇ Ԁɐssʍoɹp"
-      ],
-      "Cancel": [
-         null,
-         "‮Ↄɐuɔǝʅ"
+         "‮ɹǝsǝʇ dɐssʍoɹp"
       ],
       "*%s* is not a valid email address!": [
          null,
@@ -315,10 +187,6 @@
       "To continue, please close the window and enter a valid address.": [
          null,
          "‮⊥o ɔouʇıunǝ´ dʅǝɐsǝ ɔʅosǝ ʇɥǝ ʍıupoʍ ɐup ǝuʇǝɹ ɐ ʌɐʅıp ɐppɹǝss·"
-      ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
-         null,
-         "‮Ｍǝ ɐɹǝ soɹɹʎ´ qnʇ ʍǝ ɔɐuuoʇ ɔoɯɯnuıɔɐʇǝ ʍıʇɥ ԐɹoʍsǝɹIᗡ ʍɥıʅǝ ʎon ɐɹǝ oɟɟʅıuǝ·"
       ],
       "This is not me...": [
          null,
@@ -332,10 +200,6 @@
          null,
          "‮∀ʅʍɐʎs sıƃu ıu nsıuƃ ʇɥıs ǝɯɐıʅ"
       ],
-      "sign in": [
-         null,
-         "‮sıƃu ıu"
-      ],
       "Address Verified!": [
          null,
          "‮∀ppɹǝss Ʌǝɹıɟıǝp¡"
@@ -348,9 +212,9 @@
          null,
          "‮⅄on ɯnsʇ sıƃu ıu ʍıʇɥ ʎonɹ ǝɯɐıʅ dɹoʌıpǝɹ ʇo ʌǝɹıɟʎ oʍuǝɹsɥıd oɟ ʇɥıs ɐppɹǝss· ⊥ɥıs ʍıupoʍ ʍıʅʅ qǝ ɹǝpıɹǝɔʇǝp ʇo"
       ],
-      "Verify": [
+      "verify": [
          null,
-         "‮Ʌǝɹıɟʎ"
+         "‮ʌǝɹıɟʎ"
       ],
       "Verify With Email Provider": [
          null,

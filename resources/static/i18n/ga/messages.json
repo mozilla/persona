@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "POT-Creation-Date": " 2012-03-02 15:27+0100",
          "PO-Revision-Date": " YEAR-MO-DA HO:MI+ZONE",
          "Last-Translator": " FULL NAME <EMAIL@ADDRESS>",
          "Language-Team": " LANGUAGE <LL@li.org>",
@@ -23,9 +23,9 @@
          null,
          "Tharla earráid agus an clárú á chur i gcrích."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
-         "Ag logáil isteach i: "
+         "Críochnaigh logáil isteach i:"
       ],
       "Email Verification": [
          null,
@@ -71,9 +71,9 @@
          null,
          "Ní ionann na focail fhaire."
       ],
-      "Finish": [
+      "finish": [
          null,
-         "Críochnaigh"
+         "críochnaigh"
       ],
       "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
@@ -82,6 +82,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Tá do sheoladh nua socraithe agus tá tú logáilte isteach anois. Tá cead agat an fhuinneog seo a dhúnadh anois agus filleadh ar"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "Caithfidh tú fianáin a cheadú chun BrowserID a úsáid"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         "Dún an fhuinneog seo, <a %s>cumasaigh fianáin</a> agus bain triail eile as"
       ],
       "Communicating with server": [
          null,
@@ -95,9 +103,9 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
-         "Logáil isteach go tapaidh agus go sábháilte le BrowserID &mdash; <a target=\"_blank\" href=\"/about\">tuilleadh eolais</a>"
+         "Logáil isteach go tapaidh agus go sábháilte le BrowserID &mdash; <a %s>tuilleadh eolais</a>"
       ],
       "BrowserID: %s": [
          null,
@@ -123,9 +131,9 @@
          null,
          "Logáil Amach"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
-         "Cruthaithe ag an <a href=\"%s\" target=\"_blank\">Foireann Aitheantas</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
+         "Cruthaithe ag an <a %s>Foireann Aitheantais</a> i <a %s>Saotharlann Mhozilla</a>"
       ],
       "Privacy": [
          null,
@@ -143,7 +151,7 @@
          null,
          "Bhí fadhb le do nasc cláraithe. An raibh an seoladh seo cláraithe cheana?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Earráid chumarsáide leis an bhfreastalaí."
       ],
@@ -157,7 +165,7 @@
       ],
       "Thanks for verifying your email address. This message is being sent to you to complete your sign-in to %s.": [
          null,
-         "Go raibh maith agat as do sheoladh ríomhphoist a dhearbhú. Sheolamar an teachtaireacht chugat chun an logáil isteach i %s a chur i gcrích."
+         "Go raibh maith agat as do sheoladh ríomhphoist a dhearbhú. Sheolamar an teachtaireacht seo chugat chun an logáil isteach i %s a chur i gcrích."
       ],
       "Finish registration by clicking this link:": [
          null,

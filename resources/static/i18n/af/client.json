@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
          "PO-Revision-Date": " 2012-02-04 23:58+0200",
          "Last-Translator": " Friedel <friedel@translate.org.za>",
          "Language-Team": " LANGUAGE <LL@li.org>",
@@ -14,159 +14,11 @@
          "Plural-Forms": " nplurals=2; plural=(n != 1);",
          "X-Generator": " Pootle 2.1.6"
       },
-      "Authenticating User": [
+      "BrowserID requires cookies": [
          null,
          ""
       ],
-      "Adding Address": [
-         null,
-         ""
-      ],
-      "Adding Primary Email Address to User": [
-         null,
-         ""
-      ],
-      "Checking Address Info": [
-         null,
-         ""
-      ],
-      "Authenticating with Assertion": [
-         null,
-         ""
-      ],
-      "Cancelling User Account": [
-         null,
-         ""
-      ],
-      "Checking Authentication": [
-         null,
-         ""
-      ],
-      "Checking Script Version": [
-         null,
-         ""
-      ],
-      "Completing User Registration": [
-         null,
-         ""
-      ],
-      "We are sorry, BrowserID requires cookies": [
-         null,
-         ""
-      ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
-         null,
-         ""
-      ],
-      "Checking if Cookies are Enabled": [
-         null,
-         ""
-      ],
-      "Creating Account": [
-         null,
-         ""
-      ],
-      "Getting Assertion": [
-         null,
-         ""
-      ],
-      "Checking Registration Token": [
-         null,
-         ""
-      ],
-      "Checking Email Address": [
-         null,
-         ""
-      ],
-      "Checking Whether User is Authenticated with IdP": [
-         null,
-         ""
-      ],
-      "Logout Failed": [
-         null,
-         ""
-      ],
-      "You are offline!": [
-         null,
-         ""
-      ],
-      "Unfortunately, BrowserID cannot communicate while offline!": [
-         null,
-         ""
-      ],
-      "Authenticating with Identity Provider": [
-         null,
-         ""
-      ],
-      "We had trouble communicating with your email provider, please try again!": [
-         null,
-         ""
-      ],
-      "Provisioning with Identity Provider": [
-         null,
-         ""
-      ],
-      "Provisioning Unsupported Identity Provider": [
-         null,
-         ""
-      ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
-         null,
-         ""
-      ],
-      "Registration Failed": [
-         null,
-         ""
-      ],
-      "Establishing Relay": [
-         null,
-         ""
-      ],
-      "Relay frame could not be found": [
-         null,
-         ""
-      ],
-      "Resetting Password": [
-         null,
-         ""
-      ],
-      "Remove Email Address from Account": [
-         null,
-         ""
-      ],
-      "Setting Password": [
-         null,
-         ""
-      ],
-      "Signin Failed": [
-         null,
-         ""
-      ],
-      "Signup Failed": [
-         null,
-         ""
-      ],
-      "Syncing Address": [
-         null,
-         ""
-      ],
-      "Syncing Email Addresses": [
-         null,
-         ""
-      ],
-      "Sync Keys for Address": [
-         null,
-         ""
-      ],
-      "Getting Token Info": [
-         null,
-         ""
-      ],
-      "Updating password": [
-         null,
-         ""
-      ],
-      "Verifying email address": [
+      "Please close this window, <a %s>enable cookies</a> and try again": [
          null,
          ""
       ],
@@ -238,7 +90,7 @@
          null,
          "Welkom by BrowserID!"
       ],
-      "This email looks new, so let&#39;s get you set up.": [
+      "This email looks new, so let's get you set up.": [
          null,
          "Dié e-posadres lyk nuut. Laat ons dit gou opstel."
       ],
@@ -258,6 +110,10 @@
          null,
          "Kan nie aanmeld by die rekening met dié gebruikernaam en wagwoord nie."
       ],
+      "By clicking %s, you confirm that you accept this site's <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.": [
+         null,
+         ""
+      ],
       "next": [
          null,
          "volgende"
@@ -266,9 +122,9 @@
          null,
          "bevestig e-posadres"
       ],
-      "select email": [
+      "sign in": [
          null,
-         "kies e-posadres"
+         "meld aan"
       ],
       "Cannot verify %s": [
          null,
@@ -298,17 +154,33 @@
          null,
          "As dit 'n fout is, ignoreer die gestuurde boodskap en <a href=\"#\" id=\"back\">gebruik 'n ander e-posadres</a>."
       ],
+      "We are very sorry, the server is under extreme load!": [
+         null,
+         ""
+      ],
+      "We are very sorry, there has been an error!": [
+         null,
+         ""
+      ],
+      "Please reload the page and try again.": [
+         null,
+         ""
+      ],
+      "Please close this window and try again.": [
+         null,
+         "Om voort te gaan, sluit die venster en gee 'n geldige e-posadres."
+      ],
+      "See more info": [
+         null,
+         ""
+      ],
       "The site requested you sign in using": [
          null,
          "Dié werf vra dat u aanmeld met"
       ],
-      "Reset Password": [
+      "reset password": [
          null,
          "Stel wagwoord terug"
-      ],
-      "Cancel": [
-         null,
-         "Kanselleer"
       ],
       "*%s* is not a valid email address!": [
          null,
@@ -317,10 +189,6 @@
       "To continue, please close the window and enter a valid address.": [
          null,
          "Om voort te gaan, sluit die venster en gee 'n geldige e-posadres."
-      ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
-         null,
-         "Ons kan ongelukkig nie met BrowserID kommunikeer terwyl u vanlyn is nie."
       ],
       "This is not me...": [
          null,
@@ -334,10 +202,6 @@
          null,
          "Meld altyd aan met dié e-posadres"
       ],
-      "sign in": [
-         null,
-         "meld aan"
-      ],
       "Address Verified!": [
          null,
          "Adres is bevestig!"
@@ -350,13 +214,25 @@
          null,
          "U moet aanmeld met u e-posverskaffer om eienaarskap van dié adres te bevestig. Dié venster gaan aanstuur na"
       ],
-      "Verify": [
+      "verify": [
          null,
          "Bevestig"
       ],
       "Verify With Email Provider": [
          null,
          "Bevestig met e-posverskaffer"
+      ],
+      "select email": [
+         null,
+         "kies e-posadres"
+      ],
+      "#~ \"We are sorry, but we cannot communicate with BrowserID while you are \"#~ \"offline.\"": [
+         null,
+         "#~ \"Ons kan ongelukkig nie met BrowserID kommunikeer terwyl u vanlyn is nie.\""
+      ],
+      "Cancel": [
+         null,
+         "Kanselleer"
       ]
    }
 }

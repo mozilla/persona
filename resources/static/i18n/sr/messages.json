@@ -3,8 +3,8 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-01-28 04:28+0200",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-02-27 21:38+0200",
          "Last-Translator": " Milos <mdinic@mozilla.com>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " sr",
@@ -26,7 +26,7 @@
          null,
          "Дошло је до грешке приликом покушаја да се заврши регистрација."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
          "Завршите пријављивање на: "
       ],
@@ -74,7 +74,7 @@
          null,
          "Лозинке нису исте."
       ],
-      "Finish": [
+      "finish": [
          null,
          "Заврши"
       ],
@@ -85,6 +85,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Ваша нова адреса је подешена и сада бисте требали бити у могућности да се пријавите. Сада можете затворити овај прозор и отићи поново на"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "BrowserID почетак"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         ""
       ],
       "Communicating with server": [
          null,
@@ -98,7 +106,7 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
          "BrowserID је брз и сигуран начин да се пријавите &mdash; <a target=\"_blank\" href=\"/about\">сазнајте више</a>"
       ],
@@ -126,7 +134,7 @@
          null,
          "Одјавите се"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
          "Од <a href=\"%s\" target=\"_blank\">’Идентитет’ тима</a> при <a href=\"%s\" target=\"_blank\">Мозила лабораторији</a>"
       ],
@@ -146,7 +154,7 @@
          null,
          "Постоји проблем са Вашом везом за регистрацију.  Да ли је ова адреса ел. поште већ регистрована?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Грешка при комуникацији са сервером."
       ],
@@ -160,7 +168,7 @@
       ],
       "Thanks for verifying your email address. This message is being sent to you to complete your sign-in to %s.": [
          null,
-         ""
+         "Хвала што се потврдили своју адресу ел. поште. Ова порука Вам је послата да бисте потврдили пријављивање на сајт: %s."
       ],
       "Finish registration by clicking this link:": [
          null,

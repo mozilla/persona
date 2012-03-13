@@ -3,173 +3,27 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-06 20:10+0200",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-03 01:57+0200",
          "Last-Translator": " Γιώργος Φιωτάκης <fiotakis@otenet.gr>",
          "Language-Team": " Greek <fiotakis@otenet.gr>",
-         "Language": " ",
+         "Language": " el",
          "MIME-Version": " 1.0",
          "Content-Type": " text/plain; charset=UTF-8",
          "Content-Transfer-Encoding": " 8bit",
+         "Plural-Forms": " nplurals=2; plural=(n != 1);",
+         "X-Generator": " Pootle 2.1.6",
+         "X-Poedit-SourceCharset": " utf-8",
          "X-Poedit-Language": " Greek",
-         "X-Poedit-Country": " GREECE",
-         "X-Poedit-SourceCharset": " utf-8"
+         "X-Poedit-Country": " GREECE"
       },
-      "Authenticating User": [
+      "BrowserID requires cookies": [
          null,
-         "Γίνεται πιστοποίηση χρήστη"
+         "Το BrowserID απαιτεί cookies"
       ],
-      "Adding Address": [
+      "Please close this window, <a %s>enable cookies</a> and try again": [
          null,
-         "Προστίθεται διεύθυνση"
-      ],
-      "Adding Primary Email Address to User": [
-         null,
-         "Προστίθεται πρωτεύουσα διεύθυνση ηλ. ταχυδρομείου χρήστη"
-      ],
-      "Checking Address Info": [
-         null,
-         "Γίνεται έλεγχος διεύθυνσης"
-      ],
-      "Authenticating with Assertion": [
-         null,
-         "Πιστοποίηση μέσω διαβεβαίωσης"
-      ],
-      "Cancelling User Account": [
-         null,
-         "Ακυρώνεται ο λογαριασμός χρήστη"
-      ],
-      "Checking Authentication": [
-         null,
-         "Γίνεται έλεγχος πιστοποίησης"
-      ],
-      "Checking Script Version": [
-         null,
-         "Γίνεται έλεγχος έκδοσης σεναρίου εντολών"
-      ],
-      "Completing User Registration": [
-         null,
-         "Ολοκληρώνεται η εγγραφή χρήστη"
-      ],
-      "We are sorry, BrowserID requires cookies": [
-         null,
-         "Λυπούμαστε αλλά το BrowserID απαιτεί cookies"
-      ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
-         null,
-         "Το BrowserID απαιτεί την ενεργοποίηση των cookies στον περιηγητή για να λειτουργήσει. Σας παρακαλούμε να ενεργοποιήσετε τα cookies στον περιηγητή σας και να προσπαθήσετε ξανά."
-      ],
-      "Checking if Cookies are Enabled": [
-         null,
-         "Γίνεται έλεγχος ενεργοποίησης cookies"
-      ],
-      "Creating Account": [
-         null,
-         "Γίνεται δημιουργία λογαριασμού"
-      ],
-      "Getting Assertion": [
-         null,
-         "Λήψη διαβεβαίωσης"
-      ],
-      "Checking Registration Token": [
-         null,
-         "Γίνεται έλεγχος token εγγραφής"
-      ],
-      "Checking Email Address": [
-         null,
-         "Γίνεται έλεγχος διεύθυνσης ηλ. ταχυδρομείου"
-      ],
-      "Checking Whether User is Authenticated with IdP": [
-         null,
-         "Γίνεται έλεγχος πιστοποίησης χρήστη μέσω IdP"
-      ],
-      "Logout Failed": [
-         null,
-         "Απέτυχε η αποσύνδεση"
-      ],
-      "You are offline!": [
-         null,
-         "Έχετε αποσυνδεθεί!"
-      ],
-      "Unfortunately, BrowserID cannot communicate while offline!": [
-         null,
-         "Δυστυχώς το BrowserID δεν μπορεί να επικοινωνήσει εκτός σύνδεσης!"
-      ],
-      "Authenticating with Identity Provider": [
-         null,
-         "Γίνεται πιστοποίηση μέσω πάροχου ταυτοποίησης"
-      ],
-      "We had trouble communicating with your email provider, please try again!": [
-         null,
-         "Παρουσιάστηκε πρόβλημα στην επικοινωνία μας με τον παροχέα ηλ. ταχυδρομείου σας, παρακαλούμε προσπαθήστε ξανά!"
-      ],
-      "Provisioning with Identity Provider": [
-         null,
-         "Τροφοδοσία παρόχου ταυτοποίησης"
-      ],
-      "Provisioning Unsupported Identity Provider": [
-         null,
-         "Τροφοδοσία μη υποστηριζόμενου παρόχου ταυτοποίησης"
-      ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
-         null,
-         "Δυστυχώς η διεύθυνση ηλ. ταχυδρομείου που παρείχατε δεν μπορεί να χρησιμοποιηθεί σαν πρωτεύουσα παροχή ταυτοποίησης"
-      ],
-      "Registration Failed": [
-         null,
-         "Απέτυχε η εγγραφή"
-      ],
-      "Establishing Relay": [
-         null,
-         "Δημιουργείται ο συσχετισμός"
-      ],
-      "Relay frame could not be found": [
-         null,
-         "Δεν βρέθηκε το πλαίσιο συσχέτισης"
-      ],
-      "Resetting Password": [
-         null,
-         "Γίνεται επαναφορά κωδικού"
-      ],
-      "Remove Email Address from Account": [
-         null,
-         "Αφαίρεση διεύθυνσης ηλ. ταχυδρομείου από τον λογαριασμό"
-      ],
-      "Setting Password": [
-         null,
-         "Γίνεται ορισμός κωδικού"
-      ],
-      "Signin Failed": [
-         null,
-         "Απέτυχε η σύνδεση"
-      ],
-      "Signup Failed": [
-         null,
-         "Απέτυχε η εγγραφή"
-      ],
-      "Syncing Address": [
-         null,
-         "Γίνεται συγχρονισμός διεύθυνσης"
-      ],
-      "Syncing Email Addresses": [
-         null,
-         "Γίνεται συγχρονισμός διεύθυνσης ηλ. ταχυδρομείου"
-      ],
-      "Sync Keys for Address": [
-         null,
-         "Συγχρονισμός κλειδιών για τη διεύθυνση"
-      ],
-      "Getting Token Info": [
-         null,
-         "Γίνεται λήψη πληροφοριών token"
-      ],
-      "Updating password": [
-         null,
-         "Γίνεται ενημέρωση κωδικού"
-      ],
-      "Verifying email address": [
-         null,
-         "Γίνεται επαλήθευση διεύθυνσης ηλ. ταχυδρομείου"
+         "Παρακαλούμε κλείστε αυτό το παράθυρο, <a %s>ενεργοποιήστε τα cookies</a> και δοκιμάστε ξανά."
       ],
       "Communication Error": [
          null,
@@ -239,7 +93,7 @@
          null,
          "Καλώς ορίσατε στο BrowserID"
       ],
-      "This email looks new, so let&#39;s get you set up.": [
+      "This email looks new, so let's get you set up.": [
          null,
          "Αυτή η διεύθυνση ηλ. ταχυδρομείου φαίνεται καινούρια, ας κάνουμε λοιπόν τις ρυθμίσεις."
       ],
@@ -259,6 +113,10 @@
          null,
          "Δεν είναι δυνατή η σύνδεση στο λογαριασμό με αυτό τον κωδικό και το όνομα χρήστη."
       ],
+      "By clicking %s, you confirm that you accept this site's <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.": [
+         null,
+         "Κάνοντας κλικ στο %s, συμφωνείτε ότι αποδέχεστε τους <a %s>όρους χρήσης</a> και την <a %s>πολιτική απορρήτου</a> του ιστότοπου."
+      ],
       "next": [
          null,
          "Επόμενο"
@@ -267,9 +125,9 @@
          null,
          "Επαλήθευση διεύθυνσης"
       ],
-      "select email": [
+      "sign in": [
          null,
-         "Επιλογή διεύθυνσης ηλ. ταχυδρομείου"
+         "Σύνδεση"
       ],
       "Cannot verify %s": [
          null,
@@ -297,19 +155,35 @@
       ],
       "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"back\">use another email address</a>.": [
          null,
-         "Αν πρόκειται για λάθος, απλά αγνοήστε το μήνυμα που σας στείλαμε και <a href=\"#\" id=\"back\">χρησιμοποιήστε άλλη διεύθυνση</a>."
+         "Αν πρόκειται για λάθος, απλά αγνοήστε το μήνυμα που σας στείλαμε και <a href=\"#\" id=\"back\">χρησιμοποιήστε άλλη διεύθυνση ηλ. ταχυδρομείου</a>."
+      ],
+      "We are very sorry, the server is under extreme load!": [
+         null,
+         "Ο διακομιστής έχει υπερβολικό φόρτο, σας ζητάμε συγνώμη!"
+      ],
+      "We are very sorry, there has been an error!": [
+         null,
+         "Παρουσιάστηκε σφάλμα, ζητάμε συγνώμη!"
+      ],
+      "Please reload the page and try again.": [
+         null,
+         "Παρακαλούμε ανανεώστε τη σελίδα και προσπαθήστε ξανά."
+      ],
+      "Please close this window and try again.": [
+         null,
+         "Παρακαλούμε κλείστε το παράθυρο και προσπαθήσετε ξανά."
+      ],
+      "See more info": [
+         null,
+         "Δείτε περισσότερες πληροφορίες"
       ],
       "The site requested you sign in using": [
          null,
          "Ο ιστότοπος απαιτεί να συνδεθείτε ως"
       ],
-      "Reset Password": [
+      "reset password": [
          null,
          "Επαναφορά κωδικού"
-      ],
-      "Cancel": [
-         null,
-         "Ακύρωση"
       ],
       "*%s* is not a valid email address!": [
          null,
@@ -318,10 +192,6 @@
       "To continue, please close the window and enter a valid address.": [
          null,
          "Για να συνεχίσετε, σας παρακαλούμε να κλείσετε το παράθυρο και να εισάγετε μια έγκυρη διεύθυνση ηλ. ταχυδρομείου."
-      ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
-         null,
-         "Λυπούμαστε αλλά δεν μπορούμε να επικοινωνήσουμε με το BrowserID εφόσον είστε εκτός σύνδεσης."
       ],
       "This is not me...": [
          null,
@@ -335,29 +205,189 @@
          null,
          "Να γίνεται πάντα σύνδεση με αυτή τη διεύθυνση."
       ],
-      "sign in": [
-         null,
-         "Σύνδεση"
-      ],
       "Address Verified!": [
          null,
          "Η διεύθυνση επαληθεύτηκε!"
       ],
       "Your identity has been verified with your email provider, we will now try to sign you in.": [
          null,
-         "Η ταυτότητα σας πιστοποιήθηκε από τον παροχέα του ηλεκτρονικού σας ταχυδρομείου, θα προσπαθήσουμε τώρα να σας συνδέσουμε."
+         "Η ταυτότητα σας επαληθεύτηκε από τον παροχέα του ηλεκτρονικού σας ταχυδρομείου, θα προσπαθήσουμε τώρα να σας συνδέσουμε."
       ],
       "You must sign in with your email provider to verify ownership of this address. This window will be redirected to": [
          null,
-         "Θα πρέπει να συνδεθείτε στην υπηρεσία ηλεκτρονικού ταχυδρομείου σας για να επιβεβαιωθεί ότι σας ανήκει η διεύθυνση. Θα γίνει ανακατεύθυνση του παράθυρου στο"
+         "Θα πρέπει να συνδεθείτε στην υπηρεσία ηλεκτρονικού ταχυδρομείου σας για να επιβεβαιωθεί ότι σας ανήκει η διεύθυνση. Αυτό το παράθυρο θα σας ανακατευθύνει στο"
       ],
-      "Verify": [
+      "verify": [
          null,
          "Επαλήθευση"
       ],
       "Verify With Email Provider": [
          null,
          "Επιβεβαίωση μέσω παροχέα ηλ. ταχυδρομείου"
+      ],
+      "#~ \"BrowserID requires your browser's cookies to be enabled to operate. \"#~ \"Please enable your browser's cookies and try again\"": [
+         null,
+         "#~ \"Το BrowserID απαιτεί την ενεργοποίηση των cookies στον περιηγητή για να \"#~ \"λειτουργήσει. Σας παρακαλούμε να ενεργοποιήσετε τα cookies στον περιηγητή \"#~ \"σας και να προσπαθήσετε ξανά.\""
+      ],
+      "You are offline!": [
+         null,
+         "Έχετε αποσυνδεθεί!"
+      ],
+      "Unfortunately, BrowserID cannot communicate while offline!": [
+         null,
+         "Δυστυχώς το BrowserID δεν μπορεί να επικοινωνήσει εκτός σύνδεσης!"
+      ],
+      "select email": [
+         null,
+         "Επιλογή διεύθυνσης"
+      ],
+      "#~ \"We are sorry, but we cannot communicate with BrowserID while you are \"#~ \"offline.\"": [
+         null,
+         "#~ \"Λυπούμαστε αλλά δεν μπορούμε να επικοινωνήσουμε με το BrowserID εφόσον \"#~ \"είστε εκτός σύνδεσης.\""
+      ],
+      "Authenticating User": [
+         null,
+         "Γίνεται πιστοποίηση χρήστη"
+      ],
+      "Adding Address": [
+         null,
+         "Προστίθεται διεύθυνση"
+      ],
+      "Adding Primary Email Address to User": [
+         null,
+         "Προστίθεται πρωτεύουσα διεύθυνση ηλ. ταχυδρομείου χρήστη"
+      ],
+      "Checking Address Info": [
+         null,
+         "Γίνεται έλεγχος διεύθυνσης"
+      ],
+      "Authenticating with Assertion": [
+         null,
+         "Πιστοποίηση μέσω διαβεβαίωσης"
+      ],
+      "Cancelling User Account": [
+         null,
+         "Ακυρώνεται ο λογαριασμός χρήστη"
+      ],
+      "Checking Authentication": [
+         null,
+         "Γίνεται έλεγχος πιστοποίησης"
+      ],
+      "Checking Script Version": [
+         null,
+         "Γίνεται έλεγχος έκδοσης σεναρίου εντολών"
+      ],
+      "Completing User Registration": [
+         null,
+         "Ολοκληρώνεται η εγγραφή χρήστη"
+      ],
+      "Checking if Cookies are Enabled": [
+         null,
+         "Γίνεται έλεγχος ενεργοποίησης cookies"
+      ],
+      "Creating Account": [
+         null,
+         "Γίνεται δημιουργία λογαριασμού"
+      ],
+      "Getting Assertion": [
+         null,
+         "Γίνεται λήψη διαβεβαίωσης"
+      ],
+      "Checking Registration Token": [
+         null,
+         "Γίνεται έλεγχος token εγγραφής"
+      ],
+      "Checking Email Address": [
+         null,
+         "Γίνεται έλεγχος διεύθυνσης ηλ. ταχυδρομείου"
+      ],
+      "Checking Whether User is Authenticated with IdP": [
+         null,
+         "Γίνεται έλεγχος πιστοποίησης χρήστη μέσω IdP"
+      ],
+      "Logout Failed": [
+         null,
+         "Απέτυχε η αποσύνδεση"
+      ],
+      "Authenticating with Identity Provider": [
+         null,
+         "Γίνεται πιστοποίηση μέσω πάροχου ταυτοποίησης"
+      ],
+      "#~ \"We had trouble communicating with your email provider, please try again!\"": [
+         null,
+         "#~ \"Παρουσιάστηκε πρόβλημα στην επικοινωνία μας με τον παροχέα ηλ. \"#~ \"ταχυδρομείου σας, παρακαλούμε προσπαθήστε ξανά!\""
+      ],
+      "Provisioning with Identity Provider": [
+         null,
+         "Τροφοδοσία παρόχου ταυτοποίησης"
+      ],
+      "Provisioning Unsupported Identity Provider": [
+         null,
+         "Τροφοδοσία μη υποστηριζόμενου παρόχου ταυτοποίησης"
+      ],
+      "#~ \"Unfortunately, the email address provided cannot act as a Primary \"#~ \"Identity Provider\"": [
+         null,
+         "#~ \"Δυστυχώς η διεύθυνση ηλ. ταχυδρομείου που δώσατε δεν μπορεί να \"#~ \"χρησιμοποιηθεί σαν βασικός πάροχος ταυτοποίησης\""
+      ],
+      "Registration Failed": [
+         null,
+         "Απέτυχε η εγγραφή"
+      ],
+      "Establishing Relay": [
+         null,
+         "Δημιουργείται ο συσχετισμός"
+      ],
+      "Relay frame could not be found": [
+         null,
+         "Δεν βρέθηκε το πλαίσιο συσχέτισης"
+      ],
+      "Resetting Password": [
+         null,
+         "Γίνεται επαναφορά κωδικού"
+      ],
+      "Remove Email Address from Account": [
+         null,
+         "Αφαίρεση διεύθυνσης ηλ. ταχυδρομείου από τον λογαριασμό"
+      ],
+      "Setting Password": [
+         null,
+         "Γίνεται ορισμός κωδικού"
+      ],
+      "Signin Failed": [
+         null,
+         "Απέτυχε η σύνδεση"
+      ],
+      "Signup Failed": [
+         null,
+         "Απέτυχε η εγγραφή"
+      ],
+      "Syncing Address": [
+         null,
+         "Γίνεται συγχρονισμός διεύθυνσης"
+      ],
+      "Syncing Email Addresses": [
+         null,
+         "Γίνεται συγχρονισμός διεύθυνσης ηλ. ταχυδρομείου"
+      ],
+      "Sync Keys for Address": [
+         null,
+         "Συγχρονισμός κλειδιών για τη διεύθυνση"
+      ],
+      "Getting Token Info": [
+         null,
+         "Γίνεται λήψη πληροφοριών token"
+      ],
+      "Updating password": [
+         null,
+         "Γίνεται ενημέρωση κωδικού"
+      ],
+      "Verifying email address": [
+         null,
+         "Γίνεται επαλήθευση διεύθυνσης ηλ. ταχυδρομείου"
+      ],
+      "Cancel": [
+         null,
+         "Ακύρωση"
       ]
    }
 }
