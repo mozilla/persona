@@ -46,12 +46,10 @@
 
     createController();
 
-    var firstLI = $("#first_testuser_com").closest("li");
-    var secondLI = $("#second_testuser_com").closest("li");
-    var thirdLI = $("#third_testuser_com").closest("li");
-
-    equal(firstLI.next().is(secondLI), true, "first is before second");
-    equal(secondLI.next().is(thirdLI), true, "second is before third");
+    var inputs = $(".inputs input[type=radio]");
+    equal(inputs.eq(0).val(), "first@testuser.com", "correct email for the first element");
+    equal(inputs.eq(1).val(), "second@testuser.com", "correct email for the second element");
+    equal(inputs.eq(2).val(), "third@testuser.com", "correct email for the third element");
   });
 
   test("pickemail controller with email associated with site - check correct email", function() {
@@ -156,20 +154,37 @@
   });
 
   test("click on an email label and radio button - select corresponding radio button", function() {
-    storage.addEmail("testuser@testuser.com", {});
     storage.addEmail("testuser2@testuser.com", {});
+    storage.addEmail("testuser@testuser.com", {});
 
     createController(false);
 
-    equal($("#testuser_testuser_com").is(":checked"), false, "radio button is not selected before click.");
+    equal($("#email_1").is(":checked"), false, "radio button is not selected before click.");
 
     // selects testuser@testuser.com
-    $("label[for=testuser_testuser_com]").trigger("click");
-    equal($("#testuser_testuser_com").is(":checked"), true, "radio button is correctly selected");
+    $(".inputs label:eq(1)").trigger("click");
+    equal($("#email_1").is(":checked"), true, "radio button is correctly selected");
 
     // selects testuser2@testuser.com
-    $("#testuser2_testuser_com").trigger("click");
-    equal($("#testuser2_testuser_com").is(":checked"), true, "radio button is correctly selected");
+    $(".inputs label:eq(0)").trigger("click");
+    equal($("#email_0").is(":checked"), true, "radio button is correctly selected");
+  });
+
+  test("click on an email label that contains a + - select corresponding radio button", function() {
+    storage.addEmail("testuser+test0@testuser.com", {});
+    storage.addEmail("testuser+test1@testuser.com", {});
+
+    createController(false);
+
+    equal($("#email_1").is(":checked"), false, "radio button is not selected before click.");
+
+    // selects testuser+test1@testuser.com
+    $(".inputs label:eq(1)").trigger("click");
+    equal($("#email_1").is(":checked"), true, "radio button is correctly selected");
+
+    // selects testuser+test0@testuser.com
+    $(".inputs label:eq(0)").trigger("click");
+    equal($("#email_0").is(":checked"), true, "radio button is correctly selected");
   });
 
   test("click on the 'Always sign in...' label and checkbox - correct toggling", function() {
