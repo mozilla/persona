@@ -102,7 +102,6 @@ BrowserID.Modules.PickEmail = (function() {
         tos_url: options.tosURL
       });
       dom.getElements("body").css("opacity", "1");
-      $('p.tospp').css('width', (240 - $('#signIn button:visible').outerWidth()) + 'px');
       if (dom.getElements("#selectEmail input[type=radio]:visible").length === 0) {
         // If there is only one email address, the radio button is never shown,
         // instead focus the sign in button so that the user can click enter.

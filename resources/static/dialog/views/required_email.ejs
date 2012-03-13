@@ -31,10 +31,8 @@
 
           <% if (password) { %>
               <li id="password_section">
-                  <label for="password" class="half serif"><%= gettext("Password") %></label>
-                  <div class="half right">
-                      <a id="forgotPassword" href="#" tabindex="4"><%= gettext("forgot your password?") %></a>
-                  </div>
+                  <a id="forgotPassword" class="right" href="#" tabindex="4"><%= gettext("forgot your password?") %></a>
+                  <label for="password" class="serif"><%= gettext("Password") %></label>
 
                   <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
 
@@ -53,23 +51,27 @@
 
       <div class="submit cf">
         <% if (privacy_url && tos_url) { %>
-          <p class="tospp">
+          <p>
             <%= format(
                   gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
-                       [ gettext('sign in'), 
+                       [ gettext('sign in'),
                          format(' href="%s" target="_new"', [tos_url]),
                          format(' href="%s" target="_new"', [privacy_url])
                        ]) %>
           </p>
+          <p>
         <% } %>
-          <% if (signin) { %>
-            <button id="sign_in" tabindex="3"><%= gettext("sign in") %></button>
-          <% } else if (verify) { %>
-            <button id="verify_address" tabindex="3"><%= gettext("verify email") %></button>
-          <% } %>
+            <% if (signin) { %>
+              <button id="sign_in" tabindex="3"><%= gettext("sign in") %></button>
+            <% } else if (verify) { %>
+              <button id="verify_address" tabindex="3"><%= gettext("verify email") %></button>
+            <% } %>
 
-          <% if (secondary_auth) { %>
-            <a href="#" id="cancel" tabindex="4"><%= gettext("cancel") %></a>
-          <% } %>
+            <% if (secondary_auth) { %>
+              <a href="#" id="cancel" tabindex="4"><%= gettext("cancel") %></a>
+            <% } %>
+        <% if (privacy_url && tos_url) { %>
+          </p>
+        <% } %>
       </div>
   </div>

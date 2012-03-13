@@ -80,10 +80,6 @@ a {
   text-decoration: none;
 }
 
-a:hover, button:hover {
-  text-decoration: underline;
-}
-
 p:last-child {
   margin-bottom: 0 !important;
 }
@@ -161,6 +157,7 @@ button,
     background-color: #37A6FF;
     background-image: -moz-linear-gradient(center top , #76C2FF 0pt, #37A6FF 100%);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
+    white-space: nowrap;
 }
 
 button:hover,
@@ -214,9 +211,11 @@ button[disabled], .submit_disabled button, .submit_disabled .button,
 }
 
 
-.submit > a {
+.submit > #cancel,
+#signIn .submit > #cancel {
   float: right;
   margin-right: 15px;
+  line-height: 28px;
 }
 
 a.secondary[disabled], .submit_disabled a.secondary, .submit_disabled a.secondary:focus, .submit_disabled a.secondary:active {
@@ -232,7 +231,7 @@ hr {
 
 
 .right {
-  text-align: right;
+  float: right;
 }
 
 h1 {

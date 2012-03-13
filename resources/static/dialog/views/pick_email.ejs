@@ -2,7 +2,7 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-  
+
   <strong><%= gettext('Sign in using') %></strong>
 
   <div id="selectEmail" class="form_section">
@@ -23,31 +23,28 @@
 
 
       <div class="submit add cf">
-      <% if (allow_persistent || (privacy_url && tos_url)) { %>
-        <p class="tospp">
+      <% if (allow_persistent) { %>
+          <label for="remember" class="selectable">
+            <input type="checkbox" id="remember" name="remember" <% if (remember) { %> checked="checked" <% } %> />
+            <%= gettext('Always sign in using this email') %>
+          </label>
       <% } %>
 
-<% if (allow_persistent) { %>
-            <label for="remember" class="selectable">
-              <input type="checkbox" id="remember" name="remember" <% if (remember) { %> checked="checked" <% } %> />
-              <%= gettext('Always sign in using this email') %>
-            </label>
-          <% } %>
       <% if (privacy_url && tos_url) { %>
+        <p>
 <%= format(
           gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
-                   [ gettext('sign in'), 
-                     format(' href="%s" target="_new"', [tos_url]), 
+                   [ gettext('sign in'),
+                     format(' href="%s" target="_new"', [tos_url]),
                      format(' href="%s" target="_new"', [privacy_url])
                    ]) %>
-      <% } %>
-
-      <% if (allow_persistent || (privacy_url && tos_url)) { %>
         </p>
-      <% } %>          
-
+        <p>
+      <% } %>
           <button id="signInButton"><%= gettext('sign in') %></button>
-        <br style="clear: both" />
+      <% if (privacy_url && tos_url) { %>
+        </p>
+      <% } %>
       </div>
   </div>
 

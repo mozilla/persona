@@ -194,8 +194,6 @@ BrowserID.Modules.RequiredEmail = (function() {
         self.click("#verify_address", verifyAddress);
         self.click("#forgotPassword", forgotPassword);
         self.click("#cancel", cancel);
-
-        $('p.tospp').css('width', (240 - $('#signIn button:visible').outerWidth()) + 'px');
       }
 
       RequiredEmail.sc.start.call(self, options);

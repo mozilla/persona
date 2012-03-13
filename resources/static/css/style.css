@@ -647,13 +647,6 @@ h1 {
   text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
-#signUpForm label.half,
-.half {
-  width: 50%;
-  display: inline-block;
-  float: left;
-}
-
 #signUpForm .red {
   color: red;
 }
