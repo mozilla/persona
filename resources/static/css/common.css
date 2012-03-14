@@ -103,6 +103,9 @@ input[type=password] {
        -moz-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
          -o-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
             box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+
+    /* Fix webkit putting an inner box shadow on the input elements. Issue #1313 */
+    -webkit-appearance: caret;
 }
 
 input[type=email]:focus,
@@ -124,6 +127,11 @@ input[type=email]:disabled,
 input[type=password]:disabled {
     background-color: #f0f0f0;
     color: #4f4f4f;
+    /* The opacity and -webkit-text-fill-color are to override mobile Safari's
+     * default stylings that make reading input elements very difficult.
+     * issue #1311 */
+    -webkit-text-fill-color: #4f4f4f;
+    opacity: 1;
 }
 
 input[type=radio],
@@ -211,8 +219,8 @@ button[disabled], .submit_disabled button, .submit_disabled .button,
 }
 
 
-.submit > #cancel,
-#signIn .submit > #cancel {
+.submit #cancel,
+#signIn .submit #cancel {
   float: right;
   margin-right: 15px;
   line-height: 28px;
