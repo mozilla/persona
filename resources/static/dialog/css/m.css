@@ -47,7 +47,10 @@
   #favicon {
       display: block;
       width: 100%;
-      position: relative;
+      /* Changed this from relative to static to fix issue #1309 - tooltips
+       * being partially cut off by the site URL bar
+       */
+      position: static;
   }
 
   #favicon {
@@ -91,7 +94,11 @@
       background-color: transparent;
   }
 
-  .error #formWrap, .error #wait, .waiting #formWrap {
+  .waiting #wait, .delay #delay, #error #error {
+      display: block;
+  }
+
+  .waiting #formWrap, .delay #formWrap, .error #formWrap, .delay #wait, .error #wait, .error #delay {
       display: none;
   }
 
@@ -144,7 +151,7 @@
     overflow: visible;
   }
 
-  .submit > #cancel, #signIn .submit > #cancel {
+  .submit #cancel, #signIn .submit #cancel {
     font-size: 18px;
     line-height: 40px;
   }
@@ -157,8 +164,8 @@
     position: static;
   }
 
-  #error .vertical, #wait .vertical {
-      height: 250px;
+  #error .vertical, #delay .vertical, #wait .vertical {
+    height: 250px;
   }
 
   #error .vertical {

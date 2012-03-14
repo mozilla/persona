@@ -93,15 +93,8 @@ section > .contents {
   background-image: url("/i/bg.png");
 }
 
-
 .waiting #wait {
     z-index: 1;
-    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-    opacity: 1;
-}
-
-.error #error, #error.unsupported, #error.cookies_disabled {
-    z-index: 3;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
 }
@@ -112,7 +105,11 @@ section > .contents {
     opacity: 1;
 }
 
-
+.error #error, #error.unsupported, #error.cookies_disabled {
+    z-index: 3;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    opacity: 1;
+}
 
 #error.unsupported {
   padding: 20px 0;
@@ -367,19 +364,10 @@ footer {
     padding: 20px;
 }
 
-.form_section {
-  clear: right;
-}
-
 .inputs {
     line-height: 18px;
 }
 
-/*
-.add {
-    font-size: 80%;
-}
-*/
 .inputs > li:only-child input[type=radio] {
     display: none;
 }
