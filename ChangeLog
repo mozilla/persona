@@ -1,4 +1,17 @@
-train-2012.03.14 (in progress):
+train-2012.03.14:
+  * BrowserID now speaks Bulgarian
+  * Fix regressions related to ToS/PP feature (#841): #1303
+  * Fix regressions related to improved email selection on iOS (#1133): #1304
+  * "delegation of authority" implemented: #1271, #864
+  * visual improvements: #403
+  * improved algorithm for finding best language for a given user: #1128
+  * frontend tests now run on every commit under travisci: #635
+  * improve the way that .well-known/browserid is cached: #1205
+  * l10n fixes: #1124, #1300
+  * tools/build/dev env cleanup: #1235, #1234, #1257, #1245, #1055
+  * improvements to developer tool for checking primary support - scripts/checks_primary_support
+  * documentation improvements: #1264, #1287, #1288
+  * logging improvements: #1254, #1255, #1283, #1291
 
 train-2012.03.01:
   * When the user authenticates log them in automatically without going to the email picker: #198
