@@ -20,7 +20,7 @@ BrowserID.Modules.RequiredEmail = (function() {
       secondaryAuth;
 
   function closePrimaryUser(callback) {
-    this.close("primary_user", _.extend(primaryInfo, {
+    this.close("primary_user", helpers.extend(primaryInfo, {
       email: email,
       requiredEmail: true,
       add: !!auth_level
@@ -123,9 +123,7 @@ BrowserID.Modules.RequiredEmail = (function() {
           showTemplate({
             signin: true,
             password: auth_level !== "password",
-            secondary_auth: secondaryAuth,
-            privacy_url: options.privacyURL,
-            tos_url: options.tosURL
+            secondary_auth: secondaryAuth
           });
           ready();
         }
@@ -162,9 +160,7 @@ BrowserID.Modules.RequiredEmail = (function() {
               // user is authenticated, but does not control address
               // OR
               // address is unknown, make the user verify.
-              showTemplate({ verify: true,
-                             privacy_url: options.privacyURL,
-                             tos_url: options.tosURL  });
+              showTemplate({ verify: true });
             }
             else {
               // We've made it all this way.  It is a user who is not logged in
@@ -176,19 +172,19 @@ BrowserID.Modules.RequiredEmail = (function() {
         }
       }, self.getErrorDialog(errors.checkAuthentication, ready));
 
-      function showTemplate(options) {
-        options = _.extend({
+      function showTemplate(templateData) {
+        templateData = helpers.extend({
           email: email,
           verify: false,
           signin: false,
           password: false,
           secondary_auth: false,
           primary: false,
-          privacy_url: undefined,
-          tos_url: undefined
-        }, options);
+          privacy_url: options.privacyURL || null,
+          tos_url: options.tosURL || null
+        }, templateData);
 
-        self.renderDialog("required_email", options);
+        self.renderDialog("required_email", templateData);
 
         self.click("#sign_in", signIn);
         self.click("#verify_address", verifyAddress);
