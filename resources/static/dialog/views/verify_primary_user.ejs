@@ -24,7 +24,21 @@
       </ul>
 
       <div class="submit cf">
+        <% if (privacy_url && tos_url) { %>
+          <p class="tospp">
+            <%= format(
+                  gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
+                       [ gettext('verify'),
+                         format(' href="%s" target="_new"', [tos_url]),
+                         format(' href="%s" target="_new"', [privacy_url])
+                       ]) %>
+          </p>
+          <p>
+        <% } %>
           <button id="verifyWithPrimary"><%= gettext("verify") %></button>
+        <% if (privacy_url && tos_url) { %>
+          </p>
+        <% } %>
       </div>
   </div>
 
@@ -38,8 +52,22 @@
     </p>
 
     <div class="submit cf">
-      <button id="verifyWithPrimary"><%= gettext("verify") %></button>
-      <a href="#" id="cancel"><%= gettext("cancel") %></a>
+        <% if (privacy_url && tos_url) { %>
+          <p class="tospp">
+            <%= format(
+                  gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
+                       [ gettext('verify'),
+                         format(' href="%s" target="_new"', [tos_url]),
+                         format(' href="%s" target="_new"', [privacy_url])
+                       ]) %>
+          </p>
+          <p>
+        <% } %>
+          <button id="verifyWithPrimary"><%= gettext("verify") %></button>
+          <a href="#" id="cancel"><%= gettext("cancel") %></a>
+        <% if (privacy_url && tos_url) { %>
+          </p>
+        <% } %>
     </div>
 
   </div>

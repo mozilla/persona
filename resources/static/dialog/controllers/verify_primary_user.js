@@ -47,8 +47,12 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email = data.email;
       auth_url = data.auth_url;
 
-      data.requiredEmail = data.requiredEmail || false;
-      self.renderDialog("verify_primary_user", data);
+      var templateData = helpers.extend({}, data, {
+        requiredEmail: data.requiredEmail || false,
+        privacy_url: data.privacyURL || null,
+        tos_url: data.tosURL || null
+      });
+      self.renderDialog("verify_primary_user", templateData);
 
       self.click("#cancel", cancel);
 
