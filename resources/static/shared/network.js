@@ -525,6 +525,16 @@ BrowserID.Network = (function() {
     },
 
     /**
+     * Return the user's userid, which will an integer if the user
+     * is authenticated, undefined otherwise.
+     *
+     * @method userid
+     */
+    userid: function() {
+      return userid;
+    },
+
+    /**
      * Get the current time on the server in the form of a
      * date object.
      *

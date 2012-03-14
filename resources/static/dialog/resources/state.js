@@ -6,6 +6,7 @@
 BrowserID.State = (function() {
   var bid = BrowserID,
       storage = bid.Storage,
+      network = bid.Network,
       mediator = bid.Mediator,
       helpers = bid.Helpers,
       publish = mediator.publish.bind(mediator),
@@ -77,11 +78,20 @@ BrowserID.State = (function() {
         });
       }
       else if (authenticated) {
-        publish("pick_email");
+        if (storage.usersComputer.confirmed(network.userid())) {
+          publish("pick_email");
+        } else {
+          publish("is_this_your_computer");
+        }
       } else {
         publish("authenticate");
       }
     });
+
+    subscribe("is_this_your_computer", function(msg, info) {
+      startState("doIsThisYourComputer", info);
+    });
+
 
     subscribe("authenticate", function(msg, info) {
       info = info || {};

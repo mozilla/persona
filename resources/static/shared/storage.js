@@ -320,20 +320,20 @@ BrowserID.Storage = (function() {
 
     usersComputer: {
       /** Query whether the user has confirmed that this is their computer
-       * @param {string} userid - the user's numeric id, returned from session_context when authed.
+       * @param {integer} userid - the user's numeric id, returned from session_context when authed.
        * @method usersComputer.confirmed */
       confirmed: userConfirmedOnComputer,
       /** Save the fact that a user confirmed that this is their computer
-       * @param {string} userid - the user's numeric id, returned from session_context when authed.
+       * @param {integer} userid - the user's numeric id, returned from session_context when authed.
        * @method usersComputer.setConfirmed */
       setConfirmed: setUserConfirmedOnComputer,
       /** Query whether a user has been "seen" on this computer before
-       * @param {string} userid - the user's numeric id, returned from session_context when authed.
+       * @param {integer} userid - the user's numeric id, returned from session_context when authed.
        * @method usersComputer.seen */
       seen: userSeenOnComputer,
       /** Save the fact that a user has been seen on this computer before, but do not overwrite
        *  existing state
-       * @param {string} userid - the user's numeric id, returned from session_context when authed.
+       * @param {integer} userid - the user's numeric id, returned from session_context when authed.
        * @method usersComputer.setSeen */
       setSeen: setUserSeenOnComputer
     },

@@ -151,6 +151,10 @@ BrowserID.Modules.Actions = (function() {
       startService("primary_user_provisioned", info);
     },
 
+    doIsThisYourComputer: function(info) {
+      startService("is_this_your_computer", info);
+    },
+
     doEmailChosen: function(info) {
       startService("email_chosen", info);
     }
