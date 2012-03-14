@@ -253,6 +253,11 @@ BrowserID.State = (function() {
     });
 
     subscribe("add_email", function(msg, info) {
+      info = helpers.extend(info || {}, {
+        privacyURL: self.privacyURL,
+        tosURL: self.tosURL
+      });
+
       startState("doAddEmail", info);
     });
 
