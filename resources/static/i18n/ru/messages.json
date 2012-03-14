@@ -3,8 +3,8 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-01-31 12:15+0400",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-03 20:18+0300",
          "Last-Translator": " Alexander Slovesnik <unghost@mozilla-russia.org>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " ru",
@@ -25,9 +25,9 @@
          null,
          "При попытке завершения регистрации произошла ошибка."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
-         "Завершите вход в: "
+         "Завершите вход в:"
       ],
       "Email Verification": [
          null,
@@ -73,9 +73,9 @@
          null,
          "Пароли не совпадают."
       ],
-      "Finish": [
+      "finish": [
          null,
-         "Закончить"
+         "закончить"
       ],
       "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
@@ -84,6 +84,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Ваш новый адрес настроен и вы сейчас должны быть зарегистрированы. Теперь вы можете закрыть это окно и вернуться в"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "Для работы BrowserID требуются куки"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         "Пожалуйста, закройте это окно, <a %s>включите куки</a> и попробуйте снова"
       ],
       "Communicating with server": [
          null,
@@ -97,9 +105,9 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
-         "BrowserID &mdash; это быстрый и безопасный способ регистрации &mdash; <a target=\"_blank\" href=\"/about\">подробнее</a>"
+         "BrowserID &mdash; это быстрый и безопасный способ регистрации &mdash; <a %s>подробнее</a>"
       ],
       "BrowserID: %s": [
          null,
@@ -125,9 +133,9 @@
          null,
          "Выйти"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
-         "От <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
+         "От <a %s>Identity Team</a> из <a %s>Mozilla Labs</a>"
       ],
       "Privacy": [
          null,
@@ -143,9 +151,9 @@
       ],
       "There was a problem with your signup link. Has this address already been registered?": [
          null,
-         "С вашей ссылкой для заведения возникли проблемы.  Этот адрес уже был зарегистрирован?"
+         "С вашей ссылкой для регистрации возникли проблемы.  Этот адрес уже был зарегистрирован?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Ошибка при попытке соединения с сервером."
       ],
@@ -155,11 +163,11 @@
       ],
       "Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!": [
          null,
-         "Спасибо за то, что начали использовать <strong>BrowserID</strong>. Теперь вы можете использовать вашу учётную запись <strong>BrowserID</strong> для <em>Входа</em> или <em>Выхода</em> на веб-сайтах по всему миру!"
+         "Спасибо за то, что начали использовать <strong>BrowserID</strong>. Теперь вы можете использовать вашу учётную запись <strong>BrowserID</strong> для <em>Регистрации</em> или <em>Входа</em> на веб-сайты по всему миру!"
       ],
       "Thanks for verifying your email address. This message is being sent to you to complete your sign-in to %s.": [
          null,
-         ""
+         "Спасибо за подтверждение вашего адреса эл. почты. Это сообщение было послано вам, чтобы вы смогли завершить регистрацию на %s."
       ],
       "Finish registration by clicking this link:": [
          null,

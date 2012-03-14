@@ -3,8 +3,8 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-03 18:04+0200",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-02-27 23:38+0200",
          "Last-Translator": " Gion-Andri <gion-andri@gmx.ch>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " rm",
@@ -14,161 +14,13 @@
          "Plural-Forms": " nplurals=2; plural=(n != 1) ;",
          "X-Generator": " Pootle 2.1.6"
       },
-      "Authenticating User": [
-         null,
-         "Autentifitgar l'utilisader"
-      ],
-      "Adding Address": [
-         null,
-         "Agiuntar ina adressa"
-      ],
-      "Adding Primary Email Address to User": [
-         null,
-         "Agiuntar ina adressa dad e-mail principala a l'utilisader"
-      ],
-      "Checking Address Info": [
-         null,
-         "Controlla da las infurmaziuns d'adressa"
-      ],
-      "Authenticating with Assertion": [
-         null,
-         ""
-      ],
-      "Cancelling User Account": [
-         null,
-         "Il conto d'utilisader vegn allontanà"
-      ],
-      "Checking Authentication": [
-         null,
-         "Controllar l'autentificaziun"
-      ],
-      "Checking Script Version": [
-         null,
-         "Controllar la versiun dal script"
-      ],
-      "Completing User Registration": [
-         null,
-         "Cumpletar la registraziun da l'utilisader"
-      ],
-      "We are sorry, BrowserID requires cookies": [
+      "BrowserID requires cookies": [
          null,
          "Perstgisa, ma BrowserID utilisescha cookies"
       ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
-         null,
-         "Per che BrowserID funcziunescha correctamain èsi necessari che l'utilisaziun da cookies è activada en tes navigatur. Activescha p. pl. ils cookies ed emprova danovamain."
-      ],
-      "Checking if Cookies are Enabled": [
-         null,
-         "Controllar sche cookies èn activads"
-      ],
-      "Creating Account": [
-         null,
-         "Crear in conto"
-      ],
-      "Getting Assertion": [
+      "Please close this window, <a %s>enable cookies</a> and try again": [
          null,
          ""
-      ],
-      "Checking Registration Token": [
-         null,
-         "Controllar il token da registraziun"
-      ],
-      "Checking Email Address": [
-         null,
-         "Controllar l'adressa dad e-mail"
-      ],
-      "Checking Whether User is Authenticated with IdP": [
-         null,
-         ""
-      ],
-      "Logout Failed": [
-         null,
-         "Errur cun partir"
-      ],
-      "You are offline!": [
-         null,
-         "Ti es offline!"
-      ],
-      "Unfortunately, BrowserID cannot communicate while offline!": [
-         null,
-         "Deplorabalamin na po BroswerID betg communitgar sche ti es en il modus offline."
-      ],
-      "Authenticating with Identity Provider": [
-         null,
-         ""
-      ],
-      "We had trouble communicating with your email provider, please try again!": [
-         null,
-         ""
-      ],
-      "Provisioning with Identity Provider": [
-         null,
-         ""
-      ],
-      "Provisioning Unsupported Identity Provider": [
-         null,
-         ""
-      ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
-         null,
-         ""
-      ],
-      "Registration Failed": [
-         null,
-         "Errur durant la registraziun"
-      ],
-      "Establishing Relay": [
-         null,
-         ""
-      ],
-      "Relay frame could not be found": [
-         null,
-         ""
-      ],
-      "Resetting Password": [
-         null,
-         "Redefinir il pled-clav"
-      ],
-      "Remove Email Address from Account": [
-         null,
-         "Allontanar l'adressa dad e-mail dal conto"
-      ],
-      "Setting Password": [
-         null,
-         "Definir il pled-clav"
-      ],
-      "Signin Failed": [
-         null,
-         "Errur cun s'annunziar"
-      ],
-      "Signup Failed": [
-         null,
-         "Errur cun registrar"
-      ],
-      "Syncing Address": [
-         null,
-         "Sincronisar l'adressa"
-      ],
-      "Syncing Email Addresses": [
-         null,
-         "Sincronisar las adressas dad e-mail"
-      ],
-      "Sync Keys for Address": [
-         null,
-         ""
-      ],
-      "Getting Token Info": [
-         null,
-         ""
-      ],
-      "Updating password": [
-         null,
-         "Actualisar il pled-clav"
-      ],
-      "Verifying email address": [
-         null,
-         "Verifitgar l'adressa dad e-mail"
       ],
       "Communication Error": [
          null,
@@ -184,7 +36,7 @@
       ],
       "Please wait a few seconds while we sign you into the site.": [
          null,
-         "Spetga in per secundas enfin nus t'annunziain tar la paigna."
+         "Spetga in per secundas enfin nus t'annunziain tar la pagina."
       ],
       "We are sorry, this request is taking a LOOONG time.": [
          null,
@@ -238,7 +90,7 @@
          null,
          "Bainvegni tar BrowserID!"
       ],
-      "This email looks new, so let&#39;s get you set up.": [
+      "This email looks new, so let's get you set up.": [
          null,
          "Questa adressa dad e-mail para nova, lain registrar ella."
       ],
@@ -252,11 +104,15 @@
       ],
       "The password field is required.": [
          null,
-         "Il champ da pled-clav è necessri."
+         "Il champ da pled-clav è necessari."
       ],
       "The account cannot be logged in with this username and password.": [
          null,
          "Ti na pos betg t'annunziar tar quest conto cun quest num d'utilisader e quest pled-clav."
+      ],
+      "By clicking %s, you confirm that you accept this site's <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.": [
+         null,
+         ""
       ],
       "next": [
          null,
@@ -266,9 +122,9 @@
          null,
          "verifitgar l'adressa dad e-mail"
       ],
-      "select email": [
+      "sign in": [
          null,
-         "tscherner l'adressa dad e-mail"
+         "s'annunziar"
       ],
       "Cannot verify %s": [
          null,
@@ -298,17 +154,33 @@
          null,
          "Sch'i sa tracta d'in sbagl, ignorescha l'e-mail tramess ed <a href=\"#\" id=\"back\">utilisescha ina autra adressa d'e-mail</a>."
       ],
+      "We are very sorry, the server is under extreme load!": [
+         null,
+         "Perstgisa, noss servers èn surchargiads!"
+      ],
+      "We are very sorry, there has been an error!": [
+         null,
+         "Perstgisa, ma ina errur è capitada!"
+      ],
+      "Please reload the page and try again.": [
+         null,
+         "Per cuntinuar stos ti rechargiar la pagina ed empruvar danovamain."
+      ],
+      "Please close this window and try again.": [
+         null,
+         "Per cuntinuar, serra p.pl. la fanestra ed emprova danovamain."
+      ],
+      "See more info": [
+         null,
+         "Mussar dapli infurmaziuns"
+      ],
       "The site requested you sign in using": [
          null,
          "La pagina dumonda che ti t'annunzias cun"
       ],
-      "Reset Password": [
+      "reset password": [
          null,
          "Redefinir il pled-clav"
-      ],
-      "Cancel": [
-         null,
-         "Interrumper"
       ],
       "*%s* is not a valid email address!": [
          null,
@@ -316,11 +188,7 @@
       ],
       "To continue, please close the window and enter a valid address.": [
          null,
-         "Per continuar, serra p.pl. la fanestra ed endatescha ina adressa valida."
-      ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
-         null,
-         "Perstgisa, ma nus na pudain betg communitgar cun BrowserID durant che ti es offline."
+         "Per cuntinuar, serra p.pl. la fanestra ed endatescha ina adressa valida."
       ],
       "This is not me...": [
          null,
@@ -334,23 +202,19 @@
          null,
          "Adina s'annunziar cun questa adressa dad e-mail"
       ],
-      "sign in": [
-         null,
-         "s'annunziar"
-      ],
       "Address Verified!": [
          null,
          "Verifitgà l'adressa."
       ],
       "Your identity has been verified with your email provider, we will now try to sign you in.": [
          null,
-         ""
+         "Tia identitad è vegnida verifitgada cun tes provider dad e-mail. Nus empruvain ussa dad annunziar tai."
       ],
       "You must sign in with your email provider to verify ownership of this address. This window will be redirected to": [
          null,
-         ""
+         "Ti stos s'annunziar tar tes provider dad e-mail per verifitgar che ti possedas questa adressa. Questa fanestra vegn renviada a"
       ],
-      "Verify": [
+      "verify": [
          null,
          "Verifitgar"
       ],
@@ -358,13 +222,125 @@
          null,
          "Verifitgar cun il provider dad e-mails"
       ],
+      "#~ \"BrowserID requires your browser's cookies to be enabled to operate. \"#~ \"Please enable your browser's cookies and try again\"": [
+         null,
+         "#~ \"Per che BrowserID funcziunescha correctamain èsi necessari che cookies èn \"#~ \"activads en tes navigatur. Activescha p.pl. ils cookies ed emprova \"#~ \"danovamain.\""
+      ],
+      "You are offline!": [
+         null,
+         "Ti es offline!"
+      ],
+      "Unfortunately, BrowserID cannot communicate while offline!": [
+         null,
+         "#~ \"Deplorablamain na po BrowserID betg communitgar sche ti es en il modus \"#~ \"offline.\""
+      ],
+      "select email": [
+         null,
+         "tscherner l'adressa dad e-mail"
+      ],
+      "#~ \"We are sorry, but we cannot communicate with BrowserID while you are \"#~ \"offline.\"": [
+         null,
+         "#~ \"Perstgisa, ma nus na pudain betg communitgar cun BrowserID durant che ti \"#~ \"es offline.\""
+      ],
+      "Authenticating User": [
+         null,
+         "Autentifitgar l'utilisader"
+      ],
+      "Adding Address": [
+         null,
+         "Agiuntar ina adressa"
+      ],
+      "Adding Primary Email Address to User": [
+         null,
+         "Agiuntar ina adressa dad e-mail principala a l'utilisader"
+      ],
+      "Checking Address Info": [
+         null,
+         "Controlla da las infurmaziuns d'adressa"
+      ],
+      "Cancelling User Account": [
+         null,
+         "Il conto d'utilisader vegn allontanà"
+      ],
+      "Checking Authentication": [
+         null,
+         "Controllar l'autentificaziun"
+      ],
+      "Checking Script Version": [
+         null,
+         "Controllar la versiun dal script"
+      ],
+      "Completing User Registration": [
+         null,
+         "Cumpletar la registraziun da l'utilisader"
+      ],
+      "Checking if Cookies are Enabled": [
+         null,
+         "Controllar sche cookies èn activads"
+      ],
+      "Creating Account": [
+         null,
+         "Crear in conto"
+      ],
+      "Checking Registration Token": [
+         null,
+         "Controllar il token da registraziun"
+      ],
+      "Checking Email Address": [
+         null,
+         "Controllar l'adressa dad e-mail"
+      ],
+      "Logout Failed": [
+         null,
+         "Errur cun partir"
+      ],
+      "Registration Failed": [
+         null,
+         "Errur durant la registraziun"
+      ],
+      "Resetting Password": [
+         null,
+         "Redefinir il pled-clav"
+      ],
+      "Remove Email Address from Account": [
+         null,
+         "Allontanar l'adressa dad e-mail dal conto"
+      ],
+      "Setting Password": [
+         null,
+         "Definir il pled-clav"
+      ],
+      "Signin Failed": [
+         null,
+         "Errur cun s'annunziar"
+      ],
+      "Signup Failed": [
+         null,
+         "Errur cun registrar"
+      ],
+      "Syncing Address": [
+         null,
+         "Sincronisar l'adressa"
+      ],
+      "Syncing Email Addresses": [
+         null,
+         "Sincronisar las adressas dad e-mail"
+      ],
+      "Updating password": [
+         null,
+         "Actualisar il pled-clav"
+      ],
+      "Verifying email address": [
+         null,
+         "Verifitgar l'adressa dad e-mail"
+      ],
+      "Cancel": [
+         null,
+         "Interrumper"
+      ],
       "#~ \"We just sent an email to that address!  If you really want to send \"#~ \"another, wait a minute or two and try again.\"": [
          null,
          "#~ \"Nus avain gist tramess in e-mail a questa adressa. Sche ti vuls propi \"#~ \"trametter anc in, spetga ina minuta u duas ed emprova danovamain.\""
-      ],
-      "This email looks new, so let&apos;s get you set up.": [
-         null,
-         "Questa adressa dad e-mail para nova, lain registrar ella."
       ],
       "translated text": [
          null,

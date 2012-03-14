@@ -3,9 +3,9 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-04 13:09+0200",
-         "Last-Translator": " Francesco <francesco.lodolo@mozillaitalia.org>",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-02-19 21:51+0200",
+         "Last-Translator": " Sandro <gialloporpora@mozillaitalia.org>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " it",
          "MIME-Version": " 1.0",
@@ -16,7 +16,7 @@
       },
       "Complete Login to %s using BrowserID": [
          null,
-         "Completa la procedura di accesso a %S utilizzando BrowserID"
+         "Completa la procedura di accesso a %s utilizzando BrowserID"
       ],
       "Error encountered while attempting to confirm your address. Have you previously verified this address?": [
          null,
@@ -26,7 +26,7 @@
          null,
          "Si è verificato un errore durante il tentativo di completare la registrazione."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
          "Identificazione completata per: "
       ],
@@ -74,7 +74,7 @@
          null,
          "Le password inserite non corrispondono."
       ],
-      "Finish": [
+      "finish": [
          null,
          "Fine"
       ],
@@ -85,6 +85,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Il tuo nuovo indirizzo è stato impostato e puoi utilizzarlo per l'accesso. Adesso puoi chiudere questa finestra e ritornare a"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "Home BrowserID"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         ""
       ],
       "Communicating with server": [
          null,
@@ -98,7 +106,7 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
          "BrowserID è un modo sicuro e veloce per identificarsi sui siti web &mdash; <a target=\"_blank\" href=\"/about\">per saperne di più</a>"
       ],
@@ -126,7 +134,7 @@
          null,
          "Disconnetti"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
          "Realizzato da <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
       ],
@@ -146,7 +154,7 @@
          null,
          "Si è verificato un problema con il link per l'iscrizione. Avevi già registrato questo indirizzo email?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Errore durante la connessione con il server."
       ],

@@ -3,8 +3,8 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-04 01:02+0200",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-03 17:22+0200",
          "Last-Translator": " Ton <tonnes.mb@gmail.com>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " nl",
@@ -26,9 +26,9 @@
          null,
          "Er is een fout opgetreden bij het voltooien van de registratie."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
-         "Aanmelden beëindigen bij: "
+         "Aanmelden voltooien bij:"
       ],
       "Email Verification": [
          null,
@@ -40,7 +40,7 @@
       ],
       "Your Email": [
          null,
-         "Uw e-mail"
+         "Uw e-mailadres"
       ],
       "New Password": [
          null,
@@ -74,9 +74,9 @@
          null,
          "Wachtwoorden komen niet overeen."
       ],
-      "Finish": [
+      "finish": [
          null,
-         "Voltooien"
+         "voltooien"
       ],
       "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
@@ -85,6 +85,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Uw nieuwe e-mailadres is ingesteld en u bent nu aangemeld. U kunt dit venster nu sluiten en teruggaan naar"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "BrowserID vereist cookies"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         "Sluit dit venster, <a %s>schakel cookies in</a> en probeer het nogmaals"
       ],
       "Communicating with server": [
          null,
@@ -98,9 +106,9 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
-         "BrowserID is de snelle en veilige manier van aanmelden &ndash; <a target=\"_blank\" href=\"/about\">Meer info</a>"
+         "BrowserID is de snelle en veilige manier van aanmelden &ndash; <a %s>meer info</a>"
       ],
       "BrowserID: %s": [
          null,
@@ -126,9 +134,9 @@
          null,
          "Afmelden"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
-         "Door het <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
+         "Door het <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>"
       ],
       "Privacy": [
          null,
@@ -146,7 +154,7 @@
          null,
          "Er is een probleem met uw registratiekoppeling. Is dit adres al geregistreerd?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Fout bij communicatie met server."
       ],

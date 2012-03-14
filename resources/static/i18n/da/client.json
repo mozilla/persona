@@ -3,8 +3,8 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-05 15:04+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-02-27 18:36+0100",
          "Last-Translator": " Dan Storm <storm@catalystcode.net>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " ",
@@ -12,161 +12,13 @@
          "Content-Type": " text/plain; charset=UTF-8",
          "Content-Transfer-Encoding": " 8bit"
       },
-      "Authenticating User": [
-         null,
-         "Godkender bruger"
-      ],
-      "Adding Address": [
-         null,
-         "Tilføjer adresse"
-      ],
-      "Adding Primary Email Address to User": [
-         null,
-         "Tilføjer primær mailadresse til bruger"
-      ],
-      "Checking Address Info": [
-         null,
-         "Kontrollerer adresseinformation"
-      ],
-      "Authenticating with Assertion": [
-         null,
-         "Godkender med påstand"
-      ],
-      "Cancelling User Account": [
-         null,
-         "Annullerer brugerkonto"
-      ],
-      "Checking Authentication": [
-         null,
-         "Kontrollerer godkendelse"
-      ],
-      "Checking Script Version": [
-         null,
-         "Kontrollerer script-version"
-      ],
-      "Completing User Registration": [
-         null,
-         "Afslutter brugertilmelding."
-      ],
-      "We are sorry, BrowserID requires cookies": [
+      "BrowserID requires cookies": [
          null,
          "Vi beklager, men BrowserID kræver cookies"
       ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
+      "Please close this window, <a %s>enable cookies</a> and try again": [
          null,
-         "BrowserID kræver, at din browser accepterer cookies, for at virke. Aktiver cookies i din browser, og prøv igen."
-      ],
-      "Checking if Cookies are Enabled": [
-         null,
-         "Kontrollerer at cookies er aktiveret"
-      ],
-      "Creating Account": [
-         null,
-         "Opretter konto"
-      ],
-      "Getting Assertion": [
-         null,
-         "Henter påstand"
-      ],
-      "Checking Registration Token": [
-         null,
-         "Kontrollerer registreringsnøgle"
-      ],
-      "Checking Email Address": [
-         null,
-         "Kontrollerer mailadresse"
-      ],
-      "Checking Whether User is Authenticated with IdP": [
-         null,
-         "Kontrollerer om brugeren er godkendt gennem IdP"
-      ],
-      "Logout Failed": [
-         null,
-         "Log ud mislykkedes"
-      ],
-      "You are offline!": [
-         null,
-         "Du er offline!"
-      ],
-      "Unfortunately, BrowserID cannot communicate while offline!": [
-         null,
-         "BrowserID kan beklageligvis ikke kommunikere i offline tilstand!"
-      ],
-      "Authenticating with Identity Provider": [
-         null,
-         "Godkender med identitetsudbyder"
-      ],
-      "We had trouble communicating with your email provider, please try again!": [
-         null,
-         "Vi kunne ikke kommunikere med din mailudbyder. Prøv igen!"
-      ],
-      "Provisioning with Identity Provider": [
-         null,
-         "Provisionerer med identitetsudbyder"
-      ],
-      "Provisioning Unsupported Identity Provider": [
-         null,
-         "Provisionerer ikke-understøttet identitetsudbyder"
-      ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
-         null,
-         "Den angivne mailadresse kan desværre ikke agere som primær identitetsudbyder"
-      ],
-      "Registration Failed": [
-         null,
-         "Tilmeldingen mislykkedes"
-      ],
-      "Establishing Relay": [
-         null,
-         "Etablerer relay"
-      ],
-      "Relay frame could not be found": [
-         null,
-         "Relay ramme kunne ikke findes"
-      ],
-      "Resetting Password": [
-         null,
-         "Nulstiller adgangskode"
-      ],
-      "Remove Email Address from Account": [
-         null,
-         "Fjerner mailadresse fra konto"
-      ],
-      "Setting Password": [
-         null,
-         "Indstiller adgangskode"
-      ],
-      "Signin Failed": [
-         null,
-         "Log ind mislykkkedes"
-      ],
-      "Signup Failed": [
-         null,
-         "Tilmelding mislykkedes"
-      ],
-      "Syncing Address": [
-         null,
-         "Synkroniserer adresse"
-      ],
-      "Syncing Email Addresses": [
-         null,
-         "Synkroniserer mailadresser"
-      ],
-      "Sync Keys for Address": [
-         null,
-         "Synkroniserer nøgler for adresser"
-      ],
-      "Getting Token Info": [
-         null,
-         "Henter nøgleinformation"
-      ],
-      "Updating password": [
-         null,
-         "Opdaterer adgangskode"
-      ],
-      "Verifying email address": [
-         null,
-         "Bekræfter mailadresse"
+         ""
       ],
       "Communication Error": [
          null,
@@ -236,7 +88,7 @@
          null,
          "Velkommen til BrowserID"
       ],
-      "This email looks new, so let&#39;s get you set up.": [
+      "This email looks new, so let's get you set up.": [
          null,
          "Denne mailadresse ser ny ud, så lad os få dig i gang."
       ],
@@ -256,6 +108,10 @@
          null,
          "Du kan ikke logge ind på denne konto med det angivne brugernavn og adgangskode."
       ],
+      "By clicking %s, you confirm that you accept this site's <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.": [
+         null,
+         ""
+      ],
       "next": [
          null,
          "næste"
@@ -264,9 +120,9 @@
          null,
          "bekræft mailadresse"
       ],
-      "select email": [
+      "sign in": [
          null,
-         "vælg mailadresse"
+         "log ind"
       ],
       "Cannot verify %s": [
          null,
@@ -296,17 +152,33 @@
          null,
          "Hvis dette er en fejl, kan du ignorere den sendte mail og <a href=\"#\" id=\"back\">bruge en anden mailadresse</a>."
       ],
+      "We are very sorry, the server is under extreme load!": [
+         null,
+         "Vi beklager virkelig, men serveren er under ekstremt pres!"
+      ],
+      "We are very sorry, there has been an error!": [
+         null,
+         "Vi beklager meget, men der opstod en fejl!"
+      ],
+      "Please reload the page and try again.": [
+         null,
+         "For at prøve igen, skal du genindlæse siden og prøve på ny."
+      ],
+      "Please close this window and try again.": [
+         null,
+         "For at fortsætte skal du lukke vinduet og prøve på ny."
+      ],
+      "See more info": [
+         null,
+         "Se flere oplysninger"
+      ],
       "The site requested you sign in using": [
          null,
          "Websitet ønsker, at du logger ind ved at bruge"
       ],
-      "Reset Password": [
+      "reset password": [
          null,
-         "Nulstil adgangskode"
-      ],
-      "Cancel": [
-         null,
-         "Annuller"
+         "nulstil adgangskode"
       ],
       "*%s* is not a valid email address!": [
          null,
@@ -315,10 +187,6 @@
       "To continue, please close the window and enter a valid address.": [
          null,
          "For at fortsætte skal du lukke vinduet og indtaste en gyldig adresse."
-      ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
-         null,
-         "Vi kan beklageligvis ikke kommunikere med BrowserID mens du er offline."
       ],
       "This is not me...": [
          null,
@@ -332,10 +200,6 @@
          null,
          "Brug altid denne mailadresse"
       ],
-      "sign in": [
-         null,
-         "log ind"
-      ],
       "Address Verified!": [
          null,
          "Adresse bekræftet!"
@@ -348,13 +212,33 @@
          null,
          "Du skal logge ind med din mailudbyder for at bekræfte ejerskab over denne adresse. Dette vindue vil nu stille videre til"
       ],
-      "Verify": [
+      "verify": [
          null,
-         "Bekræft"
+         "bekræft"
       ],
       "Verify With Email Provider": [
          null,
          "Bekræft med mailudbyder"
+      ],
+      "#~ \"BrowserID requires your browser's cookies to be enabled to operate. \"#~ \"Please enable your browser's cookies and try again\"": [
+         null,
+         "#~ \"BrowserID kræver, at din browser accepterer cookies, for at virke. \"#~ \"Aktiver cookies i din browser, og prøv igen.\""
+      ],
+      "You are offline!": [
+         null,
+         "Du er offline!"
+      ],
+      "Unfortunately, BrowserID cannot communicate while offline!": [
+         null,
+         "BrowserID kan beklageligvis ikke kommunikere i offline tilstand!"
+      ],
+      "select email": [
+         null,
+         "vælg mailadresse"
+      ],
+      "#~ \"We are sorry, but we cannot communicate with BrowserID while you are \"#~ \"offline.\"": [
+         null,
+         "#~ \"Vi kan beklageligvis ikke kommunikere med BrowserID mens du er offline.\""
       ]
    }
 }

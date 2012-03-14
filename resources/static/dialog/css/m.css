@@ -31,6 +31,7 @@
   section {
     position: static;
     overflow: visible;
+    display: none;
   }
 
   .inputs > li > label {
@@ -46,16 +47,23 @@
   #favicon {
       display: block;
       width: 100%;
-      position: relative;
-      padding: 10px;
+      /* Changed this from relative to static to fix issue #1309 - tooltips
+       * being partially cut off by the site URL bar
+       */
+      position: static;
+  }
+
+  #favicon {
+    padding: 10px;
   }
 
   #signIn {
-      padding: 10px;
+      padding: 0;
   }
 
   #signIn .container {
       width: 100%;
+      padding: 20px;
   }
 
   #signIn form {
@@ -86,7 +94,11 @@
       background-color: transparent;
   }
 
-  .error #formWrap, .error #wait, .waiting #formWrap {
+  .waiting #wait, .delay #delay, #error #error {
+      display: block;
+  }
+
+  .waiting #formWrap, .delay #formWrap, .error #formWrap, .delay #wait, .error #wait, .error #delay {
       display: none;
   }
 
@@ -113,22 +125,24 @@
 
   #signIn .submit {
     position: static;
-    line-height: 40px;
-    margin-top: 40px;
+    line-height: 1.6;
+    margin-top: 25px;
   }
 
   #signIn .submit > p {
     font-size: 14px;
+    display: block;
+  }
+
+  #signIn .submit > p:first-child {
+    padding: 0;
+    margin-bottom: 20px;
   }
 
   label[for=remember] {
     display: block;
     font-size: 15px;
-    margin: 13px;
-  }
-
-  .form_section {
-    margin-top: 20px;
+    margin-bottom: 25px;
   }
 
   #content, .form_section, .inputs, .vertical {
@@ -137,8 +151,9 @@
     overflow: visible;
   }
 
-  .authenticated .vertical a, #cancel {
-    font-size: 1.2em;
+  .submit #cancel, #signIn .submit #cancel {
+    font-size: 18px;
+    line-height: 40px;
   }
 
   #useNewEmail {
@@ -149,8 +164,8 @@
     position: static;
   }
 
-  #error .vertical, #wait .vertical {
-      height: 250px;
+  #error .vertical, #delay .vertical, #wait .vertical {
+    height: 250px;
   }
 
   #error .vertical {
@@ -161,5 +176,9 @@
     display: block;
     height: auto;
     padding: 10px;
+  }
+
+  a.emphasize {
+    font-size: 13px;
   }
 

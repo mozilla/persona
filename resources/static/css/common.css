@@ -80,10 +80,6 @@ a {
   text-decoration: none;
 }
 
-a:hover, button:hover {
-  text-decoration: underline;
-}
-
 p:last-child {
   margin-bottom: 0 !important;
 }
@@ -107,6 +103,9 @@ input[type=password] {
        -moz-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
          -o-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
             box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+
+    /* Fix webkit putting an inner box shadow on the input elements. Issue #1313 */
+    -webkit-appearance: caret;
 }
 
 input[type=email]:focus,
@@ -128,6 +127,11 @@ input[type=email]:disabled,
 input[type=password]:disabled {
     background-color: #f0f0f0;
     color: #4f4f4f;
+    /* The opacity and -webkit-text-fill-color are to override mobile Safari's
+     * default stylings that make reading input elements very difficult.
+     * issue #1311 */
+    -webkit-text-fill-color: #4f4f4f;
+    opacity: 1;
 }
 
 input[type=radio],
@@ -161,6 +165,7 @@ button,
     background-color: #37A6FF;
     background-image: -moz-linear-gradient(center top , #76C2FF 0pt, #37A6FF 100%);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #76C2FF), color-stop(100%, #37A6FF));
+    white-space: nowrap;
 }
 
 button:hover,
@@ -214,9 +219,11 @@ button[disabled], .submit_disabled button, .submit_disabled .button,
 }
 
 
-.submit > a {
+.submit #cancel,
+#signIn .submit #cancel {
   float: right;
   margin-right: 15px;
+  line-height: 28px;
 }
 
 a.secondary[disabled], .submit_disabled a.secondary, .submit_disabled a.secondary:focus, .submit_disabled a.secondary:active {
@@ -232,7 +239,7 @@ hr {
 
 
 .right {
-  text-align: right;
+  float: right;
 }
 
 h1 {

@@ -10,10 +10,16 @@
       validation = bid.Validation,
       helpers = bid.Helpers = bid.Helpers || {};
 
-  function extend(target, source) {
-    for(var key in source) {
-      target[key] = source[key];
+  function extend(target) {
+    var mixins = [].slice.call(arguments, 1);
+
+    for(var index = 0, mixin; mixin = mixins[index]; ++index) {
+      for(var key in mixin) {
+        target[key] = mixin[key];
+      }
     }
+
+    return target;
   }
 
   function getAndValidateEmail(target) {

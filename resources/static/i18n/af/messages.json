@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
          "PO-Revision-Date": " 2012-02-04 23:58+0200",
          "Last-Translator": " Friedel <friedel@translate.org.za>",
          "Language-Team": " LANGUAGE <LL@li.org>",
@@ -26,7 +26,7 @@
          null,
          "Kon nie registrasie voltooi nie."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
          "Voltooi aanmelding by:"
       ],
@@ -74,7 +74,7 @@
          null,
          "Wagwoorde stem nie ooreen nie."
       ],
-      "Finish": [
+      "finish": [
          null,
          ""
       ],
@@ -85,6 +85,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Die nuwe adres is opgestel en u kan nou aanmeld. Sluit gerus dié venster en gaan terug na"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "Tuiste van BrowserID"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         ""
       ],
       "Communicating with server": [
          null,
@@ -98,7 +106,7 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
          "BrowserID is die vinnige en veilige manier om mee aan te meld &mdash; <a target=\"_blank\" href=\"/about\">Meer inligting</a>"
       ],
@@ -126,7 +134,7 @@
          null,
          "Meld af"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
          "Deur die <a href=\"%s\" target=\"_blank\">Identiteitspan</a> by <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
       ],
@@ -146,7 +154,7 @@
          null,
          "Daar was 'n probleem met die inskrywingskakel. Is dié adres dalk reeds geregistreer?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Fout met kommunikasie met bediener."
       ],

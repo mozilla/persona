@@ -3,9 +3,9 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-03 13:54+0200",
-         "Last-Translator": " Besnik <besnik@programeshqip.org>",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-02-23 02:26+0200",
+         "Last-Translator": " Besnik Bleta <besnik@programeshqip.org>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " sq",
          "MIME-Version": " 1.0",
@@ -14,161 +14,13 @@
          "Plural-Forms": " nplurals=2; plural=(n != 1);",
          "X-Generator": " Pootle 2.1.6"
       },
-      "Authenticating User": [
-         null,
-         "Po Kryhet Mirëfilltësimi i Përdoruesit"
-      ],
-      "Adding Address": [
-         null,
-         "Po Shtohet Adresa"
-      ],
-      "Adding Primary Email Address to User": [
-         null,
-         "Po Shtohet Te Përdoruesi Adresa Email Parësore"
-      ],
-      "Checking Address Info": [
-         null,
-         "Po Kontrollohen Të Dhëna Adrese"
-      ],
-      "Authenticating with Assertion": [
-         null,
-         ""
-      ],
-      "Cancelling User Account": [
-         null,
-         "Po Anulohet Llogaria e Përdoruesit"
-      ],
-      "Checking Authentication": [
-         null,
-         "Po Kontrollohet Mirëfilltësimi"
-      ],
-      "Checking Script Version": [
-         null,
-         "Po Kontrollohet Versioni i Programit"
-      ],
-      "Completing User Registration": [
-         null,
-         "Po Plotësohet Regjistrimi i Përdoruesit"
-      ],
-      "We are sorry, BrowserID requires cookies": [
+      "BrowserID requires cookies": [
          null,
          "Na ndjeni, BrowserID lyp \"cookies\""
       ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
-         null,
-         "BrowserID lyp që &quot;cookie&quot;-t te shfletuesi juaj të jenë në gjendje të funksionojnë.  Ju lutem, aktivizoni &quot;cookie&quot;-t te shfletuesi juaj dhe riprovoni"
-      ],
-      "Checking if Cookies are Enabled": [
-         null,
-         "Po Kontrollohet Nëse Cookie-t Janë të Aktivizuara"
-      ],
-      "Creating Account": [
-         null,
-         "Po krijohet Llogaria"
-      ],
-      "Getting Assertion": [
+      "Please close this window, <a %s>enable cookies</a> and try again": [
          null,
          ""
-      ],
-      "Checking Registration Token": [
-         null,
-         ""
-      ],
-      "Checking Email Address": [
-         null,
-         "Po Kontrollohet Adresa Email"
-      ],
-      "Checking Whether User is Authenticated with IdP": [
-         null,
-         "Po Kontrollohet Nëse Përdoruesi është Mirëfilltësuar me IdP"
-      ],
-      "Logout Failed": [
-         null,
-         "Dalja Dështoi"
-      ],
-      "You are offline!": [
-         null,
-         "Jeni \"offline\"!"
-      ],
-      "Unfortunately, BrowserID cannot communicate while offline!": [
-         null,
-         "Për fat të keq, BrowserID nuk mund të komunikojë po nuk qetë të lidhur!"
-      ],
-      "Authenticating with Identity Provider": [
-         null,
-         "Po Mirëfilltësohet me Mundësuesin e Identitetit"
-      ],
-      "We had trouble communicating with your email provider, please try again!": [
-         null,
-         "Patëm probleme në komunikimin me mundësuesin tuaj të email-it, ju lutem, riprovoni!"
-      ],
-      "Provisioning with Identity Provider": [
-         null,
-         ""
-      ],
-      "Provisioning Unsupported Identity Provider": [
-         null,
-         ""
-      ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
-         null,
-         "Për fat të keq, adresa email e dhënë nuk mund të funksionojë si Mundësues Parësor Identiteti"
-      ],
-      "Registration Failed": [
-         null,
-         "Regjistrimi Dështoi"
-      ],
-      "Establishing Relay": [
-         null,
-         ""
-      ],
-      "Relay frame could not be found": [
-         null,
-         ""
-      ],
-      "Resetting Password": [
-         null,
-         "Po Ricaktohet Fjalëkalimi"
-      ],
-      "Remove Email Address from Account": [
-         null,
-         "Hiqe Adresën Email Prej Llogarisë"
-      ],
-      "Setting Password": [
-         null,
-         "Po Caktohet Fjalëkalimi"
-      ],
-      "Signin Failed": [
-         null,
-         "Hyrja Dështoi"
-      ],
-      "Signup Failed": [
-         null,
-         "Regjistrimi Dështoi"
-      ],
-      "Syncing Address": [
-         null,
-         "Po Njëkohësohet Adresa"
-      ],
-      "Syncing Email Addresses": [
-         null,
-         "Po Njëkohësohen Adresat Email"
-      ],
-      "Sync Keys for Address": [
-         null,
-         "Njëkohëso Kyça për Adresën"
-      ],
-      "Getting Token Info": [
-         null,
-         ""
-      ],
-      "Updating password": [
-         null,
-         "Po përditësohet fjalëkalimi"
-      ],
-      "Verifying email address": [
-         null,
-         "Po verifikohet adresa email"
       ],
       "Communication Error": [
          null,
@@ -238,7 +90,7 @@
          null,
          "Mirë se vini te BrowserID!"
       ],
-      "This email looks new, so let&#39;s get you set up.": [
+      "This email looks new, so let's get you set up.": [
          null,
          "Ky email duket i ri, ndaj le t&quot;ju shërbejmë."
       ],
@@ -258,6 +110,10 @@
          null,
          "Te llogaria nuk hyhet dot me këtë emër përdoruesi dhe fjalëkalim."
       ],
+      "By clicking %s, you confirm that you accept this site's <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.": [
+         null,
+         ""
+      ],
       "next": [
          null,
          "pasuesi"
@@ -266,9 +122,9 @@
          null,
          "verifikoni email-in"
       ],
-      "select email": [
+      "sign in": [
          null,
-         "përzgjidhni email"
+         "hyni"
       ],
       "Cannot verify %s": [
          null,
@@ -298,17 +154,33 @@
          null,
          "Nëse bëhet fjalë për gabim, thjesht shpërfilleni email-ine dërguar dhe <a href=\"#\" id=\"back\">përdorni një tjetër adresë email</a>."
       ],
+      "We are very sorry, the server is under extreme load!": [
+         null,
+         "Na vjen shumë keq, shërbyesi gjendet nën ngarkesë të skajshme!"
+      ],
+      "We are very sorry, there has been an error!": [
+         null,
+         "Na vjen shumë keq, pati një gabim!"
+      ],
+      "Please reload the page and try again.": [
+         null,
+         "Që të riprovoni, lypset të ringarkoni faqen dhe të riprovoni."
+      ],
+      "Please close this window and try again.": [
+         null,
+         "Që të riprovoni, lypset ta mbyllni këtë dritare dhe të riprovoni."
+      ],
+      "See more info": [
+         null,
+         "Shihni më tepër të dhëna"
+      ],
       "The site requested you sign in using": [
          null,
          "Site-i kërkoi që të hyni duke përdorur"
       ],
-      "Reset Password": [
+      "reset password": [
          null,
-         "Ricaktoni Fjalëkalimin"
-      ],
-      "Cancel": [
-         null,
-         "Anuloje"
+         "ricaktoni fjalëkalimin"
       ],
       "*%s* is not a valid email address!": [
          null,
@@ -317,10 +189,6 @@
       "To continue, please close the window and enter a valid address.": [
          null,
          "Që të vazhdohet, ju lutem, mbylleni dritaren dhe jepni si adresë të vlefshme."
-      ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
-         null,
-         "Na ndjeni, por nuk mund të lidhemi me BrowserID sa kohë që nuk jeni i lidhur."
       ],
       "This is not me...": [
          null,
@@ -334,10 +202,6 @@
          null,
          "Hyni gjithmonë duke përdorur këtë email"
       ],
-      "sign in": [
-         null,
-         "hyni"
-      ],
       "Address Verified!": [
          null,
          "Adresa u Verifikua!"
@@ -350,13 +214,169 @@
          null,
          "Që të verifikohet pronësia e kësaj adrese, duhet të hyni me të dhënat nga mundësuesi juaj i email-i. Kjo dritare do t'ju ridrejtojë tek"
       ],
-      "Verify": [
+      "verify": [
          null,
-         "Verifikoje"
+         "verifikoje"
       ],
       "Verify With Email Provider": [
          null,
          "Verifikoje me Mundësuesin e Email-it"
+      ],
+      "#~ \"BrowserID requires your browser's cookies to be enabled to operate. \"#~ \"Please enable your browser's cookies and try again\"": [
+         null,
+         "#~ \"BrowserID lyp që &quot;cookie&quot;-t te shfletuesi juaj të jenë në \"#~ \"gjendje të funksionojnë.  Ju lutem, aktivizoni &quot;cookie&quot;-t te \"#~ \"shfletuesi juaj dhe riprovoni\""
+      ],
+      "You are offline!": [
+         null,
+         "Jeni \"offline\"!"
+      ],
+      "Unfortunately, BrowserID cannot communicate while offline!": [
+         null,
+         "#~ \"Për fat të keq, BrowserID nuk mund të komunikojë po nuk qetë të lidhur!\""
+      ],
+      "select email": [
+         null,
+         "përzgjidhni email"
+      ],
+      "#~ \"We are sorry, but we cannot communicate with BrowserID while you are \"#~ \"offline.\"": [
+         null,
+         "#~ \"Na ndjeni, por nuk mund të lidhemi me BrowserID sa kohë që nuk jeni i \"#~ \"lidhur.\""
+      ],
+      "Authenticating User": [
+         null,
+         "Po Kryhet Mirëfilltësimi i Përdoruesit"
+      ],
+      "Adding Address": [
+         null,
+         "Po Shtohet Adresa"
+      ],
+      "Adding Primary Email Address to User": [
+         null,
+         "Po Shtohet Te Përdoruesi Adresa Email Parësore"
+      ],
+      "Checking Address Info": [
+         null,
+         "Po Kontrollohen Të Dhëna Adrese"
+      ],
+      "Authenticating with Assertion": [
+         null,
+         "Mirëfilltësim me Pohim"
+      ],
+      "Cancelling User Account": [
+         null,
+         "Po Anulohet Llogaria e Përdoruesit"
+      ],
+      "Checking Authentication": [
+         null,
+         "Po Kontrollohet Mirëfilltësimi"
+      ],
+      "Checking Script Version": [
+         null,
+         "Po Kontrollohet Versioni i Programit"
+      ],
+      "Completing User Registration": [
+         null,
+         "Po Plotësohet Regjistrimi i Përdoruesit"
+      ],
+      "Checking if Cookies are Enabled": [
+         null,
+         "Po Kontrollohet Nëse Cookie-t Janë të Aktivizuara"
+      ],
+      "Creating Account": [
+         null,
+         "Po krijohet Llogaria"
+      ],
+      "Getting Assertion": [
+         null,
+         "Po Merret Pohimi"
+      ],
+      "Checking Registration Token": [
+         null,
+         "Po Kontrollohet Token-i i Regjistrimit"
+      ],
+      "Checking Email Address": [
+         null,
+         "Po Kontrollohet Adresa Email"
+      ],
+      "Checking Whether User is Authenticated with IdP": [
+         null,
+         "Po Kontrollohet Nëse Përdoruesi është Mirëfilltësuar me IdP"
+      ],
+      "Logout Failed": [
+         null,
+         "Dalja Dështoi"
+      ],
+      "Authenticating with Identity Provider": [
+         null,
+         "Po Mirëfilltësohet me Mundësuesin e Identitetit"
+      ],
+      "#~ \"We had trouble communicating with your email provider, please try again!\"": [
+         null,
+         "#~ \"Patëm probleme në komunikimin me mundësuesin tuaj të email-it, ju lutem, \"#~ \"riprovoni!\""
+      ],
+      "Provisioning with Identity Provider": [
+         null,
+         "Po bëhet me Mundësuesin e Identitetit"
+      ],
+      "Provisioning Unsupported Identity Provider": [
+         null,
+         "Po bëhet nga Mundësues i Pambuluar Identiteti"
+      ],
+      "#~ \"Unfortunately, the email address provided cannot act as a Primary \"#~ \"Identity Provider\"": [
+         null,
+         "#~ \"Për fat të keq, adresa email e dhënë nuk mund të funksionojë si Mundësues \"#~ \"Parësor Identiteti\""
+      ],
+      "Registration Failed": [
+         null,
+         "Regjistrimi Dështoi"
+      ],
+      "Resetting Password": [
+         null,
+         "Po Ricaktohet Fjalëkalimi"
+      ],
+      "Remove Email Address from Account": [
+         null,
+         "Hiqe Adresën Email Prej Llogarisë"
+      ],
+      "Setting Password": [
+         null,
+         "Po Caktohet Fjalëkalimi"
+      ],
+      "Signin Failed": [
+         null,
+         "Hyrja Dështoi"
+      ],
+      "Signup Failed": [
+         null,
+         "Regjistrimi Dështoi"
+      ],
+      "Syncing Address": [
+         null,
+         "Po Njëkohësohet Adresa"
+      ],
+      "Syncing Email Addresses": [
+         null,
+         "Po Njëkohësohen Adresat Email"
+      ],
+      "Sync Keys for Address": [
+         null,
+         "Njëkohëso Kyça për Adresën"
+      ],
+      "Getting Token Info": [
+         null,
+         "Po Merren të Dhëna Token-i"
+      ],
+      "Updating password": [
+         null,
+         "Po përditësohet fjalëkalimi"
+      ],
+      "Verifying email address": [
+         null,
+         "Po verifikohet adresa email"
+      ],
+      "Cancel": [
+         null,
+         "Anuloje"
       ]
    }
 }

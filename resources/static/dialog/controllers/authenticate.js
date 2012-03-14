@@ -61,7 +61,6 @@ BrowserID.Modules.Authenticate = (function() {
       } else {
         createSecondaryUserState.call(self);
       }
-      $('p.tospp').css('width', (240 - $('#signIn button:visible').outerWidth()) + 'px');
     }
   }
 
@@ -163,7 +162,6 @@ BrowserID.Modules.Authenticate = (function() {
 
       Module.sc.start.call(self, options);
       initialState.call(self, options);
-      $('p.tospp').css('width', (240 - $('#signIn button:visible').outerWidth()) + 'px');
     }
 
     // BEGIN TESTING API

@@ -37,10 +37,9 @@
 
           <li class="returning">
 
-              <label for="password" class="half serif"><%= gettext('Password') %></label>
-              <div class="half right">
-                  <a id="forgotPassword" href="#" tabindex="4"><%= gettext('forgot your password?') %></a>
-              </div>
+              <a id="forgotPassword" class="right" href="#" tabindex="4"><%= gettext('forgot your password?') %></a>
+              <label for="password" class="serif"><%= gettext('Password') %></label>
+
               <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
 
               <div id="password_required" class="tooltip" for="password">
@@ -56,18 +55,21 @@
 
       <div class="submit cf">
         <% if (privacy_url && tos_url) { %>
-          <p class="tospp">
+           <p>
             <%= format(
                   gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
-                       [ gettext('next'), 
-                         format(' href="%s" target="_new"', [tos_url]), 
+                       [ gettext('next'),
+                         format(' href="%s" target="_new"', [tos_url]),
                          format(' href="%s" target="_new"', [privacy_url])
                        ]) %>
           </p>
+          <p>
       <% } %>
-          <button class="start" tabindex="3"><%= gettext('next') %></button>
-          <button class="newuser" tabindex="3"><%= gettext('verify email') %></button>
-
-          <button class="returning" tabindex="3"><%= gettext('sign in') %></button>
+            <button class="start" tabindex="3"><%= gettext('next') %></button>
+            <button class="newuser" tabindex="3"><%= gettext('verify email') %></button>
+            <button class="returning" tabindex="3"><%= gettext('sign in') %></button>
+        <% if (privacy_url && tos_url) { %>
+          </p>
+        <% } %>
       </div>
   </div>

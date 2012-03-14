@@ -3,9 +3,9 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-04 20:14+0200",
-         "Last-Translator": " Joaquim <noguer@gmail.com>",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-04 00:34+0200",
+         "Last-Translator": " Eduard <edu@eduard-gamonal.net>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " ca",
          "MIME-Version": " 1.0",
@@ -26,9 +26,9 @@
          null,
          "S'ha trobat un error en intentar completar el registre."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
-         "Inici de sessió a:"
+         "Acaba l'inici de sessió a:"
       ],
       "Email Verification": [
          null,
@@ -44,7 +44,7 @@
       ],
       "New Password": [
          null,
-         "Adreça electrònica nova"
+         "Contrasenya nova"
       ],
       "Enter a Password": [
          null,
@@ -74,7 +74,7 @@
          null,
          "Les contrasenyes no coincideixen."
       ],
-      "Finish": [
+      "finish": [
          null,
          "Finalitza"
       ],
@@ -85,6 +85,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Ja s'ha configurat satisfactòriament la vostra adreça electrònica nova i heu iniciat una sessió. Tanqueu aquesta finestra per tornar a"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "El BrowserID necessita utilitzar galetes"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         "Tanqueu aquesta finestra, <a %s>habiliteu les galetes</a> i torneu a provar-ho"
       ],
       "Communicating with server": [
          null,
@@ -98,9 +106,9 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
-         "El BrowserID és una manera ràpida i segura per iniciar una sessió &mdash; <a target=\"_blank\" href=\"/about\">més informació</a>"
+         "El BrowserID és la manera ràpida i segura per iniciar una sessió &mdash; <a target=\"_blank\" href=\"/about\">més informació</a>"
       ],
       "BrowserID: %s": [
          null,
@@ -126,9 +134,9 @@
          null,
          "Surt de la sessió"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
-         "Desenvolupat per <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
+         "Desenvolupat per l'<a href=\"%s\" target=\"_blank\">equip d'identitat</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
       ],
       "Privacy": [
          null,
@@ -146,9 +154,9 @@
          null,
          "Hi ha un problema amb l'enllaç per registrar-se. Potser havíeu registrat aquesta adreça abans?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
-         "S'ha produït un error de comunicacions amb el servidor."
+         "S'ha produït un error en comunicar-se amb el servidor."
       ],
       "Last step!": [
          null,

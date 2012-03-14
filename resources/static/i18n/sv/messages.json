@@ -1,17 +1,18 @@
 ;var json_locale_data = {
    "messages": {
       "": {
-         "Project-Id-Version": " PACKAGE VERSION",
+         "Project-Id-Version": " BrowserID 1",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-05 14:59+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-03 15:30+0100",
          "Last-Translator": " Hans Wallanger <hasse@jasajudeju.se>",
          "Language-Team": " Swedish",
          "Language": " sv",
          "MIME-Version": " 1.0",
          "Content-Type": " text/plain; charset=UTF-8",
          "Content-Transfer-Encoding": " 8bit",
-         "X-Generator": " Translate Toolkit 1.9.0"
+         "X-Generator": " Translate Toolkit 1.9.0",
+         "X-Poedit-Language": " Swedish"
       },
       "Complete Login to %s using BrowserID": [
          null,
@@ -25,7 +26,7 @@
          null,
          "Ett fel uppstod vid slutförandet av registreringen."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
          "Slutför inloggning till:"
       ],
@@ -73,9 +74,9 @@
          null,
          "Det är olika lösenord."
       ],
-      "Finish": [
+      "finish": [
          null,
-         "Slutför"
+         "slutför"
       ],
       "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
@@ -84,6 +85,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Din nya adress är klar och du bör nu vara inloggad. Du kan nu stänga det här fönstret och återvända till"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "BrowserID använder kakor"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         "Stäng fönstret, <a %s>aktivera kakor</a> och försök igen"
       ],
       "Communicating with server": [
          null,
@@ -97,9 +106,9 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
-         "BrowserID är det snabba och säkra sättet att logga in &mdash; <a target=\"_blank\" href=\"/about\">läs mer</a>"
+         "BrowserID är det snabba och säkra sättet att logga in &mdash; <a %s>läs mer</a>"
       ],
       "BrowserID: %s": [
          null,
@@ -125,9 +134,9 @@
          null,
          "Logga ut"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
-         "Av <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
+         "Av <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>"
       ],
       "Privacy": [
          null,
@@ -145,7 +154,7 @@
          null,
          "Det uppstod ett problem med din anmälningslänk. Är den här adressen redan registrerad?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Ett fel uppstod vid kommunikation med servern."
       ],

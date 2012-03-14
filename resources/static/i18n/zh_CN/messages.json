@@ -3,8 +3,8 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-04 06:05+0200",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-03 23:09+0200",
          "Last-Translator": " Shaohua <shaohua.wen@gmail.com>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " zh_CN",
@@ -26,7 +26,7 @@
          null,
          "尝试完成注册时发生错误。"
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
          "完成登录至："
       ],
@@ -74,7 +74,7 @@
          null,
          "输入的密码不相同。"
       ],
-      "Finish": [
+      "finish": [
          null,
          "完成"
       ],
@@ -85,6 +85,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "您的新电子邮件地址已经设置完成，现在应该也已经登录了。您现在可以关闭此窗口并回到"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "BrowserID 需要 cookie 功能"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         "请关闭此窗口然后<a %s>开启 cookie </a> 并再试一次"
       ],
       "Communicating with server": [
          null,
@@ -98,9 +106,9 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
-         "BrowserID 是种更快、更安全的登录网站的方式 &mdash; <a target=\"_blank\" href=\"/about\">了解更多信息</a>"
+         "BrowserID 是种更快、更安全的登录网站的方式 &mdash; <a %s>了解更多信息</a>"
       ],
       "BrowserID: %s": [
          null,
@@ -126,9 +134,9 @@
          null,
          "登出"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
-         "由 <a href=\"%s\" target=\"_blank\">Mozilla Labs</a> 的 <a href=\"%s\" target=\"_blank\">Identity Team</a> 打造"
+         "由 <a %s>Mozilla Labs</a> 的 <a %s>Identity Team</a> 打造"
       ],
       "Privacy": [
          null,
@@ -146,7 +154,7 @@
          null,
          "您的注册链接有问题。这个电子邮件地址已注册过了吗？"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "与服务器通讯时发生错误。"
       ],

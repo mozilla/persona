@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": " browserid.org",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
          "PO-Revision-Date": " 2012-02-02 07:26-0800",
          "Last-Translator": " Alexandru Szasz <alexxed@gmail.com>",
          "Language-Team": " Romanian <LL@li.org>",
@@ -26,7 +26,7 @@
          null,
          "A intervenit o eroare în timp ce se încerca finalizarea înregistrării."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
          "Se încheie procesul de autentificare pe: "
       ],
@@ -74,7 +74,7 @@
          null,
          "Parolele nu se potrivesc."
       ],
-      "Finish": [
+      "finish": [
          null,
          "Finalizează"
       ],
@@ -85,6 +85,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Noua dumneavoastră adresa e setată și acum ar trebui să fiți autentificat(ă). Puteți să închideți această fereastră și să vă întoarceți la"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "BrowserID - pagina de start"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         ""
       ],
       "Communicating with server": [
          null,
@@ -98,7 +106,7 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
          "BrowserID este un mod rapid și sigur de autentificare &mdash; <a target=\"_blank\" href=\"/about\">aflați mai multe</a>"
       ],
@@ -126,7 +134,7 @@
          null,
          "Ieșire"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
          ""
       ],
@@ -146,7 +154,7 @@
          null,
          "A intervenit o problemă cu legătura de înregistrare. S-ar putea ca adresa aceasta să mai fi fost înregistrată."
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Eroare la comunicarea cu serverul."
       ],

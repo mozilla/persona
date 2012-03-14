@@ -3,8 +3,8 @@
       "": {
          "Project-Id-Version": " 1.0",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-01-30 03:01+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-02 23:46+0100",
          "Last-Translator": " Leszek Życzkowski <leszekz@gmail.com>",
          "Language-Team": " pl <leszekz@gmail.com>",
          "Language": " pl",
@@ -26,7 +26,7 @@
          null,
          "Podczas kończenia procesu rejestracji wystąpił błąd."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
          "Zakończ rejestrację do: "
       ],
@@ -74,9 +74,9 @@
          null,
          "Hasła są niezgodne."
       ],
-      "Finish": [
+      "finish": [
          null,
-         "Zakończ"
+         "zakończ"
       ],
       "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
@@ -85,6 +85,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Nowy adres został określony i rejestracja została dokonana. Możesz teraz zamknąć to okno i powrócić do"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "Do działania BrowserID wymagane jest akceptowanie ciasteczek"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         "Zamknij to okno, <a %s>włącz akceptowanie ciasteczek</a> i ponów próbę"
       ],
       "Communicating with server": [
          null,
@@ -98,9 +106,9 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
-         "BrowserID ijest szybką i bezpieczną metodą logowania &ndash; <a target=\"_blank\" href=\"/about\">dowiedz się więcej</a>"
+         "BrowserID jest szybką i bezpieczną metodą logowania &ndash; <a %s>dowiedz się więcej</a>"
       ],
       "BrowserID: %s": [
          null,
@@ -126,9 +134,9 @@
          null,
          "Wyloguj się"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
-         "Przez <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
+         "Przez <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>"
       ],
       "Privacy": [
          null,
@@ -146,7 +154,7 @@
          null,
          "Wystąpił problem z twoim odnośnikiem potwierdzającym rejestrację. Czy ten adres e-mail był już zarejestrowany?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Nie można skontaktować się z serwerem."
       ],
@@ -160,7 +168,7 @@
       ],
       "Thanks for verifying your email address. This message is being sent to you to complete your sign-in to %s.": [
          null,
-         ""
+         "Dziękujemy za dokonanie weryfikacji swojego adresu e-mail. Ta wiadomość jest wysyłana do ciebie, aby zakończyć proces logowania do %s."
       ],
       "Finish registration by clicking this link:": [
          null,
@@ -177,10 +185,6 @@
       "(A better way to sign in)": [
          null,
          "(Lepsza metoda logowania)"
-      ],
-      "Browser ID": [
-         null,
-         "Browser ID"
       ]
    }
 }

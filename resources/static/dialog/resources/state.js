@@ -7,6 +7,7 @@ BrowserID.State = (function() {
   var bid = BrowserID,
       storage = bid.Storage,
       mediator = bid.Mediator,
+      helpers = bid.Helpers,
       publish = mediator.publish.bind(mediator),
       user = bid.User,
       moduleManager = bid.module,
@@ -122,10 +123,14 @@ BrowserID.State = (function() {
     });
 
     subscribe("primary_user_unauthenticated", function(msg, info) {
-      info = info || {};
-      info.add = !!addPrimaryUser;
-      info.email = email;
-      info.requiredEmail = !!requiredEmail;
+      info = helpers.extend(info || {}, {
+        add: !!addPrimaryUser,
+        email: email,
+        requiredEmail: !!requiredEmail,
+        privacyURL: self.privacyURL,
+        tosURL: self.tosURL
+      });
+
       if(primaryVerificationInfo) {
         primaryVerificationInfo = null;
         if(requiredEmail) {
@@ -248,6 +253,11 @@ BrowserID.State = (function() {
     });
 
     subscribe("add_email", function(msg, info) {
+      info = helpers.extend(info || {}, {
+        privacyURL: self.privacyURL,
+        tosURL: self.tosURL
+      });
+
       startState("doAddEmail", info);
     });
 

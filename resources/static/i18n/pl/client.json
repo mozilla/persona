@@ -3,9 +3,9 @@
       "": {
          "Project-Id-Version": " 1.0",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-01 03:21+0200",
-         "Last-Translator": " Leszek <leszekz@gmail.com>",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-02 23:49+0100",
+         "Last-Translator": " Leszek Życzkowski <leszekz@gmail.com>",
          "Language-Team": " pl <leszekz@gmail.com>",
          "Language": " pl",
          "MIME-Version": " 1.0",
@@ -14,161 +14,13 @@
          "Plural-Forms": " nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
          "X-Generator": " Pootle 2.1.6"
       },
-      "Authenticating User": [
+      "BrowserID requires cookies": [
          null,
-         "Autoryzacja użytkownika"
+         "Do obsługi BrowserID wymagana jest akceptacja ciasteczek"
       ],
-      "Adding Address": [
+      "Please close this window, <a %s>enable cookies</a> and try again": [
          null,
-         "Dodawanie adresu"
-      ],
-      "Adding Primary Email Address to User": [
-         null,
-         "Dodawanie podstawowego adresu e-mail"
-      ],
-      "Checking Address Info": [
-         null,
-         "Sprawdzanie Informacji o adresie"
-      ],
-      "Authenticating with Assertion": [
-         null,
-         "Autoryzacja z potwierdzeniem"
-      ],
-      "Cancelling User Account": [
-         null,
-         "Usuwanie konta użytkownika"
-      ],
-      "Checking Authentication": [
-         null,
-         "Sprawdzanie autoryzacji"
-      ],
-      "Checking Script Version": [
-         null,
-         "Sprawdzanie wersji skryptu"
-      ],
-      "Completing User Registration": [
-         null,
-         "Kończenie rejestracji użytkownika"
-      ],
-      "We are sorry, BrowserID requires cookies": [
-         null,
-         "Przepraszamy, ale BrowserID wymaga ciasteczek"
-      ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
-         null,
-         "Do wykonywania operacji, BrowserID wymaga, aby w przeglądarce była włączona obsługa ciasteczek. Włącz w przeglądarce akceptowanie ciasteczek."
-      ],
-      "Checking if Cookies are Enabled": [
-         null,
-         "Sprawdzanie obsługi ciasteczek"
-      ],
-      "Creating Account": [
-         null,
-         "Tworzenie konta"
-      ],
-      "Getting Assertion": [
-         null,
-         "Pobieranie potwierdzenia"
-      ],
-      "Checking Registration Token": [
-         null,
-         "Sprawdzanie tokena rejestracji"
-      ],
-      "Checking Email Address": [
-         null,
-         "Sprawdzanie adresu e-mail"
-      ],
-      "Checking Whether User is Authenticated with IdP": [
-         null,
-         "Sprawdzanie, czy użytkownik jest autoryzowany za pomocą IdP"
-      ],
-      "Logout Failed": [
-         null,
-         "Wylogowanie się nie powiodło"
-      ],
-      "You are offline!": [
-         null,
-         "Jesteś offline!"
-      ],
-      "Unfortunately, BrowserID cannot communicate while offline!": [
-         null,
-         "Niestety BrowserID nie może zestawić połączenia, gdy jesteś offline!"
-      ],
-      "Authenticating with Identity Provider": [
-         null,
-         "Autoryzacja za pomocą modułu IdP"
-      ],
-      "We had trouble communicating with your email provider, please try again!": [
-         null,
-         "Wystąpił problem z połączeniem się z twoim dostawcą usługi pocztowej, ponów próbę!"
-      ],
-      "Provisioning with Identity Provider": [
-         null,
-         "Zabezpieczanie za pomocą modułu IdP"
-      ],
-      "Provisioning Unsupported Identity Provider": [
-         null,
-         "Zabezpieczanie nie obsługuje modułu IdP"
-      ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
-         null,
-         "Niestety, podany adres e-mail nie może służyć jako podstawowy moduł IdP"
-      ],
-      "Registration Failed": [
-         null,
-         "Rejestracja się nie powiodła"
-      ],
-      "Establishing Relay": [
-         null,
-         "Ustanawianie transmisji"
-      ],
-      "Relay frame could not be found": [
-         null,
-         "Nie znaleziono ramki transportu"
-      ],
-      "Resetting Password": [
-         null,
-         "Resetowanie hasła"
-      ],
-      "Remove Email Address from Account": [
-         null,
-         "Usuń adres e-mail z konta"
-      ],
-      "Setting Password": [
-         null,
-         "Ustanawianie hasła"
-      ],
-      "Signin Failed": [
-         null,
-         "Logowanie się nie powiodło"
-      ],
-      "Signup Failed": [
-         null,
-         "Wylogowanie się nie powiodło"
-      ],
-      "Syncing Address": [
-         null,
-         "Synchronizowanie adresu"
-      ],
-      "Syncing Email Addresses": [
-         null,
-         "Synchronizowanie adresów e-mail"
-      ],
-      "Sync Keys for Address": [
-         null,
-         "Synchronizowanie kluczy dla adresu"
-      ],
-      "Getting Token Info": [
-         null,
-         "Pobieranie informacji tokena"
-      ],
-      "Updating password": [
-         null,
-         "Aktualizacja hasła"
-      ],
-      "Verifying email address": [
-         null,
-         "Weryfikowanie adresu e-mail"
+         "Zamknij to okno, <a %s>włącz akceptację ciasteczek</a> i ponów próbę"
       ],
       "Communication Error": [
          null,
@@ -180,7 +32,7 @@
       ],
       "In just a moment you'll be signed into BrowserID.": [
          null,
-         "Za chwilę nastąpi rejestracja w BrowserID."
+         "Za chwilę zalogujesz się w BrowserID."
       ],
       "Please wait a few seconds while we sign you into the site.": [
          null,
@@ -196,7 +48,7 @@
       ],
       "Sign in using": [
          null,
-         "Znak jest już używany"
+         "Zaloguj się używając"
       ],
       "New email address": [
          null,
@@ -212,7 +64,7 @@
       ],
       "We just sent an email to that address! If you really want to send another, wait a minute or two and try again.": [
          null,
-         "Na ten adres została już wysłana wiadomość! jeśli chcesz wysłać inny, odoczekaj chwilę i ponów próbę."
+         "Na ten adres została już wysłana wiadomość! Jeśli chcesz wysłać inny, odczekaj chwilę i ponów próbę."
       ],
       "That address is already added to your account!": [
          null,
@@ -238,7 +90,7 @@
          null,
          "Witamy w BrowserID!"
       ],
-      "This email looks new, so let&#39;s get you set up.": [
+      "This email looks new, so let's get you set up.": [
          null,
          "Ten adres e-mail wygląda na nowy, więc można dokonać konfiguracji."
       ],
@@ -258,6 +110,10 @@
          null,
          "Nie można zalogować się do konta, używając tej nazwy użytkownika i hasła."
       ],
+      "By clicking %s, you confirm that you accept this site's <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.": [
+         null,
+         "Klikając %s akceptujesz <a %s>regulamin korzystania z serwisu</a> i <a %s>zasady ochrony prywatności</a>."
+      ],
       "next": [
          null,
          "dalej"
@@ -266,17 +122,17 @@
          null,
          "weryfikuj adres e-mail"
       ],
-      "select email": [
+      "sign in": [
          null,
-         "zaznacz adres e-mail"
+         "zaloguj się"
       ],
       "Cannot verify %s": [
          null,
-         ""
+         "Nie można zweryfikować %s"
       ],
       "%s is a required address, but we cannot verify that you own this address.": [
          null,
-         ""
+         "Adres %s jest konieczny, ale nie można potwierdzić, że należy on do ciebie."
       ],
       "Check your email!": [
          null,
@@ -292,23 +148,39 @@
       ],
       "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"cancel\">cancel</a>.": [
          null,
-         "Jeśli jest to pomyłka, zignoruj wiadomość i <a href=\"#\" class=\"cancel\" id=\"back\">użyj innego adresu e-mail</a>."
+         "Jeśli jest to pomyłka, zignoruj wiadomość i <a href=\"#\" id=\"cancel\">użyj innego adresu e-mail</a>."
       ],
       "If this is a mistake, just ignore the sent email and <a href=\"#\" id=\"back\">use another email address</a>.": [
          null,
-         "Jeśli jest to pomyłka, zignoruj wiadomość i <a href=\"#\" class=\"cancel\" id=\"back\">użyj innego adresu e-mail</a>."
+         "Jeśli jest to pomyłka, zignoruj wiadomość i <a href=\"#\" id=\"back\">użyj innego adresu e-mail</a>."
+      ],
+      "We are very sorry, the server is under extreme load!": [
+         null,
+         "Przepraszamy, ale serwer jest bardzo przeciążony!"
+      ],
+      "We are very sorry, there has been an error!": [
+         null,
+         "Przepraszamy bardzo, wystąpił błąd!"
+      ],
+      "Please reload the page and try again.": [
+         null,
+         "Odśwież stronę i spróbuj jeszcze raz."
+      ],
+      "Please close this window and try again.": [
+         null,
+         "Zamknij to okno i spróbuj jeszcze raz."
+      ],
+      "See more info": [
+         null,
+         "Zobacz więcej informacji"
       ],
       "The site requested you sign in using": [
          null,
          "Witryna wymaga zalogowania za pomocą"
       ],
-      "Reset Password": [
+      "reset password": [
          null,
-         "Resetuj hasło"
-      ],
-      "Cancel": [
-         null,
-         "Anuluj"
+         "resetuj hasło"
       ],
       "*%s* is not a valid email address!": [
          null,
@@ -317,10 +189,6 @@
       "To continue, please close the window and enter a valid address.": [
          null,
          "Aby kontynuować, zamknij okno i podaj prawidłowy adres e-mail."
-      ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
-         null,
-         "Przepraszamy, ale nie możesz połączyć się z BrowserID, gdy jesteś offline."
       ],
       "This is not me...": [
          null,
@@ -334,10 +202,6 @@
          null,
          "Loguj się, używając zawsze tego adresu e-mail"
       ],
-      "sign in": [
-         null,
-         "zaloguj się"
-      ],
       "Address Verified!": [
          null,
          "Adres e-mail został zweryfikowany!"
@@ -350,29 +214,13 @@
          null,
          "Aby sprawdzić, czy ten adres e-mail należy do ciebie, musisz się zalogować u swojego dostawcy usługi pocztowej. To okno zostanie przekierowane do"
       ],
-      "Verify": [
+      "verify": [
          null,
-         "Sprawdź"
+         "weryfikuj"
       ],
       "Verify With Email Provider": [
          null,
          "Sprawdź za pośrednictwem dostarczyciela usługi pocztowej"
-      ],
-      "#~ \"We just sent an email to that address!  If you really want to send \"#~ \"another, wait a minute or two and try again.\"": [
-         null,
-         "#~ \"Na ten adres została wysłana wiadomość! Jeśli chcesz wysłać inny, \"#~ \"odczekaj chwilę i i spróbuj ponownie.\""
-      ],
-      "This email looks new, so let&apos;s get you set up.": [
-         null,
-         "Ten e-mail wygląda na nowy, więc przejdźmy do konfiguracji."
-      ],
-      "#~ \"To verify that you own <strong id='primary_email'>%s</strong>, you must \"#~ \"sign in with your provider.  This window will be redirected to\"": [
-         null,
-         "#~ \"Aby sprawdzić, czy adres <strong id='primary_email'>%s</strong> należy do \"#~ \"ciebie, musisz się zalogować u swojego dostawcy usługi pocztowej. To okno \"#~ \"zostanie przekierowane do\""
-      ],
-      "translated text": [
-         null,
-         "tekst przetłumaczony"
       ]
    }
 }

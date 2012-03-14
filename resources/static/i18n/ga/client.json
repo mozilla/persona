@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "POT-Creation-Date": " 2012-03-02 15:27+0100",
          "PO-Revision-Date": " YEAR-MO-DA HO:MI+ZONE",
          "Last-Translator": " FULL NAME <EMAIL@ADDRESS>",
          "Language-Team": " LANGUAGE <LL@li.org>",
@@ -11,161 +11,13 @@
          "Content-Type": " text/plain; charset=UTF-8",
          "Content-Transfer-Encoding": " 8bit"
       },
-      "Authenticating User": [
-         null,
-         "Úsáideoir á Fhíordheimhniú"
-      ],
-      "Adding Address": [
-         null,
-         "Seoladh á Chur Leis"
-      ],
-      "Adding Primary Email Address to User": [
-         null,
-         "Príomhsheoladh Ríomhphoist á chur le hÚsáideoir"
-      ],
-      "Checking Address Info": [
-         null,
-         "Seoladh á Sheiceáil"
-      ],
-      "Authenticating with Assertion": [
-         null,
-         "Á Fhíordheimhniú trí Assertion"
-      ],
-      "Cancelling User Account": [
-         null,
-         "Cuntas Úsáideora á Chealú"
-      ],
-      "Checking Authentication": [
-         null,
-         "Fíordheimhniú á Sheiceáil"
-      ],
-      "Checking Script Version": [
-         null,
-         "Leagan na Scripte á Sheiceáil"
-      ],
-      "Completing User Registration": [
-         null,
-         "Clárú Úsáideora á Chur i gCrích"
-      ],
-      "We are sorry, BrowserID requires cookies": [
+      "BrowserID requires cookies": [
          null,
          "Caithfidh tú fianáin a cheadú chun BrowserID a úsáid"
       ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
+      "Please close this window, <a %s>enable cookies</a> and try again": [
          null,
-         "Úsáideann BrowserID fianáin i do bhrabhsálaí. Ní mór duit fianáin a chumasú, ansin bain triail eile as"
-      ],
-      "Checking if Cookies are Enabled": [
-         null,
-         "Fianáin á Seiceáil"
-      ],
-      "Creating Account": [
-         null,
-         "Cuntas á Chruthú"
-      ],
-      "Getting Assertion": [
-         null,
-         "Dearbhú á Fháil"
-      ],
-      "Checking Registration Token": [
-         null,
-         "Ceadchomhartha Cláraithe á Sheiceáil"
-      ],
-      "Checking Email Address": [
-         null,
-         "Seoladh Ríomhphoist á Sheiceáil"
-      ],
-      "Checking Whether User is Authenticated with IdP": [
-         null,
-         "Ag seiceáil an bhfuil an t-úsáideoir fíordheimhnithe trí IdP"
-      ],
-      "Logout Failed": [
-         null,
-         "Theip ar Logáil Amach"
-      ],
-      "You are offline!": [
-         null,
-         "Tá tú as líne!"
-      ],
-      "Unfortunately, BrowserID cannot communicate while offline!": [
-         null,
-         "Faraor, níl BrowserID in ann cumarsáid a dhéanamh nuair a bhíonn tú as líne!"
-      ],
-      "Authenticating with Identity Provider": [
-         null,
-         "Fíordheimhniú trí Sholáthraí Aitheantais"
-      ],
-      "We had trouble communicating with your email provider, please try again!": [
-         null,
-         "Bhí fadhb againn ag dul i dteagmháil le do sholáthraí ríomhphoist; bain triail eile as!"
-      ],
-      "Provisioning with Identity Provider": [
-         null,
-         "Faisnéis á fáil ó Sholáthraí Aitheantais"
-      ],
-      "Provisioning Unsupported Identity Provider": [
-         null,
-         "Faisnéis á fáil ó Sholáthraí Aitheantais gan tacaíocht"
-      ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
-         null,
-         "Faraor, ní féidir an seoladh ríomhphoist a úsáid mar Phríomhsholáthraí Aitheantais"
-      ],
-      "Registration Failed": [
-         null,
-         "Theip ar Chlárú"
-      ],
-      "Establishing Relay": [
-         null,
-         "Seachadán á Bhunú"
-      ],
-      "Relay frame could not be found": [
-         null,
-         "Níorbh fhéidir fráma seachadáin a aimsiú"
-      ],
-      "Resetting Password": [
-         null,
-         "Focal Faire á Athshocrú"
-      ],
-      "Remove Email Address from Account": [
-         null,
-         "Bain Seoladh Ríomhphoist ón Chuntas"
-      ],
-      "Setting Password": [
-         null,
-         "Focal Faire á Shocrú"
-      ],
-      "Signin Failed": [
-         null,
-         "Theip ar Logáil Isteach"
-      ],
-      "Signup Failed": [
-         null,
-         "Theip ar Chlárú"
-      ],
-      "Syncing Address": [
-         null,
-         "Seoladh á Shioncrónú"
-      ],
-      "Syncing Email Addresses": [
-         null,
-         "Seoltaí Ríomhphoist á Sioncrónú"
-      ],
-      "Sync Keys for Address": [
-         null,
-         "Eochracha á Sioncrónú"
-      ],
-      "Getting Token Info": [
-         null,
-         "Faisnéis Cheadchomhartha á Fáil"
-      ],
-      "Updating password": [
-         null,
-         "Focal faire á nuashonrú"
-      ],
-      "Verifying email address": [
-         null,
-         "Seoladh ríomhphoist á dheimhniú"
+         "Dún an fhuinneog seo, <a %s>cumasaigh fianáin</a> agus bain triail eile as"
       ],
       "Communication Error": [
          null,
@@ -235,7 +87,7 @@
          null,
          "Fáilte go BrowserID!"
       ],
-      "This email looks new, so let&#39;s get you set up.": [
+      "This email looks new, so let's get you set up.": [
          null,
          "Is seoladh nua é seo, mar sin socróimid do chuntas anois."
       ],
@@ -245,7 +97,7 @@
       ],
       "forgot your password?": [
          null,
-         "an ndearna tú dearmad ar d'fhocal faire?"
+         "an ndearna tú dearmad de d'fhocal faire?"
       ],
       "The password field is required.": [
          null,
@@ -255,6 +107,10 @@
          null,
          "Ní féidir logáil isteach leis an ainm úsáideora seo agus leis an focal faire seo."
       ],
+      "By clicking %s, you confirm that you accept this site's <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.": [
+         null,
+         "Má chliceálann tú %s, dearbhaíonn tú go nglacann tú le <a %s>Téarmaí Úsáide</a> agus le <a %s>Polasaí Príobháideachta</a> an tsuímh seo."
+      ],
       "next": [
          null,
          "ar aghaidh"
@@ -263,9 +119,9 @@
          null,
          "deimhnigh do ríomhphost"
       ],
-      "select email": [
+      "sign in": [
          null,
-         "roghnaigh seoladh ríomhphoist"
+         "logáil isteach"
       ],
       "Cannot verify %s": [
          null,
@@ -295,17 +151,33 @@
          null,
          "Más botún é seo, ná bac leis an teachtaireacht agus <a href=\"#\" id=\"back\">úsáid seoladh ríomhphoist eile</a>."
       ],
+      "We are very sorry, the server is under extreme load!": [
+         null,
+         "Tá brón orainn, tá an freastalaí an-ghnóthach faoi láthair!"
+      ],
+      "We are very sorry, there has been an error!": [
+         null,
+         "Tá brón orainn, tharla earráid!"
+      ],
+      "Please reload the page and try again.": [
+         null,
+         "Athluchtaigh an leathanach agus bain triail eile as."
+      ],
+      "Please close this window and try again.": [
+         null,
+         "Dún an fhuinneog seo agus bain triail eile as."
+      ],
+      "See more info": [
+         null,
+         "Tuilleadh eolais"
+      ],
       "The site requested you sign in using": [
          null,
          "Tá an suíomh ag iarraidh ort logáil isteach trí"
       ],
-      "Reset Password": [
+      "reset password": [
          null,
-         "Athshocraigh an Focal Faire"
-      ],
-      "Cancel": [
-         null,
-         "Cealaigh"
+         "athshocraigh an focal faire"
       ],
       "*%s* is not a valid email address!": [
          null,
@@ -314,10 +186,6 @@
       "To continue, please close the window and enter a valid address.": [
          null,
          "Chun dul ar aghaidh, dún an fhuinneog agus cuir seoladh bailí isteach."
-      ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
-         null,
-         "Ní féidir linn dul i dteagmháil le BrowserID nuair a bhíonn tú as líne."
       ],
       "This is not me...": [
          null,
@@ -331,10 +199,6 @@
          null,
          "Logáil isteach leis an seoladh seo i gcónaí"
       ],
-      "sign in": [
-         null,
-         "logáil isteach"
-      ],
       "Address Verified!": [
          null,
          "Seoladh Deimhnithe!"
@@ -347,13 +211,177 @@
          null,
          "Chun bheith cinnte gur leatsa an seoladh ríomhphoist seo, caithfidh tú logáil isteach le do sholáthraí ríomhphoist. Athdhíreofar an fhuinneog seo chuig"
       ],
-      "Verify": [
+      "verify": [
          null,
-         "Deimhnigh"
+         "deimhnigh"
       ],
       "Verify With Email Provider": [
          null,
          "Deimhnigh le Soláthraí Ríomhphoist"
+      ],
+      "#~ \"BrowserID requires your browser's cookies to be enabled to operate. \"#~ \"Please enable your browser's cookies and try again\"": [
+         null,
+         "#~ \"Úsáideann BrowserID fianáin i do bhrabhsálaí. Ní mór duit fianáin a \"#~ \"chumasú, ansin bain triail eile as\""
+      ],
+      "You are offline!": [
+         null,
+         "Tá tú as líne!"
+      ],
+      "Unfortunately, BrowserID cannot communicate while offline!": [
+         null,
+         "#~ \"Faraor, níl BrowserID in ann cumarsáid a dhéanamh nuair a bhíonn tú as \"#~ \"líne!\""
+      ],
+      "select email": [
+         null,
+         "roghnaigh seoladh ríomhphoist"
+      ],
+      "#~ \"We are sorry, but we cannot communicate with BrowserID while you are \"#~ \"offline.\"": [
+         null,
+         "#~ \"Ní féidir linn dul i dteagmháil le BrowserID nuair a bhíonn tú as líne.\""
+      ],
+      "Authenticating User": [
+         null,
+         "Úsáideoir á Fhíordheimhniú"
+      ],
+      "Adding Address": [
+         null,
+         "Seoladh á Chur Leis"
+      ],
+      "Adding Primary Email Address to User": [
+         null,
+         "Príomhsheoladh Ríomhphoist á chur le hÚsáideoir"
+      ],
+      "Checking Address Info": [
+         null,
+         "Seoladh á Sheiceáil"
+      ],
+      "Authenticating with Assertion": [
+         null,
+         "Á Fhíordheimhniú trí Assertion"
+      ],
+      "Cancelling User Account": [
+         null,
+         "Cuntas Úsáideora á Chealú"
+      ],
+      "Checking Authentication": [
+         null,
+         "Fíordheimhniú á Sheiceáil"
+      ],
+      "Checking Script Version": [
+         null,
+         "Leagan na Scripte á Sheiceáil"
+      ],
+      "Completing User Registration": [
+         null,
+         "Clárú Úsáideora á Chur i gCrích"
+      ],
+      "Checking if Cookies are Enabled": [
+         null,
+         "Fianáin á Seiceáil"
+      ],
+      "Creating Account": [
+         null,
+         "Cuntas á Chruthú"
+      ],
+      "Getting Assertion": [
+         null,
+         "Dearbhú á Fháil"
+      ],
+      "Checking Registration Token": [
+         null,
+         "Ceadchomhartha Cláraithe á Sheiceáil"
+      ],
+      "Checking Email Address": [
+         null,
+         "Seoladh Ríomhphoist á Sheiceáil"
+      ],
+      "Checking Whether User is Authenticated with IdP": [
+         null,
+         "Ag seiceáil an bhfuil an t-úsáideoir fíordheimhnithe trí IdP"
+      ],
+      "Logout Failed": [
+         null,
+         "Theip ar Logáil Amach"
+      ],
+      "Authenticating with Identity Provider": [
+         null,
+         "Fíordheimhniú trí Sholáthraí Aitheantais"
+      ],
+      "#~ \"We had trouble communicating with your email provider, please try again!\"": [
+         null,
+         "#~ \"Bhí fadhb againn ag dul i dteagmháil le do sholáthraí ríomhphoist; bain \"#~ \"triail eile as!\""
+      ],
+      "Provisioning with Identity Provider": [
+         null,
+         "Faisnéis á fáil ó Sholáthraí Aitheantais"
+      ],
+      "Provisioning Unsupported Identity Provider": [
+         null,
+         "Faisnéis á fáil ó Sholáthraí Aitheantais gan tacaíocht"
+      ],
+      "#~ \"Unfortunately, the email address provided cannot act as a Primary \"#~ \"Identity Provider\"": [
+         null,
+         "#~ \"Faraor, ní féidir an seoladh ríomhphoist a úsáid mar Phríomhsholáthraí \"#~ \"Aitheantais\""
+      ],
+      "Registration Failed": [
+         null,
+         "Theip ar Chlárú"
+      ],
+      "Establishing Relay": [
+         null,
+         "Seachadán á Bhunú"
+      ],
+      "Relay frame could not be found": [
+         null,
+         "Níorbh fhéidir fráma seachadáin a aimsiú"
+      ],
+      "Resetting Password": [
+         null,
+         "Focal Faire á Athshocrú"
+      ],
+      "Remove Email Address from Account": [
+         null,
+         "Bain Seoladh Ríomhphoist ón Chuntas"
+      ],
+      "Setting Password": [
+         null,
+         "Focal Faire á Shocrú"
+      ],
+      "Signin Failed": [
+         null,
+         "Theip ar Logáil Isteach"
+      ],
+      "Signup Failed": [
+         null,
+         "Theip ar Chlárú"
+      ],
+      "Syncing Address": [
+         null,
+         "Seoladh á Shioncrónú"
+      ],
+      "Syncing Email Addresses": [
+         null,
+         "Seoltaí Ríomhphoist á Sioncrónú"
+      ],
+      "Sync Keys for Address": [
+         null,
+         "Eochracha á Sioncrónú"
+      ],
+      "Getting Token Info": [
+         null,
+         "Faisnéis Cheadchomhartha á Fáil"
+      ],
+      "Updating password": [
+         null,
+         "Focal faire á nuashonrú"
+      ],
+      "Verifying email address": [
+         null,
+         "Seoladh ríomhphoist á dheimhniú"
+      ],
+      "Cancel": [
+         null,
+         "Cealaigh"
       ],
       "#~ \"We just sent an email to that address!  If you really want to send \"#~ \"another, wait a minute or two and try again.\"": [
          null,

@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
          "PO-Revision-Date": " YEAR-MO-DA HO:MI+ZONE",
          "Last-Translator": " FULL NAME <EMAIL@ADDRESS>",
          "Language-Team": " LANGUAGE <LL@li.org>",
@@ -12,159 +12,11 @@
          "Content-Type": " text/plain; charset=UTF-8",
          "Content-Transfer-Encoding": " 8bit"
       },
-      "Authenticating User": [
+      "BrowserID requires cookies": [
          null,
          ""
       ],
-      "Adding Address": [
-         null,
-         ""
-      ],
-      "Adding Primary Email Address to User": [
-         null,
-         ""
-      ],
-      "Checking Address Info": [
-         null,
-         ""
-      ],
-      "Authenticating with Assertion": [
-         null,
-         ""
-      ],
-      "Cancelling User Account": [
-         null,
-         ""
-      ],
-      "Checking Authentication": [
-         null,
-         ""
-      ],
-      "Checking Script Version": [
-         null,
-         ""
-      ],
-      "Completing User Registration": [
-         null,
-         ""
-      ],
-      "We are sorry, BrowserID requires cookies": [
-         null,
-         ""
-      ],
-      "BrowserID requires your browser's cookies to be enabled to operate.  Please enable your browser's cookies and try again": [
-         null,
-         ""
-      ],
-      "Checking if Cookies are Enabled": [
-         null,
-         ""
-      ],
-      "Creating Account": [
-         null,
-         ""
-      ],
-      "Getting Assertion": [
-         null,
-         ""
-      ],
-      "Checking Registration Token": [
-         null,
-         ""
-      ],
-      "Checking Email Address": [
-         null,
-         ""
-      ],
-      "Checking Whether User is Authenticated with IdP": [
-         null,
-         ""
-      ],
-      "Logout Failed": [
-         null,
-         ""
-      ],
-      "You are offline!": [
-         null,
-         ""
-      ],
-      "Unfortunately, BrowserID cannot communicate while offline!": [
-         null,
-         ""
-      ],
-      "Authenticating with Identity Provider": [
-         null,
-         ""
-      ],
-      "We had trouble communicating with your email provider, please try again!": [
-         null,
-         ""
-      ],
-      "Provisioning with Identity Provider": [
-         null,
-         ""
-      ],
-      "Provisioning Unsupported Identity Provider": [
-         null,
-         ""
-      ],
-      "Unfortunately, the email address provided cannot act as a Primary Identity Provider": [
-         null,
-         ""
-      ],
-      "Registration Failed": [
-         null,
-         ""
-      ],
-      "Establishing Relay": [
-         null,
-         ""
-      ],
-      "Relay frame could not be found": [
-         null,
-         ""
-      ],
-      "Resetting Password": [
-         null,
-         ""
-      ],
-      "Remove Email Address from Account": [
-         null,
-         ""
-      ],
-      "Setting Password": [
-         null,
-         ""
-      ],
-      "Signin Failed": [
-         null,
-         ""
-      ],
-      "Signup Failed": [
-         null,
-         ""
-      ],
-      "Syncing Address": [
-         null,
-         ""
-      ],
-      "Syncing Email Addresses": [
-         null,
-         ""
-      ],
-      "Sync Keys for Address": [
-         null,
-         ""
-      ],
-      "Getting Token Info": [
-         null,
-         ""
-      ],
-      "Updating password": [
-         null,
-         ""
-      ],
-      "Verifying email address": [
+      "Please close this window, <a %s>enable cookies</a> and try again": [
          null,
          ""
       ],
@@ -236,7 +88,7 @@
          null,
          ""
       ],
-      "This email looks new, so let&#39;s get you set up.": [
+      "This email looks new, so let's get you set up.": [
          null,
          ""
       ],
@@ -256,6 +108,10 @@
          null,
          ""
       ],
+      "By clicking %s, you confirm that you accept this site's <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.": [
+         null,
+         ""
+      ],
       "next": [
          null,
          ""
@@ -264,7 +120,7 @@
          null,
          ""
       ],
-      "select email": [
+      "sign in": [
          null,
          ""
       ],
@@ -296,15 +152,31 @@
          null,
          ""
       ],
+      "We are very sorry, the server is under extreme load!": [
+         null,
+         ""
+      ],
+      "We are very sorry, there has been an error!": [
+         null,
+         ""
+      ],
+      "Please reload the page and try again.": [
+         null,
+         ""
+      ],
+      "Please close this window and try again.": [
+         null,
+         ""
+      ],
+      "See more info": [
+         null,
+         ""
+      ],
       "The site requested you sign in using": [
          null,
          ""
       ],
-      "Reset Password": [
-         null,
-         ""
-      ],
-      "Cancel": [
+      "reset password": [
          null,
          ""
       ],
@@ -313,10 +185,6 @@
          ""
       ],
       "To continue, please close the window and enter a valid address.": [
-         null,
-         ""
-      ],
-      "We are sorry, but we cannot communicate with BrowserID while you are offline.": [
          null,
          ""
       ],
@@ -332,10 +200,6 @@
          null,
          ""
       ],
-      "sign in": [
-         null,
-         ""
-      ],
       "Address Verified!": [
          null,
          ""
@@ -348,7 +212,7 @@
          null,
          ""
       ],
-      "Verify": [
+      "verify": [
          null,
          ""
       ],

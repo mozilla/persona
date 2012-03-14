@@ -19,7 +19,9 @@ h2 {
 
 
 .vertical {
-    height: 250px;
+    height: 230px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .table {
@@ -56,6 +58,10 @@ section > .contents {
     height: 250px;
 }
 
+.contents > strong {
+    display: none;
+}
+
 #wait, #error, #delay {
     text-align: center;
     z-index: -1;
@@ -87,15 +93,8 @@ section > .contents {
   background-image: url("/i/bg.png");
 }
 
-
 .waiting #wait {
     z-index: 1;
-    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-    opacity: 1;
-}
-
-.error #error, #error.unsupported, #error.cookies_disabled {
-    z-index: 3;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
 }
@@ -106,7 +105,11 @@ section > .contents {
     opacity: 1;
 }
 
-
+.error #error, #error.unsupported, #error.cookies_disabled {
+    z-index: 3;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    opacity: 1;
+}
 
 #error.unsupported {
   padding: 20px 0;
@@ -158,6 +161,7 @@ section > .contents {
      * otherwise the buttons slide right with the arrow
      */
     width: 325px;
+    padding: 20px 52px 20px 20px;
 }
 
 .arrow {
@@ -205,7 +209,6 @@ div#required_email {
 }
 
 #signIn .vertical {
-    padding: 20px 52px 20px 20px;
     position: relative;
 }
 
@@ -223,21 +226,25 @@ div#required_email {
 
 #signIn .submit {
     line-height: 28px;
-    position: absolute;
-    bottom: 20px;
-    left: 0;
-    right: 52px;
+    margin-top: 10px;
+    color: #333;
+    font-size: 11px;
+    line-height: 1.2;
 }
 
-#signIn .submit {
-  margin-left: 20px;
+#signIn .submit > a {
+    color: #549FDC;
+    margin-right: 0;
+    float: none;
 }
 
+  /*
 #signIn .submit > p {
   line-height: 13px;
   clear: right;
   text-align: center;
 }
+*/
 
 #signIn label.half,
 .half {
@@ -299,18 +306,16 @@ label.selectable {
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
-#signIn .submit > p.tospp {
-    /* width comes from controller/<page>.js p.tospp.css('width') update */
-    bottom: 0px;
-    color: #333;
-    font-size: 11px;
-    line-height: 1.2;
-    position: absolute; 
-    text-align: justify;
-    left; 0px;
+#signIn .submit > p {
+    display: block;
 }
 
-.tospp a {
+#signIn .submit > p + p:last-child {
+    margin-top: 15px;
+    padding-left: 10px;
+}
+
+#signIn .submit a {
     color: #549FDC;
 }
 
@@ -360,23 +365,7 @@ footer {
 }
 
 .inputs {
-    margin: 1em 0 .5em;
     line-height: 18px;
-    max-height: 130px;
-    overflow-y: auto;
-}
-
-/* Some languages have long text for the "sign in" and "use a different email"
- * buttons.  If the user >= 6 emails in these languages, the buttons overlap.
- * This shrinks the email address box by one address to prevent this overlap.
- */
-#selectEmail .inputs {
-    max-height: 115px;
-}
-
-
-.add {
-    font-size: 80%;
 }
 
 .inputs > li:only-child input[type=radio] {

@@ -3,8 +3,8 @@
       "": {
          "Project-Id-Version": " PACKAGE VERSION",
          "Report-Msgid-Bugs-To": " ",
-         "POT-Creation-Date": " 2012-02-03 11:43+0100",
-         "PO-Revision-Date": " 2012-02-06 15:59+0200",
+         "POT-Creation-Date": " 2012-03-02 15:24+0100",
+         "PO-Revision-Date": " 2012-03-02 17:30+0200",
          "Last-Translator": " Selim <selim@sum.lu>",
          "Language-Team": " LANGUAGE <LL@li.org>",
          "Language": " tr",
@@ -26,7 +26,7 @@
          null,
          "Kayıt tamamlanmaya çalışılırken hata oluştu."
       ],
-      "Finish signing into: ": [
+      "Finish signing into:": [
          null,
          "Oturum açmayı tamamla: "
       ],
@@ -74,9 +74,9 @@
          null,
          "Parolalar eşleşmiyor."
       ],
-      "Finish": [
+      "finish": [
          null,
-         "Bitir"
+         "bitir"
       ],
       "<strong class=\"email\">Your address</strong> has been verified!": [
          null,
@@ -85,6 +85,14 @@
       "Your new address is set up and you should now be signed in. You may now close this window and go back to": [
          null,
          "Yeni adresiniz kuruldu ve oturumunuz açıldı. Artık bu pencereyi kapatıp şuraya dönebilirsiniz:"
+      ],
+      "BrowserID requires cookies": [
+         null,
+         "BrowserID çerez kullanımını gerektirir"
+      ],
+      "Please close this window, <a %s>enable cookies</a> and try again": [
+         null,
+         "Lütfen bu pencereyi kapatın, <a %s>çerezleri etkinleştirin</a> ve tekrar deneyin"
       ],
       "Communicating with server": [
          null,
@@ -98,9 +106,9 @@
          null,
          "BrowserID"
       ],
-      "BrowserID is the fast and secure way to sign in &mdash; <a target=\"_blank\" href=\"/about\">learn more</a>": [
+      "BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>": [
          null,
-         "BrowserID, oturum açmanın hızlı ve güvenli yoludur. <a target=\"_blank\" href=\"/about\">daha fazla bilgi alın</a>"
+         "BrowserID, oturum açmanın hızlı ve güvenli yoludur. <a %s>daha fazla bilgi alın</a>"
       ],
       "BrowserID: %s": [
          null,
@@ -126,9 +134,9 @@
          null,
          "Oturumu kapat"
       ],
-      "By the <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>": [
+      "By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>": [
          null,
-         "Geliştiren: <a href=\"%s\" target=\"_blank\">Identity Team</a> @ <a href=\"%s\" target=\"_blank\">Mozilla Labs</a>"
+         "Geliştiren: <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>"
       ],
       "Privacy": [
          null,
@@ -146,7 +154,7 @@
          null,
          "Kayıt bağlantınızda bir sorun var. Bu adres zaten kayıtlı olabilir mi?"
       ],
-      "Error comunicating with server.": [
+      "Error communicating with server.": [
          null,
          "Sunucuya bağlantıda sorun oluştu."
       ],
