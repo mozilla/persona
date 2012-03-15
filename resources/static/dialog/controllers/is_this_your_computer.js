@@ -30,11 +30,12 @@ BrowserID.Modules.IsThisYourComputer = (function() {
     },
 
     yes: function() {
-      alert("yes!");
+      storage.usersComputer.setConfirmed(network.userid());
+      this.close("cancel_state");
     },
 
     no: function() {
-      alert("no!");
+      this.close("cancel_state");
     }
 
   });

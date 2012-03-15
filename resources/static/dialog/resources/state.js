@@ -17,7 +17,8 @@ BrowserID.State = (function() {
       addPrimaryUser = false,
       email,
       requiredEmail,
-      primaryVerificationInfo;
+      primaryVerificationInfo,
+      isYourComputerAsked = false;
 
   function startStateMachine() {
     var self = this,
@@ -78,11 +79,7 @@ BrowserID.State = (function() {
         });
       }
       else if (authenticated) {
-        if (storage.usersComputer.confirmed(network.userid())) {
-          publish("pick_email");
-        } else {
-          publish("is_this_your_computer");
-        }
+        publish("pick_email");
       } else {
         publish("authenticate");
       }
@@ -182,6 +179,12 @@ BrowserID.State = (function() {
     });
 
     subscribe("email_chosen", function(msg, info) {
+      if (!isYourComputerAsked &&
+          !storage.usersComputer.confirmed(network.userid())) {
+        isYourComputerAsked = true;
+        publish("is_this_your_computer", info);
+        return;
+      }
       info = info || {};
 
       var email = info.email,
