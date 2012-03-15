@@ -69,7 +69,7 @@ BrowserID.Provisioning = (function() {
     });
 
     chan.bind('genKeyPair', function(trans, s) {
-      var keypair = jwk.KeyPair.generate("DS", BrowserID.KEY_LENGTH);
+      keypair = jwk.KeyPair.generate("DS", BrowserID.KEY_LENGTH);
       return keypair.publicKey.toSimpleObject();
     });
 
