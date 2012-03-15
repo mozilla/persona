@@ -10,11 +10,14 @@ BrowserID.Modules.IsThisYourComputer = (function() {
       user = bid.User,
       network = bid.Network,
       storage = bid.Storage,
-      errors = bid.Errors;
+      errors = bid.Errors,
+      email;
 
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       options = options || {};
+
+      email = options.email;
 
       var self = this,
           complete = function(status) {
@@ -31,11 +34,11 @@ BrowserID.Modules.IsThisYourComputer = (function() {
 
     yes: function() {
       storage.usersComputer.setConfirmed(network.userid());
-      this.close("cancel_state");
+      this.publish("email_chosen", { email: email });
     },
 
     no: function() {
-      this.close("cancel_state");
+      this.publish("email_chosen", { email: email });
     }
 
   });

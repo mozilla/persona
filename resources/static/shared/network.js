@@ -499,7 +499,7 @@ BrowserID.Network = (function() {
         data: {
           email: email,
           pubkey: pubkey.serialize(),
-          ephemeral: storage.usersComputer.confirmed(email) ? 
+          ephemeral: !storage.usersComputer.confirmed(email)
         },
         success: onComplete,
         error: onFailure
