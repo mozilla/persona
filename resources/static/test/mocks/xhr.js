@@ -141,7 +141,7 @@ BrowserID.Mocks.xhr = (function() {
       };
 
 
-      if(type === "post" && !obj.data.csrf) {
+      if(type === "post" && obj.data.indexOf("csrf") === -1) {
         ok(false, "missing csrf token on POST request");
       }
 

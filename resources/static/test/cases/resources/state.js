@@ -164,11 +164,12 @@
     ok(actions.called.doEmailChosen, "doEmailChosen called");
   });
 
-  test("authenticated - call doEmailChosen", function() {
-    storage.addEmail("testuser@testuser.com", {});
+  asyncTest("authenticated - defer to `email_chosen`", function() {
+    mediator.subscribe("email_chosen", function(msg, data) {
+      equal(data.email, "testuser@testuser.com");
+      start();
+    });
     mediator.publish("authenticated", { email: "testuser@testuser.com" });
-
-    ok(actions.called.doEmailChosen, "doEmailChosen has been called");
   });
 
   test("forgot_password", function() {
@@ -355,11 +356,17 @@
   });
 
   test("null assertion generated - preserve original options in doPickEmail", function() {
-    mediator.publish("start", { allowPersistent: true });
+    mediator.publish("start", {
+      hostname: "http://example.com",
+      privacyURL: "http://example.com/priv.html",
+      tosURL: "http://example.com/tos.html"
+    });
     mediator.publish("assertion_generated", { assertion: null });
 
     equal(actions.called.doPickEmail, true, "doPickEmail callled");
-    equal(actions.info.doPickEmail.allow_persistent, true, "allow_persistent preserved");
+    equal(actions.info.doPickEmail.origin, "http://example.com", "hostname preserved");
+    equal(actions.info.doPickEmail.privacyURL, "http://example.com/priv.html", "privacyURL preserved");
+    equal(actions.info.doPickEmail.tosURL, "http://example.com/tos.html", "tosURL preserved");
   });
 
 }());
