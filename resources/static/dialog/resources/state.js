@@ -17,8 +17,7 @@ BrowserID.State = (function() {
       addPrimaryUser = false,
       email,
       requiredEmail,
-      primaryVerificationInfo,
-      isYourComputerAsked = false;
+      primaryVerificationInfo;
 
   function startStateMachine() {
     var self = this,
@@ -179,9 +178,7 @@ BrowserID.State = (function() {
     });
 
     subscribe("email_chosen", function(msg, info) {
-      if (!isYourComputerAsked &&
-          !storage.usersComputer.confirmed(network.userid())) {
-        isYourComputerAsked = true;
+      if (storage.usersComputer.shouldAsk(network.userid())) {
         publish("is_this_your_computer", info);
         return;
       }

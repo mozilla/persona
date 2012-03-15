@@ -38,6 +38,7 @@ BrowserID.Modules.IsThisYourComputer = (function() {
     },
 
     no: function() {
+      storage.usersComputer.setDenied(network.userid());
       this.publish("email_chosen", { email: email });
     }
 

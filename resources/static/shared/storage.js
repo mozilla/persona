@@ -5,7 +5,8 @@
 BrowserID.Storage = (function() {
 
   var jwk,
-      storage = localStorage;
+      storage = localStorage,
+      ONE_DAY_IN_MS = (1000 * 60 * 60 * 24);
 
   function prepareDeps() {
     if (!jwk) {
@@ -211,33 +212,94 @@ BrowserID.Storage = (function() {
     return allInfo[emailOrUserID];
   }
 
-  // tools to manage knowledge of whether this is the user's computer, which helps
-  // us set appropriate authentication duration.
-  function userConfirmedOnComputer(userid) {
-    userid = mapEmailToUserID(userid);
-    var allInfo = JSON.parse(storage.usersComputer || "{}");
-    return allInfo[userid] === 'confirmed';
+  // tools to manage knowledge of whether this is the user's computer,
+  // which helps us set appropriate authentication duration.
+  function validState(state) {
+    return (state === 'seen' || state === 'confirmed' || state === 'denied');
   }
-  function userSeenOnComputer(userid) {
+    
+  function setConfirmationState(userid, state) {
     userid = mapEmailToUserID(userid);
-    var allInfo = JSON.parse(storage.usersComputer || "{}");
-    return !!(allInfo[userid]); // "seen" or "confirmed"
+
+    if (typeof userid !== 'number') throw 'bad userid ' + userid;
+
+    if (!validState(state)) throw "invalid state";
+
+    var allInfo;
+    var currentState;
+    var lastUpdated = 0; 
+    try {
+      allInfo = JSON.parse(storage.usersComputer);
+      if (typeof allInfo !== 'object') throw 'bogus';
+      if (allInfo[userid]) {
+        currentState = allInfo[userid][0];
+        lastUpdated = Date.parse(allInfo[userid][1]);
+        if (!validState(currentState)) throw "corrupt/outdated";
+        if (NaN === lastUpdated) throw "corrupt/outdated";
+      }
+    } catch(e) {
+      currentState = undefined;
+      lastUpdated = 0;
+      allInfo = {};
+    }
+    
+    // ...now determine if we should update the state...
+
+    // first if the user said this wasn't their computer over 24 hours ago,
+    // forget that setting (we will revisit this)
+    if (currentState === 'denied' &&
+        ((new Date()).getTime() - lastUpdated) > ONE_DAY_IN_MS) {
+      currentState = undefined;
+      lastUpdated = 0;
+    }
+
+    // if the user has a non-null state and this is another user sighting
+    // (seen), then forget it
+    if (state === 'seen' && currentState) return;
+    
+    // good to go!  let's make the update
+    allInfo[userid] = [ state, new Date().toString() ];
+    storage.usersComputer = JSON.stringify(allInfo);    
+  }
+
+  function userConfirmedOnComputer(userid) {
+    try {
+      userid = mapEmailToUserID(userid);
+      var allInfo = JSON.parse(storage.usersComputer || "{}");
+      return allInfo[userid][0] === 'confirmed';
+    } catch(e) {
+      return false;
+    } 
+  }
+  function shouldAskUserAboutHerComputer(userid) {
+    // we should ask the user if this is their computer if they were
+    // first seen over a minute ago, if they haven't denied ownership
+    // of this computer in the last 24 hours, and they haven't confirmed
+    // ownership of this computer
+    try {
+      userid = mapEmailToUserID(userid);
+      var allInfo = JSON.parse(storage.usersComputer);
+      
+      var s = allInfo[userid][0];
+      var timeago = new Date() - Date.parse(allInfo[userid][1]);
+
+      if (s === 'confirmed') return false;
+      if (s === 'denied' && timeago > ONE_DAY_IN_MS) return true;
+      if (s === 'seen' && timeago > (60 * 1000)) return true;
+    } catch (e) {
+      return true;
+    }
+
+    return false;
   }
   function setUserSeenOnComputer(userid) {
-    userid = mapEmailToUserID(userid);
-    var allInfo = JSON.parse(storage.usersComputer || "{}");
-    if (!allInfo[userid]) {
-      allInfo[userid] = "seen";
-      storage.usersComputer = JSON.stringify(allInfo);
-    }
+    setConfirmationState(userid, 'seen');
   }
   function setUserConfirmedOnComputer(userid) {
-    userid = mapEmailToUserID(userid);
-    var allInfo = JSON.parse(storage.usersComputer || "{}");
-    if (allInfo[userid] !== 'confirmed') {
-      allInfo[userid] = 'confirmed';
-      storage.usersComputer = JSON.stringify(allInfo);
-    }
+    setConfirmationState(userid, 'confirmed');
+  }
+  function setNotMyComputer(userid) {
+    setConfirmationState(userid, 'denied');
   }
 
   // update our local storage based mapping of email addresses to userids,
@@ -245,7 +307,6 @@ BrowserID.Storage = (function() {
   // to a user who has already confirmed their ownership of a computer.
   function updateEmailToUserIDMapping(userid, emails) {
     var allInfo = JSON.parse(storage.emailToUserID || "{}");
-    console.log(emails);
     _.each(emails, function(email) {
       allInfo[email] = userid;
     });
@@ -327,10 +388,17 @@ BrowserID.Storage = (function() {
        * @param {integer} userid - the user's numeric id, returned from session_context when authed.
        * @method usersComputer.setConfirmed */
       setConfirmed: setUserConfirmedOnComputer,
-      /** Query whether a user has been "seen" on this computer before
+      /** Save the fact that a user denied that this is their computer
        * @param {integer} userid - the user's numeric id, returned from session_context when authed.
+       * @method usersComputer.setDenied */
+      setDenied: setNotMyComputer,
+      /** Should we ask the user if this is their computer, based on the last
+       * time they used browserid and the last time they answered a question
+       * about this device
+       * @param {integer} userid - the user's numeric id, returned
+       *   from session_context when authed.
        * @method usersComputer.seen */
-      seen: userSeenOnComputer,
+      shouldAsk: shouldAskUserAboutHerComputer,
       /** Save the fact that a user has been seen on this computer before, but do not overwrite
        *  existing state
        * @param {integer} userid - the user's numeric id, returned from session_context when authed.
