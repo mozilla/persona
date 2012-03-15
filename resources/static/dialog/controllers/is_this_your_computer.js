@@ -21,11 +21,24 @@ BrowserID.Modules.IsThisYourComputer = (function() {
             options.ready && options.ready(status || false);
           };
 
-      self.renderDialog("is_this_your_computer", options);
+      self.renderWait("is_this_your_computer", options);
+
+      self.click("button.this_is_my_computer", self.yes);
+      self.click("button.this_is_not_my_computer", self.no);
 
       Module.sc.start.call(self, options);
+    },
+
+    yes: function() {
+      alert("yes!");
+    },
+
+    no: function() {
+      alert("no!");
     }
+
   });
+
 
   return Module;
 
