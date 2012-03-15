@@ -498,7 +498,8 @@ BrowserID.Network = (function() {
         url: "/wsapi/cert_key",
         data: {
           email: email,
-          pubkey: pubkey.serialize()
+          pubkey: pubkey.serialize(),
+          ephemeral: storage.usersComputer.confirmed(email) ? 
         },
         success: onComplete,
         error: onFailure

@@ -136,7 +136,9 @@ BrowserID.XHR = (function() {
 
       var req = _.extend(options, {
         type: "POST",
-        data: data,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        processData: false,
         defer_success: true
       });
       request(req);
