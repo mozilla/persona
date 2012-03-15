@@ -63,6 +63,11 @@ BrowserID.Network = (function() {
 
       if (typeof authenticated !== 'boolean') throw status;
 
+      // now update the userid which is set once the user is authenticated.
+      // this is used to key off client side state, like whether this user has
+      // confirmed ownership of this device
+      userid = status.userid;
+
       // at this point we know the authentication status of the
       // session, let's set it to perhaps save a network request
       // (to fetch session context).
