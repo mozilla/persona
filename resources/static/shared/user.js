@@ -908,8 +908,7 @@ BrowserID.User = (function() {
      */
     syncEmailKeypair: function(email, onComplete, onFailure) {
       prepareDeps();
-      // always use 1024 DSA keys - see issue #1293
-      var keypair = jwk.KeyPair.generate("DS", 128);
+      var keypair = jwk.KeyPair.generate("DS", bid.KEY_LENGTH);
       setTimeout(function() {
         certifyEmailKeypair(email, keypair, onComplete, onFailure);
       }, 0);

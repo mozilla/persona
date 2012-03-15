@@ -7,5 +7,9 @@
 
   window.BrowserID = window.BrowserID || {};
 
-
+  // Define some constants.
+  _.extend(window.BrowserID, {
+    // always use 1024 DSA keys - see issue #1293
+    KEY_LENGTH: 128
+  });
 }());

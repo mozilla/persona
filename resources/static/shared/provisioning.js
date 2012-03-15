@@ -69,8 +69,7 @@ BrowserID.Provisioning = (function() {
     });
 
     chan.bind('genKeyPair', function(trans, s) {
-      // always use 1024 DSA keys - see issue #1293
-      var keypair = jwk.KeyPair.generate("DS", 128);
+      var keypair = jwk.KeyPair.generate("DS", BrowserID.KEY_LENGTH);
       return keypair.publicKey.toSimpleObject();
     });
 
