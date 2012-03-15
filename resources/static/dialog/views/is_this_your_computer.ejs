@@ -2,6 +2,7 @@
       License, v. 2.0. If a copy of the MPL was not distributed with this
       file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
 
+  <div id="your_computer_content">
     <h2><%= gettext('If you don\'t mind me asking, is this your computer?') %></h2>
 
     <p>
@@ -10,10 +11,10 @@
     </p>
 
     <p>
-      <button class="this_is_not_my_computer" tabindex="3"><%= gettext('no') %></button>
+      <button class="this_is_not_my_computer negative" tabindex="3"><%= gettext('no') %></button>
       <%= gettext('If you\'re at a public computer such as a library or internet cafe, we\'ll ask you ' +
                   'for your password again in five minutes.') %>
     </p>
-
+  </div>
 
 

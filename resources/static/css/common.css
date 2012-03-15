@@ -168,6 +168,21 @@ button,
     white-space: nowrap;
 }
 
+button.negative {
+    border: 1px solid #E70227;
+    color: #fff;
+    text-shadow: -1px -1px 0 #E70227;
+
+    -webkit-box-shadow: 0 0 0 1px #FF1560 inset;
+       -moz-box-shadow: 0 0 0 1px #FF1560 inset;
+         -o-box-shadow: 0 0 0 1px #FF1560 inset;
+            box-shadow: 0 0 0 1px #FF1560 inset;
+
+    background-color: #E70227;
+    background-image: -moz-linear-gradient(center top , #FF1560 0pt, #E70227 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FF1560), color-stop(100%, #E70227));
+}
+
 button:hover,
 button:focus,
 .button:hover,
@@ -177,6 +192,17 @@ button:focus,
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(50%, #76C2FF), color-stop(100%, #37A6FF));
 
 }
+
+button.negative:hover,
+button.negative:focus,
+.button.negative:hover,
+.button.negative:focus{
+    background-color: #FF1560;
+    background-image: -moz-linear-gradient(center top , #FF1560 70%, #E70227 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(70%, #FF1560), color-stop(100%, #E70227));
+
+}
+
 
 button:active,
 .button:active {
