@@ -198,7 +198,8 @@ suite.addBatch({
   "authentication with first email": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: TEST_EMAIL,
-      pass: TEST_PASS
+      pass: TEST_PASS,
+      ephemeral: false
     }),
     "works": function(err, r) {
       assert.strictEqual(r.code, 200);
@@ -207,7 +208,8 @@ suite.addBatch({
   "authentication with second email": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: SECONDARY_EMAIL,
-      pass: TEST_PASS
+      pass: TEST_PASS,
+      ephemeral: false
     }),
     "works": function(err, r) {
       assert.strictEqual(r.code, 200);

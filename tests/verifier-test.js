@@ -97,7 +97,8 @@ suite.addBatch({
     topic: function() {
       wsapi.post('/wsapi/cert_key', {
         email: TEST_EMAIL,
-        pubkey: g_keypair.publicKey.serialize()
+        pubkey: g_keypair.publicKey.serialize(),
+        ephemeral: false
       }).call(this);
     },
     "works swimmingly": function(err, r) {

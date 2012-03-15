@@ -74,7 +74,8 @@ suite.addBatch({
   "authenticating with the password": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: TEST_EMAIL,
-      pass: OLD_PASSWORD
+      pass: OLD_PASSWORD,
+      ephemeral: false
     }),
     "works as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
@@ -83,7 +84,8 @@ suite.addBatch({
   "authenticating with the wrong password": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: TEST_EMAIL,
-      pass: NEW_PASSWORD
+      pass: NEW_PASSWORD,
+      ephemeral: false
     }),
     "fails as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, false);
@@ -131,7 +133,8 @@ suite.addBatch({
   "authenticating with the password": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: TEST_EMAIL,
-      pass: NEW_PASSWORD
+      pass: NEW_PASSWORD,
+      ephemeral: false
     }),
     "works as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
@@ -140,7 +143,8 @@ suite.addBatch({
   "authenticating with the wrong password": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: TEST_EMAIL,
-      pass: OLD_PASSWORD
+      pass: OLD_PASSWORD,
+      ephemeral: false
     }),
     "fails as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, false);

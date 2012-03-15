@@ -98,7 +98,11 @@ suite.addBatch({
     }
   },
   "cert key invoked with proper argument": {
-    topic: wsapi.post(cert_key_url, { email: 'syncer@somehost.com', pubkey: kp.publicKey.serialize() }),
+    topic: wsapi.post(cert_key_url, {
+      email: 'syncer@somehost.com',
+      pubkey: kp.publicKey.serialize(),
+      ephemeral: false
+    }),
     "returns a response with a proper content-type" : function(err, r) {
       assert.strictEqual(r.code, 200);
     },
@@ -143,7 +147,11 @@ suite.addBatch({
     }
   },
   "cert key invoked proper arguments but incorrect email address": {
-    topic: wsapi.post(cert_key_url, { email: 'syncer2@somehost.com', pubkey: kp.publicKey.serialize() }),
+    topic: wsapi.post(cert_key_url, {
+      email: 'syncer2@somehost.com',
+      pubkey: kp.publicKey.serialize(),
+      ephemeral: false
+    }),
     "returns a response with a proper error content-type" : function(err, r) {
       assert.strictEqual(r.code, 400);
     }
