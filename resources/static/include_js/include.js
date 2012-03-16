@@ -1044,8 +1044,19 @@
       commChan.notify({ method: 'loggedInUser', params: email });
     };
 
+    // backwards compatibility function
     navigator.id.get = function(callback, options) {
-      // backwards compatibility function
+      function handleEvent(e) {
+        navigator.id.removeEventListener('login', handleEvent);
+        callback(e && e.assertion ? e.assertion : null);
+      }
+      navigator.id.addEventListener('login', handleEvent);
+      navigator.id.request(options);
+    };
+
+    // backwards compatibility function
+    navigator.id.getVerifiedEmail = function(callback) {
+      navigator.id.get(callback);
     };
 
     navigator.id.request = function(options) {
