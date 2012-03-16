@@ -24,6 +24,10 @@ function DevDeployer() {
 
   this.sslpub = process.env['DEV_SSL_PUB'];
   this.sslpriv = process.env['DEV_SSL_PRIV'];
+  this.keypairs = [];
+  if (process.env['ADDITIONAL_KEYPAIRS']) {
+    this.keypairs = process.env['ADDITIONAL_KEYPAIRS'].split(',');
+  }
 
   if (!this.sslpub || !this.sslpriv) {
     throw("you must provide ssl cert paths via DEV_SSL_PUB & DEV_SSL_PRIV");
@@ -63,7 +67,21 @@ DevDeployer.prototype.configure = function(cb) {
   var config = { public_url: "https://dev.diresworb.org" };
   ssh.copyUpConfig(self.deets.ipAddress, config, function (err) {
     if (err) return cb(err);
-    ssh.copySSL(self.deets.ipAddress, self.sslpub, self.sslpriv, cb);
+    ssh.copySSL(self.deets.ipAddress, self.sslpub, self.sslpriv, function(err) {
+      if (err) return cb(err);
+
+      // now copy up addtional keypairs
+      var i = 0;
+      function copyNext() {
+        if (i == self.keypairs.length) return cb(null);
+        ssh.addSSHPubKey(self.deets.ipAddress, self.keypairs[i++], function(err) {
+          if (err) return cb(err);
+          self.emit('progress', "key added...");
+          copyNext();
+        });
+      }
+      copyNext();
+    });
   });
 }
 
