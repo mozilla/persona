@@ -176,7 +176,7 @@ Deployer.prototype.checkForUpdates = function() {
 var deployer = new Deployer();
 
 var currentLogFile = null;
-// a directory where we'll deployment logs
+// a directory where we'll keep deployment logs
 var deployLogDir = process.env['DEPLOY_LOG_DIR'] || temp.mkdirSync();
 
 var deployingSHA = null;
