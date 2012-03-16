@@ -1016,14 +1016,12 @@
     };
 
     navigator.id.removeEventListener = function(type, listener/*, useCapture */) {
-      if (!useCapture) useCapture = false;
-
       // remove event from listeners table
       var i;
       for (i = 0; i < listeners[type].length; i++) {
         if (listeners[type][i] === listener) break;
       }
-      if (i < listeners[type][i] === listener) {
+      if (i < listeners[type][i].length) {
         listeners[type].splice(i, 1);
       }
     };
@@ -1048,7 +1046,7 @@
     navigator.id.get = function(callback, options) {
       function handleEvent(e) {
         navigator.id.removeEventListener('login', handleEvent);
-        callback(e && e.assertion ? e.assertion : null);
+        callback((e && e.assertion) ? e.assertion : null);
       }
       navigator.id.addEventListener('login', handleEvent);
       navigator.id.request(options);
