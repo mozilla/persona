@@ -36,3 +36,8 @@ exports.copySSL = function(host, pub, priv, cb) {
     });
   });
 };
+
+exports.addSSHPubKey = function(host, pubkey, cb) {
+  var cmd = 'ssh -o "StrictHostKeyChecking no" ec2-user@' + host + " 'echo \'" + pubkey + "\' >> .ssh/authorized_keys'";
+  child_process.exec(cmd, cb);
+};
