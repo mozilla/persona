@@ -55,17 +55,7 @@ DevDeployer.prototype.setup = function(cb) {
         vm.setName(r.instanceId, "dev.diresworb.org (" + self.sha + ")", function(err, r) {
           if (err) return cb(err);
           self.emit('progress', "name set");
-
-          // now copy up addtional keypairs
-          var i = 0;
-          function copyNext() {
-            if (i == self.keypairs.length) return cb(null);
-            ssh.addSSHPubKey(self.deets.ipAddress, self.keypairs[i++], function(err) {
-              if (err) return cb(err);
-              self.emit('progress', "key added...");
-              copyNext();
-            });
-          }
+          cb(null);
         });
       });
     });
@@ -77,7 +67,21 @@ DevDeployer.prototype.configure = function(cb) {
   var config = { public_url: "https://dev.diresworb.org" };
   ssh.copyUpConfig(self.deets.ipAddress, config, function (err) {
     if (err) return cb(err);
-    ssh.copySSL(self.deets.ipAddress, self.sslpub, self.sslpriv, cb);
+    ssh.copySSL(self.deets.ipAddress, self.sslpub, self.sslpriv, function(err) {
+      if (err) return cb(err);
+
+      // now copy up addtional keypairs
+      var i = 0;
+      function copyNext() {
+        if (i == self.keypairs.length) return cb(null);
+        ssh.addSSHPubKey(self.deets.ipAddress, self.keypairs[i++], function(err) {
+          if (err) return cb(err);
+          self.emit('progress', "key added...");
+          copyNext();
+        });
+      }
+      copyNext();
+    });
   });
 }
 
