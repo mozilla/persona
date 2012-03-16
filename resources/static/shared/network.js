@@ -67,6 +67,9 @@ BrowserID.Network = (function() {
       // this is used to key off client side state, like whether this user has
       // confirmed ownership of this device
       userid = status.userid;
+      if (userid) {
+        storage.usersComputer.setSeen(userid);
+      }
 
       // at this point we know the authentication status of the
       // session, let's set it to perhaps save a network request

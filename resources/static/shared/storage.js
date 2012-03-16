@@ -183,10 +183,12 @@ BrowserID.Storage = (function() {
     else delete allInfo[origin];
     storage.loggedIn = JSON.stringify(allInfo);
   }
+
   function getLoggedIn(origin) {
     var allInfo = JSON.parse(storage.loggedIn || "{}");
     return allInfo[origin];
   }
+
   function watchLoggedIn(origin, callback) {
     var lastState = getLoggedIn(origin);
 
@@ -217,7 +219,7 @@ BrowserID.Storage = (function() {
   function validState(state) {
     return (state === 'seen' || state === 'confirmed' || state === 'denied');
   }
-    
+
   function setConfirmationState(userid, state) {
     userid = mapEmailToUserID(userid);
 
@@ -227,13 +229,17 @@ BrowserID.Storage = (function() {
 
     var allInfo;
     var currentState;
-    var lastUpdated = 0; 
+    var lastUpdated = 0;
+
     try {
       allInfo = JSON.parse(storage.usersComputer);
       if (typeof allInfo !== 'object') throw 'bogus';
-      if (allInfo[userid]) {
-        currentState = allInfo[userid][0];
-        lastUpdated = Date.parse(allInfo[userid][1]);
+
+      var userInfo = allInfo[userid];
+      if (userInfo) {
+        currentState = userInfo.state;
+        lastUpdated = Date.parse(userInfo.updated);
+
         if (!validState(currentState)) throw "corrupt/outdated";
         if (NaN === lastUpdated) throw "corrupt/outdated";
       }
@@ -242,7 +248,7 @@ BrowserID.Storage = (function() {
       lastUpdated = 0;
       allInfo = {};
     }
-    
+
     // ...now determine if we should update the state...
 
     // first if the user said this wasn't their computer over 24 hours ago,
@@ -256,21 +262,22 @@ BrowserID.Storage = (function() {
     // if the user has a non-null state and this is another user sighting
     // (seen), then forget it
     if (state === 'seen' && currentState) return;
-    
+
     // good to go!  let's make the update
-    allInfo[userid] = [ state, new Date().toString() ];
-    storage.usersComputer = JSON.stringify(allInfo);    
+    allInfo[userid] = {state: state, updated: new Date().toString()};
+    storage.usersComputer = JSON.stringify(allInfo);
   }
 
   function userConfirmedOnComputer(userid) {
     try {
       userid = mapEmailToUserID(userid);
       var allInfo = JSON.parse(storage.usersComputer || "{}");
-      return allInfo[userid][0] === 'confirmed';
+      return allInfo[userid].state === 'confirmed';
     } catch(e) {
       return false;
-    } 
+    }
   }
+
   function shouldAskUserAboutHerComputer(userid) {
     // we should ask the user if this is their computer if they were
     // first seen over a minute ago, if they haven't denied ownership
@@ -279,27 +286,44 @@ BrowserID.Storage = (function() {
     try {
       userid = mapEmailToUserID(userid);
       var allInfo = JSON.parse(storage.usersComputer);
-      
-      var s = allInfo[userid][0];
-      var timeago = new Date() - Date.parse(allInfo[userid][1]);
+      var userInfo = allInfo[userid];
+      var s = userInfo.state;
+      var timeago = new Date() - Date.parse(userInfo.updated);
 
       if (s === 'confirmed') return false;
       if (s === 'denied' && timeago > ONE_DAY_IN_MS) return true;
-      if (s === 'seen' && timeago > (60 * 1000)) return true;
+      if (s === 'seen' && timeago > (5 * 1000)) return true;
     } catch (e) {
       return true;
     }
 
     return false;
   }
+
   function setUserSeenOnComputer(userid) {
     setConfirmationState(userid, 'seen');
   }
+
   function setUserConfirmedOnComputer(userid) {
     setConfirmationState(userid, 'confirmed');
   }
+
   function setNotMyComputer(userid) {
     setConfirmationState(userid, 'denied');
+  }
+
+  function clearUsersComputerOwnershipStatus(userid) {
+    try {
+      allInfo = JSON.parse(storage.usersComputer);
+      if (typeof allInfo !== 'object') throw 'bogus';
+
+      var userInfo = allInfo[userid];
+      if (userInfo) {
+        allInfo[userid] = null;
+        delete allInfo[userid];
+        storage.usersComputer = JSON.stringify(allInfo);
+      }
+    } catch (e) {}
   }
 
   // update our local storage based mapping of email addresses to userids,
@@ -380,30 +404,40 @@ BrowserID.Storage = (function() {
     },
 
     usersComputer: {
-      /** Query whether the user has confirmed that this is their computer
+      /**
+       * Query whether the user has confirmed that this is their computer
        * @param {integer} userid - the user's numeric id, returned from session_context when authed.
        * @method usersComputer.confirmed */
       confirmed: userConfirmedOnComputer,
-      /** Save the fact that a user confirmed that this is their computer
+      /**
+       * Save the fact that a user confirmed that this is their computer
        * @param {integer} userid - the user's numeric id, returned from session_context when authed.
        * @method usersComputer.setConfirmed */
       setConfirmed: setUserConfirmedOnComputer,
-      /** Save the fact that a user denied that this is their computer
+      /**
+       * Save the fact that a user denied that this is their computer
        * @param {integer} userid - the user's numeric id, returned from session_context when authed.
        * @method usersComputer.setDenied */
       setDenied: setNotMyComputer,
-      /** Should we ask the user if this is their computer, based on the last
+      /**
+       * Should we ask the user if this is their computer, based on the last
        * time they used browserid and the last time they answered a question
        * about this device
        * @param {integer} userid - the user's numeric id, returned
        *   from session_context when authed.
        * @method usersComputer.seen */
       shouldAsk: shouldAskUserAboutHerComputer,
-      /** Save the fact that a user has been seen on this computer before, but do not overwrite
+      /**
+       * Save the fact that a user has been seen on this computer before, but do not overwrite
        *  existing state
        * @param {integer} userid - the user's numeric id, returned from session_context when authed.
        * @method usersComputer.setSeen */
-      setSeen: setUserSeenOnComputer
+      setSeen: setUserSeenOnComputer,
+      /**
+       * Clear the status for the user
+       * @param {integer} userid - the user's numeric id, returned from session_context when authed.
+       * @method usersComputer.clear */
+      clear: clearUsersComputerOwnershipStatus
     },
 
     /** add email addresses to the email addy to userid mapping used when we're trying to determine

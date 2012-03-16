@@ -16,16 +16,13 @@ BrowserID.Modules.IsThisYourComputer = (function() {
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       options = options || {};
-
       email = options.email;
 
-      var self = this,
-          complete = function(status) {
-            options.ready && options.ready(status || false);
-          };
+      var self = this;
 
       self.renderWait("is_this_your_computer", options);
 
+      // TODO - Make the selectors use ids instead of classes.
       self.click("button.this_is_my_computer", self.yes);
       self.click("button.this_is_not_my_computer", self.no);
 
@@ -33,13 +30,19 @@ BrowserID.Modules.IsThisYourComputer = (function() {
     },
 
     yes: function() {
+      // TODO - Move this to user.js where it could be used by other clients in
+      // other areas.
       storage.usersComputer.setConfirmed(network.userid());
-      this.publish("email_chosen", { email: email });
+      this.confirmed(true);
     },
 
     no: function() {
       storage.usersComputer.setDenied(network.userid());
-      this.publish("email_chosen", { email: email });
+      this.confirmed(false);
+    },
+
+    confirmed: function(status) {
+      this.publish("user_computer_status_set", { users_computer: status });
     }
 
   });

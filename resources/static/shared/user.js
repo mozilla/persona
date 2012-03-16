@@ -1083,11 +1083,10 @@ BrowserID.User = (function() {
       User.checkAuthentication(function(authenticated) {
         if (authenticated) {
           storage.setLoggedIn(origin, false);
-          if (onComplete) {
-            onComplete(true);
-          }
-        } else if (onComplete) {
-          onComplete(false);
+        }
+
+        if (onComplete) {
+          onComplete(!!authenticated);
         }
       }, onFailure);
     },

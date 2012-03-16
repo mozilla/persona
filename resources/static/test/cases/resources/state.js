@@ -12,6 +12,7 @@
       user = bid.User,
       machine,
       actions,
+      network = bid.Network,
       storage = bid.Storage,
       testHelpers = bid.TestHelpers,
       xhr = bid.Mocks.xhr;
@@ -38,6 +39,19 @@
     machine.start({controller: actions});
   }
 
+  function setContextInfo(auth_status) {
+    // Make sure there is context info for network.
+    var serverTime = (new Date().getTime()) - 10;
+    mediator.publish("context_info", {
+      server_time: serverTime,
+      domain_key_creation_time: serverTime,
+      code_version: "ABCDEF",
+      auth_status: auth_status || "password",
+      userid: 1,
+      random_seed: "ABCDEFGH"
+    });
+  }
+
   module("resources/state", {
     setup: function() {
       testHelpers.setup();
@@ -50,10 +64,6 @@
     }
   });
 
-
-  test("can create and start the machine", function() {
-    ok(machine, "Machine has been created");
-  });
 
   test("attempt to create a state machine without a controller", function() {
     var error;
@@ -158,13 +168,19 @@
     ok(actions.called.doProvisionPrimaryUser, "doProvisionPrimaryUser called");
   });
 
-  test("primary_user_ready - call doEmailChosen", function() {
+  asyncTest("primary_user_ready - redirect to `email_chosen`", function() {
+    storage.addEmail("testuser@testuser.com", {});
+    mediator.subscribe("email_chosen", function(msg, info) {
+      equal(info.email, "testuser@testuser.com", "correct email passed");
+      start();
+    });
+
     mediator.publish("primary_user_ready", { email: "testuser@testuser.com", assertion: "assertion" });
 
-    ok(actions.called.doEmailChosen, "doEmailChosen called");
   });
 
-  asyncTest("authenticated - defer to `email_chosen`", function() {
+  asyncTest("authenticated - redirect to `email_chosen`", function() {
+    storage.addEmail("testuser@testuser.com", {});
     mediator.subscribe("email_chosen", function(msg, data) {
       equal(data.email, "testuser@testuser.com");
       start();
@@ -201,27 +217,37 @@
     equal(actions.info.doAuthenticate.email, "testuser@testuser.com", "authenticate called with the correct email");
   });
 
-  test("assertion_generated with null assertion", function() {
+  asyncTest("assertion_generated with null assertion - redirect to pick_email", function() {
+    mediator.subscribe("pick_email", function() {
+      ok(true, "redirect to pick_email");
+      start();
+    });
     mediator.publish("assertion_generated", {
       assertion: null
     });
-
-    equal(actions.called.doPickEmail, true, "now picking email because of null assertion");
   });
 
-  test("assertion_generated with assertion", function() {
+  asyncTest("assertion_generated with assertion, need to ask user whether it's their computer - redirect to is_this_your_computer", function() {
+    setContextInfo("password");
+    // clear the user's seen info which causes the question to be asked.
+    storage.usersComputer.clear(network.userid());
+    mediator.subscribe("is_this_your_computer", function() {
+      ok(true, "redirect to is_this_your_computer");
+      start();
+    });
+
+    mediator.publish("assertion_generated", {
+      assertion: "assertion"
+    });
+  });
+
+  test("assertion_generated with assertion, do not ask user whether it's their computer - doAssertionGenerated called", function() {
+    setContextInfo("password");
     mediator.publish("assertion_generated", {
       assertion: "assertion"
     });
 
     equal(actions.info.doAssertionGenerated, "assertion", "assertion generated with good assertion");
-  });
-
-  test("add_email - call doAddEmail", function() {
-    mediator.publish("add_email", { email: "testuser@testuser.com" });
-
-    ok(actions.called.doAddEmail, "user wants to add an email");
-    ok(actions.info.doAddEmail.email, "testuser@testuser.com", "correct email passed");
   });
 
   test("email_confirmed", function() {
