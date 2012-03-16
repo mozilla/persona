@@ -59,7 +59,7 @@ DevDeployer.prototype.setup = function(cb) {
           // now copy up addtional keypairs
           var i = 0;
           function copyNext() {
-            if (i == self.keypairs.length) cb(null);
+            if (i == self.keypairs.length) return cb(null);
             ssh.addSSHPubKey(self.deets.ipAddress, self.keypairs[i++], function(err) {
               if (err) return cb(err);
               self.emit('progress', "key added...");
