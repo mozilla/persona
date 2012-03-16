@@ -947,6 +947,19 @@
       loginCanceled: [ ]
     };
 
+    var compatMode = undefined;
+    function checkCompat(requiredMode) {
+      if (requiredMode === true) {
+        try { console.log("this site uses deprecated APIs (see documentation for navigator.id.request())"); } catch(e) { }
+      }
+
+      if (compatMode === undefined) compatMode = requiredMode;
+      else if (compatMode != requiredMode) {
+        throw "you cannot combine browserid event APIs with navigator.id.getVerifiedEmail() or navigator.id.get()" +
+              "this site should instead use navigator.id.request() and the browserid event API";
+      }
+    }
+
     function emitEvent(type, params) {
       if (listeners[type]) {
         var evt = document.createEvent('Event');
@@ -1001,10 +1014,7 @@
       }
     }
 
-    navigator.id.addEventListener = function(type, listener/*, useCapture */) {
-      // allocate iframe if it is not allocated
-      _open_hidden_iframe();
-
+    function internalAddEventListener(type, listener) {
       // add event to listeners table if it's not there already
       if (!listeners[type]) throw "unsupported event type: '" + type + "'";
 
@@ -1013,9 +1023,17 @@
         if (listeners[type][i] === listener) return;
       }
       listeners[type].push(listener);
+    }
+
+    navigator.id.addEventListener = function(type, listener) {
+      checkCompat(false);
+
+      // allocate iframe if it is not allocated
+      _open_hidden_iframe();
+      internalAddEventListener(type,listener);
     };
 
-    navigator.id.removeEventListener = function(type, listener/*, useCapture */) {
+    function internalRemoveEventListener(type, listener ) {
       // remove event from listeners table
       var i;
       for (i = 0; i < listeners[type].length; i++) {
@@ -1024,9 +1042,16 @@
       if (i < listeners[type][i].length) {
         listeners[type].splice(i, 1);
       }
+    }
+
+    navigator.id.removeEventListener = function(type, listener/*, useCapture */) {
+      checkCompat(false);
+      internalRemoveEventListener(type, listener);
     };
 
     navigator.id.logout = function() {
+      checkCompat(false);
+
       // allocate iframe if it is not allocated
       _open_hidden_iframe();
 
@@ -1035,6 +1060,8 @@
     };
 
     navigator.id.setLoggedInUser = function(email) {
+      checkCompat(false);
+
       // 1. allocate iframe if it is not allocated
       _open_hidden_iframe();
 
@@ -1044,20 +1071,32 @@
 
     // backwards compatibility function
     navigator.id.get = function(callback, options) {
-      function handleEvent(e) {
-        navigator.id.removeEventListener('login', handleEvent);
-        callback((e && e.assertion) ? e.assertion : null);
+      checkCompat(true);
+
+      if (options && options.silent) {
+        if (callback) setTimeout(function() { callback(null); }, 0);
+      } else {
+        function handleEvent(e) {
+          internalRemoveEventListener('login', handleEvent);
+          callback((e && e.assertion) ? e.assertion : null);
+        }
+        internalAddEventListener('login', handleEvent);
+        internalRequest(options);
       }
-      navigator.id.addEventListener('login', handleEvent);
-      navigator.id.request(options);
     };
 
     // backwards compatibility function
     navigator.id.getVerifiedEmail = function(callback) {
+      checkCompat(true);
       navigator.id.get(callback);
     };
 
     navigator.id.request = function(options) {
+      checkCompat(false);
+      return internalRequest(options);
+    };
+
+    function internalRequest(options) {
       // focus an existing window
       if (w) {
         try {
