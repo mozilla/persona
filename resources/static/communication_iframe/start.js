@@ -90,6 +90,9 @@
 
   chan.bind("dialog_complete", function(trans, params) {
     pause = false;
+    // the dialog running can change authentication status,
+    // lets manually purge our network cache
+    network.clearContext();
     checkAndEmit();
   });
 }());

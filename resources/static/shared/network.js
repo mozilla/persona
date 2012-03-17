@@ -155,6 +155,14 @@ BrowserID.Network = (function() {
     },
 
     /**
+     * clear local cache, including authentication status and
+     * other session data.
+     *
+     * @method clearContext
+     */
+    clearContext: clearContext,
+
+    /**
      * Log the authenticated user out
      * @method logout
      * @param {function} [onComplete] - called on completion
