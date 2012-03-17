@@ -330,7 +330,13 @@ BrowserID.Storage = (function() {
   // this map helps us determine whether a specific email address belongs
   // to a user who has already confirmed their ownership of a computer.
   function updateEmailToUserIDMapping(userid, emails) {
-    var allInfo = JSON.parse(storage.emailToUserID || "{}");
+    var allInfo;
+    try {
+      allInfo = JSON.parse(storage.emailToUserID);
+      if (typeof allInfo != 'object' || allInfo === null) throw "bogus";
+    } catch(e) {
+      allInfo = {};
+    }
     _.each(emails, function(email) {
       allInfo[email] = userid;
     });
