@@ -1051,6 +1051,14 @@ BrowserID.User = (function() {
      * @param {function} onFailure - called on XHR failure.
      */
     getSilentAssertion: function(siteSpecifiedEmail, onComplete, onFailure) {
+      // XXX: why do we need to check authentication status here explicitly.
+      //      why can't we fail later?  the problem with doing this is that
+      //      knowing correct present authentication status requires that we
+      //      talk to the server, because you can be logged in or logged out
+      //      in many different contexts (dialog, manage page, cookies expire).
+      //      so if we rely on localstorage only and check authentication status
+      //      only when we know a network request will be required, we very well
+      //      might have fewer race conditions and do fewer network requests.
       User.checkAuthentication(function(authenticated) {
         if (authenticated) {
           var loggedInEmail = storage.getLoggedIn(origin);
