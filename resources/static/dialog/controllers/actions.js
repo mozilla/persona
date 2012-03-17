@@ -113,12 +113,12 @@ BrowserID.Modules.Actions = (function() {
       }, self.getErrorDialog(errors.getAssertion));
     },
 
-    doAssertionGenerated: function(assertion) {
+    doAssertionGenerated: function(o) {
       // Clear onerror before the call to onsuccess - the code to onsuccess
       // calls window.close, which would trigger the onerror callback if we
       // tried this afterwards.
       onerror = null;
-      if(onsuccess) onsuccess(assertion);
+      if(onsuccess) onsuccess(o);
     },
 
     doNotMe: function() {

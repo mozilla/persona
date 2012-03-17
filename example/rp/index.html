@@ -97,6 +97,12 @@ pre {
 <script src="https://browserid.org/include.js"></script>
 <script>
 
+function loggit() {
+  try {
+    console.log.apply(console, arguments);
+  } catch(e) {}
+}
+
 // a function to check an assertion against the server
 function checkAssertion(assertion) {
   $.ajax({
@@ -118,15 +124,18 @@ function checkAssertion(assertion) {
 };
 
 navigator.id.addEventListener('login', function(event) {
+  loggit("login event");
   checkAssertion(event.assertion);
 });
 
 navigator.id.addEventListener('logout', function(event) {
+  loggit("logout event");
   var txt = 'got event at ' + (new Date).toString();
   $(".logoutEvents > pre").text(txt);
 });
 
 navigator.id.addEventListener('loginCanceled', function(event) {
+  loggit("loginCanceled");
   var txt = 'got event at ' + (new Date).toString();
   $(".loginCanceledEvents > pre").text(txt);
 });

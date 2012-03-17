@@ -28,9 +28,17 @@
 
   var loggedInUser = undefined;
 
+  // the controlling page may "pause" the iframe when someone else (the dialog)
+  // is supposed to emit events
+  var pause = false;
+
   function checkAndEmit(oncomplete) {
-    // XXX: seemless re-certification!
+    console.log('checking', pause, localStorage.loggedIn);
+    if (pause) return;
+
+    // this will re-certify the user if neccesary
     user.getSilentAssertion(loggedInUser, function(email, assertion) {
+      console.log(email, assertion);
       if (email) {
         // only send login events when the assertion is defined - when
         // the 'loggedInUser' is already logged in, it's false - that is
@@ -74,5 +82,14 @@
       storage.setLoggedIn(remoteOrigin, false);
       chan.notify({ method: 'logout' });
     }
+  });
+
+  chan.bind("dialog_running", function(trans, params) {
+    pause = true;
+  });
+
+  chan.bind("dialog_complete", function(trans, params) {
+    pause = false;
+    checkAndEmit();
   });
 }());

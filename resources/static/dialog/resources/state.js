@@ -260,7 +260,7 @@ BrowserID.State = (function() {
         }
         else {
           storage.setLoggedIn(user.getOrigin(), self.email);
-          startAction("doAssertionGenerated", info.assertion);
+          startAction("doAssertionGenerated", { assertion: info.assertion, email: self.email });
         }
       }
       else {

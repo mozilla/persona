@@ -918,10 +918,6 @@
     };
   }());
 
-  /**
-   * The meat and potatoes of the verified email protocol
-   */
-
   if (!navigator.id) {
     navigator.id = {};
   }
@@ -1123,6 +1119,10 @@
         return;
       }
 
+      // notify the iframe that the dialog is running so we
+      // don't do duplicative work
+      if (commChan) commChan.notify({ method: 'dialog_running' });
+
       w = WinChan.open({
         url: ipServer + '/sign_in',
         relay_url: ipServer + '/relay',
@@ -1132,9 +1132,22 @@
           params: options
         }
       }, function(err, r) {
+        // unpause the iframe to detect future changes in login state
+        if (commChan) {
+          // update the loggedInUser in the case that an assertion was generated, as
+          // this will prevent the comm iframe from thinking that state has changed
+          // and generating a new assertion.  IF, however, this request is not a success,
+          // then we do not change the loggedInUser - and we will let the comm frame determine
+          // if generating a logout event is the right thing to do
+          if (!err && r && r.email) {
+            commChan.notify({ method: 'loggedInUser', params: r.email });
+          }
+          commChan.notify({ method: 'dialog_complete' });
+        }
+
         // clear the window handle
         w = undefined;
-        if (!err && r) emitEvent('login', { assertion: r });
+        if (!err && r && r.assertion) emitEvent('login', { assertion: r.assertion });
         else emitEvent('loginCanceled');
       });
     };
