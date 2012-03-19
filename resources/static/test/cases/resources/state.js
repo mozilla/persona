@@ -230,8 +230,7 @@
 
   asyncTest("assertion_generated with assertion, need to ask user whether it's their computer - redirect to is_this_your_computer", function() {
     setContextInfo("password");
-    // clear the user's seen info which causes the question to be asked.
-    storage.usersComputer.clear(network.userid());
+    storage.usersComputer.forceAsk(network.userid());
     mediator.subscribe("is_this_your_computer", function() {
       ok(true, "redirect to is_this_your_computer");
       start();

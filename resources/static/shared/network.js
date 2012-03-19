@@ -21,6 +21,18 @@ BrowserID.Network = (function() {
       get = xhr.get,
       storage = bid.Storage;
 
+  function setUserID(uid) {
+    userid = uid;
+
+    // TODO - Get this out of here and put it into user!
+
+    // when session context returns with an authenticated user, update localstorage
+    // to indicate we've seen this user on this device
+    if (userid) {
+      storage.usersComputer.setSeen(userid);
+    }
+  }
+
   function onContextChange(msg, result) {
     context = result;
     server_time = {
@@ -30,13 +42,7 @@ BrowserID.Network = (function() {
     domain_key_creation_time = result.domain_key_creation_time;
     auth_status = result.auth_level;
     code_version = result.code_version;
-    userid = result.userid;
-
-    // when session context returns with an authenticated user, update localstorage
-    // to indicate we've seen this user on this device
-    if (userid) {
-      storage.usersComputer.setSeen(userid);
-    }
+    setUserID(result.userid);
 
     // seed the PRNG
     // FIXME: properly abstract this out, probably by exposing a jwcrypto
@@ -66,10 +72,7 @@ BrowserID.Network = (function() {
       // now update the userid which is set once the user is authenticated.
       // this is used to key off client side state, like whether this user has
       // confirmed ownership of this device
-      userid = status.userid;
-      if (userid) {
-        storage.usersComputer.setSeen(userid);
-      }
+      setUserID(status.userid);
 
       // at this point we know the authentication status of the
       // session, let's set it to perhaps save a network request
@@ -178,6 +181,7 @@ BrowserID.Network = (function() {
           // FIXME: we should return a confirmation that the
           // user was successfully logged out.
           auth_status = false;
+          setUserID(undefined);
           complete(onComplete);
         },
         error: function(info, xhr, textStatus) {
@@ -530,6 +534,8 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/list_emails",
         success: function(emails) {
+          // TODO - Put this into user.js or storage.js when emails are synced/saved to
+          // storage.
           // update our local storage map of email addresses to user ids
           if (userid) {
             storage.updateEmailToUserIDMapping(userid, _.keys(emails));

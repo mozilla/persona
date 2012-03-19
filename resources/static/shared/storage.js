@@ -287,12 +287,17 @@ BrowserID.Storage = (function() {
       userid = mapEmailToUserID(userid);
       var allInfo = JSON.parse(storage.usersComputer);
       var userInfo = allInfo[userid];
-      var s = userInfo.state;
-      var timeago = new Date() - Date.parse(userInfo.updated);
+      if(userInfo) {
+        var s = userInfo.state;
+        var timeago = new Date() - Date.parse(userInfo.updated);
 
-      if (s === 'confirmed') return false;
-      if (s === 'denied' && timeago > ONE_DAY_IN_MS) return true;
-      if (s === 'seen' && timeago > (5 * 1000)) return true;
+        // The ask state is an artificial state that should never be seen in
+        // the wild.  It is used in testing.
+        if (s === 'ask') return true;
+        if (s === 'confirmed') return false;
+        if (s === 'denied' && timeago > ONE_DAY_IN_MS) return true;
+        if (s === 'seen' && timeago > (60 * 1000)) return true;
+      }
     } catch (e) {
       return true;
     }
@@ -310,6 +315,18 @@ BrowserID.Storage = (function() {
 
   function setNotMyComputer(userid) {
     setConfirmationState(userid, 'denied');
+  }
+
+  function setUserMustConfirmComputer(userid) {
+      try {
+        userid = mapEmailToUserID(userid);
+        var allInfo = JSON.parse(storage.usersComputer);
+        if (typeof allInfo !== 'object') throw 'bogus';
+
+        var userInfo = allInfo[userid] || {};
+        userInfo.state = 'ask';
+        storage.usersComputer = JSON.stringify(allInfo);
+      } catch(e) {}
   }
 
   function clearUsersComputerOwnershipStatus(userid) {
@@ -443,7 +460,12 @@ BrowserID.Storage = (function() {
        * Clear the status for the user
        * @param {integer} userid - the user's numeric id, returned from session_context when authed.
        * @method usersComputer.clear */
-      clear: clearUsersComputerOwnershipStatus
+      clear: clearUsersComputerOwnershipStatus,
+      /**
+       * Force the user to be asked their status
+       * @param {integer} userid - the user's numeric id, returned from session_context when authed.
+       * @method usersComputer.forceAsk */
+      forceAsk: setUserMustConfirmComputer
     },
 
     /** add email addresses to the email addy to userid mapping used when we're trying to determine
