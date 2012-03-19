@@ -84,11 +84,6 @@ BrowserID.State = (function() {
       }
     });
 
-    handleState("is_this_your_computer", function(msg, info) {
-      startAction("doIsThisYourComputer", info);
-    });
-
-
     handleState("authenticate", function(msg, info) {
       info = info || {};
       info.privacyURL = self.privacyURL;
@@ -198,16 +193,15 @@ BrowserID.State = (function() {
             // If the email is a primary, and their cert is not available,
             // throw the user down the primary flow.
             // Doing so will catch cases where the primary certificate is expired
-            // and the user must re-verify with their IdP.  This flow will
-            // generate its own assertion when ready.
+            // and the user must re-verify with their IdP.
             redirectToState("primary_user", info);
           }
         }
         else {
           user.checkAuthentication(function(authentication) {
             if(authentication === "assertion") {
-              // user not authenticated, kick them over to the required email
-              // screen.
+              // user must authenticate with their password, kick them over to
+              // the required email screen to enter the password.
               startAction("doAuthenticateWithRequiredEmail", {
                 email: email,
                 secondary_auth: true,
@@ -255,8 +249,8 @@ BrowserID.State = (function() {
       if (info.assertion !== null) {
         if (storage.usersComputer.shouldAsk(network.userid())) {
           // We have to confirm the user's status
-          redirectToState("is_this_your_computer", info);
           self.assertion_info = info;
+          redirectToState("is_this_your_computer", info);
         }
         else {
           storage.setLoggedIn(user.getOrigin(), self.email);
@@ -266,6 +260,10 @@ BrowserID.State = (function() {
       else {
         redirectToState("pick_email");
       }
+    });
+
+    handleState("is_this_your_computer", function(msg, info) {
+      startAction("doIsThisYourComputer", info);
     });
 
     handleState("user_computer_status_set", function(msg, info) {

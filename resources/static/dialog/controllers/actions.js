@@ -11,7 +11,7 @@ BrowserID.Modules.Actions = (function() {
       serviceManager = bid.module,
       user = bid.User,
       errors = bid.Errors,
-      wait = bid.Wait,
+      dialogHelpers = bid.Helpers.Dialog,
       runningService,
       onsuccess,
       onerror;
@@ -113,12 +113,15 @@ BrowserID.Modules.Actions = (function() {
       }, self.getErrorDialog(errors.getAssertion));
     },
 
-    doAssertionGenerated: function(o) {
+    doAssertionGenerated: function(info) {
       // Clear onerror before the call to onsuccess - the code to onsuccess
       // calls window.close, which would trigger the onerror callback if we
       // tried this afterwards.
-      onerror = null;
-      if(onsuccess) onsuccess(o);
+      this.hideWait();
+      dialogHelpers.animateClose(function() {
+        onerror = null;
+        if(onsuccess) onsuccess(info);
+      });
     },
 
     doNotMe: function() {

@@ -22,6 +22,7 @@ BrowserID.Modules.EmailChosen = (function() {
       }
 
       dialogHelpers.getAssertion.call(self, email, options.ready);
+      // TODO, this is not needed here, it is done in the state machine.
       storage.setLoggedIn(user.getOrigin(), options.email);
       sc.start.call(self, options);
     }
