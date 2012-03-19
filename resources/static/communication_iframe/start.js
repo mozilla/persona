@@ -33,12 +33,10 @@
   var pause = false;
 
   function checkAndEmit(oncomplete) {
-    console.log('checking', pause, localStorage.loggedIn);
     if (pause) return;
 
     // this will re-certify the user if neccesary
     user.getSilentAssertion(loggedInUser, function(email, assertion) {
-      console.log(email, assertion);
       if (email) {
         // only send login events when the assertion is defined - when
         // the 'loggedInUser' is already logged in, it's false - that is
