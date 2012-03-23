@@ -77,6 +77,13 @@ suite.addBatch({
 
 // now try all apis that can be excercised without further setup
 suite.addBatch({
+  "ping": {
+    topic: wsapi.get('/wsapi/ping', {}),
+    "fails with 500 when db is stalled": function(err, r) {
+      // address info with a primary address doesn't need db access.
+      assert.strictEqual(r.code, 500);
+    }
+  },
   "address_info": {
     topic: wsapi.get('/wsapi/address_info', {
       email: 'test@example.domain'
@@ -155,6 +162,16 @@ addStallDriverBatch(false);
 var token = undefined;
 
 suite.addBatch({
+  "ping": {
+    topic: wsapi.get('/wsapi/ping', {}),
+    "works when database is unstalled": function(err, r) {
+      // address info with a primary address doesn't need db access.
+      assert.strictEqual(r.code, 200);
+    }
+  }
+});
+
+suite.addBatch({
   "account staging": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: "stalltest@whatev.er",
@@ -194,6 +211,13 @@ addStallDriverBatch(true);
 // test remaining wsapis
 
 suite.addBatch({
+  "ping": {
+    topic: wsapi.get('/wsapi/ping', { }),
+    "fails": function(err, r) {
+      assert.strictEqual(r.code, 500);
+    }
+  },
+
   "account_cancel": {
     topic: wsapi.post('/wsapi/account_cancel', { }),
     "fails with 503": function(err, r) {
