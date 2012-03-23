@@ -14,6 +14,9 @@ train-2012.03.14:
   * improvements to developer tool for checking primary support - scripts/checks_primary_support
   * documentation improvements: #1264, #1287, #1288
   * logging improvements: #1254, #1255, #1283, #1291
+  * (hotfix 03.23) re-add bulgarian: #1312
+  * (hotfix 03.23) add a ping wsapi to give monitoring probes a target that will test db connectivity: #1324
+  * (hotfix 03.23) ensure ETag on sign-in is changed: #1331
 
 train-2012.03.01:
   * When the user authenticates log them in automatically without going to the email picker: #198
