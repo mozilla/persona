@@ -9,6 +9,6 @@
     "driver": "json"
   },
   "express_log_format": "dev_bid",
-  "email_to_console": true
+  "email_to_console": true,
+  "env": "local"
 }
-
