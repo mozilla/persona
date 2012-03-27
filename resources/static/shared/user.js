@@ -90,8 +90,12 @@ BrowserID.User = (function() {
   }
 
   function setAuthenticationStatus(authenticated) {
-    var func = authenticated ? 'addClass' : 'removeClass';
-    $('body')[func]('authenticated');
+    if(window.$) {
+      // TODO get this out of here!
+      // jQuery is not included in the communication_iframe
+      var func = authenticated ? 'addClass' : 'removeClass';
+      $('body')[func]('authenticated');
+    }
 
     if (!authenticated) {
       storage.clear();
