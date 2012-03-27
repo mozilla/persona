@@ -48,7 +48,19 @@ function doRequest(path, headers, cb) {
 function hasProperCacheHeaders(path) {
   return {
     topic: function() {
-      doRequest(path, {}, this.callback);
+      var self = this;
+      // note we do *two* requests to the same resource.  The way
+      // etagify works is to generate content based hashes on the first
+      // request, and then use them every subsequent request.  This
+      // minimizes complexity and buffering that we do, at the cost of
+      // the first client after server restart possibly getting a couple
+      // extra kilobytes over the wire in a 200-that-shoulda-been-a-304.
+      // See issue #1331 and https://github.com/lloyd/connect-etagify
+      // for more context.
+      doRequest(path, {}, function(err, r) {
+        if (err) self.callback(err, r);
+        else doRequest(path, {}, self.callback);
+      });
     },
     "returns 200 with content": function(err, r) {
       assert.strictEqual(r.statusCode, 200);
