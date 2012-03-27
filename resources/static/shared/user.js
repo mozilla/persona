@@ -436,7 +436,11 @@ BrowserID.User = (function() {
       }
 
       provisioning(
-        { email: email, url: info.prov },
+        {
+          email: email,
+          url: info.prov,
+          ephemeral: !storage.usersComputer.confirmed(email)
+        },
         function(keypair, cert) {
           var userInfo = _.extend({
             keypair: keypair,
