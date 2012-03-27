@@ -577,10 +577,11 @@ BrowserID.Network = (function() {
           // http://stackoverflow.com/questions/8509387/android-browser-not-respecting-cookies-disabled/9264996#9264996
           document.cookie = "test=true; max-age=1";
           var enabled = document.cookie.indexOf("test") > -1;
-          complete(onComplete, enabled);
         } catch(e) {
-          complete(onComplete, false);
+          enabled = false;
         }
+
+        complete(onComplete, enabled);
       }, onFailure);
     }
   };
