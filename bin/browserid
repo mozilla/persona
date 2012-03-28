@@ -138,7 +138,7 @@ var static_root = path.join(__dirname, "..", "resources", "static");
 
 app.use(cachify.setup(assets(config.get('supported_languages')),
         {
-          prefix: 'v',
+          prefix: config.get('cachify_prefix'),
           production: config.get('use_minified_resources'),
           root: static_root,
         }));

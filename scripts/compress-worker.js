@@ -1,5 +1,6 @@
 const
 cachify = require('connect-cachify'),
+config = require('../lib/configuration.js'),
 fs = require('fs'),
 jsp = require("uglify-js").parser,
 logger = require('../lib/logging.js').logger,
@@ -11,6 +12,12 @@ path = require('path');
 function compressResource(staticPath, name, files, cb) {
   var orig_code = "";
   var info = undefined;
+
+  // Cachify only used in compress for CSS Images, so no asserts needed
+  cachify.setup({}, {
+    prefix: config.get('cachify_prefix'),
+    root: staticPath
+  });
   function writeFile(final_code) {
     mkdirp(path.join(staticPath, path.dirname(name)), function (err) {
       if (err) cb(err);
@@ -80,11 +87,6 @@ function compressResource(staticPath, name, files, cb) {
 
   isBuildNeeded();
 }
-
-var static_root = path.join(__dirname, '..', 'resources/static/');
-logger.info("cachify will look in " + static_root);
-// Cachify only used in compress for CSS Images, so no asserts needed
-cachify.setup({}, { prefix: 'v', root: static_root });
 
 function cachify_embedded (css_src) {
   return css_src.replace(/url\s*\(['"](.*)\s*['"]\s*\)/g, function (str, url) {
