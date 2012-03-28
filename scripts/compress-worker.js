@@ -84,7 +84,7 @@ function compressResource(staticPath, name, files, cb) {
 var static_root = path.join(__dirname, '..', 'resources/static/');
 logger.info("cachify will look in " + static_root);
 // Cachify only used in compress for CSS Images, so no asserts needed
-cachify.setup({}, { root: static_root});
+cachify.setup({}, { prefix: 'v', root: static_root });
 
 function cachify_embedded (css_src) {
   return css_src.replace(/url\s*\(['"](.*)\s*['"]\s*\)/g, function (str, url) {
