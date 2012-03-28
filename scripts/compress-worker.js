@@ -1,6 +1,9 @@
 const
+cachify = require('connect-cachify'),
+config = require('../lib/configuration.js'),
 fs = require('fs'),
 jsp = require("uglify-js").parser,
+logger = require('../lib/logging.js').logger,
 pro = require("uglify-js").uglify,
 uglifycss = require('uglifycss'),
 mkdirp = require('mkdirp'),
@@ -9,6 +12,12 @@ path = require('path');
 function compressResource(staticPath, name, files, cb) {
   var orig_code = "";
   var info = undefined;
+
+  // Cachify only used in compress for CSS Images, so no asserts needed
+  cachify.setup({}, {
+    prefix: config.get('cachify_prefix'),
+    root: staticPath
+  });
   function writeFile(final_code) {
     mkdirp(path.join(staticPath, path.dirname(name)), function (err) {
       if (err) cb(err);
@@ -31,7 +40,8 @@ function compressResource(staticPath, name, files, cb) {
         final_code = pro.split_lines(pro.gen_code(ast), 32 * 1024); // compressed code here
       } else if (/\.css$/.test(name)) {
         // compress css
-        final_code = uglifycss.processString(orig_code);
+        var cach_code = cachify_embedded(orig_code);
+        final_code = uglifycss.processString(cach_code);
       } else {
         return cb("can't determine content type: " + name);
       }
@@ -76,6 +86,15 @@ function compressResource(staticPath, name, files, cb) {
   }
 
   isBuildNeeded();
+}
+
+function cachify_embedded (css_src) {
+  return css_src.replace(/url\s*\(['"](.*)\s*['"]\s*\)/g, function (str, url) {
+    // This will throw an error if url doesn't exist. This is good as we will
+    // catch typos during build.
+    logger.info("For " + str + " making " + url + " into " + cachify.cachify(url));
+     return "url('" + cachify.cachify(url) + "')";
+  });
 }
 
 process.on('message', function(m) {
