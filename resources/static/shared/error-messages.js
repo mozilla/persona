@@ -5,6 +5,8 @@
 BrowserID.Errors = (function(){
   "use strict";
 
+  var enableCookiesURL = BrowserID.EnableCookiesURL.getURL();
+
   // NOTE: The majority of these strings do not have gettext because they are
   // not immediately user facing.  These strings are used in the error dialog
   // and are only shown after the user clicks on "show more info"
@@ -47,7 +49,8 @@ BrowserID.Errors = (function(){
 
     cookiesDisabled: {
       title: gettext("BrowserID requires cookies"),
-      message: format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='http://support.mozilla.org/en-US/kb/Websites%20say%20cookies%20are%20blocked'"])
+      message: format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='" + enableCookiesURL + "'"])
+
     },
 
     cookiesEnabled: {

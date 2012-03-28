@@ -66,6 +66,20 @@
     equal(support.isSupported(), true, "Firefox 7.01 is supported");
     equal(typeof support.getNoSupportReason(), "undefined", "no reason, we are all good");
   });
+
+  test("isIOS with userAgent that is not iOS - return false", function() {
+    stubNavigator.appName = "Netscape";
+    stubNavigator.userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:14.0) Gecko/20120326 Firefox/14.0a1";
+
+    strictEqual(support.isIOS(), false, "false returned for Firefox userAgent");
+  });
+
+  test("isIOS with userAgent that is iOS - return true", function() {
+    stubNavigator.userAgent = "Mozilla/5.0 (iPod; U; CPU iPhone OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5";
+
+    strictEqual(support.isIOS(), true, "true returned for iOS userAgent");
+  });
+
 }());
 
 

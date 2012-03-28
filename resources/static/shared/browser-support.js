@@ -62,6 +62,11 @@ BrowserID.BrowserSupport = (function() {
     return reason;
   }
 
+  function isIOS() {
+    var ua = nav.userAgent;
+    return ua.indexOf("like Mac OS X") > -1;
+  }
+
   return {
     /**
      * Set the test environment.
@@ -84,7 +89,12 @@ BrowserID.BrowserSupport = (function() {
     /**
      * IE version surfaced for crypto optimizations
      */
-    getInternetExplorerVersion: getInternetExplorerVersion
+    getInternetExplorerVersion: getInternetExplorerVersion,
+    /**
+     * Check to see whether user is using iOS
+     * @method isIOS
+     */
+    isIOS: isIOS
   };
 
 }());
