@@ -87,7 +87,11 @@ function hasProperCacheHeaders(path) {
     },
     "followed by a request with an if-modified-since cache header, and bogus etag": {
       topic: function(err, r) {
-        var etag = r.headers['etag'].replace(/"$/, "bogus\"");
+        var etag = r.headers['etag'] = '"bogus"';
+        // No ETag present in iframes, make one
+        if (['/communication_iframe', '/relay'].indexOf(path) === -1) {
+          etag = r.headers['etag'].replace(/"$/, "bogus\"");
+        }
         doRequest(path, {
           "If-None-Match": etag
         }, this.callback);
