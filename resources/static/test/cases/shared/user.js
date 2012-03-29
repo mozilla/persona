@@ -1113,4 +1113,45 @@ var vep = require("./vep");
     }, testHelpers.unexpectedXHRFailure);
   });
 
+  asyncTest("setComputerOwnershipStatus with true, isUsersComputer - mark the computer as the users, prolongs the user's session", function() {
+    lib.authenticate("testuser@testuser.com", "password", function() {
+      storage.usersComputer.clear(network.userid());
+      lib.setComputerOwnershipStatus(true, function() {
+        lib.isUsersComputer(function(usersComputer) {
+          equal(usersComputer, true, "user is marked as owner of computer");
+          start();
+        }, testHelpers.unexpectedXHRFailure);
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("setComputerOwnershipStatus with false, isUsersComputer - mark the computer as not the users", function() {
+    lib.authenticate("testuser@testuser.com", "password", function() {
+      storage.usersComputer.clear(network.userid());
+      lib.setComputerOwnershipStatus(false, function() {
+        lib.isUsersComputer(function(usersComputer) {
+          equal(usersComputer, false, "user is marked as not an owner");
+          start();
+        }, testHelpers.unexpectedXHRFailure);
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("setComputerOwnershipStatus with unauthenticated user - call onFailure", function() {
+    lib.setComputerOwnershipStatus(false,
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
+  asyncTest("setComputerOwnershipStatus with true & XHR Failure - call onFailure", function() {
+    lib.authenticate("testuser@testuser.com", "password", function() {
+      xhr.useResult("ajaxError");
+      lib.setComputerOwnershipStatus(true,
+        testHelpers.unexpectedSuccess,
+        testHelpers.expectedXHRFailure
+      );
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
 }());

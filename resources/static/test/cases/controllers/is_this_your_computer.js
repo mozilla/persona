@@ -10,6 +10,7 @@
       el = $("body"),
       bid = BrowserID,
       user = bid.User,
+      network = bid.Network,
       xhr = bid.Mocks.xhr,
       modules = bid.Modules,
       testHelpers = bid.TestHelpers,
@@ -39,12 +40,26 @@
     controller.start(options || {});
   }
 
-  test("yes - sets ownership flag to true for the user", function() {
-    console.log("add a test");
+  asyncTest("yes - sets ownership flag to true for the user", function() {
+    createController();
+    network.authenticate("testuser@testuser.com", "password", function() {
+      register("user_computer_status_set", function(msg, data) {
+        equal(data.users_computer, true, "user_computer_status_set called with correct status");
+        start();
+      });
+      controller.yes();
+    }, testHelpers.unexpectedXHRFailure);
   });
 
-  test("no - set the ownership flag to false for the user", function() {
-    console.log("add a test");
+  asyncTest("no - set the ownership flag to false for the user", function() {
+    createController();
+    network.authenticate("testuser@testuser.com", "password", function() {
+      register("user_computer_status_set", function(msg, data) {
+        equal(data.users_computer, false, "user_computer_status_set called with correct status");
+        start();
+      });
+      controller.no();
+    }, testHelpers.unexpectedXHRFailure);
   });
 }());
 

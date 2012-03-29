@@ -14,7 +14,8 @@ BrowserID.User = (function() {
       User, pollTimeout,
       provisioning = bid.Provisioning,
       addressCache = {},
-      primaryAuthCache = {};
+      primaryAuthCache = {},
+      complete = bid.Helpers.complete;
 
   function prepareDeps() {
     if (!jwk) {
@@ -1122,6 +1123,39 @@ BrowserID.User = (function() {
       }
 
       onComplete(hasSecondary);
+    },
+
+    /**
+     * Set whether the user owns the computer or not.
+     * @method setComputerOwnershipStatus
+     * @param {boolean} userOwnsComputer - true if user owns computer, false otw.
+     * @param {function} onComplete - called on successful completion.
+     * @param {function} onFailure - called on XHR failure.
+     */
+    setComputerOwnershipStatus: function(userOwnsComputer, onComplete, onFailure) {
+      var userID = network.userid();
+      if(typeof userID !== "undefined") {
+        if (userOwnsComputer) {
+          storage.usersComputer.setConfirmed(userID);
+          network.prolongSession(onComplete, onFailure);
+        }
+        else {
+          storage.usersComputer.setDenied(userID);
+          complete(onComplete);
+        }
+      } else {
+        complete(onFailure, "user is not authenticated");
+      }
+    },
+
+    isUsersComputer: function(onComplete, onFailure) {
+      var userID = network.userid();
+      if(typeof userID !== "undefined") {
+        complete(onComplete, storage.usersComputer.confirmed(userID));
+      } else {
+        complete(onFailure, "user is not authenticated");
+      }
+
     }
   };
 

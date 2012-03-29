@@ -565,4 +565,23 @@
     }
   });
 
+  asyncTest("prolongSession with authenticated user, success - call complete", function() {
+    network.authenticate("testuser@testuser.com", "password", function() {
+      network.prolongSession(function() {
+        ok(true, "prolongSession completed");
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("prolongSession with unauthenticated user - call failure", function() {
+    transport.useResult("unauthenticated");
+    network.prolongSession(testHelpers.unexpectedSuccess, testHelpers.expectedXHRFailure);
+  });
+
+  asyncTest("prolongSession with XHR Failure - call failure", function() {
+    transport.useResult("ajaxError");
+    network.prolongSession(testHelpers.unexpectedSuccess, testHelpers.expectedXHRFailure);
+  });
+
 }());

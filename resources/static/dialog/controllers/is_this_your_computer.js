@@ -8,8 +8,6 @@ BrowserID.Modules.IsThisYourComputer = (function() {
 
   var bid = BrowserID,
       user = bid.User,
-      network = bid.Network,
-      storage = bid.Storage,
       errors = bid.Errors,
       email;
 
@@ -30,21 +28,19 @@ BrowserID.Modules.IsThisYourComputer = (function() {
     },
 
     yes: function() {
-      // TODO - Move this to user.js where it could be used by other clients in
-      // other areas.
-      storage.usersComputer.setConfirmed(network.userid());
       this.confirmed(true);
     },
 
     no: function() {
-      storage.usersComputer.setDenied(network.userid());
       this.confirmed(false);
     },
 
     confirmed: function(status) {
-      this.publish("user_computer_status_set", { users_computer: status });
+      var self=this;
+      user.setComputerOwnershipStatus(status, function() {
+        self.close("user_computer_status_set", { users_computer: status });
+      }, self.getErrorDialog(errors.setComputerOwnershipStatus));
     }
-
   });
 
 

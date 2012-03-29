@@ -111,7 +111,10 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", auth: "https://auth_url", prov: "https://prov_url" },
       "get /wsapi/address_info?email=testuser%40testuser.com ajaxError": undefined,
       "post /wsapi/add_email_with_assertion invalid": { success: false },
-      "post /wsapi/add_email_with_assertion valid": { success: true }
+      "post /wsapi/add_email_with_assertion valid": { success: true },
+      "post /wsapi/prolong_session valid": { success: true },
+      "post /wsapi/prolong_session unauthenticated": 400,
+      "post /wsapi/prolong_session ajaxError": undefined,
     },
 
     setContextInfo: function(field, value) {

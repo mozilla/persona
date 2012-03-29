@@ -60,7 +60,7 @@ BrowserID.Network = (function() {
   function clearContext() {
     xhr.clearContext();
     var undef;
-    context = server_time = auth_status = undef;
+    context = server_time = auth_status = userid = undef;
   }
 
   function handleAuthenticationResponse(type, onComplete, onFailure, status) {
@@ -548,6 +548,7 @@ BrowserID.Network = (function() {
     },
 
     /**
+     * TODO - move this into user.
      * Return the user's userid, which will an integer if the user
      * is authenticated, undefined otherwise.
      *
@@ -633,6 +634,28 @@ BrowserID.Network = (function() {
         }
 
         complete(onComplete, enabled);
+      }, onFailure);
+    },
+
+    /**
+     * Prolong a user's session so that they are not re-prompted to enter their
+     * password
+     * @method prolongSession
+     * @param {function} [onComplete] - Called whenever complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    prolongSession: function(onComplete, onFailure) {
+      Network.checkAuth(function(authenticated) {
+        if(authenticated) {
+          post({
+            url: "/wsapi/prolong_session",
+            success: onComplete,
+            error: onFailure
+          });
+        }
+        else {
+          complete(onFailure, "user not authenticated");
+        }
       }, onFailure);
     }
   };
