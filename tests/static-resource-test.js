@@ -43,13 +43,13 @@ suite.addBatch({
       assert.equal(files[minFile].length,
                    res[minRes].length);
       // Non-localized files underneath stay the same
-      [0, 1, 2, 3, 4, 5, 7].forEach(function (nonLocalizedIndex) {
+      [0, 1, 2, 3, 4, 5, 6, 8].forEach(function (nonLocalizedIndex) {
       assert.equal(files[minFile][nonLocalizedIndex],
                    res[minRes][nonLocalizedIndex]);
       });
       // Fragile - filename with :locale...
       // When fixing this test case... console.log(res[Object.keys(res)[0]]);
-      var localeIndex = 6;
+      var localeIndex = 7;
       assert.notEqual(files[minFile][localeIndex],
                       res[minRes][localeIndex]);
       var counter = 0;
