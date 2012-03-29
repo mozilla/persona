@@ -10,7 +10,7 @@ BrowserID.XHR = (function() {
       mediator = bid.Mediator,
       context,
       csrf_token,
-      transport = $,
+      transport = bid.XHRTransport,
       time_until_delay;
 
   function clearContext() {
@@ -31,14 +31,13 @@ BrowserID.XHR = (function() {
 
   function xhrError(cb, info, jqXHR, textStatus, errorThrown) {
     info = info || {};
-    var network = _.extend(info.network || {}, {
+    info.network = _.extend(info.network || {}, {
       status: jqXHR && jqXHR.status,
       textStatus: textStatus,
       errorThrown: errorThrown,
       responseText: jqXHR.responseText
     });
 
-    info.network = network;
     mediator.publish("xhr_error", info);
 
     if (cb) cb(info);
