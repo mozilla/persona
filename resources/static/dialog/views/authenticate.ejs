@@ -27,11 +27,16 @@
           </li>
 
           <li id="hint_section" class="start">
-              <p><%= format(gettext('Enter your email address to sign in to <strong>%s</strong>'), [sitename]) %></p>
+              <%= format(gettext('Enter your email address to sign in to <strong>%s</strong>'), [sitename]) %>
+
+          </li>
+
+          <li id="hint_section" class="addressInfo">
+              <%= gettext("Please hold on while we get information about your email provider.") %>
           </li>
 
           <li id="create_text_section" class="newuser">
-              <p><strong><%= gettext('Welcome to BrowserID!') %></strong></p>
+              <strong><%= gettext('Welcome to BrowserID!') %></strong>
               <p><%= gettext("This email looks new, so let's get you set up.") %></p>
           </li>
 
@@ -65,7 +70,7 @@
           </p>
           <p>
       <% } %>
-            <button class="start" tabindex="3"><%= gettext('next') %></button>
+            <button class="start addressInfo" tabindex="3"><%= gettext('next') %></button>
             <button class="newuser" tabindex="3"><%= gettext('verify email') %></button>
             <button class="returning" tabindex="3"><%= gettext('sign in') %></button>
         <% if (privacy_url && tos_url) { %>

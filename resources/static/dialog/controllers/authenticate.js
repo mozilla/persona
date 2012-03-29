@@ -17,7 +17,8 @@ BrowserID.Modules.Authenticate = (function() {
       complete = helpers.complete,
       dom = bid.DOM,
       lastEmail = "",
-      addressInfo;
+      addressInfo,
+      hints = ["newuser","forgot","returning","start","addressInfo"];
 
   function getEmail() {
     return helpers.getAndValidateEmail("#email");
@@ -31,7 +32,7 @@ BrowserID.Modules.Authenticate = (function() {
       enterPasswordState.call(self, info.ready);
     }
     else {
-      animateSwap(".newuser,.forgot,.returning", ".start");
+      showHint("start");
       complete(info.ready);
     }
   }
@@ -46,6 +47,7 @@ BrowserID.Modules.Authenticate = (function() {
       onAddressInfo(info);
     }
     else {
+      showHint("addressInfo");
       user.addressInfo(email, onAddressInfo,
         self.getErrorDialog(errors.addressInfo));
     }
@@ -91,16 +93,20 @@ BrowserID.Modules.Authenticate = (function() {
     }
   }
 
-  function animateSwap(fadeOutSelector, fadeInSelector, callback) {
-    // XXX instead of using jQuery here, think about using CSS animations.
-    $(fadeOutSelector).hide();
-    $(fadeInSelector).fadeIn(ANIMATION_TIME, callback);
+  function showHint(showSelector, callback) {
+    hints.forEach(function(className) {
+      if(className != showSelector) {
+        $("." + className).not("." + showSelector).hide();
+      }
+    });
+
+    $("." + showSelector).fadeIn(ANIMATION_TIME, callback);
   }
 
   function enterEmailState(el) {
     if (!$("#email").is(":disabled")) {
       this.submit = checkEmail;
-      animateSwap(".returning:visible,.newuser:visible", ".start");
+      showHint("start");
     }
   }
 
@@ -109,7 +115,7 @@ BrowserID.Modules.Authenticate = (function() {
 
     self.publish("enter_password", addressInfo);
     self.submit = authenticate;
-    animateSwap(".start:visible,.newuser:visible,.forgot:visible", ".returning", function() {
+    showHint("returning", function() {
       dom.focus("#password");
     });
     complete(callback);
@@ -128,7 +134,7 @@ BrowserID.Modules.Authenticate = (function() {
 
     self.publish("create_user");
     self.submit = createSecondaryUser;
-    animateSwap(".start:visible,.returning:visible", ".newuser");
+    showHint("newuser");
   }
 
 
