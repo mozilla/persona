@@ -178,6 +178,11 @@ suite.addBatch({
 
 var kp = jwk.KeyPair.generate("RS", 64);
 
+assert.within = function(got, expected, margin) {
+  assert.ok(got + margin > expected);
+  assert.ok(got - margin < expected);
+}
+
 suite.addBatch({
   "cert_key invoked with ephemeral = false": {
     topic: wsapi.post('/wsapi/cert_key', {
@@ -197,7 +202,9 @@ suite.addBatch({
       var cert = new jws.JWS();
       cert.parse(r.body);
       var pl = JSON.parse(cert.payload);
-      assert.strictEqual(pl.exp - pl.iat, config.get('certificate_validity_ms'));
+      assert.within(pl.exp - pl.iat,
+                    config.get('certificate_validity_ms'),
+                    200);
     }
   }
 });
@@ -221,7 +228,9 @@ suite.addBatch({
       var cert = new jws.JWS();
       cert.parse(r.body);
       var pl = JSON.parse(cert.payload);
-      assert.strictEqual(pl.exp - pl.iat, config.get('ephemeral_session_duration_ms'));
+      assert.within(pl.exp - pl.iat,
+                    config.get('ephemeral_session_duration_ms'),
+                    200);
     }
   }
 });
