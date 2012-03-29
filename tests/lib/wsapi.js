@@ -21,6 +21,10 @@ exports.injectCookies = function(cookies) {
   wcli.injectCookies({cookieJar: cookies}, context);
 };
 
+exports.getCookie = function(which) {
+  return wcli.getCookie(context, which);
+};
+
 exports.get = function (path, getArgs) {
   return function () {
     wcli.get(configuration, path, context, getArgs, this.callback);
