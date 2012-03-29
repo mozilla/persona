@@ -113,6 +113,10 @@ BrowserID.Errors = (function(){
       title: "Remove Email Address from Account"
     },
 
+    setComputerOwnershipStatus: {
+      title: "Setting whether the user owns the computer"
+    },
+
     setPassword: {
       title: "Setting Password"
     },
