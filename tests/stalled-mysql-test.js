@@ -366,7 +366,8 @@ suite.addBatch({
   "auth_with_assertion": {
     topic: function() {
       wsapi.post('/wsapi/auth_with_assertion', {
-        assertion: g_assertion
+        assertion: g_assertion,
+        ephemeral: true
       }).call(this);
     },
     "fails with 503": function(err, r) {

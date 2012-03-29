@@ -12,9 +12,7 @@ start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 email = require('../lib/email.js'),
 ca = require('../lib/keysigner/ca.js'),
-jwcert = require('jwcrypto/jwcert'),
 jwk = require('jwcrypto/jwk'),
-jws = require('jwcrypto/jws'),
 jwt = require('jwcrypto/jwt');
 
 var suite = vows.describe('cert-emails');

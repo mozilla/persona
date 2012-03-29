@@ -41,8 +41,8 @@ suite.addBatch({
     "and logging in with the assertion": {
       topic: function(assertion)  {
         wsapi.post('/wsapi/auth_with_assertion', {
-          email: TEST_EMAIL,
-          assertion: assertion
+          assertion: assertion,
+          ephemeral: true
         }).call(this);
       },
       "succeeds": function(err, r) {
