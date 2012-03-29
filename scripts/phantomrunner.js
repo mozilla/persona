@@ -68,12 +68,20 @@ page.open(phantom.args[0], function(status){
             var failedNum = page.evaluate(function(){
 
                 var tests = document.getElementById("qunit-tests").childNodes;
-                console.log("\nTest name (failed, passed, total)\n");
                 for(var i in tests){
-                    var text = tests[i].innerText;
-                    if(text !== undefined){
-                        if(/Rerun$/.test(text)) text = text.substring(0, text.length - 5);
-                        console.log(text + "\n");
+                    var node = tests[i];
+                    var failed = /fail/.test(node.className);
+                    if(failed) {
+                        var text = node.querySelector("strong").innerText;
+                        text.substring(0, text.length - 5);
+                        console.log(text);
+
+                        var failingItems = node.querySelectorAll(".fail");
+                        var failingItemsCount = failingItems.length;
+                        for(var i = 0; i < failingItemsCount; i++) {
+                          var failingItem = failingItems.item(i);
+                          console.log("   - " + failingItem.innerText);
+                        }
                     }
                 }
 
