@@ -86,9 +86,9 @@ app.post('/verify', function(req, resp, next) {
       if (ct.indexOf(';') != -1) ct = ct.substr(0, ct.indexOf(';'));
       if (want_ct.indexOf(ct) == -1) throw "wrong content type";
     } catch (e) {
-      return resp.json({ status: "failure", reason: "Content-Type expected to be one of: " + want_ct.join(", ") });
+      return resp.json({ status: "failure", reason: "Content-Type expected to be one of: " + want_ct.join(", ") }, 415);
     }
-    return resp.json({ status: "failure", reason: "need assertion and audience" });
+    return resp.json({ status: "failure", reason: "need assertion and audience" }, 400);
   }
 
   var startTime = new Date();
@@ -104,7 +104,7 @@ app.post('/verify', function(req, resp, next) {
     else if (!r || !r.success) err = "no response returned from child process";
 
     if (err) {
-      resp.json({"status":"failure", reason: err});
+      resp.json({"status":"failure", reason: err});  //Could be 500 or 200 OK if invalid cert
       metrics.report('verify', {
         result: 'failure',
         rp: audience
