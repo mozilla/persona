@@ -15,7 +15,7 @@ db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
 bcrypt = require('bcrypt');
 
-var suite = vows.describe('session-prolong');
+var suite = vows.describe('session-context');
 
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
@@ -82,32 +82,20 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  "session length": {
-    topic: function() {
-      this.callback(wsapi.getCookie(/^browserid_state/));
-    },
-    "is short (ephemeral)": function(cookie) {
-      assert.equal(cookie.split('.')[3], config.get('ephemeral_session_duration_ms'));
-    }
-  }
-});
-
-suite.addBatch({
-  "session prolonging": {
-    topic: wsapi.post('/wsapi/prolong_session', {}),
-    "returns 200": function(err, r) {
-      assert.strictEqual(r.code, 200);
-    }
-  }
-});
-
-suite.addBatch({
-  "session length": {
-    topic: function() {
-      this.callback(wsapi.getCookie(/^browserid_state/));
-    },
-    "becomes long": function(cookie) {
-      assert.equal(cookie.split('.')[3], config.get('authentication_duration_ms'));
+  "session context": {
+    topic: wsapi.get('/wsapi/session_context'),
+    "contains values expected": function(err, r) {
+      assert.isNull(err);
+      var resp = JSON.parse(r.body);
+      assert.strictEqual(typeof resp.csrf_token, 'string');
+      var serverTime = new Date(resp.server_time);
+      assert.ok(new Date() - serverTime < 5000);      
+      assert.strictEqual(resp.authenticated, true);
+      assert.strictEqual(resp.auth_level, 'password');
+      var domainKeyCreation = new Date(resp.domain_key_creation_time);
+      assert.ok(new Date() - serverTime < 365 * 24 * 60 * 60 * 1000);
+      assert.strictEqual(typeof resp.random_seed, 'string');
+      assert.strictEqual(resp.userid, 1);
     }
   }
 });
