@@ -32,6 +32,7 @@ BrowserID.Modules.CheckRegistration = (function() {
       var self=this;
       user[self.verifier](self.email, function(status) {
         if (status === "complete") {
+          // TODO - move the syncEmails somewhere else, perhaps into user.js
           user.syncEmails(function() {
             self.close(self.verificationMessage);
             oncomplete && oncomplete();

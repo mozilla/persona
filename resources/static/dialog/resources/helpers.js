@@ -39,13 +39,11 @@
     user.getAssertion(email, user.getOrigin(), function(assert) {
       assert = assert || null;
       wait.hide();
-      animateClose(function() {
-        self.close("assertion_generated", {
-          assertion: assert
-        });
-
-        complete(callback, assert);
+      self.close("assertion_generated", {
+        assertion: assert
       });
+
+      complete(callback, assert);
     }, self.getErrorDialog(errors.getAssertion, complete));
   }
 
@@ -129,7 +127,8 @@
     createUser: createUser,
     addEmail: addEmail,
     resetPassword: resetPassword,
-    cancelEvent: helpers.cancelEvent
+    cancelEvent: helpers.cancelEvent,
+    animateClose: animateClose
   });
 
 }());

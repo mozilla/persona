@@ -162,13 +162,21 @@ suite.addBatch({
 // valid (this is so *until* someone clicks through)
 suite.addBatch({
   "first email works": {
-    topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'firstfakepass' }),
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: 'first@fakeemail.com',
+      pass: 'firstfakepass',
+      ephemeral: false
+    }),
     "should work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
   },
   "second email works": {
-    topic: wsapi.post('/wsapi/authenticate_user', { email: 'second@fakeemail.com', pass: 'firstfakepass' }),
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: 'second@fakeemail.com',
+      pass: 'firstfakepass',
+      ephemeral: false
+    }),
     "should work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
@@ -192,13 +200,21 @@ suite.addBatch({
 // password, and all other combinations should fail
 suite.addBatch({
   "first email, first pass bad": {
-    topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'firstfakepass' }),
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: 'first@fakeemail.com',
+      pass: 'firstfakepass',
+      ephemeral: false
+    }),
     "shouldn't work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, false);
     }
   },
   "first email, second pass good": {
-    topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: 'first@fakeemail.com',
+      pass: 'secondfakepass',
+      ephemeral: false
+    }),
     "should work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
@@ -210,13 +226,21 @@ suite.addBatch({
     }
   },
   "second email, first pass good": {
-    topic: wsapi.post('/wsapi/authenticate_user', { email: 'second@fakeemail.com', pass: 'firstfakepass' }),
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: 'second@fakeemail.com',
+      pass: 'firstfakepass',
+      ephemeral: false
+    }),
     "should work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
   },
   "second email, second pass bad": {
-    topic: wsapi.post('/wsapi/authenticate_user', { email: 'second@fakeemail.com', pass: 'secondfakepass' }),
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: 'second@fakeemail.com',
+      pass: 'secondfakepass',
+      ephemeral: false
+    }),
     "shouldn' work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, false);
     }

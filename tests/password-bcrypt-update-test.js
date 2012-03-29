@@ -117,7 +117,8 @@ suite.addBatch({
   "re-authentication": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: TEST_EMAIL,
-      pass: TEST_PASSWORD
+      pass: TEST_PASSWORD,
+      ephemeral: false
     }),
     "should work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
@@ -153,7 +154,8 @@ suite.addBatch({
   "and re-authentication": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: TEST_EMAIL,
-      pass: TEST_PASSWORD
+      pass: TEST_PASSWORD,
+      ephemeral: false
     }),
     "should still work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);

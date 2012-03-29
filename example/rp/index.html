@@ -15,10 +15,11 @@ BrowserID Relying Party
 body { margin: auto; font: 13px/1.5 Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; }
 a:link, a:visited { font-style: italic; text-decoration: none; color: #008; }
 a:hover { border-bottom: 2px solid black ; }
-.title { font-size: 2em; font-weight: bold; text-align: center; margin: 1.5em; }
-.intro { font-size: 1.2em; width: 600px; margin: auto; }
-.specify { font-size: 1.1em; width: 600px; padding-top: 2em; margin: auto; }
-.assertion, .verifierResp { width: 600px; margin: auto; }
+.title { font-size: 2em; font-weight: bold; text-align: center; margin: 1.5em auto 1.5em auto; }
+.intro { font-size: 1.2em;  }
+.specify { font-size: 1.1em; padding-top: 2em; }
+body div { width: 600px; margin: auto; }
+
 pre {
   font-family: 'lucida console', monaco, 'andale mono', 'bitstream vera sans mono', consolas, monospace;
   border: 3px solid #666;
@@ -31,7 +32,6 @@ pre {
   background-color: #333;
 /*  white-space: pre;*/
   font-size: .9em;
-  width:600px;
   word-wrap: break-word;
 }
 
@@ -60,12 +60,6 @@ pre {
   <p>What flavor of assertion would you like?</p>
   <ul>
     <li>
-      <input type="checkbox" id="silent"> 
-      <label for="silent">Silent</label>
-    </li><li>
-      <input type="checkbox" id="allowPersistent">
-      <label for="allowPersistent">Allow persistent sign-in</label>
-    </li><li>
       <input type="checkbox" id="privacy">
       <label for="privacy">Supply a privacy policy</label>
     </li><li>
@@ -76,21 +70,38 @@ pre {
       <label for="requiredEmail">Require a specific email</label><br />
     </li>
   </ul>
-    <button>Get an assertion</button>
+    <button class="assertion">Get an assertion</button>
+    <button class="logout">logout</button>
 </div>
 
-<div class="verifierResp">
-  <pre> ... verifier response ... </pre>
+<div class="loginEvents">
+  <h2>login events</h2>
+  <pre> ... login events ... </pre>
 </div>
 
-<div class="assertion">
-  <pre> ... ye' ol' assertion ... </pre>
+<div class="logoutEvents">
+  <h2>logout events</h2>
+  <pre> ... logout events ... </pre>
+</div>
+
+<div class="loginCanceledEvents">
+  <h2>loginCanceled events</h2>
+  <pre> ... loginCanceled events ... </pre>
+</div>
+
+
 </body>
 
 </div>
 <script src="jquery-min.js"></script>
 <script src="https://browserid.org/include.js"></script>
 <script>
+
+function loggit() {
+  try {
+    console.log.apply(console, arguments);
+  } catch(e) {}
+}
 
 // a function to check an assertion against the server
 function checkAssertion(assertion) {
@@ -103,37 +114,47 @@ function checkAssertion(assertion) {
       audience: window.location.protocol + "//" + window.location.host
     },
     success: function(data, textStatus, jqXHR) {
-      $(".verifierResp > pre").text(JSON.stringify(data, null, 4));
+      $(".loginEvents > pre").text(JSON.stringify(data, null, 4));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       var resp = jqXHR.responseText ? JSON.parse(jqXHR.responseText) : errorThrown;
-      $(".verifierResp > pre").text(resp);
+      $(".loginEvents > pre").text(resp);
     }
   });
 };
 
+navigator.id.addEventListener('login', function(event) {
+  loggit("login event");
+  checkAssertion(event.assertion);
+});
+
+navigator.id.addEventListener('logout', function(event) {
+  loggit("logout event");
+  var txt = 'got event at ' + (new Date).toString();
+  $(".logoutEvents > pre").text(txt);
+});
+
+navigator.id.addEventListener('loginCanceled', function(event) {
+  loggit("loginCanceled");
+  var txt = 'got event at ' + (new Date).toString();
+  $(".loginCanceledEvents > pre").text(txt);
+});
+
 $(document).ready(function() {
-  $(".specify button").click(function() {
+  $(".specify button.assertion").click(function() {
     $("pre").text("... waiting ...");
 
     var requiredEmail = $.trim($('#requiredEmail').val());
     if (!requiredEmail.length) requiredEmail = undefined;
 
-    navigator.id.get(function(assertion) {
-      if (!assertion) {
-        $(".assertion pre").text("navigator.id.get() returns NULL");
-      } else {
-        $(".assertion pre").text(assertion);
-        checkAssertion(assertion);
-      }
-    }, {
-      silent: $('#silent').attr('checked'),
-      allowPersistent: $('#allowPersistent').attr('checked'),
+    navigator.id.request({
       privacyURL: $('#privacy').attr('checked') ? "/privacy.html" : undefined,
       tosURL: $('#tos').attr('checked') ? "/TOS.html" : undefined,
       requiredEmail: requiredEmail
     });
   });
+
+  $(".specify button.logout").click(navigator.id.logout);
 });
 
 </script>

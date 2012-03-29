@@ -28,7 +28,7 @@ BrowserID.Provisioning = (function() {
 
     if (!failureCB) throw "missing required failure callback";
 
-    if (!args || !args.email || !args.url) {
+    if (!args || !args.email || !args.url || !args.hasOwnProperty('ephemeral')) {
       return fail('internal', 'missing required arguments');
     }
 
@@ -61,21 +61,15 @@ BrowserID.Provisioning = (function() {
     chan.bind('beginProvisioning', function(trans, s) {
       return {
         email: args.email,
-        // XXX: certificate duration should vary depending on a variety of factors:
-        //   * user is on a device that is not her own
-        //   * user is in an environment that can't handle the crypto
-        cert_duration_s: (6 * 60 * 60)
+        // XXX: {non,}ephemeral auth duration should be stored somewhere central and
+        // should be common between primary and secondary cert provisioning.  Because
+        // the latter occurs on the server, it should probably be sent session_context.
+        cert_duration_s: ((args.ephemeral === false) ? (6 * 60 * 60) : (60 * 60))
       };
     });
 
     chan.bind('genKeyPair', function(trans, s) {
-      // this will take a little bit
-      // FIXME: refactor so code that makes this decision is shared.
-      var keysize = 256;
-      var ie_version = BrowserID.BrowserSupport.getInternetExplorerVersion();
-      if (ie_version > -1 && ie_version < 9)
-        keysize = 128;
-      keypair = jwk.KeyPair.generate("DS", keysize);
+      keypair = jwk.KeyPair.generate("DS", BrowserID.KEY_LENGTH);
       return keypair.publicKey.toSimpleObject();
     });
 

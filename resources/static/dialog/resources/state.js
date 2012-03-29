@@ -6,9 +6,9 @@
 BrowserID.State = (function() {
   var bid = BrowserID,
       storage = bid.Storage,
+      network = bid.Network,
       mediator = bid.Mediator,
       helpers = bid.Helpers,
-      publish = mediator.publish.bind(mediator),
       user = bid.User,
       moduleManager = bid.module,
       complete = bid.Helpers.complete,
@@ -20,8 +20,9 @@ BrowserID.State = (function() {
 
   function startStateMachine() {
     var self = this,
-        subscribe = self.subscribe.bind(self),
-        startState = function(save, msg, options) {
+        handleState = self.subscribe.bind(self),
+        redirectToState = mediator.publish.bind(mediator),
+        startAction = function(save, msg, options) {
           if(typeof save !== "boolean") {
             options = msg;
             msg = save;
@@ -33,96 +34,97 @@ BrowserID.State = (function() {
         },
         cancelState = self.popState.bind(self);
 
-    subscribe("start", function(msg, info) {
+    handleState("start", function(msg, info) {
       info = info || {};
 
       self.hostname = info.hostname;
-      self.allowPersistent = !!info.allowPersistent;
       self.privacyURL = info.privacyURL;
       self.tosURL = info.tosURL;
       requiredEmail = info.requiredEmail;
 
       if ((typeof(requiredEmail) !== "undefined") && (!bid.verifyEmail(requiredEmail))) {
         // Invalid format
-        startState("doError", "invalid_required_email", {email: requiredEmail});
+        startAction("doError", "invalid_required_email", {email: requiredEmail});
       }
       else if(info.email && info.type === "primary") {
         primaryVerificationInfo = info;
-        publish("primary_user", info);
+        redirectToState("primary_user", info);
       }
       else {
-        startState("doCheckAuth");
+        startAction("doCheckAuth");
       }
     });
 
-    subscribe("cancel", function() {
-      startState("doCancel");
+    handleState("cancel", function() {
+      startAction("doCancel");
     });
 
-    subscribe("window_unload", function() {
+    handleState("window_unload", function() {
       if (!self.success) {
-        bid.Storage.setStagedOnBehalfOf("");
-        startState("doCancel");
+        storage.setStagedOnBehalfOf("");
+        startAction("doCancel");
       }
     });
 
-    subscribe("authentication_checked", function(msg, info) {
+    handleState("authentication_checked", function(msg, info) {
       var authenticated = info.authenticated;
 
       if (requiredEmail) {
-        startState("doAuthenticateWithRequiredEmail", {
+        self.email = requiredEmail;
+        startAction("doAuthenticateWithRequiredEmail", {
           email: requiredEmail,
           privacyURL: self.privacyURL,
           tosURL: self.tosURL
         });
       }
       else if (authenticated) {
-        publish("pick_email");
+        redirectToState("pick_email");
       } else {
-        publish("authenticate");
+        redirectToState("authenticate");
       }
     });
 
-    subscribe("authenticate", function(msg, info) {
+    handleState("authenticate", function(msg, info) {
       info = info || {};
       info.privacyURL = self.privacyURL;
       info.tosURL = self.tosURL;
-      startState("doAuthenticate", info);
+      startAction("doAuthenticate", info);
     });
 
-    subscribe("user_staged", function(msg, info) {
+    handleState("user_staged", function(msg, info) {
       self.stagedEmail = info.email;
       info.required = !!requiredEmail;
-      startState("doConfirmUser", info);
+      startAction("doConfirmUser", info);
     });
 
-    subscribe("user_confirmed", function() {
-      startState("doEmailConfirmed", { email: self.stagedEmail} );
+    handleState("user_confirmed", function() {
+      self.email = self.stagedEmail;
+      startAction("doEmailConfirmed", { email: self.stagedEmail} );
     });
 
-    subscribe("primary_user", function(msg, info) {
+    handleState("primary_user", function(msg, info) {
       addPrimaryUser = !!info.add;
       email = info.email;
 
       var idInfo = storage.getEmail(email);
       if(idInfo && idInfo.cert) {
-        publish("primary_user_ready", info);
+        redirectToState("primary_user_ready", info);
       }
       else {
         // We don't want to put the provisioning step on the stack, instead when
         // a user cancels this step, they should go back to the step before the
         // provisioning.
-        startState(false, "doProvisionPrimaryUser", info);
+        startAction(false, "doProvisionPrimaryUser", info);
       }
     });
 
-    subscribe("primary_user_provisioned", function(msg, info) {
+    handleState("primary_user_provisioned", function(msg, info) {
       info = info || {};
       info.add = !!addPrimaryUser;
-      startState("doPrimaryUserProvisioned", info);
+      startAction("doPrimaryUserProvisioned", info);
     });
 
-    subscribe("primary_user_unauthenticated", function(msg, info) {
+    handleState("primary_user_unauthenticated", function(msg, info) {
       info = helpers.extend(info || {}, {
         add: !!addPrimaryUser,
         email: email,
@@ -134,48 +136,49 @@ BrowserID.State = (function() {
       if(primaryVerificationInfo) {
         primaryVerificationInfo = null;
         if(requiredEmail) {
-          startState("doCannotVerifyRequiredPrimary", info);
+          startAction("doCannotVerifyRequiredPrimary", info);
         }
         else if(info.add) {
           // Add the pick_email in case the user cancels the add_email screen.
           // The user needs something to go "back" to.
-          publish("pick_email");
-          publish("add_email", info);
+          redirectToState("pick_email");
+          redirectToState("add_email", info);
         }
         else {
-          publish("authenticate", info);
+          redirectToState("authenticate", info);
         }
       }
       else {
-        startState("doVerifyPrimaryUser", info);
+        startAction("doVerifyPrimaryUser", info);
       }
     });
 
-    subscribe("primary_user_authenticating", function(msg, info) {
+    handleState("primary_user_authenticating", function(msg, info) {
       // Keep the dialog from automatically closing when the user browses to
       // the IdP for verification.
       moduleManager.stopAll();
       self.success = true;
     });
 
-    subscribe("primary_user_ready", function(msg, info) {
-      startState("doEmailChosen", info);
+    handleState("primary_user_ready", function(msg, info) {
+      redirectToState("email_chosen", info);
     });
 
-    subscribe("pick_email", function() {
-      startState("doPickEmail", {
+    handleState("pick_email", function() {
+      startAction("doPickEmail", {
         origin: self.hostname,
-        allow_persistent: self.allowPersistent,
         privacyURL: self.privacyURL,
         tosURL: self.tosURL
       });
     });
 
-    subscribe("email_chosen", function(msg, info) {
+    handleState("email_chosen", function(msg, info) {
       info = info || {};
 
       var email = info.email,
           idInfo = storage.getEmail(email);
+
+      self.email = email;
 
       function oncomplete() {
         complete(info.complete);
@@ -184,23 +187,22 @@ BrowserID.State = (function() {
       if(idInfo) {
         if(idInfo.type === "primary") {
           if(idInfo.cert) {
-            startState("doEmailChosen", info);
+            startAction("doEmailChosen", info);
           }
           else {
             // If the email is a primary, and their cert is not available,
             // throw the user down the primary flow.
             // Doing so will catch cases where the primary certificate is expired
-            // and the user must re-verify with their IdP.  This flow will
-            // generate its own assertion when ready.
-            publish("primary_user", info);
+            // and the user must re-verify with their IdP.
+            redirectToState("primary_user", info);
           }
         }
         else {
           user.checkAuthentication(function(authentication) {
             if(authentication === "assertion") {
-              // user not authenticated, kick them over to the required email
-              // screen.
-              startState("doAuthenticateWithRequiredEmail", {
+              // user must authenticate with their password, kick them over to
+              // the required email screen to enter the password.
+              startAction("doAuthenticateWithRequiredEmail", {
                 email: email,
                 secondary_auth: true,
                 privacyURL: self.privacyURL,
@@ -208,7 +210,7 @@ BrowserID.State = (function() {
               });
             }
             else {
-              startState("doEmailChosen", info);
+              startAction("doEmailChosen", info);
             }
             oncomplete();
           }, oncomplete);
@@ -219,59 +221,79 @@ BrowserID.State = (function() {
       }
     });
 
-    subscribe("notme", function() {
-      startState("doNotMe");
+    handleState("notme", function() {
+      startAction("doNotMe");
     });
 
-    subscribe("logged_out", function() {
-      publish("authenticate");
+    handleState("logged_out", function() {
+      redirectToState("authenticate");
     });
 
-    subscribe("authenticated", function(msg, info) {
-      publish("email_chosen", info);
+    handleState("authenticated", function(msg, info) {
+      redirectToState("email_chosen", info);
     });
 
-    subscribe("forgot_password", function(msg, info) {
+    handleState("forgot_password", function(msg, info) {
       // forgot password initiates the forgotten password flow.
-      startState(false, "doForgotPassword", info);
+      startAction(false, "doForgotPassword", info);
     });
 
-    subscribe("reset_password", function(msg, info) {
+    handleState("reset_password", function(msg, info) {
       // reset password says the password has been reset, now waiting for
       // confirmation.
-      startState(false, "doResetPassword", info);
+      startAction(false, "doResetPassword", info);
     });
 
-    subscribe("assertion_generated", function(msg, info) {
+    handleState("assertion_generated", function(msg, info) {
       self.success = true;
       if (info.assertion !== null) {
-        startState("doAssertionGenerated", info.assertion);
+        if (storage.usersComputer.shouldAsk(network.userid())) {
+          // We have to confirm the user's status
+          self.assertion_info = info;
+          redirectToState("is_this_your_computer", info);
+        }
+        else {
+          storage.setLoggedIn(user.getOrigin(), self.email);
+          startAction("doAssertionGenerated", { assertion: info.assertion, email: self.email });
+        }
       }
       else {
-        publish("pick_email");
+        redirectToState("pick_email");
       }
     });
 
-    subscribe("add_email", function(msg, info) {
+    handleState("is_this_your_computer", function(msg, info) {
+      startAction("doIsThisYourComputer", info);
+    });
+
+    handleState("user_computer_status_set", function(msg, info) {
+      // User's status has been confirmed, redirect them back to the
+      // assertion_generated state with the stored assertion_info
+      var assertion_info = self.assertion_info;
+      self.assertion_info = null;
+      redirectToState("assertion_generated", assertion_info);
+    });
+
+    handleState("add_email", function(msg, info) {
       info = helpers.extend(info || {}, {
         privacyURL: self.privacyURL,
         tosURL: self.tosURL
       });
 
-      startState("doAddEmail", info);
+      startAction("doAddEmail", info);
     });
 
-    subscribe("email_staged", function(msg, info) {
+    handleState("email_staged", function(msg, info) {
       self.stagedEmail = info.email;
       info.required = !!requiredEmail;
-      startState("doConfirmEmail", info);
+      startAction("doConfirmEmail", info);
     });
 
-    subscribe("email_confirmed", function() {
-      startState("doEmailConfirmed", { email: self.stagedEmail} );
+    handleState("email_confirmed", function() {
+      startAction("doEmailConfirmed", { email: self.stagedEmail} );
     });
 
-    subscribe("cancel_state", function(msg, info) {
+    handleState("cancel_state", function(msg, info) {
       cancelState(info);
     });
 

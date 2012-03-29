@@ -47,6 +47,12 @@ BrowserID.TestHelpers = (function() {
     ok($("#error #network").text().length, "network contents have been written");
   }
 
+  function clearStorage() {
+    for(var key in localStorage) {
+      localStorage.removeItem(key);
+    }
+  }
+
   var TestHelpers = {
     XHR_TIME_UNTIL_DELAY: 100,
     setup: function() {
@@ -63,7 +69,7 @@ BrowserID.TestHelpers = (function() {
       transport.useResult("valid");
 
       network.init();
-      storage.clear();
+      clearStorage();
 
       $("body").stop().show();
       $("body")[0].className = "";
@@ -93,7 +99,7 @@ BrowserID.TestHelpers = (function() {
         time_until_delay: 10 * 1000
       });
       network.init();
-      storage.clear();
+      clearStorage();
       screens.wait.hide();
       screens.error.hide();
       screens.delay.hide();

@@ -1,0 +1,233 @@
+#!/usr/bin/env node
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+require('./lib/test_env.js');
+
+const assert =
+require('assert'),
+vows = require('vows'),
+start_stop = require('./lib/start-stop.js'),
+wsapi = require('./lib/wsapi.js'),
+db = require('../lib/db.js'),
+config = require('../lib/configuration.js'),
+bcrypt = require('bcrypt'),
+primary = require('./lib/primary.js'),
+ca = require('../lib/keysigner/ca.js'),
+jwk = require('jwcrypto/jwk'),
+jwt = require('jwcrypto/jwt'),
+jws = require('jwcrypto/jws');
+
+var suite = vows.describe('session-context');
+
+// disable vows (often flakey?) async error behavior
+suite.options.error = false;
+
+start_stop.addStartupBatches(suite);
+
+// test that auth_with_assertion also respects the 'ephemeral' argument
+const PRIMARY_DOMAIN = 'example.domain',
+      PRIMARY_EMAIL = 'testuser@' + PRIMARY_DOMAIN,
+      PRIMARY_ORIGIN = 'http://127.0.0.1:10002';
+
+// here we go!  let's authenticate with an assertion from
+// a primary.
+
+var primaryUser = new primary({
+  email: PRIMARY_EMAIL,
+  domain: PRIMARY_DOMAIN
+});
+
+suite.addBatch({
+  "generating an assertion": {
+    topic: function() {
+      return primaryUser.getAssertion(PRIMARY_ORIGIN);
+    },
+    "succeeds": function(r, err) {
+      assert.isString(r);
+    },
+    "and logging in with the assertion with ephemeral = true": {
+      topic: function(assertion)  {
+        wsapi.post('/wsapi/auth_with_assertion', {
+          assertion: assertion,
+          ephemeral: true
+        }).call(this);
+      },
+      "works": function(err, r) {
+        var resp = JSON.parse(r.body);
+        assert.isObject(resp);
+        assert.isTrue(resp.success);
+      },
+      "has expected duration": function(err, r) {
+        assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('ephemeral_session_duration_ms'));
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "generating an assertion": {
+    topic: function() {
+      return primaryUser.getAssertion(PRIMARY_ORIGIN);
+    },
+    "succeeds": function(r, err) {
+      assert.isString(r);
+    },
+    "and logging in with the assertion with ephemeral = false": {
+      topic: function(assertion)  {
+        wsapi.post('/wsapi/auth_with_assertion', {
+          assertion: assertion,
+          ephemeral: false
+        }).call(this);
+      },
+      "works": function(err, r) {
+        var resp = JSON.parse(r.body);
+        assert.isObject(resp);
+        assert.isTrue(resp.success);
+      },
+      "has expected duration": function(err, r) {
+        assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('authentication_duration_ms'));
+      }
+    }
+  }
+});
+
+// now test that authenticate_user & secondary emails properly respect the 'ephemeral' argument to
+// alter session length
+const TEST_EMAIL = 'someuser@somedomain.com',
+      PASSWORD = 'thisismypassword';
+
+var token = undefined;
+
+// first stage the account
+suite.addBatch({
+  "account staging": {
+    topic: wsapi.post('/wsapi/stage_user', {
+      email: TEST_EMAIL,
+      site: 'fakesite.com'
+    }),
+    "works":     function(err, r) {
+      assert.equal(r.code, 200);
+    }
+  }
+});
+
+// wait for the token
+suite.addBatch({
+  "a token": {
+    topic: function() {
+      start_stop.waitForToken(this.callback);
+    },
+    "is obtained": function (t) {
+      assert.strictEqual(typeof t, 'string');
+      token = t;
+    }
+  }
+});
+
+// create a new account via the api with (first address)
+suite.addBatch({
+  "setting password": {
+    topic: function() {
+      wsapi.post('/wsapi/complete_user_creation', {
+        token: token,
+        pass: PASSWORD
+      }).call(this);
+    },
+    "works just fine": function(err, r) {
+      assert.equal(r.code, 200);
+    }
+  }
+});
+
+suite.addBatch({
+  "authenticating with the password and ephemeral = true": {
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: TEST_EMAIL,
+      pass: PASSWORD,
+      ephemeral: true
+    }),
+    "works as expected": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).success, true);
+    },
+    "yields a session of expected length": function(err, r) {
+      assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('ephemeral_session_duration_ms'));
+    }
+  }
+});
+
+suite.addBatch({
+  "authenticating with the password and ephemeral = false": {
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: TEST_EMAIL,
+      pass: PASSWORD,
+      ephemeral: false
+    }),
+    "works as expected": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).success, true);
+    },
+    "yields a session of expected length": function(err, r) {
+      assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('authentication_duration_ms'));
+    }
+  }
+});
+
+// finally, let's verify that ephemeral is properly handled when certifying keys for a user
+
+var kp = jwk.KeyPair.generate("RS", 64);
+
+suite.addBatch({
+  "cert_key invoked with ephemeral = false": {
+    topic: wsapi.post('/wsapi/cert_key', {
+      email: TEST_EMAIL,
+      pubkey: kp.publicKey.serialize(),
+      ephemeral: false
+    }),
+    "returns a response with a proper content-type" : function(err, r) {
+      assert.strictEqual(r.code, 200);
+    },
+    "returns a valid cert": function(err, r) {
+      ca.verifyChain('127.0.0.1', [r.body], function(pk) {
+        assert.isTrue(kp.publicKey.equals(pk));
+      });
+    },
+    "has the correct expiration": function(err, r) {
+      var cert = new jws.JWS();
+      cert.parse(r.body);
+      var pl = JSON.parse(cert.payload);
+      assert.strictEqual(pl.exp - pl.iat, config.get('certificate_validity_ms'));
+    }
+  }
+});
+
+suite.addBatch({
+  "cert_key invoked with ephemeral = true": {
+    topic: wsapi.post('/wsapi/cert_key', {
+      email: TEST_EMAIL,
+      pubkey: kp.publicKey.serialize(),
+      ephemeral: true
+    }),
+    "returns a response with a proper content-type" : function(err, r) {
+      assert.strictEqual(r.code, 200);
+    },
+    "returns a valid cert": function(err, r) {
+      ca.verifyChain('127.0.0.1', [r.body], function(pk) {
+        assert.isTrue(kp.publicKey.equals(pk));
+      });
+    },
+    "has the correct expiration": function(err, r) {
+      var cert = new jws.JWS();
+      cert.parse(r.body);
+      var pl = JSON.parse(cert.payload);
+      assert.strictEqual(pl.exp - pl.iat, config.get('ephemeral_session_duration_ms'));
+    }
+  }
+});
+
+start_stop.addShutdownBatches(suite);
+
+// run or export the suite.
+if (process.argv[1] === __filename) suite.run();
+else suite.export(module);

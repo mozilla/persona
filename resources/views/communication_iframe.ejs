@@ -5,24 +5,7 @@
 <html>
 <head><title>non-interactive iframe</title>
   <meta charset="utf-8">
-  <% if(production) { %>
-    <script type="text/javascript" src="/production/communication_iframe.js"></script>
-  <% } else { %>
-    <script type="text/javascript" src="/lib/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="/lib/jschannel.js"></script>
-    <script type="text/javascript" src="/lib/underscore-min.js"></script>
-    <script type="text/javascript" src="/lib/vepbundle.js"></script>
-    <script type="text/javascript" src="/lib/hub.js"></script>
-    <script type="text/javascript" src="/shared/javascript-extensions.js"></script>
-    <script type="text/javascript" src="/shared/browserid.js"></script>
-    <script type="text/javascript" src="/shared/mediator.js"></script>
-    <script type="text/javascript" src="/shared/helpers.js"></script>
-    <script type="text/javascript" src="/shared/storage.js"></script>
-    <script type="text/javascript" src="/shared/xhr.js"></script>
-    <script type="text/javascript" src="/shared/network.js"></script>
-    <script type="text/javascript" src="/shared/user.js"></script>
-    <script type="text/javascript" src="/communication_iframe/start.js"></script>
-  <% } %>
+  <%- cachify_js('/production/communication_iframe.js') %>
 </head>
 <body></body>
 </html>

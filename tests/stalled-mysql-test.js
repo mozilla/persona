@@ -112,7 +112,8 @@ suite.addBatch({
   "authenticate_user": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: 'test@example.com',
-      pass: 'oogabooga'
+      pass: 'oogabooga',
+      ephemeral: false
     }),
     "fails with 503": function(err, r) {
       assert.strictEqual(r.code, 503);
@@ -227,7 +228,8 @@ suite.addBatch({
   "cert_key": {
     topic: wsapi.post('/wsapi/cert_key', {
       email: "test@whatev.er",
-      pubkey: "bogus"
+      pubkey: "bogus",
+      ephemeral: false
     }),
     "fails with 503": function(err, r) {
       assert.strictEqual(r.code, 503);
@@ -364,7 +366,8 @@ suite.addBatch({
   "auth_with_assertion": {
     topic: function() {
       wsapi.post('/wsapi/auth_with_assertion', {
-        assertion: g_assertion
+        assertion: g_assertion,
+        ephemeral: true
       }).call(this);
     },
     "fails with 503": function(err, r) {

@@ -6,7 +6,8 @@
 (function() {
   var bid = BrowserID,
       network = bid.Network,
-      user = bid.User;
+      user = bid.User,
+      storage = bid.Storage;
 
   network.init();
 
@@ -25,28 +26,71 @@
     }
   }
 
-  chan.bind("getPersistentAssertion", function(trans, params) {
-    setRemoteOrigin(trans.origin);
+  var loggedInUser = undefined;
 
-    trans.delayReturn(true);
+  // the controlling page may "pause" the iframe when someone else (the dialog)
+  // is supposed to emit events
+  var pause = false;
 
-    user.getPersistentSigninAssertion(function(rv) {
-      trans.complete(rv);
-    }, function() {
-      trans.error();
+  function checkAndEmit(oncomplete) {
+    if (pause) return;
+
+    // this will re-certify the user if neccesary
+    user.getSilentAssertion(loggedInUser, function(email, assertion) {
+      if (email) {
+        // only send login events when the assertion is defined - when
+        // the 'loggedInUser' is already logged in, it's false - that is
+        // when the site already has the user logged in and does not want
+        // the resources or cost required to generate an assertion
+        if (assertion) chan.notify({ method: 'login', params: assertion });
+        loggedInUser = email;
+      } else if (loggedInUser !== null) {
+        // only send logout events when loggedInUser is not null, which is an
+        // indicator that the site thinks the user is logged out
+        chan.notify({ method: 'logout' });
+        loggedInUser = null;
+      }
+      oncomplete && oncomplete();
+    }, function(err) {
+      chan.notify({ method: 'logout' });
+      loggedInUser = null;
+      oncomplete && oncomplete();
     });
+  }
+
+  function watchState() {
+    storage.watchLoggedIn(remoteOrigin, checkAndEmit);
+  }
+
+  // one of two events will cause us to begin checking to
+  // see if an event shall be emitted - either an explicit
+  // loggedInUser event or page load.
+  chan.bind("loggedInUser", function(trans, email) {
+    loggedInUser = email;
+  });
+
+  chan.bind("loaded", function(trans, params) {
+    setRemoteOrigin(trans.origin);
+    checkAndEmit(watchState);
+    trans.complete();
   });
 
   chan.bind("logout", function(trans, params) {
-    setRemoteOrigin(trans.origin);
+    if (loggedInUser != null) {
+      storage.setLoggedIn(remoteOrigin, false);
+      chan.notify({ method: 'logout' });
+    }
+  });
 
-    trans.delayReturn(true);
+  chan.bind("dialog_running", function(trans, params) {
+    pause = true;
+  });
 
-    user.clearPersistentSignin(function(rv) {
-      trans.complete(rv);
-    }, function() {
-      trans.error();
-    });
+  chan.bind("dialog_complete", function(trans, params) {
+    pause = false;
+    // the dialog running can change authentication status,
+    // lets manually purge our network cache
+    network.clearContext();
+    checkAndEmit();
   });
 }());
-

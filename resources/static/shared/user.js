@@ -33,9 +33,9 @@ BrowserID.User = (function() {
         // if it was issued *before* the domain key was last updated or
         // if the certificate expires in less that 5 minutes from now.
         function isExpired(cert) {
-          // if it expires in less than 5 minutes, it's too old to use.
+          // if it expires in less than 2 minutes, it's too old to use.
           var diff = cert.expires.valueOf() - serverTime.valueOf();
-          if (diff < (60 * 5 * 1000)) {
+          if (diff < (60 * 2 * 1000)) {
             return true;
           }
 
@@ -436,7 +436,11 @@ BrowserID.User = (function() {
       }
 
       provisioning(
-        { email: email, url: info.prov },
+        {
+          email: email,
+          url: info.prov,
+          ephemeral: !storage.usersComputer.confirmed(email)
+        },
         function(keypair, cert) {
           var userInfo = _.extend({
             keypair: keypair,
@@ -458,7 +462,6 @@ BrowserID.User = (function() {
           }
         }
       );
-
     },
 
     /**
@@ -626,6 +629,10 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - called on error.
      */
     logoutUser: function(onComplete, onFailure) {
+      // logout of all websites
+      storage.logoutEverywhere();
+
+      // log out of browserid
       network.logout(function() {
         setAuthenticationStatus(false);
         if (onComplete) {
@@ -905,12 +912,7 @@ BrowserID.User = (function() {
      */
     syncEmailKeypair: function(email, onComplete, onFailure) {
       prepareDeps();
-      // FIXME: parameterize!
-      var keysize = 256;
-      var ie_version = BrowserID.BrowserSupport.getInternetExplorerVersion();
-      if (ie_version > -1 && ie_version < 9)
-        keysize = 128;
-      var keypair = jwk.KeyPair.generate("DS", keysize);
+      var keypair = jwk.KeyPair.generate("DS", bid.KEY_LENGTH);
       setTimeout(function() {
         certifyEmailKeypair(email, keypair, onComplete, onFailure);
       }, 0);
@@ -1046,27 +1048,38 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Get an assertion for the current domain, as long as the user has
-     * selected that they want the email/site remembered
+     * Get an assertion for the current domain if the user is signed into it
      * @method getPersistentSigninAssertion
      * @param {function} onComplete - called on completion.  Called with an
      * assertion if successful, null otw.
      * @param {function} onFailure - called on XHR failure.
      */
-    getPersistentSigninAssertion: function(onComplete, onFailure) {
+    getSilentAssertion: function(siteSpecifiedEmail, onComplete, onFailure) {
+      // XXX: why do we need to check authentication status here explicitly.
+      //      why can't we fail later?  the problem with doing this is that
+      //      knowing correct present authentication status requires that we
+      //      talk to the server, because you can be logged in or logged out
+      //      in many different contexts (dialog, manage page, cookies expire).
+      //      so if we rely on localstorage only and check authentication status
+      //      only when we know a network request will be required, we very well
+      //      might have fewer race conditions and do fewer network requests.
       User.checkAuthentication(function(authenticated) {
         if (authenticated) {
-          var remembered = storage.site.get(origin, "remember");
-          var email = storage.site.get(origin, "email");
-          if (remembered && email) {
-            User.getAssertion(email, origin, onComplete, onFailure);
-          }
-          else if (onComplete) {
-            onComplete(null);
+          var loggedInEmail = storage.getLoggedIn(origin);
+          if (loggedInEmail !== siteSpecifiedEmail) {
+            if (loggedInEmail) {
+              User.getAssertion(loggedInEmail, origin, function(assertion) {
+                onComplete(assertion ? loggedInEmail : null, assertion);
+              }, onFailure);
+            } else {
+              onComplete(null, null);
+            }
+          } else {
+            onComplete(loggedInEmail, null);
           }
         }
         else if (onComplete) {
-          onComplete(null);
+          onComplete(null, null);
         }
       }, onFailure);
     },
@@ -1078,15 +1091,14 @@ BrowserID.User = (function() {
      * a boolean, true if successful, false otw.
      * @param {function} onFailure - called on XHR failure.
      */
-    clearPersistentSignin: function(onComplete, onFailure) {
+    logout: function(onComplete, onFailure) {
       User.checkAuthentication(function(authenticated) {
         if (authenticated) {
-          storage.site.set(origin, "remember", false);
-          if (onComplete) {
-            onComplete(true);
-          }
-        } else if (onComplete) {
-          onComplete(false);
+          storage.setLoggedIn(origin, false);
+        }
+
+        if (onComplete) {
+          onComplete(!!authenticated);
         }
       }, onFailure);
     },
@@ -1111,8 +1123,6 @@ BrowserID.User = (function() {
 
       onComplete(hasSecondary);
     }
-
-
   };
 
   User.setOrigin(document.location.host);

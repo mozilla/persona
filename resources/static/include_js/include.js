@@ -918,26 +918,11 @@
     };
   }());
 
-
-  // this is for calls that are non-interactive
-  function _open_hidden_iframe(doc) {
-    var iframe = doc.createElement("iframe");
-    iframe.style.display = "none";
-    doc.body.appendChild(iframe);
-    iframe.src = ipServer + "/communication_iframe";
-    return iframe;
-  }
-
-  /**
-   * The meat and potatoes of the verified email protocol
-   */
-
-
   if (!navigator.id) {
     navigator.id = {};
   }
 
-  if (!navigator.id.getVerifiedEmail || navigator.id._getVerifiedEmailIsShimmed) {
+  if (!navigator.id.request || navigator.id._shimmed) {
     var ipServer = "https://browserid.org";
     var userAgent = navigator.userAgent;
     // We must check for both XUL and Java versions of Fennec.  Both have
@@ -951,105 +936,223 @@
 
     var w;
 
-    navigator.id.get = function(callback, options) {
-      if (typeof callback !== 'function') {
-        throw "navigator.id.get() requires a callback argument";
+    // table of registered event listeners
+    var listeners = {
+      login: [ ],
+      logout: [ ],
+      loginCanceled: [ ]
+    };
+
+    var compatMode = undefined;
+    function checkCompat(requiredMode) {
+      if (requiredMode === true) {
+        try { console.log("this site uses deprecated APIs (see documentation for navigator.id.request())"); } catch(e) { }
       }
 
-      if (options && options.silent) {
-        _noninteractiveCall('getPersistentAssertion', { }, function(rv) {
-          callback(rv);
-        }, function(e, msg) {
-          callback(null);
-        });
-      } else {
-        // focus an existing window
-        if (w) {
+      if (compatMode === undefined) compatMode = requiredMode;
+      else if (compatMode != requiredMode) {
+        throw "you cannot combine browserid event APIs with navigator.id.getVerifiedEmail() or navigator.id.get()" +
+              "this site should instead use navigator.id.request() and the browserid event API";
+      }
+    }
+
+    function emitEvent(type, params) {
+      if (listeners[type]) {
+        var evt = document.createEvent('Event');
+        evt.initEvent(type, true, true);
+        // XXX: we should probably implement .stopImmediatePropagation()
+        if (params) {
+          for (var k in params) {
+            if (params.hasOwnProperty(k)) {
+              evt[k] = params[k];
+            }
+          }
+        }
+        for (var i = 0; i < listeners[type].length; i++) {
           try {
-            w.focus();
+            listeners[type][i](evt);
+          } catch(e) {
+            // XXX: what shall we do when an exception is raised by an event handler?
           }
-          catch(e) {
-            /* IE7 blows up here, do nothing */
-          }
-          return;
         }
+      }
+    }
 
-        if (!BrowserSupport.isSupported()) {
-          var reason = BrowserSupport.getNoSupportReason(),
-              url = "unsupported_dialog";
+    var commChan;
 
-          if(reason === "LOCALSTORAGE_DISABLED") {
-            url = "cookies_disabled";
+    // this is for calls that are non-interactive
+    function _open_hidden_iframe() {
+      if (!commChan) {
+        var doc = window.document;
+        var iframe = doc.createElement("iframe");
+        iframe.style.display = "none";
+        doc.body.appendChild(iframe);
+        iframe.src = ipServer + "/communication_iframe";
+        commChan = Channel.build({
+          window: iframe.contentWindow,
+          origin: ipServer,
+          scope: "mozid_ni",
+          onReady: function() {
+            // once the channel is set up, we'll fire a loaded message.  this is the
+            // cutoff point where we'll say if 'setLoggedInUser' was not called before
+            // this point, then it wont be called (XXX: optimize and improve me)
+            commChan.call({ method: 'loaded', success: function(){}, error: function() {} });
           }
-
-          w = window.open(
-            ipServer + "/" + url,
-            null,
-            windowOpenOpts);
-          return;
-        }
-
-        w = WinChan.open({
-          url: ipServer + '/sign_in',
-          relay_url: ipServer + '/relay',
-          window_features: windowOpenOpts,
-          params: {
-            method: "get",
-            params: options
-          }
-        }, function(err, r) {
-          // clear the window handle
-          w = undefined;
-          // ignore err!
-          callback(err ? null : (r ? r : null));
         });
+
+        commChan.bind('logout', function(trans, params) {
+          emitEvent('logout');
+        });
+
+        commChan.bind('login', function(trans, params) {
+          emitEvent('login', { assertion: params });
+        });
+      }
+    }
+
+    function internalAddEventListener(type, listener) {
+      // add event to listeners table if it's not there already
+      if (!listeners[type]) throw "unsupported event type: '" + type + "'";
+
+      // is the function already registered?
+      for (var i = 0; i < listeners[type].length; i++) {
+        if (listeners[type][i] === listener) return;
+      }
+      listeners[type].push(listener);
+    }
+
+    navigator.id.addEventListener = function(type, listener) {
+      checkCompat(false);
+
+      // allocate iframe if it is not allocated
+      _open_hidden_iframe();
+      internalAddEventListener(type,listener);
+    };
+
+    function internalRemoveEventListener(type, listener ) {
+      // remove event from listeners table
+      var i;
+      for (i = 0; i < listeners[type].length; i++) {
+        if (listeners[type][i] === listener) break;
+      }
+      if (i < listeners[type][i].length) {
+        listeners[type].splice(i, 1);
+      }
+    }
+
+    navigator.id.removeEventListener = function(type, listener/*, useCapture */) {
+      checkCompat(false);
+      internalRemoveEventListener(type, listener);
+    };
+
+    navigator.id.logout = function() {
+      checkCompat(false);
+
+      // allocate iframe if it is not allocated
+      _open_hidden_iframe();
+
+      // send logout message
+      commChan.notify({ method: 'logout' });
+    };
+
+    navigator.id.setLoggedInUser = function(email) {
+      checkCompat(false);
+
+      // 1. allocate iframe if it is not allocated
+      _open_hidden_iframe();
+
+      // 2. send a "loggedInUser" message to iframe
+      commChan.notify({ method: 'loggedInUser', params: email });
+    };
+
+    // backwards compatibility function
+    navigator.id.get = function(callback, options) {
+      checkCompat(true);
+
+      if (options && options.silent) {
+        if (callback) setTimeout(function() { callback(null); }, 0);
+      } else {
+        function handleEvent(e) {
+          internalRemoveEventListener('login', handleEvent);
+          callback((e && e.assertion) ? e.assertion : null);
+        }
+        internalAddEventListener('login', handleEvent);
+        internalRequest(options);
       }
     };
 
-    navigator.id.getVerifiedEmail = function (callback, options) {
-      if (options) {
-        throw "getVerifiedEmail doesn't accept options.  use navigator.id.get() instead.";
-      }
+    // backwards compatibility function
+    navigator.id.getVerifiedEmail = function(callback) {
+      checkCompat(true);
       navigator.id.get(callback);
     };
 
-    navigator.id.logout = function(callback) {
-      _noninteractiveCall('logout', { }, function(rv) {
-        callback(rv);
-      }, function() {
-        callback(null);
-      });
+    navigator.id.request = function(options) {
+      checkCompat(false);
+      return internalRequest(options);
     };
 
-    var _noninteractiveCall = function(method, args, onsuccess, onerror) {
-      var doc = window.document;
-      var ni_iframe = _open_hidden_iframe(doc);
-
-      var chan = Channel.build({window: ni_iframe.contentWindow, origin: ipServer, scope: "mozid_ni"});
-
-      function cleanup() {
-        chan.destroy();
-        chan = undefined;
-        doc.body.removeChild(ni_iframe);
+    function internalRequest(options) {
+      // focus an existing window
+      if (w) {
+        try {
+          w.focus();
+        }
+        catch(e) {
+          /* IE7 blows up here, do nothing */
+        }
+        return;
       }
 
-      chan.call({
-        method: method,
-        params: args,
-        success: function(rv) {
-          if (onsuccess) {
-            onsuccess(rv);
-          }
-          cleanup();
-        },
-        error: function(code, msg) {
-          if (onerror) onerror(code, msg);
-          cleanup();
+      if (!BrowserSupport.isSupported()) {
+        var reason = BrowserSupport.getNoSupportReason(),
+        url = "unsupported_dialog";
+
+        if(reason === "LOCALSTORAGE_DISABLED") {
+          url = "cookies_disabled";
         }
+
+        w = window.open(
+          ipServer + "/" + url,
+          null,
+          windowOpenOpts);
+        return;
+      }
+
+      // notify the iframe that the dialog is running so we
+      // don't do duplicative work
+      if (commChan) commChan.notify({ method: 'dialog_running' });
+
+      w = WinChan.open({
+        url: ipServer + '/sign_in',
+        relay_url: ipServer + '/relay',
+        window_features: windowOpenOpts,
+        params: {
+          method: "get",
+          params: options
+        }
+      }, function(err, r) {
+        // unpause the iframe to detect future changes in login state
+        if (commChan) {
+          // update the loggedInUser in the case that an assertion was generated, as
+          // this will prevent the comm iframe from thinking that state has changed
+          // and generating a new assertion.  IF, however, this request is not a success,
+          // then we do not change the loggedInUser - and we will let the comm frame determine
+          // if generating a logout event is the right thing to do
+          if (!err && r && r.email) {
+            commChan.notify({ method: 'loggedInUser', params: r.email });
+          }
+          commChan.notify({ method: 'dialog_complete' });
+        }
+
+        // clear the window handle
+        w = undefined;
+        if (!err && r && r.assertion) emitEvent('login', { assertion: r.assertion });
+        else emitEvent('loginCanceled');
       });
     };
 
-    navigator.id._getVerifiedEmailIsShimmed = true;
+    navigator.id._shimmed = true;
   }
 }());
 

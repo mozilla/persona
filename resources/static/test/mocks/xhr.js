@@ -34,12 +34,12 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/email_for_token?token=token valid": { email: "testuser@testuser.com" },
       "get /wsapi/email_for_token?token=token needsPassword": { email: "testuser@testuser.com", needs_password: true },
       "get /wsapi/email_for_token?token=token invalid": { success: false },
-      "post /wsapi/authenticate_user valid": { success: true },
+      "post /wsapi/authenticate_user valid": { success: true, userid: 1 },
       "post /wsapi/authenticate_user invalid": { success: false },
       "post /wsapi/authenticate_user incorrectPassword": { success: false },
       "post /wsapi/authenticate_user ajaxError": undefined,
-      "post /wsapi/auth_with_assertion primary": { success: true },
-      "post /wsapi/auth_with_assertion valid": { success: true },
+      "post /wsapi/auth_with_assertion primary": { success: true, userid: 1 },
+      "post /wsapi/auth_with_assertion valid": { success: true, userid: 1 },
       "post /wsapi/auth_with_assertion invalid": { success: false },
       "post /wsapi/auth_with_assertion ajaxError": undefined,
       "post /wsapi/cert_key valid": random_cert,
@@ -141,7 +141,7 @@ BrowserID.Mocks.xhr = (function() {
       };
 
 
-      if(type === "post" && !obj.data.csrf) {
+      if(type === "post" && obj.data.indexOf("csrf") === -1) {
         ok(false, "missing csrf token on POST request");
       }
 

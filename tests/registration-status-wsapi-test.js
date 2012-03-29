@@ -35,7 +35,11 @@ suite.addBatch({
 
 suite.addBatch({
   "authentication as an unknown user": {
-    topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: 'first@fakeemail.com',
+      pass: 'secondfakepass',
+      ephemeral: false
+    }),
     "fails": function (err, r) {
       assert.isFalse(JSON.parse(r.body).success);
     }
@@ -234,7 +238,11 @@ suite.addBatch({
 
 suite.addBatch({
   "after re-registration, authenticating with new credetials": {
-    topic: wsapi.post('/wsapi/authenticate_user', { email: 'first@fakeemail.com', pass: 'secondfakepass' }),
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: 'first@fakeemail.com',
+      pass: 'secondfakepass',
+      ephemeral: false
+    }),
     "works as you might expect": function (err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }

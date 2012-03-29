@@ -1015,95 +1015,22 @@ var vep = require("./vep");
     failureCheck(lib.cancelUser);
   });
 
-  asyncTest("getPersistentSigninAssertion with invalid login - expect null assertion", function() {
+
+  asyncTest("logout with invalid login", function() {
     xhr.setContextInfo("auth_level", undefined);
 
-    lib.syncEmailKeypair("testuser@testuser.com", function() {
-      storage.site.set(testOrigin, "remember", false);
-      storage.site.set(testOrigin, "email", "testuser@testuser.com");
-      xhr.useResult("invalid");
-
-      lib.getPersistentSigninAssertion(function onComplete(assertion) {
-        strictEqual(assertion, null, "assertion with invalid login is null");
-        start();
-      }, testHelpers.unexpectedXHRFailure);
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("getPersistentSigninAssertion without email set for site - expect null assertion", function() {
-    xhr.setContextInfo("auth_level", "primary");
-    storage.site.set(testOrigin, "remember", true);
-    storage.site.remove(testOrigin, "email");
-
-    lib.getPersistentSigninAssertion(function onComplete(assertion) {
-      strictEqual(assertion, null, "assertion with no email is null");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("getPersistentSigninAssertion without remember set for site - expect null assertion", function() {
-    xhr.setContextInfo("auth_level", "primary");
-    lib.syncEmailKeypair("testuser@testuser.com", function() {
-      storage.site.set(testOrigin, "remember", false);
-      storage.site.set(testOrigin, "email", "testuser@testuser.com");
-      // invalidate the email so that we force a fresh key certification with
-      // the server
-      storage.invalidateEmail("testuser@testuser.com");
-
-      lib.getPersistentSigninAssertion(function onComplete(assertion) {
-        strictEqual(assertion, null, "assertion with remember=false is null");
-        start();
-      }, testHelpers.unexpectedXHRFailure);
-    });
-  });
-
-  asyncTest("getPersistentSigninAssertion with valid login, email, and remember set to true - expect assertion", function() {
-    xhr.setContextInfo("auth_level", "primary");
-    lib.syncEmailKeypair("testuser@testuser.com", function() {
-      storage.site.set(testOrigin, "remember", true);
-      storage.site.set(testOrigin, "email", "testuser@testuser.com");
-      // invalidate the email so that we force a fresh key certification with
-      // the server
-      storage.invalidateEmail("testuser@testuser.com");
-
-      lib.getPersistentSigninAssertion(function onComplete(assertion) {
-        ok(assertion, "we have an assertion!");
-        start();
-      }, testHelpers.unexpectedXHRFailure);
-    });
-  });
-
-  asyncTest("getPersistentSigninAssertion with XHR failure", function() {
-    xhr.setContextInfo("auth_level", "primary");
-    lib.syncEmailKeypair("testuser@testuser.com", function() {
-      storage.site.set(testOrigin, "remember", true);
-      storage.site.set(testOrigin, "email", "testuser@testuser.com");
-      // invalidate the email so that we force a fresh key certification with
-      // the server
-      storage.invalidateEmail("testuser@testuser.com");
-
-      failureCheck(lib.getPersistentSigninAssertion);
-    });
-
-
-  });
-
-  asyncTest("clearPersistentSignin with invalid login", function() {
-    xhr.setContextInfo("auth_level", undefined);
-
-    lib.clearPersistentSignin(function onComplete(success) {
+    lib.logout(function onComplete(success) {
       strictEqual(success, false, "success with invalid login is false");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("clearPersistentSignin with valid login with remember set to true", function() {
+  asyncTest("logout with valid login with remember set to true", function() {
     xhr.setContextInfo("auth_level", "primary");
     storage.site.set(testOrigin, "remember", true);
 
-    lib.clearPersistentSignin(function onComplete(success) {
+    lib.logout(function onComplete(success) {
       strictEqual(success, true, "success flag good");
-      strictEqual(storage.site.get(testOrigin, "remember"), false, "remember flag set to false");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });

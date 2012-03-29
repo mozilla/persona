@@ -6,8 +6,7 @@
 BrowserID.Modules.ProvisionPrimaryUser = (function() {
   "use strict";
 
-  var ANIMATION_TIME = 250,
-      bid = BrowserID,
+  var bid = BrowserID,
       user = bid.User,
       errors = bid.Errors;
 

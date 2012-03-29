@@ -139,10 +139,8 @@
     margin-bottom: 20px;
   }
 
-  label[for=remember] {
-    display: block;
-    font-size: 15px;
-    margin-bottom: 25px;
+  .form_section {
+    margin-top: 20px;
   }
 
   #content, .form_section, .inputs, .vertical {
