@@ -82,6 +82,13 @@ function hasProperCacheHeaders(path) {
         }, this.callback);
       },
       "returns a 304": function(err, r) {
+        if (! err) {
+          if (['/communication_iframe', '/relay'].indexOf(path) !== -1) {
+            assert.strictEqual(r.headers['x-frame-options'], undefined);
+          } else {
+            assert.strictEqual(r.headers['x-frame-options'],"DENY");
+          }
+        }
         assert.strictEqual(r.statusCode, 304);
       }
     },
