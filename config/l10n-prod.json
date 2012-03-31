@@ -1,7 +1,7 @@
 {
 "supported_languages": [
     "bg", "ca", "cs", "da", "de", "el", "en-US", "es", "et", "eu", "fi", "fr",
-    "ga", "hr", "it", "lij", "lt", "nl", "pa", "pl", "pt-BR", "rm",
+    "ga", "hr", "hu", "it", "lij", "lt", "nl", "pa", "pl", "pt-BR", "rm",
     "ru", "sk", "sl", "sq", "sr", "sv", "tr", "uk", "zh-CN", "zh-TW"
   ]
 }
