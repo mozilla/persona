@@ -52,7 +52,7 @@ and using the following software:
 
   * *nginx* runs as user 'www-data'
   * *node.js* servers run as user 'www-data'
-  *  when git pushing, all publishing and restarting runs as user 'git'
+  * when git pushing, all publishing and restarting runs as user 'git'
 
 ## Setup
 
