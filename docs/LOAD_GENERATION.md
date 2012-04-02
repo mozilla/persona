@@ -62,4 +62,3 @@ could account for browser caching here with another factor).
 
 The result of this is a description of each activity in terms of network
 transactions that can be expressed in code.   
-

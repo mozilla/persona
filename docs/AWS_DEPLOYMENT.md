@@ -76,7 +76,6 @@ going to deploy.  Once chosen, invoke deploy.js like this:
         "ipAddress": "184.73.84.132"
     }
 
-
 The output contains instructions for use.  Note that every occurance of 
 `some_name_i_chose` will be replaced with the name *YOU* chose.
 
@@ -105,7 +104,6 @@ Say you want to push changes to this server from a completely different
 branch:
 
     $ git push -f some_name_i_chose myotherbranch:master
-
 
 ## Seeing what VMs you have running
 
@@ -148,4 +146,3 @@ access to:
 Feel free to start a new server, and ssh in as `app` to explore all of the
 configuration.  An attempt has been made to isolate as much configuration 
 under this user's account as possible.
-

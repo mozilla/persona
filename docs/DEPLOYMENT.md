@@ -299,5 +299,3 @@ create a file as root at `/etc/logrotate.d/browserid`:
 Now your logfiles will be automatically rotated.
 
 easy, right?
-
-
