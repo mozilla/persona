@@ -13,6 +13,10 @@ node_js:
 
 notifications:
   irc: "irc.mozilla.org#identity"
+  email:
+    - lloyd@mozilla.com
+    - jbonacci@mozilla.com
+    - jrgm@mozilla.com
 
 env:
  - WHAT_TESTS=front MYSQL_USER=root
