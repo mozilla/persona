@@ -252,7 +252,7 @@ train-2011.11.03:
   * Suppress iOS autocapitalizion and auto-correction for email addresses: #464
   * Improve front end email address validation: #513
   * Improve repository organization: #503, #488
-  * As part of above and in prep for #460 - all processes (browserid, verifier, etc) are now always run separately (never combined into the same express instance
+  * As part of above and in prep for #460 - all processes (browserid, verifier, etc) are now always run separately (never combined into the same express instance)
   * Test improvements: #520, #530, #531
   * Fix undefined reference (crash) in verifier after verification failure: #523 (hot-fixed in production: https://github.com/mozilla/browserid/commit/ba3c53)
   * Remove UI that corresponds to unimplemented features: #519
