@@ -29,7 +29,7 @@ This document assumes we're deploying on an **Ubuntu 10.04.1 LTS** box,
 and using the following software:
 
  * **nginx** - frontend web server that handles static content and
-   serves as a reverse proxy for node.js servers running on local host
+   serves as a reverse proxy for node.js servers running on localhost
    config: `/etc/nginx/conf/nginx.conf`
 
  * **node.js** - all non-static servers run with node.  modules are installed
