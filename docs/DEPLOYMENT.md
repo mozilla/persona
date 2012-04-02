@@ -168,8 +168,8 @@ fi
 ### 6. Get node servers running
 
 At this point, pushing code to gitolite will cause /home/browserid/code to be updated.  Now
-we need to get the servers running!  Manually we can verify that the servers will run.
-For the browser id server:
+we need to get the servers running!  First, verify that the servers will run manually.
+For the browserid server:
 
     cd /home/browserid/code/browserid && sudo -u www-data ./run.js
 
