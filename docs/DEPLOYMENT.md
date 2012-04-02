@@ -50,7 +50,6 @@ and using the following software:
 
 ### Permissions conventions
 
-Permissions conventions:
   * *nginx* runs as user 'www-data'
   * *node.js* servers run as user 'www-data'
   *  when git pushing, all publishing and restarting runs as user 'git'
