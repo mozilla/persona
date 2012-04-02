@@ -384,7 +384,7 @@ train-2011.08.18:
   * forgotten password flow was broken with port to mysql, fixed: #170
   * improved metrics reporting abstraction: #168
   * moved all server logging into a single file: #169
-  * all files created at execution time are now in one location:  #172	
+  * all files created at execution time are now in one location: #172
   * developer ergonomics - improved colorized logging with terse webserver output to console
   * always require a user to authenticate if they don't have an active session: #74
   * improved CSRF protection to fix race conditions in previous train: #173
