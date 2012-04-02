@@ -79,6 +79,9 @@ going to deploy.  Once chosen, invoke deploy.js like this:
 The output contains instructions for use.  Note that every occurance of 
 `some_name_i_chose` will be replaced with the name *YOU* chose.
 
+IMPORTANT: Amazon charges money by the hour for running instances.  Destroy
+instances when they are no longer needed to avoid unexpected charges.
+
 ## Deploying code to your server
 
 The deployment process sets up a 'git remote', which just means it runs
