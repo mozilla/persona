@@ -56,7 +56,7 @@ and using the following software:
 
 ## Setup
 
-### 1. gitolite!
+### 1. Install gitolite
 
 *This step is optional*.  gitlite turns a normal unix machine into a
 "git server".  All that gitolite does is provide some utilities and
@@ -81,7 +81,7 @@ add a remote to your local copy of the browserid repo and push to it:
 Now you have a clone of your browserid repository that's trivial to update.
 You can use ssh keys with passphrases and ssh-agent if security is a concern.
 
-### 2. install node.js!
+### 2. Install node.js
 
 At present we're running node.js 0.4.10.  Lastest along the 4 line should
 work:
@@ -108,7 +108,7 @@ Subsequent steps use different software which you might need to install.
   3. `CREATE DATABASE browserid;`
   4. `GRANT CREATE, DELETE, INDEX, INSERT, LOCK TABLES, SELECT, UPDATE ON browserid.* TO 'browserid'@'localhost';`
 
-### 5. Set up post-update hook
+### 5. Set up git post-update hook
 
 *This step is optional* - if you want to manually update code you
  probably skipped step #1, you can skip this one as well.  All you need
@@ -166,7 +166,7 @@ post update hook, annotated to help you follow along:
     fi
 </pre>
 
-### 6. get node servers running
+### 6. Get node servers running
 
 At this point, pushing code to gitolite will cause /home/browserid/code to be updated.  Now
 we need to get the servers running!  Manually we can verify that the servers will run.
@@ -227,7 +227,7 @@ check host browserid.org with address 127.0.0.1
   6. verify servers are running!  check `/var/log/monit.log`, curl ports 62700
      and 62800, and verify servers are restarted at 10s if you kill em!
 
-### 7. set up nginx!
+### 7. Install nginx
 
 At this point we've got automatic server restart, simple git based code
 publishing, and all of the software prerequisites installed on the box.  The
@@ -297,7 +297,7 @@ server {
 
   5. restart your webserver: `sudo /etc/init.d/nginx restart
 
-### 8. set up log rotation
+### 8. Set up log rotation
 
 create a file as root at `/etc/logrotate.d/browserid`:
 
