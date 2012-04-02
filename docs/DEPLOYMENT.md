@@ -129,40 +129,40 @@ Now, here's a full sample script that you can start with for that
 post-update hook, annotated to help you follow along:
 
 <pre>
-    #!/bin/bash
+#!/bin/bash
 
-    # only run these commands if it's the browserid repo bein' pushed
-    if [ "x$GL_REPO" == 'xbrowserid' ] ; then
-        # create a temporary directory where we'll stage new code                                                                                                                        
-        NEWCODE=`mktemp -d`
-        echo "staging code to $NEWCODE"
-        mkdir -p $NEWCODE
-        git archive --format=tar dev | tar -x -C $NEWCODE
-    
-        echo "generating production resources"
-        cd $NEWCODE/browserid && ./compress.sh && cd -
-    
-        # stop the servers
-        curl -o --url http://localhost:62700/code_update > /dev/null 2>&1
-        curl -o --url http://localhost:62800/code_update > /dev/null 2>&1
-    
-        # now move code into place, and keep a backup of the last code
-        # that was in production in .old
-        echo "moving updated code into place"
-        rm -rf /home/browserid/code.old
-        mv /home/browserid/code{,.old}
-        mv $NEWCODE /home/browserid/code
-    
-        echo "fixing permissions"
-        find /home/browserid/code -exec chgrp www-data {} \; > /dev/null 2>&1
-        find /home/browserid/code -type d -exec chmod 0775 {} \; > /dev/null 2>&1
-        find /home/browserid/code -type f -exec chmod ga+r {} \; > /dev/null 2>&1
-        find /home/browserid/code -type f -perm /u+x -exec chmod g+x {} \; > /dev/null 2>&1
-    
-        echo "updating dependencies"
-        ln -s /home/browserid/node_modules /home/browserid/code/node_modules
-        cd /home/browserid/code && npm install && cd -
-    fi
+# only run these commands if it's the browserid repo bein' pushed
+if [ "x$GL_REPO" == 'xbrowserid' ] ; then
+    # create a temporary directory where we'll stage new code
+    NEWCODE=`mktemp -d`
+    echo "staging code to $NEWCODE"
+    mkdir -p $NEWCODE
+    git archive --format=tar dev | tar -x -C $NEWCODE
+
+    echo "generating production resources"
+    cd $NEWCODE/browserid && ./compress.sh && cd -
+
+    # stop the servers
+    curl -o --url http://localhost:62700/code_update > /dev/null 2>&1
+    curl -o --url http://localhost:62800/code_update > /dev/null 2>&1
+
+    # now move code into place, and keep a backup of the last code
+    # that was in production in .old
+    echo "moving updated code into place"
+    rm -rf /home/browserid/code.old
+    mv /home/browserid/code{,.old}
+    mv $NEWCODE /home/browserid/code
+
+    echo "fixing permissions"
+    find /home/browserid/code -exec chgrp www-data {} \; > /dev/null 2>&1
+    find /home/browserid/code -type d -exec chmod 0775 {} \; > /dev/null 2>&1
+    find /home/browserid/code -type f -exec chmod ga+r {} \; > /dev/null 2>&1
+    find /home/browserid/code -type f -perm /u+x -exec chmod g+x {} \; > /dev/null 2>&1
+
+    echo "updating dependencies"
+    ln -s /home/browserid/node_modules /home/browserid/code/node_modules
+    cd /home/browserid/code && npm install && cd -
+fi
 </pre>
 
 ### 6. Get node servers running
