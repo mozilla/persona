@@ -2,7 +2,7 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-## How to deploy BrowserID
+# How to deploy BrowserID
 
 This describes how to take the code here, put it on a server, and build
 a service like browserid.org.  
