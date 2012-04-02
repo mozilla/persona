@@ -105,6 +105,8 @@ branch:
 
     $ git push -f some_name_i_chose myotherbranch:master
 
+You are pushing *from* the local `myotherbranch`, to the remote `master`.
+
 ## Seeing what VMs you have running
 
     $ scripts/deploy.js list
