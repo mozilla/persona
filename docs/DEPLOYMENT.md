@@ -86,11 +86,10 @@ You can use ssh keys with passphrases and ssh-agent if security is a concern.
 At present we're running node.js 0.4.10.  Lastest along the 4 line should
 work:
 
-  1. install dev libs and tools to build node: g++ & libssl-dev
-  2. `./configure && make && sudo make install`
-  3. now install npm: `git clone https://github.com/isaacs/npm.git && cd npm && sudo make install`
-  4. intstall uglify-js, required to create production resources:
-     `npm install -g uglify-js`
+  1. install dev tools, required to build node: `apt-get install g++ libssl-dev`
+  2. build and install node: `./configure && make && sudo make install`
+  3. install npm, required to install uglify-js: `git clone https://github.com/isaacs/npm.git && cd npm && sudo make install`
+  4. intstall uglify-js, required to create production resources: `npm install -g uglify-js`
 
 ### 3. Install software prerequisites
 
