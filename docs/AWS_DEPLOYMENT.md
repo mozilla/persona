@@ -139,7 +139,7 @@ There are several things that are pre-configured for your pleasure:
      a reasonable error message when your servers aren't running.
   5. a mysql database with a browserid user without any password.
 
-### User Accounts
+### User accounts
 
 VMs have two pre-configured users, both which you have passphraseless SSH
 access to:
