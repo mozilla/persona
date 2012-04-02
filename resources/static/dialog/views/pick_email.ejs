@@ -32,9 +32,13 @@
                       format(' href="%s" target="_new"', [privacy_url])
                     ]) %>
         </p>
+        <p>
       <% } %>
 
         <button id="signInButton"><%= gettext('sign in') %></button>
-        <br style="clear: both" />
+        <!--br style="clear: both" /-->
+      <% if (privacy_url && tos_url) { %>
+        </p>
+      <% } %>
       </div>
   </div>

@@ -46,6 +46,10 @@ header, section, footer {
   display: block;
 }
 
+ul, li {
+  list-style-type: none;
+}
+
 .sans {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -103,9 +107,6 @@ input[type=password] {
        -moz-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
          -o-box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
             box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-
-    /* Fix webkit putting an inner box shadow on the input elements. Issue #1313 */
-    -webkit-appearance: caret;
 }
 
 input[type=email]:focus,
@@ -137,6 +138,7 @@ input[type=password]:disabled {
 input[type=radio],
 input[type=checkbox] {
   cursor: pointer;
+  margin-left: 2px; /* necessary or chrome cuts off part of the radio button */
 }
 
 button,
@@ -245,8 +247,7 @@ button[disabled], .submit_disabled button, .submit_disabled .button,
 }
 
 
-.submit #cancel,
-#signIn .submit #cancel {
+.submit #cancel {
   float: right;
   margin-right: 15px;
   line-height: 28px;
@@ -286,11 +287,9 @@ header a {
 header a.home {
   width: 80px;
   height: 21px;
-  background-image: url('/i/icon.png');
+  background: url("/i/icon.png") 0px 4px no-repeat;
+  text-indent: -9999px;
   display: block;
-  background-position: left 4px;
-  background-repeat: no-repeat;
-  text-indent: -999px;
 }
 
 footer {
@@ -329,10 +328,6 @@ footer .help {
 
 #error h2 {
     color: #ff0000;
-}
-
-#error ul, #error li {
-    list-style-type: none;
 }
 
 #wait strong, #error strong, #delay strong {

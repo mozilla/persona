@@ -17,33 +17,19 @@
   <title><%= gettext('BrowserID') %></title>
 </head>
   <body class="waiting">
-      <div id="wrapper">
-          <header id="header" class="cf">
-              <ul>
-                  <li><a class="home" target="_blank" href="/">BrowserID Home</a></li>
-              </ul>
-          </header>
+      <header id="header">
+         <h1><a class="home" target="_blank" href="/">BrowserID Home</a></h1>
+      </header>
 
-          <div id="content">
-            <%- body %>
-          </div>
-
-          <footer>
-                <!--ul class="cf">
-                    <li>By <a href="http://mozillalabs.com">Mozilla Labs</a></li>
-
-                    <li>&mdash;</li>
-                    <li><a href="#">Privacy</a></li>
-                    <li><a href="#">TOS</a></li>
-                </ul-->
-
-                <div class="learn">
-<%- format(gettext('BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>'), [" href='/about' target='_blank'"]) %>
-                </div>
-
-          </footer>
-
+      <div id="content">
+        <%- body %>
       </div>
+
+      <footer>
+<%- format(gettext('BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>'), [" href='/about' target='_blank'"]) %>
+
+      </footer>
+
 
       <% if (useJavascript !== false) { %>
         <%- cachify_js(util.format('/production/%s/dialog.js', locale)) %>

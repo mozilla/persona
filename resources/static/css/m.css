@@ -235,4 +235,12 @@
     margin: 115px 0 28px 0; /* put a margin-top on so that it does not go under the header */
 
   }
+
+  input[type=email],
+  input[type=password] {
+
+      /* Fix webkit putting an inner box shadow on the input elements. Issue #1313 */
+      -webkit-appearance: caret;
+  }
+
 }
