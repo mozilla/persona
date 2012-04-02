@@ -3,10 +3,10 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 Here lives the [BrowserID][] implementation.  BrowserID is an implementation of the
-[verified email protocol][].
+[verified email protocol][VEP].
 
   [BrowserID]:https://browserid.org
-  [verified email protocol]:https://wiki.mozilla.org/Labs/Identity/VerifiedEmailProtocol
+  [VEP]:https://wiki.mozilla.org/Labs/Identity/VerifiedEmailProtocol
 
 This repository contains several distinct things related to BrowserID:
 
