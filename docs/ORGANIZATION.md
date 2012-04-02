@@ -6,37 +6,41 @@ Several node.js servers are implemented in this repostiory, each is
 implemented on top of the [express](http://expressjs.com) framework
 and they share the following directory structure:
 
-  * `bin` - Contains the BrowserID servers (browserid,  dbwriter, keysgner, and verifier) and CLI tools.
-    * Each node.js application is the "entry point" for that app and is a typical express app.
+* `bin/` - Contains the BrowserID servers (browserid,  dbwriter, keysgner, and verifier) and CLI tools.
 
-  * `scripts` - Contains more CLI tools
-    * `run_locally.js` - Script to run all the node.js servers server - typically bound
-     against a well known localhost port.
+ * Each node.js application is the "entry point" for that app and is a typical express app.
 
-  * `lib/` - Server side JavaScript modules
+* `scripts/` - Contains more CLI tools
 
-  * `var/` - A demand created directory with ephemeral files generated
-             during the run (keys, logs, etc).
+ * `run_locally.js` - Script to run all the node.js servers server - typically bound
+    against a well known localhost port.
 
-  * `resources/`
-    * `views/` - Express views (server side), served before `static/` (if present)
+* `lib/` - Server side JavaScript modules
 
-    * `static/` - Files served verbatim without any substitution nor server
-             side logic in them
+* `var/` - A demand created directory with ephemeral files generated
+            during the run (keys, logs, etc).
 
-      * `include.js` - The JS file included by all RPs.
+* `resources/`
 
-      * `dialog` - The meat of the BID dialog, a client side MVC architecture with a state machine
+ * `views/` - Express views (server side), served before `static/` (if present)
 
-        * `views/` - Client side EJS templates, not executed by ejs.js server side
+ * `static/` - Files served verbatim without any substitution nor server
+            side logic in them
 
-        * `resources` - State machine and other logic powering the dialog
+  * `include.js` - The JS file included by all RPs.
 
-      * `pages` - Client side business logic for dialog
+  * `dialog/` - The meat of the BID dialog, a client side MVC architecture with a state machine
 
-      * `shared` - JavaScript which is re-used across dialogs
+   * `views/` - Client side EJS templates, not executed by ejs.js server side
 
-      * `test` - QUnit tests
+   * `resources/` - State machine and other logic powering the dialog
 
-  * `tests/` - Tests written using [vows](http://vowsjs.org)
-    * Run via `scripts/run_all_tests.sh`
+  * `pages/` - Client side business logic for dialog
+
+  * `shared/` - JavaScript which is re-used across dialogs
+
+  * `test/` - QUnit tests
+
+* `tests/` - Tests written using [vows](http://vowsjs.org)
+
+ * Run via `scripts/run_all_tests.sh`

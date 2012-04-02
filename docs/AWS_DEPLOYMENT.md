@@ -17,7 +17,7 @@ In order to use these deploy scripts, you need the following:
 
 Once you have these things, you'll need to relay them to deployment
 scripts via your environment.  you might put something like this
-in your .bashrc:
+in your `.bashrc`:
 
     # This is your Access Key ID from your AWS Security Credentials
     export AWS_ID=<your id>
@@ -26,7 +26,7 @@ in your .bashrc:
     # This is a magic credential you get from lloyd
     export BROWSERID_DEPLOY_DNS_KEY=98...33
 
-## test!
+## Verify the credentials
 
 You can verify that your credentials are properly configured, try:
 
@@ -39,7 +39,7 @@ You can verify that your credentials are properly configured, try:
 Let's get started.  To deploy your first vm, all you have to do is pick a 
 hostname.  This might be something like `feature385` or `issue1000`, or 
 you can use a different name that is short but meaningful to what you're
-going to deploy.  Once chosen, invoke deploy.js like this:
+going to deploy.  Once chosen, invoke `deploy.js` like this:
 
     $ scripts/deploy.js deploy some_name_i_chose
     attempting to set up some_name_i_chose.hacksign.in
@@ -76,16 +76,18 @@ going to deploy.  Once chosen, invoke deploy.js like this:
         "ipAddress": "184.73.84.132"
     }
 
-
 The output contains instructions for use.  Note that every occurance of 
-`some_name_i_chose` will be replaces with the name *YOU* chose.
+`some_name_i_chose` will be replaced with the name *YOU* chose.
 
-## deploying code
+IMPORTANT: Amazon charges money by the hour for running instances.  Destroy
+instances when they are no longer needed to avoid unexpected charges.
+
+## Deploying code to your server
 
 The deployment process sets up a 'git remote', which just means it runs
 the following command for you:
 
-    $ git remote add some_name_i_chose app@<ip>:git
+    $ git remote add some_name_i_chose app@<ipAddress>:git
 
 This allows you to more conveniently push code to your server.  Say 
 you wanted to now deploy code from `mybranch` on this new VM:
@@ -106,6 +108,7 @@ branch:
 
     $ git push -f some_name_i_chose myotherbranch:master
 
+You are pushing *from* the local `myotherbranch`, to the remote `master`.
 
 ## Seeing what VMs you have running
 
@@ -114,38 +117,37 @@ branch:
 
 ## Destroying your first VM
 
-These things cost money, not a lot, but money.  So when you want to 
-decomission a VM and release your hold on the DNS name, simply:"
+These things cost money by the hour, not a lot, but money.  So when you want to
+decommission a VM and release your hold on the DNS name, simply:
 
     $ scripts/deploy.js destroy some_name_i_chose
     trying to destroy VM for some_name_i_chose.hacksign.in: done
     trying to remove DNS for some_name_i_chose.hacksign.in: done
 
-## An overview of deployments
+## Overview of what's deployed to VMs
 
 Deploying code in this fashion spins up a pre-configured VM template.
 There are several things that are pre-configured for your pleasure:
 
-  1. ssh keys: your publick key is copied up to the server for passphraseless
+  1. ssh keys: your public key is copied up to the server for passphraseless
      ssh access.
-  2. Git support: an 'app' user is created with a repository under `~/git`
-     that you can push to
-  3. `post-update` hook: the code that runs after you push to update and
-     restart your servers
+  2. Git support: an 'app' user is created with a repository under `~app/git`
+     on the server, that you can push to.
+  3. `post-update` hook: when you push to the `master` branch of the server's
+     git repository, this code restarts your services to pick up the changes.
   4. nginx with SSL and 503 support - you'll get SSL for free and will see
-     a reasonable message when your servers aren't running
-  5. a mysql database with a browserid user without any password
+     a reasonable error message when your servers aren't running.
+  5. a mysql database with a browserid user without any password.
 
-### User Accounts
+### User accounts
 
 VMs have two pre-configured users, both which you have passphraseless SSH
 access to:
 
-  * `ec2-user` is an acct with full sudo access
-  * `app` is an acct that has no sudo and is the user who recieves and
-    builds code, and starts the servers.
+  * `ec2-user` is an account with full sudo access.
+  * `app` is an account that has no sudo, receives and builds code via git
+    pushes, and runs the application servers.
 
 Feel free to start a new server, and ssh in as `app` to explore all of the
 configuration.  An attempt has been made to isolate as much configuration 
 under this user's account as possible.
-

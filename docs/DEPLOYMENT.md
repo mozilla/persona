@@ -2,51 +2,61 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-## How to deploy BrowserID
+# How to deploy BrowserID
 
 This describes how to take the code here, put it on a server, and build
 a service like browserid.org.  
 
 So what are we deploying, anyway?
 
-  * *the browserid server* - a node.js server which implements a web services api, stores a record of users, the email addresses they've verified, a bcrypted password, outstanding verification tokens, etc
-  * *the verifier* - a stateless node.js server which does cryptographic verification of assertions. This thing is hosted on browserid.org as a convenience, but people using browserid can choose to relocated it if they want to their own servers.
-  * *the browserid.org website* - the templates, css, and javascript that make up the visible part of browserid.org
-  * *the javascript/HTML dialog & include library* - this is include.js and the code that it includes, the bit that someone using browserid will include.
+  * *the browserid server* - a node.js server which implements a web services
+    api, stores a record of users, the email addresses they've verified, a
+    bcrypted password, outstanding verification tokens, etc.
+  * *the verifier* - a stateless node.js server which does cryptographic
+    verification of assertions. This thing is hosted on browserid.org as a
+    convenience, but people using browserid can choose to relocated it if they
+    want to their own servers.
+  * *the browserid.org website* - the templates, css, and javascript that make
+    up the visible part of browserid.org
+  * *the javascript/HTML dialog & include library* - this is include.js and the
+    code that it includes, the bit that someone using browserid will include.
 
 ## Overview
 
-Software in use
+### Software in use
 
 This document assumes we're deploying on an **Ubuntu 10.04.1 LTS** box,
 and using the following software:
 
- * **nginx** - frontend web server that handles static content and
-   serves as a reverse proxy for node.js servers running on local host
-   config: `/etc/nginx/conf/nginx.conf`
+  * **nginx** - frontend web server that handles static content and
+    serves as a reverse proxy for node.js servers running on localhost
 
- * **node.js** - all non-static servers run with node.  modules are installed
-   using npm in `/home/http/node_modules`
+    config: `/etc/nginx/conf/nginx.conf`
 
- * **monit** - provides monitoring and automatic restarting of node.js servers
-   when they go down (by accident or upon code publishing)
-   config files are: `/etc/monitrc`, and `/etc/monit.d/*`.  Also see the
-   helper script that starts node servers: `/etc/monit.d/start_node_server`
+  * **node.js** - all non-static servers run with node.  modules are installed
+    using npm in `/home/http/node_modules`
 
- * **gitolite** - installed under the git user to provide multi-user ssh based
-   git access.  post-update hook handles updating code and restarting servers.
-   see that here: `/home/git/.gitolite/hooks/common/post-update`
+  * **monit** - provides monitoring and automatic restarting of node.js servers
+    when they go down (by accident or upon code publishing).
+
+    config files are: `/etc/monitrc`, and `/etc/monit.d/*`
+
+    helper script that starts node servers: `/etc/monit.d/start_node_server`
+
+  * **gitolite** - installed under the git user to provide multi-user ssh based
+    git access.  post-update hook handles updating code and restarting servers.
+
+    hook: `/home/git/.gitolite/hooks/common/post-update`
 
 ### Permissions conventions
 
-Permissions conventions:
   * *nginx* runs as user 'www-data'
   * *node.js* servers run as user 'www-data'
-  *  when git pushing, all publishing and restarting runs as user 'git'
+  * when *git* pushing, all publishing and restarting runs as user 'git'
 
 ## Setup
 
-### 1. gitolite!
+### 1. Install gitolite
 
 *This step is optional*.  gitlite turns a normal unix machine into a
 "git server".  All that gitolite does is provide some utilities and
@@ -61,107 +71,105 @@ Let's get started:
   2. install git if required: `sudo apt-get install git-core`
   3. become user git: `sudo su -s /bin/bash git`
   4. hop into your home directory: `cd`
-  5. [This.](http://sitaramc.github.com/gitolite/doc/1-INSTALL.html#_non_root_method)
-  6. add a browserid repo.  [This.](http://sitaramc.github.com/gitolite/doc/2-admin.html#_adding_users_and_repos).
+  5. install gitolite: [This.](http://sitaramc.github.com/gitolite/nonroot.html)
+  6. add a browserid repo: [This.](http://sitaramc.github.com/gitolite/add.html)
 
 At this point you've morphed your servers into git servers.  Go ahead and
 add a remote to your local copy of the browserid repo and push to it:
 `git remote add shortaliasforthenewvm git@myserver:browserid.git && git push --all shortaliasforthenewvm` 
 
 Now you have a clone of your browserid repository that's trivial to update.
-You can use ssh keys with passphrases and ssh-agent if you are less of an 
-optimist.
+You can use ssh keys with passphrases and ssh-agent if security is a concern.
 
-### 2. install node.js!
+### 2. Install node.js
 
 At present we're running node.js 0.4.10.  Lastest along the 4 line should
 work:
 
-  1. install dev libs and tools to build node: g++ & libssl-dev
-  2. `./configure && make && sudo make install`
-  3. now install npm: `git clone https://github.com/isaacs/npm.git && cd npm && sudo make install`
-  4. intstall uglify-js, required to create production resources:
-     `npm install -g uglify-js`
+  1. install dev tools, required to build node: `apt-get install g++ libssl-dev`
+  2. build and install node: `./configure && make && sudo make install`
+  3. install npm, required to install uglify-js: `git clone https://github.com/isaacs/npm.git && cd npm && sudo make install`
+  4. intstall uglify-js, required to create production resources: `npm install -g uglify-js`
 
 ### 3. Install software prerequisites
 
 Subsequent steps use different software which you might need to install.
 
-  * **curl** - used to iniate http requests from the cmd line (to kick the browserid server)
+  * **curl** - used to initiate http requests from the command line (to kick the browserid server)
   * **java** - used to minify css
   * **mysql 5.1+** - the preferred persistence backend
 
 ### 4. Set up mysql
 
   0. ensure you can connect via TCP - localhost:3306 (like, make sure skip-networking is off in my.cnf)
-  1. connect to the database as user root
+  1. connect to the database as user root - `mysql -u root`
   2. `CREATE USER 'browserid'@'localhost' IDENTIFIED BY 'browserid';`
   3. `CREATE DATABASE browserid;`
   4. `GRANT CREATE, DELETE, INDEX, INSERT, LOCK TABLES, SELECT, UPDATE ON browserid.* TO 'browserid'@'localhost';`
 
-### 5. Set up post-update hook
+### 5. Set up git post-update hook
 
-*This step is optional* - if you want to manually update code you
- probably skipped step #1, you can skip this one as well.  All you need
+*This step is optional* - if you want to manually update code, then you
+probably skipped step #1; you can skip this one as well.  All you need
 to do is check out the code from github and run node.
 
-Given we've now got a simple way to push updates to the server, and 
+Given that we've now got a simple way to push updates to the server, and
 we've got npm and node running, let's get the software running!  The task
-here is as a `post-update` hook (triggered by pushing changes to the server)
-to have the server update its code and restart the server.
+here is to create a git `post-update` hook to have the server update its
+code and restart the server when code is pushed.
 
-To get this done, we'll create a "post-update hook" which will live on your
-server under the git user's directory: 
+To get this done, we'll configure a hook which will live on your server
+in the git user's git directory:
 
 First, [do this] to add a blank executable post-update hook.
 
-  [do this]: http://sitaramc.github.com/gitolite/doc/2-admin.html#_using_hooks
+  [do this]: http://sitaramc.github.com/gitolite/hooks.html
 
-Now, here's a full sample script that you can start with in that 
-post update hook, annotated to help you follow along:
+Now, here's a full sample script that you can start with for that
+post-update hook, annotated to help you follow along:
 
 <pre>
-    #!/bin/bash
+#!/bin/bash
 
-    # only run these commands if it's the browserid repo bein' pushed
-    if [ "x$GL_REPO" == 'xbrowserid' ] ; then
-        # create a temporary directory where we'll stage new code                                                                                                                        
-        NEWCODE=`mktemp -d`
-        echo "staging code to $NEWCODE"
-        mkdir -p $NEWCODE
-        git archive --format=tar dev | tar -x -C $NEWCODE
-    
-        echo "generating production resources"
-        cd $NEWCODE/browserid && ./compress.sh && cd -
-    
-        # stop the servers
-        curl -o --url http://localhost:62700/code_update > /dev/null 2>&1
-        curl -o --url http://localhost:62800/code_update > /dev/null 2>&1
-    
-        # now move code into place, and keep a backup of the last code
-        # that was in production in .old
-        echo "moving updated code into place"
-        rm -rf /home/browserid/code.old
-        mv /home/browserid/code{,.old}
-        mv $NEWCODE /home/browserid/code
-    
-        echo "fixing permissions"
-        find /home/browserid/code -exec chgrp www-data {} \; > /dev/null 2>&1
-        find /home/browserid/code -type d -exec chmod 0775 {} \; > /dev/null 2>&1
-        find /home/browserid/code -type f -exec chmod ga+r {} \; > /dev/null 2>&1
-        find /home/browserid/code -type f -perm /u+x -exec chmod g+x {} \; > /dev/null 2>&1
-    
-        echo "updating dependencies"
-        ln -s /home/browserid/node_modules /home/browserid/code/node_modules
-        cd /home/browserid/code && npm install && cd -
-    fi
+# only run these commands if it's the browserid repo bein' pushed
+if [ "x$GL_REPO" == 'xbrowserid' ] ; then
+    # create a temporary directory where we'll stage new code
+    NEWCODE=`mktemp -d`
+    echo "staging code to $NEWCODE"
+    mkdir -p $NEWCODE
+    git archive --format=tar dev | tar -x -C $NEWCODE
+
+    echo "generating production resources"
+    cd $NEWCODE/browserid && ./compress.sh && cd -
+
+    # stop the servers
+    curl -o --url http://localhost:62700/code_update > /dev/null 2>&1
+    curl -o --url http://localhost:62800/code_update > /dev/null 2>&1
+
+    # now move code into place, and keep a backup of the last code
+    # that was in production in .old
+    echo "moving updated code into place"
+    rm -rf /home/browserid/code.old
+    mv /home/browserid/code{,.old}
+    mv $NEWCODE /home/browserid/code
+
+    echo "fixing permissions"
+    find /home/browserid/code -exec chgrp www-data {} \; > /dev/null 2>&1
+    find /home/browserid/code -type d -exec chmod 0775 {} \; > /dev/null 2>&1
+    find /home/browserid/code -type f -exec chmod ga+r {} \; > /dev/null 2>&1
+    find /home/browserid/code -type f -perm /u+x -exec chmod g+x {} \; > /dev/null 2>&1
+
+    echo "updating dependencies"
+    ln -s /home/browserid/node_modules /home/browserid/code/node_modules
+    cd /home/browserid/code && npm install && cd -
+fi
 </pre>
 
-### 5. get node servers running
+### 6. Get node servers running
 
 At this point, pushing code to gitolite will cause /home/browserid/code to be updated.  Now
-we need to get the servers running!  Manually we can verify that the servers will run.
-For the browser id server:
+we need to get the servers running!  First, verify that the servers will run manually.
+For the browserid server:
 
     cd /home/browserid/code/browserid && sudo -u www-data ./run.js
 
@@ -181,7 +189,8 @@ set logfile /var/log/monit.log
 include /etc/monit.d/*
 </pre>
 
-  4. Add a little utility script (`chmod +x`) to run the node servers at `/etc/monit/start_node_server`:
+  4. Add a little utility script (`chmod +x`) to run the node servers at
+     `/etc/monit/start_node_server`:
 
 <pre>
 #!/bin/bash
@@ -214,11 +223,15 @@ check host browserid.org with address 127.0.0.1
         then restart
 </pre>
 
-  6. verify servers are running!  check `/var/log/monit.log`, curl ports 62700 and 62800, and verify servers are restarted at 10s if you kill em!
+  6. verify servers are running!  check `/var/log/monit.log`, curl ports 62700
+     and 62800, and verify servers are restarted after 10 seconds if you kill em!
 
-### 6. set up nginx!
+### 7. Install nginx
 
-At this point we've got automatic server restart, simple git based code publishing, and all of the software prerequisites installed on the box.  The final bit of work is to set up nginx in such a way that it will properly proxy requests to the external interface to the proper node server:
+At this point we've got automatic server restart, simple git based code
+publishing, and all of the software prerequisites installed on the box.  The
+final bit of work is to set up nginx in such a way that it will properly proxy
+requests to the external interface to the proper node server:
 
   1. remove any other webservers that come with your vm (like apache)
   2. install nginx: `sudo apt-get install nginx`
@@ -255,7 +268,7 @@ http {
 } 
 </pre>
 
-  4. and how about configuring the webserver:
+  4. configure the webserver for browserid:
 
 <pre>
 server {
@@ -281,9 +294,11 @@ server {
 }
 </pre>
 
-  5. restart your webserver: `sudo /etc/init.d/nginx restart
+  5. restart your webserver: `sudo /etc/init.d/nginx restart`
 
-### 6. set up log rotation
+     confirm that it's accepting requests: `curl -I -H 'Host: browserid.org' http://localhost:80/`
+
+### 8. Set up log rotation
 
 create a file as root at `/etc/logrotate.d/browserid`:
 
@@ -298,6 +313,4 @@ create a file as root at `/etc/logrotate.d/browserid`:
 
 Now your logfiles will be automatically rotated.
 
-easy, right?
-
-
+Easy, right?

@@ -1,4 +1,4 @@
-# BrowserID Primary IdP  Protocol
+# BrowserID Primary IdP Protocol
 
 ## 1. Overview
 
@@ -89,7 +89,7 @@ An example declaration of supporty which delegates is thus:
 
 In attempting to determine whether primary BrowserID support exists
 for an email address `user@somehost.tld`, a browser will first pull
-`https://somehost.tld/.well-known/browserid`, upon discovery of delegated
+`https://somehost.tld/.well-known/browserid`; upon discovery of delegated
 authority, the browser would next check
 `https://otherhost.tld/.well-known/browserid`.
 
@@ -152,7 +152,7 @@ properties available to normal web content.
             var cert = someServerInteraction();
 
             // pass the certificate back to BrowserID and complete the
-            // provisioining process
+            // provisioning process
             navigator.id.registerCertificate(cert);
         });
     });
@@ -200,7 +200,7 @@ delete certificates before their expiration if it exceeds the maximum.
 #### 4.5.1 Authentication and Third Party Cookies
 
 When native browser support is not available, provisioning content will be run
-in an iframe.  Certain browser configurations may surpress cookies when content
+in an iframe.  Certain browser configurations may suppress cookies when content
 is run in such an environment.  Primary providers that want to improve their
 browser support should consider alternate authentication mechansims to support
 browsers with this featuere.
@@ -224,7 +224,7 @@ the following guidelines to facilitate this detection and prevent
 false positives:
 
   * Upon content load invoke `navigator.id.beginProvisioning()`
-    promptly to indicate successful load and initiation
+    promptly to indicate successful load and initiation.
   * Only after it has been verified that the user is authenticated as
     the target email should `.genKeyPair()` be invoked.
 
@@ -294,8 +294,7 @@ Generate a public key JSON document in Ruby:
 
     private_key = OpenSSL::PKey::RSA.new(1024)
     public_key = private_key.public_key
-    {"algorithm"=> "RS", "n" => public_key.n.to_s, "e" => public_key.e.to_s }.to_json
-    
+    { "algorithm" => "RS", "n" => public_key.n.to_s, "e" => public_key.e.to_s }.to_json
 
 ### 6.2 Certificate Format
 
