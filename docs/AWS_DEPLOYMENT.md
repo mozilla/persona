@@ -17,7 +17,7 @@ In order to use these deploy scripts, you need the following:
 
 Once you have these things, you'll need to relay them to deployment
 scripts via your environment.  you might put something like this
-in your .bashrc:
+in your `.bashrc`:
 
     # This is your Access Key ID from your AWS Security Credentials
     export AWS_ID=<your id>
@@ -39,7 +39,7 @@ You can verify that your credentials are properly configured, try:
 Let's get started.  To deploy your first vm, all you have to do is pick a 
 hostname.  This might be something like `feature385` or `issue1000`, or 
 you can use a different name that is short but meaningful to what you're
-going to deploy.  Once chosen, invoke deploy.js like this:
+going to deploy.  Once chosen, invoke `deploy.js` like this:
 
     $ scripts/deploy.js deploy some_name_i_chose
     attempting to set up some_name_i_chose.hacksign.in
