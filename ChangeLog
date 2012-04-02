@@ -181,7 +181,7 @@ train-2011.12.01:
   * IE8 fixes: #615
   * unit test fixes: #557 (revisited), #629, #657
   * update_password WSAPI added: #560, #114
-  * verifier improvements and unit tests: #467, #598, #605, #643, #642, #645, #646, 
+  * verifier improvements and unit tests: #467, #598, #605, #643, #642, #645, #646
   * node-mysql driver update - improved for prod env: #648
   * include a link to support.mozilla.com off of browserid.org: #533
   * added command line tool to create and account: #603
