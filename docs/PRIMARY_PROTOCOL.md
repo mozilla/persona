@@ -294,7 +294,7 @@ Generate a public key JSON document in Ruby:
 
     private_key = OpenSSL::PKey::RSA.new(1024)
     public_key = private_key.public_key
-    {"algorithm"=> "RS", "n" => public_key.n.to_s, "e" => public_key.e.to_s }.to_json
+    { "algorithm" => "RS", "n" => public_key.n.to_s, "e" => public_key.e.to_s }.to_json
 
 ### 6.2 Certificate Format
 
