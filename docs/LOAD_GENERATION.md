@@ -26,9 +26,9 @@ is.
 
 For the sake of this discussion, an active user uses 4 sites that use
 BrowserID and visits them 10 times each day.  These activities are
-split across 2 different devices.  Further, the average user has two
+split across 2 different devices.  Further, the average user has 2
 different email addresses that they use equally, and forgets their
-password about every four weeks.
+password about every 4 weeks.
 
 The final bit of assumption is growth rate, what percentage of active
 users in a unit of time are using browserid for the first time.  This
@@ -39,7 +39,7 @@ of new to returning users per month.
 The next bit of guesswork required is to explain the behaviors of these
 sites (RPs) that a user visits.  The average RP will set authentication
 cookies with 6 hour duration, such that a user must re-authenticate using
-browserid at least every six hours.  
+browserid at least every 6 hours.  
 
 ### Defining high-level user activities
 
