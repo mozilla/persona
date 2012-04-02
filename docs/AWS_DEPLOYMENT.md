@@ -133,8 +133,8 @@ There are several things that are pre-configured for your pleasure:
      ssh access.
   2. Git support: an 'app' user is created with a repository under `~app/git`
      on the server, that you can push to.
-  3. `post-update` hook: the code that runs after you push to update and
-     restart your servers
+  3. `post-update` hook: when you push to the `master` branch of the server's
+     git repository, this code restarts your services to pick up the changes.
   4. nginx with SSL and 503 support - you'll get SSL for free and will see
      a reasonable message when your servers aren't running
   5. a mysql database with a browserid user without any password
