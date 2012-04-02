@@ -28,25 +28,25 @@ So what are we deploying, anyway?
 This document assumes we're deploying on an **Ubuntu 10.04.1 LTS** box,
 and using the following software:
 
- * **nginx** - frontend web server that handles static content and
-   serves as a reverse proxy for node.js servers running on localhost
+  * **nginx** - frontend web server that handles static content and
+    serves as a reverse proxy for node.js servers running on localhost
 
-   config: `/etc/nginx/conf/nginx.conf`
+    config: `/etc/nginx/conf/nginx.conf`
 
- * **node.js** - all non-static servers run with node.  modules are installed
-   using npm in `/home/http/node_modules`
+  * **node.js** - all non-static servers run with node.  modules are installed
+    using npm in `/home/http/node_modules`
 
- * **monit** - provides monitoring and automatic restarting of node.js servers
-   when they go down (by accident or upon code publishing).
+  * **monit** - provides monitoring and automatic restarting of node.js servers
+    when they go down (by accident or upon code publishing).
 
-   config files are: `/etc/monitrc`, and `/etc/monit.d/*`
+    config files are: `/etc/monitrc`, and `/etc/monit.d/*`
 
-   helper script that starts node servers: `/etc/monit.d/start_node_server`
+    helper script that starts node servers: `/etc/monit.d/start_node_server`
 
- * **gitolite** - installed under the git user to provide multi-user ssh based
-   git access.  post-update hook handles updating code and restarting servers.
+  * **gitolite** - installed under the git user to provide multi-user ssh based
+    git access.  post-update hook handles updating code and restarting servers.
 
-   hook: `/home/git/.gitolite/hooks/common/post-update`
+    hook: `/home/git/.gitolite/hooks/common/post-update`
 
 ### Permissions conventions
 
