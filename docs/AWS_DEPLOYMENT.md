@@ -26,7 +26,7 @@ in your .bashrc:
     # This is a magic credential you get from lloyd
     export BROWSERID_DEPLOY_DNS_KEY=98...33
 
-## test!
+## Verify the credentials
 
 You can verify that your credentials are properly configured, try:
 
