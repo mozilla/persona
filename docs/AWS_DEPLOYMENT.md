@@ -124,7 +124,7 @@ decommission a VM and release your hold on the DNS name, simply:
     trying to destroy VM for some_name_i_chose.hacksign.in: done
     trying to remove DNS for some_name_i_chose.hacksign.in: done
 
-## An overview of deployments
+## Overview of what's deployed to VMs
 
 Deploying code in this fashion spins up a pre-configured VM template.
 There are several things that are pre-configured for your pleasure:
