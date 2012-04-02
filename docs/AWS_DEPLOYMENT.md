@@ -131,8 +131,8 @@ There are several things that are pre-configured for your pleasure:
 
   1. ssh keys: your public key is copied up to the server for passphraseless
      ssh access.
-  2. Git support: an 'app' user is created with a repository under `~/git`
-     that you can push to
+  2. Git support: an 'app' user is created with a repository under `~app/git`
+     on the server, that you can push to.
   3. `post-update` hook: the code that runs after you push to update and
      restart your servers
   4. nginx with SSL and 503 support - you'll get SSL for free and will see
