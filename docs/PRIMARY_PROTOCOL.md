@@ -89,7 +89,7 @@ An example declaration of supporty which delegates is thus:
 
 In attempting to determine whether primary BrowserID support exists
 for an email address `user@somehost.tld`, a browser will first pull
-`https://somehost.tld/.well-known/browserid`, upon discovery of delegated
+`https://somehost.tld/.well-known/browserid`; upon discovery of delegated
 authority, the browser would next check
 `https://otherhost.tld/.well-known/browserid`.
 
