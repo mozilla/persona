@@ -136,7 +136,7 @@ There are several things that are pre-configured for your pleasure:
   3. `post-update` hook: when you push to the `master` branch of the server's
      git repository, this code restarts your services to pick up the changes.
   4. nginx with SSL and 503 support - you'll get SSL for free and will see
-     a reasonable message when your servers aren't running
+     a reasonable error message when your servers aren't running
   5. a mysql database with a browserid user without any password
 
 ### User Accounts
