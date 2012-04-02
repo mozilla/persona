@@ -37,8 +37,8 @@ You can stop the servers with a Cntl-C in the terminal.
 
 ## Staying up to date:
 
-1. rm -Rf var node_modules
-2. npm install
+1. `rm -Rf var node_modules`
+2. `npm install`
 
 ## Testing
 
