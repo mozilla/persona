@@ -80,7 +80,7 @@ going to deploy.  Once chosen, invoke deploy.js like this:
 The output contains instructions for use.  Note that every occurance of 
 `some_name_i_chose` will be replaced with the name *YOU* chose.
 
-## deploying code
+## Deploying code to your server
 
 The deployment process sets up a 'git remote', which just means it runs
 the following command for you:
