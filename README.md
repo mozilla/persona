@@ -2,8 +2,8 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-Here lives the [BrowserID] implementation.  BrowserID is an implementation of the
-[verified email protocol].
+Here lives the [BrowserID][] implementation.  BrowserID is an implementation of the
+[verified email protocol][].
 
   [BrowserID]:https://browserid.org
   [verified email protocol]:https://wiki.mozilla.org/Labs/Identity/VerifiedEmailProtocol
@@ -54,19 +54,19 @@ You can control which tests are run using the `WHAT_TESTS` env var, see
 `scripts/test` for details.
 
 ### Continuous Integration Testing
-Integration tests are done with [Travis-CI]. It is recommended that you setup [Travis-CI] for your BrowserID fork so that tests are automatically run when you push changes. This will give the BrowserID team confidence that your changes both function correctly and do not cause regressions in other parts of the code.  Configuration files are already included in the repo but some setup is necessary.
+Integration tests are done with [Travis-CI][]. It is recommended that you setup [Travis-CI][] for your BrowserID fork so that tests are automatically run when you push changes. This will give the BrowserID team confidence that your changes both function correctly and do not cause regressions in other parts of the code.  Configuration files are already included in the repo but some setup is necessary.
 
-1. Sign in to [GitHub]
-2. Open [Travis-CI]
+1. Sign in to [GitHub][]
+2. Open [Travis-CI][]
 3. Click "Sign in with GitHub" if you are not signed in. If you are signed in, click on your username then "Profile" and go to step 5.
 4. Click "Allow" if this is your first time signing in.
 5. Find "browserid" in "Your Repositories"
 6. Move the switch from "OFF" to "ON"
-7. Open your fork of BrowserID on [GitHub]
+7. Open your fork of BrowserID on [GitHub][]
 8. Click the "Admin" button
 9. Click "Service Hooks"
 10. Ensure that "Travis" has a green radio button
-11. Push to your fork and return to [Travis-CI]. Watch the tests run.
+11. Push to your fork and return to [Travis-CI][]. Watch the tests run.
 
   [Travis-CI]: http://travis-ci.org
   [GitHub]: https://github.com
