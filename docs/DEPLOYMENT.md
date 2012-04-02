@@ -30,19 +30,23 @@ and using the following software:
 
  * **nginx** - frontend web server that handles static content and
    serves as a reverse proxy for node.js servers running on localhost
+
    config: `/etc/nginx/conf/nginx.conf`
 
  * **node.js** - all non-static servers run with node.  modules are installed
    using npm in `/home/http/node_modules`
 
  * **monit** - provides monitoring and automatic restarting of node.js servers
-   when they go down (by accident or upon code publishing)
-   config files are: `/etc/monitrc`, and `/etc/monit.d/*`.  Also see the
+   when they go down (by accident or upon code publishing).
+
+   config files are: `/etc/monitrc`, and `/etc/monit.d/*`
+
    helper script that starts node servers: `/etc/monit.d/start_node_server`
 
  * **gitolite** - installed under the git user to provide multi-user ssh based
    git access.  post-update hook handles updating code and restarting servers.
-   see that here: `/home/git/.gitolite/hooks/common/post-update`
+
+   hook: `/home/git/.gitolite/hooks/common/post-update`
 
 ### Permissions conventions
 
