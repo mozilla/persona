@@ -224,7 +224,7 @@ the following guidelines to facilitate this detection and prevent
 false positives:
 
   * Upon content load invoke `navigator.id.beginProvisioning()`
-    promptly to indicate successful load and initiation
+    promptly to indicate successful load and initiation.
   * Only after it has been verified that the user is authenticated as
     the target email should `.genKeyPair()` be invoked.
 
