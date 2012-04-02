@@ -200,7 +200,7 @@ delete certificates before their expiration if it exceeds the maximum.
 #### 4.5.1 Authentication and Third Party Cookies
 
 When native browser support is not available, provisioning content will be run
-in an iframe.  Certain browser configurations may surpress cookies when content
+in an iframe.  Certain browser configurations may suppress cookies when content
 is run in such an environment.  Primary providers that want to improve their
 browser support should consider alternate authentication mechansims to support
 browsers with this featuere.
