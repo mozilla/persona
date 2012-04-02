@@ -9,10 +9,17 @@ a service like browserid.org.
 
 So what are we deploying, anyway?
 
-  * *the browserid server* - a node.js server which implements a web services api, stores a record of users, the email addresses they've verified, a bcrypted password, outstanding verification tokens, etc
-  * *the verifier* - a stateless node.js server which does cryptographic verification of assertions. This thing is hosted on browserid.org as a convenience, but people using browserid can choose to relocated it if they want to their own servers.
-  * *the browserid.org website* - the templates, css, and javascript that make up the visible part of browserid.org
-  * *the javascript/HTML dialog & include library* - this is include.js and the code that it includes, the bit that someone using browserid will include.
+  * *the browserid server* - a node.js server which implements a web services
+    api, stores a record of users, the email addresses they've verified, a
+    bcrypted password, outstanding verification tokens, etc.
+  * *the verifier* - a stateless node.js server which does cryptographic
+    verification of assertions. This thing is hosted on browserid.org as a
+    convenience, but people using browserid can choose to relocated it if they
+    want to their own servers.
+  * *the browserid.org website* - the templates, css, and javascript that make
+    up the visible part of browserid.org
+  * *the javascript/HTML dialog & include library* - this is include.js and the
+    code that it includes, the bit that someone using browserid will include.
 
 ## Overview
 
@@ -181,7 +188,8 @@ set logfile /var/log/monit.log
 include /etc/monit.d/*
 </pre>
 
-  4. Add a little utility script (`chmod +x`) to run the node servers at `/etc/monit/start_node_server`:
+  4. Add a little utility script (`chmod +x`) to run the node servers at
+     `/etc/monit/start_node_server`:
 
 <pre>
 #!/bin/bash
@@ -214,11 +222,15 @@ check host browserid.org with address 127.0.0.1
         then restart
 </pre>
 
-  6. verify servers are running!  check `/var/log/monit.log`, curl ports 62700 and 62800, and verify servers are restarted at 10s if you kill em!
+  6. verify servers are running!  check `/var/log/monit.log`, curl ports 62700
+     and 62800, and verify servers are restarted at 10s if you kill em!
 
 ### 7. set up nginx!
 
-At this point we've got automatic server restart, simple git based code publishing, and all of the software prerequisites installed on the box.  The final bit of work is to set up nginx in such a way that it will properly proxy requests to the external interface to the proper node server:
+At this point we've got automatic server restart, simple git based code
+publishing, and all of the software prerequisites installed on the box.  The
+final bit of work is to set up nginx in such a way that it will properly proxy
+requests to the external interface to the proper node server:
 
   1. remove any other webservers that come with your vm (like apache)
   2. install nginx: `sudo apt-get install nginx`
