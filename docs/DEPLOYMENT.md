@@ -268,7 +268,7 @@ http {
 } 
 </pre>
 
-  4. and how about configuring the webserver:
+  4. configure the webserver for browserid:
 
 <pre>
 server {
