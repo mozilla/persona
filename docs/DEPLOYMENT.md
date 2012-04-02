@@ -102,7 +102,7 @@ Subsequent steps use different software which you might need to install.
 ### 4. Set up mysql
 
   0. ensure you can connect via TCP - localhost:3306 (like, make sure skip-networking is off in my.cnf)
-  1. connect to the database as user root
+  1. connect to the database as user root - `mysql -u root`
   2. `CREATE USER 'browserid'@'localhost' IDENTIFIED BY 'browserid';`
   3. `CREATE DATABASE browserid;`
   4. `GRANT CREATE, DELETE, INDEX, INSERT, LOCK TABLES, SELECT, UPDATE ON browserid.* TO 'browserid'@'localhost';`
