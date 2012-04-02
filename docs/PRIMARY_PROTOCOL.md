@@ -1,4 +1,4 @@
-# BrowserID Primary IdP  Protocol
+# BrowserID Primary IdP Protocol
 
 ## 1. Overview
 
