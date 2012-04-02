@@ -109,24 +109,24 @@ Subsequent steps use different software which you might need to install.
 
 ### 5. Set up git post-update hook
 
-*This step is optional* - if you want to manually update code you
- probably skipped step #1, you can skip this one as well.  All you need
+*This step is optional* - if you want to manually update code, then you
+probably skipped step #1; you can skip this one as well.  All you need
 to do is check out the code from github and run node.
 
-Given we've now got a simple way to push updates to the server, and 
+Given that we've now got a simple way to push updates to the server, and
 we've got npm and node running, let's get the software running!  The task
-here is as a `post-update` hook (triggered by pushing changes to the server)
-to have the server update its code and restart the server.
+here is to create a git `post-update` hook to have the server update its
+code and restart the server when code is pushed.
 
-To get this done, we'll create a "post-update hook" which will live on your
-server under the git user's directory: 
+To get this done, we'll configure a hook which will live on your server
+in the git user's git directory:
 
 First, [do this] to add a blank executable post-update hook.
 
   [do this]: http://sitaramc.github.com/gitolite/hooks.html
 
-Now, here's a full sample script that you can start with in that 
-post update hook, annotated to help you follow along:
+Now, here's a full sample script that you can start with for that
+post-update hook, annotated to help you follow along:
 
 <pre>
     #!/bin/bash
