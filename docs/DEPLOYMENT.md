@@ -71,8 +71,8 @@ Let's get started:
   2. install git if required: `sudo apt-get install git-core`
   3. become user git: `sudo su -s /bin/bash git`
   4. hop into your home directory: `cd`
-  5. [This.](http://sitaramc.github.com/gitolite/doc/1-INSTALL.html#_non_root_method)
-  6. add a browserid repo.  [This.](http://sitaramc.github.com/gitolite/doc/2-admin.html#_adding_users_and_repos).
+  5. [This.](http://sitaramc.github.com/gitolite/nonroot.html)
+  6. add a browserid repo.  [This.](http://sitaramc.github.com/gitolite/add.html)
 
 At this point you've morphed your servers into git servers.  Go ahead and
 add a remote to your local copy of the browserid repo and push to it:
@@ -125,7 +125,7 @@ server under the git user's directory:
 
 First, [do this] to add a blank executable post-update hook.
 
-  [do this]: http://sitaramc.github.com/gitolite/doc/2-admin.html#_using_hooks
+  [do this]: http://sitaramc.github.com/gitolite/hooks.html
 
 Now, here's a full sample script that you can start with in that 
 post update hook, annotated to help you follow along:
