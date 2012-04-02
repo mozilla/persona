@@ -157,7 +157,7 @@ post update hook, annotated to help you follow along:
     fi
 </pre>
 
-### 5. get node servers running
+### 6. get node servers running
 
 At this point, pushing code to gitolite will cause /home/browserid/code to be updated.  Now
 we need to get the servers running!  Manually we can verify that the servers will run.
@@ -216,7 +216,7 @@ check host browserid.org with address 127.0.0.1
 
   6. verify servers are running!  check `/var/log/monit.log`, curl ports 62700 and 62800, and verify servers are restarted at 10s if you kill em!
 
-### 6. set up nginx!
+### 7. set up nginx!
 
 At this point we've got automatic server restart, simple git based code publishing, and all of the software prerequisites installed on the box.  The final bit of work is to set up nginx in such a way that it will properly proxy requests to the external interface to the proper node server:
 
@@ -283,7 +283,7 @@ server {
 
   5. restart your webserver: `sudo /etc/init.d/nginx restart
 
-### 6. set up log rotation
+### 8. set up log rotation
 
 create a file as root at `/etc/logrotate.d/browserid`:
 
