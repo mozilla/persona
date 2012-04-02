@@ -95,7 +95,7 @@ work:
 
 Subsequent steps use different software which you might need to install.
 
-  * **curl** - used to iniate http requests from the cmd line (to kick the browserid server)
+  * **curl** - used to initiate http requests from the command line (to kick the browserid server)
   * **java** - used to minify css
   * **mysql 5.1+** - the preferred persistence backend
 
