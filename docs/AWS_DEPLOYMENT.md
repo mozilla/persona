@@ -115,7 +115,7 @@ You are pushing *from* the local `myotherbranch`, to the remote `master`.
 ## Destroying your first VM
 
 These things cost money, not a lot, but money.  So when you want to 
-decomission a VM and release your hold on the DNS name, simply:"
+decommission a VM and release your hold on the DNS name, simply:"
 
     $ scripts/deploy.js destroy some_name_i_chose
     trying to destroy VM for some_name_i_chose.hacksign.in: done
@@ -126,7 +126,7 @@ decomission a VM and release your hold on the DNS name, simply:"
 Deploying code in this fashion spins up a pre-configured VM template.
 There are several things that are pre-configured for your pleasure:
 
-  1. ssh keys: your publick key is copied up to the server for passphraseless
+  1. ssh keys: your public key is copied up to the server for passphraseless
      ssh access.
   2. Git support: an 'app' user is created with a repository under `~/git`
      that you can push to
