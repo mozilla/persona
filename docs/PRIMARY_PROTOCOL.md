@@ -152,7 +152,7 @@ properties available to normal web content.
             var cert = someServerInteraction();
 
             // pass the certificate back to BrowserID and complete the
-            // provisioining process
+            // provisioning process
             navigator.id.registerCertificate(cert);
         });
     });
