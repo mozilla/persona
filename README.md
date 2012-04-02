@@ -79,8 +79,8 @@ Integration tests are done with [Travis-CI][]. It is recommended that you setup 
 
 ## LICENSE
 
-All source code here is available under the [MPL 2][] license, unless
+All source code here is available under the [MPL 2.0][] license, unless
 otherwise indicated.
 
-  [MPL 2]: https://mozilla.org/MPL/
+  [MPL 2.0]: https://mozilla.org/MPL/2.0/
 
