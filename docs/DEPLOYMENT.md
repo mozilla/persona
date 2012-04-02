@@ -224,7 +224,7 @@ check host browserid.org with address 127.0.0.1
 </pre>
 
   6. verify servers are running!  check `/var/log/monit.log`, curl ports 62700
-     and 62800, and verify servers are restarted at 10s if you kill em!
+     and 62800, and verify servers are restarted after 10 seconds if you kill em!
 
 ### 7. Install nginx
 
