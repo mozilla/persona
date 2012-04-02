@@ -117,7 +117,7 @@ You are pushing *from* the local `myotherbranch`, to the remote `master`.
 
 ## Destroying your first VM
 
-These things cost money, not a lot, but money.  So when you want to 
+These things cost money by the hour, not a lot, but money.  So when you want to
 decommission a VM and release your hold on the DNS name, simply:
 
     $ scripts/deploy.js destroy some_name_i_chose
