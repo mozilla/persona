@@ -85,7 +85,7 @@ The output contains instructions for use.  Note that every occurance of
 The deployment process sets up a 'git remote', which just means it runs
 the following command for you:
 
-    $ git remote add some_name_i_chose app@<ip>:git
+    $ git remote add some_name_i_chose app@<ipAddress>:git
 
 This allows you to more conveniently push code to your server.  Say 
 you wanted to now deploy code from `mybranch` on this new VM:
