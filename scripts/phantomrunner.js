@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const TIMEOUT_SECONDS = 120;
+const TIMEOUT_SECONDS = 160;
 
 /**
  * Wait until the test condition is true or a timeout occurs. Useful for waiting
