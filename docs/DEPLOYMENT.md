@@ -79,8 +79,7 @@ add a remote to your local copy of the browserid repo and push to it:
 `git remote add shortaliasforthenewvm git@myserver:browserid.git && git push --all shortaliasforthenewvm` 
 
 Now you have a clone of your browserid repository that's trivial to update.
-You can use ssh keys with passphrases and ssh-agent if you are less of an 
-optimist.
+You can use ssh keys with passphrases and ssh-agent if security is a concern.
 
 ### 2. install node.js!
 
