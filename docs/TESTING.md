@@ -1,4 +1,4 @@
-Developer tests should be run before commiting code. There are two test suites.
+Developer tests should be run before committing code. There are two test suites.
 
   # `npm test`
 
