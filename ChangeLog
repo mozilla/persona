@@ -54,7 +54,7 @@ train-2012.03.01:
 
 train-2012.02.16:
   * improve failure mode when cookies are disabled (especially on iOS): #1056
-  * serve static css/js resources from perma URLs to improve load times - #620
+  * serve static css/js resources from perma URLs to improve load times: #620
   * improve UI flows concerning cancelation during primary sign in: #983 #1036
   * localization improvements: #1040, #1045, #1048, #1062, #1081, #1113
   * cosmetic dialog fixes: #1062, #1058, #892, #1117
