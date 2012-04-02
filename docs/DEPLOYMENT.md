@@ -23,7 +23,7 @@ So what are we deploying, anyway?
 
 ## Overview
 
-Software in use
+### Software in use
 
 This document assumes we're deploying on an **Ubuntu 10.04.1 LTS** box,
 and using the following software:
