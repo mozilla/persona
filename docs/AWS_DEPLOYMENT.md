@@ -144,9 +144,9 @@ There are several things that are pre-configured for your pleasure:
 VMs have two pre-configured users, both which you have passphraseless SSH
 access to:
 
-  * `ec2-user` is an acct with full sudo access
-  * `app` is an acct that has no sudo and is the user who recieves and
-    builds code, and starts the servers.
+  * `ec2-user` is an account with full sudo access.
+  * `app` is an account that has no sudo, receives and builds code via git
+    pushes, and runs the application servers.
 
 Feel free to start a new server, and ssh in as `app` to explore all of the
 configuration.  An attempt has been made to isolate as much configuration 
