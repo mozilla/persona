@@ -294,7 +294,9 @@ server {
 }
 </pre>
 
-  5. restart your webserver: `sudo /etc/init.d/nginx restart
+  5. restart your webserver: `sudo /etc/init.d/nginx restart`
+
+     confirm that it's accepting requests: `curl -I -H 'Host: browserid.org' http://localhost:80/`
 
 ### 8. Set up log rotation
 
