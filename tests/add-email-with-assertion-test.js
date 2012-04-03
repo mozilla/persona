@@ -31,7 +31,7 @@ start_stop.addStartupBatches(suite);
 const TEST_DOMAIN = 'example.domain',
       TEST_EMAIL = 'testuser@' + TEST_DOMAIN,
       TEST_ORIGIN = 'http://127.0.0.1:10002',
-      TEST_FIRST_ACCT = 'testuser@fake.domain';
+      TEST_FIRST_ACCT = 'test.user+folder@fake.domain';
 
 // This test will excercise the ability to add an email to an
 // account using an assertion from a primary
