@@ -17,7 +17,7 @@ a:link, a:visited { font-style: italic; text-decoration: none; color: #008; }
 a:hover { border-bottom: 2px solid black ; }
 .title { font-size: 2em; font-weight: bold; text-align: center; margin: 1.5em auto 1.5em auto; }
 .intro { font-size: 1.2em;  }
-.specify { font-size: 1.1em; padding-top: 2em; }
+.specify, .session { font-size: 1.1em; padding-top: 2em; }
 body div { width: 600px; margin: auto; }
 
 pre {
@@ -57,7 +57,7 @@ pre {
 </div>
 
 <div class="specify">
-  <p>What flavor of assertion would you like?</p>
+  <p><b>What flavor of assertion would you like?</b></p>
   <ul>
     <li>
       <input type="checkbox" id="privacy">
@@ -74,21 +74,21 @@ pre {
     <button class="logout">logout</button>
 </div>
 
+<div class="session">
+  <p><b>Care to simulate a session?  Who does this page think is logged in?</b></p>
+  <input type="text" id="loggedInUser" width="80">
+  <button class="update_session">Update "session"</button>
+</div>
+
 <div class="loginEvents">
-  <h2>login events</h2>
-  <pre> ... login events ... </pre>
+  <h2>logins</h2>
+  <pre> ... </pre>
 </div>
 
 <div class="logoutEvents">
-  <h2>logout events</h2>
-  <pre> ... logout events ... </pre>
+  <h2>logouts</h2>
+  <pre> ... </pre>
 </div>
-
-<div class="loginCanceledEvents">
-  <h2>loginCanceled events</h2>
-  <pre> ... loginCanceled events ... </pre>
-</div>
-
 
 </body>
 
@@ -122,21 +122,20 @@ function checkAssertion(assertion) {
   });
 };
 
-navigator.id.addEventListener('login', function(event) {
-  loggit("login event");
-  checkAssertion(event.assertion);
-});
-
-navigator.id.addEventListener('logout', function(event) {
-  loggit("logout event");
-  var txt = 'got event at ' + (new Date).toString();
-  $(".logoutEvents > pre").text(txt);
-});
-
-navigator.id.addEventListener('loginCanceled', function(event) {
-  loggit("loginCanceled");
-  var txt = 'got event at ' + (new Date).toString();
-  $(".loginCanceledEvents > pre").text(txt);
+navigator.id.experimental.watch({
+  email: (localStorage.loggedInUser === 'null') ? null : localStorage.loggedInUser,
+  onready: function () {
+    loggit("onready");
+  },
+  onlogin: function (assertion) {
+    loggit("onlogin");
+    checkAssertion(assertion);
+  },
+  onlogout: function () {
+    loggit("onlogout");
+    var txt = 'logout callback invoked at ' + (new Date).toString();
+    $(".logoutEvents > pre").text(txt);
+  }
 });
 
 $(document).ready(function() {
@@ -146,14 +145,26 @@ $(document).ready(function() {
     var requiredEmail = $.trim($('#requiredEmail').val());
     if (!requiredEmail.length) requiredEmail = undefined;
 
+    $(".specify button.assertion").attr('disabled', 'true');
+
     navigator.id.request({
       privacyURL: $('#privacy').attr('checked') ? "/privacy.html" : undefined,
       tosURL: $('#tos').attr('checked') ? "/TOS.html" : undefined,
-      requiredEmail: requiredEmail
+      requiredEmail: requiredEmail,
+      oncomplete: function() {
+        loggit("oncomplete");
+        $(".specify button.assertion").removeAttr('disabled');
+      }
     });
   });
 
   $(".specify button.logout").click(navigator.id.logout);
+
+  $(".session button.update_session").click(function() {
+    localStorage.loggedInUser = $.trim($('#loggedInUser').val());
+    $(".session input").fadeOut(100).fadeIn(350);
+  });
+  $('#loggedInUser').val(localStorage.loggedInUser ? localStorage.loggedInUser : "");
 });
 
 </script>
