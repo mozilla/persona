@@ -31,7 +31,7 @@
 
           <% if (password) { %>
               <li id="password_section">
-                  <a id="forgotPassword" class="right" href="#" tabindex="4"><%= gettext("forgot your password?") %></a>
+                  <a id="forgotPassword" class="right forgot" href="#" tabindex="4"><%= gettext("forgot your password?") %></a>
                   <label for="password" class="serif"><%= gettext("Password") %></label>
 
                   <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
@@ -68,7 +68,7 @@
             <% } %>
 
             <% if (secondary_auth) { %>
-              <a href="#" id="cancel" tabindex="4"><%= gettext("cancel") %></a>
+              <a href="#" id="cancel" class="action" tabindex="4"><%= gettext("cancel") %></a>
             <% } %>
         <% if (privacy_url && tos_url) { %>
           </p>
