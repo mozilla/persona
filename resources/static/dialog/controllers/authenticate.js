@@ -94,7 +94,7 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function showHint(showSelector, callback) {
-    hints.forEach(function(className) {
+    _.each(hints, function(className) {
       if(className != showSelector) {
         $("." + className).not("." + showSelector).hide();
       }
