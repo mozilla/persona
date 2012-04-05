@@ -227,6 +227,19 @@
     });
   });
 
+  asyncTest("changePassword with same old and new password - tooltip", function() {
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val("password");
+      $("#new_password").val("password");
+
+      bid.manageAccount.changePassword(function(status) {
+        equal(status, false, "do not update when old and new passwords are the same");
+        testHelpers.testTooltipVisible();
+        start();
+      });
+    });
+  });
+
   asyncTest("changePassword with XHR error - error message", function() {
     bid.manageAccount(mocks, function() {
       xhr.useResult("invalid");
@@ -242,7 +255,6 @@
   });
 
   asyncTest("changePassword with user authenticated to password level, happy case", function() {
-
     bid.manageAccount(mocks, function() {
       $("#old_password").val("oldpassword");
       $("#new_password").val("newpassword");
@@ -250,6 +262,10 @@
       bid.manageAccount.changePassword(function(status) {
         equal(status, true, "on proper completion, status is true");
         equal(tooltip.shown, false, "on proper completion, tooltip is not shown");
+
+        equal($("#old_password").val(), "", "old_password field is cleared");
+        equal($("#new_password").val(), "", "new_password field is cleared");
+
         start();
       });
     });

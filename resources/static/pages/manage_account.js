@@ -124,6 +124,8 @@ BrowserID.manageAccount = (function() {
       user.changePassword(oldPassword, newPassword, function(status) {
         if(status) {
           dom.removeClass("#edit_password", "edit");
+          dom.setInner("#old_password", "");
+          dom.setInner("#new_password", "");
         }
         else {
           tooltip.showTooltip("#tooltipInvalidPassword");
@@ -139,6 +141,10 @@ BrowserID.manageAccount = (function() {
     }
     else if(!newPassword) {
       tooltip.showTooltip("#tooltipNewRequired");
+      complete(false);
+    }
+    else if(newPassword === oldPassword) {
+      tooltip.showTooltip("#tooltipPasswordsSame");
       complete(false);
     }
     else if(newPassword.length < 8 || 80 < newPassword.length) {
