@@ -90,6 +90,11 @@ pre {
   <pre> ... </pre>
 </div>
 
+<div class="readiness">
+  <h2>readiness</h2>
+  <pre> ... </pre>
+</div>
+
 </body>
 
 <script src="jquery-min.js"></script>
@@ -102,6 +107,8 @@ function loggit() {
   } catch(e) {}
 }
 
+var serial = 1;
+
 // a function to check an assertion against the server
 function checkAssertion(assertion) {
   $.ajax({
@@ -113,7 +120,8 @@ function checkAssertion(assertion) {
       audience: window.location.protocol + "//" + window.location.host
     },
     success: function(data, textStatus, jqXHR) {
-      $(".loginEvents > pre").text(JSON.stringify(data, null, 4));
+      var old = $(".loginEvents > pre").text() + "\n";
+      $(".loginEvents > pre").text(old + JSON.stringify(data, null, 4));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       var resp = jqXHR.responseText ? JSON.parse(jqXHR.responseText) : errorThrown;
@@ -126,14 +134,20 @@ navigator.id.experimental.watch({
   email: (localStorage.loggedInUser === 'null') ? null : localStorage.loggedInUser,
   onready: function () {
     loggit("onready");
+    var txt = serial++ + ' navigator.id ready at ' + (new Date).toString();
+    $(".readiness > pre").text(txt);
+
   },
   onlogin: function (assertion) {
     loggit("onlogin");
+    var txt = serial++ + ' got assertion at ' + (new Date).toString();
+    $(".loginEvents > pre").text(txt);
+
     checkAssertion(assertion);
   },
   onlogout: function () {
     loggit("onlogout");
-    var txt = 'logout callback invoked at ' + (new Date).toString();
+    var txt = serial++ + ' logout callback invoked at ' + (new Date).toString();
     $(".logoutEvents > pre").text(txt);
   }
 });

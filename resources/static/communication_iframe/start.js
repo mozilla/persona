@@ -70,6 +70,7 @@
   });
 
   chan.bind("loaded", function(trans, params) {
+    trans.delayReturn(true);
     setRemoteOrigin(trans.origin);
     checkAndEmit(function() {
       watchState();

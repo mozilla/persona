@@ -975,9 +975,13 @@
             // once the channel is set up, we'll fire a loaded message.  this is the
             // cutoff point where we'll say if 'setLoggedInUser' was not called before
             // this point, then it wont be called (XXX: optimize and improve me)
-            commChan.call({ method: 'loaded', success: function(){
-              if (observers.ready) observers.ready();
-            }, error: function() {} });
+            commChan.call({
+              method: 'loaded',
+              success: function(){
+                if (observers.ready) observers.ready();
+              }, error: function() {
+              }
+            });
           }
         });
 
