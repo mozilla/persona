@@ -997,7 +997,7 @@
       observers.ready = options.onready || null;
 
       _open_hidden_iframe();
-      if (options.email !== undefined) {
+      if (typeof options.email !== 'undefined') {
         commChan.notify({
           method: 'loggedInUser',
           params: options.email
