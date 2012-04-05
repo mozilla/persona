@@ -992,11 +992,19 @@
     function internalWatch(options) {
       if (typeof options !== 'object') return;
 
+      if (options.onlogin && typeof options.onlogin !== 'function' ||
+          options.onlogout && typeof options.onlogout !== 'function' ||
+          options.onready && typeof options.onready !== 'function')
+      {
+        throw "non-function where function expected in parameters to navigator.id.watch()";
+      }
+
       observers.login = options.onlogin || null;
       observers.logout = options.onlogout || null;
       observers.ready = options.onready || null;
 
       _open_hidden_iframe();
+
       if (typeof options.email !== 'undefined') {
         commChan.notify({
           method: 'loggedInUser',
