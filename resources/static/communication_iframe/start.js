@@ -71,8 +71,10 @@
 
   chan.bind("loaded", function(trans, params) {
     setRemoteOrigin(trans.origin);
-    checkAndEmit(watchState);
-    trans.complete();
+    checkAndEmit(function() {
+      watchState();
+      trans.complete();
+    });
   });
 
   chan.bind("logout", function(trans, params) {
