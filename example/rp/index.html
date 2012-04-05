@@ -75,7 +75,11 @@ pre {
 </div>
 
 <div class="session">
-  <p><b>Care to simulate a session?  Who does this page think is logged in?</b></p>
+  <p><b>Care to simulate a session?</b></p>
+  <p>If you enter an email address or 'null' here, upon reload this value will
+     be passed to .watch() as the first parameter.  This lets you test things like
+     assertion generation suppression when the site and browser agree on who is logged in.
+  </p>
   <input type="text" id="loggedInUser" width="80">
   <button class="update_session">Update "session"</button>
 </div>
