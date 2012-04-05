@@ -161,12 +161,12 @@ $(document).ready(function() {
 
     $(".specify button.assertion").attr('disabled', 'true');
 
-    navigator.id.request({
+    navigator.id.experimental.request({
       privacyURL: $('#privacy').attr('checked') ? "/privacy.html" : undefined,
       tosURL: $('#tos').attr('checked') ? "/TOS.html" : undefined,
       requiredEmail: requiredEmail,
-      oncomplete: function() {
-        loggit("oncomplete");
+      onclose: function() {
+        loggit("onclose");
         $(".specify button.assertion").removeAttr('disabled');
       }
     });

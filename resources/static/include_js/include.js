@@ -952,8 +952,8 @@
 
       if (compatMode === undefined) compatMode = requiredMode;
       else if (compatMode != requiredMode) {
-        throw "you cannot combine browserid event APIs with navigator.id.getVerifiedEmail() or navigator.id.get()" +
-              "this site should instead use navigator.id.request() and the browserid event API";
+        throw "you cannot combine the navigator.id.watch() API with navigator.id.getVerifiedEmail() or navigator.id.get()" +
+              "this site should instead use navigator.id.request() and navigator.id.watch()";
       }
     }
 
@@ -1019,57 +1019,6 @@
       }
     }
 
-    navigator.id.experimental = {
-      watch: function(options) {
-        checkCompat(false);
-        internalWatch(options);
-      }
-    };
-
-    navigator.id.logout = function() {
-      // allocate iframe if it is not allocated
-      _open_hidden_iframe();
-
-      // send logout message
-      commChan.notify({ method: 'logout' });
-    };
-
-    // backwards compatibility function
-    navigator.id.get = function(callback, options) {
-      checkCompat(true);
-      internalWatch({
-        onlogin: function(assertion) {
-          if (callback) {
-            callback(assertion);
-            callback = null
-          }
-        }
-      });
-      options.oncomplete = function() {
-        if (callback) {
-          callback(null);
-          callback = null;
-        }
-        internalWatch({});
-      };
-      if (options && options.silent) {
-        if (callback) setTimeout(function() { callback(null); }, 0);
-      } else {
-        internalRequest(options);
-      }
-    };
-
-    // backwards compatibility function
-    navigator.id.getVerifiedEmail = function(callback) {
-      checkCompat(true);
-      navigator.id.get(callback);
-    };
-
-    navigator.id.request = function(options) {
-      checkCompat(false);
-      return internalRequest(options);
-    };
-
     function internalRequest(options) {
       // focus an existing window
       if (w) {
@@ -1134,12 +1083,62 @@
         }
 
         // complete
-        if (options && options.oncomplete) options.oncomplete();
-        delete options.oncomplete;
+        if (options && options.onclose) options.onclose();
+        delete options.onclose;
       });
     };
 
-    navigator.id._shimmed = true;
+    navigator.id = {
+      // The experimental API, not yet final
+      experimental: {
+        request: function(options) {
+          checkCompat(false);
+          return internalRequest(options);
+        },
+        watch: function(options) {
+          checkCompat(false);
+          internalWatch(options);
+        }
+      },
+      // logout from the current website
+      logout: function() {
+        // allocate iframe if it is not allocated
+        _open_hidden_iframe();
+        // send logout message
+        commChan.notify({ method: 'logout' });
+      },
+      // get an assertion
+      get: function(callback, options) {
+        checkCompat(true);
+        internalWatch({
+          onlogin: function(assertion) {
+            if (callback) {
+              callback(assertion);
+              callback = null
+            }
+          }
+        });
+        options.oncomplete = function() {
+          if (callback) {
+            callback(null);
+            callback = null;
+          }
+          internalWatch({});
+        };
+        if (options && options.silent) {
+          if (callback) setTimeout(function() { callback(null); }, 0);
+        } else {
+          internalRequest(options);
+        }
+      },
+      // backwards compatibility with old API
+      getVerifiedEmail: function(callback) {
+        checkCompat(true);
+        navigator.id.get(callback);
+      },
+      // required for forwards compatibility with native implementations
+      _shimmed: true
+    };
   }
 }());
 
