@@ -15,13 +15,19 @@
   test("expected public API functions available", function() {
     _.each([
       "get",
-      "request",
-      "setLoggedInUser",
-      "logout",
-      "addEventListener",
-      "removeEventListener"
+      "getVerifiedEmail",
+      "logout"
     ], function(item, index) {
       equal(typeof navigator.id[ item ], "function", "navigator.id." + item + " is available");
+    });
+  });
+
+  test("expected experimental API function is available", function() {
+    _.each([
+      "request",
+      "watch"
+    ], function(item, index) {
+      equal(typeof navigator.id.experimental[ item ], "function", "navigator.id." + item + " is available");
     });
   });
 
