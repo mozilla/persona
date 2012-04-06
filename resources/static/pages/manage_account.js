@@ -96,11 +96,6 @@ BrowserID.manageAccount = (function() {
     }
   }
 
-  function logoutEverywhere(oncomplete) {
-    storage.logoutEverywhere();
-    setTimeout(oncomplete, 0);
-  }
-
   function startEdit(event) {
     // XXX add some helpers in the dom library to find section.
     event.preventDefault();
@@ -205,13 +200,6 @@ BrowserID.manageAccount = (function() {
 
     dom.bindEvent("button.edit", "click", startEdit);
     dom.bindEvent("button.done", "click", cancelEdit);
-    dom.bindEvent("button.logout_everywhere", "click", function() {
-      logoutEverywhere(function() {
-        $("button.logout_everywhere").fadeOut(700, function() {
-          $("#logout_everywhere .completion_text").show();
-        });
-      });
-    });
     dom.bindEvent("#edit_password_form", "submit", cancelEvent(changePassword));
 
     user.checkAuthentication(function(auth_level) {
