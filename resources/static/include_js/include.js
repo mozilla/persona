@@ -1118,7 +1118,7 @@
             }
           }
         });
-        options.oncomplete = function() {
+        options.onclose = function() {
           if (callback) {
             callback(null);
             callback = null;
