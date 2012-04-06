@@ -1101,11 +1101,14 @@
         }
       },
       // logout from the current website
-      logout: function() {
+      // NOTE: callback argument will be deprecated when experimental API lands, to
+      //       be replaced with the .onlogout observer of the watch api.
+      logout: function(callback) {
         // allocate iframe if it is not allocated
         _open_hidden_iframe();
         // send logout message
         commChan.notify({ method: 'logout' });
+        if (typeof callback === 'function') setTimeout(callback, 0);
       },
       // get an assertion
       get: function(callback, options) {
