@@ -17,7 +17,7 @@ a:link, a:visited { font-style: italic; text-decoration: none; color: #008; }
 a:hover { border-bottom: 2px solid black ; }
 .title { font-size: 2em; font-weight: bold; text-align: center; margin: 1.5em auto 1.5em auto; }
 .intro { font-size: 1.2em;  }
-.specify { font-size: 1.1em; padding-top: 2em; }
+.specify, .session { font-size: 1.1em; padding-top: 2em; }
 body div { width: 600px; margin: auto; }
 
 pre {
@@ -57,7 +57,7 @@ pre {
 </div>
 
 <div class="specify">
-  <p>What flavor of assertion would you like?</p>
+  <p><b>What flavor of assertion would you like?</b></p>
   <ul>
     <li>
       <input type="checkbox" id="privacy">
@@ -74,21 +74,30 @@ pre {
     <button class="logout">logout</button>
 </div>
 
+<div class="session">
+  <p><b>Care to simulate a session?</b></p>
+  <p>If you enter an email address or 'null' here, upon reload this value will
+     be passed to .watch() as the first parameter.  This lets you test things like
+     assertion generation suppression when the site and browser agree on who is logged in.
+  </p>
+  <input type="text" id="loggedInUser" width="80">
+  <button class="update_session">Update "session"</button>
+</div>
+
 <div class="loginEvents">
-  <h2>login events</h2>
-  <pre> ... login events ... </pre>
+  <h2>logins</h2>
+  <pre> ... </pre>
 </div>
 
 <div class="logoutEvents">
-  <h2>logout events</h2>
-  <pre> ... logout events ... </pre>
+  <h2>logouts</h2>
+  <pre> ... </pre>
 </div>
 
-<div class="loginCanceledEvents">
-  <h2>loginCanceled events</h2>
-  <pre> ... loginCanceled events ... </pre>
+<div class="readiness">
+  <h2>readiness</h2>
+  <pre> ... </pre>
 </div>
-
 
 </body>
 
@@ -102,6 +111,8 @@ function loggit() {
   } catch(e) {}
 }
 
+var serial = 1;
+
 // a function to check an assertion against the server
 function checkAssertion(assertion) {
   $.ajax({
@@ -113,7 +124,8 @@ function checkAssertion(assertion) {
       audience: window.location.protocol + "//" + window.location.host
     },
     success: function(data, textStatus, jqXHR) {
-      $(".loginEvents > pre").text(JSON.stringify(data, null, 4));
+      var old = $(".loginEvents > pre").text() + "\n";
+      $(".loginEvents > pre").text(old + JSON.stringify(data, null, 4));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       var resp = jqXHR.responseText ? JSON.parse(jqXHR.responseText) : errorThrown;
@@ -122,21 +134,26 @@ function checkAssertion(assertion) {
   });
 };
 
-navigator.id.addEventListener('login', function(event) {
-  loggit("login event");
-  checkAssertion(event.assertion);
-});
+navigator.id.experimental.watch({
+  email: (localStorage.loggedInUser === 'null') ? null : localStorage.loggedInUser,
+  onready: function () {
+    loggit("onready");
+    var txt = serial++ + ' navigator.id ready at ' + (new Date).toString();
+    $(".readiness > pre").text(txt);
 
-navigator.id.addEventListener('logout', function(event) {
-  loggit("logout event");
-  var txt = 'got event at ' + (new Date).toString();
-  $(".logoutEvents > pre").text(txt);
-});
+  },
+  onlogin: function (assertion) {
+    loggit("onlogin");
+    var txt = serial++ + ' got assertion at ' + (new Date).toString();
+    $(".loginEvents > pre").text(txt);
 
-navigator.id.addEventListener('loginCanceled', function(event) {
-  loggit("loginCanceled");
-  var txt = 'got event at ' + (new Date).toString();
-  $(".loginCanceledEvents > pre").text(txt);
+    checkAssertion(assertion);
+  },
+  onlogout: function () {
+    loggit("onlogout");
+    var txt = serial++ + ' logout callback invoked at ' + (new Date).toString();
+    $(".logoutEvents > pre").text(txt);
+  }
 });
 
 $(document).ready(function() {
@@ -146,14 +163,26 @@ $(document).ready(function() {
     var requiredEmail = $.trim($('#requiredEmail').val());
     if (!requiredEmail.length) requiredEmail = undefined;
 
-    navigator.id.request({
+    $(".specify button.assertion").attr('disabled', 'true');
+
+    navigator.id.experimental.request({
       privacyURL: $('#privacy').attr('checked') ? "/privacy.html" : undefined,
       tosURL: $('#tos').attr('checked') ? "/TOS.html" : undefined,
-      requiredEmail: requiredEmail
+      requiredEmail: requiredEmail,
+      onclose: function() {
+        loggit("onclose");
+        $(".specify button.assertion").removeAttr('disabled');
+      }
     });
   });
 
   $(".specify button.logout").click(navigator.id.logout);
+
+  $(".session button.update_session").click(function() {
+    localStorage.loggedInUser = $.trim($('#loggedInUser').val());
+    $(".session input").fadeOut(100).fadeIn(350);
+  });
+  $('#loggedInUser').val(localStorage.loggedInUser ? localStorage.loggedInUser : "");
 });
 
 </script>

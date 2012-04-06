@@ -770,12 +770,13 @@
             try {
               var d = JSON.parse(e.data);
               if (d.a === 'ready') messageTarget.postMessage(req, origin);
-              else if (d.a === 'error') cb(d.d);
-              else if (d.a === 'response') {
+              else if (d.a === 'error') {
+                if (cb) { cb(d.d); cb = null; }
+              } else if (d.a === 'response') {
                 removeListener(window, 'message', onMessage);
                 removeListener(window, 'unload', cleanup);
                 cleanup();
-                cb(null, d.d);
+                if (cb) { cb(null, d.d); cb = null; }
               }
             } catch(e) { }
           };
@@ -936,11 +937,11 @@
 
     var w;
 
-    // table of registered event listeners
-    var listeners = {
-      login: [ ],
-      logout: [ ],
-      loginCanceled: [ ]
+    // table of registered observers
+    var observers = {
+      login: null,
+      logout: null,
+      ready: null
     };
 
     var compatMode = undefined;
@@ -951,30 +952,8 @@
 
       if (compatMode === undefined) compatMode = requiredMode;
       else if (compatMode != requiredMode) {
-        throw "you cannot combine browserid event APIs with navigator.id.getVerifiedEmail() or navigator.id.get()" +
-              "this site should instead use navigator.id.request() and the browserid event API";
-      }
-    }
-
-    function emitEvent(type, params) {
-      if (listeners[type]) {
-        var evt = document.createEvent('Event');
-        evt.initEvent(type, true, true);
-        // XXX: we should probably implement .stopImmediatePropagation()
-        if (params) {
-          for (var k in params) {
-            if (params.hasOwnProperty(k)) {
-              evt[k] = params[k];
-            }
-          }
-        }
-        for (var i = 0; i < listeners[type].length; i++) {
-          try {
-            listeners[type][i](evt);
-          } catch(e) {
-            // XXX: what shall we do when an exception is raised by an event handler?
-          }
-        }
+        throw "you cannot combine the navigator.id.watch() API with navigator.id.getVerifiedEmail() or navigator.id.get()" +
+              "this site should instead use navigator.id.request() and navigator.id.watch()";
       }
     }
 
@@ -996,101 +975,49 @@
             // once the channel is set up, we'll fire a loaded message.  this is the
             // cutoff point where we'll say if 'setLoggedInUser' was not called before
             // this point, then it wont be called (XXX: optimize and improve me)
-            commChan.call({ method: 'loaded', success: function(){}, error: function() {} });
+            commChan.call({
+              method: 'loaded',
+              success: function(){
+                if (observers.ready) observers.ready();
+              }, error: function() {
+              }
+            });
           }
         });
 
         commChan.bind('logout', function(trans, params) {
-          emitEvent('logout');
+          if (observers.logout) observers.logout();
         });
 
         commChan.bind('login', function(trans, params) {
-          emitEvent('login', { assertion: params });
+          if (observers.login) observers.login(params);
         });
       }
     }
 
-    function internalAddEventListener(type, listener) {
-      // add event to listeners table if it's not there already
-      if (!listeners[type]) throw "unsupported event type: '" + type + "'";
+    function internalWatch(options) {
+      if (typeof options !== 'object') return;
 
-      // is the function already registered?
-      for (var i = 0; i < listeners[type].length; i++) {
-        if (listeners[type][i] === listener) return;
+      if (options.onlogin && typeof options.onlogin !== 'function' ||
+          options.onlogout && typeof options.onlogout !== 'function' ||
+          options.onready && typeof options.onready !== 'function')
+      {
+        throw "non-function where function expected in parameters to navigator.id.watch()";
       }
-      listeners[type].push(listener);
-    }
 
-    navigator.id.addEventListener = function(type, listener) {
-      checkCompat(false);
+      observers.login = options.onlogin || null;
+      observers.logout = options.onlogout || null;
+      observers.ready = options.onready || null;
 
-      // allocate iframe if it is not allocated
       _open_hidden_iframe();
-      internalAddEventListener(type,listener);
-    };
 
-    function internalRemoveEventListener(type, listener ) {
-      // remove event from listeners table
-      var i;
-      for (i = 0; i < listeners[type].length; i++) {
-        if (listeners[type][i] === listener) break;
-      }
-      if (i < listeners[type][i].length) {
-        listeners[type].splice(i, 1);
+      if (typeof options.email !== 'undefined') {
+        commChan.notify({
+          method: 'loggedInUser',
+          params: options.email
+        });
       }
     }
-
-    navigator.id.removeEventListener = function(type, listener/*, useCapture */) {
-      checkCompat(false);
-      internalRemoveEventListener(type, listener);
-    };
-
-    navigator.id.logout = function() {
-      checkCompat(false);
-
-      // allocate iframe if it is not allocated
-      _open_hidden_iframe();
-
-      // send logout message
-      commChan.notify({ method: 'logout' });
-    };
-
-    navigator.id.setLoggedInUser = function(email) {
-      checkCompat(false);
-
-      // 1. allocate iframe if it is not allocated
-      _open_hidden_iframe();
-
-      // 2. send a "loggedInUser" message to iframe
-      commChan.notify({ method: 'loggedInUser', params: email });
-    };
-
-    // backwards compatibility function
-    navigator.id.get = function(callback, options) {
-      checkCompat(true);
-
-      if (options && options.silent) {
-        if (callback) setTimeout(function() { callback(null); }, 0);
-      } else {
-        function handleEvent(e) {
-          internalRemoveEventListener('login', handleEvent);
-          callback((e && e.assertion) ? e.assertion : null);
-        }
-        internalAddEventListener('login', handleEvent);
-        internalRequest(options);
-      }
-    };
-
-    // backwards compatibility function
-    navigator.id.getVerifiedEmail = function(callback) {
-      checkCompat(true);
-      navigator.id.get(callback);
-    };
-
-    navigator.id.request = function(options) {
-      checkCompat(false);
-      return internalRequest(options);
-    };
 
     function internalRequest(options) {
       // focus an existing window
@@ -1147,12 +1074,71 @@
 
         // clear the window handle
         w = undefined;
-        if (!err && r && r.assertion) emitEvent('login', { assertion: r.assertion });
-        else emitEvent('loginCanceled');
+        if (!err && r && r.assertion) {
+          try {
+            if (observers.login) observers.login(r.assertion);
+          } catch(e) {
+            // client's observer threw an exception
+          }
+        }
+
+        // complete
+        if (options && options.onclose) options.onclose();
+        delete options.onclose;
       });
     };
 
-    navigator.id._shimmed = true;
+    navigator.id = {
+      // The experimental API, not yet final
+      experimental: {
+        request: function(options) {
+          checkCompat(false);
+          return internalRequest(options);
+        },
+        watch: function(options) {
+          checkCompat(false);
+          internalWatch(options);
+        }
+      },
+      // logout from the current website
+      logout: function() {
+        // allocate iframe if it is not allocated
+        _open_hidden_iframe();
+        // send logout message
+        commChan.notify({ method: 'logout' });
+      },
+      // get an assertion
+      get: function(callback, options) {
+        checkCompat(true);
+        internalWatch({
+          onlogin: function(assertion) {
+            if (callback) {
+              callback(assertion);
+              callback = null
+            }
+          }
+        });
+        options.oncomplete = function() {
+          if (callback) {
+            callback(null);
+            callback = null;
+          }
+          internalWatch({});
+        };
+        if (options && options.silent) {
+          if (callback) setTimeout(function() { callback(null); }, 0);
+        } else {
+          internalRequest(options);
+        }
+      },
+      // backwards compatibility with old API
+      getVerifiedEmail: function(callback) {
+        checkCompat(true);
+        navigator.id.get(callback);
+      },
+      // required for forwards compatibility with native implementations
+      _shimmed: true
+    };
   }
 }());
 
