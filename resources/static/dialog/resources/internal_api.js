@@ -53,6 +53,12 @@
    */
   internal.get = function(origin, callback, options) {
     function complete(assertion) {
+      // The API is supposed to return a string assertion, not an
+      // object.  issue #1395
+      if (typeof assertion === 'object' && assertion.assertion) {
+        assertion = assertion.assertion;
+      }
+
       // If no assertion, give no reason why there was a failure.
       callback && callback(assertion || null);
     }
@@ -90,7 +96,13 @@
    */
   function getSilent(origin, email, callback) {
     function complete(assertion) {
-      callback && callback(assertion);
+      // The API is supposed to return a string assertion, not an
+      // object.  issue #1395
+      if (typeof assertion === 'object' && assertion.assertion) {
+        assertion = assertion.assertion;
+      }
+
+      callback && callback(assertion || null);
     }
 
     user.checkAuthenticationAndSync(function(authenticated) {
