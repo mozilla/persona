@@ -947,7 +947,8 @@
     var compatMode = undefined;
     function checkCompat(requiredMode) {
       if (requiredMode === true) {
-        try { console.log("this site uses deprecated APIs (see documentation for navigator.id.request())"); } catch(e) { }
+        // this deprecation warning should be re-enabled when the .watch and .request APIs become final.
+        // try { console.log("this site uses deprecated APIs (see documentation for navigator.id.request())"); } catch(e) { }
       }
 
       if (compatMode === undefined) compatMode = requiredMode;
