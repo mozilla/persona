@@ -38,6 +38,7 @@ for f in bin lib locale node_modules resources scripts *.json; do
 done
 mkdir -p %{buildroot}%{_rootdir}/config
 cp -p config/l10n-all.json %{buildroot}%{_rootdir}/config
+cp -p config/l10n-prod.json %{buildroot}%{_rootdir}/config
 
 %clean
 rm -rf %{buildroot}
