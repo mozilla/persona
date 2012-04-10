@@ -962,37 +962,43 @@
 
     // this is for calls that are non-interactive
     function _open_hidden_iframe() {
-      if (!commChan) {
-        var doc = window.document;
-        var iframe = doc.createElement("iframe");
-        iframe.style.display = "none";
-        doc.body.appendChild(iframe);
-        iframe.src = ipServer + "/communication_iframe";
-        commChan = Channel.build({
-          window: iframe.contentWindow,
-          origin: ipServer,
-          scope: "mozid_ni",
-          onReady: function() {
-            // once the channel is set up, we'll fire a loaded message.  this is the
-            // cutoff point where we'll say if 'setLoggedInUser' was not called before
-            // this point, then it wont be called (XXX: optimize and improve me)
-            commChan.call({
-              method: 'loaded',
-              success: function(){
-                if (observers.ready) observers.ready();
-              }, error: function() {
-              }
-            });
-          }
-        });
+      try {
+        if (!commChan) {
+          var doc = window.document;
+          var iframe = doc.createElement("iframe");
+          iframe.style.display = "none";
+          doc.body.appendChild(iframe);
+          iframe.src = ipServer + "/communication_iframe";
+          commChan = Channel.build({
+            window: iframe.contentWindow,
+            origin: ipServer,
+            scope: "mozid_ni",
+            onReady: function() {
+              // once the channel is set up, we'll fire a loaded message.  this is the
+              // cutoff point where we'll say if 'setLoggedInUser' was not called before
+              // this point, then it wont be called (XXX: optimize and improve me)
+              commChan.call({
+                method: 'loaded',
+                success: function(){
+                  if (observers.ready) observers.ready();
+                }, error: function() {
+                }
+              });
+            }
+          });
 
-        commChan.bind('logout', function(trans, params) {
-          if (observers.logout) observers.logout();
-        });
+          commChan.bind('logout', function(trans, params) {
+            if (observers.logout) observers.logout();
+          });
 
-        commChan.bind('login', function(trans, params) {
-          if (observers.login) observers.login(params);
-        });
+          commChan.bind('login', function(trans, params) {
+            if (observers.login) observers.login(params);
+          });
+        }
+      } catch(e) {
+        // channel building failed!  this is probably an unsupported browser.  let's ignore
+        // the error and allow higher level code to handle user messaging.
+        commChan = undefined;
       }
     }
 
@@ -1012,7 +1018,10 @@
 
       _open_hidden_iframe();
 
-      if (typeof options.email !== 'undefined') {
+      // check that the commChan was properly initialized before interacting with it.
+      // on unsupported browsers commChan might still be undefined, in which case
+      // we let the dialog display the "unsupported browser" message upon spawning.
+      if (typeof options.email !== 'undefined' && commChan) {
         commChan.notify({
           method: 'loggedInUser',
           params: options.email
