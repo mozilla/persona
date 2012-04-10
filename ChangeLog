@@ -7,6 +7,8 @@ train-2012.03.28:
   * tools/build/dev env fixes: #1284
   * (hotfix 2012.03.30) Fix regression where 304 responses to requests for IFrame HTML would have X-Frame-Options: deny, preventing loading of iframes #1353
   * (hotfix 2012.03.30) ETag headers now vary by locale, fixes regression where switching between locales was broken #1364
+  * (hotfix 2012.04.10) more rigorous checking of email inputs to WSAPI
+  * (hotfix 2012.04.10) copy config/l10n-*.json to build directory
 
 train-2012.03.14:
   * BrowserID now speaks Bulgarian
