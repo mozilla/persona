@@ -9,6 +9,7 @@ train-2012.03.28:
   * (hotfix 2012.03.30) ETag headers now vary by locale, fixes regression where switching between locales was broken #1364
   * (hotfix 2012.04.10) more rigorous checking of email inputs to WSAPI
   * (hotfix 2012.04.10) copy config/l10n-*.json to build directory
+  * (hotfix 2012.04.10) final 40 production locales merged: #1412
 
 train-2012.03.14:
   * BrowserID now speaks Bulgarian
