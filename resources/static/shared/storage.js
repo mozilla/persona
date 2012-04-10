@@ -279,6 +279,10 @@ BrowserID.Storage = (function() {
   }
 
   function shouldAskUserAboutHerComputer(userid) {
+    // if any higher level code passes in a non-userid,
+    // we'll tell them not to ask, triggering ephemeral sessions.
+    if (typeof userid !== 'number') return false;
+
     // we should ask the user if this is their computer if they were
     // first seen over a minute ago, if they haven't denied ownership
     // of this computer in the last 24 hours, and they haven't confirmed
