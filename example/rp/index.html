@@ -105,6 +105,15 @@ pre {
 <script src="https://browserid.org/include.js"></script>
 <script>
 
+try {
+  var storage = localStorage;
+}
+catch(e) {
+  // Fx with cookies disabled with blow up when trying to access localStorage.
+  storage = {};
+}
+
+
 function loggit() {
   try {
     console.log.apply(console, arguments);
@@ -135,7 +144,7 @@ function checkAssertion(assertion) {
 };
 
 navigator.id.experimental.watch({
-  email: (localStorage.loggedInUser === 'null') ? null : localStorage.loggedInUser,
+  email: (storage.loggedInUser === 'null') ? null : storage.loggedInUser,
   onready: function () {
     loggit("onready");
     var txt = serial++ + ' navigator.id ready at ' + (new Date).toString();
@@ -179,10 +188,10 @@ $(document).ready(function() {
   $(".specify button.logout").click(navigator.id.logout);
 
   $(".session button.update_session").click(function() {
-    localStorage.loggedInUser = $.trim($('#loggedInUser').val());
+    storage.loggedInUser = $.trim($('#loggedInUser').val());
     $(".session input").fadeOut(100).fadeIn(350);
   });
-  $('#loggedInUser').val(localStorage.loggedInUser ? localStorage.loggedInUser : "");
+  $('#loggedInUser').val(storage.loggedInUser ? storage.loggedInUser : "");
 });
 
 </script>

@@ -5,8 +5,22 @@
 BrowserID.Storage = (function() {
 
   var jwk,
-      storage = localStorage,
       ONE_DAY_IN_MS = (1000 * 60 * 60 * 24);
+
+  try {
+    var storage = localStorage;
+  }
+  catch(e) {
+    // Fx with cookies disabled will except while trying to access
+    // localStorage.  Because of this, and because the new API requires access
+    // to localStorage
+    storage = {
+      removeItem: function(key) {
+        this[key] = null;
+        delete this[key];
+      }
+    };
+  }
 
   function prepareDeps() {
     if (!jwk) {
@@ -160,21 +174,21 @@ BrowserID.Storage = (function() {
     }
   }
 
-  function managePageGet(key) {
-    var allInfo = JSON.parse(storage.managePage || "{}");
+  function generic2KeySet(namespace, key, value) {
+    var allInfo = JSON.parse(storage[namespace] || "{}");
+    allInfo[key] = value;
+    storage[namespace] = JSON.stringify(allInfo);
+  }
+
+  function generic2KeyGet(namespace, key) {
+    var allInfo = JSON.parse(storage[namespace] || "{}");
     return allInfo[key];
   }
 
-  function managePageSet(key, value) {
-    var allInfo = JSON.parse(storage.managePage || "{}");
-    allInfo[key] = value;
-    storage.managePage = JSON.stringify(allInfo);
-  }
-
-  function managePageRemove(key) {
-    var allInfo = JSON.parse(storage.managePage || "{}");
+  function generic2KeyRemove(namespace, key) {
+    var allInfo = JSON.parse(storage[namespace] || "{}");
     delete allInfo[key];
-    storage.managePage = JSON.stringify(allInfo);
+    storage[namespace] = JSON.stringify(allInfo);
   }
 
   function setLoggedIn(origin, email) {
@@ -421,9 +435,15 @@ BrowserID.Storage = (function() {
        * Set a data field for the manage page
        * @method managePage.set
        */
-      set: managePageSet,
-      get: managePageGet,
-      remove: managePageRemove
+      set: generic2KeySet.curry("managePage"),
+      get: generic2KeyGet.curry("managePage"),
+      remove: generic2KeyRemove.curry("managePage")
+    },
+
+    signInEmail: {
+      set: generic2KeySet.curry("main_site", "signInEmail"),
+      get: generic2KeyGet.curry("main_site", "signInEmail"),
+      remove: generic2KeyRemove.curry("main_site", "signInEmail")
     },
 
     usersComputer: {
