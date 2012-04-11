@@ -94,18 +94,21 @@ section > .contents {
 }
 
 .waiting #wait {
+    display: block;
     z-index: 1;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
 }
 
 .delay #delay {
+    display: block;
     z-index: 2;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
 }
 
 .error #error, #error.unsupported, #error.cookies_disabled {
+    display: block;
     z-index: 3;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
