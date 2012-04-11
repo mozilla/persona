@@ -27,7 +27,7 @@ suite.addBatch({
   "start registration": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
-      site:'fakesite.com'
+      site:'http://fakesite.com:123'
     }),
     "returns 200": function(err, r) {
       assert.strictEqual(r.code, 200);

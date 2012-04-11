@@ -41,7 +41,7 @@ suite.addBatch({
   "account staging": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: TEST_EMAIL,
-      site: TEST_DOMAIN
+      site: TEST_ORIGIN
     }),
     "works":     function(err, r) {
       assert.equal(r.code, 200);

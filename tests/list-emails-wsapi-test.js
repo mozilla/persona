@@ -27,7 +27,7 @@ suite.addBatch({
   "stage an account": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'syncer@somehost.com',
-      site:'fakesite.com'
+      site:'https://foobar.fakesite.com'
     }),
     "works": function(err, r) {
       assert.strictEqual(r.code, 200);

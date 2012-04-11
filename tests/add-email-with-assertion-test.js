@@ -112,7 +112,7 @@ suite.addBatch({
   "stage an account": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: TEST_FIRST_ACCT,
-      site:'fakesite.com'
+      site:'http://fakesite.com:652'
     }),
     "works": function(err, r) {
       assert.strictEqual(r.code, 200);

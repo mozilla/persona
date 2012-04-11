@@ -81,7 +81,7 @@ suite.addBatch({
   "add a new email address to our account": {
     topic: wsapi.post('/wsapi/stage_email', {
       email: SECONDARY_EMAIL,
-      site:'fakesite.com'
+      site:'https://fakesite.com'
     }),
     "works": function(err, r) {
       assert.strictEqual(r.code, 200);
@@ -146,7 +146,7 @@ suite.addBatch({
   "add a new email address to our account": {
     topic: wsapi.post('/wsapi/stage_email', {
       email: SECOND_SECONDARY_EMAIL,
-      site:'fakesite.com'
+      site:'http://fakesite.com:123'
     }),
     "works": function(err, r) {
       assert.strictEqual(r.code, 200);

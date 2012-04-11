@@ -35,7 +35,7 @@ suite.addBatch({
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'syncer@somehost.com',
       pubkey: 'fakekey',
-      site:'fakesite.com'
+      site:'http://fakesite.com'
     }),
     "succeeds": function(err, r) {
       assert.strictEqual(r.code, 200);
