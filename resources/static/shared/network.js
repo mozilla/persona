@@ -257,6 +257,9 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/user_creation_status?email=" + encodeURIComponent(email),
         success: function(status, textStatus, jqXHR) {
+          if (status.status === 'complete' && status.userid) {
+            setUserID(status.userid);
+          }
           complete(onComplete, status.status);
         },
         error: onFailure

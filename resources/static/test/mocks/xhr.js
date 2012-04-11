@@ -54,7 +54,7 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/stage_user throttle": 429,
       "post /wsapi/stage_user ajaxError": undefined,
       "get /wsapi/user_creation_status?email=registered%40testuser.com pending": { status: "pending" },
-      "get /wsapi/user_creation_status?email=registered%40testuser.com complete": { status: "complete" },
+      "get /wsapi/user_creation_status?email=registered%40testuser.com complete": { status: "complete", userid: 4 },
       "get /wsapi/user_creation_status?email=registered%40testuser.com mustAuth": { status: "mustAuth" },
       "get /wsapi/user_creation_status?email=registered%40testuser.com noRegistration": { status: "noRegistration" },
       "get /wsapi/user_creation_status?email=registered%40testuser.com ajaxError": undefined,
