@@ -14,6 +14,17 @@
       storage = bid.Storage,
       moduleManager = bid.module;
 
+  // given an object containing an assertion, extract the assertion string,
+  // as the internal API is supposed to return a string assertion, not an
+  // object.  issue #1395
+
+  function assertionObjectToString(assertion) {
+    if (assertion !== null && typeof assertion === 'object' && assertion.assertion) {
+      assertion = assertion.assertion;
+    }
+    return assertion;
+  }
+
   /**
    * Set the persistent flag to true for an origin.
    * @method setPersistent
@@ -53,6 +64,7 @@
    */
   internal.get = function(origin, callback, options) {
     function complete(assertion) {
+      assertion = assertionObjectToString(assertion);
       // If no assertion, give no reason why there was a failure.
       callback && callback(assertion || null);
     }
@@ -90,7 +102,8 @@
    */
   function getSilent(origin, email, callback) {
     function complete(assertion) {
-      callback && callback(assertion);
+      assertion = assertionObjectToString(assertion);
+      callback && callback(assertion || null);
     }
 
     user.checkAuthenticationAndSync(function(authenticated) {
