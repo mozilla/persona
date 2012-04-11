@@ -1,7 +1,8 @@
 {
 "supported_languages": [
-    "ca", "cs", "de", "el", "en-US", "es", "et", "eu", "fr", "fy",
-    "ga", "gl", "he", "hr", "hu", "it", "ja", "lij", "lt", "nl", "pa", "pl", "pt-BR", "rm",
-    "ru", "sk", "sl", "sq", "sv", "tr", "zh-CN", "zh-TW"
+    "bg", "ca", "cs", "da", "de", "el", "en-US", "eo", "es", "et",
+    "eu", "fi", "fr", "fy", "ga", "gd", "gl", "he", "hr", "hu",
+    "id", "it", "ja", "ko", "lij", "lt", "nl", "pa", "pl", "pt-BR",
+    "rm", "ru", "sk", "sl", "sq", "sr", "sv", "tr", "zh-CN", "zh-TW"
   ]
 }
