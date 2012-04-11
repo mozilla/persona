@@ -68,7 +68,6 @@
 
     bid.manageAccount(mocks, function() {
       // switch to a single address return on the sync.
-      xhr.useResult("valid");
       bid.manageAccount.removeEmail("testuser@testuser.com", function() {
         equal($("#emailList").children().length, 1, "after removing an email, only one remains");
         start();
@@ -93,6 +92,25 @@
     bid.manageAccount(mocks, function() {
       bid.manageAccount.removeEmail("testuser@testuser.com", function() {
         equal(mocks.document.location, "/", "redirection happened");
+        start();
+      });
+    });
+  });
+  
+  asyncTest("removeEmail doesn't cancel the account when removing a non-existent e-mail", function() {
+    bid.manageAccount(mocks, function() {
+      bid.manageAccount.removeEmail("non@existent.com", function() {
+        notEqual(mocks.document.location, "/", "redirection did not happen");
+        start();
+      });
+    });
+  });
+  
+  asyncTest("removeEmail doesn't cancel the account when out of sync with the server", function() {
+    bid.manageAccount(mocks, function() {
+      xhr.useResult("multiple");
+      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
+        notEqual(mocks.document.location, "/", "redirection did not happen");
         start();
       });
     });
