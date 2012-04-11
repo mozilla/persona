@@ -1,3 +1,6 @@
+train-2012.04.25 (in progress):
+  *
+
 train-2012.04.11:
   * New BrowserID "Observer" API implemented in experimental status: #912
   * Implement variable length sessions and explicit user confirmation to improve saftey on public terminals/shared computers: #884
