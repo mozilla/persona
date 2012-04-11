@@ -157,5 +157,12 @@
   test("getStagedOnBehalfOf", function() {
     // XXX needs a test
   });
+
+  test("signInEmail.set/.get/.remove - set, get, and remove the signInEmail", function() {
+    storage.signInEmail.set("testuser@testuser.com");
+    equal(storage.signInEmail.get(), "testuser@testuser.com", "correct email gotten");
+    storage.signInEmail.remove();
+    equal(typeof storage.signInEmail.get(), "undefined", "after remove, signInEmail is empty");
+  });
 }());
 

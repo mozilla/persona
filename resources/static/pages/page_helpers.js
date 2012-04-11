@@ -8,8 +8,8 @@ BrowserID.PageHelpers = (function() {
 
   var win = window,
       doc = win.document,
-      locStorage = win.localStorage,
       bid = BrowserID,
+      storage = bid.Storage,
       user = bid.User,
       helpers = bid.Helpers,
       dom = bid.DOM,
@@ -18,7 +18,15 @@ BrowserID.PageHelpers = (function() {
       origStoredEmail;
 
   function setStoredEmail(email) {
-    locStorage.signInEmail = email;
+    storage.signInEmail.set(email);
+  }
+
+  function clearStoredEmail() {
+    storage.signInEmail.remove();
+  }
+
+  function getStoredEmail() {
+    return storage.signInEmail.get() || "";
   }
 
   function onEmailChange(event) {
@@ -30,7 +38,7 @@ BrowserID.PageHelpers = (function() {
     // If the user tried to sign in on the sign up page with an existing email,
     // place that email in the email field, then focus the password.
     var el = $("#email"),
-        email = locStorage.signInEmail;
+        email = getStoredEmail();
 
     if (email) {
       el.val(email);
@@ -39,14 +47,6 @@ BrowserID.PageHelpers = (function() {
 
     dom.bindEvent("#email", "change", onEmailChange);
     dom.bindEvent("#email", "keyup", onEmailChange);
-  }
-
-  function clearStoredEmail() {
-    locStorage.removeItem("signInEmail");
-  }
-
-  function getStoredEmail() {
-    return locStorage.signInEmail || "";
   }
 
   function getParameterByName( name ) {
