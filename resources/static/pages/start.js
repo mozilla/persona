@@ -70,21 +70,35 @@ $(function() {
   });
 
   var ANIMATION_TIME = 500;
-  user.checkAuthentication(function(authenticated) {
-    $(".display_always").fadeIn(ANIMATION_TIME);
-
-    dom.addClass("body", authenticated ? "authenticated" : "not_authenticated");
-    if (authenticated) {
-      $(".display_auth").fadeIn(ANIMATION_TIME);
-      if ($('#emailList').length) {
-        bid.manageAccount();
-      }
+  network.cookiesEnabled(function(cookiesEnabled) {
+    if(cookiesEnabled) {
+      user.checkAuthentication(function(authenticated) {
+        if (authenticated) {
+          displayAuthenticated();
+        }
+        else {
+          displayNonAuthenticated();
+        }
+      });
     }
     else {
-      $(".display_nonauth").fadeIn(ANIMATION_TIME);
+      displayNonAuthenticated();
     }
   });
 
+  function displayAuthenticated() {
+    $(".display_always").fadeIn(ANIMATION_TIME);
+    dom.addClass("body", "authenticated");
+    $(".display_auth").fadeIn(ANIMATION_TIME);
+    if ($('#emailList').length) {
+      bid.manageAccount();
+    }
+  }
 
+  function displayNonAuthenticated() {
+    $(".display_always").fadeIn(ANIMATION_TIME);
+    dom.addClass("body", "not_authenticated");
+    $(".display_nonauth").fadeIn(ANIMATION_TIME);
+  }
 });
 
