@@ -11,35 +11,48 @@ h2 {
     font-weight: bold;
 }
 
-
-#wrapper {
-    min-width: 640px;
-    position: relative;
-}
-
-
-.vertical {
-    height: 230px;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-.table {
-    display: table;
+header,
+footer {
+    position: absolute;
     width: 100%;
+    padding: 20px;
+    z-index: 2;
 }
 
-.table .vertical {
-    display: table-cell;
-    vertical-align: middle;
+header {
+    top: 0;
+    font-weight: bold;
+    border-bottom: 1px solid #c7c6c1;
+    background-color: rgba(0,0,0,0.05);
+    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
+    zoom: 1;
+    -webkit-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
+       -moz-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
+         -o-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
+            box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
 }
 
-#content {
-    position: relative;
-    height: 250px;
-    overflow: hidden;
-    /* Fix for IE6 not displaying the unsupported dialog correctly */
-    _width: 100%;
+footer {
+    bottom: 0;
+    font-size: 12px;
+    color: #62615F;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+    border-top: 1px solid #c7c6c1;
+}
+
+footer a {
+    color: #549FDC;
+}
+
+label {
+    display: block;
+    color: #62615F;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+}
+
+label.selectable {
+    cursor: pointer;
 }
 
 section {
@@ -52,14 +65,49 @@ section {
     z-index: 0;
 }
 
+.table {
+    display: table;
+    width: 100%;
+    height: 100%;
+}
+
+.table .vertical {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+/*
+.contents {
+    max-height: 210px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}*/
+
+
 section > .contents {
     display: table-cell;
     vertical-align: middle;
     height: 250px;
 }
 
+.form_section {
+    width: 250px;
+}
+
+
 .contents > strong {
     display: none;
+}
+
+#content {
+    position: absolute;
+    overflow: hidden;
+    left: 0;
+    right: 0;
+    top: 61px;
+    bottom: 61px;
+    /* Fix for IE6 not displaying the unsupported dialog correctly */
+    _width: 100%;
 }
 
 #wait, #error, #delay {
@@ -156,34 +204,51 @@ section > .contents {
     position: absolute;
     left: 0;
     top: 0;
+    bottom: 0;
+    width: 325px;
 }
 
-#signIn .container {
+#signIn .table {
     /**
      * Set the width of the container for when the arrow animation happens
      * otherwise the buttons slide right with the arrow
      */
-    width: 325px;
+    /*width: 325px;*/
     padding: 20px 52px 20px 20px;
 }
 
-.arrow {
+.arrowContainer {
     width: 40px;
-    height: 250px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #fff;
+    background-image: -webkit-linear-gradient(left, #c7c7c7, #fff 2px);
+    background-image:    -moz-linear-gradient(left, #c7c7c7, #fff 2px);
+    background-image:     -ms-linear-gradient(left, #c7c7c7, #fff 2px);
+    background-image:      -o-linear-gradient(left, #c7c7c7, #fff 2px);
+    background-image:         linear-gradient(left, #c7c7c7, #fff 2px);
+}
+
+.arrow {
     display: block;
     position: absolute;
-    right: 0px;
     top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
     background-image: url('/i/arrow.png');
     background-repeat: no-repeat;
     background-position: center;
-    background-color: #fff;
+    background-color: transparent;
 }
 
 #favicon {
     position: absolute;
     left: 375px;
     top: 0;
+    bottom: 0;
     right: 0;
     z-index: 10;
 }
@@ -198,8 +263,7 @@ section > .contents {
 }
 
 #favicon .vertical {
-    display: block;
-    line-height: 250px;
+    display: table-cell;
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -211,49 +275,24 @@ div#required_email {
     font-weight: bold;
 }
 
+    /*
 #signIn .vertical {
     position: relative;
 }
-
-#signIn .vertical ul {
-  list-style-type: none;
-}
-
-#signIn .vertical ul li {
-  margin-top: 10px;
-}
-
-#signIn .vertical ul li:first-child {
-  margin-top: 0;
-}
-
-#signIn .submit {
-    line-height: 28px;
-    margin-top: 10px;
-    color: #333;
-    font-size: 11px;
-    line-height: 1.2;
-}
-
-#signIn .submit > a {
-    color: #549FDC;
-    margin-right: 0;
-    float: none;
-}
-
-  /*
-#signIn .submit > p {
-  line-height: 13px;
-  clear: right;
-  text-align: center;
-}
 */
 
-#signIn label.half,
-.half {
-    width: 50%;
-    display: inline-block;
-    float: left;
+#selectEmail {
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    left: 20px;
+    width: 250px;
+    overflow-y: auto;
+}
+
+#selectEmail.center {
+    position: static;
+    overflow-y: visible;
 }
 
 #forgotPassword {
@@ -262,21 +301,16 @@ div#required_email {
     font-size: 11px;
 }
 
-#signIn button.create {
-    font-size: 14px;
-    height: 28px;
-    padding: 0 10px;
-    float: right;
+.inputs {
+  line-height: 18px;
 }
 
-label {
-    display: block;
-    color: #62615F;
-    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+.inputs > li {
+  margin-top: 10px;
 }
 
-label.selectable {
-    cursor: pointer;
+.inputs > li:first-child {
+  margin-top: 0;
 }
 
 .inputs > li > label {
@@ -285,7 +319,7 @@ label.selectable {
     text-overflow: ellipsis;
 }
 
-#signIn #selectEmail > .inputs > li {
+#selectEmail > .inputs > li {
     margin: 0;
 }
 
@@ -294,85 +328,29 @@ label.selectable {
     white-space: nowrap;
 }
 
-.inputs > li > label.preselected {
+#selectEmail > .inputs > li > label.preselected {
     font-weight: bold;
 }
 
-.inputs > li:only-child > label.selectable {
+#selectEmail > .inputs > li:only-child > label.selectable {
     cursor: default;
 }
 
-.learn {
-    display: inline-block;
-    font-size: 12px;
-    color: #62615F;
-    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+#selectEmail > .inputs > li:only-child input[type=radio] {
+  display: none;
 }
 
-#signIn .submit > p {
-    display: block;
+.submit {
+    line-height: 28px;
+    margin-top: 10px;
+    color: #333;
+    font-size: 11px;
+    line-height: 1.2;
 }
 
-#signIn .submit > p + p:last-child {
+.submit > p + p:last-child {
     margin-top: 15px;
     padding-left: 10px;
-}
-
-#signIn .submit a {
-    color: #549FDC;
-}
-
-footer .learn a {
-    color: #549FDC;
-}
-
-.checkregistration p {
-    color: #62615F;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-header,
-footer {
-    display: block;
-    width: 100%;
-}
-
-header {
-    padding: 20px;
-    font-weight: bold;
-    border-bottom: 1px solid #c7c6c1;
-    background-color: rgba(0,0,0,0.05);
-    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
-    zoom: 1;
-    -webkit-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
-       -moz-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
-         -o-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
-            box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
-}
-
-header ul {
-    display: block;
-    float: left;
-}
-
-header ul li {
-    margin: 0 10px 0 0;
-    color: #222;
-    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-}
-
-footer {
-    border-top: 1px solid #c7c6c1;
-    padding: 20px;
-}
-
-.inputs {
-    line-height: 18px;
-}
-
-.inputs > li:only-child input[type=radio] {
-    display: none;
 }
 
 a.emphasize {
@@ -384,26 +362,10 @@ a.emphasize {
   line-height: 18px;
 }
 
-.submit > button {
-    margin: 0 0 0 5px;
-}
-
-#newEmail {
-    -moz-box-flex: 1;
-}
-
 .newuser,
 .forgot,
 .returning {
     display: none;
-}
-
-#create_text_section {
-    color: #222;
-}
-
-#checkemail {
-    text-align: center;
 }
 
 #your_computer_content {

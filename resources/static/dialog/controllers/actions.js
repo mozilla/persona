@@ -26,6 +26,8 @@ BrowserID.Modules.Actions = (function() {
       runningService = name;
     }
 
+    bid.resize();
+
     return module;
   }
 

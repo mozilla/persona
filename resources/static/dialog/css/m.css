@@ -4,18 +4,10 @@
 
 @media screen and (max-width: 640px) {
 
-  #wrapper {
-      min-width: 320px;
-      width: 100%;
-      margin: 0 auto;
-  }
-
   header, footer {
+    position: static;
     padding: 5px 20px;
-  }
-
-  header ul li:nth-child(2) {
-      display: none;
+    background-image: url("/i/bg.png");
   }
 
   button {
@@ -28,11 +20,10 @@
     font-size: 17px;
   }
 
-  section {
-    position: static;
-    overflow: visible;
+  section, .arrow, .arrowContainer {
     display: none;
   }
+
 
   .inputs > li > label {
     font-size: 18px;
@@ -43,8 +34,24 @@
     font-size: 20px;
   }
 
-  #signIn,
+  #selectEmail {
+    top: auto;
+    left: auto;
+    bottom: auto;
+    right: auto;
+    overflow-y: inherit;
+    position: static;
+    width: auto;
+  }
+
+  #signIn {
+    top: 45px;  /* 45px is a magic number - the height of the favicon area */
+    right: 0;
+    width: auto;
+  }
+
   #favicon {
+      overflow: inherit;
       display: block;
       width: 100%;
       /* Changed this from relative to static to fix issue #1309 - tooltips
@@ -57,13 +64,17 @@
     padding: 10px;
   }
 
-  #signIn {
-      padding: 0;
-  }
-
   #signIn .container {
       width: 100%;
       padding: 20px;
+  }
+
+  .pickemail #signIn .container {
+      padding-top: 0;
+  }
+
+  #signIn .vertical {
+      position: static;
   }
 
   #signIn form {
@@ -102,25 +113,9 @@
       display: none;
   }
 
-  .arrow {
-      display: none;
-  }
-
-  #checkemail p {
-      height: 250px;
-  }
-
-  #signIn .vertical {
-    padding: 10px;
-  }
-
-  #signIn .vertical ul li {
-    margin-top: 20px;
-  }
-
   #selectEmail > .inputs > li > label {
     margin: 0;
-    padding: 15px 1px;
+    padding: 25px 0;
   }
 
   #signIn .submit {
@@ -139,14 +134,23 @@
     margin-bottom: 20px;
   }
 
-  .form_section {
-    margin-top: 20px;
+  #content {
+    position: relative;
+    top: 0;
+    bottom: 0;
   }
 
-  #content, .form_section, .inputs, .vertical {
+  .form_section,
+  .vertical {
+    position: relative;
     height: auto;
+    width: 100%;
     max-height: none;
     overflow: visible;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
   }
 
   .submit #cancel, #signIn .submit #cancel {
