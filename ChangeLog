@@ -16,6 +16,7 @@ train-2012.04.11:
   * improve password update in account manager screen: #1388, #1389
   * developers link now points to MDN: #1397
   * fix issues that were introduced while implementing the above features: #1349, #1348, #1354, #1357, #1374, #1399, #1400, #1408, #1395, #1406, #1405, #1390, #1391
+  * (hotfix 2012.04.12) return 400 rather than 500 for invalid params to stage_user or stage_email: #1429
 
 train-2012.03.28:
   * work towards better user messaging for when cookies are disabled: #1167, #1302
@@ -31,6 +32,7 @@ train-2012.03.28:
   * (hotfix 2012.04.10) final 40 production locales merged: #1412
   * (hotfix 2012.04.10) update l10n-all.json to have all locales (complete and in-progress) as well as en-US and db-LB
   * (hotfix 2012.04.10) fix more rigorous checking of email inputs to WSAPI: domain checking of 'site' parameter was validating hostnames rather than domains.
+  * (hotfix 2012.04.12) fix /signup page on browserid.org: #1429
 
 train-2012.03.14:
   * BrowserID now speaks Bulgarian
