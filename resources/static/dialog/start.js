@@ -33,6 +33,7 @@
       moduleManager.register("generate_assertion", modules.GenerateAssertion);
       moduleManager.register("xhr_delay", modules.XHRDelay);
       moduleManager.register("xhr_disable_form", modules.XHRDisableForm);
+      moduleManager.register("set_password", modules.SetPassword);
 
       moduleManager.start("xhr_delay");
       moduleManager.start("xhr_disable_form");

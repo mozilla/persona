@@ -73,6 +73,15 @@ BrowserID.Modules.Actions = (function() {
       if(onsuccess) onsuccess(null);
     },
 
+    doSetPassword: function(info) {
+      startService("set_password", info);
+    },
+
+    doStageUser: function(info) {
+      var email = info.email;
+      bid.Helpers.Dialog.createUser.call(this, email);
+    },
+
     doConfirmUser: function(info) {
       startRegCheckService.call(this, info, "waitForUserValidation", "user_confirmed");
     },

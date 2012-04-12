@@ -61,7 +61,8 @@ BrowserID.Modules.Authenticate = (function() {
       else if(info.known) {
         enterPasswordState.call(self);
       } else {
-        createSecondaryUserState.call(self);
+        self.close("new_user", { email: email });
+        //createSecondaryUserState.call(self);
       }
     }
   }
@@ -71,9 +72,10 @@ BrowserID.Modules.Authenticate = (function() {
         email = getEmail();
 
     if (email) {
-      dialogHelpers.createUser.call(self, email, callback);
+      self.close("new_user", { email: email });
+      //dialogHelpers.createUser.call(self, email, callback);
     } else {
-      callback && callback();
+      complete(callback);
     }
   }
 

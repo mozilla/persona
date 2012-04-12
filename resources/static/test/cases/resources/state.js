@@ -78,10 +78,21 @@
     equal(error, "start: controller must be specified", "creating a state machine without a controller fails");
   });
 
+  test("new_user - call doSetPassword with correct email", function() {
+    mediator.publish("new_user", { email: TEST_EMAIL });
+
+    equal(actions.info.doSetPassword.email, TEST_EMAIL, "correct email sent to doSetPassword");
+  });
+
+  test("password_set - call doStageUser with correct email", function() {
+    mediator.publish("new_user", { email: TEST_EMAIL });
+    mediator.publish("password_set");
+
+    equal(actions.info.doStageUser.email, TEST_EMAIL, "correct email sent to doStageUser");
+  });
+
   test("user_staged - call doConfirmUser", function() {
-    mediator.publish("user_staged", {
-      email: TEST_EMAIL
-    });
+    mediator.publish("user_staged", { email: TEST_EMAIL });
 
     equal(actions.info.doConfirmUser.email, TEST_EMAIL, "waiting for email confirmation for testuser@testuser.com");
   });

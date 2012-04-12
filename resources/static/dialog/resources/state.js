@@ -93,6 +93,18 @@ BrowserID.State = (function() {
       startAction("doAuthenticate", info);
     });
 
+    handleState("new_user", function(msg, info) {
+      self.newUserEmail = info.email;
+      startAction("doSetPassword", info);
+    });
+
+    handleState("password_set", function(msg, info) {
+      info = info || {};
+      info.email = self.newUserEmail;
+
+      startAction("doStageUser", info);
+    });
+
     handleState("user_staged", function(msg, info) {
       self.stagedEmail = info.email;
       info.required = !!requiredEmail;
