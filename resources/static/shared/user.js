@@ -1163,6 +1163,15 @@ BrowserID.User = (function() {
     }
   };
 
-  User.setOrigin(document.location.host);
+  // Set origin to default to the current domain.  Other contexts that use user.js,
+  // like dialogs or iframes, will call setOrigin themselves to update this to
+  // the origin of the of the RP.  On browserid.org, it will remain the origin of
+  // browserid.org
+  var currentOrigin = window.location.protocol + '//' + window.location.hostname;
+  if (window.location.port) {
+    currentOrigin += ':' + window.location.port;
+  }
+  User.setOrigin(currentOrigin);
+
   return User;
 }());
