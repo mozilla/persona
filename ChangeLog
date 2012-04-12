@@ -12,6 +12,7 @@ train-2012.03.28:
   * (hotfix 2012.04.10) final 40 production locales merged: #1412
   * (hotfix 2012.04.10) update l10n-all.json to have all locales (complete and in-progress) as well as en-US and db-LB
   * (hotfix 2012.04.10) fix more rigorous checking of email inputs to WSAPI: domain checking of 'site' parameter was validating hostnames rather than domains.
+  * (hotfix 2012.04.12) fix /signup page on browserid.org: #1429
 
 train-2012.03.14:
   * BrowserID now speaks Bulgarian
