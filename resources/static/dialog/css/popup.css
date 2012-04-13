@@ -11,10 +11,8 @@ h2 {
     font-weight: bold;
 }
 
-header,
-footer {
+header, footer {
     position: absolute;
-    width: 100%;
     padding: 20px;
     z-index: 2;
 }
@@ -42,7 +40,12 @@ footer {
 }
 
 footer a {
-    color: #549FDC;
+    color: #62615f;
+    border-bottom: 1px dotted #999;
+}
+
+footer a:hover {
+    color: #333;
 }
 
 label {
@@ -275,12 +278,6 @@ div#required_email {
     font-weight: bold;
 }
 
-    /*
-#signIn .vertical {
-    position: relative;
-}
-*/
-
 #selectEmail {
     position: absolute;
     top: 20px;
@@ -293,12 +290,6 @@ div#required_email {
 #selectEmail.center {
     position: static;
     overflow-y: visible;
-}
-
-#forgotPassword {
-    color: #888784;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-    font-size: 11px;
 }
 
 .inputs {
@@ -337,7 +328,7 @@ div#required_email {
 }
 
 #selectEmail > .inputs > li:only-child input[type=radio] {
-  display: none;
+    display: none;
 }
 
 .submit {
@@ -353,6 +344,15 @@ div#required_email {
     padding-left: 10px;
 }
 
+.tospp > a {
+    color: #333;
+    border-bottom: 1px dotted #999;
+}
+
+.tospp > a:hover {
+    color: #000;
+}
+
 a.emphasize {
   background-color: #F0EFED;
   color: #4E4E4E;
@@ -362,8 +362,21 @@ a.emphasize {
   line-height: 18px;
 }
 
+a.emphasize:hover {
+  background-color: #fbfafa;
+}
+
+
+#back {
+  color: #000;
+  border-bottom: 1px dotted;
+}
+
+.submit > button {
+    margin: 0 0 0 5px;
+}
+
 .newuser,
-.forgot,
 .returning {
     display: none;
 }

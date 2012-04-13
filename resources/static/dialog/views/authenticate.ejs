@@ -42,7 +42,7 @@
 
           <li class="returning">
 
-              <a id="forgotPassword" class="right" href="#" tabindex="4"><%= gettext('forgot your password?') %></a>
+              <a id="forgotPassword" class="forgot right" href="#" tabindex="4"><%= gettext('forgot your password?') %></a>
               <label for="password" class="serif"><%= gettext('Password') %></label>
 
               <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
@@ -60,7 +60,7 @@
 
       <div class="submit cf">
         <% if (privacy_url && tos_url) { %>
-           <p>
+           <p class="tospp">
             <%= format(
                   gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
                        [ gettext('next'),

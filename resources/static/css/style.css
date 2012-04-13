@@ -98,7 +98,6 @@ noscript {
 }
 
 #about {
-  font-family: 'Droid Serif', Georgia, serif;
   font-size: 14px;
   line-height: 21px;
   color: #444;
@@ -200,8 +199,8 @@ div.steps {
 }
 
 .sumo > a {
-  font-weight: bold;
   color: #444;
+  border-bottom: 1px dotted;
 }
 
 #legal {
@@ -209,13 +208,7 @@ div.steps {
 }
 
 #newuser {
-  background-color: #faca33;
-  line-height: 32px;
-  border-radius: 4px;
-  margin-bottom: 20px;
-  text-align: center;
-  color: #626160;
-  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+  margin: 0 0 20px 0;
   height: 0;
   -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   opacity: 0;
@@ -226,10 +219,10 @@ div.steps {
   -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   opacity: 1;
   -webkit-transition: all 500ms;
-  -moz-transition: all 500ms;
-  -ms-transition: all 500ms;
-  -o-transition: all 500ms;
-  transition: all 500ms;
+     -moz-transition: all 500ms;
+      -ms-transition: all 500ms;
+       -o-transition: all 500ms;
+          transition: all 500ms;
 }
 
 #manage {
@@ -322,13 +315,6 @@ div.steps {
   font-size: 12px;
 }
 
-/*
-.buttonrow > button {
-  width: 48px;
-}
-*/
-.buttonrow > .edit { }
-
 .edit .buttonrow > .edit {
   display: none;
 }
@@ -390,9 +376,9 @@ div.steps {
 }
 
 .activity button {
-  width: 60px;
+  min-width: 60px;
   margin-left: 10px;
-  margin-right: -70px;
+  margin-right: -100%;
 
   -webkit-transition: margin 0.4s ease;
      -moz-transition: margin 0.4s ease;
@@ -430,9 +416,18 @@ button.delete {
        -o-border-radius: 5px;
           border-radius: 5px;
 
-  background-image: -moz-linear-gradient(#EA7676 0%, #C84343 100%);
-  background-image: -o-linear-gradient(#EA7676 0%, #C84343 100%);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #EA7676), color-stop(100%, #C84343));
+  background-image: -moz-linear-gradient(#EA7676 0%, #C84343 100%);
+  background-image: -ms-linear-gradient(#EA7676 0%, #C84343 100%);
+  background-image: -o-linear-gradient(#EA7676 0%, #C84343 100%);
+}
+
+button.delete:hover {
+  background-color: #f07979;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f07979), color-stop(100%, #c34141));
+  background-image: -moz-linear-gradient(#f07979 0%, #c34141 100%);
+  background-image: -ms-linear-gradient(#f07979 0%, #c34141 100%);
+  background-image: -o-linear-gradient(#f07979 0%, #c34141 100%);
 }
 
 button.delete:active {
@@ -450,6 +445,7 @@ button.delete:active {
   background-image: -o-linear-gradient(#C84343 0%, #AA3D3D 100%);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #C84343), color-stop(100%, #AA3D3D));
 }
+
 
 #edit_password {
   margin-bottom: 10px;
@@ -489,10 +485,6 @@ button.delete:active {
   text-align: right;
 }
 
-#disclaimer a {
-  color: #549FDC;
-}
-
 h1 {
   margin-bottom: 20px;
 }
@@ -514,9 +506,8 @@ h1 {
   padding: 0 0 0 250px;
 }
 
-#signUp .info {
-  color: #549FDC;
-  text-decoration: underline;
+#signUp .tour {
+  border-bottom: 1px dotted #90c0db;
 }
 
 #signUp p {
@@ -618,11 +609,6 @@ h1 {
   margin: 122px 115px;
 }
 
-#signUpFormWrap a.signUpIn {
-  color: #549FDC;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-}
-
 #signUpFormWrap a.space {
   margin: 10px 20px 0;
   display: inline-block;
@@ -686,6 +672,10 @@ h1 {
   display: none;
 }
 
+.submit .remember {
+  float: left;
+}
+
 .enter_password #signUpForm > .password_entry, .known_secondary #signUpForm > .password_entry,
 .unknown_secondary #unknown_secondary, .verify_primary #verify_primary {
   display: block;
@@ -706,12 +696,6 @@ h1 {
 }
 
 
-a.forgot {
-  color: #888784;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-  font-size: 11px;
-}
-
 .notifications {
   list-style-type: none;
 }
@@ -730,7 +714,7 @@ a.forgot {
   text-align: center;
 }
 
-.notifications > .notification a, .notifications > .notification strong {
+.notifications > .notification strong {
   color: #222;
 }
 
@@ -759,6 +743,15 @@ header ul.nav li {
 }
 
 
+header ul a {
+  padding: 4px 8px;
+}
+
+header ul a:hover {
+  background-color: #f4f3f0;
+  border-radius: 3px;
+}
+
 header a.signIn, header a.signOut {
   background-color: #d1ceca;
   padding: 4px 8px;
@@ -782,11 +775,12 @@ header a.signIn:hover, header a.signOut:hover {
   display: inline;
 }
 
-#wrapper > header,
-footer {
-  display: block;
-  width: 100%;
+header, footer {
   padding: 20px 0;
+}
+
+section > header {
+  padding: 0;
 }
 
 footer {
@@ -794,7 +788,17 @@ footer {
   bottom: 0;
 }
 
-#newsbanner {
+footer a {
+  color: #aaa;
+  border-bottom: 1px dotted #ccc;
+}
+
+footer a:hover {
+  color: #777;
+}
+
+
+.newsbanner {
   margin-top: 60px; /* put a margin-top on so that it does not go under the header */
   background-color: #faca33;
   line-height: 32px;
@@ -804,8 +808,16 @@ footer {
   color: #626160;
   text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
   -webkit-transition: all 500ms;
-  -moz-transition: all 500ms;
-  -ms-transition: all 500ms;
-  -o-transition: all 500ms;
-  transition: all 500ms;
+     -moz-transition: all 500ms;
+      -ms-transition: all 500ms;
+       -o-transition: all 500ms;
+          transition: all 500ms;
+}
+
+.newsbanner a {
+  border-bottom: 1px dotted;
+}
+
+.newsbanner a:hover {
+  color: #000;
 }

@@ -18,7 +18,7 @@ BrowserID.Modules.Authenticate = (function() {
       dom = bid.DOM,
       lastEmail = "",
       addressInfo,
-      hints = ["newuser","forgot","returning","start","addressInfo"];
+      hints = ["newuser","returning","start","addressInfo"];
 
   function getEmail() {
     return helpers.getAndValidateEmail("#email");
@@ -161,7 +161,7 @@ BrowserID.Modules.Authenticate = (function() {
         tos_url: options.tosURL
       });
 
-      $(".newuser,.forgot,.returning,.start").hide();
+      $(".newuser,.returning,.start").hide();
 
       self.bind("#email", "keyup", emailKeyUp);
       self.click("#forgotPassword", forgotPassword);
