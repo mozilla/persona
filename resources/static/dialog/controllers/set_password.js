@@ -29,8 +29,11 @@ BrowserID.Modules.SetPassword = (function() {
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
+      options = options || {};
 
-      self.renderDialog("set_password");
+      self.renderDialog("set_password", {
+        password_reset: !!options.password_reset
+      });
 
       self.click("#cancel", cancel);
 

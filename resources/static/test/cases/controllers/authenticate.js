@@ -88,21 +88,21 @@
     controller.checkEmail();
   }
 
-  asyncTest("checkEmail with unknown secondary email, expect 'new_user' message", function() {
+  asyncTest("checkEmail with unknown secondary email - 'new_user' message", function() {
     $("#email").val("unregistered@testuser.com");
     xhr.useResult("unknown_secondary");
 
     testUserUnregistered();
   });
 
-  asyncTest("checkEmail with email with leading/trailing whitespace, user not registered, expect 'new_user' message", function() {
+  asyncTest("checkEmail with email with leading/trailing whitespace, user not registered - 'new_user' message", function() {
     $("#email").val("    unregistered@testuser.com   ");
     xhr.useResult("unknown_secondary");
 
     testUserUnregistered();
   });
 
-  asyncTest("checkEmail with normal email, user registered, expect 'enter_password' message", function() {
+  asyncTest("checkEmail with normal email, user registered - 'enter_password' message", function() {
     $("#email").val("registered@testuser.com");
     xhr.useResult("known_secondary");
 
@@ -114,7 +114,7 @@
     controller.checkEmail();
   });
 
-  asyncTest("checkEmail with email that has IdP support, expect 'primary_user' message", function() {
+  asyncTest("checkEmail with email that has IdP support - 'primary_user' message", function() {
     $("#email").val("unregistered@testuser.com");
     xhr.useResult("primary");
 

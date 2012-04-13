@@ -280,15 +280,21 @@ BrowserID.User = (function() {
     /**
      * Create a user account - this creates an user account that must be verified.
      * @method createSecondaryUser
-     * @param {string} email - Email address.
+     * @param {string} email
+     * @param {string} password
      * @param {function} [onComplete] - Called on completion.
      * @param {function} [onFailure] - Called on error.
      */
-    createSecondaryUser: function(email, onComplete, onFailure) {
-      // remember this for later
+    createSecondaryUser: function(email, password, onComplete, onFailure) {
+      // Used on the main site when the user verifies - we try to show them
+      // what URL they came from.
+
+      // XXX - this will have to be updated to either store both the hostname
+      // and the exact URL of the RP or just the URL of the RP and the origin
+      // is extracted from that.
       storage.setStagedOnBehalfOf(User.getHostname());
 
-      network.createUser(email, origin, onComplete, onFailure);
+      network.createUser(email, password, origin, onComplete, onFailure);
     },
 
     /**
@@ -309,6 +315,7 @@ BrowserID.User = (function() {
      *  info is passed on primary.verify and contains the info necessary to
      *  verify the user with the IdP
      */
+    // XXX - only used on main site
     createUser: function(email, onComplete, onFailure) {
       User.addressInfo(email, function(info) {
         User.createUserWithInfo(email, info, onComplete, onFailure);

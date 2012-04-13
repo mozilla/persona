@@ -185,7 +185,7 @@
   });
 
   asyncTest("createUser with valid user", function() {
-    network.createUser("validuser", "origin", function onSuccess(created) {
+    network.createUser("validuser", "password", "origin", function onSuccess(created) {
       ok(created);
       start();
     }, testHelpers.unexpectedFailure);
@@ -193,7 +193,7 @@
 
   asyncTest("createUser with invalid user", function() {
     transport.useResult("invalid");
-    network.createUser("invaliduser", "origin", function onSuccess(created) {
+    network.createUser("invaliduser", "password", "origin", function onSuccess(created) {
       equal(created, false);
       start();
     }, testHelpers.unexpectedFailure);
@@ -202,14 +202,14 @@
   asyncTest("createUser throttled", function() {
     transport.useResult("throttle");
 
-    network.createUser("validuser", "origin", function onSuccess(added) {
+    network.createUser("validuser", "password", "origin", function onSuccess(added) {
       equal(added, false, "throttled email returns onSuccess but with false as the value");
       start();
     }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("createUser with XHR failure", function() {
-    failureCheck(network.createUser, "validuser", "origin");
+    failureCheck(network.createUser, "validuser", "password", "origin");
   });
 
   asyncTest("checkUserRegistration returns pending - pending status, user is not logged in", function() {

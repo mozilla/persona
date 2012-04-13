@@ -18,7 +18,7 @@ BrowserID.Modules.Authenticate = (function() {
       dom = bid.DOM,
       lastEmail = "",
       addressInfo,
-      hints = ["newuser","returning","start","addressInfo"];
+      hints = ["returning","start","addressInfo"];
 
   function getEmail() {
     return helpers.getAndValidateEmail("#email");
@@ -61,8 +61,7 @@ BrowserID.Modules.Authenticate = (function() {
       else if(info.known) {
         enterPasswordState.call(self);
       } else {
-        self.close("new_user", { email: email });
-        //createSecondaryUserState.call(self);
+        createSecondaryUser.call(self);
       }
     }
   }
@@ -73,7 +72,6 @@ BrowserID.Modules.Authenticate = (function() {
 
     if (email) {
       self.close("new_user", { email: email });
-      //dialogHelpers.createUser.call(self, email, callback);
     } else {
       complete(callback);
     }
@@ -131,15 +129,6 @@ BrowserID.Modules.Authenticate = (function() {
     }
   }
 
-  function createSecondaryUserState() {
-    var self=this;
-
-    self.publish("create_user");
-    self.submit = createSecondaryUser;
-    showHint("newuser");
-  }
-
-
   function emailKeyUp() {
     var newEmail = dom.getInner("#email");
     if (newEmail !== lastEmail) {
@@ -163,7 +152,7 @@ BrowserID.Modules.Authenticate = (function() {
         tos_url: options.tosURL
       });
 
-      $(".newuser,.returning,.start").hide();
+      $(".returning,.start").hide();
 
       self.bind("#email", "keyup", emailKeyUp);
       self.click("#forgotPassword", forgotPassword);

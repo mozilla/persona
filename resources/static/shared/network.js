@@ -199,16 +199,18 @@ BrowserID.Network = (function() {
     /**
      * Create a new user.  Requires a user to verify identity.
      * @method createUser
-     * @param {string} email - Email address to prepare.
+     * @param {string} email
+     * @param {string} password
      * @param {string} origin - site user is trying to sign in to.
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    createUser: function(email, origin, onComplete, onFailure) {
+    createUser: function(email, password, origin, onComplete, onFailure) {
       post({
         url: "/wsapi/stage_user",
         data: {
           email: email,
+          password: password,
           site : origin
         },
         success: function(status) {
@@ -325,7 +327,8 @@ BrowserID.Network = (function() {
      */
     requestPasswordReset: function(email, origin, onComplete, onFailure) {
       if (email) {
-        Network.createUser(email, origin, onComplete, onFailure);
+        // XXX we need a password!
+        Network.createUser(email, origin, "", onComplete, onFailure);
       } else {
         // TODO: if no email is provided, then what?
         throw "no email provided to password reset";

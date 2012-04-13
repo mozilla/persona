@@ -31,8 +31,16 @@
   });
 
 
-  test("create - show correct template", function() {
+  test("create with no options - show template, user must verify email", function() {
     ok($("#set_password").length, "set_password template added");
+    equal($("#verify_user").length, 1, "correct button shown");
+  });
+
+  test("create with password_reset option - show template, show reset password button", function() {
+    controller.destroy();
+    createController({ password_reset: true });
+    ok($("#set_password").length, "set_password template added");
+    equal($("#password_reset").length, 1, "correct button shown");
   });
 
   asyncTest("submit with good password/vpassword - password_set message raised", function() {
