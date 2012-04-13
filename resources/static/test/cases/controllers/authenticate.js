@@ -80,8 +80,11 @@
   });
 
   function testUserUnregistered() {
-    register("new_user", function() {
-      ok(true, "email was valid, user not registered");
+    register("new_user", function(msg, info, rehydrate) {
+      ok(info.email, "new_user triggered with info.email");
+      // rehydration email used to go back to authentication controller if
+      // the user cancels one of the next steps.
+      ok(rehydrate.email, "new_user triggered with rehydrate.email");
       start();
     });
 

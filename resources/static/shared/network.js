@@ -321,14 +321,15 @@ BrowserID.Network = (function() {
     /**
      * Request a password reset for the given email address.
      * @method requestPasswordReset
-     * @param {string} email - email address to reset password for.
+     * @param {string} email
+     * @param {string} password
+     * @param {string} origin
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestPasswordReset: function(email, origin, onComplete, onFailure) {
+    requestPasswordReset: function(email, password, origin, onComplete, onFailure) {
       if (email) {
-        // XXX we need a password!
-        Network.createUser(email, origin, "", onComplete, onFailure);
+        Network.createUser(email, password, origin, onComplete, onFailure);
       } else {
         // TODO: if no email is provided, then what?
         throw "no email provided to password reset";

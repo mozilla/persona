@@ -23,7 +23,6 @@
       moduleManager.register("add_email", modules.AddEmail);
       moduleManager.register("authenticate", modules.Authenticate);
       moduleManager.register("check_registration", modules.CheckRegistration);
-      moduleManager.register("forgot_password", modules.ForgotPassword);
       moduleManager.register("is_this_your_computer", modules.IsThisYourComputer);
       moduleManager.register("pick_email", modules.PickEmail);
       moduleManager.register("required_email", modules.RequiredEmail);

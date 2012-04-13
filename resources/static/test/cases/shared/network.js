@@ -327,7 +327,7 @@
 
 
   asyncTest("addSecondaryEmail valid", function() {
-    network.addSecondaryEmail("address", "origin", function onSuccess(added) {
+    network.addSecondaryEmail("testuser@testuser.com", "origin", function onSuccess(added) {
       ok(added);
       start();
     }, testHelpers.unexpectedFailure);
@@ -335,7 +335,7 @@
 
   asyncTest("addSecondaryEmail invalid", function() {
     transport.useResult("invalid");
-    network.addSecondaryEmail("address", "origin", function onSuccess(added) {
+    network.addSecondaryEmail("testuser@testuser.com", "origin", function onSuccess(added) {
       equal(added, false);
       start();
     }, testHelpers.unexpectedFailure);
@@ -344,14 +344,14 @@
   asyncTest("addSecondaryEmail throttled", function() {
     transport.useResult("throttle");
 
-    network.addSecondaryEmail("address", "origin", function onSuccess(added) {
+    network.addSecondaryEmail("testuser@testuser.com", "origin", function onSuccess(added) {
       equal(added, false, "throttled email returns onSuccess but with false as the value");
       start();
     }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("addSecondaryEmail with XHR failure", function() {
-    failureCheck(network.addSecondaryEmail, "address", "origin");
+    failureCheck(network.addSecondaryEmail, "testuser@testuser.com", "origin");
   });
 
   asyncTest("checkEmailRegistration pending", function() {
@@ -377,7 +377,7 @@
   });
 
   asyncTest("checkEmailRegistration with XHR failure", function() {
-    failureCheck(network.checkEmailRegistration, "address");
+    failureCheck(network.checkEmailRegistration, "testuser@testuser.com");
   });
 
 
@@ -456,16 +456,15 @@
   });
 
 
-  asyncTest("requestPasswordReset", function() {
-    network.requestPasswordReset("address", "origin", function onSuccess() {
-      // XXX need a test here;
-      ok(true);
+  asyncTest("requestPasswordReset - true status", function() {
+    network.requestPasswordReset("testuser@testuser.com", "password", "origin", function onSuccess(status) {
+      equal(status, true, "password reset request success");
       start();
     }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("requestPasswordReset with XHR failure", function() {
-    failureCheck(network.requestPasswordReset, "address", "origin");
+    failureCheck(network.requestPasswordReset, "testuser@testuser.com", "password", "origin");
   });
 
   asyncTest("setPassword happy case expects true status", function() {

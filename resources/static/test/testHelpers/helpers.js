@@ -29,7 +29,7 @@ BrowserID.TestHelpers = (function() {
       }
       calls[msg] = true;
 
-      cb && cb(msg, info);
+      cb && cb.apply(null, arguments);
     }));
   }
 

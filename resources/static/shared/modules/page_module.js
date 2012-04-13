@@ -51,6 +51,8 @@ BrowserID.Modules.PageModule = (function() {
 
     start: function(options) {
       var self=this;
+      self.options = options || {};
+
       self.bind("form", "submit", cancelEvent(onSubmit));
       // TODO - why is this here and not in pick_email?
       self.click("#thisIsNotMe", self.close.bind(self, "notme"));
@@ -154,6 +156,7 @@ BrowserID.Modules.PageModule = (function() {
     submit: function() {
     },
 
+    // XXX maybe we should not get rid of this.
     close: function(message) {
       this.destroy();
       if (message) {

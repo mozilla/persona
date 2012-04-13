@@ -39,7 +39,7 @@
     user.getAssertion(email, user.getOrigin(), function(assert) {
       assert = assert || null;
       wait.hide();
-      self.close("assertion_generated", {
+      self.publish("assertion_generated", {
         assertion: assert
       });
 
@@ -58,28 +58,28 @@
       }, self.getErrorDialog(errors.authenticate, callback));
   }
 
-  function createUser(email, callback) {
+  function createUser(email, password, callback) {
     var self=this;
-    user.createSecondaryUser(email, function(status) {
+    user.createSecondaryUser(email, password, function(status) {
       if (status) {
         var info = { email: email };
-        self.close("user_staged", info, info);
+        self.publish("user_staged", info, info);
         complete(callback, true);
       }
       else {
+        // XXX will this tooltip ever be shown, the authentication screen has
+        // already been torn down by this point?
         tooltip.showTooltip("#could_not_add");
         complete(callback, false);
       }
     }, self.getErrorDialog(errors.createUser, callback));
   }
 
-  function resetPassword(email, callback) {
+  function resetPassword(email, password, callback) {
     var self=this;
-    user.requestPasswordReset(email, function(status) {
+    user.requestPasswordReset(email, password, function(status) {
       if (status.success) {
-        self.close("reset_password", {
-          email: email
-        });
+        self.publish("password_reset", { email: email });
       }
       else {
         tooltip.showTooltip("#could_not_add");
@@ -100,14 +100,14 @@
       user.addressInfo(email, function(info) {
         if (info.type === "primary") {
           var info = _.extend(info, { email: email, add: true });
-          self.close("primary_user", info, info);
+          self.publish("primary_user", info, info);
           complete(callback, true);
         }
         else {
           user.addEmail(email, function(added) {
             if (added) {
               var info = { email: email };
-              self.close("email_staged", info, info );
+              self.publish("email_staged", info, info );
             }
             else {
               tooltip.showTooltip("#could_not_add");

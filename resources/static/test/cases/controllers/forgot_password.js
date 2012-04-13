@@ -40,9 +40,9 @@
     equal($("#email").val(), "registered@testuser.com", "email prefilled");
   });
 
-  asyncTest("resetPassword raises 'reset_password' with email address", function() {
-    register("reset_password", function(msg, info) {
-      equal(info.email, "registered@testuser.com", "reset_password raised with correct email address");
+  asyncTest("resetPassword raises 'password_reset' with email address", function() {
+    register("password_reset", function(msg, info) {
+      equal(info.email, "registered@testuser.com", "password_reset raised with correct email address");
       start();
     });
 

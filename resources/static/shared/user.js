@@ -599,17 +599,18 @@ BrowserID.User = (function() {
     /**
      * Request a password reset for the given email address.
      * @method requestPasswordReset
-     * @param {string} email - email address to reset password for.
+     * @param {string} email
+     * @param {string} password
      * @param {function} [onComplete] - Callback to call when complete, called
      * with a single object, info.
      *    info.status {boolean} - true or false whether request was successful.
      *    info.reason {string} - if status false, reason of failure.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestPasswordReset: function(email, onComplete, onFailure) {
+    requestPasswordReset: function(email, password, onComplete, onFailure) {
       User.isEmailRegistered(email, function(registered) {
         if (registered) {
-          network.requestPasswordReset(email, origin, function(reset) {
+          network.requestPasswordReset(email, password, origin, function(reset) {
             var status = {
               success: reset
             };

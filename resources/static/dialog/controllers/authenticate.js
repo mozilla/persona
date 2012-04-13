@@ -71,7 +71,7 @@ BrowserID.Modules.Authenticate = (function() {
         email = getEmail();
 
     if (email) {
-      self.close("new_user", { email: email });
+      self.close("new_user", { email: email }, { email: email });
     } else {
       complete(callback);
     }

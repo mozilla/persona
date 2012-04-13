@@ -53,7 +53,7 @@
     });
 
     controller.submit(function() {
-      ok(password, "password", "password_set message raised with correct password");
+      equal(password, "password", "password_set message raised with correct password");
       start();
     });
   });

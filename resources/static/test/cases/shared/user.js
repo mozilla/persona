@@ -490,24 +490,24 @@ var vep = require("./vep");
     );
   });
 
-  asyncTest("requestPasswordReset with known email", function() {
-    lib.requestPasswordReset("registered@testuser.com", function(status) {
+  asyncTest("requestPasswordReset with known email - true status", function() {
+    lib.requestPasswordReset("registered@testuser.com", "password", function(status) {
       equal(status.success, true, "password reset for known user");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("requestPasswordReset with unknown email", function() {
-    lib.requestPasswordReset("unregistered@testuser.com", function(status) {
+  asyncTest("requestPasswordReset with unknown email - false status, invalid_user", function() {
+    lib.requestPasswordReset("unregistered@testuser.com", "password", function(status) {
       equal(status.success, false, "password not reset for unknown user");
       equal(status.reason, "invalid_user", "invalid_user is the reason");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("requestPasswordReset with throttle", function() {
+  asyncTest("requestPasswordReset with throttle - false status, throttle", function() {
     xhr.useResult("throttle");
-    lib.requestPasswordReset("registered@testuser.com", function(status) {
+    lib.requestPasswordReset("registered@testuser.com", "password", function(status) {
       equal(status.success, false, "password not reset for throttle");
       equal(status.reason, "throttle", "password reset was throttled");
       start();
@@ -515,7 +515,7 @@ var vep = require("./vep");
   });
 
   asyncTest("requestPasswordReset with XHR failure", function() {
-    failureCheck(lib.requestPasswordReset, "registered@testuser.com");
+    failureCheck(lib.requestPasswordReset, "registered@testuser.com", "password");
   });
 
 

@@ -7,16 +7,19 @@ BrowserID.Modules.SetPassword = (function() {
   "use strict";
   var bid = BrowserID,
       dom = bid.DOM,
-      complete = bid.Helpers.complete,
+      helpers = bid.Helpers,
+      complete = helpers.complete,
+      dialogHelpers = helpers.Dialog,
       sc;
 
   function submit(callback) {
     var pass = dom.getInner("#password"),
-        vpass = dom.getInner("#vpassword");
+        vpass = dom.getInner("#vpassword"),
+        options = this.options;
 
     var valid = bid.Validation.passwordAndValidationPassword(pass, vpass);
     if(valid) {
-      this.close("password_set", { password: pass });
+      this.publish("password_set", { password: pass });
     }
 
     complete(callback, valid);

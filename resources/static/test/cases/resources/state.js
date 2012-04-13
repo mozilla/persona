@@ -84,6 +84,15 @@
     equal(actions.info.doSetPassword.email, TEST_EMAIL, "correct email sent to doSetPassword");
   });
 
+  test("cancel new user password_set flow - go back to the authentication screen", function() {
+    mediator.publish("authenticate");
+    mediator.publish("new_user", undefined, { email: TEST_EMAIL });
+    mediator.publish("password_set");
+    actions.info.doAuthenticate = {};
+    mediator.publish("cancel_state");
+    equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate called with the correct email");
+  });
+
   test("password_set - call doStageUser with correct email", function() {
     mediator.publish("new_user", { email: TEST_EMAIL });
     mediator.publish("password_set");
@@ -223,13 +232,13 @@
     equal(actions.info.doForgotPassword.requiredEmail, true, "correct requiredEmail passed");
   });
 
-  test("reset_password to user_confirmed - call doResetPassword then doEmailConfirmed", function() {
-    // reset_password indicates the user has verified that they want to reset
+  test("password_reset to user_confirmed - call doUserStaged then doEmailConfirmed", function() {
+    // password_reset indicates the user has verified that they want to reset
     // their password.
-    mediator.publish("reset_password", {
+    mediator.publish("password_reset", {
       email: TEST_EMAIL
     });
-    equal(actions.info.doResetPassword.email, TEST_EMAIL, "reset password with the correct email");
+    equal(actions.info.doConfirmUser.email, TEST_EMAIL, "doConfirmUser with the correct email");
 
     // At this point the user should be displayed the "go confirm your address"
     // screen.
@@ -247,13 +256,13 @@
   });
 
 
-  test("cancel reset_password flow - go two steps back", function() {
+  test("cancel password_reset flow - go two steps back", function() {
     // we want to skip the "verify" screen of reset password and instead go two
     // screens back.  Do do this, we are simulating the steps necessary to get
-    // to the reset_password flow.
+    // to the password_reset flow.
     mediator.publish("authenticate");
     mediator.publish("forgot_password", undefined, { email: TEST_EMAIL });
-    mediator.publish("reset_password", { email: TEST_EMAIL });
+    mediator.publish("password_reset");
     actions.info.doAuthenticate = {};
     mediator.publish("cancel_state");
     equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate called with the correct email");

@@ -78,8 +78,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doStageUser: function(info) {
-      var email = info.email;
-      bid.Helpers.Dialog.createUser.call(this, email);
+      dialogHelpers.createUser.call(this, info.email, info.password, info.ready);
     },
 
     doConfirmUser: function(info) {
@@ -103,11 +102,11 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doForgotPassword: function(info) {
-      startService("forgot_password", info);
+      startService("set_password", _.extend(info, { password_reset: true }));
     },
 
     doResetPassword: function(info) {
-      this.doConfirmUser(info);
+      dialogHelpers.resetPassword.call(this, info.email, info.password, info.ready);
     },
 
     doConfirmEmail: function(info) {
