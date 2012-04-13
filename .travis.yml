@@ -12,7 +12,11 @@ node_js:
  - 0.6
 
 notifications:
-  irc: "irc.mozilla.org#identity"
+  irc:
+    channels:
+      - "irc.mozilla.org#identity"
+    use_notice: false
+    skip_join: false
   email:
     - lloyd@mozilla.com
     - jbonacci@mozilla.com
