@@ -93,6 +93,10 @@ BrowserID.Modules.Actions = (function() {
       startService("add_email", info);
     },
 
+    doStageEmail: function(info) {
+      dialogHelpers.addSecondaryEmailWithPassword.call(this, info.email, info.password, info.ready);
+    },
+
     doAuthenticate: function(info) {
       startService("authenticate", info);
     },

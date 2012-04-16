@@ -97,26 +97,42 @@
       complete(callback, false);
     }
     else {
-      user.addressInfo(email, function(info) {
+      user.addessInfo(email, function(info) {
         if (info.type === "primary") {
           var info = _.extend(info, { email: email, add: true });
           self.publish("primary_user", info, info);
           complete(callback, true);
         }
         else {
-          user.addEmail(email, function(added) {
-            if (added) {
-              var info = { email: email };
-              self.publish("email_staged", info, info );
+          // TODO - maybe put this in the state machine so it can be used in
+          // the main site as well?
+          user.passwordNeededToAddSecondaryEmail(function(passwordNeeded) {
+            if(passwordNeeded) {
+              self.publish("add_email_requires_password", { email: email });
+              complete(callback, false);
             }
             else {
-              tooltip.showTooltip("#could_not_add");
+              addSecondaryEmailWithPassword.call(self, email, undefined, callback);
             }
-            complete(callback, added);
-          }, self.getErrorDialog(errors.addEmail, callback));
+          });
         }
       }, self.getErrorDialog(errors.addressInfo, callback));
     }
+  }
+
+  function addSecondaryEmailWithPassword(email, password, callback) {
+    var self=this;
+
+    user.addEmail(email, password, function(added) {
+      if (added) {
+        var info = { email: email };
+        self.publish("email_staged", info, info );
+      }
+      else {
+        tooltip.showTooltip("#could_not_add");
+      }
+      complete(callback, added);
+    }, self.getErrorDialog(errors.addEmail, callback));
   }
 
   helpers.Dialog = helpers.Dialog || {};
@@ -126,6 +142,7 @@
     authenticateUser: authenticateUser,
     createUser: createUser,
     addEmail: addEmail,
+    addSecondaryEmailWithPassword: addSecondaryEmailWithPassword,
     resetPassword: resetPassword,
     cancelEvent: helpers.cancelEvent,
     animateClose: animateClose

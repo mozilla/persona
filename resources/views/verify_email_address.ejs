@@ -19,35 +19,7 @@
                     <label class="serif" for="email"><%= gettext('Email Address') %></label>
                     <input class="youraddress sans" id="email" placeholder="<%= gettext('Your Email') %>" type="email" value="" disabled="disabled" maxlength="254" />
                 </li>
-                <li>
-                    <label class="serif" for="password"><%= gettext('New Password') %></label>
-                    <input class="sans" id="password" placeholder="<%= gettext('Enter a Password') %>" type="password" autofocus maxlength=80 />
-
-                    <div class="tooltip" id="password_required" for="password">
-                      <%= gettext('Password is required.') %>
-                    </div>
-
-                    <div class="tooltip" id="password_length" for="password">
-                      <%= gettext('Password must be between 8 and 80 characters long.') %>
-                    </div>
-                </li>
-                <li>
-                    <label class="serif" for="vpassword"><%= gettext('Verify Password') %></label>
-                    <input class="sans" id="vpassword" placeholder="<%= gettext('Repeat Password') %>" type="password" maxlength=80 />
-
-                    <div class="tooltip" id="vpassword_required" for="vpassword">
-                      <%= gettext('Verification password is required.') %>
-                    </div>
-
-                    <div class="tooltip" id="passwords_no_match" for="vpassword">
-                      <%= gettext('Passwords do not match.') %>
-                    </div>
-                </li>
             </ul>
-
-            <div class="submit cf">
-                <button><%= gettext('finish') %></button>
-            </div>
 
         </form>
 

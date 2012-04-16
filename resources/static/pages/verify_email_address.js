@@ -7,44 +7,35 @@
   "use strict";
 
   var bid = BrowserID,
+      network = bid.Network,
+      storage = bid.Storage,
       errors = bid.Errors,
       pageHelpers = bid.PageHelpers,
       token;
 
   function submit(oncomplete) {
-    var pass = $("#password").val(),
-        vpass = $("#vpassword").val();
-
-    var valid = bid.Validation.passwordAndValidationPassword(pass, vpass);
-
-    if (valid) {
-      bid.Network.completeUserRegistration(token, pass, function onSuccess(registered) {
-        var selector = registered ? "#congrats" : "#cannotcomplete";
-        pageHelpers.replaceFormWithNotice(selector, oncomplete);
-      }, pageHelpers.getFailure(errors.completeUserRegistration, oncomplete));
-    }
-    else {
-      oncomplete && oncomplete();
-    }
+    network.completeUserRegistration(token, function onSuccess(registered) {
+      var selector = registered ? "#congrats" : "#cannotcomplete";
+      pageHelpers.replaceFormWithNotice(selector, oncomplete);
+    }, pageHelpers.getFailure(errors.completeUserRegistration, oncomplete));
   }
 
   function init(tok, oncomplete) {
-    $("#signUpForm").bind("submit", pageHelpers.cancelEvent(submit));
     $(".siteinfo").hide();
     $("#congrats").hide();
     token = tok;
 
-    var staged = bid.Storage.getStagedOnBehalfOf();
+    var staged = storage.getStagedOnBehalfOf();
     if (staged) {
       $('.website').html(staged);
       $('.siteinfo').show();
     }
 
     // go get the email address
-    bid.Network.emailForVerificationToken(token, function(info) {
+    network.emailForVerificationToken(token, function(info) {
       if (info) {
         $('#email').val(info.email);
-        oncomplete && oncomplete();
+        submit(oncomplete);
       }
       else {
         pageHelpers.replaceFormWithNotice("#cannotconfirm", oncomplete);
@@ -54,7 +45,6 @@
 
   // BEGIN TESTING API
   function reset() {
-    $("#signUpForm").unbind("submit");
   }
 
   init.submit = submit;

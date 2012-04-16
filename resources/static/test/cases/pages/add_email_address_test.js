@@ -64,7 +64,7 @@
     equal(error, "missing config option: token", "correct error thrown");
   });
 
-  asyncTest("no password: start with good token and site", function() {
+  asyncTest("no start with good token and site", function() {
     storage.setStagedOnBehalfOf("browserid.org");
 
     createController(config, function() {
@@ -76,7 +76,7 @@
     });
   });
 
-  asyncTest("no password: start with good token and nosite", function() {
+  asyncTest("no start with good token and nosite", function() {
     createController(config, function() {
       testEmail();
       equal($(".siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
@@ -85,7 +85,7 @@
     });
   });
 
-  asyncTest("no password: start with bad token", function() {
+  asyncTest("no start with bad token", function() {
     xhr.useResult("invalid");
 
     createController(config, function() {
@@ -94,81 +94,11 @@
     });
   });
 
-  asyncTest("no password: start with emailForVerficationToken XHR failure", function() {
+  asyncTest("no start with emailForVerficationToken XHR failure", function() {
     xhr.useResult("ajaxError");
     createController(config, function() {
       testHelpers.testErrorVisible();
       start();
     });
   });
-
-  asyncTest("password: first secondary address added", function() {
-    xhr.useResult("needsPassword");
-    createController(config, function() {
-      equal($("body").hasClass("enter_password"), true, "enter_password added to body");
-      testEmail();
-      start();
-    });
-  });
-
-  asyncTest("password: missing password", function() {
-    $("#password").val();
-    $("#vpassword").val("password");
-
-    expectTooltipVisible();
-  });
-
-  asyncTest("password: missing verify password", function() {
-    $("#password").val("password");
-    $("#vpassword").val();
-
-    expectTooltipVisible();
-  });
-
-  asyncTest("password: too short of a password", function() {
-    $("#password").val("pass");
-    $("#vpassword").val("pass");
-
-    expectTooltipVisible();
-  });
-
-  asyncTest("password: too long of a password", function() {
-    var tooLong = testHelpers.generateString(81);
-    $("#password").val(tooLong);
-    $("#vpassword").val(tooLong);
-
-    expectTooltipVisible();
-  });
-
-  asyncTest("password: mismatched passwords", function() {
-    $("#password").val("passwords");
-    $("#vpassword").val("password");
-
-    expectTooltipVisible();
-  });
-
-  asyncTest("password: good password", function() {
-    $("#password").val("password");
-    $("#vpassword").val("password");
-
-    createController(config, function() {
-      controller.submit(function(status) {
-        equal(status, true, "correct status");
-        equal($("body").hasClass("complete"), true, "body has complete class");
-        start();
-      });
-    });
-  });
-
-  asyncTest("password: good password bad token", function() {
-    $("#password").val("password");
-    $("#vpassword").val("password");
-
-    xhr.useResult("invalid");
-    createController(config, function() {
-      testCannotConfirm();
-      start();
-    });
-  });
-
 }());

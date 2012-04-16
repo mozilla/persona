@@ -148,17 +148,28 @@
     });
   });
 
-  asyncTest("addEmail with unknown secondary email happy case", function() {
+  asyncTest("addEmail with unknown first secondary email - trigger add_email_requires_password", function() {
+    xhr.useResult("unknown_secondary");
+    closeCB = expectedClose("add_email_requires_password", "email", "unregistered@testuser.com");
+    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
+      equal(added, false, "email not added");
+      start();
+    });
+  });
+
+  asyncTest("addEmail with unknown second secondary email - trigger email_staged", function() {
     xhr.useResult("unknown_secondary");
     closeCB = expectedClose("email_staged", "email", "unregistered@testuser.com");
-    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(status) {
-      ok(status, "correct status");
+    storage.addEmail("registered@testuser.com", { type: "secondary" });
+    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
+      equal(added, true, "email added");
       start();
     });
   });
 
   asyncTest("addEmail throttled", function() {
     xhr.useResult("throttle");
+    storage.addEmail("registered@testuser.com", { type: "secondary" });
     dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
       equal(added, false, "email not added");
       start();

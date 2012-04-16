@@ -64,85 +64,10 @@
     });
   });
 
-  asyncTest("submit with good token, both passwords", function() {
+  asyncTest("submit with good token", function() {
     bid.verifyEmailAddress("token", function() {
-      $("#password").val("password");
-      $("#vpassword").val("password");
-
-      bid.verifyEmailAddress.submit(function() {
-        equal($("#congrats").is(":visible"), true, "congrats is visible, we are complete");
-        start();
-      });
-    });
-  });
-
-  asyncTest("submit with good token, missing password", function() {
-    bid.verifyEmailAddress("token", function() {
-      $("#password").val("");
-      $("#vpassword").val("password");
-
-      bid.verifyEmailAddress.submit(function() {
-        equal($("#congrats").is(":visible"), false, "congrats is not visible, missing password");
-        testTooltipVisible();
-        start();
-      });
-    });
-  });
-
-  asyncTest("submit with good token, too short of a password", function() {
-    bid.verifyEmailAddress("token", function() {
-      var pass = testHelpers.generateString(6);
-      $("#password").val(pass);
-      $("#vpassword").val(pass);
-
-      bid.verifyEmailAddress.submit(function() {
-        equal($("#congrats").is(":visible"), false, "congrats is not visible, too short of a password");
-        testTooltipVisible();
-        start();
-      });
-    });
-  });
-
-  asyncTest("submit with good token, too long of a password", function() {
-    bid.verifyEmailAddress("token", function() {
-      var pass = testHelpers.generateString(81);
-      $("#password").val(pass);
-      $("#vpassword").val(pass);
-
-      bid.verifyEmailAddress.submit(function() {
-        equal($("#congrats").is(":visible"), false, "congrats is not visible, too long of a password");
-        testTooltipVisible();
-        start();
-      });
-    });
-  });
-
-  asyncTest("submit with good token, missing verification password", function() {
-    bid.verifyEmailAddress("token");
-
-
-    $("#password").val("password");
-    $("#vpassword").val("");
-
-    bid.verifyEmailAddress.submit(function() {
-      equal($("#congrats").is(":visible"), false, "congrats is not visible, missing verification password");
-      testTooltipVisible();
+      equal($("#congrats").is(":visible"), true, "congrats is visible, we are complete");
       start();
     });
-
-  });
-
-  asyncTest("submit with good token, different passwords", function() {
-    bid.verifyEmailAddress("token");
-
-    $("#password").val("password");
-    $("#vpassword").val("pass");
-
-    bid.verifyEmailAddress.submit(function() {
-      equal($("#congrats").is(":visible"), false, "congrats is not visible, different passwords");
-      testTooltipVisible();
-      start();
-    });
-
   });
 }());

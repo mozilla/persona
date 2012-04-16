@@ -540,15 +540,14 @@ BrowserID.User = (function() {
      * Verify a user
      * @method verifyUser
      * @param {string} token - token to verify.
-     * @param {string} password - password to set for account.
      * @param {function} [onComplete] - Called to give status updates.
      * @param {function} [onFailure] - Called on error.
      */
-    verifyUser: function(token, password, onComplete, onFailure) {
+    verifyUser: function(token, onComplete, onFailure) {
       User.tokenInfo(token, function(info) {
         var invalidInfo = { valid: false };
         if (info) {
-          network.completeUserRegistration(token, password, function (valid) {
+          network.completeUserRegistration(token, function (valid) {
             info.valid = valid;
             storage.setStagedOnBehalfOf("");
             if (onComplete) onComplete(info);
@@ -837,17 +836,39 @@ BrowserID.User = (function() {
      * does not add the new email address/keypair to the local list of
      * valid identities.
      * @method addEmail
-     * @param {string} email - Email address.
+     * @param {string} email
+     * @param {string} password
      * @param {function} [onComplete] - Called on successful completion.
      * @param {function} [onFailure] - Called on error.
      */
-    addEmail: function(email, onComplete, onFailure) {
-      network.addSecondaryEmail(email, origin, function(added) {
+    addEmail: function(email, password, onComplete, onFailure) {
+      network.addSecondaryEmail(email, password, origin, function(added) {
         if (added) storage.setStagedOnBehalfOf(User.getHostname());
 
         // we no longer send the keypair, since we will certify it later.
         if (onComplete) onComplete(added);
       }, onFailure);
+    },
+
+    /**
+     * Check whether a password is needed to add a secondary email address to
+     * an already existing account.
+     * @method passwordNeededToAddSecondaryEmail
+     * @param {function} [onComplete] - Called on successful completion, called
+     * with true if password is needed, false otw.
+     * @param {function} [onFailure] - Called on error.
+     */
+    passwordNeededToAddSecondaryEmail: function(onComplete, onFailure) {
+      var emails = storage.getEmails(),
+          passwordNeeded = true;
+
+      for(var key in emails) {
+        if(emails[key].type === "secondary") {
+          passwordNeeded = false;
+        }
+      }
+
+      complete(onComplete, passwordNeeded);
     },
 
     /**
@@ -878,18 +899,14 @@ BrowserID.User = (function() {
      *   with only valid otw.
      * @param {function} [onFailure] - Called on error.
      */
-    verifyEmailNoPassword: function(token, onComplete, onFailure) {
-      User.verifyEmailWithPassword(token, undefined, onComplete, onFailure);
-    },
-
-    verifyEmailWithPassword: function(token, pass, onComplete, onFailure) {
+    verifyEmail: function(token, onComplete, onFailure) {
       function complete(status) {
         onComplete && onComplete(status);
       }
       network.emailForVerificationToken(token, function (info) {
         var invalidInfo = { valid: false };
         if (info) {
-          network.completeEmailRegistration(token, pass, function (valid) {
+          network.completeEmailRegistration(token, function (valid) {
             var result = invalidInfo;
 
             if(valid) {

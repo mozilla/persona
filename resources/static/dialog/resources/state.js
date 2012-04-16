@@ -106,13 +106,17 @@ BrowserID.State = (function() {
        * or 2) a user is adding the first secondary address to an account that
        * consists only of primary addresses, or 3) an existing user has
        * forgotten their password and wants to reset it.  #1 is taken care of
-       * by newUserEmail, #3 is taken care of by resetPasswordEmail.
+       * by newUserEmail, #2 by addEmailEmail, #3 by resetPasswordEmail.
        */
-      info = _.extend({ email: self.newUserEmail || self.resetPasswordEmail }, info);
+      info = _.extend({ email: self.newUserEmail || self.addEmailEmail || self.resetPasswordEmail }, info);
 
       if(self.newUserEmail) {
         self.newUserEmail = null;
         startAction(false, "doStageUser", info);
+      }
+      else if(self.addEmailEmail) {
+        self.addEmailEmail = null;
+        startAction(false, "doStageEmail", info);
       }
       else if(self.resetPasswordEmail) {
         self.resetPasswordEmail = null;
@@ -345,6 +349,11 @@ BrowserID.State = (function() {
       });
 
       startAction("doAddEmail", info);
+    });
+
+    handleState("add_email_requires_password", function(msg, info) {
+      self.addEmailEmail = info.email;
+      startAction(false, "doSetPassword", info);
     });
 
     handleState("email_staged", function(msg, info) {

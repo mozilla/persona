@@ -54,45 +54,18 @@ BrowserID.addEmailAddress = (function() {
     }, 2000);
   }
 
-  function userMustEnterPassword(info) {
-    return !!info.needs_password;
-  }
-
-  function verifyWithoutPassword(oncomplete) {
-    user.verifyEmailNoPassword(token,
+  function verifyEmail(oncomplete) {
+    user.verifyEmail(token,
       emailRegistrationComplete.curry(oncomplete),
       pageHelpers.getFailure(errors.verifyEmail, oncomplete)
     );
-  }
-
-  function verifyWithPassword(oncomplete) {
-    var pass = dom.getInner("#password"),
-        vpass = dom.getInner("#vpassword"),
-        valid = bid.Validation.passwordAndValidationPassword(pass, vpass);
-
-    if(valid) {
-      user.verifyEmailWithPassword(token, pass,
-        emailRegistrationComplete.curry(oncomplete),
-        pageHelpers.getFailure(errors.verifyEmail, oncomplete)
-      );
-    }
-    else {
-      oncomplete && oncomplete(false);
-    }
   }
 
   function startVerification(oncomplete) {
     user.tokenInfo(token, function(info) {
       if(info) {
         showRegistrationInfo(info);
-
-        if(userMustEnterPassword(info)) {
-          dom.addClass("body", "enter_password");
-          oncomplete(true);
-        }
-        else {
-          verifyWithoutPassword(oncomplete);
-        }
+        verifyEmail(oncomplete);
       }
       else {
         showError("#cannotconfirm");
@@ -116,7 +89,7 @@ BrowserID.addEmailAddress = (function() {
       sc.start.call(this, options);
     },
 
-    submit: verifyWithPassword
+    submit: verifyEmail
   });
 
   sc = Module.sc;

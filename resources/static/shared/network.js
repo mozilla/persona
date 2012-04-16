@@ -210,7 +210,7 @@ BrowserID.Network = (function() {
         url: "/wsapi/stage_user",
         data: {
           email: email,
-          password: password,
+          pass: password,
           site : origin
         },
         success: function(status) {
@@ -277,16 +277,14 @@ BrowserID.Network = (function() {
      * Complete user registration, give user a password
      * @method completeUserRegistration
      * @param {string} token - token to register for.
-     * @param {string} password - password to register for account.
      * @param {function} [onComplete] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeUserRegistration: function(token, password, onComplete, onFailure) {
+    completeUserRegistration: function(token, onComplete, onFailure) {
       post({
         url: "/wsapi/complete_user_creation",
         data: {
-          token: token,
-          pass: password
+          token: token
         },
         success: function(status, textStatus, jqXHR) {
           complete(onComplete, status.success);
@@ -299,17 +297,15 @@ BrowserID.Network = (function() {
      * Call with a token to prove an email address ownership.
      * @method completeEmailRegistration
      * @param {string} token - token proving email ownership.
-     * @param {string} password - password to set if necessary.  If not necessary, set to undefined.
      * @param {function} [onComplete] - Callback to call when complete.  Called
      * with one boolean parameter that specifies the validity of the token.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeEmailRegistration: function(token, password, onComplete, onFailure) {
+    completeEmailRegistration: function(token, onComplete, onFailure) {
       post({
         url: "/wsapi/complete_email_addition",
         data: {
-          token: token,
-          pass: password
+          token: token
         },
         success: function(status, textStatus, jqXHR) {
           complete(onComplete, status.success);
@@ -417,16 +413,18 @@ BrowserID.Network = (function() {
     /**
      * Add a secondary email to the current user's account.
      * @method addSecondaryEmail
-     * @param {string} email - Email address to add.
-     * @param {string} origin - site user is trying to sign in to.
+     * @param {string} email
+     * @param {string} password
+     * @param {string} origin
      * @param {function} [onComplete] - called when complete.
      * @param {function} [onFailure] - called on xhr failure.
      */
-    addSecondaryEmail: function(email, origin, onComplete, onFailure) {
+    addSecondaryEmail: function(email, password, origin, onComplete, onFailure) {
       post({
         url: "/wsapi/stage_email",
         data: {
           email: email,
+          pass: password,
           site: origin
         },
         success: function(response) {
