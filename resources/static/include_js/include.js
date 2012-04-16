@@ -1122,6 +1122,7 @@
       },
       // get an assertion
       get: function(callback, options) {
+        options = options || {};
         checkCompat(true);
         internalWatch({
           onlogin: function(assertion) {
