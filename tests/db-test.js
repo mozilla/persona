@@ -73,7 +73,7 @@ suite.addBatch({
 suite.addBatch({
   "stage a user for creation pending verification": {
     topic: function() {
-      db.stageUser('lloyd@nowhe.re', this.callback);
+      db.stageUser('lloyd@nowhe.re', 'biglonghashofapassword', this.callback);
     },
     "staging returns a valid secret": function(err, r) {
       assert.isNull(err);
@@ -125,7 +125,7 @@ suite.addBatch({
 suite.addBatch({
   "upon receipt of a secret": {
     topic: function() {
-      db.gotVerificationSecret(secret, 'fakepasswordhash', this.callback);
+      db.gotVerificationSecret(secret, this.callback);
     },
     "gotVerificationSecret completes without error": function (err, r) {
       assert.isNull(err);
@@ -164,7 +164,7 @@ suite.addBatch({
     },
     "the correct password": function(err, r) {
       assert.isNull(err);
-      assert.strictEqual(r, "fakepasswordhash");
+      assert.strictEqual(r, "biglonghashofapassword");
     }
   }
 });
@@ -200,7 +200,7 @@ suite.addBatch({
     },
     "then staging an email": {
       topic: function(err, uid) {
-        db.stageEmail(uid, 'lloyd@somewhe.re', this.callback);
+        db.stageEmail(uid, 'lloyd@somewhe.re', 'biglonghashofapassword', this.callback);
       },
       "yields a valid secret": function(err, secret) {
         assert.isNull(err);
@@ -215,7 +215,7 @@ suite.addBatch({
         "makes it visible via isStaged": function(sekret, r) { assert.isTrue(r); },
         "lets you verify it": {
           topic: function(secret, r) {
-            db.gotVerificationSecret(secret, undefined, this.callback);
+            db.gotVerificationSecret(secret, this.callback);
           },
           "successfully": function(err, r) {
             assert.isNull(err);

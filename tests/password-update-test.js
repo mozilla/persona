@@ -34,6 +34,7 @@ suite.addBatch({
   "account staging": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: TEST_EMAIL,
+      pass: OLD_PASSWORD,
       site: 'https://fakesite.com:123'
     }),
     "works":     function(err, r) {

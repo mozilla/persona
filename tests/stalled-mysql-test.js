@@ -129,8 +129,7 @@ suite.addBatch({
   },
   "complete_user_creation": {
     topic: wsapi.post('/wsapi/complete_user_creation', {
-      token: 'bogus',
-      pass: 'fakefake'
+      token: 'bogus'
     }),
     "fails with 503": function(err, r) {
       assert.strictEqual(r.code, 503);
@@ -147,6 +146,7 @@ suite.addBatch({
   "stage_user": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'bogus@bogus.edu',
+      pass: 'a_password',
       site: 'https://whatev.er'
     }),
     "fails with 503": function(err, r) {
@@ -176,6 +176,7 @@ suite.addBatch({
   "account staging": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: "stalltest@whatev.er",
+      pass: 'a_password',
       site: 'http://fakesite.com'
     }),
     "works":     function(err, r) {
@@ -195,8 +196,7 @@ suite.addBatch({
     "setting password": {
       topic: function(token) {
         wsapi.post('/wsapi/complete_user_creation', {
-          token: token,
-          pass: "somepass"
+          token: token
         }).call(this);
       },
       "works just fine": function(err, r) {
@@ -266,6 +266,7 @@ suite.addBatch({
   "stage_email": {
     topic: wsapi.post('/wsapi/stage_email', {
       email: "test2@whatev.er",
+      pass: 'a_password',
       site: "https://foo.com"
     }),
     "fails with 503": function(err, r) {

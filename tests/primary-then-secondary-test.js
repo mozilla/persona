@@ -75,7 +75,6 @@ suite.addBatch({
 });
 
 var token;
-
 // now we have a new account.  let's add a secondary to it
 suite.addBatch({
   "add a new email address to our account": {
@@ -83,40 +82,37 @@ suite.addBatch({
       email: SECONDARY_EMAIL,
       site:'https://fakesite.com'
     }),
-    "works": function(err, r) {
+    "fails without a password": function(err, r) {
       assert.strictEqual(r.code, 200);
+      assert.strictEqual(JSON.parse(r.body).success, false);
     },
-    "and get a token": {
-      topic: function() {
-        start_stop.waitForToken(this.callback);
+    "but with a password": {
+      topic: wsapi.post('/wsapi/stage_email', {
+        email: SECONDARY_EMAIL,
+        pass: TEST_PASS,
+        site:'https://fakesite.com'
+      }),
+      "succeeds": function(err, r) {
+        assert.strictEqual(r.code, 200);
       },
-      "successfully": function (t) {
-        this._token = t;
-        assert.strictEqual(typeof t, 'string');
-      },
-      "and complete":  {
-        topic: function(t) {
-          wsapi.get('/wsapi/email_for_token', {
-            token: t
-          }).call(this);
+      "and get a token": {
+        topic: function() {
+          start_stop.waitForToken(this.callback);
         },
-        "we need to set our password": function (err, r) {
-          r = JSON.parse(r.body);
-          assert.ok(r.needs_password);
+        "successfully": function (t) {
+          this._token = t;
+          assert.strictEqual(typeof t, 'string');
         },
-        "with": {
-          topic: function() {
-            wsapi.post('/wsapi/complete_email_addition', { token: this._token }).call(this);
+        "and complete":  {
+          topic: function(t) {
+            wsapi.get('/wsapi/email_for_token', {
+              token: t
+            }).call(this);
           },
-          "no password fails": function(err, r) {
-            assert.equal(r.code, 200);
-            assert.strictEqual(JSON.parse(r.body).success, false);
-          },
-          "a password": {
+          "which then": {
             topic: function() {
               wsapi.post('/wsapi/complete_email_addition', {
-                token: this._token,
-                pass: TEST_PASS
+                token: this._token
               }).call(this);
             },
             "succeeds": function(err, r) {
@@ -140,7 +136,6 @@ suite.addBatch({
   }
 });
 
-
 // after a small delay, we can authenticate with our password
 suite.addBatch({
   "after a small delay": {
@@ -161,41 +156,42 @@ suite.addBatch({
 
 // adding a second secondary will not let us set the password
 suite.addBatch({
-  "add a new email address to our account": {
+  "add a second secondary to account with": {
     topic: wsapi.post('/wsapi/stage_email', {
       email: SECOND_SECONDARY_EMAIL,
+      pass: TEST_PASS,
       site:'http://fakesite.com:123'
     }),
-    "works": function(err, r) {
+    "a password fails": function(err, r) {
       assert.strictEqual(r.code, 200);
+      var body = JSON.parse(r.body);
+      assert.strictEqual(body.success, false);
+      assert.strictEqual(body.reason, 'a password may not be set at this time');
     },
-    "and get a token": {
-      topic: function() {
-        start_stop.waitForToken(this.callback);
+    "but with no password specified": {
+      topic: wsapi.post('/wsapi/stage_email', {
+        email: SECOND_SECONDARY_EMAIL,
+        site:'http://fakesite.com:123'
+      }),
+      "succeeds": function(err, r) {
+        assert.strictEqual(r.code, 200);
+        assert.strictEqual(JSON.parse(r.body).success, true);
       },
-      "successfully": function (t) {
-        this._token = t;
-        assert.strictEqual(typeof t, 'string');
-      },
-      "and to complete": {
-        topic: function(t) {
-          wsapi.get('/wsapi/email_for_token', {
-            token: t
-          }).call(this);
+      "and get a token": {
+        topic: function() {
+          start_stop.waitForToken(this.callback);
         },
-        "we do not need to set our password": function (err, r) {
-          r = JSON.parse(r.body);
-          assert.isFalse(r.needs_password);
+        "successfully": function (t) {
+          this._token = t;
+          assert.strictEqual(typeof t, 'string');
         },
-        "with": {
-          topic: function() {
-            wsapi.post('/wsapi/complete_email_addition', { token: this._token, pass: TEST_PASS }).call(this);
+        "and to complete":  {
+          topic: function(t) {
+            wsapi.get('/wsapi/email_for_token', {
+              token: t
+            }).call(this);
           },
-          "a password fails": function(err, r) {
-            assert.equal(r.code, 200);
-            assert.strictEqual(JSON.parse(r.body).success, false);
-          },
-          "no password succeeds": {
+          "with a token": {
             topic: function() {
               wsapi.post('/wsapi/complete_email_addition', {
                 token: this._token
@@ -231,10 +227,9 @@ suite.addBatch({
     }),
     "works": function(err, r) {
       assert.strictEqual(r.code, 200);
-    },
+    }
   }
 });
-
 
 // shut the server down and cleanup
 start_stop.addShutdownBatches(suite);

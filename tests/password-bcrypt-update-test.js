@@ -46,6 +46,7 @@ suite.addBatch({
   "account staging": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: TEST_EMAIL,
+      pass: TEST_PASSWORD,
       site:'https://fakesite.com'
     }),
     "works":     function(err, r) {
@@ -72,8 +73,7 @@ suite.addBatch({
   "setting password": {
     topic: function() {
       wsapi.post('/wsapi/complete_user_creation', {
-        token: token,
-        pass: TEST_PASSWORD
+        token: token
       }).call(this);
     },
     "works just fine": function(err, r) {
