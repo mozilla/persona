@@ -148,30 +148,11 @@
     });
   });
 
-  asyncTest("addEmail with unknown first secondary email - trigger add_email_requires_password", function() {
+  asyncTest("addEmail with secondary email - trigger add_email_submit_with_secondary", function() {
     xhr.useResult("unknown_secondary");
-    closeCB = expectedClose("add_email_requires_password", "email", "unregistered@testuser.com");
-    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
-      equal(added, false, "email not added");
-      start();
-    });
-  });
-
-  asyncTest("addEmail with unknown second secondary email - trigger email_staged", function() {
-    xhr.useResult("unknown_secondary");
-    closeCB = expectedClose("email_staged", "email", "unregistered@testuser.com");
-    storage.addEmail("registered@testuser.com", { type: "secondary" });
-    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
-      equal(added, true, "email added");
-      start();
-    });
-  });
-
-  asyncTest("addEmail throttled", function() {
-    xhr.useResult("throttle");
-    storage.addEmail("registered@testuser.com", { type: "secondary" });
-    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
-      equal(added, false, "email not added");
+    closeCB = expectedClose("add_email_submit_with_secondary", "email", "unregistered@testuser.com");
+    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(success) {
+      equal(success, true, "success status");
       start();
     });
   });

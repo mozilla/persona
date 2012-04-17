@@ -351,9 +351,16 @@ BrowserID.State = (function() {
       startAction("doAddEmail", info);
     });
 
-    handleState("add_email_requires_password", function(msg, info) {
-      self.addEmailEmail = info.email;
-      startAction(false, "doSetPassword", info);
+    handleState("add_email_submit_with_secondary", function(msg, info) {
+      user.passwordNeededToAddSecondaryEmail(function(passwordNeeded) {
+        if(passwordNeeded) {
+          self.addEmailEmail = info.email;
+          startAction(false, "doSetPassword", info);
+        }
+        else {
+          startAction(false, "doStageEmail", info);
+        }
+      });
     });
 
     handleState("email_staged", function(msg, info) {

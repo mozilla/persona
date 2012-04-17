@@ -97,24 +97,15 @@
       complete(callback, false);
     }
     else {
-      user.addessInfo(email, function(info) {
+      BrowserID.User.addressInfo(email, function(info) {
         if (info.type === "primary") {
           var info = _.extend(info, { email: email, add: true });
           self.publish("primary_user", info, info);
           complete(callback, true);
         }
         else {
-          // TODO - maybe put this in the state machine so it can be used in
-          // the main site as well?
-          user.passwordNeededToAddSecondaryEmail(function(passwordNeeded) {
-            if(passwordNeeded) {
-              self.publish("add_email_requires_password", { email: email });
-              complete(callback, false);
-            }
-            else {
-              addSecondaryEmailWithPassword.call(self, email, undefined, callback);
-            }
-          });
+          self.publish("add_email_submit_with_secondary", { email: email });
+          complete(callback, true);
         }
       }, self.getErrorDialog(errors.addressInfo, callback));
     }

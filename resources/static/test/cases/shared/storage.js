@@ -34,6 +34,20 @@
     equal("key", id.priv, "email that was added is retrieved");
   });
 
+  test("addPrimaryEmail", function() {
+    storage.addPrimaryEmail("testuser@testuser.com");
+
+    var email = storage.getEmail("testuser@testuser.com");
+    equal(email.type, "primary", "email type set correctly");
+  });
+
+  test("addSecondaryEmail", function() {
+    storage.addSecondaryEmail("testuser@testuser.com");
+
+    var email = storage.getEmail("testuser@testuser.com");
+    equal(email.type, "secondary", "email type set correctly");
+  });
+
   test("removeEmail, getEmails", function() {
     storage.addEmail("testuser@testuser.com", {priv: "key"});
     storage.removeEmail("testuser@testuser.com");

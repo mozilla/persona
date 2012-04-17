@@ -93,11 +93,25 @@
     equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate called with the correct email");
   });
 
-  test("password_set - call doStageUser with correct email", function() {
+  test("password_set for new user - call doStageUser with correct email", function() {
     mediator.publish("new_user", { email: TEST_EMAIL });
     mediator.publish("password_set");
 
     equal(actions.info.doStageUser.email, TEST_EMAIL, "correct email sent to doStageUser");
+  });
+
+  test("password_set for add secondary email - call doStageEmail with correct email", function() {
+    mediator.publish("add_email_submit_with_secondary", { email: TEST_EMAIL });
+    mediator.publish("password_set");
+
+    equal(actions.info.doStageEmail.email, TEST_EMAIL, "correct email sent to doStageEmail");
+  });
+
+  test("password_set for reset password - call doResetPassword with correct email", function() {
+    mediator.publish("forgot_password", { email: TEST_EMAIL });
+    mediator.publish("password_set");
+
+    equal(actions.info.doResetPassword.email, TEST_EMAIL, "correct email sent to doResetPassword");
   });
 
   test("user_staged - call doConfirmUser", function() {
@@ -470,5 +484,36 @@
     equal(actions.info.doPickEmail.privacyURL, "http://example.com/priv.html", "privacyURL preserved");
     equal(actions.info.doPickEmail.tosURL, "http://example.com/tos.html", "tosURL preserved");
   });
+
+  test("add_email - call doAddEmail", function() {
+    mediator.publish("add_email", {
+      complete: function() {
+        equal(actions.called.doAddEmail, true, "doAddEmail called");
+        start();
+      }
+    });
+  });
+
+  test("add_email_submit_with_secondary - first secondary email - call doSetPassword", function() {
+    mediator.publish("add_email", {
+      complete: function() {
+        equal(actions.called.doSetPassword, true, "doSetPassword called");
+        start();
+      }
+    });
+  });
+
+
+  test("add_email_submit_with_secondary - second secondary email - call doStageEmail", function() {
+    storage.addSecondaryEmail("testuser@testuser.com");
+
+    mediator.publish("add_email", {
+      complete: function() {
+        equal(actions.called.doStageEmail, true, "doStageEmail called");
+        start();
+      }
+    });
+  });
+
 
 }());
