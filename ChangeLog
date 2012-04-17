@@ -17,6 +17,8 @@ train-2012.04.11:
   * (hotfix 2012.04.12) fix broken string, "is this your computer" was broken into two fragments: #1425
   * (hotfix 2012.04.16) fix API regression that would cause javascript error when .get() invoked without second arg: #1442
   * (hotfix 2012.04.16) update load_gen to new server apis that require an `ephemeral` argument: #1436
+  * (hotfix 2012.04.17) fix broken reset password flow - button was non-responsive in dialog: #1440
+  * (hotfix 2012.04.17) mitigate errors seen when adding a secondary email to an acct with only primary emails: #1445
 
 train-2012.03.28:
   * work towards better user messaging for when cookies are disabled: #1167, #1302
