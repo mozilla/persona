@@ -1012,6 +1012,9 @@
         throw "non-function where function expected in parameters to navigator.id.watch()";
       }
 
+      if (!options.onlogin) throw "'onlogin' is a required argument to navigator.id.watch()";
+      if (!options.onlogout) throw "'onlogout' is a required argument to navigator.id.watch()";
+
       observers.login = options.onlogin || null;
       observers.logout = options.onlogout || null;
       observers.ready = options.onready || null;
@@ -1021,10 +1024,10 @@
       // check that the commChan was properly initialized before interacting with it.
       // on unsupported browsers commChan might still be undefined, in which case
       // we let the dialog display the "unsupported browser" message upon spawning.
-      if (typeof options.email !== 'undefined' && commChan) {
+      if (typeof options.loggedInEmail !== 'undefined' && commChan) {
         commChan.notify({
           method: 'loggedInUser',
-          params: options.email
+          params: options.loggedInEmail
         });
       }
     }
@@ -1092,9 +1095,12 @@
           }
         }
 
-        // complete
-        if (options && options.onclose) options.onclose();
-        delete options.onclose;
+        // if either err indicates the user canceled the signin (expected) or a
+        // null response was sent (unexpected), invoke the .oncancel() handler.
+        if (err === 'client closed window' || !r) {
+          if (options && options.oncancel) options.oncancel();
+          delete options.oncancel;
+        }
       });
     };
 
@@ -1132,7 +1138,7 @@
             }
           }
         });
-        options.onclose = function() {
+        options.oncancel = function() {
           if (callback) {
             callback(null);
             callback = null;

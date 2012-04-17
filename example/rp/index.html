@@ -144,7 +144,7 @@ function checkAssertion(assertion) {
 };
 
 navigator.id.experimental.watch({
-  email: (storage.loggedInUser === 'null') ? null : storage.loggedInUser,
+  loggedInEmail: (storage.loggedInUser === 'null') ? null : storage.loggedInUser,
   onready: function () {
     loggit("onready");
     var txt = serial++ + ' navigator.id ready at ' + (new Date).toString();
@@ -157,6 +157,8 @@ navigator.id.experimental.watch({
     $(".loginEvents > pre").text(txt);
 
     checkAssertion(assertion);
+
+    $(".specify button.assertion").removeAttr('disabled');
   },
   onlogout: function () {
     loggit("onlogout");
@@ -167,8 +169,6 @@ navigator.id.experimental.watch({
 
 $(document).ready(function() {
   $(".specify button.assertion").click(function() {
-    $("pre").text("... waiting ...");
-
     var requiredEmail = $.trim($('#requiredEmail').val());
     if (!requiredEmail.length) requiredEmail = undefined;
 
@@ -178,8 +178,8 @@ $(document).ready(function() {
       privacyURL: $('#privacy').attr('checked') ? "/privacy.html" : undefined,
       tosURL: $('#tos').attr('checked') ? "/TOS.html" : undefined,
       requiredEmail: requiredEmail,
-      onclose: function() {
-        loggit("onclose");
+      oncancel: function() {
+        loggit("oncancel");
         $(".specify button.assertion").removeAttr('disabled');
       }
     });

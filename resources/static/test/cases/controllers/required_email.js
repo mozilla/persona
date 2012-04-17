@@ -454,24 +454,7 @@
     });
   });
 
-  asyncTest("cancel normally raises the 'cancel' message", function() {
-    var email = "registered@testuser.com",
-        message = "cancel";
-
-    createController({
-      email: email,
-      ready: function() {
-        register(message, function(item, info) {
-          ok(true, message + " received");
-          start();
-        });
-
-        controller.cancel();
-      }
-    });
-  });
-
-  asyncTest("cancel with 'secondary_auth' raises the 'cancel_state' message", function() {
+  asyncTest("cancel raises the 'cancel_state' message", function() {
     var email = "registered@testuser.com",
         message = "cancel_state";
 
