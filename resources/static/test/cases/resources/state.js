@@ -218,6 +218,14 @@
     equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate called with the correct email");
   });
 
+  test("reset_password through to validation on same browser - call doEmailConfirmed with email address", function() {
+    mediator.publish("reset_password", { email: TEST_EMAIL });
+    mediator.publish("user_confirmed");
+
+    equal(actions.info.doEmailConfirmed.email, TEST_EMAIL, "doEmailConfirmed called with correct email");
+  });
+
+
   asyncTest("assertion_generated with null assertion - redirect to pick_email", function() {
     mediator.subscribe("pick_email", function() {
       ok(true, "redirect to pick_email");

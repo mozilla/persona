@@ -109,6 +109,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/address_info?email=unregistered%40testuser.com primary": { type: "primary", auth: "https://auth_url", prov: "https://prov_url" },
       "get /wsapi/address_info?email=testuser%40testuser.com unknown_secondary": { type: "secondary", known: false },
       "get /wsapi/address_info?email=testuser%40testuser.com known_secondary": { type: "secondary", known: true },
+      "get /wsapi/address_info?email=registered%40testuser.com mustAuth": { type: "secondary", known: true },
       "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", auth: "https://auth_url", prov: "https://prov_url" },
       "get /wsapi/address_info?email=testuser%40testuser.com ajaxError": undefined,
       "post /wsapi/add_email_with_assertion invalid": { success: false },
