@@ -70,9 +70,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doCancel: function() {
-      // do not call success with null here, let winchan's cancel handling do the work.
-      // this gives us consistent semantics across browsers on the RP side of the WinChan.
-      //      if(onsuccess) onsuccess(null);
+      if(onsuccess) onsuccess(null);
     },
 
     doConfirmUser: function(info) {

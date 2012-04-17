@@ -91,7 +91,10 @@ BrowserID.Modules.RequiredEmail = (function() {
 
 
   function cancel() {
-    this.close(secondaryAuth ? "cancel_state" : "cancel");
+    // The cancel button is only shown to a user who has to enter their
+    // password to go from "assertion" authentication to "password"
+    // authentication.
+    this.close("cancel_state");
   }
 
   var RequiredEmail = bid.Modules.PageModule.extend({
