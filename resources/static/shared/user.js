@@ -298,15 +298,12 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Create a user.  Works for both primaries and secondaries.
+     * Create a primary user.
      * @method createUser
-     * @param {string} email
+     * @param {object} info
      * @param {function} onComplete - function to call on complettion.  Called
      * with two parameters - status and info.
      * Status can be:
-     *  secondary.already_added
-     *  secondary.verify
-     *  secondary.could_not_add
      *  primary.already_added
      *  primary.verified
      *  primary.verify
@@ -315,63 +312,23 @@ BrowserID.User = (function() {
      *  info is passed on primary.verify and contains the info necessary to
      *  verify the user with the IdP
      */
-    // XXX - only used on main site
-    createUser: function(email, onComplete, onFailure) {
-      User.addressInfo(email, function(info) {
-        User.createUserWithInfo(email, info, onComplete, onFailure);
-      }, onFailure);
-    },
-
-    /**
-     * Attempt to create a user with the info returned from
-     * network.addressInfo.  Attempts to create both primary and secondary
-     * based users depending on info.type.
-     * @method createUserWithInfo
-     * @param {string} email
-     * @param {object} info - contains fields returned from network.addressInfo
-     * @param {function} [onComplete]
-     * @param {function} [onFailure]
-     */
-    createUserWithInfo: function(email, info, onComplete, onFailure) {
-      function attemptAddSecondary(email, info) {
-        if (info.known) {
-          onComplete("secondary.already_added");
-        }
-        else {
-          User.createSecondaryUser(email, function(success) {
-            if (success) {
-              onComplete("secondary.verify");
+    createPrimaryUser: function(info, onComplete, onFailure) {
+      var email = info.email;
+      User.provisionPrimaryUser(email, info, function(status, provInfo) {
+        if (status === "primary.verified") {
+          network.authenticateWithAssertion(email, provInfo.assertion, function(status) {
+            if (status) {
+              onComplete("primary.verified");
             }
             else {
-              onComplete("secondary.could_not_add");
+              onComplete("primary.could_not_add");
             }
           }, onFailure);
         }
-      }
-
-      function attemptAddPrimary(email, info) {
-        User.provisionPrimaryUser(email, info, function(status, provInfo) {
-          if (status === "primary.verified") {
-            network.authenticateWithAssertion(email, provInfo.assertion, function(status) {
-              if (status) {
-                onComplete("primary.verified");
-              }
-              else {
-                onComplete("primary.could_not_add");
-              }
-            }, onFailure);
-          }
-          else {
-            onComplete(status, provInfo);
-          }
-        }, onFailure);
-      }
-
-      if (info.type === 'secondary') {
-        attemptAddSecondary(email, info);
-      } else {
-        attemptAddPrimary(email, info);
-      }
+        else {
+          onComplete(status, provInfo);
+        }
+      }, onFailure);
     },
 
     /**

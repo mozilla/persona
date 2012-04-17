@@ -153,33 +153,11 @@ var vep = require("./vep");
   });
 
 
-  asyncTest("createUser with unknown secondary happy case - expect 'secondary.verify'", function() {
-    xhr.useResult("unknown_secondary");
-
-    lib.createUser("unregistered@testuser.com", function(status) {
-      equal(status, "secondary.verify", "secondary user must be verified");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("createUser with unknown secondary, throttled - expect status='secondary.could_not_add'", function() {
-    xhr.useResult("throttle");
-
-    lib.createUser("unregistered@testuser.com", function(status) {
-      equal(status, "secondary.could_not_add", "user creation refused");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("createUser with unknown secondary, XHR failure - expect failure call", function() {
-    failureCheck(lib.createUser, "unregistered@testuser.com");
-  });
-
-  asyncTest("createUser with primary, user verified with primary - expect 'primary.verified'", function() {
+  asyncTest("createPrimaryUser with primary, user verified with primary - expect 'primary.verified'", function() {
     xhr.useResult("primary");
     provisioning.setStatus(provisioning.AUTHENTICATED);
 
-    lib.createUser("unregistered@testuser.com", function(status) {
+    lib.createPrimaryUser({email: "unregistered@testuser.com"}, function(status) {
       equal(status, "primary.verified", "primary user is already verified, correct status");
       network.checkAuth(function(authenticated) {
         equal(authenticated, "assertion", "after provisioning user, user should be automatically authenticated to BrowserID");
@@ -188,31 +166,26 @@ var vep = require("./vep");
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("createUser with primary, user must authenticate with primary - expect 'primary.verify'", function() {
+  asyncTest("createPrimaryUser with primary, user must authenticate with primary - expect 'primary.verify'", function() {
     xhr.useResult("primary");
 
-    lib.createUser("unregistered@testuser.com", function(status) {
+    lib.createPrimaryUser({email: "unregistered@testuser.com"}, function(status) {
       equal(status, "primary.verify", "primary must verify with primary, correct status");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("createUser with primary, unknown provisioning failure, expect XHR failure callback", function() {
+  asyncTest("createPrimaryUser with primary, unknown provisioning failure, expect XHR failure callback", function() {
     xhr.useResult("primary");
     provisioning.setFailure({
       code: "primaryError",
       msg: "some error"
     });
 
-    lib.createUser("unregistered@testuser.com",
+    lib.createPrimaryUser({email: "unregistered@testuser.com"},
       testHelpers.unexpectedSuccess,
       testHelpers.expectedXHRFailure
     );
-  });
-
-  asyncTest("createUserWithInfo", function() {
-    ok(true, "For development speed and reduced duplication of tests, tested via createUser");
-    start();
   });
 
   asyncTest("provisionPrimaryUser authenticated with IdP, expect primary.verified", function() {
