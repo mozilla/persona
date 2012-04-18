@@ -15,9 +15,9 @@
 
     <p>
       <% if(required) { %>
-        <%= gettext('If this is a mistake, just ignore the sent email and <a href="#" id="cancel">cancel</a>.') %>
+        <%= format(gettext('If this is a mistake, just ignore the sent email and <a %s>cancel</a>.'), [' href="#" id="back"']) %>
       <% } else { %>
-        <%= gettext('If this is a mistake, just ignore the sent email and <a href="#" id="back">use another email address</a>.') %>
+        <%= format(gettext('If this is a mistake, just ignore the sent email and <a %s>use another email address</a>.'), [' href="#" id="back"']) %>
       <% } %>
     </p>
 
