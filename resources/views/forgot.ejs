@@ -46,6 +46,36 @@
                     </div>
                 </li>
 
+                <li>
+                    <label class="serif" for="password">Password</label>
+                    <input class="sans" id="password" placeholder="Password" type="password" maxlength="80">
+
+                    <div id="password_required" class="tooltip" for="password">
+                        Password is required.
+                    </div>
+
+                    <div class="tooltip" id="password_length" for="password">
+                        Password must be between 8 and 80 characters long.
+                    </div>
+
+                    <div id="could_not_add" class="tooltip" for="password">
+                        We just sent an email to that address! If you really want to send another, wait a minute or two and try again.
+                    </div>
+                </li>
+
+                <li>
+                    <label class="serif" for="vpassword">Verify Password</label>
+                    <input class="sans" id="vpassword" placeholder="Repeat Password" type="password" maxlength="80">
+
+                    <div id="password_required" class="tooltip" for="vpassword">
+                      Verification password is required.
+                    </div>
+
+                    <div class="tooltip" id="passwords_no_match" for="vpassword">
+                      Passwords do not match.
+                    </div>
+
+                </li>
 
             </ul>
 

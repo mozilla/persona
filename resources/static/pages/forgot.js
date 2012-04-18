@@ -9,6 +9,8 @@ BrowserID.forgot = (function() {
   var bid = BrowserID,
       user = bid.User,
       helpers = bid.Helpers,
+      complete = helpers.complete,
+      validation = bid.Validation,
       pageHelpers = bid.PageHelpers,
       cancelEvent = pageHelpers.cancelEvent,
       dom = bid.DOM,
@@ -18,21 +20,24 @@ BrowserID.forgot = (function() {
     // GET RID OF THIS HIDE CRAP AND USE CSS!
     $(".notifications .notification").hide();
 
-    var email = helpers.getAndValidateEmail("#email");
+    var email = helpers.getAndValidateEmail("#email"),
+        pass = dom.getInner("#password"),
+        vpass = dom.getInner("#vpassword"),
+        validPass = email && validation.passwordAndValidationPassword(pass, vpass);
 
-    if (email) {
-      // XXX TODO - the fake password is to make tests pass.
-      user.requestPasswordReset(email, "XXX_FAKE_PASSWORD", function onSuccess(info) {
+    if (email && validPass) {
+      user.requestPasswordReset(email, pass, function onSuccess(info) {
         if (info.success) {
           pageHelpers.emailSent(oncomplete);
         }
         else {
           var tooltipEl = info.reason === "throttle" ? "#could_not_add" : "#not_registered";
-          tooltip.showTooltip(tooltipEl, oncomplete);
+          tooltip.showTooltip(tooltipEl);
+          complete(oncomplete);
         }
       }, pageHelpers.getFailure(bid.Errors.requestPasswordReset, oncomplete));
     } else {
-      oncomplete && oncomplete();
+      complete(oncomplete);
     }
   };
 

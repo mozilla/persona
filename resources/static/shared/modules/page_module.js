@@ -54,8 +54,6 @@ BrowserID.Modules.PageModule = (function() {
       self.options = options || {};
 
       self.bind("form", "submit", cancelEvent(onSubmit));
-      // TODO - why is this here and not in pick_email?
-      self.click("#thisIsNotMe", self.close.bind(self, "notme"));
     },
 
     stop: function() {

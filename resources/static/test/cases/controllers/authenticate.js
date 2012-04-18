@@ -190,37 +190,5 @@
     });
   });
 
-  /*
-  asyncTest("createUser with valid email but throttling", function() {
-    $("#email").val("unregistered@testuser.com");
-
-    var handlerCalled = false;
-    register("new_user", function(msg, info) {
-      handlerCalled = true;
-    });
-
-    xhr.useResult("throttle");
-    controller.createUser(function() {
-      equal(handlerCalled, false, "bad jiji, new_user should not have been called with throttling");
-      equal(bid.Tooltip.shown, true, "tooltip is shown");
-      start();
-    });
-  });
-
-  asyncTest("createUser with valid email, XHR error", function() {
-    $("#email").val("unregistered@testuser.com");
-
-    var handlerCalled = false;
-    register("new_user", function(msg, info) {
-      handlerCalled = true;
-    });
-
-    xhr.useResult("ajaxError");
-    controller.createUser(function() {
-      equal(handlerCalled, false, "bad jiji, new_user should not have been called with XHR error");
-      start();
-    });
-  });
-*/
 }());
 
