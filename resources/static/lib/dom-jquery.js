@@ -313,7 +313,7 @@ BrowserID.DOM = ( function() {
         },
 
         /**
-         * Show an element/elements
+         * Show an element
          * @method show
          * @param {selector || element} elementToShow
          */
@@ -322,15 +322,13 @@ BrowserID.DOM = ( function() {
         },
 
         /**
-         * Hide an element/elements
+         * Hide an element
          * @method hide
          * @param {selector || element} elementToHide
          */
         hide: function( elementToHide ) {
           return jQuery( elementToHide ).hide();
         }
-
-
     };
 
     function isValBased( target ) {

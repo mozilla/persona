@@ -42,8 +42,7 @@ BrowserID.State = (function() {
 
     handleState("start", function(msg, info) {
       self.hostname = info.hostname;
-      self.privacyURL = info.privacyURL;
-      self.tosURL = info.tosURL;
+      self.siteTOSPP = !!(info.privacyURL && info.tosURL);
       requiredEmail = info.requiredEmail;
 
       startAction(false, "doRPInfo", info);
@@ -77,8 +76,7 @@ BrowserID.State = (function() {
         self.email = requiredEmail;
         startAction("doAuthenticateWithRequiredEmail", {
           email: requiredEmail,
-          privacyURL: self.privacyURL,
-          tosURL: self.tosURL
+          siteTOSPP: self.siteTOSPP
         });
       }
       else if (authenticated) {
@@ -89,8 +87,8 @@ BrowserID.State = (function() {
     });
 
     handleState("authenticate", function(msg, info) {
-      info.privacyURL = self.privacyURL;
-      info.tosURL = self.tosURL;
+      info = info || {};
+      info.siteTOSPP = self.siteTOSPP;
       startAction("doAuthenticate", info);
     });
 
@@ -167,8 +165,7 @@ BrowserID.State = (function() {
         add: !!addPrimaryUser,
         email: email,
         requiredEmail: !!requiredEmail,
-        privacyURL: self.privacyURL,
-        tosURL: self.tosURL
+        siteTOSPP: self.siteTOSPP
       });
 
       if (primaryVerificationInfo) {
@@ -205,8 +202,7 @@ BrowserID.State = (function() {
     handleState("pick_email", function() {
       startAction("doPickEmail", {
         origin: self.hostname,
-        privacyURL: self.privacyURL,
-        tosURL: self.tosURL
+        siteTOSPP: self.siteTOSPP
       });
     });
 
@@ -245,8 +241,7 @@ BrowserID.State = (function() {
               startAction("doAuthenticateWithRequiredEmail", {
                 email: email,
                 secondary_auth: true,
-                privacyURL: self.privacyURL,
-                tosURL: self.tosURL
+                siteTOSPP: self.siteTOSPP
               });
             }
             else {
@@ -309,6 +304,9 @@ BrowserID.State = (function() {
       // finally reset, the password_reset message will be raised where we must
       // await email confirmation.
       self.resetPasswordEmail = info.email;
+      info = helpers.extend(info || {}, {
+        siteTOSPP: self.siteTOSPP
+      });
       startAction(false, "doForgotPassword", info);
     });
 
@@ -344,10 +342,28 @@ BrowserID.State = (function() {
       redirectToState("email_chosen", info);
     });
 
+    handleState("reset_password", function(msg, info) {
+      info = info || {};
+      // reset_password says the user has confirmed that they want to
+      // reset their password.  doResetPassword will attempt to invoke
+      // the create_user wsapi.  If the wsapi call is successful,
+      // the user will be shown the "go verify your account" message.
+
+      // We have to save the staged email address here for when the user
+      // verifies their account and user_confirmed is called.
+      self.stagedEmail = info.email;
+      startAction(false, "doResetPassword", info);
+    });
+
     handleState("add_email", function(msg, info) {
-      info = helpers.extend(info, {
-        privacyURL: self.privacyURL,
-        tosURL: self.tosURL
+      // add_email indicates the user wishes to add an email to the account,
+      // the add_email screen must be displayed.  After the user enters the
+      // email address they wish to add, add_email will trigger
+      // either 1) primary_user or 2) email_staged. #1 occurs if the email
+      // address is a primary address, #2 occurs if the address is a secondary
+      // and the verification email has been sent.
+      info = helpers.extend(info || {}, {
+        siteTOSPP: self.siteTOSPP
       });
 
       startAction("doAddEmail", info);

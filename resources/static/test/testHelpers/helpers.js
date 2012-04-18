@@ -220,17 +220,25 @@ BrowserID.TestHelpers = (function() {
       }
     },
 
-    testHasClass: function(selector, className, msg) {
-      ok($(selector).hasClass(className),
-          selector + " has className " + className + " - " + msg);
-    },
-
     testUndefined: function(toTest, msg) {
       equal(typeof toTest, "undefined", msg || "object is undefined");
     },
 
     testNotUndefined: function(toTest, msg) {
       notEqual(typeof toTest, "undefined", msg || "object is defined");
+    },
+
+    testHasClass: function(selector, className, msg) {
+      ok($(selector).hasClass(className),
+          msg || (selector + " has className " + className));
+    },
+
+    testElementDoesNotExist: function(selector, msg) {
+      equal($(selector).length, 0, msg || ("element '" + selector + "' does not exist"));
+    },
+
+    testElementExists: function(selector, msg) {
+      ok($(selector).length, msg || ("element '" + selector + "' exists"));
     }
 
   };

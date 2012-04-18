@@ -11,7 +11,8 @@
       complete = helpers.complete,
       user = bid.User,
       tooltip = bid.Tooltip,
-      errors = bid.Errors;
+      errors = bid.Errors,
+      dom = bid.DOM;
 
   function animateClose(callback) {
     var body = $("body"),
@@ -133,6 +134,10 @@
     }, self.getErrorDialog(errors.addEmail, callback));
   }
 
+  function showRPTosPP() {
+    dom.show(".rptospp");
+  }
+
   helpers.Dialog = helpers.Dialog || {};
 
   helpers.extend(helpers.Dialog, {
@@ -143,7 +148,8 @@
     addSecondaryEmail: addSecondaryEmail,
     resetPassword: resetPassword,
     cancelEvent: helpers.cancelEvent,
-    animateClose: animateClose
+    animateClose: animateClose,
+    showRPTosPP: showRPTosPP
   });
 
 }());

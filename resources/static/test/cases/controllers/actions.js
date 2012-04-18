@@ -88,7 +88,6 @@
     testActionStartsModule('doGenerateAssertion', { email: TEST_EMAIL }, "generate_assertion");
   });
 
-
   asyncTest("doStageUser with successful creation - trigger user_staged", function() {
     createController({
       ready: function() {
@@ -108,6 +107,22 @@
 
   asyncTest("doForgotPassword - call the set_password controller with reset_password true", function() {
     testActionStartsModule('doForgotPassword', { email: TEST_EMAIL }, "set_password");
+  });
+
+  asyncTest("doRPInfo - start the rp_info service", function() {
+    createController({
+      ready: function() {
+        var error;
+        try {
+          controller.doRPInfo({ name: "browserid.org" });
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for rp_info", "correct service started");
+        start();
+      }
+    });
   });
 }());
 

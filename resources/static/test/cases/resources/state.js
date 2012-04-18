@@ -34,6 +34,14 @@
     }
   }
 
+  function testActionStarted(actionName, requiredOptions) {
+    ok(actions.called[actionName], actionName + "called");
+    for(var key in requiredOptions) {
+      equal(actions.info[actionName][key], requiredOptions[key],
+          actionName + " called with " + key + "=" + requiredOptions[key]);
+    }
+  }
+
   function createMachine() {
     machine = bid.State.create();
     actions = new ActionsMock();
@@ -125,6 +133,17 @@
     mediator.publish("password_set");
 
     equal(actions.info.doResetPassword.email, TEST_EMAIL, "correct email sent to doResetPassword");
+  });
+
+  test("start - RPInfo always started", function() {
+    mediator.publish("start", {
+      tosURL: "https://browserid.org/TOS.html",
+      privacyURL: "https://browserid.org/priv.html"
+    });
+
+    ok(actions.info.doRPInfo.sitename, "doRPInfo called with sitename added and set");
+    ok(actions.info.doRPInfo.tosURL, "doRPInfo called with tosURL set");
+    ok(actions.info.doRPInfo.privacyURL, "doRPInfo called with privacyURL set");
   });
 
   test("user_staged - call doConfirmUser", function() {
@@ -250,13 +269,13 @@
     mediator.publish("authenticated", { email: TEST_EMAIL });
   });
 
-  test("forgot_password", function() {
+  test("forgot_password - call doForgotPassword with correct options", function() {
+    mediator.publish("start", { privacyURL: "priv.html", tosURL: "tos.html" });
     mediator.publish("forgot_password", {
       email: TEST_EMAIL,
       requiredEmail: true
     });
-    equal(actions.info.doForgotPassword.email, TEST_EMAIL, "correct email passed");
-    equal(actions.info.doForgotPassword.requiredEmail, true, "correct requiredEmail passed");
+    testActionStarted("doForgotPassword", { email: TEST_EMAIL, requiredEmail: true, siteTOSPP: true });
   });
 
   test("password_reset to user_confirmed - call doUserStaged then doEmailConfirmed", function() {
@@ -375,12 +394,11 @@
     ok(actions.called.doNotMe, "doNotMe has been called");
   });
 
-  test("authenticate", function() {
-    mediator.publish("authenticate", {
-      email: TEST_EMAIL
-    });
+  test("authenticate - call doAuthenticate with the correct options", function() {
+    mediator.publish("start", { privacyURL: "priv.html", tosURL: "tos.html" });
+    mediator.publish("authenticate", { email: TEST_EMAIL });
 
-    equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate with testuser@testuser.com");
+    testActionStarted("doAuthenticate", { email: TEST_EMAIL, siteTOSPP: true });
   });
 
   test("start with no special parameters - go straight to checking auth", function() {
@@ -406,16 +424,23 @@
   });
 
 
+  test("add_email - call doAddEmail with correct options", function() {
+    mediator.publish("start", { privacyURL: "priv.html", tosURL: "tos.html" });
+    mediator.publish("add_email");
+    testActionStarted("doAddEmail", { siteTOSPP: true });
+  });
+
   asyncTest("email_chosen with secondary email, user must authenticate - call doAuthenticateWithRequiredEmail", function() {
     var email = TEST_EMAIL;
     storage.addEmail(email, { type: "secondary" });
 
     xhr.setContextInfo("auth_level", "assertion");
 
+    mediator.publish("start", { privacyURL: "priv.html", tosURL: "tos.html" });
     mediator.publish("email_chosen", {
       email: email,
       complete: function() {
-        equal(actions.called.doAuthenticateWithRequiredEmail, true, "doAuthenticateWithRequiredEmail called");
+        testActionStarted("doAuthenticateWithRequiredEmail", { siteTOSPP: true });
         start();
       }
     });
@@ -472,8 +497,7 @@
 
     equal(actions.called.doPickEmail, true, "doPickEmail callled");
     equal(actions.info.doPickEmail.origin, "http://example.com", "hostname preserved");
-    equal(actions.info.doPickEmail.privacyURL, "http://example.com/priv.html", "privacyURL preserved");
-    equal(actions.info.doPickEmail.tosURL, "http://example.com/tos.html", "tosURL preserved");
+    equal(actions.info.doPickEmail.siteTOSPP, true, "siteTOSPP preserved");
   });
 
   test("add_email - call doAddEmail", function() {

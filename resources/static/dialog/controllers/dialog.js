@@ -73,10 +73,6 @@ BrowserID.Modules.Dialog = (function() {
     channel && channel.detach();
   }
 
-  function setOrigin(origin) {
-    user.setOrigin(origin);
-  }
-
   function onWindowUnload() {
     this.publish("window_unload");
   }
@@ -139,7 +135,7 @@ BrowserID.Modules.Dialog = (function() {
       var self=this,
           hash = win.location.hash;
 
-      setOrigin(origin_url);
+      user.setOrigin(origin_url);
 
 
       if (startExternalDependencies) {

@@ -389,9 +389,19 @@ div#required_email {
   margin-top: 10px;
 }
 
+.submit > p + p:last-child {
+  margin-top: 15px;
+}
+
 .tospp {
-    color: #787878;
-    clear: right;
+  display: none;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+#rp_info .tospp {
+  margin: 10px auto;
+  max-width: 280px;
 }
 
 a.emphasize {

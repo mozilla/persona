@@ -83,6 +83,7 @@ BrowserID.Modules.PickEmail = (function() {
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var origin = user.getOrigin(),
+          originEmail = user.getOriginEmail(),
           self=this;
 
       options = options || {};
@@ -95,10 +96,17 @@ BrowserID.Modules.PickEmail = (function() {
 
       self.renderDialog("pick_email", {
         identities: identities,
-        siteemail: storage.site.get(origin, "email"),
+        siteemail: originEmail,
         privacy_url: options.privacyURL,
         tos_url: options.tosURL
       });
+
+      // If the user has been to this site before, they have already implicitly
+      // agreed to TOS/PP agreement.  Don't bug them a second time.
+      if (!originEmail && options.siteTOSPP) {
+        dialogHelpers.showRPTosPP.call(self);
+      }
+
       dom.getElements("body").css("opacity", "1");
       if (dom.getElements("#selectEmail input[type=radio]:visible").length === 0) {
         // If there is only one email address, the radio button is never shown,

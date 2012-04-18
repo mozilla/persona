@@ -58,10 +58,6 @@ BrowserID.Modules.Actions = (function() {
       if(data.ready) _.defer(data.ready);
     },
 
-    doRPInfo: function(info) {
-      startService("rp_info", info);
-    },
-
     doCancel: function() {
       if(onsuccess) onsuccess(null);
     },
@@ -157,6 +153,10 @@ BrowserID.Modules.Actions = (function() {
 
     doGenerateAssertion: function(info) {
       startService("generate_assertion", info);
+    },
+
+    doRPInfo: function(info) {
+      startService("rp_info", info);
     }
   });
 

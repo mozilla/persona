@@ -58,16 +58,15 @@
           <button class="start addressInfo" tabindex="3"><%= gettext('next') %></button>
           <button class="returning" tabindex="3"><%= gettext('sign in') %></button>
         </p>
-        <% if (privacy_url && tos_url) { %>
-           <p class="tospp">
-            <%= format(
-                  gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
-                       [ gettext('next'),
-                         format(' href="%s" target="_new"', [tos_url]),
-                         format(' href="%s" target="_new"', [privacy_url])
-                       ]) %>
+
+        <p class="tospp bidtospp">
+           <%= format(
+                gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
+                     [ "Persona",
+                       ' href="https://browserid.org/tos" target="_new"',
+                       ' href="https://browserid.org/privacy" target="_new"',
+                     ]) %>
           </p>
-      <% } %>
 
       </div>
   </div>

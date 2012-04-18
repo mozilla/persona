@@ -12,7 +12,9 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       add,
       email,
       auth_url,
+      dom = bid.DOM,
       helpers = bid.Helpers,
+      dialogHelpers = helpers.Dialog,
       complete = helpers.complete;
 
   function verify(callback) {
@@ -48,11 +50,14 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       auth_url = data.auth_url;
 
       var templateData = helpers.extend({}, data, {
-        requiredEmail: data.requiredEmail || false,
-        privacy_url: data.privacyURL || null,
-        tos_url: data.tosURL || null
+        requiredEmail: data.requiredEmail || false
       });
       self.renderDialog("verify_primary_user", templateData);
+
+      if(data.siteTOSPP) {
+        dialogHelpers.showRPTosPP.call(self);
+      }
+      dom.show(".tospp");
 
       self.click("#cancel", cancel);
 
