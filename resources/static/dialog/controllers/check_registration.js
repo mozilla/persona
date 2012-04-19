@@ -18,12 +18,13 @@ BrowserID.Modules.CheckRegistration = (function() {
       options.required = !!options.required;
 
       self.renderWait("confirm_email", options);
+
       self.email = options.email;
       self.verifier = options.verifier;
       self.verificationMessage = options.verificationMessage;
+      self.required = options.required;
 
       self.click("#back", self.back);
-      self.click("#cancel", self.cancel);
 
       Module.sc.start.call(self, options);
     },
@@ -46,16 +47,9 @@ BrowserID.Modules.CheckRegistration = (function() {
     },
 
     back: function() {
-      // XXX this should change to cancelEmailValidation for email, but this
-      // will work.
       user.cancelUserValidation();
-      this.close("cancel_state");
-    },
-
-    cancel: function() {
-      this.close("cancel");
+      this.publish(this.required ? "cancel" : "cancel_state");
     }
-
   });
 
   return Module;
