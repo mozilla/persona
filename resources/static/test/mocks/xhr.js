@@ -82,6 +82,7 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/stage_email throttle": 429,
       "post /wsapi/stage_email ajaxError": undefined,
       "post /wsapi/cert_key ajaxError": undefined,
+      "get /wsapi/email_addition_status?email=testuser%40testuser.com complete": { status: "complete" },
       "get /wsapi/email_addition_status?email=registered%40testuser.com pending": { status: "pending" },
       "get /wsapi/email_addition_status?email=registered%40testuser.com complete": { status: "complete" },
       "get /wsapi/email_addition_status?email=registered%40testuser.com mustAuth": { status: "mustAuth" },
