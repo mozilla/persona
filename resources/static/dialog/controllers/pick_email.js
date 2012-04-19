@@ -48,9 +48,6 @@ BrowserID.Modules.PickEmail = (function() {
 
     var valid = checkEmail.call(self, email);
     if (valid) {
-      var origin = user.getOrigin();
-      storage.site.set(origin, "email", email);
-
       self.close("email_chosen", { email: email });
     }
   }
