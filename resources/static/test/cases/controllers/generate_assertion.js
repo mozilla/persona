@@ -17,7 +17,7 @@
     config = config || {};
     config.ready = complete;
 
-    controller = BrowserID.Modules.EmailChosen.create();
+    controller = BrowserID.Modules.GenerateAssertion.create();
     controller.start(config);
   }
 

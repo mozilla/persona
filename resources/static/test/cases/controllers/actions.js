@@ -10,11 +10,28 @@
       user = bid.User,
       controller,
       el,
-      testHelpers = bid.TestHelpers;
+      testHelpers = bid.TestHelpers,
+      TEST_EMAIL = "testuser@testuser.com";
 
   function createController(config) {
     controller = BrowserID.Modules.Actions.create();
     controller.start(config);
+  }
+
+  function testActionStartsModule(actionName, actionOptions, expectedModule) {
+    createController({
+      ready: function() {
+        var error;
+        try {
+          controller[actionName](actionOptions);
+        } catch(e) {
+          error = e;
+        }
+
+        equal(error, "module not registered for " + expectedModule, "correct service started");
+        start();
+      }
+    });
   }
 
   module("controllers/actions", {
@@ -55,35 +72,13 @@
   });
 
   asyncTest("doProvisionPrimaryUser - start the provision_primary_user service", function() {
-    createController({
-      ready: function() {
-        var error;
-        try {
-          controller.doProvisionPrimaryUser({email: "testuser@testuser.com"});
-        } catch(e) {
-          error = e;
-        }
-
-        equal(error, "module not registered for provision_primary_user", "correct service started");
-        start();
-      }
-    });
+    testActionStartsModule("doProvisionPrimaryUser", {email: TEST_EMAIL},
+      "provision_primary_user");
   });
 
   asyncTest("doVerifyPrimaryUser - start the verify_primary_user service", function() {
-    createController({
-      ready: function() {
-        var error;
-        try {
-          controller.doVerifyPrimaryUser();
-        } catch(e) {
-          error = e;
-        }
-
-        equal(error, "module not registered for verify_primary_user", "correct service started");
-        start();
-      }
-    });
+    testActionStartsModule("doVerifyPrimaryUser", {},
+      "verify_primary_user");
   });
 
   asyncTest("doCannotVerifyRequiredPrimary - show the error screen", function() {
@@ -99,83 +94,23 @@
   });
 
   asyncTest("doPrimaryUserProvisioned - start the primary_user_verified service", function() {
-    createController({
-      ready: function() {
-        var error;
-        try {
-          controller.doPrimaryUserProvisioned();
-        } catch(e) {
-          error = e;
-        }
-
-        equal(error, "module not registered for primary_user_provisioned", "correct service started");
-        start();
-      }
-    });
-  });
-
-  asyncTest("doEmailChosen - start the email_chosen service", function() {
-    createController({
-      ready: function() {
-        var error;
-        try {
-          controller.doEmailChosen({email: "testuser@testuser.com"});
-        } catch(e) {
-          error = e;
-        }
-
-        equal(error, "module not registered for email_chosen", "correct service started");
-        start();
-      }
-    });
+    testActionStartsModule("doPrimaryUserProvisioned", {},
+      "primary_user_provisioned");
   });
 
   asyncTest("doConfirmUser - start the check_registration service", function() {
-    createController({
-      ready: function() {
-        var error;
-        try {
-          controller.doConfirmUser({email: "testuser@testuser.com"});
-        } catch(e) {
-          error = e;
-        }
-
-        equal(error, "module not registered for check_registration", "correct service started");
-        start();
-      }
-    });
+    testActionStartsModule("doConfirmUser", {email: TEST_EMAIL},
+      "check_registration");
   });
 
   asyncTest("doConfirmEmail - start the check_registration service", function() {
-    createController({
-      ready: function() {
-        var error;
-        try {
-          controller.doConfirmEmail({email: "testuser@testuser.com"});
-        } catch(e) {
-          error = e;
-        }
-
-        equal(error, "module not registered for check_registration", "correct service started");
-        start();
-      }
-    });
-
+    testActionStartsModule("doConfirmEmail", {email: TEST_EMAIL},
+      "check_registration");
   });
 
-  asyncTest("doEmailConfirmed - generate an assertion for the email", function() {
-    createController({
-      ready: function() {
-        testHelpers.register("assertion_generated", function(msg, info) {
-          ok(info.assertion, "assertion generated");
-          start();
-        });
-
-        user.syncEmailKeypair("testuser@testuser.com", function() {
-          controller.doEmailConfirmed({email: "testuser@testuser.com"});
-        });
-      }
-    });
+  asyncTest("doGenerateAssertion - start the generate_assertion service", function() {
+    testActionStartsModule('doGenerateAssertion', { email: TEST_EMAIL }, "generate_assertion");
   });
+
 }());
 

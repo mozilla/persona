@@ -30,7 +30,7 @@
       moduleManager.register("verify_primary_user", modules.VerifyPrimaryUser);
       moduleManager.register("provision_primary_user", modules.ProvisionPrimaryUser);
       moduleManager.register("primary_user_provisioned", modules.PrimaryUserProvisioned);
-      moduleManager.register("email_chosen", modules.EmailChosen);
+      moduleManager.register("generate_assertion", modules.GenerateAssertion);
       moduleManager.register("xhr_delay", modules.XHRDelay);
       moduleManager.register("xhr_disable_form", modules.XHRDisableForm);
 
