@@ -194,7 +194,9 @@ BrowserID.State = (function() {
         if (idInfo.type === "primary") {
           if (idInfo.cert) {
             // Email is a primary and the cert is available - the user can log
-            // in without authenticated with the primary.
+            // in without authenticating with the IdP. All invalid/expired
+            // certs are assumed to have been checked and removed by this
+            // point.
             redirectToState("email_valid_and_ready", info);
           }
           else {
@@ -230,13 +232,12 @@ BrowserID.State = (function() {
     });
 
     handleState("email_valid_and_ready", function(msg, info) {
-      // At this stage, we know that the email the user is trying to
-      // authenticate with is valid, it has been confirmed, and it has a valid
-      // key.  Before generating an assertion, check to see if the user has
-      // verified whether the ownership status of this computer. If the user
-      // needs asked, ask them and generate the assertion once they finish the
-      // response.  If they do not need to be asked, generate the assertion
-      // now.
+      // this state is only called after all checking is done on the email
+      // address.  For secondaries, this means the email has been validated and
+      // the user is authenticated to the password level.  For primaries, this
+      // means the user is authenticated with their IdP and the certificate for
+      // the address is valid.  An assertion can be generated, but first we
+      // may have to check whether the user owns the computer.
       user.shouldAskIfUsersComputer(function(shouldAsk) {
         if (shouldAsk) {
           redirectToState("is_this_your_computer", info);
