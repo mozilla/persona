@@ -15,7 +15,8 @@ BrowserID.User = (function() {
       provisioning = bid.Provisioning,
       addressCache = {},
       primaryAuthCache = {},
-      complete = bid.Helpers.complete;
+      complete = bid.Helpers.complete,
+      registrationComplete = false;
 
   function prepareDeps() {
     if (!jwk) {
@@ -130,6 +131,11 @@ BrowserID.User = (function() {
             addressCache[email].known = true;
           }
 
+          // registrationComplete is used in shouldAskIfUsersComputer to
+          // prevent the user from seeing the "is this your computer" screen if
+          // they just completed a registration.
+          registrationComplete = true;
+
           if (onSuccess) {
             onSuccess(status);
           }
@@ -220,11 +226,13 @@ BrowserID.User = (function() {
       if (config.provisioning) {
         provisioning = config.provisioning;
       }
+
     },
 
     reset: function() {
       provisioning = BrowserID.Provisioning;
       User.resetCaches();
+      registrationComplete = false;
     },
 
     resetCaches: function() {
@@ -1152,6 +1160,10 @@ BrowserID.User = (function() {
       }
     },
 
+    /**
+     * Check if the user owns the computer
+     * @method isUsersComputer
+     */
     isUsersComputer: function(onComplete, onFailure) {
       var userID = network.userid();
       if(typeof userID !== "undefined") {
@@ -1159,7 +1171,25 @@ BrowserID.User = (function() {
       } else {
         complete(onFailure, "user is not authenticated");
       }
+    },
 
+    /**
+     * Check whether the user should be asked if this is their computer
+     * @method shouldAskIfUsersComputer
+     */
+    shouldAskIfUsersComputer: function(onComplete, onFailure) {
+      var userID = network.userid();
+      if(typeof userID !== "undefined") {
+        // A user should never be asked if they completed an email
+        // registration/validation in this dialog session.
+        var shouldAsk = storage.usersComputer.shouldAsk(userID)
+                        && !registrationComplete;
+        complete(onComplete, shouldAsk);
+      } else {
+        complete(onFailure, "user is not authenticated");
+      }
+
+      return shouldAsk;
     }
   };
 

@@ -249,15 +249,17 @@ BrowserID.State = (function() {
     handleState("assertion_generated", function(msg, info) {
       self.success = true;
       if (info.assertion !== null) {
-        if (storage.usersComputer.shouldAsk(network.userid())) {
-          // We have to confirm the user's status
-          self.assertion_info = info;
-          redirectToState("is_this_your_computer", info);
-        }
-        else {
-          storage.setLoggedIn(user.getOrigin(), self.email);
-          startAction("doAssertionGenerated", { assertion: info.assertion, email: self.email });
-        }
+        user.shouldAskIfUsersComputer(function(shouldAsk) {
+          if (shouldAsk) {
+            // We have to confirm the user's status
+            self.assertion_info = info;
+            redirectToState("is_this_your_computer", info);
+          }
+          else {
+            storage.setLoggedIn(user.getOrigin(), self.email);
+            startAction("doAssertionGenerated", { assertion: info.assertion, email: self.email });
+          }
+        });
       }
       else {
         redirectToState("pick_email");
