@@ -8,13 +8,15 @@
    */
   function onResize() {
     var selectEmailEl = $("#selectEmail"),
-        contentEl = $("#content");
+        contentEl = $("#content"),
+        signInEl = $("#signIn");
 
     selectEmailEl.css("position", "static");
     if($(window).width() >= 640) {
       // First, remove the mobile hacks
       selectEmailEl.css("width", "");
       contentEl.css("min-height", "");
+      signInEl.css("top", "");
 
       // This is a hack for desktop mode which centers the form vertically in
       // the middle of its container.  We have to do this hack because we use
@@ -105,6 +107,11 @@
         contentEl.css("min-height", contentHeight + "px");
 
         $("section,#signIn").css("position", "");
+
+        favIconHeight = $("#favicon").outerHeight();
+
+        // Force the top of the main content area to be below the favicon area.
+        signInEl.css("top", (headerHeight + favIconHeight) + "px");
     }
 
     selectEmailEl.css("position", "");

@@ -42,6 +42,7 @@
       moduleManager.register("xhr_delay", modules.XHRDelay);
       moduleManager.register("xhr_disable_form", modules.XHRDisableForm);
       moduleManager.register("set_password", modules.SetPassword);
+      moduleManager.register("rp_info", modules.RPInfo);
 
       moduleManager.start("xhr_delay");
       moduleManager.start("xhr_disable_form");

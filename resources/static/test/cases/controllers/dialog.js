@@ -469,5 +469,123 @@
     });
   });
 
+  asyncTest("get with relative logoURL - not allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          logoURL: "logo.png",
+        });
+
+        equal(retval, "must be an absolute path: (logo.png)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with javascript: logoURL - not allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          logoURL: "javascript:alert('xss')",
+        });
+
+        equal(retval, "must be an absolute path: (javascript:alert('xss'))", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with data-uri: logoURL - not allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          logoURL: "data:image/png,FAKEDATA",
+        });
+
+        equal(retval, "must be an absolute path: (data:image/png,FAKEDATA)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with http: logoURL - not allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          logoURL: HTTP_TEST_DOMAIN + "://logo.png",
+        });
+
+        equal(retval, "must be an absolute path: (" + HTTP_TEST_DOMAIN + "://logo.png)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with https: logoURL - not allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          logoURL: HTTPS_TEST_DOMAIN + "://logo.png",
+        });
+
+        equal(retval, "must be an absolute path: (" + HTTPS_TEST_DOMAIN + "://logo.png)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with absolute path - allowed URL but it must be properly escaped", function() {
+    createController({
+      ready: function() {
+        var startInfo;
+        mediator.subscribe("start", function(msg, info) {
+          startInfo = info;
+        });
+
+        var logoURL = '/i/card.png" onerror="alert(\'xss\')" <script>alert(\'more xss\')</script>';
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          logoURL: logoURL
+        });
+
+        start();
+
+        testHelpers.testObjectValuesEqual(startInfo, {
+          logoURL: encodeURI(HTTP_TEST_DOMAIN + logoURL)
+        });
+        equal(typeof retval, "undefined", "no error expected");
+        testErrorNotVisible();
+        start();
+      }
+    });
+
+  });
+
+
+
 }());
 

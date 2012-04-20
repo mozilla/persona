@@ -75,7 +75,6 @@ BrowserID.Modules.Dialog = (function() {
 
   function setOrigin(origin) {
     user.setOrigin(origin);
-    dom.setInner("#sitename", user.getHostname());
   }
 
   function onWindowUnload() {
@@ -91,6 +90,12 @@ BrowserID.Modules.Dialog = (function() {
     else throw "relative urls not allowed: (" + url + ")";
     // encodeURI limits our return value to [a-z0-9:/?%], excluding <script>
     return encodeURI(u.validate().normalize().toString());
+  }
+
+  function fixupAbsolutePath(origin_url, path) {
+    if (/^\//.test(path))  return fixupURL(origin_url, path);
+
+    throw "must be an absolute path: (" + path + ")";
   }
 
   var Dialog = bid.Modules.PageModule.extend({
@@ -166,6 +171,17 @@ BrowserID.Modules.Dialog = (function() {
         if (paramsFromRP.termsOfService && paramsFromRP.privacyPolicy) {
           params.tosURL = fixupURL(origin_url, paramsFromRP.termsOfService);
           params.privacyURL = fixupURL(origin_url, paramsFromRP.privacyPolicy);
+        }
+
+        if (paramsFromRP.logoURL) {
+          // Until we have our head around the dangers of data uris and images
+          // that come from other domains, only allow absolute paths from the
+          // origin.
+          params.logoURL = fixupAbsolutePath(origin_url, paramsFromRP.logoURL);
+        }
+
+        if (paramsFromRP.name) {
+          params.name = _.escape(paramsFromRP.name);
         }
 
         if (hash.indexOf("#CREATE_EMAIL=") === 0) {
