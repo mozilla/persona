@@ -86,7 +86,7 @@ BrowserID.Modules.Dialog = (function() {
     if (/^http/.test(url)) u = URLParse(url);
     else if (/^\//.test(url)) u = URLParse(origin + url);
     else throw "relative urls not allowed: (" + url + ")";
-    return u.validate().normalize().toString();
+    return encodeURI(u.validate().normalize().toString());
   }
 
   var Dialog = bid.Modules.PageModule.extend({
