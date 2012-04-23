@@ -12,8 +12,9 @@ BrowserID.Storage = (function() {
   }
   catch(e) {
     // Fx with cookies disabled will except while trying to access
-    // localStorage.  Because of this, and because the new API requires access
-    // to localStorage
+    // localStorage.  IE6/IE7 will just plain blow up because they have no
+    // notion of localStorage.  Because of this, and because the new API
+    // requires access to localStorage, create a fake one with removeItem.
     storage = {
       removeItem: function(key) {
         this[key] = null;
