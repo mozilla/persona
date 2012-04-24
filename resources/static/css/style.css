@@ -36,8 +36,7 @@ noscript {
 .waiting #errorBackground, .error #errorBackground, .delay #errorBackground {
   z-index: 1001;
   display: block;
-  -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000,endColorstr=#99000000);
-  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000,endColorstr=#99000000);
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
   opacity: .6;
 }
 
