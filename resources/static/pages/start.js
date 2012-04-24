@@ -51,6 +51,8 @@ $(function() {
   }
 
   function start(status) {
+    // If cookies are disabled, do not run any of the page specific code and
+    // instead just show the error message.
     if(!status) return;
 
     dom.addClass("body", "ready");
