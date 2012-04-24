@@ -171,7 +171,7 @@ $(document).ready(function() {
   $(".specify button.assertion").click(function() {
     var requiredEmail = $.trim($('#requiredEmail').val());
     if (!requiredEmail.length) requiredEmail = undefined;
-    if (requiredEmail.indexOf('@') === -1) {
+    if (requiredEmail && requiredEmail.indexOf('@') === -1) {
       alert('Invalid Email in "Require a specific email" field. Adding @example.com');
       $('#requiredEmail').val(requiredEmail + '@example.com');
       $('#requiredEmail').focus();
