@@ -36,7 +36,11 @@ $(function() {
   dom.addClass("body", "ready");
 
   moduleManager.register("xhr_delay", XHRDelay);
+  moduleManager.start("xhr_delay");
+
   moduleManager.register("xhr_disable_form", XHRDisableForm);
+  moduleManager.start("xhr_disable_form");
+
   if (!path || path === "/") {
     bid.index();
   }
