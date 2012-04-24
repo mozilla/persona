@@ -20,9 +20,10 @@ $(function() {
       path = document.location.pathname,
       moduleManager = bid.module,
       modules = bid.Modules,
-      CodeCheck = modules.CodeCheck,
+      CookieCheck = modules.CookieCheck,
       XHRDelay = modules.XHRDelay,
-      XHRDisableForm = modules.XHRDisableForm;
+      XHRDisableForm = modules.XHRDisableForm,
+      ANIMATION_TIME = 500;
 
 
   xhr.init({ time_until_delay: 10 * 1000 });
@@ -33,76 +34,83 @@ $(function() {
     $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
   }
 
-  dom.addClass("body", "ready");
-
   moduleManager.register("xhr_delay", XHRDelay);
   moduleManager.start("xhr_delay");
 
   moduleManager.register("xhr_disable_form", XHRDisableForm);
   moduleManager.start("xhr_disable_form");
 
-  if (!path || path === "/") {
-    bid.index();
+  if(path && path !== "/") {
+    // do a cookie check on every page except the main page.
+    moduleManager.register("cookie_check", CookieCheck);
+    moduleManager.start("cookie_check", { ready: start });
   }
-  else if (path === "/signin") {
-    var module = bid.signIn.create();
-    module.start({});
-  }
-  else if (path === "/signup") {
-    bid.signUp();
-  }
-  else if (path === "/forgot") {
-    bid.forgot();
-  }
-  else if (path === "/add_email_address") {
-    var module = bid.addEmailAddress.create();
-    module.start({
-      token: token
-    });
-  }
-  else if(token && path === "/verify_email_address") {
-    bid.verifyEmailAddress(token);
+  else {
+    // the main page makes it through without checking for cookies.
+    start(true);
   }
 
-  $("a.signOut").click(function(event) {
-    event.preventDefault();
-    event.stopPropagation();
+  function start(status) {
+    if(!status) return;
 
-    user.logoutUser(function() {
-      document.location = "/";
-    }, pageHelpers.getFailure(bid.Errors.logout));
-  });
+    dom.addClass("body", "ready");
 
-  var ANIMATION_TIME = 500;
-  network.cookiesEnabled(function(cookiesEnabled) {
-    if(cookiesEnabled) {
-      user.checkAuthentication(function(authenticated) {
-        if (authenticated) {
-          displayAuthenticated();
-        }
-        else {
-          displayNonAuthenticated();
-        }
+    if (!path || path === "/") {
+      bid.index();
+    }
+    else if (path === "/signin") {
+      var module = bid.signIn.create();
+      module.start({});
+    }
+    else if (path === "/signup") {
+      bid.signUp();
+    }
+    else if (path === "/forgot") {
+      bid.forgot();
+    }
+    else if (path === "/add_email_address") {
+      var module = bid.addEmailAddress.create();
+      module.start({
+        token: token
       });
     }
-    else {
-      displayNonAuthenticated();
+    else if(token && path === "/verify_email_address") {
+      bid.verifyEmailAddress(token);
     }
-  });
 
-  function displayAuthenticated() {
-    $(".display_always").fadeIn(ANIMATION_TIME);
-    dom.addClass("body", "authenticated");
-    $(".display_auth").fadeIn(ANIMATION_TIME);
-    if ($('#emailList').length) {
-      bid.manageAccount();
+    user.checkAuthentication(function(authenticated) {
+      if (authenticated) {
+        displayAuthenticated();
+      }
+      else {
+        displayNonAuthenticated();
+      }
+    });
+
+    function displayAuthenticated() {
+      $(".display_always,.display_auth").fadeIn(ANIMATION_TIME);
+      dom.addClass("body", "authenticated");
+
+      if ($('#emailList').length) {
+        bid.manageAccount();
+      }
+
+      $("a.signOut").click(function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        user.logoutUser(function() {
+          document.location = "/";
+        }, pageHelpers.getFailure(bid.Errors.logout));
+      });
+    }
+
+    function displayNonAuthenticated() {
+      $(".display_always").fadeIn(ANIMATION_TIME);
+      dom.addClass("body", "not_authenticated");
+      $(".display_nonauth").fadeIn(ANIMATION_TIME);
     }
   }
 
-  function displayNonAuthenticated() {
-    $(".display_always").fadeIn(ANIMATION_TIME);
-    dom.addClass("body", "not_authenticated");
-    $(".display_nonauth").fadeIn(ANIMATION_TIME);
-  }
 });
 

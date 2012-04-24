@@ -648,9 +648,7 @@ BrowserID.User = (function() {
       // log out of browserid
       network.logout(function() {
         setAuthenticationStatus(false);
-        if (onComplete) {
-          onComplete();
-        }
+        complete(onComplete);
       }, onFailure);
     },
 
@@ -700,7 +698,8 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Check whether the current user is authenticated.
+     * Check whether the current user is authenticated.  Calls the callback
+     * with false if cookies are disabled.
      * @method checkAuthentication
      * @param {function} [onComplete] - Called when check is complete with one
      * boolean parameter, authenticated.  authenticated will be true if user is
@@ -708,10 +707,15 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     checkAuthentication: function(onComplete, onFailure) {
-      network.checkAuth(function(authenticated) {
-        setAuthenticationStatus(authenticated);
-        if (onComplete) {
-          onComplete(authenticated);
+      network.cookiesEnabled(function(cookiesEnabled) {
+        if(cookiesEnabled) {
+          network.checkAuth(function(authenticated) {
+            setAuthenticationStatus(authenticated);
+            complete(onComplete, authenticated);
+          }, onFailure);
+        }
+        else {
+          complete(onComplete, cookiesEnabled);
         }
       }, onFailure);
     },
