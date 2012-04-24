@@ -79,7 +79,7 @@ $(function() {
         verifyFunction: "verifyEmail"
       });
     }
-    else if(token && path === "/verify_email_address") {
+    else if(path === "/verify_email_address") {
       var module = bid.verifySecondaryAddress.create();
       module.start({
         token: token,
