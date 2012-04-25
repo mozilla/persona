@@ -103,4 +103,65 @@
 
     equal(url, "https://browserid.org?email=testuser%40testuser.com&status=complete", "correct URL with GET parameters");
   });
+
+  test("simulate log on browser without console - no exception thrown", function() {
+    var err,
+        nativeConsole = window.console;
+
+    // Simulate browser without window.console.
+    window.console = undefined;
+    try {
+      helpers.log("test message");
+    }
+    catch(e) {
+      err = e;
+    }
+
+    equal(typeof err, "undefined", "no exception thrown");
+
+    window.console = nativeConsole;
+  });
+
+  test("simulate log on browser without console.log - no exception thrown", function() {
+    var err,
+        nativeConsole = window.console;
+
+    // Simulate browser with console, but without console.log.
+    window.console = {};
+    try {
+      helpers.log("test message");
+    }
+    catch(e) {
+      err = e;
+    }
+
+    equal(typeof err, "undefined", "no exception thrown");
+
+    window.console = nativeConsole;
+  });
+
+  test("simulate log on browser with console.log - prints message", function() {
+    var err,
+        loggedMessage,
+        nativeConsole = window.console;
+
+    // Simulate browser with console and console.log
+    window.console = {
+      log: function(msg) {
+        loggedMessage = msg;
+      }
+    };
+
+    try {
+      helpers.log("test message");
+    }
+    catch(e) {
+      err = e;
+    }
+
+    equal(typeof err, "undefined", "no exception thrown");
+    equal(loggedMessage, "test message", "correct message logged");
+
+    window.console = nativeConsole;
+  });
 }());

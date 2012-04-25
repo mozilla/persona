@@ -67,6 +67,15 @@
     }
   }
 
+  function log(msg) {
+    try {
+      window.console.log(msg);
+    } catch(e) {
+      // Catch all if console is not available or if it for some reason blows
+      // up. Do nothing.
+    }
+  }
+
   extend(helpers, {
     /**
      * Extend an object with the properties of another object.  Overwrites
@@ -116,7 +125,14 @@
      * parameter is a function.
      * @param {variant} [params] - parameters to pass to callback.
      */
-    complete: complete
+    complete: complete,
+
+    /**
+     * If the console is available, log a message to it.
+     * @method log
+     * @param {string} msg
+     */
+    log: log
   });
 
 
