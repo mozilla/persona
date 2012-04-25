@@ -11,6 +11,7 @@ $(function() {
    */
 
   var bid = BrowserID,
+      helpers = bid.Helpers,
       pageHelpers = bid.PageHelpers,
       user = bid.User,
       dom = bid.DOM,
@@ -78,6 +79,11 @@ $(function() {
     }
     else if(token && path === "/verify_email_address") {
       bid.verifyEmailAddress(token);
+    }
+    else {
+      // Instead of throwing a hard error here, adding a message to the console
+      // to let developers know something is up.
+      helpers.log("unknown path");
     }
 
     user.checkAuthentication(function(authenticated) {
