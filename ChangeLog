@@ -1,5 +1,16 @@
-train-2012.04.25 (in progress):
-  *
+train-2012.04.27:
+  * Observer API updated, still experimental.
+  * A more responsive dialog design that scales to different screen sizes: #1101, #1317
+  * Improved consistency of links: #702, #1453
+  * Test improvements: #1246, #1437, #1488, #1464
+  * Allow underscores in email address domain and site origin: #1454
+  * Fixes to per site last-used-email state maintenence: #968
+  * Never ask a user if this "is your computer" in a session that involves email verificatino: #1446
+  * Remove placeholder text from change password inputs: #1461
+  * General cleanup: #1449, #1396
+  * Logging improvements: #1383
+  * IE8 visual improvements for error screens: #1485
+  * Improved checks for disabled cookies: #1418, #1484
 
 train-2012.04.11:
   * New BrowserID "Observer" API implemented in experimental status: #912
