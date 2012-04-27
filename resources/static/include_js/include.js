@@ -958,10 +958,16 @@
       }
     }
 
-    var commChan;
+    var commChan,
+        browserSupported = BrowserSupport.isSupported();
 
     // this is for calls that are non-interactive
     function _open_hidden_iframe() {
+      // If this is an unsupported browser, do not even attempt to add the
+      // IFRAME as doing so will cause an exception to be thrown in IE6 and IE7
+      // from within the communication_iframe.
+      if(!browserSupported) return;
+
       try {
         if (!commChan) {
           var doc = window.document;
@@ -996,8 +1002,8 @@
           });
         }
       } catch(e) {
-        // channel building failed!  this is probably an unsupported browser.  let's ignore
-        // the error and allow higher level code to handle user messaging.
+        // channel building failed!  let's ignore the error and allow higher
+        // level code to handle user messaging.
         commChan = undefined;
       }
     }
@@ -1122,8 +1128,8 @@
       logout: function(callback) {
         // allocate iframe if it is not allocated
         _open_hidden_iframe();
-        // send logout message
-        commChan.notify({ method: 'logout' });
+        // send logout message if the commChan exists
+        if (commChan) commChan.notify({ method: 'logout' });
         if (typeof callback === 'function') setTimeout(callback, 0);
       },
       // get an assertion
