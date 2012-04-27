@@ -13,7 +13,13 @@ h2 {
 
 header, footer {
     position: absolute;
+    /* The *padding is a fix for IE6 and IE7 showing scroll bars in the
+     * unsupported dialog.  Since IE6 and IE7 do not support box-sizing:
+     * border-box, the left and right padding cause these versions of IE to
+     * overflow the dialog box.
+     */
     padding: 20px;
+    *padding: 20px 0;
     z-index: 2;
 }
 
@@ -109,8 +115,14 @@ section > .contents {
     right: 0;
     top: 61px;
     bottom: 61px;
-    /* Fix for IE6 not displaying the unsupported dialog correctly */
-    _width: 100%;
+    /* Fix for IE6 not displaying the unsupported dialog correctly. IE6 by
+     * default sets the height and width of the element to 0 meaning nothing
+     * shows up on the screen.
+     * Note, these are magic numbers that depend on the width and height of the
+     * dialog.  The height also depends on the height of the header and footer.
+     */
+    _width: 682px;
+    _height: 250px;
 }
 
 #wait, #error, #delay {
