@@ -141,6 +141,24 @@ suite.addBatch({
 });
 
 
+// after a small delay, we can authenticate with our password
+suite.addBatch({
+  "after a small delay": {
+    topic: function() { setTimeout(this.callback, 1500); },
+    "authenticating with our newly set password" : {
+      topic: wsapi.post('/wsapi/authenticate_user', {
+        email: TEST_EMAIL,
+        pass: TEST_PASS,
+        ephemeral: false
+      }),
+      "works": function(err, r) {
+        assert.strictEqual(r.code, 200);
+      }
+    }
+  }
+});
+
+
 // adding a second secondary will not let us set the password
 suite.addBatch({
   "add a new email address to our account": {
@@ -159,7 +177,7 @@ suite.addBatch({
         this._token = t;
         assert.strictEqual(typeof t, 'string');
       },
-      "and to complete":  {
+      "and to complete": {
         topic: function(t) {
           wsapi.get('/wsapi/email_for_token', {
             token: t

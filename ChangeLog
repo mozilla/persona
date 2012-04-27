@@ -17,6 +17,12 @@ train-2012.04.11:
   * developers link now points to MDN: #1397
   * fix issues that were introduced while implementing the above features: #1349, #1348, #1354, #1357, #1374, #1399, #1400, #1408, #1395, #1406, #1405, #1390, #1391
   * (hotfix 2012.04.12) return 400 rather than 500 for invalid params to stage_user or stage_email: #1429
+  * (hotfix 2012.04.12) fix broken string, "is this your computer" was broken into two fragments: #1425
+  * (hotfix 2012.04.16) fix API regression that would cause javascript error when .get() invoked without second arg: #1442
+  * (hotfix 2012.04.16) update load_gen to new server apis that require an `ephemeral` argument: #1436
+  * (hotfix 2012.04.17) fix broken reset password flow - button was non-responsive in dialog: #1440
+  * (hotfix 2012.04.17) mitigate errors seen when adding a secondary email to an acct with only primary emails: #1445
+  * (hotfix 2012.04.18) fix error where under certain conditions user could see an error immediately after authenticating: #1449
 
 train-2012.03.28:
   * work towards better user messaging for when cookies are disabled: #1167, #1302
