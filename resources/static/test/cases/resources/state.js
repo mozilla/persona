@@ -198,13 +198,23 @@
     equal(actions.info.doForgotPassword.requiredEmail, true, "correct requiredEmail passed");
   });
 
-  test("reset_password - call doResetPassword", function() {
-    // XXX how is this different from forgot_password?
+  test("reset_password to user_confirmed - call doResetPassword then doEmailConfirmed", function() {
+    // reset_password indicates the user has verified that they want to reset
+    // their password.
     mediator.publish("reset_password", {
       email: TEST_EMAIL
     });
     equal(actions.info.doResetPassword.email, TEST_EMAIL, "reset password with the correct email");
+
+    // At this point the user should be displayed the "go confirm your address"
+    // screen.
+
+    // user_confirmed means the user has confirmed their email and the dialog
+    // has received the "complete" message from /wsapi/user_creation_status
+    mediator.publish("user_confirmed");
+    equal(actions.info.doEmailConfirmed.email, TEST_EMAIL, "email successfully verified, doEmailConfirmed called with the correct email");
   });
+
 
   test("cancel reset_password flow - go two steps back", function() {
     // we want to skip the "verify" screen of reset password and instead go two
@@ -212,7 +222,7 @@
     // to the reset_password flow.
     mediator.publish("authenticate");
     mediator.publish("forgot_password", undefined, { email: TEST_EMAIL });
-    mediator.publish("reset_password");
+    mediator.publish("reset_password", { email: TEST_EMAIL });
     actions.info.doAuthenticate = {};
     mediator.publish("cancel_state");
     equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate called with the correct email");
