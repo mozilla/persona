@@ -86,7 +86,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
       assert.strictEqual(JSON.parse(r.body).success, false);
     },
-    "but with a password": {
+    "with a password": {
       topic: wsapi.post('/wsapi/stage_email', {
         email: SECONDARY_EMAIL,
         pass: TEST_PASS,

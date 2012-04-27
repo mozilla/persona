@@ -112,25 +112,6 @@
     testActionStartsModule('doGenerateAssertion', { email: TEST_EMAIL }, "generate_assertion");
   });
 
-  asyncTest("doEmailChosen - start the email_chosen service", function() {
-    testActionStartsModule('doEmailChosen', { email: TEST_EMAIL }, "email_chosen");
-  });
-
-
-  asyncTest("doEmailConfirmed - generate an assertion for the email", function() {
-    createController({
-      ready: function() {
-        testHelpers.register("assertion_generated", function(msg, info) {
-          ok(info.assertion, "assertion generated");
-          start();
-        });
-
-        user.syncEmailKeypair(TEST_EMAIL, function() {
-          controller.doEmailConfirmed({email: TEST_EMAIL});
-        });
-      }
-    });
-  });
 
   asyncTest("doStageUser with successful creation - trigger user_staged", function() {
     createController({
