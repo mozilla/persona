@@ -23,7 +23,7 @@ BrowserID.State = (function() {
         handleState = self.subscribe.bind(self),
         redirectToState = mediator.publish.bind(mediator),
         startAction = function(save, msg, options) {
-          if(typeof save !== "boolean") {
+          if (typeof save !== "boolean") {
             options = msg;
             msg = save;
             save = true;
@@ -46,7 +46,7 @@ BrowserID.State = (function() {
         // Invalid format
         startAction("doError", "invalid_required_email", {email: requiredEmail});
       }
-      else if(info.email && info.type === "primary") {
+      else if (info.email && info.type === "primary") {
         primaryVerificationInfo = info;
         redirectToState("primary_user", info);
       }
@@ -101,7 +101,7 @@ BrowserID.State = (function() {
 
     handleState("user_confirmed", function() {
       self.email = self.stagedEmail;
-      startAction("doEmailConfirmed", { email: self.stagedEmail} );
+      redirectToState("email_chosen", { email: self.stagedEmail} );
     });
 
     handleState("primary_user", function(msg, info) {
@@ -109,7 +109,7 @@ BrowserID.State = (function() {
       email = info.email;
 
       var idInfo = storage.getEmail(email);
-      if(idInfo && idInfo.cert) {
+      if (idInfo && idInfo.cert) {
         redirectToState("primary_user_ready", info);
       }
       else {
@@ -123,6 +123,10 @@ BrowserID.State = (function() {
     handleState("primary_user_provisioned", function(msg, info) {
       info = info || {};
       info.add = !!addPrimaryUser;
+      // The user is is authenticated with their IdP. Two possibilities exist
+      // for the email - 1) create a new account or 2) add address to the
+      // existing account. If the user is authenticated with BrowserID, #2
+      // will happen. If not, #1.
       startAction("doPrimaryUserProvisioned", info);
     });
 
@@ -135,12 +139,12 @@ BrowserID.State = (function() {
         tosURL: self.tosURL
       });
 
-      if(primaryVerificationInfo) {
+      if (primaryVerificationInfo) {
         primaryVerificationInfo = null;
-        if(requiredEmail) {
+        if (requiredEmail) {
           startAction("doCannotVerifyRequiredPrimary", info);
         }
-        else if(info.add) {
+        else if (info.add) {
           // Add the pick_email in case the user cancels the add_email screen.
           // The user needs something to go "back" to.
           redirectToState("pick_email");
@@ -186,22 +190,26 @@ BrowserID.State = (function() {
         complete(info.complete);
       }
 
-      if(idInfo) {
-        if(idInfo.type === "primary") {
-          if(idInfo.cert) {
-            startAction("doEmailChosen", info);
+      if (idInfo) {
+        if (idInfo.type === "primary") {
+          if (idInfo.cert) {
+            // Email is a primary and the cert is available - the user can log
+            // in without authenticating with the IdP. All invalid/expired
+            // certs are assumed to have been checked and removed by this
+            // point.
+            redirectToState("email_valid_and_ready", info);
           }
           else {
-            // If the email is a primary, and their cert is not available,
-            // throw the user down the primary flow.
-            // Doing so will catch cases where the primary certificate is expired
+            // If the email is a primary and the cert is not available,
+            // throw the user down the primary flow. The primary flow will
+            // catch cases where the primary certificate is expired
             // and the user must re-verify with their IdP.
             redirectToState("primary_user", info);
           }
         }
         else {
           user.checkAuthentication(function(authentication) {
-            if(authentication === "assertion") {
+            if (authentication === "assertion") {
               // user must authenticate with their password, kick them over to
               // the required email screen to enter the password.
               startAction("doAuthenticateWithRequiredEmail", {
@@ -212,7 +220,7 @@ BrowserID.State = (function() {
               });
             }
             else {
-              startAction("doEmailChosen", info);
+              redirectToState("email_valid_and_ready", info);
             }
             oncomplete();
           }, oncomplete);
@@ -220,6 +228,58 @@ BrowserID.State = (function() {
       }
       else {
         throw "invalid email";
+      }
+    });
+
+    handleState("email_valid_and_ready", function(msg, info) {
+      // this state is only called after all checking is done on the email
+      // address.  For secondaries, this means the email has been validated and
+      // the user is authenticated to the password level.  For primaries, this
+      // means the user is authenticated with their IdP and the certificate for
+      // the address is valid.  An assertion can be generated, but first we
+      // may have to check whether the user owns the computer.
+      user.shouldAskIfUsersComputer(function(shouldAsk) {
+        if (shouldAsk) {
+          redirectToState("is_this_your_computer", info);
+        }
+        else {
+          redirectToState("generate_assertion", info);
+        }
+      });
+    });
+
+    handleState("is_this_your_computer", function(msg, info) {
+      // We have to confirm the user's computer ownership status.  Save off
+      // the selected email info for when the user_computer_status_set is
+      // complete so that the user can continue the flow with the correct
+      // email address.
+      self.chosenEmailInfo = info;
+      startAction("doIsThisYourComputer", info);
+    });
+
+    handleState("user_computer_status_set", function(msg, info) {
+      // User's status has been confirmed, an assertion can safely be
+      // generated as there are no more delays introduced by user interaction.
+      // Use the email address that was stored in the call to
+      // "is_this_your_computer".
+      var emailInfo = self.chosenEmailInfo;
+      self.chosenEmailInfo = null;
+      redirectToState("generate_assertion", emailInfo);
+    });
+
+    handleState("generate_assertion", function(msg, info) {
+      startAction("doGenerateAssertion", info);
+    });
+
+    handleState("assertion_generated", function(msg, info) {
+      self.success = true;
+      if (info.assertion !== null) {
+        // XXX TODO - move the setLoggedIn to the getAssertion perhaps?
+        storage.setLoggedIn(user.getOrigin(), self.email);
+        startAction("doAssertionGenerated", { assertion: info.assertion, email: self.email });
+      }
+      else {
+        redirectToState("pick_email");
       }
     });
 
@@ -253,38 +313,6 @@ BrowserID.State = (function() {
       startAction(false, "doResetPassword", info);
     });
 
-    handleState("assertion_generated", function(msg, info) {
-      self.success = true;
-      if (info.assertion !== null) {
-        user.shouldAskIfUsersComputer(function(shouldAsk) {
-          if (shouldAsk) {
-            // We have to confirm the user's status
-            self.assertion_info = info;
-            redirectToState("is_this_your_computer", info);
-          }
-          else {
-            storage.setLoggedIn(user.getOrigin(), self.email);
-            startAction("doAssertionGenerated", { assertion: info.assertion, email: self.email });
-          }
-        });
-      }
-      else {
-        redirectToState("pick_email");
-      }
-    });
-
-    handleState("is_this_your_computer", function(msg, info) {
-      startAction("doIsThisYourComputer", info);
-    });
-
-    handleState("user_computer_status_set", function(msg, info) {
-      // User's status has been confirmed, redirect them back to the
-      // assertion_generated state with the stored assertion_info
-      var assertion_info = self.assertion_info;
-      self.assertion_info = null;
-      redirectToState("assertion_generated", assertion_info);
-    });
-
     handleState("add_email", function(msg, info) {
       info = helpers.extend(info || {}, {
         privacyURL: self.privacyURL,
@@ -301,7 +329,7 @@ BrowserID.State = (function() {
     });
 
     handleState("email_confirmed", function() {
-      startAction("doEmailConfirmed", { email: self.stagedEmail} );
+      redirectToState("email_chosen", { email: self.stagedEmail} );
     });
 
     handleState("cancel_state", function(msg, info) {

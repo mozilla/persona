@@ -105,16 +105,6 @@ BrowserID.Modules.Actions = (function() {
       startRegCheckService.call(this, info, "waitForEmailValidation", "email_confirmed");
     },
 
-    doEmailConfirmed: function(info) {
-      var self=this;
-      // yay!  now we need to produce an assertion.
-      user.getAssertion(info.email, user.getOrigin(), function(assertion) {
-        self.publish("assertion_generated", {
-          assertion: assertion
-        });
-      }, self.getErrorDialog(errors.getAssertion));
-    },
-
     doAssertionGenerated: function(info) {
       // Clear onerror before the call to onsuccess - the code to onsuccess
       // calls window.close, which would trigger the onerror callback if we
@@ -160,8 +150,8 @@ BrowserID.Modules.Actions = (function() {
       startService("is_this_your_computer", info);
     },
 
-    doEmailChosen: function(info) {
-      startService("email_chosen", info);
+    doGenerateAssertion: function(info) {
+      startService("generate_assertion", info);
     }
   });
 

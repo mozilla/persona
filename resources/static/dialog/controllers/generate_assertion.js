@@ -3,7 +3,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-BrowserID.Modules.EmailChosen = (function() {
+BrowserID.Modules.GenerateAssertion = (function() {
   "use strict";
 
   var bid = BrowserID,
@@ -12,7 +12,7 @@ BrowserID.Modules.EmailChosen = (function() {
       user = bid.User,
       storage = bid.Storage;
 
-  var EmailChosen = bid.Modules.PageModule.extend({
+  var GenerateAssertion = bid.Modules.PageModule.extend({
     start: function(options) {
       var email = options.email,
           self=this;
@@ -28,9 +28,9 @@ BrowserID.Modules.EmailChosen = (function() {
     }
   });
 
-  sc = EmailChosen.sc;
+  sc = GenerateAssertion.sc;
 
-  return EmailChosen;
+  return GenerateAssertion;
 
 }());
 

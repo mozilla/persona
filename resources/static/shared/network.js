@@ -258,6 +258,11 @@ BrowserID.Network = (function() {
         url: "/wsapi/user_creation_status?email=" + encodeURIComponent(email),
         success: function(status, textStatus, jqXHR) {
           if (status.status === 'complete' && status.userid) {
+            // The user at this point can ONLY be logged in with password
+            // authentication. Once the registration is complete, that means
+            // the server has updated the user's cookies and the user is
+            // officially authenticated.
+            auth_status = 'password';
             setUserID(status.userid);
           }
           complete(onComplete, status.status);
