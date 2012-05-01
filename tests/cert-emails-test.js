@@ -33,8 +33,6 @@ suite.addBatch({
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'syncer@somehost.com',
       pass: 'fakepass',
-      // TODO: is this pubkey needed?
-      pubkey: 'fakekey',
       site:'http://fakesite.com'
     }),
     "succeeds": function(err, r) {
