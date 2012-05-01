@@ -61,8 +61,7 @@ suite.addBatch({
   "setting password": {
     topic: function() {
       wsapi.post('/wsapi/complete_user_creation', {
-        token: token,
-        pass: OLD_PASSWORD
+        token: token
       }).call(this);
     },
     "works just fine": function(err, r) {
