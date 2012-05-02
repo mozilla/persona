@@ -15,6 +15,7 @@
   "statsd": {
     "enabled": true
   },
+  "kpi_backend_sample_rate": 0.0,
   "bcrypt_work_factor": 12,
   "max_compute_processes": null,
   "max_compute_duration": 10,
