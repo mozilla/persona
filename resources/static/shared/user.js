@@ -497,17 +497,25 @@ BrowserID.User = (function() {
      * Verify a user
      * @method verifyUser
      * @param {string} token - token to verify.
-     * @param {function} [onComplete] - Called to give status updates.
+     * @param {string} password
+     * @param {function} [onComplete] - Called on completion.
+     *   Called with an object with valid, email, and origin if valid, called
+     *   with valid=false otw.
      * @param {function} [onFailure] - Called on error.
      */
-    verifyUser: function(token, onComplete, onFailure) {
+    verifyUser: function(token, password, onComplete, onFailure) {
       User.tokenInfo(token, function(info) {
         var invalidInfo = { valid: false };
         if (info) {
-          network.completeUserRegistration(token, function (valid) {
-            info.valid = valid;
-            storage.setStagedOnBehalfOf("");
-            if (onComplete) onComplete(info);
+          network.completeUserRegistration(token, password, function (valid) {
+            var result = invalidInfo;
+
+            if(valid) {
+              result = _.extend({ valid: valid, origin: storage.getStagedOnBehalfOf() }, info);
+              storage.setStagedOnBehalfOf("");
+            }
+
+            complete(onComplete, result);
           }, onFailure);
         } else if (onComplete) {
           onComplete(invalidInfo);
@@ -851,19 +859,17 @@ BrowserID.User = (function() {
      * Verify a users email address given by the token
      * @method verifyEmail
      * @param {string} token
+     * @param {string} password
      * @param {function} [onComplete] - Called on completion.
      *   Called with an object with valid, email, and origin if valid, called
-     *   with only valid otw.
+     *   with valid=false otw.
      * @param {function} [onFailure] - Called on error.
      */
-    verifyEmail: function(token, onComplete, onFailure) {
-      function complete(status) {
-        onComplete && onComplete(status);
-      }
+    verifyEmail: function(token, password, onComplete, onFailure) {
       network.emailForVerificationToken(token, function (info) {
         var invalidInfo = { valid: false };
         if (info) {
-          network.completeEmailRegistration(token, function (valid) {
+          network.completeEmailRegistration(token, password, function (valid) {
             var result = invalidInfo;
 
             if(valid) {
@@ -871,10 +877,10 @@ BrowserID.User = (function() {
               storage.setStagedOnBehalfOf("");
             }
 
-            complete(result);
+            complete(onComplete, result);
           }, onFailure);
         } else {
-          complete(invalidInfo);
+          complete(onComplete, invalidInfo);
         }
       }, onFailure);
     },

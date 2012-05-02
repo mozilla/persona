@@ -73,13 +73,18 @@ $(function() {
       bid.forgot();
     }
     else if (path === "/add_email_address") {
-      var module = bid.addEmailAddress.create();
+      var module = bid.verifySecondaryAddress.create();
       module.start({
-        token: token
+        token: token,
+        verifyFunction: "verifyEmail"
       });
     }
     else if(token && path === "/verify_email_address") {
-      bid.verifyEmailAddress(token);
+      var module = bid.verifySecondaryAddress.create();
+      module.start({
+        token: token,
+        verifyFunction: "verifyUser"
+      });
     }
     else {
       // Instead of throwing a hard error here, adding a message to the console

@@ -667,7 +667,7 @@ h1 {
   margin-bottom: 10px;
 }
 
-.siteinfo, #congrats, #signUpForm .password_entry, .enter_password .hint, #unknown_secondary, #primary_verify, .verify_primary .submit {
+.siteinfo, #congrats, .password_entry, .enter_password .hint, #unknown_secondary, #primary_verify, .verify_primary .submit {
   display: none;
 }
 
@@ -675,7 +675,7 @@ h1 {
   float: left;
 }
 
-.enter_password #signUpForm .password_entry, .known_secondary #signUpForm .password_entry,
+.enter_password .password_entry, .known_secondary .password_entry,
 .unknown_secondary #unknown_secondary, .verify_primary #verify_primary {
   display: block;
 }
@@ -820,3 +820,4 @@ footer a:hover {
 .newsbanner a:hover {
   color: #000;
 }
+

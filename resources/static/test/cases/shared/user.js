@@ -393,7 +393,7 @@ var vep = require("./vep");
   asyncTest("verifyUser with a good token", function() {
     storage.setStagedOnBehalfOf(testOrigin);
 
-    lib.verifyUser("token", function onSuccess(info) {
+    lib.verifyUser("token", "password", function onSuccess(info) {
 
       ok(info.valid, "token was valid");
       equal(info.email, TEST_EMAIL, "email part of info");
@@ -407,7 +407,7 @@ var vep = require("./vep");
   asyncTest("verifyUser with a bad token", function() {
     xhr.useResult("invalid");
 
-    lib.verifyUser("token", function onSuccess(info) {
+    lib.verifyUser("token", "password", function onSuccess(info) {
       equal(info.valid, false, "bad token calls onSuccess with a false validity");
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -418,6 +418,7 @@ var vep = require("./vep");
 
     lib.verifyUser(
       "token",
+      "password",
       testHelpers.unexpectedSuccess,
       testHelpers.expectedXHRFailure
     );
@@ -716,7 +717,7 @@ var vep = require("./vep");
 
   asyncTest("verifyEmail with a good token - callback with email, origin, valid", function() {
     storage.setStagedOnBehalfOf(testOrigin);
-    lib.verifyEmail("token", function onSuccess(info) {
+    lib.verifyEmail("token", "password", function onSuccess(info) {
 
       ok(info.valid, "token was valid");
       equal(info.email, TEST_EMAIL, "email part of info");
@@ -730,7 +731,7 @@ var vep = require("./vep");
   asyncTest("verifyEmail with a bad token - callback with valid: false", function() {
     xhr.useResult("invalid");
 
-    lib.verifyEmail("token", function onSuccess(info) {
+    lib.verifyEmail("token", "password", function onSuccess(info) {
       equal(info.valid, false, "bad token calls onSuccess with a false validity");
 
       start();
@@ -742,6 +743,7 @@ var vep = require("./vep");
 
     lib.verifyEmail(
       "token",
+      "password",
       testHelpers.unexpectedSuccess,
       testHelpers.expectedXHRFailure
     );

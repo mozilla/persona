@@ -12,7 +12,8 @@
       testHelpers = bid.TestHelpers,
       TEST_EMAIL = "testuser@testuser.com",
       TEST_PASSWORD = "password",
-      failureCheck = testHelpers.failureCheck;
+      failureCheck = testHelpers.failureCheck,
+      testObjectValuesEqual = testHelpers.testObjectValuesEqual;
 
   var network = BrowserID.Network;
 
@@ -167,22 +168,29 @@
 
 
   asyncTest("completeEmailRegistration valid", function() {
-    network.completeEmailRegistration("goodtoken", function onSuccess(proven) {
+    network.completeEmailRegistration("goodtoken", "password", function onSuccess(proven) {
       equal(proven, true, "good token proved");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
+  asyncTest("completeEmailRegistration with valid token, missing password", function() {
+    transport.useResult("missing_password");
+    network.completeEmailRegistration("token", undefined,
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure);
+  });
+
   asyncTest("completeEmailRegistration with invalid token", function() {
     transport.useResult("invalid");
-    network.completeEmailRegistration("badtoken", function onSuccess(proven) {
+    network.completeEmailRegistration("badtoken", "password", function onSuccess(proven) {
       equal(proven, false, "bad token could not be proved");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("completeEmailRegistration with XHR failure", function() {
-    failureCheck(network.completeEmailRegistration, "goodtoken");
+    failureCheck(network.completeEmailRegistration, "goodtoken", "password");
   });
 
   asyncTest("createUser with valid user", function() {
@@ -265,8 +273,22 @@
     failureCheck(network.checkUserRegistration, "registered@testuser.com");
   });
 
-  asyncTest("completeUserRegistration with valid token", function() {
-    network.completeUserRegistration("token", function(registered) {
+  asyncTest("completeUserRegistration with valid token, no password required", function() {
+    network.completeUserRegistration("token", undefined, function(registered) {
+      ok(registered);
+      start();
+    }, testHelpers.unexpectedFailure);
+  });
+
+  asyncTest("completeUserRegistration with valid token, missing password", function() {
+    transport.useResult("missing_password");
+    network.completeUserRegistration("token", undefined,
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure);
+  });
+
+  asyncTest("completeUserRegistration with valid token, password required", function() {
+    network.completeUserRegistration("token", "password", function(registered) {
       ok(registered);
       start();
     }, testHelpers.unexpectedFailure);
@@ -275,14 +297,14 @@
   asyncTest("completeUserRegistration with invalid token", function() {
     transport.useResult("invalid");
 
-    network.completeUserRegistration("token", function(registered) {
+    network.completeUserRegistration("token", "password", function(registered) {
       equal(registered, false);
       start();
     }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("completeUserRegistration with XHR failure", function() {
-    failureCheck(network.completeUserRegistration, "token");
+    failureCheck(network.completeUserRegistration, "token", "password");
   });
 
   asyncTest("cancelUser valid", function() {
@@ -416,12 +438,11 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("emailForVerificationToken that needs password - returns needs_password and email address", function() {
-    transport.useResult("needsPassword");
+  asyncTest("emailForVerificationToken that must authenticate - returns must_auth and email address", function() {
+    transport.useResult("mustAuth");
 
     network.emailForVerificationToken("token", function(result) {
-      equal(result.needs_password, true, "needs_password correctly set to true");
-      equal(result.email, TEST_EMAIL, "email address correctly added");
+      testObjectValuesEqual(result, { must_auth: true, email: TEST_EMAIL });
       start();
     }, testHelpers.unexpectedXHRFailure);
   });

@@ -310,6 +310,24 @@ BrowserID.DOM = ( function() {
          */
         is: function( elementToCheck, type ) {
           return jQuery( elementToCheck ).is( type );
+        },
+
+        /**
+         * Show an element/elements
+         * @method show
+         * @param {selector || element} elementToShow
+         */
+        show: function( elementToShow ) {
+          return jQuery( elementToShow ).show();
+        },
+
+        /**
+         * Hide an element/elements
+         * @method hide
+         * @param {selector || element} elementToHide
+         */
+        hide: function( elementToHide ) {
+          return jQuery( elementToHide ).hide();
         }
 
 

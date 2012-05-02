@@ -277,14 +277,16 @@ BrowserID.Network = (function() {
      * Complete user registration, give user a password
      * @method completeUserRegistration
      * @param {string} token - token to register for.
+     * @param {string} password
      * @param {function} [onComplete] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeUserRegistration: function(token, onComplete, onFailure) {
+    completeUserRegistration: function(token, password, onComplete, onFailure) {
       post({
         url: "/wsapi/complete_user_creation",
         data: {
-          token: token
+          token: token,
+          pass: password
         },
         success: function(status, textStatus, jqXHR) {
           complete(onComplete, status.success);
@@ -297,15 +299,17 @@ BrowserID.Network = (function() {
      * Call with a token to prove an email address ownership.
      * @method completeEmailRegistration
      * @param {string} token - token proving email ownership.
+     * @param {string} password
      * @param {function} [onComplete] - Callback to call when complete.  Called
      * with one boolean parameter that specifies the validity of the token.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeEmailRegistration: function(token, onComplete, onFailure) {
+    completeEmailRegistration: function(token, password, onComplete, onFailure) {
       post({
         url: "/wsapi/complete_email_addition",
         data: {
-          token: token
+          token: token,
+          pass: password
         },
         success: function(status, textStatus, jqXHR) {
           complete(onComplete, status.success);

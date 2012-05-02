@@ -11,13 +11,15 @@
       xhr = bid.Mocks.xhr,
       dom = bid.DOM,
       testHelpers = bid.TestHelpers,
+      testHasClass = testHelpers.testHasClass,
       validToken = true,
       controller,
       config = {
-        token: "token"
+        token: "token",
+        verifyFunction: "verifyEmail"
       };
 
-  module("pages/add_email_address", {
+  module("pages/verify_secondary_address", {
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/add_email_address", {});
@@ -29,14 +31,14 @@
   });
 
   function createController(options, callback) {
-    controller = BrowserID.addEmailAddress.create();
+    controller = BrowserID.verifySecondaryAddress.create();
     options = options || {};
     options.ready = callback;
     controller.start(options);
   }
 
   function expectTooltipVisible() {
-    xhr.useResult("needsPassword");
+    xhr.useResult("mustAuth");
     createController(config, function() {
       controller.submit(function() {
         testHelpers.testTooltipVisible();
@@ -46,7 +48,7 @@
   }
 
   function testEmail() {
-    equal(dom.getInner(".email"), "testuser@testuser.com", "correct email shown");
+    equal(dom.getInner("#email"), "testuser@testuser.com", "correct email shown");
   }
 
   function testCannotConfirm() {
@@ -64,19 +66,19 @@
     equal(error, "missing config option: token", "correct error thrown");
   });
 
-  asyncTest("no start with good token and site", function() {
+  asyncTest("no password: start with good token and site", function() {
     storage.setStagedOnBehalfOf("browserid.org");
 
     createController(config, function() {
       testEmail();
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
       equal($(".website:nth(0)").text(), "browserid.org", "origin is updated");
-      equal($("body").hasClass("complete"), true, "body has complete class");
+      testHasClass("body", "complete");
       start();
     });
   });
 
-  asyncTest("no start with good token and nosite", function() {
+  asyncTest("no password: start with good token and nosite", function() {
     createController(config, function() {
       testEmail();
       equal($(".siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
@@ -85,7 +87,7 @@
     });
   });
 
-  asyncTest("no start with bad token", function() {
+  asyncTest("no password: start with bad token", function() {
     xhr.useResult("invalid");
 
     createController(config, function() {
@@ -94,11 +96,42 @@
     });
   });
 
-  asyncTest("no start with emailForVerficationToken XHR failure", function() {
+  asyncTest("no password: start with emailForVerficationToken XHR failure", function() {
     xhr.useResult("ajaxError");
     createController(config, function() {
       testHelpers.testErrorVisible();
       start();
     });
   });
+
+  asyncTest("password: missing password", function() {
+    $("#password").val();
+
+    expectTooltipVisible();
+  });
+
+  asyncTest("password: good password", function() {
+    $("#password").val("password");
+
+    xhr.useResult("mustAuth");
+    createController(config, function() {
+      xhr.useResult("valid");
+      controller.submit(function(status) {
+        equal(status, true, "correct status");
+        testHasClass("body", "complete");
+        start();
+      });
+    });
+  });
+
+  asyncTest("password: good password bad token", function() {
+    $("#password").val("password");
+
+    xhr.useResult("invalid");
+    createController(config, function() {
+      testCannotConfirm();
+      start();
+    });
+  });
+
 }());

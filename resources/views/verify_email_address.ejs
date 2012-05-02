@@ -6,7 +6,6 @@
     <div id="signUpFormWrap">
         <ul class="notifications">
             <li class="notification error" id="cannotconfirm"><%= gettext('There was a problem with your signup link. Has this address already been registered?') %></li>
-            <li class="notification error" id="cannotcommunicate"><%= gettext('Error communicating with server.') %></li>
             <li class="notification error" id="cannotcomplete"><%= gettext('Error encountered trying to complete registration.') %></li>
         </ul>
 
@@ -19,7 +18,23 @@
                     <label class="serif" for="email"><%= gettext('Email Address') %></label>
                     <input class="youraddress sans" id="email" placeholder="<%= gettext('Your Email') %>" type="email" value="" disabled="disabled" maxlength="254" />
                 </li>
+                <li class="password_entry">
+                    <label class="serif" for="password"><%= gettext('Password') %></label>
+                    <input class="sans" id="password" placeholder="<%= gettext('Your Password') %>" type="password" autofocus maxlength=80 />
+
+                    <div class="tooltip" id="password_required" for="password">
+                      <%= gettext('Password is required.') %>
+                    </div>
+
+                    <div class="tooltip" id="password_length" for="password">
+                      <%= gettext('Password must be between 8 and 80 characters long.') %>
+                    </div>
+                </li>
             </ul>
+
+            <div class="submit cf password_entry">
+                <button><%= gettext('finish') %></button>
+            </div>
 
         </form>
 
