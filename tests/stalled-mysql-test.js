@@ -129,7 +129,8 @@ suite.addBatch({
   },
   "complete_user_creation": {
     topic: wsapi.post('/wsapi/complete_user_creation', {
-      token: 'bogus'
+      token: 'bogus',
+      pass: 'alsobogus'
     }),
     "fails with 503": function(err, r) {
       assert.strictEqual(r.code, 503);
