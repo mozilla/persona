@@ -25,6 +25,7 @@ suite.addBatch({
   "staging an account": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
+      pass: 'firstfakepass',
       site:'http://localhost:123'
     }),
     "works": function(err, r) {
@@ -49,7 +50,7 @@ suite.addBatch({
 suite.addBatch({
   "create first account": {
     topic: function() {
-      wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'firstfakepass' }).call(this);
+      wsapi.post('/wsapi/complete_user_creation', { token: token }).call(this);
     },
     "account created": function(err, r) {
       assert.equal(r.code, 200);
@@ -137,6 +138,7 @@ suite.addBatch({
   "re-stage first account": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
+      pass: 'secondfakepass',
       site:'https://otherfakesite.com'
     }),
     "works": function(err, r) {
@@ -187,7 +189,7 @@ suite.addBatch({
 suite.addBatch({
   "re-create first email address": {
     topic: function() {
-      wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'secondfakepass' }).call(this);
+      wsapi.post('/wsapi/complete_user_creation', { token: token }).call(this);
     },
     "account created": function(err, r) {
       assert.equal(r.code, 200);
@@ -196,7 +198,7 @@ suite.addBatch({
   }
 });
 
-// now we should be able to sign into the first email address with the second
+// now we should be able to sign into the first email address with the first
 // password, and all other combinations should fail
 suite.addBatch({
   "first email, first pass bad": {

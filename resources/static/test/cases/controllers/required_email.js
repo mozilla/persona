@@ -423,18 +423,18 @@
 
   });
 
-  asyncTest("verifyAddress of authenticated user, address belongs to another user - redirects to 'email_staged'", function() {
+  asyncTest("verifyAddress of authenticated user, secondary address belongs to another user - redirects to 'add_email_submit_with_secondary'", function() {
     var email = "registered@testuser.com";
     xhr.useResult("known_secondary");
 
-    testMessageReceived(email, "email_staged");
+    testMessageReceived(email, "add_email_submit_with_secondary");
   });
 
-  asyncTest("verifyAddress of authenticated user, unknown address - redirects to 'email_staged'", function() {
+  asyncTest("verifyAddress of authenticated user, unknown address - redirects to 'add_email_submit_with_secondary'", function() {
     var email = "unregistered@testuser.com";
     xhr.useResult("unknown_secondary");
 
-    testMessageReceived(email, "email_staged");
+    testMessageReceived(email, "add_email_submit_with_secondary");
   });
 
   asyncTest("verifyAddress of un-authenticated user, forgot password - redirect to 'forgot_password'", function() {

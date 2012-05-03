@@ -21,7 +21,7 @@
       badError = testHelpers.unexpectedXHRFailure;
 
   var controllerMock = {
-    close: function(message, info) {
+    publish: function(message, info) {
       closeCB && closeCB(message, info);
     },
 
@@ -116,7 +116,7 @@
     xhr.useResult("unknown_secondary");
     closeCB = expectedClose("user_staged", "email", "unregistered@testuser.com");
 
-    dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", function(staged) {
+    dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", "password", function(staged) {
       equal(staged, true, "user was staged");
       start();
     });
@@ -126,7 +126,7 @@
     closeCB = badClose;
 
     xhr.useResult("throttle");
-    dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", function(staged) {
+    dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", "password", function(staged) {
       equal(staged, false, "user was not staged");
       start();
     });
@@ -136,7 +136,7 @@
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
-    dialogHelpers.createUser.call(controllerMock, "registered@testuser.com", testHelpers.unexpectedSuccess);
+    dialogHelpers.createUser.call(controllerMock, "registered@testuser.com", "password", testHelpers.unexpectedSuccess);
   });
 
   asyncTest("addEmail with primary email happy case, expects primary_user message", function() {
@@ -148,19 +148,11 @@
     });
   });
 
-  asyncTest("addEmail with unknown secondary email happy case", function() {
+  asyncTest("addEmail with secondary email - trigger add_email_submit_with_secondary", function() {
     xhr.useResult("unknown_secondary");
-    closeCB = expectedClose("email_staged", "email", "unregistered@testuser.com");
-    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(status) {
-      ok(status, "correct status");
-      start();
-    });
-  });
-
-  asyncTest("addEmail throttled", function() {
-    xhr.useResult("throttle");
-    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
-      equal(added, false, "email not added");
+    closeCB = expectedClose("add_email_submit_with_secondary", "email", "unregistered@testuser.com");
+    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(success) {
+      equal(success, true, "success status");
       start();
     });
   });
@@ -185,8 +177,8 @@
   });
 
   asyncTest("resetPassword happy case", function() {
-    closeCB = expectedClose("reset_password", "email", "registered@testuser.com");
-    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", function(reset) {
+    closeCB = expectedClose("password_reset", "email", "registered@testuser.com");
+    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", "password", function(reset) {
       ok(reset, "password reset");
       start();
     });
@@ -195,7 +187,7 @@
 
   asyncTest("resetPassword throttled", function() {
     xhr.useResult("throttle");
-    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", function(reset) {
+    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", "password", function(reset) {
       equal(reset, false, "password not reset");
       start();
     });
@@ -205,7 +197,7 @@
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
-    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", function(reset) {
+    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", "password", function(reset) {
       ok(false, "unexpected close");
       start();
     });

@@ -20,7 +20,13 @@ BrowserID.State = (function() {
 
   function startStateMachine() {
     var self = this,
-        handleState = self.subscribe.bind(self),
+        handleState = function(msg, callback) {
+          self.subscribe(msg, function(msg, info) {
+            // This level of indirection is to ensure an info object is
+            // always present in the handler.
+            callback(msg, info || {});
+          });
+        },
         redirectToState = mediator.publish.bind(mediator),
         startAction = function(save, msg, options) {
           if (typeof save !== "boolean") {
@@ -35,8 +41,6 @@ BrowserID.State = (function() {
         cancelState = self.popState.bind(self);
 
     handleState("start", function(msg, info) {
-      info = info || {};
-
       self.hostname = info.hostname;
       self.privacyURL = info.privacyURL;
       self.tosURL = info.tosURL;
@@ -87,10 +91,37 @@ BrowserID.State = (function() {
     });
 
     handleState("authenticate", function(msg, info) {
-      info = info || {};
       info.privacyURL = self.privacyURL;
       info.tosURL = self.tosURL;
       startAction("doAuthenticate", info);
+    });
+
+    handleState("new_user", function(msg, info) {
+      self.newUserEmail = info.email;
+      startAction(false, "doSetPassword", info);
+    });
+
+    handleState("password_set", function(msg, info) {
+      /* A password can be set for one of three reasons - 1) This is a new user
+       * or 2) a user is adding the first secondary address to an account that
+       * consists only of primary addresses, or 3) an existing user has
+       * forgotten their password and wants to reset it.  #1 is taken care of
+       * by newUserEmail, #2 by addEmailEmail, #3 by resetPasswordEmail.
+       */
+      info = _.extend({ email: self.newUserEmail || self.addEmailEmail || self.resetPasswordEmail }, info);
+
+      if(self.newUserEmail) {
+        self.newUserEmail = null;
+        startAction(false, "doStageUser", info);
+      }
+      else if(self.addEmailEmail) {
+        self.addEmailEmail = null;
+        startAction(false, "doStageEmail", info);
+      }
+      else if(self.resetPasswordEmail) {
+        self.resetPasswordEmail = null;
+        startAction(false, "doResetPassword", info);
+      }
     });
 
     handleState("user_staged", function(msg, info) {
@@ -121,7 +152,6 @@ BrowserID.State = (function() {
     });
 
     handleState("primary_user_provisioned", function(msg, info) {
-      info = info || {};
       info.add = !!addPrimaryUser;
       // The user is is authenticated with their IdP. Two possibilities exist
       // for the email - 1) create a new account or 2) add address to the
@@ -131,7 +161,7 @@ BrowserID.State = (function() {
     });
 
     handleState("primary_user_unauthenticated", function(msg, info) {
-      info = helpers.extend(info || {}, {
+      info = helpers.extend(info, {
         add: !!addPrimaryUser,
         email: email,
         requiredEmail: !!requiredEmail,
@@ -179,8 +209,6 @@ BrowserID.State = (function() {
     });
 
     handleState("email_chosen", function(msg, info) {
-      info = info || {};
-
       var email = info.email,
           idInfo = storage.getEmail(email);
 
@@ -271,6 +299,25 @@ BrowserID.State = (function() {
       startAction("doGenerateAssertion", info);
     });
 
+    handleState("forgot_password", function(msg, info) {
+      // User has forgotten their password, let them reset it.  The response
+      // message from the forgot_password controller will be a set_password.
+      // the set_password handler needs to know the forgotPassword email so it
+      // knows how to handle the password being set.  When the password is
+      // finally reset, the password_reset message will be raised where we must
+      // await email confirmation.
+      self.resetPasswordEmail = info.email;
+      startAction(false, "doForgotPassword", info);
+    });
+
+    handleState("password_reset", function(msg, info) {
+      // password_reset says the user has confirmed that they want to
+      // reset their password.  doResetPassword will attempt to invoke
+      // the create_user wsapi.  If the wsapi call is successful,
+      // the user will be shown the "go verify your account" message.
+      redirectToState("user_staged", info);
+    });
+
     handleState("assertion_generated", function(msg, info) {
       self.success = true;
       if (info.assertion !== null) {
@@ -295,31 +342,25 @@ BrowserID.State = (function() {
       redirectToState("email_chosen", info);
     });
 
-    handleState("forgot_password", function(msg, info) {
-      // forgot password initiates the forgotten password flow.
-      startAction(false, "doForgotPassword", info);
-    });
-
-    handleState("reset_password", function(msg, info) {
-      info = info || {};
-      // reset_password says the user has confirmed that they want to
-      // reset their password.  doResetPassword will attempt to invoke
-      // the create_user wsapi.  If the wsapi call is successful,
-      // the user will be shown the "go verify your account" message.
-
-      // We have to save the staged email address here for when the user
-      // verifies their account and user_confirmed is called.
-      self.stagedEmail = info.email;
-      startAction(false, "doResetPassword", info);
-    });
-
     handleState("add_email", function(msg, info) {
-      info = helpers.extend(info || {}, {
+      info = helpers.extend(info, {
         privacyURL: self.privacyURL,
         tosURL: self.tosURL
       });
 
       startAction("doAddEmail", info);
+    });
+
+    handleState("add_email_submit_with_secondary", function(msg, info) {
+      user.passwordNeededToAddSecondaryEmail(function(passwordNeeded) {
+        if(passwordNeeded) {
+          self.addEmailEmail = info.email;
+          startAction(false, "doSetPassword", info);
+        }
+        else {
+          startAction(false, "doStageEmail", info);
+        }
+      });
     });
 
     handleState("email_staged", function(msg, info) {
@@ -329,7 +370,7 @@ BrowserID.State = (function() {
     });
 
     handleState("email_confirmed", function() {
-      redirectToState("email_chosen", { email: self.stagedEmail} );
+      redirectToState("email_chosen", { email: self.stagedEmail } );
     });
 
     handleState("cancel_state", function(msg, info) {

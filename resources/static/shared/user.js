@@ -280,27 +280,30 @@ BrowserID.User = (function() {
     /**
      * Create a user account - this creates an user account that must be verified.
      * @method createSecondaryUser
-     * @param {string} email - Email address.
+     * @param {string} email
+     * @param {string} password
      * @param {function} [onComplete] - Called on completion.
      * @param {function} [onFailure] - Called on error.
      */
-    createSecondaryUser: function(email, onComplete, onFailure) {
-      // remember this for later
+    createSecondaryUser: function(email, password, onComplete, onFailure) {
+      // Used on the main site when the user verifies - we try to show them
+      // what URL they came from.
+
+      // XXX - this will have to be updated to either store both the hostname
+      // and the exact URL of the RP or just the URL of the RP and the origin
+      // is extracted from that.
       storage.setStagedOnBehalfOf(User.getHostname());
 
-      network.createUser(email, origin, onComplete, onFailure);
+      network.createUser(email, password, origin, onComplete, onFailure);
     },
 
     /**
-     * Create a user.  Works for both primaries and secondaries.
+     * Create a primary user.
      * @method createUser
-     * @param {string} email
+     * @param {object} info
      * @param {function} onComplete - function to call on complettion.  Called
      * with two parameters - status and info.
      * Status can be:
-     *  secondary.already_added
-     *  secondary.verify
-     *  secondary.could_not_add
      *  primary.already_added
      *  primary.verified
      *  primary.verify
@@ -309,62 +312,23 @@ BrowserID.User = (function() {
      *  info is passed on primary.verify and contains the info necessary to
      *  verify the user with the IdP
      */
-    createUser: function(email, onComplete, onFailure) {
-      User.addressInfo(email, function(info) {
-        User.createUserWithInfo(email, info, onComplete, onFailure);
-      }, onFailure);
-    },
-
-    /**
-     * Attempt to create a user with the info returned from
-     * network.addressInfo.  Attempts to create both primary and secondary
-     * based users depending on info.type.
-     * @method createUserWithInfo
-     * @param {string} email
-     * @param {object} info - contains fields returned from network.addressInfo
-     * @param {function} [onComplete]
-     * @param {function} [onFailure]
-     */
-    createUserWithInfo: function(email, info, onComplete, onFailure) {
-      function attemptAddSecondary(email, info) {
-        if (info.known) {
-          onComplete("secondary.already_added");
-        }
-        else {
-          User.createSecondaryUser(email, function(success) {
-            if (success) {
-              onComplete("secondary.verify");
+    createPrimaryUser: function(info, onComplete, onFailure) {
+      var email = info.email;
+      User.provisionPrimaryUser(email, info, function(status, provInfo) {
+        if (status === "primary.verified") {
+          network.authenticateWithAssertion(email, provInfo.assertion, function(status) {
+            if (status) {
+              onComplete("primary.verified");
             }
             else {
-              onComplete("secondary.could_not_add");
+              onComplete("primary.could_not_add");
             }
           }, onFailure);
         }
-      }
-
-      function attemptAddPrimary(email, info) {
-        User.provisionPrimaryUser(email, info, function(status, provInfo) {
-          if (status === "primary.verified") {
-            network.authenticateWithAssertion(email, provInfo.assertion, function(status) {
-              if (status) {
-                onComplete("primary.verified");
-              }
-              else {
-                onComplete("primary.could_not_add");
-              }
-            }, onFailure);
-          }
-          else {
-            onComplete(status, provInfo);
-          }
-        }, onFailure);
-      }
-
-      if (info.type === 'secondary') {
-        attemptAddSecondary(email, info);
-      } else {
-        attemptAddPrimary(email, info);
-      }
+        else {
+          onComplete(status, provInfo);
+        }
+      }, onFailure);
     },
 
     /**
@@ -533,8 +497,10 @@ BrowserID.User = (function() {
      * Verify a user
      * @method verifyUser
      * @param {string} token - token to verify.
-     * @param {string} password - password to set for account.
-     * @param {function} [onComplete] - Called to give status updates.
+     * @param {string} password
+     * @param {function} [onComplete] - Called on completion.
+     *   Called with an object with valid, email, and origin if valid, called
+     *   with valid=false otw.
      * @param {function} [onFailure] - Called on error.
      */
     verifyUser: function(token, password, onComplete, onFailure) {
@@ -542,9 +508,14 @@ BrowserID.User = (function() {
         var invalidInfo = { valid: false };
         if (info) {
           network.completeUserRegistration(token, password, function (valid) {
-            info.valid = valid;
-            storage.setStagedOnBehalfOf("");
-            if (onComplete) onComplete(info);
+            var result = invalidInfo;
+
+            if(valid) {
+              result = _.extend({ valid: valid, origin: storage.getStagedOnBehalfOf() }, info);
+              storage.setStagedOnBehalfOf("");
+            }
+
+            complete(onComplete, result);
           }, onFailure);
         } else if (onComplete) {
           onComplete(invalidInfo);
@@ -592,17 +563,18 @@ BrowserID.User = (function() {
     /**
      * Request a password reset for the given email address.
      * @method requestPasswordReset
-     * @param {string} email - email address to reset password for.
+     * @param {string} email
+     * @param {string} password
      * @param {function} [onComplete] - Callback to call when complete, called
      * with a single object, info.
      *    info.status {boolean} - true or false whether request was successful.
      *    info.reason {string} - if status false, reason of failure.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestPasswordReset: function(email, onComplete, onFailure) {
+    requestPasswordReset: function(email, password, onComplete, onFailure) {
       User.isEmailRegistered(email, function(registered) {
         if (registered) {
-          network.requestPasswordReset(email, origin, function(reset) {
+          network.requestPasswordReset(email, password, origin, function(reset) {
             var status = {
               success: reset
             };
@@ -829,17 +801,39 @@ BrowserID.User = (function() {
      * does not add the new email address/keypair to the local list of
      * valid identities.
      * @method addEmail
-     * @param {string} email - Email address.
+     * @param {string} email
+     * @param {string} password
      * @param {function} [onComplete] - Called on successful completion.
      * @param {function} [onFailure] - Called on error.
      */
-    addEmail: function(email, onComplete, onFailure) {
-      network.addSecondaryEmail(email, origin, function(added) {
+    addEmail: function(email, password, onComplete, onFailure) {
+      network.addSecondaryEmail(email, password, origin, function(added) {
         if (added) storage.setStagedOnBehalfOf(User.getHostname());
 
         // we no longer send the keypair, since we will certify it later.
         if (onComplete) onComplete(added);
       }, onFailure);
+    },
+
+    /**
+     * Check whether a password is needed to add a secondary email address to
+     * an already existing account.
+     * @method passwordNeededToAddSecondaryEmail
+     * @param {function} [onComplete] - Called on successful completion, called
+     * with true if password is needed, false otw.
+     * @param {function} [onFailure] - Called on error.
+     */
+    passwordNeededToAddSecondaryEmail: function(onComplete, onFailure) {
+      var emails = storage.getEmails(),
+          passwordNeeded = true;
+
+      for(var key in emails) {
+        if(emails[key].type === "secondary") {
+          passwordNeeded = false;
+        }
+      }
+
+      complete(onComplete, passwordNeeded);
     },
 
     /**
@@ -865,23 +859,17 @@ BrowserID.User = (function() {
      * Verify a users email address given by the token
      * @method verifyEmail
      * @param {string} token
+     * @param {string} password
      * @param {function} [onComplete] - Called on completion.
      *   Called with an object with valid, email, and origin if valid, called
-     *   with only valid otw.
+     *   with valid=false otw.
      * @param {function} [onFailure] - Called on error.
      */
-    verifyEmailNoPassword: function(token, onComplete, onFailure) {
-      User.verifyEmailWithPassword(token, undefined, onComplete, onFailure);
-    },
-
-    verifyEmailWithPassword: function(token, pass, onComplete, onFailure) {
-      function complete(status) {
-        onComplete && onComplete(status);
-      }
+    verifyEmail: function(token, password, onComplete, onFailure) {
       network.emailForVerificationToken(token, function (info) {
         var invalidInfo = { valid: false };
         if (info) {
-          network.completeEmailRegistration(token, pass, function (valid) {
+          network.completeEmailRegistration(token, password, function (valid) {
             var result = invalidInfo;
 
             if(valid) {
@@ -889,10 +877,10 @@ BrowserID.User = (function() {
               storage.setStagedOnBehalfOf("");
             }
 
-            complete(result);
+            complete(onComplete, result);
           }, onFailure);
         } else {
-          complete(invalidInfo);
+          complete(onComplete, invalidInfo);
         }
       }, onFailure);
     },
@@ -1035,7 +1023,9 @@ BrowserID.User = (function() {
           sortedIdentities = [];
 
       for(var key in identities) {
-        sortedIdentities.push({ address: key, info: identities[key] });
+        if(identities.hasOwnProperty(key)) {
+          sortedIdentities.push({ address: key, info: identities[key] });
+        }
       }
 
       sortedIdentities.sort(function(a, b) {

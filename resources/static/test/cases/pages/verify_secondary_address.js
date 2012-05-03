@@ -11,13 +11,15 @@
       xhr = bid.Mocks.xhr,
       dom = bid.DOM,
       testHelpers = bid.TestHelpers,
+      testHasClass = testHelpers.testHasClass,
       validToken = true,
       controller,
       config = {
-        token: "token"
+        token: "token",
+        verifyFunction: "verifyEmail"
       };
 
-  module("pages/add_email_address", {
+  module("pages/verify_secondary_address", {
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/add_email_address", {});
@@ -29,14 +31,14 @@
   });
 
   function createController(options, callback) {
-    controller = BrowserID.addEmailAddress.create();
+    controller = BrowserID.verifySecondaryAddress.create();
     options = options || {};
     options.ready = callback;
     controller.start(options);
   }
 
   function expectTooltipVisible() {
-    xhr.useResult("needsPassword");
+    xhr.useResult("mustAuth");
     createController(config, function() {
       controller.submit(function() {
         testHelpers.testTooltipVisible();
@@ -46,7 +48,7 @@
   }
 
   function testEmail() {
-    equal(dom.getInner(".email"), "testuser@testuser.com", "correct email shown");
+    equal(dom.getInner("#email"), "testuser@testuser.com", "correct email shown");
   }
 
   function testCannotConfirm() {
@@ -71,7 +73,7 @@
       testEmail();
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
       equal($(".website:nth(0)").text(), "browserid.org", "origin is updated");
-      equal($("body").hasClass("complete"), true, "body has complete class");
+      testHasClass("body", "complete");
       start();
     });
   });
@@ -102,59 +104,21 @@
     });
   });
 
-  asyncTest("password: first secondary address added", function() {
-    xhr.useResult("needsPassword");
-    createController(config, function() {
-      equal($("body").hasClass("enter_password"), true, "enter_password added to body");
-      testEmail();
-      start();
-    });
-  });
-
   asyncTest("password: missing password", function() {
     $("#password").val();
-    $("#vpassword").val("password");
-
-    expectTooltipVisible();
-  });
-
-  asyncTest("password: missing verify password", function() {
-    $("#password").val("password");
-    $("#vpassword").val();
-
-    expectTooltipVisible();
-  });
-
-  asyncTest("password: too short of a password", function() {
-    $("#password").val("pass");
-    $("#vpassword").val("pass");
-
-    expectTooltipVisible();
-  });
-
-  asyncTest("password: too long of a password", function() {
-    var tooLong = testHelpers.generateString(81);
-    $("#password").val(tooLong);
-    $("#vpassword").val(tooLong);
-
-    expectTooltipVisible();
-  });
-
-  asyncTest("password: mismatched passwords", function() {
-    $("#password").val("passwords");
-    $("#vpassword").val("password");
 
     expectTooltipVisible();
   });
 
   asyncTest("password: good password", function() {
     $("#password").val("password");
-    $("#vpassword").val("password");
 
+    xhr.useResult("mustAuth");
     createController(config, function() {
+      xhr.useResult("valid");
       controller.submit(function(status) {
         equal(status, true, "correct status");
-        equal($("body").hasClass("complete"), true, "body has complete class");
+        testHasClass("body", "complete");
         start();
       });
     });
@@ -162,7 +126,6 @@
 
   asyncTest("password: good password bad token", function() {
     $("#password").val("password");
-    $("#vpassword").val("password");
 
     xhr.useResult("invalid");
     createController(config, function() {

@@ -53,6 +53,7 @@ BrowserID.StateMachine = (function() {
       // only save the current state when a new state comes in.
       var cmd = history.getCurrent();
       if(cmd && cmd.save) {
+        // XXX saveState should be renamed to pushState
         history.saveState();
       }
 

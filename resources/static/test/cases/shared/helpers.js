@@ -13,7 +13,7 @@
   module("shared/helpers", {
     setup: function() {
       testHelpers.setup();
-      bid.Renderer.render("#page_head", "site/add_email_address", {});
+      bid.Renderer.render("#page_head", "site/signin", {});
     },
 
     teardown: function() {

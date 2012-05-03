@@ -27,6 +27,7 @@ suite.addBatch({
   "start registration": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'first@fakeemail.com',
+      pass: 'firstfakepass',
       site:'http://fakesite.com:123'
     }),
     "returns 200": function(err, r) {
@@ -51,7 +52,7 @@ suite.addBatch({
 suite.addBatch({
   "completing user creation": {
     topic: function() {
-      wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'firstfakepass' }).call(this);
+      wsapi.post('/wsapi/complete_user_creation', { token: token }).call(this);
     },
     "works": function(err, r) {
       assert.equal(r.code, 200);

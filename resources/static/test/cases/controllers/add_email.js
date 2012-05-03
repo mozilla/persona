@@ -10,6 +10,7 @@
       el = $("body"),
       bid = BrowserID,
       user = bid.User,
+      storage = bid.Storage,
       xhr = bid.Mocks.xhr,
       modules = bid.Modules,
       testHelpers = bid.TestHelpers,
@@ -55,7 +56,7 @@
     ok($("#newEmail").val(), "testuser@testuser.com", "email prepopulated");
   });
 
-  asyncTest("addEmail with valid unknown secondary email", function() {
+  asyncTest("addEmail with first valid unknown secondary email - trigger add_email_submit_with_secondary", function() {
     createController();
     xhr.useResult("unknown_secondary");
 
@@ -63,21 +64,38 @@
 
     $("#newEmail").val("unregistered@testuser.com");
 
-    register("email_staged", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "email_staged called with correct email");
+    register("add_email_submit_with_secondary", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "add_email_submit_with_secondary called with correct email");
       start();
     });
 
     controller.addEmail();
   });
 
-  asyncTest("addEmail with valid unknown secondary email with leading/trailing whitespace", function() {
+  asyncTest("addEmail with second valid unknown secondary email - trigger add_email_submit_with_secondary", function() {
+    createController();
+    xhr.useResult("unknown_secondary");
+
+    equal($("#addEmail").length, 1, "control rendered correctly");
+
+    $("#newEmail").val("unregistered@testuser.com");
+
+    register("add_email_submit_with_secondary", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "add_email_submit_with_secondary called with correct email");
+      start();
+    });
+
+    storage.addSecondaryEmail("testuser@testuser.com");
+    controller.addEmail();
+  });
+
+  asyncTest("addEmail with valid unknown secondary email with leading/trailing whitespace - allows address, triggers add_email_submit_with_secondary", function() {
     createController();
     xhr.useResult("unknown_secondary");
 
     $("#newEmail").val("   unregistered@testuser.com  ");
-    register("email_staged", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "email_staged called with correct email");
+    register("add_email_submit_with_secondary", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "add_email_submit_with_secondary called with correct email");
       start();
     });
     controller.addEmail();
@@ -88,12 +106,12 @@
 
     $("#newEmail").val("unregistered");
     var handlerCalled = false;
-    register("email_staged", function(msg, info) {
+    register("add_email_submit_with_secondary", function(msg, info) {
       handlerCalled = true;
-      ok(false, "email_staged should not be called on invalid email");
+      ok(false, "add_email_submit_with_secondary should not be called on invalid email");
     });
     controller.addEmail(function() {
-      equal(handlerCalled, false, "the email_staged handler should have never been called");
+      equal(handlerCalled, false, "the add_email_submit_with_secondary handler should have never been called");
       start();
     });
   });
@@ -103,8 +121,8 @@
 
     $("#newEmail").val("registered@testuser.com");
 
-    register("email_staged", function(msg, info) {
-      ok(false, "unexpected email_staged message");
+    register("add_email_submit_with_secondary", function(msg, info) {
+      ok(false, "unexpected add_email_submit_with_secondary message");
     });
 
     // simulate the email being already added.
@@ -119,13 +137,13 @@
     });
   });
 
-  asyncTest("addEmail with secondary email belonging to another user - allows for account consolidation", function() {
+  asyncTest("addEmail with first secondary email belonging to another user - allows for account consolidation", function() {
     createController();
     xhr.useResult("known_secondary");
 
     $("#newEmail").val("registered@testuser.com");
-    register("email_staged", function(msg, info) {
-      equal(info.email, "registered@testuser.com", "email_staged called with correct email");
+    register("add_email_submit_with_secondary", function(msg, info) {
+      equal(info.email, "registered@testuser.com", "add_email_submit_with_secondary called with correct email");
       start();
     });
     controller.addEmail();
