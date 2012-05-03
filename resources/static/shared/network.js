@@ -353,6 +353,28 @@ BrowserID.Network = (function() {
     },
 
     /**
+     * post interaction data
+     * @method setPassword
+     * @param {string} password - new password.
+     * @param {function} [onComplete] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    sendInteractionData: function(data, onComplete, onFailure) {
+      post({
+        url: "/wsapi/interaction_data",
+        data: {
+          // reminder, CSRF token will be inserted here by xhr.js, that's
+          // why this *must* be an object
+          data: data
+        },
+        success: function(status) {
+          complete(onComplete, status.success);
+        },
+        error: onFailure
+      });
+    },
+
+    /**
      * Update the password of the current user
      * @method changePassword
      * @param {string} oldpassword - old password.

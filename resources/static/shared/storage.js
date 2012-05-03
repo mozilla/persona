@@ -379,6 +379,58 @@ BrowserID.Storage = (function() {
     storage.emailToUserID = JSON.stringify(allInfo);
   }
 
+  function pushInteractionData(data) {
+    var id;
+    try {
+      id = JSON.parse(storage.interactionData);
+      id.unshift(data);
+    } catch(e) {
+      id = [ data ];
+    }
+    storage.interactionData = JSON.stringify(id);
+  }
+
+  function currentInteractionData() {
+    try {
+      return JSON.parse(storage.interactionData)[0];
+    } catch(e) {
+      alert(e);
+      return {};
+    }
+  }
+
+  function setCurrentInteractionData(data) {
+    var id;
+    try {
+      id = JSON.parse(storage.interactionData);
+      id[0] = data;
+    } catch(e) {
+      alert(e);
+      id = [ data ];
+    }
+    storage.interactionData = JSON.stringify(id);
+  }
+
+  function getAllInteractionData() {
+    try {
+      var id = JSON.parse(storage.interactionData);
+      return id.slice(1);
+    } catch(e) {
+      alert(e);
+      return [];
+    }
+  }
+
+  function clearInteractionData() {
+    try {
+      var id = JSON.parse(storage.interactionData);
+      storage.interactionData = JSON.stringify(id.slice(0,1));
+    } catch(e) {
+      alert(e);
+      delete storage.interactionData;
+    }
+  }
+
   return {
     /**
      * Add an email address and optional key pair.
@@ -449,6 +501,43 @@ BrowserID.Storage = (function() {
       set: generic2KeySet.curry("main_site", "signInEmail"),
       get: generic2KeyGet.curry("main_site", "signInEmail"),
       remove: generic2KeyRemove.curry("main_site", "signInEmail")
+    },
+
+    interactionData: {
+      /**
+       * add a data interaction blob to localstorage
+       * @param {object} data - an object to push onto the queue
+       * @method interactionData.push()
+       * @returns nada
+       */
+      push: pushInteractionData,
+      /**
+       * read the current interaction data blob (the one on the top of the
+       * stack)
+       * @method interactionData.current()
+       * @returns a JSON object containing the latest interaction data blob
+       */
+      current: currentInteractionData,
+      /**
+       * overwrite the current interaction data blob (the one on the top of the
+       * stack)
+       * @param {object} data - the object to overwrite current with
+       * @method interactionData.setCurrent()
+       */
+      setCurrent: setCurrentInteractionData,
+      /**
+       * get all the saved interaction data (returned as a JSON array)
+       * @method interactionData.get()
+       * @returns an array, possibly of length zero if no interaction data is
+       * available
+       */
+      get: getAllInteractionData,
+      /**
+       * clear all interaction data, except the current, in-progress
+       * collection.
+       * @method interactionData.clear()
+       */
+      clear: clearInteractionData
     },
 
     usersComputer: {
