@@ -24,7 +24,8 @@ $(function() {
       CookieCheck = modules.CookieCheck,
       XHRDelay = modules.XHRDelay,
       XHRDisableForm = modules.XHRDisableForm,
-      ANIMATION_TIME = 500;
+      ANIMATION_TIME = 500,
+      checkCookiePaths = [ "/signin", "/signup", "/forgot", "/add_email_address", "/verify_email_address" ];
 
 
   xhr.init({ time_until_delay: 10 * 1000 });
@@ -41,7 +42,7 @@ $(function() {
   moduleManager.register("xhr_disable_form", XHRDisableForm);
   moduleManager.start("xhr_disable_form");
 
-  if(path && path !== "/") {
+  if(path && (checkCookiePaths.indexOf(path) > -1)) {
     // do a cookie check on every page except the main page.
     moduleManager.register("cookie_check", CookieCheck);
     moduleManager.start("cookie_check", { ready: start });
