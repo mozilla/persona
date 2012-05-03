@@ -31,12 +31,13 @@ BrowserID.Modules.Actions = (function() {
     return module;
   }
 
-  function startRegCheckService(options, verifier, message) {
+  function startRegCheckService(options, verifier, message, password) {
     var controller = startService("check_registration", {
       email: options.email,
       required: options.required,
       verifier: verifier,
-      verificationMessage: message
+      verificationMessage: message,
+      password: password
     });
     controller.startCheck();
   }
@@ -82,7 +83,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doConfirmUser: function(info) {
-      startRegCheckService.call(this, info, "waitForUserValidation", "user_confirmed");
+      startRegCheckService.call(this, info, "waitForUserValidation", "user_confirmed", info.password || undefined);
     },
 
     doPickEmail: function(info) {

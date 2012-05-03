@@ -62,7 +62,7 @@
     var self=this;
     user.createSecondaryUser(email, password, function(status) {
       if (status) {
-        var info = { email: email };
+        var info = { email: email, password: password };
         self.publish("user_staged", info, info);
         complete(callback, true);
       }

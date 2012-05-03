@@ -23,6 +23,7 @@ BrowserID.Modules.CheckRegistration = (function() {
       self.verifier = options.verifier;
       self.verificationMessage = options.verificationMessage;
       self.required = options.required;
+      self.password = options.password;
 
       self.click("#back", self.back);
 
@@ -40,9 +41,26 @@ BrowserID.Modules.CheckRegistration = (function() {
           });
         }
         else if (status === "mustAuth") {
-          user.addressInfo(self.email, function(info) {
-            self.close("authenticate", info);
-          });
+          // if we have a password (because it was just chosen in dialog),
+          // then we can authenticate the user and proceed
+          if (self.password) {
+            user.authenticate(self.email, self.password, function (authenticated) {
+              if (authenticated) {
+                user.syncEmails(function() {
+                  self.close(self.verificationMessage);
+                  oncomplete && oncomplete();
+                });
+              } else {
+                user.addressInfo(self.email, function(info) {
+                  self.close("authenticate", info);
+                });
+              }
+            });
+          } else {
+            user.addressInfo(self.email, function(info) {
+              self.close("authenticate", info);
+            });
+          }
 
           oncomplete && oncomplete();
         }
