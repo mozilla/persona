@@ -3,12 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 BrowserID.Storage = (function() {
+  "use strict";
 
   var jwk,
-      ONE_DAY_IN_MS = (1000 * 60 * 60 * 24);
+      ONE_DAY_IN_MS = (1000 * 60 * 60 * 24),
+      storage;
 
   try {
-    var storage = localStorage;
+    storage = localStorage;
   }
   catch(e) {
     // Fx with cookies disabled will except while trying to access
@@ -224,7 +226,7 @@ BrowserID.Storage = (function() {
       if (lastState !== currentState) {
         callback();
         lastState = currentState;
-      };
+      }
     }
 
     // IE8 does not have addEventListener, nor does it support storage events.
@@ -362,7 +364,7 @@ BrowserID.Storage = (function() {
 
   function clearUsersComputerOwnershipStatus(userid) {
     try {
-      allInfo = JSON.parse(storage.usersComputer);
+      var allInfo = JSON.parse(storage.usersComputer);
       if (typeof allInfo !== 'object') throw 'bogus';
 
       var userInfo = allInfo[userid];
