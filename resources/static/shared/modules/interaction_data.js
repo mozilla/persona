@@ -23,57 +23,42 @@
 //    listen for events via the mediator?
 //  * the primary flow will cause unload and reload.  omg.  How do we deal?
 
-(function() {
+BrowserID.Modules.InteractionData = (function() {
   var bid = BrowserID,
-      mediator = bid.Mediator,
       storage = bid.Storage.interactionData,
-      network = bid.Network;
-
-  var startTime = new Date();
-
-  // sample rate is specified from the server.  it's set at the
-  // first 'context_info' event, which corresponds to the first time
-  // we get 'session_context' from the server.  When sampleRate is
-  // not undefined, then the interaction data is initialized.
-  // sample will be true or false
-  var sample = undefined;
-
-  var currentData = {
-    event_stream: [
-    ]
-  };
-
-  // whenever session_context is hit, let's hear about it so we can
-  // extract the information that's important to us (like, whether we
-  // should be running or not)
-  mediator.subscribe('context_info', onSessionContext);
+      network = bid.Network,
+      dom = bid.DOM,
+      sc;
 
   function onSessionContext(msg, result) {
+    var self=this,
+        currentData = self.currentData;
+
     // defend against onSessionContext being called multiple times
-    if (sample !== undefined) return;
+    if (self.sample !== undefined) return;
 
     // set the sample rate as defined by the server.  It's a value
     // between 0..1, integer or float, and it specifies the percentage
     // of the time that we should capture
     var sampleRate = result.data_sample_rate || 0;
 
-    currentData.sample_rate = sampleRate;
-
     // now that we've got sample rate, let's smash it into a boolean
     // probalistically
-    sample = (Math.random() <= sampleRate);
+    self.sample = self.forceSample || (Math.random() <= sampleRate);
 
     // if we're not going to sample, kick out early.
-    if (!sample) {
-      currentData = undefined;
+    if (!self.sample) {
+      self.currentData = undefined;
       return;
     }
+
+    currentData.sample_rate = sampleRate;
 
     // set current time
     currentData.timestamp = result.server_time;
 
     // language
-    currentData.lang = $('html').attr('lang');
+    currentData.lang = dom.getAttr('html', 'lang');
 
     if (window.screen) {
       currentData.screen_size = {
@@ -94,7 +79,7 @@
     currentData = undefined;
 
     // finally, let's try to publish any old data
-    setTimeout(publishOld, 10);
+    setTimeout(publish, 10);
   }
 
   // At every load, after session_context returns, we'll try to publish
@@ -105,28 +90,87 @@
   // critical to the functioning of the system (and some failure scenarios
   // simply won't resolve with retries - like corrupt data, or too much
   // data)
-  function publishOld() {
+  function publish() {
     var data = storage.get();
-    if (data.length === 0) return;
-    network.sendInteractionData(data, complete, complete);
-    return;
 
-    function complete() {
+    if (data.length === 0) return;
+
+    network.sendInteractionData(data, complete, function() {
       storage.clear();
+    });
+  }
+
+
+  function addEvent(eventName) {
+    var self=this;
+
+    if (self.sample === false) return;
+
+    var eventData = [ eventName, new Date() - self.startTime ];
+    if (self.currentData) {
+      self.currentData.event_stream.push(eventData);
+    } else {
+      // @lloyd, how does this bit work?  When can sampling be enabled but
+      // there not be currentData?  It looks like currentData is created as
+      // soon as this module is run, and cleared only when session context
+      // comes in.
+      var d = storage.current();
+      if (!d.event_stream) d.event_stream = [];
+      d.event_stream.push(eventData);
+      storage.setCurrent(d);
     }
   }
 
-  // on all events, update event_stream
-  mediator.subscribeAll(function(msg, data) {
-    if (sample === false) return;
+  var Module = bid.Modules.PageModule.extend({
+    start: function(options) {
+      options = options || {};
 
-    if (currentData) {
-      currentData.event_stream.push([ msg, new Date() - startTime ]);
-    } else {
-      var d = storage.current();
-      if (!d.event_stream) d.event_stream = [];
-      d.event_stream.push([ msg, new Date() - startTime ]);
-      storage.setCurrent(d);
-    }
+      var self = this;
+
+      self.forceSample = options.forceSample;
+
+      self.startTime = new Date();
+
+      // sample rate is specified from the server.  it's set at the
+      // first 'context_info' event, which corresponds to the first time
+      // we get 'session_context' from the server.  When sampleRate is
+      // not undefined, then the interaction data is initialized.
+      // sample will be true or false
+      self.sample = undefined;
+
+      self.currentData = {
+        event_stream: [
+        ]
+      };
+
+      // whenever session_context is hit, let's hear about it so we can
+      // extract the information that's important to us (like, whether we
+      // should be running or not)
+      this.subscribe('context_info', onSessionContext);
+
+      // on all events, update event_stream
+      this.subscribeAll(addEvent);
+    },
+
+    addEvent: addEvent,
+
+    isSampling: function() {
+      return this.sample;
+    },
+
+    getData: function() {
+      return this.currentData;
+    },
+
+    getStream: function() {
+      return this.currentData && this.currentData.event_stream;
+    },
+
+    publish: publish
   });
+
+  sc = Module.sc;
+
+  return Module;
+
 }());

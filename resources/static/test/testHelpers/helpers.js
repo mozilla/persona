@@ -197,7 +197,14 @@ BrowserID.TestHelpers = (function() {
         str += (i % 10);
       }
       return str;
+    },
+
+    testObjectHasOwnProperties: function(objToTest, expected, msg) {
+      for(var i=0, key; key=expected[i]; ++i) {
+        ok(objToTest.hasOwnProperty(key), msg || ("object contains " + key));
+      }
     }
+
   };
 
   return TestHelpers;

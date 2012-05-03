@@ -157,6 +157,10 @@ BrowserID.Network = (function() {
       }, onFailure);
     },
 
+    withContext: function(onComplete, onFailure) {
+      withContext(onComplete, onFailure)
+    },
+
     /**
      * clear local cache, including authentication status and
      * other session data.

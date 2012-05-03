@@ -14,6 +14,9 @@
   xhr.init({ time_until_delay: 10 * 1000 });
   network.init();
 
+  moduleManager.register("interaction_data", modules.InteractionData);
+  moduleManager.start("interaction_data");
+
   moduleManager.register("cookie_check", modules.CookieCheck);
   moduleManager.start("cookie_check", {
     ready: function(status) {
