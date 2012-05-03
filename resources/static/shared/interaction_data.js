@@ -23,7 +23,7 @@
 //    listen for events via the mediator?
 //  * the primary flow will cause unload and reload.  omg.  How do we deal?
 
-BrowserID.InteractionData = (function() {
+(function() {
   var bid = BrowserID,
       mediator = bid.Mediator,
       storage = bid.Storage.interactionData,
@@ -116,20 +116,17 @@ BrowserID.InteractionData = (function() {
     }
   }
 
-  function addEvent(name) {
+  // on all events, update event_stream
+  mediator.subscribeAll(function(msg, data) {
     if (sample === false) return;
 
     if (currentData) {
-      currentData.event_stream.push([ name, new Date() - startTime ]);
+      currentData.event_stream.push([ msg, new Date() - startTime ]);
     } else {
       var d = storage.current();
       if (!d.event_stream) d.event_stream = [];
-      d.event_stream.push([ name, new Date() - startTime ]);
+      d.event_stream.push([ msg, new Date() - startTime ]);
       storage.setCurrent(d);
     }
-  }
-
-  return {
-    addEvent: addEvent
-  };
+  });
 }());

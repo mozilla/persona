@@ -7,10 +7,10 @@ BrowserID.Mediator = (function() {
   var hub = Hub;
 
   return {
+    subscribeAll: hub.all.bind(hub),
     subscribe: hub.on.bind(hub),
     unsubscribe: hub.off.bind(hub),
     publish: hub.fire.bind(hub),
     reset: hub.reset.bind(hub)
   };
 }());
-
