@@ -189,15 +189,13 @@
           "after clearing, interaction data is zero length");
   });
 
-  test("get interaction data returns everything except current (in-progress) data", function() {
+  test("get interaction data returns all data", function() {
     storage.interactionData.push({ foo: "old2" });
     storage.interactionData.clear();
     storage.interactionData.push({ foo: "old1" });
-    storage.interactionData.push({ foo: "current" });
     var d = storage.interactionData.get();
-    equal(d.length, 2, "get() returns complete unpublished data blobs");
+    equal(d.length, 1, "get() returns complete unpublished data blobs");
     equal(d[0].foo, 'old1', "get() returns complete unpublished data blobs");
-    equal(d[1].foo, 'old2', "get() returns complete unpublished data blobs");
   });
 }());
 

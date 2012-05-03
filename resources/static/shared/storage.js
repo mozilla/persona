@@ -394,7 +394,7 @@ BrowserID.Storage = (function() {
     try {
       return JSON.parse(storage.interactionData)[0];
     } catch(e) {
-      alert(e);
+      //alert(e);
       return {};
     }
   }
@@ -405,7 +405,7 @@ BrowserID.Storage = (function() {
       id = JSON.parse(storage.interactionData);
       id[0] = data;
     } catch(e) {
-      alert(e);
+      //alert(e);
       id = [ data ];
     }
     storage.interactionData = JSON.stringify(id);
@@ -413,21 +413,19 @@ BrowserID.Storage = (function() {
 
   function getAllInteractionData() {
     try {
-      var id = JSON.parse(storage.interactionData);
-      return id.slice(1);
+      return JSON.parse(storage.interactionData);
     } catch(e) {
-      alert(e);
+      //alert(e);
       return [];
     }
   }
 
   function clearInteractionData() {
     try {
-      var id = JSON.parse(storage.interactionData);
-      storage.interactionData = JSON.stringify(id.slice(0,1));
+      storage.interactionData = JSON.stringify([]);
     } catch(e) {
-      alert(e);
-      delete storage.interactionData;
+  //    alert(e);
+    //  delete storage.interactionData;
     }
   }
 
