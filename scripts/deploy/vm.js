@@ -4,7 +4,7 @@ jsel = require('JSONSelect'),
 key = require('./key.js'),
 sec = require('./sec.js');
 
-const BROWSERID_TEMPLATE_IMAGE_ID = 'ami-c38f57aa';
+const BROWSERID_TEMPLATE_IMAGE_ID = 'ami-c2a401ab';
 
 function extractInstanceDeets(horribleBlob) {
   var instance = {};

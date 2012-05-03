@@ -12,63 +12,48 @@ BrowserID.signUp = (function() {
       helpers = bid.Helpers,
       pageHelpers = bid.PageHelpers,
       cancelEvent = pageHelpers.cancelEvent,
+      validation = bid.Validation,
       errors = bid.Errors,
       tooltip = BrowserID.Tooltip,
       ANIMATION_SPEED = 250,
       storedEmail = pageHelpers,
       winchan = window.WinChan,
-      verifyEmail,
-      verifyURL;
+      primaryUserInfo,
+      sc;
 
     function showNotice(selector) {
       $(selector).fadeIn(ANIMATION_SPEED);
     }
 
     function authWithPrimary(oncomplete) {
-      pageHelpers.openPrimaryAuth(winchan, verifyEmail, verifyURL, primaryAuthComplete);
+      pageHelpers.openPrimaryAuth(winchan, primaryUserInfo.email, primaryUserInfo.auth, primaryAuthComplete);
 
       oncomplete && oncomplete();
     }
 
     function primaryAuthComplete(error, result, oncomplete) {
-      if(error) {
+      if (error) {
         pageHelpers.showFailure(errors.primaryAuthentication, error, oncomplete);
       }
       else {
         // hey ho, the user is authenticated, re-try the submit.
-        createUser(verifyEmail, oncomplete);
+        createPrimaryUser(primaryUserInfo, oncomplete);
       }
     }
 
-    function createUser(email, oncomplete) {
+    function createPrimaryUser(info, oncomplete) {
       function complete(status) {
         oncomplete && oncomplete(status);
       }
 
-      user.createUser(email, function onComplete(status, info) {
+      user.createPrimaryUser(info, function onComplete(status, info) {
         switch(status) {
-          case "secondary.already_added":
-            $('#registeredEmail').html(email);
-            showNotice(".alreadyRegistered");
-            complete(false);
-            break;
-          case "secondary.verify":
-            pageHelpers.emailSent(complete);
-            break;
-          case "secondary.could_not_add":
-            tooltip.showTooltip("#could_not_add");
-            complete(false);
-            break;
-          case "primary.already_added":
-            // XXX Is this status possible?
-            break;
           case "primary.verified":
             pageHelpers.replaceFormWithNotice("#congrats", complete.bind(null, true));
             break;
           case "primary.verify":
-            verifyEmail = email;
-            verifyURL = info.auth;
-            dom.setInner("#primary_email", email);
+            primaryUserInfo = info;
+            dom.setInner("#primary_email", info.email);
             pageHelpers.replaceInputsWithNotice("#primary_verify", complete.bind(null, false));
             break;
           case "primary.could_not_add":
@@ -80,18 +65,62 @@ BrowserID.signUp = (function() {
       }, pageHelpers.getFailure(errors.createUser, complete));
     }
 
-    function submit(oncomplete) {
-      var email = helpers.getAndValidateEmail("#email");
+    function enterPasswordState(info) {
+      var self=this;
+      self.emailToStage = info.email;
+      self.submit = passwordSubmit;
 
-      function complete(status) {
-        oncomplete && oncomplete(status);
-      }
+      dom.addClass("body", "enter_password");
+    }
 
-      if (email) {
-        createUser(email, complete);
+    function passwordSubmit(oncomplete) {
+      var pass = dom.getInner("#password"),
+          vpass = dom.getInner("#vpassword"),
+          valid = validation.passwordAndValidationPassword(pass, vpass);
+
+      if(valid) {
+        user.createSecondaryUser(this.emailToStage, pass, function(status) {
+          if(status) {
+            pageHelpers.emailSent(oncomplete && oncomplete.curry(true));
+          }
+          else {
+            tooltip.showTooltip("#could_not_add");
+            oncomplete && oncomplete(false);
+          }
+        }, pageHelpers.getFailure(errors.createUser, oncomplete));
       }
       else {
-        complete(false);
+        oncomplete && oncomplete(false);
+      }
+    }
+
+    function emailSubmit(oncomplete) {
+      var email = helpers.getAndValidateEmail("#email"),
+          self = this;
+
+      if (email) {
+
+        user.isEmailRegistered(email, function(isRegistered) {
+          if(isRegistered) {
+            $('#registeredEmail').html(email);
+            showNotice(".alreadyRegistered");
+            oncomplete && oncomplete(false);
+          }
+          else {
+            user.addressInfo(email, function(info) {
+              if(info.type === "primary") {
+                createPrimaryUser.call(self, info, oncomplete);
+              }
+              else {
+                enterPasswordState.call(self, info);
+                oncomplete && oncomplete(!isRegistered);
+              }
+            }, pageHelpers.getFailure(errors.addressInfo, oncomplete));
+          }
+        }, pageHelpers.getFailure(errors.isEmailRegistered, oncomplete));
+      }
+      else {
+        oncomplete && oncomplete(false);
       }
     }
 
@@ -103,39 +132,45 @@ BrowserID.signUp = (function() {
       if (event.which !== 13) $(".notification").fadeOut(ANIMATION_SPEED);
     }
 
-    function init(config) {
-      config = config || {};
+    var Module = bid.Modules.PageModule.extend({
+      start: function(options) {
+        var self=this;
+        options = options || {};
 
-      if(config.winchan) {
-        winchan = config.winchan;
-      }
+        if (options.winchan) {
+          winchan = options.winchan;
+        }
 
-      $("form input[autofocus]").focus();
+        dom.focus("form input[autofocus]");
 
-      pageHelpers.setupEmail();
+        pageHelpers.setupEmail();
 
-      dom.bindEvent("#email", "keyup", onEmailKeyUp);
-      dom.bindEvent("form", "submit", cancelEvent(submit));
-      dom.bindEvent("#back", "click", cancelEvent(back));
-      dom.bindEvent("#authWithPrimary", "click", cancelEvent(authWithPrimary));
-    }
+        self.bind("#email", "keyup", onEmailKeyUp);
+        self.click("#back", back);
+        self.click("#authWithPrimary", authWithPrimary);
+
+        sc.start.call(self, options);
+      },
+
+      submit: emailSubmit,
+      // BEGIN TESTING API
+      emailSubmit: emailSubmit,
+      passwordSubmit: passwordSubmit,
+      reset: reset,
+      back: back,
+      authWithPrimary: authWithPrimary,
+      primaryAuthComplete: primaryAuthComplete
+      // END TESTING API
+    });
+
 
     // BEGIN TESTING API
     function reset() {
-      dom.unbindEvent("#email", "keyup");
-      dom.unbindEvent("form", "submit");
-      dom.unbindEvent("#back", "click");
-      dom.unbindEvent("#authWithPrimary", "click");
       winchan = window.WinChan;
-      verifyEmail = verifyURL = null;
     }
-
-    init.submit = submit;
-    init.reset = reset;
-    init.back = back;
-    init.authWithPrimary = authWithPrimary;
-    init.primaryAuthComplete = primaryAuthComplete;
     // END TESTING API
 
-    return init;
+    sc = Module.sc;
+
+    return Module;
 }());

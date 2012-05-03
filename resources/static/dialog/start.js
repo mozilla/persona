@@ -29,7 +29,6 @@
       moduleManager.register("add_email", modules.AddEmail);
       moduleManager.register("authenticate", modules.Authenticate);
       moduleManager.register("check_registration", modules.CheckRegistration);
-      moduleManager.register("forgot_password", modules.ForgotPassword);
       moduleManager.register("is_this_your_computer", modules.IsThisYourComputer);
       moduleManager.register("pick_email", modules.PickEmail);
       moduleManager.register("required_email", modules.RequiredEmail);
@@ -39,6 +38,7 @@
       moduleManager.register("generate_assertion", modules.GenerateAssertion);
       moduleManager.register("xhr_delay", modules.XHRDelay);
       moduleManager.register("xhr_disable_form", modules.XHRDisableForm);
+      moduleManager.register("set_password", modules.SetPassword);
 
       moduleManager.start("xhr_delay");
       moduleManager.start("xhr_disable_form");

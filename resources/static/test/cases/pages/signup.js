@@ -13,7 +13,8 @@
       WinChanMock = bid.Mocks.WinChan,
       testHelpers = bid.TestHelpers,
       provisioning = bid.Mocks.Provisioning,
-      winchan;
+      winchan,
+      controller;
 
   module("pages/signup", {
     setup: function() {
@@ -22,18 +23,20 @@
       $(".emailsent").hide();
       $(".notification").hide()
       winchan = new WinChanMock();
-      bid.signUp({
+      controller = bid.signUp.create();
+      controller.start({
         winchan: winchan
       });
     },
     teardown: function() {
       testHelpers.teardown();
-      bid.signUp.reset();
+      controller.reset();
+      controller.destroy();
     }
   });
 
-  function testNotRegistered(extraTests) {
-    bid.signUp.submit(function(status) {
+  function testPasswordNotShown(extraTests) {
+    controller.submit(function(status) {
       strictEqual(status, false, "address was not registered");
       equal($(".emailsent").is(":visible"), false, "email not sent, notice not visible");
 
@@ -42,64 +45,69 @@
     });
   }
 
-  asyncTest("signup with valid unregistered secondary email", function() {
-    xhr.useResult("unknown_secondary");
-
+  asyncTest("signup with valid unregistered secondary email - show password", function() {
     $("#email").val("unregistered@testuser.com");
 
-    bid.signUp.submit(function() {
-      equal($(".emailsent").is(":visible"), true, "email sent, notice visible");
+    controller.submit(function() {
+      equal($("body").hasClass("enter_password"), true, "new email, password section shown");
+
       start();
     });
   });
 
-  asyncTest("signup with valid unregistered email with leading/trailing whitespace", function() {
-    xhr.useResult("unknown_secondary");
 
+  asyncTest("submit with valid unregistered email with leading/trailing whitespace", function() {
     $("#email").val(" unregistered@testuser.com ");
 
-    bid.signUp.submit(function() {
-      equal($(".emailsent").is(":visible"), true, "email sent, notice visible");
+    controller.submit(function() {
+      equal($("body").hasClass("enter_password"), true, "new email, password section shown");
       start();
     });
   });
 
-  asyncTest("signup with valid registered email", function() {
-    xhr.useResult("known_secondary");
+  asyncTest("submit with valid registered email", function() {
     $("#email").val("registered@testuser.com");
 
-    testNotRegistered();
+    testPasswordNotShown();
   });
 
-  asyncTest("signup with invalid email address", function() {
+  asyncTest("submit with invalid email address", function() {
     $("#email").val("invalid");
 
-    testNotRegistered();
+    testPasswordNotShown();
   });
 
-  asyncTest("signup with throttling", function() {
-    xhr.useResult("throttle");
-
+  asyncTest("submit with XHR error", function() {
+    xhr.useResult("ajaxError");
     $("#email").val("unregistered@testuser.com");
 
-    testNotRegistered();
-  });
-
-  asyncTest("signup with XHR error", function() {
-    xhr.useResult("invalid");
-    $("#email").val("unregistered@testuser.com");
-
-    testNotRegistered(function() {
+    testPasswordNotShown(function() {
       testHelpers.testErrorVisible();
     });
   });
 
-  asyncTest("signup with unregistered secondary email and cancel button pressed", function() {
-    xhr.useResult("unknown_secondary");
-    $("#email").val("unregistered@testuser.com");
 
-    bid.signUp.submit(function() {
-      bid.signUp.back(function() {
+  asyncTest("passwordSubmit with throttling", function() {
+    $("#email").val("unregistered@testuser.com");
+    $("#password, #vpassword").val("password");
+
+    xhr.useResult("throttle");
+    controller.passwordSubmit(function(userStaged) {
+      equal(userStaged, false, "email throttling took effect, user not staged");
+      start();
+    });
+  });
+
+  asyncTest("passwordSubmit happy case, check back button too", function() {
+    $("#email").val("unregistered@testuser.com");
+    $("#password, #vpassword").val("password");
+
+    controller.passwordSubmit(function(userStaged) {
+      equal(userStaged, true, "user has been staged");
+      equal($(".emailsent").is(":visible"), true, "email sent, notice visible");
+
+      // check back button
+      controller.back(function() {
         equal($(".notification:visible").length, 0, "no notifications are visible - visible: " + $(".notification:visible").attr("id"));
         ok($(".forminputs:visible").length, "form inputs are again visible");
         equal($("#email").val(), "unregistered@testuser.com", "email address restored");
@@ -107,6 +115,7 @@
       });
     });
   });
+
 
   asyncTest("signup with primary email address, provisioning failure - expect error screen", function() {
     xhr.useResult("primary");
@@ -116,7 +125,7 @@
       msg: "doowap"
     });
 
-    bid.signUp.submit(function(status) {
+    controller.submit(function(status) {
       equal(status, false, "provisioning failure, status false");
       testHelpers.testErrorVisible();
       start();
@@ -128,7 +137,7 @@
     $("#email").val("unregistered@testuser.com");
     provisioning.setStatus(provisioning.AUTHENTICATED);
 
-    bid.signUp.submit(function(status) {
+    controller.submit(function(status) {
       equal(status, true, "primary addition success - true status");
       equal($("#congrats:visible").length, 1, "success notification is visible");
       start();
@@ -139,7 +148,7 @@
     xhr.useResult("primary");
     $("#email").val("unregistered@testuser.com");
 
-    bid.signUp.submit(function(status) {
+    controller.submit(function(status) {
       equal($("#primary_verify:visible").length, 1, "success notification is visible");
       equal($("#primary_email").text(), "unregistered@testuser.com", "correct email shown");
       equal(status, false, "user must authenticate, some action needed.");
@@ -151,8 +160,8 @@
     xhr.useResult("primary");
     $("#email").val("unregistered@testuser.com");
 
-    bid.signUp.submit(function(status) {
-      bid.signUp.authWithPrimary(function() {
+    controller.submit(function(status) {
+      controller.authWithPrimary(function() {
         ok(winchan.oncomplete, "winchan set up");
         start();
       });
@@ -160,7 +169,7 @@
   });
 
   asyncTest("primaryAuthComplete with error, expect incorrect status", function() {
-    bid.signUp.primaryAuthComplete("error", "", function(status) {
+    controller.primaryAuthComplete("error", "", function(status) {
       equal(status, false, "correct status for could not complete");
       testHelpers.testErrorVisible();
       start();
@@ -171,15 +180,15 @@
     xhr.useResult("primary");
     $("#email").val("unregistered@testuser.com");
 
-    bid.signUp.submit(function(status) {
-      bid.signUp.authWithPrimary(function() {
+    controller.submit(function(status) {
+      controller.authWithPrimary(function() {
         // In real life the user would now be authenticated.
         provisioning.setStatus(provisioning.AUTHENTICATED);
 
         // Before primaryAuthComplete is called, we reset the user caches to
         // force re-fetching of what could have been stale user data.
         user.resetCaches();
-        bid.signUp.primaryAuthComplete(null, "success", function(status) {
+        controller.primaryAuthComplete(null, "success", function(status) {
           equal(status, true, "correct status");
           equal($("#congrats:visible").length, 1, "success notification is visible");
           start();

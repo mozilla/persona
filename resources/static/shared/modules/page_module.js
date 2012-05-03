@@ -51,8 +51,9 @@ BrowserID.Modules.PageModule = (function() {
 
     start: function(options) {
       var self=this;
+      self.options = options || {};
+
       self.bind("form", "submit", cancelEvent(onSubmit));
-      self.click("#thisIsNotMe", self.close.bind(self, "notme"));
     },
 
     stop: function() {
@@ -153,6 +154,7 @@ BrowserID.Modules.PageModule = (function() {
     submit: function() {
     },
 
+    // XXX maybe we should not get rid of this.
     close: function(message) {
       this.destroy();
       if (message) {

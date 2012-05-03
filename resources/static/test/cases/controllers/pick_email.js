@@ -137,5 +137,16 @@
     equal($("#email_0").is(":checked"), true, "radio button is correctly selected");
   });
 
+  asyncTest("click on not me button - trigger notme message", function() {
+    createController();
+
+    register("notme", function(msg, info) {
+      ok(true, "notme triggered");
+      start();
+    });
+
+    $("#thisIsNotMe").click();
+  });
+
 }());
 

@@ -29,6 +29,7 @@ BrowserID.History = (function() {
       return this.current;
     },
 
+    // XXX this should be renamed to pushState
     saveState: function() {
       this.history.push(this.current);
     },

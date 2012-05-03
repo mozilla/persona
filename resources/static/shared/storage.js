@@ -3,12 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 BrowserID.Storage = (function() {
+  "use strict";
 
   var jwk,
-      ONE_DAY_IN_MS = (1000 * 60 * 60 * 24);
+      ONE_DAY_IN_MS = (1000 * 60 * 60 * 24),
+      storage;
 
   try {
-    var storage = localStorage;
+    storage = localStorage;
   }
   catch(e) {
     // Fx with cookies disabled will except while trying to access
@@ -64,6 +66,18 @@ BrowserID.Storage = (function() {
     var emails = getEmails();
     emails[email] = obj;
     storeEmails(emails);
+  }
+
+  function addPrimaryEmail(email, obj) {
+    obj = obj || {};
+    obj.type = "primary";
+    addEmail(email, obj);
+  }
+
+  function addSecondaryEmail(email, obj) {
+    obj = obj || {};
+    obj.type = "secondary";
+    addEmail(email, obj);
   }
 
   function removeEmail(email) {
@@ -212,7 +226,7 @@ BrowserID.Storage = (function() {
       if (lastState !== currentState) {
         callback();
         lastState = currentState;
-      };
+      }
     }
 
     // IE8 does not have addEventListener, nor does it support storage events.
@@ -350,7 +364,7 @@ BrowserID.Storage = (function() {
 
   function clearUsersComputerOwnershipStatus(userid) {
     try {
-      allInfo = JSON.parse(storage.usersComputer);
+      var allInfo = JSON.parse(storage.usersComputer);
       if (typeof allInfo !== 'object') throw 'bogus';
 
       var userInfo = allInfo[userid];
@@ -435,6 +449,16 @@ BrowserID.Storage = (function() {
      * @method addEmail
      */
     addEmail: addEmail,
+    /**
+     * Add a primary address
+     * @method addPrimaryEmail
+     */
+    addPrimaryEmail: addPrimaryEmail,
+    /**
+     * Add a secondary address
+     * @method addSecondaryEmail
+     */
+    addSecondaryEmail: addSecondaryEmail,
     /**
      * Get all email addresses and their associated key pairs
      * @method getEmails

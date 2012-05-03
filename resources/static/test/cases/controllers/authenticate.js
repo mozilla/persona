@@ -80,29 +80,32 @@
   });
 
   function testUserUnregistered() {
-    register("create_user", function() {
-      ok(true, "email was valid, user not registered");
+    register("new_user", function(msg, info, rehydrate) {
+      ok(info.email, "new_user triggered with info.email");
+      // rehydration email used to go back to authentication controller if
+      // the user cancels one of the next steps.
+      ok(rehydrate.email, "new_user triggered with rehydrate.email");
       start();
     });
 
     controller.checkEmail();
   }
 
-  asyncTest("checkEmail with unknown secondary email, expect 'create_user' message", function() {
+  asyncTest("checkEmail with unknown secondary email - 'new_user' message", function() {
     $("#email").val("unregistered@testuser.com");
     xhr.useResult("unknown_secondary");
 
     testUserUnregistered();
   });
 
-  asyncTest("checkEmail with email with leading/trailing whitespace, user not registered, expect 'create_user' message", function() {
+  asyncTest("checkEmail with email with leading/trailing whitespace, user not registered - 'new_user' message", function() {
     $("#email").val("    unregistered@testuser.com   ");
     xhr.useResult("unknown_secondary");
 
     testUserUnregistered();
   });
 
-  asyncTest("checkEmail with normal email, user registered, expect 'enter_password' message", function() {
+  asyncTest("checkEmail with normal email, user registered - 'enter_password' message", function() {
     $("#email").val("registered@testuser.com");
     xhr.useResult("known_secondary");
 
@@ -114,7 +117,7 @@
     controller.checkEmail();
   });
 
-  asyncTest("checkEmail with email that has IdP support, expect 'primary_user' message", function() {
+  asyncTest("checkEmail with email that has IdP support - 'primary_user' message", function() {
     $("#email").val("unregistered@testuser.com");
     xhr.useResult("primary");
 
@@ -165,8 +168,8 @@
     $("#email").val("unregistered@testuser.com");
     xhr.useResult("unknown_secondary");
 
-    register("user_staged", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "user_staged with correct email triggered");
+    register("new_user", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "new_user with correct email triggered");
       start();
     });
 
@@ -177,43 +180,12 @@
     $("#email").val("unregistered");
 
     var handlerCalled = false;
-    register("user_staged", function(msg, info) {
+    register("new_user", function(msg, info) {
       handlerCalled = true;
     });
 
     controller.createUser(function() {
-      equal(handlerCalled, false, "bad jiji, user_staged should not have been called with invalid email");
-      start();
-    });
-  });
-
-  asyncTest("createUser with valid email but throttling", function() {
-    $("#email").val("unregistered@testuser.com");
-
-    var handlerCalled = false;
-    register("user_staged", function(msg, info) {
-      handlerCalled = true;
-    });
-
-    xhr.useResult("throttle");
-    controller.createUser(function() {
-      equal(handlerCalled, false, "bad jiji, user_staged should not have been called with throttling");
-      equal(bid.Tooltip.shown, true, "tooltip is shown");
-      start();
-    });
-  });
-
-  asyncTest("createUser with valid email, XHR error", function() {
-    $("#email").val("unregistered@testuser.com");
-
-    var handlerCalled = false;
-    register("user_staged", function(msg, info) {
-      handlerCalled = true;
-    });
-
-    xhr.useResult("ajaxError");
-    controller.createUser(function() {
-      equal(handlerCalled, false, "bad jiji, user_staged should not have been called with XHR error");
+      equal(handlerCalled, false, "bad jiji, new_user should not have been called with invalid email");
       start();
     });
   });

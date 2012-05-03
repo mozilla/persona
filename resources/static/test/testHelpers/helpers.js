@@ -29,7 +29,7 @@ BrowserID.TestHelpers = (function() {
       }
       calls[msg] = true;
 
-      cb && cb(msg, info);
+      cb && cb.apply(null, arguments);
     }));
   }
 
@@ -203,6 +203,17 @@ BrowserID.TestHelpers = (function() {
       for(var i=0, key; key=expected[i]; ++i) {
         ok(key in objToTest, msg || ("object contains " + key));
       }
+    },
+
+    testObjectValuesEqual: function(objToTest, expected, msg) {
+      for(var key in expected) {
+        equal(objToTest[key], expected[key], key + " set to: " + expected[key] + (msg ? " - " + msg : ""));
+      }
+    },
+
+    testHasClass: function(selector, className, msg) {
+      ok($(selector).hasClass(className),
+          selector + " has className " + className + " - " + msg);
     }
 
   };

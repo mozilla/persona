@@ -41,6 +41,7 @@ suite.addBatch({
   "account staging": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: TEST_EMAIL,
+      pass: TEST_PASSWORD,
       site: TEST_ORIGIN
     }),
     "works":     function(err, r) {
@@ -65,8 +66,7 @@ suite.addBatch({
   "setting password and creating the account": {
     topic: function() {
       wsapi.post('/wsapi/complete_user_creation', {
-        token: token,
-        pass: TEST_PASSWORD
+        token: token
       }).call(this);
     },
     "works just fine": function(err, r) {
@@ -714,7 +714,7 @@ suite.addBatch({
 });
 
 // now verify that assertions from a primary who does not have browserid support
-// will fail to verify 
+// will fail to verify
 function make_other_issuer_tests(new_style) {
   var title = "generating an assertion from a cert signed by some other domain with " + (new_style ? "new style" : "old style");
   var tests = {

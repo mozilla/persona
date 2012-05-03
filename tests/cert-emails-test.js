@@ -32,7 +32,7 @@ suite.addBatch({
   "staging an account": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: 'syncer@somehost.com',
-      pubkey: 'fakekey',
+      pass: 'fakepass',
       site:'http://fakesite.com'
     }),
     "succeeds": function(err, r) {
@@ -57,7 +57,7 @@ suite.addBatch({
 suite.addBatch({
   "verifying account ownership": {
     topic: function() {
-      wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'fakepass' }).call(this);
+      wsapi.post('/wsapi/complete_user_creation', { token: token }).call(this);
     },
     "works": function(err, r) {
       assert.equal(r.code, 200);

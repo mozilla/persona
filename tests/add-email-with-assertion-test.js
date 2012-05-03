@@ -112,6 +112,7 @@ suite.addBatch({
   "stage an account": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: TEST_FIRST_ACCT,
+      pass: 'fakepass',
       site:'http://fakesite.com:652'
     }),
     "works": function(err, r) {
@@ -126,7 +127,7 @@ suite.addBatch({
       },
       "can be used": {
         topic: function(token) {
-          wsapi.post('/wsapi/complete_user_creation', { token: token, pass: 'fakepass' }).call(this);
+          wsapi.post('/wsapi/complete_user_creation', { token: token }).call(this);
         },
         "to verify email ownership": function(err, r) {
           assert.equal(r.code, 200);

@@ -32,6 +32,7 @@ suite.addBatch({
   "account staging": {
     topic: wsapi.post('/wsapi/stage_user', {
       email: TEST_EMAIL,
+      pass: PASSWORD,
       site: 'https://fakesite.com'
     }),
     "works":     function(err, r) {
@@ -58,8 +59,7 @@ suite.addBatch({
   "setting password": {
     topic: function() {
       wsapi.post('/wsapi/complete_user_creation', {
-        token: token,
-        pass: PASSWORD
+        token: token
       }).call(this);
     },
     "works just fine": function(err, r) {
@@ -89,7 +89,7 @@ suite.addBatch({
       var resp = JSON.parse(r.body);
       assert.strictEqual(typeof resp.csrf_token, 'string');
       var serverTime = new Date(resp.server_time);
-      assert.ok(new Date() - serverTime < 5000);      
+      assert.ok(new Date() - serverTime < 5000);
       assert.strictEqual(resp.authenticated, true);
       assert.strictEqual(resp.auth_level, 'password');
       var domainKeyCreation = new Date(resp.domain_key_creation_time);

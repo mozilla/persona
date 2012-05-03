@@ -84,7 +84,7 @@
   asyncTest("doCannotVerifyRequiredPrimary - show the error screen", function() {
     createController({
       ready: function() {
-        controller.doCannotVerifyRequiredPrimary({ email: "testuser@testuser.com"});
+        controller.doCannotVerifyRequiredPrimary({ email: TEST_EMAIL});
 
         testHelpers.testErrorVisible();
         start();
@@ -112,5 +112,26 @@
     testActionStartsModule('doGenerateAssertion', { email: TEST_EMAIL }, "generate_assertion");
   });
 
+
+  asyncTest("doStageUser with successful creation - trigger user_staged", function() {
+    createController({
+      ready: function() {
+        var email;
+        testHelpers.register("user_staged", function(msg, info) {
+          email = info.email;
+        });
+
+        controller.doStageUser({ email: TEST_EMAIL, password: "password", ready: function(status) {
+          equal(status, true, "correct status");
+          equal(email, TEST_EMAIL, "user successfully staged");
+          start();
+        }});
+      }
+    });
+  });
+
+  asyncTest("doForgotPassword - call the set_password controller with reset_password true", function() {
+    testActionStartsModule('doForgotPassword', { email: TEST_EMAIL }, "set_password");
+  });
 }());
 
