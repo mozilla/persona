@@ -408,7 +408,7 @@ BrowserID.Storage = (function() {
     try {
       return JSON.parse(storage.interactionData)[0];
     } catch(e) {
-      //alert(e);
+      if (window.console && console.error) console.error(e);
       return {};
     }
   }
@@ -419,7 +419,7 @@ BrowserID.Storage = (function() {
       id = JSON.parse(storage.interactionData);
       id[0] = data;
     } catch(e) {
-      //alert(e);
+      if (window.console && console.error) console.error(e);
       id = [ data ];
     }
     storage.interactionData = JSON.stringify(id);
@@ -429,7 +429,7 @@ BrowserID.Storage = (function() {
     try {
       return JSON.parse(storage.interactionData);
     } catch(e) {
-      //alert(e);
+      if (window.console && console.error) console.error(e);
       return [];
     }
   }
@@ -438,8 +438,8 @@ BrowserID.Storage = (function() {
     try {
       storage.interactionData = JSON.stringify([]);
     } catch(e) {
-  //    alert(e);
-    //  delete storage.interactionData;
+      delete storage.interactionData;
+      if (window.console && console.error) console.error(e);      
     }
   }
 
