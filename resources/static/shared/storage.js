@@ -505,30 +505,31 @@ BrowserID.Storage = (function() {
 
     interactionData: {
       /**
-       * add a data interaction blob to localstorage
+       * add a new interaction blob to localstorage, this will *push* any stored
+       * blobs to the 'completed' backlog, and happens when a new dialog interaction
+       * begins.
        * @param {object} data - an object to push onto the queue
        * @method interactionData.push()
        * @returns nada
        */
       push: pushInteractionData,
       /**
-       * read the current interaction data blob (the one on the top of the
-       * stack)
+       * read the interaction data blob associated with the current interaction
        * @method interactionData.current()
        * @returns a JSON object containing the latest interaction data blob
        */
       current: currentInteractionData,
       /**
-       * overwrite the current interaction data blob (the one on the top of the
-       * stack)
+       * overwrite the interaction data blob associated with the current interaction
        * @param {object} data - the object to overwrite current with
        * @method interactionData.setCurrent()
        */
       setCurrent: setCurrentInteractionData,
       /**
-       * get all the saved interaction data (returned as a JSON array)
+       * get all past saved interaction data (returned as a JSON array), excluding
+       * the "current" data (that which is being collected now).
        * @method interactionData.get()
-       * @returns an array, possibly of length zero if no interaction data is
+       * @returns an array, possibly of length zero if no past interaction data is
        * available
        */
       get: getAllInteractionData,
