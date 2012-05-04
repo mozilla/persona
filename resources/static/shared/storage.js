@@ -25,6 +25,11 @@ BrowserID.Storage = (function() {
     };
   }
 
+  // temporary, replace with helpers.log if storage uses elog long term...
+  function elog (msg) {
+    if (window.console && console.error) console.error(msg);
+  }
+
   function prepareDeps() {
     if (!jwcrypto) {
       jwcrypto = require("./jwcrypto");
@@ -409,7 +414,7 @@ BrowserID.Storage = (function() {
     try {
       return storage.interactionData ? JSON.parse(storage.interactionData)[0] : {};
     } catch(e) {
-      if (window.console && console.error) console.error(e);
+      elog(e);
       return {};
     }
   }
@@ -420,7 +425,7 @@ BrowserID.Storage = (function() {
       id = JSON.parse(storage.interactionData);
       id[0] = data;
     } catch(e) {
-      if (window.console && console.error) console.error(e);
+      elog(e);
       id = [ data ];
     }
     storage.interactionData = JSON.stringify(id);
@@ -439,8 +444,7 @@ BrowserID.Storage = (function() {
     try {
       storage.interactionData = JSON.stringify([]);
     } catch(e) {
-      delete storage.interactionData;
-      if (window.console && console.error) console.error(e);
+      elog(e);
     }
   }
 
