@@ -6,7 +6,7 @@
 BrowserID.Provisioning = (function() {
   "use strict";
 
-  var jwk = require("./jwk");
+  var jwcrypto = require("./lib/jwcrypto");
 
   var Provisioning = function(args, successCB, failureCB) {
     function tearDown() {
@@ -69,8 +69,10 @@ BrowserID.Provisioning = (function() {
     });
 
     chan.bind('genKeyPair', function(trans, s) {
-      keypair = jwk.KeyPair.generate("DS", BrowserID.KEY_LENGTH);
-      return keypair.publicKey.toSimpleObject();
+      trans.delayReturn(true);
+      jwcrypto.generateKeypair({algorithm: "DS", keysize: BrowserID.KEY_LENGTH}, function(err, keypair) {
+        trans.complete(keypair.publicKey.toSimpleObject());
+      });
     });
 
     chan.bind('raiseProvisioningFailure', function(trans, s) {

@@ -5,7 +5,7 @@
 BrowserID.Storage = (function() {
   "use strict";
 
-  var jwk,
+  var jwcrypto,
       ONE_DAY_IN_MS = (1000 * 60 * 60 * 24),
       storage;
 
@@ -26,8 +26,8 @@ BrowserID.Storage = (function() {
   }
 
   function prepareDeps() {
-    if (!jwk) {
-      jwk = require("./jwk");
+    if (!jwcrypto) {
+      jwcrypto = require("./jwcrypto");
     }
   }
 
@@ -125,9 +125,10 @@ BrowserID.Storage = (function() {
     storage.tempKeypair = null;
     if (raw_kp) {
       prepareDeps();
-      var kp = new jwk.KeyPair();
-      kp.publicKey = jwk.PublicKey.fromSimpleObject(raw_kp.publicKey);
-      kp.secretKey = jwk.SecretKey.fromSimpleObject(raw_kp.secretKey);
+
+      var kp = {};
+      kp.publicKey = jwcrypto.loadPublicKeyFromObject(raw_kp.publicKey);
+      kp.secretKey = jwcrypto.loadSecretKeyFromObject(raw_kp.secretKey);
       return kp;
     } else {
       return null;

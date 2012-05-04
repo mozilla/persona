@@ -3,10 +3,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-var jwk = require("./jwk");
-var jwt = require("./jwt");
-var jwcert = require("./jwcert");
-var vep = require("./vep");
+var jwcrypto = require("./lib/jwcrypto");
 
 (function() {
   var bid = BrowserID,
@@ -33,20 +30,18 @@ var vep = require("./vep");
     // Decode the assertion to a bundle.
     // var bundle = JSON.parse(window.atob(assertion));
     // WOW, ^^ was assuming a specific format, let's fix that
-    var bundle = vep.unbundleCertsAndAssertion(assertion);
+    var bundle = jwcrypto.cert.unbundle(assertion);
 
     // Make sure both parts of the bundle exist
-    ok(bundle.certificates && bundle.certificates.length, "we have an array like object for the certificates");
-    equal(typeof bundle.assertion, "string");
+    ok(bundle.certs && bundle.certs.length, "we have an array like object for the certificates");
+    equal(typeof bundle.signedAssertion, "string");
 
     // Decode the assertion itself
-    var tok = new jwt.JWT();
-    tok.parse(bundle.assertion);
-
+    var components = jwcrypto.extractComponents(bundle.signedAssertion);
 
     // Check for parts of the assertion
-    equal(tok.audience, testOrigin, "correct audience");
-    var expires = tok.expires.getTime();
+    equal(components.payload.aud, testOrigin, "correct audience");
+    var expires = parseInt(components.payload.exp);
     ok(typeof expires === "number" && !isNaN(expires), "expiration date is valid");
 
     // this should be based on server time, not local time.
@@ -58,9 +53,9 @@ var vep = require("./vep");
       var diff = Math.abs(expires - nowPlus2Mins);
       ok(diff < 5000, "expiration date must be within 5 seconds of 2 minutes from now: " + diff);
 
-      equal(typeof tok.cryptoSegment, "string", "cryptoSegment exists");
-      equal(typeof tok.headerSegment, "string", "headerSegment exists");
-      equal(typeof tok.payloadSegment, "string", "payloadSegment exists");
+      equal(typeof components.cryptoSegment, "string", "cryptoSegment exists");
+      equal(typeof components.headerSegment, "string", "headerSegment exists");
+      equal(typeof components.payloadSegment, "string", "payloadSegment exists");
 
       if(cb) cb();
     });
@@ -155,15 +150,15 @@ var vep = require("./vep");
 
   asyncTest("createPrimaryUser with primary, user verified with primary - expect 'primary.verified'", function() {
     xhr.useResult("primary");
-    provisioning.setStatus(provisioning.AUTHENTICATED);
-
-    lib.createPrimaryUser({email: "unregistered@testuser.com"}, function(status) {
-      equal(status, "primary.verified", "primary user is already verified, correct status");
-      network.checkAuth(function(authenticated) {
-        equal(authenticated, "assertion", "after provisioning user, user should be automatically authenticated to BrowserID");
-        start();
-      });
-    }, testHelpers.unexpectedXHRFailure);
+    provisioning.setStatus(provisioning.AUTHENTICATED, function() {
+      lib.createPrimaryUser({email: "unregistered@testuser.com"}, function(status) {
+        equal(status, "primary.verified", "primary user is already verified, correct status");
+        network.checkAuth(function(authenticated) {
+          equal(authenticated, "assertion", "after provisioning user, user should be automatically authenticated to BrowserID");
+          start();
+        });
+      }, testHelpers.unexpectedXHRFailure);
+    });
   });
 
   asyncTest("createPrimaryUser with primary, user must authenticate with primary - expect 'primary.verify'", function() {

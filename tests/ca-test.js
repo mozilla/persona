@@ -12,45 +12,62 @@ start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 email = require('../lib/email.js'),
 ca = require('../lib/keysigner/ca.js'),
-jwcert = require('jwcrypto/jwcert'),
-jwk = require('jwcrypto/jwk'),
-jws = require('jwcrypto/jws');
+jwcrypto = require('jwcrypto'),
+cert = jwcrypto.cert,
+assertion = jwcrypto.assertion;
+
+// algorithms
+require("jwcrypto/lib/algs/rs");
 
 var suite = vows.describe('ca');
 
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
-// generate a public key
-var kp = jwk.KeyPair.generate("RS",64);
-
 var email_addr = "foo@foo.com";
+var issuer = "127.0.0.1";
+
+var kp = null;
 
 // certify a key
 suite.addBatch({
-  "certify a public key": {
+  "generate a keypair": {
     topic: function() {
-      var expiration = new Date();
-      expiration.setTime(new Date().valueOf() + 5000);
-      return ca.certify('127.0.0.1', email_addr, kp.publicKey, expiration);
+      // generate a public key
+      jwcrypto.generateKeypair({algorithm: "RS", keysize: 64}, this.callback);
     },
-    "parses" : function(cert_raw, err) {
-      var cert = ca.parseCert(cert_raw);
-      assert.notEqual(cert, null);
+    "got a keypair": function(err, keypair) {
+      assert.isNull(err);
+      assert.isObject(keypair);
+      kp = keypair;
     },
-    "verifies": function(cert_raw, err) {
-      // FIXME we might want to turn this into a true async test
-      // rather than one that is assumed to be synchronous although
-      // it has an async structure
-      ca.verifyChain('127.0.0.1', [cert_raw], function(pk) {
-        assert.isTrue(kp.publicKey.equals(pk));
-      });
+    "certify a public key": {
+      topic: function() {
+        var expiration = new Date();
+        expiration.setTime(new Date().valueOf() + 5000);
+        ca.certify(issuer, email_addr, kp.publicKey, expiration, this.callback);
+      },
+      "does not error out": function(err, cert_raw) {
+        assert.isNull(err);
+        assert.isNotNull(cert_raw);
+      },
+      "looks ok" : function(err, cert_raw) {
+        assert.equal(cert_raw.split(".").length, 3);
+      },
+      "upon verification": {
+        topic: function(err, cert_raw) {
+          ca.verifyChain(issuer, [cert_raw], this.callback);
+        },
+        "verifies": function(err, pk, principal) {
+          assert.isNull(err);
+          assert.isTrue(kp.publicKey.equals(pk));
+          assert.equal(principal.email, email_addr);
+        }
+      }
     }
-  },
-  "certify a chain of keys": {
   }
 });
-
+               
 // run or export the suite.
 if (process.argv[1] === __filename) suite.run();
 else suite.export(module);

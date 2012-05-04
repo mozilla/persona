@@ -39,18 +39,29 @@ var primaryUser = new primary({
   domain: TEST_DOMAIN
 });
 
+suite.addBatch({
+  "set things up": {
+    topic: function() {
+      primaryUser.setup(this.callback);
+    },
+    "works": function() {
+      // nothing to do here
+    }
+  }
+});
+
 // first we'll create an account without a password by using
 // a primary address.
 suite.addBatch({
   "generating an assertion": {
     topic: function() {
-      return primaryUser.getAssertion(TEST_ORIGIN);
+      return primaryUser.getAssertion(TEST_ORIGIN, this.callback);
     },
-    "succeeds": function(r) {
+    "succeeds": function(err, r) {
       assert.isString(r);
     },
     "and logging in with the assertion": {
-      topic: function(assertion)  {
+      topic: function(err, assertion)  {
         wsapi.post('/wsapi/auth_with_assertion', {
           assertion: assertion,
           ephemeral: true

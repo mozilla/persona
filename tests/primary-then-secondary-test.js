@@ -38,17 +38,28 @@ var primaryUser = new primary({
   domain: TEST_DOMAIN
 });
 
+suite.addBatch({
+  "set things up": {
+    topic: function() {
+      primaryUser.setup(this.callback);
+    },
+    "works": function() {
+      // nothing to do here
+    }
+  }
+});
+
 // now let's generate an assertion using this user
 suite.addBatch({
   "generating an assertion": {
     topic: function() {
-      return primaryUser.getAssertion(TEST_ORIGIN);
+      primaryUser.getAssertion(TEST_ORIGIN, this.callback);
     },
-    "succeeds": function(r) {
+    "succeeds": function(err, r) {
       assert.isString(r);
     },
     "and logging in with the assertion succeeds": {
-      topic: function(assertion)  {
+      topic: function(err, assertion)  {
         wsapi.post('/wsapi/auth_with_assertion', {
           assertion: assertion,
           ephemeral: true

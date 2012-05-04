@@ -47,7 +47,8 @@ BrowserID.Network = (function() {
     // seed the PRNG
     // FIXME: properly abstract this out, probably by exposing a jwcrypto
     // interface for randomness
-    require("./libs/all").sjcl.random.addEntropy(result.random_seed);
+    // require("./libs/all").sjcl.random.addEntropy(result.random_seed);
+    // FIXME: this wasn't doing anything for real, so commenting this out for now
   }
 
   function withContext(cb, onFailure) {

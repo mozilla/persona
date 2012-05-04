@@ -10,10 +10,7 @@ const assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-email = require('../lib/email.js'),
-jwcert = require('jwcrypto/jwcert'),
-jwk = require('jwcrypto/jwk'),
-jws = require('jwcrypto/jws');
+email = require('../lib/email.js');
 
 var suite = vows.describe('cookie-session-security');
 
