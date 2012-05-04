@@ -21,7 +21,6 @@
 // TODO:
 //  * should code explicitly call .addEvent?  or instead should this module
 //    listen for events via the mediator?
-//  * the primary flow will cause unload and reload.  omg.  How do we deal?
 
 BrowserID.Modules.InteractionData = (function() {
   var bid = BrowserID,
@@ -38,10 +37,10 @@ BrowserID.Modules.InteractionData = (function() {
     if (self.sessionContextHandled) return;
     self.sessionContextHandled = true;
 
-    // Publish any outstanding data.  Previous session data must be published
-    // independently of whether the current dialog session is allowed to sample
-    // data. This is because the original dialog session has already decided
-    // whether to collect data.
+    // Publish any outstanding data.  Unless this is a continuation, previous
+    // session data must be published independently of whether the current
+    // dialog session is allowed to sample data. This is because the original
+    // dialog session has already decided whether to collect data.
     publishStored();
 
     // set the sample rate as defined by the server.  It's a value
@@ -49,7 +48,7 @@ BrowserID.Modules.InteractionData = (function() {
     // of the time that we should capture
     var sampleRate = result.data_sample_rate || 0;
 
-    if(typeof self.samplingEnabled === "undefined") {
+    if (typeof self.samplingEnabled === "undefined") {
       // now that we've got sample rate, let's smash it into a boolean
       // probalistically
       self.samplingEnabled = Math.random() <= sampleRate;
@@ -64,6 +63,7 @@ BrowserID.Modules.InteractionData = (function() {
       event_stream: self.initialEventStream,
       sample_rate: sampleRate,
       timestamp: result.server_time,
+      local_timestamp: self.startTime.toString(),
       lang: dom.getAttr('html', 'lang') || null,
     };
 
@@ -130,26 +130,53 @@ BrowserID.Modules.InteractionData = (function() {
 
       var self = this;
 
-      self.startTime = new Date();
-
-      // If samplingEnabled is not specified in the options, it will be decided
-      // on the first "context_info" event, which corresponds to the first time
-      // we get 'session_context' from the server.
-      //
       // options.samplingEnabled is used for testing purposes.
+      //
+      // If samplingEnabled is not specified in the options, and this is not
+      // a continuation, samplingEnabled will be decided on the first "
+      // context_info" event, which corresponds to the first time
+      // 'session_context' returns from the server.
       self.samplingEnabled = options.samplingEnabled;
 
-      // The initialEventStream is used to store events until onSessionContext
-      // is called.  Once onSessionContext is called and it is known whether
-      // the user's data will be saved, initialEventStream will either be
-      // discarded or added to the data set that is saved to localStorage.
-      self.initialEventStream = [];
-      self.samplesBeingStored = false;
+      // continuation means the users dialog session is continuing, probably
+      // due to a redirect to an IdP and then a return after authentication.
+      if (options.continuation) {
+        var previousData = storage.current();
 
-      // whenever session_context is hit, let's hear about it so we can
-      // extract the information that's important to us (like, whether we
-      // should be running or not)
-      this.subscribe('context_info', onSessionContext);
+        var samplingEnabled = self.samplingEnabled = !!previousData.event_stream;
+        if (samplingEnabled) {
+          self.startTime = Date.parse(previousData.local_timestamp);
+
+          if (typeof self.samplingEnabled === "undefined") {
+            self.samplingEnabled = samplingEnabled;
+          }
+
+          // instead of waiting for session_context to start appending data to
+          // localStorage, start saving into localStorage now.
+          self.samplesBeingStored = true;
+        }
+        else {
+          // If there was no previous event stream, that means data collection
+          // was not allowed for the previous session.  Return with no further
+          // action, data collection is not allowed for this session either.
+          return;
+        }
+      }
+      else {
+        self.startTime = new Date();
+
+        // The initialEventStream is used to store events until onSessionContext
+        // is called.  Once onSessionContext is called and it is known whether
+        // the user's data will be saved, initialEventStream will either be
+        // discarded or added to the data set that is saved to localStorage.
+        self.initialEventStream = [];
+        self.samplesBeingStored = false;
+
+        // whenever session_context is hit, let's hear about it so we can
+        // extract the information that's important to us (like, whether we
+        // should be running or not)
+        self.contextInfoHandle = this.subscribe('context_info', onSessionContext);
+      }
 
       // on all events, update event_stream
       this.subscribeAll(addEvent);
@@ -163,7 +190,7 @@ BrowserID.Modules.InteractionData = (function() {
     },
 
     getEventStream: function() {
-      return this.samplesBeingStored ? storage.current().event_stream : this.initialEventStream;
+      return this.samplesBeingStored ? storage.current().event_stream : this.initialEventStream || [];
     },
 
     publishStored: publishStored

@@ -14,8 +14,11 @@
   xhr.init({ time_until_delay: 10 * 1000 });
   network.init();
 
+  var hash = window.location.hash || "",
+      continuation = hash.indexOf("#CREATE_EMAIL") > -1 || hash.indexOf("#ADD_EMAIL") > -1;
+
   moduleManager.register("interaction_data", modules.InteractionData);
-  moduleManager.start("interaction_data");
+  moduleManager.start("interaction_data", { continuation: continuation });
 
   moduleManager.register("cookie_check", modules.CookieCheck);
   moduleManager.start("cookie_check", {
