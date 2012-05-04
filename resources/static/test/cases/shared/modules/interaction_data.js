@@ -9,6 +9,7 @@
   var bid = BrowserID,
       testHelpers = bid.TestHelpers,
       network = bid.Network,
+      storage = bid.Storage,
       controller;
 
   module("shared/modules/interaction_data", {
@@ -21,42 +22,99 @@
   });
 
   function createController(config) {
-    config = _.extend({ forceSample: true }, config);
+    config = _.extend({ samplingEnabled: true }, config);
     controller = BrowserID.Modules.InteractionData.create();
     controller.start(config);
   }
 
-  asyncTest("forceSample - data collection starts on context_info", function() {
+  function indexOfEvent(eventStream, eventName) {
+    for(var event, i = 0; event = eventStream[i]; ++i) {
+      if(event[0] === eventName) return i;
+    }
+
+    return -1;
+  }
+
+  asyncTest("samplingEnabled - ensure data collection working as expected", function() {
     createController();
 
-    network.withContext(function() {
-      equal(controller.isSampling(), true, "sampling has started!");
-      var data = controller.getData();
+    controller.addEvent("before_session_context");
 
-      testHelpers.testObjectHasOwnProperties(data, ["sample_rate", "timestamp", "lang", "user_agent"]);
+    var events = controller.getEventStream();
+    ok(indexOfEvent(events, "before_session_context") > -1, "before_session_context correctly saved to event stream");
+    ok(indexOfEvent(events, "after_session_context") === -1, "after_session_context not yet added to current event stream");
+
+    // with context initializes the current stored data.
+    network.withContext(function() {
+      var data = controller.getCurrentStoredData();
+
+      // Make sure expected items are in the current stored data.
+      testHelpers.testKeysInObject(data, ["event_stream", "sample_rate", "timestamp", "lang"]);
+
+      controller.addEvent("after_session_context");
+
+      var events = controller.getEventStream();
+
+      // Make sure both the before_session_context and after_session_context
+      // are both on the event stream.
+      ok(indexOfEvent(events, "before_session_context") > -1, "before_session_context correctly saved to current event stream");
+      ok(indexOfEvent(events, "after_session_context") > -1, "after_session_context correctly saved to current event stream");
+
+
+      // Ensure that the event name as well as relative time are saved for an
+      // event.
+      var index = indexOfEvent(events, "after_session_context");
+      var event = events[index];
+
+      ok(index > -1, "after_session_context correctly saved to current event stream");
+      equal(event[0], "after_session_context", "name stored");
+      equal(typeof event[1], "number", "time stored");
 
       start();
     });
+
   });
 
-  asyncTest("addEvent to stream, getEventStream", function() {
+  asyncTest("publish data", function() {
     createController();
 
-    network.withContext(function() {
-      controller.addEvent("something_special");
+    // force saved data to be cleared.
+    storage.interactionData.clear();
+    controller.publishStored(function(status) {
+      equal(status, false, "no data to publish");
 
-      var stream = controller.getStream(),
-          lastItem = stream[stream.length - 1];
+      // session context is required start saving events to localStorage.
+      network.withContext(function() {
 
-      equal(lastItem[0], "something_special", "name stored");
-      equal(typeof lastItem[1], "number", "time stored");
+        // Add an event which should allow us to publish
+        controller.addEvent("something_special");
+        controller.publishStored(function(status) {
+          equal(status, true, "data correctly published");
 
-      start();
+          start();
+        });
+      });
     });
   });
 
-  asyncTest("publish - publish any outstanding data", function() {
+  asyncTest("samplingEnabled set to false - no data collection occurs", function() {
+    createController({ samplingEnabled: false });
+
+    // the initial with_context will send off any stored data, there should be
+    // no stored data.
+    network.withContext(function() {
+      controller.addEvent("after_session_context");
+      var events = controller.getEventStream();
+
+      var index = indexOfEvent(events, "after_session_context");
+      equal(index, -1, "events not being stored");
+
+      equal(typeof controller.getCurrentStoredData(), "undefined", "no stored data");
+
+      start();
+    });
 
   });
+
 
 }());

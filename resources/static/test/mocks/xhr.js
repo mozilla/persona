@@ -119,6 +119,8 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/prolong_session valid": { success: true },
       "post /wsapi/prolong_session unauthenticated": 400,
       "post /wsapi/prolong_session ajaxError": undefined,
+      "post /wsapi/interaction_data valid": { success: true },
+      "post /wsapi/interaction_data ajaxError": undefined
     },
 
     setContextInfo: function(field, value) {

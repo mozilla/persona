@@ -27,38 +27,45 @@ BrowserID.Modules.InteractionData = (function() {
   var bid = BrowserID,
       storage = bid.Storage.interactionData,
       network = bid.Network,
+      complete = bid.Helpers.complete,
       dom = bid.DOM,
       sc;
 
   function onSessionContext(msg, result) {
-    var self=this,
-        currentData = self.currentData;
+    var self=this;
 
     // defend against onSessionContext being called multiple times
-    if (self.sample !== undefined) return;
+    if (self.sessionContextHandled) return;
+    self.sessionContextHandled = true;
+
+    // Publish any outstanding data.  Previous session data must be published
+    // independently of whether the current dialog session is allowed to sample
+    // data. This is because the original dialog session has already decided
+    // whether to collect data.
+    publishStored();
 
     // set the sample rate as defined by the server.  It's a value
     // between 0..1, integer or float, and it specifies the percentage
     // of the time that we should capture
     var sampleRate = result.data_sample_rate || 0;
 
-    // now that we've got sample rate, let's smash it into a boolean
-    // probalistically
-    self.sample = self.forceSample || (Math.random() <= sampleRate);
+    if(typeof self.samplingEnabled === "undefined") {
+      // now that we've got sample rate, let's smash it into a boolean
+      // probalistically
+      self.samplingEnabled = Math.random() <= sampleRate;
+    }
 
     // if we're not going to sample, kick out early.
-    if (!self.sample) {
-      self.currentData = undefined;
+    if (!self.samplingEnabled) {
       return;
     }
 
-    currentData.sample_rate = sampleRate;
-
-    // set current time
-    currentData.timestamp = result.server_time;
-
-    // language
-    currentData.lang = dom.getAttr('html', 'lang');
+    var currentData = {
+      event_stream: self.initialEventStream,
+      sample_rate: sampleRate,
+      timestamp: result.server_time,
+      lang: dom.getAttr('html', 'lang') || null,
+    };
 
     if (window.screen) {
       currentData.screen_size = {
@@ -67,19 +74,15 @@ BrowserID.Modules.InteractionData = (function() {
       };
     }
 
-    // XXX: implement me!
-    currentData.user_agent = {
-      os: null,
-      browser: null,
-      version: null
-    };
-
-    // cool.  now let's persist this data
+    // cool.  now let's persist the initial data.  This data will be published
+    // as soon as the first session_context completes for the next dialog
+    // session.  Use a push because old data *may not* have been correctly
+    // published to a down server or erroring web service.
     storage.push(currentData);
-    currentData = undefined;
 
-    // finally, let's try to publish any old data
-    setTimeout(publish, 10);
+    self.initialEventStream = null;
+
+    self.samplesBeingStored = true;
   }
 
   // At every load, after session_context returns, we'll try to publish
@@ -90,34 +93,34 @@ BrowserID.Modules.InteractionData = (function() {
   // critical to the functioning of the system (and some failure scenarios
   // simply won't resolve with retries - like corrupt data, or too much
   // data)
-  function publish() {
+  function publishStored(oncomplete) {
     var data = storage.get();
 
-    if (data.length === 0) return;
-
-    network.sendInteractionData(data, complete, function() {
-      storage.clear();
-    });
+    if (data && data.length !== 0) {
+      network.sendInteractionData(data, function() {
+        storage.clear();
+        complete(oncomplete, true);
+      });
+    }
+    else {
+      complete(oncomplete, false);
+    }
   }
 
 
   function addEvent(eventName) {
     var self=this;
 
-    if (self.sample === false) return;
+    if (self.samplingEnabled === false) return;
 
     var eventData = [ eventName, new Date() - self.startTime ];
-    if (self.currentData) {
-      self.currentData.event_stream.push(eventData);
-    } else {
-      // @lloyd, how does this bit work?  When can sampling be enabled but
-      // there not be currentData?  It looks like currentData is created as
-      // soon as this module is run, and cleared only when session context
-      // comes in.
-      var d = storage.current();
+    if (self.samplesBeingStored) {
+      var d = storage.current() || {};
       if (!d.event_stream) d.event_stream = [];
       d.event_stream.push(eventData);
       storage.setCurrent(d);
+    } else {
+      self.initialEventStream.push(eventData);
     }
   }
 
@@ -127,21 +130,21 @@ BrowserID.Modules.InteractionData = (function() {
 
       var self = this;
 
-      self.forceSample = options.forceSample;
-
       self.startTime = new Date();
 
-      // sample rate is specified from the server.  it's set at the
-      // first 'context_info' event, which corresponds to the first time
-      // we get 'session_context' from the server.  When sampleRate is
-      // not undefined, then the interaction data is initialized.
-      // sample will be true or false
-      self.sample = undefined;
+      // If samplingEnabled is not specified in the options, it will be decided
+      // on the first "context_info" event, which corresponds to the first time
+      // we get 'session_context' from the server.
+      //
+      // options.samplingEnabled is used for testing purposes.
+      self.samplingEnabled = options.samplingEnabled;
 
-      self.currentData = {
-        event_stream: [
-        ]
-      };
+      // The initialEventStream is used to store events until onSessionContext
+      // is called.  Once onSessionContext is called and it is known whether
+      // the user's data will be saved, initialEventStream will either be
+      // discarded or added to the data set that is saved to localStorage.
+      self.initialEventStream = [];
+      self.samplesBeingStored = false;
 
       // whenever session_context is hit, let's hear about it so we can
       // extract the information that's important to us (like, whether we
@@ -154,19 +157,16 @@ BrowserID.Modules.InteractionData = (function() {
 
     addEvent: addEvent,
 
-    isSampling: function() {
-      return this.sample;
+    getCurrentStoredData: function() {
+      var und;
+      return this.samplesBeingStored ? storage.current() : und;
     },
 
-    getData: function() {
-      return this.currentData;
+    getEventStream: function() {
+      return this.samplesBeingStored ? storage.current().event_stream : this.initialEventStream;
     },
 
-    getStream: function() {
-      return this.currentData && this.currentData.event_stream;
-    },
-
-    publish: publish
+    publishStored: publishStored
   });
 
   sc = Module.sc;

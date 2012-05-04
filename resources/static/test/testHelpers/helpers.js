@@ -199,9 +199,9 @@ BrowserID.TestHelpers = (function() {
       return str;
     },
 
-    testObjectHasOwnProperties: function(objToTest, expected, msg) {
+    testKeysInObject: function(objToTest, expected, msg) {
       for(var i=0, key; key=expected[i]; ++i) {
-        ok(objToTest.hasOwnProperty(key), msg || ("object contains " + key));
+        ok(key in objToTest, msg || ("object contains " + key));
       }
     }
 
