@@ -13,15 +13,16 @@ start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
-jwk = require('jwcrypto/jwk.js'),
-jwt = require('jwcrypto/jwt.js'),
-vep = require('jwcrypto/vep.js'),
-jwcert = require('jwcrypto/jwcert.js'),
+jwcrypto = require('jwcrypto'),
 http = require('http'),
 querystring = require('querystring'),
 path = require("path");
 
 var suite = vows.describe('auth-with-assertion');
+
+// algs
+require("jwcrypto/lib/algs/ds");
+require("jwcrypto/lib/algs/rs");
 
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
@@ -43,9 +44,9 @@ var g_keypair, g_cert;
 suite.addBatch({
   "generating a keypair": {
     topic: function() {
-      return jwk.KeyPair.generate("DS", 256)
+      jwcrypto.generateKeypair({algorithm: "DS", keysize: 256}, this.callback);
     },
-    "succeeds": function(r, err) {
+    "succeeds": function(err, r) {
       assert.isObject(r);
       assert.isObject(r.publicKey);
       assert.isObject(r.secretKey);
@@ -56,9 +57,8 @@ suite.addBatch({
 
 // for this trick we'll need the "secret" key of our built in
 // primary
-var g_privKey = jwk.SecretKey.fromSimpleObject(
-  JSON.parse(require('fs').readFileSync(
-    path.join(__dirname, '..', 'example', 'primary', 'sample.privatekey'))));
+var g_privKey = jwcrypto.loadSecretKey(require('fs').readFileSync(
+    path.join(__dirname, '..', 'example', 'primary', 'sample.privatekey')));
 
 
 suite.addBatch({
@@ -68,13 +68,12 @@ suite.addBatch({
 
       var expiration = new Date();
       expiration.setTime(new Date().valueOf() + 60 * 60 * 1000);
-      g_cert = new jwcert.JWCert(TEST_DOMAIN, expiration, new Date(),
-                                 g_keypair.publicKey, {email: TEST_EMAIL}).sign(g_privKey);
-      return g_cert;
+      jwcrypto.cert.sign(g_keypair.publicKey, {email: TEST_EMAIL}, {issuer: TEST_DOMAIN, expiresAt: expiration, issuedAt: new Date()}, null, g_privKey, this.callback);
     },
-    "works swimmingly": function(cert, err) {
+    "works swimmingly": function(err, cert) {
       assert.isString(cert);
       assert.lengthOf(cert.split('.'), 3);
+      g_cert = cert;
     }
   }
 });
@@ -83,11 +82,21 @@ suite.addBatch({
 suite.addBatch({
   "generating an assertion": {
     topic: function() {
+      var self = this;
       var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
-      var tok = new jwt.JWT(null, expirationDate, TEST_ORIGIN);
-      return vep.bundleCertsAndAssertion([g_cert], tok.sign(g_keypair.secretKey));
+      jwcrypto.assertion.sign(
+        {},
+        {audience: TEST_ORIGIN,
+         issuer: TEST_DOMAIN,
+         expiresAt: expirationDate},
+        g_keypair.secretKey,
+        function(err, signedAssertion) {
+          self.callback(err, jwcrypto.cert.bundle([g_cert], signedAssertion));
+        });
+      // var tok = new jwt.JWT(null, expirationDate, TEST_ORIGIN);
+      //return vep.bundleCertsAndAssertion([g_cert], tok.sign(g_keypair.secretKey));
     },
-    "succeeds": function(r, err) {
+    "succeeds": function(err, r) {
       assert.isString(r);
       g_assertion = r;
     }

@@ -88,7 +88,7 @@ app.post('/verify', function(req, resp, next) {
     } catch (e) {
       return resp.json({ status: "failure", reason: "Content-Type expected to be one of: " + want_ct.join(", ") }, 415);
     }
-    return resp.json({ status: "failure", reason: "need assertion and audience" }, 400);
+    return resp.json({ status: "failure", reason: "need assertion and audience"}, 400);
   }
 
   var startTime = new Date();

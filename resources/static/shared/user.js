@@ -7,7 +7,7 @@
 BrowserID.User = (function() {
   "use strict";
 
-  var jwk, jwt, vep, jwcert, origin,
+  var jwcrypto, origin,
       bid = BrowserID,
       network = bid.Network,
       storage = bid.Storage,
@@ -19,11 +19,8 @@ BrowserID.User = (function() {
       registrationComplete = false;
 
   function prepareDeps() {
-    if (!jwk) {
-      jwk= require("./jwk");
-      jwt = require("./jwt");
-      vep = require("./vep");
-      jwcert = require("./jwcert");
+    if (!jwcrypto) {
+      jwcrypto= require("./lib/jwcrypto");
     }
   }
 
@@ -36,14 +33,14 @@ BrowserID.User = (function() {
         // if the certificate expires in less that 5 minutes from now.
         function isExpired(cert) {
           // if it expires in less than 2 minutes, it's too old to use.
-          var diff = cert.expires.valueOf() - serverTime.valueOf();
+          var diff = cert.payload.exp.valueOf() - serverTime.valueOf();
           if (diff < (60 * 2 * 1000)) {
             return true;
           }
 
           // or if it was issued before the last time the domain key
           // was updated, it's invalid
-          if (!cert.issued_at || cert.issued_at < creationTime) {
+          if (!cert.payload.iat || cert.payload.iat < creationTime) {
             return true;
           }
 
@@ -55,7 +52,7 @@ BrowserID.User = (function() {
         prepareDeps();
         _(emails).each(function(email_obj, email_address) {
           try {
-            email_obj.pub = jwk.PublicKey.fromSimpleObject(email_obj.pub);
+            email_obj.pub = jwcrypto.loadPublicKeyFromObject(email_obj.pub);
           } catch (x) {
             storage.invalidateEmail(email_address);
             return;
@@ -67,8 +64,7 @@ BrowserID.User = (function() {
           } else {
             try {
               // parse the cert
-              var cert = new jwcert.JWCert();
-              cert.parse(emails[email_address].cert);
+              var cert = jwcrypto.extractComponents(emails[email_address].cert);
 
               // check if this certificate is still valid.
               if (isExpired(cert)) {
@@ -917,10 +913,9 @@ BrowserID.User = (function() {
      */
     syncEmailKeypair: function(email, onComplete, onFailure) {
       prepareDeps();
-      var keypair = jwk.KeyPair.generate("DS", bid.KEY_LENGTH);
-      setTimeout(function() {
+      jwcrypto.generateKeypair({algorithm: "DS", keysize: bid.KEY_LENGTH}, function(err, keypair) {
         certifyEmailKeypair(email, keypair, onComplete, onFailure);
-      }, 0);
+      });
     },
 
 
@@ -946,22 +941,20 @@ BrowserID.User = (function() {
 
         function createAssertion(idInfo) {
           network.serverTime(function(serverTime) {
-            var sk = jwk.SecretKey.fromSimpleObject(idInfo.priv);
+            var sk = jwcrypto.loadSecretKeyFromObject(idInfo.priv);
 
-            // yield!
-            setTimeout(function() {
-              // assertions are valid for 2 minutes
-              var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
-              var expirationDate = new Date(expirationMS);
-              var tok = new jwt.JWT(null, expirationDate, audience);
-
-              // yield!
-              setTimeout(function() {
-                assertion = vep.bundleCertsAndAssertion([idInfo.cert], tok.sign(sk), true);
+            // assertions are valid for 2 minutes
+            var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
+            var expirationDate = new Date(expirationMS);
+            
+            jwcrypto.assertion.sign(
+              {}, {audience: audience, expiresAt: expirationDate},
+              sk,
+              function(err, signedAssertion) {
+                assertion = jwcrypto.cert.bundle([idInfo.cert], signedAssertion);
                 storage.site.set(audience, "email", email);
                 complete(assertion);
-              }, 0);
-            }, 0);
+              });
           }, onFailure);
         }
 

@@ -12,8 +12,10 @@ urlparse = require('urlparse'),
 postprocess = require('postprocess'),
 querystring = require('querystring'),
 sessions = require('connect-cookie-session'),
-jwk = require('jwcrypto/jwk'),
-jwcert = require('jwcrypto/jwcert');
+jwcrypto = require("jwcrypto");
+
+// alg
+require("jwcrypto/lib/algs/rs");
 
 var exampleServer = express.createServer();
 
@@ -75,9 +77,9 @@ exampleServer.get("/api/logout", function (req, res) {
   return res.json(null);
 });
 
-var _privKey = jwk.SecretKey.fromSimpleObject(
-  JSON.parse(require('fs').readFileSync(
-    path.join(__dirname, '..', 'example', 'primary', 'sample.privatekey'))));
+var _privKey = jwcrypto.loadSecretKey(
+  require('fs').readFileSync(
+    path.join(__dirname, '..', 'example', 'primary', 'sample.privatekey')));
 
 exampleServer.post("/api/cert_key", function (req, res) {
   var user = req.session.user;
@@ -85,10 +87,11 @@ exampleServer.post("/api/cert_key", function (req, res) {
   var domain = process.env['SHIMMED_DOMAIN'];
 
   var expiration = new Date();
-  var pubkey = jwk.PublicKey.fromSimpleObject(req.body.pubkey);
+  var pubkey = jwcrypto.loadPublicKeyFromObject(req.body.pubkey);
   expiration.setTime(new Date().valueOf() + req.body.duration * 1000);
-  var cert = new jwcert.JWCert(domain, expiration, new Date(),
-                               pubkey, {email: user + "@" + domain}).sign(_privKey);
+  jwcrypto.cert.sign(pubkey, {email: user + "@" + domain}, {issuer: domain, expiresAt: expiration, issuedAt: new Date()}, _privkey, function(err, cert) {
+    res.json({ cert: cert });
+  });
 
   res.json({ cert: cert });
 });

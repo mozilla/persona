@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+
 require('./lib/test_env.js');
 
 const assert =
@@ -16,9 +17,7 @@ config = require('../lib/configuration.js'),
 bcrypt = require('bcrypt'),
 primary = require('./lib/primary.js'),
 ca = require('../lib/keysigner/ca.js'),
-jwk = require('jwcrypto/jwk'),
-jwt = require('jwcrypto/jwt'),
-jws = require('jwcrypto/jws');
+jwcrypto = require('jwcrypto');
 
 var suite = vows.describe('session-context');
 
@@ -41,15 +40,28 @@ var primaryUser = new primary({
 });
 
 suite.addBatch({
+  "setup user": {
+    topic: function() {
+      primaryUser.setup(this.callback);
+    },
+    "works": function(err) {
+      assert.isNull(err);
+      assert.isObject(primaryUser._keyPair);
+      assert.isString(primaryUser._cert);
+    }
+  }
+});
+
+suite.addBatch({
   "generating an assertion": {
     topic: function() {
-      return primaryUser.getAssertion(PRIMARY_ORIGIN);
+      primaryUser.getAssertion(PRIMARY_ORIGIN, this.callback);
     },
-    "succeeds": function(r, err) {
+    "succeeds": function(err, r) {
       assert.isString(r);
     },
     "and logging in with the assertion with ephemeral = true": {
-      topic: function(assertion)  {
+      topic: function(err, assertion)  {
         wsapi.post('/wsapi/auth_with_assertion', {
           assertion: assertion,
           ephemeral: true
@@ -70,13 +82,13 @@ suite.addBatch({
 suite.addBatch({
   "generating an assertion": {
     topic: function() {
-      return primaryUser.getAssertion(PRIMARY_ORIGIN);
+      primaryUser.getAssertion(PRIMARY_ORIGIN, this.callback);
     },
-    "succeeds": function(r, err) {
+    "succeeds": function(err, r) {
       assert.isString(r);
     },
     "and logging in with the assertion with ephemeral = false": {
-      topic: function(assertion)  {
+      topic: function(err, assertion)  {
         wsapi.post('/wsapi/auth_with_assertion', {
           assertion: assertion,
           ephemeral: false
@@ -176,7 +188,7 @@ suite.addBatch({
 
 // finally, let's verify that ephemeral is properly handled when certifying keys for a user
 
-var kp = jwk.KeyPair.generate("RS", 64);
+var kp = null;
 
 assert.within = function(got, expected, margin) {
   assert.ok(got + margin > expected);
@@ -184,53 +196,71 @@ assert.within = function(got, expected, margin) {
 }
 
 suite.addBatch({
+  "generate keypair": {
+    topic: function() {
+      jwcrypto.generateKeypair({algorithm:"RS", keysize: 64}, this.callback);
+    },
+    "works": function(err, keypair) {
+      assert.isNull(err);
+      kp = keypair;
+    }
+  }
+});
+
+suite.addBatch({
   "cert_key invoked with ephemeral = false": {
-    topic: wsapi.post('/wsapi/cert_key', {
-      email: TEST_EMAIL,
-      pubkey: kp.publicKey.serialize(),
-      ephemeral: false
-    }),
+    topic: function() {
+      wsapi.post('/wsapi/cert_key', {
+        email: TEST_EMAIL,
+        pubkey: kp.publicKey.serialize(),
+        ephemeral: false
+      }).call(this);
+    },
     "returns a response with a proper content-type" : function(err, r) {
       assert.strictEqual(r.code, 200);
     },
-    "returns a valid cert": function(err, r) {
-      ca.verifyChain('127.0.0.1', [r.body], function(pk) {
+    "upon validation": {
+      topic: function(err, r) {
+        ca.verifyChain('127.0.0.1', [r.body], this.callback);
+      },
+      "works": function(err, pk, principal, certParamsArray) {
         assert.isTrue(kp.publicKey.equals(pk));
-      });
-    },
-    "has the correct expiration": function(err, r) {
-      var cert = new jws.JWS();
-      cert.parse(r.body);
-      var pl = JSON.parse(cert.payload);
-      assert.within(pl.exp - pl.iat,
-                    config.get('certificate_validity_ms'),
-                    200);
+      },
+      "has the correct expiration": function(err, pk, principal, certParamsArray) {
+        var params = certParamsArray[certParamsArray.length - 1].assertionParams;
+        assert.within(params.expiresAt - params.issuedAt,
+                      config.get('certificate_validity_ms'),
+                      200);
+      }      
     }
   }
 });
 
 suite.addBatch({
   "cert_key invoked with ephemeral = true": {
-    topic: wsapi.post('/wsapi/cert_key', {
-      email: TEST_EMAIL,
-      pubkey: kp.publicKey.serialize(),
-      ephemeral: true
-    }),
+    topic: function() {
+      wsapi.post('/wsapi/cert_key', {
+        email: TEST_EMAIL,
+        pubkey: kp.publicKey.serialize(),
+        ephemeral: true
+      }).call(this);
+    },
     "returns a response with a proper content-type" : function(err, r) {
       assert.strictEqual(r.code, 200);
     },
-    "returns a valid cert": function(err, r) {
-      ca.verifyChain('127.0.0.1', [r.body], function(pk) {
+    "upon validation": {
+      topic: function(err, r) {
+        ca.verifyChain('127.0.0.1', [r.body], this.callback);
+      },
+      "works": function(err, pk, principal, certParamsArray) {
         assert.isTrue(kp.publicKey.equals(pk));
-      });
-    },
-    "has the correct expiration": function(err, r) {
-      var cert = new jws.JWS();
-      cert.parse(r.body);
-      var pl = JSON.parse(cert.payload);
-      assert.within(pl.exp - pl.iat,
-                    config.get('ephemeral_session_duration_ms'),
-                    200);
+      },
+      "has the correct expiration": function(err, pk, principal, certParamsArray) {
+        var params = certParamsArray[certParamsArray.length - 1].assertionParams;
+        assert.within(params.expiresAt - params.issuedAt,
+                      config.get('ephemeral_session_duration_ms'),
+                      200);
+      }
     }
   }
 });
