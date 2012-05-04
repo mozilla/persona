@@ -143,7 +143,7 @@ function checkAssertion(assertion) {
   });
 };
 
-navigator.id.experimental.watch({
+navigator.id.watch({
   loggedInEmail: (storage.loggedInUser === 'null') ? null : storage.loggedInUser,
   onready: function () {
     loggit("onready");
@@ -180,7 +180,7 @@ $(document).ready(function() {
 
     $(".specify button.assertion").attr('disabled', 'true');
 
-    navigator.id.experimental.request({
+    navigator.id.request({
       privacyURL: $('#privacy').attr('checked') ? "/privacy.html" : undefined,
       tosURL: $('#tos').attr('checked') ? "/TOS.html" : undefined,
       requiredEmail: requiredEmail,
