@@ -158,6 +158,10 @@ BrowserID.Network = (function() {
       }, onFailure);
     },
 
+    withContext: function(onComplete, onFailure) {
+      withContext(onComplete, onFailure)
+    },
+
     /**
      * clear local cache, including authentication status and
      * other session data.
@@ -349,6 +353,28 @@ BrowserID.Network = (function() {
         url: "/wsapi/set_password",
         data: {
           password: password
+        },
+        success: function(status) {
+          complete(onComplete, status.success);
+        },
+        error: onFailure
+      });
+    },
+
+    /**
+     * post interaction data
+     * @method setPassword
+     * @param {string} password - new password.
+     * @param {function} [onComplete] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    sendInteractionData: function(data, onComplete, onFailure) {
+      post({
+        url: "/wsapi/interaction_data",
+        data: {
+          // reminder, CSRF token will be inserted here by xhr.js, that's
+          // why this *must* be an object
+          data: data
         },
         success: function(status) {
           complete(onComplete, status.success);

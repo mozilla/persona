@@ -13,7 +13,8 @@ BrowserID.Mocks.xhr = (function() {
       authenticated: false,
       auth_level: undefined,
       code_version: "ABC123",
-      random_seed: "H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo="
+      random_seed: "H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo=",
+      data_sample_rate: 1
     };
 
   // this cert is meaningless, but it has the right format
@@ -122,6 +123,8 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/prolong_session valid": { success: true },
       "post /wsapi/prolong_session unauthenticated": 400,
       "post /wsapi/prolong_session ajaxError": undefined,
+      "post /wsapi/interaction_data valid": { success: true },
+      "post /wsapi/interaction_data ajaxError": undefined
     },
 
     setContextInfo: function(field, value) {

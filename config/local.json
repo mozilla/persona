@@ -10,5 +10,6 @@
   },
   "express_log_format": "dev_bid",
   "email_to_console": true,
-  "env": "local"
+  "env": "local",
+  "kpi_backend_sample_rate": 1.0
 }

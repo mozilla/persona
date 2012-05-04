@@ -199,6 +199,12 @@ BrowserID.TestHelpers = (function() {
       return str;
     },
 
+    testKeysInObject: function(objToTest, expected, msg) {
+      for(var i=0, key; key=expected[i]; ++i) {
+        ok(key in objToTest, msg || ("object contains " + key));
+      }
+    },
+
     testObjectValuesEqual: function(objToTest, expected, msg) {
       for(var key in expected) {
         equal(objToTest[key], expected[key], key + " set to: " + expected[key] + (msg ? " - " + msg : ""));
@@ -209,6 +215,7 @@ BrowserID.TestHelpers = (function() {
       ok($(selector).hasClass(className),
           selector + " has className " + className + " - " + msg);
     }
+
   };
 
   return TestHelpers;

@@ -635,4 +635,18 @@
     network.prolongSession(testHelpers.unexpectedSuccess, testHelpers.expectedXHRFailure);
   });
 
+  asyncTest("sendInteractionData success - call success", function() {
+    var data = {};
+    network.sendInteractionData(data, function(status) {
+      equal(status, true, "complete with correct status");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("sendInteractionData with XHR failure - call failure", function() {
+    var data = {};
+    transport.useResult("ajaxError");
+    network.sendInteractionData(data, testHelpers.unexpectedSuccess, testHelpers.expectedXHRFailure);
+  });
+
 }());

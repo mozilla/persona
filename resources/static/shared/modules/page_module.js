@@ -178,7 +178,17 @@ BrowserID.Modules.PageModule = (function() {
      * @param {object} [context] - context, if not given, use this.
      */
     subscribe: function(message, callback, context) {
-      mediator.subscribe(message, callback.bind(context || this));
+      mediator.subscribe(message, callback, context || this);
+    },
+
+    /**
+     * Subscribe to all messages on the mediator.
+     * @method subscribeAll
+     * @param {function} callback
+     * @param {object} [context] - context, if not given, use this.
+     */
+    subscribeAll: function(callback, context) {
+      mediator.subscribeAll(callback, context || this);
     },
 
     /**
