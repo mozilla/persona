@@ -16,18 +16,11 @@
     _.each([
       "get",
       "getVerifiedEmail",
-      "logout"
-    ], function(item, index) {
-      equal(typeof navigator.id[ item ], "function", "navigator.id." + item + " is available");
-    });
-  });
-
-  test("expected experimental API function is available", function() {
-    _.each([
+      "logout",
       "request",
       "watch"
     ], function(item, index) {
-      equal(typeof navigator.id.experimental[ item ], "function", "navigator.id." + item + " is available");
+      equal(typeof navigator.id[ item ], "function", "navigator.id." + item + " is available");
     });
   });
 
