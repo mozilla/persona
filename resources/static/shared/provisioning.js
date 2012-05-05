@@ -70,7 +70,8 @@ BrowserID.Provisioning = (function() {
 
     chan.bind('genKeyPair', function(trans, s) {
       trans.delayReturn(true);
-      jwcrypto.generateKeypair({algorithm: "DS", keysize: BrowserID.KEY_LENGTH}, function(err, keypair) {
+      jwcrypto.generateKeypair({algorithm: "DS", keysize: BrowserID.KEY_LENGTH}, function(err, kp) {
+        keypair = kp;
         trans.complete(keypair.publicKey.toSimpleObject());
       });
     });
