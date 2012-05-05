@@ -407,7 +407,7 @@ BrowserID.Storage = (function() {
 
   function currentInteractionData() {
     try {
-      return JSON.parse(storage.interactionData)[0];
+      return storage.interactionData ? JSON.parse(storage.interactionData)[0] : {};
     } catch(e) {
       if (window.console && console.error) console.error(e);
       return {};
@@ -428,7 +428,7 @@ BrowserID.Storage = (function() {
 
   function getAllInteractionData() {
     try {
-      return JSON.parse(storage.interactionData);
+      return storage.interactionData ? JSON.parse(storage.interactionData) : [];
     } catch(e) {
       if (window.console && console.error) console.error(e);
       return [];
@@ -440,7 +440,7 @@ BrowserID.Storage = (function() {
       storage.interactionData = JSON.stringify([]);
     } catch(e) {
       delete storage.interactionData;
-      if (window.console && console.error) console.error(e);      
+      if (window.console && console.error) console.error(e);
     }
   }
 
