@@ -1111,20 +1111,18 @@
     };
 
     navigator.id = {
-      // The experimental API, not yet final
-      experimental: {
-        request: function(options) {
-          checkCompat(false);
-          return internalRequest(options);
-        },
-        watch: function(options) {
-          checkCompat(false);
-          internalWatch(options);
-        }
+      request: function(options) {
+        options = options || {};
+        checkCompat(false);
+        return internalRequest(options);
+      },
+      watch: function(options) {
+        checkCompat(false);
+        internalWatch(options);
       },
       // logout from the current website
-      // NOTE: callback argument will be deprecated when experimental API lands, to
-      //       be replaced with the .onlogout observer of the watch api.
+      // The callback parameter is DEPRECATED, instead you should use the
+      // the .onlogout observer of the .watch() api.
       logout: function(callback) {
         // allocate iframe if it is not allocated
         _open_hidden_iframe();
