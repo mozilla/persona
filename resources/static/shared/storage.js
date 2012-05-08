@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/*globals BrowserID: true, console: true */
+
 BrowserID.Storage = (function() {
   "use strict";
 
@@ -23,6 +25,11 @@ BrowserID.Storage = (function() {
         delete this[key];
       }
     };
+  }
+
+  // temporary, replace with helpers.log if storage uses elog long term...
+  function elog (msg) {
+    if (window.console && console.error) console.error(msg);
   }
 
   function prepareDeps() {
@@ -271,7 +278,7 @@ BrowserID.Storage = (function() {
         lastUpdated = Date.parse(userInfo.updated);
 
         if (!validState(currentState)) throw "corrupt/outdated";
-        if (NaN === lastUpdated) throw "corrupt/outdated";
+        if (isNaN(lastUpdated)) throw "corrupt/outdated";
       }
     } catch(e) {
       currentState = undefined;
@@ -409,7 +416,7 @@ BrowserID.Storage = (function() {
     try {
       return storage.interactionData ? JSON.parse(storage.interactionData)[0] : {};
     } catch(e) {
-      if (window.console && console.error) console.error(e);
+      elog(e);
       return {};
     }
   }
@@ -420,7 +427,7 @@ BrowserID.Storage = (function() {
       id = JSON.parse(storage.interactionData);
       id[0] = data;
     } catch(e) {
-      if (window.console && console.error) console.error(e);
+      elog(e);
       id = [ data ];
     }
     storage.interactionData = JSON.stringify(id);
@@ -439,8 +446,8 @@ BrowserID.Storage = (function() {
     try {
       storage.interactionData = JSON.stringify([]);
     } catch(e) {
-      delete storage.interactionData;
-      if (window.console && console.error) console.error(e);
+      storage.removeItem("interactionData");
+      elog(e);
     }
   }
 
