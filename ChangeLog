@@ -12,6 +12,8 @@ train-2012.04.27:
   * IE visual improvements for error screens: #1485, #1390, #1496
   * Improved checks for disabled cookies: #1418, #1484
   * Fix bug where if user pauses for 2 minutes on "is this your computer" the generated assertion is invalid: #1460
+  * (hotfix 2012.05.07) upgrade to node.js 0.6.17 to mitigate risk of HTTP parser bugs - bug #752605
+  * (hotfix 2012.05.08) handle syntax errors in declaration of support better. bug #752721
 
 train-2012.04.11:
   * New BrowserID "Observer" API implemented in experimental status: #912
