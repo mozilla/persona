@@ -43,7 +43,7 @@ BrowserID.Storage = (function() {
   }
 
   function clear() {
-    storeEmails({});
+    storage.removeItem("emails");
     storage.removeItem("tempKeypair");
     storage.removeItem("stagedOnBehalfOf");
     storage.removeItem("siteInfo");
