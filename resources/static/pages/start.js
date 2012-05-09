@@ -42,7 +42,10 @@ $(function() {
 
   $(".display_always,.display_auth,.display_nonauth").hide();
   if ($('#vAlign').length) {
-    $(window).bind('resize', function() { $('#vAlign').css({'height' : $(window).height() }); }).trigger('resize');
+    $(window).bind('resize', function() {
+      var height = $(window).height() - $("header").outerHeight() - $("footer").outerHeight();
+      $('#vAlign').css({'height' : height });
+    }).trigger('resize');
   }
 
   moduleManager.register("xhr_delay", XHRDelay);
@@ -115,7 +118,7 @@ $(function() {
       $(".display_always,.display_auth").fadeIn(ANIMATION_TIME);
       dom.addClass("body", "authenticated");
 
-      if ($('#emailList').length) {
+      if (!path || path === "/") {
         bid.manageAccount();
       }
 

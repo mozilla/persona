@@ -2,108 +2,75 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 936px) {
   #wrapper {
-    width: 320px;
+    width: 100%;
   }
 
+  #vAlign, #hAlign, #signUp, #signUpForm, #congrats {
+    width: 475px;
+  }
+
+  header, footer {
+    width: 100%;
+    padding: 20px;
+  }
+
+  footer .cf {
+    width: auto;
+  }
+
+  .headline-main {
+    font-size: 33px;
+  }
+}
+
+
+@media screen and (max-width: 505px) {
   hr {
     width: 300px;
   }
 
   #content {
-    padding: 122px 0 84px;
-    margin: 0 10px;
+    margin: 10px;
+    padding: 0;
   }
 
-  #header {
-    padding: 20px 30px;
+  #about {
+    padding: 10px;
+    border-radius: 5px;
   }
 
-  #header ul.nav {
-    float: left;
-    width: 260px;
-    margin-top: 10px;
+  .headline-main {
+    font-size: 37px;
   }
 
-  #header ul.nav li {
-    margin: 0 1px 0 0;
+  #vAlign, #hAlign, #signUp, #signUpForm, #congrats {
+    width: 320px;
+  }
+
+  header ul.nav {
+    margin: 20px 0 0 0;
+    float: none;
+    display: block;
     text-align: center;
-    width: 64px;
   }
 
-  #header ul.nav li:first-child {
-    width: 102px;
+  header ul.nav li {
+    margin: 0 10px 0 0;
   }
 
-  #header ul.nav li:nth-child(2) {
-    width: 91px;
+  /*
+  header ul a {
+    padding: 0 5px;
   }
-
-
-  #header ul.nav li a {
-    padding: 3px 0;
-    background-color: #549FDC;
-    color: #fff;
-    display: block;
-
-    -webkit-border-radius: 3px;
-       -moz-border-radius: 3px;
-         -o-border-radius: 3px;
-            border-radius: 3px;
-  }
-
-  body.authenticated #header ul.nav li.signOut,
-  #header ul.nav li {
-    display: block;
-  }
-
-  #header ul.nav li.signOut,
-  body.authenticated #header ul.nav li.signIn {
-    display: none;
-  }
-
-  #header ul.nav li a {
-    -webkit-border-radius: 0 3px 3px 0;
-       -moz-border-radius: 0 3px 3px 0;
-         -o-border-radius: 0 3px 3px 0;
-            border-radius: 0 3px 3px 0;
-  }
-
-  #header ul.nav li:first-child a {
-
-    -webkit-border-radius: 3px 0 0 3px;
-       -moz-border-radius: 3px 0 0 3px;
-         -o-border-radius: 3px 0 0 3px;
-            border-radius: 3px 0 0 3px;
-  }
-
-  #header ul.nav li:nth-child(2) a {
-    -webkit-border-radius: 0px;
-       -moz-border-radius: 0px;
-         -o-border-radius: 0px;
-            border-radius: 0px;
-  }
-
-  #header ul.nav li a.signIn {
-    background-color: rgba(0,0,0,0.1);
-    color: #222;
-  }
-
-  #header ul.nav li a:hover {
-    text-decoration: none;
-  }
+  */
 
   #signUp {
-    width: 320px;
-    padding: 0 10px;
+    padding: 0;
     font-size: 16px;
     line-height: 21px;
     margin: 0 0 90px;  /* Add a bottom margin so the footer is never overlapped. */
-  }
-
-  #signUp p {
-    padding: 0 20px;
   }
 
   #card {
@@ -147,10 +114,6 @@
 
   #legal li {
     list-style-position: inside;
-  }
-
-  #about {
-    padding: 0;
   }
 
   #about .video,
@@ -217,9 +180,6 @@
     text-align: left;
   }
 
-  #footer {
-    padding: 20px 30px;
-  }
 
   #emailList .email {
     width: auto;
@@ -242,5 +202,5 @@
       /* Fix webkit putting an inner box shadow on the input elements. Issue #1313 */
       -webkit-appearance: caret;
   }
-
 }
+

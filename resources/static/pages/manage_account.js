@@ -200,6 +200,10 @@ BrowserID.manageAccount = (function() {
     if (options.document) doc = options.document;
     if (options.confirm) confirmAction = options.confirm;
 
+    var template = new EJS({ text: $("#templateManage").html() });
+    var manage = template.render({});
+    $("#hAlign").after(manage);
+
     dom.bindEvent("#cancelAccount", "click", cancelEvent(cancelAccount));
 
     dom.bindEvent("button.edit", "click", startEdit);

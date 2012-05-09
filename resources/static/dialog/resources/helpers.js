@@ -15,10 +15,13 @@
 
   function animateClose(callback) {
     var body = $("body"),
-        doAnimation = $("#signIn").length && body.innerWidth() > 640;
+        bodyWidth = body.innerWidth(),
+        doAnimation = $("#signIn").length && bodyWidth > 640;
 
     if (doAnimation) {
-      $("#signIn").animate({"width" : "95%"}, 750, function () {
+      var endWidth = bodyWidth - $(".arrowContainer").outerWidth() - 10;
+
+      $("#signIn").animate({"width" : endWidth + "px"}, 750, function () {
          body.delay(500).animate({ "opacity" : "0.5"}, 500);
       });
 
