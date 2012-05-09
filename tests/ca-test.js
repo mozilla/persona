@@ -8,13 +8,8 @@ require('./lib/test_env.js');
 
 const assert = require('assert'),
 vows = require('vows'),
-start_stop = require('./lib/start-stop.js'),
-wsapi = require('./lib/wsapi.js'),
-email = require('../lib/email.js'),
 ca = require('../lib/keysigner/ca.js'),
-jwcrypto = require('jwcrypto'),
-cert = jwcrypto.cert,
-assertion = jwcrypto.assertion;
+jwcrypto = require('jwcrypto');
 
 // algorithms
 require("jwcrypto/lib/algs/rs");
@@ -53,16 +48,6 @@ suite.addBatch({
       },
       "looks ok" : function(err, cert_raw) {
         assert.equal(cert_raw.split(".").length, 3);
-      },
-      "upon verification": {
-        topic: function(err, cert_raw) {
-          ca.verifyChain(issuer, [cert_raw], this.callback);
-        },
-        "verifies": function(err, pk, principal) {
-          assert.isNull(err);
-          assert.isTrue(kp.publicKey.equals(pk));
-          assert.equal(principal.email, email_addr);
-        }
       }
     }
   }

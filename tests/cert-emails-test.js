@@ -10,7 +10,6 @@ const assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-email = require('../lib/email.js'),
 ca = require('../lib/keysigner/ca.js'),
 jwcrypto = require("jwcrypto");
 
@@ -120,16 +119,6 @@ suite.addBatch({
       "returns a response with a proper content-type" : function(err, r) {
         assert.strictEqual(r.code, 200);
       },
-      "returns a proper cert": {
-        topic: function(err, r) {
-          ca.verifyChain('127.0.0.1', [r.body], this.callback);
-        },
-        "that verifies": function(err, pk, principal) {
-          assert.isNull(err);
-          assert.equal(principal.email, 'syncer@somehost.com');
-          assert.equal(kp.publicKey.serialize(), pk.serialize());
-        }
-      },
       "generate an assertion": {
         topic: function(err, r) {
           var serializedCert = r.body.toString();
@@ -150,22 +139,6 @@ suite.addBatch({
           assert.equal(certs_and_assertion.certificates[0].split(".").length, 3);
           assert.equal(certs_and_assertion.assertion.split(".").length, 3);
         },
-        "assertion verifies": {
-          topic: function(err, certs_and_assertion) {
-            // bundle and verify
-            var bundle = jwcrypto.cert.bundle(certs_and_assertion.certificates, certs_and_assertion.assertion);
-            
-            var cb = this.callback;
-            // extract public key at the tail of the chain
-            ca.verifyBundle('127.0.0.1', bundle, this.callback);
-          },
-          "verifies": function(err, certParamsArray, payload, assertionParams) {
-            assert.isNull(err);
-            assert.isArray(certParamsArray);
-            assert.isObject(payload);
-            assert.isObject(assertionParams);
-          }
-        }
       }
     },
     "cert key invoked proper arguments but incorrect email address": {

@@ -218,20 +218,6 @@ suite.addBatch({
     },
     "returns a response with a proper content-type" : function(err, r) {
       assert.strictEqual(r.code, 200);
-    },
-    "upon validation": {
-      topic: function(err, r) {
-        ca.verifyChain('127.0.0.1', [r.body], this.callback);
-      },
-      "works": function(err, pk, principal, certParamsArray) {
-        assert.isTrue(kp.publicKey.equals(pk));
-      },
-      "has the correct expiration": function(err, pk, principal, certParamsArray) {
-        var params = certParamsArray[certParamsArray.length - 1].assertionParams;
-        assert.within(params.expiresAt - params.issuedAt,
-                      config.get('certificate_validity_ms'),
-                      200);
-      }      
     }
   }
 });
@@ -247,20 +233,6 @@ suite.addBatch({
     },
     "returns a response with a proper content-type" : function(err, r) {
       assert.strictEqual(r.code, 200);
-    },
-    "upon validation": {
-      topic: function(err, r) {
-        ca.verifyChain('127.0.0.1', [r.body], this.callback);
-      },
-      "works": function(err, pk, principal, certParamsArray) {
-        assert.isTrue(kp.publicKey.equals(pk));
-      },
-      "has the correct expiration": function(err, pk, principal, certParamsArray) {
-        var params = certParamsArray[certParamsArray.length - 1].assertionParams;
-        assert.within(params.expiresAt - params.issuedAt,
-                      config.get('ephemeral_session_duration_ms'),
-                      200);
-      }
     }
   }
 });
