@@ -21,6 +21,7 @@ noscript {
   right: 0;
   bottom: 0;
   left: 0;
+  filter: alpha(opacity=0); /* Needed for IE6 and IE7 on the main site */
   -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   opacity: 0;
   z-index: -2;
@@ -42,6 +43,7 @@ noscript {
 
 #error, #wait, #delay {
   z-index: -2;
+  filter: alpha(opacity=0); /* Needed for IE6 and IE7 on the main site */
   -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   opacity: 0;
   -webkit-transition: opacity 750ms;
