@@ -28,6 +28,15 @@ $(function() {
       checkCookiePaths = [ "/signin", "/signup", "/forgot", "/add_email_address", "/verify_email_address" ];
 
 
+  function shouldCheckCookies(path) {
+    if (path) {
+      // IE6 and IE7 will blow up if trying to use indexOf on the array.
+      for(var i = 0, checkCookiePath; checkCookiePath = checkCookiePaths[i]; ++i) {
+        if (checkCookiePath === path) return true;
+      }
+    }
+  }
+
   xhr.init({ time_until_delay: 10 * 1000 });
   network.init();
 
@@ -42,7 +51,7 @@ $(function() {
   moduleManager.register("xhr_disable_form", XHRDisableForm);
   moduleManager.start("xhr_disable_form");
 
-  if(path && (checkCookiePaths.indexOf(path) > -1)) {
+  if(shouldCheckCookies(path)) {
     // do a cookie check on every page except the main page.
     moduleManager.register("cookie_check", CookieCheck);
     moduleManager.start("cookie_check", { ready: start });
