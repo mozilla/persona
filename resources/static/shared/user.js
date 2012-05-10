@@ -943,18 +943,20 @@ BrowserID.User = (function() {
           network.serverTime(function(serverTime) {
             var sk = jwcrypto.loadSecretKeyFromObject(idInfo.priv);
 
-            // assertions are valid for 2 minutes
-            var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
-            var expirationDate = new Date(expirationMS);
-            
-            jwcrypto.assertion.sign(
-              {}, {audience: audience, expiresAt: expirationDate},
-              sk,
-              function(err, signedAssertion) {
-                assertion = jwcrypto.cert.bundle([idInfo.cert], signedAssertion);
-                storage.site.set(audience, "email", email);
-                complete(assertion);
-              });
+            setTimeout(function() {
+              // assertions are valid for 2 minutes
+              var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
+              var expirationDate = new Date(expirationMS);
+
+              jwcrypto.assertion.sign(
+                {}, {audience: audience, expiresAt: expirationDate},
+                sk,
+                function(err, signedAssertion) {
+                  assertion = jwcrypto.cert.bundle([idInfo.cert], signedAssertion);
+                  storage.site.set(audience, "email", email);
+                  complete(assertion);
+                });
+            }, 0);
           }, onFailure);
         }
 
