@@ -302,6 +302,16 @@ div#required_email {
 #selectEmail.center {
     position: static;
     overflow-y: visible;
+    /* The below 1px padding is part of a fix for a bug in webkit where there
+     * is a ghost padding-right to accommodate the scroll bar that is shown
+     * if there are many email addresses. The ghost padding caused the submit
+     * button to shift when the user clicked on it, sometimes making the
+     * submit button require two clicks.  The other half of the fix is in
+     * screen_size_hacks.js, where an adjustment to the width is made.
+     * These two in combination force Chrome to re-flow, which fixes its
+     * own bug.
+     */
+    padding-right: 1px;
 }
 
 .inputs {
