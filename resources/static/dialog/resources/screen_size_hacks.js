@@ -30,6 +30,18 @@
 
       if(height < $("#signIn .vertical").innerHeight()) {
         selectEmailEl.addClass("center");
+
+        /* The below width adjustment is part of a fix for a bug in webkit where
+         * there is a ghost padding-right to accommodate the scroll bar that is
+         * shown if there are many email addresses. The ghost padding caused the
+         * submit button to shift when the user clicked on it, sometimes making
+         * the submit button require two clicks.  The other half of the fix is
+         * in popup.css, where an adjustment to the padding is made.
+         * These two in combination force Chrome to re-flow, which fixes its
+         * own bug.
+         */
+        var width = selectEmailEl.width();
+        selectEmailEl.width(width);
       }
       else {
         selectEmailEl.removeClass("center");
