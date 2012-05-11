@@ -96,10 +96,21 @@ BrowserID.Modules.InteractionData = (function() {
   function publishStored(oncomplete) {
     var data = storage.get();
 
+    // XXX: should we even try to post data if it's larger than some reasonable
+    // threshold?
     if (data && data.length !== 0) {
       network.sendInteractionData(data, function() {
         storage.clear();
         complete(oncomplete, true);
+      }, function(status) {
+        // if the server returns a 413 error, (too much data posted), then
+        // let's clear our local storage and move on.  This does mean we
+        // loose some interaction data, but it shouldn't be statistically
+        // significant.
+        if (status && status.network && status.network.status === 413) {
+          storage.clear();
+        }
+        complete(oncomplete, false);
       });
     }
     else {
