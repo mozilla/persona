@@ -1,3 +1,6 @@
+train-2012.05.25 (in progress):
+  *
+
 train-2012.05.14:
   * Password is now requested in dialog for new user signup: #1000, #290
   * "Key Performance Indicator" system implemented, to be disabled pending review: #1546, #1567
