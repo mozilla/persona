@@ -1,5 +1,14 @@
-train-2012.05.09 (in progress):
-  *
+train-2012.05.14:
+  * Password is now requested in dialog for new user signup: #1000, #290
+  * "Key Performance Indicator" system implemented, to be disabled pending review: #1546, #1567
+  * Improve error handling: #1227, #1495
+  * code and test cleanup: #1521, #1547
+  * ToS and privacy policy display regardless of cookie settings: #1514
+  * Integrated new version of jwcrypto: #1543, #1544, #1545, #1552, #1574, #1575
+  * Android 4.0 cookie fixes: #1542
+  * Proper error display in IE6 & IE7: #1529
+  * Allow mysql password to be specified in environment: #1560
+  * Fix occasional dropped click during sign-in on chrome: #1581
 
 train-2012.04.27:
   * Observer API updated, still experimental.
