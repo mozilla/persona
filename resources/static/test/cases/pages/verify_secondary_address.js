@@ -116,6 +116,7 @@
     xhr.useResult("mustAuth");
     createController(config, function() {
       xhr.useResult("valid");
+      testHasClass("body", "enter_password");
       controller.submit(function(status) {
         equal(status, true, "correct status");
         testHasClass("body", "complete");
@@ -131,6 +132,90 @@
     createController(config, function() {
       testCannotConfirm();
       start();
+    });
+  });
+
+  asyncTest("must set password, successful login", function() {
+    xhr.useResult("needsPassword");
+    createController(config, function() {
+      xhr.useResult("valid");
+
+      $("#password").val("password");
+      $("#vpassword").val("password");
+
+      testHasClass("body", "enter_password");
+      testHasClass("body", "enter_verify_password");
+
+      controller.submit(function(status) {
+        equal(status, true, "correct status");
+        testHasClass("body", "complete");
+        start();
+      });
+    });
+  });
+
+  asyncTest("must set password, too short a password", function() {
+    xhr.useResult("needsPassword");
+    createController(config, function() {
+      xhr.useResult("valid");
+
+      $("#password").val("pass");
+      $("#vpassword").val("pass");
+
+      controller.submit(function(status) {
+        equal(status, false, "correct status");
+        testHelpers.testTooltipVisible();
+        start();
+      });
+    });
+  });
+
+  asyncTest("must set password, too long a password", function() {
+    xhr.useResult("needsPassword");
+    createController(config, function() {
+      xhr.useResult("valid");
+
+      var pass = testHelpers.generateString(81);
+      $("#password").val(pass);
+      $("#vpassword").val(pass);
+
+      controller.submit(function(status) {
+        equal(status, false, "correct status");
+        testHelpers.testTooltipVisible();
+        start();
+      });
+    });
+  });
+
+  asyncTest("must set password, missing verification password", function() {
+    xhr.useResult("needsPassword");
+    createController(config, function() {
+      xhr.useResult("valid");
+
+      $("#password").val("password");
+      $("#vpassword").val("");
+
+      controller.submit(function(status) {
+        equal(status, false, "correct status");
+        testHelpers.testTooltipVisible();
+        start();
+      });
+    });
+  });
+
+  asyncTest("must set password, mismatched passwords", function() {
+    xhr.useResult("needsPassword");
+    createController(config, function() {
+      xhr.useResult("valid");
+
+      $("#password").val("password");
+      $("#vpassword").val("password1");
+
+      controller.submit(function(status) {
+        equal(status, false, "correct status");
+        testHelpers.testTooltipVisible();
+        start();
+      });
     });
   });
 
