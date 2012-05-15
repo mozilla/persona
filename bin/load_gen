@@ -329,44 +329,53 @@ if (args.m) outputActiveUserSummary(args.m);
 
 const userdb = require("../lib/load_gen/user_db.js");
 
-if (args.u) {
-  // parse args.u
-  var start, end;
-  try {
-    var r = args.u.split('/');
-    if (r.length != 2) throw "expected format ##/##";
-    start = parseInt(r[0], 10);
-    end = parseInt(r[1], 10);
-    if (start >= end) throw "first number must be smaller than the second";
-  } catch(e) {
-    console.log("your -u argument is poorly formated: " + e.toString());
+const lg_crypto = require("../lib/load_gen/crypto.js");
+
+lg_crypto.init(function(err) {
+  if (err) {
+    process.stderr.write('error initializing crypto module: ' + err);
     process.exit(1);
   }
 
-  // now create all them users!
-  console.log("Runing with", (end - start + 1), "pre-created users (XXX@loadtest.domain)");
-  for (var i = start; i < end; i++) {
-    userdb.addNewUser(userdb.getNewUser(i + "@loadtest.domain", "THE PASSWORD"));
-  }
-  console.log("users created!  applying load...");
-  poll();
-} else {
-  console.log("To start, let's create " + NUM_INITIAL_USERS + " users via the API.  One moment please...");
+  if (args.u) {
+    // parse args.u
+    var start, end;
+    try {
+      var r = args.u.split('/');
+      if (r.length != 2) throw "expected format ##/##";
+      start = parseInt(r[0], 10);
+      end = parseInt(r[1], 10);
+      if (start >= end) throw "first number must be smaller than the second";
+    } catch(e) {
+      console.log("your -u argument is poorly formated: " + e.toString());
+      process.exit(1);
+    }
 
-  var createUser = require("../lib/load_gen/activities/signup.js").startFunc;
-  var created = 0;
-  for (var i = 0; i < NUM_INITIAL_USERS; i++) {
-    createUser(configuration, function(err) {
-      if (err) {
-        console.log("failed to create initial users! tragedy!  run away!:", err);
-        process.exit(1);
-      }
-      process.stdout.write(".");
-      if (++created == NUM_INITIAL_USERS) {
-        process.stdout.write("\n\n");
-        console.log("Average active users simulated over the last 1s/5s/60s:");
-        poll();
-      }
-    });
+    // now create all them users!
+    console.log("Runing with", (end - start + 1), "pre-created users (XXX@loadtest.domain)");
+    for (var i = start; i < end; i++) {
+      userdb.addNewUser(userdb.getNewUser(i + "@loadtest.domain", "THE PASSWORD"));
+    }
+    console.log("users created!  applying load...");
+    poll();
+  } else {
+    console.log("To start, let's create " + NUM_INITIAL_USERS + " users via the API.  One moment please...");
+
+    var createUser = require("../lib/load_gen/activities/signup.js").startFunc;
+    var created = 0;
+    for (var i = 0; i < NUM_INITIAL_USERS; i++) {
+      createUser(configuration, function(err) {
+        if (err) {
+          console.log("failed to create initial users! tragedy!  run away!:", err);
+          process.exit(1);
+        }
+        process.stdout.write(".");
+        if (++created == NUM_INITIAL_USERS) {
+          process.stdout.write("\n\n");
+          console.log("Average active users simulated over the last 1s/5s/60s:");
+          poll();
+        }
+      });
+    }
   }
-}
+});
