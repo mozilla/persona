@@ -31,6 +31,7 @@ BrowserID.Modules.InteractionData = (function() {
       sc;
 
   function onSessionContext(msg, result) {
+    console.log("session context");
     var self=this;
 
     // defend against onSessionContext being called multiple times
@@ -41,48 +42,51 @@ BrowserID.Modules.InteractionData = (function() {
     // session data must be published independently of whether the current
     // dialog session is allowed to sample data. This is because the original
     // dialog session has already decided whether to collect data.
-    publishStored();
 
-    // set the sample rate as defined by the server.  It's a value
-    // between 0..1, integer or float, and it specifies the percentage
-    // of the time that we should capture
-    var sampleRate = result.data_sample_rate || 0;
+    // Continuation after publishing MUST be done
+    publishStored(function() {
+      // set the sample rate as defined by the server.  It's a value
+      // between 0..1, integer or float, and it specifies the percentage
+      // of the time that we should capture
+      var sampleRate = result.data_sample_rate || 0;
 
-    if (typeof self.samplingEnabled === "undefined") {
-      // now that we've got sample rate, let's smash it into a boolean
-      // probalistically
-      self.samplingEnabled = Math.random() <= sampleRate;
-    }
+      if (typeof self.samplingEnabled === "undefined") {
+        // now that we've got sample rate, let's smash it into a boolean
+        // probalistically
+        self.samplingEnabled = Math.random() <= sampleRate;
+      }
 
-    // if we're not going to sample, kick out early.
-    if (!self.samplingEnabled) {
-      return;
-    }
+      // if we're not going to sample, kick out early.
+      if (!self.samplingEnabled) {
+        return;
+      }
 
-    var currentData = {
-      event_stream: self.initialEventStream,
-      sample_rate: sampleRate,
-      timestamp: result.server_time,
-      local_timestamp: self.startTime.toString(),
-      lang: dom.getAttr('html', 'lang') || null,
-    };
-
-    if (window.screen) {
-      currentData.screen_size = {
-        width: window.screen.width,
-        height: window.screen.height
+      var currentData = {
+        event_stream: self.initialEventStream,
+        sample_rate: sampleRate,
+        timestamp: result.server_time,
+        local_timestamp: self.startTime.toString(),
+        lang: dom.getAttr('html', 'lang') || null,
       };
-    }
 
-    // cool.  now let's persist the initial data.  This data will be published
-    // as soon as the first session_context completes for the next dialog
-    // session.  Use a push because old data *may not* have been correctly
-    // published to a down server or erroring web service.
-    storage.push(currentData);
+      if (window.screen) {
+        currentData.screen_size = {
+          width: window.screen.width,
+          height: window.screen.height
+        };
+      }
 
-    self.initialEventStream = null;
+      // cool.  now let's persist the initial data.  This data will be published
+      // as soon as the first session_context completes for the next dialog
+      // session.  Use a push because old data *may not* have been correctly
+      // published to a down server or erroring web service.
+      console.log("pushing currentData");
+      storage.push(currentData);
 
-    self.samplesBeingStored = true;
+      self.initialEventStream = null;
+
+      self.samplesBeingStored = true;
+    });
   }
 
   // At every load, after session_context returns, we'll try to publish
@@ -98,8 +102,10 @@ BrowserID.Modules.InteractionData = (function() {
 
     // XXX: should we even try to post data if it's larger than some reasonable
     // threshold?
+    console.log(data);
     if (data && data.length !== 0) {
       network.sendInteractionData(data, function() {
+        console.log("clear");
         storage.clear();
         complete(oncomplete, true);
       }, function(status) {
@@ -126,11 +132,13 @@ BrowserID.Modules.InteractionData = (function() {
 
     var eventData = [ eventName, new Date() - self.startTime ];
     if (self.samplesBeingStored) {
+      console.log("add stored event:" + eventName);
       var d = storage.current() || {};
       if (!d.event_stream) d.event_stream = [];
       d.event_stream.push(eventData);
       storage.setCurrent(d);
     } else {
+      console.log("add initial event:" + eventName);
       self.initialEventStream.push(eventData);
     }
   }
