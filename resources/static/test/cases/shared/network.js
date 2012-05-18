@@ -174,9 +174,9 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("completeEmailRegistration with valid token, missing password", function() {
-    transport.useResult("missing_password");
-    network.completeEmailRegistration("token", undefined,
+  asyncTest("completeEmailRegistration with valid token, bad password", function() {
+    transport.useResult("badPassword");
+    network.completeEmailRegistration("token", "password",
       testHelpers.unexpectedSuccess,
       testHelpers.expectedXHRFailure);
   });
@@ -280,9 +280,9 @@
     }, testHelpers.unexpectedFailure);
   });
 
-  asyncTest("completeUserRegistration with valid token, missing password", function() {
-    transport.useResult("missing_password");
-    network.completeUserRegistration("token", undefined,
+  asyncTest("completeUserRegistration with valid token, bad password", function() {
+    transport.useResult("badPassword");
+    network.completeUserRegistration("token", "password",
       testHelpers.unexpectedSuccess,
       testHelpers.expectedXHRFailure);
   });

@@ -15,6 +15,7 @@ BrowserID.verifySecondaryAddress = (function() {
       helpers = bid.Helpers,
       complete = helpers.complete,
       validation = bid.Validation,
+      tooltip = bid.Tooltip,
       token,
       sc,
       needsPassword,
@@ -49,7 +50,15 @@ BrowserID.verifySecondaryAddress = (function() {
 
         var selector = info.valid ? "#congrats" : "#cannotcomplete";
         pageHelpers.replaceFormWithNotice(selector, complete.curry(oncomplete, info.valid));
-      }, pageHelpers.getFailure(errors.verifyEmail, oncomplete));
+      }, function(info) {
+        if (info.network && info.network.status === 401) {
+          tooltip.showTooltip("#cannot_authenticate");
+          complete(oncomplete, false);
+        }
+        else {
+          pageHelpers.showFailure(errors.verifyEmail, info, oncomplete);
+        }
+      });
     }
     else {
       complete(oncomplete, false);

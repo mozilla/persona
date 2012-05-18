@@ -125,6 +125,20 @@
     });
   });
 
+  asyncTest("password: bad password", function() {
+    $("#password").val("password");
+
+    xhr.useResult("mustAuth");
+    createController(config, function() {
+      xhr.useResult("badPassword");
+      controller.submit(function(status) {
+        equal(status, false, "correct status");
+        testHelpers.testTooltipVisible();
+        start();
+      });
+    });
+  });
+
   asyncTest("password: good password bad token", function() {
     $("#password").val("password");
 
