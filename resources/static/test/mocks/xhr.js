@@ -21,13 +21,18 @@ BrowserID.Mocks.xhr = (function() {
   var random_cert = "eyJhbGciOiJSUzEyOCJ9.eyJpc3MiOiJpc3N1ZXIuY29tIiwiZXhwIjoxMzE2Njk1MzY3NzA3LCJwdWJsaWMta2V5Ijp7ImFsZ29yaXRobSI6IlJTIiwibiI6IjU2MDYzMDI4MDcwNDMyOTgyMzIyMDg3NDE4MTc2ODc2NzQ4MDcyMDM1NDgyODk4MzM0ODExMzY4NDA4NTI1NTk2MTk4MjUyNTE5MjY3MTA4MTMyNjA0MTk4MDA0NzkyODQ5MDc3ODY4OTUxOTA2MTcwODEyNTQwNzEzOTgyOTU0NjUzODEwNTM5OTQ5Mzg0NzEyNzczMzkwMjAwNzkxOTQ5NTY1OTAzNDM5NTIxNDI0OTA5NTc2ODMyNDE4ODkwODE5MjA0MzU0NzI5MjE3MjA3MzYwMTA1OTA2MDM5MDIzMjk5NTYxMzc0MDk4OTQyNzg5OTk2NzgwMTAyMDczMDcxNzYwODUyODQxMDY4OTg5ODYwNDAzNDMxNzM3NDgwMTgyNzI1ODUzODk5NzMzNzA2MDY5IiwiZSI6IjY1NTM3In0sInByaW5jaXBhbCI6eyJlbWFpbCI6InRlc3R1c2VyQHRlc3R1c2VyLmNvbSJ9fQ.aVIO470S_DkcaddQgFUXciGwq2F_MTdYOJtVnEYShni7I6mqBwK3fkdWShPEgLFWUSlVUtcy61FkDnq2G-6ikSx1fUZY7iBeSCOKYlh6Kj9v43JX-uhctRSB2pI17g09EUtvmb845EHUJuoowdBLmLa4DSTdZE-h4xUQ9MsY7Ik";
 
   /**
-   * This is the results table, the keys are the request type, url, and
+   * This is the responses table, the keys are the request type, url, and
    * a "selector" for testing.  The right is the expected return value, already
    * decoded.  If a result is "undefined", the request's error handler will be
    * called.
    */
   var xhr = {
-    results: {
+    // Keep track of the last request made to each wsapi call.  keyed only on
+    // url - for instince - instead of "get /wsapi/session_context
+    // valid", the key would only be "/wsapi/session_context"
+    requests: {},
+
+    responses: {
       "get /wsapi/session_context valid": contextInfo,
       // We are going to test for XHR failures for session_context using
       // the flag contextAjaxError.
@@ -85,7 +90,6 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/stage_email invalid": { success: false },
       "post /wsapi/stage_email throttle": 429,
       "post /wsapi/stage_email ajaxError": undefined,
-      "post /wsapi/cert_key ajaxError": undefined,
       "get /wsapi/email_addition_status?email=testuser%40testuser.com complete": { status: "complete" },
       "get /wsapi/email_addition_status?email=registered%40testuser.com pending": { status: "pending" },
       "get /wsapi/email_addition_status?email=registered%40testuser.com complete": { status: "complete" },
@@ -124,6 +128,7 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/prolong_session unauthenticated": 400,
       "post /wsapi/prolong_session ajaxError": undefined,
       "post /wsapi/interaction_data valid": { success: true },
+      "post /wsapi/interaction_data throttle": 413,
       "post /wsapi/interaction_data ajaxError": undefined
     },
 
@@ -136,61 +141,63 @@ BrowserID.Mocks.xhr = (function() {
     },
 
     useResult: function(result) {
-      xhr.resultType = result;
+      xhr.responseName = result;
     },
 
-    getLastRequest: function() {
-      return this.req;
+    getLastRequest: function(key) {
+      var req = this.request;
+      if (key) {
+        req = this.requests[key];
+      }
+
+      return req;
     },
 
-    ajax: function(obj) {
+    ajax: function(request) {
       //console.log("ajax request");
-      var type = obj.type ? obj.type.toLowerCase() : "get";
+      var type = request.type ? request.type.toLowerCase() : "get";
 
-      var req = this.req = {
-        type: type,
-        url: obj.url,
-        data: obj.data
-      };
+      this.request = request = _.extend(request, {
+        type: type
+      });
 
-
-      if(type === "post" && obj.data.indexOf("csrf") === -1) {
+      if (type === "post" && request.data.indexOf("csrf") === -1) {
         ok(false, "missing csrf token on POST request");
       }
 
-
-      var resultType = xhr.resultType;
+      var responseName = xhr.responseName;
 
       // Unless the contextAjaxError is specified, use the "valid" context info.
       // This makes it so we do not have to keep adding new items for
       // context_info for every possible result type.
-      if(req.url === "/wsapi/session_context" && resultType !== "contextAjaxError") {
-        resultType = "valid";
+      if (request.url === "/wsapi/session_context" && responseName !== "contextAjaxError") {
+        responseName = "valid";
       }
 
-      var resName = req.type + " " + req.url + " " + resultType;
+      var responseKey = request.type + " " + request.url + " " + responseName,
+          response = xhr.responses[responseKey],
+          typeofResponse = typeof response;
 
-      var result = xhr.results[resName];
+      this.requests[request.url] = request;
 
-      var type = typeof result;
-      if(type === "function") {
-        result(obj.success);
+      if (typeofResponse === "function") {
+        response(request.success);
       }
-      else if(!(type == "number" || type == "undefined")) {
-        if(obj.success) {
-          if(delay) {
+      else if (!(typeofResponse == "number" || typeofResponse == "undefined")) {
+        if (request.success) {
+          if (delay) {
             // simulate response delay
-            _.delay(obj.success, delay, result);
+            _.delay(request.success, delay, response);
           }
           else {
-            obj.success(result);
+            request.success(response);
           }
         }
       }
-      else if (obj.error) {
-        // Invalid result - either invalid URL, invalid GET/POST or
-        // invalid resultType
-        obj.error({ status: result || 400, responseText: "response text" }, "errorStatus", "errorThrown");
+      else if (request.error) {
+        // Invalid response - either invalid URL, invalid GET/POST or
+        // invalid responseName
+        request.error({ status: response || 400, responseText: "response text" }, "errorStatus", "errorThrown");
       }
     }
   };

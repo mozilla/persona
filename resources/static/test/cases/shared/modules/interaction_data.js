@@ -9,11 +9,16 @@
   var bid = BrowserID,
       testHelpers = bid.TestHelpers,
       network = bid.Network,
-      storage = bid.Storage,
+      model = bid.Models.InteractionData,
+      xhr = bid.Mocks.xhr,
+      mediator = bid.Mediator,
       controller;
 
   module("shared/modules/interaction_data", {
-    setup: testHelpers.setup,
+    setup: function() {
+      testHelpers.setup();
+      localStorage.removeItem("interaction_data");
+    },
     teardown: function() {
       testHelpers.teardown();
 
@@ -36,25 +41,35 @@
   }
 
   asyncTest("samplingEnabled - ensure data collection working as expected", function() {
+    // Desired sequence:
+    // 1. When session_context completes, initialize this session's interaction
+    // data, sends previous session's data.
+    // 2. when network.sendInteractionData completes, previous session's data is
+    // erased, current session's data is unaffected.
+
+    // simulate data stored for last session
+    model.push({ timestamp: new Date().getTime() });
+
     createController();
 
     controller.addEvent("before_session_context");
 
-    var events = controller.getEventStream();
+    var events = controller.getCurrentEventStream();
     ok(indexOfEvent(events, "before_session_context") > -1, "before_session_context correctly saved to event stream");
-    ok(indexOfEvent(events, "after_session_context") === -1, "after_session_context not yet added to current event stream");
 
-    // with context initializes the current stored data.
-    network.withContext(function() {
-      var data = controller.getCurrentStoredData();
+    // Add an XHR delay to simulate interaction_data completeing after
+    // session_context completes.
+    xhr.setDelay(5);
+
+    mediator.subscribe("interaction_data_send_complete", function() {
+      var data = controller.getCurrent();
 
       // Make sure expected items are in the current stored data.
       testHelpers.testKeysInObject(data, ["event_stream", "sample_rate", "timestamp", "lang"]);
 
       controller.addEvent("after_session_context");
 
-      var events = controller.getEventStream();
-
+      events = controller.getCurrentEventStream();
       // Make sure both the before_session_context and after_session_context
       // are both on the event stream.
       ok(indexOfEvent(events, "before_session_context") > -1, "before_session_context correctly saved to current event stream");
@@ -73,28 +88,7 @@
       start();
     });
 
-  });
-
-  asyncTest("publish data", function() {
-    createController();
-
-    // force saved data to be cleared.
-    storage.interactionData.clear();
-    controller.publishStored(function(status) {
-      equal(status, false, "no data to publish");
-
-      // session context is required start saving events to localStorage.
-      network.withContext(function() {
-
-        // Add an event which should allow us to publish
-        controller.addEvent("something_special");
-        controller.publishStored(function(status) {
-          equal(status, true, "data correctly published");
-
-          start();
-        });
-      });
-    });
+    network.withContext();
   });
 
   asyncTest("samplingEnabled set to false - no data collection occurs", function() {
@@ -104,12 +98,9 @@
     // no stored data.
     network.withContext(function() {
       controller.addEvent("after_session_context");
-      var events = controller.getEventStream();
 
-      var index = indexOfEvent(events, "after_session_context");
-      equal(index, -1, "events not being stored");
-
-      equal(typeof controller.getCurrentStoredData(), "undefined", "no stored data");
+      equal(typeof controller.getCurrent(), "undefined", "no stored data");
+      equal(typeof controller.getCurrentEventStream(), "undefined", "no data stored");
 
       controller.publishStored(function(status) {
         equal(status, false, "there was no data to publish");
@@ -135,7 +126,7 @@
       network.withContext(function() {
         controller.addEvent("session2_after_session_context");
 
-        var events = controller.getEventStream();
+        var events = controller.getCurrentEventStream();
 
         ok(indexOfEvent(events, "session1_before_session_context") > -1, "session1_before_session_context correctly saved to current event stream");
         ok(indexOfEvent(events, "session1_after_session_context") > -1, "session1_after_session_context correctly saved to current event stream");
@@ -166,12 +157,8 @@
       network.withContext(function() {
         controller.addEvent("session2_after_session_context");
 
-        var events = controller.getEventStream();
-
-        ok(indexOfEvent(events, "session1_before_session_context") === -1, "no data collected");
-        ok(indexOfEvent(events, "session1_after_session_context") === -1, "no data collected");
-        ok(indexOfEvent(events, "session2_before_session_context") === -1, "no data collected");
-        ok(indexOfEvent(events, "session2_after_session_context") === -1, "no data collected");
+        equal(typeof controller.getCurrent(), "undefined", "no data collected");
+        equal(typeof controller.getCurrentEventStream(), "undefined", "no data collected");
 
         controller.publishStored(function(status) {
           equal(status, false, "there was no data to publish");
@@ -179,8 +166,35 @@
         });
       });
     });
-
   });
 
+
+  asyncTest("simulate failed starts - data not sent until second successful session_context", function() {
+    // simulate 3 dialog openings without session completing for any of them.
+    // On the forth attempt at opening the dialog, the data is successfully
+    // sent.
+
+    createController();
+    controller.addEvent("session1_before_session_context");
+
+    // simulate this as the first successful connection to backend to find out
+    // whether data collection is allowed.
+    createController();
+    controller.addEvent("session2_before_session_context");
+    network.withContext(function() {
+
+      createController();
+      controller.addEvent("session2_before_session_context");
+
+      // Data is sent on the second successful call to session_context
+      network.withContext(function() {
+        var request = xhr.getLastRequest('/wsapi/interaction_data'),
+            previousSessionsData = JSON.parse(request.data).data;
+
+        equal(previousSessionsData.length, 1, "sending correct result sets");
+        start();
+      });
+    });
+  });
 
 }());
