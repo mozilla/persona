@@ -85,7 +85,7 @@ BrowserID.Modules.Dialog = (function() {
     var u;
     if (/^http/.test(url)) u = URLParse(url);
     else if (/^\//.test(url)) u = URLParse(origin + url);
-    else throw "relative urls not allowed: (" + url + ")";
+    else throw "relative urls not allowed";
     return encodeURI(u.validate().normalize().toString());
   }
 
