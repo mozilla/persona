@@ -86,6 +86,7 @@ BrowserID.Modules.Dialog = (function() {
     if (/^http/.test(url)) u = URLParse(url);
     else if (/^\//.test(url)) u = URLParse(origin + url);
     else throw "relative urls not allowed: (" + url + ")";
+    // encodeURI limits our return value to [a-z0-9:/?%], excluding <script>
     return encodeURI(u.validate().normalize().toString());
   }
 
@@ -111,7 +112,7 @@ BrowserID.Modules.Dialog = (function() {
       return this.get(origin_url, {}, success, error);
     },
 
-    get: function(origin_url, params, success, error) {
+    get: function(origin_url, paramsFromRP, success, error) {
       var self=this,
           hash = win.location.hash;
 
@@ -120,23 +121,32 @@ BrowserID.Modules.Dialog = (function() {
       var actions = startActions.call(self, success, error);
       startStateMachine.call(self, actions);
 
-      params = params || {};
+      // Security Note: paramsFromRP is the output of a JSON.parse on an
+      // RP-controlled string. Most of these fields are expected to be simple
+      // printable strings (hostnames, usernames, and URLs), but we cannot
+      // rely upon the RP to do that. In particular we must guard against
+      // these strings containing <script> tags. We will populate a new
+      // object ("params") with suitably type-checked properties.
+      params = {};
       params.hostname = user.getHostname();
 
       // verify params
-      if (params.tosURL && params.privacyURL) {
+      if (paramsFromRP.tosURL && paramsFromRP.privacyURL) {
         try {
-          params.tosURL = fixupURL(origin_url, params.tosURL);
-          params.privacyURL = fixupURL(origin_url, params.privacyURL);
+          params.tosURL = fixupURL(origin_url, paramsFromRP.tosURL);
+          params.privacyURL = fixupURL(origin_url, paramsFromRP.privacyURL);
         } catch(e) {
+          // note: renderError accepts HTML and cheerfully injects it into a
+          // frame with a powerful origin. So convert 'e' first.
           return self.renderError("error", {
             action: {
-              title: "error in " + origin_url,
-              message: "improper usage of API: " + e
+              title: "error in " + _.escape(origin_url),
+              message: "improper usage of API: " + _.escape(e)
             }
           });
         }
       }
+      // after this point, "params" can be relied upon to contain safe data
 
       // XXX Perhaps put this into the state machine.
       self.bind(win, "unload", onWindowUnload);
