@@ -669,7 +669,7 @@ h1 {
   margin-bottom: 10px;
 }
 
-.siteinfo, #congrats, .password_entry, .enter_password .hint, #unknown_secondary, #primary_verify, .verify_primary .submit {
+.siteinfo, #congrats, .password_entry, #verify_password, .enter_password .hint, #unknown_secondary, #primary_verify, .verify_primary .submit {
   display: none;
 }
 
@@ -677,7 +677,7 @@ h1 {
   float: left;
 }
 
-.enter_password .password_entry, .known_secondary .password_entry,
+.enter_password .password_entry, .enter_verify_password #verify_password, .known_secondary .password_entry,
 .unknown_secondary #unknown_secondary, .verify_primary #verify_primary {
   display: block;
 }
