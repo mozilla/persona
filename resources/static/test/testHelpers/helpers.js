@@ -181,7 +181,7 @@ BrowserID.TestHelpers = (function() {
         start();
       });
 
-      if(transport.resultType === "valid") {
+      if(transport.responseName === "valid") {
         transport.useResult("ajaxError");
       }
 
@@ -200,6 +200,11 @@ BrowserID.TestHelpers = (function() {
     },
 
     testKeysInObject: function(objToTest, expected, msg) {
+      if (!objToTest) {
+        ok(false, "Missing object to test against");
+        return;
+      }
+
       for(var i=0, key; key=expected[i]; ++i) {
         ok(key in objToTest, msg || ("object contains " + key));
       }
