@@ -96,7 +96,7 @@ BrowserID.Models.InteractionData = (function() {
       // we needed to calculate time offsets in our event stream, but which
       // could be used to fingerprint users.
       var filtered = [];
-      data.forEach(function(obj) {
+      _.each(data, function(obj) {
         filtered.push(whitelistFilter(obj, [
           'event_stream',
           'lang', 
