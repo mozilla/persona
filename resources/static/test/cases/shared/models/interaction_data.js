@@ -23,36 +23,36 @@
   });
 
   test("after push, most recently pushed data available through getCurrent, getStaged gets previous data sets", function() {
-    model.push({ foo: "bar" });
-    equal(model.getCurrent().foo, "bar",
+    model.push({ lang: "foo" });
+    equal(model.getCurrent().lang, "foo",
           "after pushing new interaction data, it's returned from .getCurrent()");
 
     equal(model.getStaged().length, 0, "no data is yet staged");
 
-    model.push({ foo: "baz" });
+    model.push({ lang: "bar" });
 
-    equal(model.getCurrent().foo, "baz", "current points to new data set")
+    equal(model.getCurrent().lang, "bar", "current points to new data set")
     var staged = model.getStaged();
 
     equal(staged.length, 1, "only one staged item");
-    testObjectValuesEqual(staged[0], { foo: "bar" });
+    testObjectValuesEqual(staged[0], { lang: "foo" });
   });
 
   test("setCurrent data overwrites current", function() {
     model.clearStaged();
-    model.push({ foo: "bar" });
-    model.setCurrent({ foo: "baz" });
-    equal(model.getCurrent().foo, "baz",
+    model.push({ lang: "foo" });
+    model.setCurrent({ lang: "bar" });
+    equal(model.getCurrent().lang, "bar",
           "overwriting current interaction data works");
   });
 
   test("clearStaged clears staged interaction data but leaves current data unaffected", function() {
-    model.push({ foo: "bar" });
-    model.push({ foo: "baz" });
+    model.push({ lang: "foo" });
+    model.push({ lang: "bar" });
     model.clearStaged();
     equal(model.getStaged().length, 0,
           "after clearStageding, interaction data is zero length");
-    equal(model.getCurrent().foo, "baz",
+    equal(model.getCurrent().lang, "bar",
           "after clearStageding, current data is unaffected");
   });
 
@@ -61,7 +61,7 @@
     model.stageCurrent();
     equal(model.getStaged().length, 0, "no data to staged");
 
-    model.push({ foo: "bar" });
+    model.push({ lang: "foo" });
     model.stageCurrent();
 
     equal(model.getStaged().length, 1, "current data staged");
@@ -77,7 +77,7 @@
       // desired result - data is purged from staging table
 
       // The first pushed data will become staged.
-      model.push({ foo: "bar" });
+      model.push({ lang: "foo" });
       model.stageCurrent();
 
       xhr.useResult("throttle");
@@ -87,7 +87,7 @@
 
         // When the interaction_data next completes, this will be the only data
         // that is pushed.
-        model.push({ foo: "baz" });
+        model.push({ lang: "bar", secret: "Attack at dawn!!!" });
         model.stageCurrent();
 
         xhr.useResult("valid");
@@ -97,7 +97,8 @@
               previousSessionsData = JSON.parse(request.data).data;
 
           equal(previousSessionsData.length, 1, "sending correct result sets");
-          equal(previousSessionsData[0].foo, "baz", "correct data sent");
+          equal(previousSessionsData[0].lang, "bar", "correct data sent");
+          equal(typeof previousSessionsData[0].secret, "undefined", "non-whitelisted valued stripped");
           start();
         });
       });
