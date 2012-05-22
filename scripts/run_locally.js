@@ -51,10 +51,10 @@ process.env['LOG_TO_CONSOLE'] = 1;
 
 // all spawned processes will communicate with the local browserid
 process.env['DBWRITER_URL'] = 'http://' + HOST + ":10004";
-process.env['BROWSERID_URL'] = 'http://' + HOST + ":10002";
+process.env['BROWSERID_URL'] = 'http://' + HOST + ":10007";
 process.env['VERIFIER_URL'] = 'http://' + HOST + ":10000/verify";
 process.env['KEYSIGNER_URL'] = 'http://' + HOST + ":10003";
-process.env['ROUTER_URL'] = 'http://' + HOST + ":10007";
+process.env['ROUTER_URL'] = 'http://' + HOST + ":10002";
 
 process.env['URL'] = process.env['ROUTER_URL'];
 
