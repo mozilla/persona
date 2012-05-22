@@ -131,20 +131,21 @@ BrowserID.Modules.Dialog = (function() {
       params.hostname = user.getHostname();
 
       // verify params
-      if (paramsFromRP.tosURL && paramsFromRP.privacyURL) {
-        try {
+      try {
+        params.requiredEmail = paramsFromRP.requiredEmail;
+        if (paramsFromRP.tosURL && paramsFromRP.privacyURL) {
           params.tosURL = fixupURL(origin_url, paramsFromRP.tosURL);
           params.privacyURL = fixupURL(origin_url, paramsFromRP.privacyURL);
-        } catch(e) {
-          // note: renderError accepts HTML and cheerfully injects it into a
-          // frame with a powerful origin. So convert 'e' first.
-          return self.renderError("error", {
-            action: {
-              title: "error in " + _.escape(origin_url),
-              message: "improper usage of API: " + _.escape(e)
-            }
-          });
         }
+      } catch(e) {
+        // note: renderError accepts HTML and cheerfully injects it into a
+        // frame with a powerful origin. So convert 'e' first.
+        return self.renderError("error", {
+          action: {
+            title: "error in " + _.escape(origin_url),
+            message: "improper usage of API: " + _.escape(e)
+          }
+        });
       }
       // after this point, "params" can be relied upon to contain safe data
 
