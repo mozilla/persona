@@ -34,18 +34,6 @@ app = express.createServer();
 
 logger.info("browserid server starting up");
 
-// verify that we have a keysigner configured
-if (!config.get('keysigner_url')) {
-  logger.error('missing required configuration - url for the keysigner (KEYSIGNER_URL in env)');
-  process.exit(1);
-}
-
-// verify that we have a dbwriter configured
-if (!config.get('dbwriter_url')) {
-  logger.error('missing required configuration - url for the dbwriter (DBWRITER_URL in env)');
-  process.exit(1);
-}
-
 // NOTE: ordering of middleware registration is important in this file, it is the
 // order in which middleware will be invoked as requests are processed.
 
@@ -101,25 +89,6 @@ app.use(function(req, resp, next) {
   resp.setHeader('x-frame-options', 'DENY');
   next();
 });
-
-// #5 - redirection!  redirect requests to the "verifier" or to the "dbwriter"
-// processes
-if (config.get('verifier_url')) {
-  var verifier_url = urlparse(config.get('verifier_url')).validate().normalize();
-  app.use(function(req, res, next) {
-    if (/^\/verify$/.test(req.url)) {
-      forward(
-        verifier_url, req, res,
-        function(err) {
-          if (err) {
-            logger.error("error forwarding request:", err);
-          }
-        });
-    } else {
-      return next();
-    }
-  });
-}
 
 // #6 - verify all JSON responses are objects - prevents regression on issue #217
 app.use(function(req, resp, next) {
