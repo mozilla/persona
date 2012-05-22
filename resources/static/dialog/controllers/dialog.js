@@ -127,7 +127,7 @@ BrowserID.Modules.Dialog = (function() {
       // rely upon the RP to do that. In particular we must guard against
       // these strings containing <script> tags. We will populate a new
       // object ("params") with suitably type-checked properties.
-      params = {};
+      var params = {};
       params.hostname = user.getHostname();
 
       // verify params
