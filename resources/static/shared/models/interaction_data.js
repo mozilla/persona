@@ -25,7 +25,6 @@ BrowserID.Models.InteractionData = (function() {
     try {
       storage.interaction_data = JSON.stringify(data);
     } catch(e) {
-      console.log(e);
       storage.removeItem("interaction_data");
     }
   }

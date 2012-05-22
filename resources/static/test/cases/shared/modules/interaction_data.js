@@ -170,23 +170,31 @@
 
 
   asyncTest("simulate failed starts - data not sent until second successful session_context", function() {
-    // simulate 3 dialog openings without session completing for any of them.
-    // On the forth attempt at opening the dialog, the data is successfully
-    // sent.
+    // simulate three dialogs being opened.
+    // The first open dialog does not complete session_context, so data is
+    // never collected/sent for this session.
+    // The second has session_context complete, it starts collecting data which
+    // is sent when the third dialog has its session_context complete.
+    // The third has session_context complete and sends data for the second
+    // dialog opening.
 
+
+    // First open dialog never has session_context complete. Data is not
+    // collected.
     createController();
     controller.addEvent("session1_before_session_context");
 
-    // simulate this as the first successful connection to backend to find out
-    // whether data collection is allowed.
+    // Second open dialog is the first to successfully complete
+    // session_context, data should be collected.
     createController();
     controller.addEvent("session2_before_session_context");
     network.withContext(function() {
 
+      // Third open dialog successfully completes session_context, should send
+      // data for the 2nd open dialog once session_context completes.
       createController();
       controller.addEvent("session2_before_session_context");
 
-      // Data is sent on the second successful call to session_context
       network.withContext(function() {
         var request = xhr.getLastRequest('/wsapi/interaction_data'),
             previousSessionsData = JSON.parse(request.data).data;
