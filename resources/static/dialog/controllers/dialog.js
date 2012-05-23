@@ -84,6 +84,8 @@ BrowserID.Modules.Dialog = (function() {
 
   function fixupURL(origin, url) {
     var u;
+    if (typeof(url) !== "string")
+      throw "urls must be strings: (" + url + ")";
     if (/^http(s)?:\/\//.test(url)) u = URLParse(url);
     else if (/^\//.test(url)) u = URLParse(origin + url);
     else throw "relative urls not allowed: (" + url + ")";
