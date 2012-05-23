@@ -55,11 +55,11 @@
 
   function whitelistFilter(obj, validKeys) {
     var filtered = {};
-    for (var key in obj) {
-      if (validKeys.indexOf(key) !== -1) {
+    _.each(_.keys(obj), function(key) {
+      if (_.indexOf(validKeys, key) !== -1) {
         filtered[key] = obj[key];
       }
-    }
+    });
     return filtered;
   }
 
