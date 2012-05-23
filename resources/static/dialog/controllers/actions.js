@@ -95,7 +95,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doStageEmail: function(info) {
-      dialogHelpers.addSecondaryEmailWithPassword.call(this, info.email, info.password, info.ready);
+      dialogHelpers.addSecondaryEmail.call(this, info.email, info.password, info.ready);
     },
 
     doAuthenticate: function(info) {
