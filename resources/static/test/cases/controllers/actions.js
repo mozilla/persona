@@ -47,30 +47,6 @@
     }
   });
 
-  asyncTest("doError with no template - display default error screen", function() {
-    createController({
-      ready: function() {
-        equal(testHelpers.errorVisible(), false, "Error is not yet visible");
-        controller.doError({});
-        ok(testHelpers.errorVisible(), "Error is visible");
-        equal($("#defaultError").length, 1, "default error screen is shown");
-        start();
-      }
-    });
-  });
-
-  asyncTest("doError with with template - display error screen", function() {
-    createController({
-      ready: function() {
-        equal(testHelpers.errorVisible(), false, "Error is not yet visible");
-        controller.doError("invalid_required_email", {email: "email"});
-        equal($("#invalidRequiredEmail").length, 1, "default error screen is shown");
-        ok(testHelpers.errorVisible(), "Error is visible");
-        start();
-      }
-    });
-  });
-
   asyncTest("doProvisionPrimaryUser - start the provision_primary_user service", function() {
     testActionStartsModule("doProvisionPrimaryUser", {email: TEST_EMAIL},
       "provision_primary_user");

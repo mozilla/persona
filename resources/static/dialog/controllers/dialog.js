@@ -13,6 +13,7 @@ BrowserID.Modules.Dialog = (function() {
       errors = bid.Errors,
       dom = bid.DOM,
       win = window,
+      startExternalDependencies = true,
       channel,
       sc;
 
@@ -83,7 +84,7 @@ BrowserID.Modules.Dialog = (function() {
 
   function fixupURL(origin, url) {
     var u;
-    if (/^http/.test(url)) u = URLParse(url);
+    if (/^http(s)?:\/\//.test(url)) u = URLParse(url);
     else if (/^\//.test(url)) u = URLParse(origin + url);
     else throw "relative urls not allowed: (" + url + ")";
     // encodeURI limits our return value to [a-z0-9:/?%], excluding <script>
@@ -98,8 +99,23 @@ BrowserID.Modules.Dialog = (function() {
 
       win = options.window || window;
 
+      // startExternalDependencies is used in unit testing and can only be set
+      // by the creator/starter of this module.  If startExternalDependencies
+      // is set to false, the channel, state machine, and actions controller
+      // are not started.  These dependencies can interfere with the ability to
+      // unit test this module because they can throw exceptions and show error
+      // messages.
+      startExternalDependencies = true;
+      if (typeof options.startExternalDependencies === "boolean") {
+        startExternalDependencies = options.startExternalDependencies;
+      }
+
       sc.start.call(self, options);
-      startChannel.call(self);
+
+      if (startExternalDependencies) {
+        startChannel.call(self);
+      }
+
       options.ready && _.defer(options.ready);
     },
 
@@ -118,8 +134,11 @@ BrowserID.Modules.Dialog = (function() {
 
       setOrigin(origin_url);
 
-      var actions = startActions.call(self, success, error);
-      startStateMachine.call(self, actions);
+
+      if (startExternalDependencies) {
+        var actions = startActions.call(self, success, error);
+        startStateMachine.call(self, actions);
+      }
 
       // Security Note: paramsFromRP is the output of a JSON.parse on an
       // RP-controlled string. Most of these fields are expected to be simple
@@ -132,9 +151,9 @@ BrowserID.Modules.Dialog = (function() {
 
       // verify params
       try {
-        if (typeof(paramsFromRP.requiredEmail) !== "undefined") {
+        if (paramsFromRP.requiredEmail) {
           if (!bid.verifyEmail(paramsFromRP.requiredEmail))
-            throw "invalid requiredEmail: ("+paramsFromRP.requiredEmail+")";
+            throw "invalid requiredEmail: (" + paramsFromRP.requiredEmail + ")";
           params.requiredEmail = paramsFromRP.requiredEmail;
         }
         if (paramsFromRP.tosURL && paramsFromRP.privacyURL) {
@@ -144,12 +163,14 @@ BrowserID.Modules.Dialog = (function() {
       } catch(e) {
         // note: renderError accepts HTML and cheerfully injects it into a
         // frame with a powerful origin. So convert 'e' first.
-        return self.renderError("error", {
+        self.renderError("error", {
           action: {
             title: "error in " + _.escape(origin_url),
             message: "improper usage of API: " + _.escape(e)
           }
         });
+
+        return e;
       }
       // after this point, "params" can be relied upon to contain safe data
 

@@ -127,6 +127,10 @@ BrowserID.TestHelpers = (function() {
       equal(TestHelpers.errorVisible(), true, "error screen is visible");
     },
 
+    testErrorNotVisible: function() {
+      equal(TestHelpers.errorVisible(), false, "error screen is not visible");
+    },
+
     waitVisible: function() {
       return screens.wait.visible;
     },
