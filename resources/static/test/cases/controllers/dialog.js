@@ -237,17 +237,20 @@
   asyncTest("get with valid requiredEmail - go to start", function() {
     createController({
       ready: function() {
-        var startCalled = false;
+        var startInfo;
         mediator.subscribe("start", function(msg, info) {
-          startCalled = true;
+          startInfo = info;
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
           requiredEmail: TESTEMAIL
         });
 
+        testHelpers.testObjectValuesEqual(startInfo, {
+          requiredEmail: TESTEMAIL
+        });
         equal(typeof retval, "undefined", "no error expected");
-        equal(startCalled, true, "start has been called");
+        testErrorNotVisible();
         start();
       }
     });
@@ -394,9 +397,9 @@
   asyncTest("get with valid absolute tosURL & privacyURL - go to start", function() {
     createController({
       ready: function() {
-        var startCalled = false;
+        var startInfo;
         mediator.subscribe("start", function(msg, info) {
-          startCalled = true;
+          startInfo = info;
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
@@ -404,8 +407,12 @@
           privacyURL: "/privacy.html"
         });
 
+        testHelpers.testObjectValuesEqual(startInfo, {
+          tosURL: HTTP_TEST_DOMAIN + "/tos.html",
+          privacyURL: HTTP_TEST_DOMAIN + "/privacy.html"
+        });
+
         equal(typeof retval, "undefined", "no error expected");
-        equal(startCalled, true, "start has been called");
         testErrorNotVisible();
         start();
       }
@@ -415,9 +422,9 @@
   asyncTest("get with valid fully qualified http tosURL & privacyURL - go to start", function() {
     createController({
       ready: function() {
-        var startCalled = false;
+        var startInfo;
         mediator.subscribe("start", function(msg, info) {
-          startCalled = true;
+          startInfo = info;
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
@@ -425,8 +432,12 @@
           privacyURL: HTTP_TEST_DOMAIN + "/privacy.html"
         });
 
+        testHelpers.testObjectValuesEqual(startInfo, {
+          tosURL: HTTP_TEST_DOMAIN + "/tos.html",
+          privacyURL: HTTP_TEST_DOMAIN + "/privacy.html"
+        });
+
         equal(typeof retval, "undefined", "no error expected");
-        equal(startCalled, true, "start has been called");
         testErrorNotVisible();
         start();
       }
@@ -437,9 +448,9 @@
   asyncTest("get with valid fully qualified https tosURL & privacyURL - go to start", function() {
     createController({
       ready: function() {
-        var startCalled = false;
+        var startInfo;
         mediator.subscribe("start", function(msg, info) {
-          startCalled = true;
+          startInfo = info;
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
@@ -447,8 +458,11 @@
           privacyURL: HTTPS_TEST_DOMAIN + "/privacy.html"
         });
 
+        testHelpers.testObjectValuesEqual(startInfo, {
+          tosURL: HTTPS_TEST_DOMAIN + "/tos.html",
+          privacyURL: HTTPS_TEST_DOMAIN + "/privacy.html"
+        });
         equal(typeof retval, "undefined", "no error expected");
-        equal(startCalled, true, "start has been called");
         testErrorNotVisible();
         start();
       }
