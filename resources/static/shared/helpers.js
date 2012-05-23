@@ -53,6 +53,16 @@
     return url;
   }
 
+  function whitelistFilter(obj, validKeys) {
+    var filtered = {};
+    _.each(_.keys(obj), function(key) {
+      if (_.indexOf(validKeys, key) !== -1) {
+        filtered[key] = obj[key];
+      }
+    });
+    return filtered;
+  }
+
   function cancelEvent(callback) {
     return function(event) {
       event && event.preventDefault();
@@ -111,6 +121,13 @@
      * @returns {string}
      */
     toURL: toURL,
+
+    /**
+     * Filter an object by a whitelist of keys, returning a new object.
+     * @param {object} obj - the object to filter
+     * @param {object} [validKeys] - whitelisted keys
+     */
+    whitelistFilter: whitelistFilter,
 
     /**
      * Return a function that calls preventDefault on the event and then calls

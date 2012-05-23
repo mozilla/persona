@@ -9,7 +9,8 @@ BrowserID.Models.InteractionData = (function() {
   var bid = BrowserID,
       storage = bid.getStorage(),
       network = bid.Network,
-      complete = bid.Helpers.complete;
+      complete = bid.Helpers.complete,
+      whitelistFilter = bid.Helpers.whitelistFilter;
 
   function getInteractionData() {
     var interactionData;
@@ -89,7 +90,22 @@ BrowserID.Models.InteractionData = (function() {
     // XXX: should we even try to post data if it's larger than some reasonable
     // threshold?
     if (data && data.length !== 0) {
-      network.sendInteractionData(data, function() {
+
+      // Scrub the data we are going to send and let only a set of whitelisted
+      // keys through.  This will remove such values as local_timestamp, which
+      // we needed to calculate time offsets in our event stream, but which
+      // could be used to fingerprint users.
+      var filtered = [];
+      _.each(data, function(obj) {
+        filtered.push(whitelistFilter(obj, [
+          'event_stream',
+          'lang', 
+          'screen_size',
+          'sample_rate']
+        ));
+      });
+
+      network.sendInteractionData(filtered, function() {
         clearStaged();
         complete(oncomplete, true);
       }, function(status) {

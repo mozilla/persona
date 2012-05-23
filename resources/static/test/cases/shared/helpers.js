@@ -104,6 +104,21 @@
     equal(url, "https://browserid.org?email=testuser%40testuser.com&status=complete", "correct URL with GET parameters");
   });
 
+  test("whitelistFilter an object", function() {
+    var unfiltered = {
+      'event_stream': [ ['pie', 6], ['coffee', 19], ['flan', 42] ],
+      'secret': "ATTACK AT DAWN!",
+      'location': "Zeta Minor",
+      'lang': 'auld' };
+
+    var filtered = helpers.whitelistFilter(unfiltered, ['event_stream', 'lang']);
+    equal(typeof filtered.secret, 'undefined', 'non-whitelisted key removed');
+    equal(typeof filtered.location, 'undefined', 'non-whitelisted key removed');
+    equal(filtered.lang, 'auld', 'whitelisted string passed');
+    equal(filtered.event_stream.length, 3, 'whitelisted list passed');
+    equal(filtered.event_stream[2][1], 42, 'whitelisted list elements preserved');
+  });
+
   test("simulate log on browser without console - no exception thrown", function() {
     var err,
         nativeConsole = window.console;
