@@ -132,7 +132,11 @@ BrowserID.Modules.Dialog = (function() {
 
       // verify params
       try {
-        params.requiredEmail = paramsFromRP.requiredEmail;
+        if (typeof(paramsFromRP.requiredEmail) !== "undefined") {
+          if (!bid.verifyEmail(paramsFromRP.requiredEmail))
+            throw "invalid requiredEmail: ("+paramsFromRP.requiredEmail+")";
+          params.requiredEmail = paramsFromRP.requiredEmail;
+        }
         if (paramsFromRP.tosURL && paramsFromRP.privacyURL) {
           params.tosURL = fixupURL(origin_url, paramsFromRP.tosURL);
           params.privacyURL = fixupURL(origin_url, paramsFromRP.privacyURL);
