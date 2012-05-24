@@ -123,15 +123,17 @@
     });
   });
 
-  asyncTest("unknown_secondary: user who is not authenticated - user must verify", function() {
+  asyncTest("unknown_secondary: user who is not authenticated - kick over to new_user flow", function() {
     var email = "unregistered@testuser.com";
     xhr.useResult("unknown_secondary");
 
+    register("new_user", function(item, info) {
+      equal(info.email, email, "correct email");
+      start();
+    });
+
     createController({
-      email: email,
-      ready: function() {
-        testVerify(email);
-      }
+      email: email
     });
   });
 
@@ -311,7 +313,7 @@
     });
   });
 
-  asyncTest("unknown_secondary: user who is authenticated, but email unknown - user sees verify screen", function() {
+  asyncTest("unknown_secondary: user who is authenticated to password level - user sees verify screen", function() {
     xhr.setContextInfo("auth_level",  "password");
     xhr.useResult("unknown_secondary");
 
@@ -323,6 +325,40 @@
       ready: function() {
         testVerify(email);
       }
+    });
+  });
+
+  asyncTest("unknown_secondary: user who is authenticated to assertion level, account already has password - user sees verify screen", function() {
+    xhr.setContextInfo("auth_level",  "assertion");
+    xhr.useResult("unknown_secondary");
+
+    storage.addEmail("testuser@testuser.com", { type: "secondary" });
+
+    var email = "unregistered@testuser.com";
+
+    createController({
+      email: email,
+      auth_level: "assertion",
+      ready: function() {
+        testVerify(email);
+      }
+    });
+  });
+
+  asyncTest("unknown_secondary: user who is authenticated to assertion level, account needs password - stage_email triggered", function() {
+    xhr.setContextInfo("auth_level",  "assertion");
+    xhr.useResult("unknown_secondary");
+
+    var email = "unregistered@testuser.com";
+
+    register("stage_email", function(msg, info) {
+      testHelpers.testObjectValuesEqual(info, { email: email });
+      start();
+    });
+
+    createController({
+      email: email,
+      auth_level: "assertion"
     });
   });
 
@@ -423,18 +459,18 @@
 
   });
 
-  asyncTest("verifyAddress of authenticated user, secondary address belongs to another user - redirects to 'add_email_submit_with_secondary'", function() {
+  asyncTest("verifyAddress of authenticated user, secondary address belongs to another user - redirects to 'stage_email'", function() {
     var email = "registered@testuser.com";
     xhr.useResult("known_secondary");
 
-    testMessageReceived(email, "add_email_submit_with_secondary");
+    testMessageReceived(email, "stage_email");
   });
 
-  asyncTest("verifyAddress of authenticated user, unknown address - redirects to 'add_email_submit_with_secondary'", function() {
+  asyncTest("verifyAddress of authenticated user, unknown address - redirects to 'stage_email'", function() {
     var email = "unregistered@testuser.com";
     xhr.useResult("unknown_secondary");
 
-    testMessageReceived(email, "add_email_submit_with_secondary");
+    testMessageReceived(email, "stage_email");
   });
 
   asyncTest("verifyAddress of un-authenticated user, forgot password - redirect to 'forgot_password'", function() {
