@@ -4,6 +4,10 @@ train-2012.05.25 (in progress):
   * verification links sent before deployment, should still work after - transitional code required by issue #1000: #1592
   * repair load_gen: #1596
   * fixes to mysql reconnection logic - processes can now reconnect while out of pool and only having /__heartbeat__ polled: #1608
+  * make "is this your computer" screen keyboard navigable: #1582
+  * when user types in wrong password while verifying secondary address (on different browser), show clear tooltip style error: #1557
+  * don't make a user type their password when not neccesary (adding secondary address to acct with only primary addresses): #1555
+  * perform rigorous checking of inputs to dialog from RP. (PR #1627, bug #747859)
 
 train-2012.05.14:
   * Password is now requested in dialog for new user signup: #1000, #290

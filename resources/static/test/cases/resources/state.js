@@ -376,28 +376,6 @@
     equal(actions.called.doCheckAuth, true, "checking auth on start");
   });
 
-  test("start with invalid requiredEmail - print error screen", function() {
-    mediator.publish("start", {
-      requiredEmail: "bademail"
-    });
-
-    equal(actions.called.doError, true, "error screen is shown");
-  });
-
-  test("start with empty requiredEmail - prints error screen", function() {
-    mediator.publish("start", {
-      requiredEmail: ""
-    });
-
-    equal(actions.called.doError, true, "error screen is shown");
-  });
-
-  test("start with valid requiredEmail - go to doCheckAuth", function() {
-    mediator.publish("start", { requiredEmail: TEST_EMAIL });
-
-    equal(actions.called.doCheckAuth, true, "checking auth on start");
-  });
-
   asyncTest("start to complete successful primary email verification - goto 'primary_user'", function() {
     mediator.subscribe("primary_user", function(msg, info) {
       equal(info.email, TEST_EMAIL, "correct email given");

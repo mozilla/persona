@@ -7,6 +7,8 @@ BrowserID.Validation = (function() {
       tooltip = bid.Tooltip;
 
   bid.verifyEmail = function(address) {
+    if (typeof(address) !== "string")
+      return false;
     // Original gotten from http://blog.gerv.net/2011/05/html5_email_address_regexp/
     // changed the requirement that there must be a ldh-str because BrowserID
     // is only used on internet based networks.

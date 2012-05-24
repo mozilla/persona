@@ -15,16 +15,13 @@
       testHelpers = bid.TestHelpers,
       user = bid.User,
       provisioning = bid.Mocks.Provisioning,
-      closeCB,
+      mediator = bid.Mediator,
       errorCB,
       expectedError = testHelpers.expectedXHRFailure,
       badError = testHelpers.unexpectedXHRFailure;
 
   var controllerMock = {
-    publish: function(message, info) {
-      closeCB && closeCB(message, info);
-    },
-
+    publish: mediator.publish,
     getErrorDialog: function(info) {
       return function() {
         errorCB && errorCB(info);
@@ -32,30 +29,25 @@
     }
   };
 
-  function expectedClose(message, field, value) {
-    return function(m, info) {
+  function expectedMessage(message, expectedFields) {
+    mediator.subscribe(message, function(m, info) {
       equal(m, message, "correct message: " + message);
 
-      if(field) {
-        if(value) {
-          equal(info[field], value, field + " has correct value of " + value);
-        }
-        else {
-          ok(info[field], field + " has a value");
-        }
-      }
-    }
+      testHelpers.testObjectValuesEqual(info, expectedFields);
+    });
   }
 
 
-  function badClose() {
-    ok(false, "close should have never been called");
+  function unexpectedMessage(message) {
+    mediator.subscribe(message, function(m, info) {
+      ok(false, "close should have never been called");
+    });
   }
 
   module("resources/helpers", {
     setup: function() {
       testHelpers.setup();
-      closeCB = errorCB = null;
+      errorCB = null;
       errorCB = badError;
       user.init({
         provisioning: provisioning
@@ -69,7 +61,9 @@
   });
 
   asyncTest("getAssertion happy case", function() {
-    closeCB = expectedClose("assertion_generated", "assertion");
+    mediator.subscribe("assertion_generated", function(msg, info) {
+      testHelpers.testKeysInObject(info, ["assertion"]);
+    });
 
     storage.addEmail("registered@testuser.com", {});
     dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", function(assertion) {
@@ -79,7 +73,7 @@
   });
 
   asyncTest("getAssertion with XHR error", function() {
-    closeCB = badClose;
+    unexpectedMessage("assertion_generated");
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
@@ -106,15 +100,15 @@
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
-    dialogHelpers.authenticateUser.call(controllerMock, "testuser@testuser.com", "password", function() {
-      ok(false, "unexpected success callback");
-      start();
-    });
+    dialogHelpers.authenticateUser.call(controllerMock, "testuser@testuser.com", "password", testHelpers.unexpectedSuccess);
   });
 
   asyncTest("createUser with unknown secondary happy case, expect 'user_staged' message", function() {
     xhr.useResult("unknown_secondary");
-    closeCB = expectedClose("user_staged", "email", "unregistered@testuser.com");
+    expectedMessage("user_staged", {
+      email: "unregistered@testuser.com",
+      password: "password"
+    });
 
     dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", "password", function(staged) {
       equal(staged, true, "user was staged");
@@ -123,7 +117,7 @@
   });
 
   asyncTest("createUser with unknown secondary, user throttled", function() {
-    closeCB = badClose;
+    unexpectedMessage("user_staged");
 
     xhr.useResult("throttle");
     dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", "password", function(staged) {
@@ -141,7 +135,10 @@
 
   asyncTest("addEmail with primary email happy case, expects primary_user message", function() {
     xhr.useResult("primary");
-    closeCB = expectedClose("primary_user", "add", true);
+    expectedMessage("primary_user", {
+      add: true
+    });
+
     dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(status) {
       ok(status, "correct status");
       start();
@@ -150,7 +147,10 @@
 
   asyncTest("addEmail with secondary email - trigger add_email_submit_with_secondary", function() {
     xhr.useResult("unknown_secondary");
-    closeCB = expectedClose("add_email_submit_with_secondary", "email", "unregistered@testuser.com");
+    expectedMessage("add_email_submit_with_secondary", {
+      email: "unregistered@testuser.com"
+    });
+
     dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(success) {
       equal(success, true, "success status");
       start();
@@ -161,10 +161,7 @@
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
-    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(added) {
-      ok(false, "unexpected close");
-      start();
-    });
+    dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", testHelpers.unexpectedSuccess);
   });
 
   asyncTest("addEmail trying to add an email the user already controls - prints a tooltip", function() {
@@ -176,8 +173,47 @@
     });
   });
 
+  asyncTest("addSecondaryEmail success - call `email_staged` with email and password", function() {
+
+    mediator.subscribe("email_staged", function(msg, info) {
+      testHelpers.testObjectValuesEqual(info, {
+        email: "testuser@testuser.com",
+        password: "password"
+      });
+      start();
+    });
+
+    dialogHelpers.addSecondaryEmail.call(controllerMock, "testuser@testuser.com", "password", function(added) {
+      equal(added, true, "email reported as added");
+    });
+  });
+
+  asyncTest("addSecondaryEmail throttled - tooltip displayed", function() {
+
+    xhr.useResult("throttle");
+    unexpectedMessage("email_staged");
+
+    dialogHelpers.addSecondaryEmail.call(controllerMock, "testuser@testuser.com", "password", function(added) {
+      equal(added, false, "email not added");
+      testHelpers.testTooltipVisible();
+      start();
+    });
+  });
+
+  asyncTest("addSecondaryEmail with XHR error - error message displayed", function() {
+
+    xhr.useResult("ajaxError");
+    unexpectedMessage("email_staged");
+    errorCB = expectedError;
+
+    dialogHelpers.addSecondaryEmail.call(controllerMock, "testuser@testuser.com", "password", testHelpers.unexpectedSuccess);
+  });
+
   asyncTest("resetPassword happy case", function() {
-    closeCB = expectedClose("password_reset", "email", "registered@testuser.com");
+    expectedMessage("password_reset", {
+      email: "registered@testuser.com"
+    });
+
     dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", "password", function(reset) {
       ok(reset, "password reset");
       start();
@@ -197,10 +233,7 @@
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
-    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", "password", function(reset) {
-      ok(false, "unexpected close");
-      start();
-    });
+    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", "password", testHelpers.unexpectedSuccess);
   });
 }());
 
