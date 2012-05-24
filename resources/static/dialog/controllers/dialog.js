@@ -158,9 +158,14 @@ BrowserID.Modules.Dialog = (function() {
             throw "invalid requiredEmail: (" + paramsFromRP.requiredEmail + ")";
           params.requiredEmail = paramsFromRP.requiredEmail;
         }
-        if (paramsFromRP.tosURL && paramsFromRP.privacyURL) {
-          params.tosURL = fixupURL(origin_url, paramsFromRP.tosURL);
-          params.privacyURL = fixupURL(origin_url, paramsFromRP.privacyURL);
+
+        // support old parameter names...
+        if (paramsFromRP.tosURL) paramsFromRP.termsOfService = paramsFromRP.tosURL;
+        if (paramsFromRP.privacyURL) paramsFromRP.privacyPolicy = paramsFromRP.privacyURL;
+
+        if (paramsFromRP.termsOfService && paramsFromRP.privacyPolicy) {
+          params.tosURL = fixupURL(origin_url, paramsFromRP.termsOfService);
+          params.privacyURL = fixupURL(origin_url, paramsFromRP.privacyPolicy);
         }
       } catch(e) {
         // note: renderError accepts HTML and cheerfully injects it into a

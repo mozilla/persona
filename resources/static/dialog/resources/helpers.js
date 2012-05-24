@@ -104,7 +104,7 @@
           complete(callback, true);
         }
         else {
-          self.publish("add_email_submit_with_secondary", { email: email });
+          self.publish("stage_email", { email: email });
           complete(callback, true);
         }
       }, self.getErrorDialog(errors.addressInfo, callback));
