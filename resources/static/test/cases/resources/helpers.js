@@ -145,12 +145,11 @@
     });
   });
 
-  asyncTest("addEmail with secondary email - trigger add_email_submit_with_secondary", function() {
+  asyncTest("addEmail with secondary email - trigger stage_email", function() {
     xhr.useResult("unknown_secondary");
-    expectedMessage("add_email_submit_with_secondary", {
+    expectedMessage("stage_email", {
       email: "unregistered@testuser.com"
     });
-
     dialogHelpers.addEmail.call(controllerMock, "unregistered@testuser.com", function(success) {
       equal(success, true, "success status");
       start();

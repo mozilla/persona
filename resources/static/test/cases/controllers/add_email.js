@@ -56,7 +56,7 @@
     ok($("#newEmail").val(), "testuser@testuser.com", "email prepopulated");
   });
 
-  asyncTest("addEmail with first valid unknown secondary email - trigger add_email_submit_with_secondary", function() {
+  asyncTest("addEmail with first valid unknown secondary email - trigger stage_email", function() {
     createController();
     xhr.useResult("unknown_secondary");
 
@@ -64,15 +64,15 @@
 
     $("#newEmail").val("unregistered@testuser.com");
 
-    register("add_email_submit_with_secondary", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "add_email_submit_with_secondary called with correct email");
+    register("stage_email", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "stage_email called with correct email");
       start();
     });
 
     controller.addEmail();
   });
 
-  asyncTest("addEmail with second valid unknown secondary email - trigger add_email_submit_with_secondary", function() {
+  asyncTest("addEmail with second valid unknown secondary email - trigger stage_email", function() {
     createController();
     xhr.useResult("unknown_secondary");
 
@@ -80,8 +80,8 @@
 
     $("#newEmail").val("unregistered@testuser.com");
 
-    register("add_email_submit_with_secondary", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "add_email_submit_with_secondary called with correct email");
+    register("stage_email", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "stage_email called with correct email");
       start();
     });
 
@@ -89,13 +89,13 @@
     controller.addEmail();
   });
 
-  asyncTest("addEmail with valid unknown secondary email with leading/trailing whitespace - allows address, triggers add_email_submit_with_secondary", function() {
+  asyncTest("addEmail with valid unknown secondary email with leading/trailing whitespace - allows address, triggers stage_email", function() {
     createController();
     xhr.useResult("unknown_secondary");
 
     $("#newEmail").val("   unregistered@testuser.com  ");
-    register("add_email_submit_with_secondary", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "add_email_submit_with_secondary called with correct email");
+    register("stage_email", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "stage_email called with correct email");
       start();
     });
     controller.addEmail();
@@ -106,12 +106,12 @@
 
     $("#newEmail").val("unregistered");
     var handlerCalled = false;
-    register("add_email_submit_with_secondary", function(msg, info) {
+    register("stage_email", function(msg, info) {
       handlerCalled = true;
-      ok(false, "add_email_submit_with_secondary should not be called on invalid email");
+      ok(false, "stage_email should not be called on invalid email");
     });
     controller.addEmail(function() {
-      equal(handlerCalled, false, "the add_email_submit_with_secondary handler should have never been called");
+      equal(handlerCalled, false, "the stage_email handler should have never been called");
       start();
     });
   });
@@ -121,8 +121,8 @@
 
     $("#newEmail").val("registered@testuser.com");
 
-    register("add_email_submit_with_secondary", function(msg, info) {
-      ok(false, "unexpected add_email_submit_with_secondary message");
+    register("stage_email", function(msg, info) {
+      ok(false, "unexpected stage_email message");
     });
 
     // simulate the email being already added.
@@ -142,8 +142,8 @@
     xhr.useResult("known_secondary");
 
     $("#newEmail").val("registered@testuser.com");
-    register("add_email_submit_with_secondary", function(msg, info) {
-      equal(info.email, "registered@testuser.com", "add_email_submit_with_secondary called with correct email");
+    register("stage_email", function(msg, info) {
+      equal(info.email, "registered@testuser.com", "stage_email called with correct email");
       start();
     });
     controller.addEmail();

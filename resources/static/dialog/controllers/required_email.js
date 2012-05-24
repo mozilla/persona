@@ -6,8 +6,7 @@
 BrowserID.Modules.RequiredEmail = (function() {
   "use strict";
 
-  var ANIMATION_TIME = 250,
-      bid = BrowserID,
+  var bid = BrowserID,
       user = bid.User,
       errors = bid.Errors,
       helpers = bid.Helpers,
@@ -80,7 +79,7 @@ BrowserID.Modules.RequiredEmail = (function() {
       dialogHelpers.addEmail.call(self, email);
     }
     else {
-      dialogHelpers.createUser.call(self, email);
+      self.close("new_user", { email: email });
     }
   }
 
@@ -118,9 +117,8 @@ BrowserID.Modules.RequiredEmail = (function() {
         // the user is not authenticated, all addresses are wiped, meaning
         // a user could not be looking at stale data and/or authenticate as
         // somebody else.
-        var emailInfo = user.getStoredEmailKeypair(email);
-        //alert(auth_level + ' ' + JSON.stringify(emailInfo) + JSON.stringify(options));
-        if(emailInfo && emailInfo.type === "secondary") {
+        var storedEmailInfo = user.getStoredEmailKeypair(email);
+        if(storedEmailInfo && storedEmailInfo.type === "secondary") {
           // secondary user, show the password field if they are not
           // authenticated to the "password" level.
           showTemplate({
@@ -130,45 +128,77 @@ BrowserID.Modules.RequiredEmail = (function() {
           });
           ready();
         }
-        else if(emailInfo && emailInfo.cert) {
+        else if(storedEmailInfo && storedEmailInfo.type === "primary" && storedEmailInfo.cert) {
           // primary user with valid cert, user can sign in normally.
-          primaryInfo = emailInfo;
+          primaryInfo = storedEmailInfo;
           showTemplate({ signin: true, primary: true });
           ready();
         }
         else {
           // At this point, there are several possibilities:
-          // 1) Authenticated primary user who has valid cert.
-          // 2) Authenticated primary user who has an expired cert.
-          // 3) Authenticated user who does not control address.
-          // 4) Unauthenticated user.
+          // 1) Authenticated primary user who has an expired cert.
+          // 2) Authenticated user who does not control address.
+          // 3) Unauthenticated user.
           user.addressInfo(email, function(info) {
             if(info.type === "primary") primaryInfo = info;
 
-            if (info.authed) {
+            if (info.type === "primary" && info.authed) {
               // this is a primary user who is authenticated with their IdP.
               // We know the user has control of this address, give them
               // a chance to hit "sign in" before we kick them off to the
               // primary flow account.
               showTemplate({ signin: true, primary: true });
             }
-            else if(emailInfo || info.type === "primary") {
-              // If there is emailInfo, this is a primary user who has
-              // control of the address, but whose cert is expired and the user
-              // is not authenticated with their IdP.
-              // OR
+            else if(info.type === "primary" && !info.authed) {
               // User who does not control a primary address.
+
+              // Kick the user down the primary user flow.  User creation and
+              // addition will be taken care of there.
               closePrimaryUser.call(self);
-            } else if(auth_level || !info.known) {
-              // user is authenticated, but does not control address
-              // OR
-              // address is unknown, make the user verify.
+            }
+            else if(info.type === "secondary" && auth_level === "password") {
+              // address is a secondary that the user does not control.
+
+              // user is authenticated to the password level but does not
+              // control the address, user is adding a secondary address to
+              // their account.  Being authenticated to the password level
+              // means the account already has a password, the set_password
+              // step is not necessary.  Show the confirmation screen before
+              // the verification starts.
               showTemplate({ verify: true });
             }
-            else {
-              // We've made it all this way.  It is a user who is not logged in
-              // at all and the address is known.  Make the user log in.
+            else if(info.type === "secondary" && auth_level === "assertion") {
+              // address is a secondary that the user does not control.  At
+              // this point, we need to know whether the account has a password
+              // or not.
+
+              // If the account does not have a password, kick the user down
+              // the stage_email flow which will ask to set a password.
+              // If the account does have a password, show the user
+              // a confirmation screen before starting the verification. When
+              // the user confirms ownership of the address, they may be asked
+              // for their password and their authentication credentials will
+              // be upgraded to "password" status.
+              user.passwordNeededToAddSecondaryEmail(function(passwordNeeded) {
+                if(passwordNeeded) {
+                  self.publish("stage_email", { email: email });
+                }
+                else {
+                  showTemplate({ verify: true });
+                }
+              });
+            }
+            else if(info.type === "secondary" && info.known) {
+              // address is a known secondary but the user is not logged in.
+
+              // Make the user log in.
               showTemplate({ signin: true, password: true });
+            }
+            else {
+              // address is an unknown secondary.  User is not logged in.
+
+              // Create an account.  User will have to set their password.
+              self.close("new_user", { email: email });
             }
             ready();
           }, self.getErrorDialog(errors.addressInfo, ready));
