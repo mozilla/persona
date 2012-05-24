@@ -46,11 +46,7 @@ BrowserID.State = (function() {
       self.tosURL = info.tosURL;
       requiredEmail = info.requiredEmail;
 
-      if ((typeof(requiredEmail) !== "undefined") && (!bid.verifyEmail(requiredEmail))) {
-        // Invalid format
-        startAction("doError", "invalid_required_email", {email: requiredEmail});
-      }
-      else if (info.email && info.type === "primary") {
+      if (info.email && info.type === "primary") {
         primaryVerificationInfo = info;
         redirectToState("primary_user", info);
       }

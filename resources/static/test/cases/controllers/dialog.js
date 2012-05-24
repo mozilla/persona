@@ -11,14 +11,17 @@
       network = bid.Network,
       mediator = bid.Mediator,
       testHelpers = bid.TestHelpers,
+      testErrorVisible = testHelpers.testErrorVisible,
+      testErrorNotVisible = testHelpers.testErrorNotVisible,
+      screens = bid.Screens,
       xhr = bid.Mocks.xhr,
+      HTTP_TEST_DOMAIN = "http://testdomain.org",
+      HTTPS_TEST_DOMAIN = "https://testdomain.org",
+      TESTEMAIL = "testuser@testuser.com",
       controller,
       el,
       winMock,
       navMock;
-
-  function reset() {
-  }
 
   function WinMock() {
     this.location.hash = "#1234";
@@ -49,60 +52,59 @@
   };
 
   function createController(config) {
-    var config = $.extend({
-      window: winMock
+    // startExternalDependencies defaults to true, for most of our tests we
+    // want to turn this off to prevent the state machine, channel, and actions
+    // controller from starting up and throwing errors.  This allows us to test
+    // dialog as an individual unit.
+    var options = $.extend({
+      window: winMock,
+      startExternalDependencies: false,
     }, config);
 
     controller = BrowserID.Modules.Dialog.create();
-    controller.start(config);
+    controller.start(options);
   }
 
   module("controllers/dialog", {
     setup: function() {
       winMock = new WinMock();
-      reset();
       testHelpers.setup();
     },
 
     teardown: function() {
       controller.destroy();
-      reset();
       testHelpers.teardown();
     }
   });
-
-  function checkNetworkError() {
-    ok($("#error .contents").text().length, "contents have been written");
-    ok($("#error #action").text().length, "action contents have been written");
-    ok($("#error #network").text().length, "network contents have been written");
-  }
 
   asyncTest("initialization with channel error", function() {
     // Set the hash so that the channel cannot be found.
     winMock.location.hash = "#1235";
     createController({
+      startExternalDependencies: true,
       ready: function() {
-        ok($("#error .contents").text().length, "contents have been written");
+        testErrorVisible();
         start();
       }
     });
   });
 
   asyncTest("initialization with add-on navigator.id.channel", function() {
-    var ok_p = false;
+    var registerControllerCalled = false;
 
     // expect registerController to be called.
     winMock.navigator.id = {
       channel : {
         registerController: function(controller) {
-          ok_p = controller.getVerifiedEmail && controller.get;
+          registerControllerCalled = controller.getVerifiedEmail && controller.get;
         }
       }
     };
 
     createController({
+      startExternalDependencies: true,
       ready: function() {
-        ok(ok_p, "registerController was not called with proper controller");
+        ok(registerControllerCalled, "registerController was not called with proper controller");
         start();
       }
     });
@@ -113,7 +115,7 @@
 
     createController({
       ready: function() {
-        ok($("#error .contents").text().length == 0, "no error should be reported");
+        testErrorNotVisible();
         start();
       }
     });
@@ -125,7 +127,7 @@
 
     createController({
       ready: function() {
-        ok($("#error .contents").text().length == 0, "no error should be reported");
+        testErrorNotVisible();
         start();
       }
     });
@@ -138,7 +140,7 @@
       ready: function() {
         mediator.subscribe("start", function(msg, info) {
           equal(info.type, "primary", "correct type");
-          equal(info.email, "testuser@testuser.com", "email_chosen with correct email");
+          equal(info.email, TESTEMAIL, "email_chosen with correct email");
           equal(info.add, false, "add is not specified with CREATE_EMAIL option");
           start();
         });
@@ -161,7 +163,7 @@
       ready: function() {
         mediator.subscribe("start", function(msg, info) {
           equal(info.type, "primary", "correct type");
-          equal(info.email, "testuser@testuser.com", "email_chosen with correct email");
+          equal(info.email, TESTEMAIL, "email_chosen with correct email");
           equal(info.add, true, "add is specified with ADD_EMAIL option");
           start();
         });
@@ -179,7 +181,6 @@
 
   asyncTest("onWindowUnload", function() {
     createController({
-      requiredEmail: "registered@testuser.com",
       ready: function() {
         var error;
 
@@ -196,6 +197,277 @@
     });
   });
 
+  asyncTest("get with invalid requiredEmail - print error screen", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          requiredEmail: "bademail"
+        });
+        equal(retval, "invalid requiredEmail: (bademail)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with script containing requiredEmail - print error screen", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          requiredEmail: "<script>window.scriptRun=true;</script>testuser@testuser.com"
+        });
+
+        // If requiredEmail is not properly escaped, scriptRun will be true.
+        equal(typeof window.scriptRun, "undefined", "script was not run");
+        equal(retval, "invalid requiredEmail: (<script>window.scriptRun=true;</script>testuser@testuser.com)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with valid requiredEmail - go to start", function() {
+    createController({
+      ready: function() {
+        var startInfo;
+        mediator.subscribe("start", function(msg, info) {
+          startInfo = info;
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          requiredEmail: TESTEMAIL
+        });
+
+        testHelpers.testObjectValuesEqual(startInfo, {
+          requiredEmail: TESTEMAIL
+        });
+        equal(typeof retval, "undefined", "no error expected");
+        testErrorNotVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with relative tosURL & valid privacyURL - print error screen", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          tosURL: "relative.html",
+          privacyURL: "/privacy.html"
+        });
+        equal(retval, "relative urls not allowed: (relative.html)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with script containing tosURL - print error screen", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          tosURL: "relative.html<script>window.scriptRun=true;</script>",
+          privacyURL: "/privacy.html"
+        });
+
+        // If tosURL is not properly escaped, scriptRun will be true.
+        equal(typeof window.scriptRun, "undefined", "script was not run");
+        equal(retval, "relative urls not allowed: (relative.html<script>window.scriptRun=true;</script>)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with valid tosURL & relative privacyURL - print error screen", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          tosURL: "/tos.html",
+          privacyURL: "relative.html"
+        });
+        equal(retval, "relative urls not allowed: (relative.html)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with script containing privacyURL - print error screen", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          tosURL: "/tos.html",
+          privacyURL: "relative.html<script>window.scriptRun=true;</script>"
+        });
+
+        // If privacyURL is not properly escaped, scriptRun will be true.
+        equal(typeof window.scriptRun, "undefined", "script was not run");
+        equal(retval, "relative urls not allowed: (relative.html<script>window.scriptRun=true;</script>)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with privacyURL - print error screen", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          tosURL: "/tos.html",
+          privacyURL: "relative.html<script>window.scriptRun=true;</script>"
+        });
+
+        // If privacyURL is not properly escaped, scriptRun will be true.
+        equal(typeof window.scriptRun, "undefined", "script was not run");
+        equal(retval, "relative urls not allowed: (relative.html<script>window.scriptRun=true;</script>)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with javascript protocol for privacyURL - print error screen", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          tosURL: "/tos.html",
+          privacyURL: "javascript:alert(1)"
+        });
+
+        equal(retval, "relative urls not allowed: (javascript:alert(1))", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with invalid httpg protocol for privacyURL - print error screen", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          tosURL: "/tos.html",
+          privacyURL: "httpg://testdomain.com/privacy.html"
+        });
+
+        equal(retval, "relative urls not allowed: (httpg://testdomain.com/privacy.html)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+
+  asyncTest("get with valid absolute tosURL & privacyURL - go to start", function() {
+    createController({
+      ready: function() {
+        var startInfo;
+        mediator.subscribe("start", function(msg, info) {
+          startInfo = info;
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          tosURL: "/tos.html",
+          privacyURL: "/privacy.html"
+        });
+
+        testHelpers.testObjectValuesEqual(startInfo, {
+          tosURL: HTTP_TEST_DOMAIN + "/tos.html",
+          privacyURL: HTTP_TEST_DOMAIN + "/privacy.html"
+        });
+
+        equal(typeof retval, "undefined", "no error expected");
+        testErrorNotVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with valid fully qualified http tosURL & privacyURL - go to start", function() {
+    createController({
+      ready: function() {
+        var startInfo;
+        mediator.subscribe("start", function(msg, info) {
+          startInfo = info;
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          tosURL: HTTP_TEST_DOMAIN + "/tos.html",
+          privacyURL: HTTP_TEST_DOMAIN + "/privacy.html"
+        });
+
+        testHelpers.testObjectValuesEqual(startInfo, {
+          tosURL: HTTP_TEST_DOMAIN + "/tos.html",
+          privacyURL: HTTP_TEST_DOMAIN + "/privacy.html"
+        });
+
+        equal(typeof retval, "undefined", "no error expected");
+        testErrorNotVisible();
+        start();
+      }
+    });
+  });
+
+
+  asyncTest("get with valid fully qualified https tosURL & privacyURL - go to start", function() {
+    createController({
+      ready: function() {
+        var startInfo;
+        mediator.subscribe("start", function(msg, info) {
+          startInfo = info;
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          tosURL: HTTPS_TEST_DOMAIN + "/tos.html",
+          privacyURL: HTTPS_TEST_DOMAIN + "/privacy.html"
+        });
+
+        testHelpers.testObjectValuesEqual(startInfo, {
+          tosURL: HTTPS_TEST_DOMAIN + "/tos.html",
+          privacyURL: HTTPS_TEST_DOMAIN + "/privacy.html"
+        });
+        equal(typeof retval, "undefined", "no error expected");
+        testErrorNotVisible();
+        start();
+      }
+    });
+  });
 
 }());
 

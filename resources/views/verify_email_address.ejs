@@ -30,6 +30,10 @@
                     <div class="tooltip" id="password_length" for="password">
                       <%= gettext('Password must be between 8 and 80 characters long.') %>
                     </div>
+
+                    <div id="cannot_authenticate" class="tooltip" for="password">
+                      <%= gettext('The account cannot be verified with this username and password.') %>
+                    </div>
                 </li>
 
                 <li class="password_entry" id="verify_password">
