@@ -56,20 +56,6 @@ BrowserID.Modules.Actions = (function() {
       if(data.ready) _.defer(data.ready);
     },
 
-    /**
-     * Show an error message
-     * @method doError
-     * @param {string} [template] - template to use, if not given, use "error"
-     * @param {object} [info] - info to send to template
-     */
-    doError: function(template, info) {
-      if(!info) {
-        info = template;
-        template = "error";
-      }
-      this.renderError(template, info);
-    },
-
     doCancel: function() {
       if(onsuccess) onsuccess(null);
     },
