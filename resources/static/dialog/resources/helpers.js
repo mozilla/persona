@@ -111,12 +111,12 @@
     }
   }
 
-  function addSecondaryEmailWithPassword(email, password, callback) {
+  function addSecondaryEmail(email, password, callback) {
     var self=this;
 
     user.addEmail(email, password, function(added) {
       if (added) {
-        var info = { email: email };
+        var info = { email: email, password: password };
         self.publish("email_staged", info, info );
       }
       else {
@@ -133,7 +133,7 @@
     authenticateUser: authenticateUser,
     createUser: createUser,
     addEmail: addEmail,
-    addSecondaryEmailWithPassword: addSecondaryEmailWithPassword,
+    addSecondaryEmail: addSecondaryEmail,
     resetPassword: resetPassword,
     cancelEvent: helpers.cancelEvent,
     animateClose: animateClose
