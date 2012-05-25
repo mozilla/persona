@@ -14,6 +14,8 @@ train-2012.04.27:
   * Fix bug where if user pauses for 2 minutes on "is this your computer" the generated assertion is invalid: #1460
   * (hotfix 2012.05.07) upgrade to node.js 0.6.17 to mitigate risk of HTTP parser bugs - bug #752605
   * (hotfix 2012.05.08) handle syntax errors in declaration of support better. bug #752721
+  * (hotfix 2012.05.18) don't echo ToS/PP URL in error conditions - bug #756699
+  * (hotfix 2012.05.25) validate hash-delivered email - bug #758449
 
 train-2012.04.11:
   * New BrowserID "Observer" API implemented in experimental status: #912
