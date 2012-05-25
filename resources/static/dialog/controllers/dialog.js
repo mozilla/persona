@@ -144,13 +144,13 @@ BrowserID.Modules.Dialog = (function() {
       if(hash.indexOf("#CREATE_EMAIL=") === 0) {
         var email = hash.replace(/#CREATE_EMAIL=/, "");
         params.type = "primary";
-        params.email = email;
+        params.email = (bid.verifyEmail(email) ? email : "invalid address");
         params.add = false;
       }
       else if(hash.indexOf("#ADD_EMAIL=") === 0) {
         var email = hash.replace(/#ADD_EMAIL=/, "");
         params.type = "primary";
-        params.email = email;
+        params.email = (bid.verifyEmail(email) ? email : "invalid address");
         params.add = true;
       }
 
