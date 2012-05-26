@@ -1,4 +1,7 @@
-train-2012.05.25 (in progress):
+train-2012.06.08 (in progress):
+  *
+
+train-2012.05.25:
   * many KPI improvements: #1597, #1613
   * code cleanup: #1599, #1602
   * verification links sent before deployment, should still work after - transitional code required by issue #1000: #1592
