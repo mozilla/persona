@@ -29,7 +29,7 @@
       // re-introduce constraints
 
       if(height < $("#signIn .vertical").innerHeight()) {
-        selectEmailEl.addClass("center");
+        selectEmailEl.addClass("vcenter");
 
         /* The below width adjustment is part of a fix for a bug in webkit where
          * there is a ghost padding-right to accommodate the scroll bar that is
@@ -44,12 +44,12 @@
         selectEmailEl.width(width);
       }
       else {
-        selectEmailEl.removeClass("center");
+        selectEmailEl.removeClass("vcenter");
       }
     }
     else {
         // First, remove the desktop hacks
-        selectEmailEl.removeClass("center");
+        selectEmailEl.removeClass("vcenter");
 
         // Hack to make sure the email addresses stay within their container.
         // We have to do this ghettoness because table-cells (which are used to
@@ -57,7 +57,7 @@
         // and the ellipsis never show up as expected.
 
         // First, find the maximum width that emails can be.
-        selectEmailEl.css("width", "10px").removeClass("center");
+        selectEmailEl.css("width", "10px").removeClass("vcenter");
         var constrainedWidth = $("#signIn .contents").innerWidth();
 
         // Find the real maximum width.

@@ -7,11 +7,11 @@
 
   <% if (typeof network !== "undefined" && network.status == 503) { %>
     <h2 id="error_503">
-      <%= gettext("We are very sorry.") %><span class="emphasis"> <%= getttext("The server is under extreme load!") %></span>
+      <%= gettext("We are very sorry.") %><span class="emphasis"> <%= gettext("The server is under extreme load!") %></span>
     </h2>
   <% } else if (typeof network !== "undefined" && network.status == 403) { %>
     <h2 id="error_403">
-      <%= gettext("BrowserID requires cookies") %>
+      <%= gettext("Persona requires cookies") %>
     </h2>
     <%= format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='http://support.mozilla.org/en-US/kb/Websites%20say%20cookies%20are%20blocked'"]) %>
   <% } else { %>

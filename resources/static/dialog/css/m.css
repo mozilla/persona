@@ -63,12 +63,11 @@
     padding: 10px;
   }
 
-  #signIn .container {
+  #signIn .table {
       width: 100%;
-      padding: 20px;
   }
 
-  .pickemail #signIn .container {
+  .pickemail #signIn .table {
       padding-top: 0;
   }
 

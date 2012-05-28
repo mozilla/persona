@@ -23,15 +23,6 @@ body {
   color: #fff;
 }
 
-a {
-  color: #6dc7ff;
-  text-shadow: 0 1px 0 #555;
-}
-
-a:hover {
-  color: #58a7e7;
-}
-
 #errorBackground {
   position: fixed;
   top: 0;
@@ -107,64 +98,42 @@ a:hover {
 #wrapper {
   width: 896px;
   margin: 0 auto;
-  /*
-  min-height: 100%;
-  position: relative;
-  */
 }
 
 #content {
-  padding: 84px 0;
+  padding: 50px 0;
 }
 
 #about {
-  font-size: 14px;
-  line-height: 21px;
   color: #444;
-
   text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-  padding: 0 0 50px 0;
+  padding: 50px 75px;
   background-color: #fff;
-
-  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-     -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-       -o-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-
-  -webkit-border-radius: 0 0 5px 5px;
-     -moz-border-radius: 0 0 5px 5px;
-       -o-border-radius: 0 0 5px 5px;
-          border-radius: 0 0 5px 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
 }
 
 h1 {
-  color: #fff;
-  text-shadow: 0px 1px 0px rgba(0,0,0,0.25);
+  margin-bottom: 35px;
+}
+
+.headline-main, h1 {
   font-weight: 300;
 }
 
-#about h1 {
-  margin: 0;
-  padding: 25px 0;
-  text-align: center;
+.row {
+  margin: 25px 0 0 0;
+  padding: 0 0 25px 0;
+  position: relative;
+  border-bottom: 1px solid #eee;
 }
 
-.row {
-  margin: 0 0 25px 0;
-  padding: 25px 50px 0 50px;
-  position: relative;
-}
+
+
 
 .row:last-child {
-  margin: 0;
-}
-
-.row h2 {
-  font-size: 21px;
-  font-weight: normal;
-  color: #222;
-  line-height: 32px;
-  display: inline-block;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .row div {
@@ -211,37 +180,9 @@ div.steps {
   background-position: left -48px;
 }
 
-/*
 
-.sumo {
-  text-align: center;
-}
-
-.sumo > a {
-  color: #444;
-  border-bottom: 1px dotted;
-}
-*/
 #legal {
   padding: 75px 125px;
-}
-
-#newuser {
-  margin: 0;
-  height: 0;
-  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  opacity: 0;
-}
-
-.newuser #newuser {
-  height: 32px;
-  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-  opacity: 1;
-  -webkit-transition: all 500ms;
-     -moz-transition: all 500ms;
-      -ms-transition: all 500ms;
-       -o-transition: all 500ms;
-          transition: all 500ms;
 }
 
 #manage {
@@ -341,7 +282,6 @@ div.steps {
 }
 
 #manage #emailList {
-  list-style-type: none;
   border-top: 1px solid #eee;
 }
 
@@ -448,10 +388,6 @@ button.delete:active {
   text-align: right;
 }
 
-h1 {
-  margin-bottom: 35px;
-}
-
 #hAlign {
   width: 700px;
   margin: 0 auto;
@@ -466,13 +402,15 @@ h1 {
 }
 
 #signUp {
-  /*
-  font-size: 24px;
-  line-height: 32px;
-  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-  position: relative;
-  */
   padding: 0 0 0 250px;
+}
+
+.tour a[href="/about"] {
+  color: #6dc7ff;
+}
+
+.tour a[href="/about"]:hover {
+  color: #58a7e7;
 }
 
 #signUp h1 {
@@ -486,14 +424,8 @@ h1 {
 
 .tour a {
   margin: 0 7px;
-}
-
-  /*
-#signUpForm a, .tour .action {
-  color: #6dc7ff;
   text-shadow: 0 1px 0 #555;
 }
-*/
 
 .tour .button {
   font-size: 19px;
@@ -511,16 +443,13 @@ h1 {
 
 .tour .button:hover {
   color: #fff;
+  border-color: #338fd1 #277ec4 #0e6bb6 #277ec4;
+  background-image: -webkit-linear-gradient(top, #338fd1, #0e6bb6);
+  background-image:    -moz-linear-gradient(top, #338fd1, #0e6bb6);
+  background-image:     -ms-linear-gradient(top, #338fd1, #0e6bb6);
+  background-image:      -o-linear-gradient(top, #338fd1, #0e6bb6);
+  background-image:         linear-gradient(top, #338fd1, #0e6bb6);
 }
-
-  /*
-#signUp .tour {
-  border-bottom: 1px dotted #90c0db;
-}
-#signUp p {
-  margin: 0 0 16px 0;
-}
-*/
 
 .create {
   float: none;
@@ -530,13 +459,10 @@ h1 {
 #card {
   width: 200px;
   height: 200px;
-  display: block;
   position: absolute;
   z-index: 1;
-  top: 50%;
   left: 0;
-  margin-top: -119px;
-  background-image: url('/i/card.png');
+  background-image: url('/i/badge.png');
   background-position: 0px center;
   background-repeat: no-repeat;
 
@@ -555,31 +481,11 @@ h1 {
 }
 
 
-#hint { /* put hints on rollover */
-  width: 200px;
-  height: 200px;
-  display: block;
-  position: absolute;
-  top: 50%;
-  left: 0;
-  margin-top: -119px;
-  z-index: 0;
-  background-image: url('/i/hint.png');
-  background-repeat: no-repeat;
-}
-
-#hint.info{
-  background-position: left center;
-}
-
-#hint.signUp {
-  background-position: right center;
-}
-
 #signUpForm, #congrats {
   margin: 0 auto;
   width: 475px;
   padding: 20px;
+  background-color: #556875;
   background-color: rgba(0,0,0,0.1);
 
   -webkit-border-radius: 5px;
@@ -589,11 +495,16 @@ h1 {
 }
 
 #signUpForm a {
+  color: #6dc7ff;
   text-shadow: 0 1px 0 #888;
 }
 
+#signUpForm a:hover {
+  color: #58a7e7;
+}
+
+
 #signUpForm ul {
-  list-style-type: none;
   margin: 0 0 20px;
 }
 
@@ -643,11 +554,6 @@ h1 {
   display: block;
 }
 
-#congrats p {
-    color: #62615F;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-}
-
 #congrats .siteinfo {
     margin-top: 10px;
 }
@@ -658,26 +564,10 @@ h1 {
 }
 
 
-.notifications {
-  list-style-type: none;
-}
-
 .notifications > .notification {
-  margin-top: 20px;
-  padding: 5px;
-  line-height: 21px;
-  color: #62615F;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-       -o-border-radius: 3px;
-          border-radius: 3px;
+  border-radius: 3px;
   display: none;
   text-align: center;
-}
-
-.notifications > .notification strong {
-  color: #222;
 }
 
 .notifications .notification.error {
@@ -687,10 +577,6 @@ h1 {
 
 
 #wrapper > header {
-  /*
-  position: absolute;
-  top: 0;
-  */
   font-weight: bold;
   z-index: 1;
 }
@@ -752,10 +638,6 @@ section > header {
 }
 
 footer {
-  /*
-  position: absolute;
-  bottom: 0;
-  */
   background-color: #eff1f3;
 }
 
@@ -772,41 +654,31 @@ footer ul li:first-child a {
   color: #484848;
 }
 
-footer a {
-  text-shadow: 0 1px 0 #fff;
+footer ul li:first-child a:hover {
+  border-bottom: 1px dotted #000;
 }
-/*
-footer a {
-  color: #aaa;
-  border-bottom: 1px dotted #ccc;
-}
-
-footer a:hover {
-  color: #777;
-}
-*/
 
 .newsbanner {
-  margin-top: 60px; /* put a margin-top on so that it does not go under the header */
+  display: none;
   background-color: #faca33;
   line-height: 32px;
   border-radius: 4px;
-  margin-bottom: 20px;
   text-align: center;
   color: #626160;
   text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-  -webkit-transition: all 500ms;
-     -moz-transition: all 500ms;
-      -ms-transition: all 500ms;
-       -o-transition: all 500ms;
-          transition: all 500ms;
 }
 
+.newuser .newsbanner {
+  margin-bottom: 50px;
+  display: block;
+}
+
+/*
 .newsbanner a {
-  border-bottom: 1px dotted;
+  color: #348fd0;
 }
 
 .newsbanner a:hover {
   color: #000;
 }
-
+*/

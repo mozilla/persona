@@ -44,12 +44,10 @@ BrowserID.Tooltip = (function() {
     bid.Tooltip.shown = true;
     el.fadeIn(ANIMATION_TIME, function() {
       hideTimer = setTimeout(function() {
-        /*
         el.fadeOut(ANIMATION_TIME, function() {
           bid.Tooltip.shown = false;
           if(complete) complete();
         });
-        */
       }, displayTimeMS);
     });
   }

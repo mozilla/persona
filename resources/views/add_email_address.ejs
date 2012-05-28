@@ -12,16 +12,16 @@
         <form id="signUpForm" class="cf">
             <p class="hint siteinfo"><%= gettext('Finish signing into:') %> <strong><span class="website"></span></strong></p>
 
-            <h1 class="serif"><%= gettext('Email Verification') %></h1>
+            <h1><%= gettext('Email Verification') %></h1>
 
             <ul class="inputs">
                 <li>
-                    <label class="serif" for="email"><%= gettext('Email Address') %></label>
-                    <input class="youraddress sans" id="email" placeholder="<%= gettext('Your Email') %>" type="email" value="" disabled="disabled" maxlength="254" />
+                    <label for="email"><%= gettext('Email Address') %></label>
+                    <input class="youraddress" id="email" placeholder="<%= gettext('Your Email') %>" type="email" value="" disabled="disabled" maxlength="254" />
                 </li>
                 <li class="password_entry">
-                    <label class="serif" for="password"><%= gettext('Password') %></label>
-                    <input class="sans" id="password" placeholder="<%= gettext('Your Password') %>" type="password" autofocus maxlength=80 />
+                    <label for="password"><%= gettext('Password') %></label>
+                    <input id="password" placeholder="<%= gettext('Your Password') %>" type="password" autofocus maxlength=80 />
 
                     <div class="tooltip" id="password_required" for="password">
                       <%= gettext('Password is required.') %>
@@ -37,8 +37,8 @@
                 </li>
 
                 <li class="password_entry" id="verify_password">
-                    <label class="serif" for="vpassword"><%= gettext('Verify Password') %></label>
-                    <input class="sans" id="vpassword" placeholder="<%= gettext('Repeat Password') %>" type="password" maxlength="80">
+                    <label for="vpassword"><%= gettext('Verify Password') %></label>
+                    <input id="vpassword" placeholder="<%= gettext('Repeat Password') %>" type="password" maxlength="80">
 
                     <div id="vpassword_required" class="tooltip" for="vpassword">
                       <%= gettext('Verification password is required.') %>
@@ -59,7 +59,7 @@
         </form>
 
         <div id="congrats">
-            <p class="serif">
+            <p>
                 <%- gettext('<strong class="email">Your address</strong> has been verified!') %>
 
                 <p class="siteinfo">

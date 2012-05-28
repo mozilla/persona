@@ -19,11 +19,15 @@
         doAnimation = $("#signIn").length && bodyWidth > 640;
 
     if (doAnimation) {
-      var endWidth = bodyWidth - $(".arrowContainer").outerWidth() - 10;
+      var endWidth = bodyWidth - 10;
 
-      $("#signIn").animate({"width" : endWidth + "px"}, 750, function () {
-         body.delay(500).animate({ "opacity" : "0.5"}, 500);
-      });
+      body.addClass("completing");
+      /**
+       * CSS transitions are used to do the slide effect.  jQuery has a bug
+       * where it does not do transitions correctly if the box-sizing is set to
+       * border-box and the element has a padding
+       */
+      $("#signIn").css("width", endWidth + "px");
 
       // Call setTimeout here because on Android default browser, sometimes the
       // callback is not correctly called, it seems as if jQuery does not know

@@ -37,16 +37,50 @@ $(function() {
     }
   }
 
+  // Firefox and IE have rendering bugs where if the box-sizing is set to
+  // border-box and a min-height is set, padding is added on top of the
+  // min-height, making elements render using the normal W3C box model.  Use
+  // a bit of bug detection here in case the bugs are fixed.
+  function paddingAddedToMinHeight() {
+    var div = document.createElement("div");
+    $(div).css({
+      "box-sizing": "border-box",
+      "min-height": "100px",
+      "padding-top": "10px",
+      "position": "absolute",
+      "top": "-2000px"
+    });
+
+    $("body").append(div);
+
+    var divHeight = parseInt($(div).outerHeight(), 10);
+    $(div).remove();
+    return divHeight === 110;
+  }
+
   xhr.init({ time_until_delay: 10 * 1000 });
   network.init();
 
   $(".display_always,.display_auth,.display_nonauth").hide();
-  if ($('#vAlign').length) {
-    $(window).bind('resize', function() {
-      var height = $(window).height() - $("header").outerHeight() - $("footer").outerHeight();
-      $('#vAlign').css({'height' : height });
-    }).trigger('resize');
-  }
+  $(window).bind('resize', function() {
+    var height = $(window).height() - $("header").outerHeight() - $("footer").outerHeight();
+    $("#vAlign").css({ "height": height });
+
+
+    // On the manage page, the content element sometimes does not take up the
+    // full height of the screen, leaving the footer to float somewhere in the
+    // middle.  To compensate, force the min-height of the content so that the
+    // footer remains at the bottom of the screen.
+
+    var paddingTop = 0, paddingBottom = 0;
+
+    if(paddingAddedToMinHeight()) {
+      paddingTop = parseInt($("#content").css("padding-top") || 0, 10);
+      paddingBottom = parseInt($("#content").css("padding-bottom") || 0, 10);
+    }
+
+    $("#content").css({ "min-height": height - paddingTop - paddingBottom });
+  }).trigger('resize');
 
   moduleManager.register("xhr_delay", XHRDelay);
   moduleManager.start("xhr_delay");
@@ -69,7 +103,6 @@ $(function() {
     // instead just show the error message.
     if(!status) return;
 
-    dom.addClass("body", "ready");
 
     if (!path || path === "/") {
       bid.index();
@@ -112,6 +145,11 @@ $(function() {
       else {
         displayNonAuthenticated();
       }
+
+      // The footer is initially tied to the bottom while the page is loading
+      // so that it does not appear to flicker.  Untie the footer and let it
+      // rest in its natural position.
+      $("footer").css({ position: "", bottom: "" });
     });
 
     function displayAuthenticated() {
@@ -120,6 +158,7 @@ $(function() {
 
       if (!path || path === "/") {
         bid.manageAccount();
+        $(window).trigger("resize");
       }
 
       $("a.signOut").click(function(event) {

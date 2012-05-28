@@ -14,13 +14,25 @@ body {
 }
 
 #signIn {
-    background-color: #eff0f2;
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
-    width: 275px;
+    width: 393px;
+    padding-right: 105px;
 }
+
+.completing #signIn {
+    /**
+     * The width is set in helpers.js->animateClose
+     */
+    -webkit-transition: all 750ms ease;
+       -moz-transition: all 750ms ease;
+        -ms-transition: all 750ms ease;
+         -o-transition: all 750ms ease;
+            transition: all 750ms ease;
+}
+
 
 
 header, footer {
@@ -110,14 +122,6 @@ section {
     display: table-cell;
     vertical-align: middle;
 }
-
-/*
-.contents {
-    max-height: 210px;
-    overflow-x: hidden;
-    overflow-y: auto;
-}*/
-
 
 section > .contents {
     display: table-cell;
@@ -236,13 +240,14 @@ section > .contents {
 
 
 #signIn .table {
+    background-color: #eff0f2;
     padding: 20px;
 }
 
 .arrowContainer {
     position: absolute;
     width: 105px;
-    right:  -105px;
+    right:  0;
     top: 0;
     bottom: 0;
 }
@@ -262,7 +267,7 @@ section > .contents {
 
 #favicon {
     position: absolute;
-    left: 375px;
+    left: 400px;
     top: 0;
     bottom: 0;
     right: 0;
@@ -302,7 +307,7 @@ div#required_email {
     overflow-y: auto;
 }
 
-#selectEmail.center {
+#selectEmail.vcenter {
     position: static;
     overflow-y: visible;
     /* The below 1px padding is part of a fix for a bug in webkit where there
@@ -374,12 +379,12 @@ div#required_email {
 a.emphasize {
   border-bottom: 1px solid #b8babc;
   border-radius: 2px;
-  background-color: #F0EFED;
   color: #484848;
   font-size: 11px;
   padding: 0 5px;
   display: inline-block;
   line-height: 22px;
+  background-color: #e5e9eb;
   background-image: -webkit-linear-gradient(top, #e5e9eb, #d8dbde);
   background-image:    -moz-linear-gradient(top, #e5e9eb, #d8dbde);
   background-image:     -ms-linear-gradient(top, #e5e9eb, #d8dbde);

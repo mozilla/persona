@@ -15,7 +15,7 @@
   <%- cachify_js(util.format('/production/%s/browserid.js', locale)) %>
   <title><%= format(gettext("Mozilla Person: %s"), [title]) %></title>
 </head>
-<body>
+<body class="loading">
 
 <div id="errorBackground"></div>
 
@@ -41,7 +41,7 @@
 
 </div>
 
-<footer id="footer">
+<footer style="position: absolute; bottom: 0;">
     <ul class="cf">
         <li><%- format(gettext('By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>'),
                        [" href='http://identity.mozilla.com' target='_blank'", " href='http://mozillalabs.com' target='_blank'"]) %></li>
