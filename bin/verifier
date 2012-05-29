@@ -126,9 +126,6 @@ app.post('/verify', function(req, resp, next) {
   });
 });
 
-// shutdown when /code_update is invoked
-shutdown.installUpdateHandler(app);
-
 // shutdown nicely on signals
 shutdown.handleTerminationSignals(app, function() {
   cc.exit();

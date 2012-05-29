@@ -53,7 +53,7 @@
 
                 <li class="password_entry">
                     <label class="serif" for="password">Password</label>
-                    <input class="sans" id="password" placeholder="Password" type="password" tabindex="2" maxlength="80">
+                    <input class="sans" id="password" placeholder="Password" type="password" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="password">
                         Password is required.
@@ -70,7 +70,7 @@
 
                 <li class="password_entry">
                     <label class="serif" for="vpassword">Verify Password</label>
-                    <input class="sans" id="vpassword" placeholder="Repeat Password" type="password" tabindex="2" maxlength="80">
+                    <input class="sans" id="vpassword" placeholder="Repeat Password" type="password" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="vpassword">
                       Verification password is required.
@@ -85,7 +85,7 @@
 
             <div class="submit cf forminputs">
                 <div class="remember cf">
-                    <a class="action" href="/signin">Existing account? Sign in.</a>
+                    <a class="action" href="/signin" tabindex="2">Existing account? Sign in.</a>
                 </div>
                 <button>Verify Email</button>
             </div>
@@ -99,7 +99,7 @@
                   </p>
 
                   <p>
-                    <button id="authWithPrimary">Verify</button>
+                    <button id="authWithPrimary" tabindex="1">Verify</button>
                   </p>
                 </li>
             </ul>
