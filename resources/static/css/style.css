@@ -395,7 +395,7 @@ button.delete:active {
 }
 
 #vAlign {
-  height: 2000px;
+  height: 1000px;
   width: 700px;         /* the width here is to keep the cell from collapsing */
   display: table-cell;
   vertical-align: middle;
@@ -595,7 +595,6 @@ header .nav a:hover {
 }
 
 header ul {
-  display: inline-block;
   float: right;
   line-height: 37px;
 }
@@ -639,6 +638,7 @@ section > header {
 
 footer {
   background-color: #eff1f3;
+  margin-top: 10px;
 }
 
 footer .cf {
@@ -673,12 +673,3 @@ footer ul li:first-child a:hover {
   display: block;
 }
 
-/*
-.newsbanner a {
-  color: #348fd0;
-}
-
-.newsbanner a:hover {
-  color: #000;
-}
-*/

@@ -47,6 +47,7 @@
     top: 45px;  /* 45px is a magic number - the height of the favicon area */
     right: 0;
     width: auto;
+    padding: 0;
   }
 
   #favicon {
@@ -106,7 +107,7 @@
 
   #selectEmail > .inputs > li > label {
     margin: 0;
-    padding: 25px 0;
+    padding: 15px 0;
   }
 
   #signIn .submit > p {

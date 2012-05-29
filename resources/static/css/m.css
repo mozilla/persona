@@ -12,7 +12,6 @@
   }
 
   header, footer {
-    width: 100%;
     padding: 20px;
   }
 
@@ -25,10 +24,28 @@
   }
 }
 
+@media screen and (max-width: 600px) {
+  header ul {
+    margin: 0;
+    float: none;
+    display: block;
+    text-align: center;
+  }
+}
 
 @media screen and (max-width: 505px) {
-  hr {
-    width: 300px;
+  header, footer {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 25px;
+  }
+
+  .home {
+    background-size: 75%;
+    width: 154px;
+    height: 38px;
   }
 
   #content {
@@ -43,21 +60,26 @@
 
   .headline-main {
     font-size: 37px;
-  }
-
-  #vAlign, #hAlign, #signUp, #signUpForm, #congrats {
-    width: 320px;
-  }
-
-  header ul {
-    margin: 20px 0 0 0;
-    float: none;
-    display: block;
     text-align: center;
   }
 
+  #hAlign {
+    width: 300px;
+    padding: 0 10px;
+  }
+
+  #vAlign, #signUp, #signUpForm, #congrats {
+    width: 100%;
+  }
+
   header ul li {
-    margin: 0 10px 0 0;
+    margin: 0 5px 0 0;
+  }
+
+  header .nav a {
+    font-size: 13px;
+    white-space: nowrap;
+    padding: 5px 10px;
   }
 
   #signUp {
@@ -91,6 +113,11 @@
 
   #card img {
     display: none;
+  }
+
+  .tour .button {
+    font-size: 18px;
+    padding: 5px 15px;
   }
 
   #hint,
@@ -149,24 +176,6 @@
     text-align: left;
   }
 
-  #manage .edit {
-    margin: 36px 0 14px;
-  }
-
-  #manage #emails {
-    margin: 0 0 36px;
-  }
-
-  #emails .email,
-  #emails .activity {
-    display: block;
-    width: 260px;
-  }
-
-  #emails .activity span {
-    float: left;
-  }
-
   #disclaimer {
     text-align: left;
   }
@@ -182,16 +191,14 @@
     float: right;
   }
 
-  .newsbanner {
-    margin: 115px 0 28px 0; /* put a margin-top on so that it does not go under the header */
-
+  .submit .remember {
+    margin-top: 10px;
   }
 
-  input[type=email],
-  input[type=password] {
 
-      /* Fix webkit putting an inner box shadow on the input elements. Issue #1313 */
-      -webkit-appearance: caret;
+  .newuser .newsbanner {
+    margin-bottom: 20px;
   }
+
 }
 

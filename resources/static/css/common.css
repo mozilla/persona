@@ -95,10 +95,6 @@ a:hover {
   color: #000;
 }
 
-p:last-child {
-  margin-bottom: 0 !important;
-}
-
 input[type=text],
 input[type=email],
 input[type=password] {
@@ -368,6 +364,7 @@ footer .help {
 
 #wait h2, #error h2, #delay h2 {
     font-size: 22px;
+    margin-bottom: 10px;
 }
 
 #error .emphasis {
