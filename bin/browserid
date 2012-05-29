@@ -157,17 +157,7 @@ wsapi.setup({
 // #9 - handle views for dynamicish content
 views.setup(app);
 
-function doShutdown(readyForShutdownCB) {
-  require('../lib/bcrypt.js').shutdown();
-  db.close(readyForShutdownCB)
-}
-
-// #11 - calls to /code_update from localhost will restart the daemon,
-// this feature is not externally accessible and is only used by
-// the update logic
-shutdown.installUpdateHandler(app, doShutdown);
-
-// #12 if the BROWSERID_FAKE_VERIFICATION env var is defined, we'll include
+// #10 if the BROWSERID_FAKE_VERIFICATION env var is defined, we'll include
 // fake_verification.js.  This is used during testing only and should
 // never be included in a production deployment
 if (process.env['BROWSERID_FAKE_VERIFICATION']) {
@@ -192,7 +182,10 @@ db.open(config.get('database'), function (error) {
   }
 
   // shut down express gracefully on SIGINT
-  shutdown.handleTerminationSignals(app, doShutdown);
+  shutdown.handleTerminationSignals(app, function(readyForShutdownCB) {
+    require('../lib/bcrypt.js').shutdown();
+    db.close(readyForShutdownCB)
+  });
 
   var bindTo = config.get('bind_to');
   app.listen(bindTo.port, bindTo.host, function() {

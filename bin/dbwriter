@@ -96,11 +96,6 @@ function doShutdown(readyForShutdownCB) {
   db.close(readyForShutdownCB)
 }
 
-// calls to /code_update from localhost will restart the daemon,
-// this feature is not externally accessible and is only used by
-// the update logic
-shutdown.installUpdateHandler(app, doShutdown);
-
 // open the databse
 db.open(config.get('database'), function (error) {
   if (error) {

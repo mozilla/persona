@@ -101,9 +101,6 @@ app.post('/wsapi/cert_key', validate(["email", "pubkey", "ephemeral"]), function
   });
 });
 
-// shutdown when code_update is invoked
-shutdown.installUpdateHandler(app);
-
 // shutdown nicely on signals
 shutdown.handleTerminationSignals(app, function() {
   cc.exit();
