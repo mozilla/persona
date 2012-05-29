@@ -1,4 +1,4 @@
-/**
+/*
  * js_channel is a very lightweight abstraction on top of
  * postMessage which defines message formats and semantics
  * to support interactions more rich than just message passing
