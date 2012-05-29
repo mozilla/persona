@@ -1,5 +1,6 @@
 train-2012.06.08 (in progress):
   * Support non-english passwords: issue #1631
+  * remove obsolete code - 'code_update' handler: issue #1645
 
 train-2012.05.25:
   * many KPI improvements: #1597, #1613
