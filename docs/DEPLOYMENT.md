@@ -2,6 +2,10 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
+**NOTE:** this document is outdated and should be updated, it's left here
+because there is *some* still some potentially useful information.  
+Reader beware.
+
 # How to deploy BrowserID
 
 This describes how to take the code here, put it on a server, and build
@@ -142,9 +146,8 @@ if [ "x$GL_REPO" == 'xbrowserid' ] ; then
     echo "generating production resources"
     cd $NEWCODE/browserid && ./compress.sh && cd -
 
-    # stop the servers
-    curl -o --url http://localhost:62700/code_update > /dev/null 2>&1
-    curl -o --url http://localhost:62800/code_update > /dev/null 2>&1
+    # XXX: stop the servers!  you should deliver SIGINT to each
+    # process
 
     # now move code into place, and keep a backup of the last code
     # that was in production in .old
@@ -274,11 +277,6 @@ http {
 server {
     listen       80 default;
     server_name  browserid.org;
-
-    # disallow external server restart.
-    location = /code_update {
-        internal;
-    }
 
     # pass /verify invocations to the verifier
     location /verify {
