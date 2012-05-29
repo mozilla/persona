@@ -121,11 +121,6 @@ app.use(function(req, res, next) {
     });
 });
 
-// #11 - calls to /code_update from localhost will restart the daemon,
-// this feature is not externally accessible and is only used by
-// the update logic
-shutdown.installUpdateHandler(app, function () {});
-
 var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function(conn) {
   logger.info("running on http://" + app.address().address + ":" + app.address().port);
