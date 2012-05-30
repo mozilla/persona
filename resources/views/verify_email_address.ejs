@@ -2,8 +2,8 @@
       License, v. 2.0. If a copy of the MPL was not distributed with this
       file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
 
-<div id="vAlign" class="display_always">
-    <div id="signUpFormWrap">
+<div id="hAlign" class="display_always">
+    <div id="vAlign">
         <ul class="notifications">
             <li class="notification error" id="cannotconfirm"><%= gettext('There was a problem with your signup link. Has this address already been registered?') %></li>
             <li class="notification error" id="cannotcomplete"><%= gettext('Error encountered trying to complete registration.') %></li>
@@ -11,17 +11,17 @@
 
         <form id="signUpForm" class="cf">
             <p class="hint siteinfo"><%= gettext('Finish signing into:') %> <strong><span class="website"></span></strong></p>
-            <h1 class="serif"><%= gettext('Last step!') %></h1>
+            <h1><%= gettext('Last step!') %></h1>
 
             <ul class="inputs">
                 <li>
-                    <label class="serif" for="email"><%= gettext('Email Address') %></label>
-                    <input class="youraddress sans" id="email" placeholder="<%= gettext('Your Email') %>" type="email" value="" disabled="disabled" maxlength="254" />
+                    <label for="email"><%= gettext('Email Address') %></label>
+                    <input class="youraddress" id="email" placeholder="<%= gettext('Your Email') %>" type="email" value="" disabled="disabled" maxlength="254" />
                 </li>
 
                 <li class="password_entry">
-                    <label class="serif" for="password"><%= gettext('Password') %></label>
-                    <input class="sans" id="password" placeholder="<%= gettext('Your Password') %>" type="password" autofocus maxlength=80 />
+                    <label for="password"><%= gettext('Password') %></label>
+                    <input id="password" placeholder="<%= gettext('Your Password') %>" type="password" autofocus maxlength=80 />
 
                     <div class="tooltip" id="password_required" for="password">
                       <%= gettext('Password is required.') %>
@@ -37,8 +37,8 @@
                 </li>
 
                 <li class="password_entry" id="verify_password">
-                    <label class="serif" for="vpassword"><%= gettext('Verify Password') %></label>
-                    <input class="sans" id="vpassword" placeholder="<%= gettext('Repeat Password') %>" type="password" maxlength="80">
+                    <label for="vpassword"><%= gettext('Verify Password') %></label>
+                    <input id="vpassword" placeholder="<%= gettext('Repeat Password') %>" type="password" maxlength="80">
 
                     <div id="vpassword_required" class="tooltip" for="vpassword">
                       <%= gettext('Verification password is required.') %>
@@ -58,10 +58,10 @@
         </form>
 
         <div id="congrats">
-            <p class="serif"><%- gettext('Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!') %>
+            <p><%- gettext('Thank you for signing up with <strong>Persona</strong>. You can now use your Persona account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!') %>
             </p>
 
-            <p class="serif siteinfo">
+            <p class="siteinfo">
               <%= gettext('Your new address is set up and you should now be signed in. You may now close this window and go back to') %> <strong class="website"></strong>
             </p>
         </div>

@@ -1,84 +1,80 @@
 <!-- This Source Code Form is subject to the terms of the Mozilla Public
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
-  <div id="content" class="display_auth">
-      <div class="newsbanner" id="newuser">
-        New to BrowserID? <a href="/about">Learn more</a>
-      </div>
 
-      <div id="manage">
-          <h1 class="serif">Account Manager</h1>
+  <div id="hAlign" class="display_nonauth">
+      <div id="vAlign">
+          <div id="signUp">
+              <div id="card"><img src="/i/slit.png"></div>
 
-          <section>
-            <header class="buttonrow cf">
-                <h2>Your Email Addresses</h2>
-
-                <button class="edit">edit</button>
-                <button class="done">done</button>
-            </header>
-
-            <ul id="emailList">
-            </ul>
-          </section>
-
-          <section id="edit_password">
-            <header class="buttonrow cf">
-              <h2>Password</h2>
-
-              <button class="edit">edit</button>
-              <button class="done">cancel</button>
-            </header>
-
-            <div class="showedit">
-              <label for="old_password">Old Password</label>
-              <label for="new_password">New Password</label>
-            </div>
-
-            <form id="edit_password_form" class="showedit">
-              <input type="password" id="old_password" name="old_password" maxlength="80"/>
-              <input type="password" id="new_password" name="new_password" maxlength="80"/>
-              <button id="changePassword">done</button>
-
-              <div class="tooltip" for="old_password" id="tooltipOldRequired">Old password is required.</div>
-              <div class="tooltip" for="old_password" id="tooltipInvalidPassword">Incorrect old password, password not updated.</div>
-              <div class="tooltip" for="new_password" id="tooltipNewRequired">New password is required.</div>
-              <div class="tooltip" for="new_password" id="tooltipPasswordsSame">Old and new passwords are the same.</div>
-              <div class="tooltip" for="new_password" id="tooltipPasswordLength">Password must be between 8 and 80 characters long.</div>
-            </form>
-          </section>
-
-
-          <p id="disclaimer">You may, at any time, <a href="#" id="cancelAccount" class="action">cancel your account</a></p>
-      </div>
-  </div>
-
-  <div id="vAlign" class="display_nonauth">
-      <div class="newsbanner">
-        BrowserID is graduating: we're launching Mozilla Persona. Find out more on <a href="http://identity.mozilla.com/">the identity blog</a>.
-      </div>
-
-      <div id="signUp">
-          <div id="card"><img src="/i/slit.png"></div>
-          <div id="hint"></div>
-          <div id="status"></div>
-
-          <p>Connect with <em>BrowserID</em>, the safest &amp; easiest way to sign in.</p>
-          <p>
-            <a class="granted tour action" href="/about">Take the tour</a>
-            <span class="require-js">or
-              <a href="/signup" class="button granted create">sign up</a>
-            </span>
-          </p>
+              <h1 class="white headline-main">Connect with Mozilla Persona, the safest &amp; easiest way to sign in.</h1>
+              <p class="tour white">
+                <a href="/about">Take the tour</a>
+                or
+                <a href="/signup" class="button create">Sign up &rarr;</a>
+              </p>
+          </div>
       </div>
   </div>
 
   <script type="text/html" id="templateUser">
     <li class="identity cf" id="{{ email.replace('@', '_').replace('.', '_') }}">
       <div class="email">{{ email }}</div>
-      <div class="activity cf">
-        <button class="delete">remove</button>
-      </div>
+      <button class="delete">remove</button>
     </li>
   </script>
 
+  <script type="text/html" id="templateManage">
+    <div id="content">
+        <div class="newsbanner" id="newuser">
+          New to Mozilla Persona? <a href="/about">Learn more</a>
+        </div>
+
+        <div id="manage">
+            <h1>Account Manager</h1>
+
+            <section>
+              <header class="buttonrow cf">
+                  <h2>Your Email Addresses</h2>
+
+                  <button class="edit">edit</button>
+                  <button class="done">done</button>
+              </header>
+
+              <ul id="emailList">
+              </ul>
+            </section>
+
+            <section id="edit_password">
+              <header class="buttonrow cf">
+                <h2>Password</h2>
+
+                <button class="edit">edit</button>
+                <button class="done">cancel</button>
+              </header>
+
+              <div class="showedit">
+                <label for="old_password">Old Password</label>
+                <label for="new_password">New Password</label>
+              </div>
+
+              <form id="edit_password_form" class="showedit">
+                <input type="password" id="old_password" name="old_password" maxlength="80"/>
+                <input type="password" id="new_password" name="new_password" maxlength="80"/>
+                <button id="changePassword">done</button>
+
+                <div class="tooltip" for="old_password" id="tooltipOldRequired">Old password is required.</div>
+                <div class="tooltip" for="old_password" id="tooltipInvalidPassword">Incorrect old password, password not updated.</div>
+                <div class="tooltip" for="new_password" id="tooltipNewRequired">New password is required.</div>
+                <div class="tooltip" for="new_password" id="tooltipPasswordsSame">Old and new passwords are the same.</div>
+                <div class="tooltip" for="new_password" id="tooltipPasswordLength">Password must be between 8 and 80 characters long.</div>
+              </form>
+            </section>
+
+
+            <p id="disclaimer">You may, at any time, <a href="#" id="cancelAccount" class="action">cancel your account</a></p>
+        </div>
+    </div>
+
+  </script>
 

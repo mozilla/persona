@@ -23,6 +23,9 @@
 
 
       <div class="submit add cf">
+      <p class="cf">
+        <button id="signInButton"><%= gettext('sign in') %></button>
+      </p>
       <% if (privacy_url && tos_url) { %>
         <p class="tospp">
           <%= format(
@@ -31,13 +34,6 @@
                       format(' href="%s" target="_new"', [tos_url]),
                       format(' href="%s" target="_new"', [privacy_url])
                     ]) %>
-        </p>
-        <p>
-      <% } %>
-
-        <button id="signInButton"><%= gettext('sign in') %></button>
-        <!--br style="clear: both" /-->
-      <% if (privacy_url && tos_url) { %>
         </p>
       <% } %>
       </div>

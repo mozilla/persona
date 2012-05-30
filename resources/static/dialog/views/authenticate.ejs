@@ -6,7 +6,7 @@
       <ul class="inputs">
 
           <li>
-              <label for="email" class="serif"><%= gettext('Email') %></label>
+              <label for="email"><%= gettext('Email') %></label>
               <input id="email" class="sans" type="email" autocapitalize="off" autocorrect="off" value="<%= email %>" maxlength="254" tabindex="1"/>
 
               <div id="email_format" class="tooltip" for="email">
@@ -38,7 +38,7 @@
           <li class="returning">
 
               <a id="forgotPassword" class="forgot right" href="#" tabindex="4"><%= gettext('forgot your password?') %></a>
-              <label for="password" class="serif"><%= gettext('Password') %></label>
+              <label for="password"><%= gettext('Password') %></label>
 
               <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
 
@@ -54,6 +54,10 @@
       </ul>
 
       <div class="submit cf">
+        <p class="cf">
+          <button class="start addressInfo" tabindex="3"><%= gettext('next') %></button>
+          <button class="returning" tabindex="3"><%= gettext('sign in') %></button>
+        </p>
         <% if (privacy_url && tos_url) { %>
            <p class="tospp">
             <%= format(
@@ -63,12 +67,7 @@
                          format(' href="%s" target="_new"', [privacy_url])
                        ]) %>
           </p>
-          <p>
       <% } %>
-            <button class="start addressInfo" tabindex="3"><%= gettext('next') %></button>
-            <button class="returning" tabindex="3"><%= gettext('sign in') %></button>
-        <% if (privacy_url && tos_url) { %>
-          </p>
-        <% } %>
+
       </div>
   </div>

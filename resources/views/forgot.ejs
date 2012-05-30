@@ -2,11 +2,11 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<div id="vAlign" class="display_always">
-    <div id="signUpFormWrap">
+<div id="hAlign" class="display_always">
+    <div id="vAlign">
         <!-- XXX this form submits to nowhere -->
         <form id="signUpForm" class="cf authform" novalidate>
-            <h1 class="serif">Forgot Password</h1>
+            <h1>Forgot Password</h1>
             <div class="notifications">
                 <div class="notification emailsent">
                   <p>
@@ -26,8 +26,8 @@
 
             <ul class="inputs forminputs">
                 <li>
-                    <label class="serif" for="email">Email Address</label>
-                    <input class="sans" id="email" autofocus required placeholder="Your Email" type="email" autocapitalize="off" autocorrect="off" maxlength="254" />
+                    <label for="email">Email Address</label>
+                    <input id="email" autofocus required placeholder="Your Email" type="email" autocapitalize="off" autocorrect="off" maxlength="254" />
 
                     <div id="email_format" class="tooltip" for="email">
                       This field must be an email address.
@@ -47,8 +47,8 @@
                 </li>
 
                 <li>
-                    <label class="serif" for="password">Password</label>
-                    <input class="sans" id="password" placeholder="Password" type="password" maxlength="80">
+                    <label for="password">Password</label>
+                    <input id="password" placeholder="Password" type="password" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="password">
                         Password is required.
@@ -64,8 +64,8 @@
                 </li>
 
                 <li>
-                    <label class="serif" for="vpassword">Verify Password</label>
-                    <input class="sans" id="vpassword" placeholder="Repeat Password" type="password" maxlength="80">
+                    <label for="vpassword">Verify Password</label>
+                    <input id="vpassword" placeholder="Repeat Password" type="password" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="vpassword">
                       Verification password is required.
@@ -80,10 +80,10 @@
             </ul>
 
             <div class="submit cf forminputs">
+                <button>Reset Password</button>
                 <div class="remember cf">
                     <a class="action" href="/signin">Know your password? Sign in.</a>
                 </div>
-                <button>Reset Password</button>
             </div>
         </form>
     </div>

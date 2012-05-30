@@ -2,15 +2,13 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<div id="vAlign" class="disply_always">
-    <div id="signUpFormWrap">
+<div id="hAlign" class="display_always">
+    <div id="vAlign">
         <!-- XXX this form submits to nowhere -->
         <form id="signUpForm" class="cf authform" novalidate>
-            <h1 class="serif">Sign In</h1>
+            <h1>Sign In</h1>
 
             <ul class="notifications">
-                <li class="notification error badlogin">Bad Login. Check your email and password.</li>
-
                 <li class="notification" id="unknown_secondary">
                   <strong id="unknown_email">Email</strong> is not registered.
                   Would you like to <a class="action" href="/signup">sign up</a> instead?
@@ -20,8 +18,8 @@
 
             <ul class="inputs">
                 <li>
-                    <label class="serif" for="email">Email Address</label>
-                    <input class="sans" id="email" autofocus placeholder="Your Email" type="email" autocapitalize="off" autocorrect="off" tabindex="1" maxlength="254" />
+                    <label for="email">Email Address</label>
+                    <input id="email" autofocus placeholder="Your Email" type="email" autocapitalize="off" autocorrect="off" tabindex="1" maxlength="254" />
 
                     <div id="email_format" class="tooltip" for="email">
                       This field must be an email address.
@@ -36,20 +34,24 @@
               <ul class="inputs password_entry">
                 <li class="password_section">
                     <a class="forgot right" href="/forgot" tabindex="4">forgot your password?</a>
-                    <label class="serif" for="password">Password</label>
-                    <input class="sans" id="password" placeholder="Your Password" type="password" tabindex="2" maxlength="80">
+                    <label for="password">Password</label>
+                    <input id="password" placeholder="Your Password" type="password" tabindex="2" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="password">
                       The password field is required.
                     </div>
+
+                    <div id="cannot_authenticate" class="tooltip" for="password">
+                      The account cannot be logged in with this username and password.')
+
                 </li>
             </ul>
 
             <div class="submit cf forminputs">
-                <div class="remember cf">
-                    <a class="action" href="/signup">New to BrowserID? Sign up today.</a>
-                </div>
                 <button tabindex="5">Sign In</button>
+                <div class="remember cf">
+                    <a class="action" href="/signup">New to Persona? Sign up today.</a>
+                </div>
             </div>
 
             <ul class="notifications">
@@ -69,6 +71,6 @@
 </div>
 
 <noscript>
-  We're sorry, but to sign in to BrowserID, you must have Javascript enabled.
+  We're sorry, Persona requires that Javascript is enabled.
 </noscript>
 
