@@ -1,0 +1,23 @@
+{
+  "processes": [
+    "bin/router",
+    "bin/proxy",
+    "bin/dbwriter",
+    "bin/keysigner",
+    "bin/verifier",
+    "bin/browserid"
+  ],
+  "env": {
+    "CONFIG_FILES": "$HOME/code/config/production.json,$HOME/code/config/aws.json,$HOME/config.json"
+  },
+  "remote_hooks": {
+    "postdeploy": "scripts/awsbox/post_deploy.js",
+    "poststart": "scripts/show_config.js"
+  },
+  "local_hooks": {
+    "postcreate": "scripts/awsbox/post_create.js"
+  },
+  "packages": [
+    "mysql-server"
+  ]
+}
