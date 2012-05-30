@@ -24,6 +24,7 @@ $(function() {
       CookieCheck = modules.CookieCheck,
       XHRDelay = modules.XHRDelay,
       XHRDisableForm = modules.XHRDisableForm,
+      Development = modules.Development,
       ANIMATION_TIME = 500,
       checkCookiePaths = [ "/signin", "/signup", "/forgot", "/add_email_address", "/verify_email_address" ];
 
@@ -87,6 +88,9 @@ $(function() {
 
   moduleManager.register("xhr_disable_form", XHRDisableForm);
   moduleManager.start("xhr_disable_form");
+
+  moduleManager.register("development", Development);
+  moduleManager.start("development");
 
   if(shouldCheckCookies(path)) {
     // do a cookie check on every page except the main page.

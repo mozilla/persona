@@ -24,6 +24,7 @@ body {
 }
 
 #errorBackground {
+  position: absolute;
   position: fixed;
   top: 0;
   right: 0;
@@ -67,6 +68,7 @@ body {
   border: 2px solid #000;
   border-radius: 5px;
   text-align: center;
+  color: #333;
 }
 
 

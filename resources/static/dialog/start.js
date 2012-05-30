@@ -20,6 +20,9 @@
   moduleManager.register("interaction_data", modules.InteractionData);
   moduleManager.start("interaction_data", { continuation: continuation });
 
+  moduleManager.register("development", modules.Development);
+  moduleManager.start("development");
+
   moduleManager.register("cookie_check", modules.CookieCheck);
   moduleManager.start("cookie_check", {
     ready: function(status) {

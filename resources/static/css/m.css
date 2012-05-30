@@ -200,5 +200,12 @@
     margin-bottom: 20px;
   }
 
+  #error, #wait, #delay {
+    position: absolute;  /* For a couple of browsers without position: fixed support */
+    position: fixed;
+    top: 25%;
+    left: 20px;
+    right: 20px;
+  }
 }
 

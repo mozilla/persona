@@ -19,11 +19,10 @@
   <title><%= format(gettext("Mozilla Person: %s"), [title]) %></title>
 </head>
 <body class="loading">
-
+<a href="#" id="showDevelopment">&nbsp;</a>
 <div id="errorBackground"></div>
 
 <div id="wrapper">
-
     <header id="header" class="cf">
         <a class="home" href="/"><%= gettext("Persona Home") %></a>
 
@@ -33,7 +32,9 @@
 
             <li class="signIn"><a class="signIn" href="/signin"><%= gettext("Sign In") %></a></li>
             <li class="signOut"><a class="signOut" href="/"><%= gettext("Sign Out") %></a></li>
+
         </ul>
+
     </header>
 
     <div id="wait"><div class="contents"></div></div>

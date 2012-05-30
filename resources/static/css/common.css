@@ -231,6 +231,7 @@ button[disabled], .submit_disabled button, .submit_disabled .button,
   color: #d8dde0;
   cursor: default;
   background-color: #bcc4ca;
+  background-image: none; /* Fix for IE9 still showing the blue arrow */
   background-image: -webkit-gradient(linear, left top, left bottom, from(#bcc4ca), to(#a0a7ae));
   background-image: -webkit-linear-gradient(top, #bcc4ca, #a0a7ae);
   background-image:    -moz-linear-gradient(top, #bcc4ca, #a0a7ae);
@@ -400,4 +401,36 @@ footer .help {
   color: #333;
 }
 
+#showDevelopment {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50px;
+  height: 50px;
+  cursor: default;
+}
 
+#development {
+  display: none;
+}
+
+.development #development {
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 10px;
+  z-index: 100000;
+  background-color: #000;
+  background-color: rgba(0,0,0, .75);
+  border-radius: 5px 0 0 5px;
+}
+
+#development li {
+  display: block;
+  float: none;
+  padding: 5px 10px;
+}
+
+#development li a {
+  color: #fff;
+}

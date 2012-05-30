@@ -19,5 +19,8 @@
 button[disabled], .submit_disabled button, .submit_disabled .button,
 .submit_disabled button:focus, .submit_disabled .button:focus,
 .submit_disabled button:active, .submit_disabled .button:active {
-  background-image: none;
+  color: #d8dde0;
+  cursor: default;
+  background-color: #bcc4ca;
+  background-image: none; /* Fix for IE8/IE9 still showing the blue arrow */
 }
