@@ -26,10 +26,29 @@
     }
   });
 
-  function createController(config) {
+  function createController(setKPINameTable, config) {
+    if (typeof setKPINameTable !== "boolean") {
+      config = setKPINameTable;
+      setKPINameTable = false;
+    }
+
     config = _.extend({ samplingEnabled: true }, config);
     controller = BrowserID.Modules.InteractionData.create();
     controller.start(config);
+
+    controller.setNameTable({
+      before_session_context: null,
+      after_session_context: null,
+      session1_before_session_context: null,
+      session1_after_session_context: null,
+      session2_before_session_context: null,
+      session2_after_session_context: null,
+      initial_string_name: "translated_name",
+      initial_function_name: function(msg, data) {
+        return "function_translation." + msg;
+      }
+    });
+
   }
 
   function indexOfEvent(eventStream, eventName) {
@@ -68,12 +87,23 @@
       testHelpers.testKeysInObject(data, ["event_stream", "sample_rate", "timestamp", "lang"]);
 
       controller.addEvent("after_session_context");
+      controller.addEvent("after_session_context");
+
+      // The next two are translated from mediator names to names usable by the
+      // KPI backend.
+
+      // translated to "translated_name"
+      controller.addEvent("initial_string_name");
+      // translated to "function_translation.initial_function_name"
+      controller.addEvent("initial_function_name");
 
       events = controller.getCurrentEventStream();
       // Make sure both the before_session_context and after_session_context
       // are both on the event stream.
       ok(indexOfEvent(events, "before_session_context") > -1, "before_session_context correctly saved to current event stream");
       ok(indexOfEvent(events, "after_session_context") > -1, "after_session_context correctly saved to current event stream");
+      ok(indexOfEvent(events, "translated_name") > -1, "string translation - translated_name correctly saved to current event stream");
+      ok(indexOfEvent(events, "function_translation.initial_function_name") > -1, "function translation - function_translation.initial_function_name correctly saved to current event stream");
 
 
       // Ensure that the event name as well as relative time are saved for an
