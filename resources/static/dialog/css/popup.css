@@ -6,6 +6,7 @@ body {
   color: #383838;
   background-color: #dee3e6;
   background-image: url('/i/grain.png');
+  background-image: url("/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(rgba(113, 126, 137, 0)), to(rgba(113, 126, 137, 0.2)));
   background-image: url('/i/grain.png'), -webkit-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
   background-image: url('/i/grain.png'),    -moz-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
   background-image: url('/i/grain.png'),     -ms-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
@@ -385,6 +386,7 @@ a.emphasize {
   display: inline-block;
   line-height: 22px;
   background-color: #e5e9eb;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#e5e9eb), to(#d8dbde));
   background-image: -webkit-linear-gradient(top, #e5e9eb, #d8dbde);
   background-image:    -moz-linear-gradient(top, #e5e9eb, #d8dbde);
   background-image:     -ms-linear-gradient(top, #e5e9eb, #d8dbde);
@@ -395,6 +397,7 @@ a.emphasize {
 a.emphasize:hover,
 a.emphasize:focus {
   background-color: #d8dbde;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#d8dbde), to(#ccc));
   background-image: -webkit-linear-gradient(top, #d8dbde, #ccc);
   background-image:    -moz-linear-gradient(top, #d8dbde, #ccc);
   background-image:     -ms-linear-gradient(top, #d8dbde, #ccc);
@@ -403,12 +406,6 @@ a.emphasize:focus {
 }
 
 a.emphasize:active {
-  background-color: #d8dbde;
-  background-image: -webkit-linear-gradient(top, #d8dbde, #ccc);
-  background-image:    -moz-linear-gradient(top, #d8dbde, #ccc);
-  background-image:     -ms-linear-gradient(top, #d8dbde, #ccc);
-  background-image:      -o-linear-gradient(top, #d8dbde, #ccc);
-  background-image:         linear-gradient(top, #d8dbde, #ccc);
   box-shadow: 0 0 5px #333 inset;
 }
 

@@ -24,6 +24,11 @@ BrowserID.Modules.PageModule = (function() {
 
   function showScreen(screen, template, vars, oncomplete) {
     screen.show(template, vars);
+    // Fire a window resize event any time a new section is displayed that
+    // may change the content's innerHeight.  this will cause the "screen
+    // size hacks" to resize the screen appropriately so scroll bars are
+    // displayed when needed.
+    dom.fireEvent(window, "resize");
     oncomplete && oncomplete();
   }
 

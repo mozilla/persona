@@ -23,7 +23,6 @@
     display: none;
   }
 
-
   .inputs > li > label {
     font-size: 18px;
     margin-bottom: 10px;
@@ -164,13 +163,15 @@
   }
 
   a.emphasize {
-    font-size: 16px;
-    padding: 5px 15px;
+    font-size: 14px;
+    padding: 5px;
     margin-top: 10px;
   }
 
   #your_computer_content li {
     padding: 0 0 0 100px;
+    margin: 15px 0;
+    min-height: 40px;
   }
 
 

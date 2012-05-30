@@ -66,6 +66,7 @@ ul, li {
   text-shadow: 0 1px #333;
   line-height: 16px;
   background-color: #aa1401;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(218, 81, 50, 0.9)), to(rgba(169, 19, 0, 1)));
   background-image: -webkit-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
   background-image:    -moz-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
   background-image:     -ms-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
@@ -154,6 +155,7 @@ button,
     border-bottom: 1px solid #888;
 
     background-color: #4eb5e5;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
     background-image: -webkit-linear-gradient(top, #4eb5e5, #3196cf);
     background-image:    -moz-linear-gradient(top, #4eb5e5, #3196cf);
     background-image:      -ms-linear-gradient(top, #4eb5e5, #3196cf);
@@ -166,6 +168,7 @@ button:focus,
 .button:hover,
 .button:focus {
     background-color: #43a6e2;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#43a6e2), to(#277ac1));
     background-image: -webkit-linear-gradient(top, #43a6e2, #277ac1);
     background-image:    -moz-linear-gradient(top, #43a6e2, #277ac1);
     background-image:      -ms-linear-gradient(top, #43a6e2, #277ac1);
@@ -176,6 +179,7 @@ button:focus,
 button:active,
 .button:active {
     background-color: #184a73;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#184a73), to(#276084));
     background-image: -webkit-linear-gradient(top, #184a73, #276084);
     background-image:    -moz-linear-gradient(top, #184a73, #276084);
     background-image:      -ms-linear-gradient(top, #184a73, #276084);
@@ -195,12 +199,14 @@ button::-moz-focus-inner, .button::-moz-focus-inner {
 .submit button {
     padding: 6px 45px 7px 10px;
     background-color: #4eb5e5;
+    background-image: url("/i/button-arrow.png");
+    background-image: url("/i/button-arrow.png"), -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
     background-image: url("/i/button-arrow.png"), -webkit-linear-gradient(top, #4eb5e5, #3196cf);
     background-image: url("/i/button-arrow.png"),    -moz-linear-gradient(top, #4eb5e5, #3196cf);
     background-image: url("/i/button-arrow.png"),     -ms-linear-gradient(top, #4eb5e5, #3196cf);
     background-image: url("/i/button-arrow.png"),      -o-linear-gradient(top, #4eb5e5, #3196cf);
     background-image: url("/i/button-arrow.png"),         linear-gradient(top, #4eb5e5, #3196cf);
-    background-repeat: no-repeat;
+    background-repeat: no-repeat, no-repeat;
     background-position: center right, center;
 }
 
@@ -210,6 +216,8 @@ button::-moz-focus-inner, .button::-moz-focus-inner {
 .submit .button:hover,
 .submit .button:focus {
     background-color: #43a6e2;
+    background-image: url("/i/button-arrow.png");
+    background-image: url("/i/button-arrow.png"), -webkit-gradient(linear, left top, left bottom, from(#43a6e2), to(#277ac1));
     background-image: url("/i/button-arrow.png"), -webkit-linear-gradient(top, #43a6e2, #277ac1);
     background-image: url("/i/button-arrow.png"),    -moz-linear-gradient(top, #43a6e2, #277ac1);
     background-image: url("/i/button-arrow.png"),     -ms-linear-gradient(top, #43a6e2, #277ac1);
@@ -223,6 +231,7 @@ button[disabled], .submit_disabled button, .submit_disabled .button,
   color: #d8dde0;
   cursor: default;
   background-color: #bcc4ca;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#bcc4ca), to(#a0a7ae));
   background-image: -webkit-linear-gradient(top, #bcc4ca, #a0a7ae);
   background-image:    -moz-linear-gradient(top, #bcc4ca, #a0a7ae);
   background-image:     -ms-linear-gradient(top, #bcc4ca, #a0a7ae);
@@ -236,6 +245,7 @@ button[disabled], .submit_disabled button, .submit_disabled .button,
 
 button.negative {
     background-color: #d94f30;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#d94f30), to(#ad1804));
     background-image: -webkit-linear-gradient(top, #d94f30, #ad1804);
     background-image:    -moz-linear-gradient(top, #d94f30, #ad1804);
     background-image:     -ms-linear-gradient(top, #d94f30, #ad1804);
@@ -248,6 +258,7 @@ button.negative:focus,
 .button.negative:hover,
 .button.negative:focus {
     background-color: #ad1804;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ad1804), to(#911403));
     background-image: -webkit-linear-gradient(top, #ad1804, #911403);
     background-image:    -moz-linear-gradient(top, #ad1804, #911403);
     background-image:     -ms-linear-gradient(top, #ad1804, #911403);
@@ -257,12 +268,6 @@ button.negative:focus,
 
 button.negative:active,
 .button.negative:active {
-    background-color: #ad1804;
-    background-image: -webkit-linear-gradient(top, #ad1804, #911403);
-    background-image:    -moz-linear-gradient(top, #ad1804, #911403);
-    background-image:     -ms-linear-gradient(top, #ad1804, #911403);
-    background-image:      -o-linear-gradient(top, #ad1804, #911403);
-    background-image:         linear-gradient(top, #ad1804, #911403);
     box-shadow: 0 0 5px #333 inset;
 }
 
