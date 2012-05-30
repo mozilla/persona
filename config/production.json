@@ -48,7 +48,9 @@
   "keysigner_url": "http://127.0.0.1:62600",
   "dbwriter": { "bind_to": { "port": 62900 } },
   "dbwriter_url": "http://127.0.0.1:62900",
-  "browserid": { "bind_to": { "port": 62700 } }
+  "browserid": { "bind_to": { "port": 62700 } },
+  "browserid_url": "http://127.0.0.1:62700",
+  "router": { "bind_to": { "port": 63300 } }
 
   // http_proxy should be overridded per env
   //"http_proxy": {

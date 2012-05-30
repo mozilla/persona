@@ -1,0 +1,127 @@
+#!/usr/bin/env node
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+const
+fs = require('fs'),
+path = require('path'),
+url = require('url'),
+http = require('http');
+urlparse = require('urlparse'),
+express = require('express');
+
+const
+wsapi = require('../lib/wsapi.js'),
+config = require('../lib/configuration.js'),
+heartbeat = require('../lib/heartbeat.js'),
+logger = require('../lib/logging.js').logger,
+forward = require('../lib/http_forward').forward,
+shutdown = require('../lib/shutdown');
+
+
+var app = undefined;
+
+app = express.createServer();
+
+logger.info("router server starting up");
+
+// verify that we have a keysigner configured
+if (!config.get('keysigner_url')) {
+  logger.error('missing required configuration - url for the keysigner (KEYSIGNER_URL in env)');
+  process.exit(1);
+}
+
+// verify that we have a dbwriter configured
+if (!config.get('dbwriter_url')) {
+  logger.error('missing required configuration - url for the dbwriter (DBWRITER_URL in env)');
+  process.exit(1);
+}
+
+// verify that we have a browserid configured
+if (!config.get('browserid_url')) {
+  logger.error('missing required configuration - url for browserid (BROWSERID_URL in env)');
+  process.exit(1);
+}
+
+// NOTE: ordering of middleware registration is important in this file, it is the
+// order in which middleware will be invoked as requests are processed.
+
+// #1 - Setup health check / heartbeat middleware.
+// This is in front of logging on purpose.  see issue #537
+heartbeat.setup(app);
+
+// #2 - logging!  all requests other than __heartbeat__ are logged
+app.use(express.logger({
+  format: config.get('express_log_format'),
+  stream: {
+    write: function(x) {
+      logger.info(typeof x === 'string' ? x.trim() : x);
+    }
+  }
+}));
+
+// limit all content bodies to 10kb, at which point we'll forcefully
+// close down the connection.
+app.use(express.limit("10kb"));
+
+var statsd_config = config.get('statsd');
+if (statsd_config && statsd_config.enabled) {
+  logger_statsd = require("connect-logger-statsd");
+  app.use(logger_statsd({
+    host: statsd_config.hostname || "localhost",
+    port: statsd_config.port || 8125,
+    prefix: statsd_config.prefix || "browserid.router."
+  }));
+}
+
+// Add Strict-Transport-Security headers if we're serving over SSL
+if (config.get('scheme') == 'https') {
+  app.use(function(req, resp, next) {
+    // expires in 30 days, include subdomains like www
+    resp.setHeader("Strict-Transport-Security", "max-age=2592000; includeSubdomains");
+    next();
+    });
+}
+
+// redirect requests to the "verifier" processes
+if (config.get('verifier_url')) {
+  var verifier_url = urlparse(config.get('verifier_url')).validate().normalize();
+  app.use(function(req, res, next) {
+    if (/^\/verify$/.test(req.url)) {
+      forward(
+        verifier_url, req, res,
+        function(err) {
+          if (err) {
+            logger.error("error forwarding request:", err);
+          }
+        });
+    } else {
+      return next();
+    }
+  });
+}
+
+// handle /wsapi writes
+wsapi.setup({
+  router_mode: true,
+  forward_writes: urlparse(config.get('dbwriter_url')).validate().normalize().originOnly()
+}, app);
+
+// Forward all leftover requests to browserid
+var browserid_url = urlparse(config.get('browserid_url')).validate().normalize().originOnly();
+app.use(function(req, res, next) {
+  forward(
+    browserid_url+req.url, req, res,
+    function(err) {
+      if (err) {
+        logger.error("error forwarding request:", err);
+      }
+    });
+});
+
+var bindTo = config.get('bind_to');
+app.listen(bindTo.port, bindTo.host, function(conn) {
+  logger.info("running on http://" + app.address().address + ":" + app.address().port);
+});

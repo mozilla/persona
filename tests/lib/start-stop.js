@@ -47,14 +47,16 @@ function setupProc(proc) {
       }
       var tokenRegex = new RegExp('token=([A-Za-z0-9]+)$', 'm');
 
-      if (!sentReady && /^browserid.*127\.0\.0\.1:10002$/.test(x)) {
+      if (!sentReady && /^router.*127\.0\.0\.1:10002$/.test(x)) {
         exports.browserid.emit('ready');
         sentReady = true;
       } else if (m = tokenRegex.exec(x)) {
-        tokenStack.push(m[1]);
-        if (nextTokenFunction) {
-          nextTokenFunction(tokenStack.shift());
-          nextTokenFunction = undefined;
+        if (!(/forwarding request:/.test(x))) {
+          tokenStack.push(m[1]);
+          if (nextTokenFunction) {
+            nextTokenFunction(tokenStack.shift());
+            nextTokenFunction = undefined;
+          }
         }
       }
     });

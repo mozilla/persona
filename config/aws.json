@@ -20,6 +20,6 @@
     "port": 10006
   },
   "proxy": { "bind_to": { "port": 10006 } },
-  "browserid": { "bind_to": { "port": 8080 } },
+  "router": { "bind_to": { "port": 8080 } },
   "kpi_backend_db_url" : "https://kpiggybank.hacksign.in/wsapi/interaction_data"
 }

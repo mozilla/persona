@@ -3,7 +3,8 @@
   "keysigner": { "bind_to": { "port": 10003 } },
   "dbwriter": { "bind_to": { "port": 10004 } },
   "proxy": { "bind_to": { "port": 10006 } },
-  "browserid": { "bind_to": { "port": 10002 } },
+  "browserid": { "bind_to": { "port": 10007 } },
+  "router": { "bind_to": { "port": 10002 } },
   "use_minified_resources": false,
   "database": {
     "driver": "json"
