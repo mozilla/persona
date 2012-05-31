@@ -111,7 +111,7 @@
         favIconHeight = $("#favicon").outerHeight();
 
         // Force the top of the main content area to be below the favicon area.
-        signInEl.css("top", (headerHeight + favIconHeight) + "px");
+        signInEl.css("top", favIconHeight + "px");
     }
 
     selectEmailEl.css("position", "");

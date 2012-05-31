@@ -59,7 +59,6 @@
       position: static;
       padding: 10px;
       border-bottom: 1px solid rgba(0,0,0,0.05);
-      background-image: url('/i/bg.png');
       text-align: center;
       left: 0;
   }
@@ -68,17 +67,27 @@
       max-width: 32px;
       max-height: 32px;
       display: inline;
-      margin: 0;
+      margin: 0 10px 0 0;
       vertical-align: middle;
   }
 
   #favicon h2, #favicon h3 {
-      margin: 5px 0 0 0;
+      margin: 0 5px;
+      height: auto;
+      line-height: 32px;
+      font-size: 20px;
+      display: inline;
+      vertical-align: middle;
+  }
+
+  #favicon h3 {
+      font-size: 16px;
   }
 
   #favicon .vertical {
       height: auto;
-      line-height: 20px;
+      line-height: 32px;
+      vertical-align: middle;
   }
 
 
@@ -96,23 +105,6 @@
 
   #signIn form {
       padding: 0;
-  }
-
-  #favicon {
-      text-align: center;
-  }
-
-  #favicon img {
-      width: 32px;
-      height: auto;
-      display: inline;
-      margin: 0;
-      vertical-align: middle;
-  }
-
-  #favicon .vertical {
-      height: auto;
-      line-height: 20px;
   }
 
   #formWrap {
