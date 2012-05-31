@@ -15,7 +15,7 @@
     "poststart": "scripts/show_config.js"
   },
   "local_hooks": {
-    "postcreate": "scripts/awsbox/post_create.js"
+    "postcreate": "scripts/awsbox/post_create.sh"
   },
   "packages": [
     "mysql-server"
