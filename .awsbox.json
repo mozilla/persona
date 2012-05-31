@@ -10,11 +10,9 @@
   "env": {
     "CONFIG_FILES": "$HOME/code/config/production.json,$HOME/code/config/aws.json,$HOME/config.json"
   },
-  "remote_hooks": {
+  "hooks": {
     "postdeploy": "scripts/awsbox/post_deploy.js",
-    "poststart": "scripts/show_config.js"
-  },
-  "local_hooks": {
+    "poststart": "scripts/show_config.js",
     "postcreate": "scripts/awsbox/post_create.sh"
   },
   "packages": [
