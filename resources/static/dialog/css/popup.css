@@ -284,14 +284,15 @@ section > .contents {
 #favicon img {
     display: block;
     margin: 0 auto;
-    max-height: 128px;
-    max-width: 128px;
+    max-height: 100px;
+    max-width: 100px;
 }
 
 #favicon h2, #favicon h3 {
     white-space: nowrap;
     text-overflow: ellipsis;
-    line-height: 1.3;  /* the 1.3em is to keep y, g, j, etc from having their bottoms chopped off */
+    font-size: 28px;
+    line-height: 1.2em;  /* the 1.2em is to keep y, g, j, etc from having their bottoms chopped off */
     overflow: hidden;
 }
 
@@ -300,8 +301,8 @@ section > .contents {
 }
 
 #favicon h3 {
-    font-size: 19px;
     margin-top: 0;
+    font-size: 14px;
 }
 
 #favicon .vertical {
