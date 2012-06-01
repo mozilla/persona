@@ -36,7 +36,7 @@
     },
     "devDependencies": {
         "vows": "0.5.13",
-        "awsbox": "0.0.10",
+        "awsbox": "0.2.0",
         "irc": "0.3.3"
     },
     "scripts": {
