@@ -7,17 +7,12 @@
   "use strict";
 
   BrowserID.index = function () {
-    $('.granted').hover(function() {
+    $('.tour a').hover(function() {
       $('#card').toggleClass('insert');
-      $('#status').delay(400).toggleClass('green');
     });
 
     $('.create').hover(function() {
       $('#hint').addClass('signUp').removeClass('info');
-    });
-
-    $('.info').hover(function() {
-      $('#hint').removeClass('signUp').addClass('info');
     });
   };
 }());

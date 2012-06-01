@@ -2,17 +2,83 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-
-h2 {
-    margin-bottom: 20px;
-    font-size: 150%;
-    color: #222;
-    font-weight: bold;
+body {
+  color: #383838;
+  background-color: #dee3e6;
+  background-image: url('/i/grain.png');
+  background-image: url("/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(rgba(113, 126, 137, 0)), to(rgba(113, 126, 137, 0.2)));
+  background-image: url('/i/grain.png'), -webkit-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/i/grain.png'),    -moz-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/i/grain.png'),     -ms-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/i/grain.png'),      -o-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/i/grain.png'),         linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
 }
+
+#signIn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 393px;
+    padding-right: 105px;
+}
+
+.completing #signIn {
+    /**
+     * The width is set in helpers.js->animateClose
+     */
+    -webkit-transition: all 750ms ease;
+       -moz-transition: all 750ms ease;
+        -ms-transition: all 750ms ease;
+         -o-transition: all 750ms ease;
+            transition: all 750ms ease;
+}
+
+
 
 header, footer {
     position: absolute;
+    z-index: 2;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.05) inset;
+}
+
+header {
+    top: 0;
+    padding: 10px 20px;
+    /* The *padding is a fix for IE6 and IE7 showing scroll bars in the
+     * unsupported dialog.  Since IE6 and IE7 do not support box-sizing:
+     * border-box, the left and right padding cause these versions of IE to
+     * overflow the dialog box.
+     */
+    *padding: 10px 0;
+    /*
+    font-weight: bold;
+    */
+    border-bottom: 1px solid #c7c6c1;
+
+    /*-ms-filter through zoom: 1 are fixes for IE6 and IE7 so they show the header
+     */
+    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
+    zoom: 1;
+    background-image: -webkit-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
+    background-image:    -moz-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
+    background-image:     -ms-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
+    background-image:      -o-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
+    background-image:         linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
+}
+
+.home {
+  width: 161px;
+  height: 40px;
+  background: url("/i/persona-logo-transparent.png") 0 0 no-repeat;
+  text-indent: -9999px;
+  display: inline-block;
+}
+
+footer {
+    bottom: 0;
+    border-top: 1px solid #c7c6c1;
     /* The *padding is a fix for IE6 and IE7 showing scroll bars in the
      * unsupported dialog.  Since IE6 and IE7 do not support box-sizing:
      * border-box, the left and right padding cause these versions of IE to
@@ -20,43 +86,16 @@ header, footer {
      */
     padding: 20px;
     *padding: 20px 0;
-    z-index: 2;
-}
-
-header {
-    top: 0;
-    font-weight: bold;
-    border-bottom: 1px solid #c7c6c1;
-    background-color: rgba(0,0,0,0.05);
-    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
-    zoom: 1;
-    -webkit-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
-       -moz-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
-         -o-box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
-            box-shadow: 0 -5px 5px -5px rgba(0, 0, 0, 0.1) inset;
-}
-
-footer {
-    bottom: 0;
-    font-size: 12px;
-    color: #62615F;
-    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-    border-top: 1px solid #c7c6c1;
-}
-
-footer a {
-    color: #62615f;
-    border-bottom: 1px dotted #999;
-}
-
-footer a:hover {
-    color: #333;
+    text-align: center;
+    background-image: -webkit-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
+    background-image:    -moz-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
+    background-image:     -ms-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
+    background-image:      -o-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
+    background-image:         linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
 }
 
 label {
     display: block;
-    color: #62615F;
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
@@ -85,14 +124,6 @@ section {
     vertical-align: middle;
 }
 
-/*
-.contents {
-    max-height: 210px;
-    overflow-x: hidden;
-    overflow-y: auto;
-}*/
-
-
 section > .contents {
     display: table-cell;
     vertical-align: middle;
@@ -100,6 +131,10 @@ section > .contents {
 }
 
 .form_section {
+    /**
+     * Set the width of the container for when the arrow animation happens
+     * otherwise the buttons slide right with the arrow
+     */
     width: 250px;
 }
 
@@ -126,7 +161,6 @@ section > .contents {
 }
 
 #wait, #error, #delay {
-    text-align: center;
     z-index: -1;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
     opacity: 0;
@@ -152,9 +186,6 @@ section > .contents {
     transition-delay: 0.5s;
 }
 
-#wait, #delay {
-  background-image: url("/i/bg.png");
-}
 
 .waiting #wait {
     display: block;
@@ -208,42 +239,18 @@ section > .contents {
     padding: 0 20px;
 }
 
-#formWrap {
-    background-color: #fff;
-    background-image: none;
-    display: block;
-}
-
-#signIn {
-    background-image: url('/i/bg.png');
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 325px;
-}
 
 #signIn .table {
-    /**
-     * Set the width of the container for when the arrow animation happens
-     * otherwise the buttons slide right with the arrow
-     */
-    /*width: 325px;*/
-    padding: 20px 52px 20px 20px;
+    background-color: #eff0f2;
+    padding: 20px;
 }
 
 .arrowContainer {
-    width: 40px;
     position: absolute;
-    right: 0;
+    width: 105px;
+    right:  0;
     top: 0;
     bottom: 0;
-    background-color: #fff;
-    background-image: -webkit-linear-gradient(left, #c7c7c7, #fff 2px);
-    background-image:    -moz-linear-gradient(left, #c7c7c7, #fff 2px);
-    background-image:     -ms-linear-gradient(left, #c7c7c7, #fff 2px);
-    background-image:      -o-linear-gradient(left, #c7c7c7, #fff 2px);
-    background-image:         linear-gradient(left, #c7c7c7, #fff 2px);
 }
 
 .arrow {
@@ -253,7 +260,7 @@ section > .contents {
     bottom: 0;
     left: 0;
     right: 0;
-    background-image: url('/i/arrow.png');
+    background-image: url('/i/arrow_grey.png');
     background-repeat: no-repeat;
     background-position: center;
     background-color: transparent;
@@ -261,7 +268,7 @@ section > .contents {
 
 #favicon {
     position: absolute;
-    left: 375px;
+    left: 400px;
     top: 0;
     bottom: 0;
     right: 0;
@@ -269,7 +276,9 @@ section > .contents {
 }
 
 #favicon strong {
-    font-size: 1.5em;
+    font-size: 18px;
+    line-height: 24px;
+    text-shadow: 0 1px #fff;
 }
 
 #favicon img {
@@ -299,7 +308,7 @@ div#required_email {
     overflow-y: auto;
 }
 
-#selectEmail.center {
+#selectEmail.vcenter {
     position: static;
     overflow-y: visible;
     /* The below 1px padding is part of a fix for a bug in webkit where there
@@ -327,7 +336,6 @@ div#required_email {
 }
 
 .inputs > li > label {
-    color: #333;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -337,7 +345,7 @@ div#required_email {
 }
 
 #selectEmail > .inputs > li > label {
-    padding: 5px 1px;
+    padding: 6px 1px;
     white-space: nowrap;
 }
 
@@ -354,38 +362,51 @@ div#required_email {
 }
 
 .submit {
-    line-height: 28px;
     margin-top: 10px;
     color: #333;
     font-size: 11px;
-    line-height: 1.2;
+    line-height: 14px;
 }
 
-.submit > p + p:last-child {
-    margin-top: 15px;
-    padding-left: 10px;
+.submit > p {
+  margin-top: 10px;
 }
 
-.tospp > a {
-    color: #333;
-    border-bottom: 1px dotted #999;
-}
-
-.tospp > a:hover {
-    color: #000;
+.tospp {
+    color: #787878;
+    clear: right;
 }
 
 a.emphasize {
-  background-color: #F0EFED;
-  color: #4E4E4E;
-  font-size: 0.75em;
+  border-bottom: 1px solid #b8babc;
+  border-radius: 2px;
+  color: #484848;
+  font-size: 11px;
   padding: 0 5px;
   display: inline-block;
-  line-height: 18px;
+  line-height: 22px;
+  background-color: #e5e9eb;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#e5e9eb), to(#d8dbde));
+  background-image: -webkit-linear-gradient(top, #e5e9eb, #d8dbde);
+  background-image:    -moz-linear-gradient(top, #e5e9eb, #d8dbde);
+  background-image:     -ms-linear-gradient(top, #e5e9eb, #d8dbde);
+  background-image:      -o-linear-gradient(top, #e5e9eb, #d8dbde);
+  background-image:         linear-gradient(top, #e5e9eb, #d8dbde);
 }
 
-a.emphasize:hover {
-  background-color: #fbfafa;
+a.emphasize:hover,
+a.emphasize:focus {
+  background-color: #d8dbde;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#d8dbde), to(#ccc));
+  background-image: -webkit-linear-gradient(top, #d8dbde, #ccc);
+  background-image:    -moz-linear-gradient(top, #d8dbde, #ccc);
+  background-image:     -ms-linear-gradient(top, #d8dbde, #ccc);
+  background-image:      -o-linear-gradient(top, #d8dbde, #ccc);
+  background-image:         linear-gradient(top, #d8dbde, #ccc);
+}
+
+a.emphasize:active {
+  box-shadow: 0 0 5px #333 inset;
 }
 
 
@@ -404,22 +425,19 @@ a.emphasize:hover {
 }
 
 #your_computer_content {
-  width: 90%;
+  max-width: 490px;
   margin: auto;
+}
+
+#your_computer_content li {
+  padding: 0 50px 0 150px;
+  margin: 28px 0;
   text-align: left;
 }
 
-#your_computer_content p button {
+#your_computer_content button {
   float: left;
-  margin: 0 1em 0 0;
-  vertical-align: middle;
-  font-size: 1em;
-  width: 4em;
+  margin-left: -100px;
+  min-width: 4em;
 }
 
-#your_computer_content p {
-  padding-bottom: 1em;
-  line-height: 1.3em;
-  margin-top: 2em;
-  margin-bottom: 2em;
-}

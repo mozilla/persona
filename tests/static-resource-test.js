@@ -23,7 +23,7 @@ suite.addBatch({
       var res = resources.resources;
       assert.ok(files['/production/dialog.css'].length >= 3);
       // Get ride of non-localized asset bundles
-      ['/production/communication_iframe.js', '/production/include.js', '/production/dialog.css', '/production/browserid.css'].forEach(
+      ['/production/communication_iframe.js', '/production/include.js', '/production/dialog.css', '/production/browserid.css', '/production/ie8_main.css', '/production/ie8_dialog.css'].forEach(
         function (nonLocaleAsset) {
           delete res[nonLocaleAsset];
           delete files[nonLocaleAsset];

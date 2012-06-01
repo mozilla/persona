@@ -2,15 +2,13 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<div id="vAlign" class="display_always">
-    <div id="signUpFormWrap">
+<div id="hAlign" class="display_always">
+    <div id="vAlign">
         <!-- XXX this form submits to nowhere -->
         <form id="signUpForm" class="cf authform" novalidate>
-            <h1 class="serif">Create Account</h1>
+            <h1>Create Account</h1>
 
             <ul class="notifications">
-                <li class="notification error doh">Doh! Something went wrong :-( </li>
-
                 <li class="notification alreadyRegistered">
                   <strong id="registeredEmail"></strong> is already registered.
                   Would you like to <a class="action" href="/signin">sign in</a> instead?
@@ -35,8 +33,8 @@
 
             <ul class="inputs forminputs">
                 <li>
-                    <label class="serif" for="email">Email Address</label>
-                    <input class="sans" id="email" autofocus placeholder="Your Email" type="email" autocapitalize="off" autocorrect="off" maxlength="254" />
+                    <label for="email">Email Address</label>
+                    <input id="email" autofocus placeholder="Your Email" type="email" autocapitalize="off" autocorrect="off" maxlength="254" />
 
                     <div id="email_format" class="tooltip" for="email">
                       This field must be an email address.
@@ -52,8 +50,8 @@
                 </li>
 
                 <li class="password_entry">
-                    <label class="serif" for="password">Password</label>
-                    <input class="sans" id="password" placeholder="Password" type="password" maxlength="80">
+                    <label for="password">Password</label>
+                    <input id="password" placeholder="Password" type="password" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="password">
                         Password is required.
@@ -69,8 +67,8 @@
                 </li>
 
                 <li class="password_entry">
-                    <label class="serif" for="vpassword">Verify Password</label>
-                    <input class="sans" id="vpassword" placeholder="Repeat Password" type="password" maxlength="80">
+                    <label for="vpassword">Verify Password</label>
+                    <input id="vpassword" placeholder="Repeat Password" type="password" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="vpassword">
                       Verification password is required.
@@ -84,10 +82,10 @@
             </ul>
 
             <div class="submit cf forminputs">
+                <button>Verify Email</button>
                 <div class="remember cf">
                     <a class="action" href="/signin" tabindex="2">Existing account? Sign in.</a>
                 </div>
-                <button>Verify Email</button>
             </div>
 
             <ul class="notifications">
@@ -108,7 +106,7 @@
         </form>
 
         <div class="notification" id="congrats">
-            <p class="serif">Thank you for signing up with <strong>BrowserID</strong>. You can now use your <strong>BrowserID</strong> account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!
+            <p>Thank you for signing up with <strong>Persona</strong>. You can now use your Persona account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!
             </p>
         </div>
 
@@ -116,7 +114,7 @@
 </div>
 
 <noscript>
-  We're sorry, but to sign up for BrowserID, you must have Javascript enabled.
+  We're sorry, but to sign up for Persona, you must have Javascript enabled.
 </noscript>
 
 

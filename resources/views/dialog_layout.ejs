@@ -13,12 +13,16 @@
     <script src="/lib/html5shim.js"></script>
   <![endif]-->
   <%- cachify_css('/production/dialog.css') %>
-  <link href="https://fonts.googleapis.com/css?family=Droid+Serif:400,400italic,700,700italic" rel="stylesheet" type="text/css">
-  <title><%= gettext('BrowserID') %></title>
+  <!--[if lt IE 9]>
+    <%- cachify_css('/production/ie8_dialog.css') %>
+  <![endif]-->
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <title><%= gettext('Mozilla Persona') %></title>
 </head>
   <body class="waiting">
       <header id="header">
-         <h1><a class="home" target="_blank" href="/">BrowserID Home</a></h1>
+         <a href="#" id="showDevelopment">&nbsp;</a>
+         <h1><a class="home" target="_blank" href="/">Mozilla Persona Home</a></h1>
       </header>
 
       <div id="content">
@@ -26,7 +30,7 @@
       </div>
 
       <footer>
-<%- format(gettext('BrowserID is the fast and secure way to sign in &mdash; <a %s>learn more</a>'), [" href='/about' target='_blank'"]) %>
+<%- format(gettext('Mozilla Persona is the fast and secure way to sign in.  <a %s>Learn more &rarr;</a>'), [" href='/about' target='_blank'"]) %>
 
       </footer>
 

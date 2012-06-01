@@ -5,15 +5,17 @@
   <div id="your_computer_content">
     <h2><%= gettext('If you don\'t mind me asking, is this your computer?') %></h2>
 
-    <p>
-      <button id="this_is_my_computer"><%= gettext('yes') %></button>
-      <%= gettext('If so, we\'ll keep you logged in for a couple weeks.') %>
-    </p>
+    <ul>
+      <li>
+        <button id="this_is_my_computer" tabindex="3"><%= gettext('yes') %></button>
+        <%= gettext('If so, we\'ll keep you logged in for two weeks.') %>
+      </li>
 
-    <p>
-      <button id="this_is_not_my_computer" class="negative"><%= gettext('no') %></button>
-      <%= gettext('If you\'re at a public computer such as a library or internet cafe, we\'ll ask you for your password again in an hour.') %>
-    </p>
+      <li>
+        <button id="this_is_not_my_computer" class="negative" tabindex="3"><%= gettext('no') %></button>
+        <%= gettext('If you\'re at a public computer such as a library or internet cafe, choose this.  We\'ll prompt you for your password in an hour for greater security.') %>
+      </li>
+    </ul>
   </div>
 
 

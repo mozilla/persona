@@ -7,7 +7,6 @@
   header, footer {
     position: static;
     padding: 5px 20px;
-    background-image: url("/i/bg.png");
   }
 
   button {
@@ -23,7 +22,6 @@
   section, .arrow, .arrowContainer {
     display: none;
   }
-
 
   .inputs > li > label {
     font-size: 18px;
@@ -48,6 +46,7 @@
     top: 45px;  /* 45px is a magic number - the height of the favicon area */
     right: 0;
     width: auto;
+    padding: 0;
   }
 
   #favicon {
@@ -64,12 +63,11 @@
     padding: 10px;
   }
 
-  #signIn .container {
+  #signIn .table {
       width: 100%;
-      padding: 20px;
   }
 
-  .pickemail #signIn .container {
+  .pickemail #signIn .table {
       padding-top: 0;
   }
 
@@ -82,10 +80,7 @@
   }
 
   #favicon {
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-      background-image: url('/i/bg.png');
       text-align: center;
-      left: 0;
   }
 
   #favicon img {
@@ -101,11 +96,7 @@
       line-height: 20px;
   }
 
-  #formWrap {
-      background-color: transparent;
-  }
-
-  .waiting #wait, .delay #delay, #error #error {
+  .form #formWrap, .waiting #wait, .delay #delay, #error #error {
       display: block;
   }
 
@@ -115,23 +106,18 @@
 
   #selectEmail > .inputs > li > label {
     margin: 0;
-    padding: 25px 0;
-  }
-
-  #signIn .submit {
-    position: static;
-    line-height: 1.6;
-    margin-top: 25px;
+    padding: 15px 0;
   }
 
   #signIn .submit > p {
     font-size: 14px;
     display: block;
+    margin-top: 20px;
   }
 
   #signIn .submit > p:first-child {
     padding: 0;
-    margin-bottom: 20px;
+    margin-top: 0;
   }
 
   #content {
@@ -158,10 +144,6 @@
     line-height: 40px;
   }
 
-  #useNewEmail {
-    margin-top: 18px;
-  }
-
   #error {
     position: static;
   }
@@ -181,6 +163,24 @@
   }
 
   a.emphasize {
-    font-size: 13px;
+    font-size: 14px;
+    padding: 5px;
+    margin-top: 10px;
   }
+
+  #your_computer_content li {
+    padding: 0 0 0 100px;
+    margin: 15px 0;
+    min-height: 40px;
+  }
+
+
+  .forgot {
+    font-size: 16px;
+  }
+
+  .inputs > li {
+    margin-top: 12px;
+  }
+}
 

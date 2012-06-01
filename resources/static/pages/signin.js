@@ -13,6 +13,7 @@ BrowserID.signIn = (function() {
       helpers = bid.Helpers,
       errors = bid.Errors,
       pageHelpers = bid.PageHelpers,
+      tooltip = bid.Tooltip,
       doc = document,
       winchan = window.WinChan,
       verifyEmail,
@@ -97,7 +98,7 @@ BrowserID.signIn = (function() {
         }
         else {
           // bad authentication
-          $(".notifications .notification.badlogin").fadeIn();
+          tooltip.showTooltip("#cannot_authenticate");
         }
         complete(oncomplete);
       }, pageHelpers.getFailure(errors.authenticate, oncomplete));

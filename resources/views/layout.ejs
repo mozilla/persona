@@ -10,19 +10,21 @@
   <!--[if lt IE 9]>
     <script src="/lib/html5shim.js"></script>
   <![endif]-->
-  <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <%- cachify_css('/production/browserid.css') %>
+  <!--[if lt IE 9]>
+    <%- cachify_css('/production/ie8_main.css') %>
+  <![endif]-->
   <%- cachify_js(util.format('/production/%s/browserid.js', locale)) %>
-  <title><%= format(gettext("BrowserID: %s"), [title]) %></title>
+  <title><%= format(gettext("Mozilla Person: %s"), [title]) %></title>
 </head>
-<body>
-
+<body class="loading">
+<a href="#" id="showDevelopment">&nbsp;</a>
 <div id="errorBackground"></div>
 
 <div id="wrapper">
-
     <header id="header" class="cf">
-        <a class="home" href="/"><%= gettext("BrowserID Home") %></a>
+        <a class="home" href="/"><%= gettext("Persona Home") %></a>
 
         <ul class="nav cf">
             <li><a href="/about"><%= gettext("How it works") %></a></li>
@@ -30,7 +32,9 @@
 
             <li class="signIn"><a class="signIn" href="/signin"><%= gettext("Sign In") %></a></li>
             <li class="signOut"><a class="signOut" href="/"><%= gettext("Sign Out") %></a></li>
+
         </ul>
+
     </header>
 
     <div id="wait"><div class="contents"></div></div>
@@ -39,18 +43,18 @@
 
     <%- body %>
 
-    <footer id="footer">
-        <ul class="cf">
-            <li><%- format(gettext('By the <a %s>Identity Team</a> @ <a %s>Mozilla Labs</a>'),
-                           [" href='http://identity.mozilla.com' target='_blank'", " href='http://mozillalabs.com' target='_blank'"]) %></li>
-            <li>&mdash;</li>
-            <li><a href="/privacy"><%= gettext('Privacy') %></a></li>
-            <li><a href="/tos"><%= gettext('TOS') %></a></li>
-            <li class="help"><a href="https://support.mozilla.com/en-US/kb/what-browserid-and-how-does-it-work" target="_blank"><%= gettext('Need Help?') %></a></li>
-        </ul>
-    </footer>
-
 </div>
+
+<footer style="position: absolute; bottom: 0;">
+    <ul class="cf">
+        <li><%- format(gettext('By the <a %s>Identity Team</a> @ <a %s>Mozilla</a>'),
+                       [" href='http://identity.mozilla.com' target='_blank'", " href='https://mozilla.org' target='_blank'"]) %></li>
+        <li><a href="/privacy"><%= gettext('Privacy &rarr;') %></a></li>
+        <li><a href="/tos"><%= gettext('TOS &rarr;') %></a></li>
+        <li class="help"><a href="https://support.mozilla.com/en-US/kb/what-browserid-and-how-does-it-work" target="_blank"><%= gettext('Need Help? &rarr;') %></a></li>
+    </ul>
+</footer>
+
 
 </body>
 </html>
