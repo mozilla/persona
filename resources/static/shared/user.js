@@ -696,8 +696,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     checkAuthenticationAndSync: function(onComplete, onFailure) {
-      network.checkAuth(function(authenticated) {
-        setAuthenticationStatus(authenticated);
+      User.checkAuthentication(function(authenticated) {
         if (authenticated) {
           User.syncEmails(function() {
             onComplete && onComplete(authenticated);
@@ -1065,7 +1064,7 @@ BrowserID.User = (function() {
       //      so if we rely on localstorage only and check authentication status
       //      only when we know a network request will be required, we very well
       //      might have fewer race conditions and do fewer network requests.
-      User.checkAuthentication(function(authenticated) {
+      User.checkAuthenticationAndSync(function(authenticated) {
         if (authenticated) {
           var loggedInEmail = storage.getLoggedIn(origin);
           if (loggedInEmail !== siteSpecifiedEmail) {
