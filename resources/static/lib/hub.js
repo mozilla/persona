@@ -34,6 +34,11 @@ Hub = (function() {
   }
 
   function fire(message) {
+    for(var j = 0, glistener; glistener = globalListeners[j]; ++j) {
+      // global listeners get the message name as the first argument
+      glistener.callback.apply(null, arguments);
+    }
+
     var messageListeners = listeners[message];
 
     if(messageListeners) {
@@ -44,11 +49,6 @@ Hub = (function() {
       for(var i = 0, listener; listener = messageListeners[i]; ++i) {
         listener.callback.apply(null, arguments);
       }
-    }
-
-    for(var j = 0, glistener; glistener = globalListeners[j]; ++j) {
-      // global listeners get the message name as the first argument
-      glistener.callback.apply(null, arguments);
     }
   }
 
