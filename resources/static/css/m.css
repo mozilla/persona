@@ -2,7 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-@media screen and (max-width: 936px) {
+/*
+ * 946 is the max width of the center area plus its padding
+ */
+@media screen and (max-width: 946px) {
   #wrapper {
     width: 100%;
   }
@@ -22,9 +25,18 @@
   .headline-main {
     font-size: 33px;
   }
+
+  #content {
+    padding: 20px;
+  }
 }
 
-@media screen and (max-width: 600px) {
+/*
+ * 620 catches most mobile devices in landscape mode.  The purpose of this is
+ * to make sure the right hand nav menu does not drop partially below the
+ * persona logo.
+ */
+@media screen and (max-width: 620px) {
   header ul {
     margin: 0;
     float: none;
@@ -33,6 +45,9 @@
   }
 }
 
+/*
+ * 505 catches mobile devices in portrait mode
+ */
 @media screen and (max-width: 505px) {
   header, footer {
     padding: 10px;
@@ -49,8 +64,7 @@
   }
 
   #content {
-    margin: 10px;
-    padding: 0;
+    padding: 10px;
   }
 
   #about {
