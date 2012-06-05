@@ -26,12 +26,41 @@ Here's the software you'll need installed:
 * git
 * g++
 
+`sudo apt-get install python-software-properties`
+`sudo apt-add-repository ppa:chris-lea/node.js`
+`sudo apt-get update`
+`sudo apt-get install nodejs npm git-core libgmp3-dev g++`
+
 ## Getting started:
 
-1. install node and npm
-3. run `npm install` to install 3rd party libraries and generate keys
-3. run `npm start` to start the servers locally
-4. visit the demo application ('rp') in your web browser (url output on the console at runtime)
+1. Setup git (if you haven't done so already)
+`git config --global user.name "Your Username"`
+`git config --global user.email "Your Email"`
+`git config --global credential.helper cache`
+`git config --global credential.helper 'cache --timeout=3600'`
+
+2. Setup SSH key and forking mozilla/browserid on github
+`ssh-keygen`
+`gedit $HOME/.ssh/id_rsa.pub`
+
+Login to github
+Click your user name
+Click Edit Your Profile
+Click SSH Keys (on the left) and Add SSH key
+Name the SSH key and copy file contents of the id_rsa.pub file.
+
+Go to https://github.com/mozilla/browserid
+Fork browserid
+
+3. Get clone of browserid
+`git clone git@github.com:YOURUSERNAME/browserid.git`
+
+4. Start the browserid server
+`cd ~/browserid`
+`npm install` to install 3rd party libraries and generate keys
+`npm start` to start the servers locally
+
+4. Visit the demo application ('rp') in your web browser (url output on the console at runtime)
 
 You can stop the servers with a Cntl-C in the terminal.
 
