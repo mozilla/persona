@@ -99,10 +99,11 @@ BrowserID.Models.InteractionData = (function() {
       _.each(data, function(obj) {
         filtered.push(whitelistFilter(obj, [
           'event_stream',
-          'lang', 
+          'lang',
           'screen_size',
-          'sample_rate']
-        ));
+          'sample_rate',
+          'timestamp'
+        ]));
       });
 
       network.sendInteractionData(filtered, function() {
