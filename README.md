@@ -44,7 +44,7 @@ This repository contains several distinct things related to BrowserID:
 
 ###Setup git (if you haven't done so already):
 
-1. set the git configuration
+1. Set the git configuration
 
  `git config --global user.name "Your Username"`
  
@@ -54,21 +54,21 @@ This repository contains several distinct things related to BrowserID:
  
  `git config --global credential.helper 'cache --timeout=3600'`
 
-2. generate an ssh rsa key
+2. Generate an ssh rsa key
 
  `ssh-keygen`
 
-3. login to github
-4. click your user name
-5. click "Edit Your Profile"
-6. click "SSH Keys" (on the left) and click "Add SSH key"
-7. name the SSH key, copy file contents of the id_rsa.pub file, and click "Save"
+3. Login to github
+4. Click your user name
+5. Click "Edit Your Profile"
+6. Click "SSH Keys" (on the left) and click "Add SSH key"
+7. Name the SSH key, copy file contents of the id_rsa.pub file, and click "Save"
 
  `gedit $HOME/.ssh/id_rsa.pub`
 
 ###Forking and cloning browserid:
-1. go to https://github.com/mozilla/browserid and click Fork.
-2. clone browserid to your local repository
+1. Go to https://github.com/mozilla/browserid and click Fork.
+2. Clone browserid to your local repository
 
  `git clone git@github.com:YOURUSERNAME/browserid.git`
 
