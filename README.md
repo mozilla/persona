@@ -18,60 +18,81 @@ This repository contains several distinct things related to BrowserID:
 
 ## Dependencies
 
-Here's the software you'll need installed:
+###Here's the software you'll need installed:
 
-* node.js (>= 0.6.2): http://nodejs.org/
+* node.js (>= 0.6.2): http://nodejs.org
+
 * npm: http://npmjs.org/ (or bundled with node in 0.6.3+)
+
 * libgmp3
+
 * git
+
 * g++
 
-`sudo apt-get install python-software-properties`
-`sudo apt-add-repository ppa:chris-lea/node.js`
-`sudo apt-get update`
-`sudo apt-get install nodejs npm git-core libgmp3-dev g++`
+###Install dependencies:
 
-## Getting started:
+ `sudo apt-get install python-software-properties`
+ 
+ `sudo apt-add-repository ppa:chris-lea/node.js`
+ 
+ `sudo apt-get update`
+ 
+ `sudo apt-get install nodejs npm git-core libgmp3-dev g++`
 
-1. Setup git (if you haven't done so already)
-`git config --global user.name "Your Username"`
-`git config --global user.email "Your Email"`
-`git config --global credential.helper cache`
-`git config --global credential.helper 'cache --timeout=3600'`
+## git browserid
 
-2. Setup SSH key and forking mozilla/browserid on github
-`ssh-keygen`
-`gedit $HOME/.ssh/id_rsa.pub`
+###Setup git (if you haven't done so already):
 
-Login to github
-Click your user name
-Click Edit Your Profile
-Click SSH Keys (on the left) and Add SSH key
-Name the SSH key and copy file contents of the id_rsa.pub file.
+1. set the git configuration
 
-Go to https://github.com/mozilla/browserid
-Fork browserid
+ `git config --global user.name "Your Username"`
+ 
+ `git config --global user.email "Your Email"`
+ 
+ `git config --global credential.helper cache`
+ 
+ `git config --global credential.helper 'cache --timeout=3600'`
 
-3. Get clone of browserid
-`git clone git@github.com:YOURUSERNAME/browserid.git`
+2. generate an ssh rsa key
 
-4. Start the browserid server
-`cd ~/browserid`
-`npm install` to install 3rd party libraries and generate keys
-`npm start` to start the servers locally
+ `ssh-keygen`
 
-4. Visit the demo application ('rp') in your web browser (url output on the console at runtime)
+3. login to github
+4. click your user name
+5. click "Edit Your Profile"
+6. click "SSH Keys" (on the left) and click "Add SSH key"
+7. name the SSH key, copy file contents of the id_rsa.pub file, and click "Save"
+
+ `gedit $HOME/.ssh/id_rsa.pub`
+
+###Forking and cloning browserid:
+1. go to https://github.com/mozilla/browserid and click Fork.
+2. clone browserid to your local repository
+
+ `git clone git@github.com:YOURUSERNAME/browserid.git`
+
+
+##Installing and Starting browserid
+ 
+ `npm install` to install 3rd party libraries and generate keys
+ 
+ `npm start` to start the servers locally
+
+**Visit the demo application** ('rp') in your web browser (url output on the console at runtime)
 
 You can stop the servers with a Cntl-C in the terminal.
 
-## Staying up to date:
+### Staying up to date:
 
-1. `rm -Rf var node_modules`
-2. `npm install`
+ `rm -Rf var node_modules`
+ 
+ `npm install`
+
 
 ## Testing
 
-### Local Testing
+### Local testing:
 Unit tests can be run by invoking `npm test` at the top level.  At present,
 there are three classes of unit tests to be run:
 
@@ -82,7 +103,7 @@ there are three classes of unit tests to be run:
 You can control which tests are run using the `WHAT_TESTS` env var, see
 `scripts/test` for details.
 
-### Continuous Integration Testing
+### Continuous Integration Testing:
 Integration tests are done with [Travis-CI][]. It is recommended that you setup [Travis-CI][] for your BrowserID fork so that tests are automatically run when you push changes. This will give the BrowserID team confidence that your changes both function correctly and do not cause regressions in other parts of the code.  Configuration files are already included in the repo but some setup is necessary.
 
 1. Sign in to [GitHub][]
@@ -100,7 +121,7 @@ Integration tests are done with [Travis-CI][]. It is recommended that you setup 
   [Travis-CI]: http://travis-ci.org
   [GitHub]: https://github.com
 
-## Development model
+## Development Model
 
 **branching & release model** - You'll notice some funky branching conventions, like the default branch is named `dev` rather than `master` as you might expect.  We're using gitflow: the approach is described in a [blog post](http://lloyd.io/applying-gitflow).
 
