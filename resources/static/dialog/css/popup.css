@@ -165,11 +165,11 @@ section > .contents {
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
     opacity: 0;
 
-    -webkit-transition-property: opacity;
-    -moz-transition-property: opacity;
-    -ms-transition-property: opacity;
-    -o-transition-property: opacity;
-    transition-property: opacity;
+    -webkit-transition-property: all;
+    -moz-transition-property: all;
+    -ms-transition-property: all;
+    -o-transition-property: all;
+    transition-property: all;
 
     -webkit-transition-duration: 0.25s;
     -moz-transition-duration: 0.25s;
