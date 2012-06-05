@@ -43,4 +43,4 @@ and they share the following directory structure:
 
 * `tests/` - Tests written using [vows](http://vowsjs.org)
 
- * Run via `scripts/run_all_tests.sh`
+ * Run via `scripts/test`
