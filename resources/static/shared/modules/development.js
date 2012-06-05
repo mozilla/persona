@@ -10,14 +10,16 @@ BrowserID.Modules.Development = (function() {
   var bid = BrowserID,
       dom = bid.DOM,
       renderer = bid.Renderer,
-      count = 0;
+      storage = bid.Storage,
+      network = bid.Network,
+      clickCount = 0;
 
 
   function onDevelopmentClick(event) {
-    count++;
+    clickCount++;
 
 
-    if(count === 4) {
+    if(clickCount === 4) {
       if(!document.getElementById("development")) {
         renderer.append("body", "development", {});
       }
@@ -27,6 +29,9 @@ BrowserID.Modules.Development = (function() {
       this.click("#showDelay", showDelay);
       this.click("#showWait", showWait);
       this.click("#hideAll,footer,#errorBackground", hideScreens);
+      this.click("#clearLocalStorage", clearLocalStorage);
+      this.click("#clearEmailsForSites", clearEmailsForSites);
+      this.click("#forceIsThisYourComputer", forceIsThisYourComputer);
       this.click("#closeDevelopment", close);
     }
   }
@@ -64,10 +69,23 @@ BrowserID.Modules.Development = (function() {
     this.hideWait();
   }
 
+  function clearLocalStorage() {
+    for(var key in localStorage) {
+      localStorage.removeItem(key);
+    }
+  }
+
+  function clearEmailsForSites() {
+    localStorage.removeItem("siteInfo");
+  }
+
+  function forceIsThisYourComputer() {
+    storage.usersComputer.forceAsk(network.userid());
+  }
 
   function close() {
     dom.removeClass("body", "development");
-    count = 0;
+    clickCount = 0;
   }
 
   var Module = bid.Modules.PageModule.extend({
