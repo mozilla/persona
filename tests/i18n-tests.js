@@ -61,7 +61,7 @@ suite.addBatch({
       var supported = ['af', 'en-US', 'pa'];
       var def = 'en-US';
       return i18n.bestLanguage(
-          parseAcceptLanguage(accept),
+          i18n.parseAcceptLanguage(accept),
           supported, def);
     },
     "For Punjabi": function (err, locale) {
@@ -74,7 +74,7 @@ suite.addBatch({
       var supported = ['af', 'en-US', 'pa'];
       var def = 'en-US';
       return i18n.bestLanguage(
-          parseAcceptLanguage(accept),
+          i18n.parseAcceptLanguage(accept),
           supported, def);
     },
     "For Punjabi (India) serve Punjabi": function (err, locale) {
@@ -87,7 +87,7 @@ suite.addBatch({
       var supported = ['af', 'en-US', 'pa-IT'];
       var def = 'en-US';
       return i18n.bestLanguage(
-          parseAcceptLanguage(accept),
+          i18n.parseAcceptLanguage(accept),
           supported, def);
     },
     "Don't choose Punjabi (India)": function (err, locale) {
