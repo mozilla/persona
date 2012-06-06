@@ -22,17 +22,17 @@ BrowserID.Modules.Development = (function() {
     if(clickCount === 4) {
       if(!document.getElementById("development")) {
         renderer.append("body", "development", {});
+        this.click("#showError", showError);
+        this.click("#showDelay", showDelay);
+        this.click("#showWait", showWait);
+        this.click("#hideAll,footer,#errorBackground", hideScreens);
+        this.click("#clearLocalStorage", clearLocalStorage);
+        this.click("#clearEmailsForSites", clearEmailsForSites);
+        this.click("#forceIsThisYourComputer", forceIsThisYourComputer);
+        this.click("#closeDevelopment", close);
       }
 
       dom.addClass("body", "development");
-      this.click("#showError", showError);
-      this.click("#showDelay", showDelay);
-      this.click("#showWait", showWait);
-      this.click("#hideAll,footer,#errorBackground", hideScreens);
-      this.click("#clearLocalStorage", clearLocalStorage);
-      this.click("#clearEmailsForSites", clearEmailsForSites);
-      this.click("#forceIsThisYourComputer", forceIsThisYourComputer);
-      this.click("#closeDevelopment", close);
     }
   }
 
