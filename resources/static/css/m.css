@@ -3,6 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
+ * 946, 620 and 505 are "magic" numbers that make the main site look
+ * reasonable across a variety of devices. 620 and 505 are specifically to make
+ * the header look good. When the window reaches ~620 width, the right hand
+ * menu drops below the left hand Persona logo, but is still floated right.
+ * Unless the menu is centered when the drop happens, it looks terrible.
+ * 505 is the width where the centered menu becomes too wide and takes up
+ * two lines.  At this point the text font size is reduced and the logo is
+ * shrunk so that it does not take up so much screen real estate.
+*/
+
+/*
  * 946 is the max width of the center area plus its padding
  */
 @media screen and (max-width: 946px) {
