@@ -20,7 +20,6 @@
   module("shared/network", {
     setup: function() {
       testHelpers.setup();
-      network.init();
     },
     teardown: function() {
       testHelpers.teardown();
@@ -593,8 +592,24 @@
   });
 
   asyncTest("cookiesEnabled with cookies enabled - return true status", function() {
+    network.init({ cookiesEnabledOverride: true });
     network.cookiesEnabled(function(status) {
       equal(status, true, "cookies are enabled, correct status");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("cookiesEnabled with cookies disabled - return true status", function() {
+    network.init({ cookiesEnabledOverride: false });
+    network.cookiesEnabled(function(status) {
+      equal(status, false, "cookies are disabled, correct status");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("cookiesEnabled with browser defined cookie status - wait and see", function() {
+    network.cookiesEnabled(function(status) {
+      equal(status, true, "hopefully cookies are enabled, correct status");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });

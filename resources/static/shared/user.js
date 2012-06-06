@@ -679,6 +679,7 @@ BrowserID.User = (function() {
         if(cookiesEnabled) {
           network.checkAuth(function(authenticated) {
             setAuthenticationStatus(authenticated);
+            if (!authenticated) authenticated = false;
             complete(onComplete, authenticated);
           }, onFailure);
         }
@@ -692,7 +693,9 @@ BrowserID.User = (function() {
      * Check whether the current user is authenticated.  If authenticated, sync
      * identities.
      * @method checkAuthenticationAndSync
-     * @param {function} [onComplete] - Called on sync completion.
+     * @param {function} [onComplete] - Called on sync completion with one
+     * boolean parameter, authenticated.  authenticated will be true if user
+     * is authenticated, false otw.
      * @param {function} [onFailure] - Called on error.
      */
     checkAuthenticationAndSync: function(onComplete, onFailure) {
@@ -1052,7 +1055,7 @@ BrowserID.User = (function() {
      * Get an assertion for the current domain if the user is signed into it
      * @method getPersistentSigninAssertion
      * @param {function} onComplete - called on completion.  Called with an
-     * assertion if successful, null otw.
+     * an email and assertion if successful, null otw.
      * @param {function} onFailure - called on XHR failure.
      */
     getSilentAssertion: function(siteSpecifiedEmail, onComplete, onFailure) {
