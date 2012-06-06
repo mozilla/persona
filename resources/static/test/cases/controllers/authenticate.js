@@ -117,6 +117,34 @@
     controller.checkEmail();
   });
 
+  asyncTest("clear password if user changes email address", function() {
+    xhr.useResult("known_secondary");
+    $("#email").val("registered@testuser.com");
+
+    var enterPasswordCount = 0;
+    mediator.subscribe("enter_password", function() {
+      // The first time the password is shown, change the email address.  The
+      // second time the password is shown, make sure the password was cleared.
+
+      if(enterPasswordCount == 0) {
+        // simulate the user changing the email address.  This should clear the
+        // password.
+        $("#password").val("password");
+        $("#email").val("testuser@testuser.com");
+        $("#email").keyup();
+        controller.checkEmail();
+      }
+      else {
+        equal($("#password").val(), "", "password field was cleared");
+        start();
+      }
+
+      enterPasswordCount++;
+    });
+
+    controller.checkEmail();
+  });
+
   asyncTest("checkEmail with email that has IdP support - 'primary_user' message", function() {
     $("#email").val("unregistered@testuser.com");
     xhr.useResult("primary");
