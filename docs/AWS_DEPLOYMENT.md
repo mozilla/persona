@@ -137,12 +137,12 @@ You are pushing *from* the local `myotherbranch`, to the remote `master`.
 These things cost money by the hour, not a lot, but money.  So when you want to
 decommission a VM and release your hold on the DNS name, simply:
 
-    $ scripts/deploy.js destroy awstest
-    awsbox cmd: node_modules/.bin/awsbox destroy awstest
-    trying to destroy VM for awstest: done
+    $ scripts/deploy.js destroy some_name_i_chose
+    awsbox cmd: node_modules/.bin/awsbox destroy some_name_i_chose
+    trying to destroy VM for some_name_i_chose: done
     trying to remove git remote: done
-    trying to remove DNS: awstest.personatest.org
-    deleting awstest.personatest.org: done
+    trying to remove DNS: some_name_i_chose.personatest.org
+    deleting some_name_i_chose.personatest.org: done
 
 ## Overview of what's deployed to VMs
 
