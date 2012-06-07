@@ -138,13 +138,13 @@ BrowserID.PageHelpers = (function() {
 
     var url = helpers.toURL(baseURL, {
         email: email,
-        return_to: "https://browserid.org/authenticate_with_primary#complete"
+        return_to: "https://login.persona.org/authenticate_with_primary#complete"
     });
 
     winchan.open({
-      url: "https://browserid.org/authenticate_with_primary",
+      url: "https://login.persona.org/authenticate_with_primary",
       // This is the relay that will be used when the IdP redirects to sign_in_complete
-      relay_url: "https://browserid.org/relay",
+      relay_url: "https://login.persona.org/relay",
       window_features: "width=700,height=375",
       params: url
     }, function(error, result) {

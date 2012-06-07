@@ -56,7 +56,7 @@ process.env['VERIFIER_URL'] = 'http://' + HOST + ":10000/verify";
 process.env['KEYSIGNER_URL'] = 'http://' + HOST + ":10003";
 process.env['ROUTER_URL'] = 'http://' + HOST + ":10002";
 
-process.env['URL'] = process.env['ROUTER_URL'];
+process.env['PUBLIC_URL'] = process.env['ROUTER_URL'];
 
 // if the environment is a 'test_' environment, then we'll use an
 // ephemeral database

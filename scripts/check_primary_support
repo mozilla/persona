@@ -65,10 +65,10 @@ function getResource(mode, url, urls, opts, cb) {
       'auth': '/authentication_api.js',
       'prov': '/provisioning_api.js'
     };
-    if (body.indexOf(util.format("https://browserid.org%s", includes[mode])) == -1 &&
-        body.indexOf(util.format("https://diresworb.org%s", includes[mode])) == -1 &&
-        body.indexOf(util.format("https://dev.diresworb.org%s", includes[mode])) == -1) {
-        console.log(util.format("WARNING: No https://browserid.org/%s script tag detected", includes[mode]));
+    if (body.indexOf(util.format("https://login.persona.org%s", includes[mode])) == -1 &&
+        body.indexOf(util.format("https://login.anosrep.org%s", includes[mode])) == -1 &&
+        body.indexOf(util.format("https://login.dev.anosrep.org%s", includes[mode])) == -1) {
+        console.log(util.format("WARNING: No https://persona.org/%s script tag detected", includes[mode]));
     }
     if (cb) {
         cb();

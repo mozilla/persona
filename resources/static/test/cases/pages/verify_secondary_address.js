@@ -67,12 +67,12 @@
   });
 
   asyncTest("no password: start with good token and site", function() {
-    storage.setStagedOnBehalfOf("browserid.org");
+    storage.setStagedOnBehalfOf("persona.org");
 
     createController(config, function() {
       testEmail();
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
-      equal($(".website:nth(0)").text(), "browserid.org", "origin is updated");
+      equal($(".website:nth(0)").text(), "persona.org", "origin is updated");
       testHasClass("body", "complete");
       start();
     });

@@ -90,18 +90,18 @@
   });
 
   test("toURL with no GET parameters", function() {
-    var url = helpers.toURL("https://browserid.org");
+    var url = helpers.toURL("https://login.persona.org");
 
-    equal(url, "https://browserid.org", "correct URL without GET parameters");
+    equal(url, "https://login.persona.org", "correct URL without GET parameters");
   });
 
   test("toURL with GET parameters", function() {
-    var url = helpers.toURL("https://browserid.org", {
+    var url = helpers.toURL("https://login.persona.org", {
       email: "testuser@testuser.com",
       status: "complete"
     });
 
-    equal(url, "https://browserid.org?email=testuser%40testuser.com&status=complete", "correct URL with GET parameters");
+    equal(url, "https://login.persona.org?email=testuser%40testuser.com&status=complete", "correct URL with GET parameters");
   });
 
   test("whitelistFilter an object", function() {

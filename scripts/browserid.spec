@@ -15,7 +15,7 @@ Requires:      openssl nodejs
 BuildRequires: gcc-c++ git jre make npm openssl-devel expat-devel
 
 %description
-browserid server & web home for browserid.org
+persona server & web home for persona.org
 
 %prep
 %setup -q -c -n browserid

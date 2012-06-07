@@ -11,7 +11,7 @@
       network = bid.Network,
       user = bid.User,
       xhr = bid.Mocks.xhr,
-      origin = "https://browserid.org",
+      origin = "https://login.persona.org",
       storage = bid.Storage,
       moduleManager = bid.module,
       testHelpers = bid.TestHelpers;

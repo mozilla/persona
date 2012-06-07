@@ -329,8 +329,8 @@ BrowserID.User = (function() {
 
     /**
      * A full provision a primary user, if they are authenticated, save their
-     * cert/keypair.  Note, we do not authenticate to browserid.org but
-     * merely get an assertion for browserid.org so that we can either add the
+     * cert/keypair.  Note, we do not authenticate to login.persona.org but
+     * merely get an assertion for login.persona.org so that we can either add the
      * email to the current account or authenticate the user if not
      * authenticated.
      * @method provisionPrimaryUser
@@ -349,8 +349,8 @@ BrowserID.User = (function() {
         if(authInfo.authenticated) {
           persistEmailKeypair(email, "primary", authInfo.keypair, authInfo.cert,
             function() {
-              // We are getting an assertion for browserid.org.
-              User.getAssertion(email, "https://browserid.org", function(assertion) {
+              // We are getting an assertion for persona.org.
+              User.getAssertion(email, "https://login.persona.org", function(assertion) {
                 if (assertion) {
                   onComplete("primary.verified", {
                     assertion: assertion
@@ -621,7 +621,7 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Sync local identities with browserid.org.  Generally should not need to
+     * Sync local identities with login.persona.org.  Generally should not need to
      * be called.
      * @method syncEmails
      * @param {function} [onComplete] - Called whenever complete.
@@ -1186,8 +1186,8 @@ BrowserID.User = (function() {
 
   // Set origin to default to the current domain.  Other contexts that use user.js,
   // like dialogs or iframes, will call setOrigin themselves to update this to
-  // the origin of the of the RP.  On browserid.org, it will remain the origin of
-  // browserid.org
+  // the origin of the of the RP.  On login.persona.org, it will remain the origin of
+  // login.persona.org
   var currentOrigin = window.location.protocol + '//' + window.location.hostname;
   if (window.location.port) {
     currentOrigin += ':' + window.location.port;
