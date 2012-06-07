@@ -14,6 +14,8 @@ var jwcrypto = require("./lib/jwcrypto");
       testHelpers = bid.TestHelpers,
       testOrigin = testHelpers.testOrigin,
       failureCheck = testHelpers.failureCheck,
+      testUndefined = testHelpers.testUndefined,
+      testNotUndefined = testHelpers.testNotUndefined,
       provisioning = bid.Mocks.Provisioning,
       TEST_EMAIL = "testuser@testuser.com";
 
@@ -512,24 +514,40 @@ var jwcrypto = require("./lib/jwcrypto");
 
 
   asyncTest("checkAuthentication with valid authentication", function() {
+    storage.addSecondaryEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", "primary");
+
     lib.checkAuthentication(function(authenticated) {
       equal(authenticated, "primary", "We are authenticated!");
+      testNotUndefined(storage.getEmail(TEST_EMAIL), "localStorage is not cleared");
       start();
     });
   });
 
 
 
-  asyncTest("checkAuthentication with invalid authentication", function() {
+  asyncTest("checkAuthentication with invalid authentication - localStorage cleared", function() {
+    storage.addSecondaryEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", undefined);
+
     lib.checkAuthentication(function(authenticated) {
-      equal(authenticated, undefined, "We are not authenticated!");
+      equal(authenticated, false, "We are not authenticated!");
+      testUndefined(storage.getEmail(TEST_EMAIL), "localStorage was cleared");
       start();
     });
   });
 
 
+  asyncTest("checkAuthentication with cookies disabled - localStorage is not cleared, user can enable their cookies and try again", function() {
+    storage.addSecondaryEmail(TEST_EMAIL);
+    network.init({ cookiesEnabledOverride: false });
+
+    lib.checkAuthentication(function(authenticated) {
+      equal(authenticated, false, "We are not authenticated!");
+      testNotUndefined(storage.getEmail(TEST_EMAIL), "localStorage is not cleared");
+      start();
+    });
+  });
 
   asyncTest("checkAuthentication with XHR failure", function() {
     xhr.useResult("contextAjaxError");
@@ -548,12 +566,24 @@ var jwcrypto = require("./lib/jwcrypto");
   });
 
 
-
-  asyncTest("checkAuthenticationAndSync with invalid authentication", function() {
+  asyncTest("checkAuthenticationAndSync with invalid authentication - localStorage cleared", function() {
+    storage.addSecondaryEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", undefined);
 
     lib.checkAuthenticationAndSync(function onComplete(authenticated) {
-      equal(authenticated, undefined, "We are not authenticated!");
+      equal(authenticated, false, "We are not authenticated!");
+      testUndefined(storage.getEmail(TEST_EMAIL), "localStorage was cleared");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("checkAuthenticationAndSync with cookies disabled - localStorage not cleared, user can enable their cookies and try again", function() {
+    storage.addSecondaryEmail(TEST_EMAIL);
+    network.init({ cookiesEnabledOverride: false });
+
+    lib.checkAuthenticationAndSync(function onComplete(authenticated) {
+      equal(authenticated, false, "We are not authenticated!");
+      testNotUndefined(storage.getEmail(TEST_EMAIL), "localStorage is not cleared");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -941,6 +971,34 @@ var jwcrypto = require("./lib/jwcrypto");
     failureCheck(lib.getAssertion, TEST_EMAIL, lib.getOrigin());
   });
 
+
+  asyncTest("getSilentAssertion with logged in user, emails match - user already logged in, call callback with email and null assertion", function() {
+    var LOGGED_IN_EMAIL = TEST_EMAIL;
+    xhr.setContextInfo("auth_level", "password");
+
+    lib.syncEmailKeypair(LOGGED_IN_EMAIL, function() {
+      storage.setLoggedIn(lib.getOrigin(), LOGGED_IN_EMAIL);
+      lib.getSilentAssertion(LOGGED_IN_EMAIL, function(email, assertion) {
+        equal(email, LOGGED_IN_EMAIL, "correct email");
+        strictEqual(assertion, null, "correct assertion");
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("getSilentAssertion with logged in user, request email different from logged in email, valid cert for logged in email - logged in user needs assertion - call callback with email and assertion.", function() {
+    xhr.setContextInfo("auth_level", "password");
+    var LOGGED_IN_EMAIL = TEST_EMAIL;
+    var REQUESTED_EMAIL = "requested@testuser.com";
+
+    lib.syncEmailKeypair(LOGGED_IN_EMAIL, function() {
+      storage.setLoggedIn(lib.getOrigin(), LOGGED_IN_EMAIL);
+      lib.getSilentAssertion(REQUESTED_EMAIL, function(email, assertion) {
+        equal(email, LOGGED_IN_EMAIL, "correct email");
+        testAssertion(assertion, start);
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
+  });
 
   asyncTest("logoutUser", function(onSuccess) {
     lib.authenticate(TEST_EMAIL, "testuser", function(authenticated) {

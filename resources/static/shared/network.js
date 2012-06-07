@@ -94,6 +94,10 @@ BrowserID.Network = (function() {
       // Any time the context info changes, we want to know about it.
       mediator.subscribe('context_info', onContextChange);
 
+      // BEGIN TEST API
+      this.cookiesEnabledOverride = config && config.cookiesEnabledOverride;
+      // END TEST API
+
       clearContext();
     },
 
@@ -676,6 +680,12 @@ BrowserID.Network = (function() {
         } catch(e) {
           enabled = false;
         }
+
+        // BEGIN TESTING API
+        if (typeof Network.cookiesEnabledOverride === "boolean") {
+          enabled = Network.cookiesEnabledOverride;
+        }
+        // END TESTING API
 
         complete(onComplete, enabled);
       }, onFailure);
