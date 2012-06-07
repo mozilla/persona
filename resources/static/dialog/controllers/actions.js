@@ -11,6 +11,7 @@ BrowserID.Modules.Actions = (function() {
       serviceManager = bid.module,
       user = bid.User,
       errors = bid.Errors,
+      mediator = bid.Mediator,
       dialogHelpers = bid.Helpers.Dialog,
       runningService,
       onsuccess,
@@ -26,6 +27,7 @@ BrowserID.Modules.Actions = (function() {
       runningService = name;
     }
 
+    mediator.publish("service", { name: name });
     bid.resize();
 
     return module;

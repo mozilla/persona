@@ -30,6 +30,43 @@ BrowserID.Modules.InteractionData = (function() {
       dom = bid.DOM,
       sc;
 
+  /**
+   * This is a translation table from a message on the mediator to a KPI name.
+   * Names can be modified or added to the KPI storage directly.
+   * A name can be translated by using either a string or a function.
+   *
+   * value side contains - purpose
+   * null - no translation, use mediator name for KPI name.
+   * string - translate from mediator name to string.
+   * function - function takes two arguments, msg and data.  These come
+   *   directly from the mediator.  Function returns a value.  If no value is
+   *   returned, field will not be saved to KPI data set.
+   */
+  var MediatorToKPINameTable = {
+    service: function(msg, data) { return "screen." + data.name; },
+    cancel_state: "screen.cancel",
+    primary_user_authenticating: "window.redirect_to_primary",
+    window_unload: "window.unload",
+    generate_assertion: null,
+    assertion_generated: null,
+    emails_displayed: function(msg, data) { return "user.email_count:" + data.count; },
+    user_staged: "user.user_staged",
+    user_confirmed: "user.user_confirmed",
+    email_staged: "user.email_staged",
+    email_confirmed: "user.email_confrimed",
+    notme: "user.logout",
+  };
+
+  function getKPIName(msg, data) {
+    var self=this,
+        kpiInfo = self.mediatorToKPINameTable[msg];
+
+    var type = typeof kpiInfo;
+    if(kpiInfo === null) return msg;
+    if(type === "string") return kpiInfo;
+    if(type === "function") return kpiInfo(msg, data);
+  }
+
   function onSessionContext(msg, result) {
     var self=this;
 
@@ -101,9 +138,12 @@ BrowserID.Modules.InteractionData = (function() {
   }
 
 
-  function addEvent(eventName) {
+  function addEvent(msg, data) {
     var self=this;
     if (self.samplingEnabled === false) return;
+
+    var eventName = getKPIName.call(self, msg, data);
+    if (!eventName) return;
 
     var eventData = [ eventName, new Date() - self.startTime ];
     if (self.samplesBeingStored) {
@@ -142,6 +182,7 @@ BrowserID.Modules.InteractionData = (function() {
       options = options || {};
 
       var self = this;
+      self.mediatorToKPINameTable = MediatorToKPINameTable;
 
       // options.samplingEnabled is used for testing purposes.
       //
@@ -198,6 +239,13 @@ BrowserID.Modules.InteractionData = (function() {
     getCurrent: getCurrent,
     getCurrentEventStream: getCurrentEventStream,
     publishStored: publishStored
+
+    // BEGIN TEST API
+    ,
+    setNameTable: function(table) {
+      this.mediatorToKPINameTable = table;
+    }
+    // END TEST API
   });
 
   sc = Module.sc;

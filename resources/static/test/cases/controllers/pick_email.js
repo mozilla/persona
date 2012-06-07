@@ -37,10 +37,15 @@
     controller.start({});
   }
 
-  test("multiple emails - print emails in alphabetical order", function() {
+  asyncTest("multiple emails - print emails in alphabetical order, emails_displayed triggered", function() {
     storage.addEmail("third@testuser.com", {});
     storage.addEmail("second@testuser.com", {});
     storage.addEmail("first@testuser.com", {});
+
+    register("emails_displayed", function(msg, data) {
+      equal(data.count, 3, "emails_displayed triggered with correct email count");
+      start();
+    });
 
     createController();
 

@@ -87,7 +87,16 @@
 
         // When the interaction_data next completes, this will be the only data
         // that is pushed.
-        model.push({ lang: "bar", secret: "Attack at dawn!!!" });
+        var now = new Date().getTime();
+
+        model.push({
+          event_stream: [],
+          sample_rate: 1,
+          timestamp: now,
+          local_timestamp: now,
+          lang: "bar",
+          secret: "Attack at dawn!!!"
+        });
         model.stageCurrent();
 
         xhr.useResult("valid");
@@ -97,8 +106,17 @@
               previousSessionsData = JSON.parse(request.data).data;
 
           equal(previousSessionsData.length, 1, "sending correct result sets");
-          equal(previousSessionsData[0].lang, "bar", "correct data sent");
-          equal(typeof previousSessionsData[0].secret, "undefined", "non-whitelisted valued stripped");
+
+          var mostRecentSessionData = previousSessionsData[0];
+          testObjectValuesEqual(mostRecentSessionData, {
+            event_stream: [],
+            sample_rate: 1,
+            timestamp: now,
+            lang: "bar"
+          });
+
+          equal(typeof mostRecentSessionData.local_timestamp, "undefined", "non-whitelisted valued stripped");
+          equal(typeof mostRecentSessionData.secret, "undefined", "non-whitelisted valued stripped");
           start();
         });
       });
