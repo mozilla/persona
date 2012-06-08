@@ -85,6 +85,12 @@ var jwcrypto = require("./lib/jwcrypto");
     equal(hostname, "browserid.org", "getHostname returns only the hostname");
   });
 
+  test("setOriginHREF, getOriginHREF", function() {
+    var originHREF = "http://samplerp.org";
+    lib.setOriginHREF(originHREF);
+    equal(lib.getOriginHREF(), originHREF, "get/setOriginHREF work as expected");
+  });
+
   test("getStoredEmailKeypairs without key - return all identities", function() {
     var identities = lib.getStoredEmailKeypairs();
     equal("object", typeof identities, "object returned");
@@ -461,8 +467,13 @@ var jwcrypto = require("./lib/jwcrypto");
   });
 
   asyncTest("requestPasswordReset with known email - true status", function() {
+    var originHREF = "http://samplerp.org";
+    lib.setOriginHREF(originHREF);
+
     lib.requestPasswordReset("registered@testuser.com", "password", function(status) {
       equal(status.success, true, "password reset for known user");
+      equal(storage.getStagedOnBehalfOf(), originHREF, "RP URL is stored for verification");
+
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -642,13 +653,16 @@ var jwcrypto = require("./lib/jwcrypto");
   });
 
   asyncTest("addEmail", function() {
+    var originHREF = "http://samplerp.org";
+    lib.setOriginHREF(originHREF);
+
     lib.addEmail("testemail@testemail.com", "password", function(added) {
       ok(added, "user was added");
 
       var identities = lib.getStoredEmailKeypairs();
-      equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
+      equal("testemail@testemail.com" in identities, false, "new email is not added until confirmation.");
 
-      equal(storage.getStagedOnBehalfOf(), lib.getHostname(), "initiatingOrigin is stored");
+      equal(storage.getStagedOnBehalfOf(), originHREF, "RP URL is stored for verification");
 
       start();
     }, testHelpers.unexpectedXHRFailure);

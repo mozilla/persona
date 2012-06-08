@@ -273,24 +273,29 @@ BrowserID.User = (function() {
       return origin.replace(/^.*:\/\//, "").replace(/:\d*$/, "");
     },
 
+    setOriginHREF: function(originHREF) {
+      this.originHREF = originHREF;
+    },
+
+    getOriginHREF: function() {
+      return this.originHREF;
+    },
+
     /**
-     * Create a user account - this creates an user account that must be verified.
-     * @method createSecondaryUser
+     * Create a user account - this creates an user account that must be verified.  * @method createSecondaryUser
      * @param {string} email
      * @param {string} password
      * @param {function} [onComplete] - Called on completion.
      * @param {function} [onFailure] - Called on error.
      */
     createSecondaryUser: function(email, password, onComplete, onFailure) {
-      // Used on the main site when the user verifies - we try to show them
-      // what URL they came from.
-
-      // XXX - this will have to be updated to either store both the hostname
-      // and the exact URL of the RP or just the URL of the RP and the origin
-      // is extracted from that.
-      storage.setStagedOnBehalfOf(User.getHostname());
-
-      network.createUser(email, password, origin, onComplete, onFailure);
+      network.createUser(email, password, origin, function(created) {
+        // Used on the main site when the user verifies - once verification
+        // is complete, the user is redirected back to the RP and logged in.
+        var site = User.getOriginHREF();
+        if (created && site) storage.setStagedOnBehalfOf(site);
+        complete(onComplete, created);
+      }, onFailure);
     },
 
     /**
@@ -571,13 +576,16 @@ BrowserID.User = (function() {
       User.isEmailRegistered(email, function(registered) {
         if (registered) {
           network.requestPasswordReset(email, password, origin, function(reset) {
-            var status = {
-              success: reset
-            };
+            var status = { success: reset };
 
             if (!reset) status.reason = "throttle";
+            // Used on the main site when the user verifies - once
+            // verification is complete, the user is redirected back to the
+            // RP and logged in.
+            var site = User.getOriginHREF();
+            if (reset && site) storage.setStagedOnBehalfOf(site);
 
-            if (onComplete) onComplete(status);
+            complete(onComplete, status);
           }, onFailure);
         }
         else if (onComplete) {
@@ -806,10 +814,13 @@ BrowserID.User = (function() {
      */
     addEmail: function(email, password, onComplete, onFailure) {
       network.addSecondaryEmail(email, password, origin, function(added) {
-        if (added) storage.setStagedOnBehalfOf(User.getHostname());
+        // Used on the main site when the user verifies - once verification
+        // is complete, the user is redirected back to the RP and logged in.
+        var originHREF = User.getOriginHREF();
+        if (added && originHREF) storage.setStagedOnBehalfOf(originHREF);
 
         // we no longer send the keypair, since we will certify it later.
-        if (onComplete) onComplete(added);
+        complete(onComplete, added);
       }, onFailure);
     },
 

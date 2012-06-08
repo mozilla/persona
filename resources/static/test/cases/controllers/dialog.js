@@ -15,8 +15,10 @@
       testErrorNotVisible = testHelpers.testErrorNotVisible,
       screens = bid.Screens,
       xhr = bid.Mocks.xhr,
+      user = bid.User,
       HTTP_TEST_DOMAIN = "http://testdomain.org",
       HTTPS_TEST_DOMAIN = "https://testdomain.org",
+      HTTPS_TEST_URL = "https://testdomain.org/some/page",
       TESTEMAIL = "testuser@testuser.com",
       controller,
       el,
@@ -572,8 +574,6 @@
           siteLogo: siteLogo
         });
 
-        start();
-
         testHelpers.testObjectValuesEqual(startInfo, {
           siteLogo: encodeURI(HTTP_TEST_DOMAIN + siteLogo)
         });
@@ -582,10 +582,39 @@
         start();
       }
     });
-
   });
 
 
+  asyncTest("originHREF specified, different domain as origin - error thrown", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "unexpected start");
+        });
 
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          originHREF: "http://different.domain"
+        });
+        equal(retval, "originHREF/origin mismatch", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("originHREF specified, same domain as origin - originHREF correctly set", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          equal(user.getOriginHREF(), HTTPS_TEST_URL, "Origin HREF correctly set");
+          start();
+        });
+
+        var retval = controller.get(HTTPS_TEST_DOMAIN, {
+          originHREF: HTTPS_TEST_URL
+        });
+      }
+    });
+  });
 }());
 

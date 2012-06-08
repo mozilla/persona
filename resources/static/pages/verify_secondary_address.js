@@ -20,7 +20,11 @@ BrowserID.verifySecondaryAddress = (function() {
       sc,
       needsPassword,
       mustAuth,
-      verifyFunction;
+      verifyFunction,
+      doc = document,
+      REDIRECT_TIMEOUT = 5000,
+      redirectTo,
+      redirectTimeout;  // set in config if available, use REDIRECT_TIMEOUT otw.
 
   function showError(el, oncomplete) {
     dom.hide(".hint,#signUpForm");
@@ -39,17 +43,29 @@ BrowserID.verifySecondaryAddress = (function() {
   function submit(oncomplete) {
     var pass = dom.getInner("#password") || undefined,
         vpass = dom.getInner("#vpassword") || undefined,
-        valid = (!needsPassword ||
+        inputValid = (!needsPassword ||
                     validation.passwordAndValidationPassword(pass, vpass))
              && (!mustAuth ||
                     validation.password(pass));
 
-    if (valid) {
+    if (inputValid) {
       user[verifyFunction](token, pass, function(info) {
         dom.addClass("body", "complete");
 
-        var selector = info.valid ? "#congrats" : "#cannotcomplete";
-        pageHelpers.replaceFormWithNotice(selector, complete.curry(oncomplete, info.valid));
+        var verified = info.valid,
+            selector = verified ? "#congrats" : "#cannotcomplete";
+
+        pageHelpers.replaceFormWithNotice(selector, function() {
+          if (redirectTo && verified) {
+            setTimeout(function() {
+              doc.location.href = redirectTo;
+              complete(oncomplete, verified);
+            }, redirectTimeout);
+          }
+          else {
+            complete(oncomplete, verified);
+          }
+        });
       }, function(info) {
         if (info.network && info.network.status === 401) {
           tooltip.showTooltip("#cannot_authenticate");
@@ -67,7 +83,8 @@ BrowserID.verifySecondaryAddress = (function() {
 
   function startVerification(oncomplete) {
     user.tokenInfo(token, function(info) {
-      if(info) {
+      if (info) {
+        redirectTo = info.origin;
         showRegistrationInfo(info);
 
         needsPassword = info.needs_password;
@@ -105,6 +122,12 @@ BrowserID.verifySecondaryAddress = (function() {
 
       token = options.token;
       verifyFunction = options.verifyFunction;
+      doc = options.document || document;
+
+      redirectTimeout = options.redirectTimeout;
+      if (typeof redirectTimeout === "undefined") {
+        redirectTimeout = REDIRECT_TIMEOUT;
+      }
 
       startVerification(options.ready);
 

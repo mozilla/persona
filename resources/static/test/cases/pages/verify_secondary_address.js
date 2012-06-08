@@ -9,6 +9,7 @@
   var bid = BrowserID,
       storage = bid.Storage,
       xhr = bid.Mocks.xhr,
+      WindowMock = bid.Mocks.WindowMock,
       dom = bid.DOM,
       testHelpers = bid.TestHelpers,
       testHasClass = testHelpers.testHasClass,
@@ -17,7 +18,8 @@
       config = {
         token: "token",
         verifyFunction: "verifyEmail"
-      };
+      },
+      doc;
 
   module("pages/verify_secondary_address", {
     setup: function() {
@@ -33,6 +35,8 @@
   function createController(options, callback) {
     controller = BrowserID.verifySecondaryAddress.create();
     options = options || {};
+    options.document = doc = new WindowMock().document;
+    options.redirectTimeout = 0;
     options.ready = callback;
     controller.start(options);
   }
@@ -74,6 +78,7 @@
       ok($(".siteinfo").is(":visible"), "siteinfo is visible when we say what it is");
       equal($(".website:nth(0)").text(), "browserid.org", "origin is updated");
       testHasClass("body", "complete");
+      equal(doc.location.href, "browserid.org", "redirection occurred to correct URL");
       start();
     });
   });

@@ -1069,6 +1069,9 @@
       // don't do duplicative work
       if (commChan) commChan.notify({ method: 'dialog_running' });
 
+      // originHREF is used for post-email-verification redirect
+      options.originHREF = document.location.href;
+
       w = WinChan.open({
         url: ipServer + '/sign_in',
         relay_url: ipServer + '/relay',
