@@ -1,4 +1,7 @@
-train-2012.06.08
+train-2012.06.22: (in progress)
+  *
+
+train-2012.06.08:
   * rebrand from 'browserid' to 'persona': (including regressions #1711 #1706 #1716 #1719)
   * new "router" process added - subsumes responsibility of old "webhead" process, handles all requets forwarding: #1657
   * Support non-english passwords: #1631
