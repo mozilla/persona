@@ -440,7 +440,7 @@ a.emphasize:active {
   min-width: 4em;
 }
 
-.unsupported {
+.unsupported, .cookies_disabled {
   text-align: center;
 }
 
