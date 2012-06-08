@@ -68,7 +68,7 @@ BrowserID.TestHelpers = (function() {
       transport.setContextInfo("cookies_enabled", true);
       transport.useResult("valid");
 
-      network.init();
+      network.init({ forceCookieStatus: undefined });
       clearStorage();
 
       $("body").stop().show();
@@ -223,6 +223,14 @@ BrowserID.TestHelpers = (function() {
     testHasClass: function(selector, className, msg) {
       ok($(selector).hasClass(className),
           selector + " has className " + className + " - " + msg);
+    },
+
+    testUndefined: function(toTest, msg) {
+      equal(typeof toTest, "undefined", msg || "object is undefined");
+    },
+
+    testNotUndefined: function(toTest, msg) {
+      notEqual(typeof toTest, "undefined", msg || "object is defined");
     }
 
   };
