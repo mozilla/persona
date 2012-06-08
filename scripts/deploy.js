@@ -63,7 +63,7 @@ if (process.argv.length > 1 &&
     options.x = process.env['PERSONA_EPHEMERAL_CONFIG'];
   }
 
-  cmd += " create";
+  cmd += " create --ssl=force";
 
   Object.keys(options).forEach(function(opt) {
     cmd += " -" + opt;
