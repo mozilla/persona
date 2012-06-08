@@ -51,9 +51,6 @@ header {
      * overflow the dialog box.
      */
     *padding: 10px 0;
-    /*
-    font-weight: bold;
-    */
     border-bottom: 1px solid #c7c6c1;
 
     /*-ms-filter through zoom: 1 are fixes for IE6 and IE7 so they show the header
@@ -74,6 +71,8 @@ header {
   background: url("/i/persona-logo-transparent.png") 0 0 no-repeat;
   text-indent: -9999px;
   display: inline-block;
+  *display: block;
+  zoom: 1;
 }
 
 footer {
@@ -153,10 +152,10 @@ section > .contents {
     /* Fix for IE6 not displaying the unsupported dialog correctly. IE6 by
      * default sets the height and width of the element to 0 meaning nothing
      * shows up on the screen.
-     * Note, these are magic numbers that depend on the width and height of the
+     * Note, height is a magic number that depend on the height of the
      * dialog.  The height also depends on the height of the header and footer.
      */
-    _width: 682px;
+    _width: 100%;
     _height: 250px;
 }
 
@@ -439,5 +438,9 @@ a.emphasize:active {
   float: left;
   margin-left: -100px;
   min-width: 4em;
+}
+
+.unsupported {
+  text-align: center;
 }
 
