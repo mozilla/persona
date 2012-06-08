@@ -32,6 +32,8 @@ This repository contains several distinct things related to BrowserID:
 
 ###Install dependencies:
 
+####Debian/Ubuntu specific instructions
+
  `sudo apt-get install python-software-properties`
  
  `sudo apt-add-repository ppa:chris-lea/node.js`
@@ -50,6 +52,8 @@ This repository contains several distinct things related to BrowserID:
  
  `git config --global user.email "Your Email"`
  
+  (optional steps if you want to cache your credentials)
+ 
  `git config --global credential.helper cache`
  
  `git config --global credential.helper 'cache --timeout=3600'`
@@ -62,9 +66,7 @@ This repository contains several distinct things related to BrowserID:
 4. Click your user name
 5. Click "Edit Your Profile"
 6. Click "SSH Keys" (on the left) and click "Add SSH key"
-7. Name the SSH key, copy file contents of the id_rsa.pub file, and click "Save"
-
- `gedit $HOME/.ssh/id_rsa.pub`
+7. Name the SSH key, copy file contents of the `$HOME/.ssh/id_rsa.pub` file, and click "Save"
 
 ###Forking and cloning browserid:
 1. Go to https://github.com/mozilla/browserid and click Fork.
