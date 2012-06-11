@@ -120,6 +120,8 @@ BrowserID.Modules.Authenticate = (function() {
   function enterPasswordState(callback) {
     var self=this;
 
+    dom.setInner("#password", "");
+
     self.publish("enter_password", addressInfo);
     self.submit = authenticate;
     showHint("returning", function() {
