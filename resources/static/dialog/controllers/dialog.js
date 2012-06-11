@@ -173,15 +173,15 @@ BrowserID.Modules.Dialog = (function() {
           params.privacyURL = fixupURL(origin_url, paramsFromRP.privacyPolicy);
         }
 
-        if (paramsFromRP.logoURL) {
+        if (paramsFromRP.siteLogo) {
           // Until we have our head around the dangers of data uris and images
           // that come from other domains, only allow absolute paths from the
           // origin.
-          params.logoURL = fixupAbsolutePath(origin_url, paramsFromRP.logoURL);
+          params.siteLogo = fixupAbsolutePath(origin_url, paramsFromRP.siteLogo);
         }
 
-        if (paramsFromRP.name) {
-          params.name = _.escape(paramsFromRP.name);
+        if (paramsFromRP.siteName) {
+          params.siteName = _.escape(paramsFromRP.siteName);
         }
 
         if (hash.indexOf("#CREATE_EMAIL=") === 0) {

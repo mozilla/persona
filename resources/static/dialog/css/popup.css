@@ -291,9 +291,17 @@ section > .contents {
 #favicon h2, #favicon h3 {
     white-space: nowrap;
     text-overflow: ellipsis;
-    height: 1.2em;  /* the 1.2em is to keep y, g, j, etc from having their bottoms chopped off */
+    line-height: 1.3;  /* the 1.3em is to keep y, g, j, etc from having their bottoms chopped off */
     overflow: hidden;
+}
+
+#favicon h2 {
     margin: 10px 0 0 0;
+}
+
+#favicon h3 {
+    font-size: 19px;
+    margin-top: 0;
 }
 
 #favicon .vertical {

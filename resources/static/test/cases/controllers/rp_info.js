@@ -42,16 +42,16 @@
     controller.start(options || {});
   }
 
-  test("neither name nor logo specified - use site's rp_hostname as name", function() {
+  test("neither siteName nor logo specified - show rp_hostname only", function() {
     createController();
     equal($("#rp_hostname").html(), RP_HOSTNAME, "rp_hostname filled in");
     ok(!$("#rp_name").html(), "rp_name empty");
     ok(!$("#rp_logo").attr("src"), "rp logo not shown");
   });
 
-  test("name only specified - show specified name and rp_hostname", function() {
+  test("siteName only specified - show specified siteName and rp_hostname", function() {
     createController({
-      name: RP_NAME,
+      siteName: RP_NAME,
     });
 
     equal($("#rp_hostname").html(), RP_HOSTNAME, "rp_hostname filled in");
@@ -59,13 +59,13 @@
     ok(!$("#rp_logo").attr("src"), "rp logo not shown");
   });
 
-  test("logoURLs are allowed", function() {
+  test("siteLogos are allowed", function() {
     var docMock = new WindowMock().document;
     docMock.location.protocol = "http:";
 
     createController({
       document: docMock,
-      logoURL: RP_HTTPS_LOGO
+      siteLogo: RP_HTTPS_LOGO
     });
 
     equal($("#rp_logo").attr("src"), RP_HTTPS_LOGO, "rp logo shown");
@@ -73,10 +73,10 @@
     ok(!$("#rp_name").html(), "rp_name empty");
   });
 
-  test("both name and logo specified - show name, logo and rp_hostname", function() {
+  test("both siteName and siteLogo specified - show siteName, siteLogo and rp_hostname", function() {
     createController({
-      name: RP_NAME,
-      logoURL: RP_HTTPS_LOGO
+      siteName: RP_NAME,
+      siteLogo: RP_HTTPS_LOGO
     });
 
     equal($("#rp_hostname").html(), RP_HOSTNAME, "rp_hostname filled in");

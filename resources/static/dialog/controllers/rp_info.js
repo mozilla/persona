@@ -31,8 +31,8 @@ BrowserID.Modules.RPInfo = (function() {
        */
       renderer.render("#rp_info", "rp_info", {
         hostname: options.hostname,
-        name: options.name,
-        logoURL: options.logoURL
+        siteName: options.siteName,
+        siteLogo: options.siteLogo
       });
 
       sc.start.call(this, options);

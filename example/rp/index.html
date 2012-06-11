@@ -195,8 +195,8 @@ $(document).ready(function() {
       privacyURL: $('#privacy').attr('checked') ? "/privacy.html" : undefined,
       tosURL: $('#tos').attr('checked') ? "/TOS.html" : undefined,
       requiredEmail: requiredEmail,
-      name: name,
-      logoURL: logoURL,
+      siteName: name,
+      siteLogo: logoURL,
       oncancel: function() {
         loggit("oncancel");
         $(".specify button.assertion").removeAttr('disabled');

@@ -2,17 +2,17 @@
       License, v. 2.0. If a copy of the MPL was not distributed with this
       file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
 
-<% if(logoURL) { %>
-  <img id="rp_logo" src="<%= logoURL %>" />
+<% if(siteLogo) { %>
+  <img id="rp_logo" src="<%= siteLogo %>" />
 <% } %>
 
 
-<% if(name) { %>
-  <h2 id="rp_name"><%= name %></h2>
+<% if(siteName) { %>
+  <h2 id="rp_name"><%= siteName %></h2>
 <% } %>
 
 <% if(hostname) { %>
-  <% if(name) { %>
+  <% if(siteName) { %>
     <h3 id="rp_hostname"><%= hostname %></h3>
   <% } else { %>
     <h2 id="rp_hostname"><%= hostname %></h2>
