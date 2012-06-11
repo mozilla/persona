@@ -1,0 +1,21 @@
+<% /* This Source Code Form is subject to the terms of the Mozilla Public
+      License, v. 2.0. If a copy of the MPL was not distributed with this
+      file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
+
+<% if(siteLogo) { %>
+  <img id="rp_logo" src="<%= siteLogo %>" />
+<% } %>
+
+
+<% if(siteName) { %>
+  <h2 id="rp_name"><%= siteName %></h2>
+<% } %>
+
+<% if(hostname) { %>
+  <% if(siteName) { %>
+    <h3 id="rp_hostname"><%= hostname %></h3>
+  <% } else { %>
+    <h2 id="rp_hostname"><%= hostname %></h2>
+  <% } %>
+<% } %>
+

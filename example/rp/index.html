@@ -69,6 +69,14 @@ pre {
       <input type="text" id="requiredEmail" width="80">
       <label for="requiredEmail">Require a specific email</label><br />
     </li>
+    </li><li>
+      <input type="text" id="name" width="80">
+      <label for="name">Site Name (optional)</label><br />
+    </li>
+    </li><li>
+      <input type="text" id="logoURL" width="80">
+      <label for="logoURL">Site Logo Path (optional)</label><br />
+    </li>
   </ul>
     <button class="assertion">Get an assertion</button>
     <button class="logout">logout</button>
@@ -178,12 +186,17 @@ $(document).ready(function() {
       return;
     }
 
+    var logoURL = $.trim($('#logoURL').val());
+    var name = $.trim($('#name').val());
+
     $(".specify button.assertion").attr('disabled', 'true');
 
     navigator.id.request({
       privacyURL: $('#privacy').attr('checked') ? "/privacy.html" : undefined,
       tosURL: $('#tos').attr('checked') ? "/TOS.html" : undefined,
       requiredEmail: requiredEmail,
+      siteName: name,
+      siteLogo: logoURL,
       oncancel: function() {
         loggit("oncancel");
         $(".specify button.assertion").removeAttr('disabled');
