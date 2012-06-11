@@ -1112,11 +1112,15 @@
 
     navigator.id = {
       request: function(options) {
+        if (this != navigator.id)
+          throw new Error("all navigator.id calls must be made on the navigator.id object");
         options = options || {};
         checkCompat(false);
         return internalRequest(options);
       },
       watch: function(options) {
+        if (this != navigator.id)
+          throw new Error("all navigator.id calls must be made on the navigator.id object");
         checkCompat(false);
         internalWatch(options);
       },
@@ -1124,6 +1128,8 @@
       // The callback parameter is DEPRECATED, instead you should use the
       // the .onlogout observer of the .watch() api.
       logout: function(callback) {
+        if (this != navigator.id)
+          throw new Error("all navigator.id calls must be made on the navigator.id object");
         // allocate iframe if it is not allocated
         _open_hidden_iframe();
         // send logout message if the commChan exists

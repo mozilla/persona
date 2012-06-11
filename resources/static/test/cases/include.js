@@ -24,5 +24,24 @@
     });
   });
 
+  test("DOM calls fails when unbound from navigator.id", function() {
+    _.each([
+      "watch",
+      "request",
+      "logout"
+    ], function(item, index) {
+      var the_func = navigator.id[item];
+
+      var fails = false;
+      try {
+        the_func();
+      } catch (x) {
+        fails = true;
+      }
+
+      ok(fails);
+    });
+  });
+
 }());
 
