@@ -87,11 +87,11 @@
     equal($("#rp_logo").attr("src"), RP_HTTPS_LOGO, "rp logo shown");
   });
 
-  test("privacyURL, tosURL, nextText specified - show TOS/PP info with nextText inserted", function() {
+  test("privacyPolicy, termsOfService specified - show TOS/PP info", function() {
     createController({
-      name: RP_NAME,
-      privacyURL: RP_PP_URL,
-      tosURL: RP_TOS_URL
+      siteName: RP_NAME,
+      privacyPolicy: RP_PP_URL,
+      termsOfService: RP_TOS_URL
     });
 
     equal($("#rp_name").text(), RP_NAME, "RP's name is set");

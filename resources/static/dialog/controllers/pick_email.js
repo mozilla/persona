@@ -96,9 +96,7 @@ BrowserID.Modules.PickEmail = (function() {
 
       self.renderDialog("pick_email", {
         identities: identities,
-        siteemail: originEmail,
-        privacy_url: options.privacyURL,
-        tos_url: options.tosURL
+        siteemail: originEmail
       });
 
       // If the user has been to this site before, they have already implicitly

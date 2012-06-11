@@ -165,8 +165,8 @@ BrowserID.Modules.Dialog = (function() {
         if (paramsFromRP.privacyURL) paramsFromRP.privacyPolicy = paramsFromRP.privacyURL;
 
         if (paramsFromRP.termsOfService && paramsFromRP.privacyPolicy) {
-          params.tosURL = fixupURL(origin_url, paramsFromRP.termsOfService);
-          params.privacyURL = fixupURL(origin_url, paramsFromRP.privacyPolicy);
+          params.termsOfService = fixupURL(origin_url, paramsFromRP.termsOfService);
+          params.privacyPolicy = fixupURL(origin_url, paramsFromRP.privacyPolicy);
         }
 
         if (paramsFromRP.siteLogo) {

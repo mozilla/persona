@@ -34,8 +34,8 @@ BrowserID.Modules.RPInfo = (function() {
         hostname: options.hostname,
         siteName: options.siteName,
         siteLogo: options.siteLogo,
-        privacyURL: options.privacyURL,
-        tosURL: options.tosURL
+        privacyPolicy: options.privacyPolicy,
+        termsOfService: options.termsOfService
       });
 
       sc.start.call(this, options);

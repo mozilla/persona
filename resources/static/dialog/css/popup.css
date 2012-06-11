@@ -291,17 +291,16 @@ section > .contents {
 #favicon h2, #favicon h3 {
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: 28px;
     line-height: 1.2em;  /* the 1.2em is to keep y, g, j, etc from having their bottoms chopped off */
     overflow: hidden;
-}
-
-#favicon h2 {
     margin: 10px 0 0 0;
 }
 
+#favicon h2 {
+    font-size: 28px;
+}
+
 #favicon h3 {
-    margin-top: 0;
     font-size: 14px;
 }
 
@@ -398,6 +397,7 @@ div#required_email {
   display: none;
   font-size: 11px;
   line-height: 1.2;
+  color: #787878;
 }
 
 #rp_info .tospp {
@@ -441,6 +441,7 @@ a.emphasize:active {
 #back {
   color: #000;
   border-bottom: 1px dotted;
+  font-weight: normal;
 }
 
 .submit > button {
