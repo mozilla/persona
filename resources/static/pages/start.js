@@ -59,20 +59,35 @@ $(function() {
     return divHeight === 110;
   }
 
+  function elementHeightWithMargins(element) {
+    element = $(element);
+    var height = element.outerHeight()
+                 + parseInt(element.css("margin-top"), 10)
+                 + parseInt(element.css("margin-bottom"), 10);
+    return height;
+  }
+
+
   xhr.init({ time_until_delay: 10 * 1000 });
   network.init();
 
   $(".display_always,.display_auth,.display_nonauth").hide();
-  $(window).bind('resize', function() {
-    var height = $(window).height() - $("header").outerHeight() - $("footer").outerHeight();
-    $("#vAlign").css({ "height": height });
 
+  $(window).bind('resize', function() {
+    var height = $(window).height()
+              // To find the height of the content, subtract the height of the
+              // header and footer INCLUDING any top and bottom margins they
+              // have.  If the margins are not included, the center content
+              // will be too tall and a scroll bar appears.
+              - elementHeightWithMargins("header")
+              - elementHeightWithMargins("footer");
+
+    $("#vAlign").css({ "height": height });
 
     // On the manage page, the content element sometimes does not take up the
     // full height of the screen, leaving the footer to float somewhere in the
     // middle.  To compensate, force the min-height of the content so that the
     // footer remains at the bottom of the screen.
-
     var paddingTop = 0, paddingBottom = 0;
 
     if(paddingAddedToMinHeight()) {
