@@ -1,155 +1,82 @@
 #!/usr/bin/env node
 
-const
-aws = require('./deploy/aws.js');
-path = require('path');
-vm = require('./deploy/vm.js'),
-key = require('./deploy/key.js'),
-ssh = require('./deploy/ssh.js'),
-git = require('./deploy/git.js'),
-dns = require('./deploy/dns.js');
+var path = require('path'),
+child_process = require('child_process');
 
-var verbs = {};
+/*
+ * A thin wrapper around awsbox that expects certain env
+ * vars and invokes awsbox for ya to deploy a VM. 
+ */
 
-function checkErr(err) {
-  if (err) {
-    process.stderr.write('fatal error: ' + err + "\n");
-    process.exit(1);
-  }
-}
-
-function printInstructions(name, deets) {
-  console.log("Yay!  You have your very own deployment.  Here's the basics:\n");
-  console.log(" 1. deploy your code:  git push " + name + " <mybranch>:master");
-  console.log(" 2. visit your server on the web: https://" + name + ".hacksign.in");
-  console.log(" 3. test via a website: http://" + name + ".myfavoritebeer.org");
-  console.log(" 4. ssh in with sudo: ssh ec2-user@" + name + ".hacksign.in");
-  console.log(" 5. ssh as the deployment user: ssh app@" + name + ".hacksign.in\n");
-  console.log("enjoy!  Here's your server details", JSON.stringify(deets, null, 4));
-}
-
-function validateName(name) {
-  if (!/^[a-z][0-9a-z_\-]*$/.test(name)) {
-    throw "invalid name!  must be a valid dns fragment ([z-a0-9\-_])";
-  }
-}
-
-verbs['destroy'] = function(args) {
-  if (!args || args.length != 1) {
-    throw 'missing required argument: name of instance';
-  }
-  var name = args[0];
-  validateName(name);
-  var hostname =  name + ".hacksign.in";
-
-  process.stdout.write("trying to destroy VM for " + hostname + ": ");
-  vm.destroy(name, function(err, deets) {
-    console.log(err ? ("failed: " + err) : "done");
-    process.stdout.write("trying to remove DNS for " + hostname + ": ");
-    dns.deleteRecord(hostname, function(err) {
-      console.log(err ? "failed: " + err : "done");
-      if (deets && deets.ipAddress) {
-        process.stdout.write("trying to remove git remote: ");
-        git.removeRemote(name, deets.ipAddress, function(err) {
-          console.log(err ? "failed: " + err : "done");
-        });
-      }
-    });
-  });
-}
-
-verbs['test'] = function() {
-  // let's see if we can contact aws and zerigo
-  process.stdout.write("Checking DNS management access: ");
-  dns.inUse("somerandomname", function(err) {
-    console.log(err ? "NOT ok: " + err : "good");
-    process.stdout.write("Checking AWS access: ");
-    vm.list(function(err) {
-      console.log(err ? "NOT ok: " + err : "good");
-    });
-  });
-}
-
-verbs['deploy'] = function(args) {
-  if (!args || args.length != 1) {
-    throw 'missing required argument: name of instance';
-  }
-  var name = args[0];
-  validateName(name);
-  var hostname =  name + ".hacksign.in";
-  var longName = 'browserid deployment (' + name + ')';
-
-  console.log("attempting to set up " + name + ".hacksign.in");
-
-  dns.inUse(hostname, function(err, r) {
-    checkErr(err);
-    if (r) checkErr("sorry!  that name '" + name + "' is already being used.  so sad");
-
-    vm.startImage(function(err, r) {
-      checkErr(err);
-      console.log("   ... VM launched, waiting for startup (should take about 20s)");
-
-      vm.waitForInstance(r.instanceId, function(err, deets) {
-        checkErr(err);
-        console.log("   ... Instance ready, setting up DNS");
-        dns.updateRecord(name, "hacksign.in", deets.ipAddress, function(err) {
-          checkErr(err);
-          console.log("   ... DNS set up, setting human readable name in aws");
-
-          vm.setName(r.instanceId, longName, function(err) {
-            checkErr(err);
-            console.log("   ... name set, waiting for ssh access and configuring");
-            var config = { public_url: "https://" + name + ".hacksign.in"};
-
-            ssh.copyUpConfig(deets.ipAddress, config, function(err, r) {
-              checkErr(err);
-              console.log("   ... victory!  server is accessible and configured");
-              git.addRemote(name, deets.ipAddress, function(err, r) {
-                if (err && /already exists/.test(err)) {
-                  console.log("OOPS! you already have a git remote named 'test'!");
-                  console.log("to create a new one: git remote add <name> " +
-                              "app@" + deets.ipAddress + ":git");
-                } else {
-                  checkErr(err);
-                }
-                console.log("   ... and your git remote is all set up");
-                console.log("");
-                printInstructions(name, deets);
-              });
-            });
-          });
-        });
-      });
-    });
-  });
-};
-
-verbs['list'] = function(args) {
-  vm.list(function(err, r) {
-    checkErr(err);
-    console.log(JSON.stringify(r, null, 2));
-  });
-};
-
-var error = (process.argv.length <= 2);
-
-if (!error) {
-  var verb = process.argv[2];
-  if (!verbs[verb]) error = "no such command: " + verb;
-  else {
-    try {
-      verbs[verb](process.argv.slice(3));
-    } catch(e) {
-      error = "error running '" + verb + "' command: " + e;
-    }
-  }
-}
-
-if (error) {
-  if (typeof error === 'string') process.stderr.write('fatal error: ' + error + "\n\n");
-
-  process.stderr.write('A command line tool to deploy BrowserID onto Amazon\'s EC2\n');
-  process.stderr.write('Usage: ' + path.basename(__filename) +
-                       ' <' + Object.keys(verbs).join('|') + "> [args]\n");
+if (!process.env['AWS_ID'] || ! process.env['AWS_SECRET']) {
+  console.log("You haven't defined AWS_ID and AWS_SECRET in the environment");
+  console.log("Get these values from the amazon web console and try again.");
   process.exit(1);
 }
+
+if (!process.env['ZERIGO_DNS_KEY'] && process.env['PERSONA_DEPLOY_DNS_KEY']) { 
+  process.env['ZERIGO_DNS_KEY'] = process.env['PERSONA_DEPLOY_DNS_KEY'];
+}
+
+var cmd = path.join(__dirname, '..', 'node_modules', '.bin', 'awsbox');
+cmd = path.relative(process.env['PWD'], cmd);
+
+if (process.argv.length > 1 &&
+    process.argv[2] === 'create' || 
+    process.argv[2] === 'deploy')
+{
+  var options = {};
+
+  if (process.argv.length > 3) options.n = process.argv[3];
+
+  if (process.env['PERSONA_SSL_PRIV'] || process.env['PERSONA_SSL_PUB']) {
+    options.p = process.env['PERSONA_SSL_PUB'];
+    options.s = process.env['PERSONA_SSL_PRIV'];
+  }
+
+  if (process.env['ZERIGO_DNS_KEY']) {
+    options.d = true;
+
+    // when we have a DNS key, we can set a hostname!
+    var scheme = (options.p ? 'https' : 'http') + '://';
+
+    if (process.env['PERSONA_DEPLOYMENT_HOSTNAME']) {
+      options.u = scheme + process.env['PERSONA_DEPLOYMENT_HOSTNAME'];
+    } else if (options.n) {
+      options.u = scheme + options.n + ".personatest.org";
+    }
+
+  } else {
+    console.log('WARNING: No DNS key defined in the environment!  ' +
+                'I cannot set up DNS for you.  We\'ll do this by IP.');
+  }
+
+  // pass through/override with user provided vars
+  for (var i = 3; i < process.argv.length; i++) {
+    var k = process.argv[i];
+    if (i + 1 < process.argv.length && k.length === 2 && k[0] === '-') {
+      options[k[1]] = process.argv[++i];
+    }
+  }
+
+  if (process.env['PERSONA_EPHEMERAL_CONFIG']) {
+    options.x = process.env['PERSONA_EPHEMERAL_CONFIG'];
+  }
+
+  cmd += " create --ssl=force";
+
+  Object.keys(options).forEach(function(opt) {
+    cmd += " -" + opt;
+    cmd += typeof options[opt] === 'string' ? " " + options[opt] : "";
+  });
+} else {
+  cmd += " " + process.argv.slice(2).join(' ');
+}
+
+console.log("awsbox cmd: " + cmd);
+var cp = child_process.exec(cmd, function(err) {
+  if (err) process.exit(err.code);
+  else process.exit(0);
+});
+cp.stdout.pipe(process.stdout);
+cp.stderr.pipe(process.stderr);

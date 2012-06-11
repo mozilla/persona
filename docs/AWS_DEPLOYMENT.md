@@ -17,7 +17,16 @@ In order to use these deploy scripts, you need the following:
   1. have built and locally run browserid
   2. an ssh key in `~/.ssh/id_rsa.pub`
   3. an AWS account that is "signed up" for EC2
-  4. the "DNS secret" that you get from lloyd
+  4. (optionally) a secrets bundle that you get from lloyd (for DNS, SSL, and mail setup)
+
+For the secrets bundle, you'll need gpg to unpack it, and will do
+the following:
+
+    $ cd
+    $ curl -s http://people.mozilla.org/~lhilaiel/persona_goodies.tgz.gpg | gpg -d | tar xvzf -
+
+You'll be asked for the decryption password from GPG.  Get that from
+lloyd.
 
 Once you have these things, you'll need to relay them to deployment
 scripts via your environment.  you might put something like this
@@ -27,8 +36,8 @@ in your `.bashrc`:
     export AWS_ID=<your id>
     # This is your Secret Access Key from your AWS Security Credentials
     export AWS_SECRET=<your secret>
-    # This is a magic credential you get from lloyd
-    export BROWSERID_DEPLOY_DNS_KEY=98...33
+    # install super magic secrets into your environment
+    . $HOME/.persona_secrets/env.sh
 
 ## Verify the credentials
 
@@ -46,38 +55,42 @@ you can use a different name that is short but meaningful to what you're
 going to deploy.  Once chosen, invoke `deploy.js` like this:
 
     $ scripts/deploy.js deploy some_name_i_chose
-    attempting to set up some_name_i_chose.hacksign.in
+    awsbox cmd: node_modules/.bin/awsbox create -n some_name_i_chose -p /Users/lth/.persona_secrets/cert.pem -s /Users/lth/.persona_secrets/key.pem -d -u https://some_name_i_chose.personatest.org -x /Users/lth/.persona_secrets/smtp.json
+    reading .awsbox.json
+    attempting to set up VM "some_name_i_chose"
+       ... Checking for DNS availability of some_name_i_chose.personatest.org
        ... VM launched, waiting for startup (should take about 20s)
-       ... Instance ready, setting up DNS
-       ... DNS set up, setting human readable name in aws
+       ... Adding DNS Record for some_name_i_chose.personatest.org
+       ... Instance ready, setting human readable name in aws
        ... name set, waiting for ssh access and configuring
-       ... nope.  not yet.  retrying.
-       ... nope.  not yet.  retrying.
-       ... nope.  not yet.  retrying.
+       ... adding additional configuration values
+       ... public url will be: https://some_name_i_chose.personatest.org
        ... nope.  not yet.  retrying.
        ... nope.  not yet.  retrying.
        ... victory!  server is accessible and configured
        ... and your git remote is all set up
+       ... finally, installing custom packages: mysql-server
+       ... copying up SSL cert
     
     Yay!  You have your very own deployment.  Here's the basics:
     
-     1. deploy your code:  git push some_name_i_chose <mybranch>:master
-     2. visit your server on the web: https://some_name_i_chose.hacksign.in
-     3. test via a website: http://some_name_i_chose.myfavoritebeer.org
-     4. ssh in with sudo: ssh ec2-user@some_name_i_chose.hacksign.in
-     5. ssh as the deployment user: ssh app@some_name_i_chose.hacksign.in
+     1. deploy your code:  git push some_name_i_chose HEAD:master
+     2. visit your server on the web: https://some_name_i_chose.personatest.org
+     3. ssh in with sudo: ssh ec2-user@some_name_i_chose.personatest.org
+     4. ssh as the deployment user: ssh app@some_name_i_chose.personatest.org
     
-    enjoy!  Here's your server details {
-        "instanceId": "i-8f4beeea",
-        "imageId": "ami-6900d100",
+     Here are your server's details: {
+        "instanceId": "i-f0b35e89",
+        "imageId": "ami-ac8524c5",
         "instanceState": {
             "code": "16",
             "name": "running"
         },
-        "dnsName": "ec2-184-73-84-132.compute-1.amazonaws.com",
-        "keyName": "browserid deploy key (4736caec113ccb53aa62bb165c58c17d)",
+        "dnsName": "ec2-23-21-24-182.compute-1.amazonaws.com",
+        "keyName": "awsbox deploy key (4736caec113ccb53aa62bb165c58c17d)",
         "instanceType": "t1.micro",
-        "ipAddress": "184.73.84.132"
+        "ipAddress": "23.21.24.182",
+        "name": "i-f0b35e89"
     }
 
 The output contains instructions for use.  Note that every occurance of 
@@ -125,8 +138,11 @@ These things cost money by the hour, not a lot, but money.  So when you want to
 decommission a VM and release your hold on the DNS name, simply:
 
     $ scripts/deploy.js destroy some_name_i_chose
-    trying to destroy VM for some_name_i_chose.hacksign.in: done
-    trying to remove DNS for some_name_i_chose.hacksign.in: done
+    awsbox cmd: node_modules/.bin/awsbox destroy some_name_i_chose
+    trying to destroy VM for some_name_i_chose: done
+    trying to remove git remote: done
+    trying to remove DNS: some_name_i_chose.personatest.org
+    deleting some_name_i_chose.personatest.org: done
 
 ## Overview of what's deployed to VMs
 
@@ -139,18 +155,20 @@ There are several things that are pre-configured for your pleasure:
      on the server, that you can push to.
   3. `post-update` hook: when you push to the `master` branch of the server's
      git repository, this code restarts your services to pick up the changes.
-  4. nginx with SSL and 503 support - you'll get SSL for free and will see
+  4. SSL support and 503 support - you'll get SSL for free and will see
      a reasonable error message when your servers aren't running.
   5. a mysql database with a browserid user without any password.
 
 ### User accounts
 
-VMs have two pre-configured users, both which you have passphraseless SSH
+VMs have three pre-configured users, all of which you have passphraseless SSH
 access to:
 
   * `ec2-user` is an account with full sudo access.
   * `app` is an account that has no sudo, receives and builds code via git
     pushes, and runs the application servers.
+  * `proxy` is the account the the HTTP reverse proxy that front-ends your server
+    runs as.
 
 Feel free to start a new server, and ssh in as `app` to explore all of the
 configuration.  An attempt has been made to isolate as much configuration 
