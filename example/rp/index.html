@@ -8,7 +8,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
 <title>
-BrowserID Relying Party
+Persona Relying Party
 </title>
 <style type="text/css">
 
@@ -48,34 +48,34 @@ pre {
 </head>
 <body>
 <div class="title">
-  BrowserID Test Relying Party
+  Persona Test Relying Party
 </div>
 
 <div class="intro">
   This is a RP for testing, it allows you to drive the <tt>navigator.id.get()</tt> call manually
-  to locally test BrowserID.
+  to locally test Persona.
 </div>
 
 <div class="specify">
   <p><b>What flavor of assertion would you like?</b></p>
   <ul>
     <li>
-      <input type="checkbox" id="privacy">
-      <label for="privacy">Supply a privacy policy</label>
+      <input type="checkbox" id="privacyPolicy">
+      <label for="privacyPolicy">Supply a privacy policy</label>
     </li><li>
-      <input type="checkbox" id="tos">
-      <label for="tos">Supply a ToS</label>
+      <input type="checkbox" id="termsOfService">
+      <label for="termsOfService">Supply a ToS</label>
+    </li><li>
+      <input type="checkbox" id="siteName">
+      <label for="siteName">Supply Site Name</label><br />
+    </li>
+    </li><li>
+      <input type="checkbox" id="siteLogo">
+      <label for="siteLogo">Supply Site Logo</label><br />
+    </li>
     </li><li>
       <input type="text" id="requiredEmail" width="80">
       <label for="requiredEmail">Require a specific email</label><br />
-    </li>
-    </li><li>
-      <input type="text" id="name" width="80">
-      <label for="name">Site Name (optional)</label><br />
-    </li>
-    </li><li>
-      <input type="text" id="logoURL" width="80">
-      <label for="logoURL">Site Logo Path (optional)</label><br />
     </li>
   </ul>
     <button class="assertion">Get an assertion</button>
@@ -186,17 +186,14 @@ $(document).ready(function() {
       return;
     }
 
-    var logoURL = $.trim($('#logoURL').val());
-    var name = $.trim($('#name').val());
-
     $(".specify button.assertion").attr('disabled', 'true');
 
     navigator.id.request({
-      privacyURL: $('#privacy').attr('checked') ? "/privacy.html" : undefined,
-      tosURL: $('#tos').attr('checked') ? "/TOS.html" : undefined,
+      privacyPolicy: $('#privacyPolicy').attr('checked') ? "/privacy.html" : undefined,
+      termsOfService: $('#termsOfService').attr('checked') ? "/TOS.html" : undefined,
+      siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
+      siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined,
       requiredEmail: requiredEmail,
-      siteName: name,
-      siteLogo: logoURL,
       oncancel: function() {
         loggit("oncancel");
         $(".specify button.assertion").removeAttr('disabled');
