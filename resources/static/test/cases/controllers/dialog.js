@@ -18,7 +18,6 @@
       user = bid.User,
       HTTP_TEST_DOMAIN = "http://testdomain.org",
       HTTPS_TEST_DOMAIN = "https://testdomain.org",
-      HTTPS_TEST_URL = "https://testdomain.org/some/page",
       TESTEMAIL = "testuser@testuser.com",
       controller,
       el,
@@ -585,33 +584,36 @@
   });
 
 
-  asyncTest("originHREF specified, different domain as origin - error thrown", function() {
+  asyncTest("get with returnTo with https - not allowed", function() {
     createController({
       ready: function() {
+        var URL = HTTP_TEST_DOMAIN + "/path";
+
         mediator.subscribe("start", function(msg, info) {
           ok(false, "unexpected start");
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
-          originHREF: "http://different.domain"
+          returnTo: URL
         });
-        equal(retval, "originHREF/origin mismatch", "expected error");
+
+        equal(retval, "must be an absolute path: (" + URL + ")", "expected error");
         testErrorVisible();
         start();
       }
     });
   });
 
-  asyncTest("originHREF specified, same domain as origin - originHREF correctly set", function() {
+  asyncTest("get with absolute path returnTo - allowed", function() {
     createController({
       ready: function() {
         mediator.subscribe("start", function(msg, info) {
-          equal(user.getOriginHREF(), HTTPS_TEST_URL, "Origin HREF correctly set");
+          equal(user.getReturnTo(), HTTPS_TEST_DOMAIN + "/path", "returnTo correctly set");
           start();
         });
 
         var retval = controller.get(HTTPS_TEST_DOMAIN, {
-          originHREF: HTTPS_TEST_URL
+          returnTo: "/path"
         });
       }
     });

@@ -71,7 +71,7 @@
   });
 
   asyncTest("no password: start with good token and site", function() {
-    storage.setStagedOnBehalfOf("browserid.org");
+    storage.setReturnTo("browserid.org");
 
     createController(config, function() {
       testEmail();

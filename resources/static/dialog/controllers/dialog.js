@@ -184,16 +184,19 @@ BrowserID.Modules.Dialog = (function() {
           params.siteName = _.escape(paramsFromRP.siteName);
         }
 
-        var originHREF = paramsFromRP.originHREF;
-
-        // Native implementations will be behind on the originHREF feature.  Until
-        // they are ready, set the originHREF to be the origin_url;
-        if (!originHREF) originHREF = origin_url;
-
-        if(originHREF.indexOf(origin_url) !== 0) {
-          throw "originHREF/origin mismatch";
+        // returnTo is used for post verification redirection.  Redirect back
+        // to the path specified by the RP.
+        var returnTo;
+        if (paramsFromRP.returnTo) {
+          returnTo = fixupAbsolutePath(origin_url, paramsFromRP.returnTo);
         }
-        user.setOriginHREF(fixupURL(origin_url, originHREF));
+        else {
+          // Native implementations will be behind on the returnTo feature.  Until
+          // they are ready, set the returnTo to be the origin_url;
+          returnTo = origin_url;
+        }
+
+        user.setReturnTo(returnTo);
 
         if (hash.indexOf("#CREATE_EMAIL=") === 0) {
           var email = hash.replace(/#CREATE_EMAIL=/, "");

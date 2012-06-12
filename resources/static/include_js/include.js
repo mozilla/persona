@@ -1069,8 +1069,8 @@
       // don't do duplicative work
       if (commChan) commChan.notify({ method: 'dialog_running' });
 
-      // originHREF is used for post-email-verification redirect
-      options.originHREF = document.location.href;
+      // returnTo is used for post-email-verification redirect
+      if (!options.returnTo) options.returnTo = document.location.href;
 
       w = WinChan.open({
         url: ipServer + '/sign_in',

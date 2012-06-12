@@ -85,10 +85,10 @@ var jwcrypto = require("./lib/jwcrypto");
     equal(hostname, "browserid.org", "getHostname returns only the hostname");
   });
 
-  test("setOriginHREF, getOriginHREF", function() {
-    var originHREF = "http://samplerp.org";
-    lib.setOriginHREF(originHREF);
-    equal(lib.getOriginHREF(), originHREF, "get/setOriginHREF work as expected");
+  test("setReturnTo, getReturnTo", function() {
+    var returnTo = "http://samplerp.org";
+    lib.setReturnTo(returnTo);
+    equal(lib.getReturnTo(), returnTo, "get/setReturnTo work as expected");
   });
 
   test("getStoredEmailKeypairs without key - return all identities", function() {
@@ -298,27 +298,27 @@ var jwcrypto = require("./lib/jwcrypto");
   });
 
   asyncTest("waitForUserValidation with `complete` response", function() {
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
 
     xhr.useResult("complete");
 
     lib.waitForUserValidation("registered@testuser.com", function(status) {
       equal(status, "complete", "complete response expected");
 
-      ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
+      ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("waitForUserValidation with `mustAuth` response", function() {
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
 
     xhr.useResult("mustAuth");
 
     lib.waitForUserValidation("registered@testuser.com", function(status) {
       equal(status, "mustAuth", "mustAuth response expected");
 
-      ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
+      ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -326,12 +326,12 @@ var jwcrypto = require("./lib/jwcrypto");
   asyncTest("waitForUserValidation with `noRegistration` response", function() {
     xhr.useResult("noRegistration");
 
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
     lib.waitForUserValidation(
       "registered@testuser.com",
       testHelpers.unexpectedSuccess,
       function(status) {
-        ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared for noRegistration response");
+        ok(storage.getReturnTo(), "staged on behalf of is not cleared for noRegistration response");
         ok(status, "noRegistration", "noRegistration response causes failure");
         start();
       }
@@ -340,12 +340,12 @@ var jwcrypto = require("./lib/jwcrypto");
 
 
   asyncTest("waitForUserValidation with XHR failure", function() {
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
     lib.waitForUserValidation(
       "registered@testuser.com",
       testHelpers.unexpectedSuccess,
       function() {
-        ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared on XHR failure");
+        ok(storage.getReturnTo(), "staged on behalf of is not cleared on XHR failure");
         ok(true, "xhr failure should always be a failure");
         start();
       }
@@ -355,7 +355,7 @@ var jwcrypto = require("./lib/jwcrypto");
   asyncTest("cancelUserValidation: ~1 second", function() {
     xhr.useResult("pending");
 
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
     // yes, we are neither expected succes nor failure because we are
     // cancelling the wait.
     lib.waitForUserValidation(
@@ -366,13 +366,13 @@ var jwcrypto = require("./lib/jwcrypto");
 
     setTimeout(function() {
       lib.cancelUserValidation();
-      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared when validation cancelled");
+      ok(storage.getReturnTo(), "staged on behalf of is not cleared when validation cancelled");
       start();
     }, 500);
   });
 
   asyncTest("tokenInfo with a good token and origin info, expect origin in results", function() {
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
 
     lib.tokenInfo("token", function(info) {
       equal(info.email, TEST_EMAIL, "correct email");
@@ -394,14 +394,14 @@ var jwcrypto = require("./lib/jwcrypto");
   });
 
   asyncTest("verifyUser with a good token", function() {
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
 
     lib.verifyUser("token", "password", function onSuccess(info) {
 
       ok(info.valid, "token was valid");
       equal(info.email, TEST_EMAIL, "email part of info");
       equal(info.origin, testOrigin, "origin in info");
-      equal(storage.getStagedOnBehalfOf(), "", "initiating origin was removed");
+      equal(storage.getReturnTo(), "", "initiating origin was removed");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -467,12 +467,12 @@ var jwcrypto = require("./lib/jwcrypto");
   });
 
   asyncTest("requestPasswordReset with known email - true status", function() {
-    var originHREF = "http://samplerp.org";
-    lib.setOriginHREF(originHREF);
+    var returnTo = "http://samplerp.org";
+    lib.setReturnTo(returnTo);
 
     lib.requestPasswordReset("registered@testuser.com", "password", function(status) {
       equal(status.success, true, "password reset for known user");
-      equal(storage.getStagedOnBehalfOf(), originHREF, "RP URL is stored for verification");
+      equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -653,8 +653,8 @@ var jwcrypto = require("./lib/jwcrypto");
   });
 
   asyncTest("addEmail", function() {
-    var originHREF = "http://samplerp.org";
-    lib.setOriginHREF(originHREF);
+    var returnTo = "http://samplerp.org";
+    lib.setReturnTo(returnTo);
 
     lib.addEmail("testemail@testemail.com", "password", function(added) {
       ok(added, "user was added");
@@ -662,7 +662,7 @@ var jwcrypto = require("./lib/jwcrypto");
       var identities = lib.getStoredEmailKeypairs();
       equal("testemail@testemail.com" in identities, false, "new email is not added until confirmation.");
 
-      equal(storage.getStagedOnBehalfOf(), originHREF, "RP URL is stored for verification");
+      equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -677,7 +677,7 @@ var jwcrypto = require("./lib/jwcrypto");
       var identities = lib.getStoredEmailKeypairs();
       equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
 
-      equal(typeof storage.getStagedOnBehalfOf(), "undefined", "initiatingOrigin is not stored");
+      equal(typeof storage.getReturnTo(), "undefined", "initiatingOrigin is not stored");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -689,36 +689,36 @@ var jwcrypto = require("./lib/jwcrypto");
 
 
  asyncTest("waitForEmailValidation `complete` response", function() {
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
 
     xhr.useResult("complete");
     lib.waitForEmailValidation("registered@testuser.com", function(status) {
-      ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
+      ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
       equal(status, "complete", "complete response expected");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("waitForEmailValidation `mustAuth` response", function() {
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
     xhr.useResult("mustAuth");
 
     lib.waitForEmailValidation("registered@testuser.com", function(status) {
-      ok(!storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
+      ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
       equal(status, "mustAuth", "mustAuth response expected");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("waitForEmailValidation with `noRegistration` response", function() {
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
     xhr.useResult("noRegistration");
 
     lib.waitForEmailValidation(
       "registered@testuser.com",
       testHelpers.unexpectedSuccess,
       function(status) {
-        ok(storage.getStagedOnBehalfOf(), "staged on behalf of is cleared when validation completes");
+        ok(storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
         ok(status, "noRegistration", "noRegistration response causes failure");
         start();
       });
@@ -726,7 +726,7 @@ var jwcrypto = require("./lib/jwcrypto");
 
 
  asyncTest("waitForEmailValidation XHR failure", function() {
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
     xhr.useResult("ajaxError");
 
     lib.waitForEmailValidation(
@@ -740,7 +740,7 @@ var jwcrypto = require("./lib/jwcrypto");
   asyncTest("cancelEmailValidation: ~1 second", function() {
     xhr.useResult("pending");
 
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
     lib.waitForEmailValidation(
       "registered@testuser.com",
       testHelpers.unexpectedSuccess,
@@ -749,19 +749,19 @@ var jwcrypto = require("./lib/jwcrypto");
 
     setTimeout(function() {
       lib.cancelUserValidation();
-      ok(storage.getStagedOnBehalfOf(), "staged on behalf of is not cleared when validation cancelled");
+      ok(storage.getReturnTo(), "staged on behalf of is not cleared when validation cancelled");
       start();
     }, 500);
   });
 
   asyncTest("verifyEmail with a good token - callback with email, origin, valid", function() {
-    storage.setStagedOnBehalfOf(testOrigin);
+    storage.setReturnTo(testOrigin);
     lib.verifyEmail("token", "password", function onSuccess(info) {
 
       ok(info.valid, "token was valid");
       equal(info.email, TEST_EMAIL, "email part of info");
       equal(info.origin, testOrigin, "origin in info");
-      equal(storage.getStagedOnBehalfOf(), "", "initiating origin was removed");
+      equal(storage.getReturnTo(), "", "initiating origin was removed");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -1213,7 +1213,7 @@ var jwcrypto = require("./lib/jwcrypto");
 
   asyncTest("shouldAskIfUsersComputer with user who has not been asked and has verified email in this dialog session - call onSuccess with false", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.setStagedOnBehalfOf(testOrigin);
+      storage.setReturnTo(testOrigin);
       xhr.useResult("complete");
 
       lib.waitForEmailValidation(TEST_EMAIL, function() {

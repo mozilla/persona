@@ -146,18 +146,18 @@ BrowserID.Storage = (function() {
     }
   }
 
-  function setStagedOnBehalfOf(origin) {
-    storage.stagedOnBehalfOf = JSON.stringify({
+  function setReturnTo(origin) {
+    storage.returnTo = JSON.stringify({
       at: new Date().toString(),
       origin: origin
     });
   }
 
-  function getStagedOnBehalfOf() {
+  function getReturnTo() {
     var origin;
 
     try {
-      var staged = JSON.parse(storage.stagedOnBehalfOf);
+      var staged = JSON.parse(storage.returnTo || storage.stagedOnBehalfOf);
 
       if (staged) {
         if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw "stale";
@@ -165,6 +165,7 @@ BrowserID.Storage = (function() {
         origin = staged.origin;
       }
     } catch (x) {
+      storage.removeItem("returnTo");
       storage.removeItem("stagedOnBehalfOf");
     }
 
@@ -569,7 +570,7 @@ BrowserID.Storage = (function() {
     clear: clear,
     storeTemporaryKeypair: storeTemporaryKeypair,
     retrieveTemporaryKeypair: retrieveTemporaryKeypair,
-    setStagedOnBehalfOf: setStagedOnBehalfOf,
-    getStagedOnBehalfOf: getStagedOnBehalfOf
+    setReturnTo: setReturnTo,
+    getReturnTo: getReturnTo
   };
 }());
