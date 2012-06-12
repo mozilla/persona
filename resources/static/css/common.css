@@ -291,7 +291,6 @@ a.secondary[disabled], .submit_disabled a.secondary, .submit_disabled a.secondar
 }
 
 .headline-main, h1, h2, h3, h4 {
-  font-family: 'Open Sans', "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
   font-weight: normal;
   text-shadow: 0px 1px 0px rgba(255,255,255,0.75);
 }
