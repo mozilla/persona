@@ -221,8 +221,7 @@ BrowserID.TestHelpers = (function() {
     },
 
     testHasClass: function(selector, className, msg) {
-      ok($(selector).hasClass(className),
-          selector + " has className " + className + " - " + msg);
+      ok($(selector).hasClass(className), msg || selector + " has className: " + className);
     },
 
     testUndefined: function(toTest, msg) {
@@ -231,6 +230,10 @@ BrowserID.TestHelpers = (function() {
 
     testNotUndefined: function(toTest, msg) {
       notEqual(typeof toTest, "undefined", msg || "object is defined");
+    },
+
+    testVisible: function(selector, msg) {
+      ok($(selector).is(":visible"), msg || selector + " should be visible");
     }
 
   };
