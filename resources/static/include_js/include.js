@@ -1070,7 +1070,7 @@
       if (commChan) commChan.notify({ method: 'dialog_running' });
 
       // returnTo is used for post-email-verification redirect
-      if (!options.returnTo) options.returnTo = document.location.href;
+      if (!options.returnTo) options.returnTo = document.location.pathname;
 
       w = WinChan.open({
         url: ipServer + '/sign_in',

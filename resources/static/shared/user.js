@@ -282,7 +282,8 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Create a user account - this creates an user account that must be verified.  * @method createSecondaryUser
+     * Create a user account - this creates an user account that must be verified.
+     * @method createSecondaryUser
      * @param {string} email
      * @param {string} password
      * @param {function} [onComplete] - Called on completion.
@@ -486,10 +487,10 @@ BrowserID.User = (function() {
     tokenInfo: function(token, onComplete, onFailure) {
       network.emailForVerificationToken(token, function (info) {
         if(info) {
-          info = _.extend(info, { origin: storage.getReturnTo() });
+          info = _.extend(info, { returnTo: storage.getReturnTo() });
         }
 
-        onComplete && onComplete(info);
+        complete(onComplete, info);
       }, onFailure);
 
     },
@@ -512,7 +513,7 @@ BrowserID.User = (function() {
             var result = invalidInfo;
 
             if(valid) {
-              result = _.extend({ valid: valid, origin: storage.getReturnTo() }, info);
+              result = _.extend({ valid: valid, returnTo: storage.getReturnTo() }, info);
               storage.setReturnTo("");
             }
 
@@ -882,7 +883,7 @@ BrowserID.User = (function() {
             var result = invalidInfo;
 
             if(valid) {
-              result = _.extend({ valid: valid, origin: storage.getReturnTo() }, info);
+              result = _.extend({ valid: valid, returnTo: storage.getReturnTo() }, info);
               storage.setReturnTo("");
             }
 

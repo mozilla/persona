@@ -186,17 +186,11 @@ BrowserID.Modules.Dialog = (function() {
 
         // returnTo is used for post verification redirection.  Redirect back
         // to the path specified by the RP.
-        var returnTo;
         if (paramsFromRP.returnTo) {
-          returnTo = fixupAbsolutePath(origin_url, paramsFromRP.returnTo);
-        }
-        else {
-          // Native implementations will be behind on the returnTo feature.  Until
-          // they are ready, set the returnTo to be the origin_url;
-          returnTo = origin_url;
+          var returnTo = fixupAbsolutePath(origin_url, paramsFromRP.returnTo);
+          user.setReturnTo(returnTo);
         }
 
-        user.setReturnTo(returnTo);
 
         if (hash.indexOf("#CREATE_EMAIL=") === 0) {
           var email = hash.replace(/#CREATE_EMAIL=/, "");

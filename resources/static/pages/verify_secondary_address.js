@@ -34,8 +34,8 @@ BrowserID.verifySecondaryAddress = (function() {
   function showRegistrationInfo(info) {
     dom.setInner("#email", info.email);
 
-    if (info.origin) {
-      dom.setInner(".website", info.origin);
+    if (info.returnTo) {
+      dom.setInner(".website", info.returnTo);
       dom.show(".siteinfo");
     }
   }
@@ -84,7 +84,7 @@ BrowserID.verifySecondaryAddress = (function() {
   function startVerification(oncomplete) {
     user.tokenInfo(token, function(info) {
       if (info) {
-        redirectTo = info.origin;
+        redirectTo = info.returnTo;
         showRegistrationInfo(info);
 
         needsPassword = info.needs_password;

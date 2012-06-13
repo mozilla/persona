@@ -371,20 +371,20 @@ var jwcrypto = require("./lib/jwcrypto");
     }, 500);
   });
 
-  asyncTest("tokenInfo with a good token and origin info, expect origin in results", function() {
+  asyncTest("tokenInfo with a good token and returnTo info, expect returnTo in results", function() {
     storage.setReturnTo(testOrigin);
 
     lib.tokenInfo("token", function(info) {
       equal(info.email, TEST_EMAIL, "correct email");
-      equal(info.origin, testOrigin, "correct origin");
+      equal(info.returnTo, testOrigin, "correct returnTo");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("tokenInfo with a bad token without site info, no site in results", function() {
+  asyncTest("tokenInfo with a bad token without returnTo info, no returnTo in results", function() {
     lib.tokenInfo("token", function(info) {
       equal(info.email, TEST_EMAIL, "correct email");
-      equal(typeof info.origin, "undefined", "origin is undefined");
+      equal(typeof info.returnTo, "undefined", "returnTo is undefined");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -400,7 +400,7 @@ var jwcrypto = require("./lib/jwcrypto");
 
       ok(info.valid, "token was valid");
       equal(info.email, TEST_EMAIL, "email part of info");
-      equal(info.origin, testOrigin, "origin in info");
+      equal(info.returnTo, testOrigin, "returnTo in info");
       equal(storage.getReturnTo(), "", "initiating origin was removed");
 
       start();
@@ -754,14 +754,14 @@ var jwcrypto = require("./lib/jwcrypto");
     }, 500);
   });
 
-  asyncTest("verifyEmail with a good token - callback with email, origin, valid", function() {
+  asyncTest("verifyEmail with a good token - callback with email, returnTo, valid", function() {
     storage.setReturnTo(testOrigin);
     lib.verifyEmail("token", "password", function onSuccess(info) {
 
       ok(info.valid, "token was valid");
       equal(info.email, TEST_EMAIL, "email part of info");
-      equal(info.origin, testOrigin, "origin in info");
-      equal(storage.getReturnTo(), "", "initiating origin was removed");
+      equal(info.returnTo, testOrigin, "returnTo in info");
+      equal(storage.getReturnTo(), "", "initiating returnTo was removed");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
