@@ -184,6 +184,14 @@ BrowserID.Modules.Dialog = (function() {
           params.siteName = _.escape(paramsFromRP.siteName);
         }
 
+        // returnTo is used for post verification redirection.  Redirect back
+        // to the path specified by the RP.
+        if (paramsFromRP.returnTo) {
+          var returnTo = fixupAbsolutePath(origin_url, paramsFromRP.returnTo);
+          user.setReturnTo(returnTo);
+        }
+
+
         if (hash.indexOf("#CREATE_EMAIL=") === 0) {
           var email = hash.replace(/#CREATE_EMAIL=/, "");
           if (!bid.verifyEmail(email))

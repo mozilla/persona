@@ -557,12 +557,16 @@ button.delete:active {
 }
 
 #congrats .siteinfo {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 #congrats .website {
-    display: block;
-    text-align: center;
+  display: block;
+  text-align: center;
+}
+
+#redirection {
+  text-align: center;
 }
 
 

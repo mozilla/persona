@@ -50,7 +50,6 @@ BrowserID.Storage = (function() {
   function clear() {
     storage.removeItem("emails");
     storage.removeItem("tempKeypair");
-    storage.removeItem("stagedOnBehalfOf");
     storage.removeItem("siteInfo");
     storage.removeItem("managePage");
   }
@@ -147,29 +146,50 @@ BrowserID.Storage = (function() {
     }
   }
 
-  function setStagedOnBehalfOf(origin) {
-    storage.stagedOnBehalfOf = JSON.stringify({
+  function setReturnTo(returnToURL) {
+    storage.returnTo = JSON.stringify({
       at: new Date().toString(),
-      origin: origin
+      url: returnToURL
     });
   }
 
-  function getStagedOnBehalfOf() {
-    var origin;
+  function getReturnTo() {
+    var returnToURL;
 
+    // XXX - The transitional code is to make sure any emails that were staged using
+    // the old setStagedOnBehalfOf still work with the new API.  This should be
+    // able to be removed by mid-July 2012.
     try {
-      var staged = JSON.parse(storage.stagedOnBehalfOf);
+      // BEGIN TRANSITIONAL CODE
+      if (storage.returnTo) {
+      // END TRANSITIONAL CODE
+        var staged = JSON.parse(storage.returnTo);
 
-      if (staged) {
-        if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw "stale";
-        if (typeof(staged.origin) !== 'string') throw "malformed";
-        origin = staged.origin;
+        if (staged) {
+          if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw "stale";
+          if (typeof(staged.url) !== 'string') throw "malformed";
+          returnToURL = staged.url;
+        }
+      // BEGIN TRANSITIONAL CODE
       }
+      else if(storage.stagedOnBehalfOf) {
+        var staged = JSON.parse(storage.stagedOnBehalfOf);
+
+        if (staged) {
+          if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw "stale";
+          if (typeof(staged.origin) !== 'string') throw "malformed";
+          returnToURL = staged.origin;
+        }
+      }
+      // END TRANSITIONAL CODE
     } catch (x) {
+      storage.removeItem("returnTo");
+      // BEGIN TRANSITIONAL CODE
       storage.removeItem("stagedOnBehalfOf");
+      // END TRANSITIONAL CODE
     }
 
-    return origin;
+    return returnToURL;
   }
 
   function siteSet(site, key, value) {
@@ -570,7 +590,7 @@ BrowserID.Storage = (function() {
     clear: clear,
     storeTemporaryKeypair: storeTemporaryKeypair,
     retrieveTemporaryKeypair: retrieveTemporaryKeypair,
-    setStagedOnBehalfOf: setStagedOnBehalfOf,
-    getStagedOnBehalfOf: getStagedOnBehalfOf
+    setReturnTo: setReturnTo,
+    getReturnTo: getReturnTo
   };
 }());
