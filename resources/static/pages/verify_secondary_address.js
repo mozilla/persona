@@ -9,6 +9,7 @@ BrowserID.verifySecondaryAddress = (function() {
   var ANIMATION_TIME=250,
       bid = BrowserID,
       user = bid.User,
+      storage = bid.Storage,
       errors = bid.Errors,
       pageHelpers = bid.PageHelpers,
       dom = bid.DOM,
@@ -22,9 +23,11 @@ BrowserID.verifySecondaryAddress = (function() {
       mustAuth,
       verifyFunction,
       doc = document,
-      REDIRECT_TIMEOUT = 5000,
+      REDIRECT_SECONDS = 5,
+      secondsRemaining = REDIRECT_SECONDS,
+      email,
       redirectTo,
-      redirectTimeout;  // set in config if available, use REDIRECT_TIMEOUT otw.
+      redirectTimeout;  // set in config if available, use REDIRECT_SECONDS otw.
 
   function showError(el, oncomplete) {
     dom.hide(".hint,#signUpForm");
@@ -36,7 +39,17 @@ BrowserID.verifySecondaryAddress = (function() {
 
     if (info.returnTo) {
       dom.setInner(".website", info.returnTo);
+      updateRedirectTimeout();
       dom.show(".siteinfo");
+    }
+  }
+
+  function updateRedirectTimeout() {
+    if (secondsRemaining > 0) {
+      dom.setInner("#redirectTimeout", secondsRemaining);
+
+      secondsRemaining--;
+      setTimeout(updateRedirectTimeout, 1000);
     }
   }
 
@@ -57,6 +70,14 @@ BrowserID.verifySecondaryAddress = (function() {
 
         pageHelpers.replaceFormWithNotice(selector, function() {
           if (redirectTo && verified) {
+
+            // set the loggedIn status for the site.  This allows us to get
+            // a silent assertion without relying on the dialog to set the
+            // loggedIn status for the domain.  This is useful when the user
+            // closes the dialog OR if redirection happens before the dialog
+            // has had a chance to finish its business.
+            storage.setLoggedIn(URLParse(redirectTo).originOnly(), email);
+
             setTimeout(function() {
               doc.location.href = redirectTo;
               complete(oncomplete, verified);
@@ -85,6 +106,7 @@ BrowserID.verifySecondaryAddress = (function() {
     user.tokenInfo(token, function(info) {
       if (info) {
         redirectTo = info.returnTo;
+        email = info.email;
         showRegistrationInfo(info);
 
         needsPassword = info.needs_password;
@@ -126,7 +148,7 @@ BrowserID.verifySecondaryAddress = (function() {
 
       redirectTimeout = options.redirectTimeout;
       if (typeof redirectTimeout === "undefined") {
-        redirectTimeout = REDIRECT_TIMEOUT;
+        redirectTimeout = REDIRECT_SECONDS * 1000;
       }
 
       startVerification(options.ready);
