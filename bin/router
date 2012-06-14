@@ -20,7 +20,6 @@ logger = require('../lib/logging.js').logger,
 forward = require('../lib/http_forward').forward,
 shutdown = require('../lib/shutdown');
 
-
 var app = undefined;
 
 app = express.createServer();
@@ -78,9 +77,9 @@ if (statsd_config && statsd_config.enabled) {
 
 // Add Strict-Transport-Security headers if we're serving over SSL
 if (config.get('scheme') == 'https') {
-  app.use(function(req, resp, next) {
+  app.use(function(req, res, next) {
     // expires in 30 days, include subdomains like www
-    resp.setHeader("Strict-Transport-Security", "max-age=2592000; includeSubdomains");
+    res.setHeader("Strict-Transport-Security", "max-age=2592000; includeSubdomains");
     next();
     });
 }

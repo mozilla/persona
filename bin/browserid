@@ -135,6 +135,15 @@ app.use(function(req, res, next) {
   next();
 });
 
+// add 'Access-Control-Allow-Origin' headers to static resources that will be served
+// from the CDN.  We explicitly allow resources served from public_url to access these.
+app.use(function(req, res, next) {
+  res.on('header', function() {
+    res.setHeader("Access-Control-Allow-Origin", config.get('public_url'));
+  });
+  next();
+});
+
 app.use(express.static(static_root));
 
 // open the databse
