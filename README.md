@@ -16,81 +16,55 @@ This repository contains several distinct things related to BrowserID:
   * **the login.persona.org website** - the templates, css, and javascript that make up the visible part of login.persona.org
   * **the javascript/HTML dialog & include library** - this is include.js and the code that it includes, the bit that someone using browserid will include.
 
-## Dependencies
+## Getting Started
 
-###Here's the software you'll need installed:
+If you want to work on the core BrowserID service, follow these instructions:
+
+### Install Dependencies
+
+BrowserID needs the following dependencies before it can run:
 
 * node.js (>= 0.6.2): http://nodejs.org
-
 * npm: http://npmjs.org/ (or bundled with node in 0.6.3+)
-
 * libgmp3
-
 * git
-
 * g++
 
-###Install dependencies:
+For detailed instructions for your particular operating system, check out the `SETUP` docs in the `docs/` folder.
 
-####Debian/Ubuntu specific instructions
+### Configure Git
 
- `sudo apt-get install python-software-properties`
- 
- `sudo apt-add-repository ppa:chris-lea/node.js`
- 
- `sudo apt-get update`
- 
- `sudo apt-get install nodejs npm git-core libgmp3-dev g++`
+The BrowserID team uses Git and GitHub for all of our collaboration, code hosting, and bug tracking. If you want to help out with core development, you'll need to sign up for a GitHub account and configure Git:
 
-## git browserid
+1. Sign up for a GitHub account at https://github.com/
+2. Learn how to configure Git at http://help.github.com/articles/set-up-git
+3. Learn how to fork and clone a repository at https://help.github.com/articles/fork-a-repo
 
-###Setup git (if you haven't done so already):
+If you'd like to use SSH keys instead of a password when you authenticate with GitHub, refer to https://help.github.com/articles/generating-ssh-keys
 
-1. Set the git configuration
+If you'd like to contribute code back to us, please do so using a GitHub Pull Request, as we follow the "Fork and Pull" collaborative development model. You can learn about pull requests at https://help.github.com/articles/using-pull-requests
 
- `git config --global user.name "Your Username"`
- 
- `git config --global user.email "Your Email"`
- 
-  (optional steps if you want to cache your credentials)
- 
- `git config --global credential.helper cache`
- 
- `git config --global credential.helper 'cache --timeout=3600'`
+### Running BrowserID Locally
 
-2. Generate an ssh rsa key
+To run the BrowserID service locally, you must first:
 
- `ssh-keygen`
+1. (Optionally) Fork the main `mozilla/browserid` repository.
+2. Clone the repository to your local machine.
+3. Run `npm install` from the root of your local clone.
 
-3. Login to github
-4. Click your user name
-5. Click "Edit Your Profile"
-6. Click "SSH Keys" (on the left) and click "Add SSH key"
-7. Name the SSH key, copy file contents of the `$HOME/.ssh/id_rsa.pub` file, and click "Save"
+You can then start the BrowserID suite of services by running `npm start` from the root of your local clone.
 
-###Forking and cloning browserid:
-1. Go to https://github.com/mozilla/browserid and click Fork.
-2. Clone browserid to your local repository
+When you run `npm start`, it will print several URLs to your terminal. You can test that everything is working by visiting the URL for the `example` (RP) site. Look for a line like this in the terminal: `example (10361): running on http://127.0.0.1:10001`.
 
- `git clone git@github.com:YOURUSERNAME/browserid.git`
+You can stop the services by typing Control-C in the terminal.
 
+### Staying Up to Date
 
-##Installing and Starting browserid
- 
- `npm install` to install 3rd party libraries and generate keys
- 
- `npm start` to start the servers locally
+To stay up to date with BrowserID:
 
-**Visit the demo application** ('rp') in your web browser (url output on the console at runtime)
-
-You can stop the servers with a Cntl-C in the terminal.
-
-### Staying up to date:
-
- `rm -Rf var node_modules`
- 
- `npm install`
-
+1. Use `git pull` to retrieve new changes.
+2. Delete both the `var` and `node_modules` folders in the root of your local clone.
+3. Run `npm install` from the root of your local clone.
 
 ## Testing
 
