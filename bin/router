@@ -87,8 +87,18 @@ if (config.get('scheme') == 'https') {
 // redirect requests to the "verifier" processes
 if (config.get('verifier_url')) {
   var verifier_url = urlparse(config.get('verifier_url')).validate().normalize();
+
+  // support requests coming into the verifier hostname as well as those with /verify in the path,
+  // iff the verifier is configured explicitly with a distinct hostname
+  var verifier_host;
+  if (config.get('public_verifier_url') !== config.get('public_url')) {
+    verifier_host = urlparse(config.get('public_verifier_url')).validate().host;
+  }
+
   app.use(function(req, res, next) {
-    if (/^\/verify$/.test(req.url)) {
+    if (/^\/verify$/.test(req.url) ||
+        (req.headers.host && verifier_host && req.headers.host === verifier_host))
+    {
       forward(
         verifier_url, req, res,
         function(err) {
