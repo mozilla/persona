@@ -72,7 +72,7 @@ try {
   process.exit(1);
 }
 
-app.post('/verify', function(req, resp, next) {
+function doVerification(req, resp, next) {
   req.body = req.body || {}
 
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req. body.assertion;
@@ -124,7 +124,10 @@ app.post('/verify', function(req, resp, next) {
       });
     }
   });
-});
+};
+
+app.post('/verify', doVerification);
+app.post('/', doVerification);
 
 // shutdown nicely on signals
 shutdown.handleTerminationSignals(app, function() {
