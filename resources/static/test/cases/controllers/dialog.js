@@ -15,6 +15,7 @@
       testErrorNotVisible = testHelpers.testErrorNotVisible,
       screens = bid.Screens,
       xhr = bid.Mocks.xhr,
+      user = bid.User,
       HTTP_TEST_DOMAIN = "http://testdomain.org",
       HTTPS_TEST_DOMAIN = "https://testdomain.org",
       TESTEMAIL = "testuser@testuser.com",
@@ -572,8 +573,6 @@
           siteLogo: siteLogo
         });
 
-        start();
-
         testHelpers.testObjectValuesEqual(startInfo, {
           siteLogo: encodeURI(HTTP_TEST_DOMAIN + siteLogo)
         });
@@ -582,10 +581,42 @@
         start();
       }
     });
-
   });
 
 
+  asyncTest("get with returnTo with https - not allowed", function() {
+    createController({
+      ready: function() {
+        var URL = HTTP_TEST_DOMAIN + "/path";
 
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "unexpected start");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          returnTo: URL
+        });
+
+        equal(retval, "must be an absolute path: (" + URL + ")", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with absolute path returnTo - allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          equal(user.getReturnTo(), HTTPS_TEST_DOMAIN + "/path", "returnTo correctly set");
+          start();
+        });
+
+        var retval = controller.get(HTTPS_TEST_DOMAIN, {
+          returnTo: "/path"
+        });
+      }
+    });
+  });
 }());
 

@@ -9,6 +9,7 @@ BrowserID.verifySecondaryAddress = (function() {
   var ANIMATION_TIME=250,
       bid = BrowserID,
       user = bid.User,
+      storage = bid.Storage,
       errors = bid.Errors,
       pageHelpers = bid.PageHelpers,
       dom = bid.DOM,
@@ -20,7 +21,13 @@ BrowserID.verifySecondaryAddress = (function() {
       sc,
       needsPassword,
       mustAuth,
-      verifyFunction;
+      verifyFunction,
+      doc = document,
+      REDIRECT_SECONDS = 5,
+      secondsRemaining = REDIRECT_SECONDS,
+      email,
+      redirectTo,
+      redirectTimeout;  // set in config if available, use REDIRECT_SECONDS otw.
 
   function showError(el, oncomplete) {
     dom.hide(".hint,#signUpForm");
@@ -30,26 +37,56 @@ BrowserID.verifySecondaryAddress = (function() {
   function showRegistrationInfo(info) {
     dom.setInner("#email", info.email);
 
-    if (info.origin) {
-      dom.setInner(".website", info.origin);
+    if (info.returnTo) {
+      dom.setInner(".website", info.returnTo);
+      updateRedirectTimeout();
       dom.show(".siteinfo");
+    }
+  }
+
+  function updateRedirectTimeout() {
+    if (secondsRemaining > 0) {
+      dom.setInner("#redirectTimeout", secondsRemaining);
+
+      secondsRemaining--;
+      setTimeout(updateRedirectTimeout, 1000);
     }
   }
 
   function submit(oncomplete) {
     var pass = dom.getInner("#password") || undefined,
         vpass = dom.getInner("#vpassword") || undefined,
-        valid = (!needsPassword ||
+        inputValid = (!needsPassword ||
                     validation.passwordAndValidationPassword(pass, vpass))
              && (!mustAuth ||
                     validation.password(pass));
 
-    if (valid) {
+    if (inputValid) {
       user[verifyFunction](token, pass, function(info) {
         dom.addClass("body", "complete");
 
-        var selector = info.valid ? "#congrats" : "#cannotcomplete";
-        pageHelpers.replaceFormWithNotice(selector, complete.curry(oncomplete, info.valid));
+        var verified = info.valid,
+            selector = verified ? "#congrats" : "#cannotcomplete";
+
+        pageHelpers.replaceFormWithNotice(selector, function() {
+          if (redirectTo && verified) {
+
+            // set the loggedIn status for the site.  This allows us to get
+            // a silent assertion without relying on the dialog to set the
+            // loggedIn status for the domain.  This is useful when the user
+            // closes the dialog OR if redirection happens before the dialog
+            // has had a chance to finish its business.
+            storage.setLoggedIn(URLParse(redirectTo).originOnly(), email);
+
+            setTimeout(function() {
+              doc.location.href = redirectTo;
+              complete(oncomplete, verified);
+            }, redirectTimeout);
+          }
+          else {
+            complete(oncomplete, verified);
+          }
+        });
       }, function(info) {
         if (info.network && info.network.status === 401) {
           tooltip.showTooltip("#cannot_authenticate");
@@ -67,7 +104,9 @@ BrowserID.verifySecondaryAddress = (function() {
 
   function startVerification(oncomplete) {
     user.tokenInfo(token, function(info) {
-      if(info) {
+      if (info) {
+        redirectTo = info.returnTo;
+        email = info.email;
         showRegistrationInfo(info);
 
         needsPassword = info.needs_password;
@@ -105,6 +144,12 @@ BrowserID.verifySecondaryAddress = (function() {
 
       token = options.token;
       verifyFunction = options.verifyFunction;
+      doc = options.document || document;
+
+      redirectTimeout = options.redirectTimeout;
+      if (typeof redirectTimeout === "undefined") {
+        redirectTimeout = REDIRECT_SECONDS * 1000;
+      }
 
       startVerification(options.ready);
 

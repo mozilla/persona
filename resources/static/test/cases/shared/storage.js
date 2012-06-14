@@ -164,12 +164,9 @@
     // XXX needs a test
   });
 
-  test("setStagedOnBehalfOf", function() {
-    // XXX needs a test
-  });
-
-  test("getStagedOnBehalfOf", function() {
-    // XXX needs a test
+  test("setReturnTo", function() {
+    storage.setReturnTo("http://some.domain/path");
+    equal(storage.getReturnTo(), "http://some.domain/path", "setReturnTo/getReturnTo working as expected");
   });
 
   test("signInEmail.set/.get/.remove - set, get, and remove the signInEmail", function() {

@@ -8,7 +8,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
 <title>
-Persona Relying Party
+Persona Relying Party Post Verification Return
 </title>
 <style type="text/css">
 
@@ -48,52 +48,14 @@ pre {
 </head>
 <body>
 <div class="title">
-  Persona Test Relying Party
+  Persona Relying Party Post Verification Return
 </div>
 
 <div class="intro">
-  This is a RP for testing, it allows you to drive the <tt>navigator.id.get()</tt> call manually
-  to locally test Persona.
-</div>
-
-<div class="specify">
-  <p><b>What flavor of assertion would you like?</b></p>
-  <ul>
-    <li>
-      <input type="checkbox" id="privacyPolicy">
-      <label for="privacyPolicy">Supply a privacy policy</label>
-    </li><li>
-      <input type="checkbox" id="termsOfService">
-      <label for="termsOfService">Supply a ToS</label>
-    </li><li>
-      <input type="checkbox" id="siteName">
-      <label for="siteName">Supply Site Name</label><br />
-    </li>
-    </li><li>
-      <input type="checkbox" id="siteLogo">
-      <label for="siteLogo">Supply Site Logo</label><br />
-    </li>
-    </li><li>
-      <input type="checkbox" id="returnTo">
-      <label for="returnTo">Supply returnTo</label><br />
-    </li>
-    </li><li>
-      <input type="text" id="requiredEmail" width="80">
-      <label for="requiredEmail">Require a specific email</label><br />
-    </li>
-  </ul>
-    <button class="assertion">Get an assertion</button>
-    <button class="logout">logout</button>
-</div>
-
-<div class="session">
-  <p><b>Care to simulate a session?</b></p>
-  <p>If you enter an email address or 'null' here, upon reload this value will
-     be passed to .watch() as the first parameter.  This lets you test things like
-     assertion generation suppression when the site and browser agree on who is logged in.
+  This is part of a RP for testing, it is the returnTo for post-verification redirect.
+  <p>
+    <a href="/">Return to RP Test Page</a>
   </p>
-  <input type="text" id="loggedInUser" width="80">
-  <button class="update_session">Update "session"</button>
 </div>
 
 <div class="loginEvents">
@@ -101,10 +63,6 @@ pre {
   <pre> ... </pre>
 </div>
 
-<div class="logoutEvents">
-  <h2>logouts</h2>
-  <pre> ... </pre>
-</div>
 
 <div class="readiness">
   <h2>readiness</h2>
@@ -114,7 +72,7 @@ pre {
 </body>
 
 <script src="jquery-min.js"></script>
-<script src="https://login.persona.org/include.js"></script>
+<script src="https://browserid.org/include.js"></script>
 <script>
 
 try {
@@ -177,42 +135,6 @@ navigator.id.watch({
     var txt = serial++ + ' logout callback invoked at ' + (new Date).toString();
     $(".logoutEvents > pre").text(txt);
   }
-});
-
-$(document).ready(function() {
-  $(".specify button.assertion").click(function() {
-    var requiredEmail = $.trim($('#requiredEmail').val());
-    if (!requiredEmail.length) requiredEmail = undefined;
-    if (requiredEmail && requiredEmail.indexOf('@') === -1) {
-      alert('Invalid Email in "Require a specific email" field. Adding @example.com');
-      $('#requiredEmail').val(requiredEmail + '@example.com');
-      $('#requiredEmail').focus();
-      return;
-    }
-
-    $(".specify button.assertion").attr('disabled', 'true');
-
-    navigator.id.request({
-      privacyPolicy: $('#privacyPolicy').attr('checked') ? "/privacy.html" : undefined,
-      termsOfService: $('#termsOfService').attr('checked') ? "/TOS.html" : undefined,
-      siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
-      siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined,
-      returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,
-      requiredEmail: requiredEmail,
-      oncancel: function() {
-        loggit("oncancel");
-        $(".specify button.assertion").removeAttr('disabled');
-      }
-    });
-  });
-
-  $(".specify button.logout").click(navigator.id.logout);
-
-  $(".session button.update_session").click(function() {
-    storage.loggedInUser = $.trim($('#loggedInUser').val());
-    $(".session input").fadeOut(100).fadeIn(350);
-  });
-  $('#loggedInUser').val(storage.loggedInUser ? storage.loggedInUser : "");
 });
 
 </script>

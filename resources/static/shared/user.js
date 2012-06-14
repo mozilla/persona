@@ -113,7 +113,7 @@ BrowserID.User = (function() {
           // As soon as the registration comes back as complete, we should
           // ensure that the stagedOnBehalfOf is cleared so there is no stale
           // data.
-          storage.setStagedOnBehalfOf("");
+          storage.setReturnTo("");
 
           // To avoid too many address_info requests, returns from each
           // address_info request are cached.  If the user is doing
@@ -273,6 +273,14 @@ BrowserID.User = (function() {
       return origin.replace(/^.*:\/\//, "").replace(/:\d*$/, "");
     },
 
+    setReturnTo: function(returnTo) {
+      this.returnTo = returnTo;
+    },
+
+    getReturnTo: function() {
+      return this.returnTo;
+    },
+
     /**
      * Create a user account - this creates an user account that must be verified.
      * @method createSecondaryUser
@@ -282,15 +290,13 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     createSecondaryUser: function(email, password, onComplete, onFailure) {
-      // Used on the main site when the user verifies - we try to show them
-      // what URL they came from.
-
-      // XXX - this will have to be updated to either store both the hostname
-      // and the exact URL of the RP or just the URL of the RP and the origin
-      // is extracted from that.
-      storage.setStagedOnBehalfOf(User.getHostname());
-
-      network.createUser(email, password, origin, onComplete, onFailure);
+      network.createUser(email, password, origin, function(created) {
+        // Used on the main site when the user verifies - once verification
+        // is complete, the user is redirected back to the RP and logged in.
+        var site = User.getReturnTo();
+        if (created && site) storage.setReturnTo(site);
+        complete(onComplete, created);
+      }, onFailure);
     },
 
     /**
@@ -481,10 +487,10 @@ BrowserID.User = (function() {
     tokenInfo: function(token, onComplete, onFailure) {
       network.emailForVerificationToken(token, function (info) {
         if(info) {
-          info = _.extend(info, { origin: storage.getStagedOnBehalfOf() });
+          info = _.extend(info, { returnTo: storage.getReturnTo() });
         }
 
-        onComplete && onComplete(info);
+        complete(onComplete, info);
       }, onFailure);
 
     },
@@ -507,8 +513,8 @@ BrowserID.User = (function() {
             var result = invalidInfo;
 
             if(valid) {
-              result = _.extend({ valid: valid, origin: storage.getStagedOnBehalfOf() }, info);
-              storage.setStagedOnBehalfOf("");
+              result = _.extend({ valid: valid, returnTo: storage.getReturnTo() }, info);
+              storage.setReturnTo("");
             }
 
             complete(onComplete, result);
@@ -571,13 +577,16 @@ BrowserID.User = (function() {
       User.isEmailRegistered(email, function(registered) {
         if (registered) {
           network.requestPasswordReset(email, password, origin, function(reset) {
-            var status = {
-              success: reset
-            };
+            var status = { success: reset };
 
             if (!reset) status.reason = "throttle";
+            // Used on the main site when the user verifies - once
+            // verification is complete, the user is redirected back to the
+            // RP and logged in.
+            var site = User.getReturnTo();
+            if (reset && site) storage.setReturnTo(site);
 
-            if (onComplete) onComplete(status);
+            complete(onComplete, status);
           }, onFailure);
         }
         else if (onComplete) {
@@ -806,10 +815,13 @@ BrowserID.User = (function() {
      */
     addEmail: function(email, password, onComplete, onFailure) {
       network.addSecondaryEmail(email, password, origin, function(added) {
-        if (added) storage.setStagedOnBehalfOf(User.getHostname());
+        // Used on the main site when the user verifies - once verification
+        // is complete, the user is redirected back to the RP and logged in.
+        var returnTo = User.getReturnTo();
+        if (added && returnTo) storage.setReturnTo(returnTo);
 
         // we no longer send the keypair, since we will certify it later.
-        if (onComplete) onComplete(added);
+        complete(onComplete, added);
       }, onFailure);
     },
 
@@ -871,8 +883,8 @@ BrowserID.User = (function() {
             var result = invalidInfo;
 
             if(valid) {
-              result = _.extend({ valid: valid, origin: storage.getStagedOnBehalfOf() }, info);
-              storage.setStagedOnBehalfOf("");
+              result = _.extend({ valid: valid, returnTo: storage.getReturnTo() }, info);
+              storage.setReturnTo("");
             }
 
             complete(onComplete, result);
