@@ -137,12 +137,12 @@
 
   test("start - RPInfo always started", function() {
     mediator.publish("start", {
-      tosURL: "https://browserid.org/TOS.html",
-      privacyURL: "https://browserid.org/priv.html"
+      termsOfService: "https://browserid.org/TOS.html",
+      privacyPolicy: "https://browserid.org/priv.html"
     });
 
-    ok(actions.info.doRPInfo.tosURL, "doRPInfo called with tosURL set");
-    ok(actions.info.doRPInfo.privacyURL, "doRPInfo called with privacyURL set");
+    ok(actions.info.doRPInfo.termsOfService, "doRPInfo called with termsOfService set");
+    ok(actions.info.doRPInfo.privacyPolicy, "doRPInfo called with privacyPolicy set");
   });
 
   test("user_staged - call doConfirmUser", function() {
@@ -269,12 +269,12 @@
   });
 
   test("forgot_password - call doForgotPassword with correct options", function() {
-    mediator.publish("start", { privacyURL: "priv.html", tosURL: "tos.html" });
+    mediator.publish("start", { privacyPolicy: "priv.html", termsOfService: "tos.html" });
     mediator.publish("forgot_password", {
       email: TEST_EMAIL,
       requiredEmail: true
     });
-    testActionStarted("doForgotPassword", { email: TEST_EMAIL, requiredEmail: true, siteTOSPP: true });
+    testActionStarted("doForgotPassword", { email: TEST_EMAIL, requiredEmail: true });
   });
 
   test("password_reset to user_confirmed - call doUserStaged then doEmailConfirmed", function() {
@@ -394,7 +394,7 @@
   });
 
   test("authenticate - call doAuthenticate with the correct options", function() {
-    mediator.publish("start", { privacyURL: "priv.html", tosURL: "tos.html" });
+    mediator.publish("start", { privacyPolicy: "priv.html", termsOfService: "tos.html" });
     mediator.publish("authenticate", { email: TEST_EMAIL });
 
     testActionStarted("doAuthenticate", { email: TEST_EMAIL, siteTOSPP: true });
@@ -424,9 +424,9 @@
 
 
   test("add_email - call doAddEmail with correct options", function() {
-    mediator.publish("start", { privacyURL: "priv.html", tosURL: "tos.html" });
+    mediator.publish("start", { privacyPolicy: "priv.html", termsOfService: "tos.html" });
     mediator.publish("add_email");
-    testActionStarted("doAddEmail", { siteTOSPP: true });
+    testActionStarted("doAddEmail");
   });
 
   asyncTest("email_chosen with secondary email, user must authenticate - call doAuthenticateWithRequiredEmail", function() {
@@ -435,7 +435,7 @@
 
     xhr.setContextInfo("auth_level", "assertion");
 
-    mediator.publish("start", { privacyURL: "priv.html", tosURL: "tos.html" });
+    mediator.publish("start", { privacyPolicy: "priv.html", termsOfService: "tos.html" });
     mediator.publish("email_chosen", {
       email: email,
       complete: function() {
@@ -489,8 +489,8 @@
   test("null assertion generated - preserve original options in doPickEmail", function() {
     mediator.publish("start", {
       hostname: "http://example.com",
-      privacyURL: "http://example.com/priv.html",
-      tosURL: "http://example.com/tos.html"
+      privacyPolicy: "http://example.com/priv.html",
+      termsOfService: "http://example.com/tos.html"
     });
     mediator.publish("assertion_generated", { assertion: null });
 

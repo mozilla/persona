@@ -135,7 +135,7 @@
   }
 
   function showRPTosPP() {
-    dom.show(".rptospp");
+    dom.addClass("body", "rptospp");
   }
 
   helpers.Dialog = helpers.Dialog || {};

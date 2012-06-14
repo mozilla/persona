@@ -13,8 +13,8 @@
       <ul class="inputs">
 
           <li>
-              <label for="email" class="serif"><%= gettext("Email") %></label>
-              <input id="required_email" class="sans" type="email" value="<%= email %>" disabled />
+              <label for="email" ><%= gettext("Email") %></label>
+              <input id="required_email" type="email" value="<%= email %>" disabled />
               <div id="could_not_add" class="tooltip" for="required_email">
                 <%= gettext("We just sent an email to that address! If you really want to send another, wait a minute or two and try again.") %>
               </div>
@@ -32,9 +32,9 @@
           <% if (password) { %>
               <li id="password_section">
                   <a id="forgotPassword" class="right forgot" href="#" tabindex="4"><%= gettext("forgot your password?") %></a>
-                  <label for="password" class="serif"><%= gettext("Password") %></label>
+                  <label for="password" ><%= gettext("Password") %></label>
 
-                  <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
+                  <input id="password" type="password" maxlength="80" tabindex="2" />
 
                   <div id="password_required" class="tooltip" for="password">
                     <%= gettext("The password field is required.") %>
@@ -50,14 +50,15 @@
       </ul>
 
       <div class="submit cf">
-          <p class="tospp bidtospp">
+          <p class="tospp">
             <%= format(
                   gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
-                       [ "BrowserID",
-                         ' href="https://browserid.org/tos" target="_new"',
-                         ' href="https://browserid.org/privacy" target="_new"',
+                       [ "Persona",
+                         ' href="https://login.persona.org/tos" target="_new"',
+                         ' href="https://login.persona.org/privacy" target="_new"',
                        ]) %>
           </p>
+
           <p>
             <% if (signin) { %>
               <button id="sign_in" tabindex="3"><%= gettext("sign in") %></button>

@@ -18,7 +18,7 @@
 <% } %>
 
 <% if(privacyPolicy && termsOfService) { %>
-  <p class="rptospp tospp">
+  <p id="rptospp" class="tospp">
     <%= format(gettext("By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>."),
     [ siteName || hostname,
      ' href="' + termsOfService + '" id="rp_tos" target="_blank"',

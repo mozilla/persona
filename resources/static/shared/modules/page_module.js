@@ -129,7 +129,8 @@ BrowserID.Modules.PageModule = (function() {
       self.hideWait();
       self.hideError();
       self.hideDelay();
-      dom.hide(".tospp");
+
+      dom.removeClass("body", "rptospp");
 
       screens.form.show(template, data);
       dom.focus("input:visible:not(:disabled):eq(0)");

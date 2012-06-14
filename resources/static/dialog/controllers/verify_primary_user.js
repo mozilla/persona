@@ -54,11 +54,6 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       });
       self.renderDialog("verify_primary_user", templateData);
 
-      if(data.siteTOSPP) {
-        dialogHelpers.showRPTosPP.call(self);
-      }
-      dom.show(".tospp");
-
       self.click("#cancel", cancel);
 
       sc.start.call(self, data);

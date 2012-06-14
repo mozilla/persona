@@ -24,14 +24,6 @@
       </ul>
 
       <div class="submit cf">
-          <p class="tospp bidtospp">
-           <%= format(
-                gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
-                     [ "BrowserID",
-                       ' href="https://browserid.org/tos" target="_new"',
-                       ' href="https://browserid.org/privacy" target="_new"',
-                     ]) %>
-          </p>
           <p>
             <button id="verifyWithPrimary"><%= gettext("verify") %></button>
           </p>
@@ -48,14 +40,6 @@
     </p>
 
     <div class="submit cf">
-        <p class="tospp bidtospp">
-         <%= format(
-              gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
-                   [ "BrowserID",
-                     ' href="https://browserid.org/tos" target="_new"',
-                     ' href="https://browserid.org/privacy" target="_new"',
-                   ]) %>
-        </p>
         <p>
           <button id="verifyWithPrimary"><%= gettext("verify") %></button>
           <a href="#" id="cancel" class="action"><%= gettext("cancel") %></a>

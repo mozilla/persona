@@ -394,15 +394,19 @@ div#required_email {
 }
 
 .tospp {
-  display: none;
   font-size: 11px;
   line-height: 1.2;
   color: #787878;
 }
 
-#rp_info .tospp {
+#rptospp {
+  display: none;
   margin: 10px auto;
   max-width: 280px;
+}
+
+.rptospp #rptospp {
+  display: block;
 }
 
 a.emphasize {

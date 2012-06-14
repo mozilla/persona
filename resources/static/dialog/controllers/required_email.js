@@ -103,6 +103,7 @@ BrowserID.Modules.RequiredEmail = (function() {
       email = options.email || "";
       secondaryAuth = options.secondary_auth;
       primaryInfo = null;
+      var siteTOSPP = options.siteTOSPP;
 
       function ready() {
         options.ready && options.ready();
@@ -212,12 +213,27 @@ BrowserID.Modules.RequiredEmail = (function() {
           signin: false,
           password: false,
           secondary_auth: false,
-          primary: false,
-          privacy_url: options.privacyURL || null,
-          tos_url: options.tosURL || null
+          primary: false
         }, templateData);
 
         self.renderDialog("required_email", templateData);
+
+        // For the first revision, if the required_email template is shown, the
+        // Persona TOS/PP agreement will always be shown.  The RP TOS/PP will
+        // be shown if there is no email set for the origin (user has not
+        // visited site before).
+        //
+        // This leaves two important holes in coverage for both Persona and the
+        // RP.  #1) New secondary user. The new secondary user flow is
+        // redirected to the "new_user" flow - eventually landing the user on
+        // the "set_password" screen.  #2) New primary user who is not
+        // authenticated with their IdP. These users are passed on to the
+        // "primary_user" flow.  In neither case is the Persona TOS/PP
+        // agreement shown.
+        var originEmail = user.getOriginEmail();
+        if (!originEmail && siteTOSPP) {
+          dialogHelpers.showRPTosPP.call(self);
+        }
 
         self.click("#sign_in", signIn);
         self.click("#verify_address", verifyAddress);

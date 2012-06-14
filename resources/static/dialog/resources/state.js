@@ -42,7 +42,7 @@ BrowserID.State = (function() {
 
     handleState("start", function(msg, info) {
       self.hostname = info.hostname;
-      self.siteTOSPP = !!(info.privacyURL && info.tosURL);
+      self.siteTOSPP = !!(info.privacyPolicy && info.termsOfService);
       requiredEmail = info.requiredEmail;
 
       startAction(false, "doRPInfo", info);
@@ -304,9 +304,6 @@ BrowserID.State = (function() {
       // finally reset, the password_reset message will be raised where we must
       // await email confirmation.
       self.resetPasswordEmail = info.email;
-      info = helpers.extend(info || {}, {
-        siteTOSPP: self.siteTOSPP
-      });
       startAction(false, "doForgotPassword", info);
     });
 
@@ -362,10 +359,6 @@ BrowserID.State = (function() {
       // either 1) primary_user or 2) email_staged. #1 occurs if the email
       // address is a primary address, #2 occurs if the address is a secondary
       // and the verification email has been sent.
-      info = helpers.extend(info || {}, {
-        siteTOSPP: self.siteTOSPP
-      });
-
       startAction("doAddEmail", info);
     });
 

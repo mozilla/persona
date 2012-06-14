@@ -10,7 +10,6 @@
       controller,
       el,
       testHelpers = bid.TestHelpers,
-      testElementExists = testHelpers.testElementExists,
       WindowMock = bid.Mocks.WindowMock,
       win,
       mediator = bid.Mediator;
@@ -32,32 +31,6 @@
       }
       testHelpers.teardown();
     }
-  });
-
-  test("create siteTOSPP set to true - show TOS/PP", function() {
-    createController({
-      window: win,
-      add: false,
-      email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
-      siteTOSPP: true
-    });
-
-    // XXX There should be a generalized test for this.
-    testElementExists(".tospp", "tospp has been added to the DOM");
-  });
-
-  test("create with requiredEmail, privacyURL and tosURL defined - show TOS/PP", function() {
-    createController({
-      window: win,
-      add: false,
-      requiredEmail: "unregistered@testuser.com",
-      email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
-      siteTOSPP: true
-    });
-
-    testElementExists(".tospp", "tospp has been added to the DOM");
   });
 
   asyncTest("submit with `add: false` option opens a new tab with CREATE_EMAIL URL", function() {

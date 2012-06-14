@@ -18,7 +18,6 @@ BrowserID.Modules.Authenticate = (function() {
       dom = bid.DOM,
       lastEmail = "",
       addressInfo,
-      siteTOSPP,
       hints = ["returning","start","addressInfo"];
 
   function getEmail() {
@@ -165,11 +164,12 @@ BrowserID.Modules.Authenticate = (function() {
 
       dom.hide(".returning,.start");
 
-      // We have to show the TOS/PP agreement to *all* users here.  Users who
+      // We have to show the TOS/PP agreements to *all* users here. Users who
       // are already authenticated to their IdP but do not have a Persona
       // account automatically have an account created with no further
-      // interaction.
-      dom.show(".tospp");
+      // interaction.  To make sure they see the TOS/PP agreement, show it
+      // here.
+      dialogHelpers.showRPTosPP.call(self);
 
       self.bind("#email", "keyup", emailKeyUp);
       self.click("#forgotPassword", forgotPassword);

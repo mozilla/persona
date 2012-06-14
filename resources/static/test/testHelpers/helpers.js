@@ -233,14 +233,26 @@ BrowserID.TestHelpers = (function() {
           msg || (selector + " has className " + className));
     },
 
+    testNotHasClass: function(selector, className, msg) {
+      ok(!$(selector).hasClass(className),
+          msg || (selector + " does not have className " + className));
+    },
+
     testElementDoesNotExist: function(selector, msg) {
       equal($(selector).length, 0, msg || ("element '" + selector + "' does not exist"));
     },
 
     testElementExists: function(selector, msg) {
       ok($(selector).length, msg || ("element '" + selector + "' exists"));
-    }
+    },
 
+    testRPTosPPShown: function(msg) {
+      TestHelpers.testHasClass("body", "rptospp", msg || "RP TOS/PP shown");
+    },
+
+    testRPTosPPNotShown: function(msg) {
+      TestHelpers.testNotHasClass("body", "rptospp", msg || "RP TOS/PP not shown");
+    }
   };
 
   return TestHelpers;
