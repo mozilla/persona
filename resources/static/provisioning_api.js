@@ -626,7 +626,7 @@
   }
 
   if (!navigator.id.beginProvisioning || navigator.id._primaryAPIIsShimmed) {
-    var ipServer = "https://browserid.org";
+    var ipServer = "https://login.persona.org";
 
     var chan = Channel.build({window: window.parent, origin: ipServer, scope: "vep_prov"});
 

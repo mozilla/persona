@@ -20,7 +20,7 @@ BrowserID.TestHelpers = (function() {
       tooltip = bid.Tooltip,
       registrations = [],
       calls = {},
-      testOrigin = "https://browserid.org";
+      testOrigin = "https://login.persona.org";
 
   function register(message, cb) {
     registrations.push(mediator.subscribe(message, function(msg, info) {

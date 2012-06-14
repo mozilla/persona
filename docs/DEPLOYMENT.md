@@ -9,7 +9,7 @@ Reader beware.
 # How to deploy BrowserID
 
 This describes how to take the code here, put it on a server, and build
-a service like browserid.org.  
+a service like persona.org.  
 
 So what are we deploying, anyway?
 
@@ -17,11 +17,11 @@ So what are we deploying, anyway?
     api, stores a record of users, the email addresses they've verified, a
     bcrypted password, outstanding verification tokens, etc.
   * *the verifier* - a stateless node.js server which does cryptographic
-    verification of assertions. This thing is hosted on browserid.org as a
+    verification of assertions. This thing is hosted on persona.org as a
     convenience, but people using browserid can choose to relocated it if they
     want to their own servers.
-  * *the browserid.org website* - the templates, css, and javascript that make
-    up the visible part of browserid.org
+  * *the persona.org website* - the templates, css, and javascript that make
+    up the visible part of persona.org
   * *the javascript/HTML dialog & include library* - this is include.js and the
     code that it includes, the bit that someone using browserid will include.
 
@@ -216,7 +216,7 @@ check host verifier with address 127.0.0.1
   5. create a file to run the browserid server at `/etc/monit.d/browserid`:
 
 <pre>
-check host browserid.org with address 127.0.0.1
+check host persona.org with address 127.0.0.1
     start program = "/etc/monit/start_node_server /home/browserid/code/browserid/run.js"
         as uid "www-data" and gid "www-data"
     stop program  = "/usr/bin/pkill -f '/usr/local/bin/node /home/browserid/code/browserid/run.js'"
@@ -276,7 +276,7 @@ http {
 <pre>
 server {
     listen       80 default;
-    server_name  browserid.org;
+    server_name  persona.org;
 
     # pass /verify invocations to the verifier
     location /verify {
@@ -294,7 +294,7 @@ server {
 
   5. restart your webserver: `sudo /etc/init.d/nginx restart`
 
-     confirm that it's accepting requests: `curl -I -H 'Host: browserid.org' http://localhost:80/`
+     confirm that it's accepting requests: `curl -I -H 'Host: persona.org' http://localhost:80/`
 
 ### 8. Set up log rotation
 

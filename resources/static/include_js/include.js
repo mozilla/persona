@@ -1,5 +1,5 @@
 /**
- * Uncompressed source can be found at https://browserid.org/include.orig.js
+ * Uncompressed source can be found at https://login.persona.org/include.orig.js
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -924,7 +924,7 @@
   }
 
   if (!navigator.id.request || navigator.id._shimmed) {
-    var ipServer = "https://browserid.org";
+    var ipServer = "https://login.persona.org";
     var userAgent = navigator.userAgent;
     // We must check for both XUL and Java versions of Fennec.  Both have
     // distinct UA strings.

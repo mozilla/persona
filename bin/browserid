@@ -105,13 +105,12 @@ app.use(cachify.setup(assets(config.get('supported_languages')),
         {
           prefix: config.get('cachify_prefix'),
           production: config.get('use_minified_resources'),
-          root: static_root,
+          root: static_root
         }));
 
-
 // #7 - perform response substitution to support local/dev/beta environments
-// (specifically, this replaces URLs in responses, e.g. https://browserid.org
-//  with https://diresworb.org)
+// (specifically, this replaces URLs in responses, e.g. https://login.persona.org
+//  with https://login.anosrep.org)
 config.performSubstitution(app);
 
 // #8 - handle /wsapi requests
@@ -133,6 +132,15 @@ if (process.env['BROWSERID_FAKE_VERIFICATION']) {
 // that proper vary headers are installed to prevent unwanted caching
 app.use(function(req, res, next) {
   res.setHeader('Vary', 'Accept-Encoding,Accept-Language');
+  next();
+});
+
+// add 'Access-Control-Allow-Origin' headers to static resources that will be served
+// from the CDN.  We explicitly allow resources served from public_url to access these.
+app.use(function(req, res, next) {
+  res.on('header', function() {
+    res.setHeader("Access-Control-Allow-Origin", config.get('public_url'));
+  });
   next();
 });
 

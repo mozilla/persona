@@ -5,15 +5,15 @@
 Here lives the [BrowserID][] implementation.  BrowserID is an implementation of the
 [verified email protocol][VEP].
 
-  [BrowserID]:https://browserid.org
+  [BrowserID]:https://login.persona.org
   [VEP]:https://wiki.mozilla.org/Labs/Identity/VerifiedEmailProtocol
 
 This repository contains several distinct things related to BrowserID:
 
   * **the browserid server** - a node.js server which implements a web services api, stores a record of users, the email addresses they've verified, a bcrypted password, outstanding verification tokens, etc
-  * **the verifier** - a stateless node.js server which does cryptographic verification of assertions. This thing is hosted on browserid.org as a convenience, but people using browserid can choose to host their own version if they wish to.
+  * **the verifier** - a stateless node.js server which does cryptographic verification of assertions. This thing is hosted on login.persona.org as a convenience, but people using browserid can choose to host their own version if they wish to.
   * **sample and test code** - to test the above
-  * **the browserid.org website** - the templates, css, and javascript that make up the visible part of browserid.org
+  * **the login.persona.org website** - the templates, css, and javascript that make up the visible part of login.persona.org
   * **the javascript/HTML dialog & include library** - this is include.js and the code that it includes, the bit that someone using browserid will include.
 
 ## Dependencies

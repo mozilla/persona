@@ -166,7 +166,7 @@ properties available to normal web content.
 To support browsers without native BrowserID support, the provisioning
 content should include a javascript shim, hosted at:
 
-    https://browserid.org/provisioning_api.js
+    https://login.persona.org/provisioning_api.js
 
 ### 4.3. BrowserID API
 
@@ -269,7 +269,7 @@ user has successfully authenticated with the primary.
 To support browsers without native BrowserID support, the
 authentication page should include a javascript shim, hosted at:
 
-    https://browserid.org/authentication_api.js
+    https://login.persona.org/authentication_api.js
 
 ### 5.3 BrowserID API
 
