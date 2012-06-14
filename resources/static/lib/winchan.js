@@ -115,7 +115,7 @@
           iframe.setAttribute('src', opts.relay_url);
           iframe.style.display = "none";
           iframe.setAttribute('name', RELAY_FRAME_NAME);
-          document.body.appendChild(iframe)
+          document.body.appendChild(iframe);
           messageTarget = iframe.contentWindow;
         }
 
@@ -215,7 +215,7 @@
           }
         };
       }
-    }
+    };
   } else {
     return {
       open: function(url, winopts, arg, cb) {
