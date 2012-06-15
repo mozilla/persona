@@ -152,7 +152,6 @@
         catch(e) {
           // do nothing, an exception will be thrown because no modules are
           // registered for the any services.
-          console.log(e);
         }
       }
     });
