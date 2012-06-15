@@ -155,15 +155,6 @@
     storage.clear();
     equal(typeof storage.manage_page.get("user_has_visited"), "undefined", "after reset, user_has_visited reset correctly");
   });
-
-  test("storeTemporaryKeypair", function() {
-    // XXX needs a test
-  });
-
-  test("retrieveTemporaryKeypair", function() {
-    // XXX needs a test
-  });
-
   test("setReturnTo", function() {
     storage.setReturnTo("http://some.domain/path");
     equal(storage.getReturnTo(), "http://some.domain/path", "setReturnTo/getReturnTo working as expected");

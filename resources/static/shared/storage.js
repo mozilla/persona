@@ -124,28 +124,6 @@ BrowserID.Storage = (function() {
     }
   }
 
-  function storeTemporaryKeypair(keypair) {
-    storage.tempKeypair = JSON.stringify({
-      publicKey: keypair.publicKey.toSimpleObject(),
-      secretKey: keypair.secretKey.toSimpleObject()
-    });
-  }
-
-  function retrieveTemporaryKeypair() {
-    var raw_kp = JSON.parse(storage.tempKeypair || "");
-    storage.tempKeypair = null;
-    if (raw_kp) {
-      prepareDeps();
-
-      var kp = {};
-      kp.publicKey = jwcrypto.loadPublicKeyFromObject(raw_kp.publicKey);
-      kp.secretKey = jwcrypto.loadSecretKeyFromObject(raw_kp.secretKey);
-      return kp;
-    } else {
-      return null;
-    }
-  }
-
   function setReturnTo(returnToURL) {
     storage.returnTo = JSON.stringify({
       at: new Date().toString(),
@@ -588,8 +566,6 @@ BrowserID.Storage = (function() {
      * @method clear
      */
     clear: clear,
-    storeTemporaryKeypair: storeTemporaryKeypair,
-    retrieveTemporaryKeypair: retrieveTemporaryKeypair,
     setReturnTo: setReturnTo,
     getReturnTo: getReturnTo
   };
