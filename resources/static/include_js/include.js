@@ -1039,6 +1039,10 @@
     }
 
     function internalRequest(options) {
+      if (options.requiredEmail) {
+        throw "requiredEmail has been deprecated";
+      }
+
       // focus an existing window
       if (w) {
         try {

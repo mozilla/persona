@@ -198,65 +198,6 @@
     });
   });
 
-  asyncTest("get with invalid requiredEmail - print error screen", function() {
-    createController({
-      ready: function() {
-        mediator.subscribe("start", function(msg, info) {
-          ok(false, "start should not have been called");
-        });
-
-        var retval = controller.get(HTTP_TEST_DOMAIN, {
-          requiredEmail: "bademail"
-        });
-        equal(retval, "invalid requiredEmail: (bademail)", "expected error");
-        testErrorVisible();
-        start();
-      }
-    });
-  });
-
-  asyncTest("get with script containing requiredEmail - print error screen", function() {
-    createController({
-      ready: function() {
-        mediator.subscribe("start", function(msg, info) {
-          ok(false, "start should not have been called");
-        });
-
-        var retval = controller.get(HTTP_TEST_DOMAIN, {
-          requiredEmail: "<script>window.scriptRun=true;</script>testuser@testuser.com"
-        });
-
-        // If requiredEmail is not properly escaped, scriptRun will be true.
-        equal(typeof window.scriptRun, "undefined", "script was not run");
-        equal(retval, "invalid requiredEmail: (<script>window.scriptRun=true;</script>testuser@testuser.com)", "expected error");
-        testErrorVisible();
-        start();
-      }
-    });
-  });
-
-  asyncTest("get with valid requiredEmail - go to start", function() {
-    createController({
-      ready: function() {
-        var startInfo;
-        mediator.subscribe("start", function(msg, info) {
-          startInfo = info;
-        });
-
-        var retval = controller.get(HTTP_TEST_DOMAIN, {
-          requiredEmail: TESTEMAIL
-        });
-
-        testHelpers.testObjectValuesEqual(startInfo, {
-          requiredEmail: TESTEMAIL
-        });
-        equal(typeof retval, "undefined", "no error expected");
-        testErrorNotVisible();
-        start();
-      }
-    });
-  });
-
   asyncTest("get with relative tosURL & valid privacyURL - print error screen", function() {
     createController({
       ready: function() {
