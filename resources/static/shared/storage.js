@@ -62,6 +62,7 @@ BrowserID.Storage = (function() {
     _.each({
       emailToUserID: {},
       emails: {},
+      interaction_data: {},
       loggedIn: {},
       main_site: {},
       managePage: {},
