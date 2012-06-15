@@ -178,6 +178,11 @@ BrowserID.Modules.Dialog = (function() {
           // that come from other domains, only allow absolute paths from the
           // origin.
           params.siteLogo = fixupAbsolutePath(origin_url, paramsFromRP.siteLogo);
+          // To avoid mixed content errors, only allow siteLogos to be served
+          // from https RPs
+          if (URLParse(origin_url).scheme !== "https") {
+            throw "only https sites can specify a siteLogo";
+          }
         }
 
         if (paramsFromRP.siteName) {
