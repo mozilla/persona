@@ -45,7 +45,7 @@
 /*
  * 620 catches most mobile devices in landscape mode.  The purpose of this is
  * to make sure the right hand nav menu does not drop partially below the
- * persona logo.
+ * persona logo. This also adjusts the boxes on the "How It Works" page.
  */
 @media screen and (max-width: 620px) {
   header ul {
@@ -53,6 +53,44 @@
     float: none;
     display: block;
     text-align: center;
+  }
+
+  .blurb.half {
+    width: 100%;
+    float: none;
+    min-height: 0 !important;
+  }
+  .blurb.half.first {
+    margin-right: 0;
+  }
+
+  .blurb {
+    display: -moz-box;
+    display: -webkit-box;
+    display: box;
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+  }
+  .blurb .info {
+    -webkit-box-ordinal-group: 2;
+    -moz-box-ordinal-group: 2;
+    -ms-box-ordinal-group: 2;
+    box-ordinal-group: 2;
+  }
+  .blurb.flexible .graphic {
+    margin: 0 0 30px;
+  }
+  .blurb .first {
+    padding-right: 0;
+  }
+  .blurb .info, .blurb .graphic {
+    float: none;
+    width: 100%;
+  }
+
+  h2.title {
+    font-size: 42px;
   }
 }
 
