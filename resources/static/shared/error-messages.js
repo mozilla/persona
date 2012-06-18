@@ -56,7 +56,7 @@ BrowserID.Errors = (function(){
     },
 
     cookiesDisabled: {
-      title: gettext("BrowserID requires cookies"),
+      title: gettext("Persona requires cookies"),
       message: format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='" + enableCookiesURL + "'"])
 
     },
