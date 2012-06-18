@@ -610,17 +610,13 @@ footer ul li:first-child a:hover {
   -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.13);
   -ms-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.13);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.13);
+  background: #63727d;
   background: rgba(13, 28, 41, 0.1);
   font-size: 14px;
   color: #fff;
 }
 
 .blurb {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-  -o-box-sizing: border-box;
-  box-sizing: border-box;
   zoom: 1;
   margin-top: 30px;
   padding: 30px;
@@ -661,11 +657,6 @@ footer ul li:first-child a:hover {
   margin-right: 4%;
 }
 .blurb .info, .blurb .graphic {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -ms-box-sizing: border-box;
-  -o-box-sizing: border-box;
-  box-sizing: border-box;
   width: 50%;
   float: left;
 }
@@ -718,6 +709,7 @@ a.developers {
   text-align: center;
 }
 a.developers:hover {
+  background: #3b4e5c;
   background: rgba(13, 28, 41, 0.2);
 }
 a.developers img {
