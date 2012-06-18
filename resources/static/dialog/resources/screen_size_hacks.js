@@ -12,7 +12,10 @@
         signInEl = $("#signIn");
 
     selectEmailEl.css("position", "static");
-    if($(window).width() >= 640) {
+
+    // The mobile breakpoint is 640px in the CSS.  If the max-width is changed
+    // there, it must be changed here as well.
+    if($(window).width() > 640) {
       // First, remove the mobile hacks
       selectEmailEl.css("width", "");
       contentEl.css("min-height", "");
