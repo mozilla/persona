@@ -20,7 +20,9 @@
 </head>
   <body class="waiting">
       <header id="header">
-         <a href="#" id="showDevelopment">&nbsp;</a>
+         <% if (enable_development_menu) { %>
+           <a href="#" id="showDevelopment">&nbsp;</a>
+         <% } %>
          <h1><a class="home" target="_blank" href="/">Mozilla Persona Home</a></h1>
       </header>
 
