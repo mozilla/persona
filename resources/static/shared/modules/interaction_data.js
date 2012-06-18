@@ -23,6 +23,8 @@
 //    listen for events via the mediator?
 
 BrowserID.Modules.InteractionData = (function() {
+  "use strict";
+
   var bid = BrowserID,
       model = bid.Models.InteractionData,
       network = bid.Network,
@@ -98,10 +100,16 @@ BrowserID.Modules.InteractionData = (function() {
       return;
     }
 
+    // server_time is sent in milliseconds. The promise to users and data
+    // safety is the timestamp would be at a 10 minute resultion.  Round to the
+    // nearest 10 minute mark.
+    var TEN_MINS_IN_MS = 10 * 60 * 1000,
+        roundedServerTime = Math.round(result.server_time / TEN_MINS_IN_MS) * TEN_MINS_IN_MS;
+
     var currentData = {
       event_stream: self.initialEventStream,
       sample_rate: sampleRate,
-      timestamp: result.server_time,
+      timestamp: roundedServerTime,
       local_timestamp: self.startTime.toString(),
       lang: dom.getAttr('html', 'lang') || null,
     };
