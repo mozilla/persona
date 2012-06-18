@@ -48,7 +48,9 @@ BrowserID.signIn = (function() {
         email = helpers.getAndValidateEmail("#email");
 
     if(email) {
+      dom.setAttr('#email', 'disabled', 'disabled');
       user.addressInfo(email, function(info) {
+        dom.removeAttr('#email', 'disabled');
         addressInfo = info;
 
         if(info.type === "secondary") {
