@@ -8,8 +8,8 @@
 
       <ul class="inputs">
           <li>
-              <label for="newEmail" class="serif"><%= gettext('New email address') %></label>
-              <input id="newEmail" name="newEmail" type="email" class="sans" autocapitalize="off" autocorrect="off" maxlength="254" <% if (typeof email !== "undefined") { %> value="<%= email %>" <% } %>/>
+              <label for="newEmail"><%= gettext('New email address') %></label>
+              <input id="newEmail" name="newEmail" type="email" autocapitalize="off" autocorrect="off" maxlength="254" <% if (typeof email !== "undefined") { %> value="<%= email %>" <% } %>/>
 
               <div id="email_format" class="tooltip" for="newEmail">
                 <%= gettext('This field must be an email address.') %>
