@@ -228,6 +228,10 @@ BrowserID.TestHelpers = (function() {
       notEqual(typeof toTest, "undefined", msg || "object is defined");
     },
 
+    testVisible: function(selector, msg) {
+      ok($(selector).is(":visible"), msg || selector + " should be visible");
+    },
+
     testHasClass: function(selector, className, msg) {
       ok($(selector).hasClass(className),
           msg || (selector + " has className " + className));
@@ -238,12 +242,12 @@ BrowserID.TestHelpers = (function() {
           msg || (selector + " does not have className " + className));
     },
 
-    testElementDoesNotExist: function(selector, msg) {
-      equal($(selector).length, 0, msg || ("element '" + selector + "' does not exist"));
-    },
-
     testElementExists: function(selector, msg) {
       ok($(selector).length, msg || ("element '" + selector + "' exists"));
+    },
+
+    testElementDoesNotExist: function(selector, msg) {
+      equal($(selector).length, 0, msg || ("element '" + selector + "' does not exist"));
     },
 
     testRPTosPPShown: function(msg) {

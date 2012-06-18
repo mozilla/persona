@@ -35,6 +35,14 @@ BrowserID.Errors = (function(){
       title: "Cancelling User Account"
     },
 
+    cannotConfirm: {
+      title: gettext("There was a problem with your signup link. Has this address already been registered?")
+    },
+
+    cannotComplete: {
+      title: gettext("Error encountered trying to complete registration.")
+    },
+
     checkAuthentication: {
       title: "Checking Authentication"
     },

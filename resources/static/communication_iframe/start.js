@@ -9,6 +9,11 @@
       user = bid.User,
       storage = bid.Storage;
 
+  // Initialize all localstorage values to default values.  Neccesary for
+  // proper sync of IE8 localStorage across multiple simultaneous
+  // browser sessions.
+  storage.setDefaultValues();
+
   network.init();
 
   var chan = Channel.build({
