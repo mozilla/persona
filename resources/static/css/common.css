@@ -176,6 +176,12 @@ button:focus,
     background-image:          linear-gradient(top, #43a6e2, #277ac1);
 }
 
+button:focus,
+.button:focus {
+    box-shadow: 0 0 1px #fff, 0 0 1px 3px #49ADE3;
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5), 0 0 1px 3px rgba(73, 173, 227, 0.6);
+}
+
 button:active,
 .button:active {
     background-color: #184a73;
