@@ -1,0 +1,8 @@
+{
+  "undef": true,
+  "node": true,
+  "es5": true,
+  "esnext": true,
+  "strict": false,
+  "sub": true
+}
