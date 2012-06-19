@@ -439,7 +439,7 @@
     mediator.publish("email_chosen", {
       email: email,
       complete: function() {
-        testActionStarted("doAuthenticateWithRequiredEmail", { siteTOSPP: true });
+        testActionStarted("doAuthenticateWithRequiredEmail", { siteTOSPP: false });
         start();
       }
     });

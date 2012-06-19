@@ -83,7 +83,6 @@ BrowserID.Modules.PickEmail = (function() {
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var origin = user.getOrigin(),
-          originEmail = user.getOriginEmail(),
           self=this;
 
       options = options || {};
@@ -96,12 +95,10 @@ BrowserID.Modules.PickEmail = (function() {
 
       self.renderDialog("pick_email", {
         identities: identities,
-        siteemail: originEmail
+        siteemail: user.getOriginEmail()
       });
 
-      // If the user has been to this site before, they have already implicitly
-      // agreed to TOS/PP agreement.  Don't bug them a second time.
-      if (!originEmail && options.siteTOSPP) {
+      if (options.siteTOSPP) {
         dialogHelpers.showRPTosPP.call(self);
       }
 

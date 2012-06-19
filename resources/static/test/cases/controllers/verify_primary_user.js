@@ -10,6 +10,8 @@
       controller,
       el,
       testHelpers = bid.TestHelpers,
+      testElementExists = testHelpers.testElementExists,
+      testElementNotExists = testHelpers.testElementDoesNotExist,
       WindowMock = bid.Mocks.WindowMock,
       win,
       mediator = bid.Mediator;
@@ -33,14 +35,45 @@
     }
   });
 
+  test("personaTOSPP true, requiredEmail: true - show TOS/PP", function() {
+    createController({
+      window: win,
+      add: false,
+      email: "unregistered@testuser.com",
+      auth_url: "http://testuser.com/sign_in",
+      requiredEmail: true,
+      personaTOSPP: false
+    });
+
+    testElementNotExists("#persona_tospp");
+  });
+
+  test("personaTOSPP true, requiredEmail: false - show TOS/PP", function() {
+    createController({
+      window: win,
+      add: false,
+      email: "unregistered@testuser.com",
+      auth_url: "http://testuser.com/sign_in",
+      requiredEmail: false,
+      personaTOSPP: false
+    });
+
+    testElementNotExists("#persona_tospp");
+  });
+
+
   asyncTest("submit with `add: false` option opens a new tab with CREATE_EMAIL URL", function() {
     var messageTriggered = false;
     createController({
       window: win,
       add: false,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in"
+      auth_url: "http://testuser.com/sign_in",
+      personaTOSPP: true
     });
+
+    testElementExists("#persona_tospp");
+
     mediator.subscribe("primary_user_authenticating", function() {
       messageTriggered = true;
     });
@@ -61,8 +94,11 @@
       window: win,
       add: true,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in"
+      auth_url: "http://testuser.com/sign_in",
+      personaTOSPP: true
     });
+
+    testElementExists("#persona_tospp");
 
     // Also checking to make sure the NATIVE is stripped out.
     win.document.location.href = "sign_in";

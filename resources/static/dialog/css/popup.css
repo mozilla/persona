@@ -389,10 +389,6 @@ div#required_email {
   margin-top: 10px;
 }
 
-.submit > p + p:last-child {
-  margin-top: 15px;
-}
-
 .tospp {
   font-size: 11px;
   line-height: 1.2;

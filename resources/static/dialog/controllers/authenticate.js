@@ -169,7 +169,9 @@ BrowserID.Modules.Authenticate = (function() {
       // account automatically have an account created with no further
       // interaction.  To make sure they see the TOS/PP agreement, show it
       // here.
-      dialogHelpers.showRPTosPP.call(self);
+      if (options.siteTOSPP) {
+        dialogHelpers.showRPTosPP.call(self);
+      }
 
       self.bind("#email", "keyup", emailKeyUp);
       self.click("#forgotPassword", forgotPassword);

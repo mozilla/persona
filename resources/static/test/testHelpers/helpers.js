@@ -247,7 +247,7 @@ BrowserID.TestHelpers = (function() {
     },
 
     testElementDoesNotExist: function(selector, msg) {
-      equal($(selector).length, 0, msg || ("element '" + selector + "' does not exist"));
+      ok(!$(selector).length, msg || ("element '" + selector + "' does not exist"));
     },
 
     testRPTosPPShown: function(msg) {

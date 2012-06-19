@@ -95,7 +95,7 @@
   }
 
 
-  asyncTest("siteTOSPP specified, no origin email - show TOS/PP", function() {
+  asyncTest("siteTOSPP specified - show TOS/PP", function() {
     var email = "registered@testuser.com";
     xhr.useResult("known_secondary");
     xhr.setContextInfo("auth_level", "password");
@@ -109,40 +109,6 @@
       }
     });
   });
-
-  asyncTest("siteTOSPP specified, origin has email - do not show TOS/PP", function() {
-    var email = "registered@testuser.com";
-    xhr.useResult("known_secondary");
-    xhr.setContextInfo("auth_level", "password");
-
-    storage.addSecondaryEmail(email);
-    user.setOriginEmail(email);
-
-    createController({
-      email: email,
-      siteTOSPP: true,
-      ready: function() {
-        testHelpers.testRPTosPPNotShown();
-        start();
-      }
-    });
-  });
-
-  asyncTest("siteTOSPP not specified, no origin email - do not show TOS/PP", function() {
-    var email = "registered@testuser.com";
-    xhr.useResult("known_secondary");
-    xhr.setContextInfo("auth_level", "password");
-
-    createController({
-      email: email,
-      siteTOSPP: false,
-      ready: function() {
-        testHelpers.testRPTosPPNotShown();
-        start();
-      }
-    });
-  });
-
 
   asyncTest("known_secondary: user who is not authenticated - show password form", function() {
     var email = "registered@testuser.com";
