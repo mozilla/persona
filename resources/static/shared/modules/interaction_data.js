@@ -101,7 +101,7 @@ BrowserID.Modules.InteractionData = (function() {
     }
 
     // server_time is sent in milliseconds. The promise to users and data
-    // safety is the timestamp would be at a 10 minute resultion.  Round to the
+    // safety is the timestamp would be at a 10 minute resolution.  Round to the
     // nearest 10 minute mark.
     var TEN_MINS_IN_MS = 10 * 60 * 1000,
         roundedServerTime = Math.round(result.server_time / TEN_MINS_IN_MS) * TEN_MINS_IN_MS;
