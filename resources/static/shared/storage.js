@@ -39,7 +39,7 @@ BrowserID.Storage = (function() {
 
   function prepareDeps() {
     if (!jwcrypto) {
-      jwcrypto = require("./jwcrypto");
+      jwcrypto = require("./lib/jwcrypto");
     }
   }
 
