@@ -15,7 +15,7 @@ BrowserID.Modules.PageModule = (function() {
       cancelEvent = helpers.cancelEvent,
       mediator = bid.Mediator;
 
-   function onKeypress(event) {
+   function onKeyup(event) {
     if (event.which === 13) {
       // IE8 does not trigger the submit event when hitting enter. Submit the
       // form if the key press was an enter and prevent the default action so
@@ -69,7 +69,7 @@ BrowserID.Modules.PageModule = (function() {
       self.options = options || {};
 
       self.bind("form", "submit", cancelEvent(onSubmit));
-      self.bind("input", "keypress", onKeypress);
+      self.bind("input", "keyup", onKeyup);
     },
 
     stop: function() {
