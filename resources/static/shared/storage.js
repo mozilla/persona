@@ -37,12 +37,6 @@ BrowserID.Storage = (function() {
     if (window.console && console.error) console.error(msg);
   }
 
-  function prepareDeps() {
-    if (!jwcrypto) {
-      jwcrypto = require("./jwcrypto");
-    }
-  }
-
   function storeEmails(emails) {
     storage.emails = JSON.stringify(emails);
   }
