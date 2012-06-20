@@ -24,7 +24,14 @@ suite.options.error = false;
 suite.addBatch({
   "run jshint on the lib directory": {
     topic: function () {
-      var child = exec(jshintPath + ' --config ./data/lib.jshintrc ../lib/ | grep "not defined"', {cwd: path.resolve(__dirname)}, this.callback);
+      var cmd = jshintPath + ' --config ./data/lib.jshintrc ../lib/ | grep "not defined"';
+      var child = exec(cmd, {cwd: path.resolve(__dirname)}, this.callback);
+    },
+    "jshint is found and runs" : function (error, stdout, stderr) {
+      // NOTE: until we clean up jshint errors and agree on what options,
+      // we only verify that the program was found and runs, but not that
+      // it is completely clean and error free in jshint's opinion.
+      assert.ok(!error || error.toString().indexOf('No such') === -1);
     },
     "no globals are created or referenced" : function (error, stdout, stderr) {
       var errors = stdout.split("\n").length - 1;
