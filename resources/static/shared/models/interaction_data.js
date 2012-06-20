@@ -10,7 +10,21 @@ BrowserID.Models.InteractionData = (function() {
       storage = bid.getStorage(),
       network = bid.Network,
       complete = bid.Helpers.complete,
-      whitelistFilter = bid.Helpers.whitelistFilter;
+      whitelistFilter = bid.Helpers.whitelistFilter,
+      KPI_WHITELIST = [
+        'event_stream',
+        'lang',
+        'screen_size',
+        'sample_rate',
+        'timestamp',
+        'number_emails',
+        'sites_signed_in',
+        'sites_visited',
+        'orphaned',
+        'new_account',
+        'email_type'
+      ];
+
 
   function getInteractionData() {
     var interactionData;
@@ -97,13 +111,7 @@ BrowserID.Models.InteractionData = (function() {
       // could be used to fingerprint users.
       var filtered = [];
       _.each(data, function(obj) {
-        filtered.push(whitelistFilter(obj, [
-          'event_stream',
-          'lang',
-          'screen_size',
-          'sample_rate',
-          'timestamp'
-        ]));
+        filtered.push(whitelistFilter(obj, KPI_WHITELIST));
       });
 
       network.sendInteractionData(filtered, function() {

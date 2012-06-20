@@ -4,7 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 (function() {
-  var storage = BrowserID.Storage;
+  var storage = BrowserID.Storage,
+      TEST_ORIGIN = "http://test.domain";
 
   module("shared/storage", {
     setup: function() {
@@ -16,11 +17,12 @@
     }
   });
 
-  test("getEmails with no emails", function() {
+  test("getEmails, getEmailCount with no emails", function() {
     var emails = storage.getEmails();
 
     equal("object", typeof emails, "no emails returns empty object");
     equal(_.size(emails), 0, "object should be empty");
+    equal(storage.getEmailCount(), 0, "no emails");
   });
 
   test("addEmail, getEmails, getEmail", function() {
@@ -28,6 +30,7 @@
 
     var emails = storage.getEmails();
     equal(_.size(emails), 1, "object should have one item");
+    equal(storage.getEmailCount(), 1, "a single email has been added");
     ok("testuser@testuser.com" in emails, "added email address is there");
 
     var id = storage.getEmail("testuser@testuser.com");
@@ -97,17 +100,21 @@
     equal(error.toString(), "unknown email address", "Invalidating an unknown email address");
   });
 
-  test("site.set/site.get/site.remove, happy case", function() {
+  test("site.set/site.get/site.remove/site.count, happy case", function() {
     storage.site.set("www.testsite.com", "autoauth", true);
     equal(storage.site.get("www.testsite.com", "autoauth"), true, "set/get works correctly");
+    equal(storage.site.count(), 1, "correct count");
 
     storage.site.remove("www.testsite.com", "autoauth");
     equal(typeof storage.site.get("www.testsite.com", "autoauth"), "undefined", "after remove, get returns undefined");
+
+    equal(storage.site.count(), 0, "last field for site removed, count decremented correctly");
   });
 
   test("clear clears site info", function() {
     storage.site.set("www.testsite.com", "autoauth", true);
     storage.clear();
+    equal(storage.site.count(), 0, "no more sites after clear");
     equal(typeof storage.site.get("www.testsite.com", "autoauth"), "undefined", "after clear, get returns undefined");
   });
 
@@ -165,6 +172,15 @@
     equal(storage.signInEmail.get(), "testuser@testuser.com", "correct email gotten");
     storage.signInEmail.remove();
     equal(typeof storage.signInEmail.get(), "undefined", "after remove, signInEmail is empty");
+  });
+
+  test("setLoggedIn, getLoggedIn, loggedInCount", function() {
+    var email = "testuser@testuser.com";
+    storage.setLoggedIn(TEST_ORIGIN, email);
+    equal(storage.getLoggedIn(TEST_ORIGIN), email, "correct email");
+
+    storage.setLoggedIn("http://another.domain", email);
+    equal(storage.loggedInCount(), 2, "correct logged in count");
   });
 
 }());

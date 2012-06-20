@@ -84,6 +84,10 @@ BrowserID.Storage = (function() {
     return {};
   }
 
+  function getEmailCount() {
+    return _.size(getEmails());
+  }
+
   function getEmail(email) {
     var ids = getEmails();
 
@@ -213,8 +217,17 @@ BrowserID.Storage = (function() {
 
     if (siteInfo) {
       delete siteInfo[key];
+
+      // If no more info for site, get rid of it.
+      if (!_.size(siteInfo)) delete allSiteInfo[site];
+
       storage.siteInfo = JSON.stringify(allSiteInfo);
     }
+  }
+
+  function siteCount(callback) {
+    var allSiteInfo = JSON.parse(storage.siteInfo || "{}");
+    return _.size(allSiteInfo);
   }
 
   function generic2KeySet(namespace, key, value) {
@@ -244,6 +257,11 @@ BrowserID.Storage = (function() {
   function getLoggedIn(origin) {
     var allInfo = JSON.parse(storage.loggedIn || "{}");
     return allInfo[origin];
+  }
+
+  function loggedInCount() {
+    var allInfo = JSON.parse(storage.loggedIn || "{}");
+    return _.size(allInfo);
   }
 
   function watchLoggedIn(origin, callback) {
@@ -442,6 +460,14 @@ BrowserID.Storage = (function() {
      * @method getEmails
      */
     getEmails: getEmails,
+
+    /**
+     * Get the number of stored emails
+     * @method getEmailCount
+     * @return {number}
+     */
+    getEmailCount: getEmailCount,
+
     /**
      * Get one email address and its key pair, if found.  Returns undefined if
      * not found.
@@ -484,7 +510,14 @@ BrowserID.Storage = (function() {
        * @param {string} site - site to remove info for
        * @param {string} key - key to remove
        */
-      remove: siteRemove
+      remove: siteRemove,
+
+      /**
+       * Get the number of sites that have info
+       * @method site.count
+       * @return {number}
+       */
+      count: siteCount,
     },
 
     manage_page: {
@@ -564,6 +597,13 @@ BrowserID.Storage = (function() {
      * @returns the email with which the user is logged in
      */
     getLoggedIn: getLoggedIn,
+
+    /**
+     * Get the number of sites the user is logged in to.
+     * @method loggedInCount
+     * @return {number}
+     */
+    loggedInCount: loggedInCount,
 
     /** watch for changes in the logged in state of a page
      * @param {string} origin - the site to watch the status of

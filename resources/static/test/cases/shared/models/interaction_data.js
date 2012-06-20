@@ -95,7 +95,12 @@
           timestamp: now,
           local_timestamp: now,
           lang: "bar",
-          secret: "Attack at dawn!!!"
+          number_emails: 1,
+          sites_signed_in: 2,
+          sites_visited: 3,
+          orphaned: false,
+          new_account: true,
+          email_type: "assertion"
         });
         model.stageCurrent();
 
@@ -112,11 +117,16 @@
             event_stream: [],
             sample_rate: 1,
             timestamp: now,
-            lang: "bar"
+            lang: "bar",
+            number_emails: 1,
+            sites_signed_in: 2,
+            sites_visited: 3,
+            orphaned: false,
+            new_account: true,
+            email_type: "assertion"
           });
 
-          equal(typeof mostRecentSessionData.local_timestamp, "undefined", "non-whitelisted valued stripped");
-          equal(typeof mostRecentSessionData.secret, "undefined", "non-whitelisted valued stripped");
+          testHelpers.testUndefined(mostRecentSessionData.local_timestamp, "non-whitelisted valued stripped");
           start();
         });
       });

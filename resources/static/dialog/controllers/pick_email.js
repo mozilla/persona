@@ -91,8 +91,6 @@ BrowserID.Modules.PickEmail = (function() {
 
       var identities = getSortedIdentities();
 
-      self.publish("emails_displayed", { count: identities.length });
-
       self.renderDialog("pick_email", {
         identities: identities,
         siteemail: storage.site.get(origin, "email"),

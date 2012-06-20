@@ -51,12 +51,11 @@ BrowserID.Modules.InteractionData = (function() {
     window_unload: "window.unload",
     generate_assertion: null,
     assertion_generated: null,
-    emails_displayed: function(msg, data) { return "user.email_count:" + data.count; },
     user_staged: "user.user_staged",
     user_confirmed: "user.user_confirmed",
     email_staged: "user.email_staged",
     email_confirmed: "user.email_confrimed",
-    notme: "user.logout",
+    notme: "user.logout"
   };
 
   function getKPIName(msg, data) {
@@ -130,6 +129,12 @@ BrowserID.Modules.InteractionData = (function() {
     self.initialEventStream = null;
 
     self.samplesBeingStored = true;
+  }
+
+  function onKPIData(msg, result) {
+    var currentData = this.getCurrent();
+    _.extend(currentData, result);
+    model.setCurrent(currentData);
   }
 
   // At every load, after session_context returns, try to publish the previous
@@ -236,11 +241,12 @@ BrowserID.Modules.InteractionData = (function() {
         // whenever session_context is hit, let's hear about it so we can
         // extract the information that's important to us (like, whether we
         // should be running or not)
-        self.contextInfoHandle = this.subscribe('context_info', onSessionContext);
+        self.subscribe('context_info', onSessionContext);
       }
 
       // on all events, update event_stream
-      this.subscribeAll(addEvent);
+      self.subscribeAll(addEvent);
+      self.subscribe('kpi_data', onKPIData);
     },
 
     addEvent: addEvent,
