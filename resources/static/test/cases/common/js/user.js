@@ -53,6 +53,7 @@ var jwcrypto = require("./lib/jwcrypto");
 
       // expiration date must be within 5 seconds of 2 minutes from now - see
       // issue 433 (https://github.com/mozilla/browserid/issues/433)
+      // An IE8 VM takes about 7 seconds to generate an assertion.
       var diff = Math.abs(expires - nowPlus2Mins);
       ok(diff < 5000, "expiration date must be within 5 seconds of 2 minutes from now: " + diff);
 
