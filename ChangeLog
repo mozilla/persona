@@ -1,5 +1,22 @@
-train-2012.06.22: (in progress)
-  *
+train-2012.06.22 (in progress):
+  * browserid.org now redirects to login.persona.org, all URLs are updated: #1743
+  * Websites can now provide their name and logo (requires SSL) to be displayed in the dialog: #1098, #1761
+  * A user is now sent back to the site they were visiting after verification (requires .watch() API): #385
+  * Fix .watch() API under IE8: #1637
+  * For dev and ephemeral deployments, move to awsbox, and new URLs: #1394, #1046, #1741
+  * Fix the scroll bar appearing on the main site's index page if it is not needed: #1693
+  * Clear the password if the user types a password then changes the email address: #1540
+  * New watch API now requires invocation with proper context (navigator.id.foo, not var foo = navigator.id.foo)
+  * Router fixes: #1713
+  * Serve fonts locally, don't pull resources from google: #1695
+  * IE8 now submits on enter key in password field: #1376
+  * Optimize images: #1747
+  * Fix flashes when verifying an email address: #1734
+  * Unit test added which runs jshint: #1731
+  * Fix submit occurring when selecting an email address in Firefox from the auto-complete list: #1780
+  * For KPI data, round timestamp to nearest 10 minutes, making correlation improbable: #1732
+  * Code cleanup: #1701, #1703, #1000, #1248, #1759, #1733, #1792
+  * Breaking API change: Persona now returns pubkey from generateKeypair to IdPs as a string
 
 train-2012.06.08:
   * rebrand from 'browserid' to 'persona': (including regressions #1711 #1706 #1716 #1719)
