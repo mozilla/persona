@@ -361,9 +361,14 @@ footer .help {
   font-weight: bold;
 }
 
-#content, #wait, #delay, #error {
+#wait, #delay, #error {
   background-color: #dadee1;
-  background-image: url("/i/grain.png"), -moz-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(#dadee1), to(#c7ccd0));
+  background-image: url("/i/grain.png"), -webkit-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/i/grain.png"),    -moz-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/i/grain.png"),     -ms-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/i/grain.png"),      -o-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/i/grain.png"),         linear-gradient(top, #dadee1, #c7ccd0);
 }
 
 #wait, #delay {

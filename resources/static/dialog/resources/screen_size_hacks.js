@@ -106,6 +106,8 @@
         contentHeight = Math.max(100, contentHeight, formHeight);
         contentEl.css("min-height", contentHeight + "px");
 
+        // Remove the explicit static position we added to let this go back to
+        // the position specified in CSS.
         $("section,#signIn").css("position", "");
 
         favIconHeight = $("#favicon").outerHeight();
