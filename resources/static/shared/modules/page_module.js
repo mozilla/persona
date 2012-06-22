@@ -15,16 +15,6 @@ BrowserID.Modules.PageModule = (function() {
       cancelEvent = helpers.cancelEvent,
       mediator = bid.Mediator;
 
-   function onKeyup(event) {
-    if (event.which === 13) {
-      // IE8 does not trigger the submit event when hitting enter. Submit the
-      // form if the key press was an enter and prevent the default action so
-      // the form is not submitted twice.
-      event.preventDefault();
-      this.submit();
-    }
-   }
-
    function onSubmit() {
      if (!dom.hasClass("body", "submit_disabled") && this.validate()) {
        this.submit();
@@ -69,7 +59,6 @@ BrowserID.Modules.PageModule = (function() {
       self.options = options || {};
 
       self.bind("form", "submit", cancelEvent(onSubmit));
-      self.bind("input", "keyup", onKeyup);
     },
 
     stop: function() {
