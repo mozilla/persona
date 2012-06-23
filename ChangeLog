@@ -1,3 +1,5 @@
+train-2012.07.06: (in progress)
+
 train-2012.06.22:
   * browserid.org now redirects to login.persona.org, all URLs are updated: #1743
   * Websites can now provide their name and logo (requires SSL) to be displayed in the dialog: #1098, #1761
