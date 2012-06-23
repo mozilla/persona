@@ -1,4 +1,4 @@
-train-2012.06.22 (in progress):
+train-2012.06.22:
   * browserid.org now redirects to login.persona.org, all URLs are updated: #1743
   * Websites can now provide their name and logo (requires SSL) to be displayed in the dialog: #1098, #1761
   * A user is now sent back to the site they were visiting after verification (requires .watch() API): #385
@@ -9,7 +9,6 @@ train-2012.06.22 (in progress):
   * New watch API now requires invocation with proper context (navigator.id.foo, not var foo = navigator.id.foo)
   * Router fixes: #1713
   * Serve fonts locally, don't pull resources from google: #1695
-  * IE8 now submits on enter key in password field: #1376
   * Optimize images: #1747
   * Fix flashes when verifying an email address: #1734
   * Unit test added which runs jshint: #1731
