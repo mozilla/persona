@@ -22,7 +22,7 @@
         "mysql": "0.9.5",
         "node-gettext": "0.1.1",
         "node-statsd": "https://github.com/downloads/lloyd/node-statsd/0509f85.tgz",
-        "nodemailer": "0.1.18",
+        "nodemailer": "0.1.24",
         "mkdirp": "0.3.0",
         "optimist": "0.2.8",
         "postprocess": "0.2.4",

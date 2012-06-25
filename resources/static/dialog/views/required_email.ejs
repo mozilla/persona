@@ -13,7 +13,7 @@
       <ul class="inputs">
 
           <li>
-              <label for="email" ><%= gettext("Email") %></label>
+              <label for="email"><%= gettext("Email") %></label>
               <input id="required_email" type="email" value="<%= email %>" disabled />
               <div id="could_not_add" class="tooltip" for="required_email">
                 <%= gettext("We just sent an email to that address! If you really want to send another, wait a minute or two and try again.") %>
@@ -32,7 +32,7 @@
           <% if (password) { %>
               <li id="password_section">
                   <a id="forgotPassword" class="right forgot" href="#" tabindex="4"><%= gettext("forgot your password?") %></a>
-                  <label for="password" ><%= gettext("Password") %></label>
+                  <label for="password"><%= gettext("Password") %></label>
 
                   <input id="password" type="password" maxlength="80" tabindex="2" />
 
