@@ -447,10 +447,6 @@ button.delete:active {
   padding: 0;
 }
 
-#signUpForm .submit {
-  height: 28px;
-}
-
 #signUpForm > .siteinfo {
   margin-bottom: 10px;
 }
@@ -459,8 +455,16 @@ button.delete:active {
   display: none;
 }
 
+.submit > p {
+  line-height: 28px;
+}
+
 .submit .remember {
   float: left;
+}
+
+.tospp {
+  font-size: 13px;
 }
 
 .enter_password .password_entry, .enter_verify_password #verify_password, .known_secondary .password_entry,

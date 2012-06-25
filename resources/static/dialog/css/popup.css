@@ -379,19 +379,13 @@ div#required_email {
 }
 
 .submit {
-    margin-top: 10px;
     color: #333;
     font-size: 11px;
-    line-height: 14px;
 }
 
-.submit > p {
-  margin-top: 10px;
-}
 
 .tospp {
   font-size: 11px;
-  line-height: 1.2;
   color: #787878;
 }
 
