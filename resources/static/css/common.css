@@ -128,6 +128,10 @@ input[type=password]:disabled {
      * issue #1311 */
     -webkit-text-fill-color: #4f4f4f;
     opacity: 1;
+    /* Remove the box-shadow and border-color that come with a focused input
+     * field */
+    box-shadow: none;
+    border-color: #b2b2b2;
 }
 
 input[type=radio],
