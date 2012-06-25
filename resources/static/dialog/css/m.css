@@ -159,14 +159,6 @@
     line-height: 40px;
   }
 
-  #error {
-    position: static;
-  }
-
-  #error .vertical, #delay .vertical, #wait .vertical {
-    height: 250px;
-  }
-
   #error .vertical {
     width: auto;
   }

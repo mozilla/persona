@@ -28,7 +28,6 @@ BrowserID.Modules.Actions = (function() {
     }
 
     mediator.publish("service", { name: name });
-    bid.resize();
 
     return module;
   }
