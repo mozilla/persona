@@ -7,7 +7,7 @@
 
           <li>
               <label for="email"><%= gettext('Email') %></label>
-              <input id="email" class="sans" type="email" autocapitalize="off" autocorrect="off" value="<%= email %>" maxlength="254" tabindex="1"/>
+              <input id="email" type="email" autocapitalize="off" autocorrect="off" value="<%= email %>" maxlength="254" tabindex="1"/>
 
               <div id="email_format" class="tooltip" for="email">
                 <%= gettext('This field must be an email address.') %>
@@ -40,7 +40,7 @@
               <a id="forgotPassword" class="forgot right" href="#" tabindex="4"><%= gettext('forgot your password?') %></a>
               <label for="password"><%= gettext('Password') %></label>
 
-              <input id="password" class="sans" type="password" maxlength="80" tabindex="2" />
+              <input id="password" type="password" maxlength="80" tabindex="2" />
 
               <div id="password_required" class="tooltip" for="password">
                 <%= gettext('The password field is required.') %>
