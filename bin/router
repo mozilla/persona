@@ -49,7 +49,10 @@ if (!config.get('browserid_url')) {
 
 // #1 - Setup health check / heartbeat middleware.
 // This is in front of logging on purpose.  see issue #537
-heartbeat.setup(app);
+var browserid_url = urlparse(config.get('browserid_url')).validate().normalize().originOnly();
+heartbeat.setup(app, {
+  dependencies: [browserid_url]
+});
 
 // #2 - logging!  all requests other than __heartbeat__ are logged
 app.use(express.logger({
@@ -119,7 +122,6 @@ wsapi.setup({
 }, app);
 
 // Forward all leftover requests to browserid
-var browserid_url = urlparse(config.get('browserid_url')).validate().normalize().originOnly();
 app.use(function(req, res, next) {
   forward(
     browserid_url+req.url, req, res,

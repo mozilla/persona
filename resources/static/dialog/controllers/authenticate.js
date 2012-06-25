@@ -44,6 +44,7 @@ BrowserID.Modules.Authenticate = (function() {
 
     if (!email) return;
 
+    dom.setAttr('#email', 'disabled', 'disabled');
     if(info && info.type) {
       onAddressInfo(info);
     }
@@ -55,6 +56,7 @@ BrowserID.Modules.Authenticate = (function() {
 
     function onAddressInfo(info) {
       addressInfo = info;
+      dom.removeAttr('#email', 'disabled');
 
       if(info.type === "primary") {
         self.close("primary_user", info, info);

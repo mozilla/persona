@@ -7,18 +7,39 @@ BrowserID.Modules.AddEmail = (function() {
   "use strict";
 
   var bid = BrowserID,
+      dom = bid.DOM,
       helpers = bid.Helpers,
       user = bid.User,
       dialogHelpers = helpers.Dialog,
       errors = bid.Errors,
       complete = helpers.complete,
-      tooltip = bid.Tooltip;
+      tooltip = bid.Tooltip,
+      hints = ["addressInfo"],
+      ANIMATION_TIME = 250;
+
+  function hideHint(selector) {
+    $("." + selector).hide();
+  }
+
+  function showHint(selector, callback) {
+    _.each(hints, function(className) {
+      if (className !== selector) {
+        hideHint(className);
+      }
+    });
+
+    $("." + selector).fadeIn(ANIMATION_TIME, function() {
+      dom.fireEvent(window, "resize");
+      complete(callback);
+    });
+  }
 
   function addEmail(callback) {
     var email = helpers.getAndValidateEmail("#newEmail"),
         self=this;
 
     if (email) {
+      showHint("addressInfo");
       dialogHelpers.addEmail.call(self, email, callback);
     }
     else {
@@ -37,12 +58,7 @@ BrowserID.Modules.AddEmail = (function() {
           originEmail = user.getOriginEmail();
 
       self.renderDialog("add_email", options);
-
-      // Only show the RP's TOS/PP if the user has not been to this site
-      // before.
-      if(!originEmail && options.siteTOSPP) {
-        dialogHelpers.showRPTosPP.call(self);
-      }
+      hideHint("addressInfo");
 
       self.click("#cancel", cancelAddEmail);
       Module.sc.start.call(self, options);

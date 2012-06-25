@@ -112,11 +112,19 @@ function runDaemon(daemon, cb) {
   });
 };
 
+// start all daemons except the router in parallel
 var daemonNames = Object.keys(daemonsToRun);
-function runNextDaemon() {
-  if (daemonNames.length) runDaemon(daemonNames.shift(), runNextDaemon);
-}
-runNextDaemon();
+daemonNames.splice(daemonNames.indexOf('router'), 1);
+
+var numDaemonsRun = 0;
+daemonNames.forEach(function(dn) {
+  runDaemon(dn, function() {
+    if (++numDaemonsRun === daemonNames.length) {
+      // after all daemons are up and running, start the router
+      runDaemon('router', function() { });
+    }
+  });
+});
 
 process.on('SIGINT', function () {
   console.log('\nSIGINT recieved! trying to shut down gracefully...');
