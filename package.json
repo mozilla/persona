@@ -36,8 +36,9 @@
     },
     "devDependencies": {
         "vows": "0.5.13",
-        "awsbox": "0.2.11",
-        "irc": "0.3.3"
+        "awsbox": "0.2.12",
+        "irc": "0.3.3",
+        "jshint": "0.7.1"
     },
     "scripts": {
         "postinstall": "./scripts/generate_ephemeral_keys.sh",

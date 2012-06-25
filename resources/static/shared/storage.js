@@ -37,21 +37,38 @@ BrowserID.Storage = (function() {
     if (window.console && console.error) console.error(msg);
   }
 
-  function prepareDeps() {
-    if (!jwcrypto) {
-      jwcrypto = require("./jwcrypto");
-    }
-  }
-
   function storeEmails(emails) {
     storage.emails = JSON.stringify(emails);
   }
 
   function clear() {
     storage.removeItem("emails");
-    storage.removeItem("tempKeypair");
     storage.removeItem("siteInfo");
     storage.removeItem("managePage");
+  }
+
+  // initialize all localStorage values to default if they are unset.
+  // this function is only neccesary on IE8 where there are localStorage
+  // synchronization issues between different browsing contexts, however
+  // it's intended to avoid IE8 specific bugs from being introduced.
+  // see issue #1637
+  function setDefaultValues() {
+    _.each({
+      emailToUserID: {},
+      emails: {},
+      interaction_data: {},
+      loggedIn: {},
+      main_site: {},
+      managePage: {},
+      returnTo: null,
+      siteInfo: {},
+      stagedOnBehalfOf: null,
+      usersComputer: {}
+    }, function(defaultVal, key) {
+      if (!storage[key]) {
+        storage[key] = JSON.stringify(defaultVal);
+      }
+    });
   }
 
   function getEmails() {
@@ -121,28 +138,6 @@ BrowserID.Storage = (function() {
     }
     else {
       throw "unknown email address";
-    }
-  }
-
-  function storeTemporaryKeypair(keypair) {
-    storage.tempKeypair = JSON.stringify({
-      publicKey: keypair.publicKey.toSimpleObject(),
-      secretKey: keypair.secretKey.toSimpleObject()
-    });
-  }
-
-  function retrieveTemporaryKeypair() {
-    var raw_kp = JSON.parse(storage.tempKeypair || "");
-    storage.tempKeypair = null;
-    if (raw_kp) {
-      prepareDeps();
-
-      var kp = {};
-      kp.publicKey = jwcrypto.loadPublicKeyFromObject(raw_kp.publicKey);
-      kp.secretKey = jwcrypto.loadSecretKeyFromObject(raw_kp.secretKey);
-      return kp;
-    } else {
-      return null;
     }
   }
 
@@ -588,9 +583,14 @@ BrowserID.Storage = (function() {
      * @method clear
      */
     clear: clear,
-    storeTemporaryKeypair: storeTemporaryKeypair,
-    retrieveTemporaryKeypair: retrieveTemporaryKeypair,
     setReturnTo: setReturnTo,
-    getReturnTo: getReturnTo
+    getReturnTo: getReturnTo,
+    /**
+     * Set all used storage values to default if they are unset.  This function
+     * is required for proper localStorage sync between different browsing contexts,
+     * see issue #1637 for full details.
+     * @method setDefaultValues
+     */
+    setDefaultValues: setDefaultValues
   };
 }());

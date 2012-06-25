@@ -14,7 +14,12 @@ BrowserID.ErrorDisplay = (function() {
     /**
      * XXX What a big steaming pile, use CSS animations for this!
      */
-    $("#moreInfo").slideDown();
+    $("#moreInfo").slideDown(function() {
+      // The expanded info may be partially obscured on mobile devices in
+      // landscape mode.  Force the screen size hacks to account for the new
+      // expanded size.
+      dom.fireEvent(window, "resize");
+    });
     $("#openMoreInfo").css({visibility: "hidden"});
   }
 

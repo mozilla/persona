@@ -128,6 +128,10 @@ input[type=password]:disabled {
      * issue #1311 */
     -webkit-text-fill-color: #4f4f4f;
     opacity: 1;
+    /* Remove the box-shadow and border-color that come with a focused input
+     * field */
+    box-shadow: none;
+    border-color: #b2b2b2;
 }
 
 input[type=radio],
@@ -359,7 +363,12 @@ footer .help {
 
 #wait, #delay, #error {
   background-color: #dadee1;
-  background-image: url("/i/grain.png"), -moz-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(#dadee1), to(#c7ccd0));
+  background-image: url("/i/grain.png"), -webkit-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/i/grain.png"),    -moz-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/i/grain.png"),     -ms-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/i/grain.png"),      -o-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/i/grain.png"),         linear-gradient(top, #dadee1, #c7ccd0);
 }
 
 #wait, #delay {

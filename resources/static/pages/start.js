@@ -90,7 +90,7 @@ $(function() {
     // footer remains at the bottom of the screen.
     var paddingTop = 0, paddingBottom = 0;
 
-    if(paddingAddedToMinHeight()) {
+    if (paddingAddedToMinHeight()) {
       paddingTop = parseInt($("#content").css("padding-top") || 0, 10);
       paddingBottom = parseInt($("#content").css("padding-bottom") || 0, 10);
     }
@@ -107,7 +107,7 @@ $(function() {
   moduleManager.register("development", Development);
   moduleManager.start("development");
 
-  if(shouldCheckCookies(path)) {
+  if (shouldCheckCookies(path)) {
     // do a cookie check on every page except the main page.
     moduleManager.register("cookie_check", CookieCheck);
     moduleManager.start("cookie_check", { ready: start });
@@ -120,7 +120,7 @@ $(function() {
   function start(status) {
     // If cookies are disabled, do not run any of the page specific code and
     // instead just show the error message.
-    if(!status) return;
+    if (!status) return;
 
 
     if (!path || path === "/") {
@@ -144,14 +144,17 @@ $(function() {
         verifyFunction: "verifyEmail"
       });
     }
-    else if(path === "/verify_email_address") {
+    else if (path === "/verify_email_address") {
       var module = bid.verifySecondaryAddress.create();
       module.start({
         token: token,
         verifyFunction: "verifyUser"
       });
     }
-    else if(path === "/about" || path === "/tos" || path === "/privacy") {
+    else if (path === "/about") {
+      var module = bid.about.create();
+      module.start({});
+    } else if(path === "/tos" || path === "/privacy") {
       // do nothing.  This prevents "unknown path" from being displayed to the
       // user.
     }

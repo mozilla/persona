@@ -35,6 +35,14 @@ BrowserID.Errors = (function(){
       title: "Cancelling User Account"
     },
 
+    cannotConfirm: {
+      title: gettext("There was a problem with your signup link. Has this address already been registered?")
+    },
+
+    cannotComplete: {
+      title: gettext("Error encountered trying to complete registration.")
+    },
+
     checkAuthentication: {
       title: "Checking Authentication"
     },
@@ -48,7 +56,7 @@ BrowserID.Errors = (function(){
     },
 
     cookiesDisabled: {
-      title: gettext("BrowserID requires cookies"),
+      title: gettext("Persona requires cookies"),
       message: format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='" + enableCookiesURL + "'"])
 
     },
