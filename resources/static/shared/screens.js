@@ -15,11 +15,13 @@ BrowserID.Screens = (function() {
       show: function(template, vars) {
         renderer.render(target + " .contents", template, vars);
         dom.addClass(BODY, className);
+        dom.fireEvent(window, "resize");
         this.visible = true;
       },
 
       hide: function() {
         dom.removeClass(BODY, className);
+        dom.fireEvent(window, "resize");
         this.visible = false;
       }
     }

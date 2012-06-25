@@ -501,7 +501,26 @@
     });
   });
 
-  asyncTest("get with absolute path - allowed URL but it must be properly escaped", function() {
+  asyncTest("get with absolute path and http RP - not allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var siteLogo = '/i/card.png';
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          siteLogo: siteLogo
+        });
+
+        equal(retval, "only https sites can specify a siteLogo", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with absolute path and https RP - allowed URL but is properly escaped", function() {
     createController({
       ready: function() {
         var startInfo;
@@ -510,12 +529,12 @@
         });
 
         var siteLogo = '/i/card.png" onerror="alert(\'xss\')" <script>alert(\'more xss\')</script>';
-        var retval = controller.get(HTTP_TEST_DOMAIN, {
+        var retval = controller.get(HTTPS_TEST_DOMAIN, {
           siteLogo: siteLogo
         });
 
         testHelpers.testObjectValuesEqual(startInfo, {
-          siteLogo: encodeURI(HTTP_TEST_DOMAIN + siteLogo)
+          siteLogo: encodeURI(HTTPS_TEST_DOMAIN + siteLogo)
         });
         equal(typeof retval, "undefined", "no error expected");
         testErrorNotVisible();

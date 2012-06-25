@@ -33,7 +33,7 @@
           $.ajax({
             url: '/api/cert_key',
             data: JSON.stringify({
-              pubkey: pubkey,
+              pubkey: JSON.parse(pubkey),
               duration: cert_duration
             }),
             type: 'POST',

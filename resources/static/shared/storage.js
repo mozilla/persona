@@ -37,21 +37,38 @@ BrowserID.Storage = (function() {
     if (window.console && console.error) console.error(msg);
   }
 
-  function prepareDeps() {
-    if (!jwcrypto) {
-      jwcrypto = require("./jwcrypto");
-    }
-  }
-
   function storeEmails(emails) {
     storage.emails = JSON.stringify(emails);
   }
 
   function clear() {
     storage.removeItem("emails");
-    storage.removeItem("tempKeypair");
     storage.removeItem("siteInfo");
     storage.removeItem("managePage");
+  }
+
+  // initialize all localStorage values to default if they are unset.
+  // this function is only neccesary on IE8 where there are localStorage
+  // synchronization issues between different browsing contexts, however
+  // it's intended to avoid IE8 specific bugs from being introduced.
+  // see issue #1637
+  function setDefaultValues() {
+    _.each({
+      emailToUserID: {},
+      emails: {},
+      interaction_data: {},
+      loggedIn: {},
+      main_site: {},
+      managePage: {},
+      returnTo: null,
+      siteInfo: {},
+      stagedOnBehalfOf: null,
+      usersComputer: {}
+    }, function(defaultVal, key) {
+      if (!storage[key]) {
+        storage[key] = JSON.stringify(defaultVal);
+      }
+    });
   }
 
   function getEmails() {
@@ -567,6 +584,13 @@ BrowserID.Storage = (function() {
      */
     clear: clear,
     setReturnTo: setReturnTo,
-    getReturnTo: getReturnTo
+    getReturnTo: getReturnTo,
+    /**
+     * Set all used storage values to default if they are unset.  This function
+     * is required for proper localStorage sync between different browsing contexts,
+     * see issue #1637 for full details.
+     * @method setDefaultValues
+     */
+    setDefaultValues: setDefaultValues
   };
 }());
