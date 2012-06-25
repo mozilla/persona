@@ -106,80 +106,12 @@ body {
   padding: 50px 0;
 }
 
-#about {
-  color: #444;
-  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-  padding: 50px 75px;
-  background-color: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  border-radius: 5px;
-}
-
 h1 {
   margin-bottom: 35px;
 }
 
 .headline-main, h1 {
   font-weight: 300;
-}
-
-.row {
-  margin: 25px 0 0 0;
-  padding: 0 0 25px 0;
-  position: relative;
-  border-bottom: 1px solid #eee;
-}
-
-
-
-
-.row:last-child {
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-.row div {
-  height: 140px;
-  width: 500px;
-  padding: 0 0 0 20px;
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.row p {
-  width: 380px;
-  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-  float: left;
-}
-
-.row img {
-  float: left;
-}
-
-.row button, .row .button {
-  float: right;
-  display: inline-block;
-}
-
-div.steps {
-  width: 24px;
-  height: 24px;
-  vertical-align: bottom;
-  margin-right: 10px;
-  background-image: url('/i/count.png');
-  float: left;
-}
-
-.one .steps {
-  background-position: left 0;
-}
-
-.two .steps {
-  background-position: left -24px;
-}
-
-.three .steps {
-  background-position: left -48px;
 }
 
 
@@ -657,5 +589,143 @@ footer ul li:first-child a:hover {
 .newuser .newsbanner {
   margin-bottom: 50px;
   display: block;
+}
+
+/*  How It Works
+ ***************/
+
+ h2.title {
+  font-size: 48px;
+  font-weight: normal;
+  color: #fff;
+  text-shadow: 0 1px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  letter-spacing: -2px;
+  padding-bottom: 30px;
+  margin: 0;
+}
+
+.blurb, a.developers {
+  -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.13);
+  -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.13);
+  -ms-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.13);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.13);
+  background: #63727d;
+  background: rgba(13, 28, 41, 0.1);
+  font-size: 14px;
+  color: #fff;
+}
+
+.blurb {
+  zoom: 1;
+  margin-top: 30px;
+  padding: 30px;
+  text-align: left;
+  line-height: 1.5;
+}
+.blurb:before, .blurb:after {
+  content: "";
+  display: table;
+}
+.blurb:after {
+  clear: both;
+}
+
+.blurb h1, .blurb p, .blurb a, a.developers{
+  text-shadow: 0 1px rgba(0, 0, 0, 0.5);
+  font-weight: normal;
+}
+
+.blurb img{
+  max-width: 100%;
+  vertical-align: bottom;
+}
+
+.blurb a {
+  color: #fff;
+  border-bottom: 1px dotted #fff;
+  font-weight: normal;
+}
+.blurb a:hover {
+  color: #53b7fb;
+}
+.blurb.half {
+  width: 48%;
+  float: left;
+}
+.blurb.half.first {
+  margin-right: 4%;
+}
+.blurb .info, .blurb .graphic {
+  width: 50%;
+  float: left;
+}
+.blurb .first {
+  padding-right: 30px;
+}
+.blurb .graphic {
+  text-align: center;
+}
+.blurb h1 {
+  font-size: 32px;
+  font-weight: normal;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.blurb p {
+  margin-bottom: 1em;
+}
+.blurb p:last-of-type {
+  margin-bottom: 0;
+}
+
+.privacy {
+  -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+  -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+  -ms-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+  zoom: 1;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding-bottom: 60px;
+  margin: 100px 0 60px;
+}
+.privacy:before, .privacy:after {
+  content: "";
+  display: table;
+}
+.privacy:after {
+  clear: both;
+}
+
+a.developers {
+  -webkit-transition: all 300ms ease;
+  -moz-transition: all 300ms ease;
+  -ms-transition: all 300ms ease;
+  transition: all 300ms ease;
+  display: block;
+  padding: 13px 15px;
+  line-height: 1.4;
+  text-align: center;
+}
+a.developers:hover {
+  background: #3b4e5c;
+  background: rgba(13, 28, 41, 0.2);
+}
+a.developers img {
+  margin: 0 5px -7px 0;
+}
+a.developers span {
+  color: #53b7fb;
+  font-weight: bold;
+  margin-right: 10px;
+  display: inline-block;
+}
+
+article.flexible {
+  padding-bottom: 0;
+}
+article.flexible .info {
+  margin-bottom: 30px;
 }
 

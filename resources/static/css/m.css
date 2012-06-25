@@ -45,7 +45,7 @@
 /*
  * 620 catches most mobile devices in landscape mode.  The purpose of this is
  * to make sure the right hand nav menu does not drop partially below the
- * persona logo.
+ * persona logo. This also adjusts the boxes on the "How It Works" page.
  */
 @media screen and (max-width: 620px) {
   header ul {
@@ -53,6 +53,51 @@
     float: none;
     display: block;
     text-align: center;
+  }
+
+  .blurb.half {
+    width: 100%;
+    float: none;
+    min-height: 0 !important;
+  }
+  .blurb.half.first {
+    margin-right: 0;
+  }
+
+  .blurb {
+    display: -webkit-box;
+    display: box;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+  }
+  .blurb .info {
+    -webkit-box-ordinal-group: 2;
+    -moz-box-ordinal-group: 2;
+    -ms-box-ordinal-group: 2;
+    box-ordinal-group: 2;
+  }
+  .blurb h1{
+    font-size: 20px;
+  }
+  .blurb.flexible .graphic {
+    margin: 0 0 30px;
+  }
+  .blurb .first {
+    padding-right: 0;
+  }
+  .blurb .info, .blurb .graphic {
+    float: none;
+    width: 100%;
+  }
+
+  h2.title {
+    font-size: 32px;
+    padding-bottom: 15px;
+  }
+
+  .privacy{
+    margin: 60px 0 30px;
+    padding-bottom: 30px;
   }
 }
 
@@ -76,11 +121,6 @@
 
   #content {
     padding: 10px;
-  }
-
-  #about {
-    padding: 10px;
-    border-radius: 5px;
   }
 
   .headline-main {
@@ -157,39 +197,6 @@
 
   #legal li {
     list-style-position: inside;
-  }
-
-  #about .video,
-  #about .video img {
-    width: 300px;
-    height: auto;
-  }
-
-  .row {
-    padding: 20px 20px 0;
-    margin: 0;
-  }
-
-  .row div {
-    width: auto;
-    height: auto;
-    vertical-align: inherit;
-    display: block;
-    padding: 20px 0;
-  }
-
-  .row img {
-    float: none;
-    width: 260px;
-    height: auto;
-  }
-
-  .row p {
-    float: none;
-    display: block;
-    width: 260px;
-    text-indent: -33px;
-    padding-left: 33px;
   }
 
   #signUpFormWrap {
