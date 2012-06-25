@@ -125,12 +125,12 @@ suite.addBatch({
   '/authenticate_with_primary': hasProperCacheHeaders('/authenticate_with_primary'),
   '/signup': hasProperCacheHeaders('/signup'),
   '/idp_auth_complete': hasProperCacheHeaders('/idp_auth_complete'),
-//  '/forgot': hasProperCacheHeaders('/forgot'), */
+  '/forgot': hasProperCacheHeaders('/forgot'),
   '/signin': hasProperCacheHeaders('/signin'),
   '/about': hasProperCacheHeaders('/about'),
   '/tos': hasProperCacheHeaders('/tos'),
   '/privacy': hasProperCacheHeaders('/privacy'),
-//  '/verify_email_address': hasProperCacheHeaders('/verify_email_address'), */
+  '/verify_email_address': hasProperCacheHeaders('/verify_email_address'),
   '/add_email_address': hasProperCacheHeaders('/add_email_address'),
 //  '/pk': hasProperCacheHeaders('/pk'),
 //  '/.well-known/browserid': hasProperCacheHeaders('/.well-known/browserid')
