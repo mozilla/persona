@@ -15,6 +15,7 @@ BrowserID.Mocks.WindowMock = (function() {
 
   function WindowMock() {
     this.document = new DocumentMock();
+    this.sessionStorage = {};
   }
   WindowMock.prototype = {
     open: function(url, name, options) {

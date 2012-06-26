@@ -50,6 +50,8 @@
     },
 
     navigator: {},
+
+    sessionStorage: {}
   };
 
   function createController(config) {
@@ -134,8 +136,12 @@
     });
   });
 
-  asyncTest("initialization with #CREATE_EMAIL=testuser@testuser.com - trigger start with correct params", function() {
-    winMock.location.hash = "#CREATE_EMAIL=testuser@testuser.com";
+  asyncTest("initialization with #AUTH_RETURN and add=false - trigger start with correct params", function() {
+    winMock.location.hash = "#AUTH_RETURN";
+    winMock.sessionStorage.primaryVerificationFlow = JSON.stringify({
+      add: false,
+      email: TESTEMAIL
+    });
 
     createController({
       ready: function() {
@@ -157,8 +163,12 @@
     });
   });
 
-  asyncTest("initialization with #ADD_EMAIL=testuser@testuser.com - trigger start with correct params", function() {
-    winMock.location.hash = "#ADD_EMAIL=testuser@testuser.com";
+  asyncTest("initialization with #AUTH_RETURN and add=true - trigger start with correct params", function() {
+    winMock.location.hash = "#AUTH_RETURN";
+    winMock.sessionStorage.primaryVerificationFlow = JSON.stringify({
+      add: true,
+      email: TESTEMAIL
+    });
 
     createController({
       ready: function() {

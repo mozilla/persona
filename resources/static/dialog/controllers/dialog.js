@@ -196,24 +196,15 @@ BrowserID.Modules.Dialog = (function() {
           user.setReturnTo(returnTo);
         }
 
-
-        if (hash.indexOf("#CREATE_EMAIL=") === 0) {
-          var email = hash.replace(/#CREATE_EMAIL=/, "");
-          if (!bid.verifyEmail(email))
-            throw "invalid #CREATE_EMAIL= (" + email + ")";
+        if (hash.indexOf("#AUTH_RETURN") === 0) {
+          var primaryParams = JSON.parse(win.sessionStorage.primaryVerificationFlow);
+          params.email = primaryParams.email;
+          params.add = primaryParams.add;
           params.type = "primary";
-          params.email = email;
-          params.add = false;
-        }
-        else if (hash.indexOf("#ADD_EMAIL=") === 0) {
-          var email = hash.replace(/#ADD_EMAIL=/, "");
-          if (!bid.verifyEmail(email))
-            throw "invalid #ADD_EMAIL= (" + email + ")";
-          params.type = "primary";
-          params.email = email;
-          params.add = true;
         }
 
+        // no matter what, we clear the primary flow state for this window
+        win.sessionStorage.primaryVerificationFlow = undefined;
       } catch(e) {
         // note: renderError accepts HTML and cheerfully injects it into a
         // frame with a powerful origin. So convert 'e' first.
