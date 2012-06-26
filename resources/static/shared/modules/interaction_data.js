@@ -44,6 +44,29 @@ BrowserID.Modules.InteractionData = (function() {
    *   directly from the mediator.  Function returns a value.  If no value is
    *   returned, field will not be saved to KPI data set.
    */
+
+  /**
+   * Explanation of KPIs:
+   *
+   * screen.* - the user sees a new screen (generally speaking, though there
+   *   may be a couple of exceptions).
+   * window.redirect_to_primary - the user has to authenticate with their
+   *   IdP so they are being redirected away.
+   * window.unload - the last thing in every event stream.
+   * generate_assertion - the order was given to generate an assertion.
+   * assertion_generated - the assertion generation is complete -
+   *   these two together are useful to measure how long crypto is taking
+   *   on various devices.
+   * user.user_staged - a new user verification email is sent
+   * user.user_confirmed - the user has confirmed and the dialog is closing.
+   *   These two together give us the info needed to see how long it takes
+   *   users to confirm their address - iff they keep their dialog open.
+   * user.email_staged/user.email_confirmed is similar to
+   *   user.user_staged/confirmed except it is when the user adds a secondary
+   *   email to their account.
+   * user.logout - that is the user has clicked "this is not me."
+   */
+
   var MediatorToKPINameTable = {
     service: function(msg, data) { return "screen." + data.name; },
     cancel_state: "screen.cancel",
@@ -51,12 +74,11 @@ BrowserID.Modules.InteractionData = (function() {
     window_unload: "window.unload",
     generate_assertion: null,
     assertion_generated: null,
-    emails_displayed: function(msg, data) { return "user.email_count:" + data.count; },
     user_staged: "user.user_staged",
     user_confirmed: "user.user_confirmed",
     email_staged: "user.email_staged",
     email_confirmed: "user.email_confrimed",
-    notme: "user.logout",
+    notme: "user.logout"
   };
 
   function getKPIName(msg, data) {
@@ -130,6 +152,12 @@ BrowserID.Modules.InteractionData = (function() {
     self.initialEventStream = null;
 
     self.samplesBeingStored = true;
+  }
+
+  function onKPIData(msg, result) {
+    var currentData = this.getCurrent();
+    _.extend(currentData, result);
+    model.setCurrent(currentData);
   }
 
   // At every load, after session_context returns, try to publish the previous
@@ -236,11 +264,12 @@ BrowserID.Modules.InteractionData = (function() {
         // whenever session_context is hit, let's hear about it so we can
         // extract the information that's important to us (like, whether we
         // should be running or not)
-        self.contextInfoHandle = this.subscribe('context_info', onSessionContext);
+        self.subscribe('context_info', onSessionContext);
       }
 
       // on all events, update event_stream
-      this.subscribeAll(addEvent);
+      self.subscribeAll(addEvent);
+      self.subscribe('kpi_data', onKPIData);
     },
 
     addEvent: addEvent,

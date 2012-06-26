@@ -42,7 +42,7 @@ BrowserID.Modules.PrimaryUserProvisioned = (function() {
         }, self.getErrorDialog(errors.addEmailWithAssertion, complete));
       }
       else {
-        network.authenticateWithAssertion(email, assertion, function(status) {
+        user.authenticateWithAssertion(email, assertion, function(status) {
           if(status) {
             setTimeout(function() {
               self.publish("primary_user_ready", options);

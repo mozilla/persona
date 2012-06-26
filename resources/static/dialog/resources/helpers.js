@@ -40,9 +40,11 @@
   }
 
   function getAssertion(email, callback) {
-    var self=this;
-    var wait = bid.Screens.wait;
+    var self=this,
+        wait = bid.Screens.wait;
+
     wait.show("wait", bid.Wait.generateKey);
+
     user.getAssertion(email, user.getOrigin(), function(assert) {
       assert = assert || null;
       wait.hide();

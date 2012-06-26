@@ -63,11 +63,21 @@ BrowserID.State = (function() {
 
     handleState("window_unload", function() {
       if (!self.success) {
-        storage.setStagedOnBehalfOf("");
+        storage.setReturnTo("");
         // do not call doCancel here, let winchan's cancel
         // handling do the work. This gives us consistent semantics
         // across browsers on the RP side of the WinChan.
       }
+
+      // Round up final KPI stats as the user is leaving the dialog.  This
+      // ensures the final state is sent to the KPI stats.  Any new logins are
+      // counted, any new sites are counted, any new emails are included, etc.
+      mediator.publish("kpi_data", {
+        number_emails: storage.getEmailCount() || 0,
+        sites_signed_in: storage.loggedInCount() || 0,
+        sites_visited: storage.site.count() || 0,
+        orphaned: !self.success
+     });
     });
 
     handleState("authentication_checked", function(msg, info) {
@@ -96,6 +106,10 @@ BrowserID.State = (function() {
 
     handleState("new_user", function(msg, info) {
       self.newUserEmail = info.email;
+
+      // Add new_account to the KPIs *before* the staging occurs allows us to
+      // know when we are losing users due to the email verification.
+      mediator.publish("kpi_data", { new_account: true });
 
       // cancel is disabled if the user is doing the initial password set
       // for a requiredEmail.
@@ -146,9 +160,15 @@ BrowserID.State = (function() {
         redirectToState("primary_user_ready", info);
       }
       else {
-        // We don't want to put the provisioning step on the stack, instead when
-        // a user cancels this step, they should go back to the step before the
-        // provisioning.
+        user.isEmailRegistered(email, function(known) {
+          if (!known) {
+            mediator.publish("kpi_data", { new_account: true });
+          }
+        });
+
+        // We don't want to put the provisioning step on the stack,
+        // instead when a user cancels this step, they should go
+        // back to the step before the provisioning.
         startAction(false, "doProvisionPrimaryUser", info);
       }
     });
@@ -221,6 +241,8 @@ BrowserID.State = (function() {
       }
 
       if (idInfo) {
+        mediator.publish("kpi_data", { email_type: idInfo.type });
+
         if (idInfo.type === "primary") {
           if (idInfo.cert) {
             // Email is a primary and the cert is available - the user can log
@@ -323,8 +345,8 @@ BrowserID.State = (function() {
     handleState("assertion_generated", function(msg, info) {
       self.success = true;
       if (info.assertion !== null) {
-        // XXX TODO - move the setLoggedIn to the getAssertion perhaps?
         storage.setLoggedIn(user.getOrigin(), self.email);
+
         startAction("doAssertionGenerated", { assertion: info.assertion, email: self.email });
       }
       else {

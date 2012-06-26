@@ -1,4 +1,4 @@
-/*jshint browsers:true, forin: true, laxbreak: true */
+/*jshint browser:true, forin: true, laxbreak: true */
 /*global _: true, BrowserID: true, console: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -318,7 +318,7 @@ BrowserID.User = (function() {
       var email = info.email;
       User.provisionPrimaryUser(email, info, function(status, provInfo) {
         if (status === "primary.verified") {
-          network.authenticateWithAssertion(email, provInfo.assertion, function(status) {
+          User.authenticateWithAssertion(email, provInfo.assertion, function(status) {
             if (status) {
               onComplete("primary.verified");
             }
@@ -659,7 +659,7 @@ BrowserID.User = (function() {
             if (!emails_to_add || !emails_to_add.length) {
               onComplete();
               return;
-            }
+           }
 
             var email = emails_to_add.shift();
 
@@ -742,6 +742,31 @@ BrowserID.User = (function() {
           onComplete(authenticated);
         }
       }, onFailure);
+    },
+
+    /**
+     * Authenticate the user with the given email and assertion.  This will sync
+     * the user's addresses.
+     * @method authenticateWithAssertion
+     * @param {string} email
+     * @param {string} assertion
+     * @param {function} [onComplete] - Called on completion with status. true
+     * if user is authenticated, false otw.
+     * @param {function} [onFailure] - Called on error.
+     */
+    authenticateWithAssertion: function(email, assertion, onComplete, onFailure) {
+      network.authenticateWithAssertion(email, assertion, function(authenticated) {
+        setAuthenticationStatus(authenticated);
+
+        if (authenticated) {
+          User.syncEmails(function() {
+            complete(onComplete, authenticated);
+          }, onFailure);
+        } else {
+          complete(onComplete, authenticated);
+        }
+      }, onFailure);
+
     },
 
     /**
@@ -1194,6 +1219,7 @@ BrowserID.User = (function() {
 
       return shouldAsk;
     }
+
   };
 
   // Set origin to default to the current domain.  Other contexts that use user.js,

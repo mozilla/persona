@@ -10,6 +10,7 @@ var jwcrypto = require("./lib/jwcrypto");
       lib = bid.User,
       storage = bid.Storage,
       network = bid.Network,
+      mediator = bid.Mediator,
       xhr = bid.Mocks.xhr,
       testHelpers = bid.TestHelpers,
       testOrigin = testHelpers.testOrigin,
@@ -523,6 +524,26 @@ var jwcrypto = require("./lib/jwcrypto");
     failureCheck(lib.authenticate, TEST_EMAIL, "testuser");
   });
 
+  asyncTest("authenticateWithAssertion with valid assertion", function() {
+    lib.authenticateWithAssertion(TEST_EMAIL, "test_assertion", function(authenticated) {
+      equal(true, authenticated, "we are authenticated!");
+      var emails = lib.getStoredEmailKeypairs();
+      equal(_.size(emails) > 0, true, "emails have been synced to server");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("authenticateWithAssertion with invalid assertion", function() {
+    xhr.useResult("invalid");
+    lib.authenticateWithAssertion(TEST_EMAIL, "test_assertion", function onComplete(authenticated) {
+      equal(false, authenticated, "invalid authentication.");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("authenticateWithAssertion with XHR failure", function() {
+    failureCheck(lib.authenticateWithAssertion, TEST_EMAIL, "testuser");
+  });
 
   asyncTest("checkAuthentication with valid authentication", function() {
     storage.addSecondaryEmail(TEST_EMAIL);
@@ -864,6 +885,7 @@ var jwcrypto = require("./lib/jwcrypto");
       var identities = lib.getStoredEmailKeypairs();
       ok(TEST_EMAIL in identities, "Our new email is added");
       equal(_.size(identities), 1, "there is one identity");
+
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -955,7 +977,7 @@ var jwcrypto = require("./lib/jwcrypto");
       testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("getAssertion with known primary email, expired cert, user authenticated with IdP - expect null assertion", function() {
+  asyncTest("getAssertion with known primary email, expired cert, user not authenticated with IdP - expect null assertion", function() {
     xhr.useResult("primary");
     provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
     storage.addEmail("unregistered@testuser.com", { type: "primary" });
