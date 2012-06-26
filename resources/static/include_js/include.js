@@ -1042,7 +1042,9 @@
       if (options.requiredEmail) {
         try {
           console.log("requiredEmail has been deprecated");
-        } catch(e) {/* ignore error */}
+        } catch(e) {
+          /* ignore error */
+        }
       }
 
       // focus an existing window
