@@ -111,7 +111,7 @@
         }
       }
       if (s_boundChans[origin][scope].length === 0) {
-        delete s_boundChans[origin][scope]
+        delete s_boundChans[origin][scope];
       }
     }
 
@@ -170,9 +170,9 @@
       if (typeof meth === 'string') {
         var delivered = false;
         if (s_boundChans[o] && s_boundChans[o][s]) {
-          for (var i = 0; i < s_boundChans[o][s].length; i++) {
-            if (s_boundChans[o][s][i].win === w) {
-              s_boundChans[o][s][i].handler(o, meth, m);
+          for (var j = 0; j < s_boundChans[o][s].length; j++) {
+            if (s_boundChans[o][s][j].win === w) {
+              s_boundChans[o][s][j].handler(o, meth, m);
               delivered = true;
               break;
             }
@@ -180,9 +180,9 @@
         }
 
         if (!delivered && s_boundChans['*'] && s_boundChans['*'][s]) {
-          for (var i = 0; i < s_boundChans['*'][s].length; i++) {
-            if (s_boundChans['*'][s][i].win === w) {
-              s_boundChans['*'][s][i].handler(o, meth, m);
+          for (var j = 0; j < s_boundChans['*'][s].length; j++) {
+            if (s_boundChans['*'][s][j].win === w) {
+              s_boundChans['*'][s][j].handler(o, meth, m);
               break;
             }
           }
@@ -238,7 +238,7 @@
             try { if (typeof m !== 'string') m = JSON.stringify(m); } catch(e) { }
             console.log("["+chanId+"] " + m);
           }
-        }
+        };
 
         /* browser capabilities check */
         if (!window.postMessage) throw("jschannel cannot run this browser, no postMessage");
@@ -272,7 +272,7 @@
 
         if (typeof cfg.scope !== 'undefined') {
           if (typeof cfg.scope !== 'string') throw 'scope, when specified, must be a string';
-          if (cfg.scope.split('::').length > 1) throw "scope may not contain double colons: '::'"
+          if (cfg.scope.split('::').length > 1) throw "scope may not contain double colons: '::'";
         }
 
         /* private variables */
@@ -341,7 +341,7 @@
               return completed;
             }
           };
-        }
+        };
 
         var setTransactionTimeout = function(transId, timeout, method) {
           return window.setTimeout(function() {
@@ -353,7 +353,7 @@
               delete s_transIds[transId];
             }
           }, timeout);
-        }
+        };
 
         var onMessage = function(origin, method, m) {
           // if an observer was specified at allocation time, invoke it
@@ -392,7 +392,7 @@
                       var cbName = path;
                       return function(params) {
                         return trans.invoke(cbName, params);
-                      }
+                      };
                     })();
                   }
                 }
@@ -469,7 +469,7 @@
               // what can we do?  Also, here we'll ignore return values
             }
           }
-        }
+        };
 
         // now register our bound channel for msg routing
         s_addBoundChan(cfg.window, cfg.origin, ((typeof cfg.scope === 'string') ? cfg.scope : ''), onMessage);
@@ -478,7 +478,7 @@
         var scopeMethod = function(m) {
           if (typeof cfg.scope === 'string' && cfg.scope.length) m = [cfg.scope, m].join("::");
           return m;
-        }
+        };
 
         // a small wrapper around postmessage whose primary function is to handle the
         // case that clients start sending messages before the other end is "ready"
@@ -501,7 +501,7 @@
 
             cfg.window.postMessage(JSON.stringify(msg), cfg.origin);
           }
-        }
+        };
 
         var onReady = function(trans, type) {
           debug('ready msg received');
@@ -683,7 +683,7 @@
       var loc = window.location;
       var frames = window.opener.frames;
       var origin = loc.protocol + '//' + loc.host;
-      for (i = frames.length - 1; i >= 0; i++) {
+      for (var i = frames.length - 1; i >= 0; i++) {
         try {
           if (frames[i].location.href.indexOf(origin) === 0 &&
               frames[i].name === RELAY_FRAME_NAME)
@@ -746,7 +746,7 @@
             iframe.setAttribute('src', opts.relay_url);
             iframe.style.display = "none";
             iframe.setAttribute('name', RELAY_FRAME_NAME);
-            document.body.appendChild(iframe)
+            document.body.appendChild(iframe);
             messageTarget = iframe.contentWindow;
           }
 
@@ -797,7 +797,7 @@
             }
           };
         }
-      }
+      };
     } else {
       return {
         open: function(url, winopts, arg, cb) {
@@ -1153,7 +1153,7 @@
           onlogin: function(assertion) {
             if (callback) {
               callback(assertion);
-              callback = null
+              callback = null;
             }
           },
           onlogout: function() {}
@@ -1181,4 +1181,3 @@
     };
   }
 }());
-

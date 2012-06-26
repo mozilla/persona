@@ -83,4 +83,3 @@ All source code here is available under the [MPL 2.0][] license, unless
 otherwise indicated.
 
   [MPL 2.0]: https://mozilla.org/MPL/2.0/
-
