@@ -155,6 +155,10 @@ $(function() {
       var module = bid.about.create();
       module.start({});
     }
+    else if (path === "/tos" || path === "/privacy") {
+      // do nothing.  This prevents "unknown path" from being displayed to the
+      // user.
+    }
     else {
       // Instead of throwing a hard error here, adding a message to the console
       // to let developers know something is up.
