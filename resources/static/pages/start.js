@@ -154,7 +154,8 @@ $(function() {
     else if (path === "/about") {
       var module = bid.about.create();
       module.start({});
-    } else if(path === "/tos" || path === "/privacy") {
+    }
+    else if (path === "/tos" || path === "/privacy") {
       // do nothing.  This prevents "unknown path" from being displayed to the
       // user.
     }
