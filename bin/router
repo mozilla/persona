@@ -8,7 +8,7 @@ const
 fs = require('fs'),
 path = require('path'),
 url = require('url'),
-http = require('http');
+http = require('http'),
 urlparse = require('urlparse'),
 express = require('express');
 
@@ -48,10 +48,12 @@ if (!config.get('browserid_url')) {
 // order in which middleware will be invoked as requests are processed.
 
 // #1 - Setup health check / heartbeat middleware.
+// Depends on positive health checks from browserid and static processes
 // This is in front of logging on purpose.  see issue #537
 var browserid_url = urlparse(config.get('browserid_url')).validate().normalize().originOnly();
+var static_url = urlparse(config.get('static_url')).validate().normalize().originOnly();
 heartbeat.setup(app, {
-  dependencies: [browserid_url]
+  dependencies: [browserid_url, static_url]
 });
 
 // #2 - logging!  all requests other than __heartbeat__ are logged
@@ -115,16 +117,25 @@ if (config.get('verifier_url')) {
   });
 }
 
-// handle /wsapi writes
-wsapi.setup({
-  router_mode: true,
-  forward_writes: urlparse(config.get('dbwriter_url')).validate().normalize().originOnly()
-}, app);
+// #10 if the BROWSERID_FAKE_VERIFICATION env var is defined, we'll include
+// fake_verification.js.  This is used during testing only and should
+// never be included in a production deployment
+if (process.env['BROWSERID_FAKE_VERIFICATION']) {
+  require('../lib/browserid/fake_verification.js').addVerificationWSAPI(app);
+}
 
-// Forward all leftover requests to browserid
+// handle /wsapi reads/writes
+var dbwriter_url = urlparse(config.get('dbwriter_url')).validate().normalize().originOnly();
+
+wsapi.routeSetup(app, {
+  read_url: browserid_url,
+  write_url: dbwriter_url
+});
+
+//catch-all
 app.use(function(req, res, next) {
   forward(
-    browserid_url+req.url, req, res,
+    static_url+req.url, req, res,
     function(err) {
       if (err) {
         logger.error("error forwarding request:", err);

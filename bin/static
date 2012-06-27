@@ -1,0 +1,106 @@
+#!/usr/bin/env node
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+const
+fs = require('fs'),
+path = require('path'),
+url = require('url'),
+http = require('http'),
+urlparse = require('urlparse'),
+express = require('express');
+
+const
+assets = require('../lib/static_resources').all,
+cachify = require('connect-cachify'),
+i18n = require('../lib/i18n.js'),
+wsapi = require('../lib/wsapi.js'),
+httputils = require('../lib/httputils.js'),
+secrets = require('../lib/secrets.js'),
+db = require('../lib/db.js'),
+config = require('../lib/configuration.js'),
+heartbeat = require('../lib/heartbeat.js'),
+metrics = require('../lib/metrics.js'),
+logger = require('../lib/logging.js').logger,
+forward = require('../lib/http_forward').forward,
+shutdown = require('../lib/shutdown'),
+views = require('../lib/browserid/views.js');
+
+var app = undefined;
+
+app = express.createServer();
+
+logger.info("static starting up");
+
+// Setup health check / heartbeat middleware.
+// This is in front of logging on purpose.  see issue #537
+heartbeat.setup(app);
+
+// logging!  all requests other than __heartbeat__ are logged
+app.use(express.logger({
+  format: config.get('express_log_format'),
+  stream: {
+    write: function(x) {
+      logger.info(typeof x === 'string' ? x.trim() : x);
+    }
+  }
+}));
+
+// #2.1 - localization
+app.use(i18n.abide({
+  supported_languages: config.get('supported_languages'),
+  default_lang: config.get('default_lang'),
+  debug_lang: config.get('debug_lang'),
+  locale_directory: config.get('locale_directory'),
+  disable_locale_check: config.get('disable_locale_check')
+}));
+
+var statsd_config = config.get('statsd');
+if (statsd_config && statsd_config.enabled) {
+  logger_statsd = require("connect-logger-statsd");
+  app.use(logger_statsd({
+    host: statsd_config.hostname || "localhost",
+    port: statsd_config.port || 8125,
+    prefix: statsd_config.prefix || "browserid.static."
+  }));
+}
+// #4 - prevent framing of everything.  content underneath that needs to be
+// framed must explicitly remove the x-frame-options
+app.use(function(req, resp, next) {
+  resp.setHeader('x-frame-options', 'DENY');
+  next();
+});
+
+var static_root = path.join(__dirname, "..", "resources", "static");
+
+// #7 - perform response substitution to support local/dev/beta environments
+// (specifically, this replaces URLs in responses, e.g. https://browserid.org
+//  with https://diresworb.org)
+config.performSubstitution(app);
+
+// #9 - handle views for dynamicish content
+views.setup(app);
+
+app.use(cachify.setup(assets(config.get('supported_languages')),
+        {
+          prefix: config.get('cachify_prefix'),
+          production: config.get('use_minified_resources'),
+          root: static_root,
+        }));
+
+
+// if nothing else has caught this request, serve static files, but ensure
+// that proper vary headers are installed to prevent unwanted caching
+app.use(function(req, res, next) {
+  res.setHeader('Vary', 'Accept-Encoding,Accept-Language');
+  next();
+});
+
+app.use(express.static(static_root));
+
+var bindTo = config.get('bind_to');
+app.listen(bindTo.port, bindTo.host, function() {
+  logger.info("running on http://" + app.address().address + ":" + app.address().port);
+});
