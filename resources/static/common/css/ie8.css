@@ -11,7 +11,7 @@
 .submit button:focus,
 .submit .button:hover,
 .submit .button:focus {
-    background-image: url("/i/button-arrow.png");
+    background-image: url("/common/i/button-arrow.png");
     background-position: center right;
     background-repeat: no-repeat;
 }
