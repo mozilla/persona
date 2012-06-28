@@ -1,0 +1,450 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+* {
+  margin: 0;
+  padding: 0;
+
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+       -o-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font: 14px/21px 'Open Sans', "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
+  overflow-y: auto;
+}
+
+/* for floats */
+.cf:after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0;
+}
+
+html[xmlns] .cf {
+  display: block;
+}
+
+* html .cf {
+  height: 1%;
+}
+
+header {
+}
+
+header, section, footer {
+  display: block;
+  width: 100%;
+}
+
+footer {
+  color: #484848;
+  font-weight: 300;
+}
+
+ul, li {
+  list-style-type: none;
+}
+
+.mono {
+  font-family: 'Monaco', monospace;
+}
+
+.tooltip {
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 1px #333;
+  line-height: 16px;
+  background-color: #aa1401;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(218, 81, 50, 0.9)), to(rgba(169, 19, 0, 1)));
+  background-image: -webkit-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
+  background-image:    -moz-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
+  background-image:     -ms-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
+  background-image:      -o-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
+  background-image:         linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
+  border-radius: 3px;
+  padding: 10px 15px;
+  box-shadow: 0 1px #666;
+
+  display: none;
+  max-width: 275px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 5;
+}
+
+
+a {
+  color: #348fd0;
+  text-decoration: none;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  font-weight: 300;
+}
+
+a:hover {
+  color: #000;
+}
+
+input[type=text],
+input[type=email],
+input[type=password] {
+    width: 100%;
+    color: #383838;
+    font-size: 13px;
+    padding: 5px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #b2b2b2;
+    outline: none;
+    border-radius: 3px;
+    box-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+}
+
+input[type=text]:focus,
+input[type=email]:focus,
+input[type=password]:focus {
+    border: 1px solid #42a4e0;
+    box-shadow: 1px 1px 0 rgba(255,255,255,.5), 0 0 1px 3px rgba(73,173,227, .4);
+}
+
+input[type=text]:disabled,
+input[type=email]:disabled,
+input[type=password]:disabled {
+    background-color: #f0f0f0;
+    color: #4f4f4f;
+    /* The opacity and -webkit-text-fill-color are to override mobile Safari's
+     * default stylings that make reading input elements very difficult.
+     * issue #1311 */
+    -webkit-text-fill-color: #4f4f4f;
+    opacity: 1;
+    /* Remove the box-shadow and border-color that come with a focused input
+     * field */
+    box-shadow: none;
+    border-color: #b2b2b2;
+}
+
+input[type=radio],
+input[type=checkbox] {
+  cursor: pointer;
+  margin-left: 2px; /* necessary or chrome cuts off part of the radio button */
+}
+
+button,
+.button {
+    font-size: 14px;
+    line-height: 14px;
+    /* The difference between top and bottom padding is to make up for the tiny
+     * offset that browsers use to display lowercase letters.
+     */
+    padding: 6px 10px 7px;
+    float: right;
+    border: 0;
+    color: #fff;
+    text-shadow: 0 1px 0 #888, 0 0 2px rgba(255,255,255,.2);
+    cursor: pointer;
+    white-space: nowrap;
+
+    border-radius: 3px;
+    border-bottom: 1px solid #888;
+
+    background-color: #4eb5e5;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
+    background-image: -webkit-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image:    -moz-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image:      -ms-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image:       -o-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image:          linear-gradient(top, #4eb5e5, #3196cf);
+}
+
+button:hover,
+button:focus,
+.button:hover,
+.button:focus {
+    background-color: #43a6e2;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#43a6e2), to(#277ac1));
+    background-image: -webkit-linear-gradient(top, #43a6e2, #277ac1);
+    background-image:    -moz-linear-gradient(top, #43a6e2, #277ac1);
+    background-image:      -ms-linear-gradient(top, #43a6e2, #277ac1);
+    background-image:       -o-linear-gradient(top, #43a6e2, #277ac1);
+    background-image:          linear-gradient(top, #43a6e2, #277ac1);
+}
+
+button:focus,
+.button:focus {
+    box-shadow: 0 0 1px #fff, 0 0 1px 3px #49ADE3;
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5), 0 0 1px 3px rgba(73, 173, 227, 0.6);
+}
+
+button:active,
+.button:active {
+    background-color: #184a73;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#184a73), to(#276084));
+    background-image: -webkit-linear-gradient(top, #184a73, #276084);
+    background-image:    -moz-linear-gradient(top, #184a73, #276084);
+    background-image:      -ms-linear-gradient(top, #184a73, #276084);
+    background-image:       -o-linear-gradient(top, #184a73, #276084);
+    background-image:          linear-gradient(top, #184a73, #276084);
+    color: #97b6ca;
+    text-shadow: 0 1px #143348;
+    box-shadow: 0 0 5px #003763 inset;
+}
+
+button::-moz-focus-inner, .button::-moz-focus-inner {
+  padding: 0;
+  border: 0
+}
+
+
+.submit button {
+    padding: 6px 45px 7px 10px;
+    background-color: #4eb5e5;
+    background-image: url("/common/i/button-arrow.png");
+    background-image: url("/common/i/button-arrow.png"), -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
+    background-image: url("/common/i/button-arrow.png"), -webkit-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png"),    -moz-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png"),     -ms-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png"),      -o-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png"),         linear-gradient(top, #4eb5e5, #3196cf);
+    background-repeat: no-repeat, no-repeat;
+    background-position: center right, center;
+}
+
+
+.submit button:hover,
+.submit button:focus,
+.submit .button:hover,
+.submit .button:focus {
+    background-color: #43a6e2;
+    background-image: url("/common/i/button-arrow.png");
+    background-image: url("/common/i/button-arrow.png"), -webkit-gradient(linear, left top, left bottom, from(#43a6e2), to(#277ac1));
+    background-image: url("/common/i/button-arrow.png"), -webkit-linear-gradient(top, #43a6e2, #277ac1);
+    background-image: url("/common/i/button-arrow.png"),    -moz-linear-gradient(top, #43a6e2, #277ac1);
+    background-image: url("/common/i/button-arrow.png"),     -ms-linear-gradient(top, #43a6e2, #277ac1);
+    background-image: url("/common/i/button-arrow.png"),      -o-linear-gradient(top, #43a6e2, #277ac1);
+    background-image: url("/common/i/button-arrow.png"),         linear-gradient(top, #43a6e2, #277ac1);
+}
+
+button[disabled], .submit_disabled button, .submit_disabled .button,
+.submit_disabled button:focus, .submit_disabled .button:focus,
+.submit_disabled button:active, .submit_disabled .button:active {
+  color: #d8dde0;
+  cursor: default;
+  background-color: #bcc4ca;
+  background-image: none; /* Fix for IE9 still showing the blue arrow */
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#bcc4ca), to(#a0a7ae));
+  background-image: -webkit-linear-gradient(top, #bcc4ca, #a0a7ae);
+  background-image:    -moz-linear-gradient(top, #bcc4ca, #a0a7ae);
+  background-image:     -ms-linear-gradient(top, #bcc4ca, #a0a7ae);
+  background-image:      -o-linear-gradient(top, #bcc4ca, #a0a7ae);
+  background-image:         linear-gradient(top, #bcc4ca, #a0a7ae);
+  text-shadow: 0 1px #444, 0 0 2px #555;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  opacity: .5;
+  border-bottom: 1px solid #777;
+}
+
+button.negative {
+    background-color: #d94f30;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#d94f30), to(#ad1804));
+    background-image: -webkit-linear-gradient(top, #d94f30, #ad1804);
+    background-image:    -moz-linear-gradient(top, #d94f30, #ad1804);
+    background-image:     -ms-linear-gradient(top, #d94f30, #ad1804);
+    background-image:      -o-linear-gradient(top, #d94f30, #ad1804);
+    background-image:         linear-gradient(top, #d94f30, #ad1804);
+}
+
+button.negative:hover,
+button.negative:focus,
+.button.negative:hover,
+.button.negative:focus {
+    background-color: #ad1804;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ad1804), to(#911403));
+    background-image: -webkit-linear-gradient(top, #ad1804, #911403);
+    background-image:    -moz-linear-gradient(top, #ad1804, #911403);
+    background-image:     -ms-linear-gradient(top, #ad1804, #911403);
+    background-image:      -o-linear-gradient(top, #ad1804, #911403);
+    background-image:         linear-gradient(top, #ad1804, #911403);
+}
+
+button.negative:active,
+.button.negative:active {
+    box-shadow: 0 0 5px #333 inset;
+}
+
+.submit #cancel {
+  float: right;
+  margin-right: 15px;
+  line-height: 28px;
+}
+
+a.secondary[disabled], .submit_disabled a.secondary, .submit_disabled a.secondary:focus, .submit_disabled a.secondary:active {
+  color: #999;
+}
+
+.right {
+  float: right;
+}
+
+.center {
+  text-align: center;
+}
+
+.headline-main, h1, h2, h3, h4 {
+  font-weight: normal;
+  text-shadow: 0px 1px 0px rgba(255,255,255,0.75);
+}
+
+.headline-main {
+   font-size: 48px;
+   letter-spacing: -2px;
+   line-height: 100%;
+}
+
+h1 {
+  font-size: 36px;
+  letter-spacing: -1.5px;
+  line-height: 100%;
+}
+
+.white {
+  color: #fff;
+  text-shadow: 0px 1px 0px rgba(0,0,0,0.25);
+}
+
+.thin {
+  font-weight: 300;
+}
+
+h2 {
+  font-size: 32px;
+  letter-spacing: -1px;
+  line-height: 100%;
+}
+
+h3 {
+  font-size: 28px;
+  letter-spacing: -0.5px;
+  line-height: 100%;
+}
+
+h4 {
+  font-size: 24px;
+  letter-spacing: -0.25px;
+  line-height: 100%;
+}
+
+.small, small {
+  font-size: 12px;
+  line-height: 100%;
+}
+
+header ul li {
+  display: inline-block;
+}
+
+footer ul li {
+  display: inline-block;
+  margin: 0 10px 0 0;
+}
+
+footer .help {
+    float: right;
+    cursor: help;
+}
+
+.cancelVerify {
+  font-weight: bold;
+}
+
+#wait, #delay, #error {
+  background-color: #dadee1;
+  background-image: url("/common/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(#dadee1), to(#c7ccd0));
+  background-image: url("/common/i/grain.png"), -webkit-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png"),    -moz-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png"),     -ms-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png"),      -o-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png"),         linear-gradient(top, #dadee1, #c7ccd0);
+}
+
+#wait, #delay {
+  text-align: center;
+}
+
+
+#wait h2, #error h2, #delay h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+#error .emphasis {
+    margin-top: 15px;
+    color: #aa1401;
+}
+
+#error_contents {
+    max-width: 430px;
+    margin: 0 auto;
+}
+
+#openMoreInfo {
+    display: block;
+    margin-top: 15px;
+}
+
+#moreInfo {
+    display: none;
+    color: #999;
+}
+
+.forgot {
+  font-size: 11px;
+}
+
+.forgot:hover {
+  color: #333;
+}
+
+#showDevelopment {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50px;
+  height: 50px;
+  cursor: default;
+}
+
+#development {
+  display: none;
+}
+
+.development #development {
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 10px;
+  z-index: 100000;
+  background-color: #000;
+  background-color: rgba(0,0,0, .75);
+  border-radius: 5px 0 0 5px;
+}
+
+#development li {
+  display: block;
+  float: none;
+  padding: 5px 10px;
+}
+
+#development li a {
+  color: #fff;
+}
