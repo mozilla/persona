@@ -12,6 +12,7 @@ BrowserID.Modules.Dialog = (function() {
       user = bid.User,
       errors = bid.Errors,
       dom = bid.DOM,
+      helpers = bid.Helpers,
       win = window,
       startExternalDependencies = true,
       channel,
@@ -159,9 +160,7 @@ BrowserID.Modules.Dialog = (function() {
       // verify params
       try {
         if (paramsFromRP.requiredEmail) {
-          if (!bid.verifyEmail(paramsFromRP.requiredEmail))
-            throw "invalid requiredEmail: (" + paramsFromRP.requiredEmail + ")";
-          params.requiredEmail = paramsFromRP.requiredEmail;
+          helpers.log("requiredEmail has been deprecated");
         }
 
         // support old parameter names...
