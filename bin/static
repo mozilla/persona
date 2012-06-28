@@ -26,7 +26,7 @@ metrics = require('../lib/metrics.js'),
 logger = require('../lib/logging.js').logger,
 forward = require('../lib/http_forward').forward,
 shutdown = require('../lib/shutdown'),
-views = require('../lib/browserid/views.js');
+views = require('../lib/static/views.js');
 
 var app = undefined;
 
