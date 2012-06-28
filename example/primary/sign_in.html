@@ -56,7 +56,7 @@ $(document).ready(function() {
 
   $("#cancel").click(function(e) {
     e.preventDefault();
-    navigator.id.cancelAuthentication();
+    navigator.id.raiseAuthenticationFailure('cancel');
   });
 });
 </script>

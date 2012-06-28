@@ -37,7 +37,7 @@
     };
 
     navigator.id.raiseAuthenticationFailure = function(reason) {
-      window.location = 'https://login.persona.org/sign_in';
+      window.location = 'https://login.persona.org/sign_in#AUTH_RETURN_CANCEL';
     };
 
     navigator.id._primaryAPIIsShimmed = true;
