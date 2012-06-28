@@ -62,13 +62,6 @@ BrowserID.State = (function() {
     });
 
     handleState("window_unload", function() {
-      if (!self.success) {
-        storage.setReturnTo("");
-        // do not call doCancel here, let winchan's cancel
-        // handling do the work. This gives us consistent semantics
-        // across browsers on the RP side of the WinChan.
-      }
-
       // Round up final KPI stats as the user is leaving the dialog.  This
       // ensures the final state is sent to the KPI stats.  Any new logins are
       // counted, any new sites are counted, any new emails are included, etc.

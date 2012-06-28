@@ -17,7 +17,7 @@ noscript {
 
 body {
   background-color: #6a7b86;
-  background-image: url("/i/marketplace-header.png"), url("/i/grain.png");
+  background-image: url("/pages/i/marketplace-header.png"), url("/common/i/grain.png");
   background-position: center top, center top;
   background-repeat: repeat-x, repeat;
   color: #fff;
@@ -396,7 +396,7 @@ button.delete:active {
   position: absolute;
   z-index: 1;
   left: 0;
-  background-image: url('/i/badge.png');
+  background-image: url('/pages/i/badge.png');
   background-position: 0px center;
   background-repeat: no-repeat;
 
@@ -525,7 +525,7 @@ header li {
 .home {
   width: 205px;
   height: 50px;
-  background: url("/i/persona-logo-wordmark.png") 0 0 no-repeat;
+  background: url("/pages/i/persona-logo-wordmark.png") 0 0 no-repeat;
   text-indent: -9999px;
   display: inline-block;
 }

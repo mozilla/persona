@@ -9,7 +9,7 @@
 		<link rel="stylesheet" type="text/css" href="qunit/qunit.css" />
 		<title>Persona QUnit Test</title>
   <!--[if lt IE 9]>
-    <script src="/lib/html5shim.js"></script>
+    <script src="/common/js/lib/html5shim.js"></script>
   <![endif]-->
 	</head>
 	<body>
@@ -66,20 +66,21 @@
     </script>
     <script src="qunit/qunit.js"></script>
     <script src="/include.js"></script>
-    <script src="/lib/jquery-1.7.1.min.js"></script>
-    <script src="/lib/underscore.js"></script>
-    <script src="/lib/ejs.js"></script>
+    <script src="/common/js/lib/jquery-1.7.1.min.js"></script>
+    <script src="/common/js/lib/underscore.js"></script>
+    <script src="/common/js/lib/ejs.js"></script>
     <script src="/i18n/en_US/client.json"></script>
-    <script src="/shared/javascript-extensions.js"></script>
-    <script src="/shared/gettext.js"></script>
-    <script src="/lib/bidbundle.js"></script>
+    <script src="/common/js/javascript-extensions.js"></script>
+    <script src="/common/js/gettext.js"></script>
+    <script src="/common/js/lib/bidbundle.js"></script>
     <script src="http://testmob.org/include.js"></script>
-    <script src="/shared/browserid.js"></script>
-    <script src="/lib/dom-jquery.js"></script>
-    <script src="/lib/hub.js"></script>
-    <script src="/lib/module.js"></script>
-    <script src="/lib/jschannel.js"></script>
-    <script src="/lib/urlparse.js"></script>
+    <script src="/common/js/browserid.js"></script>
+    <script src="/common/js/lib/dom-jquery.js"></script>
+    <script src="/common/js/lib/hub.js"></script>
+    <script src="/common/js/lib/module.js"></script>
+    <script src="/common/js/lib/jschannel.js"></script>
+    <script src="/common/js/lib/urlparse.js"></script>
+
     <script src="mocks/mocks.js"></script>
     <script src="mocks/xhr.js"></script>
     <script src="mocks/templates.js"></script>
@@ -88,119 +89,119 @@
     <script src="mocks/winchan.js"></script>
     <script src="mocks/cachify.js"></script>
 
-    <script src="/shared/renderer.js"></script>
-    <script src="/shared/class.js"></script>
-    <script src="/shared/mediator.js"></script>
-    <script src="/shared/tooltip.js"></script>
-    <script src="/shared/validation.js"></script>
-    <script src="/shared/helpers.js"></script>
-    <script src="/shared/screens.js"></script>
-    <script src="/shared/browser-support.js"></script>
-    <script src="/shared/enable_cookies_url.js"></script>
-    <script src="/shared/wait-messages.js"></script>
-    <script src="/shared/error-messages.js"></script>
-    <script src="/shared/error-display.js"></script>
-    <script src="/shared/storage.js"></script>
-    <script src="/shared/xhr.js"></script>
-    <script src="/shared/network.js"></script>
-    <script src="/shared/provisioning.js"></script>
-    <script src="/shared/user.js"></script>
-    <script src="/shared/command.js"></script>
-    <script src="/shared/history.js"></script>
-    <script src="/shared/state_machine.js"></script>
+    <script src="/common/js/renderer.js"></script>
+    <script src="/common/js/class.js"></script>
+    <script src="/common/js/mediator.js"></script>
+    <script src="/common/js/tooltip.js"></script>
+    <script src="/common/js/validation.js"></script>
+    <script src="/common/js/helpers.js"></script>
+    <script src="/common/js/screens.js"></script>
+    <script src="/common/js/browser-support.js"></script>
+    <script src="/common/js/enable_cookies_url.js"></script>
+    <script src="/common/js/wait-messages.js"></script>
+    <script src="/common/js/error-messages.js"></script>
+    <script src="/common/js/error-display.js"></script>
+    <script src="/common/js/storage.js"></script>
+    <script src="/common/js/xhr.js"></script>
+    <script src="/common/js/network.js"></script>
+    <script src="/common/js/provisioning.js"></script>
+    <script src="/common/js/user.js"></script>
+    <script src="/common/js/command.js"></script>
+    <script src="/common/js/history.js"></script>
+    <script src="/common/js/state_machine.js"></script>
 
-    <script src="/shared/models/models.js"></script>
-    <script src="/shared/models/interaction_data.js"></script>
+    <script src="/common/js/models/models.js"></script>
+    <script src="/common/js/models/interaction_data.js"></script>
 
-    <script src="/shared/modules/page_module.js"></script>
-    <script src="/shared/modules/xhr_delay.js"></script>
-    <script src="/shared/modules/xhr_disable_form.js"></script>
-    <script src="/shared/modules/cookie_check.js"></script>
-    <script src="/shared/modules/interaction_data.js"></script>
+    <script src="/common/js/modules/page_module.js"></script>
+    <script src="/common/js/modules/xhr_delay.js"></script>
+    <script src="/common/js/modules/xhr_disable_form.js"></script>
+    <script src="/common/js/modules/cookie_check.js"></script>
+    <script src="/common/js/modules/interaction_data.js"></script>
 
-    <script src="/dialog/resources/internal_api.js"></script>
-    <script src="/dialog/resources/helpers.js"></script>
-    <script src="/dialog/resources/state.js"></script>
+    <script src="/dialog/js/misc/internal_api.js"></script>
+    <script src="/dialog/js/misc/helpers.js"></script>
+    <script src="/dialog/js/misc/state.js"></script>
 
-    <script src="/dialog/controllers/actions.js"></script>
-    <script src="/dialog/controllers/pick_email.js"></script>
-    <script src="/dialog/controllers/add_email.js"></script>
-    <script src="/dialog/controllers/dialog.js"></script>
-    <script src="/dialog/controllers/check_registration.js"></script>
-    <script src="/dialog/controllers/authenticate.js"></script>
-    <script src="/dialog/controllers/required_email.js"></script>
-    <script src="/dialog/controllers/verify_primary_user.js"></script>
-    <script src="/dialog/controllers/generate_assertion.js"></script>
-    <script src="/dialog/controllers/provision_primary_user.js"></script>
-    <script src="/dialog/controllers/primary_user_provisioned.js"></script>
-    <script src="/dialog/controllers/is_this_your_computer.js"></script>
-    <script src="/dialog/controllers/set_password.js"></script>
-    <script src="/dialog/controllers/rp_info.js"></script>
+    <script src="/dialog/js/modules/actions.js"></script>
+    <script src="/dialog/js/modules/pick_email.js"></script>
+    <script src="/dialog/js/modules/add_email.js"></script>
+    <script src="/dialog/js/modules/dialog.js"></script>
+    <script src="/dialog/js/modules/check_registration.js"></script>
+    <script src="/dialog/js/modules/authenticate.js"></script>
+    <script src="/dialog/js/modules/required_email.js"></script>
+    <script src="/dialog/js/modules/verify_primary_user.js"></script>
+    <script src="/dialog/js/modules/generate_assertion.js"></script>
+    <script src="/dialog/js/modules/provision_primary_user.js"></script>
+    <script src="/dialog/js/modules/primary_user_provisioned.js"></script>
+    <script src="/dialog/js/modules/is_this_your_computer.js"></script>
+    <script src="/dialog/js/modules/set_password.js"></script>
+    <script src="/dialog/js/modules/rp_info.js"></script>
 
-    <script src="/pages/page_helpers.js"></script>
-    <script src="/pages/verify_secondary_address.js"></script>
-    <script src="/pages/forgot.js"></script>
-    <script src="/pages/manage_account.js"></script>
-    <script src="/pages/signin.js"></script>
-    <script src="/pages/signup.js"></script>
-    <script src="/pages/about.js"></script>
+    <script src="/pages/js/page_helpers.js"></script>
+    <script src="/pages/js/verify_secondary_address.js"></script>
+    <script src="/pages/js/forgot.js"></script>
+    <script src="/pages/js/manage_account.js"></script>
+    <script src="/pages/js/signin.js"></script>
+    <script src="/pages/js/signup.js"></script>
+    <script src="/pages/js/about.js"></script>
 
     <script src="testHelpers/helpers.js"></script>
 
     <script src="cases/include.js"></script>
 
-    <script src="cases/shared/helpers.js"></script>
-    <script src="cases/shared/renderer.js"></script>
-    <script src="cases/shared/screens.js"></script>
-    <script src="cases/shared/tooltip.js"></script>
-    <script src="cases/shared/error-display.js"></script>
-    <script src="cases/shared/browser-support.js"></script>
-    <script src="cases/shared/enable_cookies_url.js"></script>
-    <script src="cases/shared/validation.js"></script>
-    <script src="cases/shared/storage.js"></script>
-    <script src="cases/shared/xhr.js"></script>
-    <script src="cases/shared/network.js"></script>
-    <script src="cases/shared/user.js"></script>
-    <script src="cases/shared/command.js"></script>
-    <script src="cases/shared/history.js"></script>
-    <script src="cases/shared/state_machine.js"></script>
+    <script src="cases/common/js/helpers.js"></script>
+    <script src="cases/common/js/renderer.js"></script>
+    <script src="cases/common/js/screens.js"></script>
+    <script src="cases/common/js/tooltip.js"></script>
+    <script src="cases/common/js/error-display.js"></script>
+    <script src="cases/common/js/browser-support.js"></script>
+    <script src="cases/common/js/enable_cookies_url.js"></script>
+    <script src="cases/common/js/validation.js"></script>
+    <script src="cases/common/js/storage.js"></script>
+    <script src="cases/common/js/xhr.js"></script>
+    <script src="cases/common/js/network.js"></script>
+    <script src="cases/common/js/user.js"></script>
+    <script src="cases/common/js/command.js"></script>
+    <script src="cases/common/js/history.js"></script>
+    <script src="cases/common/js/state_machine.js"></script>
 
-    <script src="cases/shared/models/interaction_data.js"></script>
+    <script src="cases/common/js/models/interaction_data.js"></script>
 
-    <script src="cases/shared/modules/page_module.js"></script>
-    <script src="cases/shared/modules/xhr_delay.js"></script>
-    <script src="cases/shared/modules/xhr_disable_form.js"></script>
-    <script src="cases/shared/modules/cookie_check.js"></script>
-    <script src="cases/shared/modules/interaction_data.js"></script>
+    <script src="cases/common/js/modules/page_module.js"></script>
+    <script src="cases/common/js/modules/xhr_delay.js"></script>
+    <script src="cases/common/js/modules/xhr_disable_form.js"></script>
+    <script src="cases/common/js/modules/cookie_check.js"></script>
+    <script src="cases/common/js/modules/interaction_data.js"></script>
 
-    <script src="cases/pages/browserid.js"></script>
-    <script src="cases/pages/page_helpers.js"></script>
-    <script src="cases/pages/verify_secondary_address.js"></script>
-    <script src="cases/pages/forgot.js"></script>
-    <script src="cases/pages/signin.js"></script>
-    <script src="cases/pages/signup.js"></script>
-    <script src="cases/pages/manage_account.js"></script>
-    <script src="cases/pages/about.js"></script>
+    <script src="cases/pages/js/browserid.js"></script>
+    <script src="cases/pages/js/page_helpers.js"></script>
+    <script src="cases/pages/js/verify_secondary_address.js"></script>
+    <script src="cases/pages/js/forgot.js"></script>
+    <script src="cases/pages/js/signin.js"></script>
+    <script src="cases/pages/js/signup.js"></script>
+    <script src="cases/pages/js/manage_account.js"></script>
+    <script src="cases/pages/js/about.js"></script>
 
-    <script src="cases/resources/internal_api.js"></script>
-    <script src="cases/resources/helpers.js"></script>
-    <script src="cases/resources/state.js"></script>
+    <script src="cases/dialog/js/misc/internal_api.js"></script>
+    <script src="cases/dialog/js/misc/helpers.js"></script>
+    <script src="cases/dialog/js/misc/state.js"></script>
 
-    <script src="cases/controllers/actions.js"></script>
-    <script src="cases/controllers/pick_email.js"></script>
-    <script src="cases/controllers/add_email.js"></script>
-    <script src="cases/controllers/check_registration.js"></script>
-    <script src="cases/controllers/authenticate.js"></script>
-    <script src="cases/controllers/required_email.js"></script>
-    <script src="cases/controllers/verify_primary_user.js"></script>
-    <script src="cases/controllers/generate_assertion.js"></script>
-    <script src="cases/controllers/provision_primary_user.js"></script>
-    <script src="cases/controllers/primary_user_provisioned.js"></script>
-    <script src="cases/controllers/is_this_your_computer.js"></script>
-    <script src="cases/controllers/set_password.js"></script>
-    <script src="cases/controllers/rp_info.js"></script>
+    <script src="cases/dialog/js/modules/actions.js"></script>
+    <script src="cases/dialog/js/modules/pick_email.js"></script>
+    <script src="cases/dialog/js/modules/add_email.js"></script>
+    <script src="cases/dialog/js/modules/check_registration.js"></script>
+    <script src="cases/dialog/js/modules/authenticate.js"></script>
+    <script src="cases/dialog/js/modules/required_email.js"></script>
+    <script src="cases/dialog/js/modules/verify_primary_user.js"></script>
+    <script src="cases/dialog/js/modules/generate_assertion.js"></script>
+    <script src="cases/dialog/js/modules/provision_primary_user.js"></script>
+    <script src="cases/dialog/js/modules/primary_user_provisioned.js"></script>
+    <script src="cases/dialog/js/modules/is_this_your_computer.js"></script>
+    <script src="cases/dialog/js/modules/set_password.js"></script>
+    <script src="cases/dialog/js/modules/rp_info.js"></script>
 
     <!-- must go last or all other tests will fail. -->
-    <script src="cases/controllers/dialog.js"></script>
+    <script src="cases/dialog/js/modules/dialog.js"></script>
 	</body>
 </html>
