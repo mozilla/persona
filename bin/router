@@ -121,7 +121,19 @@ if (config.get('verifier_url')) {
 // fake_verification.js.  This is used during testing only and should
 // never be included in a production deployment
 if (process.env['BROWSERID_FAKE_VERIFICATION']) {
-  require('../lib/browserid/fake_verification.js').addVerificationWSAPI(app);
+  app.use(function(req, res, next) {
+    if (url.parse(req.url).pathname == '/wsapi/fake_verification') {
+      forward(
+        browserid_url+req.url, req, res,
+        function(err) {
+          if (err) {
+            logger.error("error forwarding request:", err);
+          }
+        });
+    } else {
+      return next();
+    }
+  });
 }
 
 // handle /wsapi reads/writes
