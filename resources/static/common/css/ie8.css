@@ -1,0 +1,26 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/**
+ * These fixes are specific to IE8 that are common to the main site and dialog.
+ */
+
+.submit button,
+.submit button:hover,
+.submit button:focus,
+.submit .button:hover,
+.submit .button:focus {
+    background-image: url("/common/i/button-arrow.png");
+    background-position: center right;
+    background-repeat: no-repeat;
+}
+
+button[disabled], .submit_disabled button, .submit_disabled .button,
+.submit_disabled button:focus, .submit_disabled .button:focus,
+.submit_disabled button:active, .submit_disabled .button:active {
+  color: #d8dde0;
+  cursor: default;
+  background-color: #bcc4ca;
+  background-image: none; /* Fix for IE8/IE9 still showing the blue arrow */
+}
