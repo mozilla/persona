@@ -297,11 +297,13 @@ section > .contents {
 
 #favicon h2 {
     margin: 10px 0 0 0;
+    font-size: 18px;
 }
 
 #favicon h3 {
     font-size: 19px;
     margin-top: 0;
+    font-size: 14px;
 }
 
 #favicon .vertical {
