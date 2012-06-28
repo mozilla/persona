@@ -8,7 +8,7 @@ const
 fs = require('fs'),
 path = require('path'),
 url = require('url'),
-http = require('http');
+http = require('http'),
 urlparse = require('urlparse'),
 express = require('express');
 
@@ -62,7 +62,7 @@ app.use(i18n.abide({
 
 var statsd_config = config.get('statsd');
 if (statsd_config && statsd_config.enabled) {
-  logger_statsd = require("connect-logger-statsd");
+  var logger_statsd = require("connect-logger-statsd");
   app.use(logger_statsd({
     host: statsd_config.hostname || "localhost",
     port: statsd_config.port || 8125,
@@ -157,7 +157,7 @@ db.open(config.get('database'), function (error) {
   // shut down express gracefully on SIGINT
   shutdown.handleTerminationSignals(app, function(readyForShutdownCB) {
     require('../lib/bcrypt.js').shutdown();
-    db.close(readyForShutdownCB)
+    db.close(readyForShutdownCB);
   });
 
   var bindTo = config.get('bind_to');
