@@ -5,13 +5,13 @@
 body {
   color: #383838;
   background-color: #dee3e6;
-  background-image: url('/i/grain.png');
-  background-image: url("/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(rgba(113, 126, 137, 0)), to(rgba(113, 126, 137, 0.2)));
-  background-image: url('/i/grain.png'), -webkit-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/i/grain.png'),    -moz-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/i/grain.png'),     -ms-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/i/grain.png'),      -o-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/i/grain.png'),         linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/common/i/grain.png');
+  background-image: url("/common/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(rgba(113, 126, 137, 0)), to(rgba(113, 126, 137, 0.2)));
+  background-image: url('/common/i/grain.png'), -webkit-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/common/i/grain.png'),    -moz-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/common/i/grain.png'),     -ms-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/common/i/grain.png'),      -o-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/common/i/grain.png'),         linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
 }
 
 #signIn {
@@ -68,7 +68,7 @@ header {
 .home {
   width: 161px;
   height: 40px;
-  background: url("/i/persona-logo-transparent.png") 0 0 no-repeat;
+  background: url("/dialog/i/persona-logo-transparent.png") 0 0 no-repeat;
   text-indent: -9999px;
   display: inline-block;
   *display: block;
@@ -259,7 +259,7 @@ section > .contents {
     bottom: 0;
     left: 0;
     right: 0;
-    background-image: url('/i/arrow_grey.png');
+    background-image: url('/dialog/i/arrow_grey.png');
     background-repeat: no-repeat;
     background-position: center;
     background-color: transparent;

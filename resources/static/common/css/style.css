@@ -209,13 +209,13 @@ button::-moz-focus-inner, .button::-moz-focus-inner {
 .submit button {
     padding: 6px 45px 7px 10px;
     background-color: #4eb5e5;
-    background-image: url("/i/button-arrow.png");
-    background-image: url("/i/button-arrow.png"), -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
-    background-image: url("/i/button-arrow.png"), -webkit-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/i/button-arrow.png"),    -moz-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/i/button-arrow.png"),     -ms-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/i/button-arrow.png"),      -o-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/i/button-arrow.png"),         linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png");
+    background-image: url("/common/i/button-arrow.png"), -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
+    background-image: url("/common/i/button-arrow.png"), -webkit-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png"),    -moz-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png"),     -ms-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png"),      -o-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png"),         linear-gradient(top, #4eb5e5, #3196cf);
     background-repeat: no-repeat, no-repeat;
     background-position: center right, center;
 }
@@ -226,13 +226,13 @@ button::-moz-focus-inner, .button::-moz-focus-inner {
 .submit .button:hover,
 .submit .button:focus {
     background-color: #43a6e2;
-    background-image: url("/i/button-arrow.png");
-    background-image: url("/i/button-arrow.png"), -webkit-gradient(linear, left top, left bottom, from(#43a6e2), to(#277ac1));
-    background-image: url("/i/button-arrow.png"), -webkit-linear-gradient(top, #43a6e2, #277ac1);
-    background-image: url("/i/button-arrow.png"),    -moz-linear-gradient(top, #43a6e2, #277ac1);
-    background-image: url("/i/button-arrow.png"),     -ms-linear-gradient(top, #43a6e2, #277ac1);
-    background-image: url("/i/button-arrow.png"),      -o-linear-gradient(top, #43a6e2, #277ac1);
-    background-image: url("/i/button-arrow.png"),         linear-gradient(top, #43a6e2, #277ac1);
+    background-image: url("/common/i/button-arrow.png");
+    background-image: url("/common/i/button-arrow.png"), -webkit-gradient(linear, left top, left bottom, from(#43a6e2), to(#277ac1));
+    background-image: url("/common/i/button-arrow.png"), -webkit-linear-gradient(top, #43a6e2, #277ac1);
+    background-image: url("/common/i/button-arrow.png"),    -moz-linear-gradient(top, #43a6e2, #277ac1);
+    background-image: url("/common/i/button-arrow.png"),     -ms-linear-gradient(top, #43a6e2, #277ac1);
+    background-image: url("/common/i/button-arrow.png"),      -o-linear-gradient(top, #43a6e2, #277ac1);
+    background-image: url("/common/i/button-arrow.png"),         linear-gradient(top, #43a6e2, #277ac1);
 }
 
 button[disabled], .submit_disabled button, .submit_disabled .button,
@@ -369,12 +369,12 @@ footer .help {
 
 #wait, #delay, #error {
   background-color: #dadee1;
-  background-image: url("/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(#dadee1), to(#c7ccd0));
-  background-image: url("/i/grain.png"), -webkit-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/i/grain.png"),    -moz-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/i/grain.png"),     -ms-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/i/grain.png"),      -o-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/i/grain.png"),         linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(#dadee1), to(#c7ccd0));
+  background-image: url("/common/i/grain.png"), -webkit-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png"),    -moz-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png"),     -ms-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png"),      -o-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png"),         linear-gradient(top, #dadee1, #c7ccd0);
 }
 
 #wait, #delay {
