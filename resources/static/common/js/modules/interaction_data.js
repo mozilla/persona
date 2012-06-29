@@ -98,13 +98,46 @@ BrowserID.Modules.InteractionData = (function() {
     if (self.sessionContextHandled) return;
     self.sessionContextHandled = true;
 
+    publishPreviousSession.call(self, result);
+  }
+
+  function publishPreviousSession(result) {
     // Publish any outstanding data.  Unless this is a continuation, previous
     // session data must be published independently of whether the current
     // dialog session is allowed to sample data. This is because the original
     // dialog session has already decided whether to collect data.
+    //
+    // beginSampling must happen afterwards, since we need to send and
+    // then scrub out the previous sessions data.
 
-    model.stageCurrent();
-    publishStored.call(self);
+    var self = this;
+
+    // if we were orphaned last time, but user is now authenticated,
+    // lets make the assumption that their action worked out okay, and
+    // remove the orphaned flag
+    // See https://github.com/mozilla/browserid/issues/1827
+    var current = model.getCurrent();
+    if (current && current.orphaned) {
+      network.checkAuth(function(auth) {
+        if (!!auth) {
+          current.orphaned = false;
+          model.setCurrent(current);
+        }
+        model.stageCurrent();
+        publishStored.call(self);
+
+        beginSampling.call(self, result);
+      })
+    } else {
+      model.stageCurrent();
+      publishStored.call(self);
+
+      beginSampling.call(self, result);
+    }
+  }
+
+  function beginSampling(result) {
+    var self = this;
 
     // set the sample rate as defined by the server.  It's a value
     // between 0..1, integer or float, and it specifies the percentage
@@ -152,6 +185,7 @@ BrowserID.Modules.InteractionData = (function() {
     self.initialEventStream = null;
 
     self.samplesBeingStored = true;
+    
   }
 
   function onKPIData(msg, result) {
