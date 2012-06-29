@@ -10,6 +10,8 @@
       el = $("body"),
       bid = BrowserID,
       testHelpers = bid.TestHelpers,
+      testElementExists = testHelpers.testElementExists,
+      testElementNotExists = testHelpers.testElementDoesNotExist,
       register = testHelpers.register,
       controller;
 
@@ -33,22 +35,29 @@
 
   test("create with no options - show template, user must verify email, can cancel", function() {
     ok($("#set_password").length, "set_password template added");
-    equal($("#verify_user").length, 1, "correct button shown");
-    equal($("#cancel").length, 1, "cancel button shown");
+    testElementExists("#verify_user");
+    testElementExists("#cancel");
+    testElementNotExists("#persona_tospp");
   });
 
   test("create with password_reset option - show template, show reset password button", function() {
     controller.destroy();
     createController({ password_reset: true });
-    ok($("#set_password").length, "set_password template added");
-    equal($("#password_reset").length, 1, "correct button shown");
-    equal($("#cancel").length, 1, "cancel button shown");
+    testElementExists("#set_password");
+    testElementExists("#password_reset");
+    testElementExists("#cancel");
+  });
+
+  test("create with personaTOSPP option - show Persona TOS/PP", function() {
+    controller.destroy();
+    createController({ personaTOSPP: true });
+    testElementExists("#persona_tospp");
   });
 
   test("create with cancelable=false option - cancel button not shown", function() {
     controller.destroy();
     createController({ cancelable: false });
-    equal($("#cancel").length, 0, "cancel button not shown");
+    testElementNotExists("#cancel");
   });
 
   asyncTest("submit with good password/vpassword - password_set message raised", function() {

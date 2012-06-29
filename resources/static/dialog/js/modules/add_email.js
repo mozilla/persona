@@ -1,5 +1,5 @@
 /*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
-/*global _: true, BrowserID: true, PageController: true */
+/*global _: true, BrowserID: true, PageController: true, gettext: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,6 +9,7 @@ BrowserID.Modules.AddEmail = (function() {
   var bid = BrowserID,
       dom = bid.DOM,
       helpers = bid.Helpers,
+      user = bid.User,
       dialogHelpers = helpers.Dialog,
       errors = bid.Errors,
       complete = helpers.complete,
@@ -54,12 +55,9 @@ BrowserID.Modules.AddEmail = (function() {
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this,
-          templateData = helpers.extend({}, options, {
-            privacy_url: options.privacyURL || null,
-            tos_url: options.tosURL || null
-          });
+          originEmail = user.getOriginEmail();
 
-      self.renderDialog("add_email", templateData);
+      self.renderDialog("add_email", options);
       hideHint("addressInfo");
 
       self.click("#cancel", cancelAddEmail);

@@ -284,24 +284,24 @@ section > .contents {
 #favicon img {
     display: block;
     margin: 0 auto;
-    max-height: 128px;
-    max-width: 128px;
+    max-height: 100px;
+    max-width: 100px;
 }
 
 #favicon h2, #favicon h3 {
     white-space: nowrap;
     text-overflow: ellipsis;
-    line-height: 1.3;  /* the 1.3em is to keep y, g, j, etc from having their bottoms chopped off */
+    line-height: 1.2em;  /* the 1.2em is to keep y, g, j, etc from having their bottoms chopped off */
     overflow: hidden;
-}
-
-#favicon h2 {
     margin: 10px 0 0 0;
 }
 
+#favicon h2 {
+    font-size: 28px;
+}
+
 #favicon h3 {
-    font-size: 19px;
-    margin-top: 0;
+    font-size: 14px;
 }
 
 #favicon .vertical {
@@ -379,19 +379,24 @@ div#required_email {
 }
 
 .submit {
-    margin-top: 10px;
     color: #333;
     font-size: 11px;
-    line-height: 14px;
 }
 
-.submit > p {
-  margin-top: 10px;
-}
 
 .tospp {
-    color: #787878;
-    clear: right;
+  font-size: 11px;
+  color: #787878;
+}
+
+#rptospp {
+  display: none;
+  margin: 10px auto;
+  max-width: 280px;
+}
+
+.rptospp #rptospp {
+  display: block;
 }
 
 a.emphasize {
@@ -430,6 +435,7 @@ a.emphasize:active {
 #back {
   color: #000;
   border-bottom: 1px dotted;
+  font-weight: normal;
 }
 
 .submit > button {

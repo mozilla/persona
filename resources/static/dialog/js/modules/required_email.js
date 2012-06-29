@@ -147,7 +147,13 @@ BrowserID.Modules.RequiredEmail = (function() {
               // We know the user has control of this address, give them
               // a chance to hit "sign in" before we kick them off to the
               // primary flow account.
-              showTemplate({ signin: true, primary: true });
+
+              // Show the Persona TOS/PP to any primary user who is authed with
+              // their IdP but not with Persona.  Unfortunately, addressInfo
+              // does not tell us whether a primary address already has an
+              // account, so we have to show the personaTOSPP to any user who
+              // is not authenticated.
+              showTemplate({ signin: true, primary: true, personaTOSPP: !auth_level });
             }
             else if(info.type === "primary" && !info.authed) {
               // User who does not control a primary address.
@@ -213,11 +219,14 @@ BrowserID.Modules.RequiredEmail = (function() {
           password: false,
           secondary_auth: false,
           primary: false,
-          privacy_url: options.privacyURL || null,
-          tos_url: options.tosURL || null
+          personaTOSPP: false
         }, templateData);
 
         self.renderDialog("required_email", templateData);
+
+        if (options.siteTOSPP) {
+          dialogHelpers.showRPTosPP.call(self);
+        }
 
         self.click("#sign_in", signIn);
         self.click("#verify_address", verifyAddress);

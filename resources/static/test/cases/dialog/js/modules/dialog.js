@@ -208,7 +208,8 @@
     });
   });
 
-  asyncTest("get with relative tosURL & valid privacyURL - print error screen", function() {
+
+  asyncTest("get with relative termsOfService & valid privacyPolicy - print error screen", function() {
     createController({
       ready: function() {
         mediator.subscribe("start", function(msg, info) {
@@ -216,8 +217,8 @@
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
-          tosURL: "relative.html",
-          privacyURL: "/privacy.html"
+          termsOfService: "relative.html",
+          privacyPolicy: "/privacy.html"
         });
         equal(retval, "relative urls not allowed: (relative.html)", "expected error");
         testErrorVisible();
@@ -226,7 +227,7 @@
     });
   });
 
-  asyncTest("get with script containing tosURL - print error screen", function() {
+  asyncTest("get with script containing termsOfService - print error screen", function() {
     createController({
       ready: function() {
         mediator.subscribe("start", function(msg, info) {
@@ -234,11 +235,11 @@
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
-          tosURL: "relative.html<script>window.scriptRun=true;</script>",
-          privacyURL: "/privacy.html"
+          termsOfService: "relative.html<script>window.scriptRun=true;</script>",
+          privacyPolicy: "/privacy.html"
         });
 
-        // If tosURL is not properly escaped, scriptRun will be true.
+        // If termsOfService is not properly escaped, scriptRun will be true.
         equal(typeof window.scriptRun, "undefined", "script was not run");
         equal(retval, "relative urls not allowed: (relative.html<script>window.scriptRun=true;</script>)", "expected error");
         testErrorVisible();
@@ -247,7 +248,7 @@
     });
   });
 
-  asyncTest("get with valid tosURL & relative privacyURL - print error screen", function() {
+  asyncTest("get with valid termsOfService & relative privacyPolicy - print error screen", function() {
     createController({
       ready: function() {
         mediator.subscribe("start", function(msg, info) {
@@ -255,8 +256,8 @@
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
-          tosURL: "/tos.html",
-          privacyURL: "relative.html"
+          termsOfService: "/tos.html",
+          privacyPolicy: "relative.html"
         });
         equal(retval, "relative urls not allowed: (relative.html)", "expected error");
         testErrorVisible();
@@ -265,7 +266,7 @@
     });
   });
 
-  asyncTest("get with script containing privacyURL - print error screen", function() {
+  asyncTest("get with script containing privacyPolicy - print error screen", function() {
     createController({
       ready: function() {
         mediator.subscribe("start", function(msg, info) {
@@ -273,11 +274,11 @@
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
-          tosURL: "/tos.html",
-          privacyURL: "relative.html<script>window.scriptRun=true;</script>"
+          termsOfService: "/tos.html",
+          privacyPolicy: "relative.html<script>window.scriptRun=true;</script>"
         });
 
-        // If privacyURL is not properly escaped, scriptRun will be true.
+        // If privacyPolicy is not properly escaped, scriptRun will be true.
         equal(typeof window.scriptRun, "undefined", "script was not run");
         equal(retval, "relative urls not allowed: (relative.html<script>window.scriptRun=true;</script>)", "expected error");
         testErrorVisible();
@@ -286,7 +287,7 @@
     });
   });
 
-  asyncTest("get with privacyURL - print error screen", function() {
+  asyncTest("get with privacyPolicy - print error screen", function() {
     createController({
       ready: function() {
         mediator.subscribe("start", function(msg, info) {
@@ -294,11 +295,11 @@
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
-          tosURL: "/tos.html",
-          privacyURL: "relative.html<script>window.scriptRun=true;</script>"
+          termsOfService: "/tos.html",
+          privacyPolicy: "relative.html<script>window.scriptRun=true;</script>"
         });
 
-        // If privacyURL is not properly escaped, scriptRun will be true.
+        // If privacyPolicy is not properly escaped, scriptRun will be true.
         equal(typeof window.scriptRun, "undefined", "script was not run");
         equal(retval, "relative urls not allowed: (relative.html<script>window.scriptRun=true;</script>)", "expected error");
         testErrorVisible();
@@ -307,7 +308,7 @@
     });
   });
 
-  asyncTest("get with javascript protocol for privacyURL - print error screen", function() {
+  asyncTest("get with javascript protocol for privacyPolicy - print error screen", function() {
     createController({
       ready: function() {
         mediator.subscribe("start", function(msg, info) {
@@ -315,8 +316,8 @@
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
-          tosURL: "/tos.html",
-          privacyURL: "javascript:alert(1)"
+          termsOfService: "/tos.html",
+          privacyPolicy: "javascript:alert(1)"
         });
 
         equal(retval, "relative urls not allowed: (javascript:alert(1))", "expected error");
@@ -326,7 +327,7 @@
     });
   });
 
-  asyncTest("get with invalid httpg protocol for privacyURL - print error screen", function() {
+  asyncTest("get with invalid httpg protocol for privacyPolicy - print error screen", function() {
     createController({
       ready: function() {
         mediator.subscribe("start", function(msg, info) {
@@ -334,8 +335,8 @@
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
-          tosURL: "/tos.html",
-          privacyURL: "httpg://testdomain.com/privacy.html"
+          termsOfService: "/tos.html",
+          privacyPolicy: "httpg://testdomain.com/privacy.html"
         });
 
         equal(retval, "relative urls not allowed: (httpg://testdomain.com/privacy.html)", "expected error");
@@ -346,7 +347,7 @@
   });
 
 
-  asyncTest("get with valid absolute tosURL & privacyURL - go to start", function() {
+  asyncTest("get with valid absolute termsOfService & privacyPolicy - go to start", function() {
     createController({
       ready: function() {
         var startInfo;
@@ -355,13 +356,13 @@
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
-          tosURL: "/tos.html",
-          privacyURL: "/privacy.html"
+          termsOfService: "/tos.html",
+          privacyPolicy: "/privacy.html"
         });
 
         testHelpers.testObjectValuesEqual(startInfo, {
-          tosURL: HTTP_TEST_DOMAIN + "/tos.html",
-          privacyURL: HTTP_TEST_DOMAIN + "/privacy.html"
+          termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
+          privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
         });
 
         equal(typeof retval, "undefined", "no error expected");
@@ -371,7 +372,7 @@
     });
   });
 
-  asyncTest("get with valid fully qualified http tosURL & privacyURL - go to start", function() {
+  asyncTest("get with valid fully qualified http termsOfService & privacyPolicy - go to start", function() {
     createController({
       ready: function() {
         var startInfo;
@@ -380,13 +381,13 @@
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
-          tosURL: HTTP_TEST_DOMAIN + "/tos.html",
-          privacyURL: HTTP_TEST_DOMAIN + "/privacy.html"
+          termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
+          privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
         });
 
         testHelpers.testObjectValuesEqual(startInfo, {
-          tosURL: HTTP_TEST_DOMAIN + "/tos.html",
-          privacyURL: HTTP_TEST_DOMAIN + "/privacy.html"
+          termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
+          privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
         });
 
         equal(typeof retval, "undefined", "no error expected");
@@ -397,7 +398,7 @@
   });
 
 
-  asyncTest("get with valid fully qualified https tosURL & privacyURL - go to start", function() {
+  asyncTest("get with valid fully qualified https termsOfService & privacyPolicy - go to start", function() {
     createController({
       ready: function() {
         var startInfo;
@@ -406,13 +407,13 @@
         });
 
         var retval = controller.get(HTTP_TEST_DOMAIN, {
-          tosURL: HTTPS_TEST_DOMAIN + "/tos.html",
-          privacyURL: HTTPS_TEST_DOMAIN + "/privacy.html"
+          termsOfService: HTTPS_TEST_DOMAIN + "/tos.html",
+          privacyPolicy: HTTPS_TEST_DOMAIN + "/privacy.html"
         });
 
         testHelpers.testObjectValuesEqual(startInfo, {
-          tosURL: HTTPS_TEST_DOMAIN + "/tos.html",
-          privacyURL: HTTPS_TEST_DOMAIN + "/privacy.html"
+          termsOfService: HTTPS_TEST_DOMAIN + "/tos.html",
+          privacyPolicy: HTTPS_TEST_DOMAIN + "/privacy.html"
         });
         equal(typeof retval, "undefined", "no error expected");
         testErrorNotVisible();

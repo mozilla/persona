@@ -11,11 +11,18 @@
   <h2 id="rp_name"><%= siteName %></h2>
 <% } %>
 
-<% if(hostname) { %>
-  <% if(siteName) { %>
-    <h3 id="rp_hostname"><%= hostname %></h3>
-  <% } else { %>
-    <h2 id="rp_hostname"><%= hostname %></h2>
-  <% } %>
+<% if(siteName) { %>
+  <h3 id="rp_hostname"><%= hostname %></h3>
+<% } else { %>
+  <h2 id="rp_hostname"><%= hostname %></h2>
 <% } %>
 
+<% if(privacyPolicy && termsOfService) { %>
+  <p id="rptospp" class="tospp">
+    <%= format(gettext("By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>."),
+    [ siteName || hostname,
+     ' href="' + termsOfService + '" id="rp_tos" target="_blank"',
+     ' href="' + privacyPolicy + '" id="rp_pp" target="_blank"'
+     ]) %>
+   </p>
+<% } %>

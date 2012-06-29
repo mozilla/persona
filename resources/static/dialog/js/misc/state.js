@@ -1,9 +1,11 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*jshint browser:true, jquery: true, forin: true, laxbreak:true */
 /*global BrowserID: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 BrowserID.State = (function() {
+  "use strict";
+
   var bid = BrowserID,
       storage = bid.Storage,
       network = bid.Network,
@@ -42,8 +44,7 @@ BrowserID.State = (function() {
 
     handleState("start", function(msg, info) {
       self.hostname = info.hostname;
-      self.privacyURL = info.privacyURL;
-      self.tosURL = info.tosURL;
+      self.siteTOSPP = !!(info.privacyPolicy && info.termsOfService);
       requiredEmail = info.requiredEmail;
 
       startAction(false, "doRPInfo", info);
@@ -80,8 +81,10 @@ BrowserID.State = (function() {
         self.email = requiredEmail;
         startAction("doAuthenticateWithRequiredEmail", {
           email: requiredEmail,
-          privacyURL: self.privacyURL,
-          tosURL: self.tosURL
+          // New users are handled by either the "new_user" flow or the
+          // "primary_user" flow. The Persona TOS/PP will be shown to users in
+          // these stages.
+          siteTOSPP: self.siteTOSPP && !user.getOriginEmail()
         });
       }
       else if (authenticated) {
@@ -92,8 +95,7 @@ BrowserID.State = (function() {
     });
 
     handleState("authenticate", function(msg, info) {
-      info.privacyURL = self.privacyURL;
-      info.tosURL = self.tosURL;
+      info.siteTOSPP = self.siteTOSPP;
       startAction("doAuthenticate", info);
     });
 
@@ -104,9 +106,23 @@ BrowserID.State = (function() {
       // know when we are losing users due to the email verification.
       mediator.publish("kpi_data", { new_account: true });
 
-      // cancel is disabled if the user is doing the initial password set
-      // for a requiredEmail.
-      info.cancelable = !requiredEmail;
+      _.extend(info, {
+        // cancel is disabled if the user is doing the initial password set
+        // for a requiredEmail.
+        cancelable: !requiredEmail,
+
+        // New users in the requiredEmail flow are sent directly to the
+        // set_password screen.  If this happens, they have not yet seen the
+        // TOS/PP agreement.
+
+        // Always show the Persona TOS/PP to new requiredEmail users.
+        personaTOSPP: !!requiredEmail,
+
+        // The site TOS/PP must be shown to new requiredEmail users if there is
+        // a site TOS/PP
+        siteTOSPP: !!requiredEmail && self.siteTOSPP
+      });
+
       startAction(false, "doSetPassword", info);
     });
 
@@ -176,12 +192,24 @@ BrowserID.State = (function() {
     });
 
     handleState("primary_user_unauthenticated", function(msg, info) {
-      info = helpers.extend(info, {
+      // a user who lands here is not authenticated with their identity
+      // provider.
+      _.extend(info, {
         add: !!addPrimaryUser,
         email: email,
         requiredEmail: !!requiredEmail,
-        privacyURL: self.privacyURL,
-        tosURL: self.tosURL
+
+        // In the requiredEmail flow, a user who is not authenticated with
+        // their primary will be sent directly to the "you must verify
+        // with your IdP" screen.
+        //
+        // Show the siteTOSPP to all requiredEmail users who have never visited
+        // the site before.
+        siteTOSPP: requiredEmail && self.siteTOSPP && !user.getOriginEmail(),
+
+        // Show the persona TOS/PP only to requiredEmail users who are creating
+        // a new account.
+        personaTOSPP: requiredEmail && !addPrimaryUser
       });
 
       if (primaryVerificationInfo) {
@@ -218,8 +246,7 @@ BrowserID.State = (function() {
     handleState("pick_email", function() {
       startAction("doPickEmail", {
         origin: self.hostname,
-        privacyURL: self.privacyURL,
-        tosURL: self.tosURL
+        siteTOSPP: self.siteTOSPP && !user.getOriginEmail()
       });
     });
 
@@ -260,8 +287,12 @@ BrowserID.State = (function() {
               startAction("doAuthenticateWithRequiredEmail", {
                 email: email,
                 secondary_auth: true,
-                privacyURL: self.privacyURL,
-                tosURL: self.tosURL
+
+                // This is a user is already authenticated to the assertion
+                // level who has chosen a secondary email address from the
+                // pick_email screen. They would have been shown the
+                // siteTOSPP there.
+                siteTOSPP: false
               });
             }
             else {
@@ -359,12 +390,26 @@ BrowserID.State = (function() {
       redirectToState("email_chosen", info);
     });
 
-    handleState("add_email", function(msg, info) {
-      info = helpers.extend(info, {
-        privacyURL: self.privacyURL,
-        tosURL: self.tosURL
-      });
+    handleState("reset_password", function(msg, info) {
+      info = info || {};
+      // reset_password says the user has confirmed that they want to
+      // reset their password.  doResetPassword will attempt to invoke
+      // the create_user wsapi.  If the wsapi call is successful,
+      // the user will be shown the "go verify your account" message.
 
+      // We have to save the staged email address here for when the user
+      // verifies their account and user_confirmed is called.
+      self.stagedEmail = info.email;
+      startAction(false, "doResetPassword", info);
+    });
+
+    handleState("add_email", function(msg, info) {
+      // add_email indicates the user wishes to add an email to the account,
+      // the add_email screen must be displayed.  After the user enters the
+      // email address they wish to add, add_email will trigger
+      // either 1) primary_user or 2) email_staged. #1 occurs if the email
+      // address is a primary address, #2 occurs if the address is a secondary
+      // and the verification email has been sent.
       startAction("doAddEmail", info);
     });
 
@@ -372,9 +417,26 @@ BrowserID.State = (function() {
       user.passwordNeededToAddSecondaryEmail(function(passwordNeeded) {
         if(passwordNeeded) {
           self.addEmailEmail = info.email;
-          // cancel is disabled if the user is doing the initial password set
-          // for a requiredEmail.
-          info.cancelable = !requiredEmail;
+
+          _.extend(info, {
+            // cancel is disabled if the user is doing the initial password set
+            // for a requiredEmail.
+            cancelable: !requiredEmail,
+
+            // stage_email is called to add an email to an already existing
+            // account.  Since it is an already existing account, the
+            // personaTOSPP does not need to be shown.
+            personaTOSPP: false,
+
+            // requiredEmail users who are adding an email but must set their
+            // password will be redirected here without seeing any other
+            // screens. non-requiredEmail users will have already seen the site
+            // TOS/PP in the pick-email screen if it was necessary.  Since
+            // requiredEmail users may not have seen the screen before, show it
+            // here if there is no originEmail.
+            siteTOSPP: self.siteTOSPP && requiredEmail && !user.getOriginEmail()
+          });
+
           startAction(false, "doSetPassword", info);
         }
         else {

@@ -10,6 +10,8 @@
       controller,
       el,
       testHelpers = bid.TestHelpers,
+      testElementExists = testHelpers.testElementExists,
+      testElementNotExists = testHelpers.testElementDoesNotExist,
       WindowMock = bid.Mocks.WindowMock,
       win,
       mediator = bid.Mediator;
@@ -33,31 +35,30 @@
     }
   });
 
-  test("create with privacyURL and tosURL defined - show TOS/PP", function() {
+  test("personaTOSPP true, requiredEmail: true - show TOS/PP", function() {
     createController({
       window: win,
       add: false,
       email: "unregistered@testuser.com",
       auth_url: "http://testuser.com/sign_in",
-      privacyURL: "http://testuser.com/priv.html",
-      tosURL: "http://testuser.com/tos.html"
+      requiredEmail: true,
+      personaTOSPP: false
     });
 
-    equal($(".tospp").length, 1, "tospp has been added to the DOM");
+    testElementNotExists("#persona_tospp");
   });
 
-  test("create with requiredEmail, privacyURL and tosURL defined - show TOS/PP", function() {
+  test("personaTOSPP true, requiredEmail: false - show TOS/PP", function() {
     createController({
       window: win,
       add: false,
-      requiredEmail: "unregistered@testuser.com",
       email: "unregistered@testuser.com",
       auth_url: "http://testuser.com/sign_in",
-      privacyURL: "http://testuser.com/priv.html",
-      tosURL: "http://testuser.com/tos.html"
+      requiredEmail: false,
+      personaTOSPP: false
     });
 
-    equal($(".tospp").length, 1, "tospp has been added to the DOM");
+    testElementNotExists("#persona_tospp");
   });
 
   asyncTest("submit with `add: false` option opens a new tab with proper URL (updated for sessionStorage)", function() {
@@ -66,8 +67,12 @@
       window: win,
       add: false,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in"
+      auth_url: "http://testuser.com/sign_in",
+      personaTOSPP: true
     });
+
+    testElementExists("#persona_tospp");
+
     mediator.subscribe("primary_user_authenticating", function() {
       messageTriggered = true;
     });
@@ -88,8 +93,11 @@
       window: win,
       add: true,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in"
+      auth_url: "http://testuser.com/sign_in",
+      personaTOSPP: true
     });
+
+    testElementExists("#persona_tospp");
 
     // Also checking to make sure the NATIVE is stripped out.
     win.document.location.href = "sign_in";

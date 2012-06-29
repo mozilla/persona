@@ -23,18 +23,8 @@
 
 
       <div class="submit add cf">
-      <p class="cf">
-        <button id="signInButton"><%= gettext('sign in') %></button>
-      </p>
-      <% if (privacy_url && tos_url) { %>
-        <p class="tospp">
-          <%= format(
-            gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
-                    [ gettext('sign in'),
-                      format(' href="%s" target="_new"', [tos_url]),
-                      format(' href="%s" target="_new"', [privacy_url])
-                    ]) %>
+        <p class="cf">
+          <button id="signInButton"><%= gettext('sign in') %></button>
         </p>
-      <% } %>
       </div>
   </div>

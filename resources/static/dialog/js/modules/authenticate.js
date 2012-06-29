@@ -33,6 +33,7 @@ BrowserID.Modules.Authenticate = (function() {
     }
     else {
       showHint("start");
+      enterEmailState.call(self);
       complete(info.ready);
     }
   }
@@ -98,7 +99,7 @@ BrowserID.Modules.Authenticate = (function() {
   function showHint(showSelector, callback) {
     _.each(hints, function(className) {
       if(className != showSelector) {
-        $("." + className).not("." + showSelector).hide();
+        dom.hide("." + className + ":not(." + showSelector + ")");
       }
     });
 
@@ -112,8 +113,8 @@ BrowserID.Modules.Authenticate = (function() {
     });
   }
 
-  function enterEmailState(el) {
-    if (!$("#email").is(":disabled")) {
+  function enterEmailState() {
+    if (!dom.is("#email", ":disabled")) {
       this.submit = checkEmail;
       showHint("start");
     }
@@ -129,6 +130,8 @@ BrowserID.Modules.Authenticate = (function() {
     showHint("returning", function() {
       dom.focus("#password");
     });
+
+
     complete(callback);
   }
 
@@ -158,12 +161,19 @@ BrowserID.Modules.Authenticate = (function() {
       var self=this;
       self.renderDialog("authenticate", {
         sitename: user.getHostname(),
-        email: lastEmail,
-        privacy_url: options.privacyURL,
-        tos_url: options.tosURL
+        email: lastEmail
       });
 
-      $(".returning,.start").hide();
+      dom.hide(".returning,.start");
+
+      // We have to show the TOS/PP agreements to *all* users here. Users who
+      // are already authenticated to their IdP but do not have a Persona
+      // account automatically have an account created with no further
+      // interaction.  To make sure they see the TOS/PP agreement, show it
+      // here.
+      if (options.siteTOSPP) {
+        dialogHelpers.showRPTosPP.call(self);
+      }
 
       self.bind("#email", "keyup", emailKeyUp);
       self.click("#forgotPassword", forgotPassword);

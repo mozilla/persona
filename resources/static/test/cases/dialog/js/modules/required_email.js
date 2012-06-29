@@ -95,17 +95,16 @@
   }
 
 
-  asyncTest("privacyURL and tosURL specified - show TOS/PP", function() {
+  asyncTest("siteTOSPP specified - show TOS/PP", function() {
     var email = "registered@testuser.com";
     xhr.useResult("known_secondary");
+    xhr.setContextInfo("auth_level", "password");
 
-    equal($(".tospp").length, 0, "tospp has not yet been added to the DOM");
     createController({
-      email: "registered@testuser.com",
-      privacyURL: "http://testuser.com/priv.html",
-      tosURL: "http://testuser.com/tos.html",
+      email: email,
+      siteTOSPP: true,
       ready: function() {
-        equal($(".tospp").length, 1, "tospp has been added to the DOM");
+        testHelpers.testRPTosPPShown();
         start();
       }
     });

@@ -119,6 +119,8 @@ BrowserID.Modules.PageModule = (function() {
       self.hideError();
       self.hideDelay();
 
+      dom.removeClass("body", "rptospp");
+
       screens.form.show(template, data);
       dom.focus("input:visible:not(:disabled):eq(0)");
       // XXX jQuery.  bleck.

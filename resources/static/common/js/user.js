@@ -264,6 +264,14 @@ BrowserID.User = (function() {
       return origin;
     },
 
+    setOriginEmail: function(email) {
+      storage.site.set(origin, "email", email);
+    },
+
+    getOriginEmail: function() {
+      return storage.site.get(origin, "email");
+    },
+
     /**
      * Get the hostname for the set origin
      * @method getHostname
