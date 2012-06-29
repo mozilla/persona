@@ -229,12 +229,12 @@ button::-moz-focus-inner, .button::-moz-focus-inner {
 .submit .button:focus {
     background-color: #4aafe5;
     background-image: url("/common/i/button-arrow-hover.png");
-    background-image: url("/common/i/button-arrow.png"), -webkit-gradient(linear, left top, left bottom, from(#4aafe5), to(#2c89c8));
-    background-image: url("/common/i/button-arrow.png"), -webkit-linear-gradient(top, #4aafe5, #2c89c8);
-    background-image: url("/common/i/button-arrow.png"),    -moz-linear-gradient(top, #4aafe5, #2c89c8);
-    background-image: url("/common/i/button-arrow.png"),     -ms-linear-gradient(top, #4aafe5, #2c89c8);
-    background-image: url("/common/i/button-arrow.png"),      -o-linear-gradient(top, #4aafe5, #2c89c8);
-    background-image: url("/common/i/button-arrow.png"),         linear-gradient(top, #4aafe5, #2c89c8);
+    background-image: url("/common/i/button-arrow-hover.png"), -webkit-gradient(linear, left top, left bottom, from(#4aafe5), to(#2c89c8));
+    background-image: url("/common/i/button-arrow-hover.png"), -webkit-linear-gradient(top, #4aafe5, #2c89c8);
+    background-image: url("/common/i/button-arrow-hover.png"),    -moz-linear-gradient(top, #4aafe5, #2c89c8);
+    background-image: url("/common/i/button-arrow-hover.png"),     -ms-linear-gradient(top, #4aafe5, #2c89c8);
+    background-image: url("/common/i/button-arrow-hover.png"),      -o-linear-gradient(top, #4aafe5, #2c89c8);
+    background-image: url("/common/i/button-arrow-hover.png"),         linear-gradient(top, #4aafe5, #2c89c8);
 }
 
 .submit button:active,
