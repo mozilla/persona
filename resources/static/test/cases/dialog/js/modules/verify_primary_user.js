@@ -61,8 +61,7 @@
     testElementNotExists("#persona_tospp");
   });
 
-
-  asyncTest("submit with `add: false` option opens a new tab with CREATE_EMAIL URL", function() {
+  asyncTest("submit with `add: false` option opens a new tab with proper URL (updated for sessionStorage)", function() {
     var messageTriggered = false;
     createController({
       window: win,
@@ -83,13 +82,13 @@
     win.document.location.hash = "#NATIVE";
 
     controller.submit(function() {
-      equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com&return_to=sign_in%23CREATE_EMAIL%3Dunregistered%40testuser.com");
+      equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com");
       equal(messageTriggered, true, "primary_user_authenticating triggered");
       start();
     });
   });
 
-  asyncTest("submit with `add: true` option opens a new tab with ADD_EMAIL URL", function() {
+  asyncTest("submit with `add: true` option opens a new tab with proper URL (updated for sessionStorage)", function() {
     createController({
       window: win,
       add: true,
@@ -105,7 +104,7 @@
     win.document.location.hash = "#NATIVE";
 
     controller.submit(function() {
-      equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com&return_to=sign_in%23ADD_EMAIL%3Dunregistered%40testuser.com");
+      equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com");
       start();
     });
   });
