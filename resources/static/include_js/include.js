@@ -1029,12 +1029,16 @@
 
       // back compat support for loggedInEmail
       if (typeof options.loggedInEmail !== 'undefined' &&
-          typeof options.loggedInUser !== 'undefined')
-      {
+          typeof options.loggedInUser !== 'undefined') {
         throw "you cannot supply *both* loggedInEmail and loggedInUser";
       }
-      else if(typeof options.loggedInEmail !== 'undefined')
-      {
+      else if(typeof options.loggedInEmail !== 'undefined') {
+        try {
+          console.log("loggedInEmail has been deprecated");
+        } catch(e) {
+          /* ignore error */
+        }
+
         options.loggedInUser = options.loggedInEmail;
         delete options.loggedInEmail;
       }
