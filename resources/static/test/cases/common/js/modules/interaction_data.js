@@ -36,18 +36,20 @@
     controller = BrowserID.Modules.InteractionData.create();
     controller.start(config);
 
-    controller.setNameTable({
-      before_session_context: null,
-      after_session_context: null,
-      session1_before_session_context: null,
-      session1_after_session_context: null,
-      session2_before_session_context: null,
-      session2_after_session_context: null,
-      initial_string_name: "translated_name",
-      initial_function_name: function(msg, data) {
-        return "function_translation." + msg;
-      }
-    });
+    if (setKPINameTable) {
+      controller.setNameTable({
+        before_session_context: null,
+        after_session_context: null,
+        session1_before_session_context: null,
+        session1_after_session_context: null,
+        session2_before_session_context: null,
+        session2_after_session_context: null,
+        initial_string_name: "translated_name",
+        initial_function_name: function(msg, data) {
+          return "function_translation." + msg;
+        }
+      });
+    }
 
   }
 
@@ -69,7 +71,7 @@
     // simulate data stored for last session
     model.push({ timestamp: new Date().getTime() });
 
-    createController();
+    createController(true);
 
     controller.addEvent("before_session_context");
 
@@ -122,7 +124,7 @@
   });
 
   asyncTest("samplingEnabled set to false - no data collection occurs", function() {
-    createController({ samplingEnabled: false });
+    createController(true, { samplingEnabled: false });
 
     // the initial with_context will send off any stored data, there should be
     // no stored data.
@@ -140,7 +142,7 @@
   });
 
   asyncTest("continue: true, data collection permitted on previous session - continue appending data to previous session", function() {
-    createController();
+    createController(true);
 
     controller.addEvent("session1_before_session_context");
     network.withContext(function() {
@@ -150,7 +152,7 @@
       // re-get session context.
       controller = null;
       network.clearContext();
-      createController({ continuation: true });
+      createController(true, { continuation: true });
 
       controller.addEvent("session2_before_session_context");
       network.withContext(function() {
