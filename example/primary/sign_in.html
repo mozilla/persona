@@ -33,37 +33,30 @@ button { line-height: 20px; }
 </div>
 
 <script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="https://login.persona.org/authentication_api.js"></script>
 <script type="text/javascript">
 
-function getParameterByName(name)
-{
-  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-  var regexS = "[\\?&]" + name + "=([^&#]*)";
-  var regex = new RegExp(regexS);
-  var results = regex.exec(window.location.href);
-  if(results == null)
-    return "";
-  else
-    return decodeURIComponent(results[1].replace(/\+/g, " "));
-}
+var who = null;
 
 $(document).ready(function() {
   try {
-    var who = getParameterByName("email").replace(/@.*$/, "");
-    $('#who').text(who);
+    navigator.id.beginAuthentication(function(email) {
+      who = /^([^@]+)@/.exec(email)[1];
+      $('#who').text(who);
+    });
   } catch(e) {
     alert("uh oh: " + e);
   }
   $("button").click(function(e) {
     $.get('/api/login', { user: who })
       .success(function(r) {
-        window.location = getParameterByName('return_to');
+        navigator.id.completeAuthentication();
       });
   });
 
   $("#cancel").click(function(e) {
     e.preventDefault();
-    window.location = getParameterByName('return_to');
+    navigator.id.raiseAuthenticationFailure('cancel');
   });
 });
 </script>
