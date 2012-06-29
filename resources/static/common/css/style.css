@@ -294,7 +294,7 @@ button.negative:active,
 .button.negative:active {
     box-shadow: 0 0 5px #333 inset;
     color: #cfa391;
-    
+
     background-color: #83311e;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#83311e), to(#670d01));
     background-image: -webkit-linear-gradient(top, #83311e, #670d01);
@@ -304,8 +304,15 @@ button.negative:active,
     background-image:         linear-gradient(top, #83311e, #670d01);
 }
 
-button.loading, input[type="submit"].loading{
-
+button.loading, input[type="submit"].loading, .submit button.loading, .submit .button.loading{
+    background-color: #4eb5e5;
+    background-image: url("/common/i/button-loader.gif"), -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
+    background-image: url("/common/i/button-loader.gif"), -webkit-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-loader.gif"),    -moz-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-loader.gif"),      -ms-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-loader.gif"),       -o-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-loader.gif"),          linear-gradient(top, #4eb5e5, #3196cf);
+    background-position: 95% center;
 }
 
 .submit #cancel {
