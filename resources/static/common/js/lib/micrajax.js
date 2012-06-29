@@ -1,4 +1,4 @@
-/*jshint browsers:true, forin: true, laxbreak: true */
+/*jshint browser:true, forin: true, laxbreak: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -17,11 +17,15 @@ window.Micrajax = (function() {
   function getXHRObject() {
     var xhrObject;
 
-    if (window.ActiveXObject) {
-      xhrObject = new ActiveXObject('Microsoft.XMLHTTP');
-    }
-    else if (window.XMLHttpRequest) {
+    // From  http://blogs.msdn.com/b/ie/archive/2011/08/31/browsing-without-plug-ins.aspx
+    // Best Practice: Use Native XHR, if available
+    if (window.XMLHttpRequest) {
+      // If IE7+, Gecko, WebKit: Use native object
       xhrObject = new XMLHttpRequest();
+    }
+    else if (window.ActiveXObject) {
+      // ...if not, try the ActiveX control
+      xhrObject = new ActiveXObject('Microsoft.XM/LHTTP');
     }
 
     return xhrObject;
