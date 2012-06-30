@@ -316,14 +316,6 @@ button.negative:active,
   margin-top: 8px;
 }
 
-/*
-.submit #cancel {
-  float: right;
-  margin-right: 15px;
-  line-height: 28px;
-}
-*/
-
 a.secondary[disabled], .submit_disabled a.secondary, .submit_disabled a.secondary:focus, .submit_disabled a.secondary:active {
   color: #999;
 }
@@ -413,11 +405,6 @@ footer .help {
   background-image: url("/common/i/grain.png"),         linear-gradient(top, #dadee1, #c7ccd0);
 }
 
-  /*
-#wait, #delay {
-  text-align: center;
-}
-*/
 #wait .contents, #error .contents, #delay .contents {
     max-width: 430px;
     margin: 0 auto;
