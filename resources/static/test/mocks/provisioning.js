@@ -34,11 +34,13 @@ BrowserID.Mocks.Provisioning = (function() {
       if (cb) cb();
     }
     else if(newStatus === Provisioning.AUTHENTICATED) {
-      if (!keypair)
+      if (!keypair) {
         jwcrypto.generateKeypair({algorithm: "DS", keysize: 256}, function(err, kp) {
           keypair = kp;
           if (cb) cb();
         });
+      }
+      else if (cb) cb();
     }
   };
 

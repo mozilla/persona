@@ -10,6 +10,7 @@
       bid = BrowserID,
       storage = bid.Storage,
       user = bid.User,
+      network = bid.Network,
       register = bid.TestHelpers.register,
       xhr = bid.Mocks.xhr,
       mediator = bid.Mediator,
@@ -55,47 +56,53 @@
   });
 
   asyncTest("create controller with all fields specified, user authenticated with primary - expected user provisioned", function() {
-    provisioning.setStatus(provisioning.AUTHENTICATED);
+    network.withContext(function() {
+      provisioning.setStatus(provisioning.AUTHENTICATED);
 
-    mediator.subscribe("primary_user_provisioned", function(msg, info) {
-      ok(info.assertion, "assertion available");
-      equal(info.email, "unregistered@testuser.com", "email available");
-      start();
-    });
+      mediator.subscribe("primary_user_provisioned", function(msg, info) {
+        ok(info.assertion, "assertion available");
+        equal(info.email, "unregistered@testuser.com", "email available");
+        start();
+      });
 
-    createController({
-      email: "unregistered@testuser.com",
-      auth: "https://auth_url",
-      prov: "https://prov_url"
+      createController({
+        email: "unregistered@testuser.com",
+        auth: "https://auth_url",
+        prov: "https://prov_url"
+      });
     });
   });
 
   asyncTest("create controller with all fields specified, user not authenticated with primary - expected user must authenticate", function() {
-    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+    network.withContext(function() {
+      provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
 
-    mediator.subscribe("primary_user_unauthenticated", function(msg, info) {
-      equal(info.auth_url, "https://auth_url", "primary information fetched");
-      start();
-    });
+      mediator.subscribe("primary_user_unauthenticated", function(msg, info) {
+        equal(info.auth_url, "https://auth_url", "primary information fetched");
+        start();
+      });
 
-    createController({
-      email: "unregistered@testuser.com",
-      auth: "https://auth_url",
-      prov: "https://prov_url"
+      createController({
+        email: "unregistered@testuser.com",
+        auth: "https://auth_url",
+        prov: "https://prov_url"
+      });
     });
   });
 
   asyncTest("create controller with missing auth/prov, user authenticated with primary - expected to request provisioning info from backend, user provisioned", function() {
-    xhr.useResult("primary");
-    provisioning.setStatus(provisioning.AUTHENTICATED);
+    network.withContext(function() {
+      xhr.useResult("primary");
+      provisioning.setStatus(provisioning.AUTHENTICATED);
 
-    mediator.subscribe("primary_user_provisioned", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "user is provisioned after requesting info from backend");
-      start();
-    });
+      mediator.subscribe("primary_user_provisioned", function(msg, info) {
+        equal(info.email, "unregistered@testuser.com", "user is provisioned after requesting info from backend");
+        start();
+      });
 
-    createController({
-      email: "unregistered@testuser.com"
+      createController({
+        email: "unregistered@testuser.com"
+      });
     });
   });
 }());
