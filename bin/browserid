@@ -144,6 +144,12 @@ app.use(function(req, res, next) {
   next();
 });
 
+// if we're not serving minified resources (local dev), then we should add
+// .ejs to the mime table so it's properly substituted.  issue #1875
+if (!config.get('use_minified_resources')) {
+  express.static.mime.types['ejs'] = 'text/html';
+}
+
 app.use(express.static(static_root));
 
 // open the databse

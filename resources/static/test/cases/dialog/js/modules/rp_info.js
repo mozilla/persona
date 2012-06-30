@@ -13,8 +13,11 @@
       register = bid.TestHelpers.register,
       WindowMock = bid.Mocks.WindowMock,
       RP_HOSTNAME = "hostname.org",
-      RP_NAME = "RP Name",
-      RP_HTTPS_LOGO = "https://en.gravatar.com/userimage/6966791/c4feac761b8544cce13e0406f36230aa.jpg";
+      RP_NAME = "The Planet's Most Awesome Site",
+      RP_TOS_URL = "https://browserid.org/TOS.html",
+      RP_PP_URL = "https://browserid.org/priv.html",
+      RP_HTTPS_LOGO = "https://en.gravatar.com/userimage/6966791/c4feac761b8544cce13e0406f36230aa.jpg",
+      mediator = bid.Mediator;
 
   module("controllers/rp_info", {
     setup: testHelpers.setup,
@@ -82,6 +85,18 @@
     equal($("#rp_hostname").html(), RP_HOSTNAME, "rp_hostname filled in");
     equal($("#rp_name").html(), RP_NAME, "rp_name filled in");
     equal($("#rp_logo").attr("src"), RP_HTTPS_LOGO, "rp logo shown");
+  });
+
+  test("privacyPolicy, termsOfService specified - show TOS/PP info", function() {
+    createController({
+      siteName: RP_NAME,
+      privacyPolicy: RP_PP_URL,
+      termsOfService: RP_TOS_URL
+    });
+
+    equal($("#rp_name").text(), RP_NAME, "RP's name is set");
+    equal($("#rp_tos").attr("href"), RP_TOS_URL, "RP's TOS is set");
+    equal($("#rp_pp").attr("href"), RP_PP_URL, "RP's Privacy Policy is set");
   });
 
 }());

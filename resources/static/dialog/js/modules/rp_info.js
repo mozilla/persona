@@ -7,7 +7,8 @@
 
 /**
  * Purpose:
- *  Display to the user RP related data such as hostname, name, and logo.
+ *  Display to the user RP related data such as hostname, sitename, logo,
+ *  TOS/PP, etc.
  */
 BrowserID.Modules.RPInfo = (function() {
   "use strict";
@@ -32,7 +33,9 @@ BrowserID.Modules.RPInfo = (function() {
       renderer.render("#rp_info", "rp_info", {
         hostname: options.hostname,
         siteName: options.siteName,
-        siteLogo: options.siteLogo
+        siteLogo: options.siteLogo,
+        privacyPolicy: options.privacyPolicy,
+        termsOfService: options.termsOfService
       });
 
       sc.start.call(this, options);

@@ -12,21 +12,22 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       add,
       email,
       auth_url,
+      dom = bid.DOM,
       helpers = bid.Helpers,
+      dialogHelpers = helpers.Dialog,
       complete = helpers.complete;
 
   function verify(callback) {
     this.publish("primary_user_authenticating");
 
-    // replace any hashes that may be there already.
-    var returnTo = win.document.location.href.replace(/#.*$/, "");
-
-    var type = add ? "ADD_EMAIL" : "CREATE_EMAIL";
-    var url = helpers.toURL(auth_url, {
-      email: email,
-      return_to: returnTo + "#" + type + "=" +email
+    // set up some information about what we're doing
+    win.sessionStorage.primaryVerificationFlow = JSON.stringify({
+      add: add,
+      email: email
     });
 
+    var url = helpers.toURL(auth_url, {email: email});
+    
     win.document.location = url;
 
     complete(callback);
@@ -47,12 +48,16 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email = data.email;
       auth_url = data.auth_url;
 
-      var templateData = helpers.extend({}, data, {
+      self.renderDialog("verify_primary_user", {
+        email: data.email,
+        auth_url: data.auth_url,
         requiredEmail: data.requiredEmail || false,
-        privacy_url: data.privacyURL || null,
-        tos_url: data.tosURL || null
+        personaTOSPP: data.personaTOSPP
       });
-      self.renderDialog("verify_primary_user", templateData);
+
+      if (data.siteTOSPP) {
+        dialogHelpers.showRPTosPP.call(self);
+      }
 
       self.click("#cancel", cancel);
 

@@ -12,6 +12,7 @@ BrowserID.Modules.Dialog = (function() {
       user = bid.User,
       errors = bid.Errors,
       dom = bid.DOM,
+      helpers = bid.Helpers,
       win = window,
       startExternalDependencies = true,
       channel,
@@ -71,10 +72,6 @@ BrowserID.Modules.Dialog = (function() {
 
   function stopChannel() {
     channel && channel.detach();
-  }
-
-  function setOrigin(origin) {
-    user.setOrigin(origin);
   }
 
   function onWindowUnload() {
@@ -139,7 +136,7 @@ BrowserID.Modules.Dialog = (function() {
       var self=this,
           hash = win.location.hash;
 
-      setOrigin(origin_url);
+      user.setOrigin(origin_url);
 
 
       if (startExternalDependencies) {
@@ -159,9 +156,7 @@ BrowserID.Modules.Dialog = (function() {
       // verify params
       try {
         if (paramsFromRP.requiredEmail) {
-          if (!bid.verifyEmail(paramsFromRP.requiredEmail))
-            throw "invalid requiredEmail: (" + paramsFromRP.requiredEmail + ")";
-          params.requiredEmail = paramsFromRP.requiredEmail;
+          helpers.log("requiredEmail has been deprecated");
         }
 
         // support old parameter names...
@@ -169,8 +164,8 @@ BrowserID.Modules.Dialog = (function() {
         if (paramsFromRP.privacyURL) paramsFromRP.privacyPolicy = paramsFromRP.privacyURL;
 
         if (paramsFromRP.termsOfService && paramsFromRP.privacyPolicy) {
-          params.tosURL = fixupURL(origin_url, paramsFromRP.termsOfService);
-          params.privacyURL = fixupURL(origin_url, paramsFromRP.privacyPolicy);
+          params.termsOfService = fixupURL(origin_url, paramsFromRP.termsOfService);
+          params.privacyPolicy = fixupURL(origin_url, paramsFromRP.privacyPolicy);
         }
 
         if (paramsFromRP.siteLogo) {
@@ -196,24 +191,19 @@ BrowserID.Modules.Dialog = (function() {
           user.setReturnTo(returnTo);
         }
 
+        if (hash.indexOf("#AUTH_RETURN") === 0) {
+          var primaryParams = JSON.parse(win.sessionStorage.primaryVerificationFlow);
+          params.email = primaryParams.email;
+          params.add = primaryParams.add;
+          params.type = "primary";
 
-        if (hash.indexOf("#CREATE_EMAIL=") === 0) {
-          var email = hash.replace(/#CREATE_EMAIL=/, "");
-          if (!bid.verifyEmail(email))
-            throw "invalid #CREATE_EMAIL= (" + email + ")";
-          params.type = "primary";
-          params.email = email;
-          params.add = false;
-        }
-        else if (hash.indexOf("#ADD_EMAIL=") === 0) {
-          var email = hash.replace(/#ADD_EMAIL=/, "");
-          if (!bid.verifyEmail(email))
-            throw "invalid #ADD_EMAIL= (" + email + ")";
-          params.type = "primary";
-          params.email = email;
-          params.add = true;
+          // FIXME: if it's AUTH_RETURN_CANCEL, we should short-circuit
+          // the attempt at provisioning. For now, we let provisioning
+          // be tried and fail.
         }
 
+        // no matter what, we clear the primary flow state for this window
+        win.sessionStorage.primaryVerificationFlow = undefined;
       } catch(e) {
         // note: renderError accepts HTML and cheerfully injects it into a
         // frame with a powerful origin. So convert 'e' first.

@@ -4,7 +4,7 @@
 
 <% if (requiredEmail) { %>
   <strong><%= gettext('The site requested you sign in using') %></strong>
-  <div class="form_section">
+  <div id="verify_primary_user" class="cf form_section">
       <ul class="inputs">
 
           <li>
@@ -15,7 +15,7 @@
               </div>
           </li>
 
-          <li>
+          <li class="small">
               <%= gettext("You must sign in with your email provider to verify ownership of this address. This window will be redirected to") %>
               <p>
                   <strong><%= auth_url %></strong>.
@@ -24,48 +24,47 @@
       </ul>
 
       <div class="submit cf">
-        <% if (privacy_url && tos_url) { %>
-          <p class="tospp">
-            <%= format(
-                  gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
-                       [ gettext('verify'),
-                         format(' href="%s" target="_new"', [tos_url]),
-                         format(' href="%s" target="_new"', [privacy_url])
+          <p class="cf">
+            <button id="verifyWithPrimary"><%= gettext("verify") %></button>
+          </p>
+
+          <% if (personaTOSPP) { %>
+            <p id="persona_tospp" class="tospp">
+               <%= format(
+                  gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
+                       [ "Persona",
+                         ' href="https://login.persona.org/tos" target="_new"',
+                         ' href="https://login.persona.org/privacy" target="_new"',
                        ]) %>
-          </p>
-          <p>
-        <% } %>
-          <button id="verifyWithPrimary"><%= gettext("verify") %></button>
-        <% if (privacy_url && tos_url) { %>
-          </p>
-        <% } %>
+            </p>
+          <% } %>
       </div>
   </div>
 
 <% } else { %>
   <strong><%= gettext("Verify With Email Provider") %></strong>
 
-  <div class="cf form_section">
-    <%= gettext("You must sign in with your email provider to verify ownership of this address. This window will be redirected to") %>
-    <p>
-      <strong><%= auth_url %></strong>.
-    </p>
+  <div id="verify_primary_user" class="cf form_section">
+    <div class="small">
+      <%= gettext("You must sign in with your email provider to verify ownership of this address. This window will be redirected to") %>
+      <p>
+        <strong><%= auth_url %></strong>.
+      </p>
+    </div>
 
     <div class="submit cf">
-        <% if (privacy_url && tos_url) { %>
-          <p class="tospp">
-            <%= format(
-                  gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
-                       [ gettext('verify'),
-                         format(' href="%s" target="_new"', [tos_url]),
-                         format(' href="%s" target="_new"', [privacy_url])
-                       ]) %>
-          </p>
-          <p>
-        <% } %>
+        <p class="cf">
           <button id="verifyWithPrimary"><%= gettext("verify") %></button>
           <a href="#" id="cancel" class="action"><%= gettext("cancel") %></a>
-        <% if (privacy_url && tos_url) { %>
+        </p>
+        <% if (personaTOSPP) { %>
+          <p id="persona_tospp" class="tospp">
+             <%= format(
+                gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
+                     [ "Persona",
+                       ' href="https://login.persona.org/tos" target="_new"',
+                       ' href="https://login.persona.org/privacy" target="_new"',
+                     ]) %>
           </p>
         <% } %>
     </div>

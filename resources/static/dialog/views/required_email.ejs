@@ -50,17 +50,7 @@
       </ul>
 
       <div class="submit cf">
-        <% if (privacy_url && tos_url) { %>
-          <p class="tospp">
-            <%= format(
-                  gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
-                       [ gettext('sign in'),
-                         format(' href="%s" target="_new"', [tos_url]),
-                         format(' href="%s" target="_new"', [privacy_url])
-                       ]) %>
-          </p>
-          <p>
-        <% } %>
+          <p class="cf">
             <% if (signin) { %>
               <button id="sign_in" tabindex="3"><%= gettext("sign in") %></button>
             <% } else if (verify) { %>
@@ -70,8 +60,16 @@
             <% if (secondary_auth) { %>
               <a href="#" id="cancel" class="action" tabindex="4"><%= gettext("cancel") %></a>
             <% } %>
-        <% if (privacy_url && tos_url) { %>
           </p>
-        <% } %>
+          <% if (personaTOSPP) { %>
+            <p class="tospp">
+               <%= format(
+                    gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
+                         [ "Persona",
+                           ' href="https://login.persona.org/tos" target="_new"',
+                           ' href="https://login.persona.org/privacy" target="_new"',
+                         ]) %>
+            </p>
+          <% } %>
       </div>
   </div>

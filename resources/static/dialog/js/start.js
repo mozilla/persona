@@ -15,7 +15,7 @@
   network.init();
 
   var hash = window.location.hash || "",
-      continuation = hash.indexOf("#CREATE_EMAIL") > -1 || hash.indexOf("#ADD_EMAIL") > -1;
+      continuation = hash.indexOf("#AUTH_RETURN") > -1;
 
   moduleManager.register("interaction_data", modules.InteractionData);
   moduleManager.start("interaction_data", { continuation: continuation });

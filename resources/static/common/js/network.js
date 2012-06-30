@@ -6,7 +6,8 @@
 BrowserID.Network = (function() {
   "use strict";
 
-  var bid = BrowserID,
+  var jwcrypto = require("./lib/jwcrypto"),
+      bid = BrowserID,
       complete = bid.Helpers.complete,
       context,
       server_time,
@@ -45,10 +46,7 @@ BrowserID.Network = (function() {
     setUserID(result.userid);
 
     // seed the PRNG
-    // FIXME: properly abstract this out, probably by exposing a jwcrypto
-    // interface for randomness
-    // require("./libs/all").sjcl.random.addEntropy(result.random_seed);
-    // FIXME: this wasn't doing anything for real, so commenting this out for now
+    jwcrypto.addEntropy(result.random_seed);
   }
 
   function withContext(cb, onFailure) {
