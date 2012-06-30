@@ -1,4 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*jshint browser:true, jquery: true, forin: true, laxbreak:true */
 /*global BrowserID:true, PageController: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -25,6 +25,7 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function initialState(info) {
+    /*jshint validthis: true*/
     var self=this;
 
     self.submit = checkEmail;
@@ -39,6 +40,7 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function checkEmail(info) {
+    /*jshint validthis: true*/
     var email = getEmail(),
         self = this;
 
@@ -70,6 +72,7 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function createSecondaryUser(callback) {
+    /*jshint validthis: true*/
     var self=this,
         email = getEmail();
 
@@ -81,6 +84,7 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function authenticate() {
+    /*jshint validthis: true*/
     var email = getEmail(),
         pass = helpers.getAndValidatePassword("#password"),
         self = this;
@@ -114,6 +118,7 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function enterEmailState() {
+    /*jshint validthis: true*/
     if (!dom.is("#email", ":disabled")) {
       this.submit = checkEmail;
       showHint("start");
@@ -121,6 +126,7 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function enterPasswordState(callback) {
+    /*jshint validthis: true*/
     var self=this;
 
     dom.setInner("#password", "");
@@ -136,6 +142,7 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function forgotPassword() {
+    /*jshint validthis: true*/
     var email = getEmail();
     if (email) {
       var info = addressInfo || { email: email };
@@ -144,6 +151,7 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function emailKeyUp() {
+    /*jshint validthis: true*/
     var newEmail = dom.getInner("#email");
     if (newEmail !== lastEmail) {
       lastEmail = newEmail;
@@ -160,7 +168,7 @@ BrowserID.Modules.Authenticate = (function() {
 
       var self=this;
       self.renderDialog("authenticate", {
-        sitename: user.getHostname(),
+        siteName: options.siteName,
         email: lastEmail
       });
 

@@ -1,4 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*jshint browser:true, jquery: true, forin: true, laxbreak:true */
 /*global _: true, BrowserID: true, PageController: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,6 +13,7 @@ BrowserID.Modules.SetPassword = (function() {
       sc;
 
   function submit(callback) {
+    /*jshint validthis: true*/
     var pass = dom.getInner("#password"),
         vpass = dom.getInner("#vpassword"),
         options = this.options;
@@ -26,6 +27,7 @@ BrowserID.Modules.SetPassword = (function() {
   }
 
   function cancel() {
+    /*jshint validthis: true*/
     this.close("cancel_state");
   }
 
@@ -35,6 +37,7 @@ BrowserID.Modules.SetPassword = (function() {
       options = options || {};
 
       self.renderDialog("set_password", {
+        email: options.email,
         password_reset: !!options.password_reset,
         cancelable: options.cancelable !== false,
         personaTOSPP: options.personaTOSPP

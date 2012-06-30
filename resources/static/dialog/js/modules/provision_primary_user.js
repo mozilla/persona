@@ -29,7 +29,9 @@ BrowserID.Modules.ProvisionPrimaryUser = (function() {
         case "primary.verify":
           self.close("primary_user_unauthenticated", {
             email: email,
-            auth_url: auth
+            auth_url: auth,
+            // XXX use self.addressInfo universally.
+            idpName: self.addressInfo.idpName
           });
           complete(true);
           break;
@@ -55,19 +57,15 @@ BrowserID.Modules.ProvisionPrimaryUser = (function() {
         throw "missing config option: email";
       }
 
-      if(!(auth && prov)) {
-        user.addressInfo(email, function(status) {
-          if(status.type === "primary") {
-            provisionPrimaryUser.call(self, email, status.auth, status.prov);
-          }
-          else {
-            self.renderError("error", { action: errors.provisioningBadPrimary });
-          }
-        }, self.getErrorDialog(errors.isEmailRegistered));
-      }
-      else {
-        provisionPrimaryUser.call(self, email, auth, prov);
-      }
+      user.addressInfo(email, function(status) {
+        self.addressInfo = status;
+        if(status.type === "primary") {
+          provisionPrimaryUser.call(self, email, status.auth, status.prov);
+        }
+        else {
+          self.renderError("error", { action: errors.provisioningBadPrimary });
+        }
+      }, self.getErrorDialog(errors.isEmailRegistered));
 
 
       ProvisionPrimaryUser.sc.start.call(self, options);

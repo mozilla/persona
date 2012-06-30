@@ -56,8 +56,13 @@ ul, li {
   list-style-type: none;
 }
 
-.mono {
-  font-family: 'Monaco', monospace;
+strong {
+  font-weight: 700;
+}
+
+.hidden {
+  visibility: hidden;
+  height: 0;
 }
 
 .tooltip {
@@ -132,6 +137,18 @@ input[type=password]:disabled {
      * field */
     box-shadow: none;
     border-color: #b2b2b2;
+}
+
+label + input[type=text],
+label + input[type=password],
+label + input[type=email] {
+  margin-top: 8px;
+}
+
+label.hidden + input[type=text],
+label.hidden + input[type=password],
+label.hidden + input[type=email] {
+  margin-top: 0;
 }
 
 input[type=radio],
@@ -282,10 +299,21 @@ button.negative:active,
     box-shadow: 0 0 5px #333 inset;
 }
 
-.submit #cancel {
-  float: right;
-  margin-right: 15px;
+.tospp {
+  line-height: 14px;
+}
+
+.buttonrow {
   line-height: 28px;
+}
+
+.buttonrow > .right {
+  margin-right: 15px;
+}
+
+.buttonrow > .right.emphasize {
+  margin-right: 0;
+  margin-top: 8px;
 }
 
 a.secondary[disabled], .submit_disabled a.secondary, .submit_disabled a.secondary:focus, .submit_disabled a.secondary:active {
@@ -377,14 +405,21 @@ footer .help {
   background-image: url("/common/i/grain.png"),         linear-gradient(top, #dadee1, #c7ccd0);
 }
 
-#wait, #delay {
-  text-align: center;
+#wait .contents, #error .contents, #delay .contents {
+    max-width: 430px;
+    margin: 0 auto;
 }
 
+#wait h2, #delay h2 {
+    font-size: 20px;
+}
 
-#wait h2, #error h2, #delay h2 {
+#error h2 {
     font-size: 22px;
-    margin-bottom: 10px;
+}
+
+#wait p, #error p, #delay p {
+    margin-top: 20px;
 }
 
 #error .emphasis {
@@ -392,7 +427,7 @@ footer .help {
     color: #aa1401;
 }
 
-#error_contents {
+#error .contents, #wait .contents {
     max-width: 430px;
     margin: 0 auto;
 }
@@ -417,7 +452,6 @@ footer .help {
 
 .submit {
     margin-top: 10px;
-    line-height: 14px;
 }
 
 .submit > p {

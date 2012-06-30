@@ -160,6 +160,10 @@ BrowserID.User = (function() {
       throw "invalid email type (should be 'secondary' or 'primary'): " + type;
   }
 
+  function getIdPName(addressInfo) {
+    return addressInfo.email.replace(/.*@/, "");
+  }
+
   /**
    * Persist an address and key pair locally.
    * @method persistEmailKeypair
@@ -825,6 +829,7 @@ BrowserID.User = (function() {
           if(info.type === "primary") {
             User.isUserAuthenticatedToPrimary(email, info, function(authed) {
               info.authed = authed;
+              info.idpName = getIdPName(info);
               complete(info);
             }, onFailure);
           }
@@ -1224,8 +1229,6 @@ BrowserID.User = (function() {
       } else {
         complete(onFailure, "user is not authenticated");
       }
-
-      return shouldAsk;
     }
 
   };
