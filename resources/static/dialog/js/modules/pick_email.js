@@ -93,7 +93,7 @@ BrowserID.Modules.PickEmail = (function() {
 
       self.renderDialog("pick_email", {
         identities: identities,
-        siteemail: user.getOriginEmail()
+        siteEmail: user.getOriginEmail()
       });
 
       if (options.siteTOSPP) {

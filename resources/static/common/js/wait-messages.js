@@ -7,7 +7,7 @@ BrowserID.Wait = (function(){
   var Wait = {
     authentication: {
       title: gettext("Finishing Sign In..."),
-      message:  gettext("In just a moment you'll be signed into BrowserID.")
+      message:  gettext("In just a moment you'll be signed into Persona.")
     },
 
     generateKey: {
@@ -16,8 +16,8 @@ BrowserID.Wait = (function(){
     },
 
     slowXHR: {
-      title:  gettext("We are sorry, this request is taking a LOOONG time."),
-      message:  gettext("This message will go away when the request completes (hopefully soon). If you wait too long, close this window and try again."),
+      title:  gettext("We are sorry, this is taking a longer than it should."),
+      message:  gettext("If this doesn't resolve itself within a few seconds, please close the window and try again."),
       id: "slowXHR"
     }
 

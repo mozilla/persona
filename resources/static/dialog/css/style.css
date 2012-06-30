@@ -12,6 +12,7 @@ body {
   background-image: url('/common/i/grain.png'),     -ms-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
   background-image: url('/common/i/grain.png'),      -o-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
   background-image: url('/common/i/grain.png'),         linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  line-height: 18px;
 }
 
 #signIn {
@@ -64,6 +65,15 @@ header {
     background-image:      -o-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
     background-image:         linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
 }
+
+h2 {
+    font-size: 20px;
+}
+
+h3 {
+    font-size: 18px;
+}
+
 
 .home {
   width: 161px;
@@ -135,6 +145,11 @@ section > .contents {
      * otherwise the buttons slide right with the arrow
      */
     width: 250px;
+    font-size: 13px;
+}
+
+.form_section p {
+    margin-top: 8px;
 }
 
 
@@ -241,7 +256,7 @@ section > .contents {
 
 #signIn .table {
     background-color: #eff0f2;
-    padding: 20px;
+    padding: 0 20px;
 }
 
 .arrowContainer {
@@ -298,7 +313,6 @@ section > .contents {
 
 #favicon h2 {
     margin: 10px 0 0 0;
-    font-size: 20px;
 }
 
 #favicon h3 {
@@ -342,16 +356,8 @@ div#required_email {
     padding-right: 1px;
 }
 
-.inputs {
-  line-height: 18px;
-}
-
 .inputs > li {
-  margin-top: 10px;
-}
-
-.inputs > li:first-child {
-  margin-top: 0;
+  margin-top: 8px;
 }
 
 .inputs > li > label {
@@ -364,7 +370,7 @@ div#required_email {
 }
 
 #selectEmail > .inputs > li > label {
-    padding: 6px 1px;
+    padding: 3px 1px;
     white-space: nowrap;
 }
 
@@ -381,10 +387,14 @@ div#required_email {
 }
 
 .submit {
+    margin-top: 8px;
     color: #333;
     font-size: 11px;
 }
 
+.submit > p {
+  margin-top: 8px;
+}
 
 .tospp {
   font-size: 11px;

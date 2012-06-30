@@ -3,19 +3,20 @@
       file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
 
   <div id="your_computer_content">
-    <h2><%= gettext('If you don\'t mind me asking, is this your computer?') %></h2>
-
+    <h2><%= gettext('Remember You?') %></h2>
+	<p><%= gettext('How long would you like to remain signed in with Persona?') %></p>
     <ul>
       <li>
-        <button id="this_is_my_computer" tabindex="3"><%= gettext('yes') %></button>
-        <%= gettext('If so, we\'ll keep you logged in for two weeks.') %>
+        <button id="this_is_my_computer" tabindex="3"><%= gettext('One month') %></button>
+        <%= gettext('I trust this computer.') %>
       </li>
 
       <li>
-        <button id="this_is_not_my_computer" class="negative" tabindex="3"><%= gettext('no') %></button>
-        <%= gettext('If you\'re at a public computer such as a library or internet cafe, choose this.  We\'ll prompt you for your password in an hour for greater security.') %>
+        <button id="this_is_not_my_computer" class="negative" tabindex="3"><%= gettext('This session only') %></button>
+        <%= gettext('This is not my computer.') %>
       </li>
     </ul>
+    <p><%= gettext('Note: You can of course sign out of Persona at any time.') %></p>
   </div>
 
 

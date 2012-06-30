@@ -21,6 +21,7 @@ BrowserID.State = (function() {
       primaryVerificationInfo;
 
   function startStateMachine() {
+    /*jshint validthis: true*/
     var self = this,
         handleState = function(msg, callback) {
           self.subscribe(msg, function(msg, info) {
@@ -44,7 +45,9 @@ BrowserID.State = (function() {
 
     handleState("start", function(msg, info) {
       self.hostname = info.hostname;
+      self.siteName = info.siteName || info.hostname;
       self.siteTOSPP = !!(info.privacyPolicy && info.termsOfService);
+
       requiredEmail = info.requiredEmail;
 
       startAction(false, "doRPInfo", info);
@@ -95,7 +98,11 @@ BrowserID.State = (function() {
     });
 
     handleState("authenticate", function(msg, info) {
-      info.siteTOSPP = self.siteTOSPP;
+      _.extend(info, {
+        siteName: self.siteName,
+        siteTOSPP: self.siteTOSPP
+      });
+
       startAction("doAuthenticate", info);
     });
 
@@ -151,7 +158,12 @@ BrowserID.State = (function() {
 
     handleState("user_staged", function(msg, info) {
       self.stagedEmail = info.email;
-      info.required = !!requiredEmail;
+
+      _.extend(info, {
+        required: !!requiredEmail,
+        siteName: self.siteName
+      });
+
       startAction("doConfirmUser", info);
     });
 
@@ -209,7 +221,9 @@ BrowserID.State = (function() {
 
         // Show the persona TOS/PP only to requiredEmail users who are creating
         // a new account.
-        personaTOSPP: requiredEmail && !addPrimaryUser
+        personaTOSPP: requiredEmail && !addPrimaryUser,
+        siteName: self.siteName,
+        idpName: info.idpName || URLParse(info.auth_url).host
       });
 
       if (primaryVerificationInfo) {
@@ -449,7 +463,10 @@ BrowserID.State = (function() {
 
     handleState("email_staged", function(msg, info) {
       self.stagedEmail = info.email;
-      info.required = !!requiredEmail;
+      _.extend(info, {
+        required: !!requiredEmail,
+        siteName: self.siteName
+      });
       startAction("doConfirmEmail", info);
     });
 

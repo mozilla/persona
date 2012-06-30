@@ -124,7 +124,7 @@
 
   #selectEmail > .inputs > li > label {
     margin: 0;
-    padding: 15px 0;
+    padding: 8px 0;
   }
 
   #signIn .submit > p {
@@ -184,10 +184,6 @@
     min-height: 40px;
   }
 
-
-  .forgot {
-    font-size: 16px;
-  }
 
   .inputs > li {
     margin-top: 12px;

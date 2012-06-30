@@ -1152,6 +1152,7 @@ var jwcrypto = require("./lib/jwcrypto");
         equal(info.type, "primary", "correct type");
         equal(info.email, "registered@testuser.com", "correct email");
         equal(info.authed, true, "user is authenticated with IdP");
+        equal(info.idpName, "testuser.com", "unknown IdP, use email host portion for name");
         start();
       },
       testHelpers.unexpectedFailure

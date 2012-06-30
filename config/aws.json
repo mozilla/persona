@@ -12,6 +12,7 @@
   "supported_languages": [
     "en-US", "it-CH", "db-LB"
   ],
+  "debug_lang": "it-CH",
   "locale_directory": "/home/app/code/locale",
   "var_path": "/home/app/var",
 

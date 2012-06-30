@@ -27,7 +27,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     });
 
     var url = helpers.toURL(auth_url, {email: email});
-    
+
     win.document.location = url;
 
     complete(callback);
@@ -52,7 +52,9 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
         email: data.email,
         auth_url: data.auth_url,
         requiredEmail: data.requiredEmail || false,
-        personaTOSPP: data.personaTOSPP
+        personaTOSPP: data.personaTOSPP,
+        siteName: data.siteName,
+        idpName: data.idpName
       });
 
       if (data.siteTOSPP) {

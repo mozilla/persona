@@ -1,13 +1,18 @@
 <% /* This Source Code Form is subject to the terms of the Mozilla Public
       License, v. 2.0. If a copy of the MPL was not distributed with this
       file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
-  <strong><%= gettext('Sign in using') %></strong>
+
   <div class="form_section">
+      <p class="start">
+          <%= format(gettext('%s uses Persona instead of usernames to sign you in.'), ["<strong>" + siteName +"</strong>"]) %>
+
+      </p>
+
       <ul class="inputs">
 
           <li>
-              <label for="email"><%= gettext('Email') %></label>
-              <input id="email" type="email" autocapitalize="off" autocorrect="off" value="<%= email %>" maxlength="254" tabindex="1"/>
+              <label for="email"><%= gettext('To sign in with Persona, please enter your email address.') %></label>
+              <input id="email" type="email" autocapitalize="off" autocorrect="off" value="<%= email %>" maxlength="254" tabindex="1" placeholder="<%= gettext('enter email address') %>"/>
 
               <div id="email_format" class="tooltip" for="email">
                 <%= gettext('This field must be an email address.') %>
@@ -20,53 +25,44 @@
               <div id="could_not_add" class="tooltip" for="email">
                 <%= gettext('We just sent an email to that address! If you really want to send another, wait a minute or two and try again.') %>
               </div>
-
-              <div id="already_registered" class="tooltip" for="email">
-                That email address is already registered!  You should try again.
-              </div>
           </li>
 
-          <li id="hint_section" class="start">
-              <%= format(gettext('Enter your email address to sign in to <strong>%s</strong>'), [sitename]) %>
 
-          </li>
-
-          <li id="hint_section" class="addressInfo">
-              <%= gettext("Please hold on while we get information about your email provider.") %>
+          <li id="hint_section" class="addressInfo submit">
+              <%= gettext("Checking with your email provider.") %>
           </li>
 
           <li class="returning">
 
-              <a id="forgotPassword" class="forgot right" href="#" tabindex="4"><%= gettext('forgot your password?') %></a>
-              <label for="password"><%= gettext('Password') %></label>
+              <label for="password" class="hidden"><%= gettext('Password') %></label>
 
-              <input id="password" type="password" maxlength="80" tabindex="2" />
+              <input id="password" type="password" maxlength="80" tabindex="2" placeholder="<%= gettext('password') %>" />
 
               <div id="password_required" class="tooltip" for="password">
                 <%= gettext('The password field is required.') %>
               </div>
 
               <div id="cannot_authenticate" class="tooltip" for="password">
-                <%= gettext('The account cannot be logged in with this username and password.') %>
+                <%= gettext('This email address and password do not match.') %>
               </div>
           </li>
 
       </ul>
 
-      <div class="submit cf">
-        <p class="cf">
-          <button class="start addressInfo" tabindex="3"><%= gettext('next') %></button>
-          <button class="returning" tabindex="3"><%= gettext('sign in') %></button>
-        </p>
+      <p class="submit cf buttonrow">
+        <button class="start addressInfo"><%= gettext('next') %></button>
+        <button class="returning"><%= gettext('sign in') %></button>
+        <a id="forgotPassword" class="returning" href="#"><%= gettext('Forgot your password?') %></a>
+      </p>
 
-        <p class="tospp">
-           <%= format(
-                gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
-                     [ "Persona",
-                       ' href="https://login.persona.org/tos" target="_new"',
-                       ' href="https://login.persona.org/privacy" target="_new"',
-                     ]) %>
-          </p>
 
-      </div>
+      <p class="submit tospp">
+         <%= format(
+              gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
+                   [ "Persona",
+                     ' href="https://login.persona.org/tos" target="_new"',
+                     ' href="https://login.persona.org/privacy" target="_new"',
+                   ]) %>
+      </p>
+
   </div>

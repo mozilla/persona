@@ -1,4 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*jshint browser:true, jquery: true, forin: true, laxbreak:true */
 /*global _: true, BrowserID: true, PageController: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -33,13 +33,11 @@ BrowserID.Modules.Actions = (function() {
   }
 
   function startRegCheckService(options, verifier, message, password) {
-    var controller = startService("check_registration", {
-      email: options.email,
-      required: options.required,
+    var controller = startService("check_registration", _.extend(options, {
       verifier: verifier,
       verificationMessage: message,
       password: password
-    });
+    }));
     controller.startCheck();
   }
 

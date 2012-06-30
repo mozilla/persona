@@ -2,22 +2,13 @@
       License, v. 2.0. If a copy of the MPL was not distributed with this
       file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
 
-    <h2><%= gettext('Check your email!') %></h2>
+    <h2><%= gettext('Confirm your email address') %></h2>
 
     <p>
-      <%= format(gettext('We sent a confirmation email to <strong>%s</strong>'), [email]) %>
+      <%= format(gettext('Check your email at %s.'), ["<strong>" + email + "</strong>"]) %>
     </p>
 
     <p>
-      <%= gettext('To finish signing in just click the verify link we sent to your email address.') %>
-    </p>
-    <br />
-
-    <p>
-      <% if(required) { %>
-        <%= format(gettext('If this is a mistake, just ignore the sent email and <a %s>cancel</a>.'), [' href="#" id="back"']) %>
-      <% } else { %>
-        <%= format(gettext('If this is a mistake, just ignore the sent email and <a %s>use another email address</a>.'), [' href="#" id="back"']) %>
-      <% } %>
+      <%= format(gettext('Click the link in the confirmation email.  You\'ll then immediately be signed in to %s.'), ["<strong>" + siteName + "</strong>"]) %>
     </p>
 
