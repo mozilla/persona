@@ -291,17 +291,19 @@ section > .contents {
 #favicon h2, #favicon h3 {
     white-space: nowrap;
     text-overflow: ellipsis;
-    line-height: 1.2em;  /* the 1.2em is to keep y, g, j, etc from having their bottoms chopped off */
-    overflow: hidden;
+    line-height: 1.3em;  /* the 1.3em is to keep y, g, j, etc from having their bottoms chopped off */
+    overflow: hidden;    /* Use the same overflow for everything, this allows us to show the ellipsis.  Trying to set overflow-x only causes a scroll bar to be shown in firefox.  */
     margin: 10px 0 0 0;
 }
 
 #favicon h2 {
-    font-size: 28px;
+    margin: 10px 0 0 0;
+    font-size: 20px;
 }
 
 #favicon h3 {
-    font-size: 14px;
+    font-size: 16px;
+    margin-top: 0;
 }
 
 #favicon .vertical {
