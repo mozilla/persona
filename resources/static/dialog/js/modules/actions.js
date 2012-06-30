@@ -33,11 +33,12 @@ BrowserID.Modules.Actions = (function() {
   }
 
   function startRegCheckService(options, verifier, message, password) {
-    var controller = startService("check_registration", _.extend(options, {
+    var controller = startService("check_registration", {
       verifier: verifier,
       verificationMessage: message,
-      password: password
-    }));
+      password: password,
+      siteName: options.siteName
+    });
     controller.startCheck();
   }
 
