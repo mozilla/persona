@@ -16,12 +16,26 @@ BrowserID.Mocks.Provisioning = (function() {
 
   function Provisioning(info, onsuccess, onfailure) {
     if(status === Provisioning.AUTHENTICATED) {
-      onsuccess(keypair, cert);
+      if (!keypair) {
+        // JWCrypto relies on there being a random seed.  The random seed is
+        // gotten whenever network.withContext is called.  Since this is
+        // supposed to mock the IdP provisioning step which will not call
+        // network.withContext, add a random seed to ensure that we can get our
+        // keypair.
+        jwcrypto.addEntropy("H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo=");
+        jwcrypto.generateKeypair({algorithm: "DS", keysize: 256}, function(err, kp) {
+          keypair = kp;
+          if (onsuccess) onsuccess(keypair, cert);
+        });
+      }
+      else {
+        if (onsuccess) onsuccess(keypair, cert);
+      }
     }
     else onfailure(failure);
   }
 
-  Provisioning.setStatus = function(newStatus, cb) {
+  Provisioning.setStatus = function(newStatus) {
     failure = null;
 
     status = newStatus;
@@ -31,16 +45,6 @@ BrowserID.Mocks.Provisioning = (function() {
         code: "primaryError",
         msg: "user is not authenticated as target user"
       };
-      if (cb) cb();
-    }
-    else if(newStatus === Provisioning.AUTHENTICATED) {
-      if (!keypair) {
-        jwcrypto.generateKeypair({algorithm: "DS", keysize: 256}, function(err, kp) {
-          keypair = kp;
-          if (cb) cb();
-        });
-      }
-      else if (cb) cb();
     }
   };
 

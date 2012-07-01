@@ -175,15 +175,14 @@ var jwcrypto = require("./lib/jwcrypto");
 
   asyncTest("createPrimaryUser with primary, user verified with primary - expect 'primary.verified'", function() {
     xhr.useResult("primary");
-    provisioning.setStatus(provisioning.AUTHENTICATED, function() {
-      lib.createPrimaryUser({email: "unregistered@testuser.com"}, function(status) {
-        equal(status, "primary.verified", "primary user is already verified, correct status");
-        network.checkAuth(function(authenticated) {
-          equal(authenticated, "assertion", "after provisioning user, user should be automatically authenticated to Persona");
-          start();
-        });
-      }, testHelpers.unexpectedXHRFailure);
-    });
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+    lib.createPrimaryUser({email: "unregistered@testuser.com"}, function(status) {
+      equal(status, "primary.verified", "primary user is already verified, correct status");
+      network.checkAuth(function(authenticated) {
+        equal(authenticated, "assertion", "after provisioning user, user should be automatically authenticated to Persona");
+        start();
+      });
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("createPrimaryUser with primary, user must authenticate with primary - expect 'primary.verify'", function() {
