@@ -28,6 +28,7 @@ BrowserID.Modules.InteractionData = (function() {
   var bid = BrowserID,
       model = bid.Models.InteractionData,
       network = bid.Network,
+      storage = bid.Storage,
       complete = bid.Helpers.complete,
       dom = bid.DOM,
       sc;
@@ -112,27 +113,46 @@ BrowserID.Modules.InteractionData = (function() {
 
     var self = this;
 
+    function onComplete() {
+      model.stageCurrent();
+      publishStored.call(self);
+      beginSampling.call(self, result);
+    }
+
     // if we were orphaned last time, but user is now authenticated,
-    // lets make the assumption that their action worked out okay, and
+    // lets see if their action end in success, and if so,
     // remove the orphaned flag
+    //"))
+    // actions:
+    // - user_staged => is authenticated?
+    // - email_staged => email count is higher?
+    //
     // See https://github.com/mozilla/browserid/issues/1827
     var current = model.getCurrent();
     if (current && current.orphaned) {
-      network.checkAuth(function(auth) {
-        if (!!auth) {
+      var events = current.event_stream || [];
+      if (hasEvent(events, MediatorToKPINameTable.user_staged)) {
+        console.log('user staged!')
+        network.checkAuth(function(auth) {
+          console.log('aut checked');
+          if (!!auth) {
+            current.orphaned = false;
+            model.setCurrent(current);
+          }
+          complete(onComplete);
+        });
+      } else if (hasEvent(events, MediatorToKPINameTable.email_staged)) {
+        if ((storage.getEmailCount() || 0) > (current.number_emails || 0)) {
           current.orphaned = false;
           model.setCurrent(current);
         }
-        model.stageCurrent();
-        publishStored.call(self);
-
-        beginSampling.call(self, result);
-      })
+        complete(onComplete);
+      } else {
+        // oh well, an orphan it is
+        complete(onComplete);
+      }
     } else {
-      model.stageCurrent();
-      publishStored.call(self);
-
-      beginSampling.call(self, result);
+      complete(onComplete);
     }
   }
 
@@ -186,6 +206,18 @@ BrowserID.Modules.InteractionData = (function() {
 
     self.samplesBeingStored = true;
     
+  }
+
+  function indexOfEvent(eventStream, eventName) {
+    for(var event, i = 0; event = eventStream[i]; ++i) {
+      if(event[0] === eventName) return i;
+    }
+
+    return -1;
+  }
+
+  function hasEvent(eventStream, eventName) {
+    return indexOfEvent(eventStream, eventName) !== -1;
   }
 
   function onKPIData(msg, result) {

@@ -1,5 +1,5 @@
 /*jshint browser: true, forin: true, laxbreak: true */
-/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true, asyncTest:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,6 +9,7 @@
   var bid = BrowserID,
       testHelpers = bid.TestHelpers,
       network = bid.Network,
+      storage = bid.Storage,
       model = bid.Models.InteractionData,
       xhr = bid.Mocks.xhr,
       mediator = bid.Mediator,
@@ -259,7 +260,7 @@
     });
   });
 
-  asyncTest("kpi orphans are adopted if user is signed in", function() {
+  asyncTest("kpi orphans are adopted if user.staged and user is signed in", function() {
     // 1. user.user_staged
     // 2. dialog is orphaned
     // 3. user comes back, authenticated
@@ -282,7 +283,98 @@
       network.withContext(function() {
         var request = xhr.getLastRequest('/wsapi/interaction_data');
         var data = JSON.parse(request.data).data[0];
-        equal(data.orphaned, false, "orphaned is not sent")
+        equal(data.orphaned, false, "orphaned is not sent");
+        start();
+      });
+    });
+  });
+
+  asyncTest("kpi orphans are NOT adopted if NOT user.staged and user is signed in", function() {
+    // 1. user was not staged
+    // 2. dialog is orphaned
+    // 3. user comes back, authenticated
+    // 4. but he wasn't staged, so dont adopt
+    createController(false);
+    network.withContext(function() {
+      // dialog all done, its orphaned, oh noes! think of the kids!
+      mediator.publish("kpi_data", {
+        orphaned: true
+      });
+      network.clearContext();
+
+
+      // new page
+      createController(false);
+      // make user authenticated
+      xhr.setContextInfo("auth_level", "password");
+      network.withContext(function() {
+        var request = xhr.getLastRequest('/wsapi/interaction_data');
+        var data = JSON.parse(request.data).data[0];
+        equal(data.orphaned, true, "orphaned is sent");
+        start();
+      });
+    });
+  });
+
+    asyncTest("kpi orphans are adopted if add_email and email count increased", function() {
+    // 1. email_staged
+    // 2. dialog is orphaned
+    // 3. email is verified
+    // 4. user comes back, authenticated
+    // 5. the orphan found a good home
+    createController(false);
+    network.withContext(function() {
+      // email is staged
+      controller.addEvent("email_staged");
+      // dialog all done, its orphaned, oh noes! think of the kids!
+      mediator.publish("kpi_data", {
+        orphaned: true,
+        number_emails: storage.getEmailCount() || 0
+      });
+      network.clearContext();
+
+      // email is verified
+      storage.addSecondaryEmail("testuser@testuser.org");
+
+      // new page
+      createController(false);
+      // make user authenticated
+      xhr.setContextInfo("auth_level", "password");
+      network.withContext(function() {
+        var request = xhr.getLastRequest('/wsapi/interaction_data');
+        var data = JSON.parse(request.data).data[0];
+        equal(data.orphaned, false, "orphaned is not sent");
+        start();
+      });
+    });
+  });
+
+  asyncTest("kpi orphans are NOT adopted if add_email but email count is same", function() {
+    // 1. email staged
+    // 2. dialog is orphaned
+    // 3. user comes back, authenticated
+    // 4. but no new email, so oprhan is true
+    createController(false);
+    network.withContext(function() {
+      // user is staged
+      controller.addEvent("email_staged");
+      // dialog all done, its orphaned, oh noes! think of the kids!
+      mediator.publish("kpi_data", {
+        orphaned: true,
+        number_emails: storage.getEmailCount() || 0
+      });
+      network.clearContext();
+
+      // user never confirms
+
+      // new page
+      createController(false);
+      // make user authenticated
+      xhr.setContextInfo("auth_level", "password");
+      network.withContext(function() {
+        var request = xhr.getLastRequest('/wsapi/interaction_data');
+        var data = JSON.parse(request.data).data[0];
+        equal(data.orphaned, true, "orphaned is sent");
         start();
       });
     });
