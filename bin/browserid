@@ -180,9 +180,9 @@ db.open(config.get('database'), function (error) {
             logger.error("error creating test users - bcrypt encrypt pass: " + err);
             process.exit(1);
           }
-          var want = parseInt(process.env['CREATE_TEST_USERS']);
+          var want = parseInt(process.env['CREATE_TEST_USERS'], 10);
           var have = 0;
-          for (i = 1; i <= want; i++) {
+          for (var i = 1; i <= want; i++) {
             db.addTestUser(i + "@loadtest.domain", hash, function(err, email) {
               if (++have == want) {
                 logger.warn("created " + want + " test users");
