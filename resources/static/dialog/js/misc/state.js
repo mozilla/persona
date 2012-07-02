@@ -1,5 +1,5 @@
 /*jshint browser:true, jquery: true, forin: true, laxbreak:true */
-/*global BrowserID: true */
+/*global BrowserID: true, URLParse: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -274,51 +274,63 @@ BrowserID.State = (function() {
         complete(info.complete);
       }
 
-      if (idInfo) {
-        mediator.publish("kpi_data", { email_type: idInfo.type });
-
-        if (idInfo.type === "primary") {
-          if (idInfo.cert) {
-            // Email is a primary and the cert is available - the user can log
-            // in without authenticating with the IdP. All invalid/expired
-            // certs are assumed to have been checked and removed by this
-            // point.
-            redirectToState("email_valid_and_ready", info);
-          }
-          else {
-            // If the email is a primary and the cert is not available,
-            // throw the user down the primary flow. The primary flow will
-            // catch cases where the primary certificate is expired
-            // and the user must re-verify with their IdP.
-            redirectToState("primary_user", info);
-          }
-        }
-        else {
-          user.checkAuthentication(function(authentication) {
-            if (authentication === "assertion") {
-              // user must authenticate with their password, kick them over to
-              // the required email screen to enter the password.
-              startAction("doAuthenticateWithRequiredEmail", {
-                email: email,
-                secondary_auth: true,
-
-                // This is a user is already authenticated to the assertion
-                // level who has chosen a secondary email address from the
-                // pick_email screen. They would have been shown the
-                // siteTOSPP there.
-                siteTOSPP: false
-              });
-            }
-            else {
-              redirectToState("email_valid_and_ready", info);
-            }
-            oncomplete();
-          }, oncomplete);
-        }
-      }
-      else {
+      if (!idInfo) {
         throw "invalid email";
       }
+
+      mediator.publish("kpi_data", { email_type: idInfo.type });
+
+      if (idInfo.type === "primary") {
+        if (idInfo.cert) {
+          // Email is a primary and the cert is available - the user can log
+          // in without authenticating with the IdP. All invalid/expired
+          // certs are assumed to have been checked and removed by this
+          // point.
+          redirectToState("email_valid_and_ready", info);
+        }
+        else {
+          // If the email is a primary and the cert is not available,
+          // throw the user down the primary flow. The primary flow will
+          // catch cases where the primary certificate is expired
+          // and the user must re-verify with their IdP.
+          redirectToState("primary_user", info);
+        }
+      }
+      // Anything below this point means the address is a secondary.
+      else if (!idInfo.verified) {
+        // user selected an unverified secondary email, kick them over to the
+        // verify screen.
+        redirectToState("verify_unverified_email", info);
+      }
+      else {
+        // Address is verified, check the authentication, if the user is not
+        // authenticated to the assertion level, force them to enter their
+        // password.
+        user.checkAuthentication(function(authentication) {
+          if (authentication === "assertion") {
+             // user must authenticate with their password, kick them over to
+            // the required email screen to enter the password.
+            startAction("doAuthenticateWithRequiredEmail", {
+              email: email,
+              secondary_auth: true,
+
+              // This is a user is already authenticated to the assertion
+              // level who has chosen a secondary email address from the
+              // pick_email screen. They would have been shown the
+              // siteTOSPP there.
+              siteTOSPP: false
+            });
+          }
+          else {
+            redirectToState("email_valid_and_ready", info);
+          }
+          oncomplete();
+        }, oncomplete);
+      }
+    });
+
+    handleState("verify_unverified_email", function(msg, info) {
+
     });
 
     handleState("email_valid_and_ready", function(msg, info) {
@@ -375,8 +387,9 @@ BrowserID.State = (function() {
     handleState("password_reset", function(msg, info) {
       // password_reset says the user has confirmed that they want to
       // reset their password.  doResetPassword will attempt to invoke
-      // the create_user wsapi.  If the wsapi call is successful,
+      // the reset_password wsapi.  If the wsapi call is successful,
       // the user will be shown the "go verify your account" message.
+      info.password_reset = true;
       redirectToState("user_staged", info);
     });
 

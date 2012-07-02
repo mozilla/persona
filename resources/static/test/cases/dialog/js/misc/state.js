@@ -433,15 +433,14 @@
     testActionStarted("doAddEmail");
   });
 
-  asyncTest("email_chosen with secondary email, user must authenticate - call doAuthenticateWithRequiredEmail", function() {
-    var email = TEST_EMAIL;
-    storage.addEmail(email, { type: "secondary" });
+  asyncTest("email_chosen with verified secondary email, user must authenticate - call doAuthenticateWithRequiredEmail", function() {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
 
     xhr.setContextInfo("auth_level", "assertion");
 
     mediator.publish("start", { privacyPolicy: "priv.html", termsOfService: "tos.html" });
     mediator.publish("email_chosen", {
-      email: email,
+      email: TEST_EMAIL,
       complete: function() {
         testActionStarted("doAuthenticateWithRequiredEmail", { siteTOSPP: false });
         start();
@@ -449,8 +448,8 @@
     });
   });
 
-  asyncTest("email_chosen with secondary email, user authenticated to secondary - redirect to email_valid_and_ready", function() {
-    storage.addEmail(TEST_EMAIL, { type: "secondary" });
+  asyncTest("email_chosen with verified secondary email, user authenticated to secondary - redirect to email_valid_and_ready", function() {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
     xhr.setContextInfo("auth_level", "password");
 
     mediator.subscribe("email_valid_and_ready", function(msg, info) {
@@ -461,6 +460,28 @@
     mediator.publish("email_chosen", {
       email: TEST_EMAIL
     });
+  });
+
+  function testUnverifiedEmailChosen(auth_level) {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    xhr.setContextInfo("auth_level", auth_level);
+
+    mediator.subscribe("verify_unverified_email", function(msg, info) {
+      equal(info.email, TEST_EMAIL, "correctly redirected to verify_unverified_email with correct email");
+      start();
+    });
+
+    mediator.publish("email_chosen", {
+      email: TEST_EMAIL
+    });
+  }
+
+  asyncTest("email_chosen with unverified secondary email, user authenticated to secondary - redirect to verify_unverified_email", function() {
+    testUnverifiedEmailChosen("password");
+  });
+
+  asyncTest("email_chosen with unverified secondary email, user authenticated to primary - redirect to verify_unverified_email", function() {
+    testUnverifiedEmailChosen("assertion");
   });
 
   test("email_chosen with primary email - call doProvisionPrimaryUser", function() {
@@ -542,6 +563,10 @@
         start();
       }
     });
+  });
+
+  asyncTest("verify_unverified_email", function() {
+    start();
   });
 
   asyncTest("window_unload - set the final KPIs", function() {
