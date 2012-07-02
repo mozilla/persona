@@ -117,6 +117,14 @@ $(function() {
     start(true);
   }
 
+  function verifySecondaryAddress(verifyFunction) {
+    var module = bid.verifySecondaryAddress.create();
+    module.start({
+      token: token,
+      verifyFunction: verifyFunction
+    });
+  }
+
   function start(status) {
     // If cookies are disabled, do not run any of the page specific code and
     // instead just show the error message.
@@ -138,18 +146,16 @@ $(function() {
       bid.forgot();
     }
     else if (path === "/add_email_address") {
-      var module = bid.verifySecondaryAddress.create();
-      module.start({
-        token: token,
-        verifyFunction: "verifyEmail"
-      });
+      verifySecondaryAddress("verifyEmail");
     }
     else if (path === "/verify_email_address") {
-      var module = bid.verifySecondaryAddress.create();
-      module.start({
-        token: token,
-        verifyFunction: "verifyUser"
-      });
+      verifySecondaryAddress("verifyUser");
+    }
+    else if (path === "/complete_password_reset") {
+      verifySecondaryAddress("completePasswordReset");
+    }
+    else if (path === "/complete_email_reverify") {
+      verifySecondaryAddress("completeEmailReverify");
     }
     else if (path === "/about") {
       var module = bid.about.create();

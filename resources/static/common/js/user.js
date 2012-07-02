@@ -627,7 +627,7 @@ BrowserID.User = (function() {
 
     /**
      * Verify the password reset for a user.
-     * @method verifyPasswordReset
+     * @method completePasswordReset
      * @param {string} token - token to verify.
      * @param {string} password
      * @param {function} [onComplete] - Called on completion.
@@ -635,7 +635,7 @@ BrowserID.User = (function() {
      *   with valid=false otw.
      * @param {function} [onFailure] - Called on error.
      */
-    verifyPasswordReset: function(token, password, onComplete, onFailure) {
+    completePasswordReset: function(token, password, onComplete, onFailure) {
       completeAddressVerification(token, password, "completePasswordReset", onComplete, onFailure);
     },
 
@@ -663,18 +663,18 @@ BrowserID.User = (function() {
      */
     requestEmailReverify: function(email, onComplete, onFailure) {
       var idInfo = storage.getEmail(email);
-      if (idInfo && idInfo.verified) {
+      if (!idInfo) {
+        // user does not own this address.
+        complete(onComplete, { success: false, reason: "invalid_email" });
+      }
+      else if (idInfo.verified) {
         // this email is already verified, cannot be reverified.
         complete(onComplete, { success: false, reason: "verified_email" });
       }
-      else if (idInfo && !idInfo.verified) {
+      else if (!idInfo.verified) {
         // this address is unverified, try to reverify it.
         network.requestEmailReverify(email, origin,
           stageAddressVerificationResponse.curry(onComplete), onFailure);
-      }
-      else {
-        // user does not own this address.
-        complete(onComplete, { success: false, reason: "invalid_email" });
       }
     },
 

@@ -3,9 +3,12 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-var jwcrypto = require("./lib/jwcrypto");
 
 (function() {
+  "use strict";
+
+  var jwcrypto = require("./lib/jwcrypto");
+
   var bid = BrowserID,
       lib = bid.User,
       storage = bid.Storage,
@@ -45,7 +48,7 @@ var jwcrypto = require("./lib/jwcrypto");
 
     // Check for parts of the assertion
     equal(components.payload.aud, testOrigin, "correct audience");
-    var expires = parseInt(components.payload.exp);
+    var expires = parseInt(components.payload.exp, 10);
     ok(typeof expires === "number" && !isNaN(expires), "expiration date is valid");
 
     // this should be based on server time, not local time.
@@ -520,11 +523,11 @@ var jwcrypto = require("./lib/jwcrypto");
     failureCheck(lib.requestPasswordReset, "registered@testuser.com", "password");
   });
 
-  asyncTest("verifyPasswordReset with a good token", function() {
+  asyncTest("completePasswordReset with a good token", function() {
     storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
     storage.setReturnTo(testOrigin);
 
-    lib.verifyPasswordReset("token", "password", function onSuccess(info) {
+    lib.completePasswordReset("token", "password", function onSuccess(info) {
       testObjectValuesEqual(info, {
         valid: true,
         email: TEST_EMAIL,
@@ -538,19 +541,19 @@ var jwcrypto = require("./lib/jwcrypto");
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("verifyPasswordReset with a bad token", function() {
+  asyncTest("completePasswordReset with a bad token", function() {
     xhr.useResult("invalid");
 
-    lib.verifyPasswordReset("token", "password", function onSuccess(info) {
+    lib.completePasswordReset("token", "password", function onSuccess(info) {
       equal(info.valid, false, "bad token calls onSuccess with a false validity");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("verifyPasswordReset with an XHR failure", function() {
+  asyncTest("completePasswordReset with an XHR failure", function() {
     xhr.useResult("ajaxError");
 
-    lib.verifyPasswordReset(
+    lib.completePasswordReset(
       "token",
       "password",
       testHelpers.unexpectedSuccess,
@@ -1405,7 +1408,6 @@ var jwcrypto = require("./lib/jwcrypto");
           start();
         }, testHelpers.expectedXHRFailure);
       }, testHelpers.unexpectedXHRFailure);
-      xhr.useResult
     }, testHelpers.unexpectedXHRFailure);
   });
 
