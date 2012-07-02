@@ -15,6 +15,8 @@ BrowserID.Modules.CheckRegistration = (function() {
     start: function(options) {
       var self=this;
       options = options || {};
+
+      self.checkRequired(options, "email", "siteName");
       var templateData = {
         email: options.email,
         required: options.required,

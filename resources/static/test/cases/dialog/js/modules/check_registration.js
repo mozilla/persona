@@ -19,7 +19,8 @@
       email: "registered@testuser.com",
       verifier: verifier,
       verificationMessage: message,
-      required: required
+      required: required,
+      siteName: "Unit Test Site"
     });
   }
 
