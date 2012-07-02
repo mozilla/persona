@@ -75,12 +75,12 @@
   });
 
   asyncTest("doConfirmUser - start the check_registration service", function() {
-    testActionStartsModule("doConfirmUser", {email: TEST_EMAIL},
+    testActionStartsModule("doConfirmUser", {email: TEST_EMAIL, siteName: "Unit Test Site"},
       "check_registration");
   });
 
   asyncTest("doConfirmEmail - start the check_registration service", function() {
-    testActionStartsModule("doConfirmEmail", {email: TEST_EMAIL},
+    testActionStartsModule("doConfirmEmail", {email: TEST_EMAIL, siteName: "Unit Test Site"},
       "check_registration");
   });
 
