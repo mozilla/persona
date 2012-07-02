@@ -206,30 +206,40 @@ BrowserID.User = (function() {
   /**
    * Persist an email address without a keypair
    * @method persistEmail
-   * @param {string} email - Email address to persist.
-   * @param {string} type - Is the email a 'primary' or a 'secondary' address?
-   * @param {function} [onComplete] - Called on successful completion.
-   * @param {function} [onFailure] - Called on error.
+   * @param {object} options - options to save
+   * @param {string} options.email - Email address to persist.
+   * @param {string} options.type - Is the email a 'primary' or a 'secondary' address?
+   * @param {string} options.verified - If the email is 'secondary', is it verified?
    */
-  function persistEmail(email, type, onComplete, onFailure) {
-    checkEmailType(type);
-    storage.addEmail(email, {
+  function persistEmail(options) {
+    checkEmailType(options.type);
+    storage.addEmail(options.email, {
       created: new Date(),
-      type: type
+      type: options.type,
+      verified: options.verified
     });
-
-    if (onComplete) onComplete(true);
   }
 
-  function verifyAddress(token, password, callName, onComplete, onFailure) {
+  function verifyAddress(token, password, networkFuncName, onComplete, onFailure) {
     User.tokenInfo(token, function(info) {
       var invalidInfo = { valid: false };
       if (info) {
-        network[callName](token, password, function (valid) {
+        network[networkFuncName](token, password, function (valid) {
           var result = invalidInfo;
 
-          if(valid) {
+          if (valid) {
             result = _.extend({ valid: valid }, info);
+            var email = info.email,
+                idInfo = storage.getEmail(email);
+
+            // Now that the address is verified, its verified bit has to be
+            // updated as well or else the user will be forced to verify the
+            // address again.
+            if (idInfo) {
+              idInfo.verified = true;
+              storage.addEmail(email, idInfo);
+            }
+
             storage.setReturnTo("");
           }
 
@@ -680,29 +690,39 @@ BrowserID.User = (function() {
 
           var emails_to_add = _.difference(server_emails, client_emails);
           var emails_to_remove = _.difference(client_emails, server_emails);
+          var emails_to_update = _.intersection(client_emails, server_emails);
 
           // remove emails
           _.each(emails_to_remove, function(email) {
             storage.removeEmail(email);
           });
 
-          // keygen for new emails
-          // asynchronous
-          function addNextEmail() {
-            if (!emails_to_add || !emails_to_add.length) {
-              onComplete();
-              return;
-           }
+          // these are new emails
+          _.each(emails_to_add, function(email) {
+            var emailInfo = emails[email];
 
-            var email = emails_to_add.shift();
+            persistEmail({
+              email: email,
+              type: emailInfo.type || "secondary",
+              verified: emailInfo.verified
+            });
+          });
 
-            // extract the email type from the server response, if it
-            // doesn't exist, assume secondary
-            var type = emails[email].type || "secondary";
-            persistEmail(email, type, addNextEmail, onFailure);
-          }
+          // update the type and verified status of stored emails
+          _.each(emails_to_update, function(email) {
+            var emailInfo = emails[email],
+                storedEmailInfo = storage.getEmail(email);
 
-          addNextEmail();
+            _.extend(storedEmailInfo, {
+              type: emailInfo.type,
+              verified: emailInfo.verified
+            });
+
+            storage.addEmail(email, storedEmailInfo);
+          });
+
+          complete(onComplete);
+
         }, onFailure);
       });
     },

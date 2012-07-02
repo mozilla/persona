@@ -83,6 +83,28 @@ BrowserID.Network = (function() {
     }
   }
 
+  function stageEmailForVerification(email, password, origin, wsapiName, onComplete, onFailure) {
+    post({
+      url: wsapiName,
+      data: {
+        email: email,
+        pass: password,
+        site : origin
+      },
+      success: function(status) {
+        complete(onComplete, status.success);
+      },
+      error: function(info) {
+        // 429 is throttling.
+        if (info.network.status === 429) {
+          complete(onComplete, false);
+        }
+        else complete(onFailure, info);
+      }
+    });
+  }
+
+
   var Network = {
     /**
      * Initialize - Clear all context info. Used for testing.
@@ -213,24 +235,7 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     createUser: function(email, password, origin, onComplete, onFailure) {
-      post({
-        url: "/wsapi/stage_user",
-        data: {
-          email: email,
-          pass: password,
-          site : origin
-        },
-        success: function(status) {
-          complete(onComplete, status.success);
-        },
-        error: function(info) {
-          // 429 is throttling.
-          if (info.network.status === 429) {
-            complete(onComplete, false);
-          }
-          else complete(onFailure, info);
-        }
-      });
+      stageEmailForVerification(email, password, origin, "/wsapi/stage_user", onComplete, onFailure);
     },
 
     /**
@@ -312,7 +317,7 @@ BrowserID.Network = (function() {
      */
     completeUserResetPassword: function(token, password, onComplete, onFailure) {
       post({
-        url: "/wsapi/complete_user_reset_password",
+        url: "/wsapi/complete_reset",
         data: {
           token: token,
           pass: password
@@ -360,7 +365,7 @@ BrowserID.Network = (function() {
      */
     completeEmailResetPassword: function(token, password, onComplete, onFailure) {
       post({
-        url: "/wsapi/complete_email_reset_password",
+        url: "/wsapi/complete_reset",
         data: {
           token: token,
           pass: password
@@ -386,12 +391,7 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     requestPasswordReset: function(email, password, origin, onComplete, onFailure) {
-      if (email) {
-        Network.createUser(email, password, origin, onComplete, onFailure);
-      } else {
-        // TODO: if no email is provided, then what?
-        throw "no email provided to password reset";
-      }
+      stageEmailForVerification(email, password, origin, "/wsapi/stage_reset", onComplete, onFailure);
     },
 
     /**
@@ -504,26 +504,8 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - called on xhr failure.
      */
     addSecondaryEmail: function(email, password, origin, onComplete, onFailure) {
-      post({
-        url: "/wsapi/stage_email",
-        data: {
-          email: email,
-          pass: password,
-          site: origin
-        },
-        success: function(response) {
-          complete(onComplete, response.success);
-        },
-        error: function(info) {
-          // 429 is throttling.
-          if (info.network.status === 429) {
-            complete(onComplete, false);
-          }
-          else complete(onFailure, info);
-        }
-      });
+      stageEmailForVerification(email, password, origin, "/wsapi/stage_email", onComplete, onFailure);
     },
-
 
     /**
      * Check the registration status of an email

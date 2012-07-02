@@ -412,13 +412,17 @@ var jwcrypto = require("./lib/jwcrypto");
 
   asyncTest("verifyUser with a good token", function() {
     storage.setReturnTo(testOrigin);
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
 
     lib.verifyUser("token", "password", function onSuccess(info) {
 
-      ok(info.valid, "token was valid");
-      equal(info.email, TEST_EMAIL, "email part of info");
-      equal(info.returnTo, testOrigin, "returnTo in info");
+      testObjectValuesEqual(info, {
+        valid: true,
+        email: TEST_EMAIL,
+        returnTo: testOrigin
+      });
       equal(storage.getReturnTo(), "", "initiating origin was removed");
+      equal(storage.getEmail(TEST_EMAIL).verified, true, "email marked as verified");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -517,10 +521,10 @@ var jwcrypto = require("./lib/jwcrypto");
   });
 
   asyncTest("verifyPasswordReset with a good token", function() {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
     storage.setReturnTo(testOrigin);
 
     lib.verifyPasswordReset("token", "password", function onSuccess(info) {
-
       testObjectValuesEqual(info, {
         valid: true,
         email: TEST_EMAIL,
@@ -528,6 +532,7 @@ var jwcrypto = require("./lib/jwcrypto");
       });
 
       equal(storage.getReturnTo(), "", "initiating origin was removed");
+      equal(storage.getEmail(TEST_EMAIL).verified, true, "email now marked as verified");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -830,12 +835,15 @@ var jwcrypto = require("./lib/jwcrypto");
 
   asyncTest("verifyEmail with a good token - callback with email, returnTo, valid", function() {
     storage.setReturnTo(testOrigin);
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
     lib.verifyEmail("token", "password", function onSuccess(info) {
-
-      ok(info.valid, "token was valid");
-      equal(info.email, TEST_EMAIL, "email part of info");
-      equal(info.returnTo, testOrigin, "returnTo in info");
+      testObjectValuesEqual(info, {
+        valid: true,
+        email: TEST_EMAIL,
+        returnTo: testOrigin
+      });
       equal(storage.getReturnTo(), "", "initiating returnTo was removed");
+      equal(storage.getEmail(TEST_EMAIL).verified, true, "email now marked as verified");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -982,12 +990,16 @@ var jwcrypto = require("./lib/jwcrypto");
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("syncEmails with one to refresh", function() {
-    storage.addEmail(TEST_EMAIL, {pub: pubkey, cert: random_cert});
+  asyncTest("syncEmails with one to update", function() {
+    // verified is set to false here,  the mock for list_emails has verified
+    // set to true.  If emails are being updated, verified will be set to true
+    // whenever syncEmails is complete.
+    storage.addEmail(TEST_EMAIL, {pub: pubkey, cert: random_cert, verified: false});
 
     lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
       ok(TEST_EMAIL in identities, "refreshed key is synced");
+      equal(identities[TEST_EMAIL].verified, true, "verified was correctly updated");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
