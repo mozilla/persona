@@ -57,6 +57,12 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/complete_email_addition badPassword": 401,
       "post /wsapi/complete_email_addition invalid": { success: false },
       "post /wsapi/complete_email_addition ajaxError": undefined,
+      /** BEGIN May not be needed **/
+      "post /wsapi/complete_email_reset_password valid": { success: true },
+      "post /wsapi/complete_email_reset_password badPassword": 401,
+      "post /wsapi/complete_email_reset_password invalid": { success: false },
+      "post /wsapi/complete_email_reset_password ajaxError": undefined,
+      /** END May not be needed **/
       "post /wsapi/stage_user unknown_secondary": { success: true },
       "post /wsapi/stage_user valid": { success: true },
       "post /wsapi/stage_user invalid": { success: false },
@@ -71,6 +77,10 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/complete_user_creation badPassword": 401,
       "post /wsapi/complete_user_creation invalid": { success: false },
       "post /wsapi/complete_user_creation ajaxError": undefined,
+      "post /wsapi/complete_user_reset_password valid": { success: true },
+      "post /wsapi/complete_user_reset_password badPassword": 401,
+      "post /wsapi/complete_user_reset_password invalid": { success: false },
+      "post /wsapi/complete_user_reset_password ajaxError": undefined,
       "post /wsapi/logout valid": { success: true },
       "post /wsapi/logout not_authenticated": 400,
       "post /wsapi/logout ajaxError": 401,

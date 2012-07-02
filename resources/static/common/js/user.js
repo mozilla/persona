@@ -221,6 +221,28 @@ BrowserID.User = (function() {
     if (onComplete) onComplete(true);
   }
 
+  function verifyAddress(token, password, callName, onComplete, onFailure) {
+    User.tokenInfo(token, function(info) {
+      var invalidInfo = { valid: false };
+      if (info) {
+        network[callName](token, password, function (valid) {
+          var result = invalidInfo;
+
+          if(valid) {
+            result = _.extend({ valid: valid }, info);
+            storage.setReturnTo("");
+          }
+
+          complete(onComplete, result);
+        }, onFailure);
+      } else if (onComplete) {
+        onComplete(invalidInfo);
+      }
+    }, onFailure);
+
+  }
+
+
   User = {
     init: function(config) {
       if (config.provisioning) {
@@ -313,7 +335,7 @@ BrowserID.User = (function() {
 
     /**
      * Create a primary user.
-     * @method createUser
+     * @method createPrimaryUser
      * @param {object} info
      * @param {function} onComplete - function to call on complettion.  Called
      * with two parameters - status and info.
@@ -518,23 +540,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     verifyUser: function(token, password, onComplete, onFailure) {
-      User.tokenInfo(token, function(info) {
-        var invalidInfo = { valid: false };
-        if (info) {
-          network.completeUserRegistration(token, password, function (valid) {
-            var result = invalidInfo;
-
-            if(valid) {
-              result = _.extend({ valid: valid, returnTo: storage.getReturnTo() }, info);
-              storage.setReturnTo("");
-            }
-
-            complete(onComplete, result);
-          }, onFailure);
-        } else if (onComplete) {
-          onComplete(invalidInfo);
-        }
-      }, onFailure);
+      verifyAddress(token, password, "completeUserRegistration", onComplete, onFailure);
     },
 
     /**
@@ -606,6 +612,21 @@ BrowserID.User = (function() {
         }
       }, onFailure);
     },
+
+    /**
+     * Verify the password reset for a user.
+     * @method verifyPasswordReset
+     * @param {string} token - token to verify.
+     * @param {string} password
+     * @param {function} [onComplete] - Called on completion.
+     *   Called with an object with valid, email, and origin if valid, called
+     *   with valid=false otw.
+     * @param {function} [onFailure] - Called on error.
+     */
+    verifyPasswordReset: function(token, password, onComplete, onFailure) {
+      verifyAddress(token, password, "completeUserResetPassword", onComplete, onFailure);
+    },
+
 
     /**
      * Cancel the current user's account.  Remove last traces of their
@@ -914,23 +935,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     verifyEmail: function(token, password, onComplete, onFailure) {
-      network.emailForVerificationToken(token, function (info) {
-        var invalidInfo = { valid: false };
-        if (info) {
-          network.completeEmailRegistration(token, password, function (valid) {
-            var result = invalidInfo;
-
-            if(valid) {
-              result = _.extend({ valid: valid, returnTo: storage.getReturnTo() }, info);
-              storage.setReturnTo("");
-            }
-
-            complete(onComplete, result);
-          }, onFailure);
-        } else {
-          complete(onComplete, invalidInfo);
-        }
-      }, onFailure);
+      verifyAddress(token, password, "completeEmailRegistration", onComplete, onFailure);
     },
 
     /**

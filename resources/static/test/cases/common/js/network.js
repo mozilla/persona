@@ -192,6 +192,32 @@
     failureCheck(network.completeEmailRegistration, "goodtoken", "password");
   });
 
+  asyncTest("completeEmailResetPassword valid", function() {
+    network.completeEmailResetPassword("goodtoken", "password", function onSuccess(proven) {
+      equal(proven, true, "good token proved");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("completeEmailResetPassword with valid token, bad password", function() {
+    transport.useResult("badPassword");
+    network.completeEmailResetPassword("token", "password",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure);
+  });
+
+  asyncTest("completeEmailResetPassword with invalid token", function() {
+    transport.useResult("invalid");
+    network.completeEmailResetPassword("badtoken", "password", function onSuccess(proven) {
+      equal(proven, false, "bad token could not be proved");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("completeEmailResetPassword with XHR failure", function() {
+    failureCheck(network.completeEmailResetPassword, "goodtoken", "password");
+  });
+
   asyncTest("createUser with valid user", function() {
     network.createUser("validuser", "password", "origin", function onSuccess(created) {
       ok(created);
@@ -304,6 +330,40 @@
 
   asyncTest("completeUserRegistration with XHR failure", function() {
     failureCheck(network.completeUserRegistration, "token", "password");
+  });
+
+  asyncTest("completeUserResetPassword with valid token, no password required", function() {
+    network.completeUserResetPassword("token", undefined, function(registered) {
+      ok(registered);
+      start();
+    }, testHelpers.unexpectedFailure);
+  });
+
+  asyncTest("completeUserResetPassword with valid token, bad password", function() {
+    transport.useResult("badPassword");
+    network.completeUserResetPassword("token", "password",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure);
+  });
+
+  asyncTest("completeUserResetPassword with valid token, password required", function() {
+    network.completeUserResetPassword("token", "password", function(registered) {
+      ok(registered);
+      start();
+    }, testHelpers.unexpectedFailure);
+  });
+
+  asyncTest("completeUserResetPassword with invalid token", function() {
+    transport.useResult("invalid");
+
+    network.completeUserResetPassword("token", "password", function(registered) {
+      equal(registered, false);
+      start();
+    }, testHelpers.unexpectedFailure);
+  });
+
+  asyncTest("completeUserResetPassword with XHR failure", function() {
+    failureCheck(network.completeUserResetPassword, "token", "password");
   });
 
   asyncTest("cancelUser valid", function() {

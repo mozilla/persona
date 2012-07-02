@@ -303,6 +303,28 @@ BrowserID.Network = (function() {
     },
 
     /**
+     * Complete user reset password
+     * @method completeUserResetPassword
+     * @param {string} token - token to register for.
+     * @param {string} password
+     * @param {function} [onComplete] - Called when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    completeUserResetPassword: function(token, password, onComplete, onFailure) {
+      post({
+        url: "/wsapi/complete_user_reset_password",
+        data: {
+          token: token,
+          pass: password
+        },
+        success: function(status, textStatus, jqXHR) {
+          complete(onComplete, status.success);
+        },
+        error: onFailure
+      });
+    },
+
+    /**
      * Call with a token to prove an email address ownership.
      * @method completeEmailRegistration
      * @param {string} token - token proving email ownership.
@@ -324,6 +346,35 @@ BrowserID.Network = (function() {
         error: onFailure
       });
     },
+
+    /**
+     * Complete email reset password
+     * @method completeEmailResetPassword
+     * @param {string} token - token to register for.
+     * @param {string} password
+     * @param {function} [onComplete] - Called when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    /**
+     * BEGIN may not be needed
+     */
+    completeEmailResetPassword: function(token, password, onComplete, onFailure) {
+      post({
+        url: "/wsapi/complete_email_reset_password",
+        data: {
+          token: token,
+          pass: password
+        },
+        success: function(status, textStatus, jqXHR) {
+          complete(onComplete, status.success);
+        },
+        error: onFailure
+      });
+    },
+    /**
+     * END may not be needed
+     */
+
 
     /**
      * Request a password reset for the given email address.

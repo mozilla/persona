@@ -17,6 +17,7 @@ var jwcrypto = require("./lib/jwcrypto");
       failureCheck = testHelpers.failureCheck,
       testUndefined = testHelpers.testUndefined,
       testNotUndefined = testHelpers.testNotUndefined,
+      testObjectValuesEqual = testHelpers.testObjectValuesEqual,
       provisioning = bid.Mocks.Provisioning,
       TEST_EMAIL = "testuser@testuser.com";
 
@@ -513,6 +514,43 @@ var jwcrypto = require("./lib/jwcrypto");
 
   asyncTest("requestPasswordReset with XHR failure", function() {
     failureCheck(lib.requestPasswordReset, "registered@testuser.com", "password");
+  });
+
+  asyncTest("verifyPasswordReset with a good token", function() {
+    storage.setReturnTo(testOrigin);
+
+    lib.verifyPasswordReset("token", "password", function onSuccess(info) {
+
+      testObjectValuesEqual(info, {
+        valid: true,
+        email: TEST_EMAIL,
+        returnTo: testOrigin,
+      });
+
+      equal(storage.getReturnTo(), "", "initiating origin was removed");
+
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("verifyPasswordReset with a bad token", function() {
+    xhr.useResult("invalid");
+
+    lib.verifyPasswordReset("token", "password", function onSuccess(info) {
+      equal(info.valid, false, "bad token calls onSuccess with a false validity");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("verifyPasswordReset with an XHR failure", function() {
+    xhr.useResult("ajaxError");
+
+    lib.verifyPasswordReset(
+      "token",
+      "password",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
 
 
