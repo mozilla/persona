@@ -125,7 +125,7 @@ suite.addBatch({
 suite.addBatch({
   "upon receipt of a secret": {
     topic: function() {
-      db.gotVerificationSecret(secret, this.callback);
+      db.completeCreateUser(secret, this.callback);
     },
     "gotVerificationSecret completes without error": function (err, r) {
       assert.isNull(err);
@@ -215,7 +215,7 @@ suite.addBatch({
         "makes it visible via isStaged": function(sekret, r) { assert.isTrue(r); },
         "lets you verify it": {
           topic: function(secret, r) {
-            db.gotVerificationSecret(secret, this.callback);
+            db.completeAddEmail(secret, this.callback);
           },
           "successfully": function(err, r) {
             assert.isNull(err);

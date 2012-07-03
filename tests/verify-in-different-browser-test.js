@@ -254,7 +254,7 @@ suite.addBatch({
         },
         "but succeeds": {
           topic: function() {
-            wsapi.post('/wsapi/complete_email_addition', {
+            wsapi.post('/wsapi/complete_user_creation', {
               token: this._token,
               pass: TEST_PASS
             }).call(this);

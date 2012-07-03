@@ -132,11 +132,10 @@ suite.addBatch({
   }
 });
 
-// Run the "forgot_email" flow with first address.  This is really
-// just re-registering the user.
+// Run the "forgot_email" flow with first address. 
 suite.addBatch({
   "re-stage first account": {
-    topic: wsapi.post('/wsapi/stage_user', {
+    topic: wsapi.post('/wsapi/stage_reset', {
       email: 'first@fakeemail.com',
       pass: 'secondfakepass',
       site:'https://otherfakesite.com'
@@ -187,9 +186,9 @@ suite.addBatch({
 
 // now let's complete the re-registration of first email address
 suite.addBatch({
-  "re-create first email address": {
+  "complete password reset": {
     topic: function() {
-      wsapi.post('/wsapi/complete_user_creation', { token: token }).call(this);
+      wsapi.post('/wsapi/complete_reset', { token: token }).call(this);
     },
     "account created": function(err, r) {
       assert.equal(r.code, 200);
@@ -198,8 +197,7 @@ suite.addBatch({
   }
 });
 
-// now we should be able to sign into the first email address with the first
-// password, and all other combinations should fail
+// now we should be able to sign in using any email address
 suite.addBatch({
   "first email, first pass bad": {
     topic: wsapi.post('/wsapi/authenticate_user', {
@@ -221,20 +219,14 @@ suite.addBatch({
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
   },
-  "logout": {
-    topic: wsapi.post('/wsapi/logout', {}),
-    "should work": function(err, r) {
-      assert.strictEqual(JSON.parse(r.body).success, true);
-    }
-  },
-  "second email, first pass good": {
+  "second email, first pass bad": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: 'second@fakeemail.com',
       pass: 'firstfakepass',
       ephemeral: false
     }),
     "should work": function(err, r) {
-      assert.strictEqual(JSON.parse(r.body).success, true);
+      assert.strictEqual(JSON.parse(r.body).success, false);
     }
   },
   "second email, second pass bad": {
@@ -244,10 +236,31 @@ suite.addBatch({
       ephemeral: false
     }),
     "shouldn' work": function(err, r) {
-      assert.strictEqual(JSON.parse(r.body).success, false);
+      assert.strictEqual(JSON.parse(r.body).success, true);
     }
   },
 });
+
+// test list emails
+suite.addBatch({
+  "list emails API": {
+    topic: wsapi.get('/wsapi/list_emails', {}),
+    "succeeds with HTTP 200" : function(err, r) {
+      assert.strictEqual(r.code, 200);
+    },
+    "returns an object with proper bits set": function(err, r) {
+      r = JSON.parse(r.body);
+      assert.strictEqual(r['second@fakeemail.com'].verified, false);
+      assert.strictEqual(r['first@fakeemail.com'].verified, true);
+    }
+  }
+});
+
+
+// XXX: test that verification of unverified emails fails
+
+// XXX: test that we can verify the remaining email ok
+
 
 start_stop.addShutdownBatches(suite);
 
