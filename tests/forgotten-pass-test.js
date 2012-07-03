@@ -10,9 +10,14 @@ const assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-email = require('../lib/email.js');
+email = require('../lib/email.js'),
+jwcrypto = require('jwcrypto');
 
 var suite = vows.describe('forgotten-email');
+
+// algs
+require("jwcrypto/lib/algs/ds");
+require("jwcrypto/lib/algs/rs");
 
 start_stop.addStartupBatches(suite);
 
@@ -169,6 +174,19 @@ suite.addBatch({
   }
 });
 
+suite.addBatch({
+  "given a token, getting an email": {
+    topic: function() {
+      wsapi.get('/wsapi/email_for_token', { token: token }).call(this);
+    },
+    "account created": function(err, r) {
+      assert.equal(r.code, 200);
+      var body = JSON.parse(r.body);
+      assert.strictEqual(body.success, true);
+    }
+  }
+});
+
 // verify that the old email address + password combinations are still
 // valid (this is so *until* someone clicks through)
 suite.addBatch({
@@ -197,20 +215,6 @@ suite.addBatch({
     "returns 'pending' after calling reset": function(err, r) {
       assert.strictEqual(r.code, 200);
       assert.strictEqual(JSON.parse(r.body).status, "pending");
-    }
-  }
-});
-
-suite.addBatch({
-  "given a token, getting an email": {
-    topic: function() {
-      wsapi.get('/wsapi/email_for_token', { token: token }).call(this);
-    },
-    "account created": function(err, r) {
-      assert.equal(r.code, 200);
-      var body = JSON.parse(r.body);
-      console.log(body);
-      assert.strictEqual(body.success, true);
     }
   }
 });
@@ -297,11 +301,52 @@ suite.addBatch({
   }
 });
 
+// test that certification fails for unverified email addresses
 
-// XXX: test that verification of unverified emails fails
+// generate a keypair, we'll use this to sign assertions, as if
+// this keypair is stored in the browser localStorage
+var kp;
+
+suite.addBatch({
+  "generate a keypair": {
+    topic: function() {
+      jwcrypto.generateKeypair({algorithm: "RS", keysize: 64}, this.callback);
+    },
+    "works": function(err, keypair) {
+      assert.isNull(err);
+      assert.isObject(keypair);
+      kp = keypair;
+    },
+    "and cert a key for a verified email address": {
+      topic: function() {
+        wsapi.post('/wsapi/cert_key', {
+          email: 'first@fakeemail.com',
+          pubkey: kp.publicKey.serialize(),
+          ephemeral: false
+        }).call(this);
+      },
+      "returns a success response" : function(err, r) {
+        assert.strictEqual(r.code, 200);
+      }
+    },
+    "and cert a key for an unverified email address": {
+      topic: function() {
+        wsapi.post('/wsapi/cert_key', {
+          email: 'second@fakeemail.com',
+          pubkey: kp.publicKey.serialize(),
+          ephemeral: false
+        }).call(this);
+      },
+      "is forbidden" : function(err, r) {
+        assert.strictEqual(r.code, 401);
+        assert.strictEqual(JSON.parse(r.body).success, false);
+      }
+    }
+  }
+});
+
 
 // XXX: test that we can verify the remaining email ok
-
 
 start_stop.addShutdownBatches(suite);
 
