@@ -91,6 +91,12 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/complete_reverify invalid": { success: false },
       "post /wsapi/complete_reverify ajaxError": undefined,
 
+      "get /wsapi/email_reverify_status?email=registered%40testuser.com pending": { status: "pending" },
+      "get /wsapi/email_reverify_status?email=registered%40testuser.com complete": { status: "complete", userid: 4 },
+      "get /wsapi/email_reverify_status?email=registered%40testuser.com mustAuth": { status: "mustAuth" },
+      "get /wsapi/email_reverify_status?email=registered%40testuser.com noRegistration": { status: "noRegistration" },
+      "get /wsapi/email_reverify_status?email=registered%40testuser.com ajaxError": undefined,
+
       "get /wsapi/user_creation_status?email=registered%40testuser.com pending": { status: "pending" },
       "get /wsapi/user_creation_status?email=registered%40testuser.com complete": { status: "complete", userid: 4 },
       "get /wsapi/user_creation_status?email=registered%40testuser.com mustAuth": { status: "mustAuth" },

@@ -434,8 +434,7 @@ BrowserID.Network = (function() {
      */
     checkEmailReverify: function(email, onComplete, onFailure) {
       get({
-        // XXX the URL is going to have to change
-        url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
+        url: "/wsapi/email_reverify_status?email=" + encodeURIComponent(email),
         success: handleAddressVerifyCheckResponse.curry(onComplete),
         error: onFailure
       });
