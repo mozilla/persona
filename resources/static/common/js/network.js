@@ -100,6 +100,19 @@ BrowserID.Network = (function() {
     });
   }
 
+  function handleAddressVerifyCheckResponse(onComplete, status, textStatus, jqXHR) {
+    if (status.status === 'complete') {
+      // The user at this point can ONLY be logged in with password
+      // authentication. Once the registration is complete, that means
+      // the server has updated the user's cookies and the user is
+      // officially authenticated.
+      auth_status = 'password';
+
+      if (status.userid) setUserID(status.userid);
+    }
+    complete(onComplete, status.status);
+  }
+
 
   var Network = {
     /**
@@ -271,17 +284,7 @@ BrowserID.Network = (function() {
     checkUserRegistration: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/user_creation_status?email=" + encodeURIComponent(email),
-        success: function(status, textStatus, jqXHR) {
-          if (status.status === 'complete' && status.userid) {
-            // The user at this point can ONLY be logged in with password
-            // authentication. Once the registration is complete, that means
-            // the server has updated the user's cookies and the user is
-            // officially authenticated.
-            auth_status = 'password';
-            setUserID(status.userid);
-          }
-          complete(onComplete, status.status);
-        },
+        success: handleAddressVerifyCheckResponse.curry(onComplete),
         error: onFailure
       });
     },
@@ -380,9 +383,7 @@ BrowserID.Network = (function() {
     checkPasswordReset: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/password_reset_status?email=" + encodeURIComponent(email),
-        success: function(status, textStatus, jqXHR) {
-          complete(onComplete, status.status);
-        },
+        success: handleAddressVerifyCheckResponse.curry(onComplete),
         error: onFailure
       });
     },
@@ -435,9 +436,7 @@ BrowserID.Network = (function() {
       get({
         // XXX the URL is going to have to change
         url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
-        success: function(status, textStatus, jqXHR) {
-          complete(onComplete, status.status);
-        },
+        success: handleAddressVerifyCheckResponse.curry(onComplete),
         error: onFailure
       });
     },
@@ -570,9 +569,7 @@ BrowserID.Network = (function() {
     checkEmailRegistration: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
-        success: function(status, textStatus, jqXHR) {
-          complete(onComplete, status.status);
-        },
+        success: handleAddressVerifyCheckResponse.curry(onComplete),
         error: onFailure
       });
     },

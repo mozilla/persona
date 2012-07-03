@@ -43,6 +43,20 @@ BrowserID.State = (function() {
         },
         cancelState = self.popState.bind(self);
 
+    function handleEmailStaged(actionName, msg, info) {
+      // The unverified email has been staged, now the user has to confirm
+      // ownership of the address.  Send them off to the "verify your address"
+      // screen.
+      var actionInfo = {
+        email: info.email,
+        siteName: self.siteName
+      };
+
+      self.stagedEmail = info.email;
+      startAction(actionName, actionInfo);
+    }
+
+
     handleState("start", function(msg, info) {
       self.hostname = info.hostname;
       self.siteName = info.siteName || info.hostname;
@@ -156,16 +170,7 @@ BrowserID.State = (function() {
       }
     });
 
-    handleState("user_staged", function(msg, info) {
-      self.stagedEmail = info.email;
-
-      _.extend(info, {
-        required: !!requiredEmail,
-        siteName: self.siteName
-      });
-
-      startAction("doConfirmUser", info);
-    });
+    handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
 
     handleState("user_confirmed", function() {
       self.email = self.stagedEmail;
@@ -338,24 +343,12 @@ BrowserID.State = (function() {
       // A user has selected an email that has not been verified after
       // a password reset.  Stage the email again to be re-verified.
       var actionInfo = {
-        email: info.email,
-        siteName: self.siteName
+        email: info.email
       };
       startAction("doStageReverifyEmail", actionInfo);
     });
 
-    handleState("reverify_email_staged", function(msg, info) {
-      // The unverified email has been staged, now the user has to confirm
-      // ownership of the address.  Send them off to the "verify your address"
-      // screen.
-      var actionInfo = {
-        email: info.email,
-        siteName: self.siteName
-      };
-
-      self.stagedEmail = info.email;
-      startAction("doConfirmReverifyEmail", actionInfo);
-    });
+    handleState("reverify_email_staged", handleEmailStaged.curry("doConfirmReverifyEmail"));
 
     handleState("email_valid_and_ready", function(msg, info) {
       // this state is only called after all checking is done on the email
@@ -404,19 +397,10 @@ BrowserID.State = (function() {
       // knows how to trigger the reset_password_staged message.  At this
       // point, the email confirmation screen will be shown.
       self.resetPasswordEmail = info.email;
-      startAction(false, "doForgotPassword", info);
+      startAction(false, "doResetPassword", info);
     });
 
-    handleState("reset_password_staged", function(msg, info) {
-      var actionInfo = {
-        email: info.email,
-        siteName: self.siteName
-      };
-
-      self.stagedEmail = info.email;
-      startAction("doConfirmResetPassword", actionInfo);
-    });
-
+    handleState("reset_password_staged", handleEmailStaged.curry("doConfirmResetPassword"));
 
     handleState("assertion_generated", function(msg, info) {
       self.success = true;
@@ -486,14 +470,7 @@ BrowserID.State = (function() {
       });
     });
 
-    handleState("email_staged", function(msg, info) {
-      self.stagedEmail = info.email;
-      _.extend(info, {
-        required: !!requiredEmail,
-        siteName: self.siteName
-      });
-      startAction("doConfirmEmail", info);
-    });
+    handleState("email_staged", handleEmailStaged.curry("doConfirmEmail"));
 
     handleState("email_confirmed", function() {
       redirectToState("email_chosen", { email: self.stagedEmail } );

@@ -97,7 +97,7 @@ BrowserID.Modules.Actions = (function() {
       startService("required_email", info);
     },
 
-    doForgotPassword: function(info) {
+    doResetPassword: function(info) {
       startService("set_password", _.extend(info, { password_reset: true }));
     },
 

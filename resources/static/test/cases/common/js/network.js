@@ -35,6 +35,34 @@
     }, testHelpers.unexpectedFailure);
   }
 
+  function testVerificationMustAuth(funcName) {
+    transport.useResult("mustAuth");
+
+    network.checkAuth(function(auth_status) {
+      equal(!!auth_status, false, "user not yet authenticated");
+      network[funcName]("registered@testuser.com", function(status) {
+        equal(status, "mustAuth");
+        network.checkAuth(function(auth_status) {
+          equal(!!auth_status, false, "user not yet authenticated");
+          start();
+        }, testHelpers.unexpectedFailure);
+      }, testHelpers.unexpectedFailure);
+    }, testHelpers.unexpectedFailure);
+  }
+
+  function testVerificationComplete(funcName) {
+    network.withContext(function() {
+      transport.useResult("complete");
+      network[funcName]("registered@testuser.com", function(status) {
+        equal(status, "complete");
+        network.checkAuth(function(auth_level) {
+          equal(auth_level, "password", "user can only be authenticated to password level after verification is complete");
+          start();
+        });
+      }, testHelpers.unexpectedFailure);
+    });
+  }
+
 
   asyncTest("authenticate with valid user", function() {
     network.authenticate(TEST_EMAIL, "testuser", function onSuccess(authenticated) {
@@ -87,7 +115,7 @@
       delayInfo = delay_info;
     });
 
-    var completeInfo
+    var completeInfo;
     mediator.subscribe("xhr_complete", function(msg, complete_info) {
       completeInfo = complete_info;
     });
@@ -385,22 +413,9 @@
     failureCheck(network.addSecondaryEmail, TEST_EMAIL, TEST_PASSWORD, "origin");
   });
 
-  asyncTest("checkEmailRegistration pending", function() {
-    testVerificationPending("checkEmailRegistration");
-  });
-
-  asyncTest("checkEmailRegistration complete", function() {
-    transport.useResult("complete");
-
-    network.checkEmailRegistration("registered@testuser.com", function(status) {
-      equal(status, "complete");
-      start();
-    }, function onFailure() {
-      ok(false);
-      start();
-    });
-
-  });
+  asyncTest("checkEmailRegistration pending", testVerificationPending.curry("checkEmailRegistration"));
+  asyncTest("checkEmailRegistration mustAuth", testVerificationMustAuth.curry("checkEmailRegistration"));
+  asyncTest("checkEmailRegistration complete", testVerificationComplete.curry("checkEmailRegistration"));
 
   asyncTest("checkEmailRegistration with XHR failure", function() {
     failureCheck(network.checkEmailRegistration, TEST_EMAIL);
@@ -526,12 +541,9 @@
     failureCheck(network.completePasswordReset, "token", "password");
   });
 
-
-  asyncTest("checkPasswordReset pending", function() {
-    testVerificationPending("checkPasswordReset");
-  });
-
-
+  asyncTest("checkPasswordReset pending", testVerificationPending.curry("checkPasswordReset"));
+  asyncTest("checkPasswordReset mustAuth", testVerificationMustAuth.curry("checkPasswordReset"));
+  asyncTest("checkPasswordReset complete", testVerificationComplete.curry("checkPasswordReset"));
 
 
   asyncTest("requestEmailReverify - true status", function() {
@@ -579,11 +591,9 @@
     failureCheck(network.completeEmailReverify, "token", "password");
   });
 
-  asyncTest("checkEmailReverify pending", function() {
-    testVerificationPending("checkEmailReverify");
-  });
-
-
+  asyncTest("checkEmailReverify pending", testVerificationPending.curry("checkEmailReverify"));
+  asyncTest("checkEmailReverify mustAuth", testVerificationMustAuth.curry("checkEmailReverify"));
+  asyncTest("checkEmailReverify complete", testVerificationComplete.curry("checkEmailReverify"));
 
 
   asyncTest("setPassword happy case expects true status", function() {
