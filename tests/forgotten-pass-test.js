@@ -338,8 +338,7 @@ suite.addBatch({
         }).call(this);
       },
       "is forbidden" : function(err, r) {
-        assert.strictEqual(r.code, 401);
-        assert.strictEqual(JSON.parse(r.body).success, false);
+        assert.strictEqual(r.code, 403);
       }
     }
   }
