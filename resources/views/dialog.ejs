@@ -28,23 +28,28 @@
     <section id="wait">
         <!-- because each section is an absolutely positioned element, we have to use the inner table container element to be able to vertically/horizontally center correctly.  Without the table element, the layout gets all messed up. -->
         <div class="table">
-            <div class="vertical contents">
-                <h2><%= gettext('Communicating with server') %></h2>
-                <p><%= gettext('Just a moment while we talk with the server.') %></p>
+            <div class="vertical">
+                <div class="contents">
+                    <h2 class="center"><%= gettext('Connecting to Persona...') %></h2>
+                </div>
             </div>
         </div>
     </section>
 
     <section id="error">
         <div class="table">
-            <div class="vertical contents">
+            <div class="vertical">
+                <div class="contents">
+                </div>
             </div>
         </div>
     </section>
 
     <section id="delay">
         <div class="table">
-            <div class="vertical contents">
+            <div class="vertical">
+                <div class="contents">
+                </div>
             </div>
         </div>
     </section>

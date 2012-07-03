@@ -77,9 +77,6 @@ pre {
       <input type="checkbox" id="returnTo">
       <label for="returnTo">Supply returnTo</label><br />
     </li>
-    </li><li>
-      <input type="text" id="requiredEmail" width="80">
-      <label for="requiredEmail">Require a specific email</label><br />
     </li>
   </ul>
     <button class="assertion">Get an assertion</button>
@@ -181,15 +178,6 @@ navigator.id.watch({
 
 $(document).ready(function() {
   $(".specify button.assertion").click(function() {
-    var requiredEmail = $.trim($('#requiredEmail').val());
-    if (!requiredEmail.length) requiredEmail = undefined;
-    if (requiredEmail && requiredEmail.indexOf('@') === -1) {
-      alert('Invalid Email in "Require a specific email" field. Adding @example.com');
-      $('#requiredEmail').val(requiredEmail + '@example.com');
-      $('#requiredEmail').focus();
-      return;
-    }
-
     $(".specify button.assertion").attr('disabled', 'true');
 
     navigator.id.request({
@@ -198,7 +186,6 @@ $(document).ready(function() {
       siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
       siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined,
       returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,
-      requiredEmail: requiredEmail,
       oncancel: function() {
         loggit("oncancel");
         $(".specify button.assertion").removeAttr('disabled');

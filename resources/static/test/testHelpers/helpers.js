@@ -221,10 +221,6 @@ BrowserID.TestHelpers = (function() {
       }
     },
 
-    testHasClass: function(selector, className, msg) {
-      ok($(selector).hasClass(className), msg || selector + " has className: " + className);
-    },
-
     testUndefined: function(toTest, msg) {
       equal(typeof toTest, "undefined", msg || "object is undefined");
     },
@@ -235,8 +231,33 @@ BrowserID.TestHelpers = (function() {
 
     testVisible: function(selector, msg) {
       ok($(selector).is(":visible"), msg || selector + " should be visible");
-    }
+    },
 
+    testHasClass: function(selector, className, msg) {
+      ok($(selector).hasClass(className),
+          msg || (selector + " has className " + className));
+    },
+
+    testNotHasClass: function(selector, className, msg) {
+      ok(!$(selector).hasClass(className),
+          msg || (selector + " does not have className " + className));
+    },
+
+    testElementExists: function(selector, msg) {
+      ok($(selector).length, msg || ("element '" + selector + "' exists"));
+    },
+
+    testElementDoesNotExist: function(selector, msg) {
+      ok(!$(selector).length, msg || ("element '" + selector + "' does not exist"));
+    },
+
+    testRPTosPPShown: function(msg) {
+      TestHelpers.testHasClass("body", "rptospp", msg || "RP TOS/PP shown");
+    },
+
+    testRPTosPPNotShown: function(msg) {
+      TestHelpers.testNotHasClass("body", "rptospp", msg || "RP TOS/PP not shown");
+    }
   };
 
   return TestHelpers;

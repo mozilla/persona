@@ -1,4 +1,4 @@
-/*jshint browsers:true, forin: true, laxbreak: true */
+/*jshint browser: true, forin: true, laxbreak: true */
 /*global BrowserID: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +15,7 @@ BrowserID.Mocks.WindowMock = (function() {
 
   function WindowMock() {
     this.document = new DocumentMock();
+    this.sessionStorage = {};
   }
   WindowMock.prototype = {
     open: function(url, name, options) {

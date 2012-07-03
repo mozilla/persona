@@ -41,7 +41,7 @@ Object.keys(all).forEach(function(resource) {
   // in prod '/build/templates.js' has all templates glommed into it,
   // and is bundled into the Big Minified Piles Of Resources we ship.
   // Here we sub the former with the latter.
-  var ix = all[resource].indexOf('/shared/templates.js');
+  var ix = all[resource].indexOf('/common/js/templates.js');
   if (ix != -1) all[resource].splice(ix, 1, '/build/templates.js');
 
   cc.enqueue({

@@ -3,38 +3,30 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 
-  <strong><%= gettext('Sign in using') %></strong>
+
+  <p>
+    <%= gettext('Sign in as...') %>
+  </p>
 
   <div id="selectEmail" class="form_section">
       <ul class="inputs">
           <% _.each(identities, function(item, index) { var emailAddress = item.address, id = "email_" + index; %>
               <li>
-                  <label for="<%= id %>" class="serif<% if (emailAddress === siteemail) { %> preselected<% } %> selectable" title="<%= emailAddress %>" >
+                  <label for="<%= id %>" class="<% if (emailAddress === siteEmail) { %> preselected<% } %> selectable" title="<%= emailAddress %>" >
                     <input type="radio" name="email" id="<%= id %>" value="<%= emailAddress %>"
-                        <% if (emailAddress === siteemail) { %> checked="checked" <% } %>
+                        <% if (emailAddress === siteEmail) { %> checked="checked" <% } %>
                       />
                     <%= emailAddress %>
                   </label>
               </li>
           <% }); %>
       </ul>
-      <a id="useNewEmail" class="emphasize" href="#"><%= gettext('Add another email') %></a>
-      <a id="thisIsNotMe" class="emphasize" href="#"><%= gettext('This is not me...') %></a>
+
+      <a id="useNewEmail" class="emphasize" href="#"><%= gettext('Add another email address') %></a>
+      <a id="thisIsNotMe" class="emphasize" href="#"><%= gettext('This is not me') %></a>
 
 
-      <div class="submit add cf">
-      <p class="cf">
+      <p class="submit add cf">
         <button id="signInButton"><%= gettext('sign in') %></button>
       </p>
-      <% if (privacy_url && tos_url) { %>
-        <p class="tospp">
-          <%= format(
-            gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
-                    [ gettext('sign in'),
-                      format(' href="%s" target="_new"', [tos_url]),
-                      format(' href="%s" target="_new"', [privacy_url])
-                    ]) %>
-        </p>
-      <% } %>
-      </div>
   </div>

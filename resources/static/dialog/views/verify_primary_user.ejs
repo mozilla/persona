@@ -2,74 +2,31 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<% if (requiredEmail) { %>
-  <strong><%= gettext('The site requested you sign in using') %></strong>
-  <div class="form_section">
-      <ul class="inputs">
+<div class="cf form_section">
+	<h3>
+    <%= format(gettext("%s makes this easy"), [idpName]) %>
+  </h3>
 
-          <li>
-              <label for="email"><%= gettext('Email') %></label>
-              <input id="required_email" type="email" value="<%= email %>" disabled />
-              <div id="could_not_add" class="tooltip" for="required_email">
-                <%= gettext("We just sent an email to that address! If you really want to send another, wait a minute or two and try again.") %>
-              </div>
-          </li>
-
-          <li>
-              <%= gettext("You must sign in with your email provider to verify ownership of this address. This window will be redirected to") %>
-              <p>
-                  <strong><%= auth_url %></strong>.
-              </p>
-          </li>
-      </ul>
-
-      <div class="submit cf">
-        <% if (privacy_url && tos_url) { %>
-          <p class="tospp">
-            <%= format(
-                  gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
-                       [ gettext('verify'),
-                         format(' href="%s" target="_new"', [tos_url]),
-                         format(' href="%s" target="_new"', [privacy_url])
-                       ]) %>
-          </p>
-          <p>
-        <% } %>
-          <button id="verifyWithPrimary"><%= gettext("verify") %></button>
-        <% if (privacy_url && tos_url) { %>
-          </p>
-        <% } %>
-      </div>
-  </div>
-
-<% } else { %>
-  <strong><%= gettext("Verify With Email Provider") %></strong>
-
-  <div class="cf form_section">
-    <%= gettext("You must sign in with your email provider to verify ownership of this address. This window will be redirected to") %>
-    <p>
-      <strong><%= auth_url %></strong>.
+  <p>
+    <%= format(gettext("Persona lets you use your %s account to sign into sites like %s."), [idpName, siteName]) %>
+  </p>
+  <p>
+    <%= format(gettext("Once you verify your account there, you will be signed in to %s."), [siteName]) %>
+  </p>
+    <p class="submit cf buttonrow">
+        <button id="verifyWithPrimary"><%= format(gettext("sign in with %s"), [idpName]) %></button>
+        <a href="#" id="cancel" class="emphasize right"><%= gettext("Use a different email address") %></a>
     </p>
 
-    <div class="submit cf">
-        <% if (privacy_url && tos_url) { %>
-          <p class="tospp">
-            <%= format(
-                  gettext('By clicking %s, you confirm that you accept this site\'s <a %s>Terms of Use</a> and <a %s>Privacy Policy</a>.'),
-                       [ gettext('verify'),
-                         format(' href="%s" target="_new"', [tos_url]),
-                         format(' href="%s" target="_new"', [privacy_url])
-                       ]) %>
-          </p>
-          <p>
-        <% } %>
-          <button id="verifyWithPrimary"><%= gettext("verify") %></button>
-          <a href="#" id="cancel" class="action"><%= gettext("cancel") %></a>
-        <% if (privacy_url && tos_url) { %>
-          </p>
-        <% } %>
-    </div>
+    <% if (personaTOSPP) { %>
+      <p id="persona_tospp" class="submit tospp">
+         <%= format(
+            gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
+                 [ "Persona",
+                   ' href="https://login.persona.org/tos" target="_new"',
+                   ' href="https://login.persona.org/privacy" target="_new"',
+                 ]) %>
+      </p>
+    <% } %>
 
-  </div>
-<% } %>
-
+</div>

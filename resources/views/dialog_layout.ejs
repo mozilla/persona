@@ -6,11 +6,11 @@
 <html LANG="<%= lang %>" dir="<%= lang_dir %>">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,width=device-width" />
+  <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
   <meta name="format-detection" content="email=no" />
 
   <!--[if lt IE 9]>
-    <script src="/lib/html5shim.js"></script>
+    <script src="/common/js/lib/html5shim.js"></script>
   <![endif]-->
   <%- cachify_css('/production/dialog.css') %>
   <!--[if lt IE 9]>
@@ -31,7 +31,7 @@
       </div>
 
       <footer>
-<%- format(gettext('Mozilla Persona is the fast and secure way to sign in.  <a %s>Learn more &rarr;</a>'), [" href='/about' target='_blank'"]) %>
+<%- format(gettext('<strong>Persona.</strong> Simplified sign-in, built by a non-profit.  <a %s>Learn more&rarr;</a>'), [" href='/about' target='_blank'"]) %>
 
       </footer>
 
