@@ -151,10 +151,10 @@ $(function() {
     else if (path === "/verify_email_address") {
       verifySecondaryAddress("verifyUser");
     }
-    else if (path === "/complete_password_reset") {
+    else if (path === "/reset_password") {
       verifySecondaryAddress("completePasswordReset");
     }
-    else if (path === "/complete_email_reverify") {
+    else if (path === "/confirm") {
       verifySecondaryAddress("completeEmailReverify");
     }
     else if (path === "/about") {

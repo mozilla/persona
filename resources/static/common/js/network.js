@@ -179,7 +179,7 @@ BrowserID.Network = (function() {
     },
 
     withContext: function(onComplete, onFailure) {
-      withContext(onComplete, onFailure)
+      withContext(onComplete, onFailure);
     },
 
     /**
@@ -379,8 +379,7 @@ BrowserID.Network = (function() {
      */
     checkPasswordReset: function(email, onComplete, onFailure) {
       get({
-        // XXX the URL is going to have to change
-        url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
+        url: "/wsapi/password_reset_status?email=" + encodeURIComponent(email),
         success: function(status, textStatus, jqXHR) {
           complete(onComplete, status.status);
         },
@@ -754,6 +753,7 @@ BrowserID.Network = (function() {
       // Make sure we get context first or else we will needlessly send
       // a cookie to the server.
       withContext(function() {
+        var enabled;
         try {
           // set a test cookie with a duration of 1 second.
           // NOTE - The Android 3.3 and 4.0 default browsers will still pass
@@ -762,7 +762,7 @@ BrowserID.Network = (function() {
           // submitted input.
           // http://stackoverflow.com/questions/8509387/android-browser-not-respecting-cookies-disabled/9264996#9264996
           document.cookie = "test=true; max-age=1";
-          var enabled = document.cookie.indexOf("test") > -1;
+          enabled = document.cookie.indexOf("test") > -1;
         } catch(e) {
           enabled = false;
         }

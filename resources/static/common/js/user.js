@@ -11,7 +11,8 @@ BrowserID.User = (function() {
       bid = BrowserID,
       network = bid.Network,
       storage = bid.Storage,
-      User, pollTimeout,
+      User,
+      pollTimeout,
       provisioning = bid.Provisioning,
       addressCache = {},
       primaryAuthCache = {},
@@ -100,7 +101,53 @@ BrowserID.User = (function() {
     }
   }
 
-  function registrationPoll(checkFunc, email, onSuccess, onFailure) {
+  function stageAddressVerification(onComplete, staged) {
+    var status = { success: staged };
+
+    if (!staged) status.reason = "throttle";
+    // Used on the main site when the user verifies - once
+    // verification is complete, the user is redirected back to the
+    // RP and logged in.
+    var site = User.getReturnTo();
+    if (staged && site) storage.setReturnTo(site);
+
+    complete(onComplete, status);
+  }
+
+  function completeAddressVerification(completeFunc, token, password, onComplete, onFailure) {
+    User.tokenInfo(token, function(info) {
+      var invalidInfo = { valid: false };
+      if (info) {
+        completeFunc(token, password, function (valid) {
+          var result = invalidInfo;
+
+          if (valid) {
+            result = _.extend({ valid: valid }, info);
+            var email = info.email,
+                idInfo = storage.getEmail(email);
+
+            // Now that the address is verified, its verified bit has to be
+            // updated as well or else the user will be forced to verify the
+            // address again.
+            if (idInfo) {
+              idInfo.verified = true;
+              storage.addEmail(email, idInfo);
+            }
+
+            storage.setReturnTo("");
+          }
+
+          complete(onComplete, result);
+        }, onFailure);
+      } else if (onComplete) {
+        onComplete(invalidInfo);
+      }
+    }, onFailure);
+
+  }
+
+
+  function addressVerificationPoll(checkFunc, email, onSuccess, onFailure) {
     function poll() {
       checkFunc(email, function(status) {
         // registration status checks the status of the last initiated registration,
@@ -117,7 +164,7 @@ BrowserID.User = (function() {
 
           // To avoid too many address_info requests, returns from each
           // address_info request are cached.  If the user is doing
-          // a registrationPoll, it means the user was registering the address
+          // a addressVerificationPoll, it means the user was registering the address
           // and the registration has completed.  Because the status is
           // "complete" or "known", we know that the address is known, so we
           // toggle the field to be up to date.  If the known field remains
@@ -220,51 +267,6 @@ BrowserID.User = (function() {
     });
   }
 
-  function stageAddressVerificationResponse(onComplete, staged) {
-    var status = { success: staged };
-
-    if (!staged) status.reason = "throttle";
-    // Used on the main site when the user verifies - once
-    // verification is complete, the user is redirected back to the
-    // RP and logged in.
-    var site = User.getReturnTo();
-    if (staged && site) storage.setReturnTo(site);
-
-    complete(onComplete, status);
-  }
-
-  function completeAddressVerification(token, password, networkFuncName, onComplete, onFailure) {
-    User.tokenInfo(token, function(info) {
-      var invalidInfo = { valid: false };
-      if (info) {
-        network[networkFuncName](token, password, function (valid) {
-          var result = invalidInfo;
-
-          if (valid) {
-            result = _.extend({ valid: valid }, info);
-            var email = info.email,
-                idInfo = storage.getEmail(email);
-
-            // Now that the address is verified, its verified bit has to be
-            // updated as well or else the user will be forced to verify the
-            // address again.
-            if (idInfo) {
-              idInfo.verified = true;
-              storage.addEmail(email, idInfo);
-            }
-
-            storage.setReturnTo("");
-          }
-
-          complete(onComplete, result);
-        }, onFailure);
-      } else if (onComplete) {
-        onComplete(invalidInfo);
-      }
-    }, onFailure);
-
-  }
-
 
   User = {
     init: function(config) {
@@ -347,7 +349,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     createSecondaryUser: function(email, password, onComplete, onFailure) {
-      // set - XXX Use stageAddressVerificationResponse to handle the response.
+      // set - XXX Use stageAddressVerification to handle the response.
       network.createUser(email, password, origin, function(created) {
         // Used on the main site when the user verifies - once verification
         // is complete, the user is redirected back to the RP and logged in.
@@ -523,7 +525,7 @@ BrowserID.User = (function() {
      * @param {function} [onSuccess] - Called to give status updates.
      * @param {function} [onFailure] - Called on error.
      */
-    waitForUserValidation: registrationPoll.curry(network.checkUserRegistration),
+    waitForUserValidation: addressVerificationPoll.curry(network.checkUserRegistration),
 
     /**
      * Cancel the waitForUserValidation poll
@@ -561,9 +563,7 @@ BrowserID.User = (function() {
      *   with valid=false otw.
      * @param {function} [onFailure] - Called on error.
      */
-    verifyUser: function(token, password, onComplete, onFailure) {
-      completeAddressVerification(token, password, "completeUserRegistration", onComplete, onFailure);
-    },
+    verifyUser: completeAddressVerification.curry(network.completeUserRegistration),
 
     /**
      * Check if the user can set their password.  Only returns true for users
@@ -617,7 +617,7 @@ BrowserID.User = (function() {
       User.isEmailRegistered(email, function(registered) {
         if (registered) {
           network.requestPasswordReset(email, password, origin,
-            stageAddressVerificationResponse.curry(onComplete), onFailure);
+            stageAddressVerification.curry(onComplete), onFailure);
         }
         else if (onComplete) {
           onComplete({ success: false, reason: "invalid_user" });
@@ -635,9 +635,7 @@ BrowserID.User = (function() {
      *   with valid=false otw.
      * @param {function} [onFailure] - Called on error.
      */
-    completePasswordReset: function(token, password, onComplete, onFailure) {
-      completeAddressVerification(token, password, "completePasswordReset", onComplete, onFailure);
-    },
+    completePasswordReset: completeAddressVerification.curry(network.completePasswordReset),
 
     /**
      * Wait for the password reset to complete
@@ -646,7 +644,7 @@ BrowserID.User = (function() {
      * @param {function} [onSuccess] - Called to give status updates.
      * @param {function} [onFailure] - Called on error.
      */
-    waitForPasswordResetComplete: registrationPoll.curry(network.checkPasswordReset),
+    waitForPasswordResetComplete: addressVerificationPoll.curry(network.checkPasswordReset),
 
     /**
      * Cancel the waitForPasswordResetComplete poll
@@ -674,13 +672,11 @@ BrowserID.User = (function() {
       else if (!idInfo.verified) {
         // this address is unverified, try to reverify it.
         network.requestEmailReverify(email, origin,
-          stageAddressVerificationResponse.curry(onComplete), onFailure);
+          stageAddressVerification.curry(onComplete), onFailure);
       }
     },
 
-    completeEmailReverify: function(token, password, onComplete, onFailure) {
-      completeAddressVerification(token, password, "completeEmailReverify", onComplete, onFailure);
-    },
+    completeEmailReverify: completeAddressVerification.curry(network.completeEmailReverify),
 
     /**
      * Wait for the email reverification to complete
@@ -689,7 +685,7 @@ BrowserID.User = (function() {
      * @param {function} [onSuccess] - Called to give status updates.
      * @param {function} [onFailure] - Called on error.
      */
-    waitForEmailReverifyComplete: registrationPoll.curry(network.checkEmailReverify),
+    waitForEmailReverifyComplete: addressVerificationPoll.curry(network.checkEmailReverify),
 
     /**
      * Cancel the waitForEmailReverifyComplete poll
@@ -991,7 +987,7 @@ BrowserID.User = (function() {
      * @param {function} [onSuccess] - Called to give status updates.
      * @param {function} [onFailure] - Called on error.
      */
-    waitForEmailValidation: registrationPoll.curry(network.checkEmailRegistration),
+    waitForEmailValidation: addressVerificationPoll.curry(network.checkEmailRegistration),
 
     /**
      * Cancel the waitForEmailValidation poll
@@ -1011,9 +1007,7 @@ BrowserID.User = (function() {
      *   with valid=false otw.
      * @param {function} [onFailure] - Called on error.
      */
-    verifyEmail: function(token, password, onComplete, onFailure) {
-      completeAddressVerification(token, password, "completeEmailRegistration", onComplete, onFailure);
-    },
+    verifyEmail: completeAddressVerification.curry(network.completeEmailRegistration),
 
     /**
      * Remove an email address.

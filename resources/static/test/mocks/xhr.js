@@ -74,6 +74,12 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/complete_reset invalid": { success: false },
       "post /wsapi/complete_reset ajaxError": undefined,
 
+      "get /wsapi/password_reset_status?email=registered%40testuser.com pending": { status: "pending" },
+      "get /wsapi/password_reset_status?email=registered%40testuser.com complete": { status: "complete", userid: 4 },
+      "get /wsapi/password_reset_status?email=registered%40testuser.com mustAuth": { status: "mustAuth" },
+      "get /wsapi/password_reset_status?email=registered%40testuser.com noRegistration": { status: "noRegistration" },
+      "get /wsapi/password_reset_status?email=registered%40testuser.com ajaxError": undefined,
+
       "post /wsapi/stage_reverify unknown_secondary": { success: true },
       "post /wsapi/stage_reverify valid": { success: true },
       "post /wsapi/stage_reverify invalid": { success: false },

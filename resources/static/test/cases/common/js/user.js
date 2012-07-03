@@ -7,9 +7,8 @@
 (function() {
   "use strict";
 
-  var jwcrypto = require("./lib/jwcrypto");
-
-  var bid = BrowserID,
+  var jwcrypto = require("./lib/jwcrypto"),
+      bid = BrowserID,
       lib = bid.User,
       storage = bid.Storage,
       network = bid.Network,
