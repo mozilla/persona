@@ -344,8 +344,119 @@ suite.addBatch({
   }
 });
 
+// Now we have an account with an unverified email.  Let's attempt to reverify our other email
+// address
+// Run the "forgot_email" flow with first address. 
+suite.addBatch({
+  "reverify a non-existent email": {
+    topic: wsapi.post('/wsapi/stage_reverify', {
+      email: 'dne@fakeemail.com',
+      site:'https://otherfakesite.com'
+    }),
+    "fails": function(err, r) {
+      assert.strictEqual(r.code, 200);
+      assert.strictEqual(JSON.parse(r.body).success, false);
+    }
+  },
+  "reverify a verified email": {
+    topic: wsapi.post('/wsapi/stage_reverify', {
+      email: 'first@fakeemail.com',
+      site:'https://otherfakesite.com'
+    }),
+    "fails": function(err, r) {
+      assert.strictEqual(r.code, 200);
+      assert.strictEqual(JSON.parse(r.body).success, false);
+    }
+  },
+  "reverify an unverified email": {
+    topic: wsapi.post('/wsapi/stage_reverify', {
+      email: 'second@fakeemail.com',
+      site:'https://otherfakesite.com'
+    }),
+    "works": function(err, r) {
+      assert.strictEqual(r.code, 200);
+      assert.strictEqual(JSON.parse(r.body).success, true);
+    }
+  }
+});
 
-// XXX: test that we can verify the remaining email ok
+suite.addBatch({
+  "a token": {
+    topic: function() {
+      start_stop.waitForToken(this.callback);
+    },
+    "is obtained": function (t) {
+      assert.strictEqual(typeof t, 'string');
+      token = t;
+    }
+  }
+});
+
+suite.addBatch({
+  "given a token, getting an email": {
+    topic: function() {
+      wsapi.get('/wsapi/email_for_token', { token: token }).call(this);
+    },
+    "works dandy": function(err, r) {
+      assert.equal(r.code, 200);
+      var body = JSON.parse(r.body);
+      assert.strictEqual(body.success, true);
+      assert.strictEqual(body.email, 'second@fakeemail.com');
+      assert.strictEqual(body.must_auth, false);
+    }
+  }
+});
+
+suite.addBatch({
+  "reverify status": {
+    topic: function() {
+      wsapi.get('/wsapi/email_reverify_status', { email: "second@fakeemail.com" }).call(this);
+    },
+    "is pending": function(err, r) {
+      assert.equal(r.code, 200);
+      var body = JSON.parse(r.body);
+      assert.strictEqual(body.status, 'pending');
+    }
+  }
+});
+
+suite.addBatch({
+  "complete reverify": {
+    topic: function() {
+      wsapi.post('/wsapi/complete_reverify', { token: token }).call(this);
+    },
+    "works": function(err, r) {
+      assert.equal(r.code, 200);
+      var body = JSON.parse(r.body);
+    }
+  }
+});
+
+suite.addBatch({
+  "after reverification": {
+    topic: function() {
+      jwcrypto.generateKeypair({algorithm: "RS", keysize: 64}, this.callback);
+    },
+    "we can generate a keypair": function(err, keypair) {
+      assert.isNull(err);
+      assert.isObject(keypair);
+      kp = keypair;
+    },
+    "we can certify a key for the email address": {
+      topic: function() {
+        wsapi.post('/wsapi/cert_key', {
+          email: 'second@fakeemail.com',
+          pubkey: kp.publicKey.serialize(),
+          ephemeral: false
+        }).call(this);
+      },
+      "returns a success response" : function(err, r) {
+        assert.strictEqual(r.code, 200);
+      }
+    }
+  }
+});
+
 
 start_stop.addShutdownBatches(suite);
 
