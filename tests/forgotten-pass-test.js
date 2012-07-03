@@ -132,9 +132,19 @@ suite.addBatch({
   }
 });
 
+suite.addBatch({
+  "reset status": {
+    topic: wsapi.get('/wsapi/password_reset_status', { email: 'first@fakeemail.com' } ),
+    "returns 'complete' before calling reset": function(err, r) {
+      assert.strictEqual(r.code, 200);
+      assert.strictEqual(JSON.parse(r.body).status, "complete");
+    }
+  }
+});
+
 // Run the "forgot_email" flow with first address. 
 suite.addBatch({
-  "re-stage first account": {
+  "reset password on first account": {
     topic: wsapi.post('/wsapi/stage_reset', {
       email: 'first@fakeemail.com',
       pass: 'secondfakepass',
@@ -181,6 +191,13 @@ suite.addBatch({
     "should work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
+  },
+  "reset status": {
+    topic: wsapi.get('/wsapi/password_reset_status', { email: 'first@fakeemail.com' } ),
+    "returns 'pending' after calling reset": function(err, r) {
+      assert.strictEqual(r.code, 200);
+      assert.strictEqual(JSON.parse(r.body).status, "pending");
+    }
   }
 });
 
@@ -193,6 +210,16 @@ suite.addBatch({
     "account created": function(err, r) {
       assert.equal(r.code, 200);
       assert.strictEqual(JSON.parse(r.body).success, true);
+    }
+  }
+});
+
+suite.addBatch({
+  "reset status": {
+    topic: wsapi.get('/wsapi/password_reset_status', { email: 'first@fakeemail.com' } ),
+    "returns 'complete' after completing reset": function(err, r) {
+      assert.strictEqual(r.code, 200);
+      assert.strictEqual(JSON.parse(r.body).status, "complete");
     }
   }
 });
