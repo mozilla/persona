@@ -201,6 +201,20 @@ suite.addBatch({
   }
 });
 
+suite.addBatch({
+  "given a token, getting an email": {
+    topic: function() {
+      wsapi.get('/wsapi/email_for_token', { token: token }).call(this);
+    },
+    "account created": function(err, r) {
+      assert.equal(r.code, 200);
+      var body = JSON.parse(r.body);
+      console.log(body);
+      assert.strictEqual(body.success, true);
+    }
+  }
+});
+
 // now let's complete the re-registration of first email address
 suite.addBatch({
   "complete password reset": {
