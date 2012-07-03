@@ -348,7 +348,13 @@ BrowserID.State = (function() {
       // The unverified email has been staged, now the user has to confirm
       // ownership of the address.  Send them off to the "verify your address"
       // screen.
-      startAction("doConfirmReverifyEmail");
+      var actionInfo = {
+        email: info.email,
+        siteName: self.siteName
+      };
+
+      self.stagedEmail = info.email;
+      startAction("doConfirmReverifyEmail", actionInfo);
     });
 
     handleState("email_valid_and_ready", function(msg, info) {
@@ -394,38 +400,20 @@ BrowserID.State = (function() {
     handleState("forgot_password", function(msg, info) {
       // User has forgotten their password, let them reset it.  The response
       // message from the forgot_password controller will be a set_password.
-      // the set_password handler needs to know the forgotPassword email so it
-      // knows how to handle the password being set.  When the password is
-      // finally reset, the password_reset message will be raised where we must
-      // await email confirmation.
+      // the set_password handler needs to know the resetPasswordEmail so it
+      // knows how to trigger the reset_password_staged message.  At this
+      // point, the email confirmation screen will be shown.
       self.resetPasswordEmail = info.email;
       startAction(false, "doForgotPassword", info);
     });
 
-    handleState("stage_reset_password", function(msg, info) {
-      // reset_password says the user has confirmed that they want to
-      // reset their password.  doStageResetPassword will attempt to invoke
-      // the reset_password wsapi.  If the wsapi call is successful,
-      // the password_reset_staged message will be triggered and the user will
-      // be shown the "go verify your account" message.
-
-      // We have to save the staged email address here for when the user
-      // verifies their account and user_confirmed is called.
-      self.stagedEmail = info.email;
-
-      var actionInfo = {
-        email: info.email,
-        password: info.password
-      };
-      startAction(false, "doStageResetPassword", actionInfo);
-    });
-
-    handleState("password_reset_staged", function(msg, info) {
+    handleState("reset_password_staged", function(msg, info) {
       var actionInfo = {
         email: info.email,
         siteName: self.siteName
       };
 
+      self.stagedEmail = info.email;
       startAction("doConfirmResetPassword", actionInfo);
     });
 

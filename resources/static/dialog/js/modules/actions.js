@@ -32,11 +32,11 @@ BrowserID.Modules.Actions = (function() {
     return module;
   }
 
-  function startRegCheckService(options, verifier, message, password) {
+  function startRegCheckService(options, verifier, message) {
     var controller = startService("check_registration", {
       verifier: verifier,
       verificationMessage: message,
-      password: password,
+      password: options.password,
       siteName: options.siteName,
       email: options.email
     });
@@ -70,7 +70,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doConfirmUser: function(info) {
-      startRegCheckService.call(this, info, "waitForUserValidation", "user_confirmed", info.password || undefined);
+      startRegCheckService.call(this, info, "waitForUserValidation", "user_confirmed");
     },
 
     doPickEmail: function(info) {
@@ -106,8 +106,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doConfirmResetPassword: function(info) {
-      startRegCheckService.call(this, info, "waitForPasswordResetComplete", "staged_address_confirmed", info.password || undefined);
-
+      startRegCheckService.call(this, info, "waitForPasswordResetComplete", "staged_address_confirmed");
     },
 
     doStageReverifyEmail: function(info) {
@@ -115,7 +114,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doConfirmReverifyEmail: function(info) {
-      startRegCheckService.call(this, info, "waitForEmailReverifyComplete", "staged_address_confirmed", info.password || undefined);
+      startRegCheckService.call(this, info, "waitForEmailReverifyComplete", "staged_address_confirmed");
     },
 
     doAssertionGenerated: function(info) {

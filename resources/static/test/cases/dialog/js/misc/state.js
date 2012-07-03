@@ -43,7 +43,7 @@
   }
 
   function testAddressStaged(startMessage, expectedAction) {
-    // password_reset_staged indicates the user has verified that they want to reset
+    // reset_password_staged indicates the user has verified that they want to reset
     // their password.
     mediator.publish(startMessage, {
       email: TEST_EMAIL
@@ -55,15 +55,13 @@
 
     // user_confirmed means the user has confirmed their email and the dialog
     // has received the "complete" message from /wsapi/user_creation_status.
-    try {
-      mediator.publish("staged_address_confirmed");
-    } catch(e) {
-      // Exception is expected because as part of the user confirmation
-      // process, before user_confirmed is called, email addresses are synced.
-      // Addresses are not synced in this test.
-      equal(e.toString(), "invalid email", "expected failure");
-    }
+    mediator.subscribe("email_chosen", function(msg, info) {
+      equal(info.email, TEST_EMAIL, "email_chosen triggered with the correct email");
+      start();
+    });
 
+    storage.addSecondaryEmail(TEST_EMAIL, { unverified: true });
+    mediator.publish("staged_address_confirmed");
   }
 
 
@@ -170,7 +168,7 @@
     ok(actions.info.doRPInfo.privacyPolicy, "doRPInfo called with privacyPolicy set");
   });
 
-  test("user_staged - call doConfirmUser", function() {
+  asyncTest("user_staged - call doConfirmUser", function() {
     testAddressStaged("user_staged", "doConfirmUser");
   });
 
@@ -198,7 +196,7 @@
     }
   });
 
-  test("email_staged - call doConfirmEmail", function() {
+  asyncTest("email_staged - call doConfirmEmail", function() {
     testAddressStaged("email_staged", "doConfirmEmail");
   });
 
@@ -302,8 +300,8 @@
     testActionStarted("doForgotPassword", { email: TEST_EMAIL, requiredEmail: true });
   });
 
-  test("password_reset_staged to staged_address_confirmed - call doConfirmResetPassword then doEmailConfirmed", function() {
-    testAddressStaged("password_reset_staged", "doConfirmResetPassword");
+  asyncTest("reset_password_staged to staged_address_confirmed - call doConfirmResetPassword then doEmailConfirmed", function() {
+    testAddressStaged("reset_password_staged", "doConfirmResetPassword");
   });
 
 
@@ -472,6 +470,10 @@
 
   asyncTest("email_chosen with unverified secondary email, user authenticated to primary - redirect to stage_reverify_email", function() {
     testReverifyEmailChosen("assertion");
+  });
+
+  asyncTest("reverify_email_staged - call doConfirmReverifyEmail", function() {
+    testAddressStaged("reverify_email_staged", "doConfirmReverifyEmail");
   });
 
   test("email_chosen with primary email - call doProvisionPrimaryUser", function() {

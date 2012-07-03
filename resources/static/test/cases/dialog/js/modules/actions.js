@@ -119,8 +119,8 @@
     testActionStartsModule('doForgotPassword', { email: TEST_EMAIL }, "set_password");
   });
 
-  asyncTest("doStageResetPassword - trigger password_reset_staged", function() {
-    testStageAddress("doStageResetPassword", "password_reset_staged");
+  asyncTest("doStageResetPassword - trigger reset_password_staged", function() {
+    testStageAddress("doStageResetPassword", "reset_password_staged");
   });
 
   asyncTest("doConfirmResetPassword - start the check_registration service", function() {

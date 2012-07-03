@@ -89,7 +89,7 @@
     var self=this;
     user.requestPasswordReset(email, password, function(status) {
       if (status.success) {
-        self.publish("password_reset_staged", { email: email });
+        self.publish("reset_password_staged", { email: email });
       }
       else {
         tooltip.showTooltip("#could_not_add");
