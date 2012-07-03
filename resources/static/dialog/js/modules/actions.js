@@ -85,6 +85,10 @@ BrowserID.Modules.Actions = (function() {
       dialogHelpers.addSecondaryEmail.call(this, info.email, info.password, info.ready);
     },
 
+    doConfirmEmail: function(info) {
+      startRegCheckService.call(this, info, "waitForEmailValidation", "email_confirmed");
+    },
+
     doAuthenticate: function(info) {
       startService("authenticate", info);
     },
@@ -97,12 +101,21 @@ BrowserID.Modules.Actions = (function() {
       startService("set_password", _.extend(info, { password_reset: true }));
     },
 
-    doResetPassword: function(info) {
+    doStageResetPassword: function(info) {
       dialogHelpers.resetPassword.call(this, info.email, info.password, info.ready);
     },
 
-    doConfirmEmail: function(info) {
-      startRegCheckService.call(this, info, "waitForEmailValidation", "email_confirmed");
+    doConfirmResetPassword: function(info) {
+      startRegCheckService.call(this, info, "waitForPasswordResetComplete", "staged_address_confirmed", info.password || undefined);
+
+    },
+
+    doStageReverifyEmail: function(info) {
+      dialogHelpers.reverifyEmail.call(this, info.email, info.ready);
+    },
+
+    doConfirmReverifyEmail: function(info) {
+      startRegCheckService.call(this, info, "waitForEmailReverifyComplete", "staged_address_confirmed", info.password || undefined);
     },
 
     doAssertionGenerated: function(info) {

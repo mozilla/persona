@@ -42,6 +42,31 @@
     }
   }
 
+  function testAddressStaged(startMessage, expectedAction) {
+    // password_reset_staged indicates the user has verified that they want to reset
+    // their password.
+    mediator.publish(startMessage, {
+      email: TEST_EMAIL
+    });
+    equal(actions.info[expectedAction].email, TEST_EMAIL, expectedAction + " with the correct email");
+
+    // At this point the user should be displayed the "go confirm your address"
+    // screen.
+
+    // user_confirmed means the user has confirmed their email and the dialog
+    // has received the "complete" message from /wsapi/user_creation_status.
+    try {
+      mediator.publish("staged_address_confirmed");
+    } catch(e) {
+      // Exception is expected because as part of the user confirmation
+      // process, before user_confirmed is called, email addresses are synced.
+      // Addresses are not synced in this test.
+      equal(e.toString(), "invalid email", "expected failure");
+    }
+
+  }
+
+
   function createMachine() {
     machine = bid.State.create();
     actions = new ActionsMock();
@@ -61,7 +86,7 @@
     });
   }
 
-  module("resources/state", {
+  module("dialog/js/misc/state", {
     setup: function() {
       testHelpers.setup();
       createMachine();
@@ -128,11 +153,11 @@
     equal(actions.info.doStageEmail.email, TEST_EMAIL, "correct email sent to doStageEmail");
   });
 
-  test("password_set for reset password - call doResetPassword with correct email", function() {
+  test("password_set for reset password - call doStageResetPassword with correct email", function() {
     mediator.publish("forgot_password", { email: TEST_EMAIL });
     mediator.publish("password_set");
 
-    equal(actions.info.doResetPassword.email, TEST_EMAIL, "correct email sent to doResetPassword");
+    equal(actions.info.doStageResetPassword.email, TEST_EMAIL, "correct email sent to doStageResetPassword");
   });
 
   test("start - RPInfo always started", function() {
@@ -146,9 +171,7 @@
   });
 
   test("user_staged - call doConfirmUser", function() {
-    mediator.publish("user_staged", { email: TEST_EMAIL });
-
-    equal(actions.info.doConfirmUser.email, TEST_EMAIL, "waiting for email confirmation for testuser@testuser.com");
+    testAddressStaged("user_staged", "doConfirmUser");
   });
 
   test("user_staged with required email - call doConfirmUser with required = true", function() {
@@ -176,9 +199,7 @@
   });
 
   test("email_staged - call doConfirmEmail", function() {
-    mediator.publish("email_staged", { email: TEST_EMAIL });
-
-    equal(actions.info.doConfirmEmail.required, false, "doConfirmEmail called without required flag");
+    testAddressStaged("email_staged", "doConfirmEmail");
   });
 
   test("email_staged with required email - call doConfirmEmail with required = true", function() {
@@ -281,41 +302,10 @@
     testActionStarted("doForgotPassword", { email: TEST_EMAIL, requiredEmail: true });
   });
 
-  test("password_reset to user_confirmed - call doUserStaged then doEmailConfirmed", function() {
-    // password_reset indicates the user has verified that they want to reset
-    // their password.
-    mediator.publish("password_reset", {
-      email: TEST_EMAIL
-    });
-    equal(actions.info.doConfirmUser.email, TEST_EMAIL, "doConfirmUser with the correct email");
-
-    // At this point the user should be displayed the "go confirm your address"
-    // screen.
-
-    // user_confirmed means the user has confirmed their email and the dialog
-    // has received the "complete" message from /wsapi/user_creation_status.
-    try {
-      mediator.publish("user_confirmed");
-    } catch(e) {
-      // Exception is expected because as part of the user confirmation
-      // process, before user_confirmed is called, email addresses are synced.
-      // Addresses are not synced in this test.
-      equal(e.toString(), "invalid email", "expected failure");
-    }
+  test("password_reset_staged to staged_address_confirmed - call doConfirmResetPassword then doEmailConfirmed", function() {
+    testAddressStaged("password_reset_staged", "doConfirmResetPassword");
   });
 
-
-  test("cancel password_reset flow - go two steps back", function() {
-    // we want to skip the "verify" screen of reset password and instead go two
-    // screens back.  Do do this, we are simulating the steps necessary to get
-    // to the password_reset flow.
-    mediator.publish("authenticate");
-    mediator.publish("forgot_password", undefined, { email: TEST_EMAIL });
-    mediator.publish("password_reset");
-    actions.info.doAuthenticate = {};
-    mediator.publish("cancel_state");
-    equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate called with the correct email");
-  });
 
   asyncTest("assertion_generated with null assertion - redirect to pick_email", function() {
     mediator.subscribe("pick_email", function() {
@@ -462,12 +452,12 @@
     });
   });
 
-  function testUnverifiedEmailChosen(auth_level) {
+  function testReverifyEmailChosen(auth_level) {
     storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
     xhr.setContextInfo("auth_level", auth_level);
 
-    mediator.subscribe("verify_unverified_email", function(msg, info) {
-      equal(info.email, TEST_EMAIL, "correctly redirected to verify_unverified_email with correct email");
+    mediator.subscribe("stage_reverify_email", function(msg, info) {
+      equal(info.email, TEST_EMAIL, "correctly redirected to stage_reverify_email with correct email");
       start();
     });
 
@@ -476,12 +466,12 @@
     });
   }
 
-  asyncTest("email_chosen with unverified secondary email, user authenticated to secondary - redirect to verify_unverified_email", function() {
-    testUnverifiedEmailChosen("password");
+  asyncTest("email_chosen with unverified secondary email, user authenticated to secondary - redirect to stage_reverify_email", function() {
+    testReverifyEmailChosen("password");
   });
 
-  asyncTest("email_chosen with unverified secondary email, user authenticated to primary - redirect to verify_unverified_email", function() {
-    testUnverifiedEmailChosen("assertion");
+  asyncTest("email_chosen with unverified secondary email, user authenticated to primary - redirect to stage_reverify_email", function() {
+    testReverifyEmailChosen("assertion");
   });
 
   test("email_chosen with primary email - call doProvisionPrimaryUser", function() {
@@ -565,8 +555,14 @@
     });
   });
 
-  asyncTest("verify_unverified_email", function() {
-    start();
+  test("stage_reverify_email - call doStageReverifyEmail", function() {
+    mediator.publish("start", { siteName: "Unit Test Site" });
+    mediator.publish("stage_reverify_email", { email: TEST_EMAIL });
+    testActionStarted("doStageReverifyEmail", { email: TEST_EMAIL, siteName: "Unit Test Site" });
+  });
+
+  test("unverified_email_staged - call doConfirmReverifyEmail", function() {
+
   });
 
   asyncTest("window_unload - set the final KPIs", function() {

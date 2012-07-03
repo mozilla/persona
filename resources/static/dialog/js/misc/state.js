@@ -152,7 +152,7 @@ BrowserID.State = (function() {
       }
       else if(self.resetPasswordEmail) {
         self.resetPasswordEmail = null;
-        startAction(false, "doResetPassword", info);
+        startAction(false, "doStageResetPassword", info);
       }
     });
 
@@ -168,6 +168,11 @@ BrowserID.State = (function() {
     });
 
     handleState("user_confirmed", function() {
+      self.email = self.stagedEmail;
+      redirectToState("email_chosen", { email: self.stagedEmail} );
+    });
+
+    handleState("staged_address_confirmed", function() {
       self.email = self.stagedEmail;
       redirectToState("email_chosen", { email: self.stagedEmail} );
     });
@@ -300,7 +305,7 @@ BrowserID.State = (function() {
       else if (!idInfo.verified) {
         // user selected an unverified secondary email, kick them over to the
         // verify screen.
-        redirectToState("verify_unverified_email", info);
+        redirectToState("stage_reverify_email", info);
       }
       else {
         // Address is verified, check the authentication, if the user is not
@@ -329,8 +334,21 @@ BrowserID.State = (function() {
       }
     });
 
-    handleState("verify_unverified_email", function(msg, info) {
+    handleState("stage_reverify_email", function(msg, info) {
+      // A user has selected an email that has not been verified after
+      // a password reset.  Stage the email again to be re-verified.
+      var actionInfo = {
+        email: info.email,
+        siteName: self.siteName
+      };
+      startAction("doStageReverifyEmail", actionInfo);
+    });
 
+    handleState("reverify_email_staged", function(msg, info) {
+      // The unverified email has been staged, now the user has to confirm
+      // ownership of the address.  Send them off to the "verify your address"
+      // screen.
+      startAction("doConfirmReverifyEmail");
     });
 
     handleState("email_valid_and_ready", function(msg, info) {
@@ -384,14 +402,33 @@ BrowserID.State = (function() {
       startAction(false, "doForgotPassword", info);
     });
 
-    handleState("password_reset", function(msg, info) {
-      // password_reset says the user has confirmed that they want to
-      // reset their password.  doResetPassword will attempt to invoke
+    handleState("stage_reset_password", function(msg, info) {
+      // reset_password says the user has confirmed that they want to
+      // reset their password.  doStageResetPassword will attempt to invoke
       // the reset_password wsapi.  If the wsapi call is successful,
-      // the user will be shown the "go verify your account" message.
-      info.password_reset = true;
-      redirectToState("user_staged", info);
+      // the password_reset_staged message will be triggered and the user will
+      // be shown the "go verify your account" message.
+
+      // We have to save the staged email address here for when the user
+      // verifies their account and user_confirmed is called.
+      self.stagedEmail = info.email;
+
+      var actionInfo = {
+        email: info.email,
+        password: info.password
+      };
+      startAction(false, "doStageResetPassword", actionInfo);
     });
+
+    handleState("password_reset_staged", function(msg, info) {
+      var actionInfo = {
+        email: info.email,
+        siteName: self.siteName
+      };
+
+      startAction("doConfirmResetPassword", actionInfo);
+    });
+
 
     handleState("assertion_generated", function(msg, info) {
       self.success = true;
@@ -415,19 +452,6 @@ BrowserID.State = (function() {
 
     handleState("authenticated", function(msg, info) {
       redirectToState("email_chosen", info);
-    });
-
-    handleState("reset_password", function(msg, info) {
-      info = info || {};
-      // reset_password says the user has confirmed that they want to
-      // reset their password.  doResetPassword will attempt to invoke
-      // the create_user wsapi.  If the wsapi call is successful,
-      // the user will be shown the "go verify your account" message.
-
-      // We have to save the staged email address here for when the user
-      // verifies their account and user_confirmed is called.
-      self.stagedEmail = info.email;
-      startAction(false, "doResetPassword", info);
     });
 
     handleState("add_email", function(msg, info) {

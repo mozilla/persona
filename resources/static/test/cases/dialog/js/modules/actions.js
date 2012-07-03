@@ -8,6 +8,7 @@
 
   var bid = BrowserID,
       user = bid.User,
+      storage = bid.Storage,
       controller,
       el,
       testHelpers = bid.TestHelpers,
@@ -34,7 +35,29 @@
     });
   }
 
-  module("controllers/actions", {
+  function testStageAddress(actionName, expectedMessage) {
+    createController({
+      ready: function() {
+        var message,
+            email;
+
+        testHelpers.register(expectedMessage, function(msg, info) {
+          message = msg;
+          email = info.email;
+        });
+
+        controller[actionName]({ email: TEST_EMAIL, password: "password", ready: function(status) {
+          equal(status, true, "correct status");
+          equal(message, expectedMessage, "correct message triggered");
+          equal(email, TEST_EMAIL, "address successfully staged");
+          start();
+        }});
+      }
+    });
+  }
+
+
+  module("dialog/js/modules/actions", {
     setup: function() {
       testHelpers.setup();
     },
@@ -74,9 +97,17 @@
       "primary_user_provisioned");
   });
 
+  asyncTest("doStageUser with successful creation - trigger user_staged", function() {
+    testStageAddress("doStageUser", "user_staged");
+  });
+
   asyncTest("doConfirmUser - start the check_registration service", function() {
     testActionStartsModule("doConfirmUser", {email: TEST_EMAIL, siteName: "Unit Test Site"},
       "check_registration");
+  });
+
+  asyncTest("doStageEmail with successful staging - trigger email_staged", function() {
+    testStageAddress("doStageEmail", "email_staged");
   });
 
   asyncTest("doConfirmEmail - start the check_registration service", function() {
@@ -84,29 +115,32 @@
       "check_registration");
   });
 
-  asyncTest("doGenerateAssertion - start the generate_assertion service", function() {
-    testActionStartsModule('doGenerateAssertion', { email: TEST_EMAIL }, "generate_assertion");
-  });
-
-  asyncTest("doStageUser with successful creation - trigger user_staged", function() {
-    createController({
-      ready: function() {
-        var email;
-        testHelpers.register("user_staged", function(msg, info) {
-          email = info.email;
-        });
-
-        controller.doStageUser({ email: TEST_EMAIL, password: "password", ready: function(status) {
-          equal(status, true, "correct status");
-          equal(email, TEST_EMAIL, "user successfully staged");
-          start();
-        }});
-      }
-    });
-  });
-
   asyncTest("doForgotPassword - call the set_password controller with reset_password true", function() {
     testActionStartsModule('doForgotPassword', { email: TEST_EMAIL }, "set_password");
+  });
+
+  asyncTest("doStageResetPassword - trigger password_reset_staged", function() {
+    testStageAddress("doStageResetPassword", "password_reset_staged");
+  });
+
+  asyncTest("doConfirmResetPassword - start the check_registration service", function() {
+    testActionStartsModule("doConfirmResetPassword", {email: TEST_EMAIL, siteName: "Unit Test Site"},
+      "check_registration");
+  });
+
+  asyncTest("doStageReverifyEmail - trigger reverify_email_staged", function() {
+
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    testStageAddress("doStageReverifyEmail", "reverify_email_staged");
+  });
+
+  asyncTest("doConfirmReverifyEmail - start the check_registration service", function() {
+    testActionStartsModule("doConfirmReverifyEmail", {email: TEST_EMAIL, siteName: "Unit Test Site"},
+      "check_registration");
+  });
+
+  asyncTest("doGenerateAssertion - start the generate_assertion service", function() {
+    testActionStartsModule('doGenerateAssertion', { email: TEST_EMAIL }, "generate_assertion");
   });
 
   asyncTest("doRPInfo - start the rp_info service", function() {

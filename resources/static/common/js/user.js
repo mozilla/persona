@@ -220,7 +220,20 @@ BrowserID.User = (function() {
     });
   }
 
-  function verifyAddress(token, password, networkFuncName, onComplete, onFailure) {
+  function stageAddressVerificationResponse(onComplete, staged) {
+    var status = { success: staged };
+
+    if (!staged) status.reason = "throttle";
+    // Used on the main site when the user verifies - once
+    // verification is complete, the user is redirected back to the
+    // RP and logged in.
+    var site = User.getReturnTo();
+    if (staged && site) storage.setReturnTo(site);
+
+    complete(onComplete, status);
+  }
+
+  function completeAddressVerification(token, password, networkFuncName, onComplete, onFailure) {
     User.tokenInfo(token, function(info) {
       var invalidInfo = { valid: false };
       if (info) {
@@ -334,6 +347,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     createSecondaryUser: function(email, password, onComplete, onFailure) {
+      // set - XXX Use stageAddressVerificationResponse to handle the response.
       network.createUser(email, password, origin, function(created) {
         // Used on the main site when the user verifies - once verification
         // is complete, the user is redirected back to the RP and logged in.
@@ -509,9 +523,7 @@ BrowserID.User = (function() {
      * @param {function} [onSuccess] - Called to give status updates.
      * @param {function} [onFailure] - Called on error.
      */
-    waitForUserValidation: function(email, onSuccess, onFailure) {
-      registrationPoll(network.checkUserRegistration, email, onSuccess, onFailure);
-    },
+    waitForUserValidation: registrationPoll.curry(network.checkUserRegistration),
 
     /**
      * Cancel the waitForUserValidation poll
@@ -550,7 +562,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     verifyUser: function(token, password, onComplete, onFailure) {
-      verifyAddress(token, password, "completeUserRegistration", onComplete, onFailure);
+      completeAddressVerification(token, password, "completeUserRegistration", onComplete, onFailure);
     },
 
     /**
@@ -604,18 +616,8 @@ BrowserID.User = (function() {
     requestPasswordReset: function(email, password, onComplete, onFailure) {
       User.isEmailRegistered(email, function(registered) {
         if (registered) {
-          network.requestPasswordReset(email, password, origin, function(reset) {
-            var status = { success: reset };
-
-            if (!reset) status.reason = "throttle";
-            // Used on the main site when the user verifies - once
-            // verification is complete, the user is redirected back to the
-            // RP and logged in.
-            var site = User.getReturnTo();
-            if (reset && site) storage.setReturnTo(site);
-
-            complete(onComplete, status);
-          }, onFailure);
+          network.requestPasswordReset(email, password, origin,
+            stageAddressVerificationResponse.curry(onComplete), onFailure);
         }
         else if (onComplete) {
           onComplete({ success: false, reason: "invalid_user" });
@@ -634,9 +636,66 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     verifyPasswordReset: function(token, password, onComplete, onFailure) {
-      verifyAddress(token, password, "completeUserResetPassword", onComplete, onFailure);
+      completeAddressVerification(token, password, "completePasswordReset", onComplete, onFailure);
     },
 
+    /**
+     * Wait for the password reset to complete
+     * @method waitForPasswordResetComplete
+     * @param {string} email - email address to check.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    waitForPasswordResetComplete: registrationPoll.curry(network.checkPasswordReset),
+
+    /**
+     * Cancel the waitForPasswordResetComplete poll
+     * @method cancelWaitForPasswordResetComplete
+     */
+    cancelWaitForPasswordResetComplete: cancelRegistrationPoll,
+
+    /**
+     * Request the reverification of an unverified email address
+     * @method requestEmailReverify
+     * @param {string} email
+     * @param {function} [onComplete]
+     * @param {function} [onFailure]
+     */
+    requestEmailReverify: function(email, onComplete, onFailure) {
+      var idInfo = storage.getEmail(email);
+      if (idInfo && idInfo.verified) {
+        // this email is already verified, cannot be reverified.
+        complete(onComplete, { success: false, reason: "verified_email" });
+      }
+      else if (idInfo && !idInfo.verified) {
+        // this address is unverified, try to reverify it.
+        network.requestEmailReverify(email, origin,
+          stageAddressVerificationResponse.curry(onComplete), onFailure);
+      }
+      else {
+        // user does not own this address.
+        complete(onComplete, { success: false, reason: "invalid_email" });
+      }
+    },
+
+    completeEmailReverify: function(token, password, onComplete, onFailure) {
+      completeAddressVerification(token, password, "completeEmailReverify", onComplete, onFailure);
+    },
+
+    /**
+     * Wait for the email reverification to complete
+     * @method waitForEmailReverifyComplete
+     * @param {string} email - email address to check.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    waitForEmailReverifyComplete: registrationPoll.curry(network.checkEmailReverify),
+
+    /**
+     * Cancel the waitForEmailReverifyComplete poll
+     * @method cancelWaitForEmailReverifyComplete
+     */
+    cancelWaitForEmailReverifyComplete: cancelRegistrationPoll,
 
     /**
      * Cancel the current user's account.  Remove last traces of their
@@ -932,9 +991,7 @@ BrowserID.User = (function() {
      * @param {function} [onSuccess] - Called to give status updates.
      * @param {function} [onFailure] - Called on error.
      */
-    waitForEmailValidation: function(email, onSuccess, onFailure) {
-      registrationPoll(network.checkEmailRegistration, email, onSuccess, onFailure);
-    },
+    waitForEmailValidation: registrationPoll.curry(network.checkEmailRegistration),
 
     /**
      * Cancel the waitForEmailValidation poll
@@ -955,7 +1012,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     verifyEmail: function(token, password, onComplete, onFailure) {
-      verifyAddress(token, password, "completeEmailRegistration", onComplete, onFailure);
+      completeAddressVerification(token, password, "completeEmailRegistration", onComplete, onFailure);
     },
 
     /**

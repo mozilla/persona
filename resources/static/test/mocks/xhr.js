@@ -74,6 +74,17 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/complete_reset invalid": { success: false },
       "post /wsapi/complete_reset ajaxError": undefined,
 
+      "post /wsapi/stage_reverify unknown_secondary": { success: true },
+      "post /wsapi/stage_reverify valid": { success: true },
+      "post /wsapi/stage_reverify invalid": { success: false },
+      "post /wsapi/stage_reverify throttle": 429,
+      "post /wsapi/stage_reverify ajaxError": undefined,
+
+      "post /wsapi/complete_reverify valid": { success: true },
+      "post /wsapi/complete_reverify badPassword": 401,
+      "post /wsapi/complete_reverify invalid": { success: false },
+      "post /wsapi/complete_reverify ajaxError": undefined,
+
       "get /wsapi/user_creation_status?email=registered%40testuser.com pending": { status: "pending" },
       "get /wsapi/user_creation_status?email=registered%40testuser.com complete": { status: "complete", userid: 4 },
       "get /wsapi/user_creation_status?email=registered%40testuser.com mustAuth": { status: "mustAuth" },
@@ -89,6 +100,9 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/have_email?email=registered%40testuser.com valid": { email_known: true },
       "get /wsapi/have_email?email=registered%40testuser.com throttle": { email_known: true },
       "get /wsapi/have_email?email=registered%40testuser.com ajaxError": undefined,
+      "get /wsapi/have_email?email=testuser%40testuser.com valid": { email_known: true },
+      "get /wsapi/have_email?email=testuser%40testuser.com throttle": { email_known: true },
+      "get /wsapi/have_email?email=testuser%40testuser.com ajaxError": undefined,
       "get /wsapi/have_email?email=unregistered%40testuser.com valid": { email_known: false },
       "get /wsapi/have_email?email=unregistered%40testuser.com primary": { email_known: false },
       "post /wsapi/remove_email valid": { success: true },

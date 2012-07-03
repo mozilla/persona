@@ -83,14 +83,10 @@ BrowserID.Network = (function() {
     }
   }
 
-  function stageEmailForVerification(email, password, origin, wsapiName, onComplete, onFailure) {
+  function stageAddressForVerification(data, wsapiName, onComplete, onFailure) {
     post({
       url: wsapiName,
-      data: {
-        email: email,
-        pass: password,
-        site : origin
-      },
+      data: data,
       success: function(status) {
         complete(onComplete, status.success);
       },
@@ -235,7 +231,12 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     createUser: function(email, password, origin, onComplete, onFailure) {
-      stageEmailForVerification(email, password, origin, "/wsapi/stage_user", onComplete, onFailure);
+      var postData = {
+        email: email,
+        pass: password,
+        site : origin
+      };
+      stageAddressForVerification(postData, "/wsapi/stage_user", onComplete, onFailure);
     },
 
     /**
@@ -308,28 +309,6 @@ BrowserID.Network = (function() {
     },
 
     /**
-     * Complete user reset password
-     * @method completeUserResetPassword
-     * @param {string} token - token to register for.
-     * @param {string} password
-     * @param {function} [onComplete] - Called when complete.
-     * @param {function} [onFailure] - Called on XHR failure.
-     */
-    completeUserResetPassword: function(token, password, onComplete, onFailure) {
-      post({
-        url: "/wsapi/complete_reset",
-        data: {
-          token: token,
-          pass: password
-        },
-        success: function(status, textStatus, jqXHR) {
-          complete(onComplete, status.success);
-        },
-        error: onFailure
-      });
-    },
-
-    /**
      * Call with a token to prove an email address ownership.
      * @method completeEmailRegistration
      * @param {string} token - token proving email ownership.
@@ -353,17 +332,32 @@ BrowserID.Network = (function() {
     },
 
     /**
+     * Request a password reset for the given email address.
+     * @method requestPasswordReset
+     * @param {string} email
+     * @param {string} password
+     * @param {string} origin
+     * @param {function} [onComplete] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    requestPasswordReset: function(email, password, origin, onComplete, onFailure) {
+      var postData = {
+        email: email,
+        pass: password,
+        site : origin
+      };
+      stageAddressForVerification(postData, "/wsapi/stage_reset", onComplete, onFailure);
+    },
+
+    /**
      * Complete email reset password
-     * @method completeEmailResetPassword
+     * @method completePasswordReset
      * @param {string} token - token to register for.
      * @param {string} password
      * @param {function} [onComplete] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    /**
-     * BEGIN may not be needed
-     */
-    completeEmailResetPassword: function(token, password, onComplete, onFailure) {
+    completePasswordReset: function(token, password, onComplete, onFailure) {
       post({
         url: "/wsapi/complete_reset",
         data: {
@@ -376,23 +370,79 @@ BrowserID.Network = (function() {
         error: onFailure
       });
     },
+
     /**
-     * END may not be needed
+     * Check the registration status of a password reset
+     * @method checkPasswordReset
+     * @param {function} [onsuccess] - called when complete.
+     * @param {function} [onfailure] - called on xhr failure.
      */
-
+    checkPasswordReset: function(email, onComplete, onFailure) {
+      get({
+        // XXX the URL is going to have to change
+        url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
+        success: function(status, textStatus, jqXHR) {
+          complete(onComplete, status.status);
+        },
+        error: onFailure
+      });
+    },
 
     /**
-     * Request a password reset for the given email address.
-     * @method requestPasswordReset
+     * Stage an email reverification.
+     * @method requestEmailReverify
      * @param {string} email
-     * @param {string} password
-     * @param {string} origin
+     * @param {string} origin - site user is trying to sign in to.
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestPasswordReset: function(email, password, origin, onComplete, onFailure) {
-      stageEmailForVerification(email, password, origin, "/wsapi/stage_reset", onComplete, onFailure);
+    requestEmailReverify: function(email, origin, onComplete, onFailure) {
+      var postData = {
+        email: email,
+        site : origin
+      };
+      stageAddressForVerification(postData, "/wsapi/stage_reverify", onComplete, onFailure);
     },
+
+    /**
+     * Complete email reverification
+     * @method completeEmailReverify
+     * @param {string} token - token to register for.
+     * @param {string} password
+     * @param {function} [onComplete] - Called when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    completeEmailReverify: function(token, password, onComplete, onFailure) {
+      post({
+        url: "/wsapi/complete_reverify",
+        data: {
+          token: token,
+          pass: password
+        },
+        success: function(status, textStatus, jqXHR) {
+          complete(onComplete, status.success);
+        },
+        error: onFailure
+      });
+    },
+
+    /**
+     * Check the registration status of an email reverification
+     * @method checkEmailReverify
+     * @param {function} [onsuccess] - called when complete.
+     * @param {function} [onfailure] - called on xhr failure.
+     */
+    checkEmailReverify: function(email, onComplete, onFailure) {
+      get({
+        // XXX the URL is going to have to change
+        url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
+        success: function(status, textStatus, jqXHR) {
+          complete(onComplete, status.status);
+        },
+        error: onFailure
+      });
+    },
+
 
     /**
      * Set the password of the current user.
@@ -504,7 +554,12 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - called on xhr failure.
      */
     addSecondaryEmail: function(email, password, origin, onComplete, onFailure) {
-      stageEmailForVerification(email, password, origin, "/wsapi/stage_email", onComplete, onFailure);
+      var postData = {
+        email: email,
+        pass: password,
+        site : origin
+      };
+      stageAddressForVerification(postData, "/wsapi/stage_email", onComplete, onFailure);
     },
 
     /**

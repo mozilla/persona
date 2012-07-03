@@ -65,7 +65,7 @@ var jwcrypto = require("./lib/jwcrypto");
     });
   }
 
-  module("shared/user", {
+  module("common/js/user", {
     setup: function() {
       testHelpers.setup();
     },
@@ -551,6 +551,100 @@ var jwcrypto = require("./lib/jwcrypto");
     xhr.useResult("ajaxError");
 
     lib.verifyPasswordReset(
+      "token",
+      "password",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
+  asyncTest("requestEmailReverify with owned verified email - false status", function() {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
+
+    var returnTo = "http://samplerp.org";
+    lib.setReturnTo(returnTo);
+    lib.requestEmailReverify(TEST_EMAIL, function(status) {
+      testObjectValuesEqual(status, {
+        success: false,
+        reason: "verified_email"
+      });
+
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("requestEmailReverify with owned unverified email - false status", function() {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+
+    var returnTo = "http://samplerp.org";
+    lib.setReturnTo(returnTo);
+    lib.requestEmailReverify(TEST_EMAIL, function(status) {
+      equal(status.success, true, "password reset for known user");
+      equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
+
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("requestEmailReverify with unowned email - false status, invalid_user", function() {
+    lib.requestEmailReverify(TEST_EMAIL, function(status) {
+      testObjectValuesEqual(status, {
+        success: false,
+        reason: "invalid_email"
+      });
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("requestEmailReverify owned email with throttle - false status, throttle", function() {
+    xhr.useResult("throttle");
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+
+    lib.requestEmailReverify(TEST_EMAIL, function(status) {
+      testObjectValuesEqual(status, {
+        success: false,
+        reason: "throttle"
+      });
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("requestEmailReverify with XHR failure", function() {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    failureCheck(lib.requestEmailReverify, TEST_EMAIL);
+  });
+
+  asyncTest("completeEmailReverify with a good token", function() {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.setReturnTo(testOrigin);
+
+    lib.completeEmailReverify("token", "password", function onSuccess(info) {
+      testObjectValuesEqual(info, {
+        valid: true,
+        email: TEST_EMAIL,
+        returnTo: testOrigin,
+      });
+
+      equal(storage.getReturnTo(), "", "initiating origin was removed");
+      equal(storage.getEmail(TEST_EMAIL).verified, true, "email now marked as verified");
+
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("completeEmailReverify with a bad token", function() {
+    xhr.useResult("invalid");
+
+    lib.completeEmailReverify("token", "password", function onSuccess(info) {
+      equal(info.valid, false, "bad token calls onSuccess with a false validity");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("completeEmailReverify with an XHR failure", function() {
+    xhr.useResult("ajaxError");
+
+    lib.completeEmailReverify(
       "token",
       "password",
       testHelpers.unexpectedSuccess,
