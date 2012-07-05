@@ -113,6 +113,23 @@ BrowserID.Network = (function() {
     complete(onComplete, status.status);
   }
 
+  function completeAddressVerification(wsapiName, token, password, onComplete, onFailure) {
+      post({
+        url: wsapiName,
+        data: {
+          token: token,
+          pass: password
+        },
+        success: function(status, textStatus, jqXHR) {
+          // If the user has successfully completed an address verification,
+          // they are authenticated to the password status.
+          if (status.success) auth_status = "password";
+          complete(onComplete, status.success);
+        },
+        error: onFailure
+      });
+
+    }
 
   var Network = {
     /**
@@ -297,19 +314,7 @@ BrowserID.Network = (function() {
      * @param {function} [onComplete] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeUserRegistration: function(token, password, onComplete, onFailure) {
-      post({
-        url: "/wsapi/complete_user_creation",
-        data: {
-          token: token,
-          pass: password
-        },
-        success: function(status, textStatus, jqXHR) {
-          complete(onComplete, status.success);
-        },
-        error: onFailure
-      });
-    },
+    completeUserRegistration: completeAddressVerification.curry("/wsapi/complete_user_creation"),
 
     /**
      * Call with a token to prove an email address ownership.
@@ -320,19 +325,7 @@ BrowserID.Network = (function() {
      * with one boolean parameter that specifies the validity of the token.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeEmailRegistration: function(token, password, onComplete, onFailure) {
-      post({
-        url: "/wsapi/complete_email_addition",
-        data: {
-          token: token,
-          pass: password
-        },
-        success: function(status, textStatus, jqXHR) {
-          complete(onComplete, status.success);
-        },
-        error: onFailure
-      });
-    },
+    completeEmailRegistration: completeAddressVerification.curry("/wsapi/complete_email_addition"),
 
     /**
      * Request a password reset for the given email address.
@@ -360,19 +353,7 @@ BrowserID.Network = (function() {
      * @param {function} [onComplete] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completePasswordReset: function(token, password, onComplete, onFailure) {
-      post({
-        url: "/wsapi/complete_reset",
-        data: {
-          token: token,
-          pass: password
-        },
-        success: function(status, textStatus, jqXHR) {
-          complete(onComplete, status.success);
-        },
-        error: onFailure
-      });
-    },
+    completePasswordReset: completeAddressVerification.curry("/wsapi/complete_reset"),
 
     /**
      * Check the registration status of a password reset
@@ -412,19 +393,7 @@ BrowserID.Network = (function() {
      * @param {function} [onComplete] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeEmailReverify: function(token, password, onComplete, onFailure) {
-      post({
-        url: "/wsapi/complete_reverify",
-        data: {
-          token: token,
-          pass: password
-        },
-        success: function(status, textStatus, jqXHR) {
-          complete(onComplete, status.success);
-        },
-        error: onFailure
-      });
-    },
+    completeEmailReverify: completeAddressVerification.curry("/wsapi/complete_reverify"),
 
     /**
      * Check the registration status of an email reverification
