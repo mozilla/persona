@@ -39,7 +39,12 @@ process.env['HTTP_PROXY'] = HOST + ":10006";
 process.env['HOST'] = HOST
 
 // use the "local" configuration
-process.env['CONFIG_FILES'] = path.join(__dirname, '..', 'config', 'local.json');
+var configFiles = [];
+if (process.env['CONFIG_FILES']) {
+  var configFiles = process.env['CONFIG_FILES'].split(',');
+}
+configFiles.push(path.join(__dirname, '..', 'config', 'local.json'));
+process.env['CONFIG_FILES'] = configFiles.join(',');
 
 // all spawned process that use handle primaries should know about "shimmed"
 // primaries
