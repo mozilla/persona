@@ -6,10 +6,10 @@
 (function() {
   "use strict";
 
-  function Gettext(params) {
+  function Gettext() {
       return {
         gettext: function (msgid) {
-          if (json_locale_data && json_locale_data["client"]) {
+          if (window.json_locale_data && json_locale_data["client"]) {
           var dict = json_locale_data["client"];
             if (dict[msgid] && dict[msgid].length >= 2 &&
                 dict[msgid][1].trim() != "") {
@@ -33,11 +33,7 @@
       };
   };
 
-  var params = {
-        "domain" : "client",
-        "locale_data" : json_locale_data
-  };
-  var gt = new Gettext(params);
+  var gt = new Gettext();
   window.gettext = gt.gettext.bind(gt);
   window.format = gt.format.bind(gt);
 
