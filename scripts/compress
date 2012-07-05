@@ -42,7 +42,12 @@ Object.keys(all).forEach(function(resource) {
   // and is bundled into the Big Minified Piles Of Resources we ship.
   // Here we sub the former with the latter.
   var ix = all[resource].indexOf('/common/js/templates.js');
-  if (ix != -1) all[resource].splice(ix, 1, '/build/templates.js');
+  if (ix !== -1) all[resource].splice(ix, 1, '/build/templates.js');
+
+  // remove all i18n en_US resources, they are unnecessary - issue #1905
+  ix = all[resource].indexOf('/i18n/en_US/client.json');
+  if (ix !== -1) all[resource].splice(ix, 1);
+
 
   cc.enqueue({
     file: resource,
