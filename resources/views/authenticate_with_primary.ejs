@@ -6,7 +6,6 @@
 <head>
   <meta charset="utf-8">
   <title>Browser ID</title>
-  <script type='text/javascript' src='https://static.login.persona.org/lib/winchan.js'></script>
-  <script type='text/javascript' src='https://static.login.persona.org/auth_with_idp/main.js'></script>
+  <%- cachify_js('/production/authenticate_with_primary.js') %>
 </head>
 </html>
