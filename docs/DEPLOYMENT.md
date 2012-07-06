@@ -75,7 +75,7 @@ Let's get started:
   2. install git if required: `sudo apt-get install git-core`
   3. become user git: `sudo su -s /bin/bash git`
   4. hop into your home directory: `cd`
-  5. install gitolite: [This.](http://sitaramc.github.com/gitolite/nonroot.html)
+  5. install gitolite: [This.](https://github.com/sitaramc/gitolite)
   6. add a browserid repo: [This.](http://sitaramc.github.com/gitolite/add.html)
 
 At this point you've morphed your servers into git servers.  Go ahead and
