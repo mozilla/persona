@@ -10,7 +10,7 @@
   <meta name="format-detection" content="email=no" />
 
   <!--[if lt IE 9]>
-    <script src="/common/js/lib/html5shim.js"></script>
+    <%- cachify_js('/production/html5shim.js') %>
   <![endif]-->
   <%- cachify_css('/production/dialog.css') %>
   <!--[if lt IE 9]>
