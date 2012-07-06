@@ -2,11 +2,11 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-Here lives the [BrowserID][] implementation.  BrowserID is an implementation of the
-[verified email protocol][VEP].
+Here lives the [Persona][] login implementation. This is an implementation of the
+[BrowserID protocol][].
 
-  [BrowserID]:https://login.persona.org
-  [VEP]:https://wiki.mozilla.org/Labs/Identity/VerifiedEmailProtocol
+  [Persona]: https://browserid.org
+  [BrowserID protocol]: https://github.com/mozilla/id-specs
 
 This repository contains several distinct things related to BrowserID:
 
@@ -48,9 +48,8 @@ If you'd like to contribute code back to us, please do so using a GitHub Pull Re
 
 To run the BrowserID service locally, you must first:
 
-1. (Optionally) Fork the main `mozilla/browserid` repository.
-2. Clone the repository to your local machine.
-3. Run `npm install` from the root of your local clone.
+1. Clone the repository to your local machine.
+2. Run `npm install` from the root of your local clone.
 
 You can then start the BrowserID suite of services by running `npm start` from the root of your local clone.
 
