@@ -10,6 +10,7 @@ BrowserID.Modules.IsThisYourComputer = (function() {
       dom = bid.DOM,
       user = bid.User,
       errors = bid.Errors,
+      domHelpers = bid.DOMHelpers,
       email;
 
   var Module = bid.Modules.PageModule.extend({
@@ -27,6 +28,9 @@ BrowserID.Modules.IsThisYourComputer = (function() {
 
       self.click("#this_is_my_computer", self.yes);
       self.click("#this_is_not_my_computer", self.no);
+
+      // Force all the buttons to be of equal width
+      domHelpers.makeEqualWidth("#your_computer_content button");
 
       Module.sc.start.call(self, options);
     },
