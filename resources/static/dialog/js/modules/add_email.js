@@ -40,7 +40,10 @@ BrowserID.Modules.AddEmail = (function() {
 
     if (email) {
       showHint("addressInfo");
-      dialogHelpers.addEmail.call(self, email, callback);
+      dialogHelpers.addEmail.call(self, email, function removeHint(status) {
+        hideHint("addressInfo");
+        complete(callback, status);
+      });
     }
     else {
       complete(callback, false);

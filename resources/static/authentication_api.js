@@ -33,11 +33,17 @@
     };
 
     navigator.id.completeAuthentication = function(cb) {
-      window.location = 'https://login.persona.org/sign_in#AUTH_RETURN';
+      if (window.name == 'auth_with_primary')
+        window.location = 'https://login.persona.org/authenticate_with_primary#complete';
+      else
+        window.location = 'https://login.persona.org/sign_in#AUTH_RETURN';
     };
 
     navigator.id.raiseAuthenticationFailure = function(reason) {
-      window.location = 'https://login.persona.org/sign_in#AUTH_RETURN_CANCEL';
+      if (window.name == 'auth_with_primary')
+        window.location = 'https://login.persona.org/authenticate_with_primary#complete';
+      else
+        window.location = 'https://login.persona.org/sign_in#AUTH_RETURN_CANCEL';
     };
 
     navigator.id._primaryAPIIsShimmed = true;
