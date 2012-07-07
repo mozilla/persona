@@ -22,6 +22,9 @@ if (!process.env['WHAT_TESTS']) {
 if (whatTests[0] == 'all') whatTests = [ 'back_mysql', 'back', 'front' ];
 
 var ec = 0;
+var frontend_test_filter = process.env['FRONTEND_TEST_FILTER'] ?
+                           ' (filter: ' + process.env['FRONTEND_TEST_FILTER'] + ')' :
+                           '';
 function run() {
   if (!whatTests.length) process.exit(ec);
 
@@ -29,7 +32,7 @@ function run() {
 
   const availConf = {
     front: {
-      what: "Front end unit tests under PhantomJS",
+      what: "Front end unit tests under PhantomJS" + frontend_test_filter,
       node_env: 'test_json',
       script: 'test_frontend'
     },
