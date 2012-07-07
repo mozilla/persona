@@ -8,10 +8,12 @@
   </h3>
 
   <p>
-    <%= format(gettext("Persona lets you use your %s account to sign into sites like %s."), [idpName, siteName]) %>
+    <%= format(gettext("Persona lets you use your %(emailProvider) account to sign into sites like %(aWebsite)."),
+               { emailProvider: idpName, aWebsite: siteName }) %>
   </p>
   <p>
-    <%= format(gettext("Once you verify your account there, you will be signed in to %s."), [siteName]) %>
+    <%= format(gettext("Once you verify your account there, you will be signed in to %(aWebsite)."),
+               {aWebsite : siteName}) %>
   </p>
     <p class="submit cf buttonrow">
         <button id="verifyWithPrimary"><%= format(gettext("sign in with %s"), [idpName]) %></button>
