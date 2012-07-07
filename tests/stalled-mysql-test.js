@@ -388,8 +388,8 @@ suite.addBatch({
         assertion: g_assertion
       }).call(this);
     },
-    "fails with 503": function(err, r) {
-      assert.strictEqual(r.code, 503);
+    "fails with 404": function(err, r) {
+      assert.strictEqual(r.code, 404);
     }
   }
 });
