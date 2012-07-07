@@ -8,7 +8,7 @@ const
 fs = require('fs'),
 path = require('path'),
 url = require('url'),
-http = require('http');
+http = require('http'),
 urlparse = require('urlparse'),
 express = require('express');
 
@@ -70,7 +70,7 @@ app.use(express.limit("10kb"));
 
 var statsd_config = config.get('statsd');
 if (statsd_config && statsd_config.enabled) {
-  logger_statsd = require("connect-logger-statsd");
+  var logger_statsd = require("connect-logger-statsd");
   app.use(logger_statsd({
     host: statsd_config.hostname || "localhost",
     port: statsd_config.port || 8125,
