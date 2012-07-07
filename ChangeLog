@@ -1,4 +1,22 @@
-train-2012.07.06: (in progress)
+train-2012.07.06:
+  * refinement of all user facing language: #1889, #1905, #1675, #1923, #1925
+  * requiredEmail feature removed: #1760
+  * A new /about page #1768
+  * watch() parameter - loggedInEmail renamed to loggedInUser #1805
+  * persona ToS / PP now displayed in dialog: #1240
+  * fix cases where redirection to website after verification would fail: #1860
+  * clean up console messages: #1518
+  * load_gen cleanup: #1278
+  * user interface improvements: #1777, #1661, #1433, #1548, #1774, #1721, #1826, #868, #1517, #1093, #1892, #1928
+  * updates to "key performance indicator": #1667, #1730
+  * test improvments: #1794, #1875, #1883
+  * code cleanup: #1778, #1756, #1748, #1849, #1852
+  * font licenses added to source tree: #1820
+  * load time performance improvements: #1793, #1851, #1861
+  * improvments to email provider API ("primary"): #1502
+  * security improvments - better random numbers: #1788
+  * Fix Persona on Windows Metro: #1867
+  * Fix dialog layout when rendered in a native webview on iOS: #1517
 
 train-2012.06.22:
   * browserid.org now redirects to login.persona.org, all URLs are updated: #1743
