@@ -1,3 +1,6 @@
+train-2012.07.20: (in progress)
+  * 
+
 train-2012.07.06:
   * refinement of all user facing language: #1889, #1905, #1675, #1923, #1925
   * requiredEmail feature removed: #1760
