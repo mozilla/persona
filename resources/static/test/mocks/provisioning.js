@@ -23,7 +23,7 @@ BrowserID.Mocks.Provisioning = (function() {
         // network.withContext, add a random seed to ensure that we can get our
         // keypair.
         jwcrypto.addEntropy("H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo=");
-        jwcrypto.generateKeypair({algorithm: "DS", keysize: 256}, function(err, kp) {
+        jwcrypto.generateKeypair({algorithm: "DS", keysize: BrowserID.KEY_LENGTH}, function(err, kp) {
           keypair = kp;
           if (onsuccess) onsuccess(keypair, cert);
         });
