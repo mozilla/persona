@@ -634,18 +634,12 @@ footer ul li:first-child a:hover {
 }
 
 .blurb {
-  zoom: 1;
   margin-top: 30px;
   padding: 30px;
   text-align: left;
   line-height: 1.5;
-}
-.blurb:before, .blurb:after {
-  content: "";
-  display: table;
-}
-.blurb:after {
-  clear: both;
+  overflow: hidden;
+  display: block;
 }
 
 .blurb h1, .blurb p, .blurb a, a.developers{
