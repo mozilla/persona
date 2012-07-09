@@ -18,10 +18,10 @@
     return mod;
   }
 
-  module("shared/modules/xhr_disable_form", {
+  module("common/js/modules/xhr_disable_form", {
     setup: function() {
       testHelpers.setup();
-      createModule();
+      createModule({ enableDelayMS: 10 });
     },
 
     teardown: function() {
@@ -44,4 +44,35 @@
     });
     mediator.publish("xhr_complete");
   });
+
+  asyncTest("multiple xhr_completes only cause one submit_enabled", function() {
+    var submitEnabledCount = 0;
+    mediator.subscribe("submit_enabled", function() {
+      submitEnabledCount++;
+    });
+    mediator.publish("xhr_complete");
+    mediator.publish("xhr_complete");
+
+    // give plenty of time to allow all submit_enabled timeouts to occur.
+    setTimeout(function() {
+      equal(submitEnabledCount, 1, "submit_enabled called only once");
+      start();
+    }, 50);
+  });
+
+  asyncTest("xhr_start after xhr_complete but before submit_enabled cancels submit_enabled", function() {
+    var submitEnabledCount = 0;
+    mediator.subscribe("submit_enabled", function() {
+      submitEnabledCount++;
+    });
+    mediator.publish("xhr_complete");
+    mediator.publish("xhr_start");
+
+    // give plenty of time to allow all submit_enabled timeouts to occur.
+    setTimeout(function() {
+      equal(submitEnabledCount, 0, "submit_enabled cancelled after xhr_start");
+      start();
+    }, 50);
+  });
+
 }());
