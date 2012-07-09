@@ -13,7 +13,6 @@ BrowserID.PageHelpers = (function() {
       user = bid.User,
       helpers = bid.Helpers,
       dom = bid.DOM,
-      errorDisplay = bid.ErrorDisplay,
       ANIMATION_SPEED = 250,
       origStoredEmail;
 
@@ -63,7 +62,6 @@ BrowserID.PageHelpers = (function() {
   function showFailure(error, info, callback) {
     info = $.extend(info || {}, { action: error, dialog: false });
     bid.Screens.error.show("error", info);
-    errorDisplay.start();
     callback && callback(false);
   }
 
