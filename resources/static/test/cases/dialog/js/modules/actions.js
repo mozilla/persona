@@ -1,4 +1,4 @@
-/*jshint browsers:true, forin: true, laxbreak: true */
+/*jshint browser: true, forin: true, laxbreak: true */
 /*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -75,12 +75,12 @@
   });
 
   asyncTest("doConfirmUser - start the check_registration service", function() {
-    testActionStartsModule("doConfirmUser", {email: TEST_EMAIL},
+    testActionStartsModule("doConfirmUser", {email: TEST_EMAIL, siteName: "Unit Test Site"},
       "check_registration");
   });
 
   asyncTest("doConfirmEmail - start the check_registration service", function() {
-    testActionStartsModule("doConfirmEmail", {email: TEST_EMAIL},
+    testActionStartsModule("doConfirmEmail", {email: TEST_EMAIL, siteName: "Unit Test Site"},
       "check_registration");
   });
 

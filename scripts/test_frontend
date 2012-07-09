@@ -35,8 +35,10 @@ start_stop.addStartupBatches(suite);
 suite.addBatch({
   "frontend unit tests": {
     topic: function() {
+      var filter = process.env['FRONTEND_TEST_FILTER'] ?
+                   '?filter=' + process.env['FRONTEND_TEST_FILTER'] : '';
       var kid = spawn('phantomjs', [ path.join(__dirname, 'phantomrunner.js'),
-                                     'http://127.0.0.1:10002/test' ]);
+                                     'http://127.0.0.1:10002/test/'+filter ]);
       kid.stdout.on('data', function(d) { process.stdout.write(d); });
       kid.stderr.on('data', function(d) { process.stderr.write(d); });
       kid.on('exit', this.callback);

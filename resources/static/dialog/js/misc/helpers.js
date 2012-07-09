@@ -1,4 +1,4 @@
-/*jshint browsers:true, forin: true, laxbreak: true */
+/*jshint browser: true, forin: true, laxbreak: true */
 /*global BrowserID: true*/
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,7 +20,10 @@
         doAnimation = $("#signIn").length && bodyWidth > 640;
 
     if (doAnimation) {
-      var endWidth = bodyWidth - 10;
+      /**
+       * Force the arrow to slide all the way off the screen.
+       */
+      var endWidth = bodyWidth + $(".arrowContainer").outerWidth();
 
       body.addClass("completing");
       /**

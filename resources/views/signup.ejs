@@ -15,17 +15,14 @@
                 </li>
 
                 <li class="notification emailsent">
+                  <h2>Confirm your email address</h2>
+
                   <p>
-                    We sent a confirmation email to <strong id="sentToEmail"></strong>.
+                    Check your email at <strong id="sentToEmail"></strong>.
                   </p>
 
                   <p>
-                    To finish signing up just click the verify link we sent to your email address.
-                  </p>
-
-                  <br />
-                  <p>
-                    If this is a mistake, just ignore the sent email and <a href="/signup" class="action cancelVerify" id="back">use another email address</a>.
+                    Click the link in the confirmation email. You'll then immediately be signed into Persona.
                   </p>
                 </li>
 
@@ -68,7 +65,7 @@
 
                 <li class="password_entry">
                     <label for="vpassword">Verify Password</label>
-                    <input id="vpassword" placeholder="Repeat Password" type="password" maxlength="80">
+                    <input id="vpassword" placeholder="Verify Password" type="password" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="vpassword">
                       Verification password is required.
@@ -106,7 +103,7 @@
                     sign in with your provider.  A new window will be opened.
                   </p>
 
-                  <p>
+                  <p class="submit">
                     <button id="authWithPrimary" tabindex="1">Verify</button>
                   </p>
                 </li>

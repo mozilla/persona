@@ -1,5 +1,5 @@
-/*jshint browsers:true, forin: true, laxbreak: true */
-/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
+/*jshint browser: true, forin: true, laxbreak: true */
+/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true, asyncTest:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,6 +9,7 @@
   var bid = BrowserID,
       testHelpers = bid.TestHelpers,
       network = bid.Network,
+      storage = bid.Storage,
       model = bid.Models.InteractionData,
       xhr = bid.Mocks.xhr,
       mediator = bid.Mediator,
@@ -36,18 +37,20 @@
     controller = BrowserID.Modules.InteractionData.create();
     controller.start(config);
 
-    controller.setNameTable({
-      before_session_context: null,
-      after_session_context: null,
-      session1_before_session_context: null,
-      session1_after_session_context: null,
-      session2_before_session_context: null,
-      session2_after_session_context: null,
-      initial_string_name: "translated_name",
-      initial_function_name: function(msg, data) {
-        return "function_translation." + msg;
-      }
-    });
+    if (setKPINameTable) {
+      controller.setNameTable({
+        before_session_context: null,
+        after_session_context: null,
+        session1_before_session_context: null,
+        session1_after_session_context: null,
+        session2_before_session_context: null,
+        session2_after_session_context: null,
+        initial_string_name: "translated_name",
+        initial_function_name: function(msg, data) {
+          return "function_translation." + msg;
+        }
+      });
+    }
 
   }
 
@@ -69,7 +72,7 @@
     // simulate data stored for last session
     model.push({ timestamp: new Date().getTime() });
 
-    createController();
+    createController(true);
 
     controller.addEvent("before_session_context");
 
@@ -122,7 +125,7 @@
   });
 
   asyncTest("samplingEnabled set to false - no data collection occurs", function() {
-    createController({ samplingEnabled: false });
+    createController(true, { samplingEnabled: false });
 
     // the initial with_context will send off any stored data, there should be
     // no stored data.
@@ -140,7 +143,7 @@
   });
 
   asyncTest("continue: true, data collection permitted on previous session - continue appending data to previous session", function() {
-    createController();
+    createController(true);
 
     controller.addEvent("session1_before_session_context");
     network.withContext(function() {
@@ -150,7 +153,7 @@
       // re-get session context.
       controller = null;
       network.clearContext();
-      createController({ continuation: true });
+      createController(true, { continuation: true });
 
       controller.addEvent("session2_before_session_context");
       network.withContext(function() {
@@ -254,6 +257,126 @@
         number_emails: 1
       });
       start();
+    });
+  });
+
+  asyncTest("kpi orphans are adopted if user.staged and user is signed in", function() {
+    // 1. user.user_staged
+    // 2. dialog is orphaned
+    // 3. user comes back, authenticated
+    // 4. the orphan found a good home
+    createController(false);
+    network.withContext(function() {
+      // user is staged
+      controller.addEvent("user_staged");
+      // dialog all done, its orphaned, oh noes! think of the kids!
+      mediator.publish("kpi_data", {
+        orphaned: true
+      });
+      network.clearContext();
+
+
+      // new page
+      createController(false);
+      // make user authenticated
+      xhr.setContextInfo("auth_level", "password");
+      network.withContext(function() {
+        var request = xhr.getLastRequest('/wsapi/interaction_data');
+        var data = JSON.parse(request.data).data[0];
+        equal(data.orphaned, false, "orphaned is not sent");
+        start();
+      });
+    });
+  });
+
+  asyncTest("kpi orphans are NOT adopted if NOT user.staged and user is signed in", function() {
+    // 1. user was not staged
+    // 2. dialog is orphaned
+    // 3. user comes back, authenticated
+    // 4. but he wasn't staged, so dont adopt
+    createController(false);
+    network.withContext(function() {
+      // dialog all done, its orphaned, oh noes! think of the kids!
+      mediator.publish("kpi_data", {
+        orphaned: true
+      });
+      network.clearContext();
+
+
+      // new page
+      createController(false);
+      // make user authenticated
+      xhr.setContextInfo("auth_level", "password");
+      network.withContext(function() {
+        var request = xhr.getLastRequest('/wsapi/interaction_data');
+        var data = JSON.parse(request.data).data[0];
+        equal(data.orphaned, true, "orphaned is sent");
+        start();
+      });
+    });
+  });
+
+    asyncTest("kpi orphans are adopted if add_email and email count increased", function() {
+    // 1. email_staged
+    // 2. dialog is orphaned
+    // 3. email is verified
+    // 4. user comes back, authenticated
+    // 5. the orphan found a good home
+    createController(false);
+    network.withContext(function() {
+      // email is staged
+      controller.addEvent("email_staged");
+      // dialog all done, its orphaned, oh noes! think of the kids!
+      mediator.publish("kpi_data", {
+        orphaned: true,
+        number_emails: storage.getEmailCount() || 0
+      });
+      network.clearContext();
+
+      // email is verified
+      storage.addSecondaryEmail("testuser@testuser.org");
+
+      // new page
+      createController(false);
+      // make user authenticated
+      xhr.setContextInfo("auth_level", "password");
+      network.withContext(function() {
+        var request = xhr.getLastRequest('/wsapi/interaction_data');
+        var data = JSON.parse(request.data).data[0];
+        equal(data.orphaned, false, "orphaned is not sent");
+        start();
+      });
+    });
+  });
+
+  asyncTest("kpi orphans are NOT adopted if add_email but email count is same", function() {
+    // 1. email staged
+    // 2. dialog is orphaned
+    // 3. user comes back, authenticated
+    // 4. but no new email, so oprhan is true
+    createController(false);
+    network.withContext(function() {
+      // user is staged
+      controller.addEvent("email_staged");
+      // dialog all done, its orphaned, oh noes! think of the kids!
+      mediator.publish("kpi_data", {
+        orphaned: true,
+        number_emails: storage.getEmailCount() || 0
+      });
+      network.clearContext();
+
+      // user never confirms
+
+      // new page
+      createController(false);
+      // make user authenticated
+      xhr.setContextInfo("auth_level", "password");
+      network.withContext(function() {
+        var request = xhr.getLastRequest('/wsapi/interaction_data');
+        var data = JSON.parse(request.data).data[0];
+        equal(data.orphaned, true, "orphaned is sent");
+        start();
+      });
     });
   });
 

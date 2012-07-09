@@ -1,4 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*jshint browser:true, jquery: true, forin: true, laxbreak:true */
 /*global _: true, BrowserID: true, PageController: true, gettext: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -40,7 +40,10 @@ BrowserID.Modules.AddEmail = (function() {
 
     if (email) {
       showHint("addressInfo");
-      dialogHelpers.addEmail.call(self, email, callback);
+      dialogHelpers.addEmail.call(self, email, function removeHint(status) {
+        hideHint("addressInfo");
+        complete(callback, status);
+      });
     }
     else {
       complete(callback, false);

@@ -20,14 +20,16 @@
         },
         // See lib/i18n.js format docs
         format: function (fmt, obj, named) {
-          if (! fmt) return "";
-          if (! fmt.replace) {
+          if (!fmt) return "";
+          if (!fmt.replace) {
             return fmt;
           }
-          if (named) {
-            return fmt.replace(/%\(\w+\)s/g, function(match){return String(obj[match.slice(2,-2)])});
-          } else {
+          if (_.isArray(obj) || named === false) {
             return fmt.replace(/%s/g, function(match){return String(obj.shift())});
+          } else if (_.isObject(obj) || named === true) {
+            return fmt.replace(/%\(\s*([^)]+)\s*\)/g, function(m, v){
+              return String(obj[v]);
+            });
           }
         }
       };
@@ -40,5 +42,4 @@
   var gt = new Gettext(params);
   window.gettext = gt.gettext.bind(gt);
   window.format = gt.format.bind(gt);
-
 }());

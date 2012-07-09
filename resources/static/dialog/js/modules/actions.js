@@ -37,7 +37,8 @@ BrowserID.Modules.Actions = (function() {
       verifier: verifier,
       verificationMessage: message,
       password: password,
-      siteName: options.siteName
+      siteName: options.siteName,
+      email: options.email
     });
     controller.startCheck();
   }

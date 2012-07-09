@@ -78,8 +78,8 @@ page.open(phantom.args[0], function(status){
 
                         var failingItems = node.querySelectorAll(".fail");
                         var failingItemsCount = failingItems.length;
-                        for(var i = 0; i < failingItemsCount; i++) {
-                          var failingItem = failingItems.item(i);
+                        for(var j = 0; j < failingItemsCount; j++) {
+                          var failingItem = failingItems.item(j);
                           console.log("   - " + failingItem.innerText);
                         }
                     }

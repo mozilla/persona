@@ -8,13 +8,13 @@ const
 fs = require('fs'),
 path = require('path'),
 url = require('url'),
-http = require('http');
+http = require('http'),
 urlparse = require('urlparse'),
 express = require('express'),
 wsapi = require('../lib/wsapi.js'),
-httputils = require('../lib/httputils.js');
+httputils = require('../lib/httputils.js'),
 secrets = require('../lib/secrets.js'),
-db = require('../lib/db.js');
+db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
 metrics = require('../lib/metrics.js'),
@@ -49,7 +49,7 @@ app.use(express.logger({
 
 var statsd_config = config.get('statsd');
 if (statsd_config && statsd_config.enabled) {
-  logger_statsd = require("connect-logger-statsd");
+  var logger_statsd = require("connect-logger-statsd");
   app.use(logger_statsd({
     host: statsd_config.hostname || "localhost",
     port: statsd_config.port || 8125,
@@ -93,7 +93,7 @@ wsapi.setup({
 
 function doShutdown(readyForShutdownCB) {
   require('../lib/bcrypt.js').shutdown();
-  db.close(readyForShutdownCB)
+  db.close(readyForShutdownCB);
 }
 
 // open the databse

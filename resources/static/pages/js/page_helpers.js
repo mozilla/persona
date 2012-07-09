@@ -13,7 +13,6 @@ BrowserID.PageHelpers = (function() {
       user = bid.User,
       helpers = bid.Helpers,
       dom = bid.DOM,
-      errorDisplay = bid.ErrorDisplay,
       ANIMATION_SPEED = 250,
       origStoredEmail;
 
@@ -63,7 +62,6 @@ BrowserID.PageHelpers = (function() {
   function showFailure(error, info, callback) {
     info = $.extend(info || {}, { action: error, dialog: false });
     bid.Screens.error.show("error", info);
-    errorDisplay.start();
     callback && callback(false);
   }
 
@@ -136,17 +134,12 @@ BrowserID.PageHelpers = (function() {
       throw "cannot verify with primary without an email address and URL"
     }
 
-    var url = helpers.toURL(baseURL, {
-        email: email,
-        return_to: "https://login.persona.org/authenticate_with_primary#complete"
-    });
-
     winchan.open({
       url: "https://login.persona.org/authenticate_with_primary",
       // This is the relay that will be used when the IdP redirects to sign_in_complete
       relay_url: "https://login.persona.org/relay",
       window_features: "width=700,height=375",
-      params: url
+      params: helpers.toURL(baseURL, {email: email})
     }, function(error, result) {
       // We have to force a reset of the primary caches because the user's
       // authentication status may be incorrect.

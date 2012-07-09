@@ -966,6 +966,59 @@ suite.addBatch({
   }
 });
 
+const OTHER_EMAIL = 'otheremail@example.com';
+
+// check that chained certs do not work
+suite.addBatch({
+  "generating an assertion with chained certs": {
+    topic: function() {
+      // primaryCert generated
+      // newClientKeypair generated
+      var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var self = this;
+
+      jwcrypto.generateKeypair(
+        {algorithm: "DS", keysize: 256},
+        function(err, innerKeypair) {
+
+          // sign this innerkeypair with the key from g_cert (g_keypair)
+          jwcrypto.cert.sign(
+            innerKeypair.publicKey, {email: OTHER_EMAIL},
+            {issuedAt: new Date(), expiresAt: expirationDate},
+            {}, g_keypair.secretKey,
+            function(err, innerCert) {
+              jwcrypto.assertion.sign({}, {audience: TEST_ORIGIN, expiresAt: expirationDate},
+                                      innerKeypair.secretKey, function(err, assertion) {
+                                        if (err) return self.callback(err);
+                                        
+                                        var b = jwcrypto.cert.bundle([g_cert, innerCert],
+                                                                     assertion);
+                                        self.callback(null, b);
+                                      });
+            });
+          
+        });
+    },
+    "yields a good looking assertion": function (err, assertion) {
+      assert.isString(assertion);
+      assert.equal(assertion.length > 0, true);
+    },
+    "will cause the verifier": {
+      topic: function(err, assertion) {
+        wsapi.post('/verify', {
+          audience: TEST_ORIGIN,
+          assertion: assertion
+        }).call(this);
+      },
+      "to fail": function (err, r) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, "certificate chaining is not yet allowed");
+      }
+    }
+  }
+});
+
 start_stop.addShutdownBatches(suite);
 
 // run or export the suite.

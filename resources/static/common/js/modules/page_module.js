@@ -1,4 +1,4 @@
-/*jshint browser:true, jQuery: true, forin: true, laxbreak:true */
+/*jshint browser:true, jquery: true, forin: true, laxbreak:true */
 /*global BrowserID: true*/
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -132,15 +132,9 @@ BrowserID.Modules.PageModule = (function() {
     renderWait: showScreen.curry(screens.wait),
     hideWait: hideScreen.curry(screens.wait),
 
-    renderError: function(template, data, oncomplete) {
-      screens.error.show(template, data);
-
-      bid.ErrorDisplay.start();
-
-      oncomplete && oncomplete(false);
-    },
-
+    renderError: showScreen.curry(screens.error),
     hideError: hideScreen.curry(screens.error),
+
     renderDelay: showScreen.curry(screens.delay),
     hideDelay: hideScreen.curry(screens.delay),
 

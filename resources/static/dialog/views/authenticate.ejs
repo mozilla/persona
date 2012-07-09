@@ -12,7 +12,7 @@
 
           <li>
               <label for="email"><%= gettext('To sign in with Persona, please enter your email address.') %></label>
-              <input id="email" type="email" autocapitalize="off" autocorrect="off" value="<%= email %>" maxlength="254" tabindex="1" placeholder="<%= gettext('enter email address') %>"/>
+              <input id="email" type="email" autocapitalize="off" autocorrect="off" value="<%= email %>" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
 
               <div id="email_format" class="tooltip" for="email">
                 <%= gettext('This field must be an email address.') %>
@@ -36,7 +36,7 @@
 
               <label for="password" class="hidden"><%= gettext('Password') %></label>
 
-              <input id="password" type="password" maxlength="80" tabindex="2" placeholder="<%= gettext('password') %>" />
+              <input id="password" type="password" maxlength="80" placeholder="<%= gettext('password') %>" />
 
               <div id="password_required" class="tooltip" for="password">
                 <%= gettext('The password field is required.') %>
@@ -57,12 +57,10 @@
 
 
       <p class="submit tospp">
-         <%= format(
-              gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
-                   [ "Persona",
-                     ' href="https://login.persona.org/tos" target="_new"',
-                     ' href="https://login.persona.org/privacy" target="_new"',
-                   ]) %>
+         <%= format(gettext("By proceeding, you agree to %(site)'s <a %(terms)>Terms</a> and <a %(privacy)>Privacy Policy</a>."),
+                    { site: "Persona",
+                      terms: 'href="https://login.persona.org/tos" target="_new"',
+                      privacy: 'href="https://login.persona.org/privacy" target="_new"' }) %>
       </p>
 
   </div>

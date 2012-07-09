@@ -1,4 +1,4 @@
-/*jshint browsers:true, forin: true, laxbreak: true */
+/*jshint browser: true, forin: true, laxbreak: true */
 /*global test: true, start: true, module: true, ok: true, equal: true, BrowserID: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,7 +15,7 @@
       xhr = bid.Mocks.xhr,
       errors = bid.Errors;
 
-  module("pages/page_helpers", {
+  module("pages/js/page_helpers", {
     setup: function() {
       testHelpers.setup();
       winMock = new WindowMock();
@@ -154,12 +154,12 @@
       // We have to make sure the error screen itself is visible and that the
       // extra info is hidden so when we click on the extra info it opens.
       $("#error").show();
-      $("#moreInfo").hide();
-      $("#openMoreInfo").trigger("click");
+      $("#error .moreInfo").hide();
+      $("#error .openMoreInfo").trigger("click");
 
       // Add a bit of delay to wait for the animation
       setTimeout(function() {
-        equal($("#moreInfo").is(":visible"), true, "extra info is visible after click");
+        equal($("#error .moreInfo").is(":visible"), true, "extra info is visible after click");
         start();
       }, 100);
 

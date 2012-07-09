@@ -114,6 +114,66 @@ suite.addBatch({
   }
 });
 
+// now let's SIGSTOP the static process and verify that the router's
+// deep heartbeat fails within 11s
+suite.addBatch({
+  "stopping the static process": {
+    topic: function() {
+      process.kill(parseInt(process.env['STATIC_PID'], 10), 'SIGSTOP');      
+      this.callback();
+    },
+    "then doing a deep __heartbeat__ on router": {
+      topic: function() {
+        var self = this;
+        var start = new Date();
+        var req = http.get({
+          host: '127.0.0.1',
+          port: 10002,
+          path: '/__heartbeat__?deep=true'
+        }, function(res) {
+          self.callback(null, res.statusCode, start);
+          req.abort();
+        }).on('error', function(e) {
+          self.callback(e, null);
+          req.abort();
+        });
+      },
+      "fails": function(e, code, start) {
+        assert.ok(!e);
+        assert.strictEqual(500, code);
+      },
+      "takes about 5s": function(e, code, start) {
+        assert.ok(!e);
+        var elapsedMS = new Date() - start;
+        assert.ok(3000 < elapsedMS < 7000);
+      },
+      "but upon SIGCONT": {
+        topic: function(e, code) {
+          process.kill(parseInt(process.env['STATIC_PID'], 10), 'SIGCONT');      
+          this.callback();
+        },
+        "a deep heartbeat": {
+          topic: function() {
+            var self = this;
+            var req = http.get(
+              { host: '127.0.0.1', port: 10002, path: '/__heartbeat__?deep=true'},
+              function(res) {
+                self.callback(null, res.statusCode);
+                req.abort();
+              }).on('error', function(e) {
+                self.callback(e, null);
+                req.abort();
+              });
+          },
+          "works": function(err, code) {
+            assert.ok(!err);
+            assert.strictEqual(200, code);
+          }
+        }
+      }
+    }
+  }
+});
 
 start_stop.addShutdownBatches(suite);
 
