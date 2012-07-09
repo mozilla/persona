@@ -52,6 +52,24 @@ BrowserID.Provisioning = (function() {
     var iframe = document.createElement("iframe");
     iframe.setAttribute('src', args.url);
     iframe.style.display = "none";
+
+    function iframeOnLoad() {
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      // a timeout for the amount of time that provisioning is allowed to take
+      timeoutID = setTimeout(function provisionTimedOut() {
+        fail('timeoutError', 'Provisioning timed out.');
+      }, MAX_TIMEOUT);
+    }
+
+    if (iframe.addEventListener) {
+      iframe.addEventListener('load', iframeOnLoad, false);
+    } else if (iframe.attachEvent) {
+      iframe.attachEvent('onload', iframeOnLoad);
+    }
+    // else ruh-roh?
+
     document.body.appendChild(iframe);
 
     var chan = Channel.build({
@@ -97,10 +115,6 @@ BrowserID.Provisioning = (function() {
       successCB(keypair, cert);
     });
 
-    // a timeout for the amount of time that provisioning is allowed to take
-    timeoutID = setTimeout(function provisionTimedOut() {
-      fail('timeoutError', 'Provisioning timed out.');
-    }, MAX_TIMEOUT);
   };
 
   return Provisioning;
