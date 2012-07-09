@@ -35,11 +35,11 @@
   <% } %>
 
   <% if(typeof action !== "undefined" || typeof network !== "undefined") { %>
-    <a href="#" id="openMoreInfo">
+    <a href="#" class="openMoreInfo">
       <%= gettext("See more info") %>
     </a>
 
-    <ul id="moreInfo">
+    <ul class="moreInfo">
       <% if (typeof action !== "undefined") { %>
         <li>
           <strong id="action">Action: </strong><%= action.title %>

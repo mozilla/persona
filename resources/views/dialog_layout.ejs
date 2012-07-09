@@ -10,7 +10,7 @@
   <meta name="format-detection" content="email=no" />
 
   <!--[if lt IE 9]>
-    <script src="/common/js/lib/html5shim.js"></script>
+    <%- cachify_js('/production/html5shim.js') %>
   <![endif]-->
   <%- cachify_css('/production/dialog.css') %>
   <!--[if lt IE 9]>
@@ -31,8 +31,7 @@
       </div>
 
       <footer>
-<%- format(gettext('<strong>Persona.</strong> Simplified sign-in, built by a non-profit.  <a %s>Learn more&rarr;</a>'), [" href='/about' target='_blank'"]) %>
-
+<%- format(gettext('<strong>Persona.</strong> Simplified sign-in, built by a non-profit. <a %s>Learn more&rarr;</a>'), [" href='/about' target='_blank'"]) %>
       </footer>
 
 

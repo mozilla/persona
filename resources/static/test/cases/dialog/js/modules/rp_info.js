@@ -31,8 +31,12 @@
           // could already be destroyed from the close
         }
       }
-      window.scriptRun = null;
-      delete window.scriptRun;
+      try {
+        var und;
+        window.scriptRun = und;
+        delete window.scriptRun;
+      } catch(e) { /* IE8 blows up trying to delete scriptRun */ }
+
       testHelpers.teardown();
     }
   });
