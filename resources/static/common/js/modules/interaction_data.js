@@ -122,7 +122,7 @@ BrowserID.Modules.InteractionData = (function() {
     // if we were orphaned last time, but user is now authenticated,
     // lets see if their action end in success, and if so,
     // remove the orphaned flag
-    //"))
+    //
     // actions:
     // - user_staged => is authenticated?
     // - email_staged => email count is higher?
@@ -132,9 +132,7 @@ BrowserID.Modules.InteractionData = (function() {
     if (current && current.orphaned) {
       var events = current.event_stream || [];
       if (hasEvent(events, MediatorToKPINameTable.user_staged)) {
-        console.log('user staged!')
         network.checkAuth(function(auth) {
-          console.log('aut checked');
           if (!!auth) {
             current.orphaned = false;
             model.setCurrent(current);
@@ -152,6 +150,7 @@ BrowserID.Modules.InteractionData = (function() {
         complete(onComplete);
       }
     } else {
+      // not an orphan, move along
       complete(onComplete);
     }
   }
