@@ -670,7 +670,10 @@ BrowserID.User = (function() {
       }
     },
 
-    completeEmailReverify: completeAddressVerification.curry(network.completeEmailReverify),
+    // the verification page for reverifying an email and adding an email to an
+    // account are the same, both are handled by the /confirm page. the
+    // /confirm page uses the verifyEmail function.  completeEmailReverify is
+    // not needed.
 
     /**
      * Wait for the email reverification to complete

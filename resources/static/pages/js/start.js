@@ -145,9 +145,14 @@ $(function() {
     else if (path === "/forgot") {
       bid.forgot();
     }
+    // START TRANSITION CODE
+    // add_email_address has been renamed to confirm. Once all outstanding
+    // emails are verified or expired, this can be removed. This change is
+    // scheduled to go into train-2012.07.20
     else if (path === "/add_email_address") {
       verifySecondaryAddress("verifyEmail");
     }
+    // END TRANSITION CODE
     else if (path === "/confirm") {
       verifySecondaryAddress("verifyEmail");
     }
@@ -156,9 +161,6 @@ $(function() {
     }
     else if (path === "/reset_password") {
       verifySecondaryAddress("completePasswordReset");
-    }
-    else if (path === "/confirm") {
-      verifySecondaryAddress("completeEmailReverify");
     }
     else if (path === "/about") {
       var module = bid.about.create();

@@ -557,40 +557,6 @@
     failureCheck(network.requestEmailReverify, TEST_EMAIL, "origin");
   });
 
-  asyncTest("completeEmailReverify with valid token, no password required", function() {
-    network.completeEmailReverify("token", undefined, function(registered) {
-      ok(registered);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("completeEmailReverify with valid token, bad password", function() {
-    transport.useResult("badPassword");
-    network.completeEmailReverify("token", "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure);
-  });
-
-  asyncTest("completeEmailReverify with valid token, password required", function() {
-    network.completeEmailReverify("token", "password", function(registered) {
-      ok(registered);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("completeEmailReverify with invalid token", function() {
-    transport.useResult("invalid");
-
-    network.completeEmailReverify("token", "password", function(registered) {
-      equal(registered, false);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("completeEmailReverify with XHR failure", function() {
-    failureCheck(network.completeEmailReverify, "token", "password");
-  });
-
   asyncTest("checkEmailReverify pending", testVerificationPending.curry("checkEmailReverify"));
   asyncTest("checkEmailReverify mustAuth", testVerificationMustAuth.curry("checkEmailReverify"));
   asyncTest("checkEmailReverify complete", testVerificationComplete.curry("checkEmailReverify"));

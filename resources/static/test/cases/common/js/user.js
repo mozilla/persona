@@ -620,45 +620,6 @@
     failureCheck(lib.requestEmailReverify, TEST_EMAIL);
   });
 
-  asyncTest("completeEmailReverify with a good token", function() {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
-    storage.setReturnTo(testOrigin);
-
-    lib.completeEmailReverify("token", "password", function onSuccess(info) {
-      testObjectValuesEqual(info, {
-        valid: true,
-        email: TEST_EMAIL,
-        returnTo: testOrigin,
-      });
-
-      equal(storage.getReturnTo(), "", "initiating origin was removed");
-      equal(storage.getEmail(TEST_EMAIL).verified, true, "email now marked as verified");
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("completeEmailReverify with a bad token", function() {
-    xhr.useResult("invalid");
-
-    lib.completeEmailReverify("token", "password", function onSuccess(info) {
-      equal(info.valid, false, "bad token calls onSuccess with a false validity");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("completeEmailReverify with an XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    lib.completeEmailReverify(
-      "token",
-      "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
-
-
   asyncTest("authenticate with valid credentials, also syncs email with server", function() {
     lib.authenticate(TEST_EMAIL, "testuser", function(authenticated) {
       equal(true, authenticated, "we are authenticated!");

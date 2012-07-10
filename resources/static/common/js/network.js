@@ -385,15 +385,10 @@ BrowserID.Network = (function() {
       stageAddressForVerification(postData, "/wsapi/stage_reverify", onComplete, onFailure);
     },
 
-    /**
-     * Complete email reverification
-     * @method completeEmailReverify
-     * @param {string} token - token to register for.
-     * @param {string} password
-     * @param {function} [onComplete] - Called when complete.
-     * @param {function} [onFailure] - Called on XHR failure.
-     */
-    completeEmailReverify: completeAddressVerification.curry("/wsapi/complete_reverify"),
+    // the verification page for reverifying an email and adding an email to an
+    // account are the same, both are handled by the /confirm page. the
+    // /confirm page uses the verifyEmail function.  completeEmailReverify is
+    // not needed.
 
     /**
      * Check the registration status of an email reverification
