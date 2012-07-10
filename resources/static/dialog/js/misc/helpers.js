@@ -20,7 +20,10 @@
         doAnimation = $("#signIn").length && bodyWidth > 640;
 
     if (doAnimation) {
-      var endWidth = bodyWidth - 10;
+      /**
+       * Force the arrow to slide all the way off the screen.
+       */
+      var endWidth = bodyWidth + $(".arrowContainer").outerWidth();
 
       body.addClass("completing");
       /**

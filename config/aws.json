@@ -10,9 +10,8 @@
   // are inverted and reversed), and en-US.
   // This set can be overridden by adding more to config.json on the VM.
   "supported_languages": [
-    "en-US", "it-CH", "db-LB"
+    "en-US"
   ],
-  "debug_lang": "it-CH",
   "locale_directory": "/home/app/code/locale",
   "var_path": "/home/app/var",
 

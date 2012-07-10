@@ -465,12 +465,12 @@ footer .help {
     margin: 0 auto;
 }
 
-#openMoreInfo {
+.openMoreInfo {
     display: block;
     margin-top: 15px;
 }
 
-#moreInfo {
+.moreInfo {
     display: none;
     color: #999;
 }

@@ -28,6 +28,7 @@ BrowserID.Modules.InteractionData = (function() {
   var bid = BrowserID,
       model = bid.Models.InteractionData,
       network = bid.Network,
+      storage = bid.Storage,
       complete = bid.Helpers.complete,
       dom = bid.DOM,
       sc;
@@ -98,13 +99,64 @@ BrowserID.Modules.InteractionData = (function() {
     if (self.sessionContextHandled) return;
     self.sessionContextHandled = true;
 
+    publishPreviousSession.call(self, result);
+  }
+
+  function publishPreviousSession(result) {
     // Publish any outstanding data.  Unless this is a continuation, previous
     // session data must be published independently of whether the current
     // dialog session is allowed to sample data. This is because the original
     // dialog session has already decided whether to collect data.
+    //
+    // beginSampling must happen afterwards, since we need to send and
+    // then scrub out the previous sessions data.
 
-    model.stageCurrent();
-    publishStored.call(self);
+    var self = this;
+
+    function onComplete() {
+      model.stageCurrent();
+      publishStored.call(self);
+      beginSampling.call(self, result);
+    }
+
+    // if we were orphaned last time, but user is now authenticated,
+    // lets see if their action end in success, and if so,
+    // remove the orphaned flag
+    //
+    // actions:
+    // - user_staged => is authenticated?
+    // - email_staged => email count is higher?
+    //
+    // See https://github.com/mozilla/browserid/issues/1827
+    var current = model.getCurrent();
+    if (current && current.orphaned) {
+      var events = current.event_stream || [];
+      if (hasEvent(events, MediatorToKPINameTable.user_staged)) {
+        network.checkAuth(function(auth) {
+          if (!!auth) {
+            current.orphaned = false;
+            model.setCurrent(current);
+          }
+          complete(onComplete);
+        });
+      } else if (hasEvent(events, MediatorToKPINameTable.email_staged)) {
+        if ((storage.getEmailCount() || 0) > (current.number_emails || 0)) {
+          current.orphaned = false;
+          model.setCurrent(current);
+        }
+        complete(onComplete);
+      } else {
+        // oh well, an orphan it is
+        complete(onComplete);
+      }
+    } else {
+      // not an orphan, move along
+      complete(onComplete);
+    }
+  }
+
+  function beginSampling(result) {
+    var self = this;
 
     // set the sample rate as defined by the server.  It's a value
     // between 0..1, integer or float, and it specifies the percentage
@@ -152,6 +204,19 @@ BrowserID.Modules.InteractionData = (function() {
     self.initialEventStream = null;
 
     self.samplesBeingStored = true;
+    
+  }
+
+  function indexOfEvent(eventStream, eventName) {
+    for(var event, i = 0; event = eventStream[i]; ++i) {
+      if(event[0] === eventName) return i;
+    }
+
+    return -1;
+  }
+
+  function hasEvent(eventStream, eventName) {
+    return indexOfEvent(eventStream, eventName) !== -1;
   }
 
   function onKPIData(msg, result) {
