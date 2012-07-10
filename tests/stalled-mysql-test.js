@@ -119,8 +119,8 @@ suite.addBatch({
       assert.strictEqual(r.code, 503);
     }
   },
-  "complete_email_addition": {
-    topic: wsapi.post('/wsapi/complete_email_addition', {
+  "complete_email_confirmation": {
+    topic: wsapi.post('/wsapi/complete_email_confirmation', {
       token: 'bogus'
     }),
     "fails with 503": function(err, r) {

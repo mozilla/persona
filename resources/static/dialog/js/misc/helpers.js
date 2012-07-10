@@ -74,7 +74,7 @@
   function createUser(email, password, callback) {
     var self=this;
     user.createSecondaryUser(email, password, function(status) {
-      if (status) {
+      if (status.success) {
         var info = { email: email, password: password };
         self.publish("user_staged", info, info);
         complete(callback, true);
@@ -92,7 +92,20 @@
     var self=this;
     user.requestPasswordReset(email, password, function(status) {
       if (status.success) {
-        self.publish("password_reset", { email: email });
+        self.publish("reset_password_staged", { email: email });
+      }
+      else {
+        tooltip.showTooltip("#could_not_add");
+      }
+      complete(callback, status.success);
+    }, self.getErrorDialog(errors.requestPasswordReset, callback));
+  }
+
+  function reverifyEmail(email, callback) {
+    var self=this;
+    user.requestEmailReverify(email, function(status) {
+      if (status.success) {
+        self.publish("reverify_email_staged", { email: email });
       }
       else {
         tooltip.showTooltip("#could_not_add");
@@ -152,6 +165,7 @@
     addEmail: addEmail,
     addSecondaryEmail: addSecondaryEmail,
     resetPassword: resetPassword,
+    reverifyEmail: reverifyEmail,
     cancelEvent: helpers.cancelEvent,
     animateClose: animateClose,
     showRPTosPP: showRPTosPP

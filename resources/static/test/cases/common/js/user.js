@@ -3,10 +3,12 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-var jwcrypto = require("./lib/jwcrypto");
 
 (function() {
-  var bid = BrowserID,
+  "use strict";
+
+  var jwcrypto = require("./lib/jwcrypto"),
+      bid = BrowserID,
       lib = bid.User,
       storage = bid.Storage,
       network = bid.Network,
@@ -17,6 +19,7 @@ var jwcrypto = require("./lib/jwcrypto");
       failureCheck = testHelpers.failureCheck,
       testUndefined = testHelpers.testUndefined,
       testNotUndefined = testHelpers.testNotUndefined,
+      testObjectValuesEqual = testHelpers.testObjectValuesEqual,
       provisioning = bid.Mocks.Provisioning,
       TEST_EMAIL = "testuser@testuser.com";
 
@@ -44,7 +47,7 @@ var jwcrypto = require("./lib/jwcrypto");
 
     // Check for parts of the assertion
     equal(components.payload.aud, testOrigin, "correct audience");
-    var expires = parseInt(components.payload.exp);
+    var expires = parseInt(components.payload.exp, 10);
     ok(typeof expires === "number" && !isNaN(expires), "expiration date is valid");
 
     // this should be based on server time, not local time.
@@ -65,7 +68,7 @@ var jwcrypto = require("./lib/jwcrypto");
     });
   }
 
-  module("shared/user", {
+  module("common/js/user", {
     setup: function() {
       testHelpers.setup();
     },
@@ -155,7 +158,7 @@ var jwcrypto = require("./lib/jwcrypto");
 
   asyncTest("createSecondaryUser success - callback with true status", function() {
     lib.createSecondaryUser(TEST_EMAIL, "password", function(status) {
-      ok(status, "user created");
+      ok(status.success, "user created");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -164,7 +167,10 @@ var jwcrypto = require("./lib/jwcrypto");
     xhr.useResult("throttle");
 
     lib.createSecondaryUser(TEST_EMAIL, "password", function(status) {
-      equal(status, false, "user creation refused");
+      testObjectValuesEqual(status, {
+        success: false,
+        reason: "throttle"
+      });
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -412,13 +418,17 @@ var jwcrypto = require("./lib/jwcrypto");
 
   asyncTest("verifyUser with a good token", function() {
     storage.setReturnTo(testOrigin);
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
 
     lib.verifyUser("token", "password", function onSuccess(info) {
 
-      ok(info.valid, "token was valid");
-      equal(info.email, TEST_EMAIL, "email part of info");
-      equal(info.returnTo, testOrigin, "returnTo in info");
+      testObjectValuesEqual(info, {
+        valid: true,
+        email: TEST_EMAIL,
+        returnTo: testOrigin
+      });
       equal(storage.getReturnTo(), "", "initiating origin was removed");
+      equal(storage.getEmail(TEST_EMAIL).verified, true, "email marked as verified");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -516,6 +526,99 @@ var jwcrypto = require("./lib/jwcrypto");
     failureCheck(lib.requestPasswordReset, "registered@testuser.com", "password");
   });
 
+  asyncTest("completePasswordReset with a good token", function() {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.setReturnTo(testOrigin);
+
+    lib.completePasswordReset("token", "password", function onSuccess(info) {
+      testObjectValuesEqual(info, {
+        valid: true,
+        email: TEST_EMAIL,
+        returnTo: testOrigin,
+      });
+
+      equal(storage.getReturnTo(), "", "initiating origin was removed");
+      equal(storage.getEmail(TEST_EMAIL).verified, true, "email now marked as verified");
+
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("completePasswordReset with a bad token", function() {
+    xhr.useResult("invalid");
+
+    lib.completePasswordReset("token", "password", function onSuccess(info) {
+      equal(info.valid, false, "bad token calls onSuccess with a false validity");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("completePasswordReset with an XHR failure", function() {
+    xhr.useResult("ajaxError");
+
+    lib.completePasswordReset(
+      "token",
+      "password",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
+  asyncTest("requestEmailReverify with owned verified email - false status", function() {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
+
+    var returnTo = "http://samplerp.org";
+    lib.setReturnTo(returnTo);
+    lib.requestEmailReverify(TEST_EMAIL, function(status) {
+      testObjectValuesEqual(status, {
+        success: false,
+        reason: "verified_email"
+      });
+
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("requestEmailReverify with owned unverified email - false status", function() {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+
+    var returnTo = "http://samplerp.org";
+    lib.setReturnTo(returnTo);
+    lib.requestEmailReverify(TEST_EMAIL, function(status) {
+      equal(status.success, true, "password reset for known user");
+      equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
+
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("requestEmailReverify with unowned email - false status, invalid_user", function() {
+    lib.requestEmailReverify(TEST_EMAIL, function(status) {
+      testObjectValuesEqual(status, {
+        success: false,
+        reason: "invalid_email"
+      });
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("requestEmailReverify owned email with throttle - false status, throttle", function() {
+    xhr.useResult("throttle");
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+
+    lib.requestEmailReverify(TEST_EMAIL, function(status) {
+      testObjectValuesEqual(status, {
+        success: false,
+        reason: "throttle"
+      });
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("requestEmailReverify with XHR failure", function() {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    failureCheck(lib.requestEmailReverify, TEST_EMAIL);
+  });
 
   asyncTest("authenticate with valid credentials, also syncs email with server", function() {
     lib.authenticate(TEST_EMAIL, "testuser", function(authenticated) {
@@ -793,12 +896,15 @@ var jwcrypto = require("./lib/jwcrypto");
 
   asyncTest("verifyEmail with a good token - callback with email, returnTo, valid", function() {
     storage.setReturnTo(testOrigin);
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
     lib.verifyEmail("token", "password", function onSuccess(info) {
-
-      ok(info.valid, "token was valid");
-      equal(info.email, TEST_EMAIL, "email part of info");
-      equal(info.returnTo, testOrigin, "returnTo in info");
+      testObjectValuesEqual(info, {
+        valid: true,
+        email: TEST_EMAIL,
+        returnTo: testOrigin
+      });
       equal(storage.getReturnTo(), "", "initiating returnTo was removed");
+      equal(storage.getEmail(TEST_EMAIL).verified, true, "email now marked as verified");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -945,12 +1051,16 @@ var jwcrypto = require("./lib/jwcrypto");
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("syncEmails with one to refresh", function() {
-    storage.addEmail(TEST_EMAIL, {pub: pubkey, cert: random_cert});
+  asyncTest("syncEmails with one to update", function() {
+    // verified is set to false here,  the mock for list_emails has verified
+    // set to true.  If emails are being updated, verified will be set to true
+    // whenever syncEmails is complete.
+    storage.addEmail(TEST_EMAIL, {pub: pubkey, cert: random_cert, verified: false});
 
     lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
       ok(TEST_EMAIL in identities, "refreshed key is synced");
+      equal(identities[TEST_EMAIL].verified, true, "verified was correctly updated");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -1262,7 +1372,6 @@ var jwcrypto = require("./lib/jwcrypto");
           start();
         }, testHelpers.expectedXHRFailure);
       }, testHelpers.unexpectedXHRFailure);
-      xhr.useResult
     }, testHelpers.unexpectedXHRFailure);
   });
 

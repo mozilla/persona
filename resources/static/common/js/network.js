@@ -83,6 +83,54 @@ BrowserID.Network = (function() {
     }
   }
 
+  function stageAddressForVerification(data, wsapiName, onComplete, onFailure) {
+    post({
+      url: wsapiName,
+      data: data,
+      success: function(status) {
+        complete(onComplete, status.success);
+      },
+      error: function(info) {
+        // 429 is throttling.
+        if (info.network.status === 429) {
+          complete(onComplete, false);
+        }
+        else complete(onFailure, info);
+      }
+    });
+  }
+
+  function handleAddressVerifyCheckResponse(onComplete, status, textStatus, jqXHR) {
+    if (status.status === 'complete') {
+      // The user at this point can ONLY be logged in with password
+      // authentication. Once the registration is complete, that means
+      // the server has updated the user's cookies and the user is
+      // officially authenticated.
+      auth_status = 'password';
+
+      if (status.userid) setUserID(status.userid);
+    }
+    complete(onComplete, status.status);
+  }
+
+  function completeAddressVerification(wsapiName, token, password, onComplete, onFailure) {
+      post({
+        url: wsapiName,
+        data: {
+          token: token,
+          pass: password
+        },
+        success: function(status, textStatus, jqXHR) {
+          // If the user has successfully completed an address verification,
+          // they are authenticated to the password status.
+          if (status.success) auth_status = "password";
+          complete(onComplete, status.success);
+        },
+        error: onFailure
+      });
+
+    }
+
   var Network = {
     /**
      * Initialize - Clear all context info. Used for testing.
@@ -161,7 +209,7 @@ BrowserID.Network = (function() {
     },
 
     withContext: function(onComplete, onFailure) {
-      withContext(onComplete, onFailure)
+      withContext(onComplete, onFailure);
     },
 
     /**
@@ -213,24 +261,12 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     createUser: function(email, password, origin, onComplete, onFailure) {
-      post({
-        url: "/wsapi/stage_user",
-        data: {
-          email: email,
-          pass: password,
-          site : origin
-        },
-        success: function(status) {
-          complete(onComplete, status.success);
-        },
-        error: function(info) {
-          // 429 is throttling.
-          if (info.network.status === 429) {
-            complete(onComplete, false);
-          }
-          else complete(onFailure, info);
-        }
-      });
+      var postData = {
+        email: email,
+        pass: password,
+        site : origin
+      };
+      stageAddressForVerification(postData, "/wsapi/stage_user", onComplete, onFailure);
     },
 
     /**
@@ -265,17 +301,7 @@ BrowserID.Network = (function() {
     checkUserRegistration: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/user_creation_status?email=" + encodeURIComponent(email),
-        success: function(status, textStatus, jqXHR) {
-          if (status.status === 'complete' && status.userid) {
-            // The user at this point can ONLY be logged in with password
-            // authentication. Once the registration is complete, that means
-            // the server has updated the user's cookies and the user is
-            // officially authenticated.
-            auth_status = 'password';
-            setUserID(status.userid);
-          }
-          complete(onComplete, status.status);
-        },
+        success: handleAddressVerifyCheckResponse.curry(onComplete),
         error: onFailure
       });
     },
@@ -288,19 +314,7 @@ BrowserID.Network = (function() {
      * @param {function} [onComplete] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeUserRegistration: function(token, password, onComplete, onFailure) {
-      post({
-        url: "/wsapi/complete_user_creation",
-        data: {
-          token: token,
-          pass: password
-        },
-        success: function(status, textStatus, jqXHR) {
-          complete(onComplete, status.success);
-        },
-        error: onFailure
-      });
-    },
+    completeUserRegistration: completeAddressVerification.curry("/wsapi/complete_user_creation"),
 
     /**
      * Call with a token to prove an email address ownership.
@@ -311,19 +325,7 @@ BrowserID.Network = (function() {
      * with one boolean parameter that specifies the validity of the token.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeEmailRegistration: function(token, password, onComplete, onFailure) {
-      post({
-        url: "/wsapi/complete_email_addition",
-        data: {
-          token: token,
-          pass: password
-        },
-        success: function(status, textStatus, jqXHR) {
-          complete(onComplete, status.success);
-        },
-        error: onFailure
-      });
-    },
+    completeEmailRegistration: completeAddressVerification.curry("/wsapi/complete_email_confirmation"),
 
     /**
      * Request a password reset for the given email address.
@@ -335,13 +337,73 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     requestPasswordReset: function(email, password, origin, onComplete, onFailure) {
-      if (email) {
-        Network.createUser(email, password, origin, onComplete, onFailure);
-      } else {
-        // TODO: if no email is provided, then what?
-        throw "no email provided to password reset";
-      }
+      var postData = {
+        email: email,
+        pass: password,
+        site : origin
+      };
+      stageAddressForVerification(postData, "/wsapi/stage_reset", onComplete, onFailure);
     },
+
+    /**
+     * Complete email reset password
+     * @method completePasswordReset
+     * @param {string} token - token to register for.
+     * @param {string} password
+     * @param {function} [onComplete] - Called when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    completePasswordReset: completeAddressVerification.curry("/wsapi/complete_reset"),
+
+    /**
+     * Check the registration status of a password reset
+     * @method checkPasswordReset
+     * @param {function} [onsuccess] - called when complete.
+     * @param {function} [onfailure] - called on xhr failure.
+     */
+    checkPasswordReset: function(email, onComplete, onFailure) {
+      get({
+        url: "/wsapi/password_reset_status?email=" + encodeURIComponent(email),
+        success: handleAddressVerifyCheckResponse.curry(onComplete),
+        error: onFailure
+      });
+    },
+
+    /**
+     * Stage an email reverification.
+     * @method requestEmailReverify
+     * @param {string} email
+     * @param {string} origin - site user is trying to sign in to.
+     * @param {function} [onComplete] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    requestEmailReverify: function(email, origin, onComplete, onFailure) {
+      var postData = {
+        email: email,
+        site : origin
+      };
+      stageAddressForVerification(postData, "/wsapi/stage_reverify", onComplete, onFailure);
+    },
+
+    // the verification page for reverifying an email and adding an email to an
+    // account are the same, both are handled by the /confirm page. the
+    // /confirm page uses the verifyEmail function.  completeEmailReverify is
+    // not needed.
+
+    /**
+     * Check the registration status of an email reverification
+     * @method checkEmailReverify
+     * @param {function} [onsuccess] - called when complete.
+     * @param {function} [onfailure] - called on xhr failure.
+     */
+    checkEmailReverify: function(email, onComplete, onFailure) {
+      get({
+        url: "/wsapi/email_reverify_status?email=" + encodeURIComponent(email),
+        success: handleAddressVerifyCheckResponse.curry(onComplete),
+        error: onFailure
+      });
+    },
+
 
     /**
      * Set the password of the current user.
@@ -453,26 +515,13 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - called on xhr failure.
      */
     addSecondaryEmail: function(email, password, origin, onComplete, onFailure) {
-      post({
-        url: "/wsapi/stage_email",
-        data: {
-          email: email,
-          pass: password,
-          site: origin
-        },
-        success: function(response) {
-          complete(onComplete, response.success);
-        },
-        error: function(info) {
-          // 429 is throttling.
-          if (info.network.status === 429) {
-            complete(onComplete, false);
-          }
-          else complete(onFailure, info);
-        }
-      });
+      var postData = {
+        email: email,
+        pass: password,
+        site : origin
+      };
+      stageAddressForVerification(postData, "/wsapi/stage_email", onComplete, onFailure);
     },
-
 
     /**
      * Check the registration status of an email
@@ -483,9 +532,7 @@ BrowserID.Network = (function() {
     checkEmailRegistration: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
-        success: function(status, textStatus, jqXHR) {
-          complete(onComplete, status.status);
-        },
+        success: handleAddressVerifyCheckResponse.curry(onComplete),
         error: onFailure
       });
     },
@@ -666,6 +713,7 @@ BrowserID.Network = (function() {
       // Make sure we get context first or else we will needlessly send
       // a cookie to the server.
       withContext(function() {
+        var enabled;
         try {
           // set a test cookie with a duration of 1 second.
           // NOTE - The Android 3.3 and 4.0 default browsers will still pass
@@ -674,7 +722,7 @@ BrowserID.Network = (function() {
           // submitted input.
           // http://stackoverflow.com/questions/8509387/android-browser-not-respecting-cookies-disabled/9264996#9264996
           document.cookie = "test=true; max-age=1";
-          var enabled = document.cookie.indexOf("test") > -1;
+          enabled = document.cookie.indexOf("test") > -1;
         } catch(e) {
           enabled = false;
         }

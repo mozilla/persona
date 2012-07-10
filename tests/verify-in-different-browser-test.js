@@ -100,7 +100,7 @@ suite.addBatch({
       "then clearing cookies and completing": {
         topic: function() {
           wsapi.clearCookies();
-          wsapi.post('/wsapi/complete_email_addition', {
+          wsapi.post('/wsapi/complete_email_confirmation', {
             token: this._token
           }).call(this);
         },
@@ -109,7 +109,7 @@ suite.addBatch({
         },
         "but succeeds": {
           topic: function() {
-            wsapi.post('/wsapi/complete_email_addition', {
+            wsapi.post('/wsapi/complete_email_confirmation', {
               token: this._token,
               pass: TEST_PASS
             }).call(this);
@@ -171,7 +171,7 @@ suite.addBatch({
       "then clearing cookies and completing": {
         topic: function() {
           wsapi.clearCookies();
-          wsapi.post('/wsapi/complete_email_addition', {
+          wsapi.post('/wsapi/complete_email_confirmation', {
             token: this._token
           }).call(this);
         },
@@ -180,7 +180,7 @@ suite.addBatch({
         },
         "but succeeds": {
           topic: function() {
-            wsapi.post('/wsapi/complete_email_addition', {
+            wsapi.post('/wsapi/complete_email_confirmation', {
               token: this._token,
               pass: TEST_PASS
             }).call(this);
@@ -254,7 +254,7 @@ suite.addBatch({
         },
         "but succeeds": {
           topic: function() {
-            wsapi.post('/wsapi/complete_email_addition', {
+            wsapi.post('/wsapi/complete_user_creation', {
               token: this._token,
               pass: TEST_PASS
             }).call(this);

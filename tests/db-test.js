@@ -125,7 +125,7 @@ suite.addBatch({
 suite.addBatch({
   "upon receipt of a secret": {
     topic: function() {
-      db.gotVerificationSecret(secret, this.callback);
+      db.completeCreateUser(secret, this.callback);
     },
     "gotVerificationSecret completes without error": function (err, r) {
       assert.isNull(err);
@@ -200,7 +200,10 @@ suite.addBatch({
     },
     "then staging an email": {
       topic: function(err, uid) {
-        db.stageEmail(uid, 'lloyd@somewhe.re', 'biglonghashofapassword', this.callback);
+        // do not supply a password here.  Email addition only supplies a password
+        // in the case it's the addition of a secondary address to an account with
+        // only primaries.
+        db.stageEmail(uid, 'lloyd@somewhe.re', undefined, this.callback);
       },
       "yields a valid secret": function(err, secret) {
         assert.isNull(err);
@@ -215,7 +218,7 @@ suite.addBatch({
         "makes it visible via isStaged": function(sekret, r) { assert.isTrue(r); },
         "lets you verify it": {
           topic: function(secret, r) {
-            db.gotVerificationSecret(secret, this.callback);
+            db.completeConfirmEmail(secret, this.callback);
           },
           "successfully": function(err, r) {
             assert.isNull(err);
@@ -232,6 +235,17 @@ suite.addBatch({
             "returns false": function(err, r) {
               assert.isNull(err);
               assert.isFalse(r);
+            }
+          },
+          "and user's password": {
+            topic: function() {
+              var self = this;
+              db.emailToUID('lloyd@nowhe.re', function(err, uid) {
+                db.checkAuth(uid, self.callback);
+              });
+            },
+            "is still populated": function(err, hash) {
+              assert.strictEqual(hash, "biglonghashofapassword");
             }
           }
         }

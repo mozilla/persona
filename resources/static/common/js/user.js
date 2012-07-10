@@ -11,7 +11,8 @@ BrowserID.User = (function() {
       bid = BrowserID,
       network = bid.Network,
       storage = bid.Storage,
-      User, pollTimeout,
+      User,
+      pollTimeout,
       provisioning = bid.Provisioning,
       addressCache = {},
       primaryAuthCache = {},
@@ -100,7 +101,53 @@ BrowserID.User = (function() {
     }
   }
 
-  function registrationPoll(checkFunc, email, onSuccess, onFailure) {
+  function handleStageAddressVerifictionResponse(onComplete, staged) {
+    var status = { success: staged };
+
+    if (!staged) status.reason = "throttle";
+    // Used on the main site when the user verifies - once
+    // verification is complete, the user is redirected back to the
+    // RP and logged in.
+    var site = User.getReturnTo();
+    if (staged && site) storage.setReturnTo(site);
+
+    complete(onComplete, status);
+  }
+
+  function completeAddressVerification(completeFunc, token, password, onComplete, onFailure) {
+    User.tokenInfo(token, function(info) {
+      var invalidInfo = { valid: false };
+      if (info) {
+        completeFunc(token, password, function (valid) {
+          var result = invalidInfo;
+
+          if (valid) {
+            result = _.extend({ valid: valid }, info);
+            var email = info.email,
+                idInfo = storage.getEmail(email);
+
+            // Now that the address is verified, its verified bit has to be
+            // updated as well or else the user will be forced to verify the
+            // address again.
+            if (idInfo) {
+              idInfo.verified = true;
+              storage.addEmail(email, idInfo);
+            }
+
+            storage.setReturnTo("");
+          }
+
+          complete(onComplete, result);
+        }, onFailure);
+      } else if (onComplete) {
+        onComplete(invalidInfo);
+      }
+    }, onFailure);
+
+  }
+
+
+  function addressVerificationPoll(checkFunc, email, onSuccess, onFailure) {
     function poll() {
       checkFunc(email, function(status) {
         // registration status checks the status of the last initiated registration,
@@ -117,7 +164,7 @@ BrowserID.User = (function() {
 
           // To avoid too many address_info requests, returns from each
           // address_info request are cached.  If the user is doing
-          // a registrationPoll, it means the user was registering the address
+          // a addressVerificationPoll, it means the user was registering the address
           // and the registration has completed.  Because the status is
           // "complete" or "known", we know that the address is known, so we
           // toggle the field to be up to date.  If the known field remains
@@ -206,20 +253,20 @@ BrowserID.User = (function() {
   /**
    * Persist an email address without a keypair
    * @method persistEmail
-   * @param {string} email - Email address to persist.
-   * @param {string} type - Is the email a 'primary' or a 'secondary' address?
-   * @param {function} [onComplete] - Called on successful completion.
-   * @param {function} [onFailure] - Called on error.
+   * @param {object} options - options to save
+   * @param {string} options.email - Email address to persist.
+   * @param {string} options.type - Is the email a 'primary' or a 'secondary' address?
+   * @param {string} options.verified - If the email is 'secondary', is it verified?
    */
-  function persistEmail(email, type, onComplete, onFailure) {
-    checkEmailType(type);
-    storage.addEmail(email, {
+  function persistEmail(options) {
+    checkEmailType(options.type);
+    storage.addEmail(options.email, {
       created: new Date(),
-      type: type
+      type: options.type,
+      verified: options.verified
     });
-
-    if (onComplete) onComplete(true);
   }
+
 
   User = {
     init: function(config) {
@@ -302,18 +349,13 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     createSecondaryUser: function(email, password, onComplete, onFailure) {
-      network.createUser(email, password, origin, function(created) {
-        // Used on the main site when the user verifies - once verification
-        // is complete, the user is redirected back to the RP and logged in.
-        var site = User.getReturnTo();
-        if (created && site) storage.setReturnTo(site);
-        complete(onComplete, created);
-      }, onFailure);
+      network.createUser(email, password, origin,
+        handleStageAddressVerifictionResponse.curry(onComplete), onFailure);
     },
 
     /**
      * Create a primary user.
-     * @method createUser
+     * @method createPrimaryUser
      * @param {object} info
      * @param {function} onComplete - function to call on complettion.  Called
      * with two parameters - status and info.
@@ -477,9 +519,7 @@ BrowserID.User = (function() {
      * @param {function} [onSuccess] - Called to give status updates.
      * @param {function} [onFailure] - Called on error.
      */
-    waitForUserValidation: function(email, onSuccess, onFailure) {
-      registrationPoll(network.checkUserRegistration, email, onSuccess, onFailure);
-    },
+    waitForUserValidation: addressVerificationPoll.curry(network.checkUserRegistration),
 
     /**
      * Cancel the waitForUserValidation poll
@@ -517,25 +557,7 @@ BrowserID.User = (function() {
      *   with valid=false otw.
      * @param {function} [onFailure] - Called on error.
      */
-    verifyUser: function(token, password, onComplete, onFailure) {
-      User.tokenInfo(token, function(info) {
-        var invalidInfo = { valid: false };
-        if (info) {
-          network.completeUserRegistration(token, password, function (valid) {
-            var result = invalidInfo;
-
-            if(valid) {
-              result = _.extend({ valid: valid, returnTo: storage.getReturnTo() }, info);
-              storage.setReturnTo("");
-            }
-
-            complete(onComplete, result);
-          }, onFailure);
-        } else if (onComplete) {
-          onComplete(invalidInfo);
-        }
-      }, onFailure);
-    },
+    verifyUser: completeAddressVerification.curry(network.completeUserRegistration),
 
     /**
      * Check if the user can set their password.  Only returns true for users
@@ -588,24 +610,85 @@ BrowserID.User = (function() {
     requestPasswordReset: function(email, password, onComplete, onFailure) {
       User.isEmailRegistered(email, function(registered) {
         if (registered) {
-          network.requestPasswordReset(email, password, origin, function(reset) {
-            var status = { success: reset };
-
-            if (!reset) status.reason = "throttle";
-            // Used on the main site when the user verifies - once
-            // verification is complete, the user is redirected back to the
-            // RP and logged in.
-            var site = User.getReturnTo();
-            if (reset && site) storage.setReturnTo(site);
-
-            complete(onComplete, status);
-          }, onFailure);
+          network.requestPasswordReset(email, password, origin,
+            handleStageAddressVerifictionResponse.curry(onComplete), onFailure);
         }
         else if (onComplete) {
           onComplete({ success: false, reason: "invalid_user" });
         }
       }, onFailure);
     },
+
+    /**
+     * Verify the password reset for a user.
+     * @method completePasswordReset
+     * @param {string} token - token to verify.
+     * @param {string} password
+     * @param {function} [onComplete] - Called on completion.
+     *   Called with an object with valid, email, and origin if valid, called
+     *   with valid=false otw.
+     * @param {function} [onFailure] - Called on error.
+     */
+    completePasswordReset: completeAddressVerification.curry(network.completePasswordReset),
+
+    /**
+     * Wait for the password reset to complete
+     * @method waitForPasswordResetComplete
+     * @param {string} email - email address to check.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    waitForPasswordResetComplete: addressVerificationPoll.curry(network.checkPasswordReset),
+
+    /**
+     * Cancel the waitForPasswordResetComplete poll
+     * @method cancelWaitForPasswordResetComplete
+     */
+    cancelWaitForPasswordResetComplete: cancelRegistrationPoll,
+
+    /**
+     * Request the reverification of an unverified email address
+     * @method requestEmailReverify
+     * @param {string} email
+     * @param {function} [onComplete]
+     * @param {function} [onFailure]
+     */
+    requestEmailReverify: function(email, onComplete, onFailure) {
+      var idInfo = storage.getEmail(email);
+      if (!idInfo) {
+        // user does not own this address.
+        complete(onComplete, { success: false, reason: "invalid_email" });
+      }
+      else if (idInfo.verified) {
+        // this email is already verified, cannot be reverified.
+        complete(onComplete, { success: false, reason: "verified_email" });
+      }
+      else if (!idInfo.verified) {
+        // this address is unverified, try to reverify it.
+        network.requestEmailReverify(email, origin,
+          handleStageAddressVerifictionResponse.curry(onComplete), onFailure);
+      }
+    },
+
+    // the verification page for reverifying an email and adding an email to an
+    // account are the same, both are handled by the /confirm page. the
+    // /confirm page uses the verifyEmail function.  completeEmailReverify is
+    // not needed.
+
+    /**
+     * Wait for the email reverification to complete
+     * @method waitForEmailReverifyComplete
+     * @param {string} email - email address to check.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    waitForEmailReverifyComplete: addressVerificationPoll.curry(network.checkEmailReverify),
+
+    /**
+     * Cancel the waitForEmailReverifyComplete poll
+     * @method cancelWaitForEmailReverifyComplete
+     */
+    cancelWaitForEmailReverifyComplete: cancelRegistrationPoll,
 
     /**
      * Cancel the current user's account.  Remove last traces of their
@@ -659,29 +742,39 @@ BrowserID.User = (function() {
 
           var emails_to_add = _.difference(server_emails, client_emails);
           var emails_to_remove = _.difference(client_emails, server_emails);
+          var emails_to_update = _.intersection(client_emails, server_emails);
 
           // remove emails
           _.each(emails_to_remove, function(email) {
             storage.removeEmail(email);
           });
 
-          // keygen for new emails
-          // asynchronous
-          function addNextEmail() {
-            if (!emails_to_add || !emails_to_add.length) {
-              onComplete();
-              return;
-           }
+          // these are new emails
+          _.each(emails_to_add, function(email) {
+            var emailInfo = emails[email];
 
-            var email = emails_to_add.shift();
+            persistEmail({
+              email: email,
+              type: emailInfo.type || "secondary",
+              verified: emailInfo.verified
+            });
+          });
 
-            // extract the email type from the server response, if it
-            // doesn't exist, assume secondary
-            var type = emails[email].type || "secondary";
-            persistEmail(email, type, addNextEmail, onFailure);
-          }
+          // update the type and verified status of stored emails
+          _.each(emails_to_update, function(email) {
+            var emailInfo = emails[email],
+                storedEmailInfo = storage.getEmail(email);
 
-          addNextEmail();
+            _.extend(storedEmailInfo, {
+              type: emailInfo.type,
+              verified: emailInfo.verified
+            });
+
+            storage.addEmail(email, storedEmailInfo);
+          });
+
+          complete(onComplete);
+
         }, onFailure);
       });
     },
@@ -891,9 +984,7 @@ BrowserID.User = (function() {
      * @param {function} [onSuccess] - Called to give status updates.
      * @param {function} [onFailure] - Called on error.
      */
-    waitForEmailValidation: function(email, onSuccess, onFailure) {
-      registrationPoll(network.checkEmailRegistration, email, onSuccess, onFailure);
-    },
+    waitForEmailValidation: addressVerificationPoll.curry(network.checkEmailRegistration),
 
     /**
      * Cancel the waitForEmailValidation poll
@@ -913,25 +1004,7 @@ BrowserID.User = (function() {
      *   with valid=false otw.
      * @param {function} [onFailure] - Called on error.
      */
-    verifyEmail: function(token, password, onComplete, onFailure) {
-      network.emailForVerificationToken(token, function (info) {
-        var invalidInfo = { valid: false };
-        if (info) {
-          network.completeEmailRegistration(token, password, function (valid) {
-            var result = invalidInfo;
-
-            if(valid) {
-              result = _.extend({ valid: valid, returnTo: storage.getReturnTo() }, info);
-              storage.setReturnTo("");
-            }
-
-            complete(onComplete, result);
-          }, onFailure);
-        } else {
-          complete(onComplete, invalidInfo);
-        }
-      }, onFailure);
-    },
+    verifyEmail: completeAddressVerification.curry(network.completeEmailRegistration),
 
     /**
      * Remove an email address.

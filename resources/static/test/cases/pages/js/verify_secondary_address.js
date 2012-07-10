@@ -25,7 +25,7 @@
   module("pages/verify_secondary_address", {
     setup: function() {
       testHelpers.setup();
-      bid.Renderer.render("#page_head", "site/add_email_address", {});
+      bid.Renderer.render("#page_head", "site/confirm", {});
       $(".siteinfo,.password_entry").hide();
     },
     teardown: function() {
