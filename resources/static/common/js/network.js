@@ -325,7 +325,7 @@ BrowserID.Network = (function() {
      * with one boolean parameter that specifies the validity of the token.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeEmailRegistration: completeAddressVerification.curry("/wsapi/complete_email_addition"),
+    completeEmailRegistration: completeAddressVerification.curry("/wsapi/complete_email_confirmation"),
 
     /**
      * Request a password reset for the given email address.
