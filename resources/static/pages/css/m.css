@@ -180,6 +180,13 @@
     display: none;
   }
 
+  .tour {
+    /* The "take the tour or sign up" text is left justified by default when
+     * everything else is centered.  Match everything up.  issue #1967
+     */
+    text-align: center;
+  }
+
   .tour .button {
     font-size: 18px;
   }
