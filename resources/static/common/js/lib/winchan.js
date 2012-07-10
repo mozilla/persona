@@ -1,5 +1,6 @@
 ;WinChan = (function() {
   var RELAY_FRAME_NAME = "__winchan_relay_frame";
+  var CLOSE_CMD = "die";
 
   // a portable addListener implementation
   function addListener(w, event, cb) {
@@ -16,7 +17,7 @@
   // checking for IE8 or above
   function isInternetExplorer() {
     var rv = -1; // Return value assumes failure.
-    if (navigator.appName == 'Microsoft Internet Explorer') {
+    if (navigator.appName === 'Microsoft Internet Explorer') {
       var ua = navigator.userAgent;
       var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
       if (re.exec(ua) != null)
@@ -28,7 +29,11 @@
   // checking Mobile Firefox (Fennec)
   function isFennec() {
     try {
-      return (navigator.userAgent.indexOf('Fennec/') != -1);
+      // We must check for both XUL and Java versions of Fennec.  Both have
+      // distinct UA strings.
+      var userAgent = navigator.userAgent;
+      return (userAgent.indexOf('Fennec/') != -1) ||  // XUL
+             (userAgent.indexOf('Firefox/') != -1 && userAgent.indexOf('Android') != -1);   // Java
     } catch(e) {};
     return false;
   }
@@ -42,7 +47,7 @@
   // given a URL, extract the origin
   function extractOrigin(url) {
     if (!/^https?:\/\//.test(url)) url = window.location.href;
-    var m = /^(https?:\/\/[-_a-zA-Z\.0-9:]+)/.exec(url);
+    var m = /^(https?:\/\/[\-_a-zA-Z\.0-9:]+)/.exec(url);
     if (m) return m[1];
     return url;
   }
@@ -129,8 +134,16 @@
         function cleanup() {
           if (iframe) document.body.removeChild(iframe);
           iframe = undefined;
-          if (w) w.close();
-          w = undefined;
+          if (w) {
+            try {
+              w.close();
+            } catch (securityViolation) {
+              // This happens in Opera 12 sometimes
+              // see https://github.com/mozilla/browserid/issues/1844
+              messageTarget.postMessage(CLOSE_CMD, origin);
+            }
+          }
+          w = messageTarget = undefined;
         }
 
         addListener(window, 'unload', cleanup);
@@ -139,22 +152,35 @@
           try {
             var d = JSON.parse(e.data);
             if (d.a === 'ready') messageTarget.postMessage(req, origin);
-            else if (d.a === 'error') cb(d.d);
-            else if (d.a === 'response') {
+            else if (d.a === 'error') {
+              if (cb) {
+                cb(d.d);
+                cb = null;
+              }
+            } else if (d.a === 'response') {
               removeListener(window, 'message', onMessage);
               removeListener(window, 'unload', cleanup);
               cleanup();
-              cb(null, d.d);
+              if (cb) {
+                cb(null, d.d);
+                cb = null;
+              }
             }
-          } catch(e) { }
-        };
+          } catch(err) { }
+        }
 
         addListener(window, 'message', onMessage);
 
         return {
           close: cleanup,
           focus: function() {
-            if (w) w.focus();
+            if (w) {
+              try {
+                w.focus();
+              } catch (e) {
+                // IE7 blows up here, do nothing
+              }
+            }
           }
         };
       },
@@ -175,7 +201,7 @@
           o = e.origin;
           try {
             d = JSON.parse(e.data);
-          } catch(e) { }
+          } catch(err) { }
           if (cb) {
             // this setTimeout is critically important for IE8 -
             // in ie8 sometimes addListener for 'message' can synchronously
@@ -188,7 +214,14 @@
             }, 0);
           }
         }
+
+        function onDie(e) {
+          if (e.data === CLOSE_CMD) {
+            try { window.close(); } catch (o_O) {}
+          }
+        }
         addListener(isIE ? msgTarget : window, 'message', onMessage);
+        addListener(isIE ? msgTarget : window, 'message', onDie);
 
         // we cannot post to our parent that we're ready before the iframe
         // is loaded. (IE specific possible failure)
@@ -203,10 +236,11 @@
 
         // if window is unloaded and the client hasn't called cb, it's an error
         var onUnload = function() {
+          removeListener(isIE ? msgTarget : window, 'message', onDie);
           if (cb) doPost({ a: 'error', d: 'client closed window' });
           cb = undefined;
           // explicitly close the window, in case the client is trying to reload or nav
-          try { window.close(); } catch (e) { };
+          try { window.close(); } catch (e) { }
         };
         addListener(window, 'unload', onUnload);
         return {
