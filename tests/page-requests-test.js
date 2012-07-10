@@ -63,6 +63,7 @@ suite.addBatch({
   'GET /privacy':                respondsWith(200),
   'GET /verify_email_address':   respondsWith(200),
   'GET /add_email_address':      respondsWith(200),
+  'GET /confirm':                respondsWith(200),
   'GET /reset_password':         respondsWith(200),
   'GET /confirm':                respondsWith(200),
   'GET /idp_auth_complete':      respondsWith(200),

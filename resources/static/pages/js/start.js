@@ -26,7 +26,7 @@ $(function() {
       XHRDisableForm = modules.XHRDisableForm,
       Development = modules.Development,
       ANIMATION_TIME = 500,
-      checkCookiePaths = [ "/signin", "/signup", "/forgot", "/add_email_address", "/verify_email_address" ];
+      checkCookiePaths = [ "/signin", "/signup", "/forgot", "/add_email_address", "/confirm", "/verify_email_address" ];
 
 
   function shouldCheckCookies(path) {
@@ -146,6 +146,9 @@ $(function() {
       bid.forgot();
     }
     else if (path === "/add_email_address") {
+      verifySecondaryAddress("verifyEmail");
+    }
+    else if (path === "/confirm") {
       verifySecondaryAddress("verifyEmail");
     }
     else if (path === "/verify_email_address") {
