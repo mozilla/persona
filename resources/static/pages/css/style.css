@@ -726,6 +726,8 @@ a.developers:hover {
 }
 a.developers img {
   margin: 0 5px -7px 0;
+  /* The logo at the bottom of the /about page has a border by default */
+  border: none;
 }
 a.developers span {
   color: #53b7fb;
