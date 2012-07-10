@@ -80,7 +80,7 @@ BrowserID.signUp = (function() {
 
       if(valid) {
         user.createSecondaryUser(this.emailToStage, pass, function(status) {
-          if(status) {
+          if(status.success) {
             pageHelpers.emailSent(oncomplete && oncomplete.curry(true));
           }
           else {

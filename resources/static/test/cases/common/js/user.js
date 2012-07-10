@@ -158,7 +158,7 @@
 
   asyncTest("createSecondaryUser success - callback with true status", function() {
     lib.createSecondaryUser(TEST_EMAIL, "password", function(status) {
-      ok(status, "user created");
+      ok(status.success, "user created");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -167,7 +167,10 @@
     xhr.useResult("throttle");
 
     lib.createSecondaryUser(TEST_EMAIL, "password", function(status) {
-      equal(status, false, "user creation refused");
+      testObjectValuesEqual(status, {
+        success: false,
+        reason: "throttle"
+      });
       start();
     }, testHelpers.unexpectedXHRFailure);
   });

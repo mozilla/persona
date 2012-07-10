@@ -101,7 +101,7 @@ BrowserID.User = (function() {
     }
   }
 
-  function stageAddressVerification(onComplete, staged) {
+  function handleStageAddressVerifictionResponse(onComplete, staged) {
     var status = { success: staged };
 
     if (!staged) status.reason = "throttle";
@@ -349,14 +349,8 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     createSecondaryUser: function(email, password, onComplete, onFailure) {
-      // set - XXX Use stageAddressVerification to handle the response.
-      network.createUser(email, password, origin, function(created) {
-        // Used on the main site when the user verifies - once verification
-        // is complete, the user is redirected back to the RP and logged in.
-        var site = User.getReturnTo();
-        if (created && site) storage.setReturnTo(site);
-        complete(onComplete, created);
-      }, onFailure);
+      network.createUser(email, password, origin,
+        handleStageAddressVerifictionResponse.curry(onComplete), onFailure);
     },
 
     /**
@@ -617,7 +611,7 @@ BrowserID.User = (function() {
       User.isEmailRegistered(email, function(registered) {
         if (registered) {
           network.requestPasswordReset(email, password, origin,
-            stageAddressVerification.curry(onComplete), onFailure);
+            handleStageAddressVerifictionResponse.curry(onComplete), onFailure);
         }
         else if (onComplete) {
           onComplete({ success: false, reason: "invalid_user" });
@@ -672,7 +666,7 @@ BrowserID.User = (function() {
       else if (!idInfo.verified) {
         // this address is unverified, try to reverify it.
         network.requestEmailReverify(email, origin,
-          stageAddressVerification.curry(onComplete), onFailure);
+          handleStageAddressVerifictionResponse.curry(onComplete), onFailure);
       }
     },
 
