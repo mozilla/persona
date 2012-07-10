@@ -465,15 +465,15 @@ a.emphasize:active {
 }
 
 #your_computer_content li {
-  padding: 0 50px 0 150px;
-  margin: 28px 0;
+  margin: 15px 0;
   text-align: left;
+  line-height: 28px;
 }
 
 #your_computer_content button {
-  float: left;
-  margin-left: -100px;
-  min-width: 4em;
+  margin: 0 10px 0 0;
+  display: inline-block;
+  float: none;
 }
 
 .unsupported, .cookies_disabled {
