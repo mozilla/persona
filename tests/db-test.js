@@ -218,7 +218,7 @@ suite.addBatch({
         "makes it visible via isStaged": function(sekret, r) { assert.isTrue(r); },
         "lets you verify it": {
           topic: function(secret, r) {
-            db.completeAddEmail(secret, this.callback);
+            db.completeConfirmEmail(secret, this.callback);
           },
           "successfully": function(err, r) {
             assert.isNull(err);

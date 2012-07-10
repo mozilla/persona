@@ -105,7 +105,7 @@ suite.addBatch({
 suite.addBatch({
   "create second account": {
     topic: function() {
-      wsapi.post('/wsapi/complete_email_addition', { token: token }).call(this);
+      wsapi.post('/wsapi/complete_email_confirmation', { token: token }).call(this);
     },
     "account created": function(err, r) {
       assert.equal(r.code, 200);
@@ -423,7 +423,7 @@ suite.addBatch({
 suite.addBatch({
   "complete reverify": {
     topic: function() {
-      wsapi.post('/wsapi/complete_reverify', { token: token }).call(this);
+      wsapi.post('/wsapi/complete_email_confirmation', { token: token }).call(this);
     },
     "works": function(err, r) {
       assert.equal(r.code, 200);

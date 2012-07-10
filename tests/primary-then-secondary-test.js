@@ -122,7 +122,7 @@ suite.addBatch({
           },
           "which then": {
             topic: function() {
-              wsapi.post('/wsapi/complete_email_addition', {
+              wsapi.post('/wsapi/complete_email_confirmation', {
                 token: this._token
               }).call(this);
             },
@@ -200,7 +200,7 @@ suite.addBatch({
           },
           "with a token": {
             topic: function() {
-              wsapi.post('/wsapi/complete_email_addition', {
+              wsapi.post('/wsapi/complete_email_confirmation', {
                 token: this._token
               }).call(this);
             },
