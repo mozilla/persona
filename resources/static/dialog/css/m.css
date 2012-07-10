@@ -30,7 +30,6 @@
   .inputs > li > label {
     font-size: 16px;
     margin-bottom: 5px;
-    overflow: visible;
   }
 
   .vertical > strong {
