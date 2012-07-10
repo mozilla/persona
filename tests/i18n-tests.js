@@ -27,7 +27,7 @@ suite.addBatch({
   "format a string with named values": {
     topic: function () {
       var params = { salutation: "Hello", place: "World" };
-      return i18n.format("%(salutation)s %(place)s!", params, true);
+      return i18n.format("%(salutation) %(place)!", params);
     },
     "was interpolated": function (err, str) {
       assert.equal(str, "Hello World!");
