@@ -32,11 +32,11 @@ BrowserID.Modules.Actions = (function() {
     return module;
   }
 
-  function startRegCheckService(options, verifier, message, password) {
+  function startRegCheckService(options, verifier, message) {
     var controller = startService("check_registration", {
       verifier: verifier,
       verificationMessage: message,
-      password: password,
+      password: options.password,
       siteName: options.siteName,
       email: options.email
     });
@@ -70,7 +70,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doConfirmUser: function(info) {
-      startRegCheckService.call(this, info, "waitForUserValidation", "user_confirmed", info.password || undefined);
+      startRegCheckService.call(this, info, "waitForUserValidation", "user_confirmed");
     },
 
     doPickEmail: function(info) {
@@ -85,6 +85,10 @@ BrowserID.Modules.Actions = (function() {
       dialogHelpers.addSecondaryEmail.call(this, info.email, info.password, info.ready);
     },
 
+    doConfirmEmail: function(info) {
+      startRegCheckService.call(this, info, "waitForEmailValidation", "email_confirmed");
+    },
+
     doAuthenticate: function(info) {
       startService("authenticate", info);
     },
@@ -93,16 +97,24 @@ BrowserID.Modules.Actions = (function() {
       startService("required_email", info);
     },
 
-    doForgotPassword: function(info) {
+    doResetPassword: function(info) {
       startService("set_password", _.extend(info, { password_reset: true }));
     },
 
-    doResetPassword: function(info) {
+    doStageResetPassword: function(info) {
       dialogHelpers.resetPassword.call(this, info.email, info.password, info.ready);
     },
 
-    doConfirmEmail: function(info) {
-      startRegCheckService.call(this, info, "waitForEmailValidation", "email_confirmed");
+    doConfirmResetPassword: function(info) {
+      startRegCheckService.call(this, info, "waitForPasswordResetComplete", "staged_address_confirmed");
+    },
+
+    doStageReverifyEmail: function(info) {
+      dialogHelpers.reverifyEmail.call(this, info.email, info.ready);
+    },
+
+    doConfirmReverifyEmail: function(info) {
+      startRegCheckService.call(this, info, "waitForEmailReverifyComplete", "staged_address_confirmed");
     },
 
     doAssertionGenerated: function(info) {

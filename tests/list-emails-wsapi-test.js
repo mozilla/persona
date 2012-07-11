@@ -85,6 +85,7 @@ suite.addBatch({
       var emails = Object.keys(respObj);
       assert.equal(emails[0], "syncer@somehost.com");
       assert.equal(respObj[emails[0]].type, "secondary");
+      assert.equal(respObj[emails[0]].verified, true);
       assert.equal(emails.length, 1);
     }
   }

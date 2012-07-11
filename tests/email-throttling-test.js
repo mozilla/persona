@@ -112,7 +112,7 @@ suite.addBatch({
 suite.addBatch({
   "and when we attempt to finish adding the email address": {
     topic: function() {
-      wsapi.post('/wsapi/complete_email_addition', { token: token }).call(this);
+      wsapi.post('/wsapi/complete_email_confirmation', { token: token }).call(this);
     },
     "it works swimmingly": function(err, r) {
       assert.equal(r.code, 200);

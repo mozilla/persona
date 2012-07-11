@@ -132,6 +132,7 @@ suite.addBatch({
   '/privacy': hasProperCacheHeaders('/privacy'),
   '/verify_email_address': hasProperCacheHeaders('/verify_email_address'),
   '/add_email_address': hasProperCacheHeaders('/add_email_address'),
+  '/confirm': hasProperCacheHeaders('/confirm'),
 //  '/pk': hasProperCacheHeaders('/pk'),
 //  '/.well-known/browserid': hasProperCacheHeaders('/.well-known/browserid')
 });

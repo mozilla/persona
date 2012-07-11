@@ -26,7 +26,7 @@ $(function() {
       XHRDisableForm = modules.XHRDisableForm,
       Development = modules.Development,
       ANIMATION_TIME = 500,
-      checkCookiePaths = [ "/signin", "/signup", "/forgot", "/add_email_address", "/verify_email_address" ];
+      checkCookiePaths = [ "/signin", "/signup", "/forgot", "/add_email_address", "/confirm", "/verify_email_address" ];
 
 
   function shouldCheckCookies(path) {
@@ -117,6 +117,14 @@ $(function() {
     start(true);
   }
 
+  function verifySecondaryAddress(verifyFunction) {
+    var module = bid.verifySecondaryAddress.create();
+    module.start({
+      token: token,
+      verifyFunction: verifyFunction
+    });
+  }
+
   function start(status) {
     // If cookies are disabled, do not run any of the page specific code and
     // instead just show the error message.
@@ -137,19 +145,22 @@ $(function() {
     else if (path === "/forgot") {
       bid.forgot();
     }
+    // START TRANSITION CODE
+    // add_email_address has been renamed to confirm. Once all outstanding
+    // emails are verified or expired, this can be removed. This change is
+    // scheduled to go into train-2012.07.20
     else if (path === "/add_email_address") {
-      var module = bid.verifySecondaryAddress.create();
-      module.start({
-        token: token,
-        verifyFunction: "verifyEmail"
-      });
+      verifySecondaryAddress("verifyEmail");
+    }
+    // END TRANSITION CODE
+    else if (path === "/confirm") {
+      verifySecondaryAddress("verifyEmail");
     }
     else if (path === "/verify_email_address") {
-      var module = bid.verifySecondaryAddress.create();
-      module.start({
-        token: token,
-        verifyFunction: "verifyUser"
-      });
+      verifySecondaryAddress("verifyUser");
+    }
+    else if (path === "/reset_password") {
+      verifySecondaryAddress("completePasswordReset");
     }
     else if (path === "/about") {
       var module = bid.about.create();

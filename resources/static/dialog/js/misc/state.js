@@ -38,6 +38,20 @@ BrowserID.State = (function() {
         },
         cancelState = self.popState.bind(self);
 
+    function handleEmailStaged(actionName, msg, info) {
+      // The unverified email has been staged, now the user has to confirm
+      // ownership of the address.  Send them off to the "verify your address"
+      // screen.
+      var actionInfo = {
+        email: info.email,
+        siteName: self.siteName
+      };
+
+      self.stagedEmail = info.email;
+      startAction(actionName, actionInfo);
+    }
+
+
     handleState("start", function(msg, info) {
       self.hostname = info.hostname;
       self.siteName = info.siteName || info.hostname;
@@ -118,21 +132,18 @@ BrowserID.State = (function() {
       }
       else if (self.resetPasswordEmail) {
         self.resetPasswordEmail = null;
-        startAction(false, "doResetPassword", info);
+        startAction(false, "doStageResetPassword", info);
       }
     });
 
-    handleState("user_staged", function(msg, info) {
-      self.stagedEmail = info.email;
-
-      _.extend(info, {
-        siteName: self.siteName
-      });
-
-      startAction("doConfirmUser", info);
-    });
+    handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
 
     handleState("user_confirmed", function() {
+      self.email = self.stagedEmail;
+      redirectToState("email_chosen", { email: self.stagedEmail} );
+    });
+
+    handleState("staged_address_confirmed", function() {
       self.email = self.stagedEmail;
       redirectToState("email_chosen", { email: self.stagedEmail} );
     });
@@ -222,52 +233,71 @@ BrowserID.State = (function() {
         complete(info.complete);
       }
 
-      if (idInfo) {
-        mediator.publish("kpi_data", { email_type: idInfo.type });
-
-        if (idInfo.type === "primary") {
-          if (idInfo.cert) {
-            // Email is a primary and the cert is available - the user can log
-            // in without authenticating with the IdP. All invalid/expired
-            // certs are assumed to have been checked and removed by this
-            // point.
-            redirectToState("email_valid_and_ready", info);
-          }
-          else {
-            // If the email is a primary and the cert is not available,
-            // throw the user down the primary flow. The primary flow will
-            // catch cases where the primary certificate is expired
-            // and the user must re-verify with their IdP.
-            redirectToState("primary_user", info);
-          }
-        }
-        else {
-          user.checkAuthentication(function(authentication) {
-            if (authentication === "assertion") {
-              // user must authenticate with their password, kick them over to
-              // the required email screen to enter the password.
-              startAction("doAuthenticateWithRequiredEmail", {
-                email: email,
-                secondary_auth: true,
-
-                // This is a user is already authenticated to the assertion
-                // level who has chosen a secondary email address from the
-                // pick_email screen. They would have been shown the
-                // siteTOSPP there.
-                siteTOSPP: false
-              });
-            }
-            else {
-              redirectToState("email_valid_and_ready", info);
-            }
-            oncomplete();
-          }, oncomplete);
-        }
-      }
-      else {
+      if (!idInfo) {
         throw "invalid email";
       }
+
+      mediator.publish("kpi_data", { email_type: idInfo.type });
+
+      if (idInfo.type === "primary") {
+        if (idInfo.cert) {
+          // Email is a primary and the cert is available - the user can log
+          // in without authenticating with the IdP. All invalid/expired
+          // certs are assumed to have been checked and removed by this
+          // point.
+          redirectToState("email_valid_and_ready", info);
+        }
+        else {
+          // If the email is a primary and the cert is not available,
+          // throw the user down the primary flow. The primary flow will
+          // catch cases where the primary certificate is expired
+          // and the user must re-verify with their IdP.
+          redirectToState("primary_user", info);
+        }
+      }
+      // Anything below this point means the address is a secondary.
+      else if (!idInfo.verified) {
+        // user selected an unverified secondary email, kick them over to the
+        // verify screen.
+        redirectToState("stage_reverify_email", info);
+      }
+      else {
+        // Address is verified, check the authentication, if the user is not
+        // authenticated to the assertion level, force them to enter their
+        // password.
+        user.checkAuthentication(function(authentication) {
+          if (authentication === "assertion") {
+             // user must authenticate with their password, kick them over to
+            // the required email screen to enter the password.
+            startAction("doAuthenticateWithRequiredEmail", {
+              email: email,
+              secondary_auth: true,
+
+              // This is a user is already authenticated to the assertion
+              // level who has chosen a secondary email address from the
+              // pick_email screen. They would have been shown the
+              // siteTOSPP there.
+              siteTOSPP: false
+            });
+          }
+          else {
+            redirectToState("email_valid_and_ready", info);
+          }
+          oncomplete();
+        }, oncomplete);
+      }
     });
+
+    handleState("stage_reverify_email", function(msg, info) {
+      // A user has selected an email that has not been verified after
+      // a password reset.  Stage the email again to be re-verified.
+      var actionInfo = {
+        email: info.email
+      };
+      startAction("doStageReverifyEmail", actionInfo);
+    });
+
+    handleState("reverify_email_staged", handleEmailStaged.curry("doConfirmReverifyEmail"));
 
     handleState("email_valid_and_ready", function(msg, info) {
       // this state is only called after all checking is done on the email
@@ -312,21 +342,14 @@ BrowserID.State = (function() {
     handleState("forgot_password", function(msg, info) {
       // User has forgotten their password, let them reset it.  The response
       // message from the forgot_password controller will be a set_password.
-      // the set_password handler needs to know the forgotPassword email so it
-      // knows how to handle the password being set.  When the password is
-      // finally reset, the password_reset message will be raised where we must
-      // await email confirmation.
+      // the set_password handler needs to know the resetPasswordEmail so it
+      // knows how to trigger the reset_password_staged message.  At this
+      // point, the email confirmation screen will be shown.
       self.resetPasswordEmail = info.email;
-      startAction(false, "doForgotPassword", info);
+      startAction(false, "doResetPassword", info);
     });
 
-    handleState("password_reset", function(msg, info) {
-      // password_reset says the user has confirmed that they want to
-      // reset their password.  doResetPassword will attempt to invoke
-      // the create_user wsapi.  If the wsapi call is successful,
-      // the user will be shown the "go verify your account" message.
-      redirectToState("user_staged", info);
-    });
+    handleState("reset_password_staged", handleEmailStaged.curry("doConfirmResetPassword"));
 
     handleState("assertion_generated", function(msg, info) {
       self.success = true;
@@ -350,19 +373,6 @@ BrowserID.State = (function() {
 
     handleState("authenticated", function(msg, info) {
       redirectToState("email_chosen", info);
-    });
-
-    handleState("reset_password", function(msg, info) {
-      info = info || {};
-      // reset_password says the user has confirmed that they want to
-      // reset their password.  doResetPassword will attempt to invoke
-      // the create_user wsapi.  If the wsapi call is successful,
-      // the user will be shown the "go verify your account" message.
-
-      // We have to save the staged email address here for when the user
-      // verifies their account and user_confirmed is called.
-      self.stagedEmail = info.email;
-      startAction(false, "doResetPassword", info);
     });
 
     handleState("add_email", function(msg, info) {
@@ -389,13 +399,7 @@ BrowserID.State = (function() {
       });
     });
 
-    handleState("email_staged", function(msg, info) {
-      self.stagedEmail = info.email;
-      _.extend(info, {
-        siteName: self.siteName
-      });
-      startAction("doConfirmEmail", info);
-    });
+    handleState("email_staged", handleEmailStaged.curry("doConfirmEmail"));
 
     handleState("email_confirmed", function() {
       redirectToState("email_chosen", { email: self.stagedEmail } );
