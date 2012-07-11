@@ -74,13 +74,16 @@ try {
   process.exit(1);
 }
 
+
+
 // and our single function
-app.post('/wsapi/cert_key', validate(["email", "pubkey", "ephemeral"]), function(req, resp) {
+app.post('/wsapi/cert_key', validate({ 'email': 'email', 'pubkey': 'pubkey', 'ephemeral': 'boolean' }), function(req, resp) {
   var startTime = new Date();
+  console.log(req.params);
   cc.enqueue({
-    pubkey: req.body.pubkey,
-    email: req.body.email,
-    validityPeriod: (req.body.ephemeral ? config.get('ephemeral_session_duration_ms') : config.get('certificate_validity_ms')),
+    pubkey: req.params.pubkey,
+    email: req.params.email,
+    validityPeriod: (req.params.ephemeral ? config.get('ephemeral_session_duration_ms') : config.get('certificate_validity_ms')),
     hostname: HOSTNAME
   }, function (err, r) {
     var reqTime = new Date - startTime;

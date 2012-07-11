@@ -44,7 +44,7 @@ suite.addBatch({
     }),
     "causes a HTTP error response": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(r.body, "Bad Request: missing 'pass' argument");
+      assert.strictEqual(JSON.parse(r.body).success, false);
     }
   },
   "a password that is too short": {
@@ -55,7 +55,7 @@ suite.addBatch({
     }),
     "causes a HTTP error response": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(r.body, "Bad Request: valid passwords are between 8 and 80 chars");
+      assert.equal(JSON.parse(r.body).success, false);
     }
   },
   "a password that is too long": {
@@ -66,7 +66,7 @@ suite.addBatch({
     }),
     "causes a HTTP error response": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(r.body, "Bad Request: valid passwords are between 8 and 80 chars");
+      assert.equal(JSON.parse(r.body).success, false);
     }
   },
   "but a password that is just right": {
