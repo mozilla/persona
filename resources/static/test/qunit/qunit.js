@@ -396,6 +396,16 @@ var QUnit = {
 		if (config.semaphore < 0) {
 			// ignore if start is called more often then stop
 			config.semaphore = 0;
+
+
+      // Keep track of the number of unmatched starts that happen, it should
+      // equal the number of stops called.  The first time QUnit is run, it
+      // will call start without first calling stop, so let that one through.
+      config.unmatched = config.unmatched || 0;
+      if ( config.unmatched ) {
+        throw new Error("Unmatched start: " + config.unmatched);
+      }
+      config.unmatched++;
 		}
 		// A slight delay, to avoid any current callbacks
 		if ( defined.setTimeout ) {
