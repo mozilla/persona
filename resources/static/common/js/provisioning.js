@@ -53,6 +53,10 @@ BrowserID.Provisioning = (function() {
     iframe.setAttribute('src', args.url);
     iframe.style.display = "none";
 
+    // start the timeout once the iframe loads, so we don't get false
+    // positives if the user is on a slow connection.
+    // the timeout should only happen if the provisioning site doesn't
+    // want to provision for us.
     function iframeOnLoad() {
       if (timeoutID) {
         clearTimeout(timeoutID);
