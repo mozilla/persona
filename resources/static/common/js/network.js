@@ -715,14 +715,32 @@ BrowserID.Network = (function() {
       withContext(function() {
         var enabled;
         try {
-          // set a test cookie with a duration of 1 second.
           // NOTE - The Android 3.3 and 4.0 default browsers will still pass
           // this check.  This causes the Android browsers to only display the
           // cookies diabled error screen only after the user has entered and
           // submitted input.
-          // http://stackoverflow.com/questions/8509387/android-browser-not-respecting-cookies-disabled/9264996#9264996
-          document.cookie = "test=true; max-age=1";
-          enabled = document.cookie.indexOf("test") > -1;
+          // http://stackoverflow.com/questions/8509387/android-browser-not-respecting-cookies-disabled
+
+          // Use both max-age (current spec) and expires (original spec).
+          // expires is officially deprecated but most browsers support it. If
+          // max-age is included as well, browsers will ignore expires.  IE8
+          // only supports expires.
+
+          // expire the cookie in 2 seconds so there is no chance of the
+          // session expiring while this check is occuring.
+          var maxAgeSeconds = 2,
+              expiryDate = new Date();
+          expiryDate.setTime(expiryDate.getTime() + (maxAgeSeconds * 1000));
+
+          document.cookie = "__cookiesEnabledCheck=1; max-age="
+            + maxAgeSeconds + "; expires=" + expiryDate.toGMTString();
+
+          enabled = document.cookie.indexOf("__cookiesEnabledCheck") > -1;
+
+          // expire the cookie NOW.  IE8 sometimes sends the cookie along for
+          // one request.
+          expiryDate.setTime((new Date().getTime()) - 1000);
+          document.cookie = "__cookiesEnabledCheck=; expires=" + expiryDate.toGMTString();
         } catch(e) {
           enabled = false;
         }
