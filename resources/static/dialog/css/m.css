@@ -7,14 +7,22 @@
  */
 @media screen and (max-width: 640px) {
 
-  html, body{
+  html, body {
     height: auto;
+    -webkit-text-size-adjust: none;
   }
+
+  /* Remove background image gradients set in style.css which cause
+   * horizontal lines to appear while the dialog is loading.
+   */
+  body {
+    background-image: url('/common/i/grain.png');
+  }
+
 
   header, footer {
     position: static;
     padding: 5px 20px;
-    -webkit-text-size-adjust: none;
   }
 
   footer{
@@ -108,17 +116,11 @@
   }
 
   #signIn .table{
-    padding: 10px 20px 20px;
-    display: block;
-  }
-
-  .pickemail #signIn .table {
-      padding-top: 0;
+    padding: 20px;
   }
 
   #signIn .vertical {
-      position: static;
-      display: block;
+    position: static;
   }
 
   #signIn form {
@@ -157,7 +159,6 @@
     position: relative;
     top: 0;
     bottom: 0;
-    padding-bottom: 20px;
   }
 
   .form_section,
@@ -173,13 +174,14 @@
     bottom: 0;
   }
 
-.form_section{
-  -webkit-text-size-adjust: none;
-}
-
   .submit #cancel, #signIn .submit #cancel {
+    line-height: 40px; /* Match the height of the buttons on the right */
     font-size: 18px;
-    line-height: 40px;
+  }
+
+  .submit #cancel.emphasize, #signIn .submit #cancel.emphasize {
+    line-height: 22px; /* override the default cancel button height for
+                          desktop or else the button looks huge */
   }
 
   #error .vertical {
