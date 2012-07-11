@@ -57,6 +57,7 @@ BrowserID.Provisioning = (function() {
     // positives if the user is on a slow connection.
     // the timeout should only happen if the provisioning site doesn't
     // want to provision for us.
+    // see https://github.com/mozilla/browserid/pull/1954
     function iframeOnLoad() {
       if (timeoutID) {
         clearTimeout(timeoutID);
