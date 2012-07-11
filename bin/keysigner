@@ -79,7 +79,6 @@ try {
 // and our single function
 app.post('/wsapi/cert_key', validate({ 'email': 'email', 'pubkey': 'pubkey', 'ephemeral': 'boolean' }), function(req, resp) {
   var startTime = new Date();
-  console.log(req.params);
   cc.enqueue({
     pubkey: req.params.pubkey,
     email: req.params.email,
