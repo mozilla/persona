@@ -8,4 +8,5 @@
 /resources/static/build
 /resources/static/production
 .DS_Store
+Thumbs.db
 /locale
