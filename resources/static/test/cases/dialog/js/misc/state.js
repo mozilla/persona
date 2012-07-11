@@ -179,7 +179,7 @@
     testVerifyStagedAddress("user_staged", "doConfirmUser");
   });
 
-  test("user_confirmed - redirect to email_chosen", function() {
+  asyncTest("user_confirmed - redirect to email_chosen", function() {
     mediator.subscribe("email_chosen", function(msg, info) {
       equal(info.email, TEST_EMAIL, "correct email passed");
       start();
@@ -188,6 +188,7 @@
     // simulate the flow of a user being staged through to confirmation. Since
     // we are not actually doing the middle bits and saving off a cert for the
     // email address, we get an invalid email exception thrown.
+    storage.addSecondaryEmail(TEST_EMAIL);
     mediator.publish("user_staged", { email: TEST_EMAIL });
     try {
       mediator.publish("user_confirmed");
@@ -334,23 +335,24 @@
     });
   });
 
-  test("email_valid_and_ready, do not need to ask user whether it's their computer - redirect to email_ready", function() {
+  asyncTest("email_valid_and_ready, do not need to ask user whether it's their computer - redirect to generate_assertion", function() {
     setContextInfo("password");
     // First, set up the context info for the email.
 
     storage.addEmail(TEST_EMAIL, {});
-    mediator.subscribe("email_ready", function() {
-      ok(true, "redirect to email_ready");
+    mediator.subscribe("generate_assertion", function() {
+      ok(true, "redirect to generate_assertion");
       start();
     });
     mediator.publish("email_valid_and_ready", { email: TEST_EMAIL });
   });
 
-  test("email_confirmed", function() {
+  asyncTest("email_confirmed", function() {
     mediator.subscribe("email_chosen", function(msg, info) {
       equal(info.email, TEST_EMAIL, "correct email passed");
       start();
     });
+    storage.addSecondaryEmail(TEST_EMAIL);
     mediator.publish("email_staged", { email: TEST_EMAIL });
     // simulate the flow of a user being staged through to confirmation. Since
     // we are not actually doing the middle bits and saving off a cert for the
@@ -551,7 +553,7 @@
     testActionStarted("doStageReverifyEmail", { email: TEST_EMAIL });
   });
 
-  test("reverify_email_staged - call doConfirmReverifyEmail", function() {
+  asyncTest("reverify_email_staged - call doConfirmReverifyEmail", function() {
     testVerifyStagedAddress("reverify_email_staged", "doConfirmReverifyEmail");
   });
 
