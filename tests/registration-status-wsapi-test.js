@@ -91,7 +91,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 400);
     },
     "returns an error string": function (err, r) {
-      assert.strictEqual(r.body, "Bad Request: missing 'email' argument");
+      assert.strictEqual(JSON.parse(r.body).success, false);
     }
   }
 });
