@@ -10,18 +10,6 @@
       validation = bid.Validation,
       helpers = bid.Helpers = bid.Helpers || {};
 
-  function extend(target) {
-    var mixins = [].slice.call(arguments, 1);
-
-    for(var index = 0, mixin; mixin = mixins[index]; ++index) {
-      for(var key in mixin) {
-        target[key] = mixin[key];
-      }
-    }
-
-    return target;
-  }
-
   function getAndValidateEmail(target) {
     var email = (dom.getInner(target) || "").trim();
 
@@ -86,16 +74,7 @@
     }
   }
 
-  extend(helpers, {
-    /**
-     * Extend an object with the properties of another object.  Overwrites
-     * properties if they already exist.
-     * @method extend
-     * @param {object} target
-     * @param {object} source
-     */
-    extend: extend,
-
+  _.extend(helpers, {
     /**
      * Get an email from a DOM element and validate it.
      * @method getAndValidateEmail
