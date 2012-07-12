@@ -17,6 +17,8 @@ train-2012.07.06:
   * security improvments - better random numbers: #1788
   * Fix Persona on Windows Metro: #1867
   * Fix dialog layout when rendered in a native webview on iOS: #1517
+  * (hotfix 2012.07.12) fix exceptions in javascript: #1978
+  * (hotfix 2012.07.12) fix ugly fonts on windows: #1856
 
 train-2012.06.22:
   * browserid.org now redirects to login.persona.org, all URLs are updated: #1743
