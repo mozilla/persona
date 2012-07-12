@@ -220,9 +220,12 @@ BrowserID.Modules.InteractionData = (function() {
   }
 
   function onKPIData(msg, result) {
+    // currentData will be undefined if sampling is disabled.
     var currentData = this.getCurrent();
-    _.extend(currentData, result);
-    model.setCurrent(currentData);
+    if (currentData) {
+      _.extend(currentData, result);
+      model.setCurrent(currentData);
+    }
   }
 
   // At every load, after session_context returns, try to publish the previous
@@ -346,6 +349,14 @@ BrowserID.Modules.InteractionData = (function() {
     ,
     setNameTable: function(table) {
       this.mediatorToKPINameTable = table;
+    },
+
+    enable: function() {
+      this.samplingEnabled = true;
+    },
+
+    disable: function() {
+      this.samplingEnabled = false;
     }
     // END TEST API
   });
