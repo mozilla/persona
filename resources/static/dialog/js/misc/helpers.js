@@ -158,7 +158,7 @@
 
   helpers.Dialog = helpers.Dialog || {};
 
-  helpers.extend(helpers.Dialog, {
+  _.extend(helpers.Dialog, {
     getAssertion: getAssertion,
     authenticateUser: authenticateUser,
     createUser: createUser,
