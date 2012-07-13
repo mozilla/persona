@@ -92,6 +92,30 @@ suite.addBatch({
   }
 });
 
+var context2 = {};
+suite.addBatch({
+  "establishing a second session": {
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: TEST_EMAIL,
+      pass: OLD_PASSWORD,
+      ephemeral: false
+    }, context2),
+    "works as expected": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).success, true);
+    }
+  }
+});
+
+suite.addBatch({
+  "using the second session": {
+    topic: wsapi.post('/wsapi/prolong_session', {}, context2),
+    "works as expected": function(err, r) {
+      assert.strictEqual(r.code, 200);
+      assert.strictEqual(r.body, "OK");
+    }
+  }
+});
+
 suite.addBatch({
   "updating the password without specifying a proper old password": {
     topic: wsapi.post('/wsapi/update_password', {
@@ -147,6 +171,12 @@ suite.addBatch({
     }),
     "fails as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, false);
+    }
+  },
+  "using the other (expired) session": {
+    topic: wsapi.post('/wsapi/prolong_session', {}, context2),
+    "fails as expected": function(err, r) {
+      assert.strictEqual(r.code, 403);
     }
   }
 });
