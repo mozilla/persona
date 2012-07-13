@@ -79,7 +79,11 @@ BrowserID.Modules.InteractionData = (function() {
     user_confirmed: "user.user_confirmed",
     email_staged: "user.email_staged",
     email_confirmed: "user.email_confrimed",
-    notme: "user.logout"
+    notme: "user.logout",
+    enter_password: "authenticate.enter_password",
+    password_submit: "authenticate.password_submitted",
+    authentication_success: "authenticate.password_success",
+    authentication_fail: "authenticate.password_fail"
   };
 
   function getKPIName(msg, data) {
@@ -204,7 +208,7 @@ BrowserID.Modules.InteractionData = (function() {
     self.initialEventStream = null;
 
     self.samplesBeingStored = true;
-    
+
   }
 
   function indexOfEvent(eventStream, eventName) {
