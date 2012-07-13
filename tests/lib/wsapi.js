@@ -13,31 +13,32 @@ var configuration = {
   browserid: 'http://127.0.0.1:10002/'
 }
 
-exports.clearCookies = function() {
-  wcli.clearCookies(context);
+exports.clearCookies = function(ctx) {
+  wcli.clearCookies(ctx||context);
 };
 
-exports.injectCookies = function(cookies) {
-  wcli.injectCookies({cookieJar: cookies}, context);
+exports.injectCookies = function(cookies, ctx) {
+  wcli.injectCookies({cookieJar: cookies}, ctx||context);
 };
 
-exports.getCookie = function(which) {
-  return wcli.getCookie(context, which);
+exports.getCookie = function(which, ctx) {
+  return wcli.getCookie(ctx||context, which);
 };
 
-exports.get = function (path, getArgs) {
+exports.get = function (path, getArgs, ctx) {
   return function () {
-    wcli.get(configuration, path, context, getArgs, this.callback);
+    wcli.get(configuration, path, ctx||context, getArgs, this.callback);
   };
 };
 
-exports.post = function (path, postArgs) {
+exports.post = function (path, postArgs, ctx) {
   return function () {
-    wcli.post(configuration, path, context, postArgs, this.callback);
+    wcli.post(configuration, path, ctx||context, postArgs, this.callback);
   };
 };
 
-exports.getCSRF = function() {
+exports.getCSRF = function(ctx) {
+  var context = ctx||context;
   if (context && context.session && context.session.csrf_token) {
     return context.session.csrf_token;
   }
