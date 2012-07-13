@@ -721,26 +721,13 @@ BrowserID.Network = (function() {
           // submitted input.
           // http://stackoverflow.com/questions/8509387/android-browser-not-respecting-cookies-disabled
 
-          // Use both max-age (current spec) and expires (original spec).
-          // expires is officially deprecated but most browsers support it. If
-          // max-age is included as well, browsers will ignore expires.  IE8
-          // only supports expires.
-
-          // expire the cookie in 2 seconds so there is no chance of the
-          // session expiring while this check is occuring.
-          var maxAgeSeconds = 2,
-              expiryDate = new Date();
-          expiryDate.setTime(expiryDate.getTime() + (maxAgeSeconds * 1000));
-
-          document.cookie = "__cookiesEnabledCheck=1; max-age="
-            + maxAgeSeconds + "; expires=" + expiryDate.toGMTString();
-
+          document.cookie = "__cookiesEnabledCheck=1";
           enabled = document.cookie.indexOf("__cookiesEnabledCheck") > -1;
 
-          // expire the cookie NOW.  IE8 sometimes sends the cookie along for
-          // one request.
-          expiryDate.setTime((new Date().getTime()) - 1000);
-          document.cookie = "__cookiesEnabledCheck=; expires=" + expiryDate.toGMTString();
+          // expire the cookie NOW by setting its expires date to yesterday.
+          var expires = new Date();
+          expires.setDate(expires.getDate() - 1);
+          document.cookie = "__cookiesEnabledCheck=; expires=" + expires.toGMTString();
         } catch(e) {
           enabled = false;
         }
