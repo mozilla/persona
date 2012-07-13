@@ -111,13 +111,14 @@ process.env['SUPPORTED_LANGUAGES'] = 'en,bg,it-CH';
 // now let's start up our servers
 start_stop.addStartupBatches(suite);
 
-function getTestTemplate(langs) {
+function getTestTemplate(langs, tp) {
+  tp = tp || '/i18n_test';
   return function() {
     var self = this;
     var req = http.request({
       host: '127.0.0.1',
       port: 10002,
-      path: '/i18n_test',
+      path: tp,
       method: "GET",
       headers: { 'Accept-Language': langs }
     }, function (res) {
@@ -171,7 +172,16 @@ suite.addBatch({
       assert.strictEqual(200, r.code);
       assert.strictEqual(r.body.trim(), "Прова?  Прова?  Четери, пет, шещ?");
     }
+  },
+  // test .json extraction fallback when translation is the empty string
+  "bulgarian accept headers without a translation": {
+    topic: getTestTemplate('bg', '/i18n_fallback_test'),
+    "return a non-translated string" : function(err, r) {
+      assert.strictEqual(200, r.code);
+      assert.strictEqual(r.body.trim(), "This is not translated");
+    }
   }
+
 });
 
 // and let's stop them servers
