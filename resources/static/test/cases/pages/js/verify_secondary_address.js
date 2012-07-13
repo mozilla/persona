@@ -11,6 +11,7 @@
       xhr = bid.Mocks.xhr,
       WindowMock = bid.Mocks.WindowMock,
       dom = bid.DOM,
+      pageHelpers = bid.PageHelpers,
       testHelpers = bid.TestHelpers,
       testHasClass = testHelpers.testHasClass,
       testVisible = testHelpers.testVisible,
@@ -26,19 +27,24 @@
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/confirm", {});
+      $(document.body).append($('<div id=redirectTimeout>'));
       $(".siteinfo,.password_entry").hide();
     },
     teardown: function() {
+      $('#redirectTimeout').remove();
       testHelpers.teardown();
     }
   });
 
   function createController(options, callback) {
     controller = BrowserID.verifySecondaryAddress.create();
-    options = options || {};
-    options.document = doc = new WindowMock().document;
-    options.redirectTimeout = 0;
-    options.ready = callback;
+    // defaults, but options can override
+    options = _.extend({
+      document: new WindowMock().document,
+      redirectTimeout: 0,
+      ready: callback
+    }, options || {});
+    doc = options.document;
     controller.start(options);
   }
 
@@ -152,6 +158,34 @@
     xhr.useResult("invalid");
     createController(config, function() {
       testCannotConfirm();
+      start();
+    });
+  });
+
+  asyncTest("redirect: message shows with correct timeout", function() {
+    var returnTo = 'http://test.domain/path';
+    storage.setReturnTo(returnTo);
+    var timeout = 2;
+
+    //mock out helper so we can check progress of redirectTimeout el
+    var replaceFormWithNotice = pageHelpers.replaceFormWithNotice;
+    pageHelpers.replaceFormWithNotice = function(selector, cb) {
+      // mock out 2s network response
+      setTimeout(function mockedNetwork() {
+        replaceFormWithNotice.call(this, selector, function intercepted() {
+          equal(parseInt($('#redirectTimeout').html(), 10), timeout,
+            'timeout should not have started countdown yet');
+
+          //at the end, finish with cb
+          cb && cb();
+        });
+      }, (timeout - 1) * 1000);
+    };
+
+    var options = _.extend({ redirectTimeout: timeout * 1000 }, config);
+    createController(options, function() {
+      // teardown
+      pageHelpers.replaceFormWithNotice = replaceFormWithNotice;
       start();
     });
   });
