@@ -16,6 +16,7 @@
         "ejs": "0.4.3",
         "etagify": "0.0.2",
         "express": "2.5.0",
+        "gobbledygook": "0.0.3", 
         "mustache": "0.3.1-dev",
         "jwcrypto": "0.3.2",
         "mysql": "0.9.5",
