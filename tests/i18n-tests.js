@@ -8,16 +8,22 @@ require('./lib/test_env.js');
 
 const assert = require('assert'),
       vows = require('vows'),
-      i18n = require('../lib/i18n');
+      i18n = require('../lib/i18n'),
+      start_stop = require('./lib/start-stop.js'),
+      wsapi = require('./lib/wsapi.js'),
+      http = require('http'),
+      path = require('path');
 
 var suite = vows.describe('i18n');
+
+suite.options.error = false;
 
 suite.addBatch({
   "format a string with place values": {
     topic: function () {
       return i18n.format("%s %s!", ["Hello", "World"]);
     },
-    "was interpolated": function (err, str) {
+    "was interpolated": function (str) {
       assert.equal(str, "Hello World!");
     }
   }
@@ -29,7 +35,7 @@ suite.addBatch({
       var params = { salutation: "Hello", place: "World" };
       return i18n.format("%(salutation) %(place)!", params);
     },
-    "was interpolated": function (err, str) {
+    "was interpolated": function (str) {
       assert.equal(str, "Hello World!");
     }
   }
@@ -40,7 +46,7 @@ suite.addBatch({
     topic: function () {
       return i18n.format("Hello World!");
     },
-    "was interpolated": function (err, str) {
+    "was interpolated": function (str) {
       assert.equal(str, "Hello World!");
     }
   },
@@ -48,7 +54,7 @@ suite.addBatch({
     topic: function () {
       return i18n.format(null);
     },
-    "was interpolated": function (err, str) {
+    "was interpolated": function (str) {
       assert.equal(str, "");
     }
   }
@@ -64,7 +70,7 @@ suite.addBatch({
           i18n.parseAcceptLanguage(accept),
           supported, def);
     },
-    "For Punjabi": function (err, locale) {
+    "For Punjabi": function (locale) {
       assert.equal(locale, "pa");
     }
   },
@@ -77,7 +83,7 @@ suite.addBatch({
           i18n.parseAcceptLanguage(accept),
           supported, def);
     },
-    "For Punjabi (India) serve Punjabi": function (err, locale) {
+    "For Punjabi (India) serve Punjabi": function (locale) {
       assert.equal(locale, "pa");
     }
   },
@@ -90,11 +96,86 @@ suite.addBatch({
           i18n.parseAcceptLanguage(accept),
           supported, def);
     },
-    "Don't choose Punjabi (India)": function (err, locale) {
+    "Don't choose Punjabi (India)": function (locale) {
       assert.equal(locale, "en-us");
     }
   }
 });
+
+// point to test translation files
+process.env['TRANSLATION_DIR'] = path.join(__dirname, "i18n_test_files");
+
+// supported languages for the purposes of this test
+process.env['SUPPORTED_LANGUAGES'] = 'en,bg,it-CH';
+
+// now let's start up our servers
+start_stop.addStartupBatches(suite);
+
+function getTestTemplate(langs) {
+  return function() {
+    var self = this;
+    var req = http.request({
+      host: '127.0.0.1',
+      port: 10002,
+      path: '/i18n_test',
+      method: "GET",
+      headers: { 'Accept-Language': langs }
+    }, function (res) {
+      var body = "";
+      res.on('data', function(chunk) { body += chunk; })
+        .on('end', function() {
+          self.callback(null, { code: res.statusCode, body: body });
+        });
+    }).on('error', function (e) {
+      self.callback(e);
+    });
+    req.end();
+  };
+}
+
+suite.addBatch({
+  // test default language
+  "test template with no headers": {
+    topic: getTestTemplate(undefined),
+    "returns english" : function(err, r) {
+      assert.strictEqual(r.code, 200);
+      assert.strictEqual(
+        r.body.trim(),
+        'This is a translation <strong>test</strong> string.');
+    }
+  },
+  // test un-supported case
+  "test template with german headers": {
+    topic: getTestTemplate('de'),
+    "returns english" : function(err, r) {
+      assert.strictEqual(200, r.code);
+      assert.strictEqual(
+        r.body.trim(),
+        'This is a translation <strong>test</strong> string.');
+    }
+  },
+  // test debug translation
+  "test template with debug headers": {
+    topic: getTestTemplate('it-CH'),
+    "returns gobbledygook" : function(err, r) {
+      assert.strictEqual(200, r.code);
+      assert.strictEqual(
+        r.body.trim(),
+        '.ƃuıɹʇs <strong>ʇsǝʇ</strong> uoıʇaʅsuaɹʇ a sı sıɥ⊥');
+    }
+  },
+  // test .json extraction
+  "bulgarian accept headers": {
+    topic: getTestTemplate('bg'),
+    "return a translation extacted from .json file" : function(err, r) {
+      assert.strictEqual(200, r.code);
+      assert.strictEqual(r.body.trim(), "Прова?  Прова?  Четери, пет, шещ?");
+    }
+  }
+});
+
+// and let's stop them servers
+start_stop.addShutdownBatches(suite);
 
 // run or export the suite.
 if (process.argv[1] === __filename) suite.run();
