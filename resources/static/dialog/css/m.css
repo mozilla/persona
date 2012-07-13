@@ -196,5 +196,13 @@
   .inputs > li {
     margin-top: 12px;
   }
+
+  /* The unsupported and cookies_disabled dialogs have to be position: static
+   * or else their content is not displayed on mobile devices. See issue #1998
+   */
+  #error.unsupported, #error.cookies_disabled {
+    position: static;
+    height: 250px;
+  }
 }
 
