@@ -35,6 +35,19 @@ create tables.  You can then run the mysql suite with, e.g.,
 NODE_ENV=test_mysql MYSQL_USER=browserid MYSQL_PASSWORD=browserid npm test
 ```
 
+#### Initial MySQL setup
+
+The following will create a database user with enough privileges:
+
+    $ mysql -uroot -p
+    > CREATE USER 'browserid'@'localhost' IDENTIFIED BY 'browserid';
+    > GRANT ALL ON *.* TO 'browserid'@'localhost';
+    > FLUSH PRIVILEGES;
+
+If you need to reset the MySQL root password on a Debian system, you'll need to do something like:
+
+    $ sudo dpkg-reconfigure -plow mysql-server-5.5
+
 ### Test Suites
 
 There are two test suites:
