@@ -79,8 +79,8 @@ suite.addBatch({
 suite.addBatch({
   "ping": {
     topic: wsapi.get('/wsapi/ping', {}),
-    "fails with 503 when db is stalled": function(err, r) {
-      assert.strictEqual(r.code, 503);
+    "fails with 500 when db is stalled": function(err, r) {
+      assert.strictEqual(r.code, 500);
     }
   },
   "address_info": {
