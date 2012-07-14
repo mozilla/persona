@@ -22,7 +22,7 @@ start_stop.addStartupBatches(suite);
 const
 TEST_DOMAIN = 'example.domain',
 TEST_ORIGIN = 'http://127.0.0.1:10002',
-TEST_SITE = 'http://example.com:652';
+TEST_SITE = 'http://dev.123done.org';
 
 // This test simply stages a secondary user. It does so for two users,
 // one with a password that is only ascii, and the other with non-ascii
