@@ -96,7 +96,7 @@
       });
     });
   });
-  
+
   asyncTest("removeEmail doesn't cancel the account when removing a non-existent e-mail", function() {
     bid.manageAccount(mocks, function() {
       bid.manageAccount.removeEmail("non@existent.com", function() {
@@ -105,7 +105,7 @@
       });
     });
   });
-  
+
   asyncTest("removeEmail doesn't cancel the account when out of sync with the server", function() {
     bid.manageAccount(mocks, function() {
       xhr.useResult("multiple");
@@ -206,7 +206,7 @@
   asyncTest("changePassword with too short of a password - tooltip", function() {
     bid.manageAccount(mocks, function() {
       $("#old_password").val("oldpassword");
-      $("#new_password").val("pass");
+      $("#new_password").val(testHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1));
 
       bid.manageAccount.changePassword(function(status) {
         equal(status, false, "on too short of a password, status is false");
@@ -219,7 +219,7 @@
   asyncTest("changePassword with too long of a password - tooltip", function() {
     bid.manageAccount(mocks, function() {
       $("#old_password").val("oldpassword");
-      $("#new_password").val(testHelpers.generateString(81));
+      $("#new_password").val(testHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1));
 
       bid.manageAccount.changePassword(function(status) {
         equal(status, false, "on too long of a password, status is false");

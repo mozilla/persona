@@ -72,14 +72,14 @@
 
   asyncTest("requestPasswordReset with too short of a password", function() {
     $("#email").val("unregistered@testuser.com");
-    $("#password,#vpassword").val("fail");
+    $("#password,#vpassword").val(testHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1));
 
     testEmailNotSent();
   });
 
   asyncTest("requestPasswordReset with too long of a password", function() {
     $("#email").val("unregistered@testuser.com");
-    $("#password,#vpassword").val(testHelpers.generateString(81));
+    $("#password,#vpassword").val(testHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1));
 
     testEmailNotSent();
   });
