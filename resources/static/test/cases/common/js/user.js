@@ -630,6 +630,22 @@
   });
 
 
+  asyncTest("authenticate with too short a password - user not authenticated", function() {
+    var password = testHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1);
+    lib.authenticate(TEST_EMAIL, password, function onComplete(authenticated) {
+      equal(false, authenticated, "invalid authentication.");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("authenticate with too long a password - user not authenticated", function() {
+    var password = testHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1);
+    lib.authenticate(TEST_EMAIL, password, function onComplete(authenticated) {
+      equal(false, authenticated, "invalid authentication.");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
   asyncTest("authenticate with invalid credentials", function() {
     xhr.useResult("invalid");
     lib.authenticate(TEST_EMAIL, "testuser", function onComplete(authenticated) {
