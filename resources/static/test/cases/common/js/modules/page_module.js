@@ -17,7 +17,7 @@
     controller.start();
   }
 
-  module("shared/modules/page_module", {
+  module("common/js/modules/page_module", {
     setup: function() {
       el = $("#controller_head");
       bid.TestHelpers.setup();

@@ -20,7 +20,7 @@
     controller.start(options);
   }
 
-  module("controllers/set_password", {
+  module("dialog/js/modules/set_password", {
     setup: function() {
       testHelpers.setup();
       createController();

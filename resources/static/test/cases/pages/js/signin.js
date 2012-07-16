@@ -19,7 +19,7 @@
       controller,
       winchan;
 
-  module("pages/signin", {
+  module("pages/js/signin", {
     setup: function() {
       testHelpers.setup();
       docMock.location = "signin";

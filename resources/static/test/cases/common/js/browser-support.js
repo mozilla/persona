@@ -11,7 +11,7 @@
       stubWindow,
       stubNavigator;
 
-  module("shared/browser-support", {
+  module("common/js/browser-support", {
     setup: function() {
       // Hard coded goodness for testing purposes
       stubNavigator = {

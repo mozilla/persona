@@ -7,7 +7,7 @@
   var storage = BrowserID.Storage,
       TEST_ORIGIN = "http://test.domain";
 
-  module("shared/storage", {
+  module("common/js/storage", {
     setup: function() {
       storage.clear();
     },

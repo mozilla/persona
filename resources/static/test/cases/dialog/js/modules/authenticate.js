@@ -31,7 +31,7 @@
     controller.start(options);
   }
 
-  module("controllers/authenticate", {
+  module("dialog/js/modules/authenticate", {
     setup: function() {
       reset();
       $("input[type=password]").hide();

@@ -13,7 +13,7 @@
       testOrigin = testHelpers.testOrigin,
       register = bid.TestHelpers.register;
 
-  module("controllers/pick_email", {
+  module("dialog/js/modules/pick_email", {
     setup: function() {
       testHelpers.setup();
     },

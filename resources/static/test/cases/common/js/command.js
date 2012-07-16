@@ -10,7 +10,7 @@
       testHelpers = bid.TestHelpers,
       Command = bid.Command;
 
-  module("shared/command", {
+  module("common/js/command", {
     setup: function() {
       testHelpers.setup();
     },

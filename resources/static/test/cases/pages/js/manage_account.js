@@ -17,7 +17,7 @@
         document: { location: "" }
       };
 
-  module("pages/manage_account", {
+  module("pages/js/manage_account", {
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/index", {});

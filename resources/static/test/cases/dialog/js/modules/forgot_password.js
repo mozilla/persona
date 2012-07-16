@@ -16,7 +16,7 @@
     controller.start(options);
   }
 
-  module("controllers/forgotpassword_controller", {
+  module("dialog/js/modules/forgotpassword_controller", {
     setup: function() {
       $("#email").val("");
       bid.TestHelpers.setup();

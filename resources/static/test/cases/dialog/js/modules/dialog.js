@@ -68,7 +68,7 @@
     controller.start(options);
   }
 
-  module("controllers/dialog", {
+  module("dialog/js/modules/dialog", {
     setup: function() {
       winMock = new WinMock();
       testHelpers.setup();

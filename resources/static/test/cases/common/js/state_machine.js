@@ -12,7 +12,7 @@
       stateMachine,
       mediator = bid.Mediator;
 
-  module("shared/state_machine", {
+  module("common/js/state_machine", {
     setup: function() {
       testHelpers.setup();
 

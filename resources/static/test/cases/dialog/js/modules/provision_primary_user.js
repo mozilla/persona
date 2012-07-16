@@ -16,7 +16,7 @@
       mediator = bid.Mediator,
       provisioning = bid.Mocks.Provisioning;
 
-  module("controllers/provision_primary_user", {
+  module("dialog/js/modules/provision_primary_user", {
     setup: function() {
       bid.TestHelpers.setup();
     },
