@@ -69,7 +69,7 @@ if (config.get('scheme') == 'https') {
 // prevent framing of everything.  content underneath that needs to be
 // framed must explicitly remove the x-frame-options
 app.use(function(req, resp, next) {
-  resp.setHeader('x-frame-options', 'DENY');
+  resp.setHeader('x-frame-options', config.get('x_frame_options'));
   next();
 });
 
