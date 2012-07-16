@@ -12,7 +12,12 @@ vows = require('vows'),
 path = require('path'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-util = require('util');
+primary = require('./lib/primary.js'),
+util = require('util'),
+jwcrypto = require('jwcrypto');
+
+require("jwcrypto/lib/algs/rs");
+require("jwcrypto/lib/algs/ds");
 
 var suite = vows.describe('delegated-primary');
 
@@ -72,6 +77,52 @@ suite.addBatch({
       assert.strictEqual(resp.auth, "http://127.0.0.1:10005/sign_in.html");
       assert.strictEqual(resp.prov, "http://127.0.0.1:10005/provision.html");
       assert.strictEqual(resp.type, "primary");
+    }
+  }
+});
+
+// We've verified that the proxy IDP configuration allows us to simulate a delegated authority.
+// Now let's test the other part of this puzzle - that users can log in with certs issued
+// by our proxy idp servers. (for which the issuer is login.persona.org).
+var primaryUser = new primary({
+  email: "bartholomew@yahoo.com",
+  domain: "127.0.0.1",
+  privKey: jwcrypto.loadSecretKey(
+    require('fs').readFileSync(
+      path.join(__dirname, '..', 'var', 'root.secretkey')))
+});
+
+suite.addBatch({
+  "initializing a primary user": {
+    topic: function() {
+      primaryUser.setup(this.callback);
+    },
+    "works": function() {
+      // nothing to do here
+    }
+  }
+});
+
+suite.addBatch({
+  "generating an assertion targeted at the persona service": {
+    topic: function() {
+      primaryUser.getAssertion('http://127.0.0.1:10002', this.callback);
+    },
+    "succeeds": function(err, r) {
+      assert.isString(r);
+    },
+    "and logging in with the assertion": {
+      topic: function(err, assertion)  {
+        wsapi.post('/wsapi/auth_with_assertion', {
+          assertion: assertion,
+          ephemeral: true
+        }).call(this);
+      },
+      "succeeds": function(err, r) {
+        var resp = JSON.parse(r.body);
+        assert.isObject(resp);
+        assert.isTrue(resp.success);
+      }
     }
   }
 });
