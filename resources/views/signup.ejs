@@ -81,11 +81,11 @@
 
                 <p class="tospp">
                    <%- format(
-                        gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
-                             [ "Persona",
-                               ' href="https://login.persona.org/tos" target="_new"',
-                               ' href="https://login.persona.org/privacy" target="_new"',
-                             ]) %>
+                        gettext('By proceeding, you agree to %(persona)\'s <a %(termsLink)>Terms</a> and <a %(privacyLink)>Privacy Policy</a>.'),
+                             { persona: "Persona",
+                               termsLink: 'href="https://login.persona.org/tos" target="_new"',
+                               privacyLink: 'href="https://login.persona.org/privacy" target="_new"',
+                             }) %>
                   </p>
 
             </div>
