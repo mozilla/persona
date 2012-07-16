@@ -27,7 +27,7 @@ BrowserID.TestHelpers = (function() {
       if(calls[msg]) {
         throw msg + " triggered more than once";
       }
-      calls[msg] = true;
+      calls[msg] = info || true;
 
       cb && cb.apply(null, arguments);
     }));
@@ -112,12 +112,42 @@ BrowserID.TestHelpers = (function() {
 
     register: register,
     isTriggered: function(message) {
-      return calls[message];
+      return message in calls;
     },
 
-    testTriggered: function(message) {
-      equal(calls[message], true, message + " was triggered");
+    testTriggered: function(message, expectedFields) {
+      ok(message in calls, message + " was triggered");
+      if (expectedFields) this.testObjectValuesEqual(calls[message], expectedFields);
     },
+
+    expectedMessage: function(message, expectedFields) {
+    // keep track of the original start function.  When the start function is
+    // called, call the proxy start function and then the original start
+    // function.  This allows proxy start functions to be chained and multiple
+    // expectedMessages to be called.
+    start = function(origStart) {
+      TestHelpers.testTriggered(message, expectedFields);
+      start = origStart;
+      start();
+    }.bind(null, start);
+
+    register(message);
+  },
+
+  unexpectedMessage: function(message) {
+    // keep track of the original start function.  When the start function is
+    // called, call the proxy start function and then the original start
+    // function.  This allows proxy start functions to be chained and multiple
+    // expectedMessages to be called.
+    start = function(origStart) {
+      equal(TestHelpers.isTriggered(message), false, message + " was not triggered");
+      start = origStart;
+      start();
+
+    }.bind(null, start);
+    register(message);
+  },
+
 
     errorVisible: function() {
       return screens.error.visible;
