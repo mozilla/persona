@@ -6,64 +6,62 @@
     <div id="vAlign">
         <!-- XXX this form submits to nowhere -->
         <form id="signUpForm" class="cf authform" novalidate>
-            <h1>Sign In</h1>
+            <h1><%- gettext('Sign In') %></h1>
 
             <ul class="notifications">
                 <li class="notification" id="unknown_secondary">
-                  <strong id="unknown_email">Email</strong> is not registered.
-                  Would you like to <a class="action" href="/signup">sign up</a> instead?
+                  <%- gettext('<strong id="unknown_email">Email</strong> is not registered. Would you like to <a class="action" href="/signup">sign up</a> instead?') %>
                 </li>
 
             </ul>
 
             <ul class="inputs">
                 <li>
-                    <label for="email">Email Address</label>
-                    <input id="email" autofocus placeholder="Your Email" type="email" autocapitalize="off" autocorrect="off" tabindex="1" maxlength="254" />
+                    <label for="email"><%- gettext('Email Address') %></label>
+                    <input id="email" autofocus placeholder="<%- gettext('Your Email') %>" type="email" autocapitalize="off" autocorrect="off" tabindex="1" maxlength="254" />
 
                     <div id="email_format" class="tooltip" for="email">
-                      This field must be an email address.
+                      <%- gettext('This field must be an email address.') %>
                     </div>
 
                     <div id="email_required" class="tooltip" for="email">
-                      The email field is required.
+                      <%- gettext('The email field is required.') %>
                     </div>
                 </li>
               </ul>
 
               <ul class="inputs password_entry">
                 <li class="password_section">
-                    <a class="forgot right" href="/forgot" tabindex="4">forgot your password?</a>
-                    <label for="password">Password</label>
-                    <input id="password" placeholder="Your Password" type="password" tabindex="2" maxlength="80">
+                    <a class="forgot right" href="/forgot" tabindex="4"><%- gettext('forgot your password?') %></a>
+                    <label for="password"><%- gettext('Password') %></label>
+                    <input id="password" placeholder="<%- gettext('Your Password') %>" type="password" tabindex="2" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="password">
-                      The password field is required.
+                      <%- gettext('The password field is required.') %>
                     </div>
 
                     <div id="cannot_authenticate" class="tooltip" for="password">
-                      This email address and password do not match.
+                      <%- gettext('This email address and password do not match.') %>
                     </div>
 
                 </li>
             </ul>
 
             <div class="submit cf forminputs">
-                <button tabindex="5">Sign In</button>
+                <button tabindex="5"><%- gettext('Sign In') %></button>
                 <div class="remember cf">
-                    <a class="action" href="/signup">New to Persona? Sign up today.</a>
+                    <a class="action" href="/signup"><%- gettext('New to Persona? Sign up today.') %></a>
                 </div>
             </div>
 
             <ul class="notifications">
                 <li class="notification" id="verify_primary">
                   <p>
-                    To verify that you own <strong id="primary_email">address</strong>, you must
-                    sign in with your provider.  A new window will be opened.
+                    <%- gettext('To verify that you own <strong id="primary_email">address</strong>, you must sign in with your provider.  A new window will be opened.') %>
                   </p>
 
                   <p>
-                    <button id="authWithPrimary">Verify</button>
+                    <button id="authWithPrimary"><%- gettext('Verify') %></button>
                   </p>
                 </li>
             </ul>
@@ -72,6 +70,6 @@
 </div>
 
 <noscript>
-  We're sorry, Persona requires that Javascript is enabled.
+  <%- gettext('We\'re sorry, Persona requires that Javascript is enabled.') %>
 </noscript>
 

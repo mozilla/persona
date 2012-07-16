@@ -4,21 +4,20 @@
 
   <section id="error" style="display: block" class="unsupported">
       <h2>
-        We are sorry, but currently your browser is not supported.
+        <%- gettext('We are sorry, but currently your browser is not supported.') %>
       </h2>
 
 
       <a href="http://getfirefox.com" target="_blank">
-        <img src="/i/firefox_logo.png" width="250" height="88" alt="Firefox logo" />
+        <img src="<%- cachify('/dialog/i/firefox_logo.png') %>" width="250" height="88" alt="<%- gettext('Firefox logo') %>" />
       </a>
 
       <p>
-        Persona works with <a href="http://getfirefox.com" target="_blank" title="Get Firefox">Firefox</a>
+        <%- gettext('Persona works with <a href="http://getfirefox.com" target="_blank" title="Get Firefox">Firefox</a>') %>
       </p>
 
       <p class="lighter">
-        and other <a href="http://whatbrowser.org" target="_blank">modern browsers.</a>
+       <%- gettext('and other <a href="http://whatbrowser.org" target="_blank">modern browsers.</a>') %>
       </p>
-
 
   </section>
