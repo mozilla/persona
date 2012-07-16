@@ -12,7 +12,12 @@ vows = require('vows'),
 path = require('path'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-util = require('util');
+primary = require('./lib/primary.js'),
+util = require('util'),
+jwcrypto = require('jwcrypto');
+
+require("jwcrypto/lib/algs/rs");
+require("jwcrypto/lib/algs/ds");
 
 var suite = vows.describe('delegated-primary');
 
@@ -72,6 +77,52 @@ suite.addBatch({
       assert.strictEqual(resp.auth, "http://127.0.0.1:10005/sign_in.html");
       assert.strictEqual(resp.prov, "http://127.0.0.1:10005/provision.html");
       assert.strictEqual(resp.type, "primary");
+    }
+  }
+});
+
+// and now let's verify a primary
+var primaryUser = new primary({
+  email: "bartholomew@yahoo.com",
+  domain: "127.0.0.1",
+  privKey: jwcrypto.loadSecretKey(
+    require('fs').readFileSync(
+      path.join(__dirname, '..', 'var', 'root.secretkey')))
+});
+
+suite.addBatch({
+  "set things up": {
+    topic: function() {
+      primaryUser.setup(this.callback);
+    },
+    "works": function() {
+      // nothing to do here
+    }
+  }
+});
+
+// now let's generate an assertion using this user
+suite.addBatch({
+  "generating an assertion": {
+    topic: function() {
+      primaryUser.getAssertion('http://127.0.0.1:10002', this.callback);
+    },
+    "succeeds": function(err, r) {
+      assert.isString(r);
+    },
+    "and logging in with the assertion succeeds": {
+      topic: function(err, assertion)  {
+        wsapi.post('/wsapi/auth_with_assertion', {
+          assertion: assertion,
+          ephemeral: true
+        }).call(this);
+      },
+      "works": function(err, r) {
+        var resp = JSON.parse(r.body);
+        console.log(resp);
+        assert.isObject(resp);
+        assert.isTrue(resp.success);
+      }
     }
   }
 });
