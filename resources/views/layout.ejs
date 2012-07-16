@@ -2,7 +2,7 @@
 <!-- This Source Code Form is subject to the terms of the Mozilla Public
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
-<html>
+<html LANG="<%= lang %>" dir="<%= lang_dir %>">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width" />
@@ -15,7 +15,10 @@
     <%- cachify_css('/production/ie8_main.css') %>
   <![endif]-->
   <%- cachify_js(util.format('/production/%s/browserid.js', locale)) %>
-  <title><%= format(gettext("Mozilla Persona: %s"), [title]) %></title>
+  <% /* the title comes from the server when the page is loaded.
+         It still needs translated, so wrap it in its own gettext
+     */ %>
+  <title><%= format(gettext("Mozilla Persona: %s"), [gettext(title)]) %></title>
 </head>
 <body class="loading">
 <% if (enable_development_menu) { %>

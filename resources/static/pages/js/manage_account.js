@@ -49,7 +49,8 @@ BrowserID.manageAccount = (function() {
         displayStoredEmails(oncomplete);
       }
       else if (_.size(emails) > 1) {
-        if (confirmAction("Remove " + email + " from your BrowserID?")) {
+        if (confirmAction(format(gettext("Remove %(email) from your BrowserID?"),
+                                 { email: email }))) {
           user.removeEmail(email, function() {
             displayStoredEmails(oncomplete);
           }, pageHelpers.getFailure(errors.removeEmail, oncomplete));
@@ -59,7 +60,7 @@ BrowserID.manageAccount = (function() {
         }
       }
       else {
-        if (confirmAction("Removing the last address will cancel your BrowserID account.\nAre you sure you want to continue?")) {
+        if (confirmAction(gettext("Removing the last address will cancel your BrowserID account.\nAre you sure you want to continue?"))) {
           user.cancelUser(function() {
             doc.location="/";
             complete();
@@ -92,7 +93,7 @@ BrowserID.manageAccount = (function() {
   }
 
   function cancelAccount(oncomplete) {
-    if (confirmAction("Are you sure you want to cancel your BrowserID account?")) {
+    if (confirmAction(gettext("Are you sure you want to cancel your BrowserID account?"))) {
       user.cancelUser(function() {
         doc.location="/";
         oncomplete && oncomplete();
