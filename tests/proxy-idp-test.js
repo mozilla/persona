@@ -81,7 +81,9 @@ suite.addBatch({
   }
 });
 
-// and now let's verify a primary
+// We've verified that the proxy IDP configuration allows us to simulate a delegated authority.
+// Now let's test the other part of this puzzle - that users can log in with certs issued
+// by our proxy idp servers. (for which the issuer is login.persona.org).
 var primaryUser = new primary({
   email: "bartholomew@yahoo.com",
   domain: "127.0.0.1",
@@ -91,7 +93,7 @@ var primaryUser = new primary({
 });
 
 suite.addBatch({
-  "set things up": {
+  "initializing a primary user": {
     topic: function() {
       primaryUser.setup(this.callback);
     },
@@ -101,25 +103,23 @@ suite.addBatch({
   }
 });
 
-// now let's generate an assertion using this user
 suite.addBatch({
-  "generating an assertion": {
+  "generating an assertion targeted at the persona service": {
     topic: function() {
       primaryUser.getAssertion('http://127.0.0.1:10002', this.callback);
     },
     "succeeds": function(err, r) {
       assert.isString(r);
     },
-    "and logging in with the assertion succeeds": {
+    "and logging in with the assertion": {
       topic: function(err, assertion)  {
         wsapi.post('/wsapi/auth_with_assertion', {
           assertion: assertion,
           ephemeral: true
         }).call(this);
       },
-      "works": function(err, r) {
+      "succeeds": function(err, r) {
         var resp = JSON.parse(r.body);
-        console.log(resp);
         assert.isObject(resp);
         assert.isTrue(resp.success);
       }
