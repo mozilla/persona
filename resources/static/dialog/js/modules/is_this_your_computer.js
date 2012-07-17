@@ -30,6 +30,9 @@ BrowserID.Modules.IsThisYourComputer = (function() {
       self.click("#this_is_not_my_computer", self.no);
 
       // Force all the buttons to be of equal width
+      self.bind(window, "resize", function() {
+        domHelpers.makeEqualWidth("#your_computer_content button");
+      });
       domHelpers.makeEqualWidth("#your_computer_content button");
 
       Module.sc.start.call(self, options);
