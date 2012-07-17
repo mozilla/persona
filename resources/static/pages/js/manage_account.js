@@ -49,7 +49,7 @@ BrowserID.manageAccount = (function() {
         displayStoredEmails(oncomplete);
       }
       else if (_.size(emails) > 1) {
-        if (confirmAction(format(gettext("Remove %(email) from your BrowserID?"),
+        if (confirmAction(format(gettext("Remove %(email) from your Persona account?"),
                                  { email: email }))) {
           user.removeEmail(email, function() {
             displayStoredEmails(oncomplete);
@@ -60,7 +60,7 @@ BrowserID.manageAccount = (function() {
         }
       }
       else {
-        if (confirmAction(gettext("Removing the last address will cancel your BrowserID account.\nAre you sure you want to continue?"))) {
+        if (confirmAction(gettext("Removing the last address will cancel your Persona account.\nAre you sure you want to continue?"))) {
           user.cancelUser(function() {
             doc.location="/";
             complete();
@@ -93,7 +93,7 @@ BrowserID.manageAccount = (function() {
   }
 
   function cancelAccount(oncomplete) {
-    if (confirmAction(gettext("Are you sure you want to cancel your BrowserID account?"))) {
+    if (confirmAction(gettext("Are you sure you want to cancel your Persona account?"))) {
       user.cancelUser(function() {
         doc.location="/";
         oncomplete && oncomplete();
