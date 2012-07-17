@@ -147,7 +147,7 @@ BrowserID.manageAccount = (function() {
       tooltip.showTooltip("#tooltipPasswordsSame");
       complete(false);
     }
-    else if(newPassword.length < 8 || 80 < newPassword.length) {
+    else if(newPassword.length < bid.PASSWORD_MIN_LENGTH || bid.PASSWORD_MAX_LENGTH < newPassword.length) {
       tooltip.showTooltip("#tooltipPasswordLength");
       complete(false);
     }
