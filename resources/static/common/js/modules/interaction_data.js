@@ -87,6 +87,7 @@ BrowserID.Modules.InteractionData = (function() {
   };
 
   function getKPIName(msg, data) {
+    /*jshint validthis: true */
     var self=this,
         kpiInfo = self.mediatorToKPINameTable[msg];
 
@@ -97,6 +98,7 @@ BrowserID.Modules.InteractionData = (function() {
   }
 
   function onSessionContext(msg, result) {
+    /*jshint validthis: true */
     var self=this;
 
     // defend against onSessionContext being called multiple times
@@ -107,6 +109,7 @@ BrowserID.Modules.InteractionData = (function() {
   }
 
   function publishPreviousSession(result) {
+    /*jshint validthis: true */
     // Publish any outstanding data.  Unless this is a continuation, previous
     // session data must be published independently of whether the current
     // dialog session is allowed to sample data. This is because the original
@@ -160,6 +163,7 @@ BrowserID.Modules.InteractionData = (function() {
   }
 
   function beginSampling(result) {
+    /*jshint validthis: true */
     var self = this;
 
     // set the sample rate as defined by the server.  It's a value
@@ -190,6 +194,8 @@ BrowserID.Modules.InteractionData = (function() {
       timestamp: roundedServerTime,
       local_timestamp: self.startTime.toString(),
       lang: dom.getAttr('html', 'lang') || null,
+      // this will be overridden in state.js if a new account is created.
+      new_account: false
     };
 
     if (window.screen) {
@@ -224,6 +230,7 @@ BrowserID.Modules.InteractionData = (function() {
   }
 
   function onKPIData(msg, result) {
+    /*jshint validthis: true */
     // currentData will be undefined if sampling is disabled.
     var currentData = this.getCurrent();
     if (currentData) {
@@ -236,6 +243,7 @@ BrowserID.Modules.InteractionData = (function() {
   // data.  We have to wait until session_context completes so that we have
   // a csrf token to send.
   function publishStored(oncomplete) {
+    /*jshint validthis: true */
     var self=this;
 
     model.publishStaged(function(status) {
@@ -247,6 +255,7 @@ BrowserID.Modules.InteractionData = (function() {
 
 
   function addEvent(msg, data) {
+    /*jshint validthis: true */
     var self=this;
     if (self.samplingEnabled === false) return;
 
@@ -265,6 +274,7 @@ BrowserID.Modules.InteractionData = (function() {
   }
 
   function getCurrent() {
+    /*jshint validthis: true */
     var self=this;
     if(self.samplingEnabled === false) return;
 
@@ -274,6 +284,7 @@ BrowserID.Modules.InteractionData = (function() {
   }
 
   function getCurrentEventStream() {
+    /*jshint validthis: true */
     var self=this;
     if(self.samplingEnabled === false) return;
 

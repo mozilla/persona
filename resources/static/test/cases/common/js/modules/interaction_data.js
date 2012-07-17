@@ -87,7 +87,7 @@
       var data = controller.getCurrent();
 
       // Make sure expected items are in the current stored data.
-      testHelpers.testKeysInObject(data, ["event_stream", "sample_rate", "timestamp", "lang"]);
+      testHelpers.testKeysInObject(data, ["event_stream", "sample_rate", "timestamp", "lang", "new_account"]);
 
       controller.addEvent("after_session_context");
       controller.addEvent("after_session_context");
