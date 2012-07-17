@@ -16,7 +16,7 @@
       xhr = bid.Mocks.xhr,
       mediator = bid.Mediator;
 
-  module("controllers/primary_user_provisioned", {
+  module("dialog/js/modules/primary_user_provisioned", {
     setup: function() {
       testHelpers.setup();
     },

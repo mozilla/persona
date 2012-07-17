@@ -10,7 +10,7 @@
       helpers = bid.Helpers,
       testHelpers = bid.TestHelpers;
 
-  module("shared/helpers", {
+  module("common/js/helpers", {
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/signin", {});

@@ -24,7 +24,7 @@
     });
   }
 
-  module("controllers/check_registration", {
+  module("dialog/js/modules/check_registration", {
     setup: function() {
       testHelpers.setup();
     },

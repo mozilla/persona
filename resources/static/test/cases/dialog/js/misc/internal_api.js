@@ -23,7 +23,7 @@
     start: function() {}
   };
 
-  module("resources/internal_api", {
+  module("dialog/js/misc/internal_api", {
     setup: function() {
       testHelpers.setup();
       moduleManager.reset();

@@ -15,7 +15,7 @@
     tooltipShown = true;
   }
 
-  module("shared/validation", {
+  module("common/js/validation", {
     setup: function() {
       origShowTooltip = bid.Tooltip.showTooltip;
       bid.Tooltip.showTooltip = showTooltip;

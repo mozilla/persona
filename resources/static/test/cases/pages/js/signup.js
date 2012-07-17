@@ -16,7 +16,7 @@
       winchan,
       controller;
 
-  module("pages/signup", {
+  module("pages/js/signup", {
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/signup", {});

@@ -12,7 +12,7 @@
       testHelpers = bid.TestHelpers,
       xhr = bid.Mocks.xhr;
 
-  module("pages/forgot", {
+  module("pages/js/forgot", {
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/forgot", {});

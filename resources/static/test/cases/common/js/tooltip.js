@@ -9,7 +9,7 @@
   var bid = BrowserID,
       tooltip = bid.Tooltip
 
-  module("shared/tooltip", {
+  module("common/js/tooltip", {
     setup: function() {
     },
     teardown: function() {

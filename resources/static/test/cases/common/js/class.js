@@ -6,7 +6,7 @@
 (function() {
   "use strict";
 
-  module("shared/class", {
+  module("common/js/class", {
   });
 
   test("create a class with no superclass", function() {

@@ -19,7 +19,7 @@
       RP_HTTPS_LOGO = "https://en.gravatar.com/userimage/6966791/c4feac761b8544cce13e0406f36230aa.jpg",
       mediator = bid.Mediator;
 
-  module("controllers/rp_info", {
+  module("dialog/js/modules/rp_info", {
     setup: testHelpers.setup,
 
     teardown: function() {

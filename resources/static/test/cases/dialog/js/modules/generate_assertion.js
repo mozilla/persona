@@ -21,7 +21,7 @@
     controller.start(config);
   }
 
-  module("controllers/email_chosen", {
+  module("dialog/js/modules/email_chosen", {
     setup: function() {
       testHelpers.setup();
     },

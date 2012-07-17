@@ -14,7 +14,7 @@
       mediator = bid.Mediator,
       testHelpers = bid.TestHelpers;
 
-  module("shared/xhr", {
+  module("common/js/xhr", {
     setup: function() {
       testHelpers.setup();
       transport.setDelay(0);

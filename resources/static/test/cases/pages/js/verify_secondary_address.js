@@ -23,7 +23,7 @@
       },
       doc;
 
-  module("pages/verify_secondary_address", {
+  module("pages/js/verify_secondary_address", {
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/confirm", {});
