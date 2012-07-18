@@ -41,7 +41,7 @@
         "jshint": "0.7.1"
     },
     "scripts": {
-        "postinstall": "./scripts/generate_ephemeral_keys.sh",
+        "postinstall": "node ./scripts/generate_ephemeral_keys.js",
         "test": "./scripts/test",
         "start": "./scripts/run_locally.js"
     },
