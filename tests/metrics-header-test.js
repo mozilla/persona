@@ -28,6 +28,13 @@ if (!process.env['SERVER_URL']) {
   start_stop.addStartupBatches(suite);
 }
 
+// existsSync moved from path in 0.6.x to fs in 0.8.x
+if (typeof fs.existsSync === 'function') {
+  var existsSync = fs.existsSync;
+} else {
+  var existsSync = path.existsSync;
+}
+
 // now parse out host, port and scheme
 var purl = urlparse(SERVER_URL);
 const method = (purl.scheme === 'https') ? require('https') : require('http');
@@ -56,7 +63,7 @@ suite.addBatch({
     },
     "metrics log exists": {
       topic: function (err, r) {
-        if (fs.existsSync(process.env.METRICS_LOG_FILE)) {
+        if (existsSync(process.env.METRICS_LOG_FILE)) {
           this.callback();
         } else {
           fs.watchFile(process.env.METRICS_LOG_FILE, null, this.callback);
