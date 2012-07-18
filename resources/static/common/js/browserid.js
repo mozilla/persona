@@ -17,7 +17,12 @@
     KEY_LENGTH: 128,
 
     PASSWORD_MIN_LENGTH: 8,
-    PASSWORD_MAX_LENGTH: 80
+    PASSWORD_MAX_LENGTH: 80,
 
+    // IE8 has a max total URL length of 2083 and a max path length of 2048.
+    // http://support.microsoft.com/kb/q208427
+    // See issue #2080 - https://github.com/mozilla/browserid/issues/2080
+    URL_MAX_LENGTH: 2083,
+    PATH_MAX_LENGTH: 2048
   });
 }());
