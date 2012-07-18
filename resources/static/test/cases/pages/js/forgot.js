@@ -10,23 +10,36 @@
       network = bid.Network,
       user = bid.User,
       testHelpers = bid.TestHelpers,
-      xhr = bid.Mocks.xhr;
+      pageHelpers = bid.PageHelpers,
+      xhr = bid.Mocks.xhr,
+      WindowMock = bid.Mocks.WindowMock,
+      controller,
+      docMock;
+
+  function createController(options) {
+    options = options || {};
+
+    docMock = new WindowMock().document;
+    options.document = docMock;
+
+    controller = bid.forgot.create();
+    controller.start(options);
+  }
 
   module("pages/js/forgot", {
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/forgot", {});
-      bid.forgot();
+      createController();
     },
     teardown: function() {
       testHelpers.teardown();
-      bid.forgot.reset();
     }
   });
 
   function testEmailNotSent(config) {
     config = config || {};
-    bid.forgot.submit(function() {
+    controller.submit(function() {
       equal($(".emailsent").is(":visible"), false, "email not sent");
       if(config.checkTooltip !== false) testHelpers.testTooltipVisible();
       if (config.ready) config.ready();
@@ -34,7 +47,38 @@
     });
   }
 
-  asyncTest("requestPasswordReset with invalid email", function() {
+  test("start with no stored email - redirect to /signin", function() {
+    equal(docMock.location.href, "/signin", "page redirected to signin if no email stored");
+  });
+
+  asyncTest("start with stored primary email - redirect to /signin", function() {
+    xhr.useResult("primary");
+    pageHelpers.setStoredEmail("testuser@testuser.com");
+    createController({
+      ready: function() {
+        equal(docMock.location.href, "/signin", "page redirected to signin if primary email stored");
+        start();
+      }
+    });
+  });
+
+  asyncTest("start with stored unknown secondary email - redirect to /signup", function() {
+    pageHelpers.setStoredEmail("unregistered@testuser.com");
+    createController({
+      ready: function() {
+        equal(docMock.location.href, "/signup", "page redirected to signup if unknown secondary email stored");
+        start();
+      }
+    });
+  });
+
+  test("start with stored known secondary email - no redirection", function() {
+    pageHelpers.setStoredEmail("testuser@testuser.com");
+    createController();
+    equal(docMock.location.href, document.location.href, "no page redirection if known secondary is stored");
+  });
+
+  asyncTest("submit with invalid email", function() {
     $("#email").val("invalid");
     $("#password,#vpassword").val("password");
 
@@ -43,62 +87,62 @@
     testEmailNotSent();
   });
 
-  asyncTest("requestPasswordReset with known email, happy case - show email sent notice", function() {
+  asyncTest("submit with known secondary email, happy case - show email sent notice", function() {
     $("#email").val("registered@testuser.com");
     $("#password,#vpassword").val("password");
 
-    bid.forgot.submit(function() {
+    controller.submit(function() {
       ok($(".emailsent").is(":visible"), "email sent successfully");
       start();
     });
   });
 
-  asyncTest("requestPasswordReset with known email with leading/trailing whitespace - show email sent notice", function() {
+  asyncTest("submit with known secondary email with leading/trailing whitespace - show email sent notice", function() {
     $("#email").val("   registered@testuser.com  ");
     $("#password,#vpassword").val("password");
 
-    bid.forgot.submit(function() {
+    controller.submit(function() {
       ok($(".emailsent").is(":visible"), "email sent successfully");
       start();
     });
   });
 
-  asyncTest("requestPasswordReset with missing password", function() {
+  asyncTest("submit with missing password", function() {
     $("#email").val("unregistered@testuser.com");
     $("#vpassword").val("password");
 
     testEmailNotSent();
   });
 
-  asyncTest("requestPasswordReset with too short of a password", function() {
+  asyncTest("submit with too short of a password", function() {
     $("#email").val("unregistered@testuser.com");
     $("#password,#vpassword").val(testHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1));
 
     testEmailNotSent();
   });
 
-  asyncTest("requestPasswordReset with too long of a password", function() {
+  asyncTest("submit with too long of a password", function() {
     $("#email").val("unregistered@testuser.com");
     $("#password,#vpassword").val(testHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1));
 
     testEmailNotSent();
   });
 
-  asyncTest("requestPasswordReset with missing vpassword", function() {
+  asyncTest("submit with missing vpassword", function() {
     $("#email").val("unregistered@testuser.com");
     $("#password").val("password");
 
     testEmailNotSent();
   });
 
-  asyncTest("requestPasswordReset with unknown email", function() {
+  asyncTest("submit with unknown secondary email", function() {
     $("#email").val("unregistered@testuser.com");
     $("#password,#vpassword").val("password");
 
     testEmailNotSent();
   });
 
-  asyncTest("requestPasswordReset with throttling", function() {
+  asyncTest("submit with throttling", function() {
     $("#email").val("registered@testuser.com");
     $("#password,#vpassword").val("password");
 
@@ -106,7 +150,7 @@
     testEmailNotSent();
   });
 
-  asyncTest("requestPasswordReset with XHR Error", function() {
+  asyncTest("submit with XHR Error", function() {
     $("#email").val("testuser@testuser.com");
     $("#password,#vpassword").val("password");
 
