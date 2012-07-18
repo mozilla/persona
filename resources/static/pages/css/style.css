@@ -462,7 +462,7 @@ button.delete:active {
   margin-bottom: 10px;
 }
 
-.siteinfo, #congrats, .password_entry, #verify_password, .enter_password .hint, #unknown_secondary, #primary_verify, .verify_primary .submit {
+.siteinfo, #congrats, .password_entry, #verify_password, .enter_password .hint, #unknown_secondary, .verify_primary .forminputs {
   display: none;
 }
 
