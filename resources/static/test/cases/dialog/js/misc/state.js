@@ -47,11 +47,13 @@
     // verifyScreenAction.
     mediator.publish("start", { siteName: "Unit Test Site" });
     mediator.publish(startMessage, {
-      email: TEST_EMAIL
+      email: TEST_EMAIL,
+      password: "password",
     });
 
     testActionStarted(verifyScreenAction, {
       email: TEST_EMAIL,
+      password: "password",
       siteName: "Unit Test Site"
     });
 

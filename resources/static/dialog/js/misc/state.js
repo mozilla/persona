@@ -49,6 +49,12 @@ BrowserID.State = (function() {
       // screen.
       var actionInfo = {
         email: info.email,
+        // The user may have just entered their password.  If they are not
+        // authenticated to the "password" level when the verification poll
+        // completes, the verification call will return "mustAuth". If this
+        // happens, the password will be used to authenticate the user.
+        // See issue #2088 - https://github.com/mozilla/browserid/issues/2088
+        password: info.password,
         siteName: self.siteName
       };
 

@@ -17,7 +17,9 @@ BrowserID.User = (function() {
       addressCache = {},
       primaryAuthCache = {},
       complete = bid.Helpers.complete,
-      registrationComplete = false;
+      registrationComplete = false,
+      stagedEmail,
+      stagedPassword;
 
   function prepareDeps() {
     if (!jwcrypto) {
@@ -101,17 +103,26 @@ BrowserID.User = (function() {
     }
   }
 
-  function handleStageAddressVerifictionResponse(onComplete, staged) {
-    var status = { success: staged };
+  function stageAddressVerification(email, password, stagingStrategy, onComplete, onFailure) {
+    // These are saved for the addressVerificationPoll.  If there is
+    // a stagedEmail or stagedPassword when the poll completes, try to
+    // authenticate the user.
+    stagedEmail = email;
+    stagedPassword = password;
 
-    if (!staged) status.reason = "throttle";
-    // Used on the main site when the user verifies - once
-    // verification is complete, the user is redirected back to the
-    // RP and logged in.
-    var site = User.getReturnTo();
-    if (staged && site) storage.setReturnTo(site);
+    // stagingStrategy is a curried function that will have all but the
+    // onComplete and onFailure functions already set up.
+    stagingStrategy(function(staged) {
+      var status = { success: staged };
 
-    complete(onComplete, status);
+      if (!staged) status.reason = "throttle";
+      // Used on the main site when the user verifies - once
+      // verification is complete, the user is redirected back to the
+      // RP and logged in.
+      var site = User.getReturnTo();
+      if (staged && site) storage.setReturnTo(site);
+      complete(onComplete, status);
+    }, onFailure);
   }
 
   function completeAddressVerification(completeFunc, token, password, onComplete, onFailure) {
@@ -148,6 +159,60 @@ BrowserID.User = (function() {
 
 
   function addressVerificationPoll(checkFunc, email, onSuccess, onFailure) {
+    function userVerified(completionStatus) {
+      if (stagedEmail && stagedPassword) {
+        // The user has set their email and password as part of the
+        // staging flow. Log them in now just to make sure their
+        // authentication creds are up to date.
+        User.authenticate(stagedEmail, stagedPassword, function(authenticated) {
+          completionStatus = authenticated ? "complete" : "mustAuth";
+          completeVerification(completionStatus);
+        }, onFailure);
+
+        stagedEmail = stagedPassword = null;
+      }
+      else {
+        // If the user's completionStatus is complete but their
+        // authStatus is not password, that means they have not entered in
+        // their authentication credentials this session and *must*
+        // do so.  If not, the backend will reject any requests to certify
+        // a key because the user will not have the correct creds to do so.
+        // See issue #2088 https://github.com/mozilla/browserid/issues/2088
+        network.checkAuth(function(authStatus) {
+          if (completionStatus === "complete" && authStatus !== "password")
+            completionStatus = "mustAuth";
+
+          completeVerification(completionStatus);
+        }, onFailure);
+      }
+    }
+
+    function completeVerification(status) {
+      // As soon as the registration comes back as complete, we should
+      // ensure that the stagedOnBehalfOf is cleared so there is no stale
+      // data.
+      storage.setReturnTo("");
+
+      // To avoid too many address_info requests, returns from each
+      // address_info request are cached.  If the user is doing
+      // a addressVerificationPoll, it means the user was registering the address
+      // and the registration has completed.  Because the status is
+      // "complete" or "known", we know that the address is known, so we
+      // toggle the field to be up to date.  If the known field remains
+      // false, then the user is redirected back to the authentication
+      // page and the system thinks the address must be verified again.
+      if(addressCache[email]) {
+        addressCache[email].known = true;
+      }
+
+      // registrationComplete is used in shouldAskIfUsersComputer to
+      // prevent the user from seeing the "is this your computer" screen if
+      // they just completed a registration.
+      registrationComplete = true;
+
+      complete(onSuccess, status);
+    }
+
     function poll() {
       checkFunc(email, function(status) {
         // registration status checks the status of the last initiated registration,
@@ -157,37 +222,13 @@ BrowserID.User = (function() {
         //   'mustAuth' - user must authenticate
         //   'noRegistration' - no registration is in progress
         if (status === "complete" || status === "mustAuth") {
-          // As soon as the registration comes back as complete, we should
-          // ensure that the stagedOnBehalfOf is cleared so there is no stale
-          // data.
-          storage.setReturnTo("");
-
-          // To avoid too many address_info requests, returns from each
-          // address_info request are cached.  If the user is doing
-          // a addressVerificationPoll, it means the user was registering the address
-          // and the registration has completed.  Because the status is
-          // "complete" or "known", we know that the address is known, so we
-          // toggle the field to be up to date.  If the known field remains
-          // false, then the user is redirected back to the authentication
-          // page and the system thinks the address must be verified again.
-          if(addressCache[email]) {
-            addressCache[email].known = true;
-          }
-
-          // registrationComplete is used in shouldAskIfUsersComputer to
-          // prevent the user from seeing the "is this your computer" screen if
-          // they just completed a registration.
-          registrationComplete = true;
-
-          if (onSuccess) {
-            onSuccess(status);
-          }
+          userVerified(status);
         }
         else if (status === 'pending') {
           pollTimeout = setTimeout(poll, 3000);
         }
-        else if (onFailure) {
-            onFailure(status);
+        else {
+          complete(onFailure, status);
         }
       }, onFailure);
     }
@@ -280,6 +321,7 @@ BrowserID.User = (function() {
       provisioning = BrowserID.Provisioning;
       User.resetCaches();
       registrationComplete = false;
+      stagedEmail = stagedPassword = null;
     },
 
     resetCaches: function() {
@@ -349,8 +391,9 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     createSecondaryUser: function(email, password, onComplete, onFailure) {
-      network.createUser(email, password, origin,
-        handleStageAddressVerifictionResponse.curry(onComplete), onFailure);
+      stageAddressVerification(email, password,
+        network.createUser.bind(network, email, password, origin),
+        onComplete, onFailure);
     },
 
     /**
@@ -610,8 +653,9 @@ BrowserID.User = (function() {
     requestPasswordReset: function(email, password, onComplete, onFailure) {
       User.isEmailRegistered(email, function(registered) {
         if (registered) {
-          network.requestPasswordReset(email, password, origin,
-            handleStageAddressVerifictionResponse.curry(onComplete), onFailure);
+          stageAddressVerification(email, password,
+            network.requestPasswordReset.bind(network, email, password, origin),
+            onComplete, onFailure);
         }
         else if (onComplete) {
           onComplete({ success: false, reason: "invalid_user" });
@@ -665,8 +709,9 @@ BrowserID.User = (function() {
       }
       else if (!idInfo.verified) {
         // this address is unverified, try to reverify it.
-        network.requestEmailReverify(email, origin,
-          handleStageAddressVerifictionResponse.curry(onComplete), onFailure);
+        stageAddressVerification(email, null,
+          network.requestEmailReverify.bind(network, email, origin),
+          onComplete, onFailure);
       }
     },
 
@@ -953,15 +998,11 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     addEmail: function(email, password, onComplete, onFailure) {
-      network.addSecondaryEmail(email, password, origin, function(added) {
-        // Used on the main site when the user verifies - once verification
-        // is complete, the user is redirected back to the RP and logged in.
-        var returnTo = User.getReturnTo();
-        if (added && returnTo) storage.setReturnTo(returnTo);
-
-        // we no longer send the keypair, since we will certify it later.
-        complete(onComplete, added);
-      }, onFailure);
+      stageAddressVerification(email, password,
+        network.addSecondaryEmail.bind(network, email, password, origin),
+        function(status) {
+          complete(onComplete, status.success);
+        }, onFailure);
     },
 
     /**
