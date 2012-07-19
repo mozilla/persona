@@ -1194,17 +1194,17 @@
           },
           onlogout: function() {}
         });
-        options.oncancel = function() {
+        opts.oncancel = function() {
           if (callback) {
             callback(null);
             callback = null;
           }
           observers.login = observers.logout = observers.ready = null;
         };
-        if (options && options.silent) {
+        if (passedOptions && passedOptions.silent) {
           if (callback) setTimeout(function() { callback(null); }, 0);
         } else {
-          internalRequest(options);
+          internalRequest(opts);
         }
       },
       // backwards compatibility with old API
