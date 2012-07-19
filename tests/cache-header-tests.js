@@ -74,8 +74,6 @@ function hasProperCacheHeaders(path) {
       assert.strictEqual(r.statusCode, 200);
       // check X-Frame-Option headers
       hasProperFramingHeaders(r, path);
-      // ensure vary headers
-      assert.strictEqual(r.headers['vary'], 'Accept-Encoding,Accept-Language');
       // ensure public, max-age=0
       assert.strictEqual(r.headers['cache-control'], 'public, max-age=0');
       // the behavior of combining a last-modified date and an etag is undefined by
@@ -135,6 +133,20 @@ suite.addBatch({
   '/confirm': hasProperCacheHeaders('/confirm'),
 //  '/pk': hasProperCacheHeaders('/pk'),
 //  '/.well-known/browserid': hasProperCacheHeaders('/.well-known/browserid')
+});
+
+// related to cache headers are correct headers which let us serve static resources
+// (not rendered views) from a different domain, to support CDN compat
+suite.addBatch({
+  "static resources": {
+    topic: function() {
+      doRequest("/favicon.ico", {}, this.callback);
+    },
+    "have proper access control headers": function(err, r) {
+      assert.strictEqual(r.statusCode, 200);
+      assert.strictEqual(r.headers['access-control-allow-origin'],"http://127.0.0.1:10002");
+    }
+  }
 });
 
 // shut the server down and cleanup
