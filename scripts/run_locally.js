@@ -80,6 +80,7 @@ if (config.get('env').substr(0,5) === 'test_') {
 
 function runDaemon(daemon, cb) {
   Object.keys(daemonsToRun[daemon]).forEach(function(ek) {
+    if (ek === 'path') return; // this blows away the Window PATH
     process.env[ek] = daemonsToRun[daemon][ek];
   });
   var pathToScript = daemonsToRun[daemon].path || path.join(__dirname, "..", "bin", daemon);
@@ -104,6 +105,7 @@ function runDaemon(daemon, cb) {
 
   console.log("spawned", daemon, "("+pathToScript+") with pid", p.pid);
   Object.keys(daemonsToRun[daemon]).forEach(function(ek) {
+    if (ek === 'path') return; // don't kill the Windows PATH
     delete process.env[ek];
   });
 
@@ -133,7 +135,11 @@ daemonNames.forEach(function(dn) {
   });
 });
 
-process.on('SIGINT', function () {
-  console.log('\nSIGINT recieved! trying to shut down gracefully...');
-  Object.keys(daemons).forEach(function (k) { daemons[k].kill('SIGINT'); });
-});
+try {
+  process.on('SIGINT', function () {
+    console.log('\nSIGINT recieved! trying to shut down gracefully...');
+    Object.keys(daemons).forEach(function (k) { daemons[k].kill('SIGINT'); });
+  });
+} catch (noSignals) {
+  // Windows doesn't have signal support, so node explodes
+}
