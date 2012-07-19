@@ -1108,9 +1108,6 @@
       // don't do duplicative work
       if (commChan) commChan.notify({ method: 'dialog_running' });
 
-      // returnTo is used for post-email-verification redirect
-      if (!options.returnTo) options.returnTo = document.location.pathname;
-
       w = WinChan.open({
         url: ipServer + '/sign_in',
         relay_url: ipServer + '/relay',
@@ -1158,6 +1155,8 @@
           throw new Error("all navigator.id calls must be made on the navigator.id object");
         options = options || {};
         checkCompat(false);
+        // returnTo is used for post-email-verification redirect
+        if (!options.returnTo) options.returnTo = document.location.pathname;
         return internalRequest(options);
       },
       watch: function(options) {
@@ -1179,8 +1178,12 @@
         if (typeof callback === 'function') setTimeout(callback, 0);
       },
       // get an assertion
-      get: function(callback, options) {
-        options = options || {};
+      get: function(callback, passedOptions) {
+        var opts = {};
+        opts.privacyPolicy =  passedOptions.privacyPolicy || undefined;
+        opts.termsOfService = passedOptions.termsOfService || undefined;
+        opts.privacyURL = passedOptions.privacyURL || undefined;
+        opts.tosURL = passedOptions.tosURL || undefined;
         checkCompat(true);
         internalWatch({
           onlogin: function(assertion) {
@@ -1191,17 +1194,17 @@
           },
           onlogout: function() {}
         });
-        options.oncancel = function() {
+        opts.oncancel = function() {
           if (callback) {
             callback(null);
             callback = null;
           }
           observers.login = observers.logout = observers.ready = null;
         };
-        if (options && options.silent) {
+        if (passedOptions && passedOptions.silent) {
           if (callback) setTimeout(function() { callback(null); }, 0);
         } else {
-          internalRequest(options);
+          internalRequest(opts);
         }
       },
       // backwards compatibility with old API
