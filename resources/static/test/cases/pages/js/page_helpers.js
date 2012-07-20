@@ -99,7 +99,7 @@
     // below.
     xhr.useResult("complete");
 
-    pageHelpers.emailSent(function() {
+    pageHelpers.emailSent("waitForUserValidation", function() {
       equal($("#sentToEmail").html(), "registered@testuser.com", "correct email is set");
       equal($(".emailsent").is(":visible"), true, "emailsent is visible");
       equal($(".forminputs").is(":visible"), false, "inputs are hidden");
@@ -135,7 +135,7 @@
   asyncTest("cancelEmailSent restores the stored email, inputs are shown again", function() {
     pageHelpers.setStoredEmail("registered@testuser.com");
     xhr.useResult("complete");
-    pageHelpers.emailSent(function() {
+    pageHelpers.emailSent("waitForUserValidation", function() {
       pageHelpers.cancelEmailSent(function() {
         var email = pageHelpers.getStoredEmail();
         equal(email, "registered@testuser.com", "stored email is reset on cancel");
