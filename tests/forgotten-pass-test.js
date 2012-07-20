@@ -232,6 +232,7 @@ suite.addBatch({
       assert.equal(r.code, 200);
       var body = JSON.parse(r.body);
       assert.strictEqual(body.success, true);
+      assert.strictEqual(body.must_auth, false);
     }
   }
 });
