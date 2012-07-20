@@ -56,15 +56,11 @@ BrowserID.Modules.CheckRegistration = (function() {
                   oncomplete && oncomplete();
                 });
               } else {
-                user.addressInfo(self.email, function(info) {
-                  self.close("authenticate", info);
-                });
+                self.close("authenticate_specified_email", { email: self.email });
               }
             });
           } else {
-            user.addressInfo(self.email, function(info) {
-              self.close("authenticate", info);
-            });
+            self.close("authenticate_specified_email", { email: self.email });
           }
 
           oncomplete && oncomplete();

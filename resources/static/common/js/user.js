@@ -146,7 +146,6 @@ BrowserID.User = (function() {
 
   }
 
-
   function addressVerificationPoll(checkFunc, email, onSuccess, onFailure) {
     function poll() {
       checkFunc(email, function(status) {
@@ -179,9 +178,19 @@ BrowserID.User = (function() {
           // they just completed a registration.
           registrationComplete = true;
 
-          if (onSuccess) {
-            onSuccess(status);
+          if (status === "complete") {
+            // If the response is complete but the user is not authenticated
+            // to the password level, the user *must* authenticate or else
+            // they will see an error when they try to certify a cert. Users
+            // who have entered their password in this dialog session will be
+            // automatically authenticated in modules/check_registration.js,
+            // all others will have to enter their password. See issue #2088.
+            network.checkAuth(function(authLevel) {
+              if (authLevel !== "password") status = "mustAuth";
+              complete(onSuccess, status);
+            }, onFailure);
           }
+          else complete(onSuccess, status);
         }
         else if (status === 'pending') {
           pollTimeout = setTimeout(poll, 3000);
