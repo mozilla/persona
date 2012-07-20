@@ -25,6 +25,9 @@ start_stop.addStartupBatches(suite);
 // var 'token'
 var token = undefined;
 
+// stores wsapi client context
+var oldContext;
+
 // create a new account via the api with (first address)
 suite.addBatch({
   "staging an account": {
@@ -98,6 +101,52 @@ suite.addBatch({
       assert.strictEqual(typeof t, 'string');
       token = t;
     }
+  }
+});
+
+// should not require auth to complete
+suite.addBatch({
+  "given a token, getting an email": {
+    topic: function() {
+      wsapi.get('/wsapi/email_for_token', { token: token }).call(this);
+    },
+    "account created": function(err, r) {
+      assert.equal(r.code, 200);
+      var body = JSON.parse(r.body);
+      assert.strictEqual(body.success, true);
+      assert.strictEqual(body.must_auth, false);
+    }
+  }
+});
+
+
+// New context for a second client
+suite.addBatch({
+  "change context": function () {
+    oldContext = wsapi.getContext();
+    wsapi.setContext({});
+  }
+});
+
+// should require auth to complete for second client
+suite.addBatch({
+  "given a token, getting an email": {
+    topic: function() {
+      wsapi.get('/wsapi/email_for_token', { token: token }).call(this);
+    },
+    "account created": function(err, r) {
+      assert.equal(r.code, 200);
+      var body = JSON.parse(r.body);
+      assert.strictEqual(body.success, true);
+      assert.strictEqual(body.must_auth, true);
+    }
+  }
+});
+
+// restore context of first client
+suite.addBatch({
+  "restore context": function () {
+    wsapi.setContext(oldContext);
   }
 });
 
@@ -290,7 +339,6 @@ suite.addBatch({
 // browser should be prompted to authenticate
 
 // New context for a second client
-var oldContext;
 suite.addBatch({
   "change context": function () {
     oldContext = wsapi.getContext();
