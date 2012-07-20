@@ -17,7 +17,9 @@ BrowserID.User = (function() {
       addressCache = {},
       primaryAuthCache = {},
       complete = bid.Helpers.complete,
-      registrationComplete = false;
+      registrationComplete = false,
+      POLL_TIMEOUT = 3000,
+      pollTimeout = POLL_TIMEOUT;
 
   function prepareDeps() {
     if (!jwcrypto) {
@@ -193,7 +195,7 @@ BrowserID.User = (function() {
           else complete(onSuccess, status);
         }
         else if (status === 'pending') {
-          pollTimeout = setTimeout(poll, 3000);
+          pollTimeout = setTimeout(poll, pollTimeout);
         }
         else if (onFailure) {
             onFailure(status);
@@ -283,12 +285,17 @@ BrowserID.User = (function() {
         provisioning = config.provisioning;
       }
 
+      if (config.pollTimeout) {
+        pollTimeout = config.pollTimeout;
+      }
+
     },
 
     reset: function() {
       provisioning = BrowserID.Provisioning;
       User.resetCaches();
       registrationComplete = false;
+      pollTimeout = POLL_TIMEOUT;
     },
 
     resetCaches: function() {
