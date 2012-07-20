@@ -139,6 +139,13 @@ BrowserID.manageAccount = (function() {
       tooltip.showTooltip("#tooltipOldRequired");
       complete(false);
     }
+    else if(oldPassword.length < bid.PASSWORD_MIN_LENGTH || bid.PASSWORD_MAX_LENGTH < oldPassword.length) {
+      // If the old password is out of range, we know it is invalid. Show the
+      // tooltip. See issue #2121
+      // - https://github.com/mozilla/browserid/issues/2121
+      tooltip.showTooltip("#tooltipInvalidPassword");
+      complete(false);
+    }
     else if(!newPassword) {
       tooltip.showTooltip("#tooltipNewRequired");
       complete(false);
