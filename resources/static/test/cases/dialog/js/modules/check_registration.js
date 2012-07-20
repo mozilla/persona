@@ -69,7 +69,7 @@
   });
 
   asyncTest("user validation with pending->complete with auth_level = assertion, no authentication info given - authenticate_specified_email triggered", function() {
-    user.init({ pollTimeout: 100 });
+    user.init({ pollDuration: 100 });
     xhr.useResult("pending");
     xhr.setContextInfo("auth_level", "assertion");
     testMustAuthUserEvent("authenticate_specified_email", "user must authenticate");
@@ -82,7 +82,7 @@
 
 
   asyncTest("user validation with pending->complete with auth_level = assertion, authentication info given - user_verified triggered", function() {
-    user.init({ pollTimeout: 100 });
+    user.init({ pollDuration: 100 });
     xhr.useResult("pending");
     xhr.setContextInfo("auth_level", "password");
 
@@ -95,7 +95,7 @@
   });
 
   asyncTest("user validation with pending->complete with auth_level = password - user_verified triggered", function() {
-    user.init({ pollTimeout: 100 });
+    user.init({ pollDuration: 100 });
     xhr.useResult("pending");
     xhr.setContextInfo("auth_level", "password");
 

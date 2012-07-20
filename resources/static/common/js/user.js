@@ -18,8 +18,8 @@ BrowserID.User = (function() {
       primaryAuthCache = {},
       complete = bid.Helpers.complete,
       registrationComplete = false,
-      POLL_TIMEOUT = 3000,
-      pollTimeout = POLL_TIMEOUT;
+      POLL_DURATION = 3000,
+      pollDuration = POLL_DURATION;
 
   function prepareDeps() {
     if (!jwcrypto) {
@@ -195,7 +195,7 @@ BrowserID.User = (function() {
           else complete(onSuccess, status);
         }
         else if (status === 'pending') {
-          pollTimeout = setTimeout(poll, pollTimeout);
+          pollTimeout = setTimeout(poll, pollDuration);
         }
         else if (onFailure) {
             onFailure(status);
@@ -285,9 +285,11 @@ BrowserID.User = (function() {
         provisioning = config.provisioning;
       }
 
-      if (config.pollTimeout) {
-        pollTimeout = config.pollTimeout;
+      // BEGIN TESTING API
+      if (config.pollDuration) {
+        pollDuration = config.pollDuration;
       }
+      // END TESTING API
 
     },
 
@@ -295,7 +297,7 @@ BrowserID.User = (function() {
       provisioning = BrowserID.Provisioning;
       User.resetCaches();
       registrationComplete = false;
-      pollTimeout = POLL_TIMEOUT;
+      pollDuration = POLL_DURATION;
     },
 
     resetCaches: function() {
