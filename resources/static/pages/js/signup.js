@@ -81,7 +81,7 @@ BrowserID.signUp = (function() {
       if(valid) {
         user.createSecondaryUser(this.emailToStage, pass, function(status) {
           if(status.success) {
-            pageHelpers.emailSent(oncomplete && oncomplete.curry(true));
+            pageHelpers.emailSent("waitForUserValidation", oncomplete && oncomplete.curry(true));
           }
           else {
             tooltip.showTooltip("#could_not_add");
