@@ -44,8 +44,8 @@
 
   function testVerifiedUserEvent(event_name, message, password) {
     createController("waitForUserValidation", event_name, false, password);
-    register(event_name, function() {
-      ok(true, message);
+    register(event_name, function(msg, info) {
+      equal(info.mustAuth, false, "user does not need to verify");
       start();
     });
     controller.startCheck();
@@ -54,39 +54,22 @@
   function testMustAuthUserEvent(event_name, message) {
     createController("waitForUserValidation", event_name);
     register(event_name, function(msg, info) {
-      // we want the email, type and known all sent back to the caller so that
-      // this information does not need to be queried again.
-      ok(true, message);
-      equal(info.email, "registered@testuser.com", "correct email");
+      equal(info.mustAuth, true, "user needs to verify");
       start();
     });
     controller.startCheck();
   }
 
-  asyncTest("user validation with mustAuth result - callback with email, type and known set to true", function() {
+  asyncTest("user validation with mustAuth result - userVerified with mustAuth: true", function() {
     xhr.useResult("mustAuth");
-    testMustAuthUserEvent("authenticate_specified_email", "user must authenticate");
+    testMustAuthUserEvent("user_verified");
   });
 
-  asyncTest("user validation with pending->complete with auth_level = assertion, no authentication info given - authenticate_specified_email triggered", function() {
+  asyncTest("user validation with pending->complete with auth_level = assertion, no authentication info given - user_verified with mustAuth triggered", function() {
     user.init({ pollDuration: 100 });
     xhr.useResult("pending");
     xhr.setContextInfo("auth_level", "assertion");
-    testMustAuthUserEvent("authenticate_specified_email", "user must authenticate");
-
-    // use setTimeout to simulate a delay in the user opening the email.
-    setTimeout(function() {
-      xhr.useResult("complete");
-    }, 50);
-  });
-
-
-  asyncTest("user validation with pending->complete with auth_level = assertion, authentication info given - user_verified triggered", function() {
-    user.init({ pollDuration: 100 });
-    xhr.useResult("pending");
-    xhr.setContextInfo("auth_level", "password");
-
-    testVerifiedUserEvent("user_verified", "user verified after authenticating", "password");
+    testMustAuthUserEvent("user_verified");
 
     // use setTimeout to simulate a delay in the user opening the email.
     setTimeout(function() {
@@ -99,7 +82,7 @@
     xhr.useResult("pending");
     xhr.setContextInfo("auth_level", "password");
 
-    testVerifiedUserEvent("user_verified", "User verified");
+    testVerifiedUserEvent("user_verified");
 
     // use setTimeout to simulate a delay in the user opening the email.
     setTimeout(function() {

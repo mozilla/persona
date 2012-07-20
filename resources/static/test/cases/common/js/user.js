@@ -329,6 +329,8 @@
     lib.waitForUserValidation("registered@testuser.com", function(status) {
       equal(status, "mustAuth", "mustAuth response expected");
 
+      testHelpers.testEmailMarkedVerified("registered@testuser.com");
+
       ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -341,6 +343,8 @@
 
     lib.waitForUserValidation("registered@testuser.com", function(status) {
       equal(status, "mustAuth", "mustAuth response expected");
+
+      testHelpers.testEmailMarkedVerified("registered@testuser.com");
 
       ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
       start();
@@ -852,6 +856,7 @@
     xhr.useResult("complete");
     lib.waitForEmailValidation("registered@testuser.com", function(status) {
       ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
+      testHelpers.testEmailMarkedVerified("registered@testuser.com");
       equal(status, "mustAuth", "mustAuth response expected");
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -865,6 +870,7 @@
     xhr.useResult("complete");
     lib.waitForEmailValidation("registered@testuser.com", function(status) {
       ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
+      testHelpers.testEmailMarkedVerified("registered@testuser.com");
       equal(status, "complete", "complete response expected");
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -876,6 +882,7 @@
 
     lib.waitForEmailValidation("registered@testuser.com", function(status) {
       ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
+      testHelpers.testEmailMarkedVerified("registered@testuser.com");
       equal(status, "mustAuth", "mustAuth response expected");
       start();
     }, testHelpers.unexpectedXHRFailure);

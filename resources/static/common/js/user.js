@@ -116,6 +116,12 @@ BrowserID.User = (function() {
     complete(onComplete, status);
   }
 
+  function markAddressVerified(email) {
+    var idInfo = storage.getEmail(email) || {};
+    idInfo.verified = true;
+    storage.addSecondaryEmail(email, idInfo);
+  }
+
   function completeAddressVerification(completeFunc, token, password, onComplete, onFailure) {
     User.tokenInfo(token, function(info) {
       var invalidInfo = { valid: false };
@@ -125,17 +131,10 @@ BrowserID.User = (function() {
 
           if (valid) {
             result = _.extend({ valid: valid }, info);
-            var email = info.email,
-                idInfo = storage.getEmail(email);
-
             // Now that the address is verified, its verified bit has to be
             // updated as well or else the user will be forced to verify the
             // address again.
-            if (idInfo) {
-              idInfo.verified = true;
-              storage.addEmail(email, idInfo);
-            }
-
+            markAddressVerified(info.email);
             storage.setReturnTo("");
           }
 
@@ -162,6 +161,11 @@ BrowserID.User = (function() {
           // ensure that the stagedOnBehalfOf is cleared so there is no stale
           // data.
           storage.setReturnTo("");
+
+          // Now that the address is verified, its verified bit has to be
+          // updated as well or else the user will be forced to verify the
+          // address again.
+          markAddressVerified(email);
 
           // To avoid too many address_info requests, returns from each
           // address_info request are cached.  If the user is doing
@@ -290,7 +294,6 @@ BrowserID.User = (function() {
         pollDuration = config.pollDuration;
       }
       // END TESTING API
-
     },
 
     reset: function() {

@@ -1,5 +1,5 @@
-/*jshint browsers: true laxbreak: true, expr: true */
-/*global BrowserID: true, ok: true, equal: true, start: true */
+/*jshint browser: true laxbreak: true, expr: true */
+/*global BrowserID: true, ok: true, equal: true, start: true, deepEqual: true, notEqual: true */
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -291,6 +291,12 @@ BrowserID.TestHelpers = (function() {
 
     testRPTosPPNotShown: function(msg) {
       TestHelpers.testNotHasClass("body", "rptospp", msg || "RP TOS/PP not shown");
+    },
+
+    testEmailMarkedVerified: function(email, msg) {
+      var emailInfo = storage.getEmail(email);
+      equal(emailInfo && emailInfo.verified, true,
+        "verified bit set for " + email);
     }
   };
 

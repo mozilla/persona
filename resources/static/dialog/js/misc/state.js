@@ -60,6 +60,25 @@ BrowserID.State = (function() {
       startAction(actionName, actionInfo);
     }
 
+    function handleEmailConfirmed(msg, info) {
+      self.email = self.stagedEmail;
+
+      if (info.mustAuth) {
+        // If the mustAuth flag comes in, the user has to authenticate.
+        // This is not a cancelable authentication.  mustAuth is set
+        // after a user verifies an address but is not authenticated
+        // to the password level.
+        redirectToState("authenticate_specified_email", {
+          email: self.stagedEmail,
+          mustAuth: info.mustAuth,
+          cancelable: !info.mustAuth
+        });
+      }
+      else {
+        redirectToState("email_chosen", { email: self.stagedEmail });
+      }
+    }
+
 
     handleState("start", function(msg, info) {
       self.hostname = info.hostname;
@@ -130,13 +149,14 @@ BrowserID.State = (function() {
       startAction("doAuthenticateWithRequiredEmail", {
         email: info.email,
         secondary_auth: true,
-
+        cancelable: ("cancelable" in info) ? info.cancelable : true,
         // This is a user is already authenticated to the assertion
         // level who has chosen a secondary email address from the
         // pick_email screen. They would have been shown the
         // siteTOSPP there.
         siteTOSPP: false
       });
+      complete(info.complete);
     });
 
     handleState("new_user", function(msg, info) {
@@ -196,15 +216,9 @@ BrowserID.State = (function() {
 
     handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
 
-    handleState("user_confirmed", function() {
-      self.email = self.stagedEmail;
-      redirectToState("email_chosen", { email: self.stagedEmail} );
-    });
+    handleState("user_confirmed", handleEmailConfirmed);
 
-    handleState("staged_address_confirmed", function() {
-      self.email = self.stagedEmail;
-      redirectToState("email_chosen", { email: self.stagedEmail} );
-    });
+    handleState("staged_address_confirmed", handleEmailConfirmed);
 
     handleState("primary_user", function(msg, info) {
       addPrimaryUser = !!info.add;
@@ -348,8 +362,8 @@ BrowserID.State = (function() {
           }
           else {
             redirectToState("email_valid_and_ready", info);
+            oncomplete();
           }
-          oncomplete();
         }, oncomplete);
       }
     });
@@ -487,9 +501,7 @@ BrowserID.State = (function() {
 
     handleState("email_staged", handleEmailStaged.curry("doConfirmEmail"));
 
-    handleState("email_confirmed", function() {
-      redirectToState("email_chosen", { email: self.stagedEmail } );
-    });
+    handleState("email_confirmed", handleEmailConfirmed);
 
     handleState("cancel_state", function(msg, info) {
       cancelState(info);
