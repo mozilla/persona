@@ -193,7 +193,7 @@ $(document).ready(function() {
     });
   });
 
-  $(".specify button.logout").click(navigator.id.logout);
+  $(".specify button.logout").click(function() { navigator.id.logout() });
 
   $(".session button.update_session").click(function() {
     storage.loggedInUser = $.trim($('#loggedInUser').val());
