@@ -18,7 +18,7 @@
         "express": "2.5.0",
         "gobbledygook": "0.0.3", 
         "mustache": "0.3.1-dev",
-        "jwcrypto": "0.3.2",
+        "jwcrypto": "https://github.com/mozilla/jwcrypto/tarball/2012-07-new-data-formats",
         "mysql": "0.9.5",
         "node-statsd": "https://github.com/downloads/lloyd/node-statsd/0509f85.tgz",
         "nodemailer": "0.1.24",

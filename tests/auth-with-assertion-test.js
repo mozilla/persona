@@ -88,7 +88,7 @@ suite.addBatch({
           
           // sign this innerkeypair with the key from g_cert (g_keypair)
           jwcrypto.cert.sign(
-            innerKeypair.publicKey, {email: OTHER_EMAIL},
+            {publicKey: innerKeypair.publicKey, principal: {email: OTHER_EMAIL}},
             {issuedAt: new Date(), expiresAt: expirationDate},
             {}, primaryUser._keyPair.secretKey,
             function(err, innerCert) {

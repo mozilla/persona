@@ -536,7 +536,7 @@ suite.addBatch({
   "certify the user key": {
     topic: function() {
       var expiration = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
-      jwcrypto.cert.sign(newClientKeypair.publicKey, {email: TEST_EMAIL},
+      jwcrypto.cert.sign({publicKey: newClientKeypair.publicKey, principal: {email: TEST_EMAIL}},
                          {issuedAt: new Date(), issuer: "127.0.0.1",
                           expiresAt: expiration},
                          {}, fakeDomainKeypair.secretKey, this.callback);
@@ -786,7 +786,7 @@ suite.addBatch({
   "certify the user key for other issuer": {
     topic: function() {
       var expiration = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
-      jwcrypto.cert.sign(newClientKeypair.publicKey, {email: TEST_EMAIL},
+      jwcrypto.cert.sign({publicKey: newClientKeypair.publicKey, principal: {email: TEST_EMAIL}},
                          {issuedAt: new Date(), issuer: "no.such.domain",
                           expiresAt: expiration},
                          {}, fakeDomainKeypair.secretKey, this.callback);
@@ -856,7 +856,7 @@ suite.addBatch({
           path.join(__dirname, '..', 'example', 'primary', 'sample.privatekey')));
 
       var expiration = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
-      jwcrypto.cert.sign(newClientKeypair.publicKey, {email: TEST_EMAIL},
+      jwcrypto.cert.sign({publicKey: newClientKeypair.publicKey, principal: {email: TEST_EMAIL}},
                          {issuedAt: new Date(), issuer: "example.domain",
                           expiresAt: expiration},
                          {}, secretKey, this.callback);
@@ -914,7 +914,7 @@ suite.addBatch({
           path.join(__dirname, '..', 'example', 'primary', 'sample.privatekey')));
 
       var expiration = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
-      jwcrypto.cert.sign(newClientKeypair.publicKey, {email: "foo@example.domain"},
+      jwcrypto.cert.sign({publicKey: newClientKeypair.publicKey, principal: {email: "foo@example.domain"}},
                          {issuedAt: new Date(), issuer: "example.domain",
                           expiresAt: expiration},
                          {}, secretKey, this.callback);
@@ -983,7 +983,7 @@ suite.addBatch({
 
           // sign this innerkeypair with the key from g_cert (g_keypair)
           jwcrypto.cert.sign(
-            innerKeypair.publicKey, {email: OTHER_EMAIL},
+            {publicKey: innerKeypair.publicKey, principal: {email: OTHER_EMAIL}},
             {issuedAt: new Date(), expiresAt: expirationDate},
             {}, g_keypair.secretKey,
             function(err, innerCert) {

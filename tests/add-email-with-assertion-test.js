@@ -68,7 +68,7 @@ suite.addBatch({
 
       var expiration = new Date();
       expiration.setTime(new Date().valueOf() + 60 * 60 * 1000);
-      jwcrypto.cert.sign(g_keypair.publicKey, {email: TEST_EMAIL}, {issuer: TEST_DOMAIN, expiresAt: expiration, issuedAt: new Date()}, null, g_privKey, this.callback);
+      jwcrypto.cert.sign({publicKey: g_keypair.publicKey, principal: {email: TEST_EMAIL}}, {issuer: TEST_DOMAIN, expiresAt: expiration, issuedAt: new Date()}, null, g_privKey, this.callback);
     },
     "works swimmingly": function(err, cert) {
       assert.isString(cert);

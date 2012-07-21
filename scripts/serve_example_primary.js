@@ -90,7 +90,9 @@ exampleServer.post("/api/cert_key", function (req, res) {
   var expiration = new Date();
   var pubkey = jwcrypto.loadPublicKeyFromObject(req.body.pubkey);
   expiration.setTime(new Date().valueOf() + req.body.duration * 1000);
-  jwcrypto.cert.sign(pubkey, {email: user + "@" + domain}, {issuer: domain, expiresAt: expiration, issuedAt: new Date()}, {}, _privKey, function(err, cert) {
+  jwcrypto.cert.sign({publicKey: pubkey, principal: {email: user + "@" + domain}},
+                     {issuer: domain, expiresAt: expiration, issuedAt: new Date()},
+                     {}, _privKey, function(err, cert) {
     res.json({ cert: cert });
   });
 });
