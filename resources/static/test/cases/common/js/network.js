@@ -55,10 +55,7 @@
       transport.useResult("complete");
       network[funcName]("registered@testuser.com", function(status) {
         equal(status, "complete");
-        network.checkAuth(function(auth_level) {
-          equal(auth_level, "password", "user can only be authenticated to password level after verification is complete");
-          start();
-        });
+        start();
       }, testHelpers.unexpectedFailure);
     });
   }
@@ -257,53 +254,11 @@
     failureCheck(network.createUser, "validuser", "password", "origin");
   });
 
-  asyncTest("checkUserRegistration returns pending - pending status, user is not logged in", function() {
-    transport.useResult("pending");
+  asyncTest("checkUserRegistration returns pending - pending status, user is not logged in", testVerificationPending.curry("checkUserRegistration"));
 
-    // To properly check the user registration status, we first have to
-    // simulate the first checkAuth or else network has no context from which
-    // to work.
-    network.checkAuth(function(auth_status) {
-      equal(!!auth_status, false, "user not yet authenticated");
-      network.checkUserRegistration("registered@testuser.com", function(status) {
-        equal(status, "pending");
-        network.checkAuth(function(auth_status) {
-          equal(!!auth_status, false, "user not yet authenticated");
-          start();
-        }, testHelpers.unexpectedFailure);
-      }, testHelpers.unexpectedFailure);
-    }, testHelpers.unexpectedFailure);
-  });
+  asyncTest("checkUserRegistration returns mustAuth - mustAuth status, user is not logged in", testVerificationMustAuth.curry("checkUserRegistration"));
 
-  asyncTest("checkUserRegistration returns mustAuth - mustAuth status, user is not logged in", function() {
-    transport.useResult("mustAuth");
-
-    network.checkAuth(function(auth_status) {
-      equal(!!auth_status, false, "user not yet authenticated");
-      network.checkUserRegistration("registered@testuser.com", function(status) {
-        equal(status, "mustAuth");
-        network.checkAuth(function(auth_status) {
-          equal(!!auth_status, false, "user not yet authenticated");
-          start();
-        }, testHelpers.unexpectedFailure);
-      }, testHelpers.unexpectedFailure);
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("checkUserRegistration returns complete - complete status, user is logged in", function() {
-    transport.useResult("complete");
-
-    network.checkAuth(function(auth_status) {
-      equal(!!auth_status, false, "user not yet authenticated");
-      network.checkUserRegistration("registered@testuser.com", function(status) {
-        equal(status, "complete");
-        network.checkAuth(function(auth_status) {
-          equal(auth_status, "password", "user authenticated after checkUserRegistration returns complete");
-          start();
-        }, testHelpers.unexpectedFailure);
-      }, testHelpers.unexpectedFailure);
-    }, testHelpers.unexpectedFailure);
-  });
+  asyncTest("checkUserRegistration returns complete - complete status, user is logged in", testVerificationComplete.curry("checkUserRegistration"));
 
   asyncTest("checkUserRegistration with XHR failure", function() {
     failureCheck(network.checkUserRegistration, "registered@testuser.com");

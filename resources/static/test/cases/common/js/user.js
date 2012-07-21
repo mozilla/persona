@@ -320,13 +320,16 @@
     );
   });
 
-  asyncTest("waitForUserValidation with `complete` response", function() {
+  asyncTest("waitForUserValidation with complete from backend, user not authed - `mustAuth` response", function() {
     storage.setReturnTo(testOrigin);
 
+    xhr.setContextInfo("auth_level", false);
     xhr.useResult("complete");
 
     lib.waitForUserValidation("registered@testuser.com", function(status) {
-      equal(status, "complete", "complete response expected");
+      equal(status, "mustAuth", "mustAuth response expected");
+
+      testHelpers.testEmailMarkedVerified("registered@testuser.com");
 
       ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
       start();
@@ -340,6 +343,8 @@
 
     lib.waitForUserValidation("registered@testuser.com", function(status) {
       equal(status, "mustAuth", "mustAuth response expected");
+
+      testHelpers.testEmailMarkedVerified("registered@testuser.com");
 
       ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
       start();
@@ -844,12 +849,28 @@
   });
 
 
- asyncTest("waitForEmailValidation `complete` response", function() {
+ asyncTest("waitForEmailValidation with `complete` backend response, user authenticated to assertion level - expect 'mustAuth'", function() {
     storage.setReturnTo(testOrigin);
+    xhr.setContextInfo("auth_level", "assertion");
 
     xhr.useResult("complete");
     lib.waitForEmailValidation("registered@testuser.com", function(status) {
       ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
+      testHelpers.testEmailMarkedVerified("registered@testuser.com");
+      equal(status, "mustAuth", "mustAuth response expected");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+
+ asyncTest("waitForEmailValidation with `complete` backend response, user authenticated to password level - expect 'complete'", function() {
+    storage.setReturnTo(testOrigin);
+    xhr.setContextInfo("auth_level", "password");
+
+    xhr.useResult("complete");
+    lib.waitForEmailValidation("registered@testuser.com", function(status) {
+      ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
+      testHelpers.testEmailMarkedVerified("registered@testuser.com");
       equal(status, "complete", "complete response expected");
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -861,6 +882,7 @@
 
     lib.waitForEmailValidation("registered@testuser.com", function(status) {
       ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
+      testHelpers.testEmailMarkedVerified("registered@testuser.com");
       equal(status, "mustAuth", "mustAuth response expected");
       start();
     }, testHelpers.unexpectedXHRFailure);

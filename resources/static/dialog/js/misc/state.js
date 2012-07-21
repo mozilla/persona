@@ -49,11 +49,34 @@ BrowserID.State = (function() {
       // screen.
       var actionInfo = {
         email: info.email,
+        // password is used to authenticate the user if the verification poll
+        // wsapi comes back with "mustAuth" or the user is currently
+        // authenticated to the "assertion" level. See issue #2088
+        password: self.stagedPassword,
         siteName: self.siteName
       };
 
       self.stagedEmail = info.email;
       startAction(actionName, actionInfo);
+    }
+
+    function handleEmailConfirmed(msg, info) {
+      self.email = self.stagedEmail;
+
+      if (info.mustAuth) {
+        // If the mustAuth flag comes in, the user has to authenticate.
+        // This is not a cancelable authentication.  mustAuth is set
+        // after a user verifies an address but is not authenticated
+        // to the password level.
+        redirectToState("authenticate_specified_email", {
+          email: self.stagedEmail,
+          mustAuth: info.mustAuth,
+          cancelable: !info.mustAuth
+        });
+      }
+      else {
+        redirectToState("email_chosen", { email: self.stagedEmail });
+      }
     }
 
 
@@ -120,6 +143,22 @@ BrowserID.State = (function() {
       startAction("doAuthenticate", info);
     });
 
+    handleState("authenticate_specified_email", function(msg, info) {
+      // user must authenticate with their password, kick them over to
+      // the required email screen to enter the password.
+      startAction("doAuthenticateWithRequiredEmail", {
+        email: info.email,
+        secondary_auth: true,
+        cancelable: ("cancelable" in info) ? info.cancelable : true,
+        // This is a user is already authenticated to the assertion
+        // level who has chosen a secondary email address from the
+        // pick_email screen. They would have been shown the
+        // siteTOSPP there.
+        siteTOSPP: false
+      });
+      complete(info.complete);
+    });
+
     handleState("new_user", function(msg, info) {
       self.newUserEmail = info.email;
 
@@ -156,6 +195,11 @@ BrowserID.State = (function() {
        */
       info = _.extend({ email: self.newUserEmail || self.addEmailEmail || self.resetPasswordEmail }, info);
 
+      // stagedPassword is used to authenticate a user if the verification poll
+      // comes back with "mustAuth" or the user is not currently authenticated
+      // to the "password" level.  See issue #2088
+      self.stagedPassword = info.password;
+
       if(self.newUserEmail) {
         self.newUserEmail = null;
         startAction(false, "doStageUser", info);
@@ -172,15 +216,9 @@ BrowserID.State = (function() {
 
     handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
 
-    handleState("user_confirmed", function() {
-      self.email = self.stagedEmail;
-      redirectToState("email_chosen", { email: self.stagedEmail} );
-    });
+    handleState("user_confirmed", handleEmailConfirmed);
 
-    handleState("staged_address_confirmed", function() {
-      self.email = self.stagedEmail;
-      redirectToState("email_chosen", { email: self.stagedEmail} );
-    });
+    handleState("staged_address_confirmed", handleEmailConfirmed);
 
     handleState("primary_user", function(msg, info) {
       addPrimaryUser = !!info.add;
@@ -320,21 +358,12 @@ BrowserID.State = (function() {
           if (authentication === "assertion") {
              // user must authenticate with their password, kick them over to
             // the required email screen to enter the password.
-            startAction("doAuthenticateWithRequiredEmail", {
-              email: email,
-              secondary_auth: true,
-
-              // This is a user is already authenticated to the assertion
-              // level who has chosen a secondary email address from the
-              // pick_email screen. They would have been shown the
-              // siteTOSPP there.
-              siteTOSPP: false
-            });
+            redirectToState("authenticate_specified_email", info);
           }
           else {
             redirectToState("email_valid_and_ready", info);
+            oncomplete();
           }
-          oncomplete();
         }, oncomplete);
       }
     });
@@ -472,9 +501,7 @@ BrowserID.State = (function() {
 
     handleState("email_staged", handleEmailStaged.curry("doConfirmEmail"));
 
-    handleState("email_confirmed", function() {
-      redirectToState("email_chosen", { email: self.stagedEmail } );
-    });
+    handleState("email_confirmed", handleEmailConfirmed);
 
     handleState("cancel_state", function(msg, info) {
       cancelState(info);

@@ -57,7 +57,7 @@
               <button id="verify_address" tabindex="3"><%= gettext("verify email") %></button>
             <% } %>
 
-            <% if (secondary_auth) { %>
+            <% if (cancelable && secondary_auth) { %>
               <a href="#" id="cancel" class="action" tabindex="4"><%= gettext("cancel") %></a>
             <% } %>
           </p>
