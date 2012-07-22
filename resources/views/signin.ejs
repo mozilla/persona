@@ -10,7 +10,8 @@
 
             <ul class="notifications">
                 <li class="notification" id="unknown_secondary">
-                  <%- gettext('<strong id="unknown_email">Email</strong> is not registered. Would you like to <a class="action" href="/signup">sign up</a> instead?') %>
+                  <%- format(gettext('<strong %(emailId)>Email</strong> is not registered. Would you like to <a %(signUpLink)>sign up</a> instead?'),
+                             { emailId: 'id="unknown_email"', signUpLink: 'class="action" href="/signup"' }) %>
                 </li>
 
             </ul>
@@ -57,7 +58,8 @@
             <ul class="notifications">
                 <li class="notification" id="verify_primary">
                   <p>
-                    <%- gettext('To verify that you own <strong id="primary_email">address</strong>, you must sign in with your provider.  A new window will be opened.') %>
+                    <%- format(gettext('To verify that you own <strong %(primaryId)>address</strong>, you must sign in with your provider.  A new window will be opened.'),
+                               { primaryId: 'id="primary_email"' }) %>
                   </p>
 
                   <p>

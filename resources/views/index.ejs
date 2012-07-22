@@ -29,7 +29,7 @@
   <script type="text/html" id="templateManage">
     <div id="content">
         <div class="newsbanner" id="newuser">
-          <%- gettext('New to Mozilla Persona? <a href="/about">Learn more</a>') %>
+          <%- format(gettext('New to Mozilla Persona? <a %(learnMoreLink)>Learn more</a>'), { learnMoreLink: 'href="/about"' }) %>
         </div>
 
         <div id="manage">
@@ -74,7 +74,7 @@
             </section>
 
 
-            <p id="disclaimer"><%- gettext('You may, at any time, <a href="#" id="cancelAccount" class="action">cancel your account</a>') %></p>
+            <p id="disclaimer"><%- format(gettext('You may, at any time, <a %(cancelLink)>cancel your account</a>'), { cancelLink: 'href="#" id="cancelAccount" class="action"' }) %></p>
         </div>
     </div>
 

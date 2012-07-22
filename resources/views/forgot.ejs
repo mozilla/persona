@@ -12,7 +12,7 @@
                   <h2><%- gettext('Confirm your email address') %></h2>
 
                   <p>
-                    <%- gettext('Check your email at <strong id="sentToEmail"></strong>.') %>
+                    <%- format(gettext('Check your email at <strong %(checkId)></strong>.'), { checkId: 'id="sentToEmail"' }) %>
                   </p>
 
                   <p>
