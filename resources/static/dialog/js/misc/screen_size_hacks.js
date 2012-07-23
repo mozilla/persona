@@ -1,4 +1,6 @@
 (function() {
+  "use strict";
+
   /**
    * This is a hack to feign fixed headers/footers and dynamic body content
    * size.  On mobile, it helps keep the footer at the very bottom of the
@@ -113,7 +115,7 @@
         // the position specified in CSS.
         $("section,#signIn").css("position", "");
 
-        favIconHeight = $("#favicon").outerHeight();
+        var favIconHeight = $("#favicon").outerHeight();
 
         // Force the top of the main content area to be below the favicon area.
         signInEl.css("top", favIconHeight + "px");
