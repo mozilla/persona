@@ -119,6 +119,7 @@ BrowserID.verifySecondaryAddress = (function() {
           // These are users who are authenticating in a different browser or
           // session than the initiator.
           dom.addClass("body", "enter_password");
+          dom.focus("input[autofocus]");
           complete(oncomplete, true);
         }
         else {
