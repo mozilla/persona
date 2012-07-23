@@ -293,6 +293,39 @@ BrowserID.TestHelpers = (function() {
       TestHelpers.testNotHasClass("body", "rptospp", msg || "RP TOS/PP not shown");
     },
 
+    testElementChecked: function(selector, msg) {
+      equal($(selector).is(":checked"), true, msg || selector + " is checked");
+    },
+
+    testElementNotChecked: function(selector, msg) {
+      equal($(selector).is(":checked"), false, msg || selector + " is not checked");
+    },
+
+    testElementFocused: function(selector, msg) {
+      var focusedEl = $(":focus");
+
+      if (focusedEl.is(selector)) {
+        ok(true, msg || selector + " is focused");
+      }
+      else {
+        // In some environments such as PhantomJS, input elements cannot be
+        // checked for focus.  Make a temporary input element which we can
+        // check to see if it is possible to focus. If it is possible, this is
+        // a failure.  If it is not possible, print a message and continue.
+        // Remove the element when complete.
+        var input = $("<input type='text' />").appendTo("body").focus();
+        if (input.is(":focus")) {
+          ok(false, msg || selector + " is focused");
+          // refocus the original input element.
+          if (focusedEl.length) $(focusedEl).focus();
+        }
+        else {
+          window.console && console.log("currently unable to focus elements, focus check skipped - try focusing the unit test page");
+        }
+        input.remove();
+      }
+    },
+
     testEmailMarkedVerified: function(email, msg) {
       var emailInfo = storage.getEmail(email);
       equal(emailInfo && emailInfo.verified, true,

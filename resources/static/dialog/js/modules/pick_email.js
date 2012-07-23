@@ -1,5 +1,5 @@
 /*jshint browser:true, jquery: true, forin: true, laxbreak:true */
-/*global _: true, BrowserID: true, PageController: true */
+/*global _: true, BrowserID: true, PageController: true, alert: true, gettext: true*/
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,25 +12,37 @@ BrowserID.Modules.PickEmail = (function() {
       storage = bid.Storage,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
+      tooltip = bid.Tooltip,
       dom = bid.DOM,
       sc;
 
   function pickEmailState(event) {
-    var self=this;
-    if (!dom.getElements("input[type=radio]:checked").length) {
-      // If none are already checked, select the first one.
-      dom.setAttr('input[type=radio]:eq(0)', 'checked', true);
+    /*jshint validthis: true*/
+    var self=this,
+        // focus the first radio button by default.
+        focusSelector = "input[type=radio]:eq(0)";
+
+    // unless a radio button is checked, then focus it.
+    if (dom.getElements("input[type=radio]:checked").length) {
+      focusSelector = "input[type=radio]:checked";
     }
-    // focus whichever is checked.
-    dom.focus("input[type=radio]:checked");
+    dom.focus(focusSelector);
+
     self.submit = signIn;
   }
 
   function addEmail() {
+    /*jshint validthis: true*/
     this.publish("add_email");
   }
 
   function checkEmail(email) {
+    /*jshint validthis: true*/
+    if (!email) {
+      tooltip.showTooltip("#must_choose_email");
+      return;
+    }
+
     var identity = user.getStoredEmailKeypair(email);
     if (!identity) {
       alert(gettext("The selected email is invalid or has been deleted."));
@@ -43,6 +55,7 @@ BrowserID.Modules.PickEmail = (function() {
   }
 
   function signIn() {
+    /*jshint validthis: true*/
     var self=this,
         email = dom.getInner("input[type=radio]:checked");
 
@@ -77,6 +90,7 @@ BrowserID.Modules.PickEmail = (function() {
   }
 
   function notMe() {
+    /*jshint validthis: true*/
     this.publish("notme");
   }
 
