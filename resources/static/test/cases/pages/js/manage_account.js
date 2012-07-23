@@ -1,5 +1,5 @@
 /*jshint browser: true, forin: true, laxbreak: true */
-/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true, notEqual: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,8 +9,10 @@
   var bid = BrowserID,
       xhr = bid.Mocks.xhr,
       errorScreen = bid.Screens.error,
+      network = bid.Network,
       storage = bid.Storage,
       testHelpers = bid.TestHelpers,
+      generateString = testHelpers.generateString,
       tooltip = bid.Tooltip,
       mocks = {
         confirm: function() { return true; },
@@ -28,6 +30,37 @@
       testHelpers.teardown();
     }
   });
+
+  function testPasswordChangeSuccess(oldPass, newPass, msg) {
+    testPasswordChange(oldPass, newPass, function(status) {
+      equal(status, true, msg);
+      // if success is expected, both password fields should be visible.
+      equal($("#old_password").val(), "", "old_password field is cleared");
+      equal($("#new_password").val(), "", "new_password field is cleared");
+      testHelpers.testTooltipNotVisible();
+      network.checkAuth(function(authLevel) {
+        equal(authLevel, "password", "after password change, user authenticated to password level");
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    }, msg);
+  }
+
+  function testPasswordChangeFailure(oldPass, newPass, msg) {
+    testPasswordChange(oldPass, newPass, function(status) {
+      equal(status, false, msg);
+      testHelpers.testTooltipVisible();
+      start();
+    }, msg);
+  }
+
+  function testPasswordChange(oldPass, newPass, testStrategy, msg) {
+    bid.manageAccount(mocks, function() {
+      $("#old_password").val(oldPass);
+      $("#new_password").val(newPass);
+
+      bid.manageAccount.changePassword(testStrategy);
+    });
+  }
 
   asyncTest("no email addresses are displayed if there are no children", function() {
     xhr.useResult("no_identities");
@@ -96,7 +129,7 @@
       });
     });
   });
-  
+
   asyncTest("removeEmail doesn't cancel the account when removing a non-existent e-mail", function() {
     bid.manageAccount(mocks, function() {
       bid.manageAccount.removeEmail("non@existent.com", function() {
@@ -105,7 +138,7 @@
       });
     });
   });
-  
+
   asyncTest("removeEmail doesn't cancel the account when out of sync with the server", function() {
     bid.manageAccount(mocks, function() {
       xhr.useResult("multiple");
@@ -178,84 +211,32 @@
   });
 
   asyncTest("changePassword with missing old password - tooltip", function() {
-    bid.manageAccount(mocks, function() {
-      $("#old_password").val("");
-      $("#new_password").val("newpassword");
+    testPasswordChangeFailure("", "newpassword", "missing old password, expected failure");
+  });
 
-      bid.manageAccount.changePassword(function(status) {
-        equal(status, false, "on missing old password, status is false");
-        testHelpers.testTooltipVisible();
-        start();
-      });
-    });
+  asyncTest("changePassword with too short of an old password - tooltip", function() {
+    testPasswordChangeFailure(generateString(bid.PASSWORD_MIN_LENGTH - 1), "newpassword", "missing old password, expected failure");
+  });
+
+  asyncTest("changePassword with too long of an old password - tooltip", function() {
+    testPasswordChangeFailure(generateString(bid.PASSWORD_MAX_LENGTH + 1), "newpassword", "missing old password, expected failure");
   });
 
   asyncTest("changePassword with missing new password - tooltip", function() {
-    bid.manageAccount(mocks, function() {
-      $("#old_password").val("oldpassword");
-      $("#new_password").val("");
-
-      bid.manageAccount.changePassword(function(status) {
-        equal(status, false, "on missing new password, status is false");
-        testHelpers.testTooltipVisible();
-        start();
-      });
-    });
+    testPasswordChangeFailure("oldpassword", "", "missing new password, expected failure");
   });
 
-  asyncTest("changePassword with too short of a password - tooltip", function() {
-    bid.manageAccount(mocks, function() {
-      $("#old_password").val("oldpassword");
-      $("#new_password").val("pass");
-
-      bid.manageAccount.changePassword(function(status) {
-        equal(status, false, "on too short of a password, status is false");
-        testHelpers.testTooltipVisible();
-        start();
-      });
-    });
+  asyncTest("changePassword with too short of a new password - tooltip", function() {
+    testPasswordChangeFailure("oldpassword", generateString(bid.PASSWORD_MIN_LENGTH - 1), "too short new password, expected failure");
   });
 
-  asyncTest("changePassword with too long of a password - tooltip", function() {
-    bid.manageAccount(mocks, function() {
-      $("#old_password").val("oldpassword");
-      $("#new_password").val(testHelpers.generateString(81));
-
-      bid.manageAccount.changePassword(function(status) {
-        equal(status, false, "on too long of a password, status is false");
-        testHelpers.testTooltipVisible();
-        start();
-      });
-    });
+  asyncTest("changePassword with too long of a new password - tooltip", function() {
+    testPasswordChangeFailure("oldpassword", generateString(bid.PASSWORD_MAN_LENGTH + 1), "too short new password, expected failure");
   });
 
-
-  asyncTest("changePassword with incorrect old password - tooltip", function() {
-    bid.manageAccount(mocks, function() {
-      xhr.useResult("incorrectPassword");
-
-      $("#old_password").val("incorrectpassword");
-      $("#new_password").val("newpassword");
-
-      bid.manageAccount.changePassword(function(status) {
-        equal(status, false, "on incorrect old password, status is false");
-        testHelpers.testTooltipVisible();
-        start();
-      });
-    });
-  });
 
   asyncTest("changePassword with same old and new password - tooltip", function() {
-    bid.manageAccount(mocks, function() {
-      $("#old_password").val("password");
-      $("#new_password").val("password");
-
-      bid.manageAccount.changePassword(function(status) {
-        equal(status, false, "do not update when old and new passwords are the same");
-        testHelpers.testTooltipVisible();
-        start();
-      });
-    });
+    testPasswordChangeFailure("password", "password", "password same, expected failure");
   });
 
   asyncTest("changePassword with XHR error - error message", function() {
@@ -272,52 +253,29 @@
     });
   });
 
-  asyncTest("changePassword with user authenticated to password level, happy case", function() {
-    bid.manageAccount(mocks, function() {
-      $("#old_password").val("oldpassword");
-      $("#new_password").val("newpassword");
-
-      bid.manageAccount.changePassword(function(status) {
-        equal(status, true, "on proper completion, status is true");
-        equal(tooltip.shown, false, "on proper completion, tooltip is not shown");
-
-        equal($("#old_password").val(), "", "old_password field is cleared");
-        equal($("#new_password").val(), "", "new_password field is cleared");
-
-        start();
-      });
-    });
+  asyncTest("changePassword with user authenticated to password level, incorrect old password - tooltip", function() {
+    xhr.setContextInfo("auth_level", "password");
+    xhr.useResult("incorrectPassword");
+    testPasswordChangeFailure("incorrectpassword", "newpassword", "incorrect old password, expected failure");
   });
 
-  asyncTest("changePassword with user authenticated to assertion level level, incorrect password - show tooltip", function() {
+  asyncTest("changePassword with user authenticated to assertion level, incorrect password - show tooltip", function() {
     xhr.setContextInfo("auth_level", "assertion");
+    xhr.useResult("incorrectPassword");
 
-    bid.manageAccount(mocks, function() {
-      $("#old_password").val("oldpassword");
-      $("#new_password").val("newpassword");
-      xhr.useResult("incorrectPassword");
+    testPasswordChangeFailure("oldpassword", "newpassword", "incorrect old password, expected failure");
+  });
 
-      bid.manageAccount.changePassword(function(status) {
-        equal(status, false, "bad password, status is false");
-        testHelpers.testTooltipVisible();
-        start();
-      });
-    });
+  asyncTest("changePassword with user authenticated to password level, happy case", function() {
+    xhr.setContextInfo("auth_level", "password");
+
+    testPasswordChangeSuccess("oldpassword", "newpassword", "proper completion, no need to authenticate");
   });
 
   asyncTest("changePassword with user authenticated to assertion level level, correct password - log user in, change password", function() {
     xhr.setContextInfo("auth_level", "assertion");
 
-    bid.manageAccount(mocks, function() {
-      $("#old_password").val("oldpassword");
-      $("#new_password").val("newpassword");
-
-      bid.manageAccount.changePassword(function(status) {
-        equal(status, true, "on proper completion, status is true");
-        equal(tooltip.shown, false, "on proper completion, tooltip is not shown");
-        start();
-      });
-    });
+    testPasswordChangeSuccess("oldpassword", "newpassword", "proper completion after authenticating user");
   });
 
 }());

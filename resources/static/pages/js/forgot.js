@@ -28,7 +28,7 @@ BrowserID.forgot = (function() {
     if (email && validPass) {
       user.requestPasswordReset(email, pass, function onSuccess(info) {
         if (info.success) {
-          pageHelpers.emailSent(oncomplete);
+          pageHelpers.emailSent("waitForPasswordResetComplete", oncomplete);
         }
         else {
           var tooltipEl = info.reason === "throttle" ? "#could_not_add" : "#not_registered";

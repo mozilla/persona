@@ -13,11 +13,11 @@
       </a>
 
       <p>
-        <%- gettext('Persona works with <a href="http://getfirefox.com" target="_blank" title="Get Firefox">Firefox</a>') %>
+        <%- format(gettext('Persona works with <a %(getFirefoxLink)>Firefox</a>'), { getFirefoxLink: 'href="http://getfirefox.com" target="_blank" title="Get Firefox"' }) %>
       </p>
 
       <p class="lighter">
-       <%- gettext('and other <a href="http://whatbrowser.org" target="_blank">modern browsers.</a>') %>
+       <%- format(gettext('and other <a %(otherBrowserLink)>modern browsers.</a>'), { otherBrowserLink: 'href="http://whatbrowser.org" target="_blank"' }) %>
       </p>
 
   </section>

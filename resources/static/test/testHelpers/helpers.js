@@ -197,6 +197,10 @@ BrowserID.TestHelpers = (function() {
       equal(tooltip.shown, true, "tooltip is visible");
     },
 
+    testTooltipNotVisible: function() {
+      equal(tooltip.shown, false, "tooltip is not visible");
+    },
+
     failureCheck: function failureCheck(cb) {
       // Take the original arguments, take off the function.  Add any additional
       // arguments that were passed in, and then tack on the onSuccess and
@@ -320,6 +324,12 @@ BrowserID.TestHelpers = (function() {
         }
         input.remove();
       }
+    },
+
+    testEmailMarkedVerified: function(email, msg) {
+      var emailInfo = storage.getEmail(email);
+      equal(emailInfo && emailInfo.verified, true,
+        "verified bit set for " + email);
     }
   };
 

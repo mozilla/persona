@@ -68,7 +68,7 @@ BrowserID.PageHelpers = (function() {
   function getFailure(error, callback) {
     return function onFailure(info) {
       showFailure(error, info, callback);
-    }
+    };
   }
 
   function replaceFormWithNotice(selector, onComplete) {
@@ -88,7 +88,7 @@ BrowserID.PageHelpers = (function() {
       .promise().done(onComplete);
   }
 
-  function emailSent(onComplete) {
+  function emailSent(pollFuncName, onComplete) {
     origStoredEmail = getStoredEmail();
     dom.setInner('#sentToEmail', origStoredEmail);
 
@@ -96,7 +96,7 @@ BrowserID.PageHelpers = (function() {
 
     replaceInputsWithNotice(".emailsent");
 
-    user.waitForUserValidation(origStoredEmail, function(status) {
+    user[pollFuncName](origStoredEmail, function(status) {
       userValidationComplete(status);
     });
     onComplete && onComplete();
@@ -124,7 +124,7 @@ BrowserID.PageHelpers = (function() {
 
   function openPrimaryAuth(winchan, email, baseURL, callback) {
     if(!(email && baseURL)) {
-      throw "cannot verify with primary without an email address and URL"
+      throw "cannot verify with primary without an email address and URL";
     }
 
     winchan.open({
