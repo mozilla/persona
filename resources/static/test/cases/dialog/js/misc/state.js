@@ -116,25 +116,6 @@
     equal(error, "start: controller must be specified", "creating a state machine without a controller fails");
   });
 
-  test("new_user - call doSetPassword with correct email, cancelable set to true", function() {
-    mediator.publish("new_user", { email: TEST_EMAIL });
-
-    testHelpers.testObjectValuesEqual(actions.info.doSetPassword, {
-      email: TEST_EMAIL,
-      cancelable: true
-    });
-  });
-
-  test("new_user with requiredEmail - call doSetPassword with correct email, cancelable set to false", function() {
-    mediator.publish("start", { requiredEmail: TEST_EMAIL });
-    mediator.publish("new_user", { email: TEST_EMAIL });
-
-    testHelpers.testObjectValuesEqual(actions.info.doSetPassword, {
-      email: TEST_EMAIL,
-      cancelable: false
-    });
-  });
-
   test("cancel new user password_set flow - go back to the authentication screen", function() {
     mediator.publish("authenticate");
     mediator.publish("new_user", undefined, { email: TEST_EMAIL });
@@ -230,12 +211,6 @@
     ok(actions.called.doVerifyPrimaryUser, "doVerifyPrimaryUser called");
   });
 
-  test("primary_user_unauthenticated after required email - call doCannotVerifyRequiredPrimary", function() {
-    mediator.publish("start", { requiredEmail: TEST_EMAIL, type: "primary", add: false, email: TEST_EMAIL });
-    mediator.publish("primary_user_unauthenticated");
-    ok(actions.called.doCannotVerifyRequiredPrimary, "doCannotVerifyRequiredPrimary called");
-  });
-
   test("primary_user_unauthenticated after verification of new user - call doAuthenticate", function() {
     mediator.publish("start", { email: TEST_EMAIL, type: "primary", add: false });
     mediator.publish("primary_user_unauthenticated");
@@ -288,10 +263,9 @@
   test("forgot_password - call doResetPassword with correct options", function() {
     mediator.publish("start", { privacyPolicy: "priv.html", termsOfService: "tos.html" });
     mediator.publish("forgot_password", {
-      email: TEST_EMAIL,
-      requiredEmail: true
+      email: TEST_EMAIL
     });
-    testActionStarted("doResetPassword", { email: TEST_EMAIL, requiredEmail: true });
+    testActionStarted("doResetPassword", { email: TEST_EMAIL });
   });
 
   asyncTest("reset_password_staged to staged_address_confirmed - call doConfirmResetPassword then doEmailConfirmed", function() {
@@ -513,12 +487,10 @@
     equal(actions.called.doAddEmail, true, "doAddEmail called");
   });
 
-  asyncTest("stage_email - first secondary email - call doSetPassword with cancelable=true", function() {
+  asyncTest("stage_email - first secondary email - call doSetPassword", function() {
     mediator.publish("stage_email", {
       complete: function() {
-        testHelpers.testObjectValuesEqual(actions.info.doSetPassword, {
-          cancelable: true
-        });
+        testActionStarted("doSetPassword");
         start();
       }
     });
@@ -531,18 +503,6 @@
     mediator.publish("stage_email", {
       complete: function() {
         equal(actions.called.doStageEmail, true, "doStageEmail called");
-        start();
-      }
-    });
-  });
-
-  asyncTest("stage_email first secondary requiredEmail - call doSetPassword with cancelable=false", function() {
-    mediator.publish("start", { requiredEmail: TEST_EMAIL });
-    mediator.publish("stage_email", {
-      complete: function() {
-        testHelpers.testObjectValuesEqual(actions.info.doSetPassword, {
-          cancelable: false
-        });
         start();
       }
     });
