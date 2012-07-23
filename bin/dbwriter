@@ -12,12 +12,9 @@ http = require('http'),
 urlparse = require('urlparse'),
 express = require('express'),
 wsapi = require('../lib/wsapi.js'),
-httputils = require('../lib/httputils.js'),
-secrets = require('../lib/secrets.js'),
 db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
-metrics = require('../lib/metrics.js'),
 logger = require('../lib/logging.js').logger,
 shutdown = require('../lib/shutdown');
 

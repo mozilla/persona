@@ -18,14 +18,10 @@ cachify = require('connect-cachify'),
 i18n = require('../lib/i18n.js'),
 wsapi = require('../lib/wsapi.js'),
 httputils = require('../lib/httputils.js'),
-secrets = require('../lib/secrets.js'),
 db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
-metrics = require('../lib/metrics.js'),
 logger = require('../lib/logging.js').logger,
-forward = require('../lib/http_forward').forward,
-shutdown = require('../lib/shutdown'),
 views = require('../lib/static/views.js');
 
 var app = undefined;
