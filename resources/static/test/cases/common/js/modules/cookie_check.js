@@ -16,7 +16,7 @@
     controller.start(config);
   }
 
-  module("shared/modules/cookie_check", {
+  module("common/js/modules/cookie_check", {
     setup: function() {
       testHelpers.setup();
     },

@@ -8,6 +8,7 @@
 
   var bid = BrowserID,
       validation = bid.Validation,
+      testHelpers = bid.TestHelpers,
       tooltipShown,
       origShowTooltip;
 
@@ -15,7 +16,7 @@
     tooltipShown = true;
   }
 
-  module("shared/validation", {
+  module("common/js/validation", {
     setup: function() {
       origShowTooltip = bid.Tooltip.showTooltip;
       bid.Tooltip.showTooltip = showTooltip;
@@ -205,21 +206,19 @@
 
 
   test("passwordAndValidationPassword with too short password", function() {
-    var valid = validation.passwordAndValidationPassword("pass", "password");
+    var tooShort = testHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1);
+    var valid = validation.passwordAndValidationPassword(tooShort, tooShort);
 
     equal(valid, false, "too short password is invalid");
     equal(tooltipShown, true, "too short password shows tooltip");
   });
 
   test("passwordAndValidationPassword with too long password", function() {
-    var tooLong = "";
-    for(var i = 0; i < 81; i++) {
-      tooLong += (i % 10);
-    }
+    var tooLong = testHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1);
     var valid = validation.passwordAndValidationPassword(tooLong, tooLong);
 
-    equal(valid, false, "too short password is invalid");
-    equal(tooltipShown, true, "too short password shows tooltip");
+    equal(valid, false, "too long password is invalid");
+    equal(tooltipShown, true, "too long password shows tooltip");
   });
 
   test("passwordAndValidationPassword with empty validation password", function() {

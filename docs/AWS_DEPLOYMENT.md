@@ -173,3 +173,16 @@ access to:
 Feel free to start a new server, and ssh in as `app` to explore all of the
 configuration.  An attempt has been made to isolate as much configuration 
 under this user's account as possible.
+
+### Hacking the deployed code
+
+If you want to change anything on your VM, you should really just commit to
+your local git repo and then push the changes over to the EC2 instance.
+
+However, sometimes that doesn't work for some reason and you need to hack
+the code directly and restart the services:
+
+  1. ssh into the VM as the `app` user
+  2. hack the currently running code in `/home/app/code/`
+  3. run the js combiner/minifier: `/home/app/code/scripts/compress`
+  4. restart all of the services: `forever restartall`

@@ -1,5 +1,35 @@
-train-2012.07.20: (in progress)
-  * 
+train-2012.08.03 (in progress):
+
+
+train-2012.07.20:
+  * Introduction of "static" process which serves views and static resources: #1757
+  * Update account password recovery flow, no longer do we remove all emails upon password recovery: #1913
+  * API parameter validation on all API calls: #1526, #2001, #1981, #2042, #2032, #2057, #2121
+  * 'locale_directory' no longer a neccesary nor allowed configuration parameter
+  * Implement support for proxy IdP (a.k.a. BigTent): #2019, #2060
+  * Main site i18n - now persona is completely translated: #1862, #2075, #2093
+  * UI improvements: #1898, #1786, #1920, #1932, #1901, #1885, #1951, #1964, #1967, #1916, #1967, #2007
+  * KPI improvements: #1827, #1825
+  * Localization improvments, reduced dependencies and debugging locale works all the time: #1917, #1905, #1970
+  * Fix regression of fonts on windows: #1856, #1973
+  * Resource optimization: #1941, #1999
+  * Links to external sumo pages are language neutral: #1938, #2055
+  * Unit test fixes and improvements: #1958, #1948, #1783, #1916, #2011, #1986
+  * Fixes for node 0.8.x (production still on node 0.6.x): #1914
+  * Code cleanup: #1902, #1989
+  * Language improvements: #1960, #1167
+  * Opera 12 fixes: #1844
+  * Persona logos added to repo: #1974
+  * Fix error when KPIs are disabled: #1978
+  * For primary certificate provisioning, fail if the process takes longer than 20s: #1570
+  * Fix IE8 cookie check: #1982
+  * Log assertion verification failures: #2016
+  * Fix slow keyboard key press response on fennec: #2029
+  * Documentation fixes: #2064
+  * All resources should include license and links: #1655?
+  * Repair metrics, specifically counting of distinct sign_ins: #2040
+  * returnTo, siteName, and siteLogo only work with the observer API: #2086
+  * Fix regressions introduced during development: #2118, #2104, #2088
 
 train-2012.07.06:
   * refinement of all user facing language: #1889, #1905, #1675, #1923, #1925

@@ -10,9 +10,9 @@
   // are inverted and reversed), and en-US.
   // This set can be overridden by adding more to config.json on the VM.
   "supported_languages": [
-    "en-US"
+    "en-US", "it-CH"
   ],
-  "locale_directory": "/home/app/code/locale",
+  "debug_lang": "it-CH",
   "var_path": "/home/app/var",
 
   "http_proxy": {

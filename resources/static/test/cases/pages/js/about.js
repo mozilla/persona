@@ -10,7 +10,7 @@
       testHelpers = bid.TestHelpers,
       controller;
 
-  module("pages/about", {
+  module("pages/js/about", {
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/about", {});

@@ -5,44 +5,50 @@
 <div id="content" class="display_always">
     <div class="about">
         <section class="simple-signon">
-            <h2 class="title">Simplified sign-on.</h2>
+            <h2 class="title"><%- gettext('Simplified sign-on.') %></h2>
             <article class="blurb">
                 <div class="info first">
-                    <h1>Persona replaces multiple passwords</h1>
-                    <p>Sites such as <a href="http://crossword.thetimes.co.uk/" target="_blank">The Times Crossword</a>, <a href="http://current.openphoto.me/" target="_blank">OpenPhoto</a> and <a href="https://www.voo.st/" target="_blank">Voost</a> use Persona instead of usernames to sign you in.</p><p>This means you only need one password to sign in to many sites.</p>
+                    <h1><%- gettext('Persona replaces multiple passwords') %></h1>
+                    <p><%- format(gettext('Sites such as <a %(timesLink)>The Times Crossword</a>, <a %(openphotoLink)>OpenPhoto</a> and <a %(voostLink)>Voost</a> use Persona instead of usernames to sign you in.'),
+                                  {
+                                    timesLink: 'href="http://crossword.thetimes.co.uk/" target="_blank"',
+                                    openphotoLink: 'href="http://current.openphoto.me/" target="_blank"',
+                                    voostLink: 'href="https://www.voo.st/" target="_blank"'
+                                  })
+                           %></p><p><%- gettext('This means you only need one password to sign in to many sites.') %></p>
                 </div>
 
                 <div class="graphic">
-                    <img src="<%- cachify('/pages/i/one-password-graphic.png') %>" alt="One password to rule them all.">
+                    <img src="<%- cachify('/pages/i/one-password-graphic.png') %>" alt="<%- gettext('One password to rule them all.') %>">
                 </div>
             </article>
 
             <article class="blurb flexible">
                 <div class="graphic first">
-                    <img src="<%- cachify('/pages/i/flexible-graphic.png') %>" alt="Use multiple email addresses">
+                    <img src="<%- cachify('/pages/i/flexible-graphic.png') %>" alt="<%- gettext('Use multiple email addresses') %>">
                 </div>
 
                 <div class="info">
-                    <h1>Persona is flexible</h1>
-                    <p>Within Persona, your identity is your email address. You can use as many email addresses as you want, but you still only need one password.</p>
+                    <h1><%- gettext('Persona is flexible') %></h1>
+                    <p><%- gettext('Within Persona, your identity is your email address. You can use as many email addresses as you want, but you still only need one password.') %></p>
                 </div>
             </article>
         </section>
 
         <section class="privacy">
-            <h2 class="title">Real privacy.</h2>
+            <h2 class="title"><%- gettext('Real privacy.') %></h2>
 
             <article class="blurb half first" style="min-height: 195px; ">
-                <h1>Persona is proudly non-profit for you</h1>
-                <p>Persona is developed by Mozilla, a not-for-profit company trusted throughout the Web community. Our goal is to create technologies that balance an open Web platform with people’s privacy.</p>
+                <h1><%- gettext('Persona is proudly non-profit for you') %></h1>
+                <p><%- gettext('Persona is developed by Mozilla, a not-for-profit company trusted throughout the Web community. Our goal is to create technologies that balance an open Web platform with people\'s privacy.') %></p>
             </article>
             <article class="blurb half">
-                <h1>Persona preserves your privacy</h1>
-                <p>Persona does not track your activity around the Web. It creates a wall between signing you in and what you do once you’re there. The history of what sites you visit is stored only on your own computer.</p>
+                <h1><%- gettext('Persona preserves your privacy') %></h1>
+                <p><%- gettext('Persona does not track your activity around the Web. It creates a wall between signing you in and what you do once you\'re there. The history of what sites you visit is stored only on your own computer.') %></p>
             </article>
         </section>
 
-        <a href="https://developer.mozilla.org/en/BrowserID/Quick_Setup" class="developers" target="_blank"><img src="<%- cachify('/pages/i/developers-link.png') %>" alt="Persona for developers"><span>Implement Persona on your site </span>Developer guides and API documentation</a>
+        <a href="https://developer.mozilla.org/en/BrowserID" class="developers" target="_blank"><img src="<%- cachify('/pages/i/developers-link.png') %>" alt="<%- gettext('Persona for developers') %>"><span><%- gettext('Implement Persona on your site') %> </span><%- gettext('Developer guides and API documentation') %></a>
     </div><!-- #dashboard -->
 </div>
 

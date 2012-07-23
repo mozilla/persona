@@ -11,7 +11,7 @@
       testObjectValuesEqual = testHelpers.testObjectValuesEqual,
       xhr = bid.Mocks.xhr;
 
-  module("shared/models/interaction_data", {
+  module("common/js/models/interaction_data", {
     setup: function() {
       testHelpers.setup();
       localStorage.removeItem("interaction_data");

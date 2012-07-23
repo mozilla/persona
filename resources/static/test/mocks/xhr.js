@@ -238,7 +238,6 @@ BrowserID.Mocks.xhr = (function() {
     }
   };
 
-
   return xhr;
 }());
 

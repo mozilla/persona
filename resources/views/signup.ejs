@@ -6,23 +6,23 @@
     <div id="vAlign">
         <!-- XXX this form submits to nowhere -->
         <form id="signUpForm" class="cf authform" novalidate>
-            <h1>Create Account</h1>
+            <h1><%- gettext('Create Account') %></h1>
 
             <ul class="notifications">
                 <li class="notification alreadyRegistered">
-                  <strong id="registeredEmail"></strong> is already registered.
-                  Would you like to <a class="action" href="/signin">sign in</a> instead?
+                  <%- format(gettext('<strong %(emailId)></strong> is already registered. Would you like to <a %(signInLink)>sign in</a> instead?'),
+                             { emailId: 'id="registeredEmail"', signInLink: 'class="action" href="/signin"' }) %>
                 </li>
 
                 <li class="notification emailsent">
-                  <h2>Confirm your email address</h2>
+                  <h2><%- gettext('Confirm your email address') %></h2>
 
                   <p>
-                    Check your email at <strong id="sentToEmail"></strong>.
+                    <%- format(gettext('Check your email at <strong %(emailId)></strong>.'), { emailId: 'id="sentToEmail"' }) %>
                   </p>
 
                   <p>
-                    Click the link in the confirmation email. You'll then immediately be signed into Persona.
+                    <%- gettext('Click the link in the confirmation email. You\'ll then immediately be signed into Persona.') %>
                   </p>
                 </li>
 
@@ -30,49 +30,45 @@
 
             <ul class="inputs forminputs">
                 <li>
-                    <label for="email">Email Address</label>
-                    <input id="email" autofocus placeholder="Your Email" type="email" autocapitalize="off" autocorrect="off" maxlength="254" />
+                    <label for="email"><%- gettext('Email Address') %></label>
+                    <input id="email" autofocus placeholder="<%- gettext('Your Email') %>" type="email" autocapitalize="off" autocorrect="off" maxlength="254" />
 
                     <div id="email_format" class="tooltip" for="email">
-                      This field must be an email address.
+                      <%- gettext('This field must be an email address.') %>
                     </div>
 
                     <div id="email_required" class="tooltip" for="email">
-                      The email field is required.
+                      <%- gettext('The email field is required.') %>
                     </div>
 
                     <div id="could_not_add" class="tooltip" for="email">
-                      We just sent an email to that address! If you really want to send another, wait a minute or two and try again.
+                      <%- gettext('We just sent an email to that address! If you really want to send another, wait a minute or two and try again.') %>
                     </div>
                 </li>
 
                 <li class="password_entry">
-                    <label for="password">Password</label>
-                    <input id="password" placeholder="Password" type="password" maxlength="80">
+                    <label for="password"><%- gettext('Password') %></label>
+                    <input id="password" placeholder="<%- gettext('Password') %>" type="password" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="password">
-                        Password is required.
+                        <%- gettext('Password is required.') %>
                     </div>
 
                     <div class="tooltip" id="password_length" for="password">
-                        Password must be between 8 and 80 characters long.
-                    </div>
-
-                    <div id="could_not_add" class="tooltip" for="password">
-                        We just sent an email to that address! If you really want to send another, wait a minute or two and try again.
+                        <%- gettext('Password must be between 8 and 80 characters long.') %>
                     </div>
                 </li>
 
                 <li class="password_entry">
-                    <label for="vpassword">Verify Password</label>
-                    <input id="vpassword" placeholder="Verify Password" type="password" maxlength="80">
+                    <label for="vpassword"><%- gettext('Verify Password') %></label>
+                    <input id="vpassword" placeholder="<%- gettext('Verify Password') %>" type="password" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="vpassword">
-                      Verification password is required.
+                      <%- gettext('Verification password is required.') %>
                     </div>
 
                     <div class="tooltip" id="passwords_no_match" for="vpassword">
-                      These passwords don't match!
+                      <%- gettext('These passwords don\'t match!') %>
                     </div>
 
                 </li>
@@ -80,17 +76,17 @@
 
             <div class="submit cf forminputs">
                 <p class="cf">
-                  <button>Verify Email</button>
-                  <a class="action remember" href="/signin" tabindex="2">Existing account? Sign in.</a>
+                  <button><%- gettext('Verify Email') %></button>
+                  <a class="action remember" href="/signin" tabindex="2"><%- gettext('Existing account? Sign in.') %></a>
                 </p>
 
                 <p class="tospp">
                    <%- format(
-                        gettext('By proceeding, you agree to %s\'s <a %s>Terms</a> and <a %s>Privacy Policy</a>.'),
-                             [ "Persona",
-                               ' href="https://login.persona.org/tos" target="_new"',
-                               ' href="https://login.persona.org/privacy" target="_new"',
-                             ]) %>
+                        gettext('By proceeding, you agree to %(persona)\'s <a %(termsLink)>Terms</a> and <a %(privacyLink)>Privacy Policy</a>.'),
+                             { persona: "Persona",
+                               termsLink: 'href="https://login.persona.org/tos" target="_new"',
+                               privacyLink: 'href="https://login.persona.org/privacy" target="_new"',
+                             }) %>
                   </p>
 
             </div>
@@ -99,12 +95,11 @@
                 <!-- This has to go down here because of the button.  Firefox clicks the first button in the form whenever the user hits enter in the form, whether the button is shown or not, and even if there is an input[type=submit].  Ghetto.  -->
                 <li class="notification" id="primary_verify">
                   <p>
-                    To verify that you own <strong id="primary_email">address</strong>, you must
-                    sign in with your provider.  A new window will be opened.
+                    <%- format(gettext('To verify that you own <strong %(emailId)>address</strong>, you must sign in with your provider.  A new window will be opened.'), { emailId: 'id="primary_email"' }) %>
                   </p>
 
                   <p class="submit">
-                    <button id="authWithPrimary" tabindex="1">Verify</button>
+                    <button id="authWithPrimary" tabindex="1"><%- gettext('Verify') %></button>
                   </p>
                 </li>
             </ul>
@@ -113,7 +108,7 @@
         </form>
 
         <div class="notification" id="congrats">
-            <p>Thank you for signing up with <strong>Persona</strong>. You can now use your Persona account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!
+            <p><%- gettext('Thank you for signing up with <strong>Persona</strong>. You can now use your Persona account to <em>Sign In</em> or <em>Sign Up</em> to websites all across the web!') %>
             </p>
         </div>
 
@@ -121,7 +116,7 @@
 </div>
 
 <noscript>
-  We're sorry, but to sign up for Persona, you must have Javascript enabled.
+  <%- gettext('We\'re sorry, Persona requires that Javascript is enabled.') %>
 </noscript>
 
 

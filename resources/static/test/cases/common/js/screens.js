@@ -11,7 +11,7 @@
       testHelpers = bid.TestHelpers,
       el;
 
-  module("shared/screens", {
+  module("common/js/screens", {
     setup: function() {
       testHelpers.setup();
     },

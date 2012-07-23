@@ -24,18 +24,18 @@ User.prototype.setup = function(cb) {
   // upon allocation of a user, we'll gen a keypair and get a signed cert
   jwcrypto.generateKeypair({algorithm:"DS", keysize:256}, function(err, kp) {
     if (err) return cb(err);
-    
+
     self._keyPair = kp;
-    
+
     var expiration = new Date();
     expiration.setTime(new Date().valueOf() + 60 * 60 * 1000);
-    
+
     jwcrypto.cert.sign(self._keyPair.publicKey, {email: self.options.email},
                        {expiresAt: expiration, issuer: self.options.domain, issuedAt: new Date()},
-                       {}, g_privKey, function(err, signedCert) {
+                       {}, self.options.privKey || g_privKey, function(err, signedCert) {
                          if (err) return cb(err);
                          self._cert = signedCert;
-                         
+
                          cb(null);
                        });
   });

@@ -1,8 +1,5 @@
 <!DOCTYPE html>
-<!-- This Source Code Form is subject to the terms of the Mozilla Public
-   - License, v. 2.0. If a copy of the MPL was not distributed with this
-   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
-
+<%- partial('partial/license_with_code_ver') %>
 <html LANG="<%= lang %>" dir="<%= lang_dir %>">
 <head>
   <meta charset="utf-8">
@@ -16,7 +13,10 @@
   <!--[if lt IE 9]>
     <%- cachify_css('/production/ie8_dialog.css') %>
   <![endif]-->
-  <title><%= gettext('Mozilla Persona') %></title>
+  <% /* the title comes from the server when the page is loaded.
+         It still needs translated, so wrap it in its own gettext
+     */ %>
+  <title><%= format(gettext("Mozilla Persona: %s"), [gettext(title)]) %></title>
 </head>
   <body class="waiting">
       <header id="header">

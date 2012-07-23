@@ -1,5 +1,5 @@
-/*jshint browsers: true laxbreak: true, expr: true */
-/*global BrowserID: true, ok: true, equal: true, start: true */
+/*jshint browser: true laxbreak: true, expr: true */
+/*global BrowserID: true, ok: true, equal: true, start: true, deepEqual: true, notEqual: true */
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -27,7 +27,7 @@ BrowserID.TestHelpers = (function() {
       if(calls[msg]) {
         throw msg + " triggered more than once";
       }
-      calls[msg] = true;
+      calls[msg] = info || true;
 
       cb && cb.apply(null, arguments);
     }));
@@ -112,12 +112,42 @@ BrowserID.TestHelpers = (function() {
 
     register: register,
     isTriggered: function(message) {
-      return calls[message];
+      return message in calls;
     },
 
-    testTriggered: function(message) {
-      equal(calls[message], true, message + " was triggered");
+    testTriggered: function(message, expectedFields) {
+      ok(message in calls, message + " was triggered");
+      if (expectedFields) this.testObjectValuesEqual(calls[message], expectedFields);
     },
+
+    expectedMessage: function(message, expectedFields) {
+    // keep track of the original start function.  When the start function is
+    // called, call the proxy start function and then the original start
+    // function.  This allows proxy start functions to be chained and multiple
+    // expectedMessages to be called.
+    start = function(origStart) {
+      TestHelpers.testTriggered(message, expectedFields);
+      start = origStart;
+      start();
+    }.bind(null, start);
+
+    register(message);
+  },
+
+  unexpectedMessage: function(message) {
+    // keep track of the original start function.  When the start function is
+    // called, call the proxy start function and then the original start
+    // function.  This allows proxy start functions to be chained and multiple
+    // expectedMessages to be called.
+    start = function(origStart) {
+      equal(TestHelpers.isTriggered(message), false, message + " was not triggered");
+      start = origStart;
+      start();
+
+    }.bind(null, start);
+    register(message);
+  },
+
 
     errorVisible: function() {
       return screens.error.visible;
@@ -165,6 +195,10 @@ BrowserID.TestHelpers = (function() {
 
     testTooltipVisible: function() {
       equal(tooltip.shown, true, "tooltip is visible");
+    },
+
+    testTooltipNotVisible: function() {
+      equal(tooltip.shown, false, "tooltip is not visible");
     },
 
     failureCheck: function failureCheck(cb) {
@@ -257,6 +291,45 @@ BrowserID.TestHelpers = (function() {
 
     testRPTosPPNotShown: function(msg) {
       TestHelpers.testNotHasClass("body", "rptospp", msg || "RP TOS/PP not shown");
+    },
+
+    testElementChecked: function(selector, msg) {
+      equal($(selector).is(":checked"), true, msg || selector + " is checked");
+    },
+
+    testElementNotChecked: function(selector, msg) {
+      equal($(selector).is(":checked"), false, msg || selector + " is not checked");
+    },
+
+    testElementFocused: function(selector, msg) {
+      var focusedEl = $(":focus");
+
+      if (focusedEl.is(selector)) {
+        ok(true, msg || selector + " is focused");
+      }
+      else {
+        // In some environments such as PhantomJS, input elements cannot be
+        // checked for focus.  Make a temporary input element which we can
+        // check to see if it is possible to focus. If it is possible, this is
+        // a failure.  If it is not possible, print a message and continue.
+        // Remove the element when complete.
+        var input = $("<input type='text' />").appendTo("body").focus();
+        if (input.is(":focus")) {
+          ok(false, msg || selector + " is focused");
+          // refocus the original input element.
+          if (focusedEl.length) $(focusedEl).focus();
+        }
+        else {
+          window.console && console.log("currently unable to focus elements, focus check skipped - try focusing the unit test page");
+        }
+        input.remove();
+      }
+    },
+
+    testEmailMarkedVerified: function(email, msg) {
+      var emailInfo = storage.getEmail(email);
+      equal(emailInfo && emailInfo.verified, true,
+        "verified bit set for " + email);
     }
   };
 

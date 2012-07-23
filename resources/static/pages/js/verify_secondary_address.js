@@ -1,4 +1,4 @@
-/*globals BrowserID: true, $:true */
+/*globals BrowserID: true, $:true, URLParse: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -26,25 +26,36 @@ BrowserID.verifySecondaryAddress = (function() {
       secondsRemaining = REDIRECT_SECONDS,
       email,
       redirectTo,
-      redirectTimeout;  // set in config if available, use REDIRECT_SECONDS otw.
+      redirectTimeout,  // set in config if available, use REDIRECT_SECONDS otw.
+      uiTimeoutID;
 
   function showRegistrationInfo(info) {
     dom.setInner("#email", info.email);
 
     if (info.returnTo) {
       dom.setInner(".website", info.returnTo);
+      if (uiTimeoutID) uiTimeoutID = clearTimeout(uiTimeoutID);
       updateRedirectTimeout();
       dom.show(".siteinfo");
     }
   }
 
   function updateRedirectTimeout() {
-    if (secondsRemaining > 0) {
-      dom.setInner("#redirectTimeout", secondsRemaining);
+    dom.setInner("#redirectTimeout", secondsRemaining);
+  }
 
-      secondsRemaining--;
-      setTimeout(updateRedirectTimeout, 1000);
+  function countdownTimeout(onComplete) {
+    function checkTime() {
+      if (secondsRemaining > 0) {
+        updateRedirectTimeout();
+        secondsRemaining--;
+        uiTimeoutID = setTimeout(checkTime, 1000);
+      } else {
+        complete(onComplete);
+      }
     }
+
+    checkTime();
   }
 
   function submit(oncomplete) {
@@ -67,10 +78,10 @@ BrowserID.verifySecondaryAddress = (function() {
               // has had a chance to finish its business.
               storage.setLoggedIn(URLParse(redirectTo).originOnly(), email);
 
-              setTimeout(function() {
+              countdownTimeout(function() {
                 doc.location.href = redirectTo;
                 complete(oncomplete, verified);
-              }, redirectTimeout);
+              });
             }
             else {
               complete(oncomplete, verified);
@@ -96,18 +107,19 @@ BrowserID.verifySecondaryAddress = (function() {
   }
 
   function startVerification(oncomplete) {
+    /*jshint validthis: true*/
     var self=this;
     user.tokenInfo(token, function(info) {
       if (info) {
         redirectTo = info.returnTo;
         email = info.email;
         showRegistrationInfo(info);
-
         mustAuth = info.must_auth;
         if (mustAuth) {
           // These are users who are authenticating in a different browser or
           // session than the initiator.
           dom.addClass("body", "enter_password");
+          dom.focus("input[autofocus]");
           complete(oncomplete, true);
         }
         else {
@@ -138,6 +150,8 @@ BrowserID.verifySecondaryAddress = (function() {
       if (typeof redirectTimeout === "undefined") {
         redirectTimeout = REDIRECT_SECONDS * 1000;
       }
+      secondsRemaining = redirectTimeout / 1000;
+
 
       startVerification.call(self, options.ready);
 

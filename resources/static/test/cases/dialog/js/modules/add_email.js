@@ -17,7 +17,7 @@
       register = testHelpers.register;
 
 
-  module("controllers/add_email", {
+  module("dialog/js/modules/add_email", {
     setup: function() {
       $("#newEmail").val("");
       testHelpers.setup();

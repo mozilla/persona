@@ -12,7 +12,7 @@
       History = bid.History,
       history;
 
-  module("shared/history", {
+  module("common/js/history", {
     setup: function() {
       testHelpers.setup();
       history = History.create();

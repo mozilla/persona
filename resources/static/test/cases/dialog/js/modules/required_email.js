@@ -17,7 +17,7 @@
       origStart;
 
 
-  module("controllers/required_email", {
+  module("dialog/js/modules/required_email", {
     setup: function() {
       origStart = start;
       var count = 0;

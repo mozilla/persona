@@ -17,7 +17,9 @@ BrowserID.User = (function() {
       addressCache = {},
       primaryAuthCache = {},
       complete = bid.Helpers.complete,
-      registrationComplete = false;
+      registrationComplete = false,
+      POLL_DURATION = 3000,
+      pollDuration = POLL_DURATION;
 
   function prepareDeps() {
     if (!jwcrypto) {
@@ -114,6 +116,12 @@ BrowserID.User = (function() {
     complete(onComplete, status);
   }
 
+  function markAddressVerified(email) {
+    var idInfo = storage.getEmail(email) || {};
+    idInfo.verified = true;
+    storage.addSecondaryEmail(email, idInfo);
+  }
+
   function completeAddressVerification(completeFunc, token, password, onComplete, onFailure) {
     User.tokenInfo(token, function(info) {
       var invalidInfo = { valid: false };
@@ -123,17 +131,10 @@ BrowserID.User = (function() {
 
           if (valid) {
             result = _.extend({ valid: valid }, info);
-            var email = info.email,
-                idInfo = storage.getEmail(email);
-
             // Now that the address is verified, its verified bit has to be
             // updated as well or else the user will be forced to verify the
             // address again.
-            if (idInfo) {
-              idInfo.verified = true;
-              storage.addEmail(email, idInfo);
-            }
-
+            markAddressVerified(info.email);
             storage.setReturnTo("");
           }
 
@@ -145,7 +146,6 @@ BrowserID.User = (function() {
     }, onFailure);
 
   }
-
 
   function addressVerificationPoll(checkFunc, email, onSuccess, onFailure) {
     function poll() {
@@ -161,6 +161,11 @@ BrowserID.User = (function() {
           // ensure that the stagedOnBehalfOf is cleared so there is no stale
           // data.
           storage.setReturnTo("");
+
+          // Now that the address is verified, its verified bit has to be
+          // updated as well or else the user will be forced to verify the
+          // address again.
+          markAddressVerified(email);
 
           // To avoid too many address_info requests, returns from each
           // address_info request are cached.  If the user is doing
@@ -179,12 +184,22 @@ BrowserID.User = (function() {
           // they just completed a registration.
           registrationComplete = true;
 
-          if (onSuccess) {
-            onSuccess(status);
+          if (status === "complete") {
+            // If the response is complete but the user is not authenticated
+            // to the password level, the user *must* authenticate or else
+            // they will see an error when they try to certify a cert. Users
+            // who have entered their password in this dialog session will be
+            // automatically authenticated in modules/check_registration.js,
+            // all others will have to enter their password. See issue #2088.
+            network.checkAuth(function(authLevel) {
+              if (authLevel !== "password") status = "mustAuth";
+              complete(onSuccess, status);
+            }, onFailure);
           }
+          else complete(onSuccess, status);
         }
         else if (status === 'pending') {
-          pollTimeout = setTimeout(poll, 3000);
+          pollTimeout = setTimeout(poll, pollDuration);
         }
         else if (onFailure) {
             onFailure(status);
@@ -274,12 +289,18 @@ BrowserID.User = (function() {
         provisioning = config.provisioning;
       }
 
+      // BEGIN TESTING API
+      if (config.pollDuration) {
+        pollDuration = config.pollDuration;
+      }
+      // END TESTING API
     },
 
     reset: function() {
       provisioning = BrowserID.Provisioning;
       User.resetCaches();
       registrationComplete = false;
+      pollDuration = POLL_DURATION;
     },
 
     resetCaches: function() {
@@ -836,6 +857,14 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     authenticate: function(email, password, onComplete, onFailure) {
+      // password is out of length range.  Don't even send the request
+      // and waste backend cycles. See issue #2032.
+      if (password.length < bid.PASSWORD_MIN_LENGTH
+       || password.length > bid.PASSWORD_MAX_LENGTH) {
+        complete(onComplete, false);
+        return;
+      }
+
       network.authenticate(email, password, function(authenticated) {
         setAuthenticationStatus(authenticated);
 

@@ -25,6 +25,9 @@ start_stop.addStartupBatches(suite);
 // var 'token'
 var token = undefined;
 
+// stores wsapi client context
+var oldContext;
+
 // create a new account via the api with (first address)
 suite.addBatch({
   "staging an account": {
@@ -98,6 +101,52 @@ suite.addBatch({
       assert.strictEqual(typeof t, 'string');
       token = t;
     }
+  }
+});
+
+// should not require auth to complete
+suite.addBatch({
+  "given a token, getting an email": {
+    topic: function() {
+      wsapi.get('/wsapi/email_for_token', { token: token }).call(this);
+    },
+    "account created": function(err, r) {
+      assert.equal(r.code, 200);
+      var body = JSON.parse(r.body);
+      assert.strictEqual(body.success, true);
+      assert.strictEqual(body.must_auth, false);
+    }
+  }
+});
+
+
+// New context for a second client
+suite.addBatch({
+  "change context": function () {
+    oldContext = wsapi.getContext();
+    wsapi.setContext({});
+  }
+});
+
+// should require auth to complete for second client
+suite.addBatch({
+  "given a token, getting an email": {
+    topic: function() {
+      wsapi.get('/wsapi/email_for_token', { token: token }).call(this);
+    },
+    "account created": function(err, r) {
+      assert.equal(r.code, 200);
+      var body = JSON.parse(r.body);
+      assert.strictEqual(body.success, true);
+      assert.strictEqual(body.must_auth, true);
+    }
+  }
+});
+
+// restore context of first client
+suite.addBatch({
+  "restore context": function () {
+    wsapi.setContext(oldContext);
   }
 });
 
@@ -183,6 +232,7 @@ suite.addBatch({
       assert.equal(r.code, 200);
       var body = JSON.parse(r.body);
       assert.strictEqual(body.success, true);
+      assert.strictEqual(body.must_auth, false);
     }
   }
 });
@@ -285,6 +335,67 @@ suite.addBatch({
     }
   },
 });
+
+// Test issue #2104: when using a second browser to initiate password reset, first
+// browser should be prompted to authenticate
+
+// New context for a second client
+suite.addBatch({
+  "change context": function () {
+    oldContext = wsapi.getContext();
+    wsapi.setContext({});
+  }
+});
+
+// Run the "forgot_email" flow with first address. 
+suite.addBatch({
+  "reset password on first account": {
+    topic: wsapi.post('/wsapi/stage_reset', {
+      email: 'first@fakeemail.com',
+      pass: 'secondfakepass',
+      site:'https://otherfakesite.com'
+    }),
+    "works": function(err, r) {
+      assert.strictEqual(r.code, 200);
+    }
+  }
+});
+
+// wait for the token
+suite.addBatch({
+  "a token": {
+    topic: function() {
+      start_stop.waitForToken(this.callback);
+    },
+    "is obtained": function (t) {
+      assert.strictEqual(typeof t, 'string');
+      token = t;
+    }
+  }
+});
+
+// restore context of first client
+suite.addBatch({
+  "restore context": function () {
+    wsapi.setContext(oldContext);
+  }
+});
+
+suite.addBatch({
+  "given a token, getting an email": {
+    topic: function() {
+      wsapi.get('/wsapi/email_for_token', { token: token }).call(this);
+    },
+    "account created": function(err, r) {
+      assert.equal(r.code, 200);
+      var body = JSON.parse(r.body);
+      assert.strictEqual(body.success, true);
+      assert.strictEqual(body.email, 'first@fakeemail.com');
+      assert.strictEqual(body.must_auth, true);
+    }
+  }
+});
+
 
 // test list emails
 suite.addBatch({

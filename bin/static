@@ -53,7 +53,7 @@ app.use(i18n.abide({
   supported_languages: config.get('supported_languages'),
   default_lang: config.get('default_lang'),
   debug_lang: config.get('debug_lang'),
-  locale_directory: config.get('locale_directory'),
+  translation_directory: config.get('translation_directory'),
   disable_locale_check: config.get('disable_locale_check')
 }));
 
@@ -90,11 +90,15 @@ app.use(cachify.setup(assets(config.get('supported_languages')),
           root: static_root,
         }));
 
-
-// if nothing else has caught this request, serve static files, but ensure
-// that proper vary headers are installed to prevent unwanted caching
+// add 'Access-Control-Allow-Origin' headers to static resources that will be served
+// from the CDN.  We explicitly allow resources served from public_url to access these.
 app.use(function(req, res, next) {
-  res.setHeader('Vary', 'Accept-Encoding,Accept-Language');
+  res.on('header', function() {
+    // this allows fonts to be requested cross domain
+    res.setHeader("Access-Control-Allow-Origin", config.get('public_url'));
+    // this makes sure caches properly consider language headers
+    res.setHeader('Vary', 'Accept-Encoding,Accept-Language');
+  });
   next();
 });
 

@@ -68,34 +68,27 @@ BrowserID.PageHelpers = (function() {
   function getFailure(error, callback) {
     return function onFailure(info) {
       showFailure(error, info, callback);
-    }
+    };
   }
 
   function replaceFormWithNotice(selector, onComplete) {
     $("form").hide();
-    $(selector).fadeIn(ANIMATION_SPEED);
-    // If there is more than one .forminputs, the onComplete callback is called
-    // multiple times, we only want once.
-    onComplete && setTimeout(onComplete, ANIMATION_SPEED);
+    $(selector).fadeIn(ANIMATION_SPEED).promise().done(onComplete);
   }
 
   function replaceInputsWithNotice(selector, onComplete) {
     $('.forminputs').hide();
-    $(selector).stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED);
-    // If there is more than one .forminputs, the onComplete callback is called
-    // multiple times, we only want once.
-    onComplete && setTimeout(onComplete, ANIMATION_SPEED);
+    $(selector).stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED)
+      .promise().done(onComplete);
   }
 
   function showInputs(onComplete) {
     $('.notification').hide();
-    $('.forminputs').stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED);
-    // If there is more than one .forminputs, the onComplete callback is called
-    // multiple times, we only want once.
-    onComplete && setTimeout(onComplete, ANIMATION_SPEED);
+    $('.forminputs').stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED)
+      .promise().done(onComplete);
   }
 
-  function emailSent(onComplete) {
+  function emailSent(pollFuncName, onComplete) {
     origStoredEmail = getStoredEmail();
     dom.setInner('#sentToEmail', origStoredEmail);
 
@@ -103,7 +96,7 @@ BrowserID.PageHelpers = (function() {
 
     replaceInputsWithNotice(".emailsent");
 
-    user.waitForUserValidation(origStoredEmail, function(status) {
+    user[pollFuncName](origStoredEmail, function(status) {
       userValidationComplete(status);
     });
     onComplete && onComplete();
@@ -131,7 +124,7 @@ BrowserID.PageHelpers = (function() {
 
   function openPrimaryAuth(winchan, email, baseURL, callback) {
     if(!(email && baseURL)) {
-      throw "cannot verify with primary without an email address and URL"
+      throw "cannot verify with primary without an email address and URL";
     }
 
     winchan.open({

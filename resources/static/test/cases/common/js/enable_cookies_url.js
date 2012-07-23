@@ -9,7 +9,7 @@
   var bid = BrowserID,
       testHelpers = bid.TestHelpers;
 
-  module("/shared/enable_cookies_url", {
+  module("/common/js/enable_cookies_url", {
     setup: function() {
       testHelpers.setup();
     },

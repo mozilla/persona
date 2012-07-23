@@ -43,3 +43,12 @@ exports.getCSRF = function() {
   }
   return null;
 };
+
+// allows for multiple clients
+exports.setContext = function (cxt) {
+  context = cxt;
+};
+
+exports.getContext = function () {
+  return context;
+};

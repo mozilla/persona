@@ -1,0 +1,12 @@
+var json_locale_data = {
+  messages: {
+    "This is a translation <strong>test</strong> string.": [
+      null,
+      "Прова?  Прова?  Четери, пет, шещ?"
+    ],
+    "This is not translated": [
+      null,
+      ""
+    ]
+  }
+};

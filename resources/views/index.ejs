@@ -7,11 +7,13 @@
           <div id="signUp">
               <div id="card"><img src="<%- cachify('/pages/i/slit.png') %>"></div>
 
-              <h1 class="white headline-main">Connect with Mozilla Persona, the safest &amp; easiest way to sign in.</h1>
+              <h1 class="white headline-main"><%- gettext('Connect with Mozilla Persona, the safest &amp; easiest way to sign in.') %></h1>
               <p class="tour white">
-                <a href="/about">Take the tour</a>
-                or
-                <a href="/signup" class="button create">Sign up &rarr;</a>
+                <%- format(gettext('<a %(aboutLink)>Take the tour</a> or <a %(signupButton)>Sign Up &rarr;</a>'),
+                      {
+                        aboutLink: 'href="/about"',
+                        signupButton: 'href="/signup" class="button create"',
+                      }) %>
               </p>
           </div>
       </div>
@@ -20,25 +22,25 @@
   <script type="text/html" id="templateUser">
     <li class="identity cf" id="{{ email.replace('@', '_').replace('.', '_') }}">
       <div class="email">{{ email }}</div>
-      <button class="delete">remove</button>
+      <button class="delete"><%- gettext('remove') %></button>
     </li>
   </script>
 
   <script type="text/html" id="templateManage">
     <div id="content">
         <div class="newsbanner" id="newuser">
-          New to Mozilla Persona? <a href="/about">Learn more</a>
+          <%- format(gettext('New to Mozilla Persona? <a %(learnMoreLink)>Learn more</a>'), { learnMoreLink: 'href="/about"' }) %>
         </div>
 
         <div id="manage">
-            <h1>Account Manager</h1>
+            <h1><%- gettext('Account Manager') %></h1>
 
             <section>
               <header class="buttonrow cf">
-                  <h2>Your Email Addresses</h2>
+                  <h2><%- gettext('Your Email Addresses') %></h2>
 
-                  <button class="edit">edit</button>
-                  <button class="done">done</button>
+                  <button class="edit"><%- gettext('edit') %></button>
+                  <button class="done"><%- gettext('done') %></button>
               </header>
 
               <ul id="emailList">
@@ -47,32 +49,32 @@
 
             <section id="edit_password">
               <header class="buttonrow cf">
-                <h2>Password</h2>
+                <h2><%- gettext('Password') %></h2>
 
-                <button class="edit">edit</button>
-                <button class="done">cancel</button>
+                <button class="edit"><%- gettext('edit') %></button>
+                <button class="done"><%- gettext('cancel') %></button>
               </header>
 
               <div class="showedit">
-                <label for="old_password">Old Password</label>
-                <label for="new_password">New Password</label>
+                <label for="old_password"><%- gettext('Old Password') %></label>
+                <label for="new_password"><%- gettext('New Password') %></label>
               </div>
 
               <form id="edit_password_form" class="showedit">
                 <input type="password" id="old_password" name="old_password" maxlength="80"/>
                 <input type="password" id="new_password" name="new_password" maxlength="80"/>
-                <button id="changePassword">done</button>
+                <button id="changePassword"><%- gettext('done') %></button>
 
-                <div class="tooltip" for="old_password" id="tooltipOldRequired">Old password is required.</div>
-                <div class="tooltip" for="old_password" id="tooltipInvalidPassword">Incorrect old password, password not updated.</div>
-                <div class="tooltip" for="new_password" id="tooltipNewRequired">New password is required.</div>
-                <div class="tooltip" for="new_password" id="tooltipPasswordsSame">Old and new passwords are the same.</div>
-                <div class="tooltip" for="new_password" id="tooltipPasswordLength">Password must be between 8 and 80 characters long.</div>
+                <div class="tooltip" for="old_password" id="tooltipOldRequired"><%- gettext('Old password is required.') %></div>
+                <div class="tooltip" for="old_password" id="tooltipInvalidPassword"><%- gettext('Incorrect old password, password not updated.') %></div>
+                <div class="tooltip" for="new_password" id="tooltipNewRequired"><%- gettext('New password is required.') %></div>
+                <div class="tooltip" for="new_password" id="tooltipPasswordsSame"><%- gettext('Old and new passwords are the same.') %></div>
+                <div class="tooltip" for="new_password" id="tooltipPasswordLength"><%- gettext('Password must be between 8 and 80 characters long.') %></div>
               </form>
             </section>
 
 
-            <p id="disclaimer">You may, at any time, <a href="#" id="cancelAccount" class="action">cancel your account</a></p>
+            <p id="disclaimer"><%- format(gettext('You may, at any time, <a %(cancelLink)>cancel your account</a>'), { cancelLink: 'href="#" id="cancelAccount" class="action"' }) %></p>
         </div>
     </div>
 

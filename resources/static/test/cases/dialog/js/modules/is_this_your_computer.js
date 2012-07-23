@@ -17,7 +17,7 @@
       register = testHelpers.register;
 
 
-  module("controllers/is_this_your_computer", {
+  module("dialog/js/modules/is_this_your_computer", {
     setup: function() {
       testHelpers.setup();
     },

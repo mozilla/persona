@@ -18,6 +18,8 @@
       mediator = bid.Mediator,
       errorCB,
       expectedError = testHelpers.expectedXHRFailure,
+      expectedMessage = testHelpers.expectedMessage,
+      unexpectedMessage = testHelpers.unexpectedMessage,
       badError = testHelpers.unexpectedXHRFailure;
 
   var controllerMock = {
@@ -29,22 +31,7 @@
     }
   };
 
-  function expectedMessage(message, expectedFields) {
-    mediator.subscribe(message, function(m, info) {
-      equal(m, message, "correct message: " + message);
-
-      testHelpers.testObjectValuesEqual(info, expectedFields);
-    });
-  }
-
-
-  function unexpectedMessage(message) {
-    mediator.subscribe(message, function(m, info) {
-      ok(false, "close should have never been called");
-    });
-  }
-
-  module("resources/helpers", {
+  module("dialog/js/misc/helpers", {
     setup: function() {
       testHelpers.setup();
       errorCB = null;
@@ -78,10 +65,12 @@
 
     xhr.useResult("ajaxError");
     storage.addEmail("registered@testuser.com", {});
-    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", testHelpers.unexpectedSuccess);
+    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", testHelpers.expectedFailure);
   });
 
   asyncTest("authenticateUser happy case", function() {
+    expectedMessage("password_submit");
+    expectedMessage("authentication_success");
     dialogHelpers.authenticateUser.call(controllerMock, "testuser@testuser.com", "password", function(authenticated) {
       equal(authenticated, true, "user is authenticated");
       start();
@@ -90,6 +79,8 @@
 
   asyncTest("authenticateUser invalid credentials", function() {
     xhr.useResult("invalid");
+    expectedMessage("password_submit");
+    expectedMessage("authentication_fail");
     dialogHelpers.authenticateUser.call(controllerMock, "testuser@testuser.com", "password", function(authenticated) {
       equal(authenticated, false, "user is not authenticated");
       start();
@@ -100,6 +91,7 @@
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
+    expectedMessage("password_submit");
     dialogHelpers.authenticateUser.call(controllerMock, "testuser@testuser.com", "password", testHelpers.unexpectedSuccess);
   });
 
@@ -209,7 +201,7 @@
   });
 
   asyncTest("resetPassword happy case", function() {
-    expectedMessage("password_reset", {
+    expectedMessage("reset_password_staged", {
       email: "registered@testuser.com"
     });
 

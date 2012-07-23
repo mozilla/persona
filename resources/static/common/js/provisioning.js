@@ -7,9 +7,13 @@ BrowserID.Provisioning = (function() {
   "use strict";
 
   var jwcrypto = require("./lib/jwcrypto");
+  var MAX_TIMEOUT = 20000; // 20s
 
   var Provisioning = function(args, successCB, failureCB) {
+    var timeoutID;
+
     function tearDown() {
+      if (timeoutID) timeoutID = clearTimeout(timeoutID);
       if (chan) chan.destroy();
       chan = undefined;
       if (iframe) document.body.removeChild(iframe);
@@ -35,8 +39,9 @@ BrowserID.Provisioning = (function() {
     // extract the expected origin from the provisioning url
     // (this may be a different domain than the email domain part, if the
     //  domain delates authority)
+    var origin;
     try {
-      var origin = /^(https?:\/\/[^\/]+)\//.exec(args.url)[1];
+      origin = /^(https?:\/\/[^\/]+)\//.exec(args.url)[1];
     } catch(e) { alert(e); }
     if (!origin) {
       return fail('internal', 'bad provisioning url, can\'t extract origin');
@@ -47,6 +52,29 @@ BrowserID.Provisioning = (function() {
     var iframe = document.createElement("iframe");
     iframe.setAttribute('src', args.url);
     iframe.style.display = "none";
+
+    // start the timeout once the iframe loads, so we don't get false
+    // positives if the user is on a slow connection.
+    // the timeout should only happen if the provisioning site doesn't
+    // want to provision for us.
+    // see https://github.com/mozilla/browserid/pull/1954
+    function iframeOnLoad() {
+      if (timeoutID) {
+        clearTimeout(timeoutID);
+      }
+      // a timeout for the amount of time that provisioning is allowed to take
+      timeoutID = setTimeout(function provisionTimedOut() {
+        fail('timeoutError', 'Provisioning timed out.');
+      }, MAX_TIMEOUT);
+    }
+
+    if (iframe.addEventListener) {
+      iframe.addEventListener('load', iframeOnLoad, false);
+    } else if (iframe.attachEvent) {
+      iframe.attachEvent('onload', iframeOnLoad);
+    }
+    // else ruh-roh?
+
     document.body.appendChild(iframe);
 
     var chan = Channel.build({
@@ -92,7 +120,6 @@ BrowserID.Provisioning = (function() {
       successCB(keypair, cert);
     });
 
-    // XXX: set a timeout for the amount of time that provisioning is allowed to take
   };
 
   return Provisioning;

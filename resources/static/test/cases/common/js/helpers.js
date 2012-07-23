@@ -10,7 +10,7 @@
       helpers = bid.Helpers,
       testHelpers = bid.TestHelpers;
 
-  module("shared/helpers", {
+  module("common/js/helpers", {
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/signin", {});
@@ -19,27 +19,6 @@
     teardown: function() {
       testHelpers.teardown();
     }
-  });
-
-  test("extend", function() {
-    var target = {};
-    var retval = helpers.extend(target, {
-      field1: true,
-      field2: "value"
-    });
-
-    equal(target.field1, true, "target extended");
-    equal(target.field2, "value", "target extended");
-
-    strictEqual(retval, target, "the updated target is returned");
-  });
-
-  test("extend with multiple mixins", function() {
-    var target = {};
-
-    helpers.extend(target, { field1: true }, { field2: "value" });
-    equal(target.field1, true, "target extended");
-    equal(target.field2, "value", "target extended");
   });
 
   test("getAndValidateEmail with valid email", function() {

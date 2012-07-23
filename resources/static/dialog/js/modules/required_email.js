@@ -19,7 +19,7 @@ BrowserID.Modules.RequiredEmail = (function() {
       secondaryAuth;
 
   function closePrimaryUser(callback) {
-    this.close("primary_user", helpers.extend(primaryInfo, {
+    this.close("primary_user", _.extend(primaryInfo, {
       email: email,
       requiredEmail: true,
       add: !!auth_level
@@ -124,7 +124,8 @@ BrowserID.Modules.RequiredEmail = (function() {
           showTemplate({
             signin: true,
             password: auth_level !== "password",
-            secondary_auth: secondaryAuth
+            secondary_auth: secondaryAuth,
+            cancelable: options.cancelable
           });
           ready();
         }
@@ -212,14 +213,15 @@ BrowserID.Modules.RequiredEmail = (function() {
       }, self.getErrorDialog(errors.checkAuthentication, ready));
 
       function showTemplate(templateData) {
-        templateData = helpers.extend({
+        templateData = _.extend({
           email: email,
           verify: false,
           signin: false,
           password: false,
           secondary_auth: false,
           primary: false,
-          personaTOSPP: false
+          personaTOSPP: false,
+          cancelable: true
         }, templateData);
 
         self.renderDialog("required_email", templateData);

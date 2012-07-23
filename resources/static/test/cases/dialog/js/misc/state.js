@@ -528,6 +528,33 @@
     mediator.publish("window_unload");
   });
 
+  function testAuthenticateSpecifiedEmail(specified, expected) {
+    var options = {
+      email: TEST_EMAIL,
+      complete: function() {
+        testActionStarted("doAuthenticateWithRequiredEmail", {
+          cancelable: expected
+        });
+        start();
+      }
+    };
+
+    if (typeof specified !== "undefined") options.cancelable = specified;
+
+    mediator.publish("authenticate_specified_email", options);
+  }
+
+  asyncTest("authenticate_specified_email with false specified - call doAuthenticateWithRequiredEmail using specified cancelable", function() {
+    testAuthenticateSpecifiedEmail(false, false);
+  });
+
+  asyncTest("authenticate_specified_email with true specified - call doAuthenticateWithRequiredEmail using specified cancelable", function() {
+    testAuthenticateSpecifiedEmail(true, true);
+  });
+
+  asyncTest("authenticate_specified_email without cancelable - call doAuthenticateWithRequiredEmail, cancelable defaults to true", function() {
+    testAuthenticateSpecifiedEmail(undefined, true);
+  });
 
 
 }());

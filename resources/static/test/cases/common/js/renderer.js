@@ -10,7 +10,7 @@
       renderer = bid.Renderer,
       testHelpers = bid.TestHelpers;
 
-  module("shared/renderer", {
+  module("common/js/renderer", {
     setup: function() {
       testHelpers.setup();
     },
