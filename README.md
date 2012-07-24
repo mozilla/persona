@@ -24,7 +24,7 @@ If you want to work on the core BrowserID service, follow these instructions:
 
 BrowserID needs the following dependencies before it can run:
 
-* node.js (>= 0.6.2): http://nodejs.org
+* node.js (>= 0.6.7): http://nodejs.org
 * npm: http://npmjs.org/ (or bundled with node in 0.6.3+)
 * libgmp3
 * git
