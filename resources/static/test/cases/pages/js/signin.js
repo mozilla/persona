@@ -12,21 +12,35 @@
       xhr = bid.Mocks.xhr,
       WinChanMock = bid.Mocks.WinChan,
       provisioning = bid.Mocks.Provisioning,
+      WindowMock = bid.Mocks.WindowMock,
       testHelpers = bid.TestHelpers,
-      docMock = {
-        location: "signin"
-      },
+      testDocumentRedirected = testHelpers.testDocumentRedirected,
+      testDocumentNotRedirected = testHelpers.testDocumentNotRedirected,
+      testHasClass = testHelpers.testHasClass,
+      pageHelpers = bid.PageHelpers,
+      docMock,
       controller,
       winchan;
+
+  function createController(options) {
+    winchan = new WinChanMock();
+    docMock = new WindowMock().document;
+
+    options = options || {};
+    _.extend(options, {
+      document: docMock,
+      winchan: winchan
+    });
+
+    controller = bid.signIn.create();
+    controller.start(options);
+  }
 
   module("pages/js/signin", {
     setup: function() {
       testHelpers.setup();
-      docMock.location = "signin";
       bid.Renderer.render("#page_head", "site/signin", {});
-      winchan = new WinChanMock();
-      controller = bid.signIn.create();
-      controller.start({document: docMock, winchan: winchan});
+      createController();
     },
     teardown: function() {
       testHelpers.teardown();
@@ -36,11 +50,59 @@
 
   function testUserNotSignedIn(extraTests) {
     controller.passwordSubmit(function() {
-      equal(docMock.location, "signin", "user not signed in");
+      testDocumentNotRedirected(docMock, "user not signed in");
       if (extraTests) extraTests();
       start();
     });
   }
+
+  asyncTest("start with no email stored - nothing fancy", function() {
+    createController({
+      ready: function() {
+        testDocumentNotRedirected(docMock, "user not signed in");
+        start();
+      }
+    });
+  });
+
+  asyncTest("start with unknown secondary email stored - redirect to /signup", function() {
+    xhr.useResult("unknown_secondary");
+    pageHelpers.setStoredEmail("unregistered@testuser.com");
+    createController({
+      ready: function() {
+        testDocumentRedirected(docMock, "/signup", "user sent to /signup page");
+        start();
+      }
+    });
+  });
+
+  asyncTest("start with known secondary email stored - show password", function() {
+    xhr.useResult("known_secondary");
+    pageHelpers.setStoredEmail("registered@testuser.com");
+    createController({
+      ready: function() {
+        testHasClass("body", "known_secondary", "known_secondary class added to body");
+        testDocumentNotRedirected(docMock);
+
+        start();
+      }
+    });
+  });
+
+  asyncTest("start with known primary email stored - show verify primary", function() {
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+    pageHelpers.setStoredEmail("registered@testuser.com");
+
+    createController({
+      ready: function() {
+        testHasClass("body", "verify_primary", "verify_primary class added to body");
+
+        testDocumentNotRedirected(docMock);
+        start();
+      }
+    });
+  });
 
   asyncTest("emailSubmit with invalid email - show tooltip", function() {
     controller.emailSubmit(function() {
@@ -59,13 +121,12 @@
     });
   });
 
-  asyncTest("unknown_secondary: emailSubmit - add unknown_secondary to body", function() {
+  asyncTest("unknown_secondary: emailSubmit - redirect to /signup", function() {
     xhr.useResult("unknown_secondary");
     $("#email").val("unregistered@testuser.com");
 
     controller.emailSubmit(function() {
-      equal($("body").hasClass("unknown_secondary"), true, "unknown_secondary class added to body");
-      equal(controller.submit, controller.emailSubmit, "submit remains emailSubmit");
+      testDocumentRedirected(docMock, "/signup", "user redirected to /signup");
       start();
     });
   });
@@ -75,7 +136,7 @@
     $("#email").val("registered@testuser.com");
 
     controller.emailSubmit(function() {
-      equal($("body").hasClass("known_secondary"), true, "known_secondary class added to body");
+      testHasClass("body", "known_secondary", "known_secondary class added to body");
       equal(controller.submit, controller.passwordSubmit, "submit has changed to passwordSubmit");
       start();
     });
@@ -101,7 +162,7 @@
     $("#email").val("registered@testuser.com");
 
     controller.emailSubmit(function() {
-      equal($("body").hasClass("verify_primary"), true, "verify_primary class added to body");
+      testHasClass("body", "verify_primary", "verify_primary class added to body");
       equal(controller.submit, controller.authWithPrimary, "submit updated to authWithPrimary");
       start();
     });

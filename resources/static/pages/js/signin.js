@@ -16,15 +16,12 @@ BrowserID.signIn = (function() {
       tooltip = bid.Tooltip,
       doc = document,
       winchan = window.WinChan,
+      complete = helpers.complete,
       verifyEmail,
       verifyURL,
       addressInfo,
       sc,
       lastEmail;
-
-  function complete(oncomplete, status) {
-    oncomplete && oncomplete(status);
-  }
 
   function provisionPrimaryUser(email, info, callback) {
     // primary user who is authenticated with the primary.
@@ -44,6 +41,7 @@ BrowserID.signIn = (function() {
   }
 
   function emailSubmit(oncomplete) {
+    /*jshint validthis: true*/
     var self=this,
         email = helpers.getAndValidateEmail("#email");
 
@@ -60,8 +58,7 @@ BrowserID.signIn = (function() {
             self.submit = passwordSubmit;
           }
           else {
-            dom.setInner("#unknown_email", email);
-            dom.addClass("body", "unknown_secondary");
+            doc.location = "/signup";
           }
 
           complete(oncomplete);
@@ -126,6 +123,8 @@ BrowserID.signIn = (function() {
   }
 
   function onEmailChange(event) {
+    /*jshint validthis: true*/
+
     // this is basically a state reset.
     var email = dom.getInner("#email");
     if(email !== lastEmail) {
@@ -151,6 +150,16 @@ BrowserID.signIn = (function() {
       self.bind("#email", "keyup", onEmailChange);
 
       sc.start.call(self, options);
+
+      // If there is an email already set up in pageHelpers.setupEmail, see if
+      // the email address is a primary, secondary, known or unknown.  Redirect
+      // if needed.
+      if (dom.getInner("#email")) {
+        self.submit(options.ready);
+      }
+      else {
+        complete(options.ready);
+      }
     },
     submit: emailSubmit
 

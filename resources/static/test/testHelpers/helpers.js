@@ -330,6 +330,15 @@ BrowserID.TestHelpers = (function() {
       var emailInfo = storage.getEmail(email);
       equal(emailInfo && emailInfo.verified, true,
         "verified bit set for " + email);
+    },
+
+    testDocumentRedirected: function(doc, expectedHref, msg) {
+      equal(doc.location, expectedHref, msg || "document redirected to " + expectedHref);
+    },
+
+    testDocumentNotRedirected: function(doc, msg) {
+      equal(doc.location.href, document.location.href, msg || "document not redirected");
+
     }
   };
 

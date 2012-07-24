@@ -8,14 +8,6 @@
         <form id="signUpForm" class="cf authform" novalidate>
             <h1><%- gettext('Sign In') %></h1>
 
-            <ul class="notifications">
-                <li class="notification" id="unknown_secondary">
-                  <%- format(gettext('<strong %(emailId)>Email</strong> is not registered. Would you like to <a %(signUpLink)>sign up</a> instead?'),
-                             { emailId: 'id="unknown_email"', signUpLink: 'class="action" href="/signup"' }) %>
-                </li>
-
-            </ul>
-
             <ul class="inputs">
                 <li>
                     <label for="email"><%- gettext('Email Address') %></label>

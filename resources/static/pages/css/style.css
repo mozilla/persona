@@ -462,7 +462,7 @@ button.delete:active {
   margin-bottom: 10px;
 }
 
-.siteinfo, #congrats, .password_entry, #verify_password, .enter_password .hint, #unknown_secondary, .verify_primary .forminputs {
+.siteinfo, #congrats, .password_entry, #verify_password, .enter_password .hint, .verify_primary .forminputs {
   display: none;
 }
 
@@ -478,8 +478,7 @@ button.delete:active {
   font-size: 13px;
 }
 
-.enter_password .password_entry, .enter_verify_password #verify_password, .known_secondary .password_entry,
-.unknown_secondary #unknown_secondary, .verify_primary #verify_primary {
+.enter_password .password_entry, .enter_verify_password #verify_password, .known_secondary .password_entry, .verify_primary #verify_primary {
   display: block;
 }
 
