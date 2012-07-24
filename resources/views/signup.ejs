@@ -95,7 +95,7 @@
                 <!-- This has to go down here because of the button.  Firefox clicks the first button in the form whenever the user hits enter in the form, whether the button is shown or not, and even if there is an input[type=submit].  Ghetto.  -->
                 <li class="notification" id="primary_verify">
                   <p>
-                    <%- format(gettext('To verify that you own <strong %(emailId)>address</strong>, you must sign in with your provider.  A new window will be opened.'), { emailId: 'id="primary_email"' }) %>
+                    <%- format(gettext('To verify that you own <strong %(emailId)>this address</strong>, you must sign in with your provider. A new window will be opened.'), { emailId: 'id="primary_email"' }) %>
                   </p>
 
                   <p class="submit">
