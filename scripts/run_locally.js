@@ -78,6 +78,21 @@ if (config.get('env').substr(0,5) === 'test_') {
   }
 }
 
+// Windows can't use signals, so lets figure out if we should use them
+// To force signals, NO_SIGNALS=true.
+// Otherwise, they will be feature-detected.
+var SIGNALS_PROP = 'NO_SIGNALS';
+if (!(SINGALS_PROP in process.env)) {
+  try {
+    function signals_test() {}
+    process.on('SIGINT', signals_test);
+    process.removeListener('SIGINT', signals_test);
+    process.env[SIGNALS_PROP] = false;
+  } catch (noSignals) {
+    process.env[SIGNALS_PROP] = true;
+  }
+}
+
 function runDaemon(daemon, cb) {
   Object.keys(daemonsToRun[daemon]).forEach(function(ek) {
     if (ek === 'path') return; // this blows away the Window PATH
@@ -135,11 +150,9 @@ daemonNames.forEach(function(dn) {
   });
 });
 
-try {
+if (!process.env[SIGNALS_PROP]) {
   process.on('SIGINT', function () {
     console.log('\nSIGINT recieved! trying to shut down gracefully...');
     Object.keys(daemons).forEach(function (k) { daemons[k].kill('SIGINT'); });
   });
-} catch (noSignals) {
-  // Windows doesn't have signal support, so node explodes
 }
