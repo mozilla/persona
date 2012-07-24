@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <style type="text/css">
+        #outlook a{
+          padding:0;
+        }
+        body{
+          background: url("<%= cachify('/common/i/grain.png') %>") #76868f;
+          background: url("<%= cachify('/pages/i/marketplace-header.png') %>") top repeat-x, url("<%= cachify('/common/i/grain.png') %>") #76868f;
+          margin:0;
+          padding:0;
+          width:100% !important;
+          -webkit-text-size-adjust:none;
+          font-family: Helvetica, Arial, sans-serif;
+          font-size: 14px;
+          color: #424f5a;
+        }
+        img{
+          border:0;
+          height:auto;
+          line-height:100%;
+          outline:none;
+          text-decoration:none;
+        }
+        a{
+          color: #3b9bda;
+          text-decoration: none;
+        }
+        a:hover{
+          text-decoration: underline;
+        }
+        p{
+          margin: 0 0 15px;
+          line-height: 1.5;
+        }
+
+        h2{
+          font-size: 18px;
+          margin: 20px 0 15px;
+        }
+
+        p:last-child{
+          margin-bottom: 0;
+        }
+        table td{
+          border-collapse:collapse;
+        }
+
+        #content{
+          border-radius: 3px;
+          padding: 30px;
+        }
+      </style>
+    </head>
+    <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="-webkit-text-size-adjust: none;margin: 0;padding: 0;background-color: #76868f;width: 100% !important;">
+      <table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" style="margin: 0;padding: 0;height: 100% !important;width: 100% !important;">
+        <td align="left" valign="top" style="border-collapse: collapse;">
+          <center>
+            <table border="0" cellpadding="0" cellspacing="0" width="600">
+              <tr class="spacer">
+                <td height="30px"></td>
+              </tr>
+              <tr>
+                <td align="left" valign="top" style="border-collapse: collapse;">
+                  <img src="<%= cachify('/pages/i/persona-logo-wordmark.png') %>" alt="Mozilla Persona" />
+                </td>
+              </tr>
+              <tr class="spacer">
+                <td height="30px"></td>
+              </tr>
+            </table><!-- #header -->
+            <table id="content" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #fff;">
+              <tr>
+                <td align="left" valign="top" class="email-content" style="border-collapse: collapse;">
+                    <p><%= gettext('Thank you for using Persona.') %></p>
+
+                  <p><a href="<%= link %>" style="color: #3b9bda; font-weight: bold;"><%= format(gettext('Click to confirm this email address and automatically sign in to %s'), [site]) %>.</a></p>
+
+                  <p><%= gettext('Note: If you are NOT trying to sign into this website, please ignore this email.') %></p>
+
+                  <p><%= gettext('Thank you,') %><br />
+                  <%= gettext('The Persona team') %></p>
+                </td>
+              </tr>
+            </table><!-- #content -->
+          </center>
+        </td>
+      </tr>
+    </table><!-- #container table -->
+  </body>
+</html>
