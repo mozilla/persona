@@ -149,6 +149,10 @@ BrowserID.signIn = (function() {
       self.bind("#email", "change", onEmailChange);
       self.bind("#email", "keyup", onEmailChange);
 
+      // a redirect to the signup page using the link needs to clear the stored
+      // email address or else the user may be redirected here.
+      self.bind(".redirect", "click", pageHelpers.clearStoredEmail);
+
       sc.start.call(self, options);
 
       // If there is an email already set up in pageHelpers.setupEmail, see if

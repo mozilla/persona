@@ -1,5 +1,5 @@
 /*jshint browser: true, forin: true, laxbreak: true */
-/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true */
+/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true, strictEqual */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,22 +11,38 @@
       network = bid.Network,
       xhr = bid.Mocks.xhr,
       WinChanMock = bid.Mocks.WinChan,
+      WindowMock = bid.Mocks.WindowMock,
       testHelpers = bid.TestHelpers,
+      testDocumentRedirected = testHelpers.testDocumentRedirected,
+      testDocumentNotRedirected = testHelpers.testDocumentNotRedirected,
+      testHasClass = testHelpers.testHasClass,
+      pageHelpers = bid.PageHelpers,
       provisioning = bid.Mocks.Provisioning,
       winchan,
+      docMock,
       controller;
+
+  function createController(options) {
+    winchan = new WinChanMock();
+    docMock = new WindowMock().document;
+
+    options = options || {};
+    _.extend(options, {
+      document: docMock,
+      winchan: winchan
+    });
+
+    controller = bid.signUp.create();
+    controller.start(options);
+  }
 
   module("pages/js/signup", {
     setup: function() {
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/signup", {});
       $(".emailsent").hide();
-      $(".notification").hide()
-      winchan = new WinChanMock();
-      controller = bid.signUp.create();
-      controller.start({
-        winchan: winchan
-      });
+      $(".notification").hide();
+      createController();
     },
     teardown: function() {
       testHelpers.teardown();
@@ -45,11 +61,59 @@
     });
   }
 
+  asyncTest("start with no email stored - nothing fancy", function() {
+    createController({
+      ready: function() {
+        testDocumentNotRedirected(docMock, "user not signed in");
+        start();
+      }
+    });
+  });
+
+  asyncTest("start with unknown secondary email stored - show password fields", function() {
+    xhr.useResult("unknown_secondary");
+    pageHelpers.setStoredEmail("unregistered@testuser.com");
+    createController({
+      ready: function() {
+        start();
+        testHasClass("body", "enter_password", "enter_password class added to body");
+        testDocumentNotRedirected(docMock);
+      }
+    });
+  });
+
+  asyncTest("start with known secondary email stored - redirect to /signin", function() {
+    xhr.useResult("known_secondary");
+    pageHelpers.setStoredEmail("registered@testuser.com");
+    createController({
+      ready: function() {
+        testDocumentRedirected(docMock, "/signin", "user sent to /signin page");
+        start();
+      }
+    });
+  });
+
+  /*
+  asyncTest("start with known primary email stored - show verify primary", function() {
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+    pageHelpers.setStoredEmail("registered@testuser.com");
+
+    createController({
+      ready: function() {
+        testHasClass("body", "verify_primary", "verify_primary class added to body");
+
+        testDocumentNotRedirected(docMock);
+        start();
+      }
+    });
+  });
+*/
   asyncTest("signup with valid unregistered secondary email - show password", function() {
     $("#email").val("unregistered@testuser.com");
 
     controller.submit(function() {
-      equal($("body").hasClass("enter_password"), true, "new email, password section shown");
+      testHasClass("body", "enter_password", "new email, password section shown");
 
       start();
     });
@@ -60,7 +124,7 @@
     $("#email").val(" unregistered@testuser.com ");
 
     controller.submit(function() {
-      equal($("body").hasClass("enter_password"), true, "new email, password section shown");
+      testHasClass("body", "enter_password", "new email, password section shown");
       start();
     });
   });
@@ -146,6 +210,7 @@
 
   asyncTest("signup with primary email address, user must verify with primary", function() {
     xhr.useResult("primary");
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
     $("#email").val("unregistered@testuser.com");
 
     controller.submit(function(status) {

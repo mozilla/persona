@@ -15,10 +15,13 @@ BrowserID.signUp = (function() {
       validation = bid.Validation,
       errors = bid.Errors,
       tooltip = BrowserID.Tooltip,
+      complete = helpers.complete,
       ANIMATION_SPEED = 250,
       storedEmail = pageHelpers,
       winchan = window.WinChan,
+      doc = document,
       primaryUserInfo,
+      lastEmail,
       sc;
 
     function showNotice(selector) {
@@ -28,7 +31,7 @@ BrowserID.signUp = (function() {
     function authWithPrimary(oncomplete) {
       pageHelpers.openPrimaryAuth(winchan, primaryUserInfo.email, primaryUserInfo.auth, primaryAuthComplete);
 
-      oncomplete && oncomplete();
+      complete(oncomplete);
     }
 
     function primaryAuthComplete(error, result, oncomplete) {
@@ -42,19 +45,15 @@ BrowserID.signUp = (function() {
     }
 
     function createPrimaryUser(info, oncomplete) {
-      function complete(status) {
-        oncomplete && oncomplete(status);
-      }
-
       user.createPrimaryUser(info, function onComplete(status, info) {
         switch(status) {
           case "primary.verified":
-            pageHelpers.replaceFormWithNotice("#congrats", complete.bind(null, true));
+            pageHelpers.replaceFormWithNotice("#congrats", complete.curry(oncomplete, true));
             break;
           case "primary.verify":
             primaryUserInfo = info;
             dom.setInner("#primary_email", info.email);
-            pageHelpers.replaceInputsWithNotice("#primary_verify", complete.bind(null, false));
+            pageHelpers.replaceInputsWithNotice("#primary_verify", complete.curry(oncomplete, false));
             break;
           case "primary.could_not_add":
             // XXX Can this happen?
@@ -66,14 +65,17 @@ BrowserID.signUp = (function() {
     }
 
     function enterPasswordState(info) {
+      /*jshint validthis: true*/
       var self=this;
       self.emailToStage = info.email;
       self.submit = passwordSubmit;
 
       dom.addClass("body", "enter_password");
+      dom.focus("#password");
     }
 
     function passwordSubmit(oncomplete) {
+      /*jshint validthis: true*/
       var pass = dom.getInner("#password"),
           vpass = dom.getInner("#vpassword"),
           valid = validation.passwordAndValidationPassword(pass, vpass);
@@ -85,44 +87,42 @@ BrowserID.signUp = (function() {
           }
           else {
             tooltip.showTooltip("#could_not_add");
-            oncomplete && oncomplete(false);
+            complete(oncomplete, false);
           }
         }, pageHelpers.getFailure(errors.createUser, oncomplete));
       }
       else {
-        oncomplete && oncomplete(false);
+        complete(oncomplete, false);
       }
     }
 
     function emailSubmit(oncomplete) {
+      /*jshint validthis: true*/
       var email = helpers.getAndValidateEmail("#email"),
           self = this;
 
       if (email) {
         dom.setAttr('#email', 'disabled', 'disabled');
-        user.isEmailRegistered(email, function(isRegistered) {
-          if(isRegistered) {
-            dom.removeAttr('#email', 'disabled');
-            $('#registeredEmail').html(email);
-            showNotice(".alreadyRegistered");
-            oncomplete && oncomplete(false);
+        user.addressInfo(email, function(info) {
+          dom.removeAttr('#email', 'disabled');
+
+          var known = info.known;
+
+          if(info.type === "secondary" && known) {
+            doc.location = "/signin";
+            complete(oncomplete, false);
           }
-          else {
-            user.addressInfo(email, function(info) {
-              dom.removeAttr('#email', 'disabled');
-              if(info.type === "primary") {
-                createPrimaryUser.call(self, info, oncomplete);
-              }
-              else {
-                enterPasswordState.call(self, info);
-                oncomplete && oncomplete(!isRegistered);
-              }
-            }, pageHelpers.getFailure(errors.addressInfo, oncomplete));
+          else if(info.type === "secondary" && !known) {
+            enterPasswordState.call(self, info);
+            complete(oncomplete, !known);
           }
-        }, pageHelpers.getFailure(errors.isEmailRegistered, oncomplete));
+          else if(info.type === "primary") {
+            createPrimaryUser.call(self, info, oncomplete);
+          }
+        }, pageHelpers.getFailure(errors.addressInfo, oncomplete));
       }
       else {
-        oncomplete && oncomplete(false);
+        complete(oncomplete, false);
       }
     }
 
@@ -130,8 +130,16 @@ BrowserID.signUp = (function() {
       pageHelpers.cancelEmailSent(oncomplete);
     }
 
-    function onEmailKeyUp(event) {
-      if (event.which !== 13) $(".notification").fadeOut(ANIMATION_SPEED);
+    function onEmailChange(event) {
+      /*jshint validthis: true*/
+
+      // this is basically a state reset.
+      var email = dom.getInner("#email");
+      if(email !== lastEmail) {
+        dom.removeClass("body", "enter_password");
+        this.submit = emailSubmit;
+        lastEmail = email;
+      }
     }
 
     var Module = bid.Modules.PageModule.extend({
@@ -139,19 +147,33 @@ BrowserID.signUp = (function() {
         var self=this;
         options = options || {};
 
-        if (options.winchan) {
-          winchan = options.winchan;
-        }
+        if (options.winchan) winchan = options.winchan;
+        if (options.document) doc = options.document;
 
         dom.focus("form input[autofocus]");
 
         pageHelpers.setupEmail();
 
-        self.bind("#email", "keyup", onEmailKeyUp);
+        self.bind("#email", "keyup", onEmailChange);
+        self.bind("#email", "change", onEmailChange);
         self.click("#back", back);
         self.click("#authWithPrimary", authWithPrimary);
 
+        // a redirect to the signin page using the link needs to clear
+        // the stored email address or else the user may be redirected here.
+        self.bind(".redirect", "click", pageHelpers.clearStoredEmail);
+
         sc.start.call(self, options);
+
+        // If there is an email already set up in pageHelpers.setupEmail,
+        // see if the email address is a primary, secondary, known or
+        // unknown.  Redirect if needed.
+        if (dom.getInner("#email")) {
+          self.submit(options.ready);
+        }
+        else {
+          complete(options.ready);
+        }
       },
 
       submit: emailSubmit,
