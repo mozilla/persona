@@ -19,7 +19,20 @@ config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
 metrics = require('../lib/metrics.js'),
 logger = require('../lib/logging.js').logger,
-shutdown = require('../lib/shutdown');
+shutdown = require('../lib/shutdown'),
+cachify = require('connect-cachify'),
+assets = require('../lib/static_resources').all;
+
+// dbwriter needs cachify to properly render emails with cachified URLs,
+// but it serves no cachified content, so it's not necc to register it as
+// a handler of any sort.
+cachify.setup(
+  assets(config.get('supported_languages')),
+  {
+    prefix: config.get('cachify_prefix'),
+    production: config.get('use_minified_resources'),
+    root: path.join(__dirname, "..", "resources", "static")
+  });
 
 var app = undefined;
 
