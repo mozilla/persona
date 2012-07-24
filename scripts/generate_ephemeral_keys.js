@@ -37,7 +37,7 @@ console.log('*** Generating ephemeral keys used for testing ***');
 
 exec(GENERATE_KEYPAIR, '-k 256 -a rsa', function(stdout) {
   if (stdout) console.log(stdout);
-  fs.mkdirSync(VAR);
+  if (!existsSync(VAR)) fs.mkdirSync(VAR);
   exec(CERTIFY, '-s key.secretkey -p key.publickey', function(cert) {
     fs.writeFileSync(CERT, cert);
     fs.unlinkSync('key.publickey');
