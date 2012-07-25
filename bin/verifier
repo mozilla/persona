@@ -81,14 +81,27 @@ function doVerification(req, resp, next) {
   if (!(assertion && audience)) {
     // why couldn't we extract these guys?  Is it because the request parameters weren't encoded as we expect? GH-643
     const want_ct = [ 'application/x-www-form-urlencoded', 'application/json' ];
+    var reason;
     try {
       var ct = req.headers['content-type'];
       if (ct.indexOf(';') != -1) ct = ct.substr(0, ct.indexOf(';'));
       if (want_ct.indexOf(ct) == -1) throw "wrong content type";
     } catch (e) {
-      return resp.json({ status: "failure", reason: "Content-Type expected to be one of: " + want_ct.join(", ") }, 415);
+      reason = "Content-Type expected to be one of: " + want_ct.join(", ");
+      metrics.report('verify', {
+        result: 'failure',
+        reason: reason,
+        rp: audience
+      });
+      return resp.json({ status: "failure", reason: reason}, 415);
     }
-    return resp.json({ status: "failure", reason: "need assertion and audience"}, 400);
+    reason = "need assertion and audience";
+    metrics.report('verify', {
+      result: 'failure',
+      reason: reason,
+      rp: audience
+    });
+    return resp.json({ status: "failure", reason: reason}, 400);
   }
 
   var startTime = new Date();
