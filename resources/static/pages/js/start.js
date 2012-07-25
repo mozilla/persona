@@ -138,10 +138,6 @@ $(function() {
       var module = bid.signIn.create();
       module.start({});
     }
-    else if (path === "/signup") {
-      var module = bid.signUp.create();
-      module.start({});
-    }
     else if (path === "/forgot") {
       bid.forgot();
     }

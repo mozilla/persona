@@ -24,7 +24,13 @@
 
   function createController(options) {
     winchan = new WinChanMock();
-    docMock = new WindowMock().document;
+
+    var winMock = new WindowMock();
+    docMock = winMock.document;
+
+    pageHelpers.init({
+      win: winMock
+    });
 
     options = options || {};
     _.extend(options, {
@@ -44,13 +50,22 @@
     },
     teardown: function() {
       testHelpers.teardown();
+      pageHelpers.reset();
       if(controller) controller.destroy();
     }
   });
 
   function testUserNotSignedIn(extraTests) {
-    controller.passwordSubmit(function() {
+    controller.signInSubmit(function() {
       testDocumentNotRedirected(docMock, "user not signed in");
+      if (extraTests) extraTests();
+      start();
+    });
+  }
+
+  function testUserNotSignedUp(extraTests) {
+    controller.signUpSubmit(function() {
+      testDocumentNotRedirected(docMock, "user not signed up");
       if (extraTests) extraTests();
       start();
     });
@@ -65,12 +80,13 @@
     });
   });
 
-  asyncTest("start with unknown secondary email stored - redirect to /signup", function() {
+  asyncTest("start with unknown secondary email stored - show double password", function() {
     xhr.useResult("unknown_secondary");
     pageHelpers.setStoredEmail("unregistered@testuser.com");
     createController({
       ready: function() {
-        testDocumentRedirected(docMock, "/signup", "user sent to /signup page");
+        testHasClass("body", "unknown_secondary", "unknown_secondary class added to body");
+        testDocumentNotRedirected(docMock);
         start();
       }
     });
@@ -121,12 +137,13 @@
     });
   });
 
-  asyncTest("unknown_secondary: emailSubmit - redirect to /signup", function() {
+  asyncTest("unknown_secondary: emailSubmit - unknown_secondary added to body", function() {
     xhr.useResult("unknown_secondary");
     $("#email").val("unregistered@testuser.com");
 
     controller.emailSubmit(function() {
-      testDocumentRedirected(docMock, "/signup", "user redirected to /signup");
+      testHasClass("body", "unknown_secondary", "unknown_secondary class added to body");
+      equal(controller.submit, controller.signUpSubmit, "submit has changed to signUpSubmit");
       start();
     });
   });
@@ -137,7 +154,7 @@
 
     controller.emailSubmit(function() {
       testHasClass("body", "known_secondary", "known_secondary class added to body");
-      equal(controller.submit, controller.passwordSubmit, "submit has changed to passwordSubmit");
+      equal(controller.submit, controller.signInSubmit, "submit has changed to signInSubmit");
       start();
     });
   });
@@ -168,34 +185,34 @@
     });
   });
 
-  asyncTest("passwordSubmit with valid email and password", function() {
+  asyncTest("signInSubmit with valid email and password", function() {
     $("#email").val("registered@testuser.com");
     $("#password").val("password");
 
-    controller.passwordSubmit(function() {
+    controller.signInSubmit(function() {
       equal(docMock.location, "/", "user signed in, page redirected");
       start();
     });
   });
 
-  asyncTest("passwordSubmit with valid email with leading/trailing whitespace and password", function() {
+  asyncTest("signInSubmit with valid email with leading/trailing whitespace and password", function() {
     $("#email").val("  registered@testuser.com  ");
     $("#password").val("password");
 
-    controller.passwordSubmit(function() {
+    controller.signInSubmit(function() {
       equal(docMock.location, "/", "user signed in, page redirected");
       start();
     });
   });
 
-  asyncTest("passwordSubmit with missing email", function() {
+  asyncTest("signInSubmit with missing email", function() {
     $("#email").val("");
     $("#password").val("password");
 
     testUserNotSignedIn();
   });
 
-  asyncTest("passwordSubmit with missing password", function() {
+  asyncTest("signInSubmit with missing password", function() {
     $("#email").val("registered@testuser.com");
     $("#password").val("");
 
@@ -203,7 +220,7 @@
   });
 
 
-  asyncTest("passwordSubmit with bad username/password", function() {
+  asyncTest("signInSubmit with bad username/password", function() {
     xhr.useResult("invalid");
     $("#email").val("registered@testuser.com");
     $("#password").val("password");
@@ -211,13 +228,104 @@
     testUserNotSignedIn();
   });
 
-  asyncTest("passwordSubmit with XHR error", function() {
+  asyncTest("signInSubmit with XHR error", function() {
     xhr.useResult("ajaxError");
     $("#email").val("registered@testuser.com");
     $("#password").val("password");
 
     testUserNotSignedIn(testHelpers.testErrorVisible);
   });
+
+
+  asyncTest("signUpSubmit with valid email and password", function() {
+    $("#email").val("registered@testuser.com");
+    $("#password, #vpassword").val("password");
+
+    controller.signUpSubmit(function(status) {
+      ok(status, "signUpSubmit success");
+      start();
+    });
+  });
+
+  asyncTest("signUpSubmit with valid email with leading/trailing whitespace and password", function() {
+    $("#email").val("  registered@testuser.com  ");
+    $("#password, #vpassword").val("password");
+
+    controller.signUpSubmit(function(status) {
+      ok(status, "signUpSubmit success");
+      start();
+    });
+  });
+
+  asyncTest("signUpSubmit with missing email", function() {
+    $("#email").val("");
+    $("#password, #vpassword").val("password");
+
+    testUserNotSignedUp();
+  });
+
+  asyncTest("signUpSubmit with missing password", function() {
+    $("#email").val("registered@testuser.com");
+    $("#password").val("");
+    $("#vpassword").val("password");
+
+    testUserNotSignedUp();
+  });
+
+  asyncTest("signUpSubmit with missing vpassword", function() {
+    $("#email").val("registered@testuser.com");
+    $("#password").val("password");
+    $("#vpassword").val("");
+
+    testUserNotSignedUp();
+  });
+
+  asyncTest("signUpSubmit with too short of a password", function() {
+    $("#email").val("registered@testuser.com");
+    var pass = testHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1);
+    $("#password").val(pass);
+    $("#vpassword").val(pass);
+
+    testUserNotSignedUp();
+  });
+
+  asyncTest("signUpSubmit with too long of a password", function() {
+    $("#email").val("registered@testuser.com");
+    var pass = testHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1);
+    $("#password").val(pass);
+    $("#vpassword").val(pass);
+
+    testUserNotSignedUp();
+  });
+
+  asyncTest("signUpSubmit with bad username/password", function() {
+    xhr.useResult("invalid");
+    $("#email").val("registered@testuser.com");
+    $("#password, #vpassword").val("password");
+
+    testUserNotSignedUp();
+  });
+
+  asyncTest("signUpSubmit with throttling", function() {
+    $("#email").val("unregistered@testuser.com");
+    $("#password, #vpassword").val("password");
+
+    xhr.useResult("throttle");
+    controller.signUpSubmit(function(userStaged) {
+      equal(userStaged, false, "email throttling took effect, user not staged");
+      start();
+    });
+  });
+
+  asyncTest("signUpSubmit with XHR error", function() {
+    xhr.useResult("ajaxError");
+    $("#email").val("registered@testuser.com");
+    $("#password,#vpassword").val("password");
+
+    testUserNotSignedUp(testHelpers.testErrorVisible);
+  });
+
+
 
   asyncTest("authWithPrimary opens winchan", function() {
     xhr.useResult("primary");

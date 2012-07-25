@@ -264,7 +264,11 @@ BrowserID.TestHelpers = (function() {
     },
 
     testVisible: function(selector, msg) {
-      ok($(selector).is(":visible"), msg || selector + " should be visible");
+      ok($(selector).is(":visible"), msg || selector + " is visible");
+    },
+
+    testNotVisible: function(selector, msg) {
+      equal($(selector).is(":visible"), false, msg || selector + " is not visible");
     },
 
     testHasClass: function(selector, className, msg) {

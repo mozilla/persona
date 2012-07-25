@@ -14,6 +14,7 @@ BrowserID.signIn = (function() {
       errors = bid.Errors,
       pageHelpers = bid.PageHelpers,
       tooltip = bid.Tooltip,
+      validation = bid.Validation,
       doc = document,
       winchan = window.WinChan,
       complete = helpers.complete,
@@ -23,13 +24,17 @@ BrowserID.signIn = (function() {
       sc,
       lastEmail;
 
+  function userAuthenticated() {
+    pageHelpers.clearStoredEmail();
+    doc.location = "/";
+  }
+
   function provisionPrimaryUser(email, info, callback) {
     // primary user who is authenticated with the primary.
     user.provisionPrimaryUser(email, info, function(status, provInfo) {
       if (status === "primary.verified") {
         network.authenticateWithAssertion(email, provInfo.assertion, function(status) {
-          doc.location = "/";
-
+          userAuthenticated();
           complete(callback);
         }, pageHelpers.getFailure(errors.authenticateWithAssertion, callback));
       }
@@ -45,21 +50,29 @@ BrowserID.signIn = (function() {
     var self=this,
         email = helpers.getAndValidateEmail("#email");
 
-    if(email) {
+    if (email) {
       dom.setAttr('#email', 'disabled', 'disabled');
       user.addressInfo(email, function(info) {
         dom.removeAttr('#email', 'disabled');
         addressInfo = info;
 
-        if(info.type === "secondary") {
-          if(info.known) {
-            dom.addClass("body", "known_secondary");
-            dom.focus("#password");
-            self.submit = passwordSubmit;
+        if (info.type === "secondary") {
+          // A secondary user has to either sign in or sign up depending on the
+          // status of their email address.
+          var className = "unknown_secondary",
+              submit = signUpSubmit,
+              title = gettext("Sign Up");
+
+          if (info.known) {
+            className = "known_secondary";
+            submit = signInSubmit;
+            title = gettext("Sign In");
           }
-          else {
-            doc.location = "/signup";
-          }
+
+          dom.addClass("body", className);
+          dom.focus("#password");
+          dom.setInner("#title", title);
+          self.submit = submit;
 
           complete(oncomplete);
         }
@@ -69,6 +82,8 @@ BrowserID.signIn = (function() {
           provisionPrimaryUser(email, info, oncomplete);
         }
         else {
+          // primary user who is not authenticated with primary, must auth with
+          // primary and then authenticate them to BrowserID.
           dom.addClass("body", "verify_primary");
           dom.setInner("#primary_email", email);
           self.submit = authWithPrimary;
@@ -85,15 +100,14 @@ BrowserID.signIn = (function() {
     }
   }
 
-  function passwordSubmit(oncomplete) {
+  function signInSubmit(oncomplete) {
     var email = helpers.getAndValidateEmail("#email"),
         password = helpers.getAndValidatePassword("#password");
 
     if (email && password) {
       user.authenticate(email, password, function onSuccess(authenticated) {
         if (authenticated) {
-          pageHelpers.clearStoredEmail();
-          doc.location = "/";
+          userAuthenticated();
         }
         else {
           // bad authentication
@@ -106,6 +120,33 @@ BrowserID.signIn = (function() {
       complete(oncomplete);
     }
   }
+
+  function signUpSubmit(oncomplete) {
+    /*jshint validthis: true*/
+    var email = dom.getInner("#email"),
+        pass = dom.getInner("#password"),
+        vpass = dom.getInner("#vpassword"),
+        valid = validation.passwordAndValidationPassword(pass, vpass);
+
+    if(email && valid) {
+      user.createSecondaryUser(email, pass, function(status) {
+        if(status.success) {
+          // clearing the stored email from localStorage is taken care
+          // of in emailSent.
+          pageHelpers.emailSent("waitForUserValidation", email,
+            complete.curry(oncomplete, true));
+        }
+        else {
+          tooltip.showTooltip("#could_not_add");
+          complete(oncomplete, false);
+        }
+      }, pageHelpers.getFailure(errors.createUser, oncomplete));
+    }
+    else {
+      complete(oncomplete, false);
+    }
+  }
+
 
   function authWithPrimary(oncomplete) {
     pageHelpers.openPrimaryAuth(winchan, verifyEmail, verifyURL, primaryAuthComplete);
@@ -170,7 +211,8 @@ BrowserID.signIn = (function() {
     // BEGIN TESTING API
     ,
     emailSubmit: emailSubmit,
-    passwordSubmit: passwordSubmit,
+    signInSubmit: signInSubmit,
+    signUpSubmit: signUpSubmit,
     authWithPrimary: authWithPrimary,
     primaryAuthComplete: primaryAuthComplete
     // END TESTING API
