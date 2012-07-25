@@ -531,6 +531,47 @@
     });
   });
 
+  asyncTest("get with absolute path that is too long - not allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        // create a logo path that is one character too long
+        var siteLogo = '/' + testHelpers.generateString(bid.PATH_MAX_LENGTH);
+        var retval = controller.get(HTTPS_TEST_DOMAIN, {
+          siteLogo: siteLogo
+        });
+
+        equal(retval, "path portion of a url must be < " + bid.PATH_MAX_LENGTH + " characters");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with absolute path causing too long of a URL - not allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var shortHTTPSDomain = "https://test.com";
+        // create a URL that is one character too long
+        var siteLogo = '/' + testHelpers.generateString(bid.URL_MAX_LENGTH - shortHTTPSDomain.length);
+        var retval = controller.get(shortHTTPSDomain, {
+          siteLogo: siteLogo
+        });
+
+        equal(retval, "urls must be < " + bid.URL_MAX_LENGTH + " characters");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
   asyncTest("get with absolute path and https RP - allowed URL but is properly escaped", function() {
     createController({
       ready: function() {

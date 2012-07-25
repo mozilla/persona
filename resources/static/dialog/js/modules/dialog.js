@@ -86,7 +86,22 @@ BrowserID.Modules.Dialog = (function() {
     else if (/^\//.test(url)) u = URLParse(origin + url);
     else throw "relative urls not allowed: (" + url + ")";
     // encodeURI limits our return value to [a-z0-9:/?%], excluding <script>
-    return encodeURI(u.validate().normalize().toString());
+    var encodedURI = encodeURI(u.validate().normalize().toString());
+
+    // All browsers have a max length of URI that they can handle. IE8 has the
+    // shortest total length at 2083 bytes.  IE8 can handle a path length of
+    // 2048 bytes. See http://support.microsoft.com/kb/q208427
+
+    // Check the total encoded URI length
+    if (encodedURI.length > bid.URL_MAX_LENGTH)
+      throw "urls must be < " + bid.URL_MAX_LENGTH + " characters";
+
+    // Check just the path portion.  encode the path to make sure the full
+    // length is checked.
+    if (encodeURI(u.path).length > bid.PATH_MAX_LENGTH)
+      throw "path portion of a url must be < " + bid.PATH_MAX_LENGTH + " characters";
+
+    return encodedURI;
   }
 
   function fixupAbsolutePath(origin_url, path) {
