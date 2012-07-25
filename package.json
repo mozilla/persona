@@ -45,7 +45,7 @@
     "scripts": {
         "postinstall": "node ./scripts/generate_ephemeral_keys.js",
         "test": "./scripts/test",
-        "start": "./scripts/run_locally.js"
+        "start": "node ./scripts/run_locally.js"
     },
     "engines": {
         "node": ">= 0.6.7"

@@ -78,8 +78,24 @@ if (config.get('env').substr(0,5) === 'test_') {
   }
 }
 
+// Windows can't use signals, so lets figure out if we should use them
+// To force signals, set the environment variable SUPPORTS_SIGNALS=true.
+// Otherwise, they will be feature-detected.
+var SIGNALS_PROP = 'SUPPORTS_SIGNALS';
+if (!(SIGNALS_PROP in process.env)) {
+  try {
+    function signals_test() {}
+    process.on('SIGINT', signals_test);
+    process.removeListener('SIGINT', signals_test);
+    process.env[SIGNALS_PROP] = true;
+  } catch (noSignals) {
+    process.env[SIGNALS_PROP] = false;
+  }
+}
+
 function runDaemon(daemon, cb) {
   Object.keys(daemonsToRun[daemon]).forEach(function(ek) {
+    if (ek === 'path') return; // this blows away the Window PATH
     process.env[ek] = daemonsToRun[daemon][ek];
   });
   var pathToScript = daemonsToRun[daemon].path || path.join(__dirname, "..", "bin", daemon);
@@ -104,6 +120,7 @@ function runDaemon(daemon, cb) {
 
   console.log("spawned", daemon, "("+pathToScript+") with pid", p.pid);
   Object.keys(daemonsToRun[daemon]).forEach(function(ek) {
+    if (ek === 'path') return; // don't kill the Windows PATH
     delete process.env[ek];
   });
 
@@ -133,7 +150,9 @@ daemonNames.forEach(function(dn) {
   });
 });
 
-process.on('SIGINT', function () {
-  console.log('\nSIGINT recieved! trying to shut down gracefully...');
-  Object.keys(daemons).forEach(function (k) { daemons[k].kill('SIGINT'); });
-});
+if (process.env[SIGNALS_PROP]) {
+  process.on('SIGINT', function () {
+    console.log('\nSIGINT recieved! trying to shut down gracefully...');
+    Object.keys(daemons).forEach(function (k) { daemons[k].kill('SIGINT'); });
+  });
+}
