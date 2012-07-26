@@ -8,16 +8,18 @@ const assert = require('assert'),
     vows = require('vows'),
     util = require('util'),
     dgram = require('dgram'),
+    http = require('http'),
+    cef = require('cef'),
     cef_logger = require('../lib/cef_logger');
 
-var mock_http_req = {
+var mock_http_req = cef.extensionsFromHTTPRequest({
   url: '/pie',
   method: 'GET',
   headers: {
     'user-agent': 'Tiney fork 3.14',
     'host': 'pie.io'
   }
-};
+});
 
 function produces(signature, message, expected_string, extensions) {
   // Mock udp syslog service
@@ -70,17 +72,16 @@ function produces(signature, message, expected_string, extensions) {
 var suite = vows.describe("CEF Logging")
 
 .addBatch({
-
   // First test with nothing else mixed into the http env to prove that
   // bare http env comes in as an object.
   "info": produces("GET_PIE", "I like pie",
                   "CEF:0|Mozilla|pie-taster|42|GET_PIE|I like pie|4",
-                  cef_logger.mergeWithHttpEnv(mock_http_req)),
+                  mock_http_req),
 
   // Blending other params in with http env ...
   "warn": produces("PIE", "Supplies of pies in demise",
                   "CEF:0|Mozilla|pie-taster|42|PIE|Supplies of pies in demise|6",
-                  cef_logger.mergeWithHttpEnv(mock_http_req, {msg: "37 remaining"})),
+                  mock_http_req, {msg: "37 remaining"}),
 
   "alert": produces("PIE", "MOAR PIES!!!",
                   "CEF:0|Mozilla|pie-taster|42|PIE|MOAR PIES!!!|9",
@@ -89,7 +90,46 @@ var suite = vows.describe("CEF Logging")
   "emergency": produces("PIE_FAILURE", "Died of starvation",
                   "CEF:0|Mozilla|pie-taster|42|PIE_FAILURE|Died of starvation|10",
                   {end: Date.now()}),
+})
 
+.addBatch({
+  "HTTP request and other parameters": {
+    topic: function() {
+      var cb = this.callback;
+      var logger = cef_logger.getInstance();
+      var server = http.createServer(function(req, res) {
+        // combine http request and a couple other objects
+        cb(null, logger.info('PIE', 'I like pie',
+                            {msg: "I like pie"},
+                             req,
+                            {end: Date.now()}));
+        server.removeAllListeners();
+        server.close();
+      });
+      server.listen(0);
+      server.on('listening', function() {
+        var req = http.request({
+          port: server.address().port,
+          method: "GET",
+          path: "/pie",
+        });
+        req.end();
+      });
+    },
+
+    "are properly merged": function(err, cef_string) {
+      [/msg=I like pie/,
+       /request=\/pie/,
+       /requestMethod=GET/,
+       /requestContext=\S+/,
+       /dhost=\S+/,
+       /shost=\S+/,
+       /end=\d+/
+      ].forEach(function(extension) {
+        assert(extension.test(cef_string));
+      });
+    }
+  }
 });
 
 if (process.argv[1] === __filename) {
