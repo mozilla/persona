@@ -163,7 +163,10 @@ BrowserID.User = (function() {
       if (stagedEmail && stagedPassword) {
         // The user has set their email and password as part of the
         // staging flow. Log them in now just to make sure their
-        // authentication creds are up to date.
+        // authentication creds are up to date. This fixes a problem where the
+        // backend incorrectly sends a mustAuth status to users who have just
+        // completed verification. See issue #1682
+        // https://github.com/mozilla/browserid/issues/1682
         User.authenticate(stagedEmail, stagedPassword, function(authenticated) {
           completionStatus = authenticated ? "complete" : "mustAuth";
           completeVerification(completionStatus);
