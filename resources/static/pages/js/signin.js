@@ -84,8 +84,8 @@ BrowserID.signIn = (function() {
         else {
           // primary user who is not authenticated with primary, must auth with
           // primary and then authenticate them to BrowserID.
-          dom.addClass("body", "verify_primary");
-          dom.slideDown("#verify_primary");
+          dom.addClass("body", "primary");
+          dom.slideDown(".verify_primary");
           dom.setInner("#primary_email", email);
           self.submit = authWithPrimary;
 

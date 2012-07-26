@@ -449,10 +449,6 @@ button.delete:active {
 }
 
 
-#signUpForm ul {
-  margin: 0 0 20px;
-}
-
 #signUpForm li {
   margin: 10px 0 0;
   padding: 0;
@@ -471,6 +467,10 @@ button.delete:active {
 }
 
 label.vpassword_entry {
+  margin-top: 15px;
+}
+
+.submit {
   margin-top: 15px;
 }
 
