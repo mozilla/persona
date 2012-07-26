@@ -1,4 +1,4 @@
-/*globals BrowserID:true, $:true*/
+/*globals BrowserID:true, gettext:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -39,7 +39,7 @@ BrowserID.signIn = (function() {
         }, pageHelpers.getFailure(errors.authenticateWithAssertion, callback));
       }
       else {
-        $("#primary_no_login").fadeIn(250);
+        dom.fadeIn("#primary_no_login", 250);
         setTimeout(complete.curry(callback), 250);
       }
     }, pageHelpers.getFailure(errors.provisioningPrimary, callback));
@@ -59,20 +59,20 @@ BrowserID.signIn = (function() {
         if (info.type === "secondary") {
           // A secondary user has to either sign in or sign up depending on the
           // status of their email address.
-          var className = "unknown_secondary",
-              submit = signUpSubmit,
-              title = gettext("Sign Up");
+          var bodyClassName = "known_secondary",
+              showClassName = "password_entry",
+              submit = signInSubmit;
 
-          if (info.known) {
-            className = "known_secondary";
-            submit = signInSubmit;
-            title = gettext("Sign In");
+          if (!info.known) {
+            bodyClassName = "unknown_secondary";
+            showClassName = "vpassword_entry";
+            submit = signUpSubmit;
           }
 
-          dom.addClass("body", className);
-          dom.focus("#password");
-          dom.setInner("#title", title);
+          dom.addClass("body", bodyClassName);
+          dom.slideDown("." + showClassName);
           self.submit = submit;
+          dom.focus("#password");
 
           complete(oncomplete);
         }
@@ -85,6 +85,7 @@ BrowserID.signIn = (function() {
           // primary user who is not authenticated with primary, must auth with
           // primary and then authenticate them to BrowserID.
           dom.addClass("body", "verify_primary");
+          dom.slideDown("#verify_primary");
           dom.setInner("#primary_email", email);
           self.submit = authWithPrimary;
 
@@ -105,12 +106,11 @@ BrowserID.signIn = (function() {
         password = helpers.getAndValidatePassword("#password");
 
     if (email && password) {
-      user.authenticate(email, password, function onSuccess(authenticated) {
+      user.authenticate(email, password, function(authenticated) {
         if (authenticated) {
           userAuthenticated();
         }
         else {
-          // bad authentication
           tooltip.showTooltip("#cannot_authenticate");
         }
         complete(oncomplete);
@@ -169,9 +169,10 @@ BrowserID.signIn = (function() {
     // this is basically a state reset.
     var email = dom.getInner("#email");
     if(email !== lastEmail) {
-      dom.removeClass("body", "verify_primary");
+      dom.removeClass("body", "primary");
       dom.removeClass("body", "known_secondary");
       dom.removeClass("body", "unknown_secondary");
+      dom.slideUp(".password_entry, .vpassword_entry, .verify_primary");
       this.submit = emailSubmit;
       lastEmail = email;
     }
@@ -189,10 +190,6 @@ BrowserID.signIn = (function() {
       self.click("#authWithPrimary", authWithPrimary);
       self.bind("#email", "change", onEmailChange);
       self.bind("#email", "keyup", onEmailChange);
-
-      // a redirect to the signup page using the link needs to clear the stored
-      // email address or else the user may be redirected here.
-      self.bind(".redirect", "click", pageHelpers.clearStoredEmail);
 
       sc.start.call(self, options);
 

@@ -6,7 +6,7 @@
     <div id="vAlign">
         <!-- XXX this form submits to nowhere -->
         <form id="signUpForm" class="cf authform" novalidate>
-            <h1 id="title"><%- gettext('Sign In') %></h1>
+            <h1><%- gettext('Sign In') %></h1>
 
             <ul class="notifications">
                 <li class="notification emailsent">
@@ -43,7 +43,8 @@
 
                 <li class="password_entry vpassword_entry">
                     <a class="forgot right" href="/forgot"><%- gettext('forgot your password?') %></a>
-                    <label for="password"><%- gettext('Password') %></label>
+                    <label for="password" class="password_entry"><%- gettext('Password') %></label>
+                    <label for="password" class="vpassword_entry"><%- gettext('Your email address is new to us. Please create a password to use with Persona.') %></label>
                     <input id="password" placeholder="<%- gettext('password') %>" type="password" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="password">
@@ -61,7 +62,7 @@
                 </li>
 
                 <li class="vpassword_entry">
-                    <label for="vpassword"><%- gettext('Verify Password') %></label>
+                    <label for="vpassword" class="hidden"><%- gettext('Verify Password') %></label>
                     <input id="vpassword" placeholder="<%- gettext('verify password') %>" type="password" maxlength="80">
 
                     <div id="password_required" class="tooltip" for="vpassword">
@@ -84,7 +85,9 @@
             </div>
 
             <div class="submit cf forminputs vpassword_entry">
-                <button id="verifyEmail"><%- gettext('Verify Email') %></button>
+                <p class="cf">
+                  <button id="verifyEmail"><%- gettext('Verify Email') %></button>
+                </p>
 
                 <p class="tospp cf">
                    <%- format(
@@ -97,18 +100,16 @@
 
             </div>
 
-            <ul class="notifications">
-                <li class="notification" id="verify_primary">
-                  <p>
-                    <%- format(gettext('To verify that you own <strong %(emailId)>this address</strong>, you must sign in with your provider. A new window will be opened.'),
-                               { emailId: 'id="primary_email"' }) %>
-                  </p>
+            <div class="submit cf forminputs verify_primary">
+              <p>
+                <%- format(gettext('To verify that you own <strong %(emailId)>this address</strong>, you must sign in with your provider. A new window will be opened.'),
+                           { emailId: 'id="primary_email"' }) %>
+              </p>
 
-                  <p class="submit">
-                    <button id="authWithPrimary"><%- gettext('Verify') %></button>
-                  </p>
-                </li>
-            </ul>
+              <p class="submit">
+                <button id="authWithPrimary"><%- gettext('Verify') %></button>
+              </p>
+            </div>
         </form>
     </div>
 </div>
