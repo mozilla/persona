@@ -466,6 +466,10 @@ button.delete:active {
   display: none;
 }
 
+.enter_password .password_entry {
+  display: block;
+}
+
 label.vpassword_entry {
   margin-top: 15px;
 }
