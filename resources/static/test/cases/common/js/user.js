@@ -68,6 +68,19 @@
     });
   }
 
+  function testAddressVerificationPoll(authLevel, xhrResultName, pollFuncName, expectedResult) {
+    storage.setReturnTo(testOrigin);
+    xhr.useResult(xhrResultName);
+
+    xhr.setContextInfo("auth_level", authLevel);
+    lib[pollFuncName]("registered@testuser.com", function(status) {
+      ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
+      equal(status, expectedResult, expectedResult + " response expected");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  }
+
+
   module("common/js/user", {
     setup: function() {
       testHelpers.setup();
@@ -320,35 +333,20 @@
     );
   });
 
-  asyncTest("waitForUserValidation with complete from backend, user not authed - `mustAuth` response", function() {
-    storage.setReturnTo(testOrigin);
+  asyncTest("waitForUserValidation with no authentication & complete backend response - `mustAuth` response", function() {
+    testAddressVerificationPoll(undefined, "complete", "waitForUserValidation", "mustAuth");
+  });
 
-    xhr.setContextInfo("auth_level", false);
-    xhr.useResult("complete");
+  asyncTest("waitForUserValidation with assertion authentication & complete backend response - `mustAuth` response", function() {
+    testAddressVerificationPoll("assertion", "complete", "waitForUserValidation", "mustAuth");
+  });
 
-    lib.waitForUserValidation("registered@testuser.com", function(status) {
-      equal(status, "mustAuth", "mustAuth response expected");
-
-      testHelpers.testEmailMarkedVerified("registered@testuser.com");
-
-      ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
+  asyncTest("waitForUserValidation with password authentication - `complete` response", function() {
+    testAddressVerificationPoll("password", "complete", "waitForUserValidation", "complete");
   });
 
   asyncTest("waitForUserValidation with `mustAuth` response", function() {
-    storage.setReturnTo(testOrigin);
-
-    xhr.useResult("mustAuth");
-
-    lib.waitForUserValidation("registered@testuser.com", function(status) {
-      equal(status, "mustAuth", "mustAuth response expected");
-
-      testHelpers.testEmailMarkedVerified("registered@testuser.com");
-
-      ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
+    testAddressVerificationPoll(undefined, "mustAuth", "waitForUserValidation", "mustAuth");
   });
 
   asyncTest("waitForUserValidation with `noRegistration` response", function() {
@@ -687,10 +685,10 @@
 
   asyncTest("checkAuthentication with valid authentication", function() {
     storage.addSecondaryEmail(TEST_EMAIL);
-    xhr.setContextInfo("auth_level", "primary");
+    xhr.setContextInfo("auth_level", "assertion");
 
     lib.checkAuthentication(function(authenticated) {
-      equal(authenticated, "primary", "We are authenticated!");
+      equal(authenticated, "assertion", "We are authenticated!");
       testNotUndefined(storage.getEmail(TEST_EMAIL), "localStorage is not cleared");
       start();
     });
@@ -729,10 +727,10 @@
 
 
   asyncTest("checkAuthenticationAndSync with valid authentication", function() {
-    xhr.setContextInfo("auth_level", "primary");
+    xhr.setContextInfo("auth_level", "assertion");
 
     lib.checkAuthenticationAndSync(function(authenticated) {
-      equal(authenticated, "primary", "We are authenticated!");
+      equal(authenticated, "assertion", "We are authenticated!");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -762,7 +760,7 @@
 
 
   asyncTest("checkAuthenticationAndSync with XHR failure", function() {
-    xhr.setContextInfo("auth_level", "primary");
+    xhr.setContextInfo("auth_level", "assertion");
 
     failureCheck(lib.checkAuthenticationAndSync);
   });
@@ -850,42 +848,15 @@
 
 
  asyncTest("waitForEmailValidation with `complete` backend response, user authenticated to assertion level - expect 'mustAuth'", function() {
-    storage.setReturnTo(testOrigin);
-    xhr.setContextInfo("auth_level", "assertion");
-
-    xhr.useResult("complete");
-    lib.waitForEmailValidation("registered@testuser.com", function(status) {
-      ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
-      testHelpers.testEmailMarkedVerified("registered@testuser.com");
-      equal(status, "mustAuth", "mustAuth response expected");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
+    testAddressVerificationPoll("password", "complete", "waitForEmailValidation", "complete");
   });
 
-
- asyncTest("waitForEmailValidation with `complete` backend response, user authenticated to password level - expect 'complete'", function() {
-    storage.setReturnTo(testOrigin);
-    xhr.setContextInfo("auth_level", "password");
-
-    xhr.useResult("complete");
-    lib.waitForEmailValidation("registered@testuser.com", function(status) {
-      ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
-      testHelpers.testEmailMarkedVerified("registered@testuser.com");
-      equal(status, "complete", "complete response expected");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
+  asyncTest("waitForEmailValidation with assertion authentication, complete from backend - return mustAuth status", function() {
+    testAddressVerificationPoll("assertion", "complete", "waitForEmailValidation", "mustAuth");
   });
 
   asyncTest("waitForEmailValidation `mustAuth` response", function() {
-    storage.setReturnTo(testOrigin);
-    xhr.useResult("mustAuth");
-
-    lib.waitForEmailValidation("registered@testuser.com", function(status) {
-      ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
-      testHelpers.testEmailMarkedVerified("registered@testuser.com");
-      equal(status, "mustAuth", "mustAuth response expected");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
+    testAddressVerificationPoll("assertion", "mustAuth", "waitForEmailValidation", "mustAuth");
   });
 
   asyncTest("waitForEmailValidation with `noRegistration` response", function() {
@@ -1249,7 +1220,7 @@
   });
 
   asyncTest("logout with valid login with remember set to true", function() {
-    xhr.setContextInfo("auth_level", "primary");
+    xhr.setContextInfo("auth_level", "assertion");
     storage.site.set(testOrigin, "remember", true);
 
     lib.logout(function onComplete(success) {
