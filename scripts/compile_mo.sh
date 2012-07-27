@@ -5,7 +5,7 @@
 
 function usage() {
     echo "syntax:"
-    echo "compile.sh locale-dir/"
+    echo "compile_mo.sh locale-dir/"
     exit 1
 }
 
