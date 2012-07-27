@@ -89,7 +89,6 @@ if (!(SIGNALS_PROP in process.env)) {
     process.removeListener('SIGINT', signals_test);
     process.env[SIGNALS_PROP] = true;
   } catch (noSignals) {
-    process.env[SIGNALS_PROP] = false;
   }
 }
 
@@ -155,4 +154,5 @@ if (process.env[SIGNALS_PROP]) {
     console.log('\nSIGINT recieved! trying to shut down gracefully...');
     Object.keys(daemons).forEach(function (k) { daemons[k].kill('SIGINT'); });
   });
+  
 }
