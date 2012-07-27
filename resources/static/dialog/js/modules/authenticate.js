@@ -179,6 +179,7 @@ BrowserID.Modules.Authenticate = (function() {
         email: lastEmail
       });
 
+      currentHint = null;
       dom.hide(".returning,.start");
 
       // We have to show the TOS/PP agreements to *all* users here. Users who
