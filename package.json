@@ -20,7 +20,7 @@
         "mustache": "0.3.1-dev",
         "jwcrypto": "https://github.com/mozilla/jwcrypto/tarball/2012-07-new-data-formats",
         "mysql": "0.9.5",
-        "nodemailer": "0.1.24",
+        "nodemailer": "0.3.21",
         "mkdirp": "0.3.0",
         "optimist": "0.2.8",
         "postprocess": "0.2.4",
