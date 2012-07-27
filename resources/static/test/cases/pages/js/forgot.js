@@ -62,11 +62,11 @@
     });
   });
 
-  asyncTest("start with stored unknown secondary email - redirect to /signup", function() {
+  asyncTest("start with stored unknown secondary email - redirect to /signin", function() {
     pageHelpers.setStoredEmail("unregistered@testuser.com");
     createController({
       ready: function() {
-        equal(docMock.location.href, "/signup", "page redirected to signup if unknown secondary email stored");
+        equal(docMock.location.href, "/signin", "page redirected to signin if unknown secondary email stored");
         start();
       }
     });
