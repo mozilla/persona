@@ -130,50 +130,56 @@ $(function() {
     // instead just show the error message.
     if (!status) return;
 
-
-    if (!path || path === "/") {
-      bid.index();
-    }
-    else if (path === "/signin") {
-      var module = bid.signIn.create();
-      module.start({});
-    }
-    else if (path === "/forgot") {
-      var module = bid.forgot.create();
-      module.start({});
-    }
-    // START TRANSITION CODE
-    // add_email_address has been renamed to confirm. Once all outstanding
-    // emails are verified or expired, this can be removed. This change is
-    // scheduled to go into train-2012.07.20
-    else if (path === "/add_email_address") {
-      verifySecondaryAddress("verifyEmail");
-    }
-    // END TRANSITION CODE
-    else if (path === "/confirm") {
-      verifySecondaryAddress("verifyEmail");
-    }
-    else if (path === "/verify_email_address") {
-      verifySecondaryAddress("verifyUser");
-    }
-    else if (path === "/reset_password") {
-      verifySecondaryAddress("completePasswordReset");
-    }
-    else if (path === "/about") {
-      var module = bid.about.create();
-      module.start({});
-    }
-    else if (path === "/tos" || path === "/privacy") {
-      // do nothing.  This prevents "unknown path" from being displayed to the
-      // user.
-    }
-    else {
-      // Instead of throwing a hard error here, adding a message to the console
-      // to let developers know something is up.
-      helpers.log("unknown path");
-    }
-
     user.checkAuthentication(function(authenticated) {
+      if (!path || path === "/") {
+        bid.index();
+      }
+      else if (path === "/signin") {
+        if (authenticated) {
+          document.location = "/";
+          return;
+        }
+        var module = bid.signIn.create();
+        module.start({});
+      }
+      else if (path === "/forgot") {
+        if (authenticated) {
+          document.location = "/";
+          return;
+        }
+        bid.forgot();
+      }
+      // START TRANSITION CODE
+      // add_email_address has been renamed to confirm. Once all outstanding
+      // emails are verified or expired, this can be removed. This change is
+      // scheduled to go into train-2012.07.20
+      else if (path === "/add_email_address") {
+        verifySecondaryAddress("verifyEmail");
+      }
+      // END TRANSITION CODE
+      else if (path === "/confirm") {
+        verifySecondaryAddress("verifyEmail");
+      }
+      else if (path === "/verify_email_address") {
+        verifySecondaryAddress("verifyUser");
+      }
+      else if (path === "/reset_password") {
+        verifySecondaryAddress("completePasswordReset");
+      }
+      else if (path === "/about") {
+        var module = bid.about.create();
+        module.start({});
+      }
+      else if (path === "/tos" || path === "/privacy") {
+        // do nothing.  This prevents "unknown path" from being displayed to the
+        // user.
+      }
+      else {
+        // Instead of throwing a hard error here, adding a message to the console
+        // to let developers know something is up.
+        helpers.log("unknown path");
+      }
+
       if (authenticated) {
         displayAuthenticated();
       }
