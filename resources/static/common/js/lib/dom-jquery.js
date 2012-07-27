@@ -337,7 +337,7 @@ BrowserID.DOM = ( function() {
          * @param {number} [animationTime]
          */
         slideDown: function( elementToSlide, animationTime ) {
-          return jQuery( elementToSlide ).slideDown( animationTime || 250 );
+          return jQuery( elementToSlide ).slideDown( animationTime );
         },
 
         /**

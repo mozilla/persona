@@ -87,6 +87,7 @@
       ready: function() {
         testHasClass("body", "unknown_secondary", "unknown_secondary class added to body");
         testDocumentNotRedirected(docMock);
+        equal($("#title").html(), "Sign Up", "title correctly set");
         start();
       }
     });
@@ -99,6 +100,7 @@
       ready: function() {
         testHasClass("body", "known_secondary", "known_secondary class added to body");
         testDocumentNotRedirected(docMock);
+        equal($("#title").html(), "Sign In", "title correctly set");
 
         start();
       }
@@ -112,7 +114,7 @@
 
     createController({
       ready: function() {
-        testHasClass("body", "verify_primary", "verify_primary class added to body");
+        testHasClass("body", "primary", "primary class added to body");
 
         testDocumentNotRedirected(docMock);
         start();
@@ -179,7 +181,7 @@
     $("#email").val("registered@testuser.com");
 
     controller.emailSubmit(function() {
-      testHasClass("body", "verify_primary", "verify_primary class added to body");
+      testHasClass("body", "primary", "primary class added to body");
       equal(controller.submit, controller.authWithPrimary, "submit updated to authWithPrimary");
       start();
     });

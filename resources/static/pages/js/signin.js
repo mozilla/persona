@@ -61,16 +61,19 @@ BrowserID.signIn = (function() {
           // status of their email address.
           var bodyClassName = "known_secondary",
               showClassName = "password_entry",
+              title = gettext("Sign In"),
               submit = signInSubmit;
 
           if (!info.known) {
             bodyClassName = "unknown_secondary";
             showClassName = "vpassword_entry";
+            title = gettext("Sign Up"),
             submit = signUpSubmit;
           }
 
           dom.addClass("body", bodyClassName);
           dom.slideDown("." + showClassName);
+          dom.setInner("#title", title);
           self.submit = submit;
           dom.focus("#password");
 
