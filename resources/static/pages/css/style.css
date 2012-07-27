@@ -449,21 +449,33 @@ button.delete:active {
 }
 
 
-#signUpForm ul {
-  margin: 0 0 20px;
+#signUpForm li {
+  margin: 10px 0 0;
+  padding: 0;
 }
 
-#signUpForm li {
-  margin: 0 0 10px;
-  padding: 0;
+#signUpForm li:first-child {
+  margin: 0;
 }
 
 #signUpForm > .siteinfo {
   margin-bottom: 10px;
 }
 
-.siteinfo, #congrats, .password_entry, #verify_password, .enter_password .hint, #unknown_secondary, .verify_primary .forminputs {
+.siteinfo, #congrats, .password_entry, .vpassword_entry, .verify_primary, .known_secondary .start, .unknown_secondary .start, .primary .start, .unknown_secondary .forgot {
   display: none;
+}
+
+.enter_password .password_entry {
+  display: block;
+}
+
+label.vpassword_entry {
+  margin-top: 15px;
+}
+
+.submit {
+  margin-top: 15px;
 }
 
 .submit > p {
@@ -476,11 +488,7 @@ button.delete:active {
 
 .tospp {
   font-size: 13px;
-}
-
-.enter_password .password_entry, .enter_verify_password #verify_password, .known_secondary .password_entry,
-.unknown_secondary #unknown_secondary, .verify_primary #verify_primary {
-  display: block;
+  clear: both;
 }
 
 #congrats .siteinfo {

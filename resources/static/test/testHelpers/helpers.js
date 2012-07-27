@@ -264,7 +264,11 @@ BrowserID.TestHelpers = (function() {
     },
 
     testVisible: function(selector, msg) {
-      ok($(selector).is(":visible"), msg || selector + " should be visible");
+      ok($(selector).is(":visible"), msg || selector + " is visible");
+    },
+
+    testNotVisible: function(selector, msg) {
+      equal($(selector).is(":visible"), false, msg || selector + " is not visible");
     },
 
     testHasClass: function(selector, className, msg) {
@@ -330,6 +334,15 @@ BrowserID.TestHelpers = (function() {
       var emailInfo = storage.getEmail(email);
       equal(emailInfo && emailInfo.verified, true,
         "verified bit set for " + email);
+    },
+
+    testDocumentRedirected: function(doc, expectedHref, msg) {
+      equal(doc.location, expectedHref, msg || "document redirected to " + expectedHref);
+    },
+
+    testDocumentNotRedirected: function(doc, msg) {
+      equal(doc.location.href, document.location.href, msg || "document not redirected");
+
     }
   };
 

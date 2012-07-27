@@ -328,6 +328,46 @@ BrowserID.DOM = ( function() {
          */
         hide: function( elementToHide ) {
           return jQuery( elementToHide ).hide();
+        },
+
+        /**
+         * Slide an element down
+         * @method slideDown
+         * @param {selector || element} elementToSlide
+         * @param {number} [animationTime]
+         */
+        slideDown: function( elementToSlide, animationTime ) {
+          return jQuery( elementToSlide ).slideDown( animationTime );
+        },
+
+        /**
+         * Slide an element up
+         * @method slideUp
+         * @param {selector || element} elementToSlide
+         * @param {number} [animationTime]
+         */
+        slideUp: function( elementToSlide, animationTime ) {
+          return jQuery( elementToSlide ).slideUp( animationTime );
+        },
+
+        /**
+         * Fade an element in
+         * @method fadeIn
+         * @param {selector || element} elementToFade
+         * @param {number} [animationTime]
+         */
+        fadeIn: function( elementToFade, animationTime ) {
+          return jQuery( elementToFade ).fadeIn( animationTime );
+        },
+
+        /**
+         * Fade an element out
+         * @method fadeOut
+         * @param {selector || element} elementToFade
+         * @param {number} [animationTime]
+         */
+        fadeOut: function( elementToFade, animationTime ) {
+          return jQuery( elementToFade ).fadeOut( animationTime );
         }
     };
 
