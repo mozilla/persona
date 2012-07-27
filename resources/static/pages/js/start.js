@@ -139,7 +139,8 @@ $(function() {
       module.start({});
     }
     else if (path === "/forgot") {
-      bid.forgot();
+      var module = bid.forgot.create();
+      module.start({});
     }
     // START TRANSITION CODE
     // add_email_address has been renamed to confirm. Once all outstanding

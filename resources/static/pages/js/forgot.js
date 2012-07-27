@@ -17,8 +17,7 @@ BrowserID.forgot = (function() {
       tooltip = bid.Tooltip;
 
   function submit(oncomplete) {
-    // GET RID OF THIS HIDE CRAP AND USE CSS!
-    $(".notifications .notification").hide();
+    dom.hide(".notification");
 
     var email = helpers.getAndValidateEmail("#email"),
         pass = dom.getInner("#password"),
@@ -31,41 +30,82 @@ BrowserID.forgot = (function() {
           pageHelpers.emailSent("waitForPasswordResetComplete", email, oncomplete);
         }
         else {
-          var tooltipEl = info.reason === "throttle" ? "#could_not_add" : "#not_registered";
-          tooltip.showTooltip(tooltipEl);
+          var tooltipEls = {
+            throttle: "#could_not_add",
+            invalid_user: "#not_registered",
+            primary_address: "#primary_address"
+          };
+
+          var tooltipEl = tooltipEls[info.reason];
+          if (tooltipEl) {
+            tooltip.showTooltip(tooltipEl);
+          }
           complete(oncomplete);
         }
       }, pageHelpers.getFailure(bid.Errors.requestPasswordReset, oncomplete));
     } else {
       complete(oncomplete);
     }
-  };
+  }
 
   function back(oncomplete) {
     pageHelpers.cancelEmailSent(oncomplete);
   }
 
-  function init() {
-    $("form input[autofocus]").focus();
+  function redirectIfNeeded(doc, ready) {
+    // email addresses are stored if the user is coming from the signin or
+    // signup page.  If no email address is stored, the user browsed here
+    // directly.  If the user browsed here directly, kick them back to the
+    // sign in page.
+    var email = pageHelpers.getStoredEmail();
+    if (!email) {
+      doc.location.href = "/signin";
+      complete(ready);
+      return;
+    }
 
-    pageHelpers.setupEmail();
+    // We know an email address was stored, now check if it is registered.  If
+    // it is not registered, or is a primary, kick them over to the signin page.
+    user.addressInfo(email, function(info) {
+      if (!info.known || info.type === "primary") {
+        doc.location.href="/signin";
+      }
 
-    dom.bindEvent("form", "submit", cancelEvent(submit));
-    dom.bindEvent("#back", "click", cancelEvent(back));
+      complete(ready);
+    });
   }
 
-  // BEGIN TESTING API
-  function reset() {
-    dom.unbindEvent("form", "submit");
-    dom.unbindEvent("#back", "click");
-  }
+  var Module = bid.Modules.PageModule.extend({
+    start: function(options) {
+      options = options || {};
 
-  init.submit = submit;
-  init.reset = reset;
-  init.back = back;
-  // END TESTING API
+      var self=this,
+          doc = options.document || document;
 
-  return init;
+      // Check whether a redirection needs to happen before showing the rest of
+      // the content.
+      redirectIfNeeded(doc, function() {
+        dom.focus("form input[autofocus]");
+
+        pageHelpers.setupEmail();
+
+        self.bind("form", "submit", cancelEvent(submit));
+        self.click("#back", back);
+
+        Module.sc.init.call(self, options);
+
+        complete(options.ready);
+      });
+    }
+
+    // BEGIN TESTING API
+    ,
+    submit: submit,
+    back: back
+    // END TESTING API
+  });
+
+  return Module;
 
 }());
 
