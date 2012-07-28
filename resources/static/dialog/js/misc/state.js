@@ -101,8 +101,8 @@ BrowserID.State = (function() {
       // counted, any new sites are counted, any new emails are included, etc.
       mediator.publish("kpi_data", {
         number_emails: storage.getEmailCount() || 0,
-        sites_signed_in: storage.loggedInCount() || 0,
-        sites_visited: storage.site.count() || 0,
+        number_sites_signed_in: storage.loggedInCount() || 0,
+        number_sites_remembered: storage.site.count() || 0,
         orphaned: !self.success
      });
     });

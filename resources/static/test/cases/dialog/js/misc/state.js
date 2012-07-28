@@ -520,7 +520,7 @@
   asyncTest("window_unload - set the final KPIs", function() {
     mediator.subscribe("kpi_data", function(msg, data) {
       testHelpers.testKeysInObject(data, [
-        'number_emails', 'sites_signed_in', 'sites_visited', 'orphaned'
+        'number_emails', 'number_sites_signed_in', 'number_sites_remembered', 'orphaned'
       ]);
       start();
     });
