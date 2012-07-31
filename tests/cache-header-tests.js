@@ -121,7 +121,6 @@ suite.addBatch({
   '/cookies_disabled': hasProperCacheHeaders('/cookies_disabled'),
   '/relay': hasProperCacheHeaders('/relay'),
   '/authenticate_with_primary': hasProperCacheHeaders('/authenticate_with_primary'),
-  '/signup': hasProperCacheHeaders('/signup'),
   '/idp_auth_complete': hasProperCacheHeaders('/idp_auth_complete'),
   '/forgot': hasProperCacheHeaders('/forgot'),
   '/signin': hasProperCacheHeaders('/signin'),

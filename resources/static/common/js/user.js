@@ -665,14 +665,19 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     requestPasswordReset: function(email, password, onComplete, onFailure) {
-      User.isEmailRegistered(email, function(registered) {
-        if (registered) {
+      User.addressInfo(email, function(info) {
+        // user is not known.  Can't request a password reset.
+        if (!info.known) {
+          complete(onComplete, { success: false, reason: "invalid_user" });
+        }
+        // user is trying to reset the password of a primary address.
+        else if (info.type === "primary") {
+          complete(onComplete, { success: false, reason: "primary_address" });
+        }
+        else {
           stageAddressVerification(email, password,
             network.requestPasswordReset.bind(network, email, password, origin),
             onComplete, onFailure);
-        }
-        else if (onComplete) {
-          onComplete({ success: false, reason: "invalid_user" });
         }
       }, onFailure);
     },
@@ -987,10 +992,13 @@ BrowserID.User = (function() {
         network.addressInfo(email, function(info) {
           info.email = email;
           if(info.type === "primary") {
-            User.isUserAuthenticatedToPrimary(email, info, function(authed) {
-              info.authed = authed;
-              info.idpName = getIdPName(info);
-              complete(info);
+            User.isEmailRegistered(email, function(registered) {
+              User.isUserAuthenticatedToPrimary(email, info, function(authed) {
+                info.known = registered;
+                info.authed = authed;
+                info.idpName = getIdPName(info);
+                complete(info);
+              }, onFailure);
             }, onFailure);
           }
           else {

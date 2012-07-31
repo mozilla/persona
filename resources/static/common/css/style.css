@@ -61,7 +61,9 @@ strong {
 }
 
 .hidden {
+  /* This funkiness is so that labels still appear for screen readers */
   visibility: hidden;
+  display: block;
   height: 0;
 }
 
@@ -137,6 +139,10 @@ input[type=password]:disabled {
      * field */
     box-shadow: none;
     border-color: #b2b2b2;
+}
+
+label {
+  display: block;
 }
 
 label + input[type=text],

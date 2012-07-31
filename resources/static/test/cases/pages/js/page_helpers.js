@@ -9,6 +9,8 @@
   var bid = BrowserID,
       pageHelpers = bid.PageHelpers,
       testHelpers = bid.TestHelpers,
+      testVisible = testHelpers.testVisible,
+      testNotVisible = testHelpers.testNotVisible,
       user = bid.User,
       WindowMock = bid.Mocks.WindowMock,
       winMock,
@@ -20,7 +22,7 @@
       testHelpers.setup();
       winMock = new WindowMock();
       pageHelpers.init({ window: winMock });
-      bid.Renderer.render("#page_head", "site/signup", {});
+      bid.Renderer.render("#page_head", "site/signin", {});
       $(".siteinfo,.emailsent").hide();
     },
 
@@ -66,17 +68,18 @@
   });
 
   asyncTest("replaceFormWithNotice replaces contents", function() {
+    bid.Renderer.render("#page_head", "site/verify_email_address", {});
     pageHelpers.replaceFormWithNotice("#congrats", function() {
-      equal($("form").is(":visible"), false, "form has been hidden");
-      equal($("#congrats").is(":visible"), true, "congrats is now visible");
+      testNotVisible("form");
+      testVisible("#congrats");
       start();
     });
   });
 
   asyncTest("replaceInputsWithNotice replaces contents", function() {
     pageHelpers.replaceInputsWithNotice(".emailsent", function() {
-      equal($(".emailsent").is(":visible"), true, "emailsent is visible");
-      equal($(".forminputs").is(":visible"), false, "inputs are hidden");
+      testVisible(".emailsent");
+      testNotVisible(".forminputs");
       start();
     });
   });
@@ -84,8 +87,8 @@
   asyncTest("showInputs hides notices and shows the inputs", function() {
     pageHelpers.replaceInputsWithNotice(".emailsent", function() {
       pageHelpers.showInputs(function() {
-        equal($(".emailsent").is(":visible"), false, "emailsent is hidden");
-        equal($(".forminputs").is(":visible"), true, "inputs are shown");
+        testNotVisible(".emailsent");
+        testVisible(".forminputs");
         start();
       });
     });
@@ -93,16 +96,14 @@
 
 
   asyncTest("emailSent shows correct email sent message, starts waiting for user validation", function() {
-    pageHelpers.setStoredEmail("registered@testuser.com");
-
     // set the result to complete to immediately return.  We'll test each case
     // below.
     xhr.useResult("complete");
 
-    pageHelpers.emailSent("waitForUserValidation", function() {
+    pageHelpers.emailSent("waitForUserValidation", "registered@testuser.com", function() {
       equal($("#sentToEmail").html(), "registered@testuser.com", "correct email is set");
-      equal($(".emailsent").is(":visible"), true, "emailsent is visible");
-      equal($(".forminputs").is(":visible"), false, "inputs are hidden");
+      testVisible(".emailsent");
+      testNotVisible(".forminputs");
       start();
     });
 
@@ -132,16 +133,12 @@
     equal(winMock.document.location.href, "/", "with complete status, redirect to /");
   });
 
-  asyncTest("cancelEmailSent restores the stored email, inputs are shown again", function() {
-    pageHelpers.setStoredEmail("registered@testuser.com");
+  asyncTest("cancelEmailSent - inputs are shown again", function() {
     xhr.useResult("complete");
-    pageHelpers.emailSent("waitForUserValidation", function() {
+    pageHelpers.emailSent("waitForUserValidation", "registered@testuser.com", function() {
       pageHelpers.cancelEmailSent(function() {
-        var email = pageHelpers.getStoredEmail();
-        equal(email, "registered@testuser.com", "stored email is reset on cancel");
-        equal($(".emailsent").is(":visible"), false, "emailsent is not visible");
-        equal($(".forminputs").is(":visible"), true, "inputs are visible");
- //       equal($("#email").is(":focus"), true, "first element is focused (NOTE: requires your browser to be focused to work)");
+        testNotVisible(".emailsent");
+        testVisible(".forminputs");
         start();
       });
     });
@@ -159,7 +156,7 @@
 
       // Add a bit of delay to wait for the animation
       setTimeout(function() {
-        equal($("#error .moreInfo").is(":visible"), true, "extra info is visible after click");
+        testVisible("#error .moreInfo", "extra info is visible after click");
         start();
       }, 100);
 

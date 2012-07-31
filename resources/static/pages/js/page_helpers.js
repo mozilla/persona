@@ -88,15 +88,13 @@ BrowserID.PageHelpers = (function() {
       .promise().done(onComplete);
   }
 
-  function emailSent(pollFuncName, onComplete) {
-    origStoredEmail = getStoredEmail();
-    dom.setInner('#sentToEmail', origStoredEmail);
-
-    clearStoredEmail();
+  function emailSent(pollFuncName, email, onComplete) {
+    dom.setInner('#sentToEmail', email);
 
     replaceInputsWithNotice(".emailsent");
 
-    user[pollFuncName](origStoredEmail, function(status) {
+    user[pollFuncName](email, function(status) {
+      clearStoredEmail();
       userValidationComplete(status);
     });
     onComplete && onComplete();
@@ -113,8 +111,6 @@ BrowserID.PageHelpers = (function() {
   }
 
   function cancelEmailSent(onComplete) {
-    setStoredEmail(origStoredEmail);
-
     showInputs(onComplete);
 
     user.cancelEmailValidation();

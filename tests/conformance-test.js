@@ -193,7 +193,7 @@ suite.addBatch({
 suite.addBatch({
   "sign a cert": {
     topic: function() {
-      jwcrypto.cert.sign(userKeypair.publicKey, {email: EMAIL},
+      jwcrypto.cert.sign({publicKey: userKeypair.publicKey, principal: {email: EMAIL}},
                          {issuedAt: now, issuer: ISSUER, expiresAt: in_a_minute},
                          {},
                          domainKeypair.secretKey, this.callback);
