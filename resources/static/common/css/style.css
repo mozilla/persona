@@ -141,6 +141,12 @@ input[type=password]:disabled {
     border-color: #b2b2b2;
 }
 
+input[type=text]:-moz-placeholder,
+input[type=email]:-moz-placeholder,
+input[type=password]:-moz-placeholder {
+   color:#aaa;
+}
+
 label {
   display: block;
 }
