@@ -141,6 +141,23 @@ input[type=password]:disabled {
     border-color: #b2b2b2;
 }
 
+/*
+ * All three browser types must be styled individually.
+ * See http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css
+ * issue #2187
+ */
+input:-moz-placeholder {
+   color:#aaa;
+}
+
+input:-ms-input-placeholder {
+   color:#aaa;
+}
+
+input:-webkit-input-placeholder {
+   color:#aaa;
+}
+
 label {
   display: block;
 }
