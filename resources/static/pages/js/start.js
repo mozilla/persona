@@ -18,7 +18,7 @@ $(function() {
       xhr = bid.XHR,
       network = bid.Network,
       token = pageHelpers.getParameterByName("token"),
-      path = document.location.pathname,
+      path = document.location.pathname || "/",
       moduleManager = bid.module,
       modules = bid.Modules,
       CookieCheck = modules.CookieCheck,
@@ -26,7 +26,8 @@ $(function() {
       XHRDisableForm = modules.XHRDisableForm,
       Development = modules.Development,
       ANIMATION_TIME = 500,
-      checkCookiePaths = [ "/signin", "/signup", "/forgot", "/add_email_address", "/confirm", "/verify_email_address" ];
+      checkCookiePaths = [ "/signin", "/forgot", "/add_email_address", "/confirm", "/verify_email_address" ],
+      redirectIfAuthenticatedPaths = [ "/signin", "/forgot" ];
 
 
   function shouldCheckCookies(path) {
@@ -37,6 +38,7 @@ $(function() {
       }
     }
   }
+
 
   // Firefox and IE have rendering bugs where if the box-sizing is set to
   // border-box and a min-height is set, padding is added on top of the
@@ -130,50 +132,56 @@ $(function() {
     // instead just show the error message.
     if (!status) return;
 
-
-    if (!path || path === "/") {
-      bid.index();
-    }
-    else if (path === "/signin") {
-      var module = bid.signIn.create();
-      module.start({});
-    }
-    else if (path === "/forgot") {
-      var module = bid.forgot.create();
-      module.start({});
-    }
-    // START TRANSITION CODE
-    // add_email_address has been renamed to confirm. Once all outstanding
-    // emails are verified or expired, this can be removed. This change is
-    // scheduled to go into train-2012.07.20
-    else if (path === "/add_email_address") {
-      verifySecondaryAddress("verifyEmail");
-    }
-    // END TRANSITION CODE
-    else if (path === "/confirm") {
-      verifySecondaryAddress("verifyEmail");
-    }
-    else if (path === "/verify_email_address") {
-      verifySecondaryAddress("verifyUser");
-    }
-    else if (path === "/reset_password") {
-      verifySecondaryAddress("completePasswordReset");
-    }
-    else if (path === "/about") {
-      var module = bid.about.create();
-      module.start({});
-    }
-    else if (path === "/tos" || path === "/privacy") {
-      // do nothing.  This prevents "unknown path" from being displayed to the
-      // user.
-    }
-    else {
-      // Instead of throwing a hard error here, adding a message to the console
-      // to let developers know something is up.
-      helpers.log("unknown path");
-    }
-
     user.checkAuthentication(function(authenticated) {
+      // If the user is authenticated and the path should not be allowed if the
+      // user is authenticated, redirect them back to the main page. See issue
+      // #1345 https://github.com/mozilla/browserid/issues/1345
+      if (authenticated && _.indexOf(redirectIfAuthenticatedPaths, path) > -1) {
+        document.location = "/";
+        return;
+      }
+      else if (path === "/") {
+        bid.index();
+      }
+      else if (path === "/signin") {
+        var module = bid.signIn.create();
+        module.start({});
+      }
+      else if (path === "/forgot") {
+        var module = bid.forgot.create();
+        module.start({});
+      }
+      // START TRANSITION CODE
+      // add_email_address has been renamed to confirm. Once all outstanding
+      // emails are verified or expired, this can be removed. This change is
+      // scheduled to go into train-2012.07.20
+      else if (path === "/add_email_address") {
+        verifySecondaryAddress("verifyEmail");
+      }
+      // END TRANSITION CODE
+      else if (path === "/confirm") {
+        verifySecondaryAddress("verifyEmail");
+      }
+      else if (path === "/verify_email_address") {
+        verifySecondaryAddress("verifyUser");
+      }
+      else if (path === "/reset_password") {
+        verifySecondaryAddress("completePasswordReset");
+      }
+      else if (path === "/about") {
+        var module = bid.about.create();
+        module.start({});
+      }
+      else if (path === "/tos" || path === "/privacy") {
+        // do nothing.  This prevents "unknown path" from being displayed to the
+        // user.
+      }
+      else {
+        // Instead of throwing a hard error here, adding a message to the console
+        // to let developers know something is up.
+        helpers.log("unknown path");
+      }
+
       if (authenticated) {
         displayAuthenticated();
       }
