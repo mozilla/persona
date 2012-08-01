@@ -79,7 +79,7 @@ strong {
   background-image:     -ms-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
   background-image:      -o-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
   background-image:         linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
-  border-radius: 3px;
+  border-radius: 4px;
   padding: 10px 15px;
   box-shadow: 0 1px #666;
 
@@ -91,6 +91,18 @@ strong {
   z-index: 5;
 }
 
+.tooltip .arrow-down {
+  /* This is an awesome CSS only arrow! */
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #aa1401;
+  border-top: 10px solid rgba(169, 19, 0, 1);
+  position: absolute;
+  bottom: -10px;
+  left: 20px;
+}
 
 a {
   color: #348fd0;
