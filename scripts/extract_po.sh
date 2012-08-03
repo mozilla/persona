@@ -9,7 +9,7 @@
 xgettext  --keyword=_ -L Perl --output-dir=locale/templates/LC_MESSAGES --from-code=utf-8 --output=messages.pot\
  `find lib -name '*.js' | grep -v 'i18n.js' | grep -v jwcrypto`
 xgettext -j -L PHP --keyword=_ --output-dir=locale/templates/LC_MESSAGES --output=messages.pot `find resources/views -name '*.ejs'`
-xgettext -j -L PHP --keyword=_ --output-dir=locale/templates/LC_MESSAGES --output=messages.pot `find lib/browserid -name '*.ejs'`
+xgettext -j -L PHP --keyword=_ --output-dir=locale/templates/LC_MESSAGES --output=messages.pot `find resources/email_templates -name '*.ejs'`
 
 # client.po 
 # js
