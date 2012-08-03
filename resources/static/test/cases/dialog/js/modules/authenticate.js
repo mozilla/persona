@@ -126,7 +126,7 @@
       // The first time the password is shown, change the email address.  The
       // second time the password is shown, make sure the password was cleared.
 
-      if(enterPasswordCount == 0) {
+      if(enterPasswordCount === 0) {
         // simulate the user changing the email address.  This should clear the
         // password.
         $("#password").val("password");
@@ -143,6 +143,40 @@
     });
 
     controller.checkEmail();
+  });
+
+  asyncTest("do not clear password if user selects an email address using autofill, then presses a key that does not change the address (CTRL-C for instance)", function() {
+    xhr.useResult("known_secondary");
+
+    // This test is for issue #406
+
+    // First, see the staps after this handler.
+
+    mediator.subscribe("enter_password", function() {
+      // The user is now looking at the password field and they decide to copy
+      // from the email field by hitting CTRL-C.
+      //
+      // Simulates the user hitting a key that does not change the
+      // input.  The user should NOT go back to the "enter_email" state at this
+      // point.
+      var enterEmailCount = 0;
+      mediator.subscribe("enter_email", function() {
+        enterEmailCount++;
+      });
+      $("#email").keyup();
+
+      equal(enterEmailCount, 0, "enter_email not called after submit if keyup did not change email field");
+      start();
+    });
+
+    // Simulates the user selecting testuser@testuser.com from the
+    // autocomplete menu.
+    $("#email").val("registered@testuser.com");
+    $("#email").change();
+
+    // Simulate the user hitting the "next" button.  Once the address is
+    // verified, the enter_password message will be triggered.
+    controller.submit();
   });
 
   asyncTest("checkEmail with email that has IdP support - 'primary_user' message", function() {
