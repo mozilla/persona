@@ -1188,6 +1188,7 @@
       // get an assertion
       get: function(callback, passedOptions) {
         var opts = {};
+        passedOptions = passedOptions || {};
         opts.privacyPolicy =  passedOptions.privacyPolicy || undefined;
         opts.termsOfService = passedOptions.termsOfService || undefined;
         opts.privacyURL = passedOptions.privacyURL || undefined;
