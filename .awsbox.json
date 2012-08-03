@@ -9,7 +9,7 @@
     "bin/static"
   ],
   "env": {
-    "CONFIG_FILES": "$HOME/code/config/production.json,$HOME/code/config/aws.json,$HOME/config.json"
+    "CONFIG_FILES": "$HOME/code/config/production.json,$HOME/code/config/aws.json,$HOME/config.json,$HOME/code/config/l10n-all.json"
   },
   "hooks": {
     "postdeploy": "scripts/awsbox_remote/post_deploy.sh",
