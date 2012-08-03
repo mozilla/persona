@@ -18,8 +18,8 @@ BrowserID.Models.InteractionData = (function() {
         'sample_rate',
         'timestamp',
         'number_emails',
-        'sites_signed_in',
-        'sites_visited',
+        'number_sites_signed_in',
+        'number_sites_remembered',
         'orphaned',
         'new_account',
         'email_type'
