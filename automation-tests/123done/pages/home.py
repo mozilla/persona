@@ -49,7 +49,7 @@ class HomePage(Page):
 
         """
         self.selenium.find_element(*self._sign_in_locator).click()
-        from browserid.pages.webdriver.sign_in import SignIn
+        from browserid.pages.sign_in import SignIn
         return SignIn(self.selenium, self.timeout, expect=expect)
 
     def click_logout(self):

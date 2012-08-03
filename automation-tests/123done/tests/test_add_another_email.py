@@ -26,7 +26,7 @@ class TestAddAnotherEmail:
 
         # Load the BrowserID link from the email in the browser
         mozwebqa.selenium.get(email.verify_user_link)
-        from browserid.pages.webdriver.complete_registration import CompleteRegistration
+        from browserid.pages.complete_registration import CompleteRegistration
         complete_registration = CompleteRegistration(mozwebqa.selenium, mozwebqa.timeout)
 
         # Check the message on the registration page reflects a successful registration!
@@ -47,7 +47,7 @@ class TestAddAnotherEmail:
 
         # Load the BrowserID link from the email in the browser
         mozwebqa.selenium.get(email.add_email_address_link)
-        from browserid.pages.webdriver.complete_registration import CompleteRegistration
+        from browserid.pages.complete_registration import CompleteRegistration
         complete_registration = CompleteRegistration(mozwebqa.selenium, mozwebqa.timeout)
 
         home_pg.wait_for_user_login()
