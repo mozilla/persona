@@ -151,6 +151,9 @@ BrowserID.Modules.Dialog = (function() {
       var self=this,
           hash = win.location.hash;
 
+      // fixupURL adds a trailing "/", which we don't want, so strip it
+      origin_url = fixupURL("", origin_url);
+      origin_url = origin_url.substr(0, origin_url.length-1);
       user.setOrigin(origin_url);
 
 
