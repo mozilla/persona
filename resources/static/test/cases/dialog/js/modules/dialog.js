@@ -347,7 +347,7 @@
   });
 
 
-  asyncTest("get with valid absolute termsOfService & privacyPolicy - go to start", function() {
+  function testValidTermsOfServicePrivacyPolicy(options, expected) {
     createController({
       ready: function() {
         var startInfo;
@@ -355,70 +355,60 @@
           startInfo = info;
         });
 
-        var retval = controller.get(HTTP_TEST_DOMAIN, {
-          termsOfService: "/tos.html",
-          privacyPolicy: "/privacy.html"
-        });
-
-        testHelpers.testObjectValuesEqual(startInfo, {
-          termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
-          privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
-        });
+        var retval = controller.get(HTTP_TEST_DOMAIN, options);
+        testHelpers.testObjectValuesEqual(startInfo, expected);
 
         equal(typeof retval, "undefined", "no error expected");
         testErrorNotVisible();
         start();
       }
     });
+  }
+
+  asyncTest("get with valid absolute termsOfService & privacyPolicy - go to start", function() {
+    testValidTermsOfServicePrivacyPolicy({
+      termsOfService: "/tos.html",
+      privacyPolicy: "/privacy.html"
+    },
+    {
+      termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
+      privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
+    });
   });
 
   asyncTest("get with valid fully qualified http termsOfService & privacyPolicy - go to start", function() {
-    createController({
-      ready: function() {
-        var startInfo;
-        mediator.subscribe("start", function(msg, info) {
-          startInfo = info;
-        });
-
-        var retval = controller.get(HTTP_TEST_DOMAIN, {
-          termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
-          privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
-        });
-
-        testHelpers.testObjectValuesEqual(startInfo, {
-          termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
-          privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
-        });
-
-        equal(typeof retval, "undefined", "no error expected");
-        testErrorNotVisible();
-        start();
-      }
+    testValidTermsOfServicePrivacyPolicy({
+      termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
+      privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
+    },
+    {
+      termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
+      privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
     });
   });
 
 
   asyncTest("get with valid fully qualified https termsOfService & privacyPolicy - go to start", function() {
-    createController({
-      ready: function() {
-        var startInfo;
-        mediator.subscribe("start", function(msg, info) {
-          startInfo = info;
-        });
+    testValidTermsOfServicePrivacyPolicy({
+      termsOfService: HTTPS_TEST_DOMAIN + "/tos.html",
+      privacyPolicy: HTTPS_TEST_DOMAIN + "/privacy.html"
+    },
+    {
+      termsOfService: HTTPS_TEST_DOMAIN + "/tos.html",
+      privacyPolicy: HTTPS_TEST_DOMAIN + "/privacy.html"
+    });
+  });
 
-        var retval = controller.get(HTTP_TEST_DOMAIN, {
-          termsOfService: HTTPS_TEST_DOMAIN + "/tos.html",
-          privacyPolicy: HTTPS_TEST_DOMAIN + "/privacy.html"
-        });
-
-        testHelpers.testObjectValuesEqual(startInfo, {
-          termsOfService: HTTPS_TEST_DOMAIN + "/tos.html",
-          privacyPolicy: HTTPS_TEST_DOMAIN + "/privacy.html"
-        });
-        equal(typeof retval, "undefined", "no error expected");
-        testErrorNotVisible();
-        start();
-      }
+  asyncTest("get with valid termsOfService, tosURL & privacyPolicy, privacyURL - use termsOfService and privacyPolicy", function() {
+    testValidTermsOfServicePrivacyPolicy({
+      termsOfService: "/tos.html",
+      tosURL: "/tos_deprecated.html",
+      privacyPolicy: "/privacy.html",
+      privacyURL: "/privacy_deprecated.html"
+    },
+    {
+      termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
+      privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
     });
   });
 
