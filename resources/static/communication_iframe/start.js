@@ -16,6 +16,15 @@
 
   network.init();
 
+  // Do not check to see if cookies are supported in the iframe.  Just
+  // optimistically try to work by running network requests.  There are
+  // cases (especially in IE) where our checks will fail but our actual
+  // requests will not.  issue #2183
+  // (NOTE: if we want to try to improve failure modes for users with
+  //  a "disable 3rd party cookies"-like preference set in their browser,
+  //  we may need to re-visit this)
+  network.cookiesEnabledOverride = true;
+
   var chan = Channel.build({
     window: window.parent,
     origin: "*",
