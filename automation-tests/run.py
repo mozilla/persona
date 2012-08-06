@@ -40,12 +40,16 @@ def main():
     parser.add_option('--all', '-a', dest='run_all', action="store_true",
                       help='run all tests. requires test account credentials' +
                            ' to be created and added to credentials.yaml')
+    parser.add_option('--target', '-t', dest='target_hostname', 
+                      default="dev", help='run tests against an ephemeral' +
+                      ' instance. Specify your instance\'s hostname ("foo"),' +
+                      ' not the full domain name ("foo.123done.org")')
     # TODO add other options
     options, arguments = parser.parse_args()
 
     # 1. check that python is the right version TODO: would 2.6 actually work?
     if sys.version_info < (2,7,0):
-        sys.stderr.write('python 2.7 or later is required to run this script\n')
+        sys.stderr.write('python 2.7 or later is required to run the tests\n')
         exit(1)
     # 2. TODO check that virtualenv and pip exist. if not, bail.
     if not which('pip'):
@@ -63,17 +67,20 @@ def main():
         subprocess.call(env_path + 'pip install -Ur requirements.txt', 
                         shell=True)
 
+    # 4 1/2. check the ephemeral instance to hit.
+    host = options.target_hostname
+
     # 5. run the tests
     # TODO parse arguments to know which tests to run
     # TODO right now we only run one 123done test in the default case
     if options.run_all:
         subprocess.call(env_py + ' -m py.test --destructive ' +
                         '--credentials=credentials.yaml ' +
-                        '--baseurl=http://dev.123done.org --driver=firefox ' +
-                        '-q browserid', shell=True);
+                        '--baseurl=http://' + host + '.123done.org ' +
+                        '--driver=firefox -q browserid', shell=True);
         subprocess.call(env_py + ' -m py.test --destructive ' +
                         '--credentials=credentials.yaml ' +
-                        '--baseurl=http://dev.myfavoritebeer.org ' +
+                        '--baseurl=http://' + host + '.myfavoritebeer.org ' +
                         '--driver=firefox -q myfavoritebeer', shell=True);
         tests_123 = '123done'
     else:
@@ -81,8 +88,8 @@ def main():
     # the 123done tests always run
     subprocess.call(env_py + ' -m py.test --destructive ' + 
                     '--credentials=credentials.yaml ' +
-                    '--baseurl=http://dev.123done.org --driver=firefox ' +
-                    '-q ' + tests_123, shell=True);
+                    '--baseurl=http://' + host + '.123done.org ' +
+                    '--driver=firefox -q ' + tests_123, shell=True);
 
     # 6. TODO deactivate/destroy virtualenv?? maybe '--cleanup' argument?
 
