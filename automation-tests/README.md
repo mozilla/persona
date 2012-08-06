@@ -11,7 +11,9 @@ If you're missing test dependencies, it'll install them for you.
 
 If all that is OK, it'll connect to dev.123done.org and try to create a fake user, login, and logout.
 
-If that single test runs OK, try creating a dummy dev user, putting the info in credentials.yaml, then doing ```run.py --all``` to run all the tests against dev.123done.org and dev.myfavoritebeer.org.
+If you want to run that single test against your ephemeral instance called 'foo', just do ```run.py --target=foo```.
+
+If you want to run all the tests, create a dummy user, put its info in credentials.yaml, then do ```run.py --all``` to run all the tests, including 123done and myfavoritebeer tests.
 
 # I've got time. Tell me more!
 
