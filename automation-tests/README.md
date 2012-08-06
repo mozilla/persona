@@ -1,6 +1,22 @@
 getting started
 ===============
 
+# I'm super impatient. Let's get going in 10 sec or less.
+
+TL;DR: just execute ```./run.py``` from inside the automation-tests directory.
+
+If you're missing pip or virtualenv, it'll tell you what to do.
+
+If you're missing test dependencies, it'll install them for you.
+
+If all that is OK, it'll connect to dev.123done.org and try to create a fake user, login, and logout.
+
+If that single test runs OK, try creating a dummy dev user, putting the info in credentials.yaml, then doing ```run.py --all``` to run all the tests against dev.123done.org and dev.myfavoritebeer.org.
+
+# I've got time. Tell me more!
+
+OK, sure...
+
 ## how to run selenium tests inside the automation-tests directory against ephemeral, stage, or prod environments
 
 Node bindings don't exist for Selenium 2 API (webdriver), so we're using python bindings instead. This requires some python-centric setup, but it shouldn't take more than 15 minutes or so to get up and running.
