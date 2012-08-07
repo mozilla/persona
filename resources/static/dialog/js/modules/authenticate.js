@@ -126,8 +126,10 @@ BrowserID.Modules.Authenticate = (function() {
 
   function enterEmailState() {
     /*jshint validthis: true*/
+    var self=this;
     if (!dom.is("#email", ":disabled")) {
-      this.submit = checkEmail;
+      self.publish("enter_email");
+      self.submit = checkEmail;
       showHint("start");
     }
   }
@@ -157,7 +159,7 @@ BrowserID.Modules.Authenticate = (function() {
     }
   }
 
-  function emailKeyUp() {
+  function emailChange() {
     /*jshint validthis: true*/
     var newEmail = dom.getInner("#email");
     if (newEmail !== lastEmail) {
@@ -191,7 +193,10 @@ BrowserID.Modules.Authenticate = (function() {
         dialogHelpers.showRPTosPP.call(self);
       }
 
-      self.bind("#email", "keyup", emailKeyUp);
+      self.bind("#email", "keyup", emailChange);
+      // Adding the change event causes the email to be checked whenever an
+      // element blurs but it has been updated via autofill.  See issue #406
+      self.bind("#email", "change", emailChange);
       self.click("#forgotPassword", forgotPassword);
 
       Module.sc.start.call(self, options);
