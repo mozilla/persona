@@ -1291,31 +1291,57 @@
     );
   });
 
-  asyncTest("addressInfo with primary authenticated user", function() {
+  asyncTest("addressInfo with unknown primary authenticated user", function() {
     xhr.useResult("primary");
     provisioning.setStatus(provisioning.AUTHENTICATED);
     lib.addressInfo(
-      "registered@testuser.com",
+      "unregistered@testuser.com",
       function(info) {
-        equal(info.type, "primary", "correct type");
-        equal(info.email, "registered@testuser.com", "correct email");
-        equal(info.authed, true, "user is authenticated with IdP");
-        equal(info.idpName, "testuser.com", "unknown IdP, use email host portion for name");
+        testObjectValuesEqual(info, {
+          type: "primary",
+          email: "unregistered@testuser.com",
+          authed: true,
+          idpName: "testuser.com",
+          known: false
+        });
         start();
       },
       testHelpers.unexpectedFailure
     );
   });
 
-  asyncTest("addressInfo with primary unauthenticated user", function() {
+  asyncTest("addressInfo with known primary authenticated user", function() {
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+    lib.addressInfo(
+      "registered@testuser.com",
+      function(info) {
+        testObjectValuesEqual(info, {
+          type: "primary",
+          email: "registered@testuser.com",
+          authed: true,
+          idpName: "testuser.com",
+          known: true
+        });
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
+  });
+
+  asyncTest("addressInfo with known primary unauthenticated user", function() {
     xhr.useResult("primary");
     provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
     lib.addressInfo(
       "registered@testuser.com",
       function(info) {
-        equal(info.type, "primary", "correct type");
-        equal(info.email, "registered@testuser.com", "correct email");
-        equal(info.authed, false, "user is not authenticated with IdP");
+        testObjectValuesEqual(info, {
+          type: "primary",
+          email: "registered@testuser.com",
+          authed: false,
+          idpName: "testuser.com",
+          known: true
+        });
         start();
       },
       testHelpers.unexpectedFailure

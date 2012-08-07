@@ -61,7 +61,9 @@ strong {
 }
 
 .hidden {
+  /* This funkiness is so that labels still appear for screen readers */
   visibility: hidden;
+  display: block;
   height: 0;
 }
 
@@ -77,7 +79,7 @@ strong {
   background-image:     -ms-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
   background-image:      -o-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
   background-image:         linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
-  border-radius: 3px;
+  border-radius: 4px;
   padding: 10px 15px;
   box-shadow: 0 1px #666;
 
@@ -89,6 +91,18 @@ strong {
   z-index: 5;
 }
 
+.tooltip .arrow-down {
+  /* This is an awesome CSS only arrow! */
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #aa1401;
+  border-top: 10px solid rgba(169, 19, 0, 1);
+  position: absolute;
+  bottom: -10px;
+  left: 20px;
+}
 
 a {
   color: #348fd0;
@@ -137,6 +151,27 @@ input[type=password]:disabled {
      * field */
     box-shadow: none;
     border-color: #b2b2b2;
+}
+
+/*
+ * All three browser types must be styled individually.
+ * See http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css
+ * issue #2187
+ */
+input:-moz-placeholder {
+   color:#aaa;
+}
+
+input:-ms-input-placeholder {
+   color:#aaa;
+}
+
+input:-webkit-input-placeholder {
+   color:#aaa;
+}
+
+label {
+  display: block;
 }
 
 label + input[type=text],

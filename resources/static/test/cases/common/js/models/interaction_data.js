@@ -96,8 +96,8 @@
           local_timestamp: now,
           lang: "bar",
           number_emails: 1,
-          sites_signed_in: 2,
-          sites_visited: 3,
+          number_sites_signed_in: 2,
+          number_sites_remembered: 3,
           orphaned: false,
           new_account: true,
           email_type: "assertion"
@@ -119,8 +119,8 @@
             timestamp: now,
             lang: "bar",
             number_emails: 1,
-            sites_signed_in: 2,
-            sites_visited: 3,
+            number_sites_signed_in: 2,
+            number_sites_remembered: 3,
             orphaned: false,
             new_account: true,
             email_type: "assertion"

@@ -236,7 +236,10 @@
 
         // if window is unloaded and the client hasn't called cb, it's an error
         var onUnload = function() {
-          removeListener(isIE ? msgTarget : window, 'message', onDie);
+          try {
+            // IE8 doesn't like this...
+            removeListener(isIE ? msgTarget : window, 'message', onDie);
+          } catch (ohWell) { }
           if (cb) doPost({ a: 'error', d: 'client closed window' });
           cb = undefined;
           // explicitly close the window, in case the client is trying to reload or nav

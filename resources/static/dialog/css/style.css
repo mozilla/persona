@@ -104,7 +104,6 @@ footer {
 }
 
 label {
-    display: block;
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
@@ -304,10 +303,7 @@ section > .contents {
 }
 
 #favicon h2, #favicon h3 {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    line-height: 1.3em;  /* the 1.3em is to keep y, g, j, etc from having their bottoms chopped off */
-    overflow: hidden;    /* Use the same overflow for everything, this allows us to show the ellipsis.  Trying to set overflow-x only causes a scroll bar to be shown in firefox.  */
+    line-height: 1.2em;
     margin: 10px 0 0 0;
 }
 

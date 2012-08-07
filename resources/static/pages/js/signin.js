@@ -1,4 +1,4 @@
-/*globals BrowserID:true, $:true*/
+/*globals BrowserID:true, gettext:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -14,16 +14,19 @@ BrowserID.signIn = (function() {
       errors = bid.Errors,
       pageHelpers = bid.PageHelpers,
       tooltip = bid.Tooltip,
+      validation = bid.Validation,
       doc = document,
       winchan = window.WinChan,
+      complete = helpers.complete,
       verifyEmail,
       verifyURL,
       addressInfo,
       sc,
       lastEmail;
 
-  function complete(oncomplete, status) {
-    oncomplete && oncomplete(status);
+  function userAuthenticated() {
+    pageHelpers.clearStoredEmail();
+    doc.location = "/";
   }
 
   function provisionPrimaryUser(email, info, callback) {
@@ -31,38 +34,48 @@ BrowserID.signIn = (function() {
     user.provisionPrimaryUser(email, info, function(status, provInfo) {
       if (status === "primary.verified") {
         network.authenticateWithAssertion(email, provInfo.assertion, function(status) {
-          doc.location = "/";
-
+          userAuthenticated();
           complete(callback);
         }, pageHelpers.getFailure(errors.authenticateWithAssertion, callback));
       }
       else {
-        $("#primary_no_login").fadeIn(250);
+        dom.fadeIn("#primary_no_login", 250);
         setTimeout(complete.curry(callback), 250);
       }
     }, pageHelpers.getFailure(errors.provisioningPrimary, callback));
   }
 
   function emailSubmit(oncomplete) {
+    /*jshint validthis: true*/
     var self=this,
         email = helpers.getAndValidateEmail("#email");
 
-    if(email) {
+    if (email) {
       dom.setAttr('#email', 'disabled', 'disabled');
       user.addressInfo(email, function(info) {
         dom.removeAttr('#email', 'disabled');
         addressInfo = info;
 
-        if(info.type === "secondary") {
-          if(info.known) {
-            dom.addClass("body", "known_secondary");
-            dom.focus("#password");
-            self.submit = passwordSubmit;
+        if (info.type === "secondary") {
+          // A secondary user has to either sign in or sign up depending on the
+          // status of their email address.
+          var bodyClassName = "known_secondary",
+              showClassName = "password_entry",
+              title = gettext("Sign In"),
+              submit = signInSubmit;
+
+          if (!info.known) {
+            bodyClassName = "unknown_secondary";
+            showClassName = "vpassword_entry";
+            title = gettext("Sign Up"),
+            submit = signUpSubmit;
           }
-          else {
-            dom.setInner("#unknown_email", email);
-            dom.addClass("body", "unknown_secondary");
-          }
+
+          dom.addClass("body", bodyClassName);
+          dom.slideDown("." + showClassName);
+          dom.setInner("#title", title);
+          self.submit = submit;
+          dom.focus("#password");
 
           complete(oncomplete);
         }
@@ -72,7 +85,10 @@ BrowserID.signIn = (function() {
           provisionPrimaryUser(email, info, oncomplete);
         }
         else {
-          dom.addClass("body", "verify_primary");
+          // primary user who is not authenticated with primary, must auth with
+          // primary and then authenticate them to BrowserID.
+          dom.addClass("body", "primary");
+          dom.slideDown(".verify_primary");
           dom.setInner("#primary_email", email);
           self.submit = authWithPrimary;
 
@@ -88,18 +104,16 @@ BrowserID.signIn = (function() {
     }
   }
 
-  function passwordSubmit(oncomplete) {
+  function signInSubmit(oncomplete) {
     var email = helpers.getAndValidateEmail("#email"),
         password = helpers.getAndValidatePassword("#password");
 
     if (email && password) {
-      user.authenticate(email, password, function onSuccess(authenticated) {
+      user.authenticate(email, password, function(authenticated) {
         if (authenticated) {
-          pageHelpers.clearStoredEmail();
-          doc.location = "/";
+          userAuthenticated();
         }
         else {
-          // bad authentication
           tooltip.showTooltip("#cannot_authenticate");
         }
         complete(oncomplete);
@@ -109,6 +123,33 @@ BrowserID.signIn = (function() {
       complete(oncomplete);
     }
   }
+
+  function signUpSubmit(oncomplete) {
+    /*jshint validthis: true*/
+    var email = dom.getInner("#email"),
+        pass = dom.getInner("#password"),
+        vpass = dom.getInner("#vpassword"),
+        valid = validation.passwordAndValidationPassword(pass, vpass);
+
+    if(email && valid) {
+      user.createSecondaryUser(email, pass, function(status) {
+        if(status.success) {
+          // clearing the stored email from localStorage is taken care
+          // of in emailSent.
+          pageHelpers.emailSent("waitForUserValidation", email,
+            complete.curry(oncomplete, true));
+        }
+        else {
+          tooltip.showTooltip("#could_not_add");
+          complete(oncomplete, false);
+        }
+      }, pageHelpers.getFailure(errors.createUser, oncomplete));
+    }
+    else {
+      complete(oncomplete, false);
+    }
+  }
+
 
   function authWithPrimary(oncomplete) {
     pageHelpers.openPrimaryAuth(winchan, verifyEmail, verifyURL, primaryAuthComplete);
@@ -126,12 +167,15 @@ BrowserID.signIn = (function() {
   }
 
   function onEmailChange(event) {
+    /*jshint validthis: true*/
+
     // this is basically a state reset.
     var email = dom.getInner("#email");
     if(email !== lastEmail) {
-      dom.removeClass("body", "verify_primary");
+      dom.removeClass("body", "primary");
       dom.removeClass("body", "known_secondary");
       dom.removeClass("body", "unknown_secondary");
+      dom.slideUp(".password_entry, .vpassword_entry, .verify_primary");
       this.submit = emailSubmit;
       lastEmail = email;
     }
@@ -151,13 +195,24 @@ BrowserID.signIn = (function() {
       self.bind("#email", "keyup", onEmailChange);
 
       sc.start.call(self, options);
+
+      // If there is an email already set up in pageHelpers.setupEmail, see if
+      // the email address is a primary, secondary, known or unknown.  Redirect
+      // if needed.
+      if (dom.getInner("#email")) {
+        self.submit(options.ready);
+      }
+      else {
+        complete(options.ready);
+      }
     },
     submit: emailSubmit
 
     // BEGIN TESTING API
     ,
     emailSubmit: emailSubmit,
-    passwordSubmit: passwordSubmit,
+    signInSubmit: signInSubmit,
+    signUpSubmit: signUpSubmit,
     authWithPrimary: authWithPrimary,
     primaryAuthComplete: primaryAuthComplete
     // END TESTING API
