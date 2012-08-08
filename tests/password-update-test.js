@@ -12,8 +12,7 @@ vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 db = require('../lib/db.js'),
-config = require('../lib/configuration.js'),
-bcrypt = require('bcrypt');
+config = require('../lib/configuration.js');
 
 var suite = vows.describe('password-length');
 
