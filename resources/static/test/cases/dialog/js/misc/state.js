@@ -31,15 +31,35 @@
           this.info[key] = info;
         };
       }(key));
+      ActionsMock.prototype.reset = function() {
+        for(var key in ActionsMock.prototype) {
+          if(bid.Modules.Actions.prototype.hasOwnProperty(key)) {
+            delete this.called[key];
+            delete this.info[key];
+          }
+        }
+      };
     }
   }
 
   function testActionStarted(actionName, requiredOptions) {
-    ok(actions.called[actionName], actionName + "called");
+    ok(actions.called[actionName], actionName + " called");
     for(var key in requiredOptions) {
       equal(actions.info[actionName][key], requiredOptions[key],
           actionName + " called with " + key + "=" + requiredOptions[key]);
     }
+  }
+
+  function testStagingThrottledRetry(startMessage, expectedStagingAction) {
+    mediator.publish(startMessage, { email: TEST_EMAIL, complete: function() {
+        mediator.publish("password_set");
+        actions.reset();
+
+        mediator.publish("password_set");
+        testActionStarted(expectedStagingAction, { email: TEST_EMAIL });
+        start();
+      }
+    });
   }
 
   function testVerifyStagedAddress(startMessage, verifyScreenAction) {
@@ -130,6 +150,10 @@
     mediator.publish("password_set");
 
     equal(actions.info.doStageUser.email, TEST_EMAIL, "correct email sent to doStageUser");
+  });
+
+  asyncTest("multiple calls to password_set for new_user, simulate throttling - call doStageUser with correct email for each", function() {
+    testStagingThrottledRetry("new_user", "doStageUser");
   });
 
   test("password_set for add secondary email - call doStageEmail with correct email", function() {
@@ -267,6 +291,11 @@
     });
     testActionStarted("doResetPassword", { email: TEST_EMAIL });
   });
+
+  asyncTest("multiple calls to password_set for forgot_password, simulate throttling - call doStageResetPassword with correct email for each", function() {
+    testStagingThrottledRetry("forgot_password", "doStageResetPassword");
+  });
+
 
   asyncTest("reset_password_staged to staged_address_confirmed - call doConfirmResetPassword then doEmailConfirmed", function() {
     testVerifyStagedAddress("reset_password_staged", "doConfirmResetPassword");
@@ -507,6 +536,11 @@
       }
     });
   });
+
+  asyncTest("multiple calls to password_set for stage_email, simulate throttling - call doAddEmail with correct email for each", function() {
+    testStagingThrottledRetry("stage_email", "doStageEmail");
+  });
+
 
   test("stage_reverify_email - call doStageReverifyEmail", function() {
     mediator.publish("stage_reverify_email", { email: TEST_EMAIL });
