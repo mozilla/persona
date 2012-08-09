@@ -1,0 +1,2 @@
+pytest-mozwebqa==1.0
+requests==0.13.3
