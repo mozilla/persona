@@ -1030,6 +1030,36 @@
       }
     }
 
+    function defined(item) {
+      return typeof item !== "undefined";
+    }
+
+    function warn(message) {
+      try {
+        console.warn(message);
+      } catch(e) {
+        /* ignore error */
+      }
+    }
+
+    function checkDeprecated(options, field) {
+      if(defined(options[field])) {
+        warn(field + " has been deprecated");
+        return true;
+      }
+    }
+
+    function checkRenamed(options, oldName, newName) {
+      if (defined(options[oldName]) &&
+          defined(options[newName])) {
+        throw "you cannot supply *both* " + oldName + " and " + newName;
+      }
+      else if(checkDeprecated(options, oldName)) {
+        options[newName] = options[oldName];
+        delete options[oldName];
+      }
+    }
+
     function internalWatch(options) {
       if (typeof options !== 'object') return;
 
@@ -1073,14 +1103,6 @@
           method: 'loggedInUser',
           params: options.loggedInUser
         });
-      }
-    }
-
-    function warn(message) {
-      try {
-        console.warn(message);
-      } catch(e) {
-        /* ignore error */
       }
     }
 
@@ -1205,6 +1227,15 @@
         opts.termsOfService = passedOptions.termsOfService || undefined;
         opts.privacyURL = passedOptions.privacyURL || undefined;
         opts.tosURL = passedOptions.tosURL || undefined;
+
+        if (checkDeprecated(passedOptions, "silent")) {
+          // Silent has been deprecated, do nothing.  Placing the check here
+          // prevents the callback from being called twice, once with null and
+          // once after internalWatch has been called.  See issue #1532
+          if (callback) setTimeout(function() { callback(null); }, 0);
+          return;
+        }
+
         checkCompat(true);
         internalWatch({
           onlogin: function(assertion) {
@@ -1222,11 +1253,7 @@
           }
           observers.login = observers.logout = observers.ready = null;
         };
-        if (passedOptions && passedOptions.silent) {
-          if (callback) setTimeout(function() { callback(null); }, 0);
-        } else {
-          internalRequest(opts);
-        }
+        internalRequest(opts);
       },
       // backwards compatibility with old API
       getVerifiedEmail: function(callback) {
