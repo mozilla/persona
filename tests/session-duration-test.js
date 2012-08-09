@@ -14,7 +14,6 @@ start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
-bcrypt = require('bcrypt'),
 primary = require('./lib/primary.js'),
 ca = require('../lib/keysigner/ca.js'),
 jwcrypto = require('jwcrypto');

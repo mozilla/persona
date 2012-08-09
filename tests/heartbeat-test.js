@@ -13,7 +13,6 @@ start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
-bcrypt = require('bcrypt'),
 http = require('http');
 
 var suite = vows.describe('heartbeat');
@@ -58,7 +57,7 @@ start_stop.addStartupBatches(suite);
 suite.addBatch({
   "stopping the browserid process": {
     topic: function() {
-      process.kill(parseInt(process.env['BROWSERID_PID'], 10), 'SIGSTOP');      
+      process.kill(parseInt(process.env['BROWSERID_PID'], 10), 'SIGSTOP');
       this.callback();
     },
     "then doing a deep __heartbeat__ on router": {
@@ -88,7 +87,7 @@ suite.addBatch({
       },
       "but upon SIGCONT": {
         topic: function(e, code) {
-          process.kill(parseInt(process.env['BROWSERID_PID'], 10), 'SIGCONT');      
+          process.kill(parseInt(process.env['BROWSERID_PID'], 10), 'SIGCONT');
           this.callback();
         },
         "a deep heartbeat": {
@@ -119,7 +118,7 @@ suite.addBatch({
 suite.addBatch({
   "stopping the static process": {
     topic: function() {
-      process.kill(parseInt(process.env['STATIC_PID'], 10), 'SIGSTOP');      
+      process.kill(parseInt(process.env['STATIC_PID'], 10), 'SIGSTOP');
       this.callback();
     },
     "then doing a deep __heartbeat__ on router": {
@@ -149,7 +148,7 @@ suite.addBatch({
       },
       "but upon SIGCONT": {
         topic: function(e, code) {
-          process.kill(parseInt(process.env['STATIC_PID'], 10), 'SIGCONT');      
+          process.kill(parseInt(process.env['STATIC_PID'], 10), 'SIGCONT');
           this.callback();
         },
         "a deep heartbeat": {
