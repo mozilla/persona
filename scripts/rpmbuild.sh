@@ -12,7 +12,7 @@ cd $(dirname $0)/..    # top level of the checkout
 mkdir -p rpmbuild/SOURCES rpmbuild/SPECS rpmbuild/SOURCES
 rm -rf rpmbuild/RPMS rpmbuild/SOURCES/browserid
 
-tar --exclude rpmbuild --exclude .git \
+tar --exclude rpmbuild --exclude .git --exclude .svn \
     --exclude var -czf \
     $PWD/rpmbuild/SOURCES/browserid-server.tar.gz .
 
