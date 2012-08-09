@@ -71,12 +71,19 @@
   });
 
 
-  test("clear", function() {
+  test("clear - there should be default values", function() {
     storage.addEmail("testuser@testuser.com", {priv: "key"});
     storage.clear();
 
     var emails = storage.getEmails();
     equal(_.size(emails), 0, "object should have no items");
+
+    // all fields *MUST* have default values or else synchronization of
+    // localStorage in IE8 across multiple browsing contexts becomes a problem.
+    // See issue #2206 and #1637
+    notEqual(typeof localStorage.emails, "undefined", "emails is defined");
+    notEqual(typeof localStorage.siteInfo, "undefined", "siteInfo is defined");
+    notEqual(typeof localStorage.managePage, "undefined", "managePage is defined");
   });
 
   test("invalidateEmail with valid email address", function() {
