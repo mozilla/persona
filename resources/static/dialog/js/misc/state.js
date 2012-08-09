@@ -52,6 +52,13 @@ BrowserID.State = (function() {
       };
 
       self.stagedEmail = info.email;
+
+      // Keep these emails around until the user is actually staged.  If the
+      // staging request is throttled, the next time set_password is called,
+      // these variables are needed to know which staging function to call.
+      // See issue #2258.
+      self.newUserEmail = self.addEmailEmail = self.resetPasswordEmail = null;
+
       startAction(actionName, actionInfo);
     }
 
@@ -150,6 +157,7 @@ BrowserID.State = (function() {
       mediator.publish("kpi_data", { new_account: true });
 
       startAction(false, "doSetPassword", info);
+      complete(info.complete);
     });
 
     handleState("password_set", function(msg, info) {
@@ -167,15 +175,12 @@ BrowserID.State = (function() {
       self.stagedPassword = info.password;
 
       if(self.newUserEmail) {
-        self.newUserEmail = null;
         startAction(false, "doStageUser", info);
       }
       else if(self.addEmailEmail) {
-        self.addEmailEmail = null;
         startAction(false, "doStageEmail", info);
       }
       else if(self.resetPasswordEmail) {
-        self.resetPasswordEmail = null;
         startAction(false, "doStageResetPassword", info);
       }
     });
@@ -376,6 +381,7 @@ BrowserID.State = (function() {
       // point, the email confirmation screen will be shown.
       self.resetPasswordEmail = info.email;
       startAction(false, "doResetPassword", info);
+      complete(info.complete);
     });
 
     handleState("reset_password_staged", handleEmailStaged.curry("doConfirmResetPassword"));
