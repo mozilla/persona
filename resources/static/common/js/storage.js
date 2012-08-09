@@ -32,6 +32,10 @@ BrowserID.Storage = (function() {
       ONE_DAY_IN_MS = (1000 * 60 * 60 * 24),
       storage = BrowserID.getStorage();
 
+  // Set default values immediately so that IE8 localStorage synchronization
+  // issues do not become a factor. See issue #2206
+  setDefaultValues();
+
   // temporary, replace with helpers.log if storage uses elog long term...
   function elog (msg) {
     if (window.console && console.error) console.error(msg);
@@ -45,6 +49,12 @@ BrowserID.Storage = (function() {
     storage.removeItem("emails");
     storage.removeItem("siteInfo");
     storage.removeItem("managePage");
+    // Ensure there are default values after they are removed.  This is
+    // necessary so that IE8's localStorage synchronization issues do not
+    // surface.  In IE8, if the dialog page is open when the verification page
+    // loads and emails does not have a default value, the dialog cannot read
+    // or write to localStorage. The dialog See issues #1637 and #2206
+    setDefaultValues();
   }
 
   // initialize all localStorage values to default if they are unset.
