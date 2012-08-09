@@ -18,7 +18,7 @@ suite.addBatch({
   "new bcrypt of password for given salt": {
     topic: function () {
       var salt = "$2a$04$rakQlaS/TyfjZmoVuRs9ku";
-      bcrypt.encrypt("Thisismypassword1!", salt, this.callback);
+      bcrypt.hash("Thisismypassword1!", salt, this.callback);
     },
     "should match old bcrypt": function (hash) {
       assert.strictEqual(hash, '$2a$04$rakQlaS/TyfjZmoVuRs9kuQHFk2oShl8DNmVbxgSZyOE8Hzgk0One');
