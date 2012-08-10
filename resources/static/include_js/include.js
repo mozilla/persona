@@ -1076,9 +1076,9 @@
       }
     }
 
-    function log(message) {
+    function warn(message) {
       try {
-        console.log(message);
+        console.warn(message);
       } catch(e) {
         /* ignore error */
       }
@@ -1086,15 +1086,15 @@
 
     function internalRequest(options) {
       if (options.requiredEmail) {
-        log("requiredEmail has been deprecated");
+        warn("requiredEmail has been deprecated");
       }
 
       if (options.termsOfService && !options.privacyPolicy) {
-        log("termsOfService ignored unless privacyPolicy also defined");
+        warn("termsOfService ignored unless privacyPolicy also defined");
       }
 
       if (options.privacyPolicy && !options.termsOfService) {
-        log("privacyPolicy ignored unless termsOfService also defined");
+        warn("privacyPolicy ignored unless termsOfService also defined");
       }
 
       // focus an existing window
