@@ -1230,6 +1230,7 @@
       },
       // backwards compatibility with old API
       getVerifiedEmail: function(callback) {
+        warn("navigator.id.getVerifiedEmail has been deprecated");
         checkCompat(true);
         navigator.id.get(callback);
       },
