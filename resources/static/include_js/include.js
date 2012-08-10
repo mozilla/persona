@@ -1076,13 +1076,25 @@
       }
     }
 
+    function warn(message) {
+      try {
+        console.warn(message);
+      } catch(e) {
+        /* ignore error */
+      }
+    }
+
     function internalRequest(options) {
       if (options.requiredEmail) {
-        try {
-          console.log("requiredEmail has been deprecated");
-        } catch(e) {
-          /* ignore error */
-        }
+        warn("requiredEmail has been deprecated");
+      }
+
+      if (options.termsOfService && !options.privacyPolicy) {
+        warn("termsOfService ignored unless privacyPolicy also defined");
+      }
+
+      if (options.privacyPolicy && !options.termsOfService) {
+        warn("privacyPolicy ignored unless termsOfService also defined");
       }
 
       // focus an existing window
