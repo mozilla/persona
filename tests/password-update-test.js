@@ -92,6 +92,30 @@ suite.addBatch({
   }
 });
 
+var context2 = {};
+suite.addBatch({
+  "establishing a second session": {
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: TEST_EMAIL,
+      pass: OLD_PASSWORD,
+      ephemeral: false
+    }, context2),
+    "works as expected": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).success, true);
+    }
+  }
+});
+
+suite.addBatch({
+  "using the second session": {
+    topic: wsapi.post('/wsapi/prolong_session', {}, context2),
+    "works as expected": function(err, r) {
+      assert.strictEqual(r.code, 200);
+      assert.strictEqual(r.body, "OK");
+    }
+  }
+});
+
 suite.addBatch({
   "updating the password without specifying a proper old password": {
     topic: wsapi.post('/wsapi/update_password', {
@@ -117,13 +141,31 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  "updating the password": {
-    topic: wsapi.post('/wsapi/update_password', {
-      oldpass: OLD_PASSWORD,
-      newpass: NEW_PASSWORD
-    }),
-    "works as expected": function(err, r) {
-      assert.strictEqual(JSON.parse(r.body).success, true);
+  "after waiting for lastPasswordReset's now() to increment": {
+    topic: function() {
+      // we introduce a 2s delay here to ensure that the now() call in
+      // lib/db/{json,mysql}.js will return a different value than it did
+      // during complete_user_creation(), thus expiring the old session still
+      // hanging out in context2. now() returns an integer
+      // seconds-since-epoch, so the shortest delay that will reliably get a
+      // different result is 1.0s+epsilon (depending upon the resolution of
+      // the system clock). To avoid this stall (and make the test suite run
+      // 2s faster), either:
+      //  1: change now() to include a mutable offset, expose a
+      //     db.addNowOffset() to "accelerate the universe", have this code
+      //     add 1s instead of using setTimeout. Or:
+      //  2: add a db function to modify (increment) lastPasswordReset by 1s,
+      //     have this code call it instead of using setTimeout
+      setTimeout(this.callback, 2000);
+      },
+    "updating the password": {
+      topic: wsapi.post('/wsapi/update_password', {
+        oldpass: OLD_PASSWORD,
+        newpass: NEW_PASSWORD
+      }),
+      "works as expected": function(err, r) {
+        assert.strictEqual(JSON.parse(r.body).success, true);
+      }
     }
   }
 });
@@ -147,6 +189,12 @@ suite.addBatch({
     }),
     "fails as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, false);
+    }
+  },
+  "using the other (expired) session": {
+    topic: wsapi.post('/wsapi/prolong_session', {}, context2),
+    "fails as expected": function(err, r) {
+      assert.strictEqual(r.code, 403);
     }
   }
 });

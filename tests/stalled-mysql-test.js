@@ -80,7 +80,6 @@ suite.addBatch({
   "ping": {
     topic: wsapi.get('/wsapi/ping', {}),
     "fails with 500 when db is stalled": function(err, r) {
-      // address info with a primary address doesn't need db access.
       assert.strictEqual(r.code, 500);
     }
   },
@@ -216,7 +215,7 @@ suite.addBatch({
   "ping": {
     topic: wsapi.get('/wsapi/ping', { }),
     "fails": function(err, r) {
-      assert.strictEqual(r.code, 500);
+      assert.strictEqual(r.code, 503);
     }
   },
 
@@ -391,15 +390,11 @@ suite.addBatch({
     "fails with 404": function(err, r) {
       assert.strictEqual(r.code, 404);
     }
-  }
-});
-
-// logout doesn't need database, it should still succeed
-suite.addBatch({
-  "logout": {
+  },
+  "logout": { // logout needs the database too
     topic: wsapi.post('/wsapi/logout', { }),
-    "succeeds": function(err, r) {
-      assert.strictEqual(r.code, 200);
+    "fails with 503": function(err, r) {
+      assert.strictEqual(r.code, 503);
     }
   }
 });
