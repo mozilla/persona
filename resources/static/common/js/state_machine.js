@@ -11,7 +11,7 @@ BrowserID.StateMachine = (function() {
       History = bid.History,
       history,
       mediator = bid.Mediator,
-      subscriptions = []
+      subscriptions = [];
 
   var StateMachine = bid.Class({
     init: function() {},
