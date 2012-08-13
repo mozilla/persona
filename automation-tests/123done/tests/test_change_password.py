@@ -44,6 +44,7 @@ class TestChangePassword:
         account_manager.click_password_done()
 
         account_manager.click_sign_out()
+        mozwebqa.selenium.execute_script('localStorage.clear()')
 
         home_pg.go_to_home_page()
 
