@@ -162,6 +162,15 @@ app.use(function(req, res, next) {
     });
 });
 
+// Do this only when PERSONA_WITH_COVER is set. Without a graceful shutdown,
+// `cover` will not generate .coverage_data
+if (process.env.PERSONA_WITH_COVER) {
+  // shutdown nicely on signals
+  shutdown.handleTerminationSignals(app, function() {
+    // nothing particular to do here for router.
+  });
+}
+
 var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function(conn) {
   logger.info("running on http://" + app.address().address + ":" + app.address().port);

@@ -114,11 +114,19 @@ function runDaemon(daemon, cb) {
     if (ek === 'path') return; // this blows away the Window PATH
     process.env[ek] = daemonsToRun[daemon][ek];
   });
+
   var pathToScript = daemonsToRun[daemon].path || path.join(__dirname, "..", "bin", daemon);
   var args = [ pathToScript ];
+
   if (process.env.PERSONA_DEBUG_MODE) {
     args.unshift('--debug=' + debugPort++);
+  } else if (process.env.PERSONA_WITH_COVER) {
+    var pathToCover = path.join(__dirname, "..", "node_modules", ".bin", "cover");
+    if (path.existsSync(pathToCover)) {
+      args.unshift(pathToCover, 'run');
+    }
   }
+
   var p = spawn('node', args);
 
   function dump(d) {
