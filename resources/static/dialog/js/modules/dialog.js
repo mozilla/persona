@@ -174,9 +174,12 @@ BrowserID.Modules.Dialog = (function() {
           helpers.log("requiredEmail has been deprecated");
         }
 
-        // support old parameter names...
-        if (paramsFromRP.tosURL) paramsFromRP.termsOfService = paramsFromRP.tosURL;
-        if (paramsFromRP.privacyURL) paramsFromRP.privacyPolicy = paramsFromRP.privacyURL;
+        // support old parameter names if new parameter names not defined.
+        if (paramsFromRP.tosURL && !paramsFromRP.termsOfService)
+          paramsFromRP.termsOfService = paramsFromRP.tosURL;
+
+        if (paramsFromRP.privacyURL && !paramsFromRP.privacyPolicy)
+          paramsFromRP.privacyPolicy = paramsFromRP.privacyURL;
 
         if (paramsFromRP.termsOfService && paramsFromRP.privacyPolicy) {
           params.termsOfService = fixupURL(origin_url, paramsFromRP.termsOfService);

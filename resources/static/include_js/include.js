@@ -1080,20 +1080,7 @@
       _open_hidden_iframe();
 
       // back compat support for loggedInEmail
-      if (typeof options.loggedInEmail !== 'undefined' &&
-          typeof options.loggedInUser !== 'undefined') {
-        throw "you cannot supply *both* loggedInEmail and loggedInUser";
-      }
-      else if(typeof options.loggedInEmail !== 'undefined') {
-        try {
-          console.log("loggedInEmail has been deprecated");
-        } catch(e) {
-          /* ignore error */
-        }
-
-        options.loggedInUser = options.loggedInEmail;
-        delete options.loggedInEmail;
-      }
+      checkRenamed(options, "loggedInEmail", "loggedInUser");
 
       // check that the commChan was properly initialized before interacting with it.
       // on unsupported browsers commChan might still be undefined, in which case
@@ -1107,9 +1094,9 @@
     }
 
     function internalRequest(options) {
-      if (options.requiredEmail) {
-        warn("requiredEmail has been deprecated");
-      }
+      checkDeprecated(options, "requiredEmail");
+      checkRenamed(options, "tosURL", "termsOfService");
+      checkRenamed(options, "privacyURL", "privacyPolicy");
 
       if (options.termsOfService && !options.privacyPolicy) {
         warn("termsOfService ignored unless privacyPolicy also defined");
