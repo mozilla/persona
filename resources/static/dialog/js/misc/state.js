@@ -36,7 +36,7 @@ BrowserID.State = (function() {
             // Save a snapshot of the current state off to the momentos. If
             // a state is ever cancelled, this momento will be used as the
             // new state.
-            if (shouldSaveState(msg)) momentos.push(_.extend({}, self));
+            if (shouldSaveMomento(msg)) momentos.push(_.extend({}, self));
             redirecting = false;
 
             callback(msg, info || {});
@@ -65,7 +65,7 @@ BrowserID.State = (function() {
           me.popState();
         };
 
-    function shouldSaveState(msg) {
+    function shouldSaveMomento(msg) {
       // Do not save temporal state machine state if we are cancelling
       // state or if we are redirecting. A redirection basically says
       // "continue the current state".  A "cancel_state" would put the
