@@ -15,13 +15,15 @@ If you want to run that single test against your ephemeral instance called 'foo'
 
 If you want to run all the tests, create a dummy user, put its info in credentials.yaml, then do ```run.py --all``` to run all the tests, including 123done and myfavoritebeer tests.
 
+If you want to run all the tests against all the browsers, using sauce labs credentials, then do ```run.py --everywhere```.
+
 # I've got time. Tell me more!
 
 OK, sure...
 
 ## how to run selenium tests inside the automation-tests directory against ephemeral, stage, or prod environments
 
-Node bindings don't exist for Selenium 2 API (webdriver), so we're using python bindings instead. This requires some python-centric setup, but it shouldn't take more than 15 minutes or so to get up and running.
+Node bindings aren't as mature as python for Selenium 2 API (webdriver), so we're using python bindings instead. This requires some python-centric setup, but it shouldn't take more than 15 minutes or so to get up and running.
 
 These tests currently only hit myfavoritebeers and 123done domains. For example, to test an ephemeral install named foo.personatest.org, you can pass 'foo.123done.org' into the py.test baseurl parameter (this is covered again in the examples section).
 

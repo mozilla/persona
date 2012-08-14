@@ -13,3 +13,7 @@
 Thumbs.db
 /locale
 /resources/email_templates/email-test.html
+/automation-tests/bid_selenium
+/automation-tests/results
+/automation-tests/credentials.yaml
+/automation-tests/sauce.yaml
