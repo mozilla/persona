@@ -17,15 +17,37 @@ BrowserID.State = (function() {
 
   function startStateMachine() {
     /*jshint validthis: true*/
-    var self = this,
+    // Self has been changed from a reference to this to a reference to the
+    // current temporal state. State cannot be stored on the "this" object
+    // because the user can go backwards in time using the "cancel_state"
+    // action. If the state were stored on this object, we would not have an
+    // easy way to "back up" in time. Because of this, snapshots of the
+    // current state must be taken and stored every time a new state is
+    // started. When a redirectToState is called, this is a continuation
+    // of the current state and no new state object is stored.  When
+    // a cancelState occurs, repopulate the state object with the previously
+    // saved snapshot.
+    var me = this,
+        self = {},
+        momentos = [],
+        redirecting = false,
         handleState = function(msg, callback) {
-          self.subscribe(msg, function(msg, info) {
-            // This level of indirection is to ensure an info object is
-            // always present in the handler.
+          me.subscribe(msg, function(msg, info) {
+            // Save a snapshot of the current state off to the momentos. If
+            // a state is ever cancelled, this momento will be used as the
+            // new state.
+            if (shouldSaveMomento(msg)) momentos.push(_.extend({}, self));
+            redirecting = false;
+
             callback(msg, info || {});
           });
         },
-        redirectToState = mediator.publish.bind(mediator),
+        redirectToState = function(msg, info) {
+          // redirectToState is like continuing the current state.  Do not save
+          // a momento if a redirection occurs.
+          redirecting = true;
+          mediator.publish(msg, info);
+        },
         startAction = function(save, msg, options) {
           if (typeof save !== "boolean") {
             options = msg;
@@ -33,10 +55,25 @@ BrowserID.State = (function() {
             save = true;
           }
 
-          var func = self.controller[msg].bind(self.controller);
-          self.gotoState(save, func, options);
+          var func = me.controller[msg].bind(me.controller);
+          me.gotoState(save, func, options);
         },
-        cancelState = self.popState.bind(self);
+        cancelState = function() {
+          // A state has been cancelled, go back to the previous snapshot of
+          // state.
+          self = momentos.pop();
+          me.popState();
+        };
+
+    function shouldSaveMomento(msg) {
+      // Do not save temporal state machine state if we are cancelling
+      // state or if we are redirecting. A redirection basically says
+      // "continue the current state".  A "cancel_state" would put the
+      // current state on the list of momentos which would then have to
+      // immediately be taken back off.
+      return msg !== "cancel_state" && !redirecting;
+    }
+
 
     function handleEmailStaged(actionName, msg, info) {
       // The unverified email has been staged, now the user has to confirm
@@ -252,7 +289,7 @@ BrowserID.State = (function() {
       // Keep the dialog from automatically closing when the user browses to
       // the IdP for verification.
       moduleManager.stopAll();
-      self.success = true;
+      me.success = self.success = true;
     });
 
     handleState("primary_user_ready", function(msg, info) {
