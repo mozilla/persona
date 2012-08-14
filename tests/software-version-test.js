@@ -19,7 +19,7 @@ suite.options.error = false;
 
 suite.addBatch({
   "version": {
-    topic: function() { return version(); },
+    topic: function() { version(this.callback); },
     "works": function(r) {
       assert.isString(r);
       assert.equal(r.length, 7);
