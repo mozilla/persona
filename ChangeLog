@@ -1,4 +1,33 @@
 train-2012.08.17:
+  * Reseting your password now logs you out everywhere: #2026
+  * SCHEMA CHANGE: add TIMESTAMP lastPasswordReset to user table for #2026
+  * CONFIG CHANGE: default statsd to false
+  * Changes to allow devs to work on windows: #1751
+  * KPI refinements: #2061, #2176, #2203
+  * No email is selected by default for a site you haven't logged into on a device: #2059
+  * Logging improvements: #928, #2016
+  * URL length limits in frontend code: #2081
+  * UI improvements: #2087, #2023, #2082, #2132, #2120, #2187, #2200, #1565, #406, #1093, #1615, #2258, #1594, #2231
+  * Fixed javascript error in FFX 14 when resizing dialog: #2071
+  * IE8 fixes: #2190, #2206
+  * Mobile UI fixes: #2066, #1325
+  * Disable spell checking in email fields in iOS: #2116
+  * Language improvements: #2136
+  * All environments now on node 0.6.17, minimum required version raised: #2250
+  * Node.JS 0.8.x now continuously tested in CI environment: #2238
+  * Persona window now has a name "__persona_dialog" to simplify automated testing: #1023
+  * Added email headers for improved verification completion by non-humans: #2174
+  * Usability enhancements for "forgot password" screen: #1679
+  * Redirect an authenticated user from /signin or /forgot to / on main site: #2178
+  * Update jwcrypto with zero behavior change: #2204, #2226
+  * Documentation improvements: #2125, #2262, #1977
+  * Make sure navigator.id.get can be called with no options: #2216
+  * Automated (selenium) tests moved into repository at /automated-tests/*: #2235
+  * Code cleanup: #2213, #2227
+  * Addition of a command line utility to inspect your browser's local storage: #2243
+  * RPM build fixes: #2249
+  * API improvements (better error messages): #1438, #2255, #2228, #1659
+  * .getVerifiedEmail() deprecated: #2267
 
 train-2012.07.30:
   * Emails are prettier!  They now include both HTML and Text versions: #1890
