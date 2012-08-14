@@ -24,11 +24,11 @@ class HomePage(Base):
 
     def __init__(self, mozwebqa):
         Base.__init__(self, mozwebqa)
-
-        WebDriverWait(self.selenium, self.timeout * 2).until(
+        longer_timeout = self.timeout * 2
+        WebDriverWait(self.selenium, longer_timeout).until(
                 lambda s: s.find_element(*self._sign_in_locator) and \
                 s.find_element(*self._sign_in_locator).is_displayed(),
-                "the sign in button has not appeared within %s" % self.timeout * 2)
+                "the sign in button has not appeared within %s" % longer_timeout)
 
     def click_sign_up(self):
         """Clicks the Sign Up button."""
