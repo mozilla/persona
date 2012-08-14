@@ -14,8 +14,13 @@ from persona_server.pages.account_manager import AccountManager
 
 class BaseTest(object):
 
+    def clear_browser(self, mozwebqa):
+        mozwebqa.selenium.execute_script('localStorage.clear()')
+
+
     # move this to BrowserID when personatestuser.org comes online
     def create_verified_user(self, mozwebqa):
+        '''Create a user, verify it, and return it.'''
         user = MockUser()
 
         # create the user
@@ -33,6 +38,7 @@ class BaseTest(object):
         account_manager = AccountManager(mozwebqa)
         account_manager.load_page()
         account_manager.sign_out()
+        self.clear_browser(mozwebqa)
         home.load_page()  # test will instantiate HomePage
 
         return user
