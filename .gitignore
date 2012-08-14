@@ -17,3 +17,4 @@ Thumbs.db
 /automation-tests/results
 /automation-tests/credentials.yaml
 /automation-tests/sauce.yaml
+automation-tests/persona_server/results/*
