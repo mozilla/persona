@@ -1,5 +1,10 @@
-train-2012.08.03 (in progress):
+train-2012.08.17:
 
+train-2012.07.30:
+  * Emails are prettier!  They now include both HTML and Text versions: #1890
+  * (hotfix 2012.08.03) l10n fix, string extraction, email templates are moved: #2122
+  * (hotfix 2012.08.06) Fix IE8 not remembering you: #2183, #2218
+  * (hotfix 2012.08.09) Fix IE8 / secondary verification in same browser: #2206
 
 train-2012.07.20:
   * Introduction of "static" process which serves views and static resources: #1757
