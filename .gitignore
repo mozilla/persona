@@ -13,3 +13,4 @@
 Thumbs.db
 /locale
 /resources/email_templates/email-test.html
+automation-tests/persona_server/results/*
