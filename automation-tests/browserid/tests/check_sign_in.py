@@ -17,6 +17,8 @@ import restmail
 class TestSignIn(BaseTest):
 
     def test_sign_in_helper(self, mozwebqa):
+        if mozwebqa.email == None:
+            pytest.skip("no --email supplied")
         browser_id = BrowserID(mozwebqa.selenium, mozwebqa.timeout)
         browser_id.sign_in(mozwebqa.email, mozwebqa.password)
 
@@ -24,6 +26,8 @@ class TestSignIn(BaseTest):
             lambda s: s.find_element_by_id('loggedin').is_displayed())
 
     def test_sign_in(self, mozwebqa):
+        if mozwebqa.email == None:
+            pytest.skip("no --email supplied")
         from .. pages.sign_in import SignIn
         signin = SignIn(mozwebqa.selenium, mozwebqa.timeout, expect='new')
         signin.email = mozwebqa.email
