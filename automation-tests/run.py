@@ -134,12 +134,15 @@ def main():
         if options.run_everywhere or options.run_all:
             subprocess.call(env_py + ' -m py.test --destructive ' +
                 '--credentials=credentials.yaml ' + sauce + browser + 
+                ' --webqatimeout=90 -m travis' +
                 ' --baseurl=http://' + host + '.123done.org -q browserid', shell=True)
             subprocess.call(env_py + ' -m py.test --destructive ' +
                 '--credentials=credentials.yaml ' + sauce + browser + 
+                ' --webqatimeout=90' +
                 ' --baseurl=http://' + host + '.123done.org -q 123done', shell=True)
             subprocess.call(env_py + ' -m py.test --destructive ' +
                 '--credentials=credentials.yaml ' + sauce + browser + 
+                ' --webqatimeout=90' +
                 ' --baseurl=http://' + host + '.myfavoritebeer.org -q myfavoritebeer', shell=True)
         # only run one test in the default case
         else:
