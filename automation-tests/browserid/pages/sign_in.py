@@ -28,6 +28,9 @@ class SignIn(Base):
     _add_another_email_locator = (By.ID, 'useNewEmail')
     _new_email_locator = (By.ID, 'newEmail')
     _add_new_email_locator = (By.ID, 'addNewEmail')
+    _your_computer_content_locator = (By.ID, 'your_computer_content')
+    _this_is_my_computer_locator = (By.ID, 'this_is_my_computer')
+    _this_is_not_my_computer_locator = (By.ID, 'this_is_not_my_computer')
 
     def __init__(self, selenium, timeout, expect='new'):
         Base.__init__(self, selenium, timeout)
@@ -161,11 +164,19 @@ class SignIn(Base):
         self.selenium.find_element(*self._sign_in_locator).click()
         self.switch_to_main_window()
 
-    def click_sign_in_returning_user(self):
+    def click_sign_in_returning_user(self, expect='login'):
         """Clicks the 'sign in' button."""
         self.selenium.find_element(
             *self._sign_in_returning_user_locator).click()
-        self.switch_to_main_window()
+
+        if expect == 'login':
+            self.switch_to_main_window()
+        elif expect == 'remember':
+            WebDriverWait(self.selenium, self.timeout).until(
+                lambda s: s.find_element(
+                    *self._your_computer_content_locator).is_displayed())
+        else:
+            raise Exception('Unknown expect value: %s' % expect)
 
     def click_verify_email(self):
         """Clicks 'verify email' button."""
@@ -201,6 +212,16 @@ class SignIn(Base):
         WebDriverWait(self.selenium, self.timeout).until(
             lambda s: s.find_element(
                 *self._check_email_at_locator).is_displayed())
+
+    def click_i_trust_this_computer(self):
+        """Clicks 'I trust this computer' and signs in """
+        self.selenium.find_element(*self._this_is_my_computer_locator).click()
+        self.switch_to_main_window()
+
+    def click_this_is_not_my_computer(self):
+        """Clicks 'I trust this computer' and signs in for a public computer"""
+        self.selenium.find_element(*self._this_is_not_my_computer_locator).click()
+        self.switch_to_main_window()
 
     def sign_in(self, email, password):
         """Signs in using the specified email address and password."""
