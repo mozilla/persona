@@ -56,6 +56,7 @@ function respondsWith(status) {
 suite.addBatch({
   'GET /':                       respondsWith(200),
   'GET /forgot':                 respondsWith(200),
+  'GET /signup':                 respondsWith(301),
   'GET /signin':                 respondsWith(200),
   'GET /about':                  respondsWith(200),
   'GET /tos':                    respondsWith(200),
