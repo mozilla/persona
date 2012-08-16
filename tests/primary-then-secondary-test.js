@@ -49,6 +49,7 @@ suite.addBatch({
   }
 });
 
+var the_assertion;
 // now let's generate an assertion using this user
 suite.addBatch({
   "generating an assertion": {
@@ -60,6 +61,7 @@ suite.addBatch({
     },
     "and logging in with the assertion succeeds": {
       topic: function(err, assertion)  {
+        the_assertion = assertion;
         wsapi.post('/wsapi/auth_with_assertion', {
           assertion: assertion,
           ephemeral: true
@@ -84,6 +86,32 @@ suite.addBatch({
     }
   }
 });
+
+// this second session, logged in with just the primary, should *not* be
+// invalidated by the addition of a secondary address (and consequent
+// establishment of a password)
+var context2 = {};
+suite.addBatch({
+  "establishing a second session": {
+    topic: function() {
+      wsapi.post('/wsapi/auth_with_assertion', {
+        assertion: the_assertion,
+        ephemeral: true
+      }, context2).call(this);
+    },
+    "works as expected": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).success, true);
+    },
+    "after waiting for  lastPasswordReset's now() to increment": {
+      topic: function() {
+        // see password-update-test.js for an explanation of this delay
+        setTimeout(this.callback, 2000);
+      },
+      "we've waited long enough": function() {}
+    }
+  }
+});
+
 
 var token;
 // now we have a new account.  let's add a secondary to it
@@ -234,6 +262,17 @@ suite.addBatch({
     }),
     "works": function(err, r) {
       assert.strictEqual(r.code, 200);
+    }
+  }
+});
+
+// and the second session should still be valid
+suite.addBatch({
+  "second session is still valid": {
+    topic: wsapi.post('/wsapi/prolong_session', {}, context2),
+    "works as expected": function(err, r) {
+      assert.strictEqual(r.code, 200);
+      assert.strictEqual(r.body, "OK");
     }
   }
 });
