@@ -1,7 +1,7 @@
 getting started
 ===============
 
-# I'm super impatient. Let's get going in 10 sec or less.
+# I'm super impatient. Let's get going in 10 sec or less. (But I don't run Windows)
 
 TL;DR: just execute ```./run.py``` from inside the automation-tests directory.
 
@@ -15,7 +15,7 @@ If you want to run that single test against your ephemeral instance called 'foo'
 
 If you want to run all the tests, create a dummy user, put its info in credentials.yaml, then do ```run.py --all``` to run all the tests, including 123done and myfavoritebeer tests.
 
-If you want to run all the tests against all the browsers, using sauce labs credentials, then do ```run.py --everywhere```.
+If you want to run all the tests against all the browsers, using any browsers the script can find locally, then do ```run.py --everywhere```.
 
 # I've got time. Tell me more!
 
@@ -23,7 +23,7 @@ OK, sure...
 
 ## how to run selenium tests inside the automation-tests directory against ephemeral, stage, or prod environments
 
-Node bindings aren't as mature as python for Selenium 2 API (webdriver), so we're using python bindings instead. This requires some python-centric setup, but it shouldn't take more than 15 minutes or so to get up and running.
+Node bindings aren't as mature as python for Selenium 2 API (webdriver), so we're using python bindings instead. This requires some python-centric setup, but it shouldn't take more than 15 minutes or so to get up and running, unless you're running Windows. See the bottom of this page for Windows setup instructions.
 
 These tests currently only hit myfavoritebeers and 123done domains. For example, to test an ephemeral install named foo.personatest.org, you can pass 'foo.123done.org' into the py.test baseurl parameter (this is covered again in the examples section).
 
@@ -113,4 +113,13 @@ TODO: some idioms from the existing test code to help people quickly express "fi
 Refer to [mozilla's pytest_mozwebqa](https://github.com/davehunt/pytest-mozwebqa#writing-tests-for-pytest_mozwebqa) documentation on writing tests for the time being.
 
 A note about upstreaming bidpom changes: this codebase contains [mozilla's bidpom](https://github.com/mozilla/bidpom) as [git-subtree](https://github.com/apenwarr/git-subtree/blob/master/git-subtree.txt). This allows us to pull in changes from upstream, while easily tracking the bidpom code to branches. It's unlikely that we'll need to push or pull to upstream frequently, but for details on doing so, see also apenwarr's [blog post](http://apenwarr.ca/log/?m=200904#30).
+
+## Setting up Python in a Windows Environment
+
+Note: this post talks about python 2.5, but you need to install 2.6 or 2.7, and not 3.x.
+
+http://blog.sadphaeton.com/2009/01/20/python-development-windows-part-1installing-python.html
+http://blog.sadphaeton.com/2009/01/20/python-development-windows-part-2-installing-easyinstallcould-be-easier.html
+
+Alternately, think about running under cygwin instead.
 
