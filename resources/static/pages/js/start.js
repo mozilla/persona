@@ -200,7 +200,8 @@ $(function() {
       dom.addClass("body", "authenticated");
 
       if (!path || path === "/") {
-        bid.manageAccount();
+        var module = bid.manageAccount.create();
+        module.start({});
         $(window).trigger("resize");
       }
 

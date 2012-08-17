@@ -1,4 +1,5 @@
-/*globals BrowserID:true, _: true, confirm: true, displayEmails: true */
+/*globals BrowserID: true, _: true, confirm: true, format: true, gettext: true, EJS: true */
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -202,48 +203,46 @@ BrowserID.manageAccount = (function() {
     }
   }
 
-  function init(options, oncomplete) {
-    options = options || {};
+  var Module = bid.Modules.PageModule.extend({
+    start: function(options) {
+      options = options || {};
 
-    if (options.document) doc = options.document;
-    if (options.confirm) confirmAction = options.confirm;
+      if (options.document) doc = options.document;
+      if (options.confirm) confirmAction = options.confirm;
 
-    var template = new EJS({ text: $("#templateManage").html() });
-    var manage = template.render({});
-    $("#hAlign").after(manage);
+      var self=this,
+          oncomplete = options.ready,
+          template = new EJS({ text: $("#templateManage").html() }),
+          manage = template.render({});
 
-    dom.bindEvent("#cancelAccount", "click", cancelEvent(cancelAccount));
+      $("#hAlign").after(manage);
 
-    dom.bindEvent("button.edit", "click", startEdit);
-    dom.bindEvent("button.done", "click", cancelEdit);
-    dom.bindEvent("#edit_password_form", "submit", cancelEvent(changePassword));
+      self.click("#cancelAccount", cancelAccount);
 
-    user.checkAuthentication(function(auth_level) {
-      authLevel = auth_level;
+      self.bind("button.edit", "click", startEdit);
+      self.bind("button.done", "click", cancelEdit);
+      self.bind("#edit_password_form", "submit", cancelEvent(changePassword));
 
-      syncAndDisplayEmails(function() {
-        displayHelpTextToNewUser();
-        displayChangePassword(oncomplete);
-      });
-    }, pageHelpers.getFailure(errors.checkAuthentication, oncomplete));
-  }
+      user.checkAuthentication(function(auth_level) {
+        authLevel = auth_level;
 
-  // BEGIN TESTING API
-  function reset() {
-    dom.unbindEvent("#cancelAccount", "click");
+        syncAndDisplayEmails(function() {
+          displayHelpTextToNewUser();
+          displayChangePassword(oncomplete);
+        });
+      }, pageHelpers.getFailure(errors.checkAuthentication, oncomplete));
+    }
 
-    dom.unbindEvent("button.edit", "click");
-    dom.unbindEvent("button.done", "click");
-    dom.unbindEvent("#edit_password_form", "submit");
-  }
+    // BEGIN TESTING API
+    ,
+    cancelAccount: cancelAccount,
+    removeEmail: removeEmail,
+    changePassword: changePassword
+    // END TESTING API
+  });
 
-  init.reset = reset;
-  init.cancelAccount = cancelAccount;
-  init.removeEmail = removeEmail;
-  init.changePassword = changePassword;
-  // END TESTING API
 
-  return init;
+  return Module;
 
 }());
 
