@@ -7,23 +7,6 @@ import subprocess
 import sys
 
 
-# used to check for existence of virtualenv and pip.
-# lifted from: http://stackoverflow.com/questions/377017
-def which(program):
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
-    return None
-
-
 def main():
     # get path to python: virtualenv location differs on windows
     # TODO platform detection is brittle. is there a better way?
@@ -64,11 +47,16 @@ def main():
         exit(1)
 
     # 2. check that virtualenv and pip exist. if not, bail.
-    if not which('pip'):
+    try:
+        import pip
+    except ImportError:
         sys.stderr.write('pip must be installed; do "easy_install pip", ' +
                          ' then try again\n')
         exit(1)
-    if not which('virtualenv'):
+        
+    try:
+        import virtualenv
+    except ImportError:
         sys.stderr.write('virtualenv must be installed; do "pip install ' +
                          'virtualenv", then try again\n')
         exit(1)
