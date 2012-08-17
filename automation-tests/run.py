@@ -5,6 +5,7 @@ import os
 import platform
 import subprocess
 import sys
+import pkg_resources
 
 
 def main():
@@ -48,17 +49,9 @@ def main():
 
     # 2. check that virtualenv and pip exist. if not, bail.
     try:
-        import pip
-    except ImportError:
-        sys.stderr.write('pip must be installed; do "easy_install pip", ' +
-                         ' then try again\n')
-        exit(1)
-        
-    try:
-        import virtualenv
-    except ImportError:
-        sys.stderr.write('virtualenv must be installed; do "pip install ' +
-                         'virtualenv", then try again\n')
+        pkg_resources.WorkingSet().require('pip', 'virtualenv')
+    except pkg_resources.DistributionNotFound as e:
+        sys.stderr.write('{package} must be installed\n'.format(package=e.message)
         exit(1)
 
     # 3. create the virtualenv if they asked you to install it or it's missing
