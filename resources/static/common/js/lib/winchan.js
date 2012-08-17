@@ -95,6 +95,7 @@
         if (err) setTimeout(function() { cb(err); }, 0);
 
         // supply default options
+        if (!opts.window_name) opts.window_name = null;
         if (!opts.window_features || isFennec()) opts.window_features = undefined;
 
         // opts.params may be undefined
@@ -124,7 +125,7 @@
           messageTarget = iframe.contentWindow;
         }
 
-        var w = window.open(opts.url, null, opts.window_features);
+        var w = window.open(opts.url, opts.window_name, opts.window_features);
 
         if (!messageTarget) messageTarget = w;
 
