@@ -29,6 +29,7 @@ train-2012.08.17:
   * API improvements (better error messages): #1438, #2255, #2228, #1659
   * .getVerifiedEmail() deprecated: #2267
   * add a permanent redirect from /signup to /signin: issue #2277
+  * lockdown our dependencies, keep checksums of .tgzs in repo: #2022
 
 train-2012.07.30:
   * Emails are prettier!  They now include both HTML and Text versions: #1890
