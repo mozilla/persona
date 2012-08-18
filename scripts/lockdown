@@ -161,7 +161,7 @@ var server = http.createServer(function (req, res) {
   r.end();
 });
 
-server.listen(process.env['PORT'] || 0, '127.0.0.1', function() {
+server.listen(process.env['LOCKDOWN_PORT'] || 0, '127.0.0.1', function() {
   boundPort = server.address().port;
 
   var child = exec('npm install', {

@@ -66,6 +66,9 @@
   "convict": {
     "0.0.6": "960495df513baf3e5c20b970268fd86ff1ac79b2"
   },
+  "cookies": {
+    "0.1.7": "*"
+  },
   "crypto-browserify": {
     "0.1.1": "34343b512041a9c32ae7ec6a7f8ab4d06b418a0b"
   },
@@ -154,6 +157,9 @@
   },
   "mysql": {
     "0.9.5": "cc95e1c31d0653974d3fb3e9266ed466cd0f96b5"
+  },
+  "node-proxy": {
+    "0.5.2": "c22cc7ddf8c2af0bfa32fed30d3c533b216ef893"
   },
   "node-statsd": {
     "0.0.2": "*"
