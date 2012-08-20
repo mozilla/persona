@@ -966,6 +966,8 @@
       ready: null
     };
 
+    var loggedInUser;
+
     var compatMode = undefined;
     function checkCompat(requiredMode) {
       if (requiredMode === true) {
@@ -1022,6 +1024,13 @@
           commChan.bind('login', function(trans, params) {
             if (observers.login) observers.login(params);
           });
+
+          if (loggedInUser) {
+            commChan.notify({
+              method: 'loggedInUser',
+              params: loggedInUser
+            });
+          }
         }
       } catch(e) {
         // channel building failed!  let's ignore the error and allow higher
@@ -1077,20 +1086,11 @@
       observers.logout = options.onlogout || null;
       observers.ready = options.onready || null;
 
-      _open_hidden_iframe();
-
       // back compat support for loggedInEmail
       checkRenamed(options, "loggedInEmail", "loggedInUser");
+      loggedInUser = options.loggedInUser;
 
-      // check that the commChan was properly initialized before interacting with it.
-      // on unsupported browsers commChan might still be undefined, in which case
-      // we let the dialog display the "unsupported browser" message upon spawning.
-      if (typeof options.loggedInUser !== 'undefined' && commChan) {
-        commChan.notify({
-          method: 'loggedInUser',
-          params: options.loggedInUser
-        });
-      }
+      _open_hidden_iframe();
     }
 
     function internalRequest(options) {
