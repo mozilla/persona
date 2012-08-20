@@ -1,35 +1,19 @@
 before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+  - sh -e /etc/init.d/xvfb start
 
-language: node_js
+language: python
+python:
+  - 2.6
+  - 2.7
 
-before_install:
- - sudo apt-get install libgmp3-dev
- - "mysql -e 'create database browserid;'"
-
-node_js:
- - 0.6
- - 0.8
-
-notifications:
-  irc:
-    channels:
-      - "irc.mozilla.org#identity"
-    use_notice: false
-    skip_join: false
-  email:
-    - lloyd@mozilla.com
-    - jbonacci@mozilla.com
-    - jrgm@mozilla.com
+script: py.test --baseurl=http://dev.123done.org --driver=firefox -m travis tests
 
 env:
- - WHAT_TESTS=front MYSQL_USER=root
- - WHAT_TESTS=back_mysql MYSQL_USER=root
- - WHAT_TESTS=back
+  - DISPLAY=':99.0'
 
-mysql:
-  adapter: mysql2
-  username: root
-  encoding: utf8
-  database: browserid
+notifications:
+  email:
+    - dave.hunt@gmail.com
+  irc:
+    - "irc.mozilla.org#automation"
+    - "irc.mozilla.org#identity"
