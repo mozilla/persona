@@ -28,7 +28,9 @@ class AccountManager(Base):
 
     @property
     def signed_in(self):
-        return not self.selenium.find_element(By.CSS_SELECTOR, 'body.not_authenticated')
+        WebDriverWait(self.selenium, self.timeout).until(
+            lambda s: s.execute_script('return jQuery.active == 0'))
+        return 'not_authenticated' not in self.selenium.find_element(By.TAG_NAME, 'body').get_attribute('class')
 
     @property
     def emails(self):
