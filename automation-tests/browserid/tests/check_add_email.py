@@ -14,7 +14,7 @@ import restmail
 
 
 @pytest.mark.nondestructive
-class TestSignIn(BaseTest):
+class TestAddEmail(BaseTest):
 
     @pytest.mark.travis
     def test_add_email(self, mozwebqa):
@@ -29,6 +29,7 @@ class TestSignIn(BaseTest):
         signin = SignIn(mozwebqa.selenium, mozwebqa.timeout, expect='returning')
         signin.click_add_another_email_address()
         signin.new_email = user.additional_emails[0]
+        assert signin.new_email == user.additional_emails[0], "new email getter failed"
         signin.click_add_new_email()
         signin.close_window()
         signin.switch_to_main_window()

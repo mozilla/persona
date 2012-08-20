@@ -6,6 +6,12 @@ Documentation
 -------------
 See the project's [wiki](https://github.com/mozilla/bidpom/wiki).
 
+Running BIDPOM's Tests
+----------------------
+* two tests in check_sign_in.py require --email and --password flags. they can be skipped by using the "-m travis" flag
+* if running against a remote selenium server, add --capabilities={"avoid-proxy":true} to the command line
+* if experiencing TimeoutErrors from WebDriverWait, add the --webqatimeout=90 to the command line
+
 License
 -------
 This software is licensed under the [MPL](http://www.mozilla.org/MPL/2.0/) 2.0:

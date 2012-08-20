@@ -62,7 +62,7 @@ class SignIn(Base):
     @property
     def signed_in_email(self):
         """Get the value of the email that is currently signed in."""
-        return self.selenium.find_element(*self._signed_in_email_locator).text
+        return self.selenium.find_element(*self._signed_in_email_locator).get_attribute('value')
 
     def click_this_is_not_me(self):
         """Clicks the 'This is not me' button."""
@@ -79,7 +79,7 @@ class SignIn(Base):
     @property
     def email(self):
         """Get the value of the email field."""
-        return self.selenium.find_element(*self._email_locator).text
+        return self.selenium.find_element(*self._email_locator).get_attribute('value')
 
     @email.setter
     def email(self, value):
@@ -91,7 +91,7 @@ class SignIn(Base):
     @property
     def new_email(self):
         """Get the value of the new email field."""
-        return self.selenium.find_element(*self._new_email_locator).text
+        return self.selenium.find_element(*self._new_email_locator).get_attribute('value')
 
     @new_email.setter
     def new_email(self, value):
@@ -119,7 +119,7 @@ class SignIn(Base):
     @property
     def password(self):
         """Get the value of the password field."""
-        return self.selenium.find_element(*self._password_locator).text
+        return self.selenium.find_element(*self._password_locator).get_attribute('value')
 
     @password.setter
     def password(self, value):
@@ -131,7 +131,7 @@ class SignIn(Base):
     @property
     def verify_password(self):
         """Get the value of the verify password field."""
-        return self.selenium.find_element(*self._verify_password_locator).text
+        return self.selenium.find_element(*self._verify_password_locator).get_attribute('value')
 
     @verify_password.setter
     def verify_password(self, value):
