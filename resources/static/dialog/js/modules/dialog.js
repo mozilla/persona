@@ -153,7 +153,7 @@ BrowserID.Modules.Dialog = (function() {
 
       // fixupURL adds a trailing "/", which we don't want, so strip it
       origin_url = fixupURL("", origin_url);
-      origin_url = origin_url.substr(0, origin_url.length-1);
+      origin_url = origin_url.replace(/\/$/, "");
       user.setOrigin(origin_url);
 
 

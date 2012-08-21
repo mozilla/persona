@@ -208,6 +208,38 @@
     });
   });
 
+  function testURIEncodedOrigin(host, path) {
+    createController({
+      ready: function() {
+        var scheme = "http://"
+        var domain = scheme + host + path;
+
+        controller.get(domain, {});
+        equal(user.getOrigin(), encodeURI(scheme + host), "origin has been URI encoded");
+        equal(user.getHostname(), encodeURI(host), "hostname has been URI encoded");
+        start();
+      }
+    });
+  }
+
+  function testScriptContainingOrigin(path) {
+    var host = "nefareous<script>alert(1)</script>.com";
+    testURIEncodedOrigin(host, path);
+  }
+
+  function testNonScriptedOrigin(path) {
+    var host = "good-actor.com";
+    testURIEncodedOrigin(host, path);
+  }
+
+  asyncTest("get with script containing origin without / on end - URI encode the origin", testScriptContainingOrigin.curry(""));
+
+  asyncTest("get with script containing origin with / on end - URI encode the origin", testScriptContainingOrigin.curry("/"));
+
+  asyncTest("get without script containing origin without / on end - URI encode the origin", testNonScriptedOrigin.curry(""));
+
+  asyncTest("get without script containing with / on end - URI encode the origin", testNonScriptedOrigin.curry("/"));
+
 
   asyncTest("get with relative termsOfService & valid privacyPolicy - print error screen", function() {
     createController({
