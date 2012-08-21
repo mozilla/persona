@@ -350,7 +350,7 @@ BrowserID.User = (function() {
      * @param {string} hostname
      */
     setHostname: function(hostnameArg) {
-      if (!/^[a-zA-Z0-9.\-]*$/.test(hostnameArg))
+      if (!/^[a-zA-Z0-9.\-\[\]]*$/.test(hostnameArg))
         throw new Error("invalid DNS characters in hostname");
       hostname = hostnameArg;
     },

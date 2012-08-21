@@ -153,7 +153,7 @@ BrowserID.Modules.Dialog = (function() {
 
       user.setOrigin(origin_url);
       var hostname = origin_url.replace(/^.*:\/\//, "").replace(/:\d*$/, "");
-      if (!/^[a-zA-Z0-9.\-]*$/.test(hostname))
+      if (!/^[a-zA-Z0-9.\-\[\]]*$/.test(hostname))
         throw new Error("invalid DNS characters in hostname");
       user.setHostname(hostname);
 
