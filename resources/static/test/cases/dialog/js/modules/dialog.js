@@ -208,6 +208,33 @@
     });
   });
 
+  function testOriginSanitization(origin, expectedHostname) {
+    createController({
+      ready: function() {
+        controller.get(origin, {});
+        equal(user.getOrigin(), origin, "origin is unmangled");
+        equal(user.getHostname(), expectedHostname, "hostname matches");
+        start();
+      }
+    });
+  }
+
+  function testOriginSanitizationRejected(origin) {
+    try {
+      testOriginSanitization(origin, "");
+      equal(false, true, "controller.get() was supposed to raise error");
+    } catch (e) {
+      // test passes
+    }
+  }
+
+  asyncTest("origin cleanup, no slash", testOriginSanitization.curry("http://good-actor123.com", "good-actor123.com"));
+  asyncTest("origin cleanup, yes slash", testOriginSanitization.curry("http://good-actor123.com/", "good-actor123.com"));
+  asyncTest("origin cleanup, path without slash", testOriginSanitization.curry("http://good-actor123.com/path", "good-actor123.com"));
+  asyncTest("origin cleanup, path with slash", testOriginSanitization.curry("http://good-actor123.com/path/", "good-actor123.com"));
+
+  asyncTest("bad origin", testOriginSanitizationRejected.curry("http://evil-<script>.com/path/"));
+
 
   asyncTest("get with relative termsOfService & valid privacyPolicy - print error screen", function() {
     createController({

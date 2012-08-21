@@ -7,7 +7,7 @@
 BrowserID.User = (function() {
   "use strict";
 
-  var jwcrypto, origin,
+  var jwcrypto, origin, hostname,
       bid = BrowserID,
       network = bid.Network,
       storage = bid.Storage,
@@ -345,12 +345,23 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Get the hostname for the set origin
+     * setHostname
+     * @method setHostname
+     * @param {string} hostname
+     */
+    setHostname: function(hostnameArg) {
+      if (!/^[a-zA-Z0-9.\-]*$/.test(hostnameArg))
+        throw new Error("invalid DNS characters in hostname");
+      hostname = hostnameArg;
+    },
+
+    /**
+     * Get the hostname - guaranteed to be DNS-legal ([a-zA-z.-]*)
      * @method getHostname
      * @returns {string}
      */
     getHostname: function() {
-      return origin.replace(/^.*:\/\//, "").replace(/:\d*$/, "");
+      return hostname;
     },
 
     setReturnTo: function(returnTo) {

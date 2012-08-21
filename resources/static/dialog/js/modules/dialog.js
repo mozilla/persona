@@ -152,6 +152,10 @@ BrowserID.Modules.Dialog = (function() {
           hash = win.location.hash;
 
       user.setOrigin(origin_url);
+      var hostname = origin_url.replace(/^.*:\/\//, "").replace(/:\d*$/, "");
+      if (!/^[a-zA-Z0-9.\-]*$/.test(hostname))
+        throw new Error("invalid DNS characters in hostname");
+      user.setHostname(hostname);
 
 
       if (startExternalDependencies) {
