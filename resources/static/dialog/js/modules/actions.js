@@ -17,17 +17,18 @@ BrowserID.Modules.Actions = (function() {
       onsuccess,
       onerror;
 
-  function startService(name, options) {
+  function startService(name, options, reported_service_name) {
+    mediator.publish("service", { name: reported_service_name || name });
+
     // Only one service outside of the main dialog allowed.
     if(runningService) {
       serviceManager.stop(runningService);
     }
+
     var module = serviceManager.start(name, options);
     if(module) {
       runningService = name;
     }
-
-    mediator.publish("service", { name: name });
 
     return module;
   }
@@ -98,7 +99,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doResetPassword: function(info) {
-      startService("set_password", _.extend(info, { password_reset: true }));
+      startService("set_password", _.extend(info, { password_reset: true }), "reset_password");
     },
 
     doStageResetPassword: function(info) {
