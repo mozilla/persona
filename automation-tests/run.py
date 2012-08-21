@@ -99,7 +99,7 @@ def main():
             credentialsfile.close()
         #if you can't open the file for editing, bail
         except IOError:
-            sys.stederr.write('Unalbe to open credentials.yaml to write out' +
+            sys.stederr.write('Unable to open credentials.yaml to write out' +
                 ' credentials. Either create credentials.yaml manually or' +
                 ' ensure the test process has permission to create the file.\n')
             exit(1)
