@@ -1,0 +1,274 @@
+{
+  "JSONSelect": {
+    "0.4.0": "a08edcc67eb3fcbe99ed630855344a0cf282bb8d"
+  },
+  "JSV": {
+    "3.5.0": "f017ec75629e8c89b8359dc79a2ceee92ef9471e"
+  },
+  "ansi": {
+    "0.1.2": "2627e29498f06e2a1c2ece9c21e28fd494430827"
+  },
+  "async": {
+    "0.1.22": "0fc1aaa088a0e3ef0ebe2d8831bab0dcf8845061"
+  },
+  "aws-lib": {
+    "0.0.5": "971b8995078d83c80f2372f134c496e71b293a46"
+  },
+  "awsbox": {
+    "0.2.15": "10fe4fa8833c4a0310469446ac222dfeaf2fe17c"
+  },
+  "bcrypt": {
+    "0.7.1": "923e2623331211adcab6ac84ec4fcd41713e1e58"
+  },
+  "bigint": {
+    "0.3.9": "0e32f5f685001a74b45d4fd9dd2e6fcbac335422"
+  },
+  "bindings": {
+    "1.0.0": "c3ccde60e9de6807c6f1aa4ef4843af29191c828"
+  },
+  "browserify": {
+    "1.13.5": "b5f0a160733779d27547885dfb598a65ef6fdaad"
+  },
+  "cjson": {
+    "0.0.6": "f53a8664cd5f195c0bed06235cd4a38df88b4208"
+  },
+  "cli": {
+    "0.4.3": "e6819c8d5faa957f64f98f66a8506268c1d1f17d"
+  },
+  "client-sessions": {
+    "0.0.6": "8985fbeebfaf2da77bd23f1ff2e387f5f8abb059"
+  },
+  "coffee-script": {
+    "1.3.3": "150d6b4cb522894369efed6a2101c20bc7f4a4f4"
+  },
+  "colors": {
+    "0.5.1": "7d0023eaeb154e8ee9fce75dcb923d0ed1667774",
+    "0.6.0-1": "6dbb68ceb8bc60f2b313dcc5ce1599f06d19e67a"
+  },
+  "commondir": {
+    "0.0.1": "89f00fdcd51b519c578733fec563e6a6da7f5be2"
+  },
+  "compute-cluster": {
+    "0.0.6": "8e7a52d9bfcd46ee65e2a084c32ce145ff6c3f79"
+  },
+  "connect": {
+    "1.7.2": "ae50fee4a98c939f78451691ea640c1b4d9c1164"
+  },
+  "connect-cachify": {
+    "0.0.10": "7b0c7a5d597a5e39ff42dfb3a9dd25ba9905d3f9"
+  },
+  "connect-cookie-session": {
+    "0.0.2": "cadd881d36e7d17fca102be77eded7f07846be1a"
+  },
+  "connect-logger-statsd": {
+    "0.0.1": "e1e350f0f6dc538a50a1868b4008806c45c409ea"
+  },
+  "convict": {
+    "0.0.6": "960495df513baf3e5c20b970268fd86ff1ac79b2"
+  },
+  "cookies": {
+    "0.1.7": "*"
+  },
+  "crypto-browserify": {
+    "0.1.1": "34343b512041a9c32ae7ec6a7f8ab4d06b418a0b"
+  },
+  "cycle": {
+    "1.0.0": "7d2bfce4be6c81cc76d1fc12bcbaec0b89c1bc55"
+  },
+  "deputy": {
+    "0.0.3": "749958930f7b40fbd039237f720eb8e8dcc8c97d"
+  },
+  "detective": {
+    "0.1.1": "f1e04fe973754c8907ae51edd3e230e380d76fe9",
+    "0.2.0": "d46b5eb799ea82e51b8788f1ae37098b63119409"
+  },
+  "ejs": {
+    "0.4.3": "8143c3656955b8934db5d9da83e9be73176f1f4f"
+  },
+  "esprima": {
+    "0.9.9": "1b90925c975d632d7282939c3bb9c3a423c30490"
+  },
+  "etagify": {
+    "0.0.2": "171c4f351c6d03e7e8a2c071b6bce2c05b41df44"
+  },
+  "express": {
+    "2.5.0": "3f9716eaa0e7380025fbb2c6c9942e3d9c9ed3b9"
+  },
+  "eyes": {
+    "0.1.7": "e9605b91d254e7375a68ee93e2a5937956b058fb"
+  },
+  "glob": {
+    "3.1.12": "4b3fd0889a68d9805f47ef4b3c6950e88455dc29"
+  },
+  "gobbledygook": {
+    "0.0.3": "437bb23d3ade04dd26b49e7c21e4026c6b086234"
+  },
+  "graceful-fs": {
+    "1.1.10": "388a63917e823bc695afd57c76d7f3ee3db54ad3"
+  },
+  "hashish": {
+    "0.0.4": "6d60bc6ffaf711b6afd60e426d077988014e6554"
+  },
+  "htmlparser": {
+    "1.7.6": "6a263c7ee5930f3e5c56fa564011f99e49f80d34"
+  },
+  "http-browserify": {
+    "0.1.1": "d9d82735a5f85f950761ac3909ba9485ec0af4f1"
+  },
+  "inherits": {
+    "1.0.0": "38e1975285bf1f7ba9c84da102bb12771322ac48"
+  },
+  "irc": {
+    "0.3.3": "f39f41fb25782217d2e57183654c520dd5fea9be"
+  },
+  "jshint": {
+    "0.7.1": "7c62cdd1b260ec71743a9851ce79a9fc9d22ff15"
+  },
+  "jwcrypto": {
+    "0.4.2": "3a5d0f1143e4b567f67c93eb4c9667107f4c38b8"
+  },
+  "lockdown": {
+    "0.0.1": "dc85b162da9e81b75808fd8a8a2b01c1b261da63"
+  },
+  "lru-cache": {
+    "1.0.6": "aa50f97047422ac72543bda177a9c9d018d98452",
+    "2.0.1": "6feae28419f7fc358a063a5b188d52d15538006a"
+  },
+  "mailcomposer": {
+    "0.1.15": "85198b329ad1380f0c8d5bb5488c350eae8218a9"
+  },
+  "mersenne": {
+    "0.0.3": "a81f9aeb4f9158b1991f92b4c40d4bddda70d33d"
+  },
+  "mime": {
+    "1.2.7": "c7a13f33a7073d9900f288436b06b3a16200865b"
+  },
+  "mimelib-noiconv": {
+    "0.1.9": "eadce6f9ce226842501a203e95bcee96af8189f2"
+  },
+  "minimatch": {
+    "0.0.5": "96bb490bbd3ba6836bbfac111adf75301b1584de",
+    "0.2.6": "afc731fd9874c4c47496bc27938e5014134eaa57"
+  },
+  "mkdirp": {
+    "0.0.7": "d89b4f0e4c3e5e5ca54235931675e094fe1a5072",
+    "0.3.0": "1bbf5ab1ba827af23575143490426455f481fe1e",
+    "0.3.3": "595e251c1370c3a68bab2136d0e348b8105adf13"
+  },
+  "mysql": {
+    "0.9.5": "cc95e1c31d0653974d3fb3e9266ed466cd0f96b5"
+  },
+  "node-proxy": {
+    "0.5.2": "c22cc7ddf8c2af0bfa32fed30d3c533b216ef893"
+  },
+  "node-statsd": {
+    "0.0.2": "*"
+  },
+  "nodemailer": {
+    "0.3.21": "d9637a1d585f36fd30362c3036ce0692656fe771"
+  },
+  "nomnom": {
+    "1.5.2": "f4345448a853cfbd5c0d26320f2477ab0526fe2f"
+  },
+  "npmlog": {
+    "0.0.2": "f0cf4b2c519950c00e91ba8e2868b62bf86254f6"
+  },
+  "nub": {
+    "0.0.0": "b369bd32bdde66af59605c3b0520bc219dccc04f"
+  },
+  "optimist": {
+    "0.2.6": "c15b750c98274ea175d241b745edf4ddc88f177b",
+    "0.2.8": "e981ab7e268b457948593b55674c099a815cac31",
+    "0.3.1": "6680d30560193af5a55eb64394883ed7bcb98f2e",
+    "0.3.4": "4d6d0bd71ffad0da4ba4f6d876d5eeb04e07480b"
+  },
+  "orderly": {
+    "1.0.1": "fb4e983db7900832373a7b0c903669c4dae78fb6"
+  },
+  "pkginfo": {
+    "0.2.3": "7239c42a5ef6c30b8f328439d9b9ff71042490f8"
+  },
+  "postprocess": {
+    "0.2.4": "f74512742b1d2c908182a4b60717faa226acf2fb"
+  },
+  "qs": {
+    "0.5.0": "fda53429faaa8a3a72f630941d4851144a24d34e"
+  },
+  "rai": {
+    "0.1.6": "46a44ff529f503cbce4c8fa3054cc440adab1926"
+  },
+  "read-installed": {
+    "0.0.1": "2d9b9086ae33ae42793210f519701169edabd2e2"
+  },
+  "read-package-json": {
+    "0.1.3": "e2c41ce3217f8b50b7221d1fc864432450cdb151"
+  },
+  "relative-date": {
+    "1.1.1": "75c97c5446fa1146c1d250c47ca3629fb9a2e764"
+  },
+  "request": {
+    "2.9.203": "6c1711a5407fb94a114219563e44145bcbf4723a"
+  },
+  "resolve": {
+    "0.2.3": "f1eb7fb76436f91d87fd19c5f973fe7d506f6571"
+  },
+  "sax": {
+    "0.1.5": "d1829a6120fa01665eb4dbff6c43f29fd6d61471",
+    "0.4.2": "39f3b601733d6bec97105b242a2a40fd6978ac3c"
+  },
+  "semver": {
+    "1.0.12": "4686f056e5894a9cba708adeabc2c49dada90778",
+    "1.0.14": "cac5e2d55a6fbf958cb220ae844045071c78f676"
+  },
+  "simplesmtp": {
+    "0.1.20": "0e75f291eeffd0bf1cd85ae85c45ab0a42276cac"
+  },
+  "slide": {
+    "1.1.3": "a16975ba76b766b92f98ef337243336c1fa3238f"
+  },
+  "stack-trace": {
+    "0.0.6": "1e719bd6a2629ff09c189e17a9ef902a94fc5db0"
+  },
+  "temp": {
+    "0.4.0": "671ad63d57be0fe9d7294664b3fc400636678a60"
+  },
+  "traverse": {
+    "0.6.3": "a053ffa1b6179b9240ea16d74bfd604bd6b6e41b"
+  },
+  "uglify-js": {
+    "1.0.6": "f0d3aafd463f26a437b9ebc19f4947ab7e8078aa",
+    "1.2.6": "d354b2d3c1cf10ebc18fa78c11a28bdd9ce1580d"
+  },
+  "uglifycss": {
+    "0.0.5": "db9652bbf3fed50d2e9b6e930e28380a0fc3a5b7"
+  },
+  "underscore": {
+    "1.1.7": "40bab84bad19d230096e8d6ef628bff055d83db0",
+    "1.3.1": "6cb8aad0e77eb5dbbfb54b22bcd8697309cf9641"
+  },
+  "urlparse": {
+    "0.0.1": "d171ec4681fcd0d8bd00b64345637d89a9700876"
+  },
+  "validator": {
+    "0.4.9": "0f2421e35abe4321054383ed5cc154264a984a94"
+  },
+  "vm-browserify": {
+    "0.0.1": "51d25979366ab219dfe35a3fc65ecd6af3631d54"
+  },
+  "vows": {
+    "0.5.13": "f6fd9ee9c36d3f20bd6680455cff8090c4b29cde",
+    "0.6.0": "be2f068009d39a37b37af85c29fa86d8573db431"
+  },
+  "which": {
+    "1.0.5": "5630d6819dda692f1464462e7956cb42c0842739"
+  },
+  "winston": {
+    "0.6.2": "4144fe2586cdc19a612bf8c035590132c9064bd2"
+  },
+  "wordwrap": {
+    "0.0.2": "b79669bb42ecb409f83d583cad52ca17eaa1643f"
+  },
+  "xml2js": {
+    "0.1.13": "438ff3b1d85a51ad659ffc2ebe83403e10c98722"
+  }
+}

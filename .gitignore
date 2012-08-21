@@ -18,3 +18,4 @@ Thumbs.db
 /automation-tests/credentials.yaml
 /automation-tests/sauce.yaml
 automation-tests/persona_server/results/*
+/automation-tests/chromedriver.log

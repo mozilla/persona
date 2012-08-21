@@ -17,7 +17,7 @@
         "etagify": "0.0.2",
         "express": "2.5.0",
         "gobbledygook": "0.0.3",
-        "mustache": "0.3.1-dev",
+        "lockdown": "0.0.1",
         "jwcrypto": "0.4.2",
         "mysql": "0.9.5",
         "nodemailer": "0.3.21",
@@ -46,6 +46,7 @@
         "htmlparser": "1.7.6"
     },
     "scripts": {
+        "preinstall": "./scripts/lockdown",
         "postinstall": "node ./scripts/generate_ephemeral_keys.js",
         "test": "./scripts/test",
         "start": "node ./scripts/run_locally.js"

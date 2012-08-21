@@ -8,6 +8,27 @@ import sys
 import pkg_resources
 
 
+# used to check for existence of virtualenv and pip.
+# lifted from: http://stackoverflow.com/questions/377017
+def which(program):
+    if platform.system() == 'Windows':
+        program += '.exe'
+
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+    return None
+
+
 def main():
     # get path to python: virtualenv location differs on windows
     # TODO platform detection is brittle. is there a better way?
@@ -30,28 +51,19 @@ def main():
                       ' not the full domain name ("foo.123done.org")')
     parser.add_option('--everywhere', '-e', dest='run_everywhere', action='store_true',
                       help='like --all, but run all tests on all supported' +
-                           ' browsers using sauce labs credentials either' +
-                           ' specified in sauce.yaml or in environment' +
-                           ' variables PERSONA_SAUCE_USER, PERSONA_SAUCE_PASSWORD,' +
-                           ' and PERSONA_SAUCE_APIKEY.')
+                           ' browsers available locally.')
     options, arguments = parser.parse_args()
 
-    # you can't specify both --all and --everywhere
-    if options.run_everywhere and options.run_all:
-            sys.stderr.write("either use --all or --everywhere, not both")
-            exit(1)
-
     # 1. check that python is the right version 
-    # TODO: would 2.6 actually work?
-    if sys.version_info < (2,7,0):
-        sys.stderr.write('python 2.7 or later is required to run the tests\n')
+    if sys.version_info < (2,6,0):
+        sys.stderr.write('python 2.6 or later is required to run the tests\n')
         exit(1)
 
     # 2. check that virtualenv and pip exist. if not, bail.
     try:
         pkg_resources.WorkingSet().require('pip', 'virtualenv')
     except pkg_resources.DistributionNotFound as e:
-        sys.stderr.write('{package} must be installed\n'.format(package=e.message)
+        sys.stderr.write('{package} must be installed\n'.format(package=e.message))
         exit(1)
 
     # 3. create the virtualenv if they asked you to install it or it's missing
@@ -64,75 +76,78 @@ def main():
     # 4. check the ephemeral instance to hit.
     host = options.target_hostname
 
-    # 5. check for/create sauce.yaml, if necessary
-    if options.run_everywhere:
-        # if sauce.yaml does not exist,
-        if not os.path.isfile('sauce.yaml'):
-            # look for environmental variables PERSONA_SAUCE_*
-            try:
-                username = os.environ['PERSONA_SAUCE_USER']
-                password = os.environ['PERSONA_SAUCE_PASSWORD']
-                api_key  = os.environ['PERSONA_SAUCE_APIKEY']
-            # if they are missing, bail
-            except KeyError:
-                sys.stderr.write('Sauce labs credentials are needed to run' +
-                    ' tests everywhere. Add credentials to sauce.yaml or, if' +
-                    ' you have access to persona dev secrets, check that' +
-                    ' the PERSONA_SAUCE_USER, PERSONA_SAUCE_PASSWORD, and' +
-                    ' PERSONA_SAUCE_APIKEY environmental variables are set.\n')
-                exit(1)
-            # if they are present, write them out to sauce.yaml
-            try:
-                saucefile = open('sauce.yaml', 'w')
-                saucefile.write('username: ' + username + '\n')
-                saucefile.write('password: ' + password + '\n')
-                saucefile.write('api-key: ' + api_key + '\n')
-                saucefile.close()
-            # if you can't open the file for editing, bail
-            except IOError:
-                sys.stderr.write('Unable to open sauce.yaml to write out' +
-                    ' credentials. Either create sauce.yaml manually, or' +
-                    ' ensure the test process has permission to create the file.\n')
-                exit(1)
+    # 5 check for and/or create credentials.yaml
+    if not os.path.isfile('credentials.yaml'):
+        # look for env variables
+        try:
+            email = os.environ['PERSONA_EMAIL']
+            password = os.environ['PERSONA_PASSWORD']
+        # if they are missing, bail
+        except KeyError:
+            sys.stderr.write('Existing validated user credentials are needed to run' +
+                ' tests for 123done and myfavoritebeer. Please set them in the' +
+                ' PERSONA_EMAIL and PERSONA_PASSWORD environmental variables.\n')
+            exit(1)
+        # if they are present, write them out to credentials.yaml
+        try:
+            credentialsfile = open('credentials.yaml', 'w')
+            credentialsfile.write('default:\n')
+            credentialsfile.write('    email: ' + email + '\n')
+            credentialsfile.write('    password: ' + password + '\n')
+            credentialsfile.close()
+        #if you can't open the file for editing, bail
+        except IOError:
+            sys.stederr.write('Unalbe to open credentials.yaml to write out' +
+                ' credentials. Either create credentials.yaml manually or' +
+                ' ensure the test process has permission to create the file.\n')
+            exit(1)
 
+    # 5.5 determine the browsers to use
+    # if the person is working for mozilla and doesn't have firefox installed, something is wrong
+    browsers = [('--driver=firefox ', 'local_firefox')]
+    if options.run_everywhere:
+        # Chrome
+        if not which('chromedriver'):
+            sys.stderr.write('In order to run tests with chrome, you must download the driver from' +
+                ' https://code.google.com/p/chromedriver/downloads/list' +
+                ' and put it on the PATH.')
+            exit(1)
+        browsers.append(('--driver=chrome ', 'local_chrome'))
+        # XXX IEDriver does not provide a clean environment for tests when run on a non-VM
+        # XXX Opera does not have a WebDriver implementation, can only be run
+        # via a selenium server
+                
     # 6. run the tests
-
-    # TODO move the run_everywhere list into a config file?
-    if options.run_everywhere:
-        browsers = ['--platform=LINUX --browsername=firefox --browserver=13 ',
-            '--platform=LINUX --browsername=opera   --browserver=12 ',
-            '--platform=MAC   --browsername=firefox --browserver=14 ',
-            '--platform=VISTA --browsername=chrome ',
-            '--platform=VISTA --browsername=firefox --browserver=13 ',
-            '--platform=VISTA --browsername="internet explorer" --browserver=9 ',
-            '--platform=XP    --browsername="internet explorer" --browserver=8 ']
-        sauce = '--saucelabs=sauce.yaml '
-    else:
-        browsers = ['--driver=firefox ']
-        sauce = ''
-
     for browser in browsers:
-        if options.run_everywhere or options.run_all:
-            subprocess.call(env_py + ' -m py.test --destructive ' +
-                '--credentials=credentials.yaml ' + sauce + browser + 
-                ' --webqatimeout=90 -m travis' +
-                ' --baseurl=http://' + host + '.123done.org -q browserid', shell=True)
-            subprocess.call(env_py + ' -m py.test --destructive ' +
-                '--credentials=credentials.yaml ' + sauce + browser + 
-                ' --webqatimeout=90' +
-                ' --baseurl=http://' + host + '.123done.org -q 123done', shell=True)
-            subprocess.call(env_py + ' -m py.test --destructive ' +
-                '--credentials=credentials.yaml ' + sauce + browser + 
-                ' --webqatimeout=90' +
-                ' --baseurl=http://' + host + '.myfavoritebeer.org -q myfavoritebeer', shell=True)
+        no_proxy_json = '--capabilities={\"avoid-proxy\":true}'
+        if options.run_all:
+            subprocess.call(env_py + ' -m py.test --destructive' +
+                ' --credentials=credentials.yaml ' + browser[0] + 
+                ' --webqatimeout=90 -m travis ' + no_proxy_json +
+                ' --webqareport=results/browserid/' + browser[1] + '.html' +
+                ' --baseurl=http://%s.123done.org -q browserid' % host, shell=True)
+            subprocess.call(env_py + ' -m py.test --destructive' +
+                ' --credentials=credentials.yaml ' + browser[0] + 
+                ' --webqatimeout=90 ' + no_proxy_json +
+                ' --webqareport=results/123done/' + browser[1] + '.html' +
+                ' --baseurl=http://%s.123done.org -q 123done' % host, shell=True)
+            subprocess.call(env_py + ' -m py.test --destructive' +
+                ' --credentials=credentials.yaml ' + browser[0] + 
+                ' --webqatimeout=90 ' + no_proxy_json +
+                ' --webqareport=results/myfavoritebeer/' + browser[1] + '.html' +
+                ' --baseurl=http://%s.myfavoritebeer.org -q myfavoritebeer' % host, shell=True)
         # only run one test in the default case
         else:
-            subprocess.call(env_py + ' -m py.test --destructive ' +
-                '--credentials=credentials.yaml ' + sauce + browser +
-                ' --baseurl=http://' + host + '.123done.org ' +
-                '-q 123done/tests/test_new_user.py', shell=True)
+            subprocess.call(env_py + ' -m py.test --destructive' +
+                ' --credentials=credentials.yaml ' + browser[0] +
+                ' --webqatimeout=90 ' + no_proxy_json +
+                ' --baseurl=http://%s.123done.org' % host +
+                ' --webqareport=results/test_new_user/' + browser[1] + '.html' +
+                ' -q 123done/tests/test_new_user.py', 
+                shell=True)
 
     # 7. TODO deactivate/destroy virtualenv?? maybe '--cleanup' argument?
+      # clean up credentials.yaml
 
 
 if __name__ == '__main__':
