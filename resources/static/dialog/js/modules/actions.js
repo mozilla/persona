@@ -107,7 +107,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doConfirmResetPassword: function(info) {
-      startRegCheckService.call(this, info, "waitForPasswordResetComplete", "staged_address_confirmed");
+      startRegCheckService.call(this, info, "waitForPasswordResetComplete", "reset_password_confirmed");
     },
 
     doStageReverifyEmail: function(info) {
@@ -115,7 +115,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doConfirmReverifyEmail: function(info) {
-      startRegCheckService.call(this, info, "waitForEmailReverifyComplete", "staged_address_confirmed");
+      startRegCheckService.call(this, info, "waitForEmailReverifyComplete", "reverify_email_confirmed");
     },
 
     doAssertionGenerated: function(info) {
