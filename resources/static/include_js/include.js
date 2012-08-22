@@ -983,7 +983,28 @@
     }
 
     var commChan,
+        waitingForDOM = false,
         browserSupported = BrowserSupport.isSupported();
+
+    function domReady(callback) {
+      if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', function contentLoaded() {
+          document.removeEventListener('DOMContentLoaded', contentLoaded);
+          callback();
+        }, false);
+      } else if (document.attachEvent && document.readyState) {
+        document.attachEvent('onreadystatechange', function ready() {
+          var state = document.readyState;
+          // 'interactive' is the same as DOMContentLoaded,
+          // but not all browsers use it, sadly.
+          if (state === 'loaded' || state === 'complete' || state === 'interactive') {
+            document.detachEvent('onreadystatechange', ready);'
+            callback();
+          }
+        });
+      }
+    }
+
 
     // this is for calls that are non-interactive
     function _open_hidden_iframe() {
@@ -991,10 +1012,19 @@
       // IFRAME as doing so will cause an exception to be thrown in IE6 and IE7
       // from within the communication_iframe.
       if(!browserSupported) return;
+      var doc = window.document;
+
+      // can't attach iframe and make commChan without the body
+      if (!doc.body) {
+        if (!waitingForDOM) {
+          domReady(_open_hidden_iframe);
+          waitingForDOM = true;
+        }
+        return;
+      }
 
       try {
         if (!commChan) {
-          var doc = window.document;
           var iframe = doc.createElement("iframe");
           iframe.style.display = "none";
           doc.body.appendChild(iframe);
