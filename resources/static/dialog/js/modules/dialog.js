@@ -110,6 +110,15 @@ BrowserID.Modules.Dialog = (function() {
     throw "must be an absolute path: (" + path + ")";
   }
 
+  function fixupHostname(origin) {
+    var hostname = URLParse(origin).host;
+
+    if (!/^[a-zA-Z0-9\.\-\[\]]*$/.test(hostname))
+      throw new Error("invalid DNS characters in hostname");
+
+    return hostname;
+  }
+
   var Dialog = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
@@ -152,10 +161,7 @@ BrowserID.Modules.Dialog = (function() {
           hash = win.location.hash;
 
       user.setOrigin(origin_url);
-      var hostname = origin_url.replace(/^.*:\/\//, "").replace(/:\d*$/, "");
-      if (!/^[a-zA-Z0-9.\-\[\]]*$/.test(hostname))
-        throw new Error("invalid DNS characters in hostname");
-      user.setHostname(hostname);
+      user.setHostname(fixupHostname(origin_url));
 
 
       if (startExternalDependencies) {

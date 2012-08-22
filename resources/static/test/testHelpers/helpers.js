@@ -343,6 +343,24 @@ BrowserID.TestHelpers = (function() {
     testDocumentNotRedirected: function(doc, msg) {
       equal(doc.location.href, document.location.href, msg || "document not redirected");
 
+    },
+
+    testRaises: function(test, expectedException) {
+      var message = "expected exception";
+      if(expectedException) message += (": " + expectedException);
+
+      try {
+        test();
+        ok(false, message);
+      }
+      catch(e) {
+        if(expectedException) {
+          equal(e.toString(), expectedException, message);
+        }
+        else {
+          ok(true, message + ": " + e.toString());
+        }
+      }
     }
   };
 

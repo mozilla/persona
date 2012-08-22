@@ -13,6 +13,7 @@
       testHelpers = bid.TestHelpers,
       testErrorVisible = testHelpers.testErrorVisible,
       testErrorNotVisible = testHelpers.testErrorNotVisible,
+      testRaises = testHelpers.testRaises,
       screens = bid.Screens,
       xhr = bid.Mocks.xhr,
       user = bid.User,
@@ -220,12 +221,14 @@
   }
 
   function testOriginSanitizationRejected(origin) {
-    try {
-      testOriginSanitization(origin, "");
-      equal(false, true, "controller.get() was supposed to raise error");
-    } catch (e) {
-      // test passes
-    }
+    createController({
+      ready: function() {
+        testRaises(function() {
+          controller.get(origin, {});
+        });
+        start();
+      }
+    });
   }
 
   asyncTest("origin cleanup, no slash", testOriginSanitization.curry("http://good-actor123.com", "good-actor123.com"));
