@@ -308,7 +308,7 @@ BrowserID.TestHelpers = (function() {
     testElementFocused: function(selector, msg) {
       var focusedEl = $(":focus");
 
-      if (focusedEl.is(selector)) {
+      if ($(selector).is(":focus")) {
         ok(true, msg || selector + " is focused");
       }
       else {
@@ -317,7 +317,7 @@ BrowserID.TestHelpers = (function() {
         // check to see if it is possible to focus. If it is possible, this is
         // a failure.  If it is not possible, print a message and continue.
         // Remove the element when complete.
-        var input = $("<input type='text' />").appendTo("body").focus();
+        var input = $("<input type='radio' />").appendTo("body").focus();
         if (input.is(":focus")) {
           ok(false, msg || selector + " is focused");
           // refocus the original input element.
