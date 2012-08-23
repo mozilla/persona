@@ -62,7 +62,7 @@
     });
   }
 
-  function testVerifyStagedAddress(startMessage, verifyScreenAction) {
+  function testVerifyStagedAddress(startMessage, confirmationMessage, verifyScreenAction) {
     // start with a site name to ensure the site name is passed to the
     // verifyScreenAction.
     mediator.publish("start", { siteName: "Unit Test Site" });
@@ -88,7 +88,7 @@
     // addresses are synced.  Add the test email and make sure the email_chosen
     // message is triggered.
     storage.addSecondaryEmail(TEST_EMAIL, { unverified: true });
-    mediator.publish("staged_address_confirmed");
+    mediator.publish(confirmationMessage);
   }
 
 
@@ -206,8 +206,8 @@
     ok(actions.info.doRPInfo.privacyPolicy, "doRPInfo called with privacyPolicy set");
   });
 
-  asyncTest("user_staged - call doConfirmUser", function() {
-    testVerifyStagedAddress("user_staged", "doConfirmUser");
+  asyncTest("user_staged to user_confirmed - call doConfirmUser", function() {
+    testVerifyStagedAddress("user_staged", "user_confirmed", "doConfirmUser");
   });
 
   asyncTest("user_confirmed - redirect to email_chosen", function() {
@@ -228,8 +228,8 @@
     }
   });
 
-  asyncTest("email_staged - call doConfirmEmail", function() {
-    testVerifyStagedAddress("email_staged", "doConfirmEmail");
+  asyncTest("email_staged to email_confirmed - call doConfirmEmail", function() {
+    testVerifyStagedAddress("email_staged", "email_confirmed", "doConfirmEmail");
   });
 
   asyncTest("primary_user with already provisioned primary user - redirect to primary_user_ready", function() {
@@ -323,8 +323,8 @@
   });
 
 
-  asyncTest("reset_password_staged to staged_address_confirmed - call doConfirmResetPassword then doEmailConfirmed", function() {
-    testVerifyStagedAddress("reset_password_staged", "doConfirmResetPassword");
+  asyncTest("reset_password_staged to reset_password_confirmed - call doConfirmResetPassword then doEmailConfirmed", function() {
+    testVerifyStagedAddress("reset_password_staged", "reset_password_confirmed", "doConfirmResetPassword");
   });
 
 
@@ -573,8 +573,8 @@
     testActionStarted("doStageReverifyEmail", { email: TEST_EMAIL });
   });
 
-  asyncTest("reverify_email_staged - call doConfirmReverifyEmail", function() {
-    testVerifyStagedAddress("reverify_email_staged", "doConfirmReverifyEmail");
+  asyncTest("reverify_email_staged to reverify_email_confirmed - call doConfirmReverifyEmail", function() {
+    testVerifyStagedAddress("reverify_email_staged", "reverify_email_confirmed", "doConfirmReverifyEmail");
   });
 
   asyncTest("window_unload - set the final KPIs", function() {

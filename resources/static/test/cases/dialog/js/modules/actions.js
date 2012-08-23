@@ -9,6 +9,7 @@
   var bid = BrowserID,
       user = bid.User,
       storage = bid.Storage,
+      mediator = bid.Mediator,
       controller,
       el,
       testHelpers = bid.TestHelpers,
@@ -19,17 +20,25 @@
     controller.start(config);
   }
 
-  function testActionStartsModule(actionName, actionOptions, expectedModule) {
+  function testActionStartsModule(actionName, actionOptions, expectedModule, expectedServiceName) {
     createController({
       ready: function() {
-        var error;
+        var error,
+            reportedServiceName;
+
+        // Check that KPI service reporting is acting as expected.
+        mediator.subscribe("service", function(msg, data) {
+          reportedServiceName = data.name;
+        });
+
         try {
           controller[actionName](actionOptions);
         } catch(e) {
           error = e;
         }
 
-        equal(error, "module not registered for " + expectedModule, "correct service started");
+        equal(error, "module not registered for " + expectedModule, "correct module started");
+        equal(reportedServiceName, expectedServiceName || expectedModule, "correct service name");
         start();
       }
     });
@@ -116,7 +125,7 @@
   });
 
   asyncTest("doResetPassword - call the set_password controller with reset_password true", function() {
-    testActionStartsModule('doResetPassword', { email: TEST_EMAIL }, "set_password");
+    testActionStartsModule('doResetPassword', { email: TEST_EMAIL }, "set_password", "reset_password");
   });
 
   asyncTest("doStageResetPassword - trigger reset_password_staged", function() {
