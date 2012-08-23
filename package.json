@@ -48,6 +48,7 @@
     "scripts": {
         "preinstall": "./scripts/lockdown",
         "postinstall": "node ./scripts/postinstall.js",
+        "postupdate": "node ./scripts/postinstall.js",
         "test": "./scripts/test",
         "start": "node ./scripts/run_locally.js"
     },
