@@ -17,79 +17,83 @@ BrowserID.manageAccount = (function() {
       pageHelpers = bid.PageHelpers,
       cancelEvent = pageHelpers.cancelEvent,
       confirmAction = confirm,
+      complete = helpers.complete,
       doc = document,
       tooltip = bid.Tooltip,
       authLevel;
 
   function syncAndDisplayEmails(oncomplete) {
+    var self=this;
     user.syncEmails(function() {
-      displayStoredEmails(oncomplete);
+      displayStoredEmails.call(self, oncomplete);
     }, pageHelpers.getFailure(errors.syncEmails, oncomplete));
   }
 
   function displayStoredEmails(oncomplete) {
     var emails = user.getSortedEmailKeypairs();
     if (_.isEmpty(emails)) {
-      $("#content").hide();
+      dom.hide("#content");
     } else {
-      $("#content").show();
-      $("#vAlign").hide();
-      displayEmails(emails);
+      dom.show("#content");
+      dom.hide("#vAlign");
+      renderEmails.call(this, emails);
     }
-    oncomplete && oncomplete();
+    complete(oncomplete);
   }
 
   function removeEmail(email, oncomplete) {
-    function complete() {
-      oncomplete && oncomplete();
-    }
-
+    var self=this;
     user.syncEmails(function() {
       var emails = user.getStoredEmailKeypairs();
       if (!emails[email]) {
-        displayStoredEmails(oncomplete);
+        displayStoredEmails.call(self, oncomplete);
       }
       else if (_.size(emails) > 1) {
         if (confirmAction(format(gettext("Remove %(email) from your Persona account?"),
                                  { email: email }))) {
           user.removeEmail(email, function() {
-            displayStoredEmails(oncomplete);
+            displayStoredEmails.call(self, oncomplete);
           }, pageHelpers.getFailure(errors.removeEmail, oncomplete));
         }
         else {
-          complete();
+          complete(oncomplete);
         }
       }
       else {
         if (confirmAction(gettext("Removing the last address will cancel your Persona account.\nAre you sure you want to continue?"))) {
           user.cancelUser(function() {
             doc.location="/";
-            complete();
+            complete(oncomplete);
           }, pageHelpers.getFailure(errors.cancelUser, oncomplete));
         }
         else {
-          complete();
+          complete(oncomplete);
         }
       }
     }, pageHelpers.getFailure(errors.syncEmails, oncomplete));
   }
 
-  function displayEmails(emails) {
-    var list = $("#emailList").empty();
+  function renderEmails(emails) {
+    var self=this,
+        list = dom.getElements("#emailList");
+
+    dom.setInner(list, "");
 
     // Set up to use mustache style templating, the normal Django style blows
     // up the node templates
     _.templateSettings = {
         interpolate : /\{\{(.+?)\}\}/g
     };
-    var template = $("#templateUser").html();
+    var template = dom.getInner("#templateUser");
 
     _(emails).each(function(item) {
       var e = item.address,
           identity = _.template(template, { email: e });
 
-      var idEl = $(identity).appendTo(list);
-      idEl.find(".delete").click(cancelEvent(removeEmail.bind(null, e)));
+      var idEl = dom.appendTo(identity, list),
+          deleteButton = dom.getDescendentElements(".delete", idEl);
+
+      self.click(deleteButton, removeEmail.curry(e));
     });
   }
 
@@ -97,29 +101,24 @@ BrowserID.manageAccount = (function() {
     if (confirmAction(gettext("Are you sure you want to cancel your Persona account?"))) {
       user.cancelUser(function() {
         doc.location="/";
-        oncomplete && oncomplete();
+        complete(oncomplete);
       }, pageHelpers.getFailure(errors.cancelUser, oncomplete));
     }
   }
 
   function startEdit(event) {
-    // XXX add some helpers in the dom library to find section.
     event.preventDefault();
-    $(event.target).closest("section").addClass("edit");
+    dom.addClass(dom.closest("section", event.target), "edit");
   }
 
   function cancelEdit(event) {
     event.preventDefault();
-    $(event.target).closest("section").removeClass("edit");
+    dom.removeClass(dom.closest("section", event.target), "edit");
   }
 
-  function changePassword(oncomplete) {
+  function submit(oncomplete) {
     var oldPassword = dom.getInner("#old_password"),
         newPassword = dom.getInner("#new_password");
-
-    function complete(status) {
-      typeof oncomplete == "function" && oncomplete(status);
-    }
 
     function changePassword() {
       user.changePassword(oldPassword, newPassword, function(status) {
@@ -132,32 +131,32 @@ BrowserID.manageAccount = (function() {
           tooltip.showTooltip("#tooltipInvalidPassword");
         }
 
-        complete(status);
+        complete(oncomplete, status);
       }, pageHelpers.getFailure(errors.updatePassword, oncomplete));
     }
 
     if(!oldPassword) {
       tooltip.showTooltip("#tooltipOldRequired");
-      complete(false);
+      complete(oncomplete, false);
     }
     else if(oldPassword.length < bid.PASSWORD_MIN_LENGTH || bid.PASSWORD_MAX_LENGTH < oldPassword.length) {
       // If the old password is out of range, we know it is invalid. Show the
       // tooltip. See issue #2121
       // - https://github.com/mozilla/browserid/issues/2121
       tooltip.showTooltip("#tooltipInvalidPassword");
-      complete(false);
+      complete(oncomplete, false);
     }
     else if(!newPassword) {
       tooltip.showTooltip("#tooltipNewRequired");
-      complete(false);
+      complete(oncomplete, false);
     }
     else if(newPassword === oldPassword) {
       tooltip.showTooltip("#tooltipPasswordsSame");
-      complete(false);
+      complete(oncomplete, false);
     }
     else if(newPassword.length < bid.PASSWORD_MIN_LENGTH || bid.PASSWORD_MAX_LENGTH < newPassword.length) {
       tooltip.showTooltip("#tooltipPasswordLength");
-      complete(false);
+      complete(oncomplete, false);
     }
     else if(authLevel !== "password") {
       var email = getSecondary();
@@ -170,7 +169,7 @@ BrowserID.manageAccount = (function() {
         }
         else {
           tooltip.showTooltip("#tooltipInvalidPassword");
-          complete(false);
+          complete(oncomplete, false);
         }
       }, pageHelpers.getFailure(errors.authenticate, oncomplete));
     }
@@ -190,7 +189,7 @@ BrowserID.manageAccount = (function() {
   function displayChangePassword(oncomplete) {
     var canSetPassword = !!getSecondary();
     dom[canSetPassword ? "addClass" : "removeClass"]("body", "canSetPassword");
-    oncomplete && oncomplete();
+    complete(oncomplete);
   }
 
   function getSecondary() {
@@ -212,32 +211,35 @@ BrowserID.manageAccount = (function() {
 
       var self=this,
           oncomplete = options.ready,
-          template = new EJS({ text: $("#templateManage").html() }),
+          template = new EJS({ text: dom.getInner("#templateManage") }),
           manage = template.render({});
 
-      $("#hAlign").after(manage);
+      dom.insertAfter(manage, "#hAlign");
 
       self.click("#cancelAccount", cancelAccount);
 
       self.bind("button.edit", "click", startEdit);
       self.bind("button.done", "click", cancelEdit);
-      self.bind("#edit_password_form", "submit", cancelEvent(changePassword));
 
       user.checkAuthentication(function(auth_level) {
         authLevel = auth_level;
 
-        syncAndDisplayEmails(function() {
+        syncAndDisplayEmails.call(self, function() {
           displayHelpTextToNewUser();
           displayChangePassword(oncomplete);
         });
       }, pageHelpers.getFailure(errors.checkAuthentication, oncomplete));
-    }
+
+      Module.sc.start.call(self, options);
+    },
+
+    submit: submit
 
     // BEGIN TESTING API
     ,
     cancelAccount: cancelAccount,
     removeEmail: removeEmail,
-    changePassword: changePassword
+    changePassword: submit
     // END TESTING API
   });
 
