@@ -998,7 +998,7 @@
           // 'interactive' is the same as DOMContentLoaded,
           // but not all browsers use it, sadly.
           if (state === 'loaded' || state === 'complete' || state === 'interactive') {
-            document.detachEvent('onreadystatechange', ready);'
+            document.detachEvent('onreadystatechange', ready);
             callback();
           }
         });
