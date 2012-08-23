@@ -350,13 +350,17 @@ BrowserID.User = (function() {
      * @param {string} hostname
      */
     setHostname: function(hostnameArg) {
+      // enforce our output guarantee locally
       if (!/^[a-zA-Z0-9\.\-\[\]]*$/.test(hostnameArg))
         throw new Error("invalid DNS characters in hostname");
       hostname = hostnameArg;
     },
 
     /**
-     * Get the hostname - guaranteed to be DNS-legal ([a-zA-z.-]*)
+     * Get the hostname - guaranteed to be in the form "foo.bar" or "1.2.3.4"
+     * or "[fe80::1234:5678]". All are suitable for interpolation into URLs
+     * and safe to embed into HTML, although IDNA hostnames should be
+     * punycode-decoded and then (important!) HTML-encoded for display.
      * @method getHostname
      * @returns {string}
      */

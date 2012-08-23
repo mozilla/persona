@@ -220,12 +220,12 @@
     });
   }
 
-  function testOriginSanitizationRejected(origin) {
+  function testOriginSanitizationRejected(origin, expectedException) {
     createController({
       ready: function() {
         testRaises(function() {
           controller.get(origin, {});
-        });
+        }, expectedException);
         start();
       }
     });

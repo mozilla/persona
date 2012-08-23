@@ -110,7 +110,7 @@ BrowserID.Modules.Dialog = (function() {
     throw "must be an absolute path: (" + path + ")";
   }
 
-  function fixupHostname(origin) {
+  function extractValidHostname(origin) {
     var hostname = URLParse(origin).host;
 
     if (!/^[a-zA-Z0-9\.\-\[\]]*$/.test(hostname))
@@ -161,8 +161,7 @@ BrowserID.Modules.Dialog = (function() {
           hash = win.location.hash;
 
       user.setOrigin(origin_url);
-      user.setHostname(fixupHostname(origin_url));
-
+      user.setHostname(extractValidHostname(origin_url));
 
       if (startExternalDependencies) {
         var actions = startActions.call(self, success, error);
