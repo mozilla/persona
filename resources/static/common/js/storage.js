@@ -136,6 +136,15 @@ BrowserID.Storage = (function() {
         }
       }
       storage.siteInfo = JSON.stringify(siteInfo);
+
+      // remove any logged in sites associated with this address.
+      var loggedInInfo = JSON.parse(storage.loggedIn || "{}");
+      for(var site in loggedInInfo) {
+        if(loggedInInfo[site] === email) {
+          delete loggedInInfo[site];
+        }
+      }
+      storage.loggedIn = JSON.stringify(loggedInInfo);
     }
     else {
       throw "unknown email address";
