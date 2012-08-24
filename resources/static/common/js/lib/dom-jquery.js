@@ -70,6 +70,17 @@ BrowserID.DOM = ( function() {
         },
 
         /**
+        * Find the closest ancestor that matches the selector
+        * @method closest
+        * @param {selector || element} selector - element to get children for
+        * @param {selector || element} searchFrom - element to search from
+        * @return {array} The closest ancestor matching the selector
+        */
+        closest: function( selector, searchFrom ) {
+          return jQuery( searchFrom ).closest( selector );
+        },
+
+        /**
         * Iterate over a set of elements
         * @method forEach
         * @param {Elements} elements - elements to iterate over
@@ -258,6 +269,16 @@ BrowserID.DOM = ( function() {
             var el = jQuery(elementToInsert );
             el.appendTo( jQuery( elementToAppendTo ) );
             return el;
+        },
+
+        /**
+        * Insert an element after another element
+        * @method insertAfter
+        * @param {selector || element} elementToInsert
+        * @param {selector || element} elementToInsertBefore
+        */
+        insertAfter: function( elementToInsert, elementToInsertAfter ) {
+          jQuery( elementToInsertAfter ).after( elementToInsert );
         },
 
         /**
