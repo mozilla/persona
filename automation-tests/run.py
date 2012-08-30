@@ -5,6 +5,7 @@ import os
 import platform
 import subprocess
 import sys
+import pkg_resources
 
 
 # used to check for existence of virtualenv and pip.
@@ -59,13 +60,10 @@ def main():
         exit(1)
 
     # 2. check that virtualenv and pip exist. if not, bail.
-    if not which('pip'):
-        sys.stderr.write('pip must be installed; do "easy_install pip", ' +
-                         ' then try again\n')
-        exit(1)
-    if not which('virtualenv'):
-        sys.stderr.write('virtualenv must be installed; do "pip install ' +
-                         'virtualenv", then try again\n')
+    try:
+        pkg_resources.WorkingSet().require('pip', 'virtualenv')
+    except pkg_resources.DistributionNotFound as e:
+        sys.stderr.write('{package} must be installed\n'.format(package=e.message))
         exit(1)
 
     # 3. create the virtualenv if they asked you to install it or it's missing
