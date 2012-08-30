@@ -1040,6 +1040,7 @@
               commChan.call({
                 method: 'loaded',
                 success: function(){
+                  // NOTE: Do not modify without reading GH-2017
                   if (observers.ready) observers.ready();
                 }, error: function() {
                 }
@@ -1114,6 +1115,7 @@
 
       observers.login = options.onlogin || null;
       observers.logout = options.onlogout || null;
+      // NOTE: Do not modify without reading GH-2017
       observers.ready = options.onready || null;
 
       // back compat support for loggedInEmail
