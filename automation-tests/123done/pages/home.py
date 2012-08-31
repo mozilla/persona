@@ -61,6 +61,10 @@ class HomePage(Page):
 
     @property
     def logged_in_user_email(self):
+        WebDriverWait(self.selenium, self.timeout).until(
+            lambda s: self.is_element_visible(*self._logged_in_user_email_locator)and not \
+                      self.is_element_visible(*self._loading_spinner_locator),
+            "Timeout waiting for user's email to appear.")
         return self.selenium.find_element(*self._logged_in_user_email_locator).text
 
     def wait_for_user_login(self):
