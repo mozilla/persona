@@ -25,7 +25,7 @@ class CompleteRegistration(Base):
         - url - the confirmation url from the email
         - expect - redirect/success/reset/verify (default redirect)
         """
-        Base.__init__(self, mozwebqa.selenium, mozwebqa.timeout)
+        Base.__init__(self, mozwebqa)
         print "the url" + url
         self.selenium.get(url)
 

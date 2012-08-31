@@ -28,7 +28,7 @@ class TestChangePassword:
 
         # Load the BrowserID link from the email in the browser
         from browserid.pages.complete_registration import CompleteRegistration
-        CompleteRegistration(mozwebqa, email.verify_user_link)
+        CompleteRegistration(mozwebqa.selenium, email.verify_user_link)
 
         mozwebqa.selenium.get(mozwebqa.server_base_url)
         from browserid.pages.account_manager import AccountManager
