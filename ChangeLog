@@ -1,3 +1,12 @@
+train-2012.08.31:
+  * Test/example code fixes: #2345, #2363
+  * allow id.watch() to be invoked from <head>: #2252
+  * KPI additions for reset password flow: #2281
+  * Improvements for developing on windows: #2263
+  * Code cleanup: #2347
+  * Documentation improvements: #2279
+  * Host sign-in button images on our service.
+
 train-2012.08.17:
   * Reseting your password now logs you out everywhere: #2026, #2307
   * SCHEMA CHANGE: add TIMESTAMP lastPasswordReset to user table for #2026
