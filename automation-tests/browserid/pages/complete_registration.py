@@ -12,20 +12,39 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 class CompleteRegistration(Base):
 
+    _page_title = 'Mozilla Persona: Complete Registration'
     _email_locator = (By.ID, 'email')
     _password_locator = (By.ID, 'password')
     _finish_locator = (By.CSS_SELECTOR, 'div.submit > button')
     _thank_you_locator = (By.ID, 'congrats')
 
-    def __init__(self, selenium, timeout, expect='success'):
-        Base.__init__(self, selenium, timeout)
+    def __init__(self, mozwebqa, url, expect='redirect'):
+        """
+        class init method
+        :Args:
+        - url - the confirmation url from the email
+        - expect - redirect/success/reset/verify (default redirect)
+        """
+        Base.__init__(self, mozwebqa.selenium, mozwebqa.timeout)
+        print "the url" + url
+        self.selenium.get(url)
 
-        if expect == 'success':
+        if expect == 'redirect':
             WebDriverWait(self.selenium, self.timeout).until(
-                lambda s: s.find_element(*self._thank_you_locator).is_displayed())
+                lambda s: s.title != self._page_title,
+                "Complete Registration page did not redirect")
+        elif expect == 'success':
+            WebDriverWait(self.selenium, self.timeout).until(
+                lambda s: 'Thank you' in s.find_element(*self._thank_you_locator).text,
+                "Complete Registration did not succeed")
+        elif expect == 'reset':
+            WebDriverWait(self.selenium, self.timeout).until(
+                lambda s: 'verified' in s.find_element(*self._thank_you_locator).text,
+                "Complete Registration did not succeed")
         elif expect == 'verify':
             WebDriverWait(self.selenium, self.timeout).until(
-                lambda s: s.find_element(*self._password_locator).is_displayed())
+                lambda s: s.find_element(*self._password_locator).is_displayed(),
+                "password field did not become visible")
         else:
             raise Exception('Unknown expect value: %s' % expect)
 

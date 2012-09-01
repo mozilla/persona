@@ -17,23 +17,23 @@ import restmail
 @pytest.mark.nondestructive
 class TestSignIn(BaseTest):
 
+    @pytest.mark.travis
     def test_sign_in_helper(self, mozwebqa):
-        if mozwebqa.email == None:
-            pytest.skip("no --email supplied")
+        credentials = mozwebqa.credentials['default']
         browser_id = BrowserID(mozwebqa.selenium, mozwebqa.timeout)
-        browser_id.sign_in(mozwebqa.email, mozwebqa.password)
+        browser_id.sign_in(credentials['email'], credentials['password'])
 
         WebDriverWait(mozwebqa.selenium, mozwebqa.timeout).until(
             lambda s: s.find_element_by_id('loggedin').is_displayed())
 
+    @pytest.mark.travis
     def test_sign_in(self, mozwebqa):
-        if mozwebqa.email == None:
-            pytest.skip("no --email supplied")
+        credentials = mozwebqa.credentials['default']
         from .. pages.sign_in import SignIn
         signin = SignIn(mozwebqa.selenium, mozwebqa.timeout, expect='new')
-        signin.email = mozwebqa.email
+        signin.email = credentials['email']
         signin.click_next(expect='password')
-        signin.password = mozwebqa.password
+        signin.password = credentials['password']
         signin.click_sign_in()
 
         WebDriverWait(mozwebqa.selenium, mozwebqa.timeout).until(
@@ -74,9 +74,11 @@ class TestSignIn(BaseTest):
         WebDriverWait(mozwebqa.selenium, mozwebqa.timeout).until(
             lambda s: s.find_element_by_id('loggedin').is_displayed())
 
+    @pytest.mark.travis
     def test_sign_in_is_this_your_computer(self, mozwebqa):
+        credentials = mozwebqa.credentials['default']
         browser_id = BrowserID(mozwebqa.selenium, mozwebqa.timeout)
-        browser_id.sign_in(mozwebqa.email, mozwebqa.password)
+        browser_id.sign_in(credentials['email'], credentials['password'])
 
         WebDriverWait(mozwebqa.selenium, mozwebqa.timeout).until(
             lambda s: s.find_element_by_id('loggedin').is_displayed())
