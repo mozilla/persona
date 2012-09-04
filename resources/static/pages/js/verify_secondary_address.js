@@ -16,24 +16,17 @@ BrowserID.verifySecondaryAddress = (function() {
       complete = helpers.complete,
       validation = bid.Validation,
       tooltip = bid.Tooltip,
-      token,
-      sc,
-      mustAuth,
-      verifyFunction,
-      doc = document,
       REDIRECT_SECONDS = 5,
-      secondsRemaining = REDIRECT_SECONDS,
-      email,
-      redirectTo,
-      redirectTimeout,  // set in config if available, use REDIRECT_SECONDS otw.
-      uiTimeoutID;
+      sc;
 
   function showRegistrationInfo(info) {
+    /*jshint validthis: true*/
+    var self=this;
     dom.setInner("#email", info.email);
-    dom.setInner(".website", redirectTo);
+    dom.setInner(".website", self.redirectTo);
 
-    if (uiTimeoutID) uiTimeoutID = clearTimeout(uiTimeoutID);
-    updateRedirectTimeout();
+    if (self.uiTimeoutID) self.uiTimeoutID = clearTimeout(self.uiTimeoutID);
+    updateRedirectTimeout.call(this);
 
     if (info.returnTo) {
       dom.show(".siteinfo");
@@ -41,15 +34,18 @@ BrowserID.verifySecondaryAddress = (function() {
   }
 
   function updateRedirectTimeout() {
-    dom.setInner("#redirectTimeout", secondsRemaining);
+    /*jshint validthis: true*/
+    dom.setInner("#redirectTimeout", this.secondsRemaining);
   }
 
   function countdownTimeout(onComplete) {
+    /*jshint validthis: true*/
+    var self=this;
     function checkTime() {
-      if (secondsRemaining > 0) {
-        updateRedirectTimeout();
-        secondsRemaining--;
-        uiTimeoutID = setTimeout(checkTime, 1000);
+      if (self.secondsRemaining > 0) {
+        updateRedirectTimeout.call(self);
+        self.secondsRemaining--;
+        self.uiTimeoutID = setTimeout(checkTime.bind(self), 1000);
       } else {
         complete(onComplete);
       }
@@ -59,11 +55,13 @@ BrowserID.verifySecondaryAddress = (function() {
   }
 
   function submit(oncomplete) {
-    var pass = dom.getInner("#password") || undefined,
-        inputValid = !mustAuth || validation.password(pass);
+    /*jshint validthis: true*/
+    var self = this,
+        pass = dom.getInner("#password") || undefined,
+        inputValid = !self.mustAuth || validation.password(pass);
 
     if (inputValid) {
-      user[verifyFunction](token, pass, function(info) {
+      user[self.verifyFunction](self.token, pass, function(info) {
         dom.addClass("body", "complete");
 
         var verified = info.valid;
@@ -75,10 +73,10 @@ BrowserID.verifySecondaryAddress = (function() {
             // loggedIn status for the domain.  This is useful when the user
             // closes the dialog OR if redirection happens before the dialog
             // has had a chance to finish its business.
-            storage.setLoggedIn(URLParse(redirectTo).originOnly(), email);
+            storage.setLoggedIn(URLParse(self.redirectTo).originOnly(), self.email);
 
-            countdownTimeout(function() {
-              doc.location = redirectTo;
+            countdownTimeout.call(self, function() {
+              self.doc.location = self.redirectTo;
               complete(oncomplete, verified);
             });
           });
@@ -104,13 +102,13 @@ BrowserID.verifySecondaryAddress = (function() {
   function startVerification(oncomplete) {
     /*jshint validthis: true*/
     var self=this;
-    user.tokenInfo(token, function(info) {
+    user.tokenInfo(self.token, function(info) {
       if (info) {
-        redirectTo = info.returnTo || "https://login.persona.org/";
-        email = info.email;
-        showRegistrationInfo(info);
-        mustAuth = info.must_auth;
-        if (mustAuth) {
+        self.redirectTo = info.returnTo || "https://login.persona.org/";
+        self.email = info.email;
+        showRegistrationInfo.call(self, info);
+        self.mustAuth = info.must_auth;
+        if (self.mustAuth) {
           // These are users who are authenticating in a different browser or
           // session than the initiator.
           dom.addClass("body", "enter_password");
@@ -120,7 +118,7 @@ BrowserID.verifySecondaryAddress = (function() {
         else {
           // Easy case where user is in same browser and same session, just
           // verify and be done with it all!
-          submit(oncomplete);
+          submit.call(self, oncomplete);
         }
       }
       else {
@@ -137,15 +135,15 @@ BrowserID.verifySecondaryAddress = (function() {
       var self=this;
       self.checkRequired(options, "token", "verifyFunction");
 
-      token = options.token;
-      verifyFunction = options.verifyFunction;
-      doc = options.document || document;
+      self.token = options.token;
+      self.verifyFunction = options.verifyFunction;
+      self.doc = options.document || document;
 
-      redirectTimeout = options.redirectTimeout;
-      if (typeof redirectTimeout === "undefined") {
-        redirectTimeout = REDIRECT_SECONDS * 1000;
+      self.redirectTimeout = options.redirectTimeout;
+      if (typeof self.redirectTimeout === "undefined") {
+        self.redirectTimeout = REDIRECT_SECONDS * 1000;
       }
-      secondsRemaining = redirectTimeout / 1000;
+      self.secondsRemaining = self.redirectTimeout / 1000;
 
 
       startVerification.call(self, options.ready);
