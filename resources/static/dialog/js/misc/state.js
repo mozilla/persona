@@ -226,8 +226,6 @@ BrowserID.State = (function() {
 
     handleState("user_confirmed", handleEmailConfirmed);
 
-    handleState("staged_address_confirmed", handleEmailConfirmed);
-
     handleState("primary_user", function(msg, info) {
       self.addPrimaryUser = !!info.add;
       var email = self.email = info.email,
@@ -370,6 +368,8 @@ BrowserID.State = (function() {
 
     handleState("reverify_email_staged", handleEmailStaged.curry("doConfirmReverifyEmail"));
 
+    handleState("reverify_email_confirmed", handleEmailConfirmed);
+
     handleState("email_valid_and_ready", function(msg, info) {
       // this state is only called after all checking is done on the email
       // address.  For secondaries, this means the email has been validated and
@@ -434,6 +434,8 @@ BrowserID.State = (function() {
         redirectToState("pick_email");
       }
     });
+
+    handleState("reset_password_confirmed", handleEmailConfirmed);
 
     handleState("notme", function() {
       startAction("doNotMe");

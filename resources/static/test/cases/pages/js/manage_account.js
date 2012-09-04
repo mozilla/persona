@@ -17,7 +17,8 @@
       mocks = {
         confirm: function() { return true; },
         document: { location: "" }
-      };
+      },
+      controller;
 
   module("pages/js/manage_account", {
     setup: function() {
@@ -30,6 +31,12 @@
       testHelpers.teardown();
     }
   });
+
+  function createController(options, ready) {
+    options.ready = ready;
+    controller = bid.manageAccount.create();
+    controller.start(options);
+  }
 
   function testPasswordChangeSuccess(oldPass, newPass, msg) {
     testPasswordChange(oldPass, newPass, function(status) {
@@ -54,18 +61,18 @@
   }
 
   function testPasswordChange(oldPass, newPass, testStrategy, msg) {
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       $("#old_password").val(oldPass);
       $("#new_password").val(newPass);
 
-      bid.manageAccount.changePassword(testStrategy);
+      controller.changePassword(testStrategy);
     });
   }
 
   asyncTest("no email addresses are displayed if there are no children", function() {
     xhr.useResult("no_identities");
 
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       equal($("#emailList").children().length, 0, "no children have been added");
       start();
     });
@@ -74,7 +81,7 @@
   asyncTest("show sorted email addresses", function() {
     xhr.useResult("multiple");
 
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       equal($("#emailList").children().length, 2, "there two children added");
 
       var firstLI = $("#testuser2_testuser_com");
@@ -89,7 +96,7 @@
   asyncTest("sync XHR error on startup", function() {
     xhr.useResult("ajaxError");
 
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
       start();
     });
@@ -99,9 +106,9 @@
     // start with multiple addresses.
     xhr.useResult("multiple");
 
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       // switch to a single address return on the sync.
-      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
+      controller.removeEmail("testuser@testuser.com", function() {
         equal($("#emailList").children().length, 1, "after removing an email, only one remains");
         start();
       });
@@ -112,9 +119,9 @@
     // start with multiple addresses.
     xhr.useResult("multiple");
 
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       xhr.useResult("ajaxError");
-      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
+      controller.removeEmail("testuser@testuser.com", function() {
         equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
         start();
       });
@@ -122,8 +129,8 @@
   });
 
   asyncTest("removeEmail with single email cancels account", function() {
-    bid.manageAccount(mocks, function() {
-      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
+    createController(mocks, function() {
+      controller.removeEmail("testuser@testuser.com", function() {
         equal(mocks.document.location, "/", "redirection happened");
         start();
       });
@@ -131,8 +138,8 @@
   });
 
   asyncTest("removeEmail doesn't cancel the account when removing a non-existent e-mail", function() {
-    bid.manageAccount(mocks, function() {
-      bid.manageAccount.removeEmail("non@existent.com", function() {
+    createController(mocks, function() {
+      controller.removeEmail("non@existent.com", function() {
         notEqual(mocks.document.location, "/", "redirection did not happen");
         start();
       });
@@ -140,9 +147,9 @@
   });
 
   asyncTest("removeEmail doesn't cancel the account when out of sync with the server", function() {
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       xhr.useResult("multiple");
-      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
+      controller.removeEmail("testuser@testuser.com", function() {
         notEqual(mocks.document.location, "/", "redirection did not happen");
         start();
       });
@@ -152,10 +159,10 @@
   asyncTest("removeEmail with single email cancels account and XHR error", function() {
     xhr.useResult("valid");
 
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       xhr.useResult("ajaxError");
 
-      bid.manageAccount.removeEmail("testuser@testuser.com", function() {
+      controller.removeEmail("testuser@testuser.com", function() {
         equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
         start();
       });
@@ -163,8 +170,8 @@
   });
 
   asyncTest("cancelAccount", function() {
-    bid.manageAccount(mocks, function() {
-      bid.manageAccount.cancelAccount(function() {
+    createController(mocks, function() {
+      controller.cancelAccount(function() {
         equal(mocks.document.location, "/", "redirection happened");
         start();
       });
@@ -172,9 +179,9 @@
   });
 
   asyncTest("cancelAccount with XHR error", function() {
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       xhr.useResult("ajaxError");
-      bid.manageAccount.cancelAccount(function() {
+      controller.cancelAccount(function() {
         equal(testHelpers.errorVisible(), true, "error message is visible on XHR error");
         start();
       });
@@ -182,10 +189,10 @@
   });
 
   asyncTest("first time a user goes to page should see help text", function() {
-    bid.manageAccount(mocks,  function() {
+    createController(mocks,  function() {
       equal($("body").hasClass("newuser"), true, "body has the newuser class on first visit");
 
-      bid.manageAccount(mocks, function() {
+      createController(mocks, function() {
         equal($("body").hasClass("newuser"), false, "body does not have the newuser class on repeat visits");
         start();
       });
@@ -195,7 +202,7 @@
   asyncTest("user with only primary emails should not have 'canSetPassword' class", function() {
     xhr.useResult("primary");
 
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       equal($("body").hasClass("canSetPassword"), false, "canSetPassword class not added to body");
       start();
     });
@@ -204,7 +211,7 @@
   asyncTest("user with >= 1 secondary email should see have 'canSetPassword' class", function() {
     storage.addEmail("primary_user@primaryuser.com", { type: "secondary" });
 
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       equal($("body").hasClass("canSetPassword"), true, "canSetPassword class added to body");
       start();
     });
@@ -240,13 +247,13 @@
   });
 
   asyncTest("changePassword with XHR error - error message", function() {
-    bid.manageAccount(mocks, function() {
+    createController(mocks, function() {
       xhr.useResult("invalid");
 
       $("#old_password").val("oldpassword");
       $("#new_password").val("newpassword");
 
-      bid.manageAccount.changePassword(function(status) {
+      controller.changePassword(function(status) {
         equal(status, false, "on xhr error, status is false");
         start();
       });

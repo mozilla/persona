@@ -38,7 +38,7 @@
     },
     "devDependencies": {
         "vows": "0.5.13",
-        "awsbox": "0.2.15",
+        "awsbox": "0.2.17",
         "irc": "0.3.3",
         "jshint": "0.7.1",
         "minimatch": "0.2.6",
@@ -47,7 +47,8 @@
     },
     "scripts": {
         "preinstall": "./scripts/lockdown",
-        "postinstall": "node ./scripts/generate_ephemeral_keys.js",
+        "postinstall": "node ./scripts/postinstall.js",
+        "postupdate": "node ./scripts/postinstall.js",
         "test": "./scripts/test",
         "start": "node ./scripts/run_locally.js"
     },

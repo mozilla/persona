@@ -42,6 +42,7 @@ var globalPythonArgs = {
   "--saucelabs": sauceYAMLPath,
   "--webqatimeout": 90,
   "--destructive": null,
+  "-n": 5,
   "-q": null,
   '--capabilities': JSON.stringify({ "avoid-proxy":"true"})
 };

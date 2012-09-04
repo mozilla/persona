@@ -8,12 +8,13 @@ const https = require('https');
 
 // people to get issues, and the issues that were assigned to them
 var people = {
-  'jedp': [],
+//  'jedp': [],
   'seanmonstar': [],
-  'ozten': [],
+//  'ozten': [],
   'lloyd': [],
   'shane-tomlinson': [],
-  'benadida': []
+  'zaach': []
+//  'benadida': []
 };
 
 var auth = process.env.AUTH;

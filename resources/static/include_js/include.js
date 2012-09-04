@@ -966,6 +966,8 @@
       ready: null
     };
 
+    var loggedInUser;
+
     var compatMode = undefined;
     function checkCompat(requiredMode) {
       if (requiredMode === true) {
@@ -981,7 +983,28 @@
     }
 
     var commChan,
+        waitingForDOM = false,
         browserSupported = BrowserSupport.isSupported();
+
+    function domReady(callback) {
+      if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', function contentLoaded() {
+          document.removeEventListener('DOMContentLoaded', contentLoaded);
+          callback();
+        }, false);
+      } else if (document.attachEvent && document.readyState) {
+        document.attachEvent('onreadystatechange', function ready() {
+          var state = document.readyState;
+          // 'interactive' is the same as DOMContentLoaded,
+          // but not all browsers use it, sadly.
+          if (state === 'loaded' || state === 'complete' || state === 'interactive') {
+            document.detachEvent('onreadystatechange', ready);
+            callback();
+          }
+        });
+      }
+    }
+
 
     // this is for calls that are non-interactive
     function _open_hidden_iframe() {
@@ -989,10 +1012,19 @@
       // IFRAME as doing so will cause an exception to be thrown in IE6 and IE7
       // from within the communication_iframe.
       if(!browserSupported) return;
+      var doc = window.document;
+
+      // can't attach iframe and make commChan without the body
+      if (!doc.body) {
+        if (!waitingForDOM) {
+          domReady(_open_hidden_iframe);
+          waitingForDOM = true;
+        }
+        return;
+      }
 
       try {
         if (!commChan) {
-          var doc = window.document;
           var iframe = doc.createElement("iframe");
           iframe.style.display = "none";
           doc.body.appendChild(iframe);
@@ -1008,6 +1040,7 @@
               commChan.call({
                 method: 'loaded',
                 success: function(){
+                  // NOTE: Do not modify without reading GH-2017
                   if (observers.ready) observers.ready();
                 }, error: function() {
                 }
@@ -1022,6 +1055,13 @@
           commChan.bind('login', function(trans, params) {
             if (observers.login) observers.login(params);
           });
+
+          if (loggedInUser) {
+            commChan.notify({
+              method: 'loggedInUser',
+              params: loggedInUser
+            });
+          }
         }
       } catch(e) {
         // channel building failed!  let's ignore the error and allow higher
@@ -1075,22 +1115,14 @@
 
       observers.login = options.onlogin || null;
       observers.logout = options.onlogout || null;
+      // NOTE: Do not modify without reading GH-2017
       observers.ready = options.onready || null;
-
-      _open_hidden_iframe();
 
       // back compat support for loggedInEmail
       checkRenamed(options, "loggedInEmail", "loggedInUser");
+      loggedInUser = options.loggedInUser;
 
-      // check that the commChan was properly initialized before interacting with it.
-      // on unsupported browsers commChan might still be undefined, in which case
-      // we let the dialog display the "unsupported browser" message upon spawning.
-      if (typeof options.loggedInUser !== 'undefined' && commChan) {
-        commChan.notify({
-          method: 'loggedInUser',
-          params: options.loggedInUser
-        });
-      }
+      _open_hidden_iframe();
     }
 
     function internalRequest(options) {
