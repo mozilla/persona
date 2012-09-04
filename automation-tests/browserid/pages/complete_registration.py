@@ -18,14 +18,14 @@ class CompleteRegistration(Base):
     _finish_locator = (By.CSS_SELECTOR, 'div.submit > button')
     _thank_you_locator = (By.ID, 'congrats')
 
-    def __init__(self, mozwebqa, url, expect='redirect'):
+    def __init__(self, selenium, timeout, url, expect='redirect'):
         """
         class init method
         :Args:
         - url - the confirmation url from the email
         - expect - redirect/success/reset/verify (default redirect)
         """
-        Base.__init__(self, mozwebqa.selenium, mozwebqa.timeout)
+        Base.__init__(self, selenium, timeout)
         print "the url" + url
         self.selenium.get(url)
 
