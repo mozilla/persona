@@ -9,19 +9,17 @@
    * the #content element causes the contents to be vertically centered.
    */
   function onResize() {
-    var selectEmailEl = $("#selectEmail"),
+    var scrollableEl = $(".form_section"),
         contentEl = $("#content"),
-        signInEl = $("#signIn");
+        boundingRectEl = $("#signIn");
 
-    selectEmailEl.css("position", "static");
+    scrollableEl.css("position", "static");
 
-    // The mobile breakpoint is 640px in the CSS.  If the max-width is changed
-    // there, it must be changed here as well.
-    if($(window).width() > 640) {
+    function desktopHacks() {
       // First, remove the mobile hacks
-      selectEmailEl.css("width", "");
+      scrollableEl.css("width", "");
       contentEl.css("min-height", "");
-      signInEl.css("top", "");
+      boundingRectEl.css("top", "");
 
       // This is a hack for desktop mode which centers the form vertically in
       // the middle of its container.  We have to do this hack because we use
@@ -30,13 +28,8 @@
       // number of emails, we have to print a scrollbar - but only around the
       // emails.
 
-      // set the height to static so that we can get the height without
-      // constraints.
-      var height = selectEmailEl.innerHeight();
-      // re-introduce constraints
-
-      if(height < $("#signIn .vertical").innerHeight()) {
-        selectEmailEl.addClass("vcenter");
+      if(scrollableEl.innerHeight() < boundingRectEl.innerHeight()) {
+        scrollableEl.addClass("vcenter");
 
         /* The below width adjustment is part of a fix for a bug in webkit where
          * there is a ghost padding-right to accommodate the scroll bar that is
@@ -47,33 +40,37 @@
          * These two in combination force Chrome to re-flow, which fixes its
          * own bug.
          */
-        var width = selectEmailEl.width();
-        selectEmailEl.width(width);
+        var width = scrollableEl.width();
+        scrollableEl.width(width);
       }
       else {
-        selectEmailEl.removeClass("vcenter");
+        scrollableEl.removeClass("vcenter");
       }
     }
-    else {
+
+    function mobileHacks() {
         // First, remove the desktop hacks
-        selectEmailEl.removeClass("vcenter");
+        scrollableEl.removeClass("vcenter");
 
         // Hack to make sure the email addresses stay within their container.
         // We have to do this ghettoness because table-cells (which are used to
         // vertically center everything) expand to fully contain their children
         // and the ellipsis never show up as expected.
 
-        // First, find the maximum width that emails can be.
-        selectEmailEl.css("width", "10px").removeClass("vcenter");
-        var constrainedWidth = $("#signIn .contents").innerWidth();
+        // First, find the maximum width that emails can be. First set the
+        // width of the scrollable element to be very narrow so that we can
+        // find the natural innerWidth of the parent.
+        scrollableEl.css("width", "10px");
+        var parentNaturalWidth = scrollableEl.parent().innerWidth();
 
-        // Find the real maximum width.
-        selectEmailEl.css("width", "");
-        var maxEmailWidth = selectEmailEl.innerWidth();
+        // Unconstrain the scrollableEl's width to find the real maximum
+        // width of the emails.
+        scrollableEl.css("width", "");
+        var maxEmailWidth = scrollableEl.innerWidth();
 
         // If we have a too large an email, constrain the width.
-        if(maxEmailWidth > constrainedWidth) {
-          selectEmailEl.css("width", constrainedWidth + "px");
+        if(maxEmailWidth > parentNaturalWidth) {
+          scrollableEl.css("width", parentNaturalWidth + "px");
         }
 
         // Hack to find the min-height of the content area the footer is pushed
@@ -118,10 +115,19 @@
         var favIconHeight = $("#favicon").outerHeight();
 
         // Force the top of the main content area to be below the favicon area.
-        signInEl.css("top", favIconHeight + "px");
+        boundingRectEl.css("top", favIconHeight + "px");
     }
 
-    selectEmailEl.css("position", "");
+    // The mobile breakpoint is 640px in the CSS.  If the max-width is changed
+    // there, it must be changed here as well.
+    if($(window).width() > 640) {
+      desktopHacks();
+    }
+    else {
+      mobileHacks();
+    }
+
+    scrollableEl.css("position", "");
   }
 
   $(window).resize(onResize);
