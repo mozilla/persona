@@ -35,7 +35,7 @@ class TestSignIn(BaseTest):
         assert signin.email == credentials['email'], "email getter failed"
         signin.click_next(expect='password')
         signin.password = credentials['password']
-        assert signin.password == credentials['password'], "password getter failed"
+        assert unicode(signin.password) == unicode(credentials['password']), "password getter failed"
         signin.click_sign_in()
 
         WebDriverWait(mozwebqa.selenium, mozwebqa.timeout).until(
