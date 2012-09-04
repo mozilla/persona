@@ -12,7 +12,7 @@ from base import BaseTest
 
 
 @pytest.mark.nondestructive
-class TestSignIn(BaseTest):
+class TestChangePassword(BaseTest):
 
     @pytest.mark.travis
     def test_change_password(self, mozwebqa):
@@ -26,8 +26,10 @@ class TestSignIn(BaseTest):
 
         account_manager.click_edit_password()
         account_manager.old_password = user.password
+        assert account_manager.old_password == user.password, "old password getter failed"
         user.password += '_new'
         account_manager.new_password = user.password
+        assert account_manager.new_password == user.password, "new password getter failed"
         account_manager.click_password_done()
         account_manager.click_sign_out()
 

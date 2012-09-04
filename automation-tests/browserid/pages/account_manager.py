@@ -43,7 +43,7 @@ class AccountManager(Base):
     @property
     def old_password(self):
         """Get the value of the old password field."""
-        return self.selenium.find_element(*self._old_password_field_locator).text
+        return self.selenium.find_element(*self._old_password_field_locator).get_attribute('value')
 
     @old_password.setter
     def old_password(self, value):
@@ -55,7 +55,7 @@ class AccountManager(Base):
     @property
     def new_password(self):
         """Get the value of the new password field."""
-        return self.selenium.find_element(*self._new_password_field_locator).text
+        return self.selenium.find_element(*self._new_password_field_locator).get_attribute('value')
 
     @new_password.setter
     def new_password(self, value):
