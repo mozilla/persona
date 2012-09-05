@@ -15,6 +15,9 @@
       testHelpers = bid.TestHelpers,
       testHasClass = testHelpers.testHasClass,
       testVisible = testHelpers.testVisible,
+      testNotVisible = testHelpers.testNotVisible,
+      testElementTextEquals = testHelpers.testElementTextEquals,
+      testDocumentRedirected = testHelpers.testDocumentRedirected,
       validToken = true,
       controller,
       config = {
@@ -77,25 +80,28 @@
     equal(error, "missing config option: token", "correct error thrown");
   });
 
-  asyncTest("valid token, no password necessary - verify user and show site info", function() {
+  asyncTest("valid token, no password necessary - verify user and show site info, user is redirected to saved URL", function() {
     var returnTo = "https://test.domain/path";
     storage.setReturnTo(returnTo);
 
     createController(config, function() {
       testVisible("#congrats");
       testHasClass("body", "complete");
-      equal($(".website").eq(0).text(), returnTo, "website is updated");
-      equal(doc.location.href, returnTo, "redirection occurred to correct URL");
+      testElementTextEquals(".website", returnTo, "origin is set to redirect to login.persona.org");
+      testDocumentRedirected(doc, returnTo, "redirection occurred to correct URL");
       equal(storage.getLoggedIn("https://test.domain"), "testuser@testuser.com", "logged in status set");
       start();
     });
   });
 
-  asyncTest("valid token, no password necessary, no saved site info - verify user but do not show site info", function() {
+  asyncTest("valid token, no password necessary, no saved site info - verify user, user is redirected to login.persona.org", function() {
+    var returnTo = "https://login.persona.org/";
+
     createController(config, function() {
       testEmail();
-      equal($(".siteinfo").is(":visible"), false, "siteinfo is not visible without having it");
-      equal($(".siteinfo .website").text(), "", "origin is not updated");
+      testNotVisible(".siteinfo", "siteinfo is not visible without having it");
+      testElementTextEquals(".website", returnTo, "origin is set to redirect to login.persona.org");
+      testDocumentRedirected(doc, returnTo, "redirection occurred to correct URL");
       start();
     });
   });

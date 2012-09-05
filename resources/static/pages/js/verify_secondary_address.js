@@ -31,11 +31,12 @@ BrowserID.verifySecondaryAddress = (function() {
 
   function showRegistrationInfo(info) {
     dom.setInner("#email", info.email);
+    dom.setInner(".website", redirectTo);
+
+    if (uiTimeoutID) uiTimeoutID = clearTimeout(uiTimeoutID);
+    updateRedirectTimeout();
 
     if (info.returnTo) {
-      dom.setInner(".website", info.returnTo);
-      if (uiTimeoutID) uiTimeoutID = clearTimeout(uiTimeoutID);
-      updateRedirectTimeout();
       dom.show(".siteinfo");
     }
   }
@@ -70,22 +71,17 @@ BrowserID.verifySecondaryAddress = (function() {
 
         if (verified) {
           pageHelpers.replaceFormWithNotice("#congrats", function() {
-            if (redirectTo) {
-              // set the loggedIn status for the site.  This allows us to get
-              // a silent assertion without relying on the dialog to set the
-              // loggedIn status for the domain.  This is useful when the user
-              // closes the dialog OR if redirection happens before the dialog
-              // has had a chance to finish its business.
-              storage.setLoggedIn(URLParse(redirectTo).originOnly(), email);
+            // set the loggedIn status for the site.  This allows us to get
+            // a silent assertion without relying on the dialog to set the
+            // loggedIn status for the domain.  This is useful when the user
+            // closes the dialog OR if redirection happens before the dialog
+            // has had a chance to finish its business.
+            storage.setLoggedIn(URLParse(redirectTo).originOnly(), email);
 
-              countdownTimeout(function() {
-                doc.location.href = redirectTo;
-                complete(oncomplete, verified);
-              });
-            }
-            else {
+            countdownTimeout(function() {
+              doc.location = redirectTo;
               complete(oncomplete, verified);
-            }
+            });
           });
         }
         else {
@@ -111,7 +107,7 @@ BrowserID.verifySecondaryAddress = (function() {
     var self=this;
     user.tokenInfo(token, function(info) {
       if (info) {
-        redirectTo = info.returnTo;
+        redirectTo = info.returnTo || "https://login.persona.org/";
         email = info.email;
         showRegistrationInfo(info);
         mustAuth = info.must_auth;
