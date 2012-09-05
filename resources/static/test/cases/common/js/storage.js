@@ -4,7 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 (function() {
-  var storage = BrowserID.Storage,
+  var bid = BrowserID,
+      storage = bid.Storage,
+      testHelpers = bid.TestHelpers,
       TEST_ORIGIN = "http://test.domain";
 
   module("common/js/storage", {
@@ -183,11 +185,16 @@
 
   test("setLoggedIn, getLoggedIn, loggedInCount", function() {
     var email = "testuser@testuser.com";
+    storage.addSecondaryEmail(email);
     storage.setLoggedIn(TEST_ORIGIN, email);
     equal(storage.getLoggedIn(TEST_ORIGIN), email, "correct email");
 
     storage.setLoggedIn("http://another.domain", email);
     equal(storage.loggedInCount(), 2, "correct logged in count");
+
+    storage.removeEmail(email);
+    equal(storage.loggedInCount(), 0, "after email removed, not logged in anywhere");
+    testHelpers.testUndefined(storage.getLoggedIn(TEST_ORIGIN), "sites with email no longer logged in");
   });
 
 }());
