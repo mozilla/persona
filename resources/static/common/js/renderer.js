@@ -7,34 +7,14 @@ BrowserID.Renderer = (function() {
   "use strict";
 
   var bid = BrowserID,
-      dom = bid.DOM,
-      templateCache = {};
+      dom = bid.DOM;
 
   function getTemplateHTML(templateName, vars) {
-    var config,
-        templateText = bid.Templates[templateName],
-        vars = vars || {};
+    var templateFn = bid.Templates[templateName];
+    vars = vars || {};
 
-    if(templateText) {
-      config = {
-        text: templateText
-      };
-    }
-    else {
-      // TODO - be able to set the directory
-      config = {
-        url: "/dialog/views/" + templateName + ".ejs"
-      };
-    }
-
-    var template = templateCache[templateName];
-    if(!template) {
-      template = new EJS(config);
-      templateCache[templateName] = template;
-    }
-
-    var html = template.render(vars);
-    return html;
+    // arguments are: locals, filters (which cant be used client-side), escapeFn
+    return templateFn.call(null, vars);
   }
 
   function render(target, templateName, vars) {

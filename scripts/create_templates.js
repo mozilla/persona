@@ -6,19 +6,26 @@
 
 const
 fs = require("fs"),
-path = require('path');
+path = require('path'),
+ejs = require('ejs');
 
 var dir = process.env.TEMPLATE_DIR || process.cwd();
 var output_dir = process.env.BUILD_DIR || dir;
 
 var templates = {};
 
-function generateTemplates() {
+var lastGen = 0;
+var templateData;
+
+function generateTemplates(outputType, templatesDir) {
+  if (templatesDir) dir = templatesDir;
   var fileNames = fs.readdirSync(dir)
 
   // is a regen even neccesary?
   try {
-    var lastGen = fs.statSync(path.join(output_dir, "templates.js")).mtime;
+    if (outputType !== generateTemplates.RETURN) {
+      lastGen = fs.statSync(path.join(output_dir, "templates.js")).mtime;
+    }
     for (var i = 0; i < fileNames.length; i++) {
       if (lastGen < fs.statSync(path.join(dir, fileNames[i])).mtime) {
         throw "newer";
@@ -26,7 +33,7 @@ function generateTemplates() {
     };
     // no rebuild needed
     console.log("templates.js is up to date");
-    return;
+    return templateData;
   } catch (e) {
     console.log("creating templates.js");
   }
@@ -35,14 +42,32 @@ function generateTemplates() {
     var fileName = fileNames[index];
     if(fileName.match(/\.ejs$/)) {
       var templateName = fileName.replace(/\.ejs/, '');
-      templates[templateName] = fs.readFileSync(dir + "/" + fileName, "utf8")
+      var templateText = fs.readFileSync(dir + "/" + fileName, "utf8");
+
+      templates[templateName] = ejs.compile(templateText, {
+        client: true,
+        compileDebug: true // TODO: make this depend on config
+      });
     }
   }
 
-  var templateData = "BrowserID.Templates =" + JSON.stringify(templates) + ";";
+  var templateData = "BrowserID.Templates = {};";
+  for (var t in templates) {
+    if (templates.hasOwnProperty(t)) {
+      templateData += "\nBrowserID.Templates['" + t + "'] = " + String(templates[t]);
+    }
+  }
 
-  fs.writeFileSync(output_dir + "/templates.js", templateData, "utf8");
+  if (outputType === generateTemplates.RETURN) {
+    lastGen = Date.now();
+    return templateData;
+  } else {
+    fs.writeFileSync(output_dir + "/templates.js", templateData, "utf8");
+  }
 };
+
+generateTemplates.FILE = 0;
+generateTemplates.RETURN = 1;
 
 // run or export the function
 if (process.argv[1] === __filename) generateTemplates();
