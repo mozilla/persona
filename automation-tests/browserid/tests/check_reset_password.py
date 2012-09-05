@@ -14,7 +14,7 @@ import restmail
 
 
 @pytest.mark.nondestructive
-class TestSignIn(BaseTest):
+class TestResetPassword(BaseTest):
 
     @pytest.mark.travis
     def test_reset_password(self, mozwebqa):
