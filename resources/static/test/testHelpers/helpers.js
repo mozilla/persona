@@ -330,6 +330,11 @@ BrowserID.TestHelpers = (function() {
       }
     },
 
+    testElementTextEquals: function(selector, expected, msg) {
+      equal($(selector).eq(0).text(), expected, msg || (selector + " text is: " + expected));
+
+    },
+
     testEmailMarkedVerified: function(email, msg) {
       var emailInfo = storage.getEmail(email);
       equal(emailInfo && emailInfo.verified, true,

@@ -14,21 +14,25 @@ import restmail
 
 
 @pytest.mark.nondestructive
-class TestSignIn(BaseTest):
+class TestAddEmail(BaseTest):
 
     @pytest.mark.travis
     def test_add_email(self, mozwebqa):
         user = self.create_verified_user(mozwebqa.selenium, mozwebqa.timeout)
         user.additional_emails.append('%s_1@restmail.net' % user.id)
 
+        # log out
         mozwebqa.selenium.get('%s/' % mozwebqa.base_url)
         self.log_out(mozwebqa.selenium, mozwebqa.timeout)
-        mozwebqa.selenium.find_element_by_css_selector('#loggedout button').click()
 
+        # initiate add email
+        mozwebqa.selenium.find_element_by_css_selector('#loggedout button').click()
         from .. pages.sign_in import SignIn
         signin = SignIn(mozwebqa.selenium, mozwebqa.timeout, expect='returning')
+
         signin.click_add_another_email_address()
         signin.new_email = user.additional_emails[0]
+        assert signin.new_email == user.additional_emails[0], "new email getter failed"
         signin.click_add_new_email()
         signin.close_window()
         signin.switch_to_main_window()
@@ -39,17 +43,14 @@ class TestSignIn(BaseTest):
         confirm_url = re.search(BrowserID.CONFIRM_URL_REGEX,
             mail[0]['text']).group(0)
 
-        mozwebqa.selenium.get(confirm_url)
         from .. pages.complete_registration import CompleteRegistration
         complete_registration = CompleteRegistration(mozwebqa.selenium,
-            mozwebqa.timeout,
-            expect='success')
-        assert 'Your address has been verified' in complete_registration.thank_you
+            mozwebqa.timeout, confirm_url, expect='redirect')
 
-        mozwebqa.selenium.get('%s/' % mozwebqa.base_url)
         self.log_out(mozwebqa.selenium, mozwebqa.timeout)
-        mozwebqa.selenium.find_element_by_css_selector('#loggedout button').click()
 
+        mozwebqa.selenium.find_element_by_css_selector('#loggedout button').click()
         signin = SignIn(mozwebqa.selenium, mozwebqa.timeout, expect='returning')
+
         assert user.additional_emails[0] in signin.emails
         assert signin.selected_email == user.additional_emails[0]

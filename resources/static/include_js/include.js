@@ -1246,6 +1246,8 @@
         opts.termsOfService = passedOptions.termsOfService || undefined;
         opts.privacyURL = passedOptions.privacyURL || undefined;
         opts.tosURL = passedOptions.tosURL || undefined;
+        opts.siteName = passedOptions.siteName || undefined;
+        opts.siteLogo = passedOptions.siteLogo || undefined;
 
         if (checkDeprecated(passedOptions, "silent")) {
           // Silent has been deprecated, do nothing.  Placing the check here
