@@ -13,7 +13,7 @@
         "connect-cachify": "0.0.10",
         "connect-cookie-session": "0.0.2",
         "connect-logger-statsd": "0.0.1",
-        "ejs": "0.4.3",
+        "ejs": "git://github.com/visionmedia/ejs.git#3c3f592d2f261bd2239653839c85b8bc90833c86",
         "etagify": "0.0.2",
         "express": "2.5.0",
         "gobbledygook": "0.0.3",
