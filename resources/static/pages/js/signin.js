@@ -21,8 +21,7 @@ BrowserID.signIn = (function() {
       verifyEmail,
       verifyURL,
       addressInfo,
-      sc,
-      lastEmail;
+      sc;
 
   function userAuthenticated() {
     pageHelpers.clearStoredEmail();
@@ -168,16 +167,17 @@ BrowserID.signIn = (function() {
 
   function onEmailChange(event) {
     /*jshint validthis: true*/
+    var self=this;
 
     // this is basically a state reset.
     var email = dom.getInner("#email");
-    if(email !== lastEmail) {
+    if(email !== self.lastEmail) {
       dom.removeClass("body", "primary");
       dom.removeClass("body", "known_secondary");
       dom.removeClass("body", "unknown_secondary");
       dom.slideUp(".password_entry, .vpassword_entry, .verify_primary");
-      this.submit = emailSubmit;
-      lastEmail = email;
+      self.submit = emailSubmit;
+      self.lastEmail = email;
     }
   }
 
@@ -189,6 +189,11 @@ BrowserID.signIn = (function() {
       if(options && options.winchan) winchan = options.winchan;
 
       pageHelpers.setupEmail();
+
+      // set up the initial lastEmail so that if the user tabs into the email
+      // field, the password field does not close. See issue #2353.
+      // https://github.com/mozilla/browserid/issues/2353
+      self.lastEmail = dom.getInner("#email");
 
       self.click("#authWithPrimary", authWithPrimary);
       self.bind("#email", "change", onEmailChange);
