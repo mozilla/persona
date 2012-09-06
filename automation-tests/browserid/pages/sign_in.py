@@ -35,14 +35,7 @@ class SignIn(Base):
     def __init__(self, selenium, timeout, expect='new'):
         Base.__init__(self, selenium, timeout)
 
-        if self.selenium.title != self._page_title:
-            for handle in self.selenium.window_handles:
-                self.selenium.switch_to_window(handle)
-                WebDriverWait(self.selenium, self.timeout).until(lambda s: s.title)
-                if self.selenium.title == self._page_title:
-                    break
-            else:
-                raise Exception('Popup has not loaded')
+        selenium.switch_to_window('__persona_dialog')
 
         if expect == 'new':
             WebDriverWait(self.selenium, self.timeout).until(

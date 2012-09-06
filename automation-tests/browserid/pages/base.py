@@ -7,8 +7,6 @@
 
 class Base(object):
 
-    _page_title = 'Mozilla Persona: A Better Way to Sign In'
-
     def __init__(self, selenium, timeout=60):
         self.selenium = selenium
         self.timeout = timeout
