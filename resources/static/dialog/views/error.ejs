@@ -13,7 +13,7 @@
     <h2 id="error_403">
       <%= gettext("Persona requires cookies to remember you.") %>
     </h2>
-    <%= format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='http://support.mozilla.org/kb/Websites%20say%20cookies%20are%20blocked'"]) %>
+    <%- format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='http://support.mozilla.org/kb/Websites%20say%20cookies%20are%20blocked'"]) %>
   <% } else if(typeof title === "string") { %>
     <h2>
       <span class="emphasis"><%= title %></span>
