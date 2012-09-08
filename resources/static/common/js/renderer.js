@@ -13,6 +13,8 @@ BrowserID.Renderer = (function() {
     var templateFn = bid.Templates[templateName];
     vars = vars || {};
 
+    if (!templateFn) throw "Template not found: " + templateName;
+
     // arguments are: locals, filters (which cant be used client-side), escapeFn
     return templateFn.call(null, vars);
   }

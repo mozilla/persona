@@ -12,14 +12,18 @@ ejs = require('ejs');
 var dir = process.env.TEMPLATE_DIR || process.cwd();
 var output_dir = process.env.BUILD_DIR || dir;
 
-var templates = {};
+var bundles = {};
 
-var lastGen = 0;
-var templateData;
-
-function generateTemplates(outputType, templatesDir) {
+function generateTemplates(outputType, templatesDir, namePrefix) {
   if (templatesDir) dir = templatesDir;
-  var fileNames = fs.readdirSync(dir)
+  if (!namePrefix) namePrefix = "";
+
+  var bundle = bundles[templatesDir] || (bundles[templatesDir] = {});
+  var lastGen = bundle.lastGen || 0;
+  var templateData = bundle.data;
+
+  var fileNames = fs.readdirSync(dir);
+  var templates = {};
 
   // is a regen even neccesary?
   try {
@@ -41,7 +45,7 @@ function generateTemplates(outputType, templatesDir) {
   for(var index = 0, max = fileNames.length; index < max; index++) {
     var fileName = fileNames[index];
     if(fileName.match(/\.ejs$/)) {
-      var templateName = fileName.replace(/\.ejs/, '');
+      var templateName = namePrefix + fileName.replace(/\.ejs/, '');
       var templateText = fs.readFileSync(dir + "/" + fileName, "utf8");
 
       templates[templateName] = ejs.compile(templateText, {
@@ -51,7 +55,7 @@ function generateTemplates(outputType, templatesDir) {
     }
   }
 
-  var templateData = "BrowserID.Templates = {};";
+  templateData = "BrowserID.Templates = BrowserID.Templates || {};";
   for (var t in templates) {
     if (templates.hasOwnProperty(t)) {
       templateData += "\nBrowserID.Templates['" + t + "'] = " + String(templates[t]);
@@ -59,7 +63,8 @@ function generateTemplates(outputType, templatesDir) {
   }
 
   if (outputType === generateTemplates.RETURN) {
-    lastGen = Date.now();
+    bundle.lastGen = Date.now();
+    bundle.data = templateData;
     return templateData;
   } else {
     fs.writeFileSync(output_dir + "/templates.js", templateData, "utf8");
