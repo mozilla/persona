@@ -7,7 +7,8 @@
 const
 fs = require("fs"),
 path = require('path'),
-ejs = require('ejs');
+ejs = require('ejs'),
+config = require('../lib/configuration');
 
 var dir = process.env.TEMPLATE_DIR || process.cwd();
 var output_dir = process.env.BUILD_DIR || dir;
@@ -50,7 +51,7 @@ function generateTemplates(outputType, templatesDir, namePrefix) {
 
       templates[templateName] = ejs.compile(templateText, {
         client: true,
-        compileDebug: true // TODO: make this depend on config
+        compileDebug: !config.get('use_minified_resources')
       });
     }
   }
