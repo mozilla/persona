@@ -57,7 +57,7 @@ suite.addBatch({
       });
       // Fragile - filename with :locale...
       // When fixing this test case... console.log(res[Object.keys(res)[0]]);
-      var localeIndex = 9;
+      var localeIndex = 8;
       assert.notEqual(files[minFile][localeIndex],
                       res[minRes][localeIndex]);
       var counter = 0;
