@@ -86,7 +86,7 @@ BrowserID.manageAccount = (function() {
       });
     }
 
-    var template = $("#templateUser").html();
+    var template = dom.getInner("#templateUser");
 
     _(emails).each(function(item) {
       var e = item.address;
@@ -214,7 +214,7 @@ BrowserID.manageAccount = (function() {
 
       var self=this,
           oncomplete = options.ready,
-          manage = dom.getInner("#templateManage") });
+          manage = dom.getInner("#templateManage");
 
       dom.insertAfter(manage, "#hAlign");
 
