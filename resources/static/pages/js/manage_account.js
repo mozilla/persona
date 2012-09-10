@@ -211,8 +211,7 @@ BrowserID.manageAccount = (function() {
 
       var self=this,
           oncomplete = options.ready,
-          template = new EJS({ text: dom.getInner("#templateManage") }),
-          manage = template.render({});
+          manage = dom.getInner("#templateManage") });
 
       dom.insertAfter(manage, "#hAlign");
 
