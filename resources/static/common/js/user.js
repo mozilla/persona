@@ -910,7 +910,7 @@ BrowserID.User = (function() {
 
     /**
      * Check whether the email is already registered.
-     * @method emailRegistered
+     * @method isEmailRegistered
      * @param {string} email - Email address to check.
      * @param {function} [onComplete] - Called with one boolean parameter when
      * complete.  Parameter is true if `email` is already registered, false
@@ -1219,7 +1219,7 @@ BrowserID.User = (function() {
 
     /**
      * Get an assertion for the current domain if the user is signed into it
-     * @method getPersistentSigninAssertion
+     * @method getSilentAssertion
      * @param {function} onComplete - called on completion.  Called with an
      * an email and assertion if successful, null otw.
      * @param {function} onFailure - called on XHR failure.
@@ -1256,7 +1256,7 @@ BrowserID.User = (function() {
 
     /**
      * Clear the persistent signin field for the current origin
-     * @method clearPersistentSignin
+     * @method logout
      * @param {function} onComplete - called on completion.  Called with
      * a boolean, true if successful, false otw.
      * @param {function} onFailure - called on XHR failure.
