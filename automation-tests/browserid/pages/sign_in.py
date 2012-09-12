@@ -35,6 +35,9 @@ class SignIn(Base):
     def __init__(self, selenium, timeout, expect='new'):
         Base.__init__(self, selenium, timeout)
 
+        # wait for second window to open
+        WebDriverWait(self.selenium, self.timeout).until(
+            lambda s: s.window_handles > 1)
         selenium.switch_to_window('__persona_dialog')
 
         if expect == 'new':
@@ -50,7 +53,11 @@ class SignIn(Base):
             raise Exception('Unknown expect value: %s' % expect)
 
     def close_window(self):
-        self.selenium.close()
+        try:  # race condition with window closing by itself
+            self.selenium.close()
+        except:
+            # if it fails, the framework will capture a screenshot
+            pass
 
     @property
     def signed_in_email(self):
