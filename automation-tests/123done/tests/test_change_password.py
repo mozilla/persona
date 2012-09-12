@@ -14,6 +14,16 @@ import pytest
 
 class TestChangePassword:
 
+    def _persona_server_url(self, mozwebqa):
+        server = None
+        if 'dev' in mozwebqa.base_url:
+            server = 'https://login.dev.anosrep.org'
+        elif 'beta' in mozwebqa.base_url:
+            server = 'https://login.anosrep.org'
+        else:
+            server = 'https://login.persona.org'
+        return server
+
     def test_can_change_user_password(self, mozwebqa):
         user = MockUser()
         home_pg = HomePage(mozwebqa)
@@ -30,7 +40,7 @@ class TestChangePassword:
         from browserid.pages.complete_registration import CompleteRegistration
         CompleteRegistration(mozwebqa.selenium, mozwebqa.timeout, email.verify_user_link)
 
-        mozwebqa.selenium.get(mozwebqa.server_base_url)
+        mozwebqa.selenium.get(self._persona_server_url(mozwebqa))
         from browserid.pages.account_manager import AccountManager
         account_manager = AccountManager(mozwebqa.selenium, mozwebqa.timeout)
 
