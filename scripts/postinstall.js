@@ -28,7 +28,6 @@ function copy(src, dest) {
 }
 
 copy('../node_modules/jwcrypto/bidbundle.js', '../resources/static/common/js/lib/bidbundle.js');
-relativeLink('../resources/views', '../resources/static/dialog/views/site');
 
 
 // generate ephemeral keys
