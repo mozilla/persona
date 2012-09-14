@@ -100,7 +100,8 @@
           number_sites_remembered: 3,
           orphaned: false,
           new_account: true,
-          email_type: "assertion"
+          email_type: "assertion",
+          rp_api: "watch_without_onready"
         });
         model.stageCurrent();
 
@@ -123,7 +124,8 @@
             number_sites_remembered: 3,
             orphaned: false,
             new_account: true,
-            email_type: "assertion"
+            email_type: "assertion",
+            rp_api: "watch_without_onready"
           });
 
           testHelpers.testUndefined(mostRecentSessionData.local_timestamp, "non-whitelisted valued stripped");

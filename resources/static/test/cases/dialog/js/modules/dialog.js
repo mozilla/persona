@@ -68,6 +68,35 @@
     controller.start(options);
   }
 
+  function testMessageNotExpected(msg) {
+    mediator.subscribe(msg, function(msg, info) {
+      ok(false, "unexpected message: " + msg);
+    });
+  }
+
+  function testExpectGetFailure(options, expectedErrorMessage) {
+    _.extend(options, {
+      ready: function() {
+        testMessageNotExpected("kpi_data");
+        testMessageNotExpected("start");
+
+        var retval = controller.get(HTTPS_TEST_DOMAIN, options);
+
+        if (expectedErrorMessage) {
+          equal(retval, expectedErrorMessage, "expected error: " + expectedErrorMessage);
+        }
+        else {
+          ok(retval, "error message returned");
+        }
+
+        testErrorVisible();
+        start();
+      }
+    });
+    createController(options);
+  }
+
+
   module("dialog/js/modules/dialog", {
     setup: function() {
       winMock = new WinMock();
@@ -619,6 +648,27 @@
         });
       }
     });
+  });
+
+  asyncTest("get with valid rp_api - allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("kpi_data", function(msg, info) {
+          equal(info.rp_api, "get");
+          start();
+        });
+
+        controller.get(HTTPS_TEST_DOMAIN, {
+          rp_api: "get"
+        });
+      }
+    });
+  });
+
+  asyncTest("get with invalid rp_api - not allowed", function() {
+    testExpectGetFailure({
+      rp_api: "invalid_value"
+    }, "invalid value for rp_api: invalid_value");
   });
 }());
 

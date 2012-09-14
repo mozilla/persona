@@ -110,6 +110,20 @@ BrowserID.Modules.Dialog = (function() {
     throw "must be an absolute path: (" + path + ")";
   }
 
+  function validateRPAPI(rpAPI) {
+    var VALID_RP_API_VALUES = [
+      "watch_without_onready",
+      "watch_with_onready",
+      "get",
+      "getVerifiedEmail",
+      "internal"
+    ];
+
+    if (_.indexOf(VALID_RP_API_VALUES, rpAPI) === -1) {
+      throw "invalid value for rp_api: " + rpAPI;
+    }
+  }
+
   var Dialog = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
@@ -170,6 +184,13 @@ BrowserID.Modules.Dialog = (function() {
 
       // verify params
       try {
+        var rpAPI = paramsFromRP.rp_api;
+        if (rpAPI) {
+          // throws if an invalid rp_api value
+          validateRPAPI(rpAPI);
+          self.publish("kpi_data", { rp_api: rpAPI });
+        }
+
         if (paramsFromRP.requiredEmail) {
           helpers.log("requiredEmail has been deprecated");
         }
