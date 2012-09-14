@@ -89,6 +89,7 @@
       // options block directly to the dialog.
       var controller = moduleManager.getRunningModule("dialog");
       if(controller) {
+        options.rp_api = "internal";
         controller.get(origin, options, complete, complete);
       }
       else {

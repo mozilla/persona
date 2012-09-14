@@ -1125,6 +1125,17 @@
       _open_hidden_iframe();
     }
 
+    var api_called;
+    function getRPAPI() {
+      var rp_api = api_called;
+      if (rp_api === "request") {
+        if (observers.ready) rp_api = "watch_with_onready";
+        else rp_api = "watch_without_onready";
+      }
+
+      return rp_api;
+    }
+
     function internalRequest(options) {
       checkDeprecated(options, "requiredEmail");
       checkRenamed(options, "tosURL", "termsOfService");
@@ -1137,6 +1148,11 @@
       if (options.privacyPolicy && !options.termsOfService) {
         warn("privacyPolicy ignored unless termsOfService also defined");
       }
+
+      options.rp_api = getRPAPI();
+      // reset the api_called in case the site implementor changes which api
+      // method called the next time around.
+      api_called = null;
 
       // focus an existing window
       if (w) {
@@ -1216,6 +1232,7 @@
           throw new Error("all navigator.id calls must be made on the navigator.id object");
         options = options || {};
         checkCompat(false);
+        api_called = "request";
         // returnTo is used for post-email-verification redirect
         if (!options.returnTo) options.returnTo = document.location.pathname;
         return internalRequest(options);
@@ -1251,7 +1268,8 @@
         opts.tosURL = passedOptions.tosURL || undefined;
         opts.siteName = passedOptions.siteName || undefined;
         opts.siteLogo = passedOptions.siteLogo || undefined;
-
+        // api_called could have been set to getVerifiedEmail already
+        api_called = api_called || "get";
         if (checkDeprecated(passedOptions, "silent")) {
           // Silent has been deprecated, do nothing.  Placing the check here
           // prevents the callback from being called twice, once with null and
@@ -1283,6 +1301,7 @@
       getVerifiedEmail: function(callback) {
         warn("navigator.id.getVerifiedEmail has been deprecated");
         checkCompat(true);
+        api_called = "getVerifiedEmail";
         navigator.id.get(callback);
       },
       // required for forwards compatibility with native implementations
