@@ -42,7 +42,7 @@ cp -p config/l10n-prod.json %{buildroot}%{_rootdir}/config
 
 %post
 echo "Restarting daemons under /var/service/browserid-*"
-/command/svc -t /var/service/browserid-*
+/usr/local/bin/svc -t /service/browserid-*
 
 %clean
 rm -rf %{buildroot}
