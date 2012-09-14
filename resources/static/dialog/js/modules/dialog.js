@@ -83,7 +83,7 @@ BrowserID.Modules.Dialog = (function() {
     if (typeof(url) !== "string")
       throw "urls must be strings: (" + url + ")";
     if (/^http(s)?:\/\//.test(url)) u = URLParse(url);
-    else if (/^\//.test(url)) u = URLParse(origin + url);
+    else if (/^\/[^\/]/.test(url)) u = URLParse(origin + url);
     else throw "relative urls not allowed: (" + url + ")";
     // encodeURI limits our return value to [a-z0-9:/?%], excluding <script>
     var encodedURI = encodeURI(u.validate().normalize().toString());
@@ -105,7 +105,8 @@ BrowserID.Modules.Dialog = (function() {
   }
 
   function fixupAbsolutePath(origin_url, path) {
-    if (/^\//.test(path))  return fixupURL(origin_url, path);
+    // Ensure URL is an absolute path (not a relative path or a scheme-relative URL)
+    if (/^\/[^\/]/.test(path))  return fixupURL(origin_url, path);
 
     throw "must be an absolute path: (" + path + ")";
   }
