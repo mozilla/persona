@@ -1,7 +1,7 @@
 %define _rootdir /opt/browserid
 
 Name:          browserid-server
-Version:       0.2012.08.17
+Version:       2.2012.08.17
 Release:       1%{?dist}_%{svnrev}
 Summary:       BrowserID server
 Packager:      Gene Wood <gene@mozilla.com>
@@ -39,6 +39,10 @@ done
 mkdir -p %{buildroot}%{_rootdir}/config
 cp -p config/l10n-all.json %{buildroot}%{_rootdir}/config
 cp -p config/l10n-prod.json %{buildroot}%{_rootdir}/config
+
+%post
+echo "Restarting daemons under /var/service/browserid-*"
+/usr/local/bin/svc -t /service/browserid-*
 
 %clean
 rm -rf %{buildroot}
