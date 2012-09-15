@@ -206,9 +206,10 @@ h1 {
        -o-box-shadow: 0 0 5px #003763 inset;
           box-shadow: 0 0 5px #003763 inset;
 
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3AA7FF), color-stop(100%, #006EC6));
   background-image: -moz-linear-gradient(#3AA7FF 0%, #006EC6 100%);
   background-image: -o-linear-gradient(#3AA7FF 0%, #006EC6 100%);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3AA7FF), color-stop(100%, #006EC6));
+  background-image: linear-gradient(#3AA7FF 0%, #006EC6 100%);
 }
 
 .edit .buttonrow > .done {
@@ -258,6 +259,7 @@ button.delete {
   background-image: -moz-linear-gradient(#EA7676 0%, #C84343 100%);
   background-image: -ms-linear-gradient(#EA7676 0%, #C84343 100%);
   background-image: -o-linear-gradient(#EA7676 0%, #C84343 100%);
+  background-image: linear-gradient(#EA7676 0%, #C84343 100%);
 }
 
 button.delete:hover {
@@ -266,6 +268,7 @@ button.delete:hover {
   background-image: -moz-linear-gradient(#f07979 0%, #c34141 100%);
   background-image: -ms-linear-gradient(#f07979 0%, #c34141 100%);
   background-image: -o-linear-gradient(#f07979 0%, #c34141 100%);
+  background-image: linear-gradient(#f07979 0%, #c34141 100%);
 }
 
 button.delete:active {
@@ -279,9 +282,10 @@ button.delete:active {
        -o-box-shadow: 0 0 5px #003763 inset;
           box-shadow: 0 0 5px #003763 inset;
 
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #C84343), color-stop(100%, #AA3D3D));
   background-image: -moz-linear-gradient(center top , #C84343 0%, #AA3D3D 100%);
   background-image: -o-linear-gradient(#C84343 0%, #AA3D3D 100%);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #C84343), color-stop(100%, #AA3D3D));
+  background-image: linear-gradient(#C84343 0%, #AA3D3D 100%);
 }
 
 
