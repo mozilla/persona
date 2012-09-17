@@ -89,7 +89,7 @@ BrowserID.manageAccount = (function() {
     var template = dom.getInner("#templateUser");
 
     _(emails).each(function(item) {
-      var e = item.address;
+      var e = _.escape(item.address);
       var identity = substitute(template, { email: e });
 
       var idEl = dom.appendTo(identity, list),
