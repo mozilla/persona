@@ -1236,7 +1236,10 @@
         _open_hidden_iframe();
         // send logout message if the commChan exists
         if (commChan) commChan.notify({ method: 'logout' });
-        if (typeof callback === 'function') setTimeout(callback, 0);
+        if (typeof callback === 'function') {
+          warn('navigator.id.logout callback argument has been deprecated.');
+          setTimeout(callback, 0);
+        }
       },
       // get an assertion
       get: function(callback, passedOptions) {
