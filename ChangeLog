@@ -1,4 +1,9 @@
 train-2012.09.14:
+  * Automated test improvements: #2364, #2429
+  * Allow siteName and siteLogo when using navigator.id.get: #2382
+  * If there is no saved site info in localStorage, redirect to the management page after verification is complete: #2388
+  * Fix the password being hidden if the user tabbed into the email field without typing any key besides tab: #2353
+  * Code cleanup: #2389
 
 train-2012.08.31:
   * Test/example code fixes: #2345, #2363
