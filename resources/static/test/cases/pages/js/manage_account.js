@@ -9,6 +9,7 @@
   var bid = BrowserID,
       xhr = bid.Mocks.xhr,
       errorScreen = bid.Screens.error,
+      user = bid.User,
       network = bid.Network,
       storage = bid.Storage,
       testHelpers = bid.TestHelpers,
@@ -82,12 +83,11 @@
     xhr.useResult("multiple");
 
     createController(mocks, function() {
-      equal($("#emailList").children().length, 2, "there two children added");
-
-      var firstLI = $("#testuser2_testuser_com");
-      var secondLI = $("#testuser_testuser_com");
-
-      equal(firstLI.next().is(secondLI), true, "names are in alphabetical order");
+      var sortedEmails = user.getSortedEmailKeypairs();
+      _.each(sortedEmails, function(addressInfo, index) {
+        var displayedAddress = $("#emailList .email").get(index).innerHTML;
+        equal(displayedAddress, addressInfo.address, "emails are displayed in sorted order");
+      });
 
       start();
     });
