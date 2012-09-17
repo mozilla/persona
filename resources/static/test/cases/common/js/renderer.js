@@ -20,12 +20,6 @@
     }
   });
 
-  test("render template loaded using XHR", function() {
-    renderer.render("#formWrap .contents", "test_template_with_input");
-
-    ok($("#templateInput").length, "template written when loaded using XHR");
-  });
-
   test("render template from memory", function() {
     renderer.render("#formWrap .contents", "inMemoryTemplate");
 
@@ -37,6 +31,14 @@
 
     ok($("#formWrap > #templateInput").length && $("#formWrap > .contents"), "template appended to element instead of overwriting it");
 
+  });
+
+  test("render template with partial", function() {
+    equal($("#focusButton").length, 0, "template not yet loaded");
+
+    renderer.render("#formWrap .contents", "test_template_with_partial");
+
+    ok($("#focusButton").length, "template loaded with partial");
   });
 
 }());
