@@ -9,7 +9,7 @@
         "connect": "1.7.2",
         "convict": "0.0.6",
         "cjson": "0.0.6",
-        "client-sessions": "0.0.6",
+        "client-sessions": "0.0.9",
         "connect-cachify": "0.0.10",
         "connect-cookie-session": "0.0.2",
         "connect-logger-statsd": "0.0.1",
