@@ -21,7 +21,7 @@
   "max_compute_duration": 10,
   "disable_primary_support": false,
   "enable_code_version": false,
-  "default_lang": "en-US",
+  "default_lang": "en",
   // supported_languages should be overridded with what is appropriate for the
   // deployment.  That is environment dependent:
   //  * in l10 preview env it's all available locales
@@ -29,7 +29,7 @@
   //    testing locales:  "it-CH", "db-LB"
   //  * in production it's reviews locales that have been signed off
   "supported_languages": [
-    "en-US"
+    "en"
   ],
   "debug_lang": "it-CH",
   // locale directory should be overridden

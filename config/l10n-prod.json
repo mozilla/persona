@@ -1,6 +1,6 @@
 {
   "supported_languages": [
-    "af", "bg", "ca", "cs", "cy", "da", "de", "el", "en-US", "eo",
+    "af", "bg", "ca", "cs", "cy", "da", "de", "el", "en", "eo",
     "es", "et", "eu", "fi", "fr", "fy", "ga", "gd", "gl", "he",
     "hr", "hu", "id", "it", "ja", "ko", "lij", "lt", "nb-NO", "nl",
     "pa", "pl", "pt-BR", "rm", "ro", "ru", "sk", "sl", "son", "sq",
