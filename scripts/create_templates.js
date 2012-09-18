@@ -6,42 +6,21 @@
 
 const
 fs = require("fs"),
-path = require('path');
+path = require('path'),
+templates = require('../lib/templates');
 
+var existsSync = fs.existsSync || path.existsSync;
 var dir = process.env.TEMPLATE_DIR || process.cwd();
 var output_dir = process.env.BUILD_DIR || dir;
-
-var templates = {};
+var outputFile = path.join(output_dir, "templates.js");
 
 function generateTemplates() {
-  var fileNames = fs.readdirSync(dir)
-
-  // is a regen even neccesary?
-  try {
-    var lastGen = fs.statSync(path.join(output_dir, "templates.js")).mtime;
-    for (var i = 0; i < fileNames.length; i++) {
-      if (lastGen < fs.statSync(path.join(dir, fileNames[i])).mtime) {
-        throw "newer";
-      }
-    };
-    // no rebuild needed
-    console.log("templates.js is up to date");
-    return;
-  } catch (e) {
-    console.log("creating templates.js");
+  var lastGen = existsSync(outputFile) ? fs.statSync(outputFile).mtime : 0;
+  var templateData = templates.generate(dir, null, lastGen);
+  if (templateData) {
+    // no data most likely means we're already up-to-date
+    fs.writeFileSync(path.join(output_dir, "templates.js"), templateData, "utf8");
   }
-
-  for(var index = 0, max = fileNames.length; index < max; index++) {
-    var fileName = fileNames[index];
-    if(fileName.match(/\.ejs$/)) {
-      var templateName = fileName.replace(/\.ejs/, '');
-      templates[templateName] = fs.readFileSync(dir + "/" + fileName, "utf8")
-    }
-  }
-
-  var templateData = "BrowserID.Templates =" + JSON.stringify(templates) + ";";
-
-  fs.writeFileSync(output_dir + "/templates.js", templateData, "utf8");
 };
 
 // run or export the function

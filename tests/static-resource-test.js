@@ -55,9 +55,9 @@ suite.addBatch({
         assert.equal(files[minFile][nonLocalizedIndex],
                      res[minRes][nonLocalizedIndex]);
       });
-      // Fragile - filename with :locale...
-      // When fixing this test case... console.log(res[Object.keys(res)[0]]);
-      var localeIndex = 9;
+
+      // testing :locale has been replaced
+      var localeIndex = res[minRes].indexOf('/i18n/:locale/client.json');
       assert.notEqual(files[minFile][localeIndex],
                       res[minRes][localeIndex]);
       var counter = 0;

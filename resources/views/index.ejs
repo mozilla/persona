@@ -19,9 +19,14 @@
       </div>
   </div>
 
+  <!--
+    These "templates" below aren't available as EJS client-side, since all
+    EJS tags are processed when this view is served by the server.
+  -->
+
   <script type="text/html" id="templateUser">
-    <li class="identity cf" id="{{ email.replace('@', '_').replace('.', '_') }}">
-      <div class="email">{{ email }}</div>
+    <li class="identity cf">
+      <div class="email">{{email}}</div>
       <button class="delete"><%- gettext('remove') %></button>
     </li>
   </script>

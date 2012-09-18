@@ -79,16 +79,18 @@ BrowserID.manageAccount = (function() {
 
     dom.setInner(list, "");
 
-    // Set up to use mustache style templating, the normal Django style blows
-    // up the node templates
-    _.templateSettings = {
-        interpolate : /\{\{(.+?)\}\}/g
-    };
+    function substitute(text, values, re) {
+      re = re || /\{\{([^\{\}]+)\}\}/g;
+      return String(text).replace(re, function(m, name) {
+        return (values[name] != null) ? values[name] : '';
+      });
+    }
+
     var template = dom.getInner("#templateUser");
 
     _(emails).each(function(item) {
-      var e = item.address,
-          identity = _.template(template, { email: e });
+      var e = _.escape(item.address);
+      var identity = substitute(template, { email: e });
 
       var idEl = dom.appendTo(identity, list),
           deleteButton = dom.getDescendentElements(".delete", idEl);
@@ -211,8 +213,7 @@ BrowserID.manageAccount = (function() {
 
       var self=this,
           oncomplete = options.ready,
-          template = new EJS({ text: dom.getInner("#templateManage") }),
-          manage = template.render({});
+          manage = dom.getInner("#templateManage");
 
       dom.insertAfter(manage, "#hAlign");
 
