@@ -22,7 +22,8 @@ BrowserID.Models.InteractionData = (function() {
         'number_sites_remembered',
         'orphaned',
         'new_account',
-        'email_type'
+        'email_type',
+        'rp_api'
       ];
 
 
