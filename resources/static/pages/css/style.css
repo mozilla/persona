@@ -3,7 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-noscript {
+#noscript-warning {
+  position: absolute;
   position: fixed;
   display: block;
   background-color: #ef1010;
