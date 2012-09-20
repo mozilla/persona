@@ -1,0 +1,33 @@
+{
+  "passfail": false,
+  "maxerr": 100,
+  "browser": true,
+  "node": true,
+  "forin": false,
+  "boss": true,
+  "noarg": true,
+  "undef": true,
+  "browser": true,
+  "laxbreak": true,
+  "laxcomma": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "expr": true,
+  "predef": [
+    "BrowserID",
+    "_",
+    "$",
+    "jQuery",
+    "ok",
+    "equal",
+    "strictEqual",
+    "notEqual",
+    "start",
+    "stop",
+    "asyncTest",
+    "test",
+    "raises"
+  ],
+  "shadow": false,
+  "supernew": false
+}
