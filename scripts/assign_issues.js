@@ -8,6 +8,7 @@ const https = require('https');
 
 // people to get issues, and the issues that were assigned to them
 var people = {
+  'warner': [],
 //  'jedp': [],
   'seanmonstar': [],
 //  'ozten': [],
