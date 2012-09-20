@@ -6,17 +6,21 @@
   "boss": true,
   "noarg": true,
   "undef": true,
-  "browser": true,
   "laxbreak": true,
   "laxcomma": true,
   "eqeqeq": true,
   "eqnull": true,
   "expr": true,
+  "jquery": true,
   "predef": [
     "BrowserID",
     "_",
     "$",
     "jQuery",
+    "gettext",
+    "Channel",
+    "WinChan",
+    "Hub"
   ],
   "shadow": false,
   "supernew": false

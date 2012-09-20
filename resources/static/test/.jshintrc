@@ -22,11 +22,13 @@
     "equal",
     "strictEqual",
     "notEqual",
+    "deepEqual",
     "start",
     "stop",
     "asyncTest",
     "test",
-    "raises"
+    "raises",
+    "module"
   ],
   "shadow": false,
   "supernew": false
