@@ -1,3 +1,4 @@
+"use strict";
 // make symlinks
 var fs = require('fs');
 var path = require('path');
@@ -28,6 +29,7 @@ function copy(src, dest) {
 }
 
 copy('../node_modules/jwcrypto/bidbundle.js', '../resources/static/common/js/lib/bidbundle.js');
+copy('../node_modules/gobbledygook/gobbledygook.js', '../resources/static/common/js/lib/gobbledygook.js');
 
 
 // generate ephemeral keys

@@ -10,6 +10,7 @@
 /resources/static/production
 /resources/static/i18n
 /resources/static/common/js/lib/bidbundle.js
+/resources/static/common/js/lib/gobbledygook.js
 /resources/static/dialog/views/site
 .DS_Store
 Thumbs.db
