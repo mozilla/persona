@@ -1,0 +1,27 @@
+{
+  "passfail": false,
+  "maxerr": 100,
+  "browser": true,
+  "forin": false,
+  "boss": true,
+  "noarg": true,
+  "undef": true,
+  "laxbreak": true,
+  "laxcomma": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "expr": true,
+  "jquery": true,
+  "predef": [
+    "BrowserID",
+    "_",
+    "$",
+    "jQuery",
+    "gettext",
+    "Channel",
+    "WinChan",
+    "Hub"
+  ],
+  "shadow": false,
+  "supernew": false
+}
