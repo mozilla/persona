@@ -614,6 +614,23 @@
     });
   });
 
+  asyncTest("get with a scheme-relative siteLogo URL - not allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "start should not have been called");
+        });
+
+        var retval = controller.get(HTTPS_TEST_DOMAIN, {
+          siteLogo: "//example.com/image.png"
+        });
+
+        equal(retval, "must be an absolute path: (//example.com/image.png)", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
 
   asyncTest("get with returnTo with https - not allowed", function() {
     createController({
@@ -629,6 +646,24 @@
         });
 
         equal(retval, "must be an absolute path: (" + URL + ")", "expected error");
+        testErrorVisible();
+        start();
+      }
+    });
+  });
+
+  asyncTest("get with a scheme-relative returnTo URL - not allowed", function() {
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          ok(false, "unexpected start");
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, {
+          returnTo: '//example.com/return'
+        });
+
+        equal(retval, "must be an absolute path: (//example.com/return)", "expected error");
         testErrorVisible();
         start();
       }
