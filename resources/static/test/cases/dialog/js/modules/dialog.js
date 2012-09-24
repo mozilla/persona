@@ -59,7 +59,7 @@
     // dialog as an individual unit.
     var options = $.extend({
       window: winMock,
-      startExternalDependencies: false,
+      startExternalDependencies: false
     }, config);
 
     controller = BrowserID.Modules.Dialog.create();
@@ -92,6 +92,32 @@
       }
     });
     createController(options);
+  }
+
+  function testRelativeURLNotAllowed(options, path) {
+    testExpectGetFailure(options, "relative urls not allowed: (" + path + ")");
+  }
+
+  function testMustBeAbsolutePath(options, path) {
+    testExpectGetFailure(options, "must be an absolute path: (" + path + ")");
+  }
+
+  function testExpectGetSuccess(options, expected) {
+    createController({
+      ready: function() {
+        var startInfo;
+        mediator.subscribe("start", function(msg, info) {
+          startInfo = info;
+        });
+
+        var retval = controller.get(HTTP_TEST_DOMAIN, options);
+        testHelpers.testObjectValuesEqual(startInfo, expected);
+
+        equal(typeof retval, "undefined", "no error expected");
+        testErrorNotVisible();
+        start();
+      }
+    });
   }
 
 
@@ -293,6 +319,20 @@
     });
   });
 
+  asyncTest("get with valid termsOfService & privacyPolicy='/' - print error screen", function() {
+    testRelativeURLNotAllowed({
+      termsOfService: "/tos.html",
+      privacyPolicy: "/"
+    }, "/");
+  });
+
+  asyncTest("get with valid termsOfService='/' and valid privacyPolicy - print error screen", function() {
+    testRelativeURLNotAllowed({
+      termsOfService: "/",
+      privacyPolicy: "/privacy.html"
+    }, "/");
+  });
+
   asyncTest("get with script containing privacyPolicy - print error screen", function() {
     createController({
       ready: function() {
@@ -374,26 +414,8 @@
   });
 
 
-  function testValidTermsOfServicePrivacyPolicy(options, expected) {
-    createController({
-      ready: function() {
-        var startInfo;
-        mediator.subscribe("start", function(msg, info) {
-          startInfo = info;
-        });
-
-        var retval = controller.get(HTTP_TEST_DOMAIN, options);
-        testHelpers.testObjectValuesEqual(startInfo, expected);
-
-        equal(typeof retval, "undefined", "no error expected");
-        testErrorNotVisible();
-        start();
-      }
-    });
-  }
-
   asyncTest("get with valid absolute termsOfService & privacyPolicy - go to start", function() {
-    testValidTermsOfServicePrivacyPolicy({
+    testExpectGetSuccess({
       termsOfService: "/tos.html",
       privacyPolicy: "/privacy.html"
     },
@@ -404,7 +426,7 @@
   });
 
   asyncTest("get with valid fully qualified http termsOfService & privacyPolicy - go to start", function() {
-    testValidTermsOfServicePrivacyPolicy({
+    testExpectGetSuccess({
       termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
       privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
     },
@@ -416,7 +438,7 @@
 
 
   asyncTest("get with valid fully qualified https termsOfService & privacyPolicy - go to start", function() {
-    testValidTermsOfServicePrivacyPolicy({
+    testExpectGetSuccess({
       termsOfService: HTTPS_TEST_DOMAIN + "/tos.html",
       privacyPolicy: HTTPS_TEST_DOMAIN + "/privacy.html"
     },
@@ -427,7 +449,7 @@
   });
 
   asyncTest("get with valid termsOfService, tosURL & privacyPolicy, privacyURL - use termsOfService and privacyPolicy", function() {
-    testValidTermsOfServicePrivacyPolicy({
+    testExpectGetSuccess({
       termsOfService: "/tos.html",
       tosURL: "/tos_deprecated.html",
       privacyPolicy: "/privacy.html",
@@ -630,7 +652,11 @@
     });
   });
 
-  asyncTest("get with returnTo with https - not allowed", function() {
+  asyncTest("get with siteLogo='/' URL - not allowed", function() {
+    testMustBeAbsolutePath({ siteLogo: "/" }, "/");
+  });
+
+  asyncTest("get with fully qualified URL for returnTo - not allowed", function() {
     createController({
       ready: function() {
         var URL = HTTP_TEST_DOMAIN + "/path";
@@ -681,6 +707,10 @@
         });
       }
     });
+  });
+
+  asyncTest("get with returnTo='/' - allowed", function() {
+    testExpectGetSuccess({ returnTo: "/"}, {});
   });
 
   asyncTest("get with valid rp_api - allowed", function() {
