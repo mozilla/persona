@@ -7,7 +7,14 @@
 const
 fs = require("fs"),
 path = require('path'),
-templates = require('../lib/templates');
+templates = require('../lib/templates'),
+cachify = require('connect-cachify'),
+config = require('../lib/configuration');
+
+cachify.setup({}, {
+  prefix: config.get('cachify_prefix'),
+  root: path.join(__dirname, '../resources/static')
+});
 
 var existsSync = fs.existsSync || path.existsSync;
 var dir = process.env.TEMPLATE_DIR || process.cwd();

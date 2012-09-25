@@ -39,6 +39,14 @@
     ok($("#focusButton").length, "template loaded with partial");
   });
 
+  test("render dialog template with cachify", function() {
+    renderer.render("#formWrap .contents", "test_template_cachify");
+
+    var expected = /\/dialog\/css\/style\.css$/;
+    var value = $("#formWrap .contents").text().trim();
+    ok(value.match(expected), "cachify has been pre-processed");
+  });
+
 }());
 
 
