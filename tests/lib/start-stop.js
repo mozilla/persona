@@ -69,15 +69,6 @@ function setupProc(proc) {
   });
 }
 
-function removeVarDir() {
-  try {
-    fs.readdirSync(varPath).forEach(function(f) {
-        fs.unlinkSync(path.join(varPath, f));
-    });
-    fs.rmdirSync(varPath);
-  } catch(e) {}
-}
-
 exports.addStartupBatches = function(suite) {
 
   // disable vows (often flakey?) async error behavior
@@ -104,7 +95,6 @@ exports.addStartupBatches = function(suite) {
     "opening the database": {
       topic: function() {
         var cfg = config.get('database');
-        cfg.drop_on_close = true;
         db.open(cfg, this.callback);
       },
       "should work fine": function(r) {
@@ -117,7 +107,7 @@ exports.addStartupBatches = function(suite) {
     "run the server": {
       topic: function() {
         var pathToHarness = path.join(__dirname, '..', '..', 'scripts', 'run_locally.js');
-        proc = spawn('node', [ pathToHarness ])
+        proc = spawn('node', [ pathToHarness ]);
         setupProc(proc);
         exports.browserid.on('ready', this.callback);
       },
@@ -151,7 +141,7 @@ exports.addRestartBatch = function(suite) {
     "run the server": {
       topic: function() {
         var pathToHarness = path.join(__dirname, '..', '..', 'scripts', 'run_locally.js');
-        proc = spawn('node', [ pathToHarness ])
+        proc = spawn('node', [ pathToHarness ]);
         setupProc(proc);
         exports.browserid.on('ready', this.callback);
       },
@@ -193,4 +183,4 @@ exports.addShutdownBatches = function(suite) {
       }
     }
   });
-}
+};

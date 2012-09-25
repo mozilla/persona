@@ -21,7 +21,6 @@ var suite = vows.describe('db');
 suite.options.error = false;
 
 var dbCfg = configuration.get('database');
-dbCfg.drop_on_close = true;
 
 suite.addBatch({
   "onReady": {
