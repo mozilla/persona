@@ -109,6 +109,16 @@ BrowserID.Modules.Dialog = (function() {
     throw "must be an absolute path: (" + path + ")";
   }
 
+  function fixupReturnTo(origin_url, path) {
+    // "/" is a valid returnTo, but it is not a valid path for any other
+    // parameter. If the path is "/", allow it, otherwise pass the path down
+    // the normal checks.
+    var returnTo = path === "/" ?
+      origin_url + path :
+      fixupAbsolutePath(origin_url, path);
+    return returnTo;
+  }
+
   function validateRPAPI(rpAPI) {
     var VALID_RP_API_VALUES = [
       "watch_without_onready",
@@ -225,7 +235,7 @@ BrowserID.Modules.Dialog = (function() {
         // returnTo is used for post verification redirection.  Redirect back
         // to the path specified by the RP.
         if (paramsFromRP.returnTo) {
-          var returnTo = fixupAbsolutePath(origin_url, paramsFromRP.returnTo);
+          var returnTo = fixupReturnTo(origin_url, paramsFromRP.returnTo);
           user.setReturnTo(returnTo);
         }
 
