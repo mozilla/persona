@@ -163,6 +163,72 @@ suite.addBatch({
   }
 });
 
+
+// now create a lame cert: valid signature by the wrong party
+const OTHER_EMAIL = 'otheruser@other.domain'; // *not* TEST_DOMAIN
+var bad_cert, bad_assertion;
+
+suite.addBatch({
+  "generating a lame certificate": {
+    topic: function() {
+      var expiration = new Date();
+      expiration.setTime(new Date().valueOf() + 60 * 60 * 1000);
+      jwcrypto.cert.sign({publicKey: g_keypair.publicKey,
+                          principal: {email: OTHER_EMAIL}},
+                         {issuer: TEST_DOMAIN,
+                          expiresAt: expiration, issuedAt: new Date()},
+                         null, g_privKey, this.callback);
+    },
+    "bad cert created": function(err, cert) {
+      assert.isString(cert);
+      assert.lengthOf(cert.split('.'), 3);
+      bad_cert = cert;
+    }
+  }
+});
+
+// generate an assertion using the lame cert
+suite.addBatch({
+  "generating an assertion": {
+    topic: function() {
+      var self = this;
+      var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
+      jwcrypto.assertion.sign(
+        {},
+        {audience: TEST_ORIGIN,
+         issuer: TEST_DOMAIN, // huh, assertions don't have .iss, right?
+         expiresAt: expirationDate},
+        g_keypair.secretKey,
+        function(err, signedAssertion) {
+          self.callback(err, jwcrypto.cert.bundle([bad_cert], signedAssertion));
+        });
+    },
+    "succeeds": function(err, r) {
+      assert.isString(r);
+      bad_assertion = r;
+    }
+  }
+});
+
+suite.addBatch({
+  "adding this email via bad assertion": {
+    topic: function()  {
+      wsapi.post('/wsapi/add_email_with_assertion', {
+        assertion: bad_assertion
+      }).call(this);
+    },
+    "fails due to bad issuer": function(err, r) {
+      assert.strictEqual(r.code, 200);
+      var respObj = JSON.parse(r.body);
+      assert.strictEqual(respObj.success, false);
+      assert.strictEqual(respObj.reason, "issuer 'example.domain' may not speak for emails from 'other.domain'");
+    }
+  }
+});
+
+// since the lame cert was rejected, we should only have the two original
+// addresses
+
 suite.addBatch({
   "list emails": {
     topic: wsapi.get('/wsapi/list_emails', {}),
