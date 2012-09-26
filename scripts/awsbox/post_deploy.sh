@@ -2,7 +2,7 @@
 
 if [ ! -f $HOME/var/root.cert ] ; then
     echo ">> generating keypair"
-    scripts/postinstall.js
+    node scripts/postinstall.js
     mv var/root.{cert,secretkey} $HOME/var
 else
     echo ">> no keypair needed.  you gots one"
