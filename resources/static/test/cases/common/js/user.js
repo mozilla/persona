@@ -74,6 +74,12 @@
     lib[pollFuncName]("registered@testuser.com", function(status) {
       ok(!storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
       equal(status, expectedResult, expectedResult + " response expected");
+
+      // synced_address should be added as a result of syncing email addresses
+      // when the verification poll completes.
+      if (expectedResult === "complete") {
+        testHelpers.testAddressesSyncedAfterUserRegistration();
+      }
       start();
     }, testHelpers.unexpectedXHRFailure);
   }

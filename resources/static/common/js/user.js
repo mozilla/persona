@@ -216,7 +216,14 @@ BrowserID.User = (function() {
       // they just completed a registration.
       registrationComplete = true;
 
-      complete(onSuccess, status);
+      if (status === "complete") {
+        User.syncEmails(function() {
+          complete(onSuccess, status);
+        }, onFailure);
+      }
+      else {
+        complete(onSuccess, status);
+      }
     }
 
     function poll() {
