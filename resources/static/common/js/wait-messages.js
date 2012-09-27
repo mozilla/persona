@@ -16,7 +16,7 @@ BrowserID.Wait = (function(){
     },
 
     slowXHR: {
-      title:  gettext("We are sorry, this is taking a longer than it should."),
+      title:  gettext("We are sorry, this is taking longer than it should."),
       message:  gettext("If this doesn't resolve itself within a few seconds, please close the window and try again."),
       id: "slowXHR"
     }
