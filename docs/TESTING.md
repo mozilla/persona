@@ -31,7 +31,7 @@ Running tests with `npm test` will use a json database by default.  To
 test using MySQL, you will need to grant `browserid` privileges to
 create tables.  You can then run the mysql suite with, e.g.,
 
-```bash
+```sh
 NODE_ENV=test_mysql MYSQL_USER=browserid MYSQL_PASSWORD=browserid npm test
 ```
 
@@ -58,7 +58,7 @@ There are two test suites:
 By default the test runner will run them all. You can limit it to one
 suite by setting `WHAT_TESTS` in your environment.  For example:
 
-```bash
+```sh
 WHAT_TESTS=front npm test
 ```
 
@@ -70,6 +70,6 @@ As in the web tests, you can tell the runner to run only tests whose
 modules match a given name.  Specify this in your environment with
 `FRONTEND_TEST_FILTER`.  For example:
 
-```bash
+```sh
 WHAT_TESTS=front FRONTEND_TEST_FILTER=shared/user npm test
 ```

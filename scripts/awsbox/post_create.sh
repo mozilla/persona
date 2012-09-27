@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 sudo /sbin/chkconfig mysqld on
 sudo /sbin/service mysqld start

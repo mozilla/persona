@@ -14,7 +14,7 @@ rm -rf rpmbuild/RPMS rpmbuild/SOURCES/browserid
 
 tar --exclude rpmbuild --exclude .git --exclude .svn \
     --exclude var -czf \
-    $PWD/rpmbuild/SOURCES/browserid-server.tar.gz .
+    "$PWD/rpmbuild/SOURCES/browserid-server.tar.gz" .
 
 set +e
 
