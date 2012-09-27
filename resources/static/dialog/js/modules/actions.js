@@ -1,5 +1,3 @@
-/*jshint browser:true, jquery: true, forin: true, laxbreak:true */
-/*global _: true, BrowserID: true, PageController: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -17,17 +15,18 @@ BrowserID.Modules.Actions = (function() {
       onsuccess,
       onerror;
 
-  function startService(name, options) {
+  function startService(name, options, reported_service_name) {
+    mediator.publish("service", { name: reported_service_name || name });
+
     // Only one service outside of the main dialog allowed.
     if(runningService) {
       serviceManager.stop(runningService);
     }
+
     var module = serviceManager.start(name, options);
     if(module) {
       runningService = name;
     }
-
-    mediator.publish("service", { name: name });
 
     return module;
   }
@@ -98,7 +97,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doResetPassword: function(info) {
-      startService("set_password", _.extend(info, { password_reset: true }));
+      startService("set_password", _.extend(info, { password_reset: true }), "reset_password");
     },
 
     doStageResetPassword: function(info) {
@@ -106,7 +105,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doConfirmResetPassword: function(info) {
-      startRegCheckService.call(this, info, "waitForPasswordResetComplete", "staged_address_confirmed");
+      startRegCheckService.call(this, info, "waitForPasswordResetComplete", "reset_password_confirmed");
     },
 
     doStageReverifyEmail: function(info) {
@@ -114,7 +113,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doConfirmReverifyEmail: function(info) {
-      startRegCheckService.call(this, info, "waitForEmailReverifyComplete", "staged_address_confirmed");
+      startRegCheckService.call(this, info, "waitForEmailReverifyComplete", "reverify_email_confirmed");
     },
 
     doAssertionGenerated: function(info) {

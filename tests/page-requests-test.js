@@ -56,6 +56,7 @@ function respondsWith(status) {
 suite.addBatch({
   'GET /':                       respondsWith(200),
   'GET /forgot':                 respondsWith(200),
+  'GET /signup':                 respondsWith(301),
   'GET /signin':                 respondsWith(200),
   'GET /about':                  respondsWith(200),
   'GET /tos':                    respondsWith(200),
@@ -64,20 +65,18 @@ suite.addBatch({
   'GET /add_email_address':      respondsWith(200),
   'GET /confirm':                respondsWith(200),
   'GET /reset_password':         respondsWith(200),
-  'GET /confirm':                respondsWith(200),
   'GET /idp_auth_complete':      respondsWith(200),
   'GET /pk':                     respondsWith(200),
   'GET /.well-known/browserid':  respondsWith(200),
-  'GET /signin':                 respondsWith(200),
   'GET /unsupported_dialog':     respondsWith(200),
   'GET /cookies_disabled':       respondsWith(200),
-  'GET /developers':             respondsWith(200),
   'GET /developers':             respondsWith(302),
   'GET /developers/':            respondsWith(302),
   'GET /test':                   respondsWith(301),
   'GET /test/':                  respondsWith(200),
   'GET /include.js':             respondsWith(200),
-  'GET /include.orig.js':        respondsWith(200)
+  'GET /include.orig.js':        respondsWith(200),
+  'GET /humans.txt':             respondsWith(200)
 });
 
 // shut the server down and cleanup

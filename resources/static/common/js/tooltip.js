@@ -1,5 +1,3 @@
-/*jshint browser:true, jquery: true, forin: true, laxbreak:true */
-/*globals BrowserID: true, _:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -8,24 +6,23 @@ BrowserID.Tooltip = (function() {
   "use strict";
 
   var ANIMATION_TIME = 250,
-      TOOLTIP_DISPLAY = 2000,
+      TOOLTIP_MIN_DISPLAY = 2000,
       READ_WPM = 200,
       bid = BrowserID,
-      dom = bid.DOM,
       renderer = bid.Renderer,
-      hideTimer;
+      hideTimer,
+      tooltip;
 
   function createTooltip(el) {
-      var contents = el.html();
+    tooltip = renderer.append("body", "tooltip", {
+      contents: el.html()
+    });
 
-      var tooltip = renderer.append("body", "tooltip", {
-        contents: contents
-      });
-
-      return tooltip;
+    return tooltip;
   }
 
-  function positionTooltip(tooltip, target) {
+  function anchorTooltip(target) {
+    target = $(target);
     var targetOffset = target.offset();
     targetOffset.top -= (tooltip.outerHeight() + 5);
     targetOffset.left += 10;
@@ -33,56 +30,69 @@ BrowserID.Tooltip = (function() {
     tooltip.css(targetOffset);
   }
 
-  function animateTooltip(el, complete) {
-    var contents = el.text().replace(/\s+/, ' ').replace(/^\s+/, '').replace(/\s+$/, '');
-    var words = contents.split(' ').length;
+  function calculateDisplayTime(text) {
+    // Calculate the amount of time a tooltip should display based on the
+    // number of words in the content divided by the number of words an average
+    // person can read per minute.
+    var contents = text.replace(/\s+/, ' ').trim(),
+        words = contents.split(' ').length,
+        // The average person can read ± 250 wpm.
+        wordTimeMS = (words / READ_WPM) * 60 * 1000,
+        displayTimeMS = Math.max(wordTimeMS, TOOLTIP_MIN_DISPLAY);
 
-    // The average person can read ± 250 wpm.
-    var wordTimeMS = (words / READ_WPM) * 60 * 1000;
-    var displayTimeMS = Math.max(wordTimeMS, TOOLTIP_DISPLAY);
+        return displayTimeMS;
+  }
+
+  function animateTooltip(el, complete) {
+    var displayTimeMS = calculateDisplayTime(el.text());
 
     bid.Tooltip.shown = true;
     el.fadeIn(ANIMATION_TIME, function() {
       hideTimer = setTimeout(function() {
-        el.fadeOut(ANIMATION_TIME, function() {
-          bid.Tooltip.shown = false;
-          if(complete) complete();
-        });
+        el.fadeOut(ANIMATION_TIME, complete);
       }, displayTimeMS);
     });
-  }
 
-  function createAndShowRelatedTooltip(el, relatedTo, complete) {
-      // This means create a copy of the tooltip element and position it in
-      // relation to an element.  Right now we are putting the tooltip directly
-      // above the element.  Once the tooltip is no longer needed, remove it
-      // from the DOM.
-      var tooltip = createTooltip(el);
-
-      var target = $("#" + relatedTo);
-      positionTooltip(tooltip, target);
-
-      animateTooltip(tooltip, function() {
-        if (tooltip) {
-          tooltip.remove();
-          tooltip = null;
-        }
-        if (complete) complete();
-      });
+    return displayTimeMS;
   }
 
   function showTooltip(el, complete) {
-    el = $(el);
-    var messageFor = el.attr("for");
+    // Only one tooltip can be shown at a time, see issue #1615
+    removeTooltips();
 
-    // First, see if we are "for" another element, if we are, create a copy of
-    // the tooltip to attach to the element.
-    if(messageFor) {
-      createAndShowRelatedTooltip(el, messageFor, complete);
+    // By default, the element passed in is the tooltip element.  If it has
+    // a "for" attribute, that means this tooltip should be anchored to the
+    // element listed in the "for" attribute. If that is the case, create a new
+    // tooltip and anchor it to the other element.
+    var tooltipEl = $(el),
+        tooltipAnchor = tooltipEl.attr("for");
+
+    if (tooltipAnchor) {
+      // The tooltip should be anchored to another element.  Place the tooltip
+      // directly above the element and remove it when it is no longer needed.
+      tooltipEl = createTooltip(tooltipEl);
+      anchorTooltip("#" + tooltipAnchor);
     }
-    else {
-      animateTooltip(el, complete);
+
+    return animateTooltip(tooltipEl, function() {
+      removeTooltips();
+      complete && complete();
+    });
+  }
+
+  function removeTooltips() {
+    if (tooltip) {
+      tooltip.remove();
+      tooltip = null;
     }
+
+    if (hideTimer) {
+      clearTimeout(hideTimer);
+      hideTimer = null;
+    }
+
+    $('.tooltip').hide();
+    bid.Tooltip.shown = false;
   }
 
 
@@ -90,15 +100,7 @@ BrowserID.Tooltip = (function() {
    showTooltip: showTooltip
    // BEGIN TESTING API
    ,
-   reset: function() {
-     if(hideTimer) {
-       clearTimeout(hideTimer);
-       hideTimer = null;
-     }
-
-     $(".tooltip").hide();
-     bid.Tooltip.shown = false;
-   }
+   reset: removeTooltips
    // END TESTING API
  };
 

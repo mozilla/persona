@@ -1,6 +1,4 @@
 
-/*jshint browser: true, forin: true, laxbreak: true */
-/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -96,11 +94,12 @@
           local_timestamp: now,
           lang: "bar",
           number_emails: 1,
-          sites_signed_in: 2,
-          sites_visited: 3,
+          number_sites_signed_in: 2,
+          number_sites_remembered: 3,
           orphaned: false,
           new_account: true,
-          email_type: "assertion"
+          email_type: "assertion",
+          rp_api: "watch_without_onready"
         });
         model.stageCurrent();
 
@@ -119,11 +118,12 @@
             timestamp: now,
             lang: "bar",
             number_emails: 1,
-            sites_signed_in: 2,
-            sites_visited: 3,
+            number_sites_signed_in: 2,
+            number_sites_remembered: 3,
             orphaned: false,
             new_account: true,
-            email_type: "assertion"
+            email_type: "assertion",
+            rp_api: "watch_without_onready"
           });
 
           testHelpers.testUndefined(mostRecentSessionData.local_timestamp, "non-whitelisted valued stripped");

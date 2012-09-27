@@ -14,7 +14,7 @@ BrowserID Example Primary
 body { margin: auto; font: 13px/1.5 Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; }
 .title { font-size: 2em; font-weight: bold; text-align: center; margin: 1.5em; }
 .intro { font-size: 1.2em; width: 600px; margin: auto; }
-.main { text-align: center; margin-top: 2em; font-size: 1.2em; width: 500px; margin: auto; display: none; }
+.main { text-align: center; margin-top: 2em; font-size: 1.2em; width: 500px; margin: auto; }
 #whoareyou { font-weight: bold; }
 
 </style>
@@ -32,11 +32,11 @@ body { margin: auto; font: 13px/1.5 Helvetica, Arial, 'Liberation Sans', FreeSan
   You are logged in as <span id="whoareyou"></span>.  <a id="logout" href="#">logout</a>.
 </div>
 
-<div class="main" id="logged_out">
+<form class="main" id="logged_out">
   You are not logged in.  Who would you like to be?
-  <input type="text">
+  <input type="text" autofocus>
   <button>doit</button>
-</div>
+</form>
 
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript">
@@ -53,7 +53,8 @@ $(document).ready(function() {
         }
       });
   }
-  $("button").click(function(e) {
+  $("form").submit(function(e) {
+    e.preventDefault();
     $.get('/api/login', { user: $.trim($("input").val()) })
       .success(function(r) {
         updateWhoIAm();

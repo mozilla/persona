@@ -5,10 +5,10 @@
     <h2><%= gettext('Confirm your email address') %></h2>
 
     <p>
-      <%= format(gettext('Check your email at %s.'), ["<strong>" + email + "</strong>"]) %>
+      <%- format(gettext('Check your email at %s.'), ["<strong>" + escape(email) + "</strong>"]) %>
     </p>
 
     <p>
-      <%= format(gettext('Click the link in the confirmation email. You\'ll then immediately be signed in to %s.'), ["<strong>" + siteName + "</strong>"]) %>
+      <%- format(gettext('Click the link in the confirmation email. You\'ll then immediately be signed in to %s.'), ["<strong>" + siteName + "</strong>"]) %>
     </p>
 

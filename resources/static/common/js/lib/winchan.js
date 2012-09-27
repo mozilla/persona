@@ -95,6 +95,7 @@
         if (err) setTimeout(function() { cb(err); }, 0);
 
         // supply default options
+        if (!opts.window_name) opts.window_name = null;
         if (!opts.window_features || isFennec()) opts.window_features = undefined;
 
         // opts.params may be undefined
@@ -124,7 +125,7 @@
           messageTarget = iframe.contentWindow;
         }
 
-        var w = window.open(opts.url, null, opts.window_features);
+        var w = window.open(opts.url, opts.window_name, opts.window_features);
 
         if (!messageTarget) messageTarget = w;
 
@@ -236,7 +237,10 @@
 
         // if window is unloaded and the client hasn't called cb, it's an error
         var onUnload = function() {
-          removeListener(isIE ? msgTarget : window, 'message', onDie);
+          try {
+            // IE8 doesn't like this...
+            removeListener(isIE ? msgTarget : window, 'message', onDie);
+          } catch (ohWell) { }
           if (cb) doPost({ a: 'error', d: 'client closed window' });
           cb = undefined;
           // explicitly close the window, in case the client is trying to reload or nav

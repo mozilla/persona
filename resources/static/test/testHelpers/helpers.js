@@ -1,5 +1,3 @@
-/*jshint browser: true laxbreak: true, expr: true */
-/*global BrowserID: true, ok: true, equal: true, start: true, deepEqual: true, notEqual: true */
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -308,7 +306,7 @@ BrowserID.TestHelpers = (function() {
     testElementFocused: function(selector, msg) {
       var focusedEl = $(":focus");
 
-      if (focusedEl.is(selector)) {
+      if ($(selector).is(":focus")) {
         ok(true, msg || selector + " is focused");
       }
       else {
@@ -317,7 +315,7 @@ BrowserID.TestHelpers = (function() {
         // check to see if it is possible to focus. If it is possible, this is
         // a failure.  If it is not possible, print a message and continue.
         // Remove the element when complete.
-        var input = $("<input type='text' />").appendTo("body").focus();
+        var input = $("<input type='radio' />").appendTo("body").focus();
         if (input.is(":focus")) {
           ok(false, msg || selector + " is focused");
           // refocus the original input element.
@@ -328,6 +326,11 @@ BrowserID.TestHelpers = (function() {
         }
         input.remove();
       }
+    },
+
+    testElementTextEquals: function(selector, expected, msg) {
+      equal($(selector).eq(0).text(), expected, msg || (selector + " text is: " + expected));
+
     },
 
     testEmailMarkedVerified: function(email, msg) {

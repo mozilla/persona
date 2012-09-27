@@ -955,7 +955,7 @@
 
     var windowOpenOpts =
       (isFennec ? undefined :
-       "menubar=0,location=1,resizable=1,scrollbars=1,status=0,dialog=1,width=700,height=375");
+       "menubar=0,location=1,resizable=1,scrollbars=1,status=0,dialog=1,minimizable=1,width=700,height=375");
 
     var w;
 
@@ -965,6 +965,8 @@
       logout: null,
       ready: null
     };
+
+    var loggedInUser;
 
     var compatMode = undefined;
     function checkCompat(requiredMode) {
@@ -981,7 +983,28 @@
     }
 
     var commChan,
+        waitingForDOM = false,
         browserSupported = BrowserSupport.isSupported();
+
+    function domReady(callback) {
+      if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', function contentLoaded() {
+          document.removeEventListener('DOMContentLoaded', contentLoaded);
+          callback();
+        }, false);
+      } else if (document.attachEvent && document.readyState) {
+        document.attachEvent('onreadystatechange', function ready() {
+          var state = document.readyState;
+          // 'interactive' is the same as DOMContentLoaded,
+          // but not all browsers use it, sadly.
+          if (state === 'loaded' || state === 'complete' || state === 'interactive') {
+            document.detachEvent('onreadystatechange', ready);
+            callback();
+          }
+        });
+      }
+    }
+
 
     // this is for calls that are non-interactive
     function _open_hidden_iframe() {
@@ -989,10 +1012,19 @@
       // IFRAME as doing so will cause an exception to be thrown in IE6 and IE7
       // from within the communication_iframe.
       if(!browserSupported) return;
+      var doc = window.document;
+
+      // can't attach iframe and make commChan without the body
+      if (!doc.body) {
+        if (!waitingForDOM) {
+          domReady(_open_hidden_iframe);
+          waitingForDOM = true;
+        }
+        return;
+      }
 
       try {
         if (!commChan) {
-          var doc = window.document;
           var iframe = doc.createElement("iframe");
           iframe.style.display = "none";
           doc.body.appendChild(iframe);
@@ -1008,6 +1040,7 @@
               commChan.call({
                 method: 'loaded',
                 success: function(){
+                  // NOTE: Do not modify without reading GH-2017
                   if (observers.ready) observers.ready();
                 }, error: function() {
                 }
@@ -1022,11 +1055,48 @@
           commChan.bind('login', function(trans, params) {
             if (observers.login) observers.login(params);
           });
+
+          if (loggedInUser) {
+            commChan.notify({
+              method: 'loggedInUser',
+              params: loggedInUser
+            });
+          }
         }
       } catch(e) {
         // channel building failed!  let's ignore the error and allow higher
         // level code to handle user messaging.
         commChan = undefined;
+      }
+    }
+
+    function defined(item) {
+      return typeof item !== "undefined";
+    }
+
+    function warn(message) {
+      try {
+        console.warn(message);
+      } catch(e) {
+        /* ignore error */
+      }
+    }
+
+    function checkDeprecated(options, field) {
+      if(defined(options[field])) {
+        warn(field + " has been deprecated");
+        return true;
+      }
+    }
+
+    function checkRenamed(options, oldName, newName) {
+      if (defined(options[oldName]) &&
+          defined(options[newName])) {
+        throw "you cannot supply *both* " + oldName + " and " + newName;
+      }
+      else if(checkDeprecated(options, oldName)) {
+        options[newName] = options[oldName];
+        delete options[oldName];
       }
     }
 
@@ -1045,45 +1115,44 @@
 
       observers.login = options.onlogin || null;
       observers.logout = options.onlogout || null;
+      // NOTE: Do not modify without reading GH-2017
       observers.ready = options.onready || null;
 
-      _open_hidden_iframe();
-
       // back compat support for loggedInEmail
-      if (typeof options.loggedInEmail !== 'undefined' &&
-          typeof options.loggedInUser !== 'undefined') {
-        throw "you cannot supply *both* loggedInEmail and loggedInUser";
-      }
-      else if(typeof options.loggedInEmail !== 'undefined') {
-        try {
-          console.log("loggedInEmail has been deprecated");
-        } catch(e) {
-          /* ignore error */
-        }
+      checkRenamed(options, "loggedInEmail", "loggedInUser");
+      loggedInUser = options.loggedInUser;
 
-        options.loggedInUser = options.loggedInEmail;
-        delete options.loggedInEmail;
+      _open_hidden_iframe();
+    }
+
+    var api_called;
+    function getRPAPI() {
+      var rp_api = api_called;
+      if (rp_api === "request") {
+        if (observers.ready) rp_api = "watch_with_onready";
+        else rp_api = "watch_without_onready";
       }
 
-      // check that the commChan was properly initialized before interacting with it.
-      // on unsupported browsers commChan might still be undefined, in which case
-      // we let the dialog display the "unsupported browser" message upon spawning.
-      if (typeof options.loggedInUser !== 'undefined' && commChan) {
-        commChan.notify({
-          method: 'loggedInUser',
-          params: options.loggedInUser
-        });
-      }
+      return rp_api;
     }
 
     function internalRequest(options) {
-      if (options.requiredEmail) {
-        try {
-          console.log("requiredEmail has been deprecated");
-        } catch(e) {
-          /* ignore error */
-        }
+      checkDeprecated(options, "requiredEmail");
+      checkRenamed(options, "tosURL", "termsOfService");
+      checkRenamed(options, "privacyURL", "privacyPolicy");
+
+      if (options.termsOfService && !options.privacyPolicy) {
+        warn("termsOfService ignored unless privacyPolicy also defined");
       }
+
+      if (options.privacyPolicy && !options.termsOfService) {
+        warn("privacyPolicy ignored unless termsOfService also defined");
+      }
+
+      options.rp_api = getRPAPI();
+      // reset the api_called in case the site implementor changes which api
+      // method called the next time around.
+      api_called = null;
 
       // focus an existing window
       if (w) {
@@ -1163,6 +1232,7 @@
           throw new Error("all navigator.id calls must be made on the navigator.id object");
         options = options || {};
         checkCompat(false);
+        api_called = "request";
         // returnTo is used for post-email-verification redirect
         if (!options.returnTo) options.returnTo = document.location.pathname;
         return internalRequest(options);
@@ -1183,15 +1253,31 @@
         _open_hidden_iframe();
         // send logout message if the commChan exists
         if (commChan) commChan.notify({ method: 'logout' });
-        if (typeof callback === 'function') setTimeout(callback, 0);
+        if (typeof callback === 'function') {
+          warn('navigator.id.logout callback argument has been deprecated.');
+          setTimeout(callback, 0);
+        }
       },
       // get an assertion
       get: function(callback, passedOptions) {
         var opts = {};
+        passedOptions = passedOptions || {};
         opts.privacyPolicy =  passedOptions.privacyPolicy || undefined;
         opts.termsOfService = passedOptions.termsOfService || undefined;
         opts.privacyURL = passedOptions.privacyURL || undefined;
         opts.tosURL = passedOptions.tosURL || undefined;
+        opts.siteName = passedOptions.siteName || undefined;
+        opts.siteLogo = passedOptions.siteLogo || undefined;
+        // api_called could have been set to getVerifiedEmail already
+        api_called = api_called || "get";
+        if (checkDeprecated(passedOptions, "silent")) {
+          // Silent has been deprecated, do nothing.  Placing the check here
+          // prevents the callback from being called twice, once with null and
+          // once after internalWatch has been called.  See issue #1532
+          if (callback) setTimeout(function() { callback(null); }, 0);
+          return;
+        }
+
         checkCompat(true);
         internalWatch({
           onlogin: function(assertion) {
@@ -1209,15 +1295,13 @@
           }
           observers.login = observers.logout = observers.ready = null;
         };
-        if (passedOptions && passedOptions.silent) {
-          if (callback) setTimeout(function() { callback(null); }, 0);
-        } else {
-          internalRequest(opts);
-        }
+        internalRequest(opts);
       },
       // backwards compatibility with old API
       getVerifiedEmail: function(callback) {
+        warn("navigator.id.getVerifiedEmail has been deprecated");
         checkCompat(true);
+        api_called = "getVerifiedEmail";
         navigator.id.get(callback);
       },
       // required for forwards compatibility with native implementations

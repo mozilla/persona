@@ -1,5 +1,3 @@
-/*jshint browser: true, forin: true, laxbreak: true */
-/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -94,91 +92,6 @@
 
     equal(typeof func, "function", "a function was returned from getErrorDialog");
     func();
-  });
-
-  asyncTest("bind DOM Events", function() {
-    createController();
-
-   controller.bind("body", "click", function(event) {
-      event.preventDefault();
-
-      strictEqual(this, controller, "context is correct");
-      start();
-   });
-
-   $("body").trigger("click");
-  });
-
-  asyncTest("click - bind a click handler, handler does not get event", function() {
-    createController();
-
-    controller.click("body", function(event) {
-      equal(typeof event, "undefined", "event is undefined");
-      strictEqual(this, controller, "context is correct");
-      start();
-    });
-
-    $("body").trigger("click");
-  });
-
-  asyncTest("unbindAll removes all listeners", function() {
-    createController();
-    var listenerCalled = false;
-
-    controller.bind("body", "click", function(event) {
-      event.preventDefault();
-
-      listenerCalled = true;
-    });
-
-    controller.unbindAll();
-
-    $("body").trigger("click");
-
-    setTimeout(function() {
-      equal(listenerCalled, false, "all events are unbound, listener should not be called");
-      start();
-    }, 1);
-  });
-
-  asyncTest("subscribe - listens to messages from the mediator", function() {
-    createController();
-    controller.subscribe("message", function(msg, data) {
-      strictEqual(this, controller, "context set to the controller");
-      equal(msg, "message", "correct message passed");
-      equal(data.field, 1, "correct data passed");
-      start();
-    });
-
-    mediator.publish("message", { field: 1 });
-  });
-
-  asyncTest("publish - publish messages to the mediator", function() {
-    createController();
-
-    mediator.subscribe("message", function(msg, data) {
-      equal(msg, "message", "message is correct");
-      equal(data.field, 1, "data passed correctly");
-      start();
-    });
-
-    controller.publish("message", {
-      field: 1
-    });
-  });
-
-  test("checkRequired", function() {
-    createController();
-
-    var error;
-    try {
-      controller.checkRequired({}, "requiredField");
-    }
-    catch(e) {
-      error = e;
-    }
-
-    equal(error, "missing config option: requiredField");
   });
 
   test("form is not submitted when 'submit_disabled' class is added to body", function() {

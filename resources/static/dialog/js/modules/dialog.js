@@ -1,5 +1,3 @@
-/*jshint browser:true, jquery: true, forin: true, laxbreak:true */
-/*global BrowserID: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -83,7 +81,7 @@ BrowserID.Modules.Dialog = (function() {
     if (typeof(url) !== "string")
       throw "urls must be strings: (" + url + ")";
     if (/^http(s)?:\/\//.test(url)) u = URLParse(url);
-    else if (/^\//.test(url)) u = URLParse(origin + url);
+    else if (/^\/[^\/]/.test(url)) u = URLParse(origin + url);
     else throw "relative urls not allowed: (" + url + ")";
     // encodeURI limits our return value to [a-z0-9:/?%], excluding <script>
     var encodedURI = encodeURI(u.validate().normalize().toString());
@@ -105,9 +103,34 @@ BrowserID.Modules.Dialog = (function() {
   }
 
   function fixupAbsolutePath(origin_url, path) {
-    if (/^\//.test(path))  return fixupURL(origin_url, path);
+    // Ensure URL is an absolute path (not a relative path or a scheme-relative URL)
+    if (/^\/[^\/]/.test(path))  return fixupURL(origin_url, path);
 
     throw "must be an absolute path: (" + path + ")";
+  }
+
+  function fixupReturnTo(origin_url, path) {
+    // "/" is a valid returnTo, but it is not a valid path for any other
+    // parameter. If the path is "/", allow it, otherwise pass the path down
+    // the normal checks.
+    var returnTo = path === "/" ?
+      origin_url + path :
+      fixupAbsolutePath(origin_url, path);
+    return returnTo;
+  }
+
+  function validateRPAPI(rpAPI) {
+    var VALID_RP_API_VALUES = [
+      "watch_without_onready",
+      "watch_with_onready",
+      "get",
+      "getVerifiedEmail",
+      "internal"
+    ];
+
+    if (_.indexOf(VALID_RP_API_VALUES, rpAPI) === -1) {
+      throw "invalid value for rp_api: " + rpAPI;
+    }
   }
 
   var Dialog = bid.Modules.PageModule.extend({
@@ -170,13 +193,23 @@ BrowserID.Modules.Dialog = (function() {
 
       // verify params
       try {
+        var rpAPI = paramsFromRP.rp_api;
+        if (rpAPI) {
+          // throws if an invalid rp_api value
+          validateRPAPI(rpAPI);
+          self.publish("kpi_data", { rp_api: rpAPI });
+        }
+
         if (paramsFromRP.requiredEmail) {
           helpers.log("requiredEmail has been deprecated");
         }
 
-        // support old parameter names...
-        if (paramsFromRP.tosURL) paramsFromRP.termsOfService = paramsFromRP.tosURL;
-        if (paramsFromRP.privacyURL) paramsFromRP.privacyPolicy = paramsFromRP.privacyURL;
+        // support old parameter names if new parameter names not defined.
+        if (paramsFromRP.tosURL && !paramsFromRP.termsOfService)
+          paramsFromRP.termsOfService = paramsFromRP.tosURL;
+
+        if (paramsFromRP.privacyURL && !paramsFromRP.privacyPolicy)
+          paramsFromRP.privacyPolicy = paramsFromRP.privacyURL;
 
         if (paramsFromRP.termsOfService && paramsFromRP.privacyPolicy) {
           params.termsOfService = fixupURL(origin_url, paramsFromRP.termsOfService);
@@ -202,7 +235,7 @@ BrowserID.Modules.Dialog = (function() {
         // returnTo is used for post verification redirection.  Redirect back
         // to the path specified by the RP.
         if (paramsFromRP.returnTo) {
-          var returnTo = fixupAbsolutePath(origin_url, paramsFromRP.returnTo);
+          var returnTo = fixupReturnTo(origin_url, paramsFromRP.returnTo);
           user.setReturnTo(returnTo);
         }
 

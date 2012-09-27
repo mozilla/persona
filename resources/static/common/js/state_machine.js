@@ -1,5 +1,3 @@
-/*jshint browser:true, jquery: true, forin: true, laxbreak:true */
-/*globals BrowserID: true, _:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,7 +9,7 @@ BrowserID.StateMachine = (function() {
       History = bid.History,
       history,
       mediator = bid.Mediator,
-      subscriptions = []
+      subscriptions = [];
 
   var StateMachine = bid.Class({
     init: function() {},

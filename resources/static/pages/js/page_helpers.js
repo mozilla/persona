@@ -1,4 +1,3 @@
-/*globals BrowserID: true, _: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -128,6 +127,12 @@ BrowserID.PageHelpers = (function() {
       // This is the relay that will be used when the IdP redirects to sign_in_complete
       relay_url: "https://login.persona.org/relay",
       window_features: "width=700,height=375",
+      // Set the window name from window.open or else IE resets the name to
+      // null whenever the user is redirected to the IdP. Without window.name,
+      // the IdP tries to redirect back to the normal BrowserID dialog and an
+      // exception is thrown.
+      // See issue #2287 - https://github.com/mozilla/browserid/issues/2287
+      window_name: "auth_with_primary",
       params: helpers.toURL(baseURL, {email: email})
     }, function(error, result) {
       // We have to force a reset of the primary caches because the user's

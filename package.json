@@ -1,24 +1,24 @@
 {
     "name": "browserid",
-    "version": "0.0.1",
+    "version": "1.0.0-b1",
     "private": true,
     "dependencies": {
         "JSONSelect": "0.4.0",
-        "bcrypt": "0.4.1",
+        "bcrypt": "0.7.1",
         "compute-cluster": "0.0.6",
         "connect": "1.7.2",
         "convict": "0.0.6",
         "cjson": "0.0.6",
-        "client-sessions": "0.0.6",
+        "client-sessions": "0.0.9",
         "connect-cachify": "0.0.10",
         "connect-cookie-session": "0.0.2",
         "connect-logger-statsd": "0.0.1",
-        "ejs": "0.4.3",
+        "ejs": "0.8.3",
         "etagify": "0.0.2",
         "express": "2.5.0",
-        "gobbledygook": "0.0.3", 
-        "mustache": "0.3.1-dev",
-        "jwcrypto": "https://github.com/mozilla/jwcrypto/tarball/2012-07-new-data-formats",
+        "gobbledygook": "0.0.3",
+        "lockdown": "0.0.1",
+        "jwcrypto": "0.4.2",
         "mysql": "0.9.5",
         "nodemailer": "0.3.21",
         "mkdirp": "0.3.0",
@@ -38,16 +38,21 @@
     },
     "devDependencies": {
         "vows": "0.5.13",
-        "awsbox": "0.2.12",
+        "awsbox": "0.2.17",
         "irc": "0.3.3",
-        "jshint": "0.7.1"
+        "jshint": "0.7.1",
+        "minimatch": "0.2.6",
+        "which": "1.0.5",
+        "htmlparser": "1.7.6"
     },
     "scripts": {
-        "postinstall": "node ./scripts/generate_ephemeral_keys.js",
+        "preinstall": "./scripts/lockdown",
+        "postinstall": "node ./scripts/postinstall.js",
+        "postupdate": "node ./scripts/postinstall.js",
         "test": "./scripts/test",
         "start": "node ./scripts/run_locally.js"
     },
     "engines": {
-        "node": ">= 0.6.7"
+        "node": ">= 0.6.17"
     }
 }

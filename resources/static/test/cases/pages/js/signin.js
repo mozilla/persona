@@ -1,5 +1,3 @@
-/*jshint browser: true, forin: true, laxbreak: true */
-/*global test: true, start: true, module: true, ok: true, equal: true, BrowserID:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -23,6 +21,8 @@
       winchan;
 
   function createController(options) {
+    if (controller) controller.destroy();
+
     winchan = new WinChanMock();
 
     var winMock = new WindowMock();
@@ -101,6 +101,15 @@
         testHasClass("body", "known_secondary", "known_secondary class added to body");
         testDocumentNotRedirected(docMock);
         equal($("#title").html(), "Sign In", "title correctly set");
+
+        // Make sure a tab keyup into the email field does not close the
+        // password field. This simulates a keyup happening into the email
+        // field, which if the user had not yet typed anything into the email
+        // field but the field was filled in because of the stored email, the
+        // password field would be hidden. See issue #2353
+        var e = jQuery.Event("keyup", { keyCode: 9 });
+        $("#email").trigger(e);
+        testHasClass("body", "known_secondary", "known_secondary class still on body");
 
         start();
       }

@@ -7,10 +7,10 @@
   "kpi_backend_sample_rate": 1.0,
   // for amazon deployments, enable it-CH which is the trigger language
   // for localization tests db-LB (which is a testing language where chars
-  // are inverted and reversed), and en-US.
+  // are inverted and reversed), and en.
   // This set can be overridden by adding more to config.json on the VM.
   "supported_languages": [
-    "en-US", "it-CH"
+    "en", "it-CH"
   ],
   "debug_lang": "it-CH",
   "var_path": "/home/app/var",

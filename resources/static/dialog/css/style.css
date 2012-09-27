@@ -143,13 +143,34 @@ section > .contents {
      * Set the width of the container for when the arrow animation happens
      * otherwise the buttons slide right with the arrow
      */
-    width: 250px;
     font-size: 13px;
+    position: absolute;
+    top: 15px;
+    bottom: 15px;
+    left: 15px;
+    width: 250px;
+    overflow-y: auto;
+}
+
+.form_section.vcenter {
+    position: static;
+    overflow-y: visible;
+    /* The below 1px padding is part of a fix for a bug in webkit where there
+     * is a ghost padding-right to accommodate the scroll bar that is shown
+     * if there are many email addresses. The ghost padding caused the submit
+     * button to shift when the user clicked on it, sometimes making the
+     * submit button require two clicks.  The other half of the fix is in
+     * screen_size_hacks.js, where an adjustment to the width is made.
+     * These two in combination force Chrome to re-flow, which fixes its
+     * own bug.
+     */
+    padding-right: 1px;
 }
 
 .form_section p {
     margin-top: 8px;
 }
+
 
 
 .contents > strong {
@@ -303,10 +324,7 @@ section > .contents {
 }
 
 #favicon h2, #favicon h3 {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    line-height: 1.3em;  /* the 1.3em is to keep y, g, j, etc from having their bottoms chopped off */
-    overflow: hidden;    /* Use the same overflow for everything, this allows us to show the ellipsis.  Trying to set overflow-x only causes a scroll bar to be shown in firefox.  */
+    line-height: 1.2em;
     margin: 10px 0 0 0;
 }
 
@@ -329,30 +347,6 @@ div#required_email {
     padding-top: .7em;
     font-size: 1.2em;
     font-weight: bold;
-}
-
-#selectEmail {
-    position: absolute;
-    top: 20px;
-    bottom: 20px;
-    left: 20px;
-    width: 250px;
-    overflow-y: auto;
-}
-
-#selectEmail.vcenter {
-    position: static;
-    overflow-y: visible;
-    /* The below 1px padding is part of a fix for a bug in webkit where there
-     * is a ghost padding-right to accommodate the scroll bar that is shown
-     * if there are many email addresses. The ghost padding caused the submit
-     * button to shift when the user clicked on it, sometimes making the
-     * submit button require two clicks.  The other half of the fix is in
-     * screen_size_hacks.js, where an adjustment to the width is made.
-     * These two in combination force Chrome to re-flow, which fixes its
-     * own bug.
-     */
-    padding-right: 1px;
 }
 
 .inputs > li {

@@ -1,5 +1,3 @@
-/*jshint browser: true, forin: true, laxbreak: true */
-/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -31,18 +29,38 @@
           this.info[key] = info;
         };
       }(key));
+      ActionsMock.prototype.reset = function() {
+        for(var key in ActionsMock.prototype) {
+          if(bid.Modules.Actions.prototype.hasOwnProperty(key)) {
+            delete this.called[key];
+            delete this.info[key];
+          }
+        }
+      };
     }
   }
 
   function testActionStarted(actionName, requiredOptions) {
-    ok(actions.called[actionName], actionName + "called");
+    ok(actions.called[actionName], actionName + " called");
     for(var key in requiredOptions) {
       equal(actions.info[actionName][key], requiredOptions[key],
           actionName + " called with " + key + "=" + requiredOptions[key]);
     }
   }
 
-  function testVerifyStagedAddress(startMessage, verifyScreenAction) {
+  function testStagingThrottledRetry(startMessage, expectedStagingAction) {
+    mediator.publish(startMessage, { email: TEST_EMAIL, complete: function() {
+        mediator.publish("password_set");
+        actions.reset();
+
+        mediator.publish("password_set");
+        testActionStarted(expectedStagingAction, { email: TEST_EMAIL });
+        start();
+      }
+    });
+  }
+
+  function testVerifyStagedAddress(startMessage, confirmationMessage, verifyScreenAction) {
     // start with a site name to ensure the site name is passed to the
     // verifyScreenAction.
     mediator.publish("start", { siteName: "Unit Test Site" });
@@ -68,7 +86,7 @@
     // addresses are synced.  Add the test email and make sure the email_chosen
     // message is triggered.
     storage.addSecondaryEmail(TEST_EMAIL, { unverified: true });
-    mediator.publish("staged_address_confirmed");
+    mediator.publish(confirmationMessage);
   }
 
 
@@ -116,20 +134,50 @@
     equal(error, "start: controller must be specified", "creating a state machine without a controller fails");
   });
 
-  test("cancel new user password_set flow - go back to the authentication screen", function() {
+  test("cancel post new_user password_set flow - go back to the authentication screen", function() {
     mediator.publish("authenticate");
-    mediator.publish("new_user", undefined, { email: TEST_EMAIL });
+    mediator.publish("new_user", { email: TEST_EMAIL}, { email: TEST_EMAIL });
     mediator.publish("password_set");
     actions.info.doAuthenticate = {};
     mediator.publish("cancel_state");
     equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate called with the correct email");
   });
 
+  test("cancel new_user password_set flow, then forgot_password, password_set - email sent to forgot password email address", function() {
+    // This comes from issue #2231
+    // * Sign in (e.g. at http://translate.123done.org) with a wrong email adress (for example mistyped).
+    // * Click cancel
+    // * Enter your correct email (from an existing account)
+    // * Click 'Forgot your password?'
+    // * Enter a new password and send the form
+    //
+    //
+    //
+    // User types in an incorrect email address, the address is unknown to
+    // Persona who treats it as a new user.
+    mediator.publish("authenticate");
+    mediator.publish("new_user", { email: "incorrect@testuser.com" });
+    // The user is now looking at the set_password screen, they cancel out.
+    mediator.publish("cancel_state");
+    // The user has entered the correct email address but has forgot their
+    // password.
+    mediator.publish("forgot_password", { email: TEST_EMAIL });
+    // The user sets the password for the correct account.
+    mediator.publish("password_set");
+    // The email should be sent to the email specified in forgot_password
+    testActionStarted("doStageResetPassword", { email: TEST_EMAIL });
+  });
+
+
   test("password_set for new user - call doStageUser with correct email", function() {
     mediator.publish("new_user", { email: TEST_EMAIL });
     mediator.publish("password_set");
 
     equal(actions.info.doStageUser.email, TEST_EMAIL, "correct email sent to doStageUser");
+  });
+
+  asyncTest("multiple calls to password_set for new_user, simulate throttling - call doStageUser with correct email for each", function() {
+    testStagingThrottledRetry("new_user", "doStageUser");
   });
 
   test("password_set for add secondary email - call doStageEmail with correct email", function() {
@@ -156,8 +204,8 @@
     ok(actions.info.doRPInfo.privacyPolicy, "doRPInfo called with privacyPolicy set");
   });
 
-  asyncTest("user_staged - call doConfirmUser", function() {
-    testVerifyStagedAddress("user_staged", "doConfirmUser");
+  asyncTest("user_staged to user_confirmed - call doConfirmUser", function() {
+    testVerifyStagedAddress("user_staged", "user_confirmed", "doConfirmUser");
   });
 
   asyncTest("user_confirmed - redirect to email_chosen", function() {
@@ -178,8 +226,8 @@
     }
   });
 
-  asyncTest("email_staged - call doConfirmEmail", function() {
-    testVerifyStagedAddress("email_staged", "doConfirmEmail");
+  asyncTest("email_staged to email_confirmed - call doConfirmEmail", function() {
+    testVerifyStagedAddress("email_staged", "email_confirmed", "doConfirmEmail");
   });
 
   asyncTest("primary_user with already provisioned primary user - redirect to primary_user_ready", function() {
@@ -268,8 +316,13 @@
     testActionStarted("doResetPassword", { email: TEST_EMAIL });
   });
 
-  asyncTest("reset_password_staged to staged_address_confirmed - call doConfirmResetPassword then doEmailConfirmed", function() {
-    testVerifyStagedAddress("reset_password_staged", "doConfirmResetPassword");
+  asyncTest("multiple calls to password_set for forgot_password, simulate throttling - call doStageResetPassword with correct email for each", function() {
+    testStagingThrottledRetry("forgot_password", "doStageResetPassword");
+  });
+
+
+  asyncTest("reset_password_staged to reset_password_confirmed - call doConfirmResetPassword then doEmailConfirmed", function() {
+    testVerifyStagedAddress("reset_password_staged", "reset_password_confirmed", "doConfirmResetPassword");
   });
 
 
@@ -508,19 +561,24 @@
     });
   });
 
+  asyncTest("multiple calls to password_set for stage_email, simulate throttling - call doAddEmail with correct email for each", function() {
+    testStagingThrottledRetry("stage_email", "doStageEmail");
+  });
+
+
   test("stage_reverify_email - call doStageReverifyEmail", function() {
     mediator.publish("stage_reverify_email", { email: TEST_EMAIL });
     testActionStarted("doStageReverifyEmail", { email: TEST_EMAIL });
   });
 
-  asyncTest("reverify_email_staged - call doConfirmReverifyEmail", function() {
-    testVerifyStagedAddress("reverify_email_staged", "doConfirmReverifyEmail");
+  asyncTest("reverify_email_staged to reverify_email_confirmed - call doConfirmReverifyEmail", function() {
+    testVerifyStagedAddress("reverify_email_staged", "reverify_email_confirmed", "doConfirmReverifyEmail");
   });
 
   asyncTest("window_unload - set the final KPIs", function() {
     mediator.subscribe("kpi_data", function(msg, data) {
       testHelpers.testKeysInObject(data, [
-        'number_emails', 'sites_signed_in', 'sites_visited', 'orphaned'
+        'number_emails', 'number_sites_signed_in', 'number_sites_remembered', 'orphaned'
       ]);
       start();
     });

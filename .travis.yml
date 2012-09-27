@@ -10,6 +10,7 @@ before_install:
 
 node_js:
  - 0.6
+ - 0.8
 
 notifications:
   irc:
@@ -19,7 +20,6 @@ notifications:
     skip_join: false
   email:
     - lloyd@mozilla.com
-    - jbonacci@mozilla.com
     - jrgm@mozilla.com
 
 env:

@@ -4,11 +4,11 @@
 
 
 
-  <p>
-    <%= gettext('Sign in as...') %>
-  </p>
-
   <div id="selectEmail" class="form_section">
+      <p>
+        <%= gettext('Sign in as...') %>
+      </p>
+
       <ul class="inputs" id="emailList">
           <% _.each(identities, function(item, index) { var emailAddress = item.address, id = "email_" + index; %>
               <li>

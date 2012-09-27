@@ -1,5 +1,3 @@
-/*jshint browser:true, jquery: true, forin: true, laxbreak:true */
-/*globals BrowserID: true, _:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,42 +5,28 @@
   "use strict";
 
   var bid = BrowserID,
-      tooltip = bid.Tooltip
+      tooltip = bid.Tooltip,
+      testHelpers = bid.TestHelpers;
 
   module("common/js/tooltip", {
     setup: function() {
+      testHelpers.setup();
     },
     teardown: function() {
+      testHelpers.teardown();
     }
   });
 
 
-  asyncTest("show short tooltip, min of 2.5 seconds", function() {
-    var startTime = new Date().getTime();
-
-    tooltip.showTooltip("#shortTooltip", function() {
-      var endTime = new Date().getTime();
-      var diff = endTime - startTime;
-      ok(2000 <= diff && diff <= 3000, diff + " - minimum of 2 seconds, max of 3 seconds");
-
-      equal(tooltip.shown, false, "tooltip says it is no longer shown");
-
-      start();
-    });
-
+  test("show short tooltip - shows for about 2.5 seconds", function() {
+    var displayTime = tooltip.showTooltip("#shortTooltip");
+    ok(2000 <= displayTime && displayTime <= 3000, displayTime + " - minimum of 2 seconds, max of 3 seconds");
     equal(tooltip.shown, true, "tooltip says that it is shown");
   });
 
-  asyncTest("show long tooltip, takes about 5 seconds", function() {
-    var startTime = new Date().getTime();
-
-    tooltip.showTooltip("#longTooltip", function() {
-      var endTime = new Date().getTime();
-      var diff = endTime - startTime;
-      ok(diff >= 4500, diff + " - longer tooltip is on the screen for a bit longer");
-
-      start();
-    });
+  test("show long tooltip - shows for about 5 seconds", function() {
+    var displayTime = tooltip.showTooltip("#longTooltip");
+    ok(displayTime >= 4500, displayTime + " - longer tooltip is on the screen for a bit longer");
   });
 
   asyncTest("show tooltip, then reset - hides tooltip, resets shown status", function() {
@@ -54,6 +38,12 @@
       equal(tooltip.shown, false, "after reset, tooltip status is reset");
       start();
     }, 100);
+  });
+
+  test("only one tooltip shown at a time", function() {
+    tooltip.showTooltip("#shortTooltip");
+    tooltip.showTooltip("#shortTooltip");
+    equal($(".tooltip:visible").length, 1, "only one tooltip shown at a time");
   });
 
 }());

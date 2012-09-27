@@ -1,10 +1,10 @@
-/*jshint browser: true, forin: true, laxbreak: true */
-/*global test: true, start: true, stop: true, module: true, ok: true, equal: true, BrowserID:true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 (function() {
-  var storage = BrowserID.Storage,
+  var bid = BrowserID,
+      storage = bid.Storage,
+      testHelpers = bid.TestHelpers,
       TEST_ORIGIN = "http://test.domain";
 
   module("common/js/storage", {
@@ -71,12 +71,19 @@
   });
 
 
-  test("clear", function() {
+  test("clear - there should be default values", function() {
     storage.addEmail("testuser@testuser.com", {priv: "key"});
     storage.clear();
 
     var emails = storage.getEmails();
     equal(_.size(emails), 0, "object should have no items");
+
+    // all fields *MUST* have default values or else synchronization of
+    // localStorage in IE8 across multiple browsing contexts becomes a problem.
+    // See issue #2206 and #1637
+    notEqual(typeof localStorage.emails, "undefined", "emails is defined");
+    notEqual(typeof localStorage.siteInfo, "undefined", "siteInfo is defined");
+    notEqual(typeof localStorage.managePage, "undefined", "managePage is defined");
   });
 
   test("invalidateEmail with valid email address", function() {
@@ -176,11 +183,16 @@
 
   test("setLoggedIn, getLoggedIn, loggedInCount", function() {
     var email = "testuser@testuser.com";
+    storage.addSecondaryEmail(email);
     storage.setLoggedIn(TEST_ORIGIN, email);
     equal(storage.getLoggedIn(TEST_ORIGIN), email, "correct email");
 
     storage.setLoggedIn("http://another.domain", email);
     equal(storage.loggedInCount(), 2, "correct logged in count");
+
+    storage.removeEmail(email);
+    equal(storage.loggedInCount(), 0, "after email removed, not logged in anywhere");
+    testHelpers.testUndefined(storage.getLoggedIn(TEST_ORIGIN), "sites with email no longer logged in");
   });
 
 }());

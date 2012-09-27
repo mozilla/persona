@@ -94,7 +94,7 @@ suite.addBatch({
     "is bcrypted with the expected number of rounds": function(err, r) {
       assert.isNull(err);
       assert.equal(typeof r, 'string');
-      assert.equal(config.get('bcrypt_work_factor'), bcrypt.get_rounds(r));
+      assert.equal(config.get('bcrypt_work_factor'), bcrypt.getRounds(r));
     }
   }
 });
@@ -143,7 +143,7 @@ suite.addBatch({
       "its bcrypted with 8 rounds": function(err, r) {
         assert.isNull(err);
         assert.equal(typeof r, 'string');
-        assert.equal(8, bcrypt.get_rounds(r));
+        assert.equal(8, bcrypt.getRounds(r));
       }
     }
   }

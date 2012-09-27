@@ -1,0 +1,4 @@
+The default language is now en instead of en-US. All en-* variants fall back to using en.
+
+Check:
+* If a user has two languages, en-gb and it-ch (in that order), user should see English translations.

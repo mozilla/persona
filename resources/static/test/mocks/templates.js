@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 BrowserID.Templates = {
-  inMemoryTemplate: "<div id='templateInput'></div>"
+  inMemoryTemplate: function (locals, filters, escape) {
+    return '<div id="templateInput"></div>'
+  }
 };
-

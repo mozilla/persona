@@ -1,4 +1,5 @@
 *~
+*.pyc
 \#*\#
 .\#*
 /node_modules
@@ -8,7 +9,16 @@
 /resources/static/build
 /resources/static/production
 /resources/static/i18n
+/resources/static/common/js/lib/bidbundle.js
+/resources/static/common/js/lib/gobbledygook.js
+/resources/static/dialog/views/site
 .DS_Store
 Thumbs.db
 /locale
 /resources/email_templates/email-test.html
+/automation-tests/bid_selenium
+/automation-tests/results
+/automation-tests/credentials.yaml
+/automation-tests/sauce.yaml
+automation-tests/persona_server/results/*
+/automation-tests/chromedriver.log

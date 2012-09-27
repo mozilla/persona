@@ -1,4 +1,3 @@
-/*globals BrowserID: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -18,11 +17,12 @@ BrowserID.Models.InteractionData = (function() {
         'sample_rate',
         'timestamp',
         'number_emails',
-        'sites_signed_in',
-        'sites_visited',
+        'number_sites_signed_in',
+        'number_sites_remembered',
         'orphaned',
         'new_account',
-        'email_type'
+        'email_type',
+        'rp_api'
       ];
 
 

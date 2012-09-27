@@ -1,5 +1,3 @@
-/*jshint browser: true, forin: true, laxbreak: true */
-/*global BrowserID: true, _: true */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -7,34 +5,23 @@ BrowserID.Renderer = (function() {
   "use strict";
 
   var bid = BrowserID,
-      dom = bid.DOM,
-      templateCache = {};
+      dom = bid.DOM;
 
   function getTemplateHTML(templateName, vars) {
-    var config,
-        templateText = bid.Templates[templateName],
-        vars = vars || {};
+    var templateFn = bid.Templates[templateName];
+    if (!templateFn) throw "Template not found: " + templateName;
 
-    if(templateText) {
-      config = {
-        text: templateText
-      };
-    }
-    else {
-      // TODO - be able to set the directory
-      config = {
-        url: "/dialog/views/" + templateName + ".ejs"
-      };
+    var localVars = _.extend({}, vars);
+    if(!localVars.partial) {
+      localVars.partial = function(name) {
+        // partials are not supported by the client side EJS. Create
+        // a standin that does what partial rendering would do on the backend.
+        return getTemplateHTML(name, vars);
+      }
     }
 
-    var template = templateCache[templateName];
-    if(!template) {
-      template = new EJS(config);
-      templateCache[templateName] = template;
-    }
-
-    var html = template.render(vars);
-    return html;
+    // arguments are: locals, filters (which cant be used client-side), escapeFn
+    return templateFn.call(null, localVars);
   }
 
   function render(target, templateName, vars) {

@@ -32,6 +32,10 @@
       setTimeout(function() { cb(email); }, 0);
     };
 
+    // window.name is set when the dialog window is opened. window.name must be
+    // set from window.open and cannot be set from within the dialog or else
+    // it is lost in IE whenever the page redirects to the IdP.
+    // See issue #2287 - https://github.com/mozilla/browserid/issues/2287
     navigator.id.completeAuthentication = function(cb) {
       if (window.name == 'auth_with_primary')
         window.location = 'https://login.persona.org/authenticate_with_primary#complete';
