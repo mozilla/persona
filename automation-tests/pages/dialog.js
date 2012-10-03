@@ -9,7 +9,6 @@ function verifyOpts(optionList, opts) {
 
 exports.signInAsNewUser = function(opts, cb) {
   verifyOpts(['email', 'browser', 'password'], opts);
-
   var browser = opts.browser;
   browser.chain()
     .wtype(CSS['dialog'].emailInput, opts.email)
