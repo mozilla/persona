@@ -1,0 +1,11 @@
+{
+  "name": "meh",
+  "description": "meh",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "vows": "*",
+    "wd": "*",
+    "request": "*"
+  }
+}

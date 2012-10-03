@@ -16,9 +16,6 @@
 Thumbs.db
 /locale
 /resources/email_templates/email-test.html
-/automation-tests/bid_selenium
+/automation-tests/node_modules
 /automation-tests/results
-/automation-tests/credentials.yaml
-/automation-tests/sauce.yaml
-automation-tests/persona_server/results/*
-/automation-tests/chromedriver.log
+/automation-tests/*.jar
