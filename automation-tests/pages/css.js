@@ -24,8 +24,12 @@ module.exports = {
     signInForm: {
       email: '#signUpForm input#email',
       nextButton: '#signUpForm button#next',
-      verifyPrimaryButton: '#signUpForm button#authWithPrimary'
-    }
+      verifyPrimaryButton: '#signUpForm button#authWithPrimary',
+      password: '#signUpForm input#password',
+      verifyPassword: '#signUpForm input#vpassword',
+      verifyEmailButton: '#signUpForm button#verifyEmail'
+    },
+    congratsMessage: 'div#congrats'
   },
   "dialog": {
     emailInput: 'input#email',
