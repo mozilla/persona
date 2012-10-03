@@ -16,7 +16,16 @@ module.exports = {
     changePasswordButton: '#edit_password button.edit',
     oldPassword: '#edit_password_form input#old_password',
     newPassword: '#edit_password_form input#new_password',
-    passwordChangeDoneButton: 'button#changePassword'
+    passwordChangeDoneButton: 'button#changePassword',
+    header: {
+      signIn: '#header a.signIn',
+      signOut: '#header a.signOut'
+    },
+    signInForm: {
+      email: '#signUpForm input#email',
+      nextButton: '#signUpForm button#next',
+      verifyPrimaryButton: '#signUpForm button#authWithPrimary'
+    }
   },
   "dialog": {
     emailInput: 'input#email',
