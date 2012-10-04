@@ -6,6 +6,7 @@
   "dependencies": {
     "vows": "*",
     "wd": "*",
-    "request": "*"
+    "request": "*",
+    "optimist": "*"
   }
 }

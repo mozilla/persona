@@ -1,5 +1,5 @@
 // platforms supported by sauce that we test
-const browsers = {
+const platforms = {
   "linux_firefox_13": {
     platform: 'LINUX',
     browserName: 'firefox',
@@ -36,4 +36,10 @@ const browsers = {
   }
 }
 
-module.exports = browsers;
+const defaultCapabilities = {
+  avoidProxy: true,
+  proxy: { proxyType: 'direct' } //TODO reportedly works for opera; investigate
+}
+
+exports.platforms = platforms;
+exports.defaultCapabilities = defaultCapabilities;

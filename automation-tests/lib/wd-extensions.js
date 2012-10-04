@@ -32,17 +32,12 @@ wd.prototype.waitForDisplayed = function(opts, cb) {
     })
   }, cb);
 };
-
+ 
 // allocate a new browser session and sets implicit wait timeout
-wd.prototype.newSession = function(cb) {
+wd.prototype.newSession = function(cb, opts) {
   browser = this;
 
-  // TODO env vars feels a bit hacky, command line maybe instead? also, pull this out maybe?
-  var desiredPlatform = process.env['SAUCE_PLATFORM'];
-  capabilities = desiredPlatform && desiredPlatform in platforms ? platforms[desiredPlatform] : {};
-  capabilities['avoid-proxy'] = true;
-
-  browser.init(capabilities, function(err) {
+  browser.init(opts, function(err) {
     if (err) return cb(err);
     // note!  the implicit wait timeout is different from other timeouts,
     // it's the amount of time certain wire transactions will wait for
