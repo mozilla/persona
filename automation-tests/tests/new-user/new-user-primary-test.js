@@ -20,13 +20,18 @@ require('../../lib/wd-extensions.js');
 
 var browser = wd.remote();
 var eyedeemail = restmail.randomEmail(10, 'eyedee.me');
+var theEmail = restmail.randomEmail(10);
 
-vowsHarness({
+function startup123done(b, cb) {
+  b.chain()
+    .newSession()
+    .get(persona_urls['123done'])
+    .wclick(CSS['123done.org'].signinButton, cb);
+}
+
+var primary_123done = {
   "startup, load 123done, click sign in": function(done) {
-    browser.chain()
-      .newSession()
-      .get(persona_urls["123done"])
-      .wclick(CSS["123done.org"].signinButton, done);
+    startup123done(browser, done);
   },
   "sign in a new eyedeemee user": function(done) {
     browser.chain()
@@ -48,4 +53,46 @@ vowsHarness({
         done()
       });
   }
-}, module);
+};
+
+var secondBrowser,
+  secondary_123done_two_browsers = {
+  "again: startup, load 123done, click sign in": function(done) {
+    startup123done(browser, done);
+  },
+  "switch to the persona dialog": function(done) {
+    browser.wwin(CSS['persona.org'].windowName, done);
+  },
+  "go through signup flow": function(done) {
+    dialog.signInAsNewUser({
+      browser: browser,
+      email: theEmail,
+      password: theEmail.split('@')[0]
+    }, done);
+  },
+  "get verification link from email": function(done) {
+    restmail.getVerificationLink({ email: theEmail }, done);
+  },
+  "open verification link in another window": function(done, link) {
+    secondBrowser = wd.remote(); //spin up a second browser
+    secondBrowser.chain()
+      .newSession()
+      .get(link, done);
+  },
+  "re-enter password and click login on persona.org": function(done) {
+    secondBrowser.chain()
+      .wtype(CSS['persona.org'].signInForm.password, theEmail.split('@')[0])
+      .wclick(CSS['persona.org'].signInForm.finishButton, done);
+  },
+  "verify the congrats message is displayed": function(done) {
+    secondBrowser.wfind(CSS['persona.org'].congratsMessage, done);
+  },
+  "tear down both browsers": function(done) {
+    browser.quit();
+    secondBrowser.quit();
+    done();
+  }
+};
+
+
+vowsHarness(secondary_123done_two_browsers, module)

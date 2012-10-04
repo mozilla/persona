@@ -27,7 +27,8 @@ module.exports = {
       verifyPrimaryButton: '#signUpForm button#authWithPrimary',
       password: '#signUpForm input#password',
       verifyPassword: '#signUpForm input#vpassword',
-      verifyEmailButton: '#signUpForm button#verifyEmail'
+      verifyEmailButton: '#signUpForm button#verifyEmail',
+      finishButton: '#signUpForm .password_entry button'
     },
     congratsMessage: 'div#congrats'
   },
