@@ -19,7 +19,6 @@ require('./wd-extensions.js');
 //  - desiredCapabilities (see json wire protocol for list of capabilities)
 // env var equivalents are PERSONA_BROWSER and PERSONA_BROWSER_CAPABILITIES
 testSetup.startup = function(opts) {
-  if (testSetup.browser) { throw new Error('call startup once per session, yo') }
 
   _setSessionOpts(opts);
 
@@ -30,9 +29,12 @@ testSetup.startup = function(opts) {
   var browser = sauceUser && sauceApiKey ?
                   wd.remote('ondemand.saucelabs.com', 80, sauceUser, sauceApiKey) :
                   wd.remote();
-  testSetup.browser = browser;
-  return browser;
+  var id = testSetup.browsers.push(browser);
+  return id - 1;
 }
+
+// store multiple browsers until we can switch between sessions via d
+testSetup.browsers = []
 
 // these session opts aren't needed until the user requests a session via newSession()
 // but we harvest them from the command line at startup time

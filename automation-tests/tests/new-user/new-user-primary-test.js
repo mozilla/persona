@@ -16,31 +16,30 @@ vowsHarness = require('../../lib/vows_harness.js');
 
 // pull in test environment, including wd
 var testSetup = require('../../lib/test-setup.js'),
-  browser = testSetup.startup(),
+  browserId = testSetup.startup(),
+  browser = testSetup.browsers[browserId],
   eyedeemail = restmail.randomEmail(10, 'eyedee.me'),
   theEmail = restmail.randomEmail(10);
 
-function startup123done(b, cb) {
+function dialogEyedeemeFlow(b, email, cb) {
   b.chain()
-    .newSession(testSetup.sessionOpts)
-    .get(persona_urls['123done'])
-    .wclick(CSS['123done.org'].signinButton, cb);
+    .wwin(CSS['persona.org'].windowName)
+    .wtype(CSS['dialog'].emailInput, email)
+    .wclick(CSS['dialog'].newEmailNextButton)
+    .wclick(CSS['dialog'].verifyWithPrimaryButton)
+    .wtype(CSS['eyedee.me'].newPassword, email.split('@')[0])
+    .wclick(CSS['eyedee.me'].createAccountButton, cb);
 }
 
 var primary_123done = {
   "startup, load 123done, click sign in": function(done) {
-    startup123done(browser, done);
+    browser.chain()
+      .newSession(testSetup.sessionOpts)
+      .get(persona_urls['123done'])
+      .wclick(CSS['123done.org'].signinButton, done)
   },
   "sign in a new eyedeemee user": function(done) {
-    browser.chain()
-      .wwin(CSS['persona.org'].windowName)
-      .wtype(CSS['dialog'].emailInput, eyedeemail)
-      .wclick(CSS['dialog'].newEmailNextButton)
-      .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      // for some reason, this button sometimes gets stuck. click it twice.
-      .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      .wtype(CSS['eyedee.me'].newPassword, eyedeemail.split('@')[0])
-      .wclick(CSS['eyedee.me'].createAccountButton, done);
+    dialogEyedeemeFlow(browser, eyedeemail, done);
   },
   // TODO 123done never seems to log in. something up with beta server?
   "switch back to main window and verify we're logged in": function(done) {
@@ -53,47 +52,62 @@ var primary_123done = {
   }
 };
 
-var secondBrowser,
-  secondary_123done_two_browsers = {
-  "again: startup, load 123done, click sign in": function(done) {
-    startup123done(browser, done);
-  },
-  "switch to the persona dialog": function(done) {
-    browser.wwin(CSS['persona.org'].windowName, done);
-  },
-  "go through signup flow": function(done) {
-    dialog.signInAsNewUser({
-      browser: browser,
-      email: theEmail,
-      password: theEmail.split('@')[0]
-    }, done);
-  },
-  "get verification link from email": function(done) {
-    restmail.getVerificationLink({ email: theEmail }, done);
-  },
-  "open verification link in another window": function(done, link) {
-    secondBrowser = wd.remote(); //spin up a second browser
-    secondBrowser.chain()
-      .newSession()
-      .get(link, done);
-  },
-  "re-enter password and click login on persona.org": function(done) {
-    secondBrowser.chain()
-      .wtype(CSS['persona.org'].signInForm.password, theEmail.split('@')[0])
-      .wclick(CSS['persona.org'].signInForm.finishButton, done);
-  },
-  "verify the congrats message is displayed": function(done) {
-    secondBrowser.wfind(CSS['persona.org'].congratsMessage, done);
-  },
-  "tear down both browsers": function(done) {
-    browser.quit();
-    secondBrowser.quit();
-    done();
-  }
+var mcss = CSS['myfavoritebeer.org'],
+  eyedeemail_mfb = restmail.randomEmail(10, 'eyedee.me'),
+  primary_mfb = {
+    "go to mfb, click sign in, switch to dialog": function(done) {
+      browser.chain()
+        .newSession(testSetup.sessionOpts)
+        .get(persona_urls['myfavoritebeer'])
+        .wclick(mcss.signinButton, done)
+    },
+    "sign in using eyedeeme": function(done) {
+      dialogEyedeemeFlow(browser, eyedeemail_mfb, done);
+    },
+    "back to mfb, check we logged in OK": function(done) {
+      browser.chain()
+        .wwin()
+        .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
+          assert.equal(text, eyedeemail_mfb);
+          done()
+        });
+    },
+    "mfb tear down browser": function(done) {
+      browser.quit(done);
+    }
 };
 
+var pcss = CSS['persona.org'],
+  porg_eyedeemail = restmail.randomEmail(10, 'eyedee.me'),
+  primary_personaorg = {
+    // how much do we really need to split this out into separate vows?
+    // is this too compact or actually better?
+    //
+    // open browser, go to persona.org, click sign in, enter eyedeemail, click next
+    // click verify primary button, switch to popup, enter password, click ok
+    // switch back to main window, look for email in acct mgr, log out
+    "create eyedee.me primary at persona.org and verify logged in OK": function(done) {
+      browser.chain()
+        .newSession(testSetup.sessionOpts)
+        .get(persona_urls['persona'])
+        .wclick(pcss.header.signIn)
+        .wtype(pcss.signInForm.email, porg_eyedeemail)
+        .wclick(pcss.signInForm.nextButton)
+        .wclick(pcss.signInForm.verifyPrimaryButton)
+        .wwin(pcss.verifyPrimaryDialogName)
+        .wtype(CSS['eyedee.me'].newPassword, porg_eyedeemail.split('@')[0])
+        .wclick(CSS['eyedee.me'].createAccountButton)
+        .wwin()
+        .wtext(pcss.accountEmail, function(err, text) {
+          assert.equal(porg_eyedeemail.toLowerCase(), text) // note
+        })
+        .wclick(pcss.header.signOut)
+        .quit(done);
+    }
+};
 
-// this is DEFINITELY just a hack. 
-// TODO: find a more solid way, maybe add to vowsHarness directly
-for (var x in secondary_123done_two_browsers) { primary_123done[x] = secondary_123done_two_browsers[x] }
+// ARGH. maddening partly because of the duplication, and partly because
+// if any vows share the same name, everything a splode.
+for (var x in primary_mfb) { primary_123done[x] = primary_mfb[x]; }
+for (var x in primary_personaorg) { primary_123done[x] = primary_personaorg[x]; }
 vowsHarness(primary_123done, module);
