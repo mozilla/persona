@@ -6,7 +6,6 @@
 
 const
 path = require('path'),
-wd = require('wd'),
 assert = require('assert'),
 restmail = require('../lib/restmail.js'),
 utils = require('../lib/utils.js'),
@@ -16,16 +15,14 @@ dialog = require('../pages/dialog.js'),
 vowsHarness = require('../lib/vows_harness.js'),
 personatestuser = require('../lib/personatestuser.js');
 
-// add fancy helper routines to wd
-require('../lib/wd-extensions.js');
-
-var browser = wd.remote();
-
-var testUser;
+// pull in test environment, including wd
+var testSetup = require('../lib/test-setup.js'),
+  browser = testSetup.startup(),
+  testUser;
 
 vowsHarness({
   "create a new selenium session": function(done) {
-    browser.newSession(done);
+    browser.newSession(testSetup.sessionOpts, done);
   },
   "create a new personatestuser": function(done) {
     personatestuser.getVerifiedUser({ env: process.env['PERSONA_ENV'] || 'dev' }, function(err, user, blob) { 

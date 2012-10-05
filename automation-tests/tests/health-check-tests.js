@@ -6,7 +6,6 @@
 
 const
 path = require('path'),
-wd = require('wd'),
 assert = require('assert'),
 restmail = require('../lib/restmail.js'),
 utils = require('../lib/utils.js'),
@@ -16,10 +15,9 @@ dialog = require('../pages/dialog.js'),
 vowsHarness = require('../lib/vows_harness.js'),
 personatestuser = require('../lib/personatestuser.js');
 
-// add fancy helper routines to wd
-require('../lib/wd-extensions.js');
-
-var browser = wd.remote(),
+// pull in test environment, including wd
+var testSetup = require('../lib/test-setup.js'),
+  browser = testSetup.startup(),
   eyedeemail = restmail.randomEmail(10, 'eyedee.me'),
   theEmail = restmail.randomEmail(10),
   pcss = CSS['persona.org'],
@@ -29,7 +27,7 @@ var browser = wd.remote(),
 // go to persona.org, click sign in, enter email, click next.
 var startup = function(b, email, cb) {
   b.chain()
-    .newSession()
+    .newSession(testSetup.sessionOpts)
     .get(persona_urls['persona'])
     .wclick(pcss.header.signIn)
     .wtype(pcss.signInForm.email, email)

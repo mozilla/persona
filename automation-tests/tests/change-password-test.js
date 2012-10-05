@@ -6,7 +6,6 @@
 
 const
 path = require('path'),
-wd = require('wd'),
 assert = require('assert'),
 utils = require('../lib/utils.js'),
 persona_urls = require('../lib/urls.js'),
@@ -15,35 +14,14 @@ dialog = require('../pages/dialog.js'),
 vowsHarness = require('../lib/vows_harness.js'),
 personatestuser = require('../lib/personatestuser.js');
 
-// add fancy helper routines to wd
-require('../lib/wd-extensions.js');
-
-// TODO extract to setup function
-var sauceUser = process.env['SAUCE_USER'];
-var sauceKey = process.env['SAUCE_APIKEY'];
-if (sauceUser && sauceKey) {
-  console.error('using remote sauce browser')
-  var browser = wd.remote('ondemand.saucelabs.com', 80, sauceUser, sauceKey);
-  browser.on('status', function(info){
-    // using console.error so we don't mix up plain text with junitxml
-    console.error('\x1b[36m%s\x1b[0m', info);
-  });
-
-  /*
-  browser.on('command', function(meth, path){
-    console.log(' > \x1b[33m%s\x1b[0m: %s', meth, path);
-  });
-  */
-} else { 
-  console.error('using local browser');
-  var browser = wd.remote()
-}
-
-var testUser;
+// pull in test environment, including wd
+var testSetup = require('../lib/test-setup.js'),
+  browser = testSetup.startup(),
+  testUser;
 
 vowsHarness({
   "create a new selenium session": function(done) {
-    browser.newSession(done);
+    browser.newSession(testSetup.sessionOpts, done);
   },
   "create a new personatestuser": function(done) {
     personatestuser.getVerifiedUser({ env: process.env['PERSONA_ENV'] || 'dev' }, function(err, user, blob) { 

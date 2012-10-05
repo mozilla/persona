@@ -6,7 +6,6 @@
 
 const
 path = require('path'),
-wd = require('wd'),
 assert = require('assert'),
 restmail = require('../../lib/restmail.js'),
 utils = require('../../lib/utils.js'),
@@ -15,16 +14,15 @@ CSS = require('../../pages/css.js'),
 dialog = require('../../pages/dialog.js'),
 vowsHarness = require('../../lib/vows_harness.js');
 
-// add fancy helper routines to wd
-require('../../lib/wd-extensions.js');
-
-var browser = wd.remote();
-var eyedeemail = restmail.randomEmail(10, 'eyedee.me');
-var theEmail = restmail.randomEmail(10);
+// pull in test environment, including wd
+var testSetup = require('../../lib/test-setup.js'),
+  browser = testSetup.startup(),
+  eyedeemail = restmail.randomEmail(10, 'eyedee.me'),
+  theEmail = restmail.randomEmail(10);
 
 function startup123done(b, cb) {
   b.chain()
-    .newSession()
+    .newSession(testSetup.sessionOpts)
     .get(persona_urls['123done'])
     .wclick(CSS['123done.org'].signinButton, cb);
 }
@@ -95,4 +93,7 @@ var secondBrowser,
 };
 
 
-vowsHarness(secondary_123done_two_browsers, module)
+// this is DEFINITELY just a hack. 
+// TODO: find a more solid way, maybe add to vowsHarness directly
+for (var x in secondary_123done_two_browsers) { primary_123done[x] = secondary_123done_two_browsers[x] }
+vowsHarness(primary_123done, module);

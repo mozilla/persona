@@ -6,7 +6,6 @@
 
 const
 path = require('path'),
-wd = require('wd'),
 assert = require('assert'),
 restmail = require('../../lib/restmail.js'),
 utils = require('../../lib/utils.js'),
@@ -15,16 +14,14 @@ CSS = require('../../pages/css.js'),
 dialog = require('../../pages/dialog.js'),
 vowsHarness = require('../../lib/vows_harness.js');
 
-// add fancy helper routines to wd
-require('../../lib/wd-extensions.js');
-
-// generate a randome email we'll use
-const theEmail = restmail.randomEmail(10);
-var browser = wd.remote();
+// pull in test environment, including wd
+var testSetup = require('../../lib/test-setup.js'),
+  browser = testSetup.startup(),
+  theEmail = restmail.randomEmail(10);
 
 vowsHarness({
   "create a new selenium session": function(done) {
-    browser.newSession(done);
+    browser.newSession(testSetup.sessionOpts, done);
   },
   "load 123done and click the signin button": function(done) {
     browser.chain()
