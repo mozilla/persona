@@ -15,8 +15,15 @@
       mediator = bid.Mediator,
       registrations = [],
       testHelpers = bid.TestHelpers,
+      testElementHasClass = testHelpers.testHasClass,
+      testElementNotHasClass = testHelpers.testNotHasClass,
       register = testHelpers.register,
-      provisioning = bid.Mocks.Provisioning;
+      provisioning = bid.Mocks.Provisioning,
+      AUTH_FORM_SELECTOR = "#authentication_form",
+      CONTENTS_SELECTOR = "#formWrap .contents",
+      BODY_SELECTOR = "body",
+      AUTHENTICATION_CLASS = "authentication",
+
 
   function reset() {
     emailRegistered = false;
@@ -50,9 +57,27 @@
     }
   });
 
+  asyncTest("authentication form initialized on startup, hidden on stop", function() {
+    $(CONTENTS_SELECTOR).text("some contents that need to be removed");
+    createController({
+      ready: function() {
+        // auth form visible when controller is ready
+        testElementHasClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
+
+        equal($(CONTENTS_SELECTOR).text(), "", "normal form contents are removed");
+        // auth form not visible after stop;
+        controller.stop();
+        testElementNotHasClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
+
+        start();
+      }
+    });
+  });
+
   asyncTest("email declared in options - prefill address field", function() {
     controller.destroy();
     $("#email").val("");
+
     createController({ email: "registered@testuser.com",
       ready: function() {
         equal($("#email").val(), "registered@testuser.com", "email prefilled");
