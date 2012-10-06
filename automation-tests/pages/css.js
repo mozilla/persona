@@ -43,12 +43,19 @@ module.exports = {
     createUserButton: 'button#verify_user',
     returningUserButton: 'button.returning',
     verifyWithPrimaryButton: 'button#verifyWithPrimary',
-    thisIsNotMe: '#thisIsNotMe'
+    thisIsNotMe: '#thisIsNotMe',
+    useNewEmail: 'a#useNewEmail',
+    newEmail: 'input#newEmail',
+    addNewEmailButton: 'button#addNewEmail',
+    firstEmail: '#email_0',
+    secondEmail: '#email_1',
+    signInButton: 'button#signInButton',
+    notMyComputerButton: 'button#this_is_not_my_computer'
   },
   "myfavoritebeer.org": {
     signinButton: '#loginInfo .login',
     currentlyLoggedInEmail: 'span.username',
-    logout: '#logout'
+    logout: 'a#logout'
   },
   "eyedee.me": {
     newPassword: 'input#new_password',
