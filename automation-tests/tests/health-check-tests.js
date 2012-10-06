@@ -17,7 +17,8 @@ personatestuser = require('../lib/personatestuser.js');
 
 // pull in test environment, including wd
 var testSetup = require('../lib/test-setup.js'),
-  browser = testSetup.startup(),
+  browserId = testSetup.startup(),
+  browser = testSetup.browsers[browserId],
   eyedeemail = restmail.randomEmail(10, 'eyedee.me'),
   theEmail = restmail.randomEmail(10),
   pcss = CSS['persona.org'],

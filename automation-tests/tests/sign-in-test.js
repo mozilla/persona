@@ -17,7 +17,8 @@ personatestuser = require('../lib/personatestuser.js');
 
 // pull in test environment, including wd
 var testSetup = require('../lib/test-setup.js'),
-  browser = testSetup.startup(),
+  browserId = testSetup.startup(),
+  browser = testSetup.browsers[browserId],
   testUser;
 
 vowsHarness({
