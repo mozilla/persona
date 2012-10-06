@@ -22,13 +22,22 @@ testSetup.startup = function(opts) {
 
   _setSessionOpts(opts);
 
-  var opts = opts || {};
-  var sauceUser = opts.sauceUser || process.env['PERSONA_SAUCE_USER'];
-  var sauceApiKey = opts.sauceApiKey || process.env['PERSONA_SAUCE_APIKEY'];
+  var opts = opts || {},
+    sauceUser = opts.sauceUser || process.env['PERSONA_SAUCE_USER'],
+    sauceApiKey = opts.sauceApiKey || process.env['PERSONA_SAUCE_APIKEY'],
+    browser;
 
-  var browser = sauceUser && sauceApiKey ?
-                  wd.remote('ondemand.saucelabs.com', 80, sauceUser, sauceApiKey) :
-                  wd.remote();
+  if (sauceUser && sauceApiKey) {
+    browser = wd.remote('ondemand.saucelabs.com', 80, sauceUser, sauceApiKey);
+    browser.on('status', function(info){
+      // using console.error so we don't mix up plain text with junitxml
+      // TODO do something nicer with this
+      console.error('\x1b[36m%s\x1b[0m', info);
+    });
+  } else {
+    browser = wd.remote();
+  }
+
   var id = testSetup.browsers.push(browser);
   return id - 1;
 }
@@ -50,7 +59,7 @@ function _setSessionOpts(opts) {
   var platform = requestedPlatform ? saucePlatforms.platforms[requestedPlatform] : '';
 
   // add platform, browserName, version to session opts
-  for (var opt in platform) { _sessionOpts[opt] = platform[opt] }
+  for (var opt in platform) { sessionOpts[opt] = platform[opt] }
 
   // pull the default desired capabilities out of the sauce-platforms file
   // overwrite if specified by user
