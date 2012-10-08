@@ -190,4 +190,57 @@
         start();
     }, {});
   });
+
+  asyncTest("logout of authenticated user logs the user out of origin", function() {
+    user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
+      // simulate multiple origin->email associations.
+      storage.setLoggedIn(ORIGIN, "email", TEST_EMAIL);
+      storage.setLoggedIn(ORIGIN + "2", "email", TEST_EMAIL);
+
+      internal.logout(ORIGIN, function(success) {
+        equal(success, true, "user has been successfully logged out");
+
+        // with logout, only the association specified for the origin is
+        // cleared.
+        testUndefined(storage.getLoggedIn(ORIGIN, "email"));
+        testNotUndefined(storage.getLoggedIn(ORIGIN + "2", "email"));
+
+        start();
+      });
+    });
+  });
+
+  asyncTest("logout of non-authenticated user does nothing", function() {
+    internal.logout(ORIGIN, function(success) {
+      equal(success, false, "user was not logged in so cannot be logged out");
+      start();
+    });
+  });
+
+  asyncTest("logoutEverywhere of authenticated user logs the user out everywhere", function() {
+    user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
+      // simulate multiple origin->email associations.
+      storage.setLoggedIn(ORIGIN, "email", TEST_EMAIL);
+      storage.setLoggedIn(ORIGIN + "2", "email", TEST_EMAIL);
+
+      internal.logoutEverywhere(function(success) {
+        equal(success, true, "user has been successfully logged out everywhere");
+        // with logoutEverywhere, both associations should be cleared.
+        testUndefined(storage.getLoggedIn(ORIGIN, "email"));
+        testUndefined(storage.getLoggedIn(ORIGIN + "2", "email"));
+
+        start();
+      });
+    })
+
+  });
+
+  asyncTest("logoutEverywhere of non-authenticated user does nothing", function() {
+    internal.logoutEverywhere(function(success) {
+      equal(success, false, "user was not logged in so cannot be logged out");
+      start();
+    });
+
+  });
+
 }());
