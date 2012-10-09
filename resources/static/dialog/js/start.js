@@ -21,7 +21,9 @@
   moduleManager.start("interaction_data", { continuation: continuation });
 
   mediator.publish("window_opened", { eventTime: BrowserID.WINDOW_OPENED });
-  mediator.publish("javascript_start", { eventTime: BrowserID.JS_START_TIME });
+  mediator.publish("javascript_parse_start", { eventTime: BrowserID.JS_START_TIME });
+  // This is the last script run, so the parsing is now complete
+  mediator.publish("javascript_parse_complete", { eventTime: new Date() });
 
   moduleManager.register("development", modules.Development);
   moduleManager.start("development");
