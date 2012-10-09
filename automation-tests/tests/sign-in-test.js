@@ -13,24 +13,19 @@ persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 vowsHarness = require('../lib/vows_harness.js'),
-personatestuser = require('../lib/personatestuser.js');
+testSetup = require('../lib/test-setup.js');
 
 // pull in test environment, including wd
-var testSetup = require('../lib/test-setup.js'),
-  browserId = testSetup.startup(),
-  browser = testSetup.browsers[browserId],
-  testUser;
+var browser, testUser, mfbUser;
+testSetup.setup({browsers: 1, personatestusers: 2}, function(err, fixtures) {
+  browser = fixtures.browsers[0];
+  testUser = fixtures.personatestusers[0];
+  mfbUser = fixtures.personatestusers[1];
+});
 
 vowsHarness({
   "create a new selenium session": function(done) {
     browser.newSession(testSetup.sessionOpts, done);
-  },
-  "create a new personatestuser": function(done) {
-    personatestuser.getVerifiedUser(function(err, user, blob) { 
-      if (err) { throw new Error('error getting persona test user: ' + err) }
-      testUser = user;
-      done()
-    })
   },
   "load 123done and wait for the signin button to be visible": function(done) {
     browser.get(persona_urls["123done"], done);
@@ -41,7 +36,7 @@ vowsHarness({
   "switch to the dialog when it opens": function(done) {
     browser.wwin(CSS["persona.org"].windowName, done);
   },
-  "sign in with the usual fake account": function(done) {
+  "sign in with the personatestuser account": function(done) {
     dialog.signInExistingUser({
       browser: browser,
       email: testUser.email,
@@ -64,14 +59,7 @@ vowsHarness({
 
   // todo extract duplication!
   "create another selenium session": function(done) {
-    browser.newSession(done);
-  },
-  "create another new personatestuser": function(done) {
-    personatestuser.getVerifiedUser(function(err, user, blob) { 
-      if (err) { throw new Error('error getting persona test user: ' + err) }
-      testUser = user;
-      done()
-    })
+    browser.newSession(testSetup.sessionOpts, done);
   },
   "load myfavoritebeer and wait for the signin button to be visible": function(done) {
     browser.chain()
@@ -81,18 +69,18 @@ vowsHarness({
   "mfb switch to the dialog when it opens": function(done) {
     browser.wwin(CSS["persona.org"].windowName, done);
   },
-  "mfb sign in with the usual fake account": function(done) {
+  "mfb sign in with personatestuser account": function(done) {
     dialog.signInExistingUser({
       browser: browser,
-      email: testUser.email,
-      password: testUser.pass
+      email: mfbUser.email,
+      password: mfbUser.pass
     }, done);
   },
   "verify signed in to myfavoritebeer": function(done) {
     browser.chain()
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, testUser.email);
+        assert.equal(text, mfbUser.email);
         done()
       });
   },

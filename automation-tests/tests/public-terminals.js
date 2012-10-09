@@ -12,13 +12,15 @@ utils = require('../lib/utils.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
+testSetup = require('../lib/test-setup.js'),
 vowsHarness = require('../lib/vows_harness.js');
 
 // pull in test environment, including wd
-var testSetup = require('../lib/test-setup.js'),
-  firstSession = testSetup.startup(),
-  browser = testSetup.browsers[firstSession],
-  secondary = restmail.randomEmail(10);
+var browser, secondary;
+testSetup.setup({browsers: 1, restmails: 1}, function(err, fixtures) {
+  browser = fixtures.browsers[0];
+  secondary = fixtures.restmails[0];
+});
 
 /*
  * - sign up as a new user via an RP
@@ -91,5 +93,8 @@ vowsHarness({
   // TODO figure out which cases to cover now that we've hacked localStorage
   'click "this is my computer" and the session should last a long time': function(done) {
     browser.wclick(CSS['dialog'].myComputerButton, done)
+  },
+  "until we decide what to do, at least end the session properly": function(done) {
+    browser.quit(done)
   }
 }, module);

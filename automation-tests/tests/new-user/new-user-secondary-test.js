@@ -12,16 +12,19 @@ utils = require('../../lib/utils.js'),
 persona_urls = require('../../lib/urls.js'),
 CSS = require('../../pages/css.js'),
 dialog = require('../../pages/dialog.js'),
+testSetup = require('../../lib/test-setup.js'),
 vowsHarness = require('../../lib/vows_harness.js');
 
 // pull in test environment, including wd
-var testSetup = require('../../lib/test-setup.js'),
-  firstSession = testSetup.startup(),
-  browser = testSetup.browsers[firstSession],
-  secondSession = testSetup.startup(),
-  secondBrowser = testSetup.browsers[secondSession],
-  theEmail = restmail.randomEmail(10),
-  mfbEmail = restmail.randomEmail(10);
+var browser, secondBrowser, theEmail, mfbEmail, nspEmail;
+// this is the more compact setup syntax
+testSetup.setup({b:2, r:3}, function(err, fix) {
+  browser = fix.b[0];
+  secondBrowser = fix.b[1];
+  theEmail = fix.r[0];
+  mfbEmail = fix.r[1];
+  nspEmail = fix.r[2];
+});
 
 var new_secondary_123done_two_browsers = {
   "startup, go to 123done, click sign in": function(done) {
@@ -118,8 +121,7 @@ var new_secondary_mfb_two_browsers = {
   }
 };
 
-var nspEmail = restmail.randomEmail(10),
-  new_secondary_personaorg = {
+var new_secondary_personaorg = {
     // trying another super terse test. I find I'm liking these better and better,
     // but I'm afraid they will be totally unreadable if you only write these
     // tests once in a while

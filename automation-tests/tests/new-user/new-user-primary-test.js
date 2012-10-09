@@ -12,14 +12,17 @@ utils = require('../../lib/utils.js'),
 persona_urls = require('../../lib/urls.js'),
 CSS = require('../../pages/css.js'),
 dialog = require('../../pages/dialog.js'),
+testSetup = require('../../lib/test-setup.js'),
 vowsHarness = require('../../lib/vows_harness.js');
 
-// pull in test environment, including wd
-var testSetup = require('../../lib/test-setup.js'),
-  browserId = testSetup.startup(),
-  browser = testSetup.browsers[browserId],
-  eyedeemail = restmail.randomEmail(10, 'eyedee.me'),
-  theEmail = restmail.randomEmail(10);
+var browser, eyedeemail, theEmail, eyedeemail_mfb, porg_eyedeemail;
+testSetup.setup({browsers: 1, eyedeemails: 3, restmails: 1}, function(err, fixtures) {
+  browser = fixtures.browsers[0];
+  eyedeemail = fixtures.eyedeemails[0];
+  eyedeemail_mfb = fixtures.eyedeemails[1];
+  porg_eyedeemail = fixtures.eyedeemails[2];
+  theEmail = fixtures.restmails[0];
+});
 
 function dialogEyedeemeFlow(b, email, cb) {
   b.chain()
@@ -53,7 +56,6 @@ var primary_123done = {
 };
 
 var mcss = CSS['myfavoritebeer.org'],
-  eyedeemail_mfb = restmail.randomEmail(10, 'eyedee.me'),
   primary_mfb = {
     "go to mfb, click sign in, switch to dialog": function(done) {
       browser.chain()
@@ -78,7 +80,6 @@ var mcss = CSS['myfavoritebeer.org'],
 };
 
 var pcss = CSS['persona.org'],
-  porg_eyedeemail = restmail.randomEmail(10, 'eyedee.me'),
   primary_personaorg = {
     // how much do we really need to split this out into separate vows?
     // is this too compact or actually better?

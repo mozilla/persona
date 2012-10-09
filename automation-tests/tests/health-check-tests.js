@@ -15,21 +15,20 @@ vowsHarness = require('../lib/vows_harness.js'),
 restmail = require('../lib/restmail.js'),
 testSetup = require('../lib/test-setup.js');
 
-// pull in test environment, including wd
 var pcss = CSS['persona.org'],
-  browser, eyedeemail, theEmail;
+  browser, secondBrowser, eyedeemail, theEmail;
 
-testSetup.setup({b: 1, e: 1, r: 1}, function(err, fixtures) {
-  browser = fixtures.b[0];
-  eyedeemail = fixtures.e[0];
-  theEmail = fixtures.r[0];
+testSetup.setup({browsers: 2, eyedeemails: 1, restmails: 1}, function(err, fixtures) {
+  browser = fixtures.browsers[0];
+  secondBrowser = fixtures.browsers[1];
+  eyedeemail = fixtures.eyedeemails[0];
+  theEmail = fixtures.restmails[0];
 });
 
 // all the stuff common between primary and secondary tests:
 // go to persona.org, click sign in, enter email, click next.
 var startup = function(b, email, cb) {
   b.chain()
-    .newSession(testSetup.sessionOpts)
     .get(persona_urls['persona'])
     .wclick(pcss.header.signIn)
     .wtype(pcss.signInForm.email, email)
@@ -64,10 +63,10 @@ var primaryTest = {
 
 var secondaryTest = {
   "start, go to personaorg, click sign in, type restmail addy, click next": function(done) {
-    startup(browser, theEmail, done);
+    startup(secondBrowser, theEmail, done);
   },
   "enter password and click verify": function(done) {
-    browser.chain()
+    secondBrowser.chain()
       .wtype(pcss.signInForm.password, theEmail.split('@')[0])
       .wtype(pcss.signInForm.verifyPassword, theEmail.split('@')[0])
       .wclick(pcss.signInForm.verifyEmailButton, done);
@@ -78,12 +77,12 @@ var secondaryTest = {
   // if we asserted against contents of #congrats message, our tests would
   // break if we ran them against a non-English deploy of the site
   "open verification link and verify we see congrats node": function(done, link) {
-    browser.chain()
+    secondBrowser.chain()
       .get(link)
       .wfind(pcss.congratsMessage, done); 
   },
   "shut down secondary test": function(done) {
-    browser.quit(done);
+    secondBrowser.quit(done);
   }
 };
 

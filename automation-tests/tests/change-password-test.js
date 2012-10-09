@@ -14,10 +14,12 @@ dialog = require('../pages/dialog.js'),
 vowsHarness = require('../lib/vows_harness.js'),
 personatestuser = require('../lib/personatestuser.js');
 
-// pull in test environment, including wd
-var testSetup = require('../lib/test-setup.js'),
-  browserId = testSetup.startup(),
-  browser = testSetup.browsers[browserId],
+// this should really be testSetup({browsers: 2, personatestusers: 1})
+var testSetup = require('../../lib/test-setup.js'),
+  firstSession = testSetup.startup(),
+  browser = testSetup.browsers[firstSession],
+  secondSession = testSetup.startup(),
+  secondBrowser = testSetup.browsers[secondSession],
   testUser;
 
 vowsHarness({
@@ -31,7 +33,7 @@ vowsHarness({
       done()
     })
   },
-  "load 123done, wait for the signin button to be visible, and click it": function(done) {
+  "sign in to 123done using personatestuser
     browser.chain()
       .get(persona_urls["123done"])
       .wclick(CSS["123done.org"].signinButton, done);
