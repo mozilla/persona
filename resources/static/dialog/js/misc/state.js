@@ -153,6 +153,7 @@ BrowserID.State = (function() {
       } else {
         redirectToState("authenticate");
       }
+      mediator.publish("user_can_interact");
     });
 
     handleState("authenticate", function(msg, info) {

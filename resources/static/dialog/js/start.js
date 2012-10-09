@@ -7,8 +7,8 @@
       moduleManager = bid.module,
       modules = bid.Modules,
       network = bid.Network,
+      mediator = bid.Mediator,
       xhr = bid.XHR;
-
 
   // A request that takes more than 10 seconds is considered delayed.
   xhr.init({ time_until_delay: 10 * 1000 });
@@ -19,6 +19,9 @@
 
   moduleManager.register("interaction_data", modules.InteractionData);
   moduleManager.start("interaction_data", { continuation: continuation });
+
+  mediator.publish("window_opened", { eventTime: BrowserID.WINDOW_OPENED });
+  mediator.publish("javascript_start", { eventTime: BrowserID.JS_START_TIME });
 
   moduleManager.register("development", modules.Development);
   moduleManager.start("development");

@@ -7,8 +7,7 @@
 
   window.BrowserID = window.BrowserID || {};
 
-  // Define some constants.
-  _.extend(window.BrowserID, {
+  var bid = BrowserID, constants = {
     // always use 1024/160 DSA keys - see issue #1293
     // this used to be called keysize 128, but that made
     // no sense since no component of this is 128 bits
@@ -23,6 +22,15 @@
     // http://support.microsoft.com/kb/q208427
     // See issue #2080 - https://github.com/mozilla/browserid/issues/2080
     URL_MAX_LENGTH: 2083,
-    PATH_MAX_LENGTH: 2048
-  });
+    PATH_MAX_LENGTH: 2048,
+
+    // This is stored in the KPI event stream to show how long it takes to
+    // start up the Javascript. This isn't exact, but this is the very first
+    // script that is run and should be a good approximation.
+    JS_START_TIME: new Date()
+  };
+
+  for (var key in constants) {
+    BrowserID[key] = constants[key];
+  }
 }());

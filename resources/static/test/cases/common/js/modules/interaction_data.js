@@ -53,12 +53,38 @@
   }
 
   function indexOfEvent(eventStream, eventName) {
-    for(var event, i = 0; event = eventStream[i]; ++i) {
-      if(event[0] === eventName) return i;
+    for (var event, i = 0; event = eventStream[i]; ++i) {
+      if (event[0] === eventName) return i;
     }
 
     return -1;
   }
+
+  asyncTest("addEvent - return an object with the event", function() {
+    createController(true);
+
+    var eventName = "before_session_context",
+        event = controller.addEvent(eventName);
+
+    equal(event[0], "before_session_context", "event name set correctly");
+    equal(typeof event[1], "number", "event offset set: " + event[1]);
+
+    start();
+  });
+
+  asyncTest("addEvent with eventTime - eventTime used as basis to calculate offset", function() {
+    createController(true);
+
+    var eventName = "before_session_context",
+        event = controller.addEvent(eventName, {
+          eventTime: new Date().getTime() + 10
+        });
+
+    equal(event[0], eventName, "event name set correctly");
+    ok(event[1] >= 10 && event[1] <= 15, "event offset set correctly: " + event[1]);
+
+    start();
+  });
 
   asyncTest("samplingEnabled - ensure data collection working as expected", function() {
     // Desired sequence:
@@ -391,37 +417,44 @@
   asyncTest("start_time message sets the startTime to calculate event time offset", function() {
     createController(true);
 
-    // set a fake startTime to simulate the dialog load delay.
+    // set a fake startTime to simulate the dialog load delay. This should make
+    // every event be offset by at least 1000 ms.
     var startTime = new Date().getTime() - 1000;
-
     controller.addEvent("start_time", startTime);
 
     network.withContext(function() {
-      var eventData = controller.addEvent("session1_after_session_context");
-      var eventOffset = eventData[1];
-      var offsetFromStart = eventOffset - 1000;
+      var eventOffset = controller.addEvent("session1_after_session_context")[1];
 
-      ok(offsetFromStart > 0 && offsetFromStart <= 100, "eventOffset within 100ms of start time");
+      ok(eventOffset >= 1000 && eventOffset <= 1100, "eventOffset at least 1000 ms but less than 1100: " + eventOffset);
       start();
     });
   });
 
-  asyncTest("start_time message cannot be set after events have already been added to the event stream", function() {
+  asyncTest("start_time adjusts date of already added events", function() {
+    // create a date that is one second ago that will be used to update the
+    // start_time.
+    var startTime = new Date().getTime() - 1000;
+
     createController(true);
 
-    // set a fake startTime to simulate the dialog load delay.
-    var startTime = new Date().getTime() - 1000,
-        err;
+    // create an event that has its offset updated.
+    var eventName = "session1_before_session_context",
+        origOffset = controller.addEvent(eventName)[1];
 
-    controller.addEvent("session1_before_session_context");
+    ok(origOffset >= 0 && origOffset <= 100, "expect less than 100ms of offset before new start_time is set: " + origOffset);
 
-    try {
-      controller.addEvent("start_time", startTime);
-    } catch(e) {
-      err = e.toString();
-    }
+    // Setting the start_time should cause the event's offset to be updated.
+    // Since the new startTime is 1 second before the previous startTime,
+    // the offset of each event should be increased by one second.
+    controller.addEvent("start_time", startTime);
 
-    equal(err.toString(), "start_time must be set before any events are added to the event stream");
+    var eventStream = controller.getCurrentEventStream();
+
+    var index = indexOfEvent(eventStream, eventName);
+    var event = eventStream[index];
+    var newOffset = event[1];
+    ok(newOffset >= 1000, "event's offset has been updated (orig-new): " + origOffset + "-" + newOffset);
+
     start();
   });
 

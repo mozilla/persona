@@ -72,7 +72,11 @@ BrowserID.Modules.InteractionData = (function() {
     service: function(msg, data) { return "screen." + data.name; },
     cancel_state: "screen.cancel",
     primary_user_authenticating: "window.redirect_to_primary",
+    window_opened: "window.opened",
     window_unload: "window.unload",
+    get_called: "window.get_called",
+    javascript_start: "window.javascript_start",
+    user_can_interact: "user.can_interact",
     generate_assertion: null,
     assertion_generated: null,
     user_staged: "user.user_staged",
@@ -87,7 +91,8 @@ BrowserID.Modules.InteractionData = (function() {
     enter_password: "authenticate.enter_password",
     password_submit: "authenticate.password_submitted",
     authentication_success: "authenticate.password_success",
-    authentication_fail: "authenticate.password_fail"
+    authentication_fail: "authenticate.password_fail",
+    xhr_start: function(msg, data) { return "xhr." + data.network.url }
   };
 
   function getKPIName(msg, data) {
@@ -257,31 +262,42 @@ BrowserID.Modules.InteractionData = (function() {
     });
   }
 
-  function addEvent(msg, data) {
-    /*jshint validthis: true */
-    var self=this;
+  function updateStartTime(newStartTime) {
+    var self=this,
+        eventStream = self.getCurrentEventStream();
 
-    if (msg === "start_time") {
-      if (self.getCurrentEventStream().length) throw "start_time must be set before any events are added to the event stream";
+    // Base the offset of any event already on the event stream off of the new
+    // startTime.
+    if (eventStream.length) {
+      var delta = self.startTime - newStartTime;
 
-      self.startTime = data;
+      for (var i=0, event; event=eventStream[i]; ++i) {
+        event[1] += delta;
+      }
+
+      setCurrentEventStream.call(self, eventStream);
     }
 
+    self.startTime = newStartTime;
+  }
+
+  function addEvent(msg, data) {
+    /*jshint validthis: true */
+    data = data || {};
+    var self=this;
+
+    if (msg === "start_time") updateStartTime.call(self, data);
     if (self.samplingEnabled === false) return;
 
     var eventName = getKPIName.call(self, msg, data);
     if (!eventName) return;
 
-    var eventData = [ eventName, new Date() - self.startTime ];
+    var eventData = [ eventName,
+      (data.eventTime || new Date()) - self.startTime ];
 
-    if (self.samplesBeingStored) {
-      var d = model.getCurrent() || {};
-      if (!d.event_stream) d.event_stream = [];
-      d.event_stream.push(eventData);
-      model.setCurrent(d);
-    } else {
-      self.initialEventStream.push(eventData);
-    }
+    var eventStream = self.getCurrentEventStream();
+    eventStream.push(eventData);
+    setCurrentEventStream.call(self, eventStream);
 
     return eventData;
   }
@@ -302,10 +318,26 @@ BrowserID.Modules.InteractionData = (function() {
     if(self.samplingEnabled === false) return;
 
     if (self.samplesBeingStored) {
-      return model.getCurrent().event_stream;
+      var d = model.getCurrent() || {};
+      if (!d.event_stream) d.event_stream = [];
+      return d.event_stream;
     }
     else {
       return self.initialEventStream;
+    }
+  }
+
+  function setCurrentEventStream(eventStream) {
+    /*jshint validthis: true*/
+    var self=this;
+
+    if (self.samplesBeingStored) {
+      var d = model.getCurrent() || {};
+      d.event_stream = eventStream;
+      model.setCurrent(d);
+    }
+    else {
+      self.initialEventStream = eventStream;
     }
   }
 
@@ -349,7 +381,7 @@ BrowserID.Modules.InteractionData = (function() {
       }
       else {
         // Set a default start time. The default is overridden if the
-        // "start_time" message is triggerred, which occurs when
+        // "start_time" message is triggerred
         self.startTime = new Date();
 
         // The initialEventStream is used to store events until onSessionContext
