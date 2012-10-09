@@ -92,7 +92,7 @@ BrowserID.Modules.InteractionData = (function() {
     password_submit: "authenticate.password_submitted",
     authentication_success: "authenticate.password_success",
     authentication_fail: "authenticate.password_fail",
-    xhr_start: function(msg, data) { return "xhr." + data.network.url }
+    xhr_complete: function(msg, data) { return "xhr." + data.network.url; }
   };
 
   function getKPIName(msg, data) {
@@ -294,6 +294,8 @@ BrowserID.Modules.InteractionData = (function() {
 
     var eventData = [ eventName,
       (data.eventTime || new Date()) - self.startTime ];
+
+    if (data.duration) eventData.push(data.duration);
 
     var eventStream = self.getCurrentEventStream();
     eventStream.push(eventData);

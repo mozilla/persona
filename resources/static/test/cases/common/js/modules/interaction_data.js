@@ -72,16 +72,18 @@
     start();
   });
 
-  asyncTest("addEvent with eventTime - eventTime used as basis to calculate offset", function() {
+  asyncTest("addEvent with eventTime and duration - eventTime used as basis to calculate offset, duration is third item in event", function() {
     createController(true);
 
     var eventName = "before_session_context",
         event = controller.addEvent(eventName, {
-          eventTime: new Date().getTime() + 10
+          eventTime: new Date().getTime() + 10,
+          duration: 110
         });
 
     equal(event[0], eventName, "event name set correctly");
     ok(event[1] >= 10 && event[1] <= 15, "event offset set correctly: " + event[1]);
+    ok(event[2], 110, "duration has been stored");
 
     start();
   });
