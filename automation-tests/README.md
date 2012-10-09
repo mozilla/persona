@@ -14,7 +14,7 @@ o hai!
 
     java -jar selenium-server-standalone-2.25.0.jar
 
-* run some tests
+* run some tests locally
 
 There isn't a test runner yet, but you can do this for each test under `tests`:
 
@@ -22,28 +22,35 @@ There isn't a test runner yet, but you can do this for each test under `tests`:
 
 `PERSONA_ENV` sets the target you want to test. **stage** is the most stable environment at present, so run your tests against it.
     
-* profit
+* run some tests against sauce
+
+Set some more environment variables:
+    * specify sauce username as `PERSONA_SAUCE_USER` (in persona-secrets bundle for mozilla identity devs)
+    * specify sauce api key as `PERSONA_SAUCE_APIKEY` (in persona-secrets bundle for mozilla identity devs)
+    * specify your sauce browser and OS combo as `PERSONA_BROWSER`
+        * current list: `linux_firefox_13`, `linux_opera_12`, `osx_firefox_14`, `vista_chrome`, `vista_firefox_13`, `vista_ie_9`, `xp_ie_8`
+        * the list is in lib/sauce-platforms.js
 
 ## Test Setup
 
 * To get common test fixtures (personatestusers, restmail emails, eyedee.me emails, or browser sessions), use TestSetup.setup:
 
-  testSetup.setup({ browsers: 2, restmails: 1, eyedeemails: 1, personatestusers: 2 }, cb)
+    testSetup.setup({ browsers: 2, restmails: 1, eyedeemails: 1, personatestusers: 2 }, cb)
 
 * You can also use a less verbose syntax:
 
-  testSetup.setup({b:2, r:1, e:1, p:2}, cb)
+    testSetup.setup({b:2, r:1, e:1, p:2}, cb)
 
 * Your callback should take an error function and an object that holds all the test fixtures you asked for:
 
-  function(err, fixtures) {
-    browser = fixtures.browsers[0];
-    secondBrowser = fixtures.browsers[1];
-    theEmail = fixtures.restmails[0];
-    eyedeemail = fixtures.eyedeemails[0];
-    firstUser = fixtures.personatestusers[0];
-    secondUser = fixtures.personatestusers[1];
-  }
+      function(err, fixtures) {
+        browser = fixtures.browsers[0];
+        secondBrowser = fixtures.browsers[1];
+        theEmail = fixtures.restmails[0];
+        eyedeemail = fixtures.eyedeemails[0];
+        firstUser = fixtures.personatestusers[0];
+        secondUser = fixtures.personatestusers[1];
+      }
 
 
 ## Reference: Extensions to wd's API
