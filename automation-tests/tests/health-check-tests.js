@@ -7,22 +7,23 @@
 const
 path = require('path'),
 assert = require('assert'),
-restmail = require('../lib/restmail.js'),
 utils = require('../lib/utils.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 vowsHarness = require('../lib/vows_harness.js'),
-personatestuser = require('../lib/personatestuser.js');
+restmail = require('../lib/restmail.js'),
+testSetup = require('../lib/test-setup.js');
 
 // pull in test environment, including wd
-var testSetup = require('../lib/test-setup.js'),
-  browserId = testSetup.startup(),
-  browser = testSetup.browsers[browserId],
-  eyedeemail = restmail.randomEmail(10, 'eyedee.me'),
-  theEmail = restmail.randomEmail(10),
-  pcss = CSS['persona.org'],
-  testUser;
+var pcss = CSS['persona.org'],
+  browser, eyedeemail, theEmail;
+
+testSetup.setup({b: 1, e: 1, r: 1}, function(err, fixtures) {
+  browser = fixtures.b[0];
+  eyedeemail = fixtures.e[0];
+  theEmail = fixtures.r[0];
+});
 
 // all the stuff common between primary and secondary tests:
 // go to persona.org, click sign in, enter email, click next.

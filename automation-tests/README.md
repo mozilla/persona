@@ -18,6 +18,28 @@ o hai!
 * ...
 * profit
 
+## Test Setup
+
+* To get common test fixtures (personatestusers, restmail emails, eyedee.me emails, or browser sessions), use TestSetup.setup:
+
+  testSetup.setup({ browsers: 2, restmails: 1, eyedeemails: 1, personatestusers: 2 }, cb)
+
+* You can also use a less verbose syntax:
+
+  testSetup.setup({b:2, r:1, e:1, p:2}, cb)
+
+* Your callback should take an error function and an object that holds all the stuff you asked for:
+
+  function(err, fixtures) {
+    // either these are global or you declared them in outer scope
+    browser = fixtures.browsers[0];
+    secondBrowser = fixtures.browsers[1];
+    theEmail = fixtures.restmails[0];
+    eyedeemail = fixtures.eyedeemails[0];
+    firstUser = fixtures.personatestusers[0];
+    secondUser = fixtures.personatestusers[1];
+  }
+
 
 ## Reference: Extensions to wd's API
 

@@ -1,11 +1,12 @@
-
-
-
-var saucePlatforms = require('./sauce-platforms.js'),
-  wd = require('wd'),
-  testSetup = {};
+const
+personatestuser = require('../lib/personatestuser.js'),
+restmail = require('../lib/restmail.js');
+saucePlatforms = require('./sauce-platforms.js'),
+wd = require('wd');
 
 require('./wd-extensions.js');
+
+var testSetup = {};
 
 // startup determines if browser sessions will be local or use saucelabs.
 // should only be called once per session (potentially, once for many tests)
@@ -80,4 +81,59 @@ testSetup.mergeOpts = function(opts) {
   return capabilities;
 }
 
+// opts could be of the form:
+// { browsers: 2, restmails: 1, eyedeemails: 1, personatestusers: 2
+// or of the form
+// { b:2, r:1, e:1, p:2 }
+// just be polite and don't mix the two.
+//
+// cb could be of the form:
+// function(err, fixtures) {
+//   // either these are global or you declared them in outer scope
+//   browser = fixtures.browsers[0];
+//   secondBrowser = fixtures.browsers[1];
+//   theEmail = fixtures.restmails[0];
+//   eyedeemail = fixtures.eyedeemails[0];
+//   firstUser = fixtures.personatestusers[0];
+//   secondUser = fixtures.personatestusers[1];
+// }
+testSetup.setup = function(opts, cb) {
+  var fixtures = {},
+    restmails = opts.restmails || opts.r,
+    eyedeemails = opts.eyedeemails || opts.e,
+    personatestusers = opts.personatestusers || opts.p,
+    browsers = opts.browsers || opts.b;
+
+  if (restmails) {
+    fixtures.r = fixtures.restmails = [];
+    for (var i = 0; i < restmails; i++) {
+      fixtures.restmails.push(restmail.randomEmail(10));
+    }
+  }
+  if (eyedeemails) {
+    fixtures.e = fixtures.eyedeemails = [];
+    for (var i = 0; i < eyedeemails; i++) {
+      fixtures.eyedeemails.push(restmail.randomEmail(10, 'eyedee.me'));
+    }
+  }
+  if (personatestusers) {
+    fixtures.p = fixtures.personatestusers = [];
+    for (var i = 0; i < personatestusers; i++) {
+      personatestuser.getVerifiedUser(function(err, user, blob) { 
+        if (err) { return cb(err) }
+        fixtures.personatestusers.push(user);
+      })
+    }
+  }
+  // since browsers timeout, set them up last
+  if (browsers) {
+    for (var i = 0; i < browsers; i++) {
+      testSetup.startup();
+    }
+    // just use the browsers array directly
+    fixtures.b = fixtures.browsers = testSetup.browsers;
+  }
+  cb(null, fixtures);
+}
+  
 module.exports = testSetup;
