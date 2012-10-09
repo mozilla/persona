@@ -15,7 +15,13 @@ o hai!
     java -jar selenium-server-standalone-2.25.0.jar
 
 * run some tests
-* ...
+
+There isn't a test runner yet, but you can do this for each test under `tests`:
+
+    PERSONA_ENV=stage node tests/change-password-test.js
+
+`PERSONA_ENV` sets the target you want to test. **stage** is the most stable environment at present, so run your tests against it.
+    
 * profit
 
 ## Test Setup
@@ -28,10 +34,9 @@ o hai!
 
   testSetup.setup({b:2, r:1, e:1, p:2}, cb)
 
-* Your callback should take an error function and an object that holds all the stuff you asked for:
+* Your callback should take an error function and an object that holds all the test fixtures you asked for:
 
   function(err, fixtures) {
-    // either these are global or you declared them in outer scope
     browser = fixtures.browsers[0];
     secondBrowser = fixtures.browsers[1];
     theEmail = fixtures.restmails[0];
