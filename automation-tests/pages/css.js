@@ -50,7 +50,8 @@ module.exports = {
     firstEmail: '#email_0',
     secondEmail: '#email_1',
     signInButton: 'button#signInButton',
-    notMyComputerButton: 'button#this_is_not_my_computer'
+    notMyComputerButton: 'button#this_is_not_my_computer',
+    myComputerButton: 'button#this_is_my_computer'
   },
   "myfavoritebeer.org": {
     signinButton: '#loginInfo .login',
