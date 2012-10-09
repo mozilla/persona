@@ -1154,6 +1154,8 @@
       // method called the next time around.
       api_called = null;
 
+      options.start_time = (new Date()).getTime();
+
       // focus an existing window
       if (w) {
         try {

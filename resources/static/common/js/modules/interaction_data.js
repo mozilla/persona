@@ -257,16 +257,23 @@ BrowserID.Modules.InteractionData = (function() {
     });
   }
 
-
   function addEvent(msg, data) {
     /*jshint validthis: true */
     var self=this;
+
+    if (msg === "start_time") {
+      if (self.getCurrentEventStream().length) throw "start_time must be set before any events are added to the event stream";
+
+      self.startTime = data;
+    }
+
     if (self.samplingEnabled === false) return;
 
     var eventName = getKPIName.call(self, msg, data);
     if (!eventName) return;
 
     var eventData = [ eventName, new Date() - self.startTime ];
+
     if (self.samplesBeingStored) {
       var d = model.getCurrent() || {};
       if (!d.event_stream) d.event_stream = [];
@@ -275,6 +282,8 @@ BrowserID.Modules.InteractionData = (function() {
     } else {
       self.initialEventStream.push(eventData);
     }
+
+    return eventData;
   }
 
   function getCurrent() {
@@ -339,6 +348,8 @@ BrowserID.Modules.InteractionData = (function() {
         }
       }
       else {
+        // Set a default start time. The default is overridden if the
+        // "start_time" message is triggerred, which occurs when
         self.startTime = new Date();
 
         // The initialEventStream is used to store events until onSessionContext

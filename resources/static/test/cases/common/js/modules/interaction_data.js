@@ -388,4 +388,41 @@
     });
   });
 
+  asyncTest("start_time message sets the startTime to calculate event time offset", function() {
+    createController(true);
+
+    // set a fake startTime to simulate the dialog load delay.
+    var startTime = new Date().getTime() - 1000;
+
+    controller.addEvent("start_time", startTime);
+
+    network.withContext(function() {
+      var eventData = controller.addEvent("session1_after_session_context");
+      var eventOffset = eventData[1];
+      var offsetFromStart = eventOffset - 1000;
+
+      ok(offsetFromStart > 0 && offsetFromStart <= 100, "eventOffset within 100ms of start time");
+      start();
+    });
+  });
+
+  asyncTest("start_time message cannot be set after events have already been added to the event stream", function() {
+    createController(true);
+
+    // set a fake startTime to simulate the dialog load delay.
+    var startTime = new Date().getTime() - 1000,
+        err;
+
+    controller.addEvent("session1_before_session_context");
+
+    try {
+      controller.addEvent("start_time", startTime);
+    } catch(e) {
+      err = e.toString();
+    }
+
+    equal(err.toString(), "start_time must be set before any events are added to the event stream");
+    start();
+  });
+
 }());

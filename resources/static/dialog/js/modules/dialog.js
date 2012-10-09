@@ -34,7 +34,7 @@ BrowserID.Modules.Dialog = (function() {
   }
 
   function startChannel() {
-    /*jshint validthis:true*/
+    /*jshint validthis: true*/
     var self = this,
         hash = win.location.hash;
 
@@ -74,7 +74,7 @@ BrowserID.Modules.Dialog = (function() {
   }
 
   function onWindowUnload() {
-    /*jshint validthis:true*/
+    /*jshint validthis: true*/
     this.publish("window_unload");
   }
 
@@ -136,6 +136,16 @@ BrowserID.Modules.Dialog = (function() {
     }
   }
 
+  function validateStartTime(startTime) {
+    var parsedTime = parseInt(startTime, 10);
+    if (typeof parsedTime !== "number" || isNaN(parsedTime)) {
+      throw "invalid value for start_time: " + startTime;
+    }
+
+    return parsedTime;
+  }
+
+
   var Dialog = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
@@ -192,6 +202,12 @@ BrowserID.Modules.Dialog = (function() {
 
       // verify params
       try {
+        var startTime = paramsFromRP.start_time;
+        if (startTime) {
+          startTime = validateStartTime(startTime);
+          self.publish("start_time", startTime);
+        }
+
         var rpAPI = paramsFromRP.rp_api;
         if (rpAPI) {
           // throws if an invalid rp_api value
