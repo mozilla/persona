@@ -10,8 +10,12 @@ const DEFAULT_TIMEOUT = 40000;
 // args include .timeout (optional), .env (optional)
 // callback is cb(error, {email, password}, fullResponse)
 exports.getVerifiedUser = function(args, cb) {
+  if (arguments.length == 1) { 
+    cb = args;
+    args = {};
+  }
   var timeout = args.timeout || DEFAULT_TIMEOUT;
-  var env = args.env || ''; 
+  var env = args.env || process.env['PERSONA_ENV'] || 'dev';
   var url = 'http://personatestuser.org/email/' + env;
 
   request({ url: url, timeout: timeout, json:true}, function (error, response, body) {

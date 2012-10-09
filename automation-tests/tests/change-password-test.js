@@ -25,7 +25,7 @@ vowsHarness({
     browser.newSession(testSetup.sessionOpts, done);
   },
   "create a new personatestuser": function(done) {
-    personatestuser.getVerifiedUser({ env: process.env['PERSONA_ENV'] || 'dev' }, function(err, user, blob) { 
+    personatestuser.getVerifiedUser(function(err, user, blob) { 
       if (err) { throw new Error('error getting persona test user: ' + err) }
       testUser = user;
       done()
