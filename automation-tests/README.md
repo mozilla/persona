@@ -2,27 +2,27 @@ o hai!
 
 ## Getting started
 
-* Install deps:
+#### Install deps:
 
     ```npm install```
 
-* You need the selenium-server-standalone jar to run tests locally:
+#### You need the selenium-server-standalone jar to run tests locally:
 
    ```curl http://selenium.googlecode.com/files/selenium-server-standalone-2.25.0.jar > selenium-server-standalone-2.25.0.jar```
 
-* Fire up selenium:
+#### Fire up selenium:
 
     ```java -jar selenium-server-standalone-2.25.0.jar```
 
-* run some tests locally
+#### run some tests locally
 
 There isn't a test runner yet, but you can do this for each test under `tests`:
 
-    ```PERSONA_ENV=stage node tests/change-password-test.js```
+    PERSONA_ENV=stage node tests/change-password-test.js
 
 `PERSONA_ENV` sets the target you want to test. **stage** is the most stable environment at present, so run your tests against it.
     
-* run some tests against sauce
+#### run some tests against sauce
 
 Set some more environment variables:
 
@@ -31,6 +31,10 @@ Set some more environment variables:
     * specify your sauce browser and OS combo as `PERSONA_BROWSER`
         * current list: `linux_firefox_13`, `linux_opera_12`, `osx_firefox_14`, `vista_chrome`, `vista_firefox_13`, `vista_ie_9`, `xp_ie_8`
         * the list is in lib/sauce-platforms.js
+
+Then run the tests just like you would locally:
+
+    PERSONA_ENV=stage node tests/change-password-test.js
 
 ## Test Setup
 
