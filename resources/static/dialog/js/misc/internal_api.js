@@ -119,4 +119,24 @@
     }, complete.curry(null));
   }
 
+  /**
+   * Log the user out of the current origin
+   * @method logout
+   * @param {string} origin
+   * @param {function} callback
+   */
+  internal.logout = function(origin, callback) {
+    user.setOrigin(origin);
+    user.logout(callback, callback.curry(null));
+  };
+
+  /**
+   * Log the user out everywhere
+   * @method logoutEveywhere
+   * @param {function} callback
+   */
+  internal.logoutEverywhere = function(callback) {
+    user.logoutUser(callback, callback.curry(null));
+  };
+
 }());

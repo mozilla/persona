@@ -166,10 +166,6 @@ BrowserID.Modules.Dialog = (function() {
       sc.stop.call(this);
     },
 
-    getVerifiedEmail: function(origin_url, success, error) {
-      return this.get(origin_url, {}, success, error);
-    },
-
     get: function(origin_url, paramsFromRP, success, error) {
       var self=this,
           hash = win.location.hash;
