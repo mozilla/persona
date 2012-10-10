@@ -8,7 +8,7 @@
  * tool, which is capable of analysing the maximum active users that
  * a browserid deployment can support */
 
-require('../lib/base').addExceptionHandler();
+require('../lib/baseExceptions').addExceptionHandler();
 
 const winston = require('winston');
 

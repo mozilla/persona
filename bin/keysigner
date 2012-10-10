@@ -6,7 +6,7 @@
 
 // I sign keys.  That's what I do.
 
-require('../lib/base').addExceptionHandler();
+require('../lib/baseExceptions').addExceptionHandler();
 
 const
 path = require('path'),

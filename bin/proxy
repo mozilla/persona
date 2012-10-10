@@ -6,7 +6,7 @@
 
 // I proxy requests.  That's what I do.
 
-require('../lib/base').addExceptionHandler();
+require('../lib/baseExceptions').addExceptionHandler();
 
 const
 http = require('http'),
