@@ -13,7 +13,7 @@ BrowserID.module = (function() {
 
   function register(service, module, config) {
     if (!module) {
-      throw "module constructor missing for " + service;
+      throw new Error("module constructor missing for " + service);
     }
 
     registration[service] = {
@@ -34,7 +34,7 @@ BrowserID.module = (function() {
     var module = running[service];
 
     if(!module) {
-      throw "no module running for " + service;
+      throw new Error("no module running for " + service);
     }
 
     return module;
@@ -48,7 +48,7 @@ BrowserID.module = (function() {
 
   function start(service, data) {
     if (running[service]) {
-      throw "module already running for " + service;
+      throw new Error("module already running for " + service);
     }
 
     var module = created[service];
@@ -64,7 +64,7 @@ BrowserID.module = (function() {
         module.init(config || {});
       }
       else {
-        throw "module not registered for " + service;
+        throw new Error("module not registered for " + service);
       }
     }
 
@@ -82,7 +82,7 @@ BrowserID.module = (function() {
       delete running[service];
     }
     else {
-      throw "module not started for " + service;
+      throw new Error("module not started for " + service);
     }
   }
 

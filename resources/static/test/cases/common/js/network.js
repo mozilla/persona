@@ -654,7 +654,7 @@
         throw "callback exception";
       }, testHelpers.unexpectedXHRFailure);
     } catch(e) {
-      equal(e.toString(), "callback exception", "correct exception caught");
+      equal(e, "callback exception", "correct exception caught");
     }
   });
 

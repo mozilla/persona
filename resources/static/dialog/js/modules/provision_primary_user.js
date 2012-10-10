@@ -52,7 +52,7 @@ BrowserID.Modules.ProvisionPrimaryUser = (function() {
           prov = options.prov;
 
       if(!email) {
-        throw "missing config option: email";
+        throw new Error("missing config option: email");
       }
 
       user.addressInfo(email, function(status) {

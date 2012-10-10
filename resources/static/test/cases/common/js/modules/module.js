@@ -86,7 +86,7 @@
       error = e;
     }
 
-    equal(error, "missing config option: requiredField");
+    equal(error.message, "missing config option: requiredField");
   });
 
 }());

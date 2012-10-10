@@ -79,10 +79,10 @@ BrowserID.Modules.Dialog = (function() {
   function fixupURL(origin, url) {
     var u;
     if (typeof(url) !== "string")
-      throw "urls must be strings: (" + url + ")";
+      throw new Error("urls must be strings: (" + url + ")");
     if (/^http(s)?:\/\//.test(url)) u = URLParse(url);
     else if (/^\/[^\/]/.test(url)) u = URLParse(origin + url);
-    else throw "relative urls not allowed: (" + url + ")";
+    else throw new Error("relative urls not allowed: (" + url + ")");
     // encodeURI limits our return value to [a-z0-9:/?%], excluding <script>
     var encodedURI = encodeURI(u.validate().normalize().toString());
 
@@ -92,12 +92,12 @@ BrowserID.Modules.Dialog = (function() {
 
     // Check the total encoded URI length
     if (encodedURI.length > bid.URL_MAX_LENGTH)
-      throw "urls must be < " + bid.URL_MAX_LENGTH + " characters";
+      throw new Error("urls must be < " + bid.URL_MAX_LENGTH + " characters");
 
     // Check just the path portion.  encode the path to make sure the full
     // length is checked.
     if (encodeURI(u.path).length > bid.PATH_MAX_LENGTH)
-      throw "path portion of a url must be < " + bid.PATH_MAX_LENGTH + " characters";
+      throw new Error("path portion of a url must be < " + bid.PATH_MAX_LENGTH + " characters");
 
     return encodedURI;
   }
@@ -106,7 +106,7 @@ BrowserID.Modules.Dialog = (function() {
     // Ensure URL is an absolute path (not a relative path or a scheme-relative URL)
     if (/^\/[^\/]/.test(path))  return fixupURL(origin_url, path);
 
-    throw "must be an absolute path: (" + path + ")";
+    throw new Error("must be an absolute path: (" + path + ")");
   }
 
   function fixupReturnTo(origin_url, path) {
@@ -129,7 +129,7 @@ BrowserID.Modules.Dialog = (function() {
     ];
 
     if (_.indexOf(VALID_RP_API_VALUES, rpAPI) === -1) {
-      throw "invalid value for rp_api: " + rpAPI;
+      throw new Error("invalid value for rp_api: " + rpAPI);
     }
   }
 
@@ -220,7 +220,7 @@ BrowserID.Modules.Dialog = (function() {
           // To avoid mixed content errors, only allow siteLogos to be served
           // from https RPs
           if (URLParse(origin_url).scheme !== "https") {
-            throw "only https sites can specify a siteLogo";
+            throw new Error("only https sites can specify a siteLogo");
           }
         }
 

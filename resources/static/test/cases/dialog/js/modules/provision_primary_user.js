@@ -50,7 +50,7 @@
       error = e;
     }
 
-    equal(error, "missing config option: email", "must specify email, auth, and prov");
+    equal(error.message, "missing config option: email", "must specify email, auth, and prov");
   });
 
   asyncTest("create controller with all fields specified, user authenticated with primary - expected user provisioned", function() {

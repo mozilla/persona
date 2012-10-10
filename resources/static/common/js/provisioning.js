@@ -28,7 +28,7 @@ BrowserID.Provisioning = (function() {
       }, 0);
     }
 
-    if (!failureCB) throw "missing required failure callback";
+    if (!failureCB) throw new Error("missing required failure callback");
 
     if (!args || !args.email || !args.url || !args.hasOwnProperty('ephemeral')) {
       return fail('internal', 'missing required arguments');

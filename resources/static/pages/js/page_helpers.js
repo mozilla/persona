@@ -119,7 +119,7 @@ BrowserID.PageHelpers = (function() {
 
   function openPrimaryAuth(winchan, email, baseURL, callback) {
     if(!(email && baseURL)) {
-      throw "cannot verify with primary without an email address and URL";
+      throw new Error("cannot verify with primary without an email address and URL");
     }
 
     winchan.open({

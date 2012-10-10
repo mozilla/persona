@@ -10,7 +10,7 @@ BrowserID.Command = (function() {
     init: function(options) {
       this.run_options = options.run_options || {};
       if(!options.callback) {
-        throw "callback required";
+        throw new Error("callback required");
       }
       this.callback = options.callback;
     },

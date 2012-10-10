@@ -131,7 +131,7 @@
     catch(e) {
       error = e;
     }
-    equal(error, "start: controller must be specified", "creating a state machine without a controller fails");
+    equal(error.message, "start: controller must be specified", "creating a state machine without a controller fails");
   });
 
   test("cancel post new_user password_set flow - go back to the authentication screen", function() {
@@ -222,7 +222,7 @@
     try {
       mediator.publish("user_confirmed");
     } catch(e) {
-      equal(e.toString(), "invalid email", "expected failure");
+      equal(e.message, "invalid email", "expected failure");
     }
   });
 
@@ -387,7 +387,7 @@
     try {
       mediator.publish("email_confirmed");
     } catch(e) {
-      equal(e.toString(), "invalid email", "expected failure");
+      equal(e.message, "invalid email", "expected failure");
     }
   });
 
@@ -518,7 +518,7 @@
       error = e;
     }
 
-    equal(error, "invalid email", "expected exception thrown");
+    equal(error.message, "invalid email", "expected exception thrown");
   });
 
   test("null assertion generated - preserve original options in doPickEmail", function() {

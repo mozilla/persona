@@ -146,7 +146,7 @@ BrowserID.Storage = (function() {
       storage.loggedIn = JSON.stringify(loggedInInfo);
     }
     else {
-      throw "unknown email address";
+      throw new Error("unknown email address");
     }
   }
 
@@ -159,7 +159,7 @@ BrowserID.Storage = (function() {
       addEmail(email, id);
     }
     else {
-      throw "unknown email address";
+      throw new Error("unknown email address");
     }
   }
 
@@ -177,8 +177,8 @@ BrowserID.Storage = (function() {
         var staged = JSON.parse(storage.returnTo);
 
         if (staged) {
-          if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw "stale";
-          if (typeof(staged.url) !== 'string') throw "malformed";
+          if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw new Error("stale");
+          if (typeof(staged.url) !== 'string') throw new Error("malformed");
           returnToURL = staged.url;
         }
     } catch (x) {
@@ -193,7 +193,7 @@ BrowserID.Storage = (function() {
     var siteInfo = allSiteInfo[site] = allSiteInfo[site] || {};
 
     if(key === "email" && !getEmail(value)) {
-      throw "unknown email address";
+      throw new Error("unknown email address");
     }
 
     siteInfo[key] = value;
@@ -295,9 +295,9 @@ BrowserID.Storage = (function() {
   function setConfirmationState(userid, state) {
     userid = mapEmailToUserID(userid);
 
-    if (typeof userid !== 'number') throw 'bad userid ' + userid;
+    if (typeof userid !== 'number') throw new Error('bad userid ' + userid);
 
-    if (!validState(state)) throw "invalid state";
+    if (!validState(state)) throw new Error("invalid state");
 
     var allInfo;
     var currentState;
@@ -305,15 +305,15 @@ BrowserID.Storage = (function() {
 
     try {
       allInfo = JSON.parse(storage.usersComputer);
-      if (typeof allInfo !== 'object') throw 'bogus';
+      if (typeof allInfo !== 'object') throw new Error('bogus');
 
       var userInfo = allInfo[userid];
       if (userInfo) {
         currentState = userInfo.state;
         lastUpdated = Date.parse(userInfo.updated);
 
-        if (!validState(currentState)) throw "corrupt/outdated";
-        if (isNaN(lastUpdated)) throw "corrupt/outdated";
+        if (!validState(currentState)) throw new Error("corrupt/outdated");
+        if (isNaN(lastUpdated)) throw new Error("corrupt/outdated");
       }
     } catch(e) {
       currentState = undefined;
@@ -397,7 +397,7 @@ BrowserID.Storage = (function() {
       try {
         userid = mapEmailToUserID(userid);
         var allInfo = JSON.parse(storage.usersComputer);
-        if (typeof allInfo !== 'object') throw 'bogus';
+        if (typeof allInfo !== 'object') throw new Error('bogus');
 
         var userInfo = allInfo[userid] || {};
         userInfo.state = 'ask';
@@ -408,7 +408,7 @@ BrowserID.Storage = (function() {
   function clearUsersComputerOwnershipStatus(userid) {
     try {
       var allInfo = JSON.parse(storage.usersComputer);
-      if (typeof allInfo !== 'object') throw 'bogus';
+      if (typeof allInfo !== 'object') throw new Error('bogus');
 
       var userInfo = allInfo[userid];
       if (userInfo) {
@@ -426,7 +426,7 @@ BrowserID.Storage = (function() {
     var allInfo;
     try {
       allInfo = JSON.parse(storage.emailToUserID);
-      if (typeof allInfo != 'object' || allInfo === null) throw "bogus";
+      if (typeof allInfo != 'object' || allInfo === null) throw new Error("bogus");
     } catch(e) {
       allInfo = {};
     }

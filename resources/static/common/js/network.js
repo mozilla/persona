@@ -651,7 +651,7 @@ BrowserID.Network = (function() {
     serverTime: function(onComplete, onFailure) {
       withContext(function() {
         try {
-          if (!server_time) throw "can't get server time!";
+          if (!server_time) throw new Error("can't get server time!");
           var offset = (new Date()).getTime() - server_time.local;
           complete(onComplete, new Date(offset + server_time.remote));
         } catch(e) {
@@ -672,7 +672,7 @@ BrowserID.Network = (function() {
     domainKeyCreationTime: function(onComplete, onFailure) {
       withContext(function() {
         try {
-          if (!domain_key_creation_time) throw "can't get domain key creation time!";
+          if (!domain_key_creation_time) throw new Error("can't get domain key creation time!");
           complete(onComplete, new Date(domain_key_creation_time));
         } catch(e) {
           complete(onFailure, e.toString());
