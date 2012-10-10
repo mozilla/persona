@@ -76,15 +76,15 @@ var static_root = path.join(__dirname, "..", "resources", "static");
 //  with https://diresworb.org)
 config.performSubstitution(app);
 
-// #9 - handle views for dynamicish content
-views.setup(app);
-
 app.use(cachify.setup(assets(config.get('supported_languages')),
         {
           prefix: config.get('cachify_prefix'),
           production: config.get('use_minified_resources'),
           root: static_root,
         }));
+
+// #9 - handle views for dynamicish content
+views.setup(app);
 
 // add 'Access-Control-Allow-Origin' headers to static resources that will be served
 // from the CDN.  We explicitly allow resources served from public_url to access these.
