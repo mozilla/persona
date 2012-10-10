@@ -30,6 +30,7 @@ function dialogEyedeemeFlow(b, email, cb) {
     .wtype(CSS['dialog'].emailInput, email)
     .wclick(CSS['dialog'].newEmailNextButton)
     .wclick(CSS['dialog'].verifyWithPrimaryButton)
+    .wclick(CSS['dialog'].verifyWithPrimaryButton) //XXX Why do we need to click twice?
     .wtype(CSS['eyedee.me'].newPassword, email.split('@')[0])
     .wclick(CSS['eyedee.me'].createAccountButton, cb);
 }

@@ -13,6 +13,9 @@ exports.randomEmail = function(chars, domain) {
     str += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
   }
 
+  // Until GH-2551 is fixed, use lowercase alphanum for email
+  str = str.toLowerCase();
+
   return str + '@' + (domain ? domain : 'restmail.net');
 };
 
