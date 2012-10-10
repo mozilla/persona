@@ -15,7 +15,7 @@ vowsHarness = require('../lib/vows_harness.js'),
 personatestuser = require('../lib/personatestuser.js');
 
 // this should really be testSetup({browsers: 2, personatestusers: 1})
-var testSetup = require('../../lib/test-setup.js'),
+var testSetup = require('../lib/test-setup.js'),
   firstSession = testSetup.startup(),
   browser = testSetup.browsers[firstSession],
   secondSession = testSetup.startup(),
@@ -23,17 +23,16 @@ var testSetup = require('../../lib/test-setup.js'),
   testUser;
 
 vowsHarness({
-  "create a new selenium session": function(done) {
-    browser.newSession(testSetup.sessionOpts, done);
+  "create a new selenium session": function(done) { browser.newSession(testSetup.sessionOpts, done);
   },
   "create a new personatestuser": function(done) {
-    personatestuser.getVerifiedUser(function(err, user, blob) { 
-      if (err) { throw new Error('error getting persona test user: ' + err) }
+    personatestuser.getVerifiedUser(function(err, user, blob) {
+      if (err) { throw new Error('error getting persona test user: ' + err); }
       testUser = user;
-      done()
-    })
+      done();
+    });
   },
-  "sign in to 123done using personatestuser
+  "sign in to 123done using personatestuser": function(done) {
     browser.chain()
       .get(persona_urls["123done"])
       .wclick(CSS["123done.org"].signinButton, done);
@@ -53,7 +52,7 @@ vowsHarness({
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         assert.equal(text, testUser.email);
-        done()
+        done();
       });
   },
   "go to the account manager": function(done) {
@@ -61,13 +60,13 @@ vowsHarness({
       .get(persona_urls['persona'])
       .wtext(CSS['persona.org'].accountManagerHeader, function(err, text) {
         assert.equal(text, 'Account Manager');
-        done()
-      })
+        done();
+      });
     },
   "make sure the right account is logged in": function(done) {
     browser.wtext(CSS['persona.org'].accountEmail, function(err, text) {
       assert.equal(text, testUser.email);
-      done()
+      done();
     });
   },
   "click the change password button": function(done) {
@@ -93,7 +92,7 @@ vowsHarness({
   "switch to the dialog and click not-my-account": function(done) {
     browser.chain()
       .wwin(CSS["persona.org"].windowName)
-      .wclick(CSS["dialog"].thisIsNotMe, done)
+      .wclick(CSS["dialog"].thisIsNotMe, done);
   },
   "sign in using the changed password": function(done) {
     dialog.signInExistingUser({
@@ -107,7 +106,7 @@ vowsHarness({
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         assert.equal(text, testUser.email);
-        done()
+        done();
       });
   },
   "shut down": function(done) {
