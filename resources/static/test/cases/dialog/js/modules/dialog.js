@@ -158,7 +158,7 @@
     winMock.navigator.id = {
       channel : {
         registerController: function(controller) {
-          registerControllerCalled = controller.getVerifiedEmail && controller.get;
+          registerControllerCalled = !!controller.get;
         }
       }
     };
