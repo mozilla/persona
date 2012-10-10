@@ -4,27 +4,28 @@ o hai!
 
 * Install deps:
 
-    npm install
+    ```npm install```
 
 * You need the selenium-server-standalone jar to run tests locally:
 
-   curl http://selenium.googlecode.com/files/selenium-server-standalone-2.25.0.jar > selenium-server-standalone-2.25.0.jar
+   ```curl http://selenium.googlecode.com/files/selenium-server-standalone-2.25.0.jar > selenium-server-standalone-2.25.0.jar```
 
 * Fire up selenium:
 
-    java -jar selenium-server-standalone-2.25.0.jar
+    ```java -jar selenium-server-standalone-2.25.0.jar```
 
 * run some tests locally
 
 There isn't a test runner yet, but you can do this for each test under `tests`:
 
-    PERSONA_ENV=stage node tests/change-password-test.js
+    ```PERSONA_ENV=stage node tests/change-password-test.js```
 
 `PERSONA_ENV` sets the target you want to test. **stage** is the most stable environment at present, so run your tests against it.
     
 * run some tests against sauce
 
 Set some more environment variables:
+
     * specify sauce username as `PERSONA_SAUCE_USER` (in persona-secrets bundle for mozilla identity devs)
     * specify sauce api key as `PERSONA_SAUCE_APIKEY` (in persona-secrets bundle for mozilla identity devs)
     * specify your sauce browser and OS combo as `PERSONA_BROWSER`
@@ -35,22 +36,24 @@ Set some more environment variables:
 
 * To get common test fixtures (personatestusers, restmail emails, eyedee.me emails, or browser sessions), use TestSetup.setup:
 
-    testSetup.setup({ browsers: 2, restmails: 1, eyedeemails: 1, personatestusers: 2 }, cb)
+```testSetup.setup({ browsers: 2, restmails: 1, eyedeemails: 1, personatestusers: 2 }, cb)```
 
 * You can also use a less verbose syntax:
 
-    testSetup.setup({b:2, r:1, e:1, p:2}, cb)
+```testSetup.setup({b:2, r:1, e:1, p:2}, cb)```
 
 * Your callback should take an error function and an object that holds all the test fixtures you asked for:
 
-      function(err, fixtures) {
-        browser = fixtures.browsers[0];
-        secondBrowser = fixtures.browsers[1];
-        theEmail = fixtures.restmails[0];
-        eyedeemail = fixtures.eyedeemails[0];
-        firstUser = fixtures.personatestusers[0];
-        secondUser = fixtures.personatestusers[1];
-      }
+```
+  function(err, fixtures) {
+    browser = fixtures.browsers[0];
+    secondBrowser = fixtures.browsers[1];
+    theEmail = fixtures.restmails[0];
+    eyedeemail = fixtures.eyedeemails[0];
+    firstUser = fixtures.personatestusers[0];
+    secondUser = fixtures.personatestusers[1];
+  }
+```
 
 
 ## Reference: Extensions to wd's API
