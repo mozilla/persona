@@ -173,13 +173,7 @@ BrowserID.Storage = (function() {
   function getReturnTo() {
     var returnToURL;
 
-    // XXX - The transitional code is to make sure any emails that were staged using
-    // the old setStagedOnBehalfOf still work with the new API.  This should be
-    // able to be removed by mid-July 2012.
     try {
-      // BEGIN TRANSITIONAL CODE
-      if (storage.returnTo) {
-      // END TRANSITIONAL CODE
         var staged = JSON.parse(storage.returnTo);
 
         if (staged) {
@@ -187,23 +181,8 @@ BrowserID.Storage = (function() {
           if (typeof(staged.url) !== 'string') throw "malformed";
           returnToURL = staged.url;
         }
-      // BEGIN TRANSITIONAL CODE
-      }
-      else if(storage.stagedOnBehalfOf) {
-        var staged = JSON.parse(storage.stagedOnBehalfOf);
-
-        if (staged) {
-          if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw "stale";
-          if (typeof(staged.origin) !== 'string') throw "malformed";
-          returnToURL = staged.origin;
-        }
-      }
-      // END TRANSITIONAL CODE
     } catch (x) {
       storage.removeItem("returnTo");
-      // BEGIN TRANSITIONAL CODE
-      storage.removeItem("stagedOnBehalfOf");
-      // END TRANSITIONAL CODE
     }
 
     return returnToURL;
