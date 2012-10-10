@@ -738,13 +738,20 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - called on error.
      */
     logoutUser: function(onComplete, onFailure) {
-      // logout of all websites
-      storage.logoutEverywhere();
+      User.checkAuthentication(function(authenticated) {
+        if (authenticated) {
+          // logout of all websites
+          storage.logoutEverywhere();
 
-      // log out of browserid
-      network.logout(function() {
-        setAuthenticationStatus(false);
-        complete(onComplete);
+          // log out of browserid
+          network.logout(function() {
+            setAuthenticationStatus(false);
+            complete(onComplete, !!authenticated);
+          }, onFailure);
+        }
+        else {
+          complete(onComplete, authenticated);
+        }
       }, onFailure);
     },
 
