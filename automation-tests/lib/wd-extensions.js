@@ -34,8 +34,12 @@ wd.prototype.waitForDisplayed = function(opts, cb) {
 };
  
 // allocate a new browser session and sets implicit wait timeout
-wd.prototype.newSession = function(cb, opts) {
-  browser = this;
+wd.prototype.newSession = function(opts, cb) {
+  var browser = this;
+  if (typeof opts === 'function') {
+    cb = opts;
+    opts = {};
+  }
 
   browser.init(opts, function(err) {
     if (err) return cb(err);
@@ -58,6 +62,8 @@ wd.prototype.newSession = function(cb, opts) {
 wd.prototype.waitForWindow = function(opts, cb) {
   if (typeof opts == 'string') opts = { name: opts };
   if (!opts.name) throw "waitForWindow missing window `name`";
+  var browser = this;
+
   setTimeouts(opts);
   utils.waitFor(opts.poll, opts.timeout, function(done) {
     browser.window(opts.name, function(err) {

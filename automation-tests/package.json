@@ -7,6 +7,7 @@
     "vows": "*",
     "wd": "*",
     "request": "*",
-    "optimist": "*"
+    "optimist": "*",
+    "underscore": "*"
   }
 }

@@ -23,7 +23,8 @@ var testSetup = require('../lib/test-setup.js'),
   testUser;
 
 vowsHarness({
-  "create a new selenium session": function(done) { browser.newSession(testSetup.sessionOpts, done);
+  "create a new selenium session": function(done) {
+    browser.newSession(testSetup.sessionOpts, done);
   },
   "create a new personatestuser": function(done) {
     personatestuser.getVerifiedUser(function(err, user, blob) {
