@@ -12,28 +12,33 @@ persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 vowsHarness = require('../lib/vows_harness.js'),
-personatestuser = require('../lib/personatestuser.js');
+testSetup = require('../lib/test-setup.js');
 
-// this should really be testSetup({browsers: 2, personatestusers: 1})
-var testSetup = require('../lib/test-setup.js'),
-  firstSession = testSetup.startup(),
-  browser = testSetup.browsers[firstSession],
-  secondSession = testSetup.startup(),
-  secondBrowser = testSetup.browsers[secondSession],
-  testUser;
+var browser, secondBrowser, testUser;
+
+/*
+ - create a secondary account
+ - log into 123done in browser A
+ - log into persona.org in browser B
+ - change password in browser B
+ - reload browser A
+ - verify logged out of browser A
+ - verify new password works in browser A
+*/
 
 vowsHarness({
-  "create a new selenium session": function(done) {
-    browser.newSession(testSetup.sessionOpts, done);
-  },
-  "create a new personatestuser": function(done) {
-    personatestuser.getVerifiedUser(function(err, user, blob) {
-      if (err) { throw new Error('error getting persona test user: ' + err); }
-      testUser = user;
+  "setup tests": function(done) {
+    testSetup.setup({browsers: 2, personatestusers: 1}, function(err, fixtures) {
+      browser = fixtures.browsers[0];
+      secondBrowser = fixtures.browsers[1];
+      testUser = fixtures.personatestusers[0];
       done();
     });
   },
-  "sign in to 123done using personatestuser": function(done) {
+  "create a new selenium session": function(done) {
+    browser.newSession(testSetup.sessionOpts, done);
+  },
+  "go to 123done and click sign in": function(done) {
     browser.chain()
       .get(persona_urls["123done"])
       .wclick(CSS["123done.org"].signinButton, done);
@@ -56,44 +61,42 @@ vowsHarness({
         done();
       });
   },
-  "go to the account manager": function(done) {
-    browser.chain()
+  "in the second browser, log in to persona.org": function(done) {
+    secondBrowser.chain()
+      .newSession(testSetup.sessionOpts)
       .get(persona_urls['persona'])
+      .wclick(CSS['persona.org'].header.signIn)
+      .wtype(CSS['persona.org'].signInForm.email, testUser.email)
+      .wclick(CSS['persona.org'].signInForm.nextButton)
+      .wtype(CSS['persona.org'].signInForm.password, testUser.pass)
+      .wclick(CSS['persona.org'].signInForm.finishButton)
       .wtext(CSS['persona.org'].accountManagerHeader, function(err, text) {
         assert.equal(text, 'Account Manager');
         done();
       });
     },
-  "make sure the right account is logged in": function(done) {
-    browser.wtext(CSS['persona.org'].accountEmail, function(err, text) {
-      assert.equal(text, testUser.email);
-      done();
-    });
-  },
   "click the change password button": function(done) {
-    browser.wclick(CSS["persona.org"].changePasswordButton, done);
+    secondBrowser.wclick(CSS["persona.org"].changePasswordButton, done);
   },
   "enter old and new passwords and click done": function(done) {
-    browser.chain()
+    secondBrowser.chain()
       .wtype(CSS['persona.org'].oldPassword, testUser.pass)
       .wtype(CSS['persona.org'].newPassword, 'new' + testUser.pass)
       .wclick(CSS['persona.org'].passwordChangeDoneButton, done);
   },
   "wait for the change password button to go back before leaving": function(done) {
-      browser.wfind(CSS['persona.org'].changePasswordButton, done);
+    secondBrowser.wfind(CSS['persona.org'].changePasswordButton, done);
   },
-  "back to 123done": function(done) {
-    browser.get(persona_urls["123done"], done);
-  },
-  "click sign out and sign in": function(done) {
+  "back to the first browser: should be signed out of 123done on reload": function(done) {
     browser.chain()
-      .wclick(CSS['123done.org'].logoutLink)
-      .wclick(CSS["123done.org"].signinButton, done);
+      .get(persona_urls["123done"])
+      .wfind(CSS['123done.org'].signinButton, done)
   },
-  "switch to the dialog and click not-my-account": function(done) {
-    browser.chain()
-      .wwin(CSS["persona.org"].windowName)
-      .wclick(CSS["dialog"].thisIsNotMe, done);
+  "start re-login flow in 123done": function(done) {
+    browser.wclick(CSS["123done.org"].signinButton, done)
+  },
+  "switch back to the dialog": function(done) {
+    browser.wwin(CSS["persona.org"].windowName, done)
   },
   "sign in using the changed password": function(done) {
     dialog.signInExistingUser({
@@ -111,6 +114,8 @@ vowsHarness({
       });
   },
   "shut down": function(done) {
-    browser.quit(done);
+    browser.quit(function(err) {
+      secondBrowser.quit(done)
+    })
   }
 }, module);

@@ -1,5 +1,6 @@
 const
 personatestuser = require('../lib/personatestuser.js'),
+Q = require('q'),
 restmail = require('../lib/restmail.js'),
 saucePlatforms = require('./sauce-platforms.js'),
 wd = require('wd'),
@@ -106,7 +107,8 @@ testSetup.setup = function(opts, cb) {
     restmails = opts.restmails || opts.r,
     eyedeemails = opts.eyedeemails || opts.e,
     personatestusers = opts.personatestusers || opts.p,
-    browsers = opts.browsers || opts.b;
+    browsers = opts.browsers || opts.b,
+    promises = [];
 
   if (restmails) {
     fixtures.r = fixtures.restmails = [];
@@ -122,22 +124,35 @@ testSetup.setup = function(opts, cb) {
   }
   if (personatestusers) {
     fixtures.p = fixtures.personatestusers = [];
+    // after personatestuser returns, and pushes result onto list of users,
+    // then the final promise will be resolved.
     for (var i = 0; i < personatestusers; i++) {
-      personatestuser.getVerifiedUser(function(err, user, blob) { 
-        if (err) { return cb(err) }
-        fixtures.personatestusers.push(user);
+      var userPromise = Q.ncall(personatestuser.getVerifiedUser)
+        .then(function(user) { fixtures.personatestusers.push(user[0]) })
+        .fail(function(error) { return cb(error) });
+      promises.push(userPromise);
+    }
+  }
+  // no need to return a promise, just fire the cb when ready
+  if (promises) { 
+    Q.all(promises)
+      .then(function() { 
+        fixtures = setupBrowsers(browsers, fixtures);
+        cb(null, fixtures) 
       })
-    }
+      .fail(function(error) { cb(error) });
+  } else {
+    fixtures = setupBrowsers(browsers, fixtures);
+    cb(null, fixtures)
   }
-  // since browsers timeout, set them up last
-  if (browsers) {
-    for (var i = 0; i < browsers; i++) {
-      testSetup.startup();
-    }
-    // just use the browsers array directly
-    fixtures.b = fixtures.browsers = testSetup.browsers;
-  }
-  cb(null, fixtures);
 }
+
+function setupBrowsers(browserCount, out) {
+  for (var i = 0; i < browserCount; i++) { testSetup.startup() }
+  // just use the browsers array directly
+  out.b = out.browsers = testSetup.browsers;
+  return out;
+}
+
   
 module.exports = testSetup;

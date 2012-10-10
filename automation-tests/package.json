@@ -8,6 +8,7 @@
     "wd": "*",
     "request": "*",
     "optimist": "*",
+    "q": "*",
     "underscore": "*"
   }
 }
