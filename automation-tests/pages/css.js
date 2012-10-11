@@ -37,10 +37,12 @@ module.exports = {
     emailInput: 'input#email',
     newEmailNextButton: 'p.submit.buttonrow button.start',
     existingPassword: 'div#signIn input#password',
+    forgotPassword: 'a#forgotPassword',
     choosePassword: 'div#set_password input#password',
     verifyPassword: 'input#vpassword',
     // the button you click on after typing and re-typing your password
     createUserButton: 'button#verify_user',
+    resetPasswordButton: 'button#password_reset',
     returningUserButton: 'button.returning',
     verifyWithPrimaryButton: 'button#verifyWithPrimary',
     thisIsNotMe: '#thisIsNotMe',
