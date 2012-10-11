@@ -18,6 +18,7 @@ module.exports = {
     newPassword: '#edit_password_form input#new_password',
     passwordChangeDoneButton: 'button#changePassword',
     header: {
+      home: '#header a.home',
       signIn: '#header a.signIn',
       signOut: '#header a.signOut'
     },
@@ -34,6 +35,7 @@ module.exports = {
     verifyPrimaryDialogName: 'auth_with_primary'
   },
   "dialog": {
+    windowName: "__persona_dialog",
     emailInput: 'input#email',
     newEmailNextButton: 'p.submit.buttonrow button.start',
     existingPassword: 'div#signIn input#password',
