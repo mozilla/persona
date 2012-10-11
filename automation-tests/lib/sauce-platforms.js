@@ -38,8 +38,7 @@ const platforms = {
 
 const defaultCapabilities = {
   avoidProxy: true,
-  proxy: { proxyType: 'direct' } //TODO reportedly works for opera; investigate
-}
+};
 
 exports.platforms = platforms;
 exports.defaultCapabilities = defaultCapabilities;

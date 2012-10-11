@@ -71,6 +71,17 @@ function _setSessionOpts(opts) {
   _.extend(sessionOpts, saucePlatforms.defaultCapabilities);
   _.extend(sessionOpts, desiredCapabilities);
 
+  if (sessionOpts.browserName === 'opera' && !sessionOpts.proxy) {
+    // TODO reportedly works for opera; investigate
+    sessionOpts.proxy = { proxyType: 'direct' };
+  }
+
+  // Ensure there is a tag for 'persona'
+  sessionOpts.tags = sessionOpts.tags || [];
+  if (sessionOpts.tags.indexOf('persona') === -1) {
+    sessionOpts.tags.push('persona');
+  }
+
   testSetup.sessionOpts = sessionOpts;
 }
 
