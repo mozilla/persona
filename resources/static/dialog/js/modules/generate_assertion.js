@@ -16,7 +16,7 @@ BrowserID.Modules.GenerateAssertion = (function() {
           self=this;
 
       if(!email) {
-        throw "email required";
+        throw new Error("email required");
       }
 
       dialogHelpers.getAssertion.call(self, email, options.ready);

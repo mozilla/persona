@@ -977,8 +977,8 @@
 
       if (compatMode === undefined) compatMode = requiredMode;
       else if (compatMode != requiredMode) {
-        throw "you cannot combine the navigator.id.watch() API with navigator.id.getVerifiedEmail() or navigator.id.get()" +
-              "this site should instead use navigator.id.request() and navigator.id.watch()";
+        throw new Error("you cannot combine the navigator.id.watch() API with navigator.id.getVerifiedEmail() or navigator.id.get()" +
+              "this site should instead use navigator.id.request() and navigator.id.watch()");
       }
     }
 
@@ -1092,7 +1092,7 @@
     function checkRenamed(options, oldName, newName) {
       if (defined(options[oldName]) &&
           defined(options[newName])) {
-        throw "you cannot supply *both* " + oldName + " and " + newName;
+        throw new Error("you cannot supply *both* " + oldName + " and " + newName);
       }
       else if(checkDeprecated(options, oldName)) {
         options[newName] = options[oldName];
@@ -1107,11 +1107,11 @@
           options.onlogout && typeof options.onlogout !== 'function' ||
           options.onready && typeof options.onready !== 'function')
       {
-        throw "non-function where function expected in parameters to navigator.id.watch()";
+        throw new Error("non-function where function expected in parameters to navigator.id.watch()");
       }
 
-      if (!options.onlogin) throw "'onlogin' is a required argument to navigator.id.watch()";
-      if (!options.onlogout) throw "'onlogout' is a required argument to navigator.id.watch()";
+      if (!options.onlogin) throw new Error("'onlogin' is a required argument to navigator.id.watch()");
+      if (!options.onlogout) throw new Error("'onlogout' is a required argument to navigator.id.watch()");
 
       observers.login = options.onlogin || null;
       observers.logout = options.onlogout || null;

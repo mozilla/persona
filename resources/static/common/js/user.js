@@ -217,7 +217,7 @@ BrowserID.User = (function() {
 
   function checkEmailType(type) {
     if (type !== 'secondary' && type !== 'primary')
-      throw "invalid email type (should be 'secondary' or 'primary'): " + type;
+      throw new Error("invalid email type (should be 'secondary' or 'primary'): " + type);
   }
 
   function getIdPName(addressInfo) {

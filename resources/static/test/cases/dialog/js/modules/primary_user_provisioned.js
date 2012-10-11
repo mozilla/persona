@@ -50,7 +50,7 @@
       error = e;
     }
 
-    equal(error, "missing config option: email", "correct error message printed");
+    equal(error.message, "missing config option: email", "correct error message printed");
   });
 
   test("starting the controller without assertion throws assertion", function() {
@@ -63,7 +63,7 @@
       error = e;
     }
 
-    equal(error, "missing config option: assertion", "correct error message printed");
+    equal(error.message, "missing config option: assertion", "correct error message printed");
   });
 
   asyncTest("start controller with `add: false` and XHR error displays error screen", function() {

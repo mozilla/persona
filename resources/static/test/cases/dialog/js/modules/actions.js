@@ -35,7 +35,7 @@
           error = e;
         }
 
-        equal(error, "module not registered for " + expectedModule, "correct module started");
+        equal(error.message, "module not registered for " + expectedModule, "correct module started");
         equal(reportedServiceName, expectedServiceName || expectedModule, "correct service name");
         start();
       }
@@ -160,7 +160,7 @@
           error = e;
         }
 
-        equal(error, "module not registered for rp_info", "correct service started");
+        equal(error.message, "module not registered for rp_info", "correct service started");
         start();
       }
     });

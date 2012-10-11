@@ -310,7 +310,7 @@ BrowserID.State = (function() {
       }
 
       if (!idInfo) {
-        throw "invalid email";
+        throw new Error("invalid email");
       }
 
       mediator.publish("kpi_data", { email_type: idInfo.type });
@@ -489,7 +489,7 @@ BrowserID.State = (function() {
 
       self.controller = options.controller;
       if (!self.controller) {
-        throw "start: controller must be specified";
+        throw new Error("start: controller must be specified");
       }
 
       State.sc.start.call(self, options);
