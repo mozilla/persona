@@ -5,11 +5,18 @@ var wd = require('wd/lib/webdriver.js');
 
 const utils = require('./utils.js'),
    timeouts = require('./timeouts.js'),
-   platforms = require('./sauce-platforms.js');
+   platforms = require('./sauce-platforms.js'),
+   path = require('path');
 
 function setTimeouts(opts) {
   opts.poll = opts.poll || timeouts.DEFAULT_POLL_MS;
   opts.timeout = opts.timeout || timeouts.DEFAULT_TIMEOUT_MS;
+}
+
+function createTestName(opts) {
+  var testname = path.basename(path.normalize(process.argv[1])) || '';
+  testname = testname.replace(/\.js$/, '');
+  return [ 'persona', testname ].join('.').replace(/\s/g, '_');
 }
 
 // wait for a element to become part of the dom and be visible to
@@ -40,6 +47,8 @@ wd.prototype.newSession = function(opts, cb) {
     cb = opts;
     opts = {};
   }
+
+  if (!opts.name) opts.name = createTestName(opts);
 
   browser.init(opts, function(err) {
     if (err) return cb(err);

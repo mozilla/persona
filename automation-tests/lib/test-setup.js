@@ -58,16 +58,18 @@ function _setSessionOpts(opts) {
     throw new Error('requested platform ' + requestedPlatform + 
                     ' not found in list of available platforms');
   }
-  var platform = requestedPlatform ? saucePlatforms.platforms[requestedPlatform] : {};
+  // Default to chrome which does not need a version number.
+  var defaultPlatform = { browserName: 'chrome', platform: 'VISTA' };
+  var platform = requestedPlatform ? saucePlatforms.platforms[requestedPlatform] : defaultPlatform;
 
   // add platform, browserName, version to session opts
-  sessionOpts = _.extend(sessionOpts, platform);
+  _.extend(sessionOpts, platform);
 
   // pull the default desired capabilities out of the sauce-platforms file
   // overwrite if specified by user
   var desiredCapabilities = opts.desiredCapabilities || process.env['PERSONA_BROWSER_CAPABILITIES'] || {};
-  sessionOpts = _.extend(sessionOpts, saucePlatforms.defaultCapabilities);
-  sessionOpts = _.extend(sessionOpts, desiredCapabilities);
+  _.extend(sessionOpts, saucePlatforms.defaultCapabilities);
+  _.extend(sessionOpts, desiredCapabilities);
 
   testSetup.sessionOpts = sessionOpts;
 }
