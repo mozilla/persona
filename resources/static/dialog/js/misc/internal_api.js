@@ -67,7 +67,10 @@
       callback && callback(assertion || null);
     }
 
-    options = options || {};
+    // Make our own copy, since we assign properties to it.
+    // There was an error doing that in B2G, since we got a
+    // WrappsJSObject.
+    options = _.extend({}, options);
 
     var silent = !!options.silent;
     if(silent) {
