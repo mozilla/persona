@@ -6,11 +6,11 @@ request = require('request');
 
 const DEFAULT_TIMEOUT = 40000;
 
-// grab user creds from personatestuser.org. 
+// grab user creds from personatestuser.org.
 // args include .timeout (optional), .env (optional)
 // callback is cb(error, {email, password}, fullResponse)
 exports.getVerifiedUser = function(args, cb) {
-  if (arguments.length == 1) { 
+  if (arguments.length == 1) {
     cb = args;
     args = {};
   }
@@ -23,7 +23,7 @@ exports.getVerifiedUser = function(args, cb) {
       if (!body.email) { return cb(new Error('funky getVerifiedUser response')) }
       cb(error, {email: body.email, pass: body.pass}, body);
     } else {
-      cb(error);
+      cb(error || response.body);
     }
   });
 };
