@@ -72,9 +72,11 @@ vowsHarness({
       assert.strictEqual(res.failed, '0', 'no tests failed');
       done();
     };
-    // The frontend tests take at least 20 seconds to run (FF); IE8 is the
-    // worst at around 200s. Running on Sauce takes longer than locally.
-    utils.waitFor(20000, 500000, check, complete);
+    // The frontend tests take at least 20 seconds to run locally (FF); Chrome
+    // on ICS is the worst locally at >1500s, with stock on ICS at
+    // ~500s. Running on Sauce takes longer than locally.  So we need to set
+    // the timeout quite high.
+    utils.waitFor(20000, 15*60*1000, check, complete);
   },
   "shut down": function(done) {
     browser.quit();
