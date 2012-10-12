@@ -19,27 +19,27 @@ testSetup = require('../lib/test-setup.js');
 // either stage or prod. (Although can be run against ephemeral).
 var devTestUrl = 'https://login.dev.anosrep.org/test/';
 
+// The test page has jquery and underscore available.
 var queryResult = [
-  "(function() {                                           ",
-  "  var result = $('#qunit-testresult').text();           ",
-  "  if (result.indexOf('Tests completed')=== -1) {        ",
-  "    return JSON.stringify({});                          ",
-  "  }                                                     ",
-  "  var elapsed = result.match(/(\\d+)\\s+millis/)[1];    ",
-  "  var passFail =                                        ",
-  "    ['total', 'passed', 'failed'].map(function(clazz) { ",
-  "      var selector = '#qunit-testresult .' + clazz;     ",
-  "      return $(selector).text();                        ",
-  "    });                                                 ",
-  "  return JSON.stringify({                               ",
-  "    elapsed: elapsed,                                   ",
-  "    total: passFail[0],                                 ",
-  "    passed: passFail[1],                                ",
-  "    failed: passFail[2],                                ",
-  "  });                                                   ",
-  "})();                                                   ",
-].join('\n');
-//.join(' ').replace(/\s+/g, ' ') // more compact
+  "(function() {                                               ",
+  "  var result = $('#qunit-testresult').text();               ",
+  "  if (result.indexOf('Tests completed')=== -1) {            ",
+  "    return JSON.stringify({});                              ",
+  "  }                                                         ",
+  "  var elapsed = result.match(/(\\d+)\\s+millis/)[1];        ",
+  "  var passFail =                                            ",
+  "    _.map(['total', 'passed', 'failed'], function(clazz) {  ",
+  "      var selector = '#qunit-testresult .' + clazz;         ",
+  "      return $(selector).text();                            ",
+  "    });                                                     ",
+  "  return JSON.stringify({                                   ",
+  "    elapsed: elapsed,                                       ",
+  "    total: passFail[0],                                     ",
+  "    passed: passFail[1],                                    ",
+  "    failed: passFail[2],                                    ",
+  "  });                                                       ",
+  "})();                                                       ",
+].join(' ').replace(/\s+/g, ' ');
 
 // pull in test environment, including wd
 var browser;
@@ -54,7 +54,7 @@ vowsHarness({
   "open the frontend test url": function(done) {
     browser.get(devTestUrl, done);
   },
-  "waitFor and check the result": function(done) {
+  "waitFor and check/complete the result": function(done) {
     function check(checkCb) {
       browser.eval(queryResult, function(err, res) {
         if (err) throw err;
