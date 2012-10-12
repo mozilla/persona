@@ -38,7 +38,7 @@
     },
     "devDependencies": {
         "vows": "0.5.13",
-        "awsbox": "0.2.17",
+        "awsbox": "0.2.18",
         "irc": "0.3.3",
         "jshint": "0.7.1",
         "minimatch": "0.2.6",
