@@ -1,4 +1,22 @@
-current train:
+train-2012.10.12:
+  * Fix IE failing when authenticating with IdP from main site's /signin: #2287
+  * Added CONTRIBUTORS file, served as /humans.txt: #2411
+  * navigator.id.logout() with callback issues deprecation warning: #2427
+  * About page screenshot updated: #2469
+  * Updated versions of dependencies: #2563, #2571
+  * Visual fixes: #2457, #1566
+  * KPI changes (rp_api): #2484
+  * Pre-compile client side templates, remove eval() calls: #2394, #2502, #2517
+  * l10n fixes, default language is 'en': #1863
+  * Remove changelog snippets: #2378
+  * Improved error messages when JavaScript is disabled: #2309)
+  * Fix error when returnTo is empty or '/': #2515
+  * Code cleanup: #2515, #2523, #2359, #2510, #2511, #2558, #2579
+  * Check issuer for primary-address operations: Bugzilla 793579
+  * Language improvements: #2528
+  * "Internal" API improvements: #2561
+  * Accessibility improvements: #2541, #2543
+  * Fix static resources - served from static.login.persona.org: #2552
 
 train-2012.09.14:
   * Automated test improvements: #2364, #2429
