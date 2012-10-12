@@ -11,8 +11,8 @@ URL:           https://github.com/mozilla/browserid
 Source0:       %{name}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root
 AutoReqProv:   no
-Requires:      openssl nodejs
-BuildRequires: gcc-c++ git jre make npm openssl-devel expat-devel
+Requires:      openssl, nodejs >= 0.6.17
+BuildRequires: gcc-c++, git, jre, make, npm, openssl-devel, expat-devel, nodejs >= 0.6.17
 
 %description
 persona server & web home for persona.org
