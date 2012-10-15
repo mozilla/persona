@@ -2,7 +2,7 @@
 
 Name:          browserid-server
 Version:       0.2012.10.12
-Release:       2%{?dist}_%{svnrev}
+Release:       3%{?dist}_%{svnrev}
 Summary:       BrowserID server
 Packager:      Gene Wood <gene@mozilla.com>
 Group:         Development/Libraries
@@ -33,12 +33,15 @@ echo "locale svn r$SVN_REVISION" >> resources/static/ver.txt
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_rootdir}
-for f in bin lib locale node_modules resources scripts *.json; do
+for f in bin lib locale node_modules resources scripts *.json CONTRIBUTORS; do
     cp -rp $f %{buildroot}%{_rootdir}/
 done
 mkdir -p %{buildroot}%{_rootdir}/config
 cp -p config/l10n-all.json %{buildroot}%{_rootdir}/config
 cp -p config/l10n-prod.json %{buildroot}%{_rootdir}/config
+# now let's link en to en-US
+mkdir -p %{buildroot}%{_rootdir}/resources/static/i18n/
+ln -s en-US %{buildroot}%{_rootdir}/resources/static/i18n/en
 
 %clean
 rm -rf %{buildroot}
