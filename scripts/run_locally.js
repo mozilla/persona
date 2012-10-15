@@ -9,7 +9,7 @@ config = require('../lib/configuration.js'),
 temp = require('temp'),
 secrets = require('../lib/secrets.js');
 
-exports.daemons = daemons = {};
+var daemons = exports.daemons = {};
 
 const HOST = process.env['IP_ADDRESS'] || process.env['HOST'] || "127.0.0.1";
 
@@ -37,7 +37,7 @@ var daemonsToRun = {
 // route outbound HTTP through our in-tree proxy to always test said codepath
 process.env['HTTP_PROXY'] = HOST + ":10006";
 
-process.env['HOST'] = HOST
+process.env['HOST'] = HOST;
 
 // use the "local" configuration
 var configFiles = [];
@@ -94,13 +94,20 @@ if (!(SIGNALS_PROP in process.env)) {
   }
 }
 
+var debugPort = 5859;
+var inspectorProc;
+
 function runDaemon(daemon, cb) {
   Object.keys(daemonsToRun[daemon]).forEach(function(ek) {
     if (ek === 'path') return; // this blows away the Window PATH
     process.env[ek] = daemonsToRun[daemon][ek];
   });
   var pathToScript = daemonsToRun[daemon].path || path.join(__dirname, "..", "bin", daemon);
-  var p = spawn('node', [ pathToScript ]);
+  var args = [ pathToScript ];
+  if (process.env.PERSONA_DEBUG_MODE) {
+    args.unshift('--debug=' + debugPort++);
+  }
+  var p = spawn('node', args);
 
   function dump(d) {
     d.toString().split('\n').forEach(function(d) {
@@ -132,10 +139,11 @@ function runDaemon(daemon, cb) {
     delete daemons[daemon];
     Object.keys(daemons).forEach(function (daemon) { daemons[daemon].kill(); });
     if (Object.keys(daemons).length === 0) {
+      if (process.env.PERSONA_DEBUG_MODE) inspectorProc.kill();
       console.log("all daemons torn down, exiting...");
     }
   });
-};
+}
 
 // start all daemons except the router in parallel
 var daemonNames = Object.keys(daemonsToRun);
@@ -146,7 +154,12 @@ daemonNames.forEach(function(dn) {
   runDaemon(dn, function() {
     if (++numDaemonsRun === daemonNames.length) {
       // after all daemons are up and running, start the router
-      runDaemon('router', function() { });
+      runDaemon('router', function() {
+        if (process.env.PERSONA_DEBUG_MODE) {
+          var inspectPath = path.join(__dirname, "..", "node_modules", ".bin", "node-inspector");
+          inspectorProc = spawn(inspectPath, []);
+        }
+      });
     }
   });
 });
