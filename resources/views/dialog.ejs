@@ -27,22 +27,22 @@
                     <ul class="inputs">
 
                         <li>
-                            <label for="email"><%= gettext('To sign in with Persona, please enter your email address.') %></label>
-                            <input id="email" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
+                            <label for="authentication_email"><%= gettext('To sign in with Persona, please enter your email address.') %></label>
+                            <input id="authentication_email" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
 
-                            <div id="email_format" class="tooltip" for="email">
+                            <div id="email_format" class="tooltip" for="authentication_email">
                               <%= gettext('This field must be an email address.') %>
                             </div>
 
-                            <div id="email_required" class="tooltip" for="email">
+                            <div id="email_required" class="tooltip" for="authentication_email">
                               <%= gettext('The email field is required.') %>
                             </div>
 
-                            <div id="could_not_add" class="tooltip" for="email">
+                            <div id="could_not_add" class="tooltip" for="authentication_email">
                               <%= gettext('We just sent an email to that address! If you really want to send another, wait a minute or two and try again.') %>
                             </div>
 
-                            <div id="cannot_authenticate" class="tooltip" for="email">
+                            <div id="cannot_authenticate" class="tooltip" for="authentication_email">
                               <%= gettext('This email address and password do not match.') %>
                             </div>
                         </li>
@@ -54,11 +54,11 @@
 
                         <li class="returning">
 
-                            <label for="password" class="hidden"><%= gettext('Password') %></label>
+                            <label for="authentication_password" class="hidden"><%= gettext('Password') %></label>
 
-                            <input id="password" type="password" maxlength="80" placeholder="<%= gettext('password') %>" />
+                            <input id="authentication_password" type="password" maxlength="80" placeholder="<%= gettext('password') %>" />
 
-                            <div id="password_required" class="tooltip" for="password">
+                            <div id="password_required" class="tooltip" for="authentication_password">
                               <%= gettext('The password field is required.') %>
                             </div>
 
