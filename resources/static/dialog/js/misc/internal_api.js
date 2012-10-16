@@ -67,7 +67,10 @@
       callback && callback(assertion || null);
     }
 
-    options = options || {};
+    // Make our own copy, since we assign properties to it.
+    // There was an error doing that in B2G, since we got a
+    // WrappsJSObject.
+    options = _.extend({}, options);
 
     var silent = !!options.silent;
     if(silent) {
@@ -85,16 +88,24 @@
     else {
       // Use the standard dialog facilities to get the assertion, pass the
       // options block directly to the dialog.
-      var controller = moduleManager.getRunningModule("dialog");
-      if(controller) {
-        options.rp_api = "internal";
-        controller.get(origin, options, complete, complete);
-      }
-      else {
-        complete();
-      }
+      options.rp_api = "internal";
+      get(origin, options, complete);
     }
   };
+
+  function get(origin, options, complete) {
+    var args = arguments;
+    var controller;
+    try {
+      controller = moduleManager.getRunningModule("dialog");
+    } catch (noModule) {
+      return setTimeout(function _get_wait() {
+        get.apply(null, args);
+      }, 50);
+    }
+
+    controller.get(origin, options, complete, complete);
+  }
 
   /*
    * Get an assertion without user interaction - internal use
