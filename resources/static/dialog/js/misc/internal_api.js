@@ -96,6 +96,11 @@
   function get(origin, options, complete) {
     var args = arguments;
     var controller;
+
+    // The dialog startup is asynchronous and the dialog module may not yet be
+    // registered by the time BrowserID.internal.get is called. If the module
+    // is not yet ready, keep polling until it is. Note, if the user's cookies
+    // are disabled, this poll will continue into eternity.
     try {
       controller = moduleManager.getRunningModule("dialog");
     } catch (noModule) {
