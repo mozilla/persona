@@ -96,6 +96,11 @@ going to deploy.  Once chosen, invoke `deploy.js` like this:
 The output contains instructions for use.  Note that every occurance of 
 `some_name_i_chose` will be replaced with the name *YOU* chose.
 
+The default is to create micro-instances which have [wacky cpu-throttling](http://docs.amazonwebservices.com/AWSEC2/latest/UserGuide/concepts_micro_instances.html#optimal-application-of-micro-instances).
+You can get a different instance type like this:
+
+       $ scripts/deploy.js deploy some_name_i_chose -t m1.small 
+
 IMPORTANT: Amazon charges money by the hour for running instances.  Destroy
 instances when they are no longer needed to avoid unexpected charges.
 
