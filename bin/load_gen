@@ -8,6 +8,8 @@
  * tool, which is capable of analysing the maximum active users that
  * a browserid deployment can support */
 
+require('../lib/baseExceptions').addExceptionHandler();
+
 const winston = require('winston');
 
 // option processing with optimist

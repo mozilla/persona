@@ -6,6 +6,8 @@
 
 // I sign keys.  That's what I do.
 
+require('../lib/baseExceptions').addExceptionHandler();
+
 const
 path = require('path'),
 express = require('express'),
