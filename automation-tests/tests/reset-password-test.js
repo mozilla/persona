@@ -68,6 +68,26 @@ vowsHarness({
       });
   },
 
+  "open dialog again and make sure user is signed in to Persona": function(done) {
+    browser.chain()
+      .wclick(CSS['myfavoritebeer.org'].logout)
+      .wclick(CSS['myfavoritebeer.org'].signinButton)
+      .wwin(CSS['dialog'].windowName)
+      // the thisIsNotMe button is only displayed if the user is already
+      // authenticated.
+      .wclick(CSS['dialog'].thisIsNotMe, function() {
+        done();
+      });
+  },
+
+  "open dialog and sign in with new password": function(done) {
+    dialog.signInExistingUser({
+      email: theUser.email,
+      password: NEW_PASSWORD,
+      browser: browser
+    }, done)
+  },
+
   "shut down remaining browsers": function(done) {
     browser.quit();
     done();
