@@ -4,7 +4,9 @@
 
 module.exports = {
   "123done.org": {
+    // XXX Change all signinButton's to signInButton to be consistent
     signinButton: 'li#loggedout button img',
+    signInButton: 'li#loggedout button img',
     // the email address of the user who is currently logged in
     currentlyLoggedInEmail: 'li#loggedin span',
     logoutLink: 'li#loggedin a'
@@ -17,6 +19,10 @@ module.exports = {
     oldPassword: '#edit_password_form input#old_password',
     newPassword: '#edit_password_form input#new_password',
     passwordChangeDoneButton: 'button#changePassword',
+    emailList: '#emailList',
+    emailListEditButton: '#manage button.edit',
+    emailListDoneButton: '#manage button.done',
+    removeEmailButton: '#emailList .delete',
     header: {
       home: '#header a.home',
       signIn: '#header a.signIn',
@@ -51,19 +57,27 @@ module.exports = {
     useNewEmail: 'a#useNewEmail',
     newEmail: 'input#newEmail',
     addNewEmailButton: 'button#addNewEmail',
+    emailPrefix: '#email_',
     firstEmail: '#email_0',
     secondEmail: '#email_1',
+    thirdEmail: '#email_2',
     signInButton: 'button#signInButton',
     notMyComputerButton: 'button#this_is_not_my_computer',
     myComputerButton: 'button#this_is_my_computer'
   },
   "myfavoritebeer.org": {
+    // XXX Change all signinButton's to signInButton to be consistent
     signinButton: '#loginInfo .login',
+    signInButton: '#loginInfo .login',
     currentlyLoggedInEmail: 'span.username',
-    logout: 'a#logout'
+    // XXX - change logout to logoutLink to be consistent
+    logout: 'a#logout',
+    logoutLink: 'a#logout'
   },
   "eyedee.me": {
     newPassword: 'input#new_password',
-    createAccountButton: 'button#create_account'
+    createAccountButton: 'button#create_account',
+    existingPassword: 'input#password',
+    signInButton: 'button#sign_in'
   }
 };

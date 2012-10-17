@@ -39,7 +39,7 @@ wd.prototype.waitForDisplayed = function(opts, cb) {
     })
   }, cb);
 };
- 
+
 // allocate a new browser session and sets implicit wait timeout
 wd.prototype.newSession = function(opts, cb) {
   var browser = this;
@@ -173,5 +173,12 @@ wd.prototype.wtext = function(opts, cb) {
   self.waitForDisplayed(opts, function(err, el) {
     if (err) return cb(err);
     self.text(el, cb);
-  })
+  });
+};
+
+// delay before the next action
+wd.prototype.delay = function(duration, cb) {
+  var self = this;
+
+  setTimeout(cb, duration);
 };
