@@ -345,6 +345,15 @@ BrowserID.TestHelpers = (function() {
     testDocumentNotRedirected: function(doc, msg) {
       equal(doc.location.href, document.location.href, msg || "document not redirected");
 
+    },
+
+    testAddressesSyncedAfterUserRegistration: function(msg) {
+      function checkEmail(email) {
+        ok(user.getStoredEmailKeypair(email), msg || email + " has been synced");
+      }
+
+      checkEmail("registered@testuser.com");
+      checkEmail("synced_address@testuser.com");
     }
   };
 
