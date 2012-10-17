@@ -15,8 +15,18 @@
       mediator = bid.Mediator,
       registrations = [],
       testHelpers = bid.TestHelpers,
+      testElementHasClass = testHelpers.testHasClass,
+      testElementNotHasClass = testHelpers.testNotHasClass,
       register = testHelpers.register,
-      provisioning = bid.Mocks.Provisioning;
+      provisioning = bid.Mocks.Provisioning,
+      AUTH_FORM_SELECTOR = "#authentication_form",
+      CONTENTS_SELECTOR = "#formWrap .contents",
+      EMAIL_SELECTOR = "#authentication_email",
+      PASSWORD_SELECTOR = "#authentication_password",
+      FORGOT_PASSWORD_SELECTOR = "#forgotPassword",
+      BODY_SELECTOR = "body",
+      AUTHENTICATION_CLASS = "authentication",
+
 
   function reset() {
     emailRegistered = false;
@@ -50,12 +60,30 @@
     }
   });
 
+  asyncTest("authentication form initialized on startup, hidden on stop", function() {
+    $(CONTENTS_SELECTOR).text("some contents that need to be removed");
+    createController({
+      ready: function() {
+        // auth form visible when controller is ready
+        testElementHasClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
+
+        equal($(CONTENTS_SELECTOR).text(), "", "normal form contents are removed");
+        // auth form not visible after stop;
+        controller.stop();
+        testElementNotHasClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
+
+        start();
+      }
+    });
+  });
+
   asyncTest("email declared in options - prefill address field", function() {
     controller.destroy();
-    $("#email").val("");
+    $(EMAIL_SELECTOR).val("");
+
     createController({ email: "registered@testuser.com",
       ready: function() {
-        equal($("#email").val(), "registered@testuser.com", "email prefilled");
+        equal($(EMAIL_SELECTOR).val(), "registered@testuser.com", "email prefilled");
         equal($("input[type=password]").is(":visible"), false, "password is not shown");
         start();
       }
@@ -64,13 +92,13 @@
 
   asyncTest("known secondary email declared in options - show password field", function() {
     controller.destroy();
-    $("#email").val("");
+    $(EMAIL_SELECTOR).val("");
     createController({
       email: "registered@testuser.com",
       type: "secondary",
       known: true,
       ready: function() {
-        equal($("#email").val(), "registered@testuser.com", "email prefilled");
+        equal($(EMAIL_SELECTOR).val(), "registered@testuser.com", "email prefilled");
         equal($("input[type=password]").is(":visible"), true, "password is shown");
         start();
       }
@@ -90,21 +118,21 @@
   }
 
   asyncTest("checkEmail with unknown secondary email - 'new_user' message", function() {
-    $("#email").val("unregistered@testuser.com");
+    $(EMAIL_SELECTOR).val("unregistered@testuser.com");
     xhr.useResult("unknown_secondary");
 
     testUserUnregistered();
   });
 
   asyncTest("checkEmail with email with leading/trailing whitespace, user not registered - 'new_user' message", function() {
-    $("#email").val("    unregistered@testuser.com   ");
+    $(EMAIL_SELECTOR).val("    unregistered@testuser.com   ");
     xhr.useResult("unknown_secondary");
 
     testUserUnregistered();
   });
 
   asyncTest("checkEmail with normal email, user registered - 'enter_password' message", function() {
-    $("#email").val("registered@testuser.com");
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
     xhr.useResult("known_secondary");
 
     register("enter_password", function() {
@@ -117,7 +145,7 @@
 
   asyncTest("clear password if user changes email address", function() {
     xhr.useResult("known_secondary");
-    $("#email").val("registered@testuser.com");
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
 
     var enterPasswordCount = 0;
     mediator.subscribe("enter_password", function() {
@@ -127,13 +155,13 @@
       if(enterPasswordCount === 0) {
         // simulate the user changing the email address.  This should clear the
         // password.
-        $("#password").val("password");
-        $("#email").val("testuser@testuser.com");
-        $("#email").keyup();
+        $(PASSWORD_SELECTOR).val("password");
+        $(EMAIL_SELECTOR).val("testuser@testuser.com");
+        $(EMAIL_SELECTOR).keyup();
         controller.checkEmail();
       }
       else {
-        equal($("#password").val(), "", "password field was cleared");
+        equal($(PASSWORD_SELECTOR).val(), "", "password field was cleared");
         start();
       }
 
@@ -161,7 +189,7 @@
       mediator.subscribe("enter_email", function() {
         enterEmailCount++;
       });
-      $("#email").keyup();
+      $(EMAIL_SELECTOR).keyup();
 
       equal(enterEmailCount, 0, "enter_email not called after submit if keyup did not change email field");
       start();
@@ -169,8 +197,8 @@
 
     // Simulates the user selecting testuser@testuser.com from the
     // autocomplete menu.
-    $("#email").val("registered@testuser.com");
-    $("#email").change();
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
+    $(EMAIL_SELECTOR).change();
 
     // Simulate the user hitting the "next" button.  Once the address is
     // verified, the enter_password message will be triggered.
@@ -178,7 +206,7 @@
   });
 
   asyncTest("checkEmail with email that has IdP support - 'primary_user' message", function() {
-    $("#email").val("unregistered@testuser.com");
+    $(EMAIL_SELECTOR).val("unregistered@testuser.com");
     xhr.useResult("primary");
 
     register("primary_user", function(msg, info) {
@@ -200,21 +228,21 @@
   }
 
   asyncTest("normal authentication is kosher", function() {
-    $("#email").val("registered@testuser.com");
-    $("#password").val("password");
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
+    $(PASSWORD_SELECTOR).val("password");
 
     testAuthenticated();
   });
 
   asyncTest("leading/trailing whitespace on the username is stripped for authentication", function() {
-    $("#email").val("    registered@testuser.com    ");
-    $("#password").val("password");
+    $(EMAIL_SELECTOR).val("    registered@testuser.com    ");
+    $(PASSWORD_SELECTOR).val("password");
 
     testAuthenticated();
   });
 
   asyncTest("forgotPassword - trigger forgot_password message", function() {
-    $("#email").val("registered@testuser.com");
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
 
     register("forgot_password", function(msg, info) {
       equal(info.email, "registered@testuser.com", "forgot_password with correct email triggered");
@@ -225,7 +253,7 @@
   });
 
   asyncTest("createUser with valid email", function() {
-    $("#email").val("unregistered@testuser.com");
+    $(EMAIL_SELECTOR).val("unregistered@testuser.com");
     xhr.useResult("unknown_secondary");
 
     register("new_user", function(msg, info) {
@@ -237,7 +265,7 @@
   });
 
   asyncTest("createUser with invalid email", function() {
-    $("#email").val("unregistered");
+    $(EMAIL_SELECTOR).val("unregistered");
 
     var handlerCalled = false;
     register("new_user", function(msg, info) {
