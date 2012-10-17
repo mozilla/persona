@@ -33,6 +33,24 @@ function getEmailIndex(email) {
   return index;
 }
 
+function removeEmail(email, done) {
+  browser.chain()
+    .get(persona_urls['persona'])
+    .wclick(CSS['persona.org'].emailListEditButton)
+    .elementsByCssSelector(CSS['persona.org'].removeEmailButton, function(err, elements) {
+      var button = elements[getEmailIndex(email)];
+
+      browser.chain()
+        .clickElement(button)
+        // Give Chrome a bit to display the alert or else the comment to
+        // accept the alert is fired too early.
+        .delay(500)
+        .acceptAlert()
+        .wclick(CSS['persona.org'].emailListDoneButton, done);
+    });
+
+}
+
 // this is the more compact setup syntax
 testSetup.setup({b:2, r:1, e:2}, function(err, fix) {
   browser = fix.b[0];
@@ -142,22 +160,7 @@ vowsHarness({
   },
 
   "go to main site, remove secondPrimaryEmail": function(done) {
-    browser.chain()
-      .get(persona_urls['persona'])
-      .wclick(CSS['persona.org'].emailListEditButton)
-      // a bit janktastic. Get all of the delete buttons. Find the right one.
-      // Click it.
-      .elementsByCssSelector(CSS['persona.org'].removeEmailButton, function(err, elements) {
-        var button = elements[getEmailIndex(secondPrimaryEmail)];
-
-        browser.chain()
-          .clickElement(button)
-          // Give Chrome a bit to display the alert or else the comment to
-          // accept the alert is fired too early.
-          .delay(500)
-          .acceptAlert()
-          .wclick(CSS['persona.org'].emailListDoneButton, done);
-      });
+    removeEmail(secondPrimaryEmail, done);
   },
 
   "go to 123done, user should no longer be logged in": function(done) {
@@ -167,26 +170,13 @@ vowsHarness({
   },
 
   "go to main site, remove secondaryEmail": function(done) {
-    browser.chain()
-      .get(persona_urls['persona'])
-      .wclick(CSS['persona.org'].emailListEditButton)
-      .elementsByCssSelector(CSS['persona.org'].removeEmailButton, function(err, elements) {
-        var button = elements[getEmailIndex(secondaryEmail)];
-
-        browser.chain()
-          .clickElement(button)
-          // Give Chrome a bit to display the alert or else the comment to
-          // accept the alert is fired too early.
-          .delay(500)
-          .acceptAlert()
-          .wclick(CSS['persona.org'].emailListDoneButton, done);
-      });
+    removeEmail(secondaryEmail, done);
   },
 
-  "go to myfavoritebeer, make sure user is no longer signed in": function(done) {
+  "go to myfavoritebeer, make sure user is still signed in - mfb still uses old API": function(done) {
     browser.chain()
       .get(persona_urls['myfavoritebeer'])
-      .waitForDisplayed(CSS['myfavoritebeer.org'].signInButton, done);
+      .waitForDisplayed(CSS['myfavoritebeer.org'].logoutLink, done);
   },
 
   "shut down remaining browsers": function(done) {
