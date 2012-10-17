@@ -175,20 +175,9 @@
         user = bid.User,
         storage = bid.Storage;
 
-    // Initialize all localstorage values to default values.  Neccesary for
-    // proper sync of IE8 localStorage across multiple simultaneous
-    // browser sessions.
-    storage.setDefaultValues();
-
-
-    log('!!!!!', options);
+    log('internal watch options', options);
     var remoteOrigin = options.origin;
-    user.setOrigin(options.origin);
-    var loggedInUser = user.getOriginEmail();
-
-    log('origin: ', remoteOrigin);
-    log('loggedInUser: ', loggedInUser);
-    log('callback: ', typeof callback);
+    var loggedInUser = options.loggedInUser;
 
     function checkAndEmit() {
       log('checking and emitting');
@@ -213,6 +202,7 @@
         log('silent return: err', err);
         doLogout();
         loggedInUser = null;
+        doReady();
       }, log);
     }
 
