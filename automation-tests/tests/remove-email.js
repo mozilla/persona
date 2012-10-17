@@ -18,19 +18,23 @@ user = require('../lib/user.js');
 
 // pull in test environment, including wd
 var browser,
-    secondBrowser,
     firstPrimaryEmail,
     firstPrimaryPassword,
     secondPrimaryEmail,
     secondPrimaryPassword,
     secondaryEmail,
-    secondaryPassword;
+    secondaryPassword,
+    emails = [];
 
 function getEmailIndex(email) {
-  var emails = [firstPrimaryEmail, secondPrimaryEmail, secondaryEmail];
-  var sortedEmails = emails.sort(function(a, b) { return a === b ? 0 : a > b ? 1 : -1; });
-  var index = sortedEmails.indexOf(email);
+  emails = emails.sort(function(a, b) { return a === b ? 0 : a > b ? 1 : -1; });
+  var index = emails.indexOf(email);
   return index;
+}
+
+function saveEmail(email) {
+  emails.push(email);
+  return email;
 }
 
 function removeEmail(email, done) {
@@ -38,15 +42,26 @@ function removeEmail(email, done) {
     .get(persona_urls['persona'])
     .wclick(CSS['persona.org'].emailListEditButton)
     .elementsByCssSelector(CSS['persona.org'].removeEmailButton, function(err, elements) {
-      var button = elements[getEmailIndex(email)];
+      var index = getEmailIndex(email);
+      var button = elements[index];
 
       browser.chain()
         .clickElement(button)
-        // Give Chrome a bit to display the alert or else the comment to
+        // Give Chrome a bit to display the alert or else the command to
         // accept the alert is fired too early.
         .delay(500)
-        .acceptAlert()
-        .wclick(CSS['persona.org'].emailListDoneButton, done);
+        .acceptAlert(function() {
+          emails.splice(index, 1);
+
+          if (emails.length) {
+            // if there are emails remaining, click the done button
+            browser.wclick(CSS['persona.org'].emailListDoneButton, done);
+          }
+          else {
+            // if there are no emails remaining, the user will be logged out
+            browser.wfind(CSS['persona.org'].header.signIn, done);
+          }
+        });
     });
 
 }
@@ -54,10 +69,9 @@ function removeEmail(email, done) {
 // this is the more compact setup syntax
 testSetup.setup({b:2, r:1, e:2}, function(err, fix) {
   browser = fix.b[0];
-  secondBrowser = fix.b[1];
-  firstPrimaryEmail = fix.e[0];
-  secondPrimaryEmail = fix.e[1];
-  secondaryEmail = fix.r[0];
+  firstPrimaryEmail = saveEmail(fix.e[0]);
+  secondPrimaryEmail = saveEmail(fix.e[1]);
+  secondaryEmail = saveEmail(fix.r[0]);
   firstPrimaryPassword = firstPrimaryEmail.split('@')[0];
   secondPrimaryPassword = secondPrimaryEmail.split('@')[0];
   secondaryPassword = secondaryEmail.split('@')[0];
@@ -166,7 +180,7 @@ vowsHarness({
   "go to 123done, user should no longer be logged in": function(done) {
     browser.chain()
       .get(persona_urls['123done'])
-      .waitForDisplayed(CSS['123done.org'].signInButton, done);
+      .wfind(CSS['123done.org'].signInButton, done);
   },
 
   "go to main site, remove secondaryEmail": function(done) {
@@ -176,12 +190,30 @@ vowsHarness({
   "go to myfavoritebeer, make sure user is still signed in - mfb still uses old API": function(done) {
     browser.chain()
       .get(persona_urls['myfavoritebeer'])
-      .waitForDisplayed(CSS['myfavoritebeer.org'].logoutLink, done);
+      .wfind(CSS['myfavoritebeer.org'].logoutLink, done);
+  },
+
+  "go to main site, remove firstPrimaryEmail": function(done) {
+    removeEmail(firstPrimaryEmail, done);
+  },
+
+  "user should now be signed out - cannot sign in with deleted addresses": function(done) {
+    browser.chain()
+      .get(persona_urls['persona'])
+      .wclick(CSS['persona.org'].header.signIn)
+      .wtype(CSS['persona.org'].signInForm.email, secondaryEmail)
+      .wclick(CSS['persona.org'].signInForm.nextButton)
+      .wfind(CSS['persona.org'].signInForm.verifyPassword)
+      .wclear(CSS['persona.org'].signInForm.email)
+      // the user will still be logged in to eyedee.me under the
+      // secondPrimaryEmail, so try logging in using the firstPrimaryEmail
+      .wtype(CSS['persona.org'].signInForm.email, firstPrimaryEmail)
+      .wclick(CSS['persona.org'].signInForm.nextButton)
+      .wfind(CSS['persona.org'].signInForm.verifyPrimaryButton, done);
   },
 
   "shut down remaining browsers": function(done) {
     browser.quit();
-    secondBrowser.quit();
     done();
   }
 }, module);

@@ -182,3 +182,12 @@ wd.prototype.delay = function(duration, cb) {
 
   setTimeout(cb, duration);
 };
+
+// wait then clear an input element
+wd.prototype.wclear = function(opts, cb) {
+  var self = this;
+  self.waitForDisplayed(opts, function(err, el) {
+    if (err) return cb(err);
+    self.clear(el, cb);
+  });
+};
