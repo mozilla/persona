@@ -472,6 +472,8 @@ footer .help {
 }
 
 #wait, #delay, #error {
+  background:#ccc;
+  /*
   background-color: #dadee1;
   background-image: url("/common/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(#dadee1), to(#c7ccd0));
   background-image: url("/common/i/grain.png"), -webkit-linear-gradient(top, #dadee1, #c7ccd0);
@@ -479,6 +481,7 @@ footer .help {
   background-image: url("/common/i/grain.png"),     -ms-linear-gradient(top, #dadee1, #c7ccd0);
   background-image: url("/common/i/grain.png"),      -o-linear-gradient(top, #dadee1, #c7ccd0);
   background-image: url("/common/i/grain.png"),         linear-gradient(top, #dadee1, #c7ccd0);
+  */
 }
 
 #wait .contents, #error .contents, #delay .contents {

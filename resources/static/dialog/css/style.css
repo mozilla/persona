@@ -4,6 +4,8 @@
 
 body {
   color: #383838;
+  background:#ccc;
+  /*
   background-color: #dee3e6;
   background-image: url('/common/i/grain.png');
   background-image: url("/common/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(rgba(113, 126, 137, 0)), to(rgba(113, 126, 137, 0.2)));
@@ -12,6 +14,7 @@ body {
   background-image: url('/common/i/grain.png'),     -ms-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
   background-image: url('/common/i/grain.png'),      -o-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
   background-image: url('/common/i/grain.png'),         linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  */
   line-height: 18px;
 }
 
@@ -40,7 +43,7 @@ body {
 header, footer {
     position: absolute;
     z-index: 2;
-    box-shadow: 0 0 24px rgba(0, 0, 0, 0.05) inset;
+    /*box-shadow: 0 0 24px rgba(0, 0, 0, 0.05) inset;*/
 }
 
 header {
@@ -52,18 +55,21 @@ header {
      * overflow the dialog box.
      */
     *padding: 10px 0;
-    border-bottom: 1px solid #c7c6c1;
+    /*border-bottom: 1px solid #c7c6c1;*/
 
     /*-ms-filter through zoom: 1 are fixes for IE6 and IE7 so they show the header
      */
     -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
     zoom: 1;
+    background:#ccc;
+    /*
     background-image: -webkit-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
     background-image:    -moz-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
     background-image:     -ms-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
     background-image:      -o-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
     background-image:         linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
+    */
 }
 
 h2 {
@@ -78,7 +84,7 @@ h3 {
 .home {
   width: 161px;
   height: 40px;
-  background: url("/dialog/i/persona-logo-transparent.png") 0 0 no-repeat;
+  /*background: url("/dialog/i/persona-logo-transparent.png") 0 0 no-repeat;*/
   text-indent: -9999px;
   display: inline-block;
   *display: block;
@@ -87,7 +93,7 @@ h3 {
 
 footer {
     bottom: 0;
-    border-top: 1px solid #c7c6c1;
+    border-top: 3px solid #aaa;
     /* The *padding is a fix for IE6 and IE7 showing scroll bars in the
      * unsupported dialog.  Since IE6 and IE7 do not support box-sizing:
      * border-box, the left and right padding cause these versions of IE to
@@ -96,11 +102,14 @@ footer {
     padding: 20px;
     *padding: 20px 0;
     text-align: center;
+    background:#ccc;
+    /*
     background-image: -webkit-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
     background-image:    -moz-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
     background-image:     -ms-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
     background-image:      -o-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
     background-image:         linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
+    */
 }
 
 label {
@@ -275,7 +284,7 @@ section > .contents {
 
 
 #signIn .table {
-    background-color: #eff0f2;
+    background-color: #ccc;
     padding: 0 20px;
 }
 
@@ -294,10 +303,12 @@ section > .contents {
     bottom: 0;
     left: 0;
     right: 0;
+    /*
     background-image: url('/dialog/i/arrow_grey.png');
     background-repeat: no-repeat;
     background-position: center;
     background-color: transparent;
+    */
 }
 
 #favicon {
