@@ -163,4 +163,78 @@
     user.logoutUser(callback, complete.curry(null));
   };
 
+  internal.watch = function (callback, options, log) {
+    if (typeof options === 'string') options = JSON.parse(options);
+    internalWatch(callback, options, log);
+  };
+
+
+  function internalWatch (callback, options, log) {
+    var bid = BrowserID,
+        network = bid.Network,
+        user = bid.User,
+        storage = bid.Storage;
+
+    // Initialize all localstorage values to default values.  Neccesary for
+    // proper sync of IE8 localStorage across multiple simultaneous
+    // browser sessions.
+    storage.setDefaultValues();
+
+
+    log('!!!!!', options);
+    var remoteOrigin = options.origin;
+    user.setOrigin(options.origin);
+    var loggedInUser = user.getOriginEmail();
+
+    log('origin: ', remoteOrigin);
+    log('loggedInUser: ', loggedInUser);
+    log('callback: ', typeof callback);
+
+    function checkAndEmit() {
+      log('checking and emitting');
+      // this will re-certify the user if neccesary
+      user.getSilentAssertion(loggedInUser, function(email, assertion) {
+        log('silent return: email, assertion ', email, assertion);
+        if (email) {
+          // only send login events when the assertion is defined - when
+          // the 'loggedInUser' is already logged in, it's false - that is
+          // when the site already has the user logged in and does not want
+          // the resources or cost required to generate an assertion
+          if (assertion) doLogin(assertion);
+          loggedInUser = email;
+        } else if (loggedInUser !== null) {
+          // only send logout events when loggedInUser is not null, which is an
+          // indicator that the site thinks the user is logged out
+          doLogout();
+          loggedInUser = null;
+        }
+        doReady();
+      }, function(err) {
+        log('silent return: err', err);
+        doLogout();
+        loggedInUser = null;
+      }, log);
+    }
+
+    checkAndEmit();
+
+    function doReady (params) {
+      log('doReady');
+      callback({ method: 'ready' });
+    }
+
+    function doLogin (params) {
+      log('doLogin', params);
+      callback({ method: 'login', assertion: params });
+    }
+
+    function doLogout () {
+      log('doLogout');
+      if (loggedInUser != null) {
+        storage.setLoggedIn(remoteOrigin, false);
+        callback({ method: 'logout' });
+      }
+    }
+  }
+
 }());
