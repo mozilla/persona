@@ -115,7 +115,7 @@ BrowserID.Modules.Authenticate = (function() {
     currentHint = showSelector;
 
     _.each(hints, function(className) {
-      if(className != showSelector) {
+      if(className !== showSelector) {
         dom.hide("." + className + ":not(." + showSelector + ")");
       }
     });
