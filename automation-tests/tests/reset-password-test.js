@@ -19,16 +19,19 @@ NEW_PASSWORD = "password";
 
 // pull in test environment, including wd
 var browser, verificationBrowser, theUser;
-// this is the more compact setup syntax
-testSetup.setup({b:2}, function(err, fix) {
-  browser = fix.b[0];
-  verificationBrowser = fix.b[1];
-});
 
 var verifyEmail = user.verifyEmail
     getVerifiedUser = user.getVerifiedUser;
 
 vowsHarness({
+  "setup": function(done) {
+    // this is the more compact setup syntax
+    testSetup.setup({b:2}, function(err, fix) {
+      browser = fix.b[0];
+      verificationBrowser = fix.b[1];
+      done(err);
+    });
+  },
   "get a verified user": function(done) {
     getVerifiedUser(done);
   },

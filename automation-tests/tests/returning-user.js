@@ -15,14 +15,7 @@ dialog = require('../pages/dialog.js'),
 testSetup = require('../lib/test-setup.js'),
 vowsHarness = require('../lib/vows_harness.js');
 
-// pull in test environment, including wd
 var browser, primary, secondary;
-testSetup.setup({browsers: 1, restmails: 1, eyedeemails:1}, function(err, fix) {
-  browser = fix.browsers[0];
-  primary = fix.eyedeemails[0];
-  secondary = fix.restmails[0];
-});
-
 /*
 - setup: create account with 2 emails (primary and a secondary on same account) on persona.org, then:
 - verify that no email is selected on first login to a site
@@ -32,6 +25,14 @@ testSetup.setup({browsers: 1, restmails: 1, eyedeemails:1}, function(err, fix) {
 */
 
 vowsHarness({
+  "setup": function(done) {
+    testSetup.setup({browsers: 1, restmails: 1, eyedeemails:1}, function(err, fix) {
+      browser = fix.browsers[0];
+      primary = fix.eyedeemails[0];
+      secondary = fix.restmails[0];
+      done(err);
+    });
+  },
   "startup, create primary acct on personaorg": function(done) {
     browser.chain()
       .newSession(testSetup.sessionOpts)

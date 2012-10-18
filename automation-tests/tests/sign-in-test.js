@@ -15,15 +15,17 @@ dialog = require('../pages/dialog.js'),
 vowsHarness = require('../lib/vows_harness.js'),
 testSetup = require('../lib/test-setup.js');
 
-// pull in test environment, including wd
 var browser, testUser, mfbUser;
-testSetup.setup({browsers: 1, personatestusers: 2}, function(err, fixtures) {
-  browser = fixtures.browsers[0];
-  testUser = fixtures.personatestusers[0];
-  mfbUser = fixtures.personatestusers[1];
-});
 
 vowsHarness({
+  "setup": function(done) {
+    testSetup.setup({browsers: 1, personatestusers: 2}, function(err, fixtures) {
+      browser = fixtures.browsers[0];
+      testUser = fixtures.personatestusers[0];
+      mfbUser = fixtures.personatestusers[1];
+      done(err);
+    });
+  },
   "create a new selenium session": function(done) {
     browser.newSession(testSetup.sessionOpts, done);
   },

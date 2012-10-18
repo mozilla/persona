@@ -16,13 +16,6 @@ testSetup = require('../../lib/test-setup.js'),
 vowsHarness = require('../../lib/vows_harness.js');
 
 var browser, eyedeemail, theEmail, eyedeemail_mfb, porg_eyedeemail;
-testSetup.setup({browsers: 1, eyedeemails: 3, restmails: 1}, function(err, fixtures) {
-  browser = fixtures.browsers[0];
-  eyedeemail = fixtures.eyedeemails[0];
-  eyedeemail_mfb = fixtures.eyedeemails[1];
-  porg_eyedeemail = fixtures.eyedeemails[2];
-  theEmail = fixtures.restmails[0];
-});
 
 function dialogEyedeemeFlow(b, email, cb) {
   b.chain()
@@ -36,6 +29,16 @@ function dialogEyedeemeFlow(b, email, cb) {
 }
 
 var primary_123done = {
+  "setup": function(done) {
+    testSetup.setup({browsers: 1, eyedeemails: 3, restmails: 1}, function(err, fixtures) {
+      browser = fixtures.browsers[0];
+      eyedeemail = fixtures.eyedeemails[0];
+      eyedeemail_mfb = fixtures.eyedeemails[1];
+      porg_eyedeemail = fixtures.eyedeemails[2];
+      theEmail = fixtures.restmails[0];
+      done(err);
+    });
+  },
   "startup, load 123done, click sign in": function(done) {
     browser.chain()
       .newSession(testSetup.sessionOpts)

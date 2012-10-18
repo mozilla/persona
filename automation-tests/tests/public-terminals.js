@@ -15,12 +15,7 @@ dialog = require('../pages/dialog.js'),
 testSetup = require('../lib/test-setup.js'),
 vowsHarness = require('../lib/vows_harness.js');
 
-// pull in test environment, including wd
 var browser, secondary;
-testSetup.setup({browsers: 1, restmails: 1}, function(err, fixtures) {
-  browser = fixtures.browsers[0];
-  secondary = fixtures.restmails[0];
-});
 
 /*
  * - sign up as a new user via an RP
@@ -36,6 +31,13 @@ testSetup.setup({browsers: 1, restmails: 1}, function(err, fixtures) {
  *
  */
 vowsHarness({
+  'pull in test environment': function(done) {
+    testSetup.setup({browsers: 1, restmails: 1}, function(err, fixtures) {
+      browser = fixtures.browsers[0];
+      secondary = fixtures.restmails[0];
+      done(err);
+    });
+  },
   'create new secondary via mfb': function(done) {
     browser.chain()
       .newSession(testSetup.sessionOpts)

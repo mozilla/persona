@@ -47,13 +47,13 @@ var queryFailures = [
 
 // pull in test environment, including wd
 var browser;
-testSetup.setup({b:1}, function(err, fix) {
-  browser = fix.b[0];
-});
 
 vowsHarness({
   "create a new selenium session": function(done) {
-    browser.newSession(testSetup.sessionOpts, done);
+    testSetup.setup({b:1}, function(err, fix) {
+      browser = fix.b[0];
+      browser.newSession(testSetup.sessionOpts, done);
+    });
   },
   "open the frontend test url": function(done) {
     browser.get(frontendTestUrl, done);

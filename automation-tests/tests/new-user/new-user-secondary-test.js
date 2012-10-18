@@ -15,18 +15,20 @@ dialog = require('../../pages/dialog.js'),
 testSetup = require('../../lib/test-setup.js'),
 vowsHarness = require('../../lib/vows_harness.js');
 
-// pull in test environment, including wd
 var browser, secondBrowser, theEmail, mfbEmail, nspEmail;
-// this is the more compact setup syntax
-testSetup.setup({b:2, r:3}, function(err, fix) {
-  browser = fix.b[0];
-  secondBrowser = fix.b[1];
-  theEmail = fix.r[0];
-  mfbEmail = fix.r[1];
-  nspEmail = fix.r[2];
-});
 
 var new_secondary_123done_two_browsers = {
+  "setup": function(done) {
+    // this is the more compact setup syntax
+    testSetup.setup({b:2, r:3}, function(err, fix) {
+      browser = fix.b[0];
+      secondBrowser = fix.b[1];
+      theEmail = fix.r[0];
+      mfbEmail = fix.r[1];
+      nspEmail = fix.r[2];
+      done(err);
+    });
+  },
   "startup, go to 123done, click sign in": function(done) {
     browser.chain()
       .newSession(testSetup.sessionOpts)

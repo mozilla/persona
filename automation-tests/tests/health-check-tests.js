@@ -18,17 +18,11 @@ testSetup = require('../lib/test-setup.js');
 var pcss = CSS['persona.org'],
   browser, secondBrowser, eyedeemail, theEmail;
 
-testSetup.setup({browsers: 2, eyedeemails: 1, restmails: 1}, function(err, fixtures) {
-  browser = fixtures.browsers[0];
-  secondBrowser = fixtures.browsers[1];
-  eyedeemail = fixtures.eyedeemails[0];
-  theEmail = fixtures.restmails[0];
-});
-
 // all the stuff common between primary and secondary tests:
 // go to persona.org, click sign in, enter email, click next.
 var startup = function(b, email, cb) {
   b.chain()
+    .newSession(testSetup.sessionOpts)
     .get(persona_urls['persona'])
     .wclick(pcss.header.signIn)
     .wtype(pcss.signInForm.email, email)
@@ -36,6 +30,16 @@ var startup = function(b, email, cb) {
 }
 
 var primaryTest = {
+  "setup stuff": function(done) {
+    testSetup.setup({browsers: 2, eyedeemails: 1, restmails: 1}, function(err, fixtures) {
+      browser = fixtures.browsers[0];
+      console.log('browser is ' + browser)
+      secondBrowser = fixtures.browsers[1];
+      eyedeemail = fixtures.eyedeemails[0];
+      theEmail = fixtures.restmails[0];
+      done()
+    });
+  },
   "start, go to personaorg, click sign in, type eyedeeme addy, click next": function(done) {
     startup(browser, eyedeemail, done)
   },
