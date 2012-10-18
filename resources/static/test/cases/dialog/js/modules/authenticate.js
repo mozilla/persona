@@ -25,7 +25,7 @@
       PASSWORD_SELECTOR = "#authentication_password",
       FORGOT_PASSWORD_SELECTOR = "#forgotPassword",
       BODY_SELECTOR = "body",
-      AUTHENTICATION_CLASS = "authentication",
+      AUTHENTICATION_CLASS = "authentication";
 
 
   function reset() {
