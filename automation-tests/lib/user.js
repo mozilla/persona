@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const
+assert = require('assert'),
 restmail = require('../lib/restmail.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
@@ -46,6 +47,7 @@ exports.getVerifiedUser = function(done) {
           browser.quit();
           exports.verifyEmail(email, email.split('@')[0], 0, browser, function() {
             done(null, {
+              browser: browser,
               email: email,
               password: password
             });
@@ -54,5 +56,4 @@ exports.getVerifiedUser = function(done) {
       });
   });
 };
-
 

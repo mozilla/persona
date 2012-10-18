@@ -23,6 +23,7 @@ module.exports = {
     emailListEditButton: '#manage button.edit',
     emailListDoneButton: '#manage button.done',
     removeEmailButton: '#emailList .delete',
+    cancelAccountLink: '#cancelAccount',
     header: {
       home: '#header a.home',
       signIn: '#header a.signIn',
