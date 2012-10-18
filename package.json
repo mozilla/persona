@@ -17,7 +17,7 @@
         "etagify": "0.0.2",
         "express": "2.5.0",
         "gobbledygook": "0.0.3",
-        "lockdown": "0.0.1",
+        "lockdown": "0.0.3",
         "jwcrypto": "0.4.2",
         "mysql": "0.9.5",
         "nodemailer": "0.3.21",
@@ -47,7 +47,7 @@
         "node-inspector": "0.2.0beta3"
     },
     "scripts": {
-        "preinstall": "./scripts/lockdown",
+        "preinstall": "node ./scripts/lockdown",
         "postinstall": "node ./scripts/postinstall.js",
         "postupdate": "node ./scripts/postinstall.js",
         "test": "./scripts/test",
