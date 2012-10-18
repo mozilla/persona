@@ -11,8 +11,8 @@ utils = require('../lib/utils.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
-vowsHarness = require('../lib/vows_harness.js'),
 restmail = require('../lib/restmail.js'),
+runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js');
 
 var pcss = CSS['persona.org'],
@@ -33,7 +33,6 @@ var primaryTest = {
   "setup stuff": function(done) {
     testSetup.setup({browsers: 2, eyedeemails: 1, restmails: 1}, function(err, fixtures) {
       browser = fixtures.browsers[0];
-      console.log('browser is ' + browser)
       secondBrowser = fixtures.browsers[1];
       eyedeemail = fixtures.eyedeemails[0];
       theEmail = fixtures.restmails[0];
@@ -90,7 +89,4 @@ var secondaryTest = {
   }
 };
 
-// this is DEFINITELY just a hack. 
-// TODO: find a more solid way, maybe add to vowsHarness directly
-for (var x in secondaryTest) { primaryTest[x] = secondaryTest[x] }
-vowsHarness(primaryTest, module);
+runner.run(module, [primaryTest, secondaryTest]);

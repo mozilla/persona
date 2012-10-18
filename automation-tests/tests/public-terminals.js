@@ -13,7 +13,7 @@ persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 testSetup = require('../lib/test-setup.js'),
-vowsHarness = require('../lib/vows_harness.js');
+runner = require('../lib/runner.js');
 
 var browser, secondary;
 
@@ -30,7 +30,7 @@ var browser, secondary;
  *   // sets usersComputer.state to 'denied', doesn't ask again
  *
  */
-vowsHarness({
+runner.run(module, {
   'pull in test environment': function(done) {
     testSetup.setup({browsers: 1, restmails: 1}, function(err, fixtures) {
       browser = fixtures.browsers[0];
@@ -99,4 +99,4 @@ vowsHarness({
   "until we decide what to do, at least end the session properly": function(done) {
     browser.quit(done)
   }
-}, module);
+});

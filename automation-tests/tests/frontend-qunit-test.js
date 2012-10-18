@@ -7,7 +7,7 @@
 const
 assert = require('assert'),
 utils = require('../lib/utils.js'),
-vowsHarness = require('../lib/vows_harness.js'),
+runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js');
 
 // Intentionally hardcoded to dev instance. This test cannot be run in
@@ -48,7 +48,7 @@ var queryFailures = [
 // pull in test environment, including wd
 var browser;
 
-vowsHarness({
+runner.run(module, {
   "create a new selenium session": function(done) {
     testSetup.setup({b:1}, function(err, fix) {
       browser = fix.b[0];
@@ -94,4 +94,4 @@ vowsHarness({
     browser.quit();
     done();
   }
-}, module);
+});

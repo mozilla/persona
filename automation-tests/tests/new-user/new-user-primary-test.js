@@ -13,7 +13,7 @@ persona_urls = require('../../lib/urls.js'),
 CSS = require('../../pages/css.js'),
 dialog = require('../../pages/dialog.js'),
 testSetup = require('../../lib/test-setup.js'),
-vowsHarness = require('../../lib/vows_harness.js');
+runner = require('../../lib/runner.js');
 
 var browser, eyedeemail, theEmail, eyedeemail_mfb, porg_eyedeemail;
 
@@ -111,8 +111,4 @@ var pcss = CSS['persona.org'],
     }
 };
 
-// ARGH. maddening partly because of the duplication, and partly because
-// if any vows share the same name, everything a splode.
-for (var x in primary_mfb) { primary_123done[x] = primary_mfb[x]; }
-for (var x in primary_personaorg) { primary_123done[x] = primary_personaorg[x]; }
-vowsHarness(primary_123done, module);
+runner.run(module, [primary_123done, primary_mfb, primary_personaorg]);

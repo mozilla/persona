@@ -11,7 +11,7 @@ utils = require('../lib/utils.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
-vowsHarness = require('../lib/vows_harness.js'),
+runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js');
 
 var browser, secondBrowser, testUser;
@@ -26,7 +26,7 @@ var browser, secondBrowser, testUser;
  - verify new password works in browser A
 */
 
-vowsHarness({
+runner.run(module, {
   "setup tests": function(done) {
     testSetup.setup({browsers: 2, personatestusers: 1}, function(err, fixtures) {
       browser = fixtures.browsers[0];
@@ -118,4 +118,4 @@ vowsHarness({
       secondBrowser.quit(done)
     })
   }
-}, module);
+});

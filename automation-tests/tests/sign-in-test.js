@@ -12,12 +12,12 @@ utils = require('../lib/utils.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
-vowsHarness = require('../lib/vows_harness.js'),
+runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js');
 
 var browser, testUser, mfbUser;
 
-vowsHarness({
+runner.run(module, {
   "setup": function(done) {
     testSetup.setup({browsers: 1, personatestusers: 2}, function(err, fixtures) {
       browser = fixtures.browsers[0];
@@ -57,8 +57,6 @@ vowsHarness({
     browser.quit(done);
   },
 
-  // tricky: you can't have duplicate keys or weird things happen
-
   // todo extract duplication!
   "create another selenium session": function(done) {
     browser.newSession(testSetup.sessionOpts, done);
@@ -89,4 +87,4 @@ vowsHarness({
   "mfb tear down browser": function(done) {
     browser.quit(done);
   }
-}, module);
+});

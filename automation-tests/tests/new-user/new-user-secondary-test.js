@@ -13,7 +13,7 @@ persona_urls = require('../../lib/urls.js'),
 CSS = require('../../pages/css.js'),
 dialog = require('../../pages/dialog.js'),
 testSetup = require('../../lib/test-setup.js'),
-vowsHarness = require('../../lib/vows_harness.js');
+runner = require('../../lib/runner.js');
 
 var browser, secondBrowser, theEmail, mfbEmail, nspEmail;
 
@@ -151,11 +151,4 @@ var new_secondary_personaorg = {
     }
 };
 
-// ok, getting tired of this. TODO add to vowsHarness at once.
-for (var x in new_secondary_mfb_two_browsers) { 
-  new_secondary_123done_two_browsers[x] = new_secondary_mfb_two_browsers[x];
-}
-for (var x in new_secondary_personaorg) { 
-  new_secondary_123done_two_browsers[x] = new_secondary_personaorg[x];
-}
-vowsHarness(new_secondary_123done_two_browsers, module);
+runner.run(module, [new_secondary_123done_two_browsers, new_secondary_mfb_two_browsers, new_secondary_personaorg]);

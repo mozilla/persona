@@ -13,7 +13,7 @@ persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 testSetup = require('../lib/test-setup.js'),
-vowsHarness = require('../lib/vows_harness.js');
+runner = require('../lib/runner.js');
 
 var browser, primary, secondary;
 /*
@@ -24,7 +24,7 @@ var browser, primary, secondary;
     - log into 123done with one acct, sign out, open dialog to sign back in, verify.
 */
 
-vowsHarness({
+runner.run(module, {
   "setup": function(done) {
     testSetup.setup({browsers: 1, restmails: 1, eyedeemails:1}, function(err, fix) {
       browser = fix.browsers[0];
@@ -126,4 +126,4 @@ vowsHarness({
   "destroy": function(done) {
     browser.quit(done)
   }
-}, module);
+});

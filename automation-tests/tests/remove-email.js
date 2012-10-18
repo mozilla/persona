@@ -12,7 +12,7 @@ utils = require('../lib/utils.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
-vowsHarness = require('../lib/vows_harness.js'),
+runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js'),
 user = require('../lib/user.js');
 
@@ -66,7 +66,7 @@ function removeEmail(email, done) {
 
 }
 
-vowsHarness({
+runner.run(module, {
   "setup all the things": function(done) {
     // this is the more compact setup syntax
     testSetup.setup({b:2, r:1, e:2}, function(err, fix) {
@@ -218,4 +218,4 @@ vowsHarness({
     browser.quit();
     done();
   }
-}, module);
+});
