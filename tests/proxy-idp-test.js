@@ -81,6 +81,51 @@ suite.addBatch({
   }
 });
 
+// Enable verifiers to lookup bigtent
+
+suite.addBatch({
+  'public key for /.well-known/browserid': {
+    topic: function () {
+	wsapi.get('/.well-known/browserid').call(this);
+    },
+    'should respond with a public key': function (err, res) {
+      assertSecondary(res);
+    }
+  },
+  'delegation of authority for /.well-known/browserid?domain=yahoo.com': {
+    topic: function () {
+      wsapi.get('/.well-known/browserid?domain=yahoo.com').call(this);
+    },
+    'should delegate authority': function (err, res) {
+      var wellKnown = JSON.parse(res.body);
+      assert.ok(wellKnown.authority);
+      assert.equal(undefined, wellKnown['public-key']);
+      assert.equal(wellKnown.authority, 'example.domain');
+    }
+  },
+  'public key for /.well-known/browserid?domain=unknown.com': {
+    topic: function () {
+	wsapi.get('/.well-known/browserid?domain=unknown.com').call(this);
+    },
+    'should respond with a public key': function (err, res) {
+      assertSecondary(res);
+    }
+  }
+});
+
+var assertSecondary = function (res) {
+  var pubKey = JSON.parse(res.body);
+  assert.ok(pubKey['public-key']);
+
+  // We don't actually care if it's RSA or DSA... if the default
+  // changes in the future
+  assert.equal('RS', pubKey['public-key'].algorithm);
+  assert.ok(pubKey['public-key'].n.length > 100);
+  assert.ok(pubKey['public-key'].e);
+
+  assert.equal(undefined, pubKey.authority);
+};
+
 // We've verified that the proxy IDP configuration allows us to simulate a delegated authority.
 // Now let's test the other part of this puzzle - that users can log in with certs issued
 // by our proxy idp servers. (for which the issuer is login.persona.org).

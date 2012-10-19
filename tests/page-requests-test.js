@@ -14,6 +14,10 @@ wsapi = require('./lib/wsapi.js');
 
 var suite = vows.describe('page requests');
 
+process.env.PROXY_IDPS = JSON.stringify({
+  "yahoo.com": "example.domain"
+});
+
 // start up a pristine server
 start_stop.addStartupBatches(suite);
 
@@ -68,6 +72,8 @@ suite.addBatch({
   'GET /idp_auth_complete':      respondsWith(200),
   'GET /pk':                     respondsWith(200),
   'GET /.well-known/browserid':  respondsWith(200),
+  'GET /.well-known/browserid?domain=yahoo.com':
+                                 respondsWith(200),
   'GET /unsupported_dialog':     respondsWith(200),
   'GET /cookies_disabled':       respondsWith(200),
   'GET /developers':             respondsWith(302),
