@@ -304,13 +304,10 @@ button.delete:active {
   display: inline-block;
 }
 
-#edit_password input[type=password] {
-  width: 40%;
-}
-
 .showedit {
   -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   opacity: 0;
+  visibility:hidden;
   -webkit-transition: all 500ms;
   -moz-transition: all 500ms;
   -ms-transition: all 500ms;
@@ -321,6 +318,11 @@ button.delete:active {
 .edit .showedit {
   -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   opacity: 1;
+  visibility:visible;
+}
+
+#changePassword{
+	margin-top:21px;
 }
 
 #disclaimer {

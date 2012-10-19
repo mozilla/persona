@@ -9,7 +9,7 @@ BrowserID.Renderer = (function() {
 
   function getTemplateHTML(templateName, vars) {
     var templateFn = bid.Templates[templateName];
-    if (!templateFn) throw "Template not found: " + templateName;
+    if (!templateFn) throw new Error("Template not found: " + templateName);
 
     var localVars = _.extend({}, vars);
     if(!localVars.partial) {

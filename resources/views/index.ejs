@@ -60,14 +60,13 @@
                 <button class="done"><%- gettext('cancel') %></button>
               </header>
 
-              <div class="showedit">
-                <label for="old_password"><%- gettext('Old Password') %></label>
-                <label for="new_password"><%- gettext('New Password') %></label>
-              </div>
-
               <form id="edit_password_form" class="showedit">
-                <input type="password" id="old_password" name="old_password" maxlength="80"/>
-                <input type="password" id="new_password" name="new_password" maxlength="80"/>
+                <label for="old_password"><%- gettext('Old Password') %><br>
+                  <input type="password" id="old_password" name="old_password" maxlength="80"/>
+                </label>
+                <label for="new_password"><%- gettext('New Password') %><br>
+                  <input type="password" id="new_password" name="new_password" maxlength="80"/>
+                </label>
                 <button id="changePassword"><%- gettext('done') %></button>
 
                 <div class="tooltip" for="old_password" id="tooltipOldRequired"><%- gettext('Old password is required.') %></div>

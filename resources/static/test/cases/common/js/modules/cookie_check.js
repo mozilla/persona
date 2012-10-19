@@ -5,7 +5,7 @@
   "use strict";
 
   var bid = BrowserID,
-      transport = bid.Mocks.xhr,
+      network = bid.Network,
       testHelpers = bid.TestHelpers,
       controller;
 
@@ -26,19 +26,24 @@
     }
   });
 
-  asyncTest("create controller with XHR error during cookie check", function() {
-    transport.useResult("contextAjaxError");
+  asyncTest("create controller cookies disabled - ready returns with false status", function() {
+    network.init({
+      cookiesEnabledOverride: false
+    });
 
     createController({
-      ready: function() {
-        testHelpers.checkNetworkError();
+      ready: function(status) {
+        equal(status, false, "cookies are disabled, false status");
+        testHelpers.testErrorVisible();
         start();
       }
     });
   });
 
   asyncTest("create controller with cookies enabled - ready returns with true status", function() {
-    transport.setContextInfo("cookies_enabled", true);
+    network.init({
+      cookiesEnabledOverride: true
+    });
 
     createController({
       ready: function(status) {

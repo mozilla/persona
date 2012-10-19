@@ -12,11 +12,10 @@
       testHelpers = bid.TestHelpers,
       register = testHelpers.register;
 
-  function createController(verifier, message, required, password) {
+  function createController(verifier, message, required) {
     controller = bid.Modules.CheckRegistration.create();
     controller.start({
       email: "registered@testuser.com",
-      password: password,
       verifier: verifier,
       verificationMessage: message,
       required: required,
@@ -40,10 +39,11 @@
     }
   });
 
-  function testVerifiedUserEvent(event_name, message, password) {
-    createController("waitForUserValidation", event_name, false, password);
+  function testVerifiedUserEvent(event_name, message) {
+    createController("waitForUserValidation", event_name, false);
     register(event_name, function(msg, info) {
       equal(info.mustAuth, false, "user does not need to verify");
+      testHelpers.testAddressesSyncedAfterUserRegistration();
       start();
     });
     controller.startCheck();
@@ -63,7 +63,7 @@
     testMustAuthUserEvent("user_verified");
   });
 
-  asyncTest("user validation with pending->complete with auth_level = assertion, no authentication info given - user_verified with mustAuth triggered", function() {
+  asyncTest("user validation with pending->complete with auth_level = assertion - user_verified with mustAuth triggered", function() {
     user.init({ pollDuration: 100 });
     xhr.useResult("pending");
     xhr.setContextInfo("auth_level", "assertion");

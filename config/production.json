@@ -6,6 +6,7 @@
     "host": "127.0.0.1"
   },
   "use_minified_resources": true,
+	"public_static_url": "https://static.login.persona.org",
   "database": {
     "driver": "mysql",
     "user": "browserid",

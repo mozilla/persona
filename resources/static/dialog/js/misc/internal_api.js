@@ -67,7 +67,10 @@
       callback && callback(assertion || null);
     }
 
-    options = options || {};
+    // Make our own copy, since we assign properties to it.
+    // There was an error doing that in B2G, since we got a
+    // WrappsJSObject.
+    options = _.extend({}, options);
 
     var silent = !!options.silent;
     if(silent) {
@@ -85,16 +88,29 @@
     else {
       // Use the standard dialog facilities to get the assertion, pass the
       // options block directly to the dialog.
-      var controller = moduleManager.getRunningModule("dialog");
-      if(controller) {
-        options.rp_api = "internal";
-        controller.get(origin, options, complete, complete);
-      }
-      else {
-        complete();
-      }
+      options.rp_api = "internal";
+      get(origin, options, complete);
     }
   };
+
+  function get(origin, options, complete) {
+    var args = arguments;
+    var controller;
+
+    // The dialog startup is asynchronous and the dialog module may not yet be
+    // registered by the time BrowserID.internal.get is called. If the module
+    // is not yet ready, keep polling until it is. Note, if the user's cookies
+    // are disabled, this poll will continue into eternity.
+    try {
+      controller = moduleManager.getRunningModule("dialog");
+    } catch (noModule) {
+      return setTimeout(function _get_wait() {
+        get.apply(null, args);
+      }, 50);
+    }
+
+    controller.get(origin, options, complete, complete);
+  }
 
   /*
    * Get an assertion without user interaction - internal use
@@ -118,5 +134,25 @@
       }
     }, complete.curry(null));
   }
+
+  /**
+   * Log the user out of the current origin
+   * @method logout
+   * @param {string} origin
+   * @param {function} callback
+   */
+  internal.logout = function(origin, callback) {
+    user.setOrigin(origin);
+    user.logout(callback, callback.curry(null));
+  };
+
+  /**
+   * Log the user out everywhere
+   * @method logoutEveywhere
+   * @param {function} callback
+   */
+  internal.logoutEverywhere = function(callback) {
+    user.logoutUser(callback, callback.curry(null));
+  };
 
 }());

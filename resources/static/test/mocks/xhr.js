@@ -139,7 +139,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/list_emails no_identities": {},
       "get /wsapi/list_emails ajaxError": undefined,
       // Used in conjunction with registration to do a complete userflow
-      "get /wsapi/list_emails complete": {"registered@testuser.com":{}},
+      "get /wsapi/list_emails complete": {"registered@testuser.com":{}, "synced_address@testuser.com": {}},
       "post /wsapi/set_password valid": { success: true },
       "post /wsapi/set_password invalid": { success: false },
       "post /wsapi/set_password ajaxError": undefined,

@@ -81,10 +81,10 @@
         var retval = controller.get(domain || HTTPS_TEST_DOMAIN, options);
 
         if (expectedErrorMessage) {
-          equal(retval, expectedErrorMessage, "expected error: " + expectedErrorMessage);
+          equal(retval.message, expectedErrorMessage, "expected error: " + expectedErrorMessage);
         }
         else {
-          ok(retval, "error message returned");
+          ok(retval instanceof Error, "error message returned");
         }
 
         // If a parameter is not properly escaped, scriptRun will be true.
@@ -158,7 +158,7 @@
     winMock.navigator.id = {
       channel : {
         registerController: function(controller) {
-          registerControllerCalled = controller.getVerifiedEmail && controller.get;
+          registerControllerCalled = !!controller.get;
         }
       }
     };
@@ -300,7 +300,7 @@
   });
 
   asyncTest("get with valid termsOfService='/' and valid privacyPolicy - print error screen", function() {
-    var URL = "/"
+    var URL = "/";
     testRelativeURLNotAllowed({
       termsOfService: URL,
       privacyPolicy: "/privacy.html"

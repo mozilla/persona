@@ -6,6 +6,8 @@
 
 // I proxy requests.  That's what I do.
 
+require('../lib/baseExceptions').addExceptionHandler();
+
 const
 http = require('http'),
 forward = require('../lib/http_forward.js'),

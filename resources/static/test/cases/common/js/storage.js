@@ -67,7 +67,7 @@
     catch(e) {
       error = e;
     }
-    equal(error.toString(), "unknown email address", "removing an unknown email address");
+    equal(error.message, "unknown email address", "removing an unknown email address");
   });
 
 
@@ -104,7 +104,7 @@
     catch(e) {
       error = e;
     }
-    equal(error.toString(), "unknown email address", "Invalidating an unknown email address");
+    equal(error.message, "unknown email address", "Invalidating an unknown email address");
   });
 
   test("site.set/site.get/site.remove/site.count, happy case", function() {
@@ -141,7 +141,7 @@
       error = e;
     }
 
-    equal(error.toString(), "unknown email address", "An unknown email address was added");
+    equal(error.message, "unknown email address", "An unknown email address was added");
   });
 
   test("site.set->email with valid email", function() {

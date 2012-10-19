@@ -473,3 +473,11 @@ a.emphasize:active {
   text-align: center;
 }
 
+#authentication_form {
+  display: none;
+}
+
+.authentication #authentication_form {
+  display: block;
+}
+

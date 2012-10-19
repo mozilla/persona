@@ -22,7 +22,7 @@ BrowserID.Modules.Module = (function() {
       var list = [].slice.call(arguments, 1);
       for(var item, index = 0; item = list[index]; ++index) {
         if(!options.hasOwnProperty(item)) {
-          throw "missing config option: " + item;
+          throw new Error("missing config option: " + item);
         }
       }
     },

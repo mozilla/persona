@@ -75,7 +75,7 @@
       error = e;
     }
 
-    equal(error, "missing config option: token", "correct error thrown");
+    equal(error.message, "missing config option: token", "correct error thrown");
   });
 
   asyncTest("valid token, no password necessary - verify user and show site info, user is redirected to saved URL", function() {
