@@ -19,7 +19,7 @@ var addy = config.has('bind_to.host') ? config.get('bind_to.host') : "127.0.0.1"
 // set a maximum allowed time on responses to declaration of support requests
 forward.setTimeout(config.get('declaration_of_support_timeout_ms'));
 
-const allowed = /^https:\/\/[a-zA-Z0-9\.\-_]+\/\.well-known\/browserid$/;
+const allowed = /^https:\/\/[a-zA-Z0-9\.\-_]+\/\.well-known\/browserid(\?.*)?$/;
 
 var server = http.createServer(function (req, res) {
   var url = req.url;
