@@ -178,6 +178,7 @@
     log('internal watch options', options);
     var remoteOrigin = options.origin;
     var loggedInUser = options.loggedInUser;
+    user.setOrigin(remoteOrigin);
 
     function checkAndEmit() {
       log('checking and emitting');
