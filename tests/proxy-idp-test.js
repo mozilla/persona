@@ -100,6 +100,7 @@ suite.addBatch({
       var wellKnown = JSON.parse(res.body);
       assert.ok(wellKnown.authority);
       assert.equal(undefined, wellKnown['public-key']);
+      assert.equal(wellKnown.authority, 'example.domain');
     }
   },
   'public key for /.well-known/browserid?domain=unknown.com': {
