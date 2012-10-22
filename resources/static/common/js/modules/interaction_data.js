@@ -75,7 +75,6 @@ BrowserID.Modules.InteractionData = (function() {
     window_opened: "window.opened",
     window_unload: "window.unload",
     get_called: "window.get_called",
-    javascript_parse: "window.javascript_parse",
     user_can_interact: "user.can_interact",
     generate_assertion: null,
     assertion_generated: null,
