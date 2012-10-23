@@ -12,7 +12,7 @@ utils = require('../lib/utils.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
-vowsHarness = require('../lib/vows_harness.js'),
+runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js'),
 user = require('../lib/user.js');
 
@@ -104,7 +104,7 @@ function testEmailNotRegistered(browser, email, done) {
     .wfind(CSS['persona.org'].signInForm.verifyPassword, done)
 }
 
-vowsHarness({
+runner.run(module, {
   // first checks to make sure removing the last email address on the
   // account cancels the account
   /*

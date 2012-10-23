@@ -1,6 +1,6 @@
 var vows = require('vows'),
     path = require('path'),
-assert = require('assert');
+    assert = require('assert');
 
 module.exports = function(spec, mod) {
   var suite = vows.describe(path.basename(process.argv[1]));
