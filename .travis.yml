@@ -9,7 +9,6 @@ before_install:
  - "mysql -e 'create database browserid;'"
 
 node_js:
- - 0.6
  - 0.8
 
 notifications:
