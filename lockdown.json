@@ -7,7 +7,7 @@
   },
   "active-x-obfuscator": {
     "0.0.1": "089b89b37145ff1d9ec74af6530be5526cae1f1a"
-	},
+  },
   "addressparser": {
     "0.1.3": "9e9ab43d257e1ae784e1df5f580c9f5240f58874"
   },
@@ -21,7 +21,7 @@
     "0.0.5": "971b8995078d83c80f2372f134c496e71b293a46"
   },
   "awsbox": {
-    "0.2.18": "7cfebaa0c21de2e054d02a8ced97d021124fe962"
+    "0.3.1": "bbd433489d7d73c8b38c4f60f39ab6b034e73584"
   },
   "bcrypt": {
     "0.7.1": "923e2623331211adcab6ac84ec4fcd41713e1e58"
@@ -331,8 +331,8 @@
   },
   "xoauth2": {
     "0.1.3": "4448cb94fb1032c02cb2c81e95008674dcd2d1c6"
-  },	
+  },
   "zeparser": {
     "0.0.5": "03726561bc268f2e5444f54c665b7fd4a8c029e2"
-	}
+  }
 }
