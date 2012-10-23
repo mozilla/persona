@@ -4,7 +4,9 @@
 BrowserID.Provisioning = (function() {
   "use strict";
 
-  var jwcrypto = require("./lib/jwcrypto");
+  var jwcrypto = require("./lib/jwcrypto"),
+       network = BrowserID.Network;
+
   var MAX_TIMEOUT = 20000; // 20s
 
   var Provisioning = function(args, successCB, failureCB) {
@@ -96,9 +98,13 @@ BrowserID.Provisioning = (function() {
 
     chan.bind('genKeyPair', function(trans, s) {
       trans.delayReturn(true);
-      jwcrypto.generateKeypair({algorithm: "DS", keysize: BrowserID.KEY_LENGTH}, function(err, kp) {
-        keypair = kp;
-        trans.complete(keypair.publicKey.serialize());
+      // ensure we have session_context at this point so that the random number
+      // generator is seeded
+      network.withContext(function() {
+        jwcrypto.generateKeypair({algorithm: "DS", keysize: BrowserID.KEY_LENGTH}, function(err, kp) {
+          keypair = kp;
+          trans.complete(keypair.publicKey.serialize());
+        });
       });
     });
 

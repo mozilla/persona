@@ -467,6 +467,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - called on failure
      */
     provisionPrimaryUser: function(email, info, onComplete, onFailure) {
+
       User.primaryUserAuthenticationInfo(email, info, function(authInfo) {
         if(authInfo.authenticated) {
           persistEmailKeypair(email, "primary", authInfo.keypair, authInfo.cert,
