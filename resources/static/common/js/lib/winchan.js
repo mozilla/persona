@@ -204,7 +204,7 @@
           try {
             d = JSON.parse(e.data);
           } catch(err) { }
-          if (!d || !d.a === 'request') return;
+          if (!d || d.a !== 'request') return;
           removeListener(window, 'message', onMessage);
           o = e.origin;
           if (cb) {
