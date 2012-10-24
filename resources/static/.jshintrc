@@ -12,6 +12,7 @@
   "eqnull": true,
   "expr": true,
   "jquery": true,
+  "white": false,
   "predef": [
     "BrowserID",
     "_",
