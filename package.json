@@ -38,7 +38,7 @@
     },
     "devDependencies": {
         "vows": "0.5.13",
-        "awsbox": "0.2.18",
+        "awsbox": "0.3.1",
         "irc": "0.3.3",
         "jshint": "0.7.1",
         "minimatch": "0.2.6",
@@ -54,6 +54,6 @@
         "start": "node ./scripts/run_locally.js"
     },
     "engines": {
-        "node": ">= 0.6.17"
+        "node": ">= 0.8.11"
     }
 }
