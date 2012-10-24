@@ -14,6 +14,7 @@
   "eqnull": true,
   "expr": true,
   "indent": 2,
+  "white": false,
   "predef": [
     "exports", 
     "require",
