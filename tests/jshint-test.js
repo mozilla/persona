@@ -17,6 +17,7 @@ exec = require('child_process').exec;
 
 var suite = vows.describe('jshint');
 var jshintPath = '../node_modules/jshint/bin/hint';
+var jshint = require('../node_modules/jshint/lib/hint').hint;
 
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
@@ -24,18 +25,18 @@ suite.options.error = false;
 suite.addBatch({
   "run jshint on the lib directory": {
     topic: function () {
-      var cmd = jshintPath + ' --config ./data/lib.jshintrc ../lib/ | grep "not defined"';
-      var child = exec(cmd, {cwd: path.resolve(__dirname)}, this.callback);
+      //var cmd = jshintPath + ' --config ./data/lib.jshintrc ../lib/ | grep "not defined"';
+      //var child = exec(cmd, {cwd: path.resolve(__dirname)}, this.callback);
+      return jshint(['../lib/'], JSON.parse(fs.readFileSync('../.jshintrc').toString()), function noop_reporter(){});
     },
-    "jshint is found and runs" : function (error, stdout, stderr) {
+    /*"jshint is found and runs" : function (error, stdout, stderr) {
       // NOTE: until we clean up jshint errors and agree on what options,
       // we only verify that the program was found and runs, but not that
       // it is completely clean and error free in jshint's opinion.
       assert.ok(!error || error.toString().indexOf('No such') === -1);
-    },
-    "no globals are created or referenced" : function (error, stdout, stderr) {
-      var errors = stdout.split("\n").length - 1;
-      assert.strictEqual(errors, 0);
+    },*/
+    "no globals are created or referenced" : function (errors) {
+      assert.strictEqual(errors.length, 0);
     }
   }
 });
