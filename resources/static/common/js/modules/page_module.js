@@ -17,6 +17,7 @@ BrowserID.Modules.PageModule = (function() {
       sc;
 
    function onSubmit() {
+     /*jshint validthis:true*/
      if (!dom.hasClass("body", "submit_disabled") && this.validate()) {
        this.submit();
      }

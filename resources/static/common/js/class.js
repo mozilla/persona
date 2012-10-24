@@ -4,8 +4,8 @@
 
 
 BrowserID.Class = (function() {
-  function create(constr, config) {
-    var inst = new constr;
+  function create(Constr, config) {
+    var inst = new Constr();
     inst.init(config);
     return inst;
   }
@@ -24,7 +24,7 @@ BrowserID.Class = (function() {
       // Object.create would work well here.
       var F = function() {};
       F.prototype = sup.prototype;
-      subclass.prototype = new F;
+      subclass.prototype = new F();
       subclass.sc = sup.prototype;
     }
     else {

@@ -9,12 +9,12 @@ BrowserID.about = (function() {
 
   function resize() {
     // Get tallest blurb
-    var tallestBlurb = 0
+    var tallestBlurb = 0;
 
     $('.half').each(function(index) {
       var $this = $(this);
 
-      if (index == 0) {
+      if (index === 0) {
         tallestBlurb = $this.height();
       } else {
 

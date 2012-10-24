@@ -10,11 +10,13 @@ BrowserID.Modules.XHRDelay = (function() {
       sc;
 
   function delayStart() {
+    /*jshint validthis:true*/
     delayed = true;
     this.renderDelay("wait", wait.slowXHR);
   }
 
   function delayStop() {
+    /*jshint validthis:true*/
     if(delayed) {
       delayed = false;
       this.hideDelay();

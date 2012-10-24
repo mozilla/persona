@@ -17,6 +17,7 @@ BrowserID.Modules.RequiredEmail = (function() {
       secondaryAuth;
 
   function closePrimaryUser(callback) {
+    /*jshint validthis:true*/
     this.close("primary_user", _.extend(primaryInfo, {
       email: email,
       requiredEmail: true,
@@ -27,6 +28,7 @@ BrowserID.Modules.RequiredEmail = (function() {
   }
 
   function signIn(callback) {
+    /*jshint validthis:true*/
     var self = this;
 
     function getAssertion() {
@@ -62,6 +64,7 @@ BrowserID.Modules.RequiredEmail = (function() {
   }
 
   function verifyAddress() {
+    /*jshint validthis:true*/
     // By being in the verifyAddress, we know that the current user has not
     // been shown the password box and we have to do a verification of some
     // sort.  This will be either an add email to the current account or a new
@@ -82,12 +85,14 @@ BrowserID.Modules.RequiredEmail = (function() {
   }
 
   function forgotPassword() {
+    /*jshint validthis:true*/
     var self=this;
     self.close("forgot_password", { email: email, requiredEmail: true });
   }
 
 
   function cancel() {
+    /*jshint validthis:true*/
     // The cancel button is only shown to a user who has to enter their
     // password to go from "assertion" authentication to "password"
     // authentication.

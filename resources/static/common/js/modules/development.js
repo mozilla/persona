@@ -14,6 +14,7 @@ BrowserID.Modules.Development = (function() {
 
 
   function onDevelopmentClick(event) {
+    /*jshint validthis:true*/
     clickCount++;
 
 
@@ -35,6 +36,7 @@ BrowserID.Modules.Development = (function() {
   }
 
   function showError() {
+    /*jshint validthis:true*/
     this.renderError("error", {
       action: {
         title: "Error title",
@@ -48,6 +50,7 @@ BrowserID.Modules.Development = (function() {
   }
 
   function showDelay() {
+    /*jshint validthis:true*/
     this.renderDelay("wait", {
       title: "Delay Screen",
       message: "Delay Message"
@@ -55,6 +58,7 @@ BrowserID.Modules.Development = (function() {
   }
 
   function showWait() {
+    /*jshint validthis:true*/
     this.renderWait("wait", {
       title: "Wait Screen",
       message: "Wait Message"
@@ -62,6 +66,7 @@ BrowserID.Modules.Development = (function() {
   }
 
   function hideScreens() {
+    /*jshint validthis:true*/
     this.hideError();
     this.hideDelay();
     this.hideWait();

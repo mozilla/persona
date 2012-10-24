@@ -15,9 +15,9 @@ BrowserID.BrowserSupport = (function() {
 
   function getInternetExplorerVersion() {
     var rv = -1; // Return value assumes failure.
-    if (nav.appName == 'Microsoft Internet Explorer') {
+    if (nav.appName === 'Microsoft Internet Explorer') {
       var ua = nav.userAgent;
-      var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+      var re = new RegExp("MSIE ([0-9]{1,}[\\.0-9]{0,})");
       if (re.exec(ua) != null)
         rv = parseFloat(RegExp.$1);
     }
@@ -39,7 +39,7 @@ BrowserID.BrowserSupport = (function() {
   }
 
   function checkLocalStorage() {
-    var localStorage = 'localStorage' in win && win['localStorage'] !== null;
+    var localStorage = 'localStorage' in win && win.localStorage !== null;
     if(!localStorage) {
       return "LOCALSTORAGE";
     }

@@ -37,17 +37,31 @@ suite.addBatch({
     "should have no jshint warnings" : function (errors) {
       assert.lengthOf(errors, 0);
     }
-  }/*,
+  },
   "run jshint on the static directory": {
     topic: function() {
-      var paths = [path.join(__dirname, '../resources/static/dialog/js')];
+      // we want most of the static js files, except for test, build,
+      // production, and perhaps some of the lib files (jQuery?)
+      var paths = [ path.join(__dirname, '../resources/static') ];
+      var ignores = [
+        path.join(__dirname, '../resources/static/test'),
+        path.join(__dirname, '../resources/static/build'),
+        path.join(__dirname, '../resources/static/production'),
+
+        // 3rd party libs that we shouldnt hint
+        path.join(__dirname, '../resources/static/common/js/lib'),
+
+        //XXX: these include WinChan, which we're not hinting yet
+        path.join(__dirname, '../resources/static/include_js'),
+        path.join(__dirname, '../resources/static/provisioning_api.js')
+      ];
       var staticRc = JSON.parse(fs.readFileSync(path.join(__dirname, '../resources/static/.jshintrc').toString()));
-      return jshintFormatter(jshint(paths, staticRc, function noop_reporter(){}));
+      return jshintFormatter(jshint(paths, staticRc, function noop_reporter(){}, ignores));
     },
     "should have no jshint warnings": function(errors) {
       assert.lengthOf(errors, 0);
     }
-  }*/
+  }
 });
 
 

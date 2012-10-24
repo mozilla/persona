@@ -9,6 +9,7 @@ BrowserID.Modules.ProvisionPrimaryUser = (function() {
       errors = bid.Errors;
 
   function provisionPrimaryUser(email, auth, prov, oncomplete) {
+    /*jshint validthis:true*/
     var self=this;
 
     function complete(status) {

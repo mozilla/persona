@@ -17,7 +17,7 @@ BrowserID.Renderer = (function() {
         // partials are not supported by the client side EJS. Create
         // a standin that does what partial rendering would do on the backend.
         return getTemplateHTML(name, vars);
-      }
+      };
     }
 
     // arguments are: locals, filters (which cant be used client-side), escapeFn
