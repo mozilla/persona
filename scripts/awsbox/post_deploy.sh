@@ -10,3 +10,4 @@ fi
 
 echo ">> generating production resources"
 scripts/compress
+

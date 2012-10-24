@@ -19,20 +19,26 @@ const path = require('path'),
       child_process = require('child_process'),
       test_finder = require('../lib/test_finder'),
       runner = require('../lib/runner'),
-      max_runners = parseInt(process.env['RUNNERS'] || 1, 10);
+      FileReporter = require('../lib/reporters/file_reporter'),
+      StdOutReporter = require('../lib/reporters/std_out_reporter'),
+      StdErrReporter = require('../lib/reporters/std_err_reporter'),
+      max_runners = parseInt(process.env['RUNNERS'] || 1, 10),
+      vows_path = "../node_modules/.bin/vows",
+      vows_args = process.env['VOWS_ARGS'] || "--xunit",
+      result_extension = process.env['RESULT_EXTENSION'] || "xml",
+      start_time = new Date().getTime();
 
-function runTest(testName, testPath, done) {
+function runTest(testName, testPath, stdOutReporter, stdErrReporter, done) {
   util.puts("starting " + testName);
 
-  var execCmd = "node " + testPath;
-  var testProcess = child_process.exec(execCmd);
+  var testProcess = child_process.spawn(vows_path, [testPath, vows_args]);
 
   testProcess.stdout.on('data', function (data) {
-    util.print(data.toString());
+    stdOutReporter.report(data.toString());
   });
 
   testProcess.stderr.on('data', function (data) {
-    util.error(data.toString());
+    stdErrReporter.report(data.toString());
   });
 
   testProcess.on('exit', function() {
@@ -55,7 +61,18 @@ function runNext() {
     var testPath = test.path;
     var testName = test.name;
 
-    runTest(testName, testPath, runNext);
+    var stdOutReporter = new FileReporter({
+      output_path: path.join(__dirname, '..', 'results',
+        start_time + "-" + testName + '.' + result_extension)
+    });
+    var stdErrReporter = new StdErrReporter();
+
+    runTest(testName, testPath, stdOutReporter, stdErrReporter, function() {
+      stdOutReporter.done();
+      stdErrReporter.done();
+
+      runNext();
+    });
   }
 };
 
