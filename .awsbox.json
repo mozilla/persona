@@ -13,7 +13,7 @@
   },
   "hooks": {
     "postdeploy": "scripts/awsbox/post_deploy.sh",
-    "poststart": "scripts/show_config.js",
+    "poststart": "scripts/awsbox/post_start.sh",
     "postcreate": "scripts/awsbox/post_create.sh"
   },
   "packages": [
