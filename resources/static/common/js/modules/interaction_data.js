@@ -74,7 +74,7 @@ BrowserID.Modules.InteractionData = (function() {
     primary_user_authenticating: "window.redirect_to_primary",
     dom_loading: "window.dom_loading",
     window_unload: "window.unload",
-    get_called: "window.get_called",
+    channel_established: "window.channel_established",
     user_can_interact: "user.can_interact",
     generate_assertion: null,
     assertion_generated: null,

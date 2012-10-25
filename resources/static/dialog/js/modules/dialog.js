@@ -208,7 +208,7 @@ BrowserID.Modules.Dialog = (function() {
           self.publish("start_time", startTime);
         }
 
-        self.publish("get_called");
+        self.publish("channel_established");
 
         var rpAPI = paramsFromRP.rp_api;
         if (rpAPI) {
