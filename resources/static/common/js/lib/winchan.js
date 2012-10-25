@@ -196,13 +196,17 @@
         }
 
         function onMessage(e) {
-          // only one message gets through
-          removeListener(window, 'message', onMessage);
+          // only one message gets through, but let's make sure it's actually
+          // the message we're looking for (other code may be using
+          // postmessage) - we do this by ensuring the payload can
+          // be parsed, and it's got an 'a' (action) value of 'request'.
           var d;
-          o = e.origin;
           try {
             d = JSON.parse(e.data);
           } catch(err) { }
+          if (!d || d.a !== 'request') return;
+          removeListener(window, 'message', onMessage);
+          o = e.origin;
           if (cb) {
             // this setTimeout is critically important for IE8 -
             // in ie8 sometimes addListener for 'message' can synchronously
