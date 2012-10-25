@@ -55,11 +55,15 @@
   "router": { "bind_to": { "port": 63300 } },
 
   // set to true to enable the development menu.
-  "enable_development_menu": false
+  "enable_development_menu": false,
 
   // http_proxy should be overridded per env
   //"http_proxy": {
   //  "host": "127.0.0.1",
   //  "port": 10006
   //},
+  
+  // set to true to use an inline script in the dialog HEAD to measure the 
+  // time it takes the window to open and the DOM to start loading.
+  "measure_dom_loading": false
 }

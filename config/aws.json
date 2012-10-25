@@ -27,5 +27,8 @@
   // explicitly undefine public_static_url, as the configuration will then fallback to
   // public_url.  Because this value is dynamic in ephemeral deployments and because
   // we serve static content from the same URL, this is exactly what we want.
-  "public_static_url": null
+  "public_static_url": null,
+
+  // enable the measurement of the dom loading
+  "measure_dom_loading": true
 }

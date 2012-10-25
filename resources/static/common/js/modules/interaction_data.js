@@ -72,7 +72,7 @@ BrowserID.Modules.InteractionData = (function() {
     service: function(msg, data) { return "screen." + data.name; },
     cancel_state: "screen.cancel",
     primary_user_authenticating: "window.redirect_to_primary",
-    window_opened: "window.opened",
+    dom_loading: "window.dom_loading",
     window_unload: "window.unload",
     get_called: "window.get_called",
     user_can_interact: "user.can_interact",

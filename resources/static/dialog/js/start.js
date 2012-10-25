@@ -20,7 +20,11 @@
   moduleManager.register("interaction_data", modules.InteractionData);
   moduleManager.start("interaction_data", { continuation: continuation });
 
-  mediator.publish("window_opened", { eventTime: BrowserID.WINDOW_OPENED });
+  // DOM_LOADING is only set if preffed on on the server.
+  var domLoading = bid.DOM_LOADING;
+  if (domLoading) {
+    mediator.publish("dom_loading", { eventTime: domLoading });
+  }
 
   moduleManager.register("development", modules.Development);
   moduleManager.start("development");
