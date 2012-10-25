@@ -28,6 +28,12 @@ var daemonsToRun = {
     PORT: 10005,
     HOST: HOST
   },
+  example_delegated_primary: {
+    SHIMMED_DOMAIN: "delegated.domain",
+    path: path.join(__dirname, "..", "scripts", "serve_example_delegated_primary.js"),
+    PORT: 10011,
+    HOST: HOST
+  },
   proxy: { },
   browserid: { },
   static: { },
@@ -50,7 +56,13 @@ process.env['CONFIG_FILES'] = configFiles.join(',');
 // all spawned process that use handle primaries should know about "shimmed"
 // primaries
 var oldShims = process.env['SHIMMED_PRIMARIES'] ? process.env['SHIMMED_PRIMARIES'] + "," : "";
-process.env['SHIMMED_PRIMARIES'] = oldShims + "example.domain|http://" + HOST + ":10005|" + path.join(__dirname, "..", "example", "primary", ".well-known", "browserid");
+process.env['SHIMMED_PRIMARIES'] = oldShims +
+  "example.domain|http://" + HOST + ":10005|" + 
+  path.join(__dirname, "..", "example", "primary", ".well-known", "browserid") +
+  "," + "delegated.domain|http://" + HOST + ":10011|" +
+  path.join(__dirname, "..", "example", "delegated_primary", ".well-known", "browserid") +
+  "," + "bigtent.domain|http://bigtent.domain:10012|" +
+  path.join(__dirname, "..", "example", "bigtent", ".well-known", "browserid");
 
 // all spawned processes should log to console
 process.env['LOG_TO_CONSOLE'] = 1;

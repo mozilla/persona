@@ -39,12 +39,13 @@ User.prototype.setup = function(cb) {
                          cb(null);
                        });
   });
-}
+};
 
-User.prototype.getAssertion = function(origin, cb) {
+User.prototype.getAssertion = function(origin, cb, issuer) {
   var self = this;
+  issuer = issuer || "127.0.0.1";
   var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
-  jwcrypto.assertion.sign({}, {audience: origin, issuer: "127.0.0.1", expiresAt: expirationDate},
+  jwcrypto.assertion.sign({}, {audience: origin, issuer: issuer, expiresAt: expirationDate},
                          this._keyPair.secretKey, function(err, signedObject) {
                            if (err) return cb(err);
 
