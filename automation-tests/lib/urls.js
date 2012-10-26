@@ -29,7 +29,7 @@ if (!URLS[env]) {
   URLS[env] = {
     "123done": 'http://'+env+'.123done.org',
     persona: 'https://'+env+'.personatest.org',
-    myfavoritebeer: 'http://'+env+'myfavoritebeer.org',
+    myfavoritebeer: 'http://'+env+'.myfavoritebeer.org',
     eyedeeme: 'https://eyedee.me'
   };
 }
