@@ -139,7 +139,7 @@ BrowserID.Modules.Dialog = (function() {
   function validateStartTime(startTime) {
     var parsedTime = parseInt(startTime, 10);
     if (typeof parsedTime !== "number" || isNaN(parsedTime)) {
-      throw "invalid value for start_time: " + startTime;
+      throw new Error("invalid value for start_time: " + startTime);
     }
 
     return parsedTime;
