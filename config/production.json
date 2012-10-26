@@ -65,5 +65,7 @@
   
   // set to true to use an inline script in the dialog HEAD to measure the 
   // time it takes the window to open and the DOM to start loading.
+  // Enabling this will break CSP because of the extra inline script in the 
+  // HEAD.
   "measure_dom_loading": false
 }
