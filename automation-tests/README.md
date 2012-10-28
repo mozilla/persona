@@ -31,6 +31,7 @@ Set some more environment variables:
     * specify your sauce browser and OS combo as `PERSONA_BROWSER`
         * current list: `linux_firefox_13`, `linux_opera_12`, `osx_firefox_14`, `vista_chrome`, `vista_firefox_13`, `vista_ie_9`, `xp_ie_8`
         * the list is in lib/sauce-platforms.js
+    * You can temporarily force a local browser run with `PERSONA_NO_SAUCE`. If you do this, make sure `PERSONA_BROWSER` is set to something that can be run locally.
 
 Then run the tests just like you would locally:
 

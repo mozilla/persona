@@ -30,16 +30,18 @@ testSetup.startup = function(opts) {
     sauceApiKey = opts.sauceApiKey || process.env['PERSONA_SAUCE_APIKEY'],
     browser;
 
-  if (sauceUser && sauceApiKey) {
+  if (sauceUser && sauceApiKey && !process.env.PERSONA_NO_SAUCE) {
     browser = wd.remote('ondemand.saucelabs.com', 80, sauceUser, sauceApiKey);
-    browser.on('status', function(info){
-      // using console.error so we don't mix up plain text with junitxml
-      // TODO do something nicer with this
-      console.error('\x1b[36m%s\x1b[0m', info);
-    });
   } else {
     browser = wd.remote();
   }
+
+  browser.on('status', function(info) {
+    // using console.error so we don't mix up plain text with junitxml
+    // TODO do something nicer with this
+    var format = process.env.NODE_DISABLE_COLORS ? '%s' : '\x1b[36m%s\x1b[0m';
+    console.error(format, info);
+  });
 
   var id = testSetup.browsers.push(browser);
   return id - 1;
