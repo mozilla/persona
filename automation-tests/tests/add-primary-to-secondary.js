@@ -68,9 +68,14 @@ runner.run(module, {
       .wclick(CSS['dialog'].useNewEmail)
       .wtype(CSS['dialog'].newEmail, primaryEmail.email)
       .wclick(CSS['dialog'].addNewEmailButton)
+      // The click on verifyWithPrimaryButton seems stable if we do it this way
+      // The problem with firing a second click just in case, is that if the
+      // first wclick worked, then the the element is gone and the second wclick
+      // spins for 20 seconds needlessly. Of course, this "fix" doesn't really
+      // make sense to me, since wclick implicitly calls wfind first o_O.
+      .wfind(CSS['dialog'].verifyWithPrimaryButton)
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      // sometimes the verifyWithPrimaryButton needs clicked twice
-      .wclick(CSS['dialog'].verifyWithPrimaryButton)
+      // continuing past that button
       .wtype(CSS['eyedee.me'].newPassword, primaryEmail.pass)
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()
@@ -82,7 +87,6 @@ runner.run(module, {
   //XXX This could be much more comprehensive by bringing up the dialog
   // again and checking the listed users, etc.
   "shut down remaining browsers": function(done) {
-    browser.quit();
-    done();
+    browser.quit(done);
   }
 });
