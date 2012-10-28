@@ -4,6 +4,7 @@ Q = require('q'),
 restmail = require('../lib/restmail.js'),
 saucePlatforms = require('./sauce-platforms.js'),
 wd = require('wd'),
+path = require('path'),
 _ = require('underscore');
 
 require('./wd-extensions.js');
@@ -29,16 +30,18 @@ testSetup.startup = function(opts) {
     sauceApiKey = opts.sauceApiKey || process.env['PERSONA_SAUCE_APIKEY'],
     browser;
 
-  if (sauceUser && sauceApiKey) {
+  if (sauceUser && sauceApiKey && !process.env.PERSONA_NO_SAUCE) {
     browser = wd.remote('ondemand.saucelabs.com', 80, sauceUser, sauceApiKey);
-    browser.on('status', function(info){
-      // using console.error so we don't mix up plain text with junitxml
-      // TODO do something nicer with this
-      console.error('\x1b[36m%s\x1b[0m', info);
-    });
   } else {
     browser = wd.remote();
   }
+
+  browser.on('status', function(info) {
+    // using console.error so we don't mix up plain text with junitxml
+    // TODO do something nicer with this
+    var format = process.env.NODE_DISABLE_COLORS ? '%s' : '\x1b[36m%s\x1b[0m';
+    console.error(format, info);
+  });
 
   var id = testSetup.browsers.push(browser);
   return id - 1;
@@ -56,7 +59,7 @@ function _setSessionOpts(opts) {
   // check for typos: throw error if requestedPlatform not found in list of supported sauce platforms
   var requestedPlatform = opts.platform || process.env['PERSONA_BROWSER'];
   if (requestedPlatform && !saucePlatforms.platforms[requestedPlatform]) {
-    throw new Error('requested platform ' + requestedPlatform + 
+    throw new Error('requested platform ' + requestedPlatform +
                     ' not found in list of available platforms');
   }
   // Default to chrome which does not need a version number.
@@ -82,6 +85,9 @@ function _setSessionOpts(opts) {
   if (sessionOpts.tags.indexOf('persona') === -1) {
     sessionOpts.tags.push('persona');
   }
+
+  // Ensure a test name for saucelabs
+  if (!sessionOpts.name) sessionOpts.name = createTestName();
 
   testSetup.sessionOpts = sessionOpts;
 }
@@ -154,5 +160,14 @@ function setupBrowsers(browserCount, out) {
   return out;
 }
 
-  
+function createTestName() {
+  var testname = path.basename(process.argv[1], '.js');
+  if (testname === 'vows') {
+    var isOption = function(elt) { return elt.indexOf('-') === 0; };
+    testname = _.reject(process.argv.slice(2), isOption)[0];
+    testname = path.basename(testname, '.js');
+  }
+  return [ 'persona', testname.replace(/\s+/g, '-') ].join('.');
+}
+
 module.exports = testSetup;
