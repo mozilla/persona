@@ -226,5 +226,10 @@
     position: static;
     height: 250px;
   }
+
+  #tosppframe {
+    height:100%;
+    width: 100%;
+  }
 }
 

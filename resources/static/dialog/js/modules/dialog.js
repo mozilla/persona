@@ -13,6 +13,8 @@ BrowserID.Modules.Dialog = (function() {
       helpers = bid.Helpers,
       win = window,
       startExternalDependencies = true,
+      TOSPP_SELECTOR = ".tospp a",
+      IFRAME_PARENT_SELECTOR = "#signIn .table .vertical",
       channel,
       sc;
 
@@ -146,6 +148,20 @@ BrowserID.Modules.Dialog = (function() {
   }
 
 
+  function showTOSPP(e) {
+    /*jshint validthis:true*/
+    var url = e.target.href;
+    if (!this._iframetospp) {
+      this._iframetospp = document.createElement('iframe');
+      this._iframetospp.id = 'tosppframe';
+      this._iframetospp.setAttribute('name', 'tosppframe');
+      //dom.appendTo(this._iframetospp, IFRAME_PARENT_SELECTOR);
+      $(IFRAME_PARENT_SELECTOR)[0].appendChild(this._iframetospp);
+    }
+
+    this._iframetospp.setAttribute('src', url);
+  }
+
   var Dialog = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
@@ -170,6 +186,10 @@ BrowserID.Modules.Dialog = (function() {
       if (startExternalDependencies) {
         startChannel.call(self);
       }
+
+      // if B2G
+      this.click(TOSPP_SELECTOR, showTOSPP);
+      // endif
 
       options.ready && _.defer(options.ready);
     },
