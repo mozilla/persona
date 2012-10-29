@@ -56,6 +56,9 @@ var primary_123done = {
         assert.equal(text, eyedeemail);
         done()
       });
+  },
+  "123done end this browser session": function(done) {
+    browser.quit(done);
   }
 };
 

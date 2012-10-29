@@ -215,7 +215,6 @@ runner.run(module, {
   },
 
   "shut down remaining browsers": function(done) {
-    browser.quit();
-    done();
+    browser.quit(done);
   }
 });
