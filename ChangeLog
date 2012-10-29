@@ -1,5 +1,22 @@
-current train:
-  *
+train-2012.10.26:
+  * Upgrade to Node.JS 0.8.12
+  * Fix redirect to /signin after email verification & unneeded password prompt: #1682
+  * Improved handling of uncaught exceptions: #2440
+  * Enable debug mode in development: #2175
+  * Fix regression: ephemeral deployments properly serve static resources: #2588
+  * Repair email delivery: #2589
+  * Image optimization: #2596
+  * Fix race conditions in internal.get() API: #2580
+  * Dialog startup performance improvments: #2604, #2624
+  * Now compatible with Firefox Password Manager: #314
+  * Test fixes: #2619, #2632
+  * Update lockdown: #2572
+  * Improved user-facing language: #2600
+  * .well-known fetch timeout shortened to 8s: #2603, #2636
+  * "Dynamic well-known" support: upon fetch of .well-known, domain of email address passed as a get parameter: #2078
+  * Fix class of sporatic dialog stalls at "Connection to Persona": #2629
+  * Fix regression: "Dialog fails to show authenticate screen on Android": #2638
+  * Fix regression: siteName not being displayed in dialog: #2634
 
 train-2012.10.12:
   * Fix IE failing when authenticating with IdP from main site's /signin: #2287
