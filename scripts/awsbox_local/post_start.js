@@ -10,40 +10,13 @@
  * server.
  */
 
-const fs            = require('fs'),
-      child_process = require('child_process'),
-      util          = require('util'),
-      temp          = require('temp'),
-      scp           = require('./scp').scp;
+const child_process = require('child_process'),
+      util          = require('util');
 
 var host = "tester.personatest.org",
     user = 'app@' + host,
     target = user + ':sauce.json';
 
-
-function getFromEnv(name) {
-  var envValue = process.env[name];
-  if (typeof envValue === "undefined")
-    throw new Error(name + " must be defined as an environment variable");
-
-  return envValue;
-}
-
-function copyConfig(done) {
-
-  temp.open({}, function(err, temp_file) {
-    var config = {
-      persona_sauce_user: getFromEnv("PERSONA_SAUCE_USER"),
-      persona_sauce_api_key: getFromEnv("PERSONA_SAUCE_APIKEY"),
-      persona_sauce_pass: getFromEnv("PERSONA_SAUCE_PASS"),
-      runners: 10
-    };
-
-    fs.writeFileSync(temp_file.path, JSON.stringify(config), 'utf8');
-
-    scp(temp_file.path, target, done);
-  });
-}
 
 function startTests(done) {
   startProcess('ssh', [
@@ -76,13 +49,9 @@ function startProcess(cmd_name, args, done) {
   return childProcess;
 }
 
-copyConfig(function(err, code) {
-  if (err) throw err;
+startTests(function(err, info) {
+if (err) throw err;
 
-  startTests(function(err, info) {
-    if (err) throw err;
-
-    process.exit(0);
-  });
+process.exit(0);
 });
 

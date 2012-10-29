@@ -6,25 +6,8 @@ var child_process = require('child_process'),
     util          = require('util');
 
 exports.scp = function(path, target, done) {
-  var scpProcess = child_process.spawn("scp", [
-    /*
-    '-o',
-    '"StrictHostKeyChecking no"',
-    'no"',
-    */
-    path,
-    target
-  ]);
-
-  scpProcess.stdout.on('data', function(data) {
-    util.print(data.toString());
-  });
-
-  scpProcess.stderr.on('data', function(data) {
-    util.error(data.toString());
-  });
-
-  scpProcess.on('exit', function(code) {
+  var cmd = 'scp -o "StrictHostKeyChecking no" ' + path + ' ' + target;
+  var scpProcess = child_process.exec(cmd, function(err, code) {
     var error = null;
 
     if (!code) {
@@ -35,5 +18,13 @@ exports.scp = function(path, target, done) {
     }
 
     done(error, code);
+  });
+
+  scpProcess.stdout.on('data', function(data) {
+    util.print(data.toString());
+  });
+
+  scpProcess.stderr.on('data', function(data) {
+    util.error(data.toString());
   });
 };
