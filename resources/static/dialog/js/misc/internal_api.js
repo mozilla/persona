@@ -221,7 +221,7 @@
 
     function doLogout () {
       log('doLogout');
-      if (loggedInUser != null) {
+      if (loggedInUser !== null) {
         storage.setLoggedIn(remoteOrigin, false);
         callback({ method: 'logout' });
       }
