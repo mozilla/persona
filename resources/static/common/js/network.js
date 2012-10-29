@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 BrowserID.Network = (function() {
   "use strict";
+  /*globals require:true*/
 
   var jwcrypto = require("./lib/jwcrypto"),
       bid = BrowserID,

@@ -16,6 +16,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       complete = helpers.complete;
 
   function verify(callback) {
+    /*jshint validthis:true*/
     this.publish("primary_user_authenticating");
 
     // set up some information about what we're doing
@@ -32,6 +33,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
   }
 
   function cancel(callback) {
+    /*jshint validthis:true*/
     this.close("cancel_state");
     callback && callback();
   }

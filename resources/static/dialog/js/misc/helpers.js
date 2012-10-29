@@ -42,6 +42,7 @@
   }
 
   function getAssertion(email, callback) {
+    /*jshint validthis:true*/
     var self=this,
         wait = bid.Screens.wait;
 
@@ -59,6 +60,7 @@
   }
 
   function authenticateUser(email, pass, callback) {
+    /*jshint validthis:true*/
     var self=this;
     self.publish("password_submit");
     user.authenticate(email, pass,
@@ -75,6 +77,7 @@
   }
 
   function createUser(email, password, callback) {
+    /*jshint validthis:true*/
     var self=this;
     user.createSecondaryUser(email, password, function(status) {
       if (status.success) {
@@ -92,6 +95,7 @@
   }
 
   function resetPassword(email, password, callback) {
+    /*jshint validthis:true*/
     var self=this;
     user.requestPasswordReset(email, password, function(status) {
       if (status.success) {
@@ -105,6 +109,7 @@
   }
 
   function reverifyEmail(email, callback) {
+    /*jshint validthis:true*/
     var self=this;
     user.requestEmailReverify(email, function(status) {
       if (status.success) {
@@ -118,6 +123,7 @@
   }
 
   function addEmail(email, callback) {
+    /*jshint validthis:true*/
     var self=this;
 
     if (user.getStoredEmailKeypair(email)) {
@@ -128,7 +134,7 @@
     else {
       user.addressInfo(email, function(info) {
         if (info.type === "primary") {
-          var info = _.extend(info, { email: email, add: true });
+          info = _.extend(info, { email: email, add: true });
           self.publish("primary_user", info, info);
           complete(callback, true);
         }
@@ -141,6 +147,7 @@
   }
 
   function addSecondaryEmail(email, password, callback) {
+    /*jshint validthis:true*/
     var self=this;
 
     user.addEmail(email, password, function(added) {

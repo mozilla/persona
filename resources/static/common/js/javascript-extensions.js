@@ -14,13 +14,13 @@
 
       var aArgs = Array.prototype.slice.call(arguments, 1),
       fToBind = this,
-      fNOP = function () {},
+      FNOP = function () {},
       fBound = function () {
-        return fToBind.apply(this instanceof fNOP ? this : oThis || window, aArgs.concat(Array.prototype.slice.call(arguments)));
+        return fToBind.apply(this instanceof FNOP ? this : oThis || window, aArgs.concat(Array.prototype.slice.call(arguments)));
       };
 
-      fNOP.prototype = this.prototype;
-      fBound.prototype = new fNOP();
+      FNOP.prototype = this.prototype;
+      fBound.prototype = new FNOP();
 
       return fBound;
 
@@ -37,14 +37,14 @@
           Array.prototype.slice.call(arguments)));
       };
     };
-  };
+  }
 
   if (!window.console) {
     window.console = {};
   }
 
-  if (!console.log) {
-    console.log = function() {};
+  if (!window.console.log) {
+    window.console.log = function() {};
   }
 
   if (!String.prototype.trim) {

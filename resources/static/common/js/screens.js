@@ -47,7 +47,7 @@ BrowserID.Screens = (function() {
 
         self.visible = false;
       }
-    }
+    };
   }
 
   return {

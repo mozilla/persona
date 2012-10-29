@@ -135,6 +135,7 @@ $(function() {
       // If the user is authenticated and the path should not be allowed if the
       // user is authenticated, redirect them back to the main page. See issue
       // #1345 https://github.com/mozilla/browserid/issues/1345
+      var module;
       if (authenticated && _.indexOf(redirectIfAuthenticatedPaths, path) > -1) {
         document.location = "/";
         return;
@@ -143,11 +144,11 @@ $(function() {
         bid.index();
       }
       else if (path === "/signin") {
-        var module = bid.signIn.create();
+        module = bid.signIn.create();
         module.start({});
       }
       else if (path === "/forgot") {
-        var module = bid.forgot.create();
+        module = bid.forgot.create();
         module.start({});
       }
       // START TRANSITION CODE
@@ -168,7 +169,7 @@ $(function() {
         verifySecondaryAddress("completePasswordReset");
       }
       else if (path === "/about") {
-        var module = bid.about.create();
+        module = bid.about.create();
         module.start({});
       }
       else if (path === "/tos" || path === "/privacy") {

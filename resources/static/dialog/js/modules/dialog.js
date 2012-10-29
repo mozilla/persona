@@ -34,6 +34,7 @@ BrowserID.Modules.Dialog = (function() {
   }
 
   function startChannel() {
+    /*jshint validthis:true*/
     var self = this,
         hash = win.location.hash;
 
@@ -44,7 +45,7 @@ BrowserID.Modules.Dialog = (function() {
     }
 
     // next, we see if the caller intends to call native APIs
-    if (hash == "#NATIVE" || hash == "#INTERNAL") {
+    if (hash === "#NATIVE" || hash === "#INTERNAL") {
       // don't do winchan, let it be.
       return;
     }
@@ -73,6 +74,7 @@ BrowserID.Modules.Dialog = (function() {
   }
 
   function onWindowUnload() {
+    /*jshint validthis:true*/
     this.publish("window_unload");
   }
 
@@ -80,6 +82,7 @@ BrowserID.Modules.Dialog = (function() {
     var u;
     if (typeof(url) !== "string")
       throw new Error("urls must be strings: (" + url + ")");
+    /*jshint newcap:false*/
     if (/^http(s)?:\/\//.test(url)) u = URLParse(url);
     else if (/^\/[^\/]/.test(url)) u = URLParse(origin + url);
     else throw new Error("relative urls not allowed: (" + url + ")");
@@ -219,6 +222,7 @@ BrowserID.Modules.Dialog = (function() {
           params.siteLogo = fixupAbsolutePath(origin_url, paramsFromRP.siteLogo);
           // To avoid mixed content errors, only allow siteLogos to be served
           // from https RPs
+          /*jshint newcap:false*/
           if (URLParse(origin_url).scheme !== "https") {
             throw new Error("only https sites can specify a siteLogo");
           }

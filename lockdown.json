@@ -114,7 +114,7 @@
     "1.0.11": "68f63325a035e644b6f7bb3d11243b9761de1b30"
   },
   "glob": {
-    "3.1.13": "ae3763e6070e6bcdabde7ef11bedec66666b6609"
+    "3.1.14": "f97a731c41da6695dc83944bbb2177e9a29b363d"
   },
   "gobbledygook": {
     "0.0.3": "437bb23d3ade04dd26b49e7c21e4026c6b086234"
@@ -147,7 +147,7 @@
     "0.3.3": "f39f41fb25782217d2e57183654c520dd5fea9be"
   },
   "jshint": {
-    "0.7.1": "7c62cdd1b260ec71743a9851ce79a9fc9d22ff15"
+    "0.9.1": "ff32ec7f09f84001f7498eeafd63c9e4fbb2dc0e"
   },
   "jwcrypto": {
     "0.4.2": "3a5d0f1143e4b567f67c93eb4c9667107f4c38b8"
@@ -239,7 +239,7 @@
     "0.0.1": "2d9b9086ae33ae42793210f519701169edabd2e2"
   },
   "read-package-json": {
-    "0.1.7": "92f4562af7553dae44bbfc07ad7c25182a724767"
+    "0.1.8": "e4dee9337fa0ed24bf5cb45fbf317dec004a5b68"
   },
   "redis": {
     "0.7.2": "fa557fef4985ab3e3384fdc5be6e2541a0bb49af"

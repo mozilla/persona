@@ -40,7 +40,7 @@
         "vows": "0.5.13",
         "awsbox": "0.3.1",
         "irc": "0.3.3",
-        "jshint": "0.7.1",
+        "jshint": "0.9.1",
         "minimatch": "0.2.6",
         "which": "1.0.5",
         "htmlparser": "1.7.6",

@@ -9,6 +9,7 @@ BrowserID.User = (function() {
       bid = BrowserID,
       network = bid.Network,
       storage = bid.Storage,
+      helpers = bid.Helpers,
       User,
       pollTimeout,
       provisioning = bid.Provisioning,
@@ -22,6 +23,7 @@ BrowserID.User = (function() {
       stagedPassword;
 
   function prepareDeps() {
+    /*globals require:true*/
     if (!jwcrypto) {
       jwcrypto= require("./lib/jwcrypto");
     }
@@ -77,7 +79,7 @@ BrowserID.User = (function() {
             } catch (e) {
               // error parsing the certificate!  Maybe it's of an old/different
               // format?  just delete it.
-              try { console.log("error parsing cert for", email_address ,":", e); } catch(e2) { }
+              helpers.log("error parsing cert for"+ email_address +":" + e);
               storage.invalidateEmail(email_address);
             }
           }

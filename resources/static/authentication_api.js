@@ -13,7 +13,7 @@
 
   function getParameterByName(name)
   {
-    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regexS = "[\\?&]" + name + "=([^&#]*)";
     var regex = new RegExp(regexS);
     var results = regex.exec(window.location.href);
@@ -37,14 +37,14 @@
     // it is lost in IE whenever the page redirects to the IdP.
     // See issue #2287 - https://github.com/mozilla/browserid/issues/2287
     navigator.id.completeAuthentication = function(cb) {
-      if (window.name == 'auth_with_primary')
+      if (window.name === 'auth_with_primary')
         window.location = 'https://login.persona.org/authenticate_with_primary#complete';
       else
         window.location = 'https://login.persona.org/sign_in#AUTH_RETURN';
     };
 
     navigator.id.raiseAuthenticationFailure = function(reason) {
-      if (window.name == 'auth_with_primary')
+      if (window.name === 'auth_with_primary')
         window.location = 'https://login.persona.org/authenticate_with_primary#complete';
       else
         window.location = 'https://login.persona.org/sign_in#AUTH_RETURN_CANCEL';

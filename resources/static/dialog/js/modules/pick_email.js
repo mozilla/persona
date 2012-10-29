@@ -43,6 +43,7 @@ BrowserID.Modules.PickEmail = (function() {
 
     var identity = user.getStoredEmailKeypair(email);
     if (!identity) {
+      /*globals alert:true*/
       alert(gettext("The selected email is invalid or has been deleted."));
       this.publish("assertion_generated", {
         assertion: null

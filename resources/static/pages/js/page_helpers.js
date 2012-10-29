@@ -48,7 +48,7 @@ BrowserID.PageHelpers = (function() {
   }
 
   function getParameterByName( name ) {
-    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    name = name.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");
     var regexS = "[\\?&]"+name+"=([^&#]*)";
     var regex = new RegExp( regexS );
     var results = regex.exec( doc.location.href );

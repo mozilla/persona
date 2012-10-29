@@ -39,7 +39,7 @@
     }
   }
 
-  var loggedInUser = undefined;
+  var loggedInUser;
 
   // the controlling page may "pause" the iframe when someone else (the dialog)
   // is supposed to emit events

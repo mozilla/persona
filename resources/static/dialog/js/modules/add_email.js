@@ -33,6 +33,7 @@ BrowserID.Modules.AddEmail = (function() {
   }
 
   function addEmail(callback) {
+    /*jshint validthis:true*/
     var email = helpers.getAndValidateEmail("#newEmail"),
         self=this;
 
@@ -50,6 +51,7 @@ BrowserID.Modules.AddEmail = (function() {
 
 
   function cancelAddEmail() {
+    /*jshint validthis:true*/
     this.close("cancel_state");
   }
 

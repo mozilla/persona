@@ -55,7 +55,7 @@ BrowserID.StateMachine = (function() {
         history.saveState();
       }
 
-      var cmd = history.createState(callback, options);
+      cmd = history.createState(callback, options);
       cmd.save = save;
       cmd.run();
     },

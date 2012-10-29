@@ -19,9 +19,11 @@
     "$",
     "jQuery",
     "gettext",
+    "format",
     "Channel",
     "WinChan",
-    "Hub"
+    "Hub",
+    "URLParse"
   ],
   "shadow": false,
   "supernew": false

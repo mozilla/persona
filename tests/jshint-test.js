@@ -16,26 +16,50 @@ path = require('path'),
 exec = require('child_process').exec;
 
 var suite = vows.describe('jshint');
-var jshintPath = '../node_modules/jshint/bin/hint';
+var jshint = require('../node_modules/jshint/lib/hint').hint;
 
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
+function jshintFormatter(errors) {
+  return errors.map(function(e) {
+    return e.error.reason + ' ' + e.file + ':' + e.error.line;
+  });
+}
+
 suite.addBatch({
   "run jshint on the lib directory": {
     topic: function () {
-      var cmd = jshintPath + ' --config ./data/lib.jshintrc ../lib/ | grep "not defined"';
-      var child = exec(cmd, {cwd: path.resolve(__dirname)}, this.callback);
+      var libPath = [path.join(__dirname, '../lib')];
+      var libRc = JSON.parse(fs.readFileSync(path.join(__dirname, '../.jshintrc')).toString());
+      return jshintFormatter(jshint(libPath, libRc, function noop_reporter(){}));
     },
-    "jshint is found and runs" : function (error, stdout, stderr) {
-      // NOTE: until we clean up jshint errors and agree on what options,
-      // we only verify that the program was found and runs, but not that
-      // it is completely clean and error free in jshint's opinion.
-      assert.ok(!error || error.toString().indexOf('No such') === -1);
+    "should have no jshint warnings" : function (errors) {
+      assert.lengthOf(errors, 0);
+    }
+  },
+  "run jshint on the static directory": {
+    topic: function() {
+      // we want most of the static js files, except for test, build,
+      // production, and perhaps some of the lib files (jQuery?)
+      var paths = [ path.join(__dirname, '../resources/static') ];
+      var ignores = [
+        path.join(__dirname, '../resources/static/test'),
+        path.join(__dirname, '../resources/static/build'),
+        path.join(__dirname, '../resources/static/production'),
+
+        // 3rd party libs that we shouldnt hint
+        path.join(__dirname, '../resources/static/common/js/lib'),
+
+        //XXX: these include WinChan, which we're not hinting yet
+        path.join(__dirname, '../resources/static/include_js'),
+        path.join(__dirname, '../resources/static/provisioning_api.js')
+      ];
+      var staticRc = JSON.parse(fs.readFileSync(path.join(__dirname, '../resources/static/.jshintrc').toString()));
+      return jshintFormatter(jshint(paths, staticRc, function noop_reporter(){}, ignores));
     },
-    "no globals are created or referenced" : function (error, stdout, stderr) {
-      var errors = stdout.split("\n").length - 1;
-      assert.strictEqual(errors, 0);
+    "should have no jshint warnings": function(errors) {
+      assert.lengthOf(errors, 0);
     }
   }
 });

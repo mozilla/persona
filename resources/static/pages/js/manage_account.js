@@ -15,6 +15,7 @@ BrowserID.manageAccount = (function() {
       helpers = bid.Helpers,
       pageHelpers = bid.PageHelpers,
       cancelEvent = pageHelpers.cancelEvent,
+      /*globals confirm:true*/
       confirmAction = confirm,
       complete = helpers.complete,
       doc = document,
@@ -22,6 +23,7 @@ BrowserID.manageAccount = (function() {
       authLevel;
 
   function syncAndDisplayEmails(oncomplete) {
+    /*jshint validthis:true*/
     var self=this;
     user.syncEmails(function() {
       displayStoredEmails.call(self, oncomplete);
@@ -29,6 +31,7 @@ BrowserID.manageAccount = (function() {
   }
 
   function displayStoredEmails(oncomplete) {
+    /*jshint validthis:true*/
     var emails = user.getSortedEmailKeypairs();
     if (_.isEmpty(emails)) {
       dom.hide("#content");
@@ -41,6 +44,7 @@ BrowserID.manageAccount = (function() {
   }
 
   function removeEmail(email, oncomplete) {
+    /*jshint validthis:true*/
     var self=this;
     user.syncEmails(function() {
       var emails = user.getStoredEmailKeypairs();
@@ -73,6 +77,7 @@ BrowserID.manageAccount = (function() {
   }
 
   function renderEmails(emails) {
+    /*jshint validthis:true*/
     var self=this,
         list = dom.getElements("#emailList");
 

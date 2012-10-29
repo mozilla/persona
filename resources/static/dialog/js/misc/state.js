@@ -247,6 +247,7 @@ BrowserID.State = (function() {
     });
 
     handleState("primary_user_unauthenticated", function(msg, info) {
+      /*jshint newcap:false*/
       _.extend(info, {
         add: !!self.addPrimaryUser,
         email: self.email,

@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 BrowserID.Provisioning = (function() {
   "use strict";
-
+  /*globals require:true*/
   var jwcrypto = require("./lib/jwcrypto"),
        network = BrowserID.Network;
 
@@ -42,7 +42,7 @@ BrowserID.Provisioning = (function() {
     var origin;
     try {
       origin = /^(https?:\/\/[^\/]+)\//.exec(args.url)[1];
-    } catch(e) { alert(e); }
+    } catch(e) {}
     if (!origin) {
       return fail('internal', 'bad provisioning url, can\'t extract origin');
     }

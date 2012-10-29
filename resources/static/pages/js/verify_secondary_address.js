@@ -73,6 +73,7 @@ BrowserID.verifySecondaryAddress = (function() {
             // loggedIn status for the domain.  This is useful when the user
             // closes the dialog OR if redirection happens before the dialog
             // has had a chance to finish its business.
+            /*jshint newcap:false*/
             storage.setLoggedIn(URLParse(self.redirectTo).originOnly(), self.email);
 
             countdownTimeout.call(self, function() {

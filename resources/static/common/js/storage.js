@@ -35,11 +35,6 @@ BrowserID.Storage = (function() {
   // issues do not become a factor. See issue #2206
   setDefaultValues();
 
-  // temporary, replace with helpers.log if storage uses elog long term...
-  function elog (msg) {
-    if (window.console && console.error) console.error(msg);
-  }
-
   function storeEmails(emails) {
     storage.emails = JSON.stringify(emails);
   }
@@ -138,9 +133,9 @@ BrowserID.Storage = (function() {
 
       // remove any logged in sites associated with this address.
       var loggedInInfo = JSON.parse(storage.loggedIn || "{}");
-      for(var site in loggedInInfo) {
-        if(loggedInInfo[site] === email) {
-          delete loggedInInfo[site];
+      for(var loggedSite in loggedInInfo) {
+        if(loggedInInfo[loggedSite] === email) {
+          delete loggedInInfo[loggedSite];
         }
       }
       storage.loggedIn = JSON.stringify(loggedInInfo);
@@ -426,7 +421,7 @@ BrowserID.Storage = (function() {
     var allInfo;
     try {
       allInfo = JSON.parse(storage.emailToUserID);
-      if (typeof allInfo != 'object' || allInfo === null) throw new Error("bogus");
+      if (typeof allInfo !== 'object' || allInfo === null) throw new Error("bogus");
     } catch(e) {
       allInfo = {};
     }
@@ -514,7 +509,7 @@ BrowserID.Storage = (function() {
        * @method site.count
        * @return {number}
        */
-      count: siteCount,
+      count: siteCount
     },
 
     manage_page: {

@@ -13,7 +13,7 @@ BrowserID.Validation = (function() {
     // is only used on internet based networks.
     var parts = address.split("@");
 
-    return /^[\w.!#$%&'*+\-/=?\^`{|}~]+@[a-z\d-]+(\.[a-z\d-]+)+$/i.test(address)
+    return (/^[\w.!#$%&'*+\-\/=?\^`{|}~]+@[a-z\d\-]+(\.[a-z\d\-]+)+$/i).test(address)
            // total address allwed to be 254 bytes long
            && address.length <= 254
            // local side only allowed to be 64 bytes long
