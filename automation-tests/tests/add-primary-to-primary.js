@@ -19,56 +19,35 @@ user = require('../lib/user.js');
 
 var browser,
     primaryEmail,
-    secondaryEmail;
+    secondPrimaryEmail;
 
 runner.run(module, {
   "setup all the things": function(done) {
-    testSetup.setup({ b:1, p:1, e:1 }, function(err, fix) {
+    testSetup.setup({ b:1, e:2 }, function(err, fix) {
       browser = fix.b[0];
-      secondaryEmail = fix.p[0];
       primaryEmail = {
         email: fix.e[0],
         pass: fix.e[0].split('@')[0],
+      };
+      secondPrimaryEmail = {
+        email: fix.e[1],
+        pass: fix.e[1].split('@')[0],
       };
       done(err);
     });
   },
   //XXX figure out how to parameterize the RP
-  "sign up as a secondary user": function(done) {
+  "start the session": function(done) {
     browser.newSession(testSetup.sessionOpts, done);
   },
-  "load 123done and wait for the signin button to be visible": function(done) {
-    browser.get(persona_urls["123done"], done);
-  },
-  "click the signin button": function(done) {
-    browser.wclick(CSS['123done.org'].signinButton, done);
-  },
-  "switch to the dialog when it opens": function(done) {
-    browser.wwin(CSS["persona.org"].windowName, done);
-  },
-  "sign in with the personatestuser account": function(done) {
-    dialog.signInExistingUser({
-      browser: browser,
-      email: secondaryEmail.email,
-      password: secondaryEmail.pass
-    }, done);
-  },
-  "verify signed in to 123done": function(done) {
+  //XXX obviously in need of refactoring between this primary and the second one.
+  "signup a new account with a primary": function(done) {
     browser.chain()
-      .wwin()
-      .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, secondaryEmail.email);
-        done();
-       });
-  },
-  "add a primary email to the account": function(done) {
-    browser.chain()
-      .wclick(CSS['123done.org'].logoutLink)
+      .get(persona_urls["123done"])
       .wclick(CSS['123done.org'].signInButton)
       .wwin(CSS['dialog'].windowName)
-      .wclick(CSS['dialog'].useNewEmail)
-      .wtype(CSS['dialog'].newEmail, primaryEmail.email)
-      .wclick(CSS['dialog'].addNewEmailButton)
+      .wtype(CSS['dialog'].emailInput, primaryEmail.email)
+      .wclick(CSS['dialog'].newEmailNextButton)
       // The click on verifyWithPrimaryButton seems stable if we do it this way
       // The problem with firing a second click just in case, is that if the
       // first wclick worked, then the the element is gone and the second wclick
@@ -82,6 +61,30 @@ runner.run(module, {
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         assert.equal(text, primaryEmail.email);
+        done();
+      });
+  },
+  "add a primary email to the account": function(done) {
+    browser.chain()
+      .wclick(CSS['123done.org'].logoutLink)
+      .wclick(CSS['123done.org'].signInButton)
+      .wwin(CSS['dialog'].windowName)
+      .wclick(CSS['dialog'].useNewEmail)
+      .wtype(CSS['dialog'].newEmail, secondPrimaryEmail.email)
+      .wclick(CSS['dialog'].addNewEmailButton)
+      // The click on verifyWithPrimaryButton seems stable if we do it this way
+      // The problem with firing a second click just in case, is that if the
+      // first wclick worked, then the the element is gone and the second wclick
+      // spins for 20 seconds needlessly. Of course, this "fix" doesn't really
+      // make sense to me, since wclick implicitly calls wfind first o_O.
+      .wfind(CSS['dialog'].verifyWithPrimaryButton)
+      .wclick(CSS['dialog'].verifyWithPrimaryButton)
+      // continuing past that button
+      .wtype(CSS['eyedee.me'].newPassword, secondPrimaryEmail.pass)
+      .wclick(CSS['eyedee.me'].createAccountButton)
+      .wwin()
+      .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
+        assert.equal(text, secondPrimaryEmail.email);
         done();
       });
   },
