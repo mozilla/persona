@@ -6,6 +6,8 @@
 
 require('./lib/test_env.js');
 
+process.env.PROXY_IDPS = '{"yahoo.com": "bigtent.domain"}';
+
 const assert =
 require('assert'),
 vows = require('vows'),
@@ -15,6 +17,7 @@ db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
 http = require('http'),
 querystring = require('querystring'),
+path = require('path'),
 primary = require('./lib/primary.js'),
 jwcrypto = require('jwcrypto');
 
@@ -123,6 +126,48 @@ suite.addBatch({
         assert.isObject(resp);
         assert.isFalse(resp.success);
         assert.equal(resp.reason, "certificate chaining is not yet allowed");
+      }
+    }
+  }
+});
+
+const BT_DOMAIN = 'bigtent.domain',
+      BT_EMAIL = 'sita@yahoo.com',
+      BT_PRIV_KEY = jwcrypto.loadSecretKey(
+        require('fs').readFileSync(
+          path.join(__dirname, '..', 'example', 'bigtent', 'key.secretkey')));
+
+var bigTentUser;
+
+suite.addBatch({
+  "generating an assertion": {
+    topic: function () {
+      bigTentUser = new primary({
+        email: BT_EMAIL,
+        domain: BT_DOMAIN,
+        privKey: BT_PRIV_KEY
+      });
+      bigTentUser.setup(this.callback);
+    },
+    "works":  {
+      topic: function () {  
+        bigTentUser.getAssertion(TEST_ORIGIN, this.callback, 'bigtent.domain');
+      },
+      "succeeds": function (err, r) {
+        assert.isString(r);
+      },
+      "and logging in with the assertion succeeds": {
+        topic: function (err, assertion) {
+          wsapi.post('/wsapi/auth_with_assertion', {
+            assertion: assertion,
+            ephemeral: true
+          }).call(this);
+        },
+        "works": function (err, r) {
+          var resp = JSON.parse(r.body);
+          assert.isObject(resp);
+          assert.isTrue(resp.success);
+        }
       }
     }
   }
