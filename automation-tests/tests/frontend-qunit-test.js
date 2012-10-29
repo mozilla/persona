@@ -91,7 +91,6 @@ runner.run(module, {
     utils.waitFor(20000, 15*60*1000, check, complete);
   },
   "shut down": function(done) {
-    browser.quit();
-    done();
+    browser.quit(done);
   }
 });
