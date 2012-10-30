@@ -209,6 +209,7 @@
       }, log);
     }
 
+    network.clearContext();
     checkAndEmit();
 
     function doReady (params) {
