@@ -8,15 +8,15 @@ const fs            = require('fs'),
       temp          = require('temp'),
       scp           = require('./scp').scp;
 
-function getFromEnv(name) {
+function getFromEnv(name, defaultValue) {
   var envValue = process.env[name];
-  if (typeof envValue === "undefined")
+  if (typeof defaultValue === "undefined" && typeof envValue === "undefined")
     throw new Error(name + " must be defined as an environment variable");
 
-  return envValue;
+  return typeof envValue === "undefined" ? defaultValue : envValue;
 }
 
-var host = getFromEnv('DEPLOYMENT_HOST'),
+var host = getFromEnv('AWS_IP_ADDRESS'),
     user = 'app@' + host,
     target = user + ':sauce.json';
 
@@ -29,6 +29,7 @@ function copyConfig(done) {
       persona_sauce_user: getFromEnv("PERSONA_SAUCE_USER"),
       persona_sauce_api_key: getFromEnv("PERSONA_SAUCE_APIKEY"),
       persona_sauce_pass: getFromEnv("PERSONA_SAUCE_PASS"),
+      persona_browser: getFromEnv("PERSONA_BROWSER", "vista_chrome"),
       runners: 10
     };
 

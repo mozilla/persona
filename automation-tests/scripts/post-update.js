@@ -57,7 +57,8 @@ function getTestEnvironment() {
     PERSONA_ENV: personaEnv,
     PERSONA_SAUCE_USER: sauceConfig.persona_sauce_user,
     PERSONA_SAUCE_APIKEY: sauceConfig.persona_sauce_api_key,
-    PERSONA_SAUCE_PASS: sauceConfig.persona_sauce_pass
+    PERSONA_SAUCE_PASS: sauceConfig.persona_sauce_pass,
+    PERSONA_BROWSER: sauceConfig.persona_browser
   });
 
   return env;
