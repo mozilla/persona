@@ -65,7 +65,6 @@ BrowserID.verifySecondaryAddress = (function() {
         dom.addClass("body", "complete");
 
         var verified = info.valid;
-
         if (verified) {
           pageHelpers.replaceFormWithNotice("#congrats", function() {
             // set the loggedIn status for the site.  This allows us to get
@@ -109,6 +108,7 @@ BrowserID.verifySecondaryAddress = (function() {
         self.email = info.email;
         showRegistrationInfo.call(self, info);
         self.mustAuth = info.must_auth;
+
         if (self.mustAuth) {
           // These are users who are authenticating in a different browser or
           // session than the initiator.

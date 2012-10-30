@@ -50,7 +50,7 @@ BrowserID.signIn = (function() {
 
     if (email) {
       dom.setAttr('#email', 'disabled', 'disabled');
-      user.addressInfo(email, function(info) {
+      user.addressInfo(email, 'default', function(info) {
         dom.removeAttr('#email', 'disabled');
         addressInfo = info;
 
@@ -183,7 +183,6 @@ BrowserID.signIn = (function() {
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
-
       if(options && options.document) doc = options.document;
       if(options && options.winchan) winchan = options.winchan;
 

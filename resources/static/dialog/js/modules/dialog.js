@@ -305,6 +305,13 @@ BrowserID.Modules.Dialog = (function() {
           user.setReturnTo(returnTo);
         }
 
+        // forceIsuser is used by the Marketplace to disable primary support
+        // and replace fxos.login.persona.org as the issuer of certs
+        if (paramsFromRP.forceIssuer) {
+          // TODO check for valid domain
+          params.forceIssuer = paramsFromRP.forceIssuer;
+	}
+
         // forceAuthentication is used by the Marketplace to ensure that the
         // user knows the password to this account. We ignore any active session.
         if (paramsFromRP.forceAuthentication &&

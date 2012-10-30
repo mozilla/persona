@@ -41,14 +41,14 @@
     }
   }
 
-  function getAssertion(email, callback) {
+  function getAssertion(email, forceIssuer, callback) {
     /*jshint validthis:true*/
     var self=this,
         wait = bid.Screens.wait;
 
     wait.show("wait", bid.Wait.generateKey);
 
-    user.getAssertion(email, user.getOrigin(), function(assert) {
+    user.getAssertion(email, user.getOrigin(), forceIssuer, function(assert) {
       assert = assert || null;
       wait.hide();
       self.publish("assertion_generated", {
@@ -132,7 +132,7 @@
       complete(callback, false);
     }
     else {
-      user.addressInfo(email, function(info) {
+      user.addressInfo(email, 'default', function(info) {
         if (info.type === "primary") {
           info = _.extend(info, { email: email, add: true });
           self.publish("primary_user", info, info);
