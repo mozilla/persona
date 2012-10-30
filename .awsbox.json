@@ -16,7 +16,7 @@
     "poststart": "scripts/awsbox_remote/post_start.sh",
     "postcreate": "scripts/awsbox_remote/post_create.sh"
   },
-  "localhooks": {
+  "local_hooks": {
     "postcreate": "node scripts/awsbox_local/post_create.js"
   },
   "packages": [

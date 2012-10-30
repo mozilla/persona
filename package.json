@@ -32,14 +32,14 @@
     "urlparse": "0.0.1",
     "validator": "0.4.9",
     "winston": "0.6.2",
-    "awsbox": "git://github.com/shane-tomlinson/awsbox.git#9b456826f77d4e200468f287558af9a4c9935293"
+    "awsbox": "git://github.com/shane-tomlinson/awsbox.git#ccf1872648a89132848e215da1038429f0082494"
   },
   "optionalDependencies": {
     "node-statsd": "https://github.com/downloads/lloyd/node-statsd/0509f85.tgz"
   },
   "devDependencies": {
     "vows": "0.5.13",
-    "awsbox": "git://github.com/shane-tomlinson/awsbox.git#9b456826f77d4e200468f287558af9a4c9935293",
+    "awsbox": "git://github.com/shane-tomlinson/awsbox.git#ccf1872648a89132848e215da1038429f0082494",
     "irc": "0.3.3",
     "jshint": "0.7.1",
     "minimatch": "0.2.6",
