@@ -19,6 +19,7 @@ train-2012.10.12:
   * Fix static resources - served from static.login.persona.org: #2552
   * (hotfix 2012.10.12) Fix processing of ejs templates to repair email delivery: #2589
   * (hotfix 2012.10.25) Fix issue where sometimes dialog sticks at "Connecting to Persona": #2629
+  * (hotfix 2012.10.30) Fix API regression: onlogout fired when it shouldn't be: #2662
 
 train-2012.09.14:
   * Automated test improvements: #2364, #2429
