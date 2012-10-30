@@ -154,6 +154,7 @@ BrowserID.Modules.Dialog = (function() {
     if (!this._iframetospp) {
       this._iframetospp = document.createElement('iframe');
       this._iframetospp.id = 'tosppframe';
+      this._iframetospp.setAttribute('sandbox', '');
       this._iframetospp.setAttribute('name', 'tosppframe');
       //dom.appendTo(this._iframetospp, IFRAME_PARENT_SELECTOR);
       $(IFRAME_PARENT_SELECTOR)[0].appendChild(this._iframetospp);
