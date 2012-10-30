@@ -175,6 +175,8 @@
         user = bid.User,
         storage = bid.Storage;
 
+    network.init();
+
     log('internal watch options', options);
     var remoteOrigin = options.origin;
     var loggedInUser = options.loggedInUser;
