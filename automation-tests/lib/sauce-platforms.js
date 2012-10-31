@@ -58,6 +58,7 @@ const platforms = {
 
 const defaultCapabilities = {
   avoidProxy: true,
+  public: true
 };
 
 exports.platforms = platforms;
