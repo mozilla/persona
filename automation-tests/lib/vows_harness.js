@@ -22,7 +22,7 @@ module.exports = function(spec, mod) {
         spec[name].apply(this, args);
       },
       "succeeds": function(err) {
-        assert(!err, err);
+        assert(!err, err && err.toString());
       }
     };
     suite.addBatch(obj);

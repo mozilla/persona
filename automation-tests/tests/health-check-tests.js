@@ -36,7 +36,7 @@ var primaryTest = {
       secondBrowser = fixtures.browsers[1];
       eyedeemail = fixtures.eyedeemails[0];
       theEmail = fixtures.restmails[0];
-      done()
+      done(err)
     });
   },
   "start, go to personaorg, click sign in, type eyedeeme addy, click next": function(done) {
@@ -55,7 +55,7 @@ var primaryTest = {
     browser.chain()
       .wwin()
       .wtext(pcss.accountEmail, function(err, text) {
-        assert.equal(eyedeemail.toLowerCase(), text) // note, had to lower case it.
+        done(err || assert.equal(eyedeemail.toLowerCase(), text)); // note, had to lower case it.
       })
       .wclick(pcss.header.signOut, done);
   },

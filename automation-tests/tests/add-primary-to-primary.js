@@ -60,8 +60,7 @@ runner.run(module, {
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, primaryEmail.email);
-        done();
+        done(err || assert.equal(text, primaryEmail.email));
       });
   },
   "add a primary email to the account": function(done) {
@@ -84,8 +83,7 @@ runner.run(module, {
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, secondPrimaryEmail.email);
-        done();
+        done(err || assert.equal(text, secondPrimaryEmail.email))
       });
   },
   //XXX This could be much more comprehensive by bringing up the dialog

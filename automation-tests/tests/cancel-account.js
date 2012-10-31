@@ -28,7 +28,7 @@ function setup(done) {
     browser = info.browser;
     secondaryEmail = saveEmail(info.email);
     secondaryPassword = info.password;
-    done();
+    done(err);
   });
 }
 
@@ -84,8 +84,7 @@ function signIn123DoneWithSecondary(browser, email, password, done) {
     .wclick(CSS['dialog'].returningUserButton)
     .wwin()
     .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-      assert.equal(text, email);
-      done();
+      done(err || assert.equal(text, email));
     });
 }
 
