@@ -14,7 +14,8 @@ BrowserID.Modules.Dialog = (function() {
       win = window,
       startExternalDependencies = true,
       TOSPP_SELECTOR = ".tospp a",
-      IFRAME_PARENT_SELECTOR = "#signIn .table .vertical",
+      TOSPP_CLOSE_SELECTOR = "#tosppmodal .close",
+      IFRAME_PARENT_SELECTOR = "body",
       channel,
       sc;
 
@@ -151,16 +152,38 @@ BrowserID.Modules.Dialog = (function() {
   function showTOSPP(e) {
     /*jshint validthis:true*/
     var url = e.target.href;
-    if (!this._iframetospp) {
-      this._iframetospp = document.createElement('iframe');
-      this._iframetospp.id = 'tosppframe';
-      this._iframetospp.setAttribute('sandbox', '');
-      this._iframetospp.setAttribute('name', 'tosppframe');
-      //dom.appendTo(this._iframetospp, IFRAME_PARENT_SELECTOR);
-      $(IFRAME_PARENT_SELECTOR)[0].appendChild(this._iframetospp);
-    }
+    var iframe;
+    var modal;
+    if (!this._tospp) {
+      this._tospp = {};
+      modal = this._tospp.modal = document.createElement('div');
+      modal.id = 'tosppmodal';
 
-    this._iframetospp.setAttribute('src', url);
+      var close = document.createElement('span');
+      close.className = "close";
+      close.innerHTML = 'X';
+      close.onclick = closeTOSPP.bind(this);
+      modal.appendChild(close);
+
+      iframe = this._tospp.iframe = document.createElement('iframe');
+      iframe.id = 'tosppframe';
+      iframe.setAttribute('sandbox', '');
+      iframe.setAttribute('name', 'tosppframe');
+      dom.appendTo(iframe, modal);
+      dom.appendTo(modal, IFRAME_PARENT_SELECTOR);
+    } else {
+      iframe = this._tospp.iframe;
+      modal = this._tospp.modal;
+    }
+    modal.style.display = "block";
+    iframe.setAttribute('src', url);
+  }
+
+  function closeTOSPP() {
+    /*jshint validthis:true*/
+    if (this._tospp) {
+      this._tospp.modal.style.display = "none";
+    }
   }
 
   var Dialog = bid.Modules.PageModule.extend({
@@ -189,7 +212,11 @@ BrowserID.Modules.Dialog = (function() {
       }
 
       // if B2G
-      this.click(TOSPP_SELECTOR, showTOSPP);
+      //this.click(TOSPP_SELECTOR, showTOSPP);
+      $(TOSPP_SELECTOR).live('click', function(e) {
+        e.preventDefault();
+        showTOSPP.call(self, e);
+      });
       // endif
 
       options.ready && _.defer(options.ready);

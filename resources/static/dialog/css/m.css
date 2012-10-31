@@ -129,6 +129,7 @@
 
   #formWrap {
       background-color: transparent;
+      overflow:auto;
   }
 
   .form #formWrap, .waiting #wait, .delay #delay, #error #error {
@@ -227,9 +228,29 @@
     height: 250px;
   }
 
+  #tosppmodal {
+    position: absolute;
+    top:0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:rgba(0, 0, 0, 0.2);
+  }
+
+  #tosppmodal .close {
+    color:#fff;
+    display:block;
+    font-size:2em;
+    font-weight:bold;
+    height:6%;
+    padding:5px;
+  }
+
   #tosppframe {
-    height:100%;
-    width: 100%;
+    border:0;
+    height:92%;
+    overflow: auto;
+    width:100%;
   }
 }
 
