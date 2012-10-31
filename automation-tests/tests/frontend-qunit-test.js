@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const
-assert = require('assert'),
+assert = require('../lib/asserts.js'),
 utils = require('../lib/utils.js'),
 runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js');

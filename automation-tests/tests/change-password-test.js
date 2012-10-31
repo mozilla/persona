@@ -6,7 +6,7 @@
 
 const
 path = require('path'),
-assert = require('assert'),
+assert = require('../lib/asserts.js'),
 utils = require('../lib/utils.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
