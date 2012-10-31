@@ -38,14 +38,14 @@ function saveEmail(email) {
 }
 
 function removeEmail(email, done) {
-  browser.chain()
+  browser.chain({onError: done})
     .get(persona_urls['persona'])
     .wclick(CSS['persona.org'].emailListEditButton)
     .elementsByCssSelector(CSS['persona.org'].removeEmailButton, function(err, elements) {
       var index = getEmailIndex(email);
       var button = elements[index];
 
-      browser.chain()
+      browser.chain({onError: done})
         .clickElement(button)
         // Give Chrome a bit to display the alert or else the command to
         // accept the alert is fired too early.
@@ -81,7 +81,7 @@ runner.run(module, {
     });
   },
   "go to 123done and create a primary account": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .newSession(testSetup.sessionOpts)
       .get(persona_urls['123done'])
       .wclick(CSS['123done.org'].signInButton)
@@ -100,7 +100,7 @@ runner.run(module, {
   },
 
   "add another primary to account": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wclick(CSS['123done.org'].logoutLink)
       .wclick(CSS['123done.org'].signInButton)
       .wwin(CSS['dialog'].windowName)
@@ -119,7 +119,7 @@ runner.run(module, {
   },
 
   "add secondary to account": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wclick(CSS['123done.org'].logoutLink)
       .wclick(CSS['123done.org'].signInButton)
       .wwin(CSS['dialog'].windowName)
@@ -136,7 +136,7 @@ runner.run(module, {
   },
 
   "follow link, wait for redirect, secondary should be displayed": function(done, link) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .get(link)
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
@@ -145,7 +145,7 @@ runner.run(module, {
   },
 
   "log in to 123done using secondPrimaryEmail": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wclick(CSS['123done.org'].logoutLink)
       .wclick(CSS['123done.org'].signInButton)
       .wwin(CSS['dialog'].windowName)
@@ -158,7 +158,7 @@ runner.run(module, {
   },
 
   "log in to myfavoritebeer using secondaryEmail": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls['myfavoritebeer'])
       .wclick(CSS['myfavoritebeer.org'].signInButton)
       .wwin(CSS['dialog'].windowName)
@@ -175,7 +175,7 @@ runner.run(module, {
   },
 
   "go to 123done, user should no longer be logged in": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls['123done'])
       .wfind(CSS['123done.org'].signInButton, done);
   },
@@ -185,7 +185,7 @@ runner.run(module, {
   },
 
   "go to myfavoritebeer, make sure user is still signed in - mfb still uses old API": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls['myfavoritebeer'])
       .wfind(CSS['myfavoritebeer.org'].logoutLink, done);
   },
@@ -195,7 +195,7 @@ runner.run(module, {
   },
 
   "user should now be signed out - cannot sign in with deleted addresses": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls['persona'])
       .wclick(CSS['persona.org'].header.signIn)
       .wtype(CSS['persona.org'].signInForm.email, secondaryEmail)

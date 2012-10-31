@@ -21,7 +21,7 @@ var pcss = CSS['persona.org'],
 // all the stuff common between primary and secondary tests:
 // go to persona.org, click sign in, enter email, click next.
 var startup = function(b, email, cb) {
-  b.chain()
+  b.chain({onError: cb})
     .newSession(testSetup.sessionOpts)
     .get(persona_urls['persona'])
     .wclick(pcss.header.signIn)
@@ -46,13 +46,13 @@ var primaryTest = {
     browser.wclick(pcss.signInForm.verifyPrimaryButton, done);
   },
   "switch to eyedeeme dialog, submit password, click ok": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin(pcss.verifyPrimaryDialogName)
       .wtype(CSS['eyedee.me'].newPassword, eyedeemail.split('@')[0])
       .wclick(CSS['eyedee.me'].createAccountButton, done);
   },
   "switch back to main window, look for the email in acct mgr, then log out": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .wtext(pcss.accountEmail, function(err, text) {
         done(err || assert.equal(eyedeemail.toLowerCase(), text)); // note, had to lower case it.
@@ -69,7 +69,7 @@ var secondaryTest = {
     startup(secondBrowser, theEmail, done);
   },
   "enter password and click verify": function(done) {
-    secondBrowser.chain()
+    secondBrowser.chain({onError: done})
       .wtype(pcss.signInForm.password, theEmail.split('@')[0])
       .wtype(pcss.signInForm.verifyPassword, theEmail.split('@')[0])
       .wclick(pcss.signInForm.verifyEmailButton, done);
@@ -80,7 +80,7 @@ var secondaryTest = {
   // if we asserted against contents of #congrats message, our tests would
   // break if we ran them against a non-English deploy of the site
   "open verification link and verify we see congrats node": function(done, link) {
-    secondBrowser.chain()
+    secondBrowser.chain({onError: done})
       .get(link)
       .wfind(pcss.congratsMessage, done); 
   },

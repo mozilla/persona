@@ -39,7 +39,7 @@ runner.run(module, {
     browser.newSession(testSetup.sessionOpts, done);
   },
   "go to 123done and click sign in": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls["123done"])
       .wclick(CSS["123done.org"].signinButton, done);
   },
@@ -54,14 +54,14 @@ runner.run(module, {
     }, done);
   },
   "verify we're logged in as the expected user": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, testUser.email));
       });
   },
   "in the second browser, log in to persona.org": function(done) {
-    secondBrowser.chain()
+    secondBrowser.chain({onError: done})
       .newSession(testSetup.sessionOpts)
       .get(persona_urls['persona'])
       .wclick(CSS['persona.org'].header.signIn)
@@ -77,7 +77,7 @@ runner.run(module, {
     secondBrowser.wclick(CSS["persona.org"].changePasswordButton, done);
   },
   "enter old and new passwords and click done": function(done) {
-    secondBrowser.chain()
+    secondBrowser.chain({onError: done})
       .wtype(CSS['persona.org'].oldPassword, testUser.pass)
       .wtype(CSS['persona.org'].newPassword, 'new' + testUser.pass)
       .wclick(CSS['persona.org'].passwordChangeDoneButton, done);
@@ -86,7 +86,7 @@ runner.run(module, {
     secondBrowser.wfind(CSS['persona.org'].changePasswordButton, done);
   },
   "back to the first browser: should be signed out of 123done on reload": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls["123done"])
       .wfind(CSS['123done.org'].signinButton, done)
   },
@@ -104,7 +104,7 @@ runner.run(module, {
     }, done);
   },
   "finally, verify signed in to 123done": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, testUser.email));

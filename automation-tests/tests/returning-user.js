@@ -34,7 +34,7 @@ runner.run(module, {
     });
   },
   "startup, create primary acct on personaorg": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .newSession(testSetup.sessionOpts)
       .get(persona_urls['persona'])
       .wclick(CSS['persona.org'].header.signIn)
@@ -50,7 +50,7 @@ runner.run(module, {
       })
   },
   "go to 123done and add a secondary acct": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls['123done'])
       .wclick(CSS['123done.org'].signinButton)
       .wwin(CSS['persona.org'].windowName)
@@ -65,7 +65,7 @@ runner.run(module, {
     restmail.getVerificationLink({ email: secondary }, done);
   },
   "follow link, wait for redirect, secondary should be displayed": function(done, link) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .get(link)
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
@@ -73,7 +73,7 @@ runner.run(module, {
       })
   },
   "go to mfb, open dialog for first login": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls['myfavoritebeer'])
       .wclick(CSS['myfavoritebeer.org'].signinButton)
       .wwin(CSS['persona.org'].windowName, done)
@@ -93,7 +93,7 @@ runner.run(module, {
     });
   },
   "sign in using primary, sign out, reload, click sign in, verify primary is selected": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wclick(CSS['dialog'].firstEmail)
       .wclick(CSS['dialog'].signInButton)
       .wclick(CSS['dialog'].notMyComputerButton)

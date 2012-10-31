@@ -30,7 +30,7 @@ var new_secondary_123done_two_browsers = {
     });
   },
   "startup, go to 123done, click sign in": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .newSession(testSetup.sessionOpts)
       .get(persona_urls['123done'])
       .wclick(CSS['123done.org'].signinButton, done);
@@ -49,12 +49,12 @@ var new_secondary_123done_two_browsers = {
     restmail.getVerificationLink({ email: theEmail }, done);
   },
   "get another browser session, open verification link in new browser window": function(done, link) {
-    secondBrowser.chain()
+    secondBrowser.chain({onError: done})
       .newSession(testSetup.sessionOpts)
       .get(link, done);
   },
   "re-enter password and click login on persona.org": function(done) {
-    secondBrowser.chain()
+    secondBrowser.chain({onError: done})
       .wtype(CSS['persona.org'].signInForm.password, theEmail.split('@')[0])
       .wclick(CSS['persona.org'].signInForm.finishButton, done);
   },
@@ -62,7 +62,7 @@ var new_secondary_123done_two_browsers = {
     secondBrowser.wfind(CSS['persona.org'].congratsMessage, done);
   },
   "verify logged in automatically to 123done in first browser": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, theEmail));
@@ -81,7 +81,7 @@ var new_secondary_mfb_two_browsers = {
     browser.newSession(testSetup.sessionOpts, done);
   },
   "load mfb and click the signin button": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls["myfavoritebeer"])
       .wclick(CSS["myfavoritebeer.org"].signinButton, done);
   },
@@ -99,14 +99,14 @@ var new_secondary_mfb_two_browsers = {
     restmail.getVerificationLink({ email: mfbEmail }, done);
   },
   "open verification link in second session and re-enter password": function(done, link) {
-    secondBrowser.chain()
+    secondBrowser.chain({onError: done})
       .newSession(testSetup.sessionOpts)
       .get(link)
       .wtype(CSS['persona.org'].signInForm.password, mfbEmail.split('@')[0])
       .wclick(CSS['persona.org'].signInForm.finishButton, done);
   },
   "back in the first session, back to main window and verify we're auto-logged in as the expected user": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
         assert.equal(text, mfbEmail);
@@ -127,7 +127,7 @@ var new_secondary_personaorg = {
     // but I'm afraid they will be totally unreadable if you only write these
     // tests once in a while
     "create restmail user at persona.org and verify logged in OK": function(done) {
-      browser.chain()
+      browser.chain({onError: done})
         .newSession(testSetup.sessionOpts)
         .get(persona_urls['persona'])
         .wclick(CSS['persona.org'].header.signIn)
@@ -141,7 +141,7 @@ var new_secondary_personaorg = {
       restmail.getVerificationLink({email: nspEmail}, done);
     }, 
     "open link, verify you are redirected to acct mgr and see your email": function(done, link) {
-      browser.chain()
+      browser.chain({onError: done})
         .get(link)
         .wtext(CSS['persona.org'].accountEmail, done)
     },

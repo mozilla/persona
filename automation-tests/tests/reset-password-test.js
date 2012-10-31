@@ -39,7 +39,7 @@ runner.run(module, {
   "open myfavoritebeer, open dialog, click forgotPassword": function(done, user) {
     theUser = user;
 
-    browser.chain()
+    browser.chain({onError: done})
       .newSession(testSetup.sessionOpts)
       .get(persona_urls['myfavoritebeer'])
       .wclick(CSS['myfavoritebeer.org'].signinButton)
@@ -50,7 +50,7 @@ runner.run(module, {
   },
 
   "choose new password": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wtype(CSS['dialog'].choosePassword, NEW_PASSWORD)
       .wtype(CSS['dialog'].verifyPassword, NEW_PASSWORD)
       .wclick(CSS['dialog'].resetPasswordButton, function(err) {
@@ -63,7 +63,7 @@ runner.run(module, {
   },
 
   "make sure user is signed in to RP after password reset": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, theUser.email));
@@ -71,7 +71,7 @@ runner.run(module, {
   },
 
   "open dialog again and make sure user is signed in to Persona": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wclick(CSS['myfavoritebeer.org'].logout)
       .wclick(CSS['myfavoritebeer.org'].signinButton)
       .wwin(CSS['dialog'].windowName)

@@ -44,14 +44,14 @@ function saveEmail(email) {
 }
 
 function removeEmail(email, done) {
-  browser.chain()
+  browser.chain({onError: done})
     .get(persona_urls['persona'])
     .wclick(CSS['persona.org'].emailListEditButton)
     .elementsByCssSelector(CSS['persona.org'].removeEmailButton, function(err, elements) {
       var index = getEmailIndex(email);
       var button = elements[index];
 
-      browser.chain()
+      browser.chain({onError: done})
         .clickElement(button)
         // Give Chrome a bit to display the alert or else the command to
         // accept the alert is fired too early.
@@ -73,7 +73,7 @@ function removeEmail(email, done) {
 }
 
 function signIn123DoneWithSecondary(browser, email, password, done) {
-  browser.chain()
+  browser.chain({onError: done})
     .newSession(testSetup.sessionOpts)
     .get(persona_urls['123done'])
     .wclick(CSS['123done.org'].signInButton)
@@ -89,13 +89,13 @@ function signIn123DoneWithSecondary(browser, email, password, done) {
 }
 
 function testUserNotSignedIn123Done(browser, done) {
-  browser.chain()
+  browser.chain({onError: done})
     .get(persona_urls['123done'])
     .wfind(CSS['123done.org'].signInButton, done);
 }
 
 function testEmailNotRegistered(browser, email, done) {
-  browser.chain()
+  browser.chain({onError: done})
     .get(persona_urls['persona'])
     .wclick(CSS['persona.org'].header.signIn)
     .wtype(CSS['persona.org'].signInForm.email, email)
@@ -147,7 +147,7 @@ runner.run(module, {
   },
 
   "go to persona manage page and cancel the account": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls['persona'])
       .wclick(CSS['persona.org'].cancelAccountLink)
       .delay(500)

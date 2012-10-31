@@ -1,11 +1,11 @@
 {
-  "name": "meh",
-  "description": "meh",
+  "name": "browserid-selenium-tests",
+  "description": "selenium tests for the browserid goodness",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
     "vows": "*",
-    "wd": "*",
+    "wd": "git://github.com/lloyd/wd",
     "request": "*",
     "optimist": "*",
     "q": "*",

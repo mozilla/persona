@@ -18,7 +18,7 @@ runner = require('../../lib/runner.js');
 var browser, eyedeemail, theEmail, eyedeemail_mfb, porg_eyedeemail;
 
 function dialogEyedeemeFlow(b, email, cb) {
-  b.chain()
+  b.chain({onError: cb})
     .wwin(CSS['persona.org'].windowName)
     .wtype(CSS['dialog'].emailInput, email)
     .wclick(CSS['dialog'].newEmailNextButton)
@@ -40,7 +40,7 @@ var primary_123done = {
     });
   },
   "startup, load 123done, click sign in": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .newSession(testSetup.sessionOpts)
       .get(persona_urls['123done'])
       .wclick(CSS['123done.org'].signinButton, done)
@@ -50,7 +50,7 @@ var primary_123done = {
   },
   // TODO 123done never seems to log in. something up with beta server?
   "switch back to main window and verify we're logged in": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, eyedeemail));
@@ -64,7 +64,7 @@ var primary_123done = {
 var mcss = CSS['myfavoritebeer.org'],
   primary_mfb = {
     "go to mfb, click sign in, switch to dialog": function(done) {
-      browser.chain()
+      browser.chain({onError: done})
         .newSession(testSetup.sessionOpts)
         .get(persona_urls['myfavoritebeer'])
         .wclick(mcss.signinButton, done)
@@ -73,7 +73,7 @@ var mcss = CSS['myfavoritebeer.org'],
       dialogEyedeemeFlow(browser, eyedeemail_mfb, done);
     },
     "back to mfb, check we logged in OK": function(done) {
-      browser.chain()
+      browser.chain({onError: done})
         .wwin()
         .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
           done(err || assert.equal(text, eyedeemail_mfb));
@@ -93,7 +93,7 @@ var pcss = CSS['persona.org'],
     // click verify primary button, switch to popup, enter password, click ok
     // switch back to main window, look for email in acct mgr, log out
     "create eyedee.me primary at persona.org and verify logged in OK": function(done) {
-      browser.chain()
+      browser.chain({onError: done})
         .newSession(testSetup.sessionOpts)
         .get(persona_urls['persona'])
         .wclick(pcss.header.signIn)
@@ -109,7 +109,7 @@ var pcss = CSS['persona.org'],
         });
     },
     "log out": function(done) {
-      browser.chain()
+      browser.chain({onError: done})
         .wclick(pcss.header.signOut)
         .quit(done);
     }

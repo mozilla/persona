@@ -39,7 +39,7 @@ runner.run(module, {
     });
   },
   'create new secondary via mfb': function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .newSession(testSetup.sessionOpts)
       .get(persona_urls['myfavoritebeer'])
       .wclick(CSS['myfavoritebeer.org'].signinButton)
@@ -56,7 +56,7 @@ runner.run(module, {
     restmail.getVerificationLink({ email: secondary }, done);
   },
   'open persona.org verification link and wait for congrats message': function(done, link) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .get(link)
       .wfind(CSS['persona.org'].congratsMessage, done);
@@ -75,7 +75,7 @@ runner.run(module, {
       'localStorage.setItem("usersComputer", storable); ' +
       '})();';
 
-    browser.chain()
+    browser.chain({onError: done})
       .wclick(CSS['persona.org'].header.signIn)
       .wfind(CSS['persona.org'].accountManagerHeader) // make sure we're logged in
       .eval(rewindOneMinute, function(err, out) {
@@ -85,7 +85,7 @@ runner.run(module, {
       })
   },
   'go to 123done, click log in, click "thats my email" button': function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls['123done'])
       .wclick(CSS['123done.org'].signinButton)
       .wwin(CSS['persona.org'].windowName)

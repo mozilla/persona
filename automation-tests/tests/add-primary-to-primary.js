@@ -42,7 +42,7 @@ runner.run(module, {
   },
   //XXX obviously in need of refactoring between this primary and the second one.
   "signup a new account with a primary": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls["123done"])
       .wclick(CSS['123done.org'].signInButton)
       .wwin(CSS['dialog'].windowName)
@@ -64,7 +64,7 @@ runner.run(module, {
       });
   },
   "add a primary email to the account": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wclick(CSS['123done.org'].logoutLink)
       .wclick(CSS['123done.org'].signInButton)
       .wwin(CSS['dialog'].windowName)

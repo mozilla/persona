@@ -46,7 +46,7 @@ runner.run(module, {
     }, done);
   },
   "verify signed in to 123done": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, testUser.email));
@@ -61,7 +61,7 @@ runner.run(module, {
     browser.newSession(testSetup.sessionOpts, done);
   },
   "load myfavoritebeer and wait for the signin button to be visible": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .get(persona_urls['myfavoritebeer'])
       .wclick(CSS['myfavoritebeer.org'].signinButton, done);
   },
@@ -76,7 +76,7 @@ runner.run(module, {
     }, done);
   },
   "verify signed in to myfavoritebeer": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, mfbUser.email));

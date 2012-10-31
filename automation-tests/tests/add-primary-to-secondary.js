@@ -54,14 +54,14 @@ runner.run(module, {
     }, done);
   },
   "verify signed in to 123done": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, secondaryEmail.email));
        });
   },
   "add a primary email to the account": function(done) {
-    browser.chain()
+    browser.chain({onError: done})
       .wclick(CSS['123done.org'].logoutLink)
       .wclick(CSS['123done.org'].signInButton)
       .wwin(CSS['dialog'].windowName)
