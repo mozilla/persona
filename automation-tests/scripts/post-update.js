@@ -32,13 +32,8 @@ function installDependencies(done) {
     env: process.env
   });
 
-  installProcess.stdout.on('data', function (data) {
-    util.log(data.toString());
-  });
-
-  installProcess.stderr.on('data', function (data) {
-    util.log(data.toString());
-  });
+  installProcess.stdout.pipe(process.stdout);
+  installProcess.stderr.pipe(process.stderr);
 
   installProcess.on('exit', done);
 }
@@ -73,13 +68,8 @@ function runTests(done) {
     env: env
   });
 
-  testProcess.stdout.on('data', function (data) {
-    util.log(data.toString());
-  });
-
-  testProcess.stderr.on('data', function (data) {
-    util.log(data.toString());
-  });
+  testProcess.stdout.pipe(process.stdout);
+  testProcess.stderr.pipe(process.stderr);
 
   testProcess.on('exit', function(code) {
     console.log("done", code);
