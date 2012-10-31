@@ -46,8 +46,7 @@ runner.run(module, {
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()
       .wtext(CSS['persona.org'].accountEmail, function(err, text) {
-        assert.equal(primary.toLowerCase(), text) // note
-        done()
+        done(err || assert.equal(primary.toLowerCase(), text)); // note
       })
   },
   "go to 123done and add a secondary acct": function(done) {
@@ -70,8 +69,7 @@ runner.run(module, {
       .wwin()
       .get(link)
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, secondary);
-        done()
+        done(err || assert.equal(text, secondary));
       })
   },
   "go to mfb, open dialog for first login": function(done) {
@@ -83,16 +81,14 @@ runner.run(module, {
   "check first radio is not selected":function(done, el) {
     browser.wfind(CSS['dialog'].firstEmail, function(err, el) {
       browser.getAttribute(el, 'selected', function(err, val) {
-        assert.ok(!val)
-        done()
+        done(err || assert.ok(!val));
       })
     })
   },
   "check second radio is not selected": function(done) {
     browser.wfind(CSS['dialog'].secondEmail, function(err, el) {
       browser.getAttribute(el, 'selected', function(err, val) {
-        assert.ok(!val)
-        done()
+        done(err || assert.ok(!val));
       })
     });
   },
@@ -110,16 +106,14 @@ runner.run(module, {
   "check first radio is selected":function(done, el) {
     browser.wfind(CSS['dialog'].firstEmail, function(err, el) {
       browser.getAttribute(el, 'selected', function(err, val) {
-        assert.ok(val)
-        done()
+        done(err || assert.ok(val));
       })
     })
   },
   "check second radio is still not selected": function(done) {
     browser.wfind(CSS['dialog'].secondEmail, function(err, el) {
       browser.getAttribute(el, 'selected', function(err, val) {
-        assert.ok(!val)
-        done()
+        done(err || assert.ok(!val));
       })
     });
   },

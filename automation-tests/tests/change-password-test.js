@@ -57,8 +57,7 @@ runner.run(module, {
     browser.chain()
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, testUser.email);
-        done();
+        done(err || assert.equal(text, testUser.email));
       });
   },
   "in the second browser, log in to persona.org": function(done) {
@@ -71,8 +70,7 @@ runner.run(module, {
       .wtype(CSS['persona.org'].signInForm.password, testUser.pass)
       .wclick(CSS['persona.org'].signInForm.finishButton)
       .wtext(CSS['persona.org'].accountManagerHeader, function(err, text) {
-        assert.equal(text, 'Account Manager');
-        done();
+        done(err || assert.equal(text, 'Account Manager'));
       });
     },
   "click the change password button": function(done) {
@@ -109,8 +107,7 @@ runner.run(module, {
     browser.chain()
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, testUser.email);
-        done();
+        done(err || assert.equal(text, testUser.email));
       });
   },
   "shut down": function(done) {

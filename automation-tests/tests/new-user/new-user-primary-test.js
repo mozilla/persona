@@ -53,8 +53,7 @@ var primary_123done = {
     browser.chain()
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, eyedeemail);
-        done()
+        done(err || assert.equal(text, eyedeemail));
       });
   },
   "123done end this browser session": function(done) {
@@ -77,8 +76,7 @@ var mcss = CSS['myfavoritebeer.org'],
       browser.chain()
         .wwin()
         .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
-          assert.equal(text, eyedeemail_mfb);
-          done()
+          done(err || assert.equal(text, eyedeemail_mfb));
         });
     },
     "mfb tear down browser": function(done) {
@@ -107,8 +105,11 @@ var pcss = CSS['persona.org'],
         .wclick(CSS['eyedee.me'].createAccountButton)
         .wwin()
         .wtext(pcss.accountEmail, function(err, text) {
-          assert.equal(porg_eyedeemail.toLowerCase(), text) // note
-        })
+          done(err || assert.equal(porg_eyedeemail.toLowerCase(), text)) // note
+        });
+    },
+    "log out": function(done) {
+      browser.chain()
         .wclick(pcss.header.signOut)
         .quit(done);
     }

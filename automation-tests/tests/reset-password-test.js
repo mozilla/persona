@@ -53,8 +53,8 @@ runner.run(module, {
     browser.chain()
       .wtype(CSS['dialog'].choosePassword, NEW_PASSWORD)
       .wtype(CSS['dialog'].verifyPassword, NEW_PASSWORD)
-      .wclick(CSS['dialog'].resetPasswordButton, function() {
-        done();
+      .wclick(CSS['dialog'].resetPasswordButton, function(err) {
+        done(err);
       });
   },
 
@@ -66,8 +66,7 @@ runner.run(module, {
     browser.chain()
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, theUser.email);
-        done();
+        done(err || assert.equal(text, theUser.email));
       });
   },
 
@@ -78,8 +77,8 @@ runner.run(module, {
       .wwin(CSS['dialog'].windowName)
       // the thisIsNotMe button is only displayed if the user is already
       // authenticated.
-      .wclick(CSS['dialog'].thisIsNotMe, function() {
-        done();
+      .wclick(CSS['dialog'].thisIsNotMe, function(err) {
+        done(err);
       });
   },
 

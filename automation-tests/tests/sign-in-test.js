@@ -49,8 +49,7 @@ runner.run(module, {
     browser.chain()
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, testUser.email);
-        done()
+        done(err || assert.equal(text, testUser.email));
        });
   },
   "tear down browser": function(done) {
@@ -80,8 +79,7 @@ runner.run(module, {
     browser.chain()
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, mfbUser.email);
-        done()
+        done(err || assert.equal(text, mfbUser.email));
       });
   },
   "mfb tear down browser": function(done) {

@@ -95,8 +95,7 @@ runner.run(module, {
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, firstPrimaryEmail);
-        done();
+        done(err || assert.equal(text, firstPrimaryEmail))
       });
   },
 
@@ -115,8 +114,7 @@ runner.run(module, {
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, secondPrimaryEmail);
-        done();
+        done(err || assert.equal(text, secondPrimaryEmail))
       });
   },
 
@@ -142,8 +140,7 @@ runner.run(module, {
       .wwin()
       .get(link)
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, secondaryEmail);
-        done();
+        done(err || assert.equal(text, secondaryEmail));
       });
   },
 
@@ -156,8 +153,7 @@ runner.run(module, {
       .wclick(CSS['dialog'].signInButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, secondPrimaryEmail);
-        done();
+        done(err || assert.equal(text, secondPrimaryEmail))
       });
   },
 
@@ -170,8 +166,7 @@ runner.run(module, {
       .wclick(CSS['dialog'].signInButton)
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
-        assert.equal(text, secondaryEmail);
-        done();
+        done(err || assert.equal(text, secondaryEmail))
       });
   },
 
