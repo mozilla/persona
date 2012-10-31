@@ -80,7 +80,7 @@ runner.run(module, {
       // - Should have a mode here where we just return the `res` back to 
       // a parallel test runner, which can then make assertions about
       // all the results.
-      console.dir(res);
+      //console.dir(res); // commented out because stray JSON makes SAX parser, hence Jenkins, cry
       assert.equal(res.result.failed, '0', 'no tests failed');
       done();
     };
