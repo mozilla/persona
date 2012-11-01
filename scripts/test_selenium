@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+// This is a travis-ci specific script that triggers selenium test runs on
+// testy-listener.personatest.org.
+
+const spawn = require('child_process').spawn;
+
+function getSHA(done) {
+  // next try using git
+  var p = spawn('git', [ 'log', '--pretty=%H', '-1' ]);
+  var buf = "";
+  p.stdout.on('data', function(d) {
+    buf += d;
+  });
+  p.stdout.on('end', function(code, signal) {
+    var gitsha = buf.toString().trim();
+    if (gitsha && gitsha.length === 40) {
+      done && done(gitsha)
+    }
+    else {
+      console.error('incorrect git sha length');
+    }
+  });
+}
+
+function runTests(sha, done) {
+  console.log(" >>> Starting selenium tests on", sha);
+
+  var p = spawn('curl', [ '-s', '-N', 'http://testy-listener.personatest.org/test/' + sha ]);
+  p.stdout.pipe(process.stdout);
+  p.stderr.pipe(process.stderr);
+
+  p.on('end', function(code, signal) {
+    done && done(code);
+  });
+}
+
+getSHA(function(sha) {
+  runTests(sha, function(err, status) {
+    process.exit(status);
+  });
+});
