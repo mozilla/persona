@@ -43,8 +43,10 @@ function runTests(sha, done) {
 
   p.on('end', function(code, signal) {
     if (!code) {
-      // look for any closing error tags which indicate there was an error in the tests
-      code = buf.indexOf("</error>") === -1 ? 0 : 1;
+      // make sure at least one testsuite was run but there are no errors.
+      var success = buf.indexOf("</testsuite>") > -1 
+                 && buf.indexOf("</error>") === -1;
+      code = success ? 0 : 1;
     }
     done && done(code);
   });
