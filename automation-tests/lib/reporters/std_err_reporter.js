@@ -2,11 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const util = require('util');
-
 function StdErrReporter() { }
 StdErrReporter.prototype.report = function(msg) {
-  util.error(msg);
+  process.stderr.write(msg);
 };
 StdErrReporter.prototype.done = function() {};
 
