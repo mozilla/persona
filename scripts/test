@@ -74,6 +74,11 @@ function run() {
       what: "API level unit tests using MySQL",
       node_env: 'test_mysql',
       script: 'test_backend'
+    },
+    selenium: {
+      what: "Selenium tests against sauce labs",
+      node_env: 'test_json',
+      script: 'test_selenium'
     }
   };
   var conf = availConf[testName];
