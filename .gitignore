@@ -22,3 +22,5 @@ Thumbs.db
 /automation-tests/sauce.yaml
 automation-tests/persona_server/results/*
 /automation-tests/chromedriver.log
+/.coverage_data
+/cover_html

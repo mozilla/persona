@@ -9,7 +9,14 @@
 
 const
 spawn = require('child_process').spawn,
+exec = require('child_process').exec,
+rimraf = require('rimraf'),
 path = require('path');
+
+// if running tests for backend coverage, remove any prior run's data.
+if (process.env.PERSONA_WITH_COVER) {
+  rimraf.sync(path.join(__dirname, "..", ".coverage_data"));
+}
 
 // WHAT TESTS are we running?
 var whatTests = [];
@@ -25,8 +32,30 @@ var ec = 0;
 var frontend_test_filter = process.env['FRONTEND_TEST_FILTER'] ?
                            ' (filter: ' + process.env['FRONTEND_TEST_FILTER'] + ')' :
                            '';
+
+function reportCoverage(ec) {
+  var pathToCover = path.join(__dirname, "..", "node_modules", ".bin", "cover");
+  var pathToReport = path.join(__dirname, "..", "cover_html");
+  rimraf.sync(pathToReport);
+  pathToReport = ['`open file://', pathToReport, '/index.html`'].join('');
+  exec(pathToCover + ' combine', function(err, stdout, stderr) {
+    if (err) throw err;
+    exec(pathToCover + ' report html', function(err, stdout, stderr) {
+      if (err) throw err;
+      console.log("\n**\n** Coverage report is available at",
+                  pathToReport, '\n**\n');
+      process.exit(ec);
+    });
+  });
+}
+
 function run() {
-  if (!whatTests.length) process.exit(ec);
+  if (!whatTests.length) {
+    if (process.env.PERSONA_WITH_COVER) {
+      return reportCoverage(ec);
+    }
+    process.exit(ec);
+  }
 
   var testName = whatTests.shift();
 
