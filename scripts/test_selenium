@@ -44,7 +44,7 @@ function runTests(sha, done) {
   p.on('end', function(code, signal) {
     if (!code) {
       // look for any closing error tags which indicate there was an error in the tests
-      code = buf.indexOf("</error>") === -1 : 0 : 1;
+      code = buf.indexOf("</error>") === -1 ? 0 : 1;
     }
     done && done(code);
   });
