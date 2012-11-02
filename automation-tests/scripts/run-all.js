@@ -24,14 +24,14 @@ const path = require('path'),
       StdErrReporter = require('../lib/reporters/std_err_reporter'),
       max_runners = parseInt(process.env['RUNNERS'] || 1, 10),
       vows_path = path.join(__dirname, "../node_modules/.bin/vows"),
-      vows_args = process.env['VOWS_ARGS'] || "--xunit",
+      vows_args = process.env['VOWS_ARGS'] || ["--xunit", "-i"], // XXX is it cool to expect an array?
       result_extension = process.env['RESULT_EXTENSION'] || "xml",
       start_time = new Date().getTime();
 
 function runTest(testName, testPath, stdOutReporter, stdErrReporter, done) {
   util.puts("starting " + testName);
 
-  var testProcess = child_process.spawn(vows_path, [testPath, vows_args]);
+  var testProcess = child_process.spawn(vows_path, [testPath].concat(vows_args));
 
   testProcess.stdout.on('data', function (data) {
     stdOutReporter.report(data.toString());
