@@ -76,6 +76,10 @@ runner.run(module, {
       // first wclick worked, then the the element is gone and the second wclick
       // spins for 20 seconds needlessly. Of course, this "fix" doesn't really
       // make sense to me, since wclick implicitly calls wfind first o_O.
+      //
+      // lth: I think effectively adding a .wfind() introduces a time delay.  If this
+      // makes tests stable I think we might have a real race condition where a button
+      // is not clickable immediately after being added to the DOM.
       .wfind(CSS['dialog'].verifyWithPrimaryButton)
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
       // continuing past that button
