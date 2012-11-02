@@ -12,7 +12,7 @@ function register(suites) {
 
 // run runs previously-registered suites. for convenience,
 // you can just pass suites into run as well.
-function run(mod, suites) {
+function run(mod, suites, opts) {
   if (suites) register(suites);
 
   rawSuites.forEach(function(suite, i) {
@@ -24,7 +24,7 @@ function run(mod, suites) {
     }
   });
 
-  vowsHarness(alltests, mod); // todo where is module defined?
+  vowsHarness(alltests, mod, opts); // todo where is module defined?
 }
 
 exports.run = run;
