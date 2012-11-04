@@ -91,12 +91,21 @@ runner.run(module, {
         done(err || assert.ok(!val));
       })
     });
-  },
+  }
+  ,
   "sign in using primary, sign out, reload, click sign in, verify primary is selected": function(done) {
     browser.chain({onError: done})
       .wclick(CSS['dialog'].firstEmail)
       .wclick(CSS['dialog'].signInButton)
-      .wclick(CSS['dialog'].notMyComputerButton)
+      .wclick(CSS['dialog'].notMyComputerButton, function(err) {
+        // Because this button depends on timing, it may not be displayed.
+        // For this reason a "timeout hit" error is not fatal.
+        // It's unfortunate that this is a 20s delay in this test...
+        if (err && err !== 'timeout hit') {
+          done(err);
+          browser.haltChain();
+        }
+      })
       .wwin()
       .wclick(CSS['myfavoritebeer.org'].logout)
       .wclick(CSS['myfavoritebeer.org'].signinButton)
