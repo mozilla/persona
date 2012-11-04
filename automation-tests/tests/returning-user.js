@@ -57,9 +57,9 @@ runner.run(module, {
       .wclick(CSS['dialog'].useNewEmail)
       .wtype(CSS['dialog'].newEmail, secondary)
       .wclick(CSS['dialog'].addNewEmailButton)
-    .wtype(CSS['dialog'].choosePassword, secondary.split('@')[0])
-    .wtype(CSS['dialog'].verifyPassword, secondary.split('@')[0])
-    .wclick(CSS['dialog'].createUserButton, done)
+      .wtype(CSS['dialog'].choosePassword, secondary.split('@')[0])
+      .wtype(CSS['dialog'].verifyPassword, secondary.split('@')[0])
+      .wclick(CSS['dialog'].createUserButton, done)
   },
   "get verification link": function(done) {
     restmail.getVerificationLink({ email: secondary }, done);
