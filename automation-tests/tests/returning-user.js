@@ -116,8 +116,10 @@ runner.run(module, {
         done(err || assert.ok(!val));
       })
     });
-  },
-  "destroy": function(done) {
-    browser.quit(done)
+  }
+}, {
+  // regardless of success or failure, we should cleanup the browser session
+  cleanup: function() {
+    browser.quit();
   }
 });
