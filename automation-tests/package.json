@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "vows": "*",
-    "wd": "git://github.com/lloyd/wd",
+    "wd": "git://github.com/lloyd/wd#41d0bf5",
     "request": "*",
     "optimist": "*",
     "q": "*",
