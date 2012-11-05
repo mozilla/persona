@@ -77,13 +77,14 @@ function runTests(repo, sha, done) {
   p.stdout.pipe(process.stdout);
   p.stderr.pipe(process.stderr);
 
-  p.on('end', function(code, signal) {
+  p.on('exit', function(code, signal) {
     if (!code) {
       // make sure at least one testsuite was run but there are no errors.
       var success = buf.indexOf("</testsuite>") > -1 
                  && buf.indexOf("</error>") === -1;
       code = success ? 0 : 1;
     }
+    console.log("\nexiting with code:", code);
     done && done(code);
   });
 }
