@@ -38,21 +38,6 @@ const platforms = {
     platform:'Mac 10.6',
     browserName: 'safari',
     version:'5'
-  },
-  "iphone_safari_5": {
-    platform:'Mac 10.6',
-    browserName: 'iphone',
-    version:'5'
-  },
-  "ipad_safari_5": {
-    platform:'Mac 10.6',
-    browserName: 'ipad',
-    version:'5'
-  },
-  "android_4": {
-    platform:'Linux',
-    browserName: 'android',
-    version:'4'
   }
 }
 
