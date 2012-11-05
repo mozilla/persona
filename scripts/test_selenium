@@ -8,7 +8,19 @@
 // This is a travis-ci specific script that triggers selenium test runs on
 // testy-listener.personatest.org.
 
-const spawn = require('child_process').spawn;
+const spawn         = require('child_process').spawn,
+      testy_url     = process.env['TESTY_URL'] || 'http://testy-listener.personatest.org/test';
+
+function getRepoInfo(done) {
+  getSHA(function(sha) {
+    getOrigin(function(origin) {
+      done && done({
+        sha: sha,
+        repo: origin
+      });
+    });
+  });
+}
 
 function getSHA(done) {
   // next try using git
@@ -28,10 +40,22 @@ function getSHA(done) {
   });
 }
 
-function runTests(sha, done) {
+function getOrigin(done) {
+  var p = spawn('git', [ 'config', '--get', 'remote.origin.url' ]);
+  var buf = "";
+  p.stdout.on('data', function(d) {
+    buf += d;
+  });
+  p.stdout.on('end', function(code, signal) {
+    done && done(buf);
+  });
+}
+
+
+function runTests(repo, sha, done) {
   console.log(" >>> Starting selenium tests on", sha);
 
-  var p = spawn('curl', [ '-s', '-N', 'http://testy-listener.personatest.org/test/' + sha ]);
+  var p = spawn('curl', [ '-s', '-N', '--data', 'repo=' + repo + '&' + 'sha=' + sha, testy_url ]);
 
   var buf = "";
   p.stdout.on('data', function(d) {
@@ -52,8 +76,8 @@ function runTests(sha, done) {
   });
 }
 
-getSHA(function(sha) {
-  runTests(sha, function(err, status) {
+getRepoInfo(function(info) {
+  runTests(info.repo, info.sha, function(err, status) {
     process.exit(status);
   });
 });
