@@ -58,7 +58,7 @@ function getOrigin(done) {
       buf += d;
     });
     p.stdout.on('end', function(code, signal) {
-      done && done(buf);
+      done && done(buf.replace(/[\n\r]/, ''));
     });
   }
 }
