@@ -30,7 +30,7 @@ function copyConfig(done) {
       persona_sauce_api_key: getFromEnv("PERSONA_SAUCE_APIKEY"),
       persona_sauce_pass: getFromEnv("PERSONA_SAUCE_PASS"),
       persona_browser: getFromEnv("PERSONA_BROWSER", "vista_chrome"),
-      runners: 10
+      runners: 30
     };
 
     fs.writeFileSync(temp_file.path, JSON.stringify(config), 'utf8');
