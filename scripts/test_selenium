@@ -9,7 +9,9 @@
 // testy-listener.personatest.org.
 
 const spawn         = require('child_process').spawn,
-      testy_url     = process.env['TESTY_URL'] || 'http://testy-listener.personatest.org/test';
+      testy_url     = process.env['TESTY_URL'] || 'http://testy-listener.personatest.org/test',
+      repo_url      = process.env['REPO_URL'],
+      repo_sha      = process.env['REPO_SHA'];
 
 function getRepoInfo(done) {
   getSHA(function(sha) {
@@ -23,37 +25,47 @@ function getRepoInfo(done) {
 }
 
 function getSHA(done) {
-  // next try using git
-  var p = spawn('git', [ 'log', '--pretty=%H', '-1' ]);
-  var buf = "";
-  p.stdout.on('data', function(d) {
-    buf += d;
-  });
-  p.stdout.on('end', function(code, signal) {
-    var gitsha = buf.toString().trim();
-    if (gitsha && gitsha.length === 40) {
-      done && done(gitsha)
-    }
-    else {
-      console.error('incorrect git sha length');
-    }
-  });
+  if (repo_sha) {
+    done && done(repo_sha);
+  }
+  else {
+    // next try using git
+    var p = spawn('git', [ 'log', '--pretty=%H', '-1' ]);
+    var buf = "";
+    p.stdout.on('data', function(d) {
+      buf += d;
+    });
+    p.stdout.on('end', function(code, signal) {
+      var gitsha = buf.toString().trim();
+      if (gitsha && gitsha.length === 40) {
+        done && done(gitsha)
+      }
+      else {
+        console.error('incorrect git sha length');
+      }
+    });
+  }
 }
 
 function getOrigin(done) {
-  var p = spawn('git', [ 'config', '--get', 'remote.origin.url' ]);
-  var buf = "";
-  p.stdout.on('data', function(d) {
-    buf += d;
-  });
-  p.stdout.on('end', function(code, signal) {
-    done && done(buf);
-  });
+  if (repo_url) {
+    done && done(repo_url);
+  }
+  else {
+    var p = spawn('git', [ 'config', '--get', 'remote.origin.url' ]);
+    var buf = "";
+    p.stdout.on('data', function(d) {
+      buf += d;
+    });
+    p.stdout.on('end', function(code, signal) {
+      done && done(buf);
+    });
+  }
 }
 
 
 function runTests(repo, sha, done) {
-  console.log(" >>> Starting selenium tests on", sha);
+  console.log(" >>> Starting selenium tests on", repo, sha);
 
   var p = spawn('curl', [ '-s', '-N', '--data', 'repo=' + repo + '&' + 'sha=' + sha, testy_url ]);
 
