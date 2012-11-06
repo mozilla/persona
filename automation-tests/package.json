@@ -9,6 +9,7 @@
     "request": "*",
     "optimist": "*",
     "q": "*",
-    "underscore": "*"
+    "underscore": "*",
+    "mkdirp": "*"
   }
 }
