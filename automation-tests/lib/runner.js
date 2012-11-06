@@ -24,7 +24,7 @@ function run(mod, suites, opts) {
     }
   });
 
-  vowsHarness(alltests, mod, opts); // todo where is module defined?
+  vowsHarness(alltests, mod, opts);
 }
 
 exports.run = run;
