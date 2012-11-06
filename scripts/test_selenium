@@ -79,13 +79,18 @@ function runTests(repo, sha, done) {
 
   p.on('exit', function(code, signal) {
     if (!code) {
-      // make sure at least one testsuite was run but there are no errors.
-      var success = buf.indexOf("</testsuite>") > -1 
-                 && buf.indexOf("</error>") === -1;
-      code = success ? 0 : 1;
+      code = searchForErrors(buf) ? 1 : 0;
     }
     done && done(null, code);
   });
+}
+
+function searchForErrors(buf) {
+  // make sure at least one testsuite was run but there are no errors.
+  return buf.indexOf("</testsuite>") === -1 
+         // If the errors attribute has anything but a 0, there is a real error.
+      || /errors="[123456789].*/.test(buf) 
+      || /failures="[123456789].*/.test(buf);
 }
 
 getRepoInfo(function(info) {
