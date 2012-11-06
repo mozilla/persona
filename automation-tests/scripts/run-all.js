@@ -23,11 +23,11 @@ const path = require('path'),
       FileReporter = require('../lib/reporters/file_reporter'),
       StdOutReporter = require('../lib/reporters/std_out_reporter'),
       StdErrReporter = require('../lib/reporters/std_err_reporter'),
-      max_runners = parseInt(process.env['RUNNERS'] || 30, 10),
+      max_runners = parseInt(process.env.RUNNERS || 30, 10),
       vows_path = path.join(__dirname, "../node_modules/.bin/vows"),
-      vows_args = process.env['VOWS_ARGS'] || ["--xunit", "-i"], // XXX is it cool to expect an array?
-      result_extension = process.env['RESULT_EXTENSION'] || "xml",
-      platform = process.env['PERSONA_BROWSER'] || 'vista_chrome',
+      vows_args = process.env.VOWS_ARGS || ["--xunit", "-i"], // XXX is it cool to expect an array?
+      result_extension = process.env.RESULT_EXTENSION || "xml",
+      platform = process.env.PERSONA_BROWSER || 'vista_chrome',
       supported_platforms = require('../lib/sauce-platforms').platforms,
       start_time = new Date().getTime();
 
@@ -91,7 +91,7 @@ function runTest(test, stdOutReporter, stdErrReporter, done) {
 
   // make a copy of the current process' environment but force the
   // platform if it is available
-  var env = toolbelt.extend(toolbelt.deepCopy(process.env), {
+  var env = toolbelt.copyExtendEnv({
     PERSONA_BROWSER: platform
   });
 
@@ -115,7 +115,7 @@ function runTest(test, stdOutReporter, stdErrReporter, done) {
     util.puts("finished " + testName);
     done && done();
   });
-};
+}
 
 function runNext() {
   var test = tests.shift();
@@ -139,7 +139,7 @@ function runNext() {
       runNext();
     });
   }
-};
+}
 
 function runTests() {
   // run tests in parallel up to the maximum number of runners.
