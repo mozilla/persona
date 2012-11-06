@@ -87,7 +87,7 @@ function runTest(test, stdOutReporter, stdErrReporter, done) {
       testPath = test.path,
       platform = test.platform;
 
-  util.puts("starting " + testName + " on " + platform);
+  util.puts(testName + ' | ' + platform + ' | ' + "starting");
 
   // make a copy of the current process' environment but force the
   // platform if it is available
@@ -108,11 +108,12 @@ function runTest(test, stdOutReporter, stdErrReporter, done) {
   });
 
   testProcess.stderr.on('data', function (data) {
-    stdErrReporter.report(data.toString());
+    // annoyingly, wd puts lots of newlines into the stderr output
+    stdErrReporter.report(testName + ' | ' + platform + ' | ' + data.toString().replace(/\n/g, ''));
   });
 
   testProcess.on('exit', function() {
-    util.puts("finished " + testName);
+    util.puts(testName + ' | ' + platform + ' | ' + "finished");
     done && done();
   });
 }
