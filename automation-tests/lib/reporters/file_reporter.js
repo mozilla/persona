@@ -5,16 +5,32 @@ const fs          = require('fs'),
 
 function FileReporter(config) {
   var fileName = config.output_path;
+  this.fileName = fileName;
 
-  mkdirp.sync(path.dirname(fileName));
+  try {
+    mkdirp.sync(path.dirname(fileName));
 
-  this.fd = fs.openSync(fileName, "a");
+    this.fd = fs.openSync(fileName, "w");
+  }
+  catch(e) {
+    console.log("error:", this.fileName, String(e));
+  }
 }
 FileReporter.prototype.report = function(msg) {
-  fs.writeSync(this.fd, msg, 0, msg.length, null);
+  try {
+    fs.writeSync(this.fd, msg, 0, msg.length, null);
+  }
+  catch(e) {
+    console.log("error:", this.fileName, String(e));
+  }
 };
 FileReporter.prototype.done = function() {
-  fs.closeSync(this.fd);
+  try {
+    fs.closeSync(this.fd);
+  }
+  catch(e) {
+    console.log("error:", this.fileName, String(e));
+  }
 };
 
 module.exports = FileReporter;
