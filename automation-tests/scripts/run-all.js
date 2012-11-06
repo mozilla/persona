@@ -19,10 +19,11 @@ const path = require('path'),
       child_process = require('child_process'),
       test_finder = require('../lib/test_finder'),
       runner = require('../lib/runner'),
+      toolbelt = require('../lib/toolbelt'),
       FileReporter = require('../lib/reporters/file_reporter'),
       StdOutReporter = require('../lib/reporters/std_out_reporter'),
       StdErrReporter = require('../lib/reporters/std_err_reporter'),
-      max_runners = parseInt(process.env['RUNNERS'] || 1, 30),
+      max_runners = parseInt(process.env['RUNNERS'] || 30, 10),
       vows_path = path.join(__dirname, "../node_modules/.bin/vows"),
       vows_args = process.env['VOWS_ARGS'] || ["--xunit", "-i"], // XXX is it cool to expect an array?
       result_extension = process.env['RESULT_EXTENSION'] || "xml",
@@ -61,15 +62,13 @@ function getTheTests(platforms) {
   var testSet = test_finder.find(),
       allTests = [];
 
-  allTests = [];
-
   // make a copy of the test set for each platform, set the platform of each
   // test, and append the platform specific test set to overall list of
   // tests.
   for (var key in platforms) {
-    // The JSON.stringify/JSON.parse creates a deep copy of the testSet so that
-    // we can modify it without worrying about shared properties.
-    var platformTests = [].concat(JSON.parse(JSON.stringify(testSet)));
+    // create a deep copy of the testSet so that we can modify each set
+    // it worrying about shared properties.
+    var platformTests = [].concat(toolbelt.deepCopy(testSet));
     setPlatformOfTests(platformTests, key);
     allTests = allTests.concat(platformTests);
   }
@@ -90,20 +89,15 @@ function runTest(test, stdOutReporter, stdErrReporter, done) {
 
   util.puts("starting " + testName + " on " + platform);
 
-
   // make a copy of the current process' environment but force the
-  // platform.
-  var environment = {};
-  Object.keys(process.env).forEach(function(key) {
-    environment[key] = process.env[key];
+  // platform if it is available
+  var env = toolbelt.extend(toolbelt.deepCopy(process.env), {
+    PERSONA_BROWSER: platform
   });
-  if (platform) {
-    environment.PERSONA_BROWSER = platform;
-  }
 
   var opts = {
     cwd: undefined,
-    env: environment
+    env: env
   };
 
   var testProcess = child_process.spawn(vows_path,
