@@ -84,13 +84,13 @@ function runTests(repo, sha, done) {
                  && buf.indexOf("</error>") === -1;
       code = success ? 0 : 1;
     }
-    console.log("\nexiting with code:", code);
-    done && done(code);
+    done && done(null, code);
   });
 }
 
 getRepoInfo(function(info) {
   runTests(info.repo, info.sha, function(err, status) {
+    console.log("\nexiting with code:", status);
     process.exit(status);
   });
 });
