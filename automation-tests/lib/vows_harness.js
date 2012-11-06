@@ -42,7 +42,7 @@ module.exports = function(spec, mod, opts) {
             suite.batches[i].remaining = 0;
           }
         }
-        if (err) throw err;
+        if (err) assert.fail(err)
       }
     };
     suite.addBatch(obj);
