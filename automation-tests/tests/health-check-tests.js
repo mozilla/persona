@@ -29,7 +29,7 @@ var startup = function(b, email, cb) {
     .wclick(pcss.signInForm.nextButton, cb);
 }
 
-var primaryTest = {
+var setup = {
   "setup stuff": function(done) {
     testSetup.setup({browsers: 2, eyedeemails: 1, restmails: 1}, function(err, fixtures) {
       browser = fixtures.browsers[0];
@@ -38,7 +38,11 @@ var primaryTest = {
       theEmail = fixtures.restmails[0];
       done(err)
     });
-  },
+  }
+};
+
+
+var primaryTest = {
   "start, go to personaorg, click sign in, type eyedeeme addy, click next": function(done) {
     startup(browser, eyedeemail, done)
   },
@@ -82,11 +86,11 @@ var secondaryTest = {
   "open verification link and verify we see congrats node": function(done, link) {
     secondBrowser.chain({onError: done})
       .get(link)
-      .wfind(pcss.congratsMessage, done); 
+      .wfind(pcss.congratsMessage, done);
   },
   "shut down secondary test": function(done) {
     secondBrowser.quit(done);
   }
 };
 
-runner.run(module, [primaryTest, secondaryTest], {suiteName: path.basename(__filename)});
+runner.run(module, [setup, secondaryTest, primaryTest], {suiteName: path.basename(__filename)});
