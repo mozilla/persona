@@ -27,10 +27,38 @@ const path = require('path'),
       vows_path = path.join(__dirname, "../node_modules/.bin/vows"),
       vows_args = process.env.VOWS_ARGS || ["--xunit", "-i"], // XXX is it cool to expect an array?
       result_extension = process.env.RESULT_EXTENSION || "xml",
-      platform = process.env.PERSONA_BROWSER || 'vista_chrome',
       supported_platforms = require('../lib/sauce-platforms').platforms,
       start_time = new Date().getTime();
 
+
+
+var argv = require('optimist')
+  .usage('Run automation tests.\nUsage: $0')
+  .alias('help', 'h')
+  .describe('help', 'display this usage message')
+/*
+  .alias('list-platforms', 'lp')
+  .describe('lp', 'list available platforms to test on')
+  .alias('env', 'e')
+  .describe('env', "the environment to test.  one of dev/stage/prod or the name of an ephemeral instance")
+*/
+  .alias('platform', 'p')
+  .describe('platform', 'the browser/os to test (globs supported)')
+  .check(function(a, b) {
+    if (!a.platform) a.platform = process.env.PERSONA_BROWSER || "vista_chrome";
+  })
+  .alias('list-tests', 'lt')
+  .describe('list-tests', 'list available tests')
+  .alias('tests', 't')
+  .describe('tests', 'specify a glob for to match a subset of tests')
+  .default("tests", "*");
+
+var args = argv.argv;
+
+if (args.h) {
+  argv.showHelp();
+  process.exit(0);
+}
 
 // General flow
 // 1. Get the list of tests for the specified platforms
@@ -40,15 +68,9 @@ const path = require('path'),
 // the tests array is shared state across all invocations of runNext. If two or
 // more tests are run in parallel, they will all check the tests array to see
 // if there are any more tests to run.
-var tests = getTheTests(getTestedPlatforms(platform));
+var tests = getTheTests(getTestedPlatforms(args.platform));
 console.log("Running", tests.length, "suites across", max_runners, "runners");
 runTests();
-
-
-
-
-
-
 
 function getTestedPlatforms(platform) {
   if (platform === 'all') return supported_platforms;
