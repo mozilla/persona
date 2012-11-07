@@ -14,33 +14,14 @@
  * should be tested.
  */
 
-const path = require('path'),
-      util = require('util'),
-      child_process = require('child_process'),
-      test_finder = require('../lib/test_finder'),
-      runner = require('../lib/runner'),
-      toolbelt = require('../lib/toolbelt'),
-      FileReporter = require('../lib/reporters/file_reporter'),
-      StdOutReporter = require('../lib/reporters/std_out_reporter'),
-      StdErrReporter = require('../lib/reporters/std_err_reporter'),
-      vows_path = path.join(__dirname, "../node_modules/.bin/vows"),
-      vows_args = process.env.VOWS_ARGS || ["--xunit", "-i"], // XXX is it cool to expect an array?
-      result_extension = process.env.RESULT_EXTENSION || "xml",
-      supported_platforms = require('../lib/sauce-platforms').platforms,
-      start_time = new Date().getTime(),
-      glob = require('minimatch');
-
-
 var argv = require('optimist')
   .usage('Run automation tests.\nUsage: $0')
   .alias('help', 'h')
   .describe('help', 'display this usage message')
   .alias('list-platforms', 'lp')
   .describe('lp', 'list available platforms to test on')
-/*
   .alias('env', 'e')
   .describe('env', "the environment to test.  one of dev/stage/prod or the name of an ephemeral instance")
-*/
   .alias('parallel', 'p')
   .describe('parallel', 'the number of tests to run at the same time')
   .check(function(a, b) {
@@ -64,6 +45,25 @@ if (args.h) {
   argv.showHelp();
   process.exit(0);
 }
+
+// propogate -e to the environment if present
+if (args.env) process.env.PERSONA_ENV = args.env;
+
+const path = require('path'),
+      util = require('util'),
+      child_process = require('child_process'),
+      test_finder = require('../lib/test_finder'),
+      runner = require('../lib/runner'),
+      toolbelt = require('../lib/toolbelt'),
+      FileReporter = require('../lib/reporters/file_reporter'),
+      StdOutReporter = require('../lib/reporters/std_out_reporter'),
+      StdErrReporter = require('../lib/reporters/std_err_reporter'),
+      vows_path = path.join(__dirname, "../node_modules/.bin/vows"),
+      vows_args = process.env.VOWS_ARGS || ["--xunit", "-i"], // XXX is it cool to expect an array?
+      result_extension = process.env.RESULT_EXTENSION || "xml",
+      supported_platforms = require('../lib/sauce-platforms').platforms,
+      start_time = new Date().getTime(),
+      glob = require('minimatch');
 
 // what mode are we in?
 if (args['list-tests']) {
@@ -93,7 +93,9 @@ function startTesting() {
   // if there are any more tests to run.
   var plats = getTestedPlatforms(args.platform);
   var tests = getTheTests(plats);
-  console.log("Running %s, suites on %s platforms, %s at a time", tests.length, Object.keys(plats).length, args.parallel);
+  console.log("Running %s, suites on %s platforms, %s at a time against %s",
+              tests.length, Object.keys(plats).length, args.parallel,
+              require('../lib/urls.js').persona);
   runTests();
 
   function getTestedPlatforms(platform_glob) {
