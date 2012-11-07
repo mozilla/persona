@@ -88,9 +88,9 @@ runner.run(module, {
       .wwin(CSS['dialog'].windowName)
       .wtype(CSS['dialog'].emailInput, firstPrimaryEmail)
       .wclick(CSS['dialog'].newEmailNextButton)
+      // sometimes the verifyWithPrimaryButton needs to be clicked twice
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      // sometimes the verifyWithPrimaryButton needs clicked twice
-      .wclick(CSS['dialog'].verifyWithPrimaryButton)
+      .wclickIfExists(CSS['dialog'].verifyWithPrimaryButton)
       .wtype(CSS['eyedee.me'].newPassword, firstPrimaryPassword)
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()
@@ -107,9 +107,9 @@ runner.run(module, {
       .wclick(CSS['dialog'].useNewEmail)
       .wtype(CSS['dialog'].newEmail, secondPrimaryEmail)
       .wclick(CSS['dialog'].addNewEmailButton)
+      // sometimes the verifyWithPrimaryButton needs to be clicked twice
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      // sometimes the verifyWithPrimaryButton needs clicked twice
-      .wclick(CSS['dialog'].verifyWithPrimaryButton)
+      .wclickIfExists(CSS['dialog'].verifyWithPrimaryButton)
       .wtype(CSS['eyedee.me'].newPassword, secondPrimaryPassword)
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()
@@ -151,6 +151,7 @@ runner.run(module, {
       .wwin(CSS['dialog'].windowName)
       .wclick(CSS['dialog'].emailPrefix + getEmailIndex(secondPrimaryEmail))
       .wclick(CSS['dialog'].signInButton)
+      .wclickIfExists(CSS['dialog'].myComputerButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, secondPrimaryEmail))
@@ -164,6 +165,7 @@ runner.run(module, {
       .wwin(CSS['dialog'].windowName)
       .wclick(CSS['dialog'].emailPrefix + getEmailIndex(secondaryEmail))
       .wclick(CSS['dialog'].signInButton)
+      .wclickIfExists(CSS['dialog'].myComputerButton)
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, secondaryEmail))

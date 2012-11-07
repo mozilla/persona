@@ -148,6 +148,29 @@ wd.prototype.click = function(which, cb) {
   });
 };
 
+// Click a button if it exists. If there is a timeout, no problem.
+wd.prototype.wclickIfExists = function(opts, cb) {
+  var self=this;
+  if (typeof opts == 'string') opts = { which: opts };
+
+  // shorten the timeout if it is not already specified. This only gets clicked
+  // if it is available. This may belong in a higher abstraction layer.
+  if (!opts.timeout) opts.timeout = 1000;
+
+  self.wclick(opts, function(err, el) {
+    // Some buttons (like the Is this your computer) are only shown after
+    // a certain amount of time has elapsed. If the button is in the DOM,
+    // great, click it. If not, move on.
+    if (err && err !== 'timeout hit') {
+      cb(err, null);
+    }
+    else {
+      cb(null, el);
+    }
+  });
+};
+
+
 // wait for an element to be displayed, then type in it.
 wd.prototype.wtype = function(opts, text, cb) {
   var self = this;
