@@ -20,6 +20,7 @@ train-2012.10.26:
   * Fix class of sporatic dialog stalls at "Connection to Persona": #2629
   * Fix regression: "Dialog fails to show authenticate screen on Android": #2638
   * Fix regression: siteName not being displayed in dialog: #2634
+  * (hotfix 2012.11.05) fix missing CONTRIBUTORS and renaming of en-US: #2682
 
 train-2012.10.12:
   * Fix IE failing when authenticating with IdP from main site's /signin: #2287
