@@ -1,9 +1,9 @@
 // platforms supported by sauce that we test
 const platforms = {
-  "linux_firefox_13": {
+  "linux_firefox_16": {
     platform: 'LINUX',
     browserName: 'firefox',
-    version: '13'
+    version: '16'
   },
   "linux_opera_12": {
     platform: 'LINUX',
@@ -19,15 +19,20 @@ const platforms = {
     platform:'VISTA',
     browserName:'chrome'
   },
-  "vista_firefox_13": {
+  "vista_firefox_16": {
     platform:'VISTA',
     browserName:'firefox',
-    version:'13'
+    version:'16'
   },
   "vista_ie_9": {
     platform:'VISTA',
     browserName:'internet explorer',
     version:'9'
+  },
+  "win8_ie_10": {
+    platform: 'Windows 2012',
+    browserName: 'internet explorer',
+    version: '10'
   },
   "xp_ie_8": {
     platform:'XP',
