@@ -62,10 +62,10 @@ function _setSessionOpts(opts) {
     throw new Error('requested platform ' + requestedPlatform +
                     ' not found in list of available platforms');
   }
-  // Default to chrome which does not need a version number.
-  var defaultPlatform = { browserName: 'chrome', platform: 'VISTA' };
+  // Default to *nothing* locally (server's choice), and chrome/VISTA for sauce
+  var defaultPlatform = process.env.PERSONA_NO_SAUCE ? null : { browserName: 'chrome', platform: 'VISTA' };
   var platform = requestedPlatform ? saucePlatforms.platforms[requestedPlatform] : defaultPlatform;
-
+  var platform = null;
   // add platform, browserName, version to session opts
   _.extend(sessionOpts, platform);
 

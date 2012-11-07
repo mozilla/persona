@@ -6,11 +6,13 @@
 const path   = require('path'),
       fs     = require('fs'),
       test_root_path = path.join(__dirname, "..", "tests"),
-      tests_to_ignore = require('../config/tests-to-ignore').tests_to_ignore;
+      tests_to_ignore = require('../config/tests-to-ignore').tests_to_ignore,
+      glob   = require('minimatch');
 
-exports.find = function(root, tests) {
+exports.find = function(root, tests, pattern) {
   root = root || test_root_path;
   tests = tests || [];
+  pattern = pattern || "*";
 
   try {
     var files = fs.readdirSync(root);
@@ -20,10 +22,12 @@ exports.find = function(root, tests) {
       if (stats.isFile()) {
         if (/\.js$/.test(file)) {
           if (tests_to_ignore.indexOf(file) === -1) {
-            tests.push({
-              name: file.replace('.js', ''),
-              path: filePath
-            });
+            if (glob(file, pattern)) {
+              tests.push({
+                name: file.replace('.js', ''),
+                path: filePath
+              });
+            }
           }
           else {
             console.log("ignoring", file);
@@ -31,7 +35,7 @@ exports.find = function(root, tests) {
         }
       }
       else if (stats.isDirectory()) {
-        exports.find(filePath, tests);
+        exports.find(filePath, tests, pattern);
       }
 
     });
