@@ -8,6 +8,7 @@ const
 assert = require('../lib/asserts.js'),
 utils = require('../lib/utils.js'),
 runner = require('../lib/runner.js'),
+path = require('path'),
 testSetup = require('../lib/test-setup.js');
 
 // Intentionally hardcoded to dev instance. This test cannot be run in
