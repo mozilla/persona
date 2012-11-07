@@ -10,6 +10,7 @@
     "optimist": "*",
     "q": "*",
     "underscore": "*",
-    "mkdirp": "*"
+    "mkdirp": "*",
+    "minimatch": "0.2.6"
   }
 }
