@@ -1,6 +1,5 @@
 // platforms supported by sauce that we test
 const platforms = {
-  /*
   "linux_firefox_13": {
     platform: 'LINUX',
     browserName: 'firefox',
@@ -16,11 +15,10 @@ const platforms = {
     browserName:'firefox',
     version:'14'
   },
-  */
   "vista_chrome": {
     platform:'VISTA',
     browserName:'chrome'
-  }/*,
+  },
   "vista_firefox_13": {
     platform:'VISTA',
     browserName:'firefox',
@@ -40,7 +38,7 @@ const platforms = {
     platform:'Mac 10.6',
     browserName: 'safari',
     version:'5'
-  }*/
+  }
 };
 
 const defaultCapabilities = {
