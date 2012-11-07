@@ -22,14 +22,21 @@ var argv = require('optimist')
   .describe('lp', 'list available platforms to test on')
   .alias('env', 'e')
   .describe('env', "the environment to test.  one of dev/stage/prod or the name of an ephemeral instance")
+  .alias('local', 'l')
+  .describe('local', 'run tests locally (instead of on saucelabs)')
+  .check(function(a) {
+    if (a.local) process.env.PERSONA_NO_SAUCE = '1';
+  })
   .alias('parallel', 'p')
   .describe('parallel', 'the number of tests to run at the same time')
-  .check(function(a, b) {
+  .check(function(a) {
     if (!a.parallel) a.parallel = parseInt(process.env.RUNNERS, 10) || 10;
   })
   .describe('platform', 'the browser/os to test (globs supported)')
-  .check(function(a, b) {
-    if (!a.platform) a.platform = process.env.PERSONA_BROWSER || "vista_chrome";
+  .check(function(a) {
+    if (!a.platform && !process.env.PERSONA_NO_SAUCE) {
+      a.platform = process.env.PERSONA_BROWSER || "vista_chrome";
+    }
     // all is a supported alias "match everything"
     if (a.platform === 'all') a.platform = "*";
   })
@@ -91,7 +98,7 @@ function startTesting() {
   // the tests array is shared state across all invocations of runNext. If two or
   // more tests are run in parallel, they will all check the tests array to see
   // if there are any more tests to run.
-  var plats = getTestedPlatforms(args.platform);
+  var plats = args.platform ? getTestedPlatforms(args.platform) : { any: {} };
   var tests = getTheTests(plats);
   console.log("Running %s, suites on %s platforms, %s at a time against %s",
               tests.length, Object.keys(plats).length, args.parallel,
@@ -117,7 +124,7 @@ function startTesting() {
       // create a deep copy of the testSet so that we can modify each set
       // it worrying about shared properties.
       var platformTests = [].concat(toolbelt.deepCopy(testSet));
-      setPlatformOfTests(platformTests, key);
+      setPlatformOfTests(platformTests);
       allTests = allTests.concat(platformTests);
     }
 
@@ -139,9 +146,9 @@ function startTesting() {
 
     // make a copy of the current process' environment but force the
     // platform if it is available
-    var env = toolbelt.copyExtendEnv({
-      PERSONA_BROWSER: platform
-    });
+    var env = {};
+    if (platform) env.PERSONA_BROWSER = platform;
+    env = toolbelt.copyExtendEnv(env);
 
     var opts = {
       cwd: undefined,
@@ -161,17 +168,20 @@ function startTesting() {
         line = line.trim();
         // skip blank lines
         if (!line.length) return;
-        // skip useless lines 
+        // skip useless lines
         if (/Ending your web drivage/.test(line)) return;
         // transform sauce lab ids into urls you can load into your browser
         var m = /^.*Driving the web.*: ([a-z0-9]+).*$/.exec(line);
-        if (m) line = 'https://saucelabs.com/tests/' + m[1];
+        if (m) {
+          if (process.env.PERSONA_NO_SAUCE) line = "id: " + m[1];
+          else line = 'https://saucelabs.com/tests/' + m[1];
+        }
         // now report, whew.
         stdErrReporter.report(testName + ' | ' + platform + ' | ' + line + "\n");
       });
     });
 
-    testProcess.on('exit', function(code) {
+    testProcess.on('exit', function(code, err) {
       util.puts(testName + ' | ' + platform + ' | ' + "finished");
       done && done();
     });
