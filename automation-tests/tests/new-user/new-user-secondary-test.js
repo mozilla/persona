@@ -69,9 +69,11 @@ var new_secondary_123done_two_browsers = {
       });
   },
   "tear down both browsers": function(done) {
-    browser.quit();
-    secondBrowser.quit();
-    done();
+    browser.quit(function(err) {
+      secondBrowser.quit(function(err2) {
+        done(err || err2)
+      })
+    });
   }
 };
 
