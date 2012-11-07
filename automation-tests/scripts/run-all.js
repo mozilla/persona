@@ -27,8 +27,8 @@ const path = require('path'),
       vows_args = process.env.VOWS_ARGS || ["--xunit", "-i"], // XXX is it cool to expect an array?
       result_extension = process.env.RESULT_EXTENSION || "xml",
       supported_platforms = require('../lib/sauce-platforms').platforms,
-      start_time = new Date().getTime();
-
+      start_time = new Date().getTime(),
+      glob = require('minimatch');
 
 
 var argv = require('optimist')
@@ -46,10 +46,11 @@ var argv = require('optimist')
   .check(function(a, b) {
     if (!a.parallel) a.parallel = parseInt(process.env.RUNNERS, 10) || 10;
   })
-  .alias('platform', 'p')
   .describe('platform', 'the browser/os to test (globs supported)')
   .check(function(a, b) {
     if (!a.platform) a.platform = process.env.PERSONA_BROWSER || "vista_chrome";
+    // all is a supported alias "match everything"
+    if (a.platform === 'all') a.platform = "*";
   })
   .alias('list-tests', 'lt')
   .describe('list-tests', 'list available tests')
@@ -90,16 +91,17 @@ function startTesting() {
   // the tests array is shared state across all invocations of runNext. If two or
   // more tests are run in parallel, they will all check the tests array to see
   // if there are any more tests to run.
-  var tests = getTheTests(getTestedPlatforms(args.platform));
-  console.log("Running", tests.length, "suites across", args.parallel, "runners");
+  var plats = getTestedPlatforms(args.platform);
+  var tests = getTheTests(plats);
+  console.log("Running %s, suites on %s platforms, %s at a time", tests.length, Object.keys(plats).length, args.parallel);
   runTests();
 
-  function getTestedPlatforms(platform) {
-    if (platform === 'all') return supported_platforms;
-
-    var platforms = {};
-    platforms[platform] = supported_platforms[platform];
-    return platforms;
+  function getTestedPlatforms(platform_glob) {
+    var plats = [];
+    Object.keys(supported_platforms).forEach(function(p) {
+      if (glob(p, platform_glob)) plats.push(supported_platforms[p]);
+    });
+    return plats;
   }
 
   function getTheTests(platforms) {
