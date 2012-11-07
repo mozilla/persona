@@ -89,6 +89,12 @@ function _setSessionOpts(opts) {
   // Ensure a test name for saucelabs
   if (!sessionOpts.name) sessionOpts.name = createTestName();
 
+  // Optionally add tag names from the environment
+  if (process.env.PERSONA_SAUCE_CUSTOM_TAGS) {
+    var customTags = process.env.PERSONA_SAUCE_CUSTOM_TAGS.split(/[\s,]/);
+    Array.prototype.push.apply(sessionOpts.tags, customTags);
+  }
+
   testSetup.sessionOpts = sessionOpts;
 }
 
