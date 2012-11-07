@@ -36,7 +36,7 @@ var argv = require('optimist')
   .alias('list-tests', 'lt')
   .describe('list-tests', 'list available tests')
   .alias('tests', 't')
-  .describe('tests', 'specify a glob for to match a subset of tests')
+  .describe('tests', 'which test(s) to run (globs supported)')
   .default("tests", "*");
 
 var args = argv.argv;
