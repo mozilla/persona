@@ -21,7 +21,7 @@ There isn't a test runner yet, but you can do this for each test under `tests`:
     PERSONA_ENV=stage node tests/change-password-test.js
 
 `PERSONA_ENV` sets the target you want to test. **stage** is the most stable environment at present, so run your tests against it.
-    
+
 #### run some tests against sauce
 
 Set some more environment variables:
@@ -36,6 +36,23 @@ Set some more environment variables:
 Then run the tests just like you would locally:
 
     PERSONA_ENV=stage node tests/change-password-test.js
+
+#### run all the tests
+It is possible to run all of the available tests either locally or against
+Sauce. The RUNNERS environment variable is used to specify the number of test
+runners to run in parallel.
+
+To run all the tests locally against one browser:
+
+    PERSONA_ENV=stage PERSONA_BROWSER=osx_firefox_15 PERSONA_NO_SAUCE=true scripts/run-all.js
+
+To run all the tests on Sauce against one browser:
+
+    PERSONA_ENV=stage RUNNERS=15 PERSONA_BROWSER=osx_firefox_15 scripts/run-all.js
+
+To run all the tests on Sauce against all supported browsers:
+
+    PERSONA_ENV=stage RUNNERS=30 PERSONA_BROWSER=all scripts/run-all.js
 
 ## Test Setup
 
@@ -70,10 +87,13 @@ This code lives in lib/wd-extensions.js
 * `wfind(selector, cb(err, el))`: wait until the specified element is displayed, then pass it to cb. Alias for custom extension `waitForDisplayed`.
 * `wclick(selector, cb(err))`: wait until the specified element is displayed, then click it
 * `wwin(windowName, cb(err))`: wait until the specified window is displayed, then switch to it. Aslias for custom extension `waitForWindow`.
+* `wclickIfExists(selector, cb(err))`: wait for a maximum of one second to see if the specified element is displayed, then click it. If element does not exist, continue without an error.
   * calling `wwin()` with no arguments will switch to the main window--not true of `waitForWindow`.
 * `wtype(selector, text, cb(err))`: wait until the specified element is displayed, then type into it
   * warning: wd.type() takes an element, not a selector!
 * `wtext(selector, cb(err, text))`: wait until the specified element is displayed, then pass its text content to cb
+* `wgetAttribute(selector, attrName, cb(err, value))`: wait until the specified element is displayed, then get an attribute value
+* `wclear(selector, cb(err))`: wait until the specified element is displayed, then clear it
 
 ### other extensions
 
@@ -87,6 +107,7 @@ This code lives in lib/wd-extensions.js
   * `opts` can be just the selector, or an object with name, poll, and timeout props.
 * `closeCurrentBrowserWindow(cb(err))`: close the currently open browser window and switch to one of the remaining
 * `newSession(cb(err))`: allocate a new browser session and sets implicit wait timeout
+* `delay(timeout, cb(err))`: delay for the specified amount of time before continuing
 
 ## Refs
 
