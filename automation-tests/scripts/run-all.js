@@ -109,7 +109,7 @@ function runTest(test, stdOutReporter, stdErrReporter, done) {
 
   testProcess.stderr.on('data', function (data) {
     // annoyingly, wd puts lots of newlines into the stderr output
-    stdErrReporter.report(testName + ' | ' + platform + ' | ' + data.toString().replace(/\n/g, ''));
+    stdErrReporter.report(testName + ' | ' + platform + ' | ' + data.toString());
   });
 
   testProcess.on('exit', function() {
