@@ -23,7 +23,6 @@ const path = require('path'),
       FileReporter = require('../lib/reporters/file_reporter'),
       StdOutReporter = require('../lib/reporters/std_out_reporter'),
       StdErrReporter = require('../lib/reporters/std_err_reporter'),
-      max_runners = parseInt(process.env.RUNNERS || 30, 10),
       vows_path = path.join(__dirname, "../node_modules/.bin/vows"),
       vows_args = process.env.VOWS_ARGS || ["--xunit", "-i"], // XXX is it cool to expect an array?
       result_extension = process.env.RESULT_EXTENSION || "xml",
@@ -42,6 +41,11 @@ var argv = require('optimist')
   .alias('env', 'e')
   .describe('env', "the environment to test.  one of dev/stage/prod or the name of an ephemeral instance")
 */
+  .alias('parallel', 'p')
+  .describe('parallel', 'the number of tests to run at the same time')
+  .check(function(a, b) {
+    if (!a.parallel) a.parallel = parseInt(process.env.RUNNERS, 10) || 10;
+  })
   .alias('platform', 'p')
   .describe('platform', 'the browser/os to test (globs supported)')
   .check(function(a, b) {
@@ -80,14 +84,14 @@ if (args['list-tests']) {
 function startTesting() {
   // General flow
   // 1. Get the list of tests for the specified platforms
-  // 2. Run the tests in parallel with a max of max_runners jobs.
+  // 2. Run the tests in parallel with a max of args.parallel jobs.
   // 3. Report the results.
 
   // the tests array is shared state across all invocations of runNext. If two or
   // more tests are run in parallel, they will all check the tests array to see
   // if there are any more tests to run.
   var tests = getTheTests(getTestedPlatforms(args.platform));
-  console.log("Running", tests.length, "suites across", max_runners, "runners");
+  console.log("Running", tests.length, "suites across", args.parallel, "runners");
   runTests();
 
   function getTestedPlatforms(platform) {
@@ -184,7 +188,7 @@ function startTesting() {
 
   function runTests() {
     // run tests in parallel up to the maximum number of runners.
-    for(var i = 0; i < max_runners; ++i) {
+    for(var i = 0; i < args.parallel; ++i) {
       runNext();
     }
   }
