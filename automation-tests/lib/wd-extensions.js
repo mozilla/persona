@@ -24,7 +24,7 @@ wd.prototype.waitForDisplayed = function(opts, cb) {
 
   utils.waitFor(opts.poll, opts.timeout, function(done) {
     browser.elementByCss(opts.which, function(err, elem) {
-      if (err) return done(!err, err, elem);
+      if (err) return done(!err, err + " - " + opts.which, elem);
       browser.displayed(elem, function(err, displayed) {
         done(!err && displayed, err, elem);
       });
@@ -161,7 +161,7 @@ wd.prototype.wclickIfExists = function(opts, cb) {
     // Some buttons (like the Is this your computer) are only shown after
     // a certain amount of time has elapsed. If the button is in the DOM,
     // great, click it. If not, move on.
-    if (err && err !== 'timeout hit') {
+    if (err && (err.indexOf('timeout hit') === -1)) {
       cb(err, null);
     }
     else {
