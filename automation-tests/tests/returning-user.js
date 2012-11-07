@@ -79,17 +79,13 @@ runner.run(module, {
       .wwin(CSS['persona.org'].windowName, done)
   },
   "check first radio is not selected":function(done, el) {
-    browser.wfind(CSS['dialog'].firstEmail, function(err, el) {
-      browser.getAttribute(el, 'selected', function(err, val) {
-        done(err || assert.ok(!val));
-      })
-    })
+    browser.wgetAttribute(CSS['dialog'].firstEmail, 'selected', function(err, val) {
+      done(err || assert.ok(!val));
+    });
   },
   "check second radio is not selected": function(done) {
-    browser.wfind(CSS['dialog'].secondEmail, function(err, el) {
-      browser.getAttribute(el, 'selected', function(err, val) {
-        done(err || assert.ok(!val));
-      })
+    browser.wgetAttribute(CSS['dialog'].secondEmail, 'selected', function(err, val) {
+      done(err || assert.ok(!val));
     });
   }
   ,
@@ -105,22 +101,20 @@ runner.run(module, {
   },
   // this time, the first radio should be selected
   "check first radio is selected":function(done, el) {
-    browser.wfind(CSS['dialog'].firstEmail, function(err, el) {
-      browser.getAttribute(el, 'selected', function(err, val) {
-        done(err || assert.ok(val));
-      })
-    })
+    browser.wgetAttribute(CSS['dialog'].firstEmail, 'selected', function(err, val) {
+      done(err || assert.ok(val));
+    });
   },
   "check second radio is still not selected": function(done) {
-    browser.wfind(CSS['dialog'].secondEmail, function(err, el) {
-      browser.getAttribute(el, 'selected', function(err, val) {
-        done(err || assert.ok(!val));
-      })
+    browser.wgetAttribute(CSS['dialog'].secondEmail, 'selected', function(err, val) {
+      done(err || assert.ok(!val));
     });
   }
 }, {
   // regardless of success or failure, we should cleanup the browser session
   cleanup: function() {
     browser.quit();
-  }
-}, {suiteName: path.basename(__filename)});
+  },
+  suiteName: path.basename(__filename)
+});
+

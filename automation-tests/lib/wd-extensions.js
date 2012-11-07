@@ -170,6 +170,14 @@ wd.prototype.wclickIfExists = function(opts, cb) {
   });
 };
 
+wd.prototype.wgetAttribute = function(opts, attribute, cb) {
+  var self = this;
+  self.waitForDisplayed(opts, function(err, el) {
+    if (err) return cb(err);
+    self.getAttribute(el, attribute, cb);
+  });
+};
+
 
 // wait for an element to be displayed, then type in it.
 wd.prototype.wtype = function(opts, text, cb) {
