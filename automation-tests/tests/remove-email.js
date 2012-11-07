@@ -209,9 +209,10 @@ runner.run(module, {
       .wtype(CSS['persona.org'].signInForm.email, firstPrimaryEmail)
       .wclick(CSS['persona.org'].signInForm.nextButton)
       .wfind(CSS['persona.org'].signInForm.verifyPrimaryButton, done);
-  },
-
-  "shut down remaining browsers": function(done) {
-    browser.quit(done);
   }
-}, {suiteName: path.basename(__filename)});
+}, {
+  cleanup: function() {
+    browser.quit();
+  },
+  suiteName: path.basename(__filename)
+});
