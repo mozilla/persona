@@ -131,4 +131,4 @@ runner.run(module, {
   cleanup: function() {
     browser.quit();
   }
-});
+}, {suiteName: path.basename(__filename)});

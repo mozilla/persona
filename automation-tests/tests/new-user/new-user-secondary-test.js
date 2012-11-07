@@ -152,4 +152,7 @@ var new_secondary_personaorg = {
     }
 };
 
-runner.run(module, [new_secondary_123done_two_browsers, new_secondary_mfb_two_browsers, new_secondary_personaorg]);
+runner.run(
+  module,
+  [new_secondary_123done_two_browsers, new_secondary_mfb_two_browsers, new_secondary_personaorg],
+  {suiteName: path.basename(__filename)});

@@ -88,4 +88,4 @@ runner.run(module, {
   "shut down remaining browsers": function(done) {
     browser.quit(done);
   }
-});
+}, {suiteName: path.basename(__filename)});

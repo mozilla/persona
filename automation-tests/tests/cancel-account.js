@@ -168,4 +168,4 @@ runner.run(module, {
   "shut down remaining browsers": function(done) {
     browser.quit(done);
   }
-}, module);
+}, {suiteName: path.basename(__filename)});

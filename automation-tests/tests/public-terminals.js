@@ -99,4 +99,4 @@ runner.run(module, {
   "until we decide what to do, at least end the session properly": function(done) {
     browser.quit(done)
   }
-});
+}, {suiteName: path.basename(__filename)});

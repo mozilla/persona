@@ -93,4 +93,4 @@ runner.run(module, {
   "shut down": function(done) {
     browser.quit(done);
   }
-});
+}, {suiteName: path.basename(__filename)});

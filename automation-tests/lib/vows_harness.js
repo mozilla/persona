@@ -9,7 +9,7 @@ module.exports = function(spec, mod, opts) {
   // if a .cleanup function is supplied, it will be invoked after
   // all tests are run
 
-  var suite = vows.describe(path.basename(process.argv[1]));
+  var suite = vows.describe(opts.suiteName || path.basename(process.argv[1]));
   suite.options.error = false;
 
   var lastArgs = [];

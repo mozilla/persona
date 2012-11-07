@@ -85,4 +85,4 @@ runner.run(module, {
   "mfb tear down browser": function(done) {
     browser.quit(done);
   }
-});
+}, {suiteName: path.basename(__filename)});

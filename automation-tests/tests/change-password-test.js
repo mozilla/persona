@@ -115,4 +115,4 @@ runner.run(module, {
       secondBrowser.quit(done)
     })
   }
-});
+}, {suiteName: path.basename(__filename)});

@@ -115,4 +115,7 @@ var pcss = CSS['persona.org'],
     }
 };
 
-runner.run(module, [primary_123done, primary_mfb, primary_personaorg]);
+runner.run(
+  module,
+  [primary_123done, primary_mfb, primary_personaorg],
+  {suiteName: path.basename(__filename)});

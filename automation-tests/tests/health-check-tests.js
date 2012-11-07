@@ -89,4 +89,4 @@ var secondaryTest = {
   }
 };
 
-runner.run(module, [primaryTest, secondaryTest]);
+runner.run(module, [primaryTest, secondaryTest], {suiteName: path.basename(__filename)});
