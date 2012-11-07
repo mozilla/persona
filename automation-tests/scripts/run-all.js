@@ -60,115 +60,127 @@ if (args.h) {
   process.exit(0);
 }
 
-// General flow
-// 1. Get the list of tests for the specified platforms
-// 2. Run the tests in parallel with a max of max_runners jobs.
-// 3. Report the results.
-
-// the tests array is shared state across all invocations of runNext. If two or
-// more tests are run in parallel, they will all check the tests array to see
-// if there are any more tests to run.
-var tests = getTheTests(getTestedPlatforms(args.platform));
-console.log("Running", tests.length, "suites across", max_runners, "runners");
-runTests();
-
-function getTestedPlatforms(platform) {
-  if (platform === 'all') return supported_platforms;
-
-  var platforms = {};
-  platforms[platform] = supported_platforms[platform];
-  return platforms;
+// what mode are we in?
+if (args['list-tests']) {
+  var testSet = test_finder.find();
+  console.log("%s tests available:", testSet.length);
+  testSet.forEach(function(test) {
+    console.log("  *", test.name);
+  });
+} else {
+  startTesting();
 }
 
-function getTheTests(platforms) {
-  var testSet = test_finder.find(),
-      allTests = [];
+function startTesting() {
+  // General flow
+  // 1. Get the list of tests for the specified platforms
+  // 2. Run the tests in parallel with a max of max_runners jobs.
+  // 3. Report the results.
 
-  // make a copy of the test set for each platform, set the platform of each
-  // test, and append the platform specific test set to overall list of
-  // tests.
-  for (var key in platforms) {
-    // create a deep copy of the testSet so that we can modify each set
-    // it worrying about shared properties.
-    var platformTests = [].concat(toolbelt.deepCopy(testSet));
-    setPlatformOfTests(platformTests, key);
-    allTests = allTests.concat(platformTests);
+  // the tests array is shared state across all invocations of runNext. If two or
+  // more tests are run in parallel, they will all check the tests array to see
+  // if there are any more tests to run.
+  var tests = getTheTests(getTestedPlatforms(args.platform));
+  console.log("Running", tests.length, "suites across", max_runners, "runners");
+  runTests();
+
+  function getTestedPlatforms(platform) {
+    if (platform === 'all') return supported_platforms;
+
+    var platforms = {};
+    platforms[platform] = supported_platforms[platform];
+    return platforms;
   }
 
-  return allTests;
-}
+  function getTheTests(platforms) {
+    var testSet = test_finder.find(),
+    allTests = [];
 
-function setPlatformOfTests(tests, platform) {
-  tests.forEach(function(test) {
-    test.platform = platform;
-  });
-}
+    // make a copy of the test set for each platform, set the platform of each
+    // test, and append the platform specific test set to overall list of
+    // tests.
+    for (var key in platforms) {
+      // create a deep copy of the testSet so that we can modify each set
+      // it worrying about shared properties.
+      var platformTests = [].concat(toolbelt.deepCopy(testSet));
+      setPlatformOfTests(platformTests, key);
+      allTests = allTests.concat(platformTests);
+    }
 
-function runTest(test, stdOutReporter, stdErrReporter, done) {
-  var testName = test.name,
-      testPath = test.path,
+    return allTests;
+  }
+
+  function setPlatformOfTests(tests, platform) {
+    tests.forEach(function(test) {
+      test.platform = platform;
+    });
+  }
+
+  function runTest(test, stdOutReporter, stdErrReporter, done) {
+    var testName = test.name,
+    testPath = test.path,
+    platform = test.platform;
+
+    util.puts(testName + ' | ' + platform + ' | ' + "starting");
+
+    // make a copy of the current process' environment but force the
+    // platform if it is available
+    var env = toolbelt.copyExtendEnv({
+      PERSONA_BROWSER: platform
+    });
+
+    var opts = {
+      cwd: undefined,
+      env: env
+    };
+
+    var testProcess = child_process.spawn(vows_path,
+                                          [testPath].concat(vows_args), opts);
+
+    testProcess.stdout.on('data', function (data) {
+      stdOutReporter.report(data.toString());
+    });
+
+    testProcess.stderr.on('data', function (data) {
+      // annoyingly, wd puts lots of newlines into the stderr output
+      stdErrReporter.report(testName + ' | ' + platform + ' | ' + data.toString());
+    });
+
+    testProcess.on('exit', function() {
+      util.puts(testName + ' | ' + platform + ' | ' + "finished");
+      done && done();
+    });
+  }
+
+  function runNext() {
+    var test = tests.shift();
+
+    if (test) {
+      var testName = test.name,
       platform = test.platform;
 
-  util.puts(testName + ' | ' + platform + ' | ' + "starting");
+      var outputPath = path.join(__dirname, '..', 'results',
+                                 start_time + "-" + testName + '-' + platform + '.' + result_extension);
 
-  // make a copy of the current process' environment but force the
-  // platform if it is available
-  var env = toolbelt.copyExtendEnv({
-    PERSONA_BROWSER: platform
-  });
+      var stdOutReporter = new FileReporter({
+        output_path: outputPath
+      });
+      var stdErrReporter = new StdErrReporter();
 
-  var opts = {
-    cwd: undefined,
-    env: env
-  };
+      runTest(test, stdOutReporter, stdErrReporter, function() {
+        stdOutReporter.done();
+        stdErrReporter.done();
 
-  var testProcess = child_process.spawn(vows_path,
-    [testPath].concat(vows_args), opts);
+        runNext();
+      });
+    }
+  }
 
-  testProcess.stdout.on('data', function (data) {
-    stdOutReporter.report(data.toString());
-  });
-
-  testProcess.stderr.on('data', function (data) {
-    // annoyingly, wd puts lots of newlines into the stderr output
-    stdErrReporter.report(testName + ' | ' + platform + ' | ' + data.toString());
-  });
-
-  testProcess.on('exit', function() {
-    util.puts(testName + ' | ' + platform + ' | ' + "finished");
-    done && done();
-  });
-}
-
-function runNext() {
-  var test = tests.shift();
-
-  if (test) {
-    var testName = test.name,
-        platform = test.platform;
-
-    var outputPath = path.join(__dirname, '..', 'results',
-        start_time + "-" + testName + '-' + platform + '.' + result_extension);
-
-    var stdOutReporter = new FileReporter({
-      output_path: outputPath
-    });
-    var stdErrReporter = new StdErrReporter();
-
-    runTest(test, stdOutReporter, stdErrReporter, function() {
-      stdOutReporter.done();
-      stdErrReporter.done();
-
+  function runTests() {
+    // run tests in parallel up to the maximum number of runners.
+    for(var i = 0; i < max_runners; ++i) {
       runNext();
-    });
+    }
   }
 }
-
-function runTests() {
-  // run tests in parallel up to the maximum number of runners.
-  for(var i = 0; i < max_runners; ++i) {
-    runNext();
-  }
-}
-
 
