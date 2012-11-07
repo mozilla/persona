@@ -99,9 +99,9 @@ function startTesting() {
   runTests();
 
   function getTestedPlatforms(platform_glob) {
-    var plats = [];
+    var plats = {};
     Object.keys(supported_platforms).forEach(function(p) {
-      if (glob(p, platform_glob)) plats.push(supported_platforms[p]);
+      if (glob(p, platform_glob)) plats[p] = supported_platforms[p];
     });
     return plats;
   }
@@ -147,7 +147,6 @@ function startTesting() {
       cwd: undefined,
       env: env
     };
-
     var testProcess = child_process.spawn(vows_path,
                                           [testPath].concat(vows_args), opts);
 
@@ -156,11 +155,23 @@ function startTesting() {
     });
 
     testProcess.stderr.on('data', function (data) {
-      // annoyingly, wd puts lots of newlines into the stderr output
-      stdErrReporter.report(testName + ' | ' + platform + ' | ' + data.toString());
+      data.toString().split("\n").forEach(function(line) {
+        // decolorize
+        line = line.replace(/\x1b\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]/, "");
+        line = line.trim();
+        // skip blank lines
+        if (!line.length) return;
+        // skip useless lines 
+        if (/Ending your web drivage/.test(line)) return;
+        // transform sauce lab ids into urls you can load into your browser
+        var m = /^.*Driving the web.*: ([a-z0-9]+).*$/.exec(line);
+        if (m) line = 'https://saucelabs.com/tests/' + m[1];
+        // now report, whew.
+        stdErrReporter.report(testName + ' | ' + platform + ' | ' + line + "\n");
+      });
     });
 
-    testProcess.on('exit', function() {
+    testProcess.on('exit', function(code) {
       util.puts(testName + ' | ' + platform + ' | ' + "finished");
       done && done();
     });
