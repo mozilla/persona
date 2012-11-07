@@ -36,9 +36,9 @@ var argv = require('optimist')
   .usage('Run automation tests.\nUsage: $0')
   .alias('help', 'h')
   .describe('help', 'display this usage message')
-/*
   .alias('list-platforms', 'lp')
   .describe('lp', 'list available platforms to test on')
+/*
   .alias('env', 'e')
   .describe('env', "the environment to test.  one of dev/stage/prod or the name of an ephemeral instance")
 */
@@ -66,6 +66,12 @@ if (args['list-tests']) {
   console.log("%s tests available:", testSet.length);
   testSet.forEach(function(test) {
     console.log("  *", test.name);
+  });
+} else if (args['list-platforms']) {
+  var plats = Object.keys(supported_platforms);
+  console.log("%s platforms configured:", plats.length);
+  plats.forEach(function(plat) {
+    console.log("  *", plat);
   });
 } else {
   startTesting();
