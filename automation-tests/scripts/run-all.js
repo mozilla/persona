@@ -191,8 +191,9 @@ function startTesting() {
       });
     });
 
-    testProcess.on('exit', function(code, err) {
-      util.puts(testName + ' | ' + platform + ' | ' + "finished");
+    testProcess.on('exit', function(code) {
+      util.puts(testName + ' | ' + platform + ' | ' + "finished" +
+                (code != 0 ? " (failed with exit code " + code + ")": ""));
       done && done();
     });
   }
