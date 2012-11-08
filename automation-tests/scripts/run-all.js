@@ -33,13 +33,6 @@ var argv = require('optimist')
     if (!a.parallel) a.parallel = parseInt(process.env.RUNNERS, 10) || 10;
   })
   .describe('platform', 'the browser/os to test (globs supported)')
-  .check(function(a) {
-    if (!a.platform && !process.env.PERSONA_NO_SAUCE) {
-      a.platform = process.env.PERSONA_BROWSER || "vista_chrome";
-    }
-    // all is a supported alias "match everything"
-    if (a.platform === 'all') a.platform = "*";
-  })
   .alias('list-tests', 'lt')
   .describe('list-tests', 'list available tests')
   .alias('tests', 't')
@@ -53,18 +46,26 @@ if (args.h) {
   process.exit(0);
 }
 
+// optimist only runs "check" if an option is defined. Since we are checking if
+// an option is not defined, its check has to be outside of the option.
+if (!args.platform && !process.env.PERSONA_NO_SAUCE) {
+  args.platform = process.env.PERSONA_BROWSER || "vista_chrome";
+}
+// all is a supported alias "match everything"
+if (args.platform === 'all') args.platform = "*";
+
 // propogate -e to the environment if present
 if (args.env) process.env.PERSONA_ENV = args.env;
 
 const path = require('path'),
       util = require('util'),
       child_process = require('child_process'),
-      test_finder = require('../lib/test_finder'),
+      test_finder = require('../lib/test-finder'),
       runner = require('../lib/runner'),
       toolbelt = require('../lib/toolbelt'),
-      FileReporter = require('../lib/reporters/file_reporter'),
-      StdOutReporter = require('../lib/reporters/std_out_reporter'),
-      StdErrReporter = require('../lib/reporters/std_err_reporter'),
+      FileReporter = require('../lib/reporters/file-reporter'),
+      StdOutReporter = require('../lib/reporters/std-out-reporter'),
+      StdErrReporter = require('../lib/reporters/std-err-reporter'),
       vows_path = path.join(__dirname, "../node_modules/.bin/vows"),
       vows_args = process.env.VOWS_ARGS || ["--xunit", "-i"], // XXX is it cool to expect an array?
       result_extension = process.env.RESULT_EXTENSION || "xml",
@@ -80,9 +81,9 @@ if (args['list-tests']) {
     console.log("  *", test.name);
   });
 } else if (args['list-platforms']) {
-  var plats = Object.keys(supported_platforms);
-  console.log("%s platforms configured:", plats.length);
-  plats.forEach(function(plat) {
+  var platforms = Object.keys(supported_platforms);
+  console.log("%s platforms configured:", platforms.length);
+  platforms.forEach(function(plat) {
     console.log("  *", plat);
   });
 } else {
@@ -98,33 +99,35 @@ function startTesting() {
   // the tests array is shared state across all invocations of runNext. If two or
   // more tests are run in parallel, they will all check the tests array to see
   // if there are any more tests to run.
-  var plats = args.platform ? getTestedPlatforms(args.platform) : { any: {} };
-  var tests = getTheTests(plats);
-  console.log("Running %s, suites on %s platforms, %s at a time against %s",
-              tests.length, Object.keys(plats).length, args.parallel,
+  var platforms = args.platform ? getTestedPlatforms(args.platform) : { any: {} };
+  var tests = getTheTests(platforms);
+  console.log("Running %s suites on %s platforms, %s at a time against %s",
+              tests.length, Object.keys(platforms).length, args.parallel,
               require('../lib/urls.js').persona);
   runTests();
 
   function getTestedPlatforms(platform_glob) {
-    var plats = {};
+    var platforms = {};
+
     Object.keys(supported_platforms).forEach(function(p) {
-      if (glob(p, platform_glob)) plats[p] = supported_platforms[p];
+      if (glob(p, platform_glob)) platforms[p] = supported_platforms[p];
     });
-    return plats;
+
+    return platforms;
   }
 
   function getTheTests(platforms) {
-    var testSet = test_finder.find(null, null, args.tests),
+    var testSet = test_finder.find(tests);
     allTests = [];
 
     // make a copy of the test set for each platform, set the platform of each
     // test, and append the platform specific test set to overall list of
     // tests.
-    for (var key in platforms) {
+    for (var platform in platforms) {
       // create a deep copy of the testSet so that we can modify each set
-      // it worrying about shared properties.
+      // without worrying about shared properties.
       var platformTests = [].concat(toolbelt.deepCopy(testSet));
-      setPlatformOfTests(platformTests);
+      setPlatformOfTests(platformTests, platform);
       allTests = allTests.concat(platformTests);
     }
 
@@ -139,16 +142,17 @@ function startTesting() {
 
   function runTest(test, stdOutReporter, stdErrReporter, done) {
     var testName = test.name,
-    testPath = test.path,
-    platform = test.platform;
+        testPath = test.path,
+        platform = test.platform;
 
     util.puts(testName + ' | ' + platform + ' | ' + "starting");
 
     // make a copy of the current process' environment but force the
-    // platform if it is available
-    var env = {};
-    if (platform) env.PERSONA_BROWSER = platform;
-    env = toolbelt.copyExtendEnv(env);
+    // platform if it is available. PERSONA_PLATFORM will only be set
+    // if it is defined.
+    var env = toolbelt.copyExtendEnv({
+      PERSONA_BROWSER: platform
+    });
 
     var opts = {
       cwd: undefined,
@@ -163,21 +167,10 @@ function startTesting() {
 
     testProcess.stderr.on('data', function (data) {
       data.toString().split("\n").forEach(function(line) {
-        // decolorize
-        line = line.replace(/\x1b\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]/, "");
-        line = line.trim();
-        // skip blank lines
-        if (!line.length) return;
-        // skip useless lines
-        if (/Ending your web drivage/.test(line)) return;
-        // transform sauce lab ids into urls you can load into your browser
-        var m = /^.*Driving the web.*: ([a-z0-9]+).*$/.exec(line);
-        if (m) {
-          if (process.env.PERSONA_NO_SAUCE) line = "id: " + m[1];
-          else line = 'https://saucelabs.com/tests/' + m[1];
+        line = prettifyLine(line);
+        if (line) {
+          stdErrReporter.report(testName + ' | ' + platform + ' | ' + line + "\n");
         }
-        // now report, whew.
-        stdErrReporter.report(testName + ' | ' + platform + ' | ' + line + "\n");
       });
     });
 
@@ -185,6 +178,24 @@ function startTesting() {
       util.puts(testName + ' | ' + platform + ' | ' + "finished");
       done && done();
     });
+  }
+
+  function prettifyLine(line) {
+    // decolorize
+    line = line.replace(/\x1b\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]/, "");
+    line = line.trim();
+    // skip blank lines
+    if (!line.length) return;
+    // skip useless lines
+    if (/Ending your web drivage/.test(line)) return;
+    // transform sauce lab ids into urls you can load into your browser
+    var m = /^.*Driving the web.*: ([a-z0-9]+).*$/.exec(line);
+    if (m) {
+      if (process.env.PERSONA_NO_SAUCE) line = "id: " + m[1];
+      else line = 'https://saucelabs.com/tests/' + m[1];
+    }
+
+    return line;
   }
 
   function runNext() {
