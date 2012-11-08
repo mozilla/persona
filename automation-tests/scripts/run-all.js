@@ -132,7 +132,7 @@ function startTesting() {
   }
 
   function getTheTests(platforms) {
-    var testSet = test_finder.find(tests);
+    var testSet = test_finder.find(args.tests);
     allTests = [];
 
     // make a copy of the test set for each platform, set the platform of each

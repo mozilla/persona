@@ -21,7 +21,7 @@ exports.find = function(pattern, root, tests) {
       var stats = fs.statSync(filePath);
       if (stats.isFile() && /\.js$/.test(file)) {
         if (tests_to_ignore.indexOf(file) === -1) {
-          if (glob(file, pattern)) {
+          if (glob(file.replace(/\.js$/, ""), pattern)) {
             tests.push({
               name: file.replace('.js', ''),
               path: filePath
