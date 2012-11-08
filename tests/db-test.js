@@ -494,6 +494,58 @@ suite.addBatch({
   }
 });
 
+var firstSeen;
+suite.addBatch({
+  "checking database for an IDP we don't know": {
+    topic: function() {
+      db.getIDPLastSeen("example.com", this.callback);
+    },
+    "returns null as lastSeen": function(err, lastSeen) {
+      assert.isNull(err);
+      assert.isNull(lastSeen);
+    }
+  },
+  "noting that we've seen an IDP": {
+    topic: function() {
+      db.updateIDPLastSeen("idp.example.com", this.callback);
+    },
+    "works": function(err) {
+        assert.isNull(err);
+    },
+    "and then checking if that IDP is known": {
+      topic: function() {
+        db.getIDPLastSeen("idp.example.com", this.callback);      
+      },
+      "returns a recent date object": function(err, lastSeen) {
+        assert.isNull(err);
+        var delta = new Date() - lastSeen;
+        assert(delta < 1000, "idp was not seen in the last second (" + delta + "ms ago)");
+        firstSeen = lastSeen;
+      },
+      "and updating again after a second": {
+        topic: function() {
+          var cb = this.callback;
+          setTimeout(function() { 
+            db.updateIDPLastSeen("idp.example.com", cb);
+          }, 1000);
+        },
+        "works": function(err) {
+          assert.isNull(err);
+        },
+        "and then checking if that IDP is known": {
+          topic: function() {
+            db.getIDPLastSeen("idp.example.com", this.callback);      
+          },
+          "returns an updated date object": function(err, lastSeen) {
+            assert.isNull(err);
+            assert.notEqual(lastSeen.getTime(), firstSeen.getTime());
+          }
+        }
+      }
+    }
+  }
+});
+
 suite.addBatch({
   "closing the database": {
     topic: function() {
