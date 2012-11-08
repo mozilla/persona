@@ -284,6 +284,13 @@ BrowserID.State = (function() {
       redirectToState("email_chosen", info);
     });
 
+    handleState("primary_offline", function(msg, info) {
+      info.idpName = info.idpName || 'TODO';
+      startAction("doPrimaryOffline", {
+        idpName: info.idpName
+      });
+    });
+
     handleState("pick_email", function() {
       startAction("doPickEmail", {
         origin: self.hostname,
@@ -307,7 +314,13 @@ BrowserID.State = (function() {
 
       mediator.publish("kpi_data", { email_type: idInfo.type });
 
-      if (idInfo.type === "primary") {
+      // TODO: backend would provide
+      idInfo.state = 'offline';
+      idInfo.issuer = 'example.com';
+
+      if (idInfo.state && 'offline' === idInfo.state) {
+	redirectToState("primary_offline", { idpName: idInfo.issuer });
+      } else if (idInfo.type === "primary") {
         if (idInfo.cert) {
           // Email is a primary and the cert is available - the user can log
           // in without authenticating with the IdP. All invalid/expired
