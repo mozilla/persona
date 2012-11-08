@@ -125,7 +125,7 @@ BrowserID.State = (function() {
         redirectToState("primary_user", info);
       }
       else {
-        startAction("doCheckAuth");
+        startAction("doCheckAuth", info);
       }
     });
 

@@ -305,6 +305,13 @@ BrowserID.Modules.Dialog = (function() {
           user.setReturnTo(returnTo);
         }
 
+        // forceAuthentication is used by the Marketplace to ensure that the
+        // user knows the password to this account. We ignore any active session.
+        if (paramsFromRP.forceAuthentication &&
+            true === paramsFromRP.forceAuthentication) {
+          params.forceAuthentication = true;
+        }
+
         if (hash.indexOf("#AUTH_RETURN") === 0) {
           var primaryParams = JSON.parse(win.sessionStorage.primaryVerificationFlow);
           params.email = primaryParams.email;
