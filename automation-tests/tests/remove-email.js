@@ -138,6 +138,8 @@ runner.run(module, {
   "follow link, wait for redirect, secondary should be displayed": function(done, link) {
     browser.chain({onError: done})
       .wwin()
+      // work around chrome crashing with "aw snap" issue #2691 (this is temporary!)
+      .get("about:blank")
       .get(link)
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, secondaryEmail));
