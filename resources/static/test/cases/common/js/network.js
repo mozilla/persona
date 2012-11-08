@@ -568,7 +568,7 @@
 
     network.addressInfo(TEST_EMAIL, function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
-      equal(data.known, false, "address is unknown to BrowserID");
+      equal(data.state, "unknown", "address is unknown to BrowserID");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -578,7 +578,7 @@
 
     network.addressInfo(TEST_EMAIL, function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
-      equal(data.known, true, "address is known to BrowserID");
+      equal(data.state, "known", "address is known to BrowserID");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });

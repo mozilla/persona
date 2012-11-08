@@ -50,6 +50,10 @@ BrowserID.Errors = (function(){
       title: "Checking Script Version"
     },
 
+    completeTransition: {
+      title: "Completing Transition State"
+    },
+
     completeUserRegistration: {
       title: "Completing User Registration"
     },

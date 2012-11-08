@@ -1244,8 +1244,7 @@
       function(info) {
         equal(info.email, "unregistered@testuser.com", "correct address");
         equal(info.type, "secondary", "correct type");
-        equal(info.email, "unregistered@testuser.com", "correct email");
-        equal(info.known, false, "address not known to Persona");
+        equal(info.state, "unknown", "address not known to Persona");
         start();
       },
       testHelpers.unexpectedFailure
@@ -1259,7 +1258,7 @@
       function(info) {
         equal(info.type, "secondary", "correct type");
         equal(info.email, "registered@testuser.com", "correct email");
-        equal(info.known, true, "address known to Persona");
+        equal(info.state, "known", "address known to Persona");
         start();
       },
       testHelpers.unexpectedFailure
