@@ -14,6 +14,21 @@
  * should be tested.
  */
 
+const path                = require('path'),
+      util                = require('util'),
+      child_process       = require('child_process'),
+      glob                = require('minimatch'),
+      test_finder         = require('../lib/test-finder'),
+      runner              = require('../lib/runner'),
+      toolbelt            = require('../lib/toolbelt'),
+      FileReporter        = require('../lib/reporters/file-reporter'),
+      StdErrReporter      = require('../lib/reporters/std-err-reporter'),
+      vows_path           = path.join(__dirname, "../node_modules/.bin/vows"),
+      vows_args           = process.env.VOWS_ARGS || ["-i", "-v"], // XXX is it cool to expect an array?
+      supported_platforms = require('../lib/sauce-platforms').platforms,
+      vows_reporters      = require('../config/vows-reporters'),
+      start_time          = new Date().getTime();
+
 var argv = require('optimist')
   .usage('Run automation tests.\nUsage: $0')
   .alias('help', 'h')
@@ -37,7 +52,17 @@ var argv = require('optimist')
   .describe('list-tests', 'list available tests')
   .alias('tests', 't')
   .describe('tests', 'which test(s) to run (globs supported)')
-  .default("tests", "*");
+  .default("tests", "*")
+  .alias('list-reporters', 'lr')
+  .describe('list-reporters', 'which output reporters are available')
+  .alias('reporter', 'r')
+  .describe('reporter', 'the output reporter type to use')
+  .default('reporter', 'xunit')
+  .check(function(a) {
+    if(a.reporter && !vows_reporters[a.reporter]) {
+      throw "invalid reporter: " + a.reporter;
+    }
+  });
 
 var args = argv.argv;
 
@@ -57,22 +82,6 @@ if (args.platform === 'all') args.platform = "*";
 // propogate -e to the environment if present
 if (args.env) process.env.PERSONA_ENV = args.env;
 
-const path = require('path'),
-      util = require('util'),
-      child_process = require('child_process'),
-      test_finder = require('../lib/test-finder'),
-      runner = require('../lib/runner'),
-      toolbelt = require('../lib/toolbelt'),
-      FileReporter = require('../lib/reporters/file-reporter'),
-      StdOutReporter = require('../lib/reporters/std-out-reporter'),
-      StdErrReporter = require('../lib/reporters/std-err-reporter'),
-      vows_path = path.join(__dirname, "../node_modules/.bin/vows"),
-      vows_args = process.env.VOWS_ARGS || ["--xunit", "-i"], // XXX is it cool to expect an array?
-      result_extension = process.env.RESULT_EXTENSION || "xml",
-      supported_platforms = require('../lib/sauce-platforms').platforms,
-      start_time = new Date().getTime(),
-      glob = require('minimatch');
-
 // what mode are we in?
 if (args['list-tests']) {
   var testSet = test_finder.find();
@@ -85,6 +94,12 @@ if (args['list-tests']) {
   console.log("%s platforms configured:", platforms.length);
   platforms.forEach(function(plat) {
     console.log("  *", plat);
+  });
+} else if (args['list-reporters']) {
+  var reporters = Object.keys(vows_reporters);
+  console.log("%s supported reporters:", reporters.length);
+  reporters.forEach(function(reporter) {
+    console.log("  *", reporter);
   });
 } else {
   startTesting();
@@ -158,8 +173,10 @@ function startTesting() {
       cwd: undefined,
       env: env
     };
-    var testProcess = child_process.spawn(vows_path,
-                                          [testPath].concat(vows_args), opts);
+
+    // tell vows which reporter to use.
+    var vowsArgs = [ testPath, '--' + args.reporter ].concat(vows_args);
+    var testProcess = child_process.spawn(vows_path, vowsArgs, opts);
 
     testProcess.stdout.on('data', function (data) {
       stdOutReporter.report(data.toString());
@@ -205,8 +222,10 @@ function startTesting() {
       var testName = test.name,
       platform = test.platform;
 
+      var extension = vows_reporters[args.reporter].extension;
+
       var outputPath = path.join(__dirname, '..', 'results',
-                                 start_time + "-" + testName + '-' + platform + '.' + result_extension);
+                                 start_time + "-" + testName + '-' + platform + '.' + extension);
 
       var stdOutReporter = new FileReporter({
         output_path: outputPath
