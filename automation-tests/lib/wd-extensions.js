@@ -42,6 +42,9 @@ wd.prototype.newSession = function(opts, cb) {
 
   browser.init(opts, function(err) {
     if (err) return cb(err);
+    // let's set the http timeout at 2x the implicit wait timeout for
+    // faster failures. (!300s)
+    browser.setHTTPInactivityTimeout(2 * timeouts.DEFAULT_TIMEOUT_MS);
     // note!  the implicit wait timeout is different from other timeouts,
     // it's the amount of time certain wire transactions will wait for
     // procedures like find_element to succeed (we'll actually wait on the
