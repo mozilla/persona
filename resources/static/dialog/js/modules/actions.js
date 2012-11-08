@@ -138,9 +138,11 @@ BrowserID.Modules.Actions = (function() {
       user.logoutUser(self.publish.bind(self, "logged_out"), self.getErrorDialog(errors.logoutUser));
     },
 
-    doCheckAuth: function() {
+    doCheckAuth: function(info) {
       var self=this;
-      user.checkAuthenticationAndSync(function(authenticated) {
+      user.checkAuthenticationAndSync(function (authenticated) {
+        // Does the RP want us to force the user to authenticate?
+        authenticated = info.forceAuthentication ? false : authenticated;
         self.publish("authentication_checked", {
           authenticated: authenticated
         });
