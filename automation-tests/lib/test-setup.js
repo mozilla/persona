@@ -58,12 +58,12 @@ function _setSessionOpts(opts) {
 
   // check for typos: throw error if requestedPlatform not found in list of supported sauce platforms
   var requestedPlatform = opts.platform || process.env['PERSONA_BROWSER'];
-  if (requestedPlatform && !saucePlatforms.platforms[requestedPlatform]) {
+  if (requestedPlatform && requestedPlatform != 'any' && !saucePlatforms.platforms[requestedPlatform]) {
     throw new Error('requested platform ' + requestedPlatform +
                     ' not found in list of available platforms');
   }
   // Default to *nothing* locally (server's choice), and chrome/VISTA for sauce
-  var defaultPlatform = process.env.PERSONA_NO_SAUCE ? null : { browserName: 'chrome', platform: 'VISTA' };
+  var defaultPlatform = process.env.PERSONA_NO_SAUCE ? 'any' : { browserName: 'chrome', platform: 'VISTA' };
   var platform = requestedPlatform ? saucePlatforms.platforms[requestedPlatform] : defaultPlatform;
   // add platform, browserName, version to session opts
   _.extend(sessionOpts, platform);
