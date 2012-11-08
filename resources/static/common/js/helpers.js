@@ -53,7 +53,7 @@
   function cancelEvent(callback) {
     return function(event) {
       event && event.preventDefault();
-      callback.call(this, event);
+      callback.call(this);
     };
   }
 
