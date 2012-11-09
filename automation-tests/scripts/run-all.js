@@ -24,7 +24,7 @@ var argv = require('optimist')
   .alias('list-platforms', 'lp')
   .describe('lp', 'list available platforms to test on')
   .alias('env', 'e')
-  .describe('env', "the environment to test.  one of dev/stage/prod or the name of an ephemeral instance")
+  .describe('env', "target environment: dev/stage/prod or the name of an ephemeral")
   .alias('local', 'l')
   .describe('local', 'run tests locally (instead of on saucelabs)')
   .check(function(a) {
