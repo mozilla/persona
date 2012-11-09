@@ -81,8 +81,10 @@ runner.run(module, {
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, mfbUser.email));
       });
-  },
-  "mfb tear down browser": function(done) {
-    browser.quit(done);
   }
-}, {suiteName: path.basename(__filename)});
+}, {
+  suiteName: path.basename(__filename),
+  cleanup: function() {
+    browser.quit();
+  }
+});

@@ -254,7 +254,7 @@ function startTesting() {
     var aggregators = [];
     var totalTests = tests.length;
     var completeTests = 0;
-    var allProcessExitedCleanly = true;
+    var allProcessesExitedCleanly = true;
 
     function getAggregator() {
       var aggregator;
@@ -274,7 +274,7 @@ function startTesting() {
     function handleTestCompletion(err) {
       if (args.output === 'console') process.stdout.write("<");
       // now pass the error into the results parser to catch bad shutdown in our final report
-      if (err) allProcessExitedCleanly = false;
+      if (err) allProcessesExitedCleanly = false;
       // complete!  If all of the tests are done, it's time to summarize results if
       // we're not in xunit mode
       completeTests += 1;
@@ -284,7 +284,7 @@ function startTesting() {
           summarizeResultsAndExit(aggregators);
         } else {
           // exit with an error code that controlling processes can catch in xunit mode
-          process.exit(allProcessesExitedCleanly ? 0 : 77); 
+          process.exit(allProcessesExitedCleanly ? 0 : 77);
         }
       } else {
         runNext(getAggregator(), handleTestCompletion);
@@ -329,5 +329,8 @@ function startTesting() {
         }
       });
     }
+    process.nextTick(function() {
+      process.exit(total - successes);
+    });
   }
 }

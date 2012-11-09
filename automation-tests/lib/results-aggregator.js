@@ -37,7 +37,7 @@ ResultsAggregator.prototype.parseLine = function(msg) {
     } else if (msg["0"] === 'end') {
       if (self.current.errors) {
         self.failures.push(self.current);
-      } else { 
+      } else {
         self.successes.push(self.current);
       }
       self.current = {};

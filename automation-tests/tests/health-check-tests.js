@@ -94,12 +94,14 @@ var secondaryTest = {
   }
 };
 
-runner.run(module,
-           [setup, secondaryTest, primaryTest],
-           {
-             suiteName: path.basename(__filename),
-             cleanup: function() {
-               if (browser) browser.quit();
-               if (secondBrowser) secondBrowser.quit();
-             }
-           });
+runner.run(
+  module,
+  [setup, secondaryTest, primaryTest],
+  {
+    suiteName: path.basename(__filename),
+    cleanup: function() {
+      console.log("CLEANUP!");
+      if (browser) browser.quit();
+      if (secondBrowser) secondBrowser.quit();
+    }
+  });
