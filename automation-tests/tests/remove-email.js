@@ -80,9 +80,11 @@ runner.run(module, {
       done(err);
     });
   },
+  "init browser session": function(done) {
+    testSetup.newBrowserSession(browser, done);
+  },
   "go to 123done and create a primary account": function(done) {
     browser.chain({onError: done})
-      .newSession(testSetup.sessionOpts)
       .get(persona_urls['123done'])
       .wclick(CSS['123done.org'].signInButton)
       .wwin(CSS['dialog'].windowName)
@@ -212,9 +214,8 @@ runner.run(module, {
       .wclick(CSS['persona.org'].signInForm.nextButton)
       .wfind(CSS['persona.org'].signInForm.verifyPrimaryButton, done);
   }
-}, {
-  cleanup: function(done) {
-    browser.quit(done);
-  },
-  suiteName: path.basename(__filename)
+}, 
+{
+  suiteName: path.basename(__filename),
+  cleanup: function(done) { testSetup.teardown(done) }
 });

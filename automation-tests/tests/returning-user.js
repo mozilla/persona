@@ -33,9 +33,11 @@ runner.run(module, {
       done(err);
     });
   },
+  "start browser session": function(done) {
+    testSetup.newBrowserSession(browser, done);
+  },
   "startup, create primary acct on personaorg": function(done) {
     browser.chain({onError: done})
-      .newSession(testSetup.sessionOpts)
       .get(persona_urls['persona'])
       .wclick(CSS['persona.org'].header.signIn)
       .wtype(CSS['persona.org'].signInForm.email, primary)
@@ -110,11 +112,8 @@ runner.run(module, {
       done(err || assert.ok(!val));
     });
   }
-}, {
-  // regardless of success or failure, we should cleanup the browser session
-  cleanup: function(done) {
-    browser.quit(done);
-  },
-  suiteName: path.basename(__filename)
+}, 
+{
+  suiteName: path.basename(__filename),
+  cleanup: function(done) { testSetup.teardown(done) }
 });
-

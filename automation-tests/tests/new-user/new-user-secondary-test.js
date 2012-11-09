@@ -29,9 +29,11 @@ var new_secondary_123done_two_browsers = {
       done(err);
     });
   },
+  "startup browser": function(done) {
+    testSetup.newBrowserSession(browser, done);
+  },
   "startup, go to 123done, click sign in": function(done) {
     browser.chain({onError: done})
-      .newSession(testSetup.sessionOpts)
       .get(persona_urls['123done'])
       .wclick(CSS['123done.org'].signinButton, done);
   },
@@ -48,10 +50,11 @@ var new_secondary_123done_two_browsers = {
   "get verification link from email": function(done) {
     restmail.getVerificationLink({ email: theEmail }, done);
   },
-  "get another browser session, open verification link in new browser window": function(done, link) {
-    secondBrowser.chain({onError: done})
-      .newSession(testSetup.sessionOpts)
-      .get(link, done);
+  "get another browser session": function(done) {
+    testSetup.newBrowserSession(secondBrowser, done);
+  },
+  "open verification link in new browser window": function(done, link) {
+    secondBrowser.get(link, done);
   },
   "re-enter password and click login on persona.org": function(done) {
     secondBrowser.chain({onError: done})
@@ -80,7 +83,7 @@ var new_secondary_123done_two_browsers = {
 
 var new_secondary_mfb_two_browsers = {
   "create a new selenium session": function(done) {
-    browser.newSession(testSetup.sessionOpts, done);
+    testSetup.newBrowserSession(browser, done);
   },
   "load mfb and click the signin button": function(done) {
     browser.chain({onError: done})
@@ -100,9 +103,11 @@ var new_secondary_mfb_two_browsers = {
   "mfb get verification link from email": function(done) {
     restmail.getVerificationLink({ email: mfbEmail }, done);
   },
+  "create a second selenium session": function(done) {
+    testSetup.newBrowserSession(secondBrowser, done);
+  },
   "open verification link in second session and re-enter password": function(done, link) {
     secondBrowser.chain({onError: done})
-      .newSession(testSetup.sessionOpts)
       .get(link)
       .wtype(CSS['persona.org'].signInForm.password, mfbEmail.split('@')[0])
       .wclick(CSS['persona.org'].signInForm.finishButton, done);
@@ -128,9 +133,11 @@ var new_secondary_personaorg = {
     // trying another super terse test. I find I'm liking these better and better,
     // but I'm afraid they will be totally unreadable if you only write these
     // tests once in a while
+    "setup browser": function(done) {
+      testSetup.newBrowserSession(browser, done);
+    },
     "create restmail user at persona.org and verify logged in OK": function(done) {
       browser.chain({onError: done})
-        .newSession(testSetup.sessionOpts)
         .get(persona_urls['persona'])
         .wclick(CSS['persona.org'].header.signIn)
         .wtype(CSS['persona.org'].signInForm.email, nspEmail)
@@ -155,4 +162,7 @@ var new_secondary_personaorg = {
 runner.run(
   module,
   [new_secondary_123done_two_browsers, new_secondary_mfb_two_browsers, new_secondary_personaorg],
-  {suiteName: path.basename(__filename)});
+  {
+    suiteName: path.basename(__filename),
+    cleanup: function(done) { testSetup.teardown(done) }
+  });

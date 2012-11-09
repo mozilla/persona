@@ -158,11 +158,25 @@ testSetup.setup = function(opts, cb) {
   }
 }
 
+// private setup function
 function setupBrowsers(browserCount, out) {
   for (var i = 0; i < browserCount; i++) { testSetup.startup() }
   // just use the browsers array directly
   out.b = out.browsers = testSetup.browsers;
   return out;
+}
+
+testSetup.newBrowserSession = function(b, cb) {
+  b.newSession(testSetup.sessionOpts, cb);
+};
+
+testSetup.teardown = function(cb) {
+  console.log('teardown called')
+  var enders = [];
+  // quit all browser sessions
+  for (var i = 0, b; b = testSetup.browsers[i]; i++) enders.push(Q.ncall(b.quit, b));
+  Q.all(enders)
+    .fin(cb);
 }
 
 function createTestName() {

@@ -39,9 +39,11 @@ var primary_123done = {
       done(err);
     });
   },
-  "startup, load 123done, click sign in": function(done) {
+  "startup browser": function(done) {
+    testSetup.newBrowserSession(browser, done);
+  },
+  "load 123done, click sign in": function(done) {
     browser.chain({onError: done})
-      .newSession(testSetup.sessionOpts)
       .get(persona_urls['123done'])
       .wclick(CSS['123done.org'].signinButton, done)
   },
@@ -63,9 +65,11 @@ var primary_123done = {
 
 var mcss = CSS['myfavoritebeer.org'],
   primary_mfb = {
+    "startup browser": function(done) {
+      testSetup.newBrowserSession(browser, done);
+    },
     "go to mfb, click sign in, switch to dialog": function(done) {
       browser.chain({onError: done})
-        .newSession(testSetup.sessionOpts)
         .get(persona_urls['myfavoritebeer'])
         .wclick(mcss.signinButton, done)
     },
@@ -92,9 +96,11 @@ var pcss = CSS['persona.org'],
     // open browser, go to persona.org, click sign in, enter eyedeemail, click next
     // click verify primary button, switch to popup, enter password, click ok
     // switch back to main window, look for email in acct mgr, log out
+    "startup browser": function(done) {
+      testSetup.newBrowserSession(browser, done);
+    },
     "create eyedee.me primary at persona.org and verify logged in OK": function(done) {
       browser.chain({onError: done})
-        .newSession(testSetup.sessionOpts)
         .get(persona_urls['persona'])
         .wclick(pcss.header.signIn)
         .wtype(pcss.signInForm.email, porg_eyedeemail)
@@ -118,4 +124,7 @@ var pcss = CSS['persona.org'],
 runner.run(
   module,
   [primary_123done, primary_mfb, primary_personaorg],
-  {suiteName: path.basename(__filename)});
+  {
+    suiteName: path.basename(__filename),
+    cleanup: function(done) { testSetup.teardown(done) }
+  });

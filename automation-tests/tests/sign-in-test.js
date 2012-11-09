@@ -27,7 +27,7 @@ runner.run(module, {
     });
   },
   "create a new selenium session": function(done) {
-    browser.newSession(testSetup.sessionOpts, done);
+    testSetup.newBrowserSession(browser, done);
   },
   "load 123done and wait for the signin button to be visible": function(done) {
     browser.get(persona_urls["123done"], done);
@@ -58,7 +58,7 @@ runner.run(module, {
 
   // todo extract duplication!
   "create another selenium session": function(done) {
-    browser.newSession(testSetup.sessionOpts, done);
+    testSetup.newBrowserSession(browser, done);
   },
   "load myfavoritebeer and wait for the signin button to be visible": function(done) {
     browser.chain({onError: done})
@@ -82,9 +82,8 @@ runner.run(module, {
         done(err || assert.equal(text, mfbUser.email));
       });
   }
-}, {
+}, 
+{
   suiteName: path.basename(__filename),
-  cleanup: function(done) {
-    browser.quit(done);
-  }
+  cleanup: function(done) { testSetup.teardown(done) }
 });

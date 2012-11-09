@@ -36,7 +36,7 @@ runner.run(module, {
     });
   },
   "create a new selenium session": function(done) {
-    browser.newSession(testSetup.sessionOpts, done);
+    testSetup.newBrowserSession(browser, done);
   },
   "go to 123done and click sign in": function(done) {
     browser.chain({onError: done})
@@ -60,9 +60,11 @@ runner.run(module, {
         done(err || assert.equal(text, testUser.email));
       });
   },
+  "setup second browser": function(done) {
+    testSetup.newBrowserSession(secondBrowser, done);
+  },
   "in the second browser, log in to persona.org": function(done) {
     secondBrowser.chain({onError: done})
-      .newSession(testSetup.sessionOpts)
       .get(persona_urls['persona'])
       .wclick(CSS['persona.org'].header.signIn)
       .wtype(CSS['persona.org'].signInForm.email, testUser.email)
@@ -115,4 +117,8 @@ runner.run(module, {
       secondBrowser.quit(done)
     })
   }
-}, {suiteName: path.basename(__filename)});
+}, 
+{
+  suiteName: path.basename(__filename),
+  cleanup: function(done) { testSetup.teardown(done) }
+});

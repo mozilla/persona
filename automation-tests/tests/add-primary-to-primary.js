@@ -38,7 +38,7 @@ runner.run(module, {
   },
   //XXX figure out how to parameterize the RP
   "start the session": function(done) {
-    browser.newSession(testSetup.sessionOpts, done);
+    testSetup.newBrowserSession(browser, done);
   },
   //XXX obviously in need of refactoring between this primary and the second one.
   "signup a new account with a primary": function(done) {
@@ -95,4 +95,8 @@ runner.run(module, {
   "shut down remaining browsers": function(done) {
     browser.quit(done);
   }
-}, {suiteName: path.basename(__filename)});
+}, 
+{
+  suiteName: path.basename(__filename),
+  cleanup: function(done) { testSetup.teardown(done) }
+});

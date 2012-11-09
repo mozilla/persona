@@ -35,12 +35,13 @@ runner.run(module, {
   "get a verified user": function(done) {
     getVerifiedUser(done);
   },
-
+  "start browser session": function(done) {
+    testSetup.newBrowserSession(browser, done);
+  },
   "open myfavoritebeer, open dialog, click forgotPassword": function(done, user) {
     theUser = user;
 
     browser.chain({onError: done})
-      .newSession(testSetup.sessionOpts)
       .get(persona_urls['myfavoritebeer'])
       .wclick(CSS['myfavoritebeer.org'].signinButton)
       .wwin(CSS['dialog'].windowName)
@@ -93,4 +94,8 @@ runner.run(module, {
   "shut down remaining browsers": function(done) {
     browser.quit(done);
   }
-}, {suiteName: path.basename(__filename)});
+}, 
+{
+  suiteName: path.basename(__filename),
+  cleanup: function(done) { testSetup.teardown(done) }
+});
