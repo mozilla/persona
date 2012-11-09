@@ -58,14 +58,13 @@ function _setSessionOpts(opts) {
 
   // check for typos: throw error if requestedPlatform not found in list of supported sauce platforms
   var requestedPlatform = opts.platform || process.env['PERSONA_BROWSER'];
-  if (requestedPlatform && !saucePlatforms.platforms[requestedPlatform]) {
+  if (requestedPlatform && requestedPlatform != 'any' && !saucePlatforms.platforms[requestedPlatform]) {
     throw new Error('requested platform ' + requestedPlatform +
                     ' not found in list of available platforms');
   }
   // Default to *nothing* locally (server's choice), and chrome/VISTA for sauce
-  var defaultPlatform = process.env.PERSONA_NO_SAUCE ? null : { browserName: 'chrome', platform: 'VISTA' };
+  var defaultPlatform = process.env.PERSONA_NO_SAUCE ? 'any' : { browserName: 'chrome', platform: 'VISTA' };
   var platform = requestedPlatform ? saucePlatforms.platforms[requestedPlatform] : defaultPlatform;
-  var platform = null;
   // add platform, browserName, version to session opts
   _.extend(sessionOpts, platform);
 
@@ -146,11 +145,11 @@ testSetup.setup = function(opts, cb) {
     }
   }
   // no need to return a promise, just fire the cb when ready
-  if (promises) { 
+  if (promises) {
     Q.all(promises)
-      .then(function() { 
+      .then(function() {
         fixtures = setupBrowsers(browsers, fixtures);
-        cb(null, fixtures) 
+        cb(null, fixtures)
       })
       .fail(function(error) { cb(error) });
   } else {

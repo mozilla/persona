@@ -112,8 +112,8 @@ runner.run(module, {
   }
 }, {
   // regardless of success or failure, we should cleanup the browser session
-  cleanup: function() {
-    browser.quit();
+  cleanup: function(done) {
+    browser.quit(done);
   },
   suiteName: path.basename(__filename)
 });

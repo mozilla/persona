@@ -9,8 +9,6 @@ function FileReporter(config) {
 
   try {
     mkdirp.sync(path.dirname(fileName));
-
-    this.fd = fs.openSync(fileName, "w");
   }
   catch(e) {
     console.log("error:", this.fileName, String(e));
@@ -18,19 +16,15 @@ function FileReporter(config) {
 }
 FileReporter.prototype.report = function(msg) {
   try {
-    fs.writeSync(this.fd, msg, 0, msg.length, null);
+    var fd = fs.openSync(this.fileName, "w");
+    fs.writeSync(fd, msg, 0, msg.length, null);
+    fs.closeSync(fd);
   }
   catch(e) {
     console.log("error:", this.fileName, String(e));
   }
 };
 FileReporter.prototype.done = function() {
-  try {
-    fs.closeSync(this.fd);
-  }
-  catch(e) {
-    console.log("error:", this.fileName, String(e));
-  }
 };
 
 module.exports = FileReporter;

@@ -41,7 +41,6 @@ var setup = {
   }
 };
 
-
 var primaryTest = {
   "start, go to personaorg, click sign in, type eyedeeme addy, click next": function(done) {
     startup(browser, eyedeemail, done)
@@ -65,6 +64,7 @@ var primaryTest = {
   },
   "shut down primary test": function(done) {
     browser.quit(done);
+    browser = null;
   }
 };
 
@@ -90,7 +90,23 @@ var secondaryTest = {
   },
   "shut down secondary test": function(done) {
     secondBrowser.quit(done);
+    secondBrowser = null;
   }
 };
 
-runner.run(module, [setup, secondaryTest, primaryTest], {suiteName: path.basename(__filename)});
+runner.run(
+  module,
+  [setup, secondaryTest, primaryTest],
+  {
+    suiteName: path.basename(__filename),
+    cleanup: function(done) {
+      // quit both browser sessions if they haven't been quit already
+      function quitIfDefined(b, cb) {
+        if (b) b.quit(cb);
+        else cb();
+      }
+      quitIfDefined(browser, function() {
+        quitIfDefined(secondBrowser, done);
+      });
+    }
+  });
