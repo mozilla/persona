@@ -246,7 +246,6 @@ function startTesting() {
         if (stdOutReporter) stdOutReporter.done();
         stdErrReporter.done();
         if (cb) cb(err);
-        runNext();
       });
     }
   }
@@ -257,41 +256,47 @@ function startTesting() {
     var completeTests = 0;
     var allProcessExitedCleanly = true;
 
+    function getAggregator() {
+      var aggregator;
+      if (args.output !== 'xunit') {
+        aggregator = new ResultsAggregator();
+        aggregators.push(aggregator);
+
+        // now if this is the console, let's output marks as tests start and complete
+        if (args.output === 'console') {
+          aggregator.on('pass', function() { process.stdout.write(".") });
+          aggregator.on('fail', function() { process.stdout.write("!") });
+        }
+      }
+      return aggregator;
+    }
+
+    function handleTestCompletion(err) {
+      if (args.output === 'console') process.stdout.write("<");
+      // now pass the error into the results parser to catch bad shutdown in our final report
+      if (err) allProcessExitedCleanly = false;
+      // complete!  If all of the tests are done, it's time to summarize results if
+      // we're not in xunit mode
+      completeTests += 1;
+      if (completeTests === totalTests) {
+        if (args.output === 'console') process.stdout.write("\n\n");
+        if (aggregators.length) {
+          summarizeResultsAndExit(aggregators);
+        } else {
+          // exit with an error code that controlling processes can catch in xunit mode
+          process.exit(allProcessesExitedCleanly ? 0 : 77); 
+        }
+      } else {
+        runNext(getAggregator(), handleTestCompletion);
+      }
+    }
+
     // run tests in parallel up to the maximum number of runners.
     for(var i = 0; i < args.parallel && tests.length; ++i) {
-      (function() {
-        var aggregator;
-        if (args.output !== 'xunit') {
-          aggregator = new ResultsAggregator();
-          aggregators.push(aggregator);
-
-          // now if this is the console, let's output marks as tests start and complete
-          if (args.output === 'console') {
-            aggregator.on('pass', function() { process.stdout.write(".") });
-            aggregator.on('fail', function() { process.stdout.write("!") });
-          }
-        }
-        runNext(aggregator, function(err) {
-          if (args.output === 'console') process.stdout.write("<");
-          // now pass the error into the results parser to catch bad shutdown in our final report
-          if (err) allProcessExitedCleanly = false;          
-          // complete!  If all of the tests are done, it's time to summarize results if
-          // we're not in xunit mode
-          completeTests += 1;
-          if (completeTests === totalTests) {
-            if (args.output === 'console') process.stdout.write("\n\n");
-            if (aggregators.length) {
-              summarizeResultsAndExit(aggregators);
-            } else {
-              // exit with an error code that controlling processes can catch in xunit mode
-              process.exit(allProcessesExitedCleanly ? 0 : 77); 
-            }
-          }
-        });
-      })();
+      runNext(getAggregator(), handleTestCompletion);
     }
   }
-  
+
   function summarizeResultsAndExit(aggregators) {
     // first let's calculate uber-high level summary information
     var total = 0;
