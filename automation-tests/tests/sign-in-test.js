@@ -84,7 +84,7 @@ runner.run(module, {
   }
 }, {
   suiteName: path.basename(__filename),
-  cleanup: function() {
-    browser.quit();
+  cleanup: function(done) {
+    browser.quit(done);
   }
 });

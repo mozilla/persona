@@ -54,8 +54,7 @@ module.exports = function(spec, mod, opts) {
   suite.addBatch({
     "cleanup": {
       topic: function() {
-        if (opts.cleanup) opts.cleanup();
-        this.callback();
+        if (opts.cleanup) opts.cleanup(this.callback);
       },
       "done": function() { }
     }

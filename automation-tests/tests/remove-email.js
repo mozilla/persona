@@ -213,8 +213,8 @@ runner.run(module, {
       .wfind(CSS['persona.org'].signInForm.verifyPrimaryButton, done);
   }
 }, {
-  cleanup: function() {
-    browser.quit();
+  cleanup: function(done) {
+    browser.quit(done);
   },
   suiteName: path.basename(__filename)
 });

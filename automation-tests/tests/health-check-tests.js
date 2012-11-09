@@ -99,8 +99,14 @@ runner.run(
   [setup, secondaryTest, primaryTest],
   {
     suiteName: path.basename(__filename),
-    cleanup: function() {
-      if (browser) browser.quit();
-      if (secondBrowser) secondBrowser.quit();
+    cleanup: function(done) {
+      // quit both browser sessions if they haven't been quit already
+      function quitIfDefined(b, cb) {
+        if (b) b.quit(cb);
+        else cb();
+      }
+      quitIfDefined(browser, function() {
+        quitIfDefined(secondBrowser, done);
+      });
     }
   });
