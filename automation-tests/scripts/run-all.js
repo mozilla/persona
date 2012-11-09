@@ -14,6 +14,9 @@
  * should be tested.
  */
 
+const outputFormats = ["console", "json", "xunit"]; 
+
+
 var argv = require('optimist')
   .usage('Run automation tests.\nUsage: $0')
   .alias('help', 'h')
@@ -37,7 +40,15 @@ var argv = require('optimist')
   .describe('list-tests', 'list available tests')
   .alias('tests', 't')
   .describe('tests', 'which test(s) to run (globs supported)')
-  .default("tests", "*");
+  .default("tests", "*")
+  .alias('output', 'o')
+  .describe('output', 'desired ouput format.  one of ' + outputFormats.join(", "))
+  .default("output", "console")
+  .check(function(a) {
+    if (outputFormats.indexOf(a.output) === -1) {
+      throw "unsupported output format: " + a.output;
+    }
+  });
 
 var args = argv.argv;
 
@@ -64,10 +75,11 @@ const path = require('path'),
       runner = require('../lib/runner'),
       toolbelt = require('../lib/toolbelt'),
       FileReporter = require('../lib/reporters/file-reporter'),
+      ResultsAggregator = require('../lib/results-aggregator'),
       StdOutReporter = require('../lib/reporters/std-out-reporter'),
       StdErrReporter = require('../lib/reporters/std-err-reporter'),
       vows_path = path.join(__dirname, "../node_modules/.bin/vows"),
-      vows_args = process.env.VOWS_ARGS || ["--xunit", "-i"], // XXX is it cool to expect an array?
+      vows_args = [(args.output === 'xunit') ? "--xunit" : "--json", "-i"],
       result_extension = process.env.RESULT_EXTENSION || "xml",
       supported_platforms = require('../lib/sauce-platforms').platforms,
       start_time = new Date().getTime(),
@@ -101,8 +113,9 @@ function startTesting() {
   // if there are any more tests to run.
   var platforms = args.platform ? getTestedPlatforms(args.platform) : { any: {} };
   var tests = getTheTests(platforms);
-  console.log("Running %s suites on %s platforms, %s at a time against %s",
-              tests.length, Object.keys(platforms).length, args.parallel,
+  var howManyAtOnce = (tests.length < args.parallel ? tests.length : args.parallel);
+  console.log("Running %s suite(s) on %s platform(s), %s at a time against %s",
+              tests.length, Object.keys(platforms).length, howManyAtOnce,
               require('../lib/urls.js').persona);
   runTests();
 
@@ -140,12 +153,14 @@ function startTesting() {
     });
   }
 
-  function runTest(test, stdOutReporter, stdErrReporter, done) {
+  function runTest(test, aggregator, stdOutReporter, stdErrReporter, done) {
     var testName = test.name,
         testPath = test.path,
         platform = test.platform;
 
-    util.puts(testName + ' | ' + platform + ' | ' + "starting");
+    if (args.output === 'xunit') {
+      util.puts(testName + ' | ' + platform + ' | ' + "starting");
+    }
 
     // make a copy of the current process' environment but force the
     // platform if it is available. PERSONA_PLATFORM will only be set
@@ -162,26 +177,29 @@ function startTesting() {
                                           [testPath].concat(vows_args), opts);
 
     testProcess.stdout.on('data', function (data) {
-      stdOutReporter.report(data.toString());
+      if (aggregator) aggregator.parseLine(data.toString());
+      if (stdOutReporter) stdOutReporter.report(data.toString());
     });
 
     testProcess.stderr.on('data', function (data) {
       data.toString().split("\n").forEach(function(line) {
-        line = prettifyLine(line);
-        if (line) {
+        line = prettifyLine(line, function(url) {
+          if (aggregator) aggregator.addInterestingURL(url);
+        });
+        // output the line to console when we're in xunit mode
+        if (line && args.output === 'xunit') {
           stdErrReporter.report(testName + ' | ' + platform + ' | ' + line + "\n");
         }
       });
     });
 
     testProcess.on('exit', function(code) {
-      util.puts(testName + ' | ' + platform + ' | ' + "finished" +
-                (code != 0 ? " (failed with exit code " + code + ")": ""));
-      done && done();
+      var err = (code != 0 ? " (failed with exit code " + code + ")": null);
+      done && done(err);
     });
   }
 
-  function prettifyLine(line) {
+  function prettifyLine(line, onInterestingURL) {
     // decolorize
     line = line.replace(/\x1b\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]/, "");
     line = line.trim();
@@ -193,41 +211,118 @@ function startTesting() {
     var m = /^.*Driving the web.*: ([a-z0-9]+).*$/.exec(line);
     if (m) {
       if (process.env.PERSONA_NO_SAUCE) line = "id: " + m[1];
-      else line = 'https://saucelabs.com/tests/' + m[1];
+      else {
+        line = 'https://saucelabs.com/tests/' + m[1];
+        if (onInterestingURL) onInterestingURL(line);
+      }
     }
 
     return line;
   }
 
-  function runNext() {
+  function runNext(aggregator, cb) {
     var test = tests.shift();
 
     if (test) {
+      if (args.output === 'console') process.stdout.write(">");
       var testName = test.name,
       platform = test.platform;
 
       var outputPath = path.join(__dirname, '..', 'results',
                                  start_time + "-" + testName + '-' + platform + '.' + result_extension);
+      if (aggregator) {
+        aggregator.setName(testName + " - " + platform);
+      }
 
-      var stdOutReporter = new FileReporter({
-        output_path: outputPath
-      });
+      var stdOutReporter = null;
+      if (args.output === 'xunit') { 
+        stdOutReporter = new FileReporter({
+          output_path: outputPath
+        });
+      }
       var stdErrReporter = new StdErrReporter();
 
-      runTest(test, stdOutReporter, stdErrReporter, function() {
-        stdOutReporter.done();
+      runTest(test, aggregator, stdOutReporter, stdErrReporter, function(err) {
+        if (stdOutReporter) stdOutReporter.done();
         stdErrReporter.done();
-
+        if (cb) cb(err);
         runNext();
       });
     }
   }
 
   function runTests() {
+    var aggregators = [];
+    var totalTests = tests.length;
+    var completeTests = 0;
+    var allProcessExitedCleanly = true;
+
     // run tests in parallel up to the maximum number of runners.
-    for(var i = 0; i < args.parallel; ++i) {
-      runNext();
+    for(var i = 0; i < args.parallel && tests.length; ++i) {
+      (function() {
+        var aggregator;
+        if (args.output !== 'xunit') {
+          aggregator = new ResultsAggregator();
+          aggregators.push(aggregator);
+
+          // now if this is the console, let's output marks as tests start and complete
+          if (args.output === 'console') {
+            aggregator.on('pass', function() { process.stdout.write(".") });
+            aggregator.on('fail', function() { process.stdout.write("!") });
+          }
+        }
+        runNext(aggregator, function(err) {
+          if (args.output === 'console') process.stdout.write("<");
+          // now pass the error into the results parser to catch bad shutdown in our final report
+          if (err) allProcessExitedCleanly = false;          
+          // complete!  If all of the tests are done, it's time to summarize results if
+          // we're not in xunit mode
+          completeTests += 1;
+          if (completeTests === totalTests) {
+            if (args.output === 'console') process.stdout.write("\n\n");
+            if (aggregators.length) {
+              summarizeResultsAndExit(aggregators);
+            } else {
+              // exit with an error code that controlling processes can catch in xunit mode
+              process.exit(allProcessesExitedCleanly ? 0 : 77); 
+            }
+          }
+        });
+      })();
+    }
+  }
+  
+  function summarizeResultsAndExit(aggregators) {
+    // first let's calculate uber-high level summary information
+    var total = 0;
+    var successes = 0;
+    aggregators.forEach(function(rp) {
+      var r = rp.results();
+      total += r.passed + r.failed;
+      successes += r.passed;
+    });
+    console.log("%s/%s tests passed%s", successes, total,
+                (successes != total) ? ", here are your failures:" : "");
+    if (successes != total) {
+      aggregators.forEach(function(rp) {
+        var r = rp.results();
+        if (r.failed || r.unhandledMessages.length) {
+          var warnings = r.unhandledMessages.length;
+          console.log(r.name + " (%s failure(s), %s warnings):", r.failed, warnings);
+          r.errorDetails.forEach(function(e) {
+            console.log("  " + e.name + ", errors:");
+            e.errors.forEach(function(err) {
+              console.log("    * " + err);
+            });
+          });
+          r.unhandledMessages.forEach(function(om) {
+            console.log("  unexpected output:", om);
+          });
+          r.urls.forEach(function(u) {
+            console.log("  >> " + u);
+          });
+        }
+      });
     }
   }
 }
-
