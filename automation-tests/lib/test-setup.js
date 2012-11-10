@@ -11,6 +11,10 @@ require('./wd-extensions.js');
 
 var testSetup = {};
 
+
+/* public API */
+
+
 // startup determines if browser sessions will be local or use saucelabs.
 // should only be called once per session (potentially, once for many tests)
 //
@@ -24,7 +28,7 @@ var testSetup = {};
 // env var equivalents are PERSONA_BROWSER and PERSONA_BROWSER_CAPABILITIES
 testSetup.startup = function(opts) {
   opts = opts || {};
-  _setSessionOpts(opts);
+  setSessionOpts(opts);
 
   var sauceUser = opts.sauceUser || process.env['PERSONA_SAUCE_USER'],
     sauceApiKey = opts.sauceApiKey || process.env['PERSONA_SAUCE_APIKEY'],
@@ -49,53 +53,6 @@ testSetup.startup = function(opts) {
 
 // store multiple browsers until we can switch between sessions via d
 testSetup.browsers = []
-
-// these session opts aren't needed until the user requests a session via newSession()
-// but we harvest them from the command line at startup time
-function _setSessionOpts(opts) {
-  opts = opts || {};
-  var sessionOpts = {};
-
-  // check for typos: throw error if requestedPlatform not found in list of supported sauce platforms
-  var requestedPlatform = opts.platform || process.env['PERSONA_BROWSER'];
-  if (requestedPlatform && requestedPlatform != 'any' && !saucePlatforms.platforms[requestedPlatform]) {
-    throw new Error('requested platform ' + requestedPlatform +
-                    ' not found in list of available platforms');
-  }
-  // Default to *nothing* locally (server's choice), and chrome/VISTA for sauce
-  var defaultPlatform = process.env.PERSONA_NO_SAUCE ? 'any' : { browserName: 'chrome', platform: 'VISTA' };
-  var platform = requestedPlatform ? saucePlatforms.platforms[requestedPlatform] : defaultPlatform;
-  // add platform, browserName, version to session opts
-  _.extend(sessionOpts, platform);
-
-  // pull the default desired capabilities out of the sauce-platforms file
-  // overwrite if specified by user
-  var desiredCapabilities = opts.desiredCapabilities || process.env['PERSONA_BROWSER_CAPABILITIES'] || {};
-  _.extend(sessionOpts, saucePlatforms.defaultCapabilities);
-  _.extend(sessionOpts, desiredCapabilities);
-
-  if (sessionOpts.browserName === 'opera' && !sessionOpts.proxy) {
-    // TODO reportedly works for opera; investigate
-    sessionOpts.proxy = { proxyType: 'direct' };
-  }
-
-  // Ensure there is a tag for 'persona'
-  sessionOpts.tags = sessionOpts.tags || [];
-  if (sessionOpts.tags.indexOf('persona') === -1) {
-    sessionOpts.tags.push('persona');
-  }
-
-  // Ensure a test name for saucelabs
-  if (!sessionOpts.name) sessionOpts.name = createTestName();
-
-  // Optionally add tag names from the environment
-  if (process.env.PERSONA_SAUCE_CUSTOM_TAGS) {
-    var customTags = process.env.PERSONA_SAUCE_CUSTOM_TAGS.split(/[\s,]/);
-    Array.prototype.push.apply(sessionOpts.tags, customTags);
-  }
-
-  testSetup.sessionOpts = sessionOpts;
-}
 
 // opts could be of the form:
 // { browsers: 2, restmails: 1, eyedeemails: 1, personatestusers: 2
@@ -158,14 +115,6 @@ testSetup.setup = function(opts, cb) {
   }
 }
 
-// private setup function
-function setupBrowsers(browserCount, out) {
-  for (var i = 0; i < browserCount; i++) { testSetup.startup() }
-  // just use the browsers array directly
-  out.b = out.browsers = testSetup.browsers;
-  return out;
-}
-
 testSetup.newBrowserSession = function(b, cb) {
   b.newSession(testSetup.sessionOpts, cb);
 };
@@ -177,6 +126,64 @@ testSetup.teardown = function(cb) {
   for (var i = 0, b; b = testSetup.browsers[i]; i++) enders.push(Q.ncall(b.quit, b));
   Q.all(enders)
     .fin(cb);
+}
+
+
+/* private functions */
+
+
+// these session opts aren't needed until the user requests a session via newSession()
+// but we harvest them from the command line at startup time
+function setSessionOpts(opts) {
+  opts = opts || {};
+  var sessionOpts = {};
+
+  // check for typos: throw error if requestedPlatform not found in list of supported sauce platforms
+  var requestedPlatform = opts.platform || process.env['PERSONA_BROWSER'];
+  if (requestedPlatform && requestedPlatform != 'any' && !saucePlatforms.platforms[requestedPlatform]) {
+    throw new Error('requested platform ' + requestedPlatform +
+                    ' not found in list of available platforms');
+  }
+  // Default to *nothing* locally (server's choice), and chrome/VISTA for sauce
+  var defaultPlatform = process.env.PERSONA_NO_SAUCE ? 'any' : { browserName: 'chrome', platform: 'VISTA' };
+  var platform = requestedPlatform ? saucePlatforms.platforms[requestedPlatform] : defaultPlatform;
+  // add platform, browserName, version to session opts
+  _.extend(sessionOpts, platform);
+
+  // pull the default desired capabilities out of the sauce-platforms file
+  // overwrite if specified by user
+  var desiredCapabilities = opts.desiredCapabilities || process.env['PERSONA_BROWSER_CAPABILITIES'] || {};
+  _.extend(sessionOpts, saucePlatforms.defaultCapabilities);
+  _.extend(sessionOpts, desiredCapabilities);
+
+  if (sessionOpts.browserName === 'opera' && !sessionOpts.proxy) {
+    // TODO reportedly works for opera; investigate
+    sessionOpts.proxy = { proxyType: 'direct' };
+  }
+
+  // Ensure there is a tag for 'persona'
+  sessionOpts.tags = sessionOpts.tags || [];
+  if (sessionOpts.tags.indexOf('persona') === -1) {
+    sessionOpts.tags.push('persona');
+  }
+
+  // Ensure a test name for saucelabs
+  if (!sessionOpts.name) sessionOpts.name = createTestName();
+
+  // Optionally add tag names from the environment
+  if (process.env.PERSONA_SAUCE_CUSTOM_TAGS) {
+    var customTags = process.env.PERSONA_SAUCE_CUSTOM_TAGS.split(/[\s,]/);
+    Array.prototype.push.apply(sessionOpts.tags, customTags);
+  }
+
+  testSetup.sessionOpts = sessionOpts;
+}
+
+function setupBrowsers(browserCount, out) {
+  for (var i = 0; i < browserCount; i++) { testSetup.startup() }
+  // just use the browsers array directly
+  out.b = out.browsers = testSetup.browsers;
+  return out;
 }
 
 function createTestName() {
