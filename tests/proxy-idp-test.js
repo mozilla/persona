@@ -130,10 +130,11 @@ var assertSecondary = function (res) {
 // by our proxy idp servers. (for which the issuer is login.persona.org).
 var primaryUser = new primary({
   email: "bartholomew@yahoo.com",
-  domain: "127.0.0.1",
+  domain: "example.domain",
   privKey: jwcrypto.loadSecretKey(
     require('fs').readFileSync(
-      path.join(__dirname, '..', 'var', 'root.secretkey')))
+      path.join(__dirname, '..', 'example',
+                'primary', 'sample.privatekey')))
 });
 
 suite.addBatch({
