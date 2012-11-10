@@ -94,7 +94,8 @@ suite.addBatch({
     },
     "succeeds": function(err, pubKey) {
       assert.strictEqual(err,
-        'Circular reference in delegating authority {"cycle.domain":0,"cycle2.domain":1}');
+        "can't get public key for cycle.domain: " +
+        'Circular reference in delegating authority: cycle.domain > cycle2.domain');
     }
   }
 });
@@ -106,9 +107,10 @@ suite.addBatch({
     },
     "succeeds": function(err, pubKey) {
       assert.strictEqual(err,
-        'Too many hops while delegating authority ["delegate0.domain","delegate1.domain",' +
-        '"delegate2.domain","delegate3.domain","delegate4.domain","delegate5.domain",' +
-        '"delegate6.domain"]');
+        "can't get public key for delegate0.domain: " +
+        'Too many hops while delegating authority: delegate0.domain > delegate1.domain > ' +
+        'delegate2.domain > delegate3.domain > delegate4.domain > delegate5.domain > ' +
+        'delegate6.domain');
     }
   }
 });
@@ -119,7 +121,7 @@ suite.addBatch({
       return primary.getPublicKey('hozed.domain', this.callback);
     },
     "succeeds": function(err, pubKey) {
-      assert.strictEqual(err.indexOf('Circular reference in delegating authority '), 0);
+      assert.strictEqual(err.indexOf('Circular reference in delegating authority'), 39);
     }
   }
 });

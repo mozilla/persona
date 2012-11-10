@@ -833,7 +833,8 @@ function make_other_issuer_tests(new_style) {
       "to return a clear error message": function (err, r) {
         var resp = JSON.parse(r.body);
         assert.strictEqual(resp.status, 'failure');
-        assert.strictEqual(resp.reason, "can't get public key for no.such.domain");
+        assert.strictEqual(resp.reason, "can't get public key for no.such.domain: " +
+                           "no.such.domain is not a browserid primary - non-200 response code to /.well-known/browserid");
       }
     }
   };

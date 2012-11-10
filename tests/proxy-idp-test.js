@@ -34,15 +34,14 @@ process.env['SHIMMED_PRIMARIES'] =
   'example.domain|http://127.0.0.1:10005|' + TEST_DOMAIN_PATH +
   ',real.primary|http://127.0.0.1:10005|' + TEST_DOMAIN_PATH;
 
-
 start_stop.addStartupBatches(suite);
 
 suite.addBatch({
   "proxy_idp configuration": {
     topic: wsapi.get('/wsapi/address_info', {
-        email: 'bartholomew@yahoo.com'
+      email: 'bartholomew@yahoo.com'
     }),
-    " acts as delegated authority": function(err, r) {
+    "acts as delegated authority": function(err, r) {
       assert.strictEqual(r.code, 200);
       var resp = JSON.parse(r.body);
       assert.strictEqual(resp.auth, "http://127.0.0.1:10005/sign_in.html");
