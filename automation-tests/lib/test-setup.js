@@ -161,20 +161,18 @@ function setSessionOpts(opts) {
     sessionOpts.proxy = { proxyType: 'direct' };
   }
 
-  // Ensure there is a tag for 'persona'
-  sessionOpts.tags = sessionOpts.tags || [];
-  if (sessionOpts.tags.indexOf('persona') === -1) {
-    sessionOpts.tags.push('persona');
-  }
-
   // Ensure a test name for saucelabs
   if (!sessionOpts.name) sessionOpts.name = createTestName();
 
   // Optionally add tag names from the environment
+  sessionOpts.tags = sessionOpts.tags || [];
   if (process.env.PERSONA_SAUCE_CUSTOM_TAGS) {
     var customTags = process.env.PERSONA_SAUCE_CUSTOM_TAGS.split(/[\s,]/);
-    Array.prototype.push.apply(sessionOpts.tags, customTags);
+    sessionOpts.tags = sessionOpts.tags.concat(customTags);
   }
+
+  sessionOpts.tags.push('env-' + (process.env.PERSONA_ENV || 'dev'));
+  sessionOpts.tags = _.uniq(sessionOpts.tags);
 
   testSetup.sessionOpts = sessionOpts;
 }
