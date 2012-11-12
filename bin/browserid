@@ -132,35 +132,11 @@ db.open(config.get('database'), function (error) {
   // we must record this.  This allows us to handle cases where
   // IdP's transition online or off.
   primary.events.on('idp_seen', function(domain) {
-    var dbwriter = wsapi.forwardWritesTo;
-
-    // XXX: this begs for an abstraction - forwarding requests to the writer.
-    // see also wsapi/auth_with_assertion for the second user of this
-    // shiny new abstraction.
-    var req = http.request({
-        host: dbwriter.host,
-        port: dbwriter.port,
-        path: '/wsapi/saw_idp?domain=' + domain,
-        method: "GET"
-      }, function(pres) {
-        var respBody = "";
-        pres.on('data', function(chunk) {
-          respBody += chunk;
-        });
-        pres.on('end', function() {
-          var r;
-          try {
-            if (pres.statusCode !== 200) throw "non-200 response: " + pres.statusCode;
-            r = JSON.parse(respBody);
-            if (!r.success) throw "non-success response from dbwriter";
-          } catch(e) {
-            logger.warn("failed to note IDP seen for domain " + domain + ": " + e);
-          }
-        });
-      }).on('error', function(e) {
-        logger.warn("failed to note IDP seen for domain " + domain + ": " + e);
-      });
-    req.end();
+    wsapi.requestToDBWriter({
+      path: '/wsapi/saw_idp?domain=' + domain
+    }, function(err, r) {
+      logger.warn("failed to note IDP seen for domain " + domain + ": " + err);
+    });
   });
 
   // shut down express gracefully on SIGINT
