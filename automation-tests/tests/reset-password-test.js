@@ -14,13 +14,12 @@ CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js'),
-user = require('../lib/user.js');
+user = require('../lib/user.js'),
 NEW_PASSWORD = "password";
 
-// pull in test environment, including wd
 var browser, verificationBrowser, theUser;
 
-var verifyEmail = user.verifyEmail
+var verifyEmail = user.verifyEmail,
     getVerifiedUser = user.getVerifiedUser;
 
 runner.run(module, {
@@ -33,14 +32,15 @@ runner.run(module, {
     });
   },
   "get a verified user": function(done) {
-    getVerifiedUser(done);
+    getVerifiedUser(function(err, user) {
+      theUser = user;
+      done(err);
+    });
   },
   "start browser session": function(done) {
     testSetup.newBrowserSession(browser, done);
   },
-  "open myfavoritebeer, open dialog, click forgotPassword": function(done, user) {
-    theUser = user;
-
+  "open myfavoritebeer, open dialog, click forgotPassword": function(done) {
     browser.chain({onError: done})
       .get(persona_urls['myfavoritebeer'])
       .wclick(CSS['myfavoritebeer.org'].signinButton)
@@ -59,7 +59,7 @@ runner.run(module, {
       });
   },
 
-  "open reset verification link in new browser window": function(done, link) {
+  "open reset verification link in new browser window": function(done) {
     verifyEmail(theUser.email, NEW_PASSWORD, 1, verificationBrowser, done);
   },
 
@@ -88,7 +88,7 @@ runner.run(module, {
       email: theUser.email,
       password: NEW_PASSWORD,
       browser: browser
-    }, done)
+    }, done);
   },
 
   "shut down remaining browsers": function(done) {
@@ -97,5 +97,5 @@ runner.run(module, {
 }, 
 {
   suiteName: path.basename(__filename),
-  cleanup: function(done) { testSetup.teardown(done) }
+  cleanup: function(done) { testSetup.teardown(done); }
 });
