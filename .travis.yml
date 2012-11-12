@@ -25,7 +25,6 @@ env:
  - WHAT_TESTS=front MYSQL_USER=root
  - WHAT_TESTS=back_mysql MYSQL_USER=root
  - WHAT_TESTS=back
- - WHAT_TESTS=selenium
 
 mysql:
   adapter: mysql2
