@@ -50,7 +50,7 @@ exampleServer.post('/process_assertion', function(req, res, next) {
             if (valid) {
               console.log("assertion verified successfully for email:", email);
             } else {
-              console.log("failed to verify assertion:", verifierResp.reason);
+              console.log("failed to verify assertion:", verifierResp);
             }
             res.json(verifierResp);
           } catch(e) {
