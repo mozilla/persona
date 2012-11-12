@@ -121,7 +121,12 @@ db.open(config.get('database'), function (error) {
   // we must record this.  This allows us to handle cases where
   // IdP's transition online or off.
   primary.events.on('idp_seen', function(domain) {
-    console.log("saw idp", domain); 
+    db.updateIDPLastSeen(domain, function(err) {
+      if (err) {
+        logger.error("error writing successful fetch of .well-known for "
+                     + domain + " to database: " + err.toString());
+      }
+    });
   });
 
   // shut down express gracefully on SIGINT
