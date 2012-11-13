@@ -6,26 +6,12 @@
 
 
 const child_process = require("child_process"),
-      util          = require('util'),
       fs            = require("fs"),
-      path          = require("path");
-
-function extend() {
-  var extended = {};
-  var extensions = Array.prototype.slice.call(arguments, 0);
-  extensions.forEach(function(extension) {
-    for (var key in extension) {
-      if (typeof extension[key] !== "undefined") {
-        extended[key] = extension[key];
-      }
-    }
-  });
-
-  return extended;
-}
+      path          = require("path"),
+      toolbelt      = require("../lib/toolbelt");
 
 function installDependencies(done) {
-  util.log(">> Installing selenium test dependencies");
+  console.log(">> Installing selenium test dependencies");
 
   var installProcess = child_process.spawn("npm", ["install"], {
     cwd: path.join(__dirname, ".."),
@@ -34,20 +20,29 @@ function installDependencies(done) {
 
   installProcess.stdout.pipe(process.stdout);
   installProcess.stderr.pipe(process.stderr);
-
   installProcess.on('exit', done);
 }
 
+function getJSONConfig(name) {
+  try {
+    var configPath = path.join(__dirname, "..", "..", "..", name);
+    var config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  } catch(e) {
+    console.error("cannot read " + name + " or json is invalid");
+    process.exit(1);
+  }
+
+  return config;
+}
+
 function getTestEnvironment() {
-  var sauceConfigPath = path.join(__dirname, "..", "..", "..", "sauce.json");
-  var sauceConfig = JSON.parse(fs.readFileSync(sauceConfigPath, 'utf8'));
+  // the next two will exit the process if they fail.
+  var sauceConfig = getJSONConfig("sauce.json"),
+      globalConfig = getJSONConfig("config.json"),
+      // personaEnv is the name of the ephemeral instance
+      personaEnv = globalConfig.public_url.replace("https://", '').replace(".personatest.org", "");
 
-  var globalConfigPath = path.join(__dirname, "..", "..", "..", "config.json");
-  var globalConfig = JSON.parse(fs.readFileSync(globalConfigPath, 'utf8'));
-
-  // get the name of the instance.
-  var personaEnv = globalConfig.public_url.replace("https://", '').replace(".personatest.org", "");
-  var env = extend(process.env, {
+  var env = toolbelt.copyExtendEnv({
     RUNNERS: sauceConfig.runners,
     PERSONA_ENV: personaEnv,
     PERSONA_SAUCE_USER: sauceConfig.persona_sauce_user,
@@ -59,9 +54,8 @@ function getTestEnvironment() {
   return env;
 }
 
-function runTests(done) {
-  var env = getTestEnvironment();
-  util.log(">> Running tests against " + env.PERSONA_ENV);
+function runTests(env, done) {
+  console.log(">> Running tests against " + env.PERSONA_ENV);
 
   var runnerPath = path.join(__dirname, "run-all.js");
   var testProcess = child_process.spawn("node", [ runnerPath ], {
@@ -70,15 +64,13 @@ function runTests(done) {
 
   testProcess.stdout.pipe(process.stdout);
   testProcess.stderr.pipe(process.stderr);
-
-  testProcess.on('exit', function(code) {
-    console.log("done", code);
-    done && done();
-  });
+  testProcess.on('exit', done);
 }
 
+var env = getTestEnvironment();
 installDependencies(function() {
-  runTests(function(code) {
+  runTests(env, function(code) {
+    console.log(">> Exiting tests with code: " + code);
     process.exit(code);
   });
 });
