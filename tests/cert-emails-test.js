@@ -11,6 +11,7 @@ vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 ca = require('../lib/keysigner/ca.js'),
+db = require('../lib/db.js'),
 jwcrypto = require("jwcrypto");
 
 var suite = vows.describe('cert-emails');
@@ -139,6 +140,23 @@ suite.addBatch({
           assert.equal(certs_and_assertion.certificates[0].split(".").length, 3);
           assert.equal(certs_and_assertion.assertion.split(".").length, 3);
         },
+      },
+      "after a short wait": {
+        // In practise, db.emailLastUsedAs is sometimes called before
+        // db.updateEmailLastUsedAs has been called by cert_key wsapi...
+        topic: function (err, r) {
+          setTimeout(this.callback, 500);
+        },
+        "email table lastUsedAs updated": {
+          topic: function(err, certs_and_assertion) {
+            // TODO used listEmails here, once that work is done
+            db.emailLastUsedAs('syncer@somehost.com', this.callback);
+          },
+          "cert_key records a secondary": function (err, lastUsedAs) {
+             assert.isNull(err);
+             assert.equal(lastUsedAs, 'secondary');
+          }
+        }
       }
     },
     "cert key invoked proper arguments but incorrect email address": {
@@ -155,7 +173,6 @@ suite.addBatch({
     }
   },
 });
-
 start_stop.addShutdownBatches(suite);
 
 // run or export the suite.
