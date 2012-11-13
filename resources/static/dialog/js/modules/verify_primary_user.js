@@ -37,8 +37,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
   function transitionComplete(callback) {
     /*jshint validthis: true*/
     var self = this;
-    user.completeTransition(email, function onSuccess(status) {
-      // do we care about status?
+    user.completeTransition(email, function onSuccess() {
       verify.call(self, callback);
     }, self.getErrorDialog(errors.completeTransition));
   }

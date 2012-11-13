@@ -24,6 +24,7 @@
     setup: function() {
       testHelpers.setup();
       win = new WindowMock();
+      xhr.setContextInfo('auth_level', 'password');
     },
 
     teardown: function() {
