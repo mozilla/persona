@@ -1,5 +1,6 @@
 // platforms supported by sauce that we test
 const platforms = {
+  /*
   "linux_firefox_16": {
     platform: 'LINUX',
     browserName: 'firefox',
@@ -14,11 +15,11 @@ const platforms = {
     platform: 'MAC',
     browserName:'firefox',
     version:'14'
-  },
+  },*/
   "vista_chrome": {
     platform:'VISTA',
     browserName:'chrome'
-  },
+  }/*,
   "vista_firefox_16": {
     platform:'VISTA',
     browserName:'firefox',
@@ -43,7 +44,7 @@ const platforms = {
     platform:'Mac 10.6',
     browserName: 'safari',
     version:'5'
-  }
+  }*/
 };
 
 // see http://saucelabs.com/docs/ondemand/additional-config for other opts
@@ -56,7 +57,7 @@ const defaultCapabilities = {
   // one will possibly hit this, so don't be too conservative.
   'idle-timeout': 90,
   // timeout global time used by a test. should avoid runaway tests eating
-  // 10 min of sauce time. setting to 3 min for now, relax if needed. 
+  // 10 min of sauce time. setting to 3 min for now, relax if needed.
   'max-session': 180
 };
 
