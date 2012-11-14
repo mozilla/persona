@@ -198,7 +198,7 @@ BrowserID.Modules.RequiredEmail = (function() {
                 }
               });
             }
-            else if(info.type === "secondary" && info.known) {
+            else if(info.type === "secondary" && info.state === "known") {
               // address is a known secondary but the user is not logged in.
 
               // Make the user log in.

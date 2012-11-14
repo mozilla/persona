@@ -11,6 +11,8 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email,
       auth_url,
       dom = bid.DOM,
+      user = bid.User,
+      errors = bid.Errors,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
       complete = helpers.complete;
@@ -32,10 +34,22 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     complete(callback);
   }
 
+  function transitionComplete(callback) {
+    /*jshint validthis: true*/
+    var self = this;
+    user.completeTransition(email, function onSuccess() {
+      verify.call(self, callback);
+    }, self.getErrorDialog(errors.completeTransition));
+  }
+
   function cancel(callback) {
     /*jshint validthis:true*/
     this.close("cancel_state");
-    callback && callback();
+    complete(callback);
+  }
+
+  function showsPrimaryTransition(state) {
+    return state === "unknown" || state === "transition_to_primary";
   }
 
   var Module = bid.Modules.PageModule.extend({
@@ -48,20 +62,30 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email = data.email;
       auth_url = data.auth_url;
 
-      self.renderDialog("verify_primary_user", {
-        email: data.email,
-        auth_url: data.auth_url,
-        requiredEmail: data.requiredEmail || false,
-        personaTOSPP: data.personaTOSPP,
-        siteName: data.siteName,
-        idpName: data.idpName
-      });
+      user.addressInfo(email, function onSuccess(info) {
+        if (showsPrimaryTransition(info.state)) {
+          self.submit = transitionComplete;
 
-      if (data.siteTOSPP) {
-        dialogHelpers.showRPTosPP.call(self);
-      }
+          self.renderDialog("verify_primary_user", {
+            email: data.email,
+            auth_url: data.auth_url,
+            requiredEmail: data.requiredEmail || false,
+            personaTOSPP: data.personaTOSPP,
+            siteName: data.siteName,
+            idpName: data.idpName
+          });
 
-      self.click("#cancel", cancel);
+          if (data.siteTOSPP) {
+            dialogHelpers.showRPTosPP.call(self);
+          }
+
+          self.click("#cancel", cancel);
+          complete(data.ready);
+        } else {
+          verify.call(self, data.ready);
+        }
+      }, self.getErrorDialog(errors.addressInfo));
+
 
       sc.start.call(self, data);
     },
