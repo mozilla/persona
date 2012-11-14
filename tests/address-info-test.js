@@ -89,7 +89,6 @@ suite.addBatch({
      }),
     "returns known": function(e, r) {
       assert.isNull(e);
-      console.log(r);
       var r = JSON.parse(r.body);
       assert.equal(r.type, "primary");
       assert.equal(r.state, "known");
@@ -119,7 +118,6 @@ suite.addBatch({
      }),
     "returns transition_to_primary": function(e, r) {
       assert.isNull(e);
-      console.log(r);
       var r = JSON.parse(r.body);
       assert.equal(r.type, "primary");
       assert.equal(r.state, "transition_to_primary");
