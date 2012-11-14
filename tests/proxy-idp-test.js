@@ -47,6 +47,7 @@ suite.addBatch({
       assert.strictEqual(resp.auth, "http://127.0.0.1:10005/sign_in.html");
       assert.strictEqual(resp.prov, "http://127.0.0.1:10005/provision.html");
       assert.strictEqual(resp.type, "primary");
+      assert.strictEqual(resp.issuer, "example.domain");
     }
   }
 });
@@ -76,6 +77,7 @@ suite.addBatch({
       assert.strictEqual(resp.auth, "http://127.0.0.1:10005/sign_in.html");
       assert.strictEqual(resp.prov, "http://127.0.0.1:10005/provision.html");
       assert.strictEqual(resp.type, "primary");
+      assert.strictEqual(resp.issuer, "real.primary");
     }
   }
 });

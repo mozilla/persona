@@ -45,6 +45,7 @@ suite.addBatch({
       assert.isNull(e);
       var r = JSON.parse(r.body);
       assert.equal(r.type, "primary");
+      assert.equal(r.issuer, TEST_DOMAIN);
       assert.equal(r.state, "unknown");
       assert.isString(r.auth);
       assert.isString(r.prov);
