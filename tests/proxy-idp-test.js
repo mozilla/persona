@@ -60,7 +60,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
       var resp = JSON.parse(r.body);
       assert.strictEqual(resp.type, "secondary");
-      assert.strictEqual(resp.known, false);
+      assert.strictEqual(resp.state, 'unknown');
     }
   }
 });
