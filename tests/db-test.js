@@ -472,6 +472,39 @@ suite.addBatch({
 });
 
 suite.addBatch({
+  ".emailInfo for primary email address": {
+    topic: function() {
+      db.emailInfo('lloyd@primary.domain', this.callback);
+    },
+    "returns a lastUsedAs of primary": function(err, r) {
+      assert.isNull(err);
+      assert.equal(r.lastUsedAs, 'primary');
+      assert.equal(r.hasPassword, false);
+    }
+  },
+  ".emailInfo for secondary email address": {
+    topic: function() {
+      db.emailInfo('lloyd@somewhe.re', this.callback);
+    },
+    "returns a lastUsedAs of secondary": function(err, r) {
+      assert.isNull(err);
+      assert(!!r);
+      assert.equal(r.lastUsedAs, 'secondary');
+      assert.equal(r.hasPassword, true);
+    }
+  },
+  ".emailInfo for unknown email address": {
+    topic: function() {
+      db.emailInfo('unknown_email@example.domain', this.callback);
+    },
+    "returns no error and null": function(err, r) {
+      assert.isNull(err);
+      assert.isNull(r);
+    }
+  }
+});
+
+suite.addBatch({
   "canceling an account": {
     topic: function() {
       var cb = this.callback;
@@ -514,7 +547,7 @@ suite.addBatch({
     },
     "and then checking if that IDP is known": {
       topic: function() {
-        db.getIDPLastSeen("idp.example.com", this.callback);      
+        db.getIDPLastSeen("idp.example.com", this.callback);
       },
       "returns a recent date object": function(err, lastSeen) {
         assert.isNull(err);
@@ -525,7 +558,7 @@ suite.addBatch({
       "and updating again after a second": {
         topic: function() {
           var cb = this.callback;
-          setTimeout(function() { 
+          setTimeout(function() {
             db.updateIDPLastSeen("idp.example.com", cb);
           }, 1000);
         },
@@ -534,7 +567,7 @@ suite.addBatch({
         },
         "and then checking if that IDP is known": {
           topic: function() {
-            db.getIDPLastSeen("idp.example.com", this.callback);      
+            db.getIDPLastSeen("idp.example.com", this.callback);
           },
           "returns an updated date object": function(err, lastSeen) {
             assert.isNull(err);
