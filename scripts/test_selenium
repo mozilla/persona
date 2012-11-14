@@ -68,7 +68,9 @@ function getOrigin(done) {
 function runTests(repo, sha, done) {
   console.log(" >>> Starting selenium tests on", repo, sha);
 
-  var p = spawn('curl', [ '-s', '-N', '--data', 'repo=' + repo + '&' + 'sha=' + sha, testy_url ]);
+  // use a GET request so that new tests are not started but results 
+  // are received. GitHub will take care of kicking off the test run.
+  var p = spawn('curl', [ '-s', '-N', '-G', '--data', 'repo=' + repo + '&' + 'sha=' + sha, testy_url ]);
 
   var buf = "";
   p.stdout.on('data', function(d) {
