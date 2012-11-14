@@ -71,7 +71,7 @@ BrowserID.Modules.Authenticate = (function() {
       if(info.type === "primary") {
         self.close("primary_user", info, info);
       }
-      else if(info.known) {
+      else if("known" === info.state) {
         enterPasswordState.call(self);
       } else {
         createSecondaryUser.call(self);
