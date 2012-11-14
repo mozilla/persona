@@ -135,7 +135,7 @@ db.open(config.get('database'), function (error) {
     wsapi.requestToDBWriter({
       path: '/wsapi/saw_idp?domain=' + domain
     }, function(err, r) {
-      logger.warn("failed to note IDP seen for domain " + domain + ": " + err);
+      if (err) logger.warn("failed to note IDP seen for domain " + domain + ": " + err);
     });
   });
 
