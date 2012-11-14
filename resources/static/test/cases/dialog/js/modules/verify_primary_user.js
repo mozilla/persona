@@ -214,11 +214,26 @@
       email: "registered@testuser.com",
       auth_url: "http://testuser.com/sign_in",
       ready: function r() {
-
-        console.log('merp');
         controller.submit(function s() {
           var req = xhr.getLastRequest();
           equal(req.url, '/wsapi/complete_transition', "complete_transition request sent");
+          start();
+        });
+      }
+    });
+  });
+
+  asyncTest("submit on transition when unknown doesnt call complete_transition", function() {
+    xhr.useResult("primary");
+
+    createController({
+      window: win,
+      email: "unregistered@testuser.com",
+      auth_url: "http://testuser.com/sign_in",
+      ready: function r() {
+        controller.submit(function s() {
+          var req = xhr.getLastRequest();
+          notEqual(req.url, '/wsapi/complete_transition', "complete_transition request not sent");
           start();
         });
       }
