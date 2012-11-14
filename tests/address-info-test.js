@@ -17,9 +17,19 @@ wsapi = require('./lib/wsapi.js'),
 db = require('../lib/db.js'),
 primary = require('./lib/primary.js');
 config = require('../lib/configuration.js'),
-bcrypt = require('bcrypt');
+bcrypt = require('bcrypt'),
+primary = require('./lib/primary.js');
 
 var suite = vows.describe('password-length');
+
+const TEST_DOMAIN = "example.domain",
+      TEST_EMAIL = "test@" + TEST_DOMAIN,
+      TEST_ORIGIN = 'http://127.0.0.1:10002';
+
+var primaryUser = new primary({
+  email: TEST_EMAIL,
+  domain: TEST_DOMAIN
+});
 
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
@@ -29,7 +39,7 @@ start_stop.addStartupBatches(suite);
 suite.addBatch({
   "address_info for an unknown address": {
      topic: wsapi.get('/wsapi/address_info', {
-      email: 'test@example.domain'
+      email: TEST_EMAIL
      }),
     "returns unknown": function(e, r) {
       assert.isNull(e);
@@ -41,6 +51,54 @@ suite.addBatch({
     }
   }
 });
+
+// now let's generate an assertion using this user
+suite.addBatch({
+  "setting up a primary user": {
+    topic: function() {
+      primaryUser.setup(this.callback);
+    },
+    "and generating an assertion": {
+      topic: function() {
+        primaryUser.getAssertion(TEST_ORIGIN, this.callback);
+      },
+      "succeeds": function(err, r) {
+        assert.isString(r);
+      },
+      "and logging in with the assertion": {
+        topic: function(err, assertion)  {
+          wsapi.post('/wsapi/auth_with_assertion', {
+            assertion: assertion,
+            ephemeral: true
+          }).call(this);
+        },
+        "succeeds": function(err, r) {
+          var resp = JSON.parse(r.body);
+          assert.isObject(resp);
+          assert.isTrue(resp.success);
+        }
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "address_info for an known primary address": {
+     topic: wsapi.get('/wsapi/address_info', {
+      email: TEST_EMAIL
+     }),
+    "returns known": function(e, r) {
+      assert.isNull(e);
+      console.log(r);
+      var r = JSON.parse(r.body);
+      assert.equal(r.type, "primary");
+      assert.equal(r.state, "known");
+      assert.isString(r.auth);
+      assert.isString(r.prov);
+    }
+  }
+});
+
 
 start_stop.addShutdownBatches(suite);
 
