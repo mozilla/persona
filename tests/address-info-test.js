@@ -99,6 +99,40 @@ suite.addBatch({
   }
 });
 
+// now manually fiddle email state in the database to
+// test a transition_to_primary state
+suite.addBatch({
+  "setting type to secondary": {
+    topic: function() {
+      db.updateEmailLastUsedAs(TEST_EMAIL, 'secondary', this.callback);
+    },
+    "succeeds": function(e) {
+      assert.isNull(e);
+    }
+  }
+});
+
+suite.addBatch({
+  "address_info for an address transitioning to primary": {
+     topic: wsapi.get('/wsapi/address_info', {
+      email: TEST_EMAIL
+     }),
+    "returns transition_to_primary": function(e, r) {
+      assert.isNull(e);
+      console.log(r);
+      var r = JSON.parse(r.body);
+      assert.equal(r.type, "primary");
+      assert.equal(r.state, "transition_to_primary");
+      assert.isString(r.auth);
+      assert.isString(r.prov);
+    }
+  }
+});
+
+// XXX: to test:
+//  * transition_to_secondary (easyish)
+//  * transition_no_password (easyish)
+//  * offline (hardish)
 
 start_stop.addShutdownBatches(suite);
 
