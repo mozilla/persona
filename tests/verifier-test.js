@@ -239,6 +239,32 @@ function make_basic_tests(new_style) {
         assert.strictEqual(resp.reason, 'audience mismatch: port mismatch');
       }
     },
+    "and trying to be clever with wildcard matching in the audience": {
+      topic: function(err, assertion)  {
+        wsapi.post('/verify', {
+          audience: "http://*.net:8080",
+          assertion: assertion
+        }).call(this);
+      },
+      "fails with a helpful error message": function(err, r) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'audience mismatch: domain missing');
+      }
+    },
+    "and submitting an audience with an empty domain": {
+      topic: function(err, assertion)  {
+        wsapi.post('/verify', {
+          audience: ":8080",
+          assertion: assertion
+        }).call(this);
+      },
+      "will not result in accidental foot-shooting": function(err, r) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'failure');
+        assert.strictEqual(resp.reason, 'audience mismatch: domain missing');
+      }
+    },
     "leaving off the audience": {
       topic: function(err, assertion)  {
         wsapi.post('/verify', {
