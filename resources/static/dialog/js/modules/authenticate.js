@@ -138,6 +138,7 @@ BrowserID.Modules.Authenticate = (function() {
       self.publish("enter_email");
       self.submit = checkEmail;
       showHint("start");
+      dom.focus(EMAIL_SELECTOR);
     }
   }
 
