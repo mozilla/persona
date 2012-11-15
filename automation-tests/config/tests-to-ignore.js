@@ -8,5 +8,5 @@ exports.tests_to_ignore = [
   "add-primary-to-secondary.js",
   "public-terminals.js",
   "remove-email.js",
-  "reset-password-test.js"
+  "returning-user.js"
 ];
