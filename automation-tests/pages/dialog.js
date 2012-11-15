@@ -10,7 +10,7 @@ function verifyOpts(optionList, opts) {
 exports.signInAsNewUser = function(opts, cb) {
   verifyOpts(['email', 'browser', 'password'], opts);
   var browser = opts.browser;
-  browser.chain()
+  browser.chain({onError: cb})
     .wtype(CSS['dialog'].emailInput, opts.email)
     .wclick(CSS['dialog'].newEmailNextButton)
     .wtype(CSS['dialog'].choosePassword, opts.password)
@@ -21,7 +21,7 @@ exports.signInAsNewUser = function(opts, cb) {
 exports.signInExistingUser = function(opts, cb) {
   verifyOpts(['email', 'browser', 'password'], opts);
   var browser = opts.browser;
-  browser.chain()
+  browser.chain({onError: cb})
     .wtype(CSS['dialog'].emailInput, opts.email)
     .wclick(CSS['dialog'].newEmailNextButton)
     .wtype(CSS['dialog'].existingPassword, opts.password)
