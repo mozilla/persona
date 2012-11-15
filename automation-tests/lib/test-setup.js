@@ -2,7 +2,7 @@ const
 personatestuser = require('../lib/personatestuser.js'),
 Q = require('q'),
 restmail = require('../lib/restmail.js'),
-saucePlatforms = require('./sauce-platforms.js'),
+saucePlatforms = require('../config/sauce-platforms.js'),
 wd = require('wd'),
 path = require('path'),
 _ = require('underscore');
