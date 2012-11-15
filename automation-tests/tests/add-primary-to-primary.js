@@ -58,6 +58,7 @@ runner.run(module, {
       // continuing past that button
       .wtype(CSS['eyedee.me'].newPassword, primaryEmail.pass)
       .wclick(CSS['eyedee.me'].createAccountButton)
+      .wclickIfExists(CSS['eyedee.me'].createAccountButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, primaryEmail.email));
@@ -85,6 +86,7 @@ runner.run(module, {
       // continuing past that button
       .wtype(CSS['eyedee.me'].newPassword, secondPrimaryEmail.pass)
       .wclick(CSS['eyedee.me'].createAccountButton)
+      .wclickIfExists(CSS['eyedee.me'].createAccountButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, secondPrimaryEmail.email))
@@ -95,7 +97,7 @@ runner.run(module, {
   "shut down remaining browsers": function(done) {
     browser.quit(done);
   }
-}, 
+},
 {
   suiteName: path.basename(__filename),
   cleanup: function(done) { testSetup.teardown(done) }
