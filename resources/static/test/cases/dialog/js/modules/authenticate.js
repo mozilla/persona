@@ -17,6 +17,7 @@
       testHelpers = bid.TestHelpers,
       testElementHasClass = testHelpers.testHasClass,
       testElementNotHasClass = testHelpers.testNotHasClass,
+      testElementFocused = testHelpers.testElementFocused,
       register = testHelpers.register,
       provisioning = bid.Mocks.Provisioning,
       AUTH_FORM_SELECTOR = "#authentication_form",
@@ -68,6 +69,9 @@
         testElementHasClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
 
         equal($(CONTENTS_SELECTOR).text(), "", "normal form contents are removed");
+
+        testElementFocused("#authentication_email", "email field is focused");
+
         // auth form not visible after stop;
         controller.stop();
         testElementNotHasClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
