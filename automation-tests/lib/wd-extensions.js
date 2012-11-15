@@ -17,7 +17,7 @@ function setTimeouts(opts) {
 //   poll (optional):
 //   timeout (optional)
 wd.prototype.waitForDisplayed = function(opts, cb) {
-  if (typeof opts == 'string') opts = { which: opts };
+  if (typeof opts === 'string') opts = { which: opts };
   if (!opts.which) throw "css selector required";
   setTimeouts(opts);
   var browser = this;
@@ -28,7 +28,7 @@ wd.prototype.waitForDisplayed = function(opts, cb) {
       browser.displayed(elem, function(err, displayed) {
         done(!err && displayed, err, elem);
       });
-    })
+    });
   }, cb);
 };
 
@@ -62,7 +62,7 @@ wd.prototype.newSession = function(opts, cb) {
 // If the latter invocation is employed, you can specify .poll and .timeout
 // values.
 wd.prototype.waitForWindow = function(opts, cb) {
-  if (typeof opts == 'string') opts = { name: opts };
+  if (typeof opts === 'string') opts = { name: opts };
   if (!opts.name) throw "waitForWindow missing window `name`";
   var browser = this;
 
@@ -122,16 +122,16 @@ wd.prototype.wwin = function(opts, cb) {
   var self = this;
 
   // special case where just the callback was passed: go to the zeroth window
-  if (arguments.length == 1 && typeof arguments[0] == 'function') {
-    var cb = arguments[0];
+  if (arguments.length === 1 && typeof arguments[0] === 'function') {
+    cb = arguments[0];
     self.windowHandles(function(err, handles) {
       if (err) return cb(err);
-      self.window(handles[0], function(err) { cb(err) }); // fire cb whether err is defined or not
+      self.window(handles[0], function(err) { cb(err); }); // fire cb whether err is defined or not
     });
   } else {
-    self.waitForWindow(opts, cb)
+    self.waitForWindow(opts, cb);
   }
-}
+};
 
 // wait for element to be displayed, then click on it.
 // optionally accepts waitForDisplayed opts object instead of CSS selector
@@ -154,7 +154,7 @@ wd.prototype.click = function(which, cb) {
 // Click a button if it exists. If there is a timeout, no problem.
 wd.prototype.wclickIfExists = function(opts, cb) {
   var self=this;
-  if (typeof opts == 'string') opts = { which: opts };
+  if (typeof opts === 'string') opts = { which: opts };
 
   // shorten the timeout if it is not already specified. This only gets clicked
   // if it is available. This may belong in a higher abstraction layer.
@@ -202,8 +202,6 @@ wd.prototype.wtext = function(opts, cb) {
 
 // delay before the next action
 wd.prototype.delay = function(duration, cb) {
-  var self = this;
-
   setTimeout(cb, duration);
 };
 
