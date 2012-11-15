@@ -10,7 +10,6 @@
       testHelpers = bid.TestHelpers,
       testElementExists = testHelpers.testElementExists,
       testElementNotExists = testHelpers.testElementDoesNotExist,
-      xhr = bid.Mocks.xhr,
       WindowMock = bid.Mocks.WindowMock,
       win,
       mediator = bid.Mediator;
@@ -24,7 +23,6 @@
     setup: function() {
       testHelpers.setup();
       win = new WindowMock();
-      xhr.setContextInfo('auth_level', 'password');
     },
 
     teardown: function() {
@@ -35,116 +33,97 @@
     }
   });
 
-  asyncTest("personaTOSPP true, requiredEmail: true - show TOS/PP", function() {
+  test("personaTOSPP true, requiredEmail: true - show TOS/PP", function() {
     createController({
       window: win,
       add: false,
       email: "unregistered@testuser.com",
       auth_url: "http://testuser.com/sign_in",
       requiredEmail: true,
-      personaTOSPP: false,
-      ready: function ready() {
-        testElementNotExists("#persona_tospp");
-        start();
-      }
+      personaTOSPP: false
     });
 
+    testElementNotExists("#persona_tospp");
   });
 
-  asyncTest("personaTOSPP true, requiredEmail: false - show TOS/PP", function() {
+  test("personaTOSPP true, requiredEmail: false - show TOS/PP", function() {
     createController({
       window: win,
       add: false,
       email: "unregistered@testuser.com",
       auth_url: "http://testuser.com/sign_in",
       requiredEmail: false,
-      personaTOSPP: false,
-      ready: function ready() {
-        testElementNotExists("#persona_tospp");
-        start();
-      }
+      personaTOSPP: false
     });
 
+    testElementNotExists("#persona_tospp");
   });
 
   asyncTest("submit with `add: false` option opens a new tab with proper URL (updated for sessionStorage)", function() {
-
-    xhr.useResult("primaryUnknown");
-
     var messageTriggered = false;
     createController({
       window: win,
       add: false,
       email: "unregistered@testuser.com",
       auth_url: "http://testuser.com/sign_in",
-      personaTOSPP: true,
-      ready: function ready() {
-        testElementExists("#persona_tospp");
+      personaTOSPP: true
+    });
 
-        mediator.subscribe("primary_user_authenticating", function() {
-          messageTriggered = true;
-        });
+    testElementExists("#persona_tospp");
 
-        // Also checking to make sure the NATIVE is stripped out.
-        win.document.location.href = "sign_in";
-        win.document.location.hash = "#NATIVE";
+    mediator.subscribe("primary_user_authenticating", function() {
+      messageTriggered = true;
+    });
 
-        controller.submit(function() {
-          equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com");
-          equal(messageTriggered, true, "primary_user_authenticating triggered");
-          start();
-        });
-      }
+    // Also checking to make sure the NATIVE is stripped out.
+    win.document.location.href = "sign_in";
+    win.document.location.hash = "#NATIVE";
+
+    controller.submit(function() {
+      equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com");
+      equal(messageTriggered, true, "primary_user_authenticating triggered");
+      start();
     });
   });
 
   asyncTest("submit with `add: true` option opens a new tab with proper URL (updated for sessionStorage)", function() {
-
-    xhr.useResult("primaryUnknown");
     createController({
       window: win,
       add: true,
       email: "unregistered@testuser.com",
       auth_url: "http://testuser.com/sign_in",
-      personaTOSPP: true,
-      ready: function ready() {
-        testElementExists("#persona_tospp");
-
-        // Also checking to make sure the NATIVE is stripped out.
-        win.document.location.href = "sign_in";
-        win.document.location.hash = "#NATIVE";
-
-        controller.submit(function() {
-          equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com");
-          start();
-        });
-      }
+      personaTOSPP: true
     });
 
-    
+    testElementExists("#persona_tospp");
 
+    // Also checking to make sure the NATIVE is stripped out.
+    win.document.location.href = "sign_in";
+    win.document.location.hash = "#NATIVE";
+
+    controller.submit(function() {
+      equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com");
+      start();
+    });
   });
 
-  asyncTest("submit with no callback", function() {
+  test("submit with no callback", function() {
     createController({
       window: win,
       add: true,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
-      ready: function ready() {
-        var error;
-        try {
-          controller.submit();
-        }
-        catch(e) {
-          error = e;
-        }
-
-        equal(typeof error, "undefined", "error is undefined");
-        start();
-      }
+      auth_url: "http://testuser.com/sign_in"
     });
 
+    var error;
+    try {
+      controller.submit();
+    }
+    catch(e) {
+      error = e;
+    }
+
+    equal(typeof error, "undefined", "error is undefined");
   });
 
   asyncTest("cancel triggers the cancel_state", function() {
@@ -152,91 +131,14 @@
       window: win,
       add: true,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
-      ready: function ready() {
-        testHelpers.register("cancel_state");
-
-        controller.cancel(function() {
-          equal(testHelpers.isTriggered("cancel_state"), true, "cancel_state is triggered");
-          start();
-        });
-      }
+      auth_url: "http://testuser.com/sign_in"
     });
-  });
 
-  asyncTest("unknown_primary shows verify_primary_user dialog", function() {
-    xhr.useResult("primary");
+    testHelpers.register("cancel_state");
 
-    createController({
-      window: win,
-      email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
-      ready: function r() {
-        testElementExists("#verifyWithPrimary");
-        start();
-      }
-    });
-  });
-
-  asyncTest("transition_to_primary shows verify_primary_user dialog", function() {
-    xhr.useResult("primaryTransition");
-
-    createController({
-      window: win,
-      email: "registered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
-      ready: function r() {
-        testElementExists("#verifyWithPrimary");
-        start();
-      }
-    });
-  });
-  
-  asyncTest("known_primary doesn't show verify_primary_user dialog", function() {
-    xhr.useResult("primary");
-
-    createController({
-      window: win,
-      email: "registered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
-      ready: function r() {
-        testElementNotExists("#verifyWithPrimary");
-        start();
-      }
-    });
-  });
-
-  asyncTest("submit on transition calls complete_transition", function() {
-    xhr.useResult("primaryTransition");
-
-    createController({
-      window: win,
-      email: "registered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
-      ready: function r() {
-        controller.submit(function s() {
-          var req = xhr.getLastRequest();
-          equal(req.url, '/wsapi/complete_transition', "complete_transition request sent");
-          start();
-        });
-      }
-    });
-  });
-
-  asyncTest("submit on transition when unknown doesnt call complete_transition", function() {
-    xhr.useResult("primary");
-
-    createController({
-      window: win,
-      email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
-      ready: function r() {
-        controller.submit(function s() {
-          var req = xhr.getLastRequest();
-          notEqual(req.url, '/wsapi/complete_transition', "complete_transition request not sent");
-          start();
-        });
-      }
+    controller.cancel(function() {
+      equal(testHelpers.isTriggered("cancel_state"), true, "cancel_state is triggered");
+      start();
     });
   });
 
