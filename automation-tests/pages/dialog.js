@@ -25,5 +25,6 @@ exports.signInExistingUser = function(opts, cb) {
     .wtype(CSS['dialog'].emailInput, opts.email)
     .wclick(CSS['dialog'].newEmailNextButton)
     .wtype(CSS['dialog'].existingPassword, opts.password)
-    .wclick(CSS['dialog'].returningUserButton, cb);
+    .wclick(CSS['dialog'].returningUserButton)
+    .wclickIfExists(CSS['dialog'].notMyComputerButton, cb);
 };

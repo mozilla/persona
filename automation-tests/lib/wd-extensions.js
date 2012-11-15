@@ -1,15 +1,37 @@
 // add helper routines onto wd that make common operations easy to do
 // correctly
 
-var wd = require('wd/lib/webdriver.js');
-
-const utils = require('./utils.js'),
-   timeouts = require('./timeouts.js');
+const wd        = require('wd/lib/webdriver')
+      utils     = require('./utils.js'),
+      timeouts  = require('./timeouts.js');
 
 function setTimeouts(opts) {
   opts.poll = opts.poll || timeouts.DEFAULT_POLL_MS;
   opts.timeout = opts.timeout || timeouts.DEFAULT_TIMEOUT_MS;
 }
+
+// save a handle to the current window so that its existence can be
+// checked for later. This is necessary in Firefox because the wd
+// driver hangs when querying elements on windows that do not exist.
+function updateWindowHandle(browser, handle, cb) {
+  if (!cb) {
+    cb = handle;
+    handle = null;
+  }
+
+  if (handle) {
+    browser._currentWindow = handle;
+    cb(null);
+  }
+  else {
+    browser.windowHandle(function(err, handle) {
+      if (err) return cb(err);
+      browser._currentWindow = handle;
+      cb(null);
+    });
+  }
+}
+
 
 // wait for a element to become part of the dom and be visible to
 // the user.  The element is identified by CSS selector.  options:
@@ -50,7 +72,9 @@ wd.prototype.newSession = function(opts, cb) {
     // procedures like find_element to succeed (we'll actually wait on the
     // *server* side for an element to become visible).  Having this be
     // the same as the global default timeout is interesting.
-    browser.setImplicitWaitTimeout(timeouts.DEFAULT_TIMEOUT_MS, cb);
+    browser.setImplicitWaitTimeout(timeouts.DEFAULT_TIMEOUT_MS, function() {
+      updateWindowHandle(browser, cb);
+    });
   });
 };
 
@@ -69,7 +93,7 @@ wd.prototype.waitForWindow = function(opts, cb) {
   setTimeouts(opts);
   utils.waitFor(opts.poll, opts.timeout, function(done) {
     browser.window(opts.name, function(err) {
-      done(!err, err);
+      updateWindowHandle(browser, cb);
     });
   }, cb);
 };
@@ -114,7 +138,7 @@ wd.prototype.find = wd.prototype.elementByCss;
 
 // convenience method to switch windows
 //
-// if no arguments are passed, switch to the base window--in a dialog flow,
+// if no arguments are passed, switch to the base window--in a diaerror flow,
 // this will be the zeroth window in the list of handles.
 //
 // if arguments are passed in, they are forwarded to waitForWindow.
@@ -126,7 +150,10 @@ wd.prototype.wwin = function(opts, cb) {
     cb = arguments[0];
     self.windowHandles(function(err, handles) {
       if (err) return cb(err);
-      self.window(handles[0], function(err) { cb(err); }); // fire cb whether err is defined or not
+      var handle=handles[0];
+      self.window(handle, function(err) {
+        updateWindowHandle(self, handle, cb);
+      }); // fire cb whether err is defined or not
     });
   } else {
     self.waitForWindow(opts, cb);
@@ -160,17 +187,34 @@ wd.prototype.wclickIfExists = function(opts, cb) {
   // if it is available. This may belong in a higher abstraction layer.
   if (!opts.timeout) opts.timeout = 1000;
 
-  self.wclick(opts, function(err, el) {
-    // Some buttons (like the Is this your computer) are only shown after
-    // a certain amount of time has elapsed. If the button is in the DOM,
-    // great, click it. If not, move on.
-    if (err && (err.indexOf('timeout hit') === -1)) {
-      cb(err, null);
-    }
-    else {
-      cb(null, el);
-    }
-  });
+  // yes, this is janktastic as anything. I am trying to wait until the dialog
+  // is closed to see if a window exists.
+  setTimeout(function() {
+    // check if the current window still exists. Firefox has a problem where if
+    // a window is closed when you check for an element's existence, it just
+    // hangs. Not ideal.
+    self.windowHandles(function(err, handles) {
+      if (handles && handles.indexOf(self._currentWindow) > -1) {
+        self.wclick(opts, function(err, el) {
+          // Some buttons (like the Is this your computer) are only shown after
+          // a certain amount of time has elapsed. If the button is in the DOM,
+          // great, click it. If not, move on.
+          if (err && (err.indexOf('timeout hit') === -1)) {
+            cb(err, null);
+          }
+          else {
+            cb(null, el);
+          }
+        });
+      }
+      else {
+        // either there was an error or the window no longer exists. If there
+        // was an error, pass it back, if the window no longer exists, no
+        // problem, the element does not exist either.
+        cb(err, null);
+      }
+    });
+  }, 15000);
 };
 
 wd.prototype.wgetAttribute = function(opts, attribute, cb) {
