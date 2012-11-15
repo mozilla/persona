@@ -1,0 +1,16 @@
+{
+  "name": "browserid-selenium-tests",
+  "description": "selenium tests for the browserid goodness",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "vows": "*",
+    "wd": "git://github.com/lloyd/wd#bb612777",
+    "request": "*",
+    "optimist": "*",
+    "q": "*",
+    "underscore": "*",
+    "mkdirp": "*",
+    "minimatch": "0.2.6"
+  }
+}

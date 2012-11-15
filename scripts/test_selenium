@@ -1,0 +1,104 @@
+#!/usr/bin/env node
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+// This is a travis-ci specific script that triggers selenium test runs on
+// testy-listener.personatest.org. It does this by issueing a curl POST command to testy-listner.personatest.org with the repo's url and sha. testy then goes and fetches the repo, checks out the sha, creates an ephemeral deployment, and then collects the test results which are then reported here.
+
+const spawn         = require('child_process').spawn,
+      path          = require('path'),
+      testy_url     = process.env['TESTY_URL'] || 'http://testy-listener.personatest.org/test',
+      repo_url      = process.env['REPO_URL'],
+      repo_sha      = process.env['REPO_SHA'];
+
+function getRepoInfo(done) {
+  getSHA(function(sha) {
+    getOrigin(function(origin) {
+      done && done({
+        sha: sha,
+        repo: origin
+      });
+    });
+  });
+}
+
+function getSHA(done) {
+  if (repo_sha) {
+    done && done(repo_sha);
+  }
+  else {
+    // next try using git
+    var p = spawn('git', [ 'log', '--pretty=%H', '-1' ]);
+    var buf = "";
+    p.stdout.on('data', function(d) {
+      buf += d;
+    });
+    p.stdout.on('end', function(code, signal) {
+      var gitsha = buf.toString().trim();
+      if (gitsha && gitsha.length === 40) {
+        done && done(gitsha)
+      }
+      else {
+        console.error('incorrect git sha length');
+      }
+    });
+  }
+}
+
+function getOrigin(done) {
+  if (repo_url) {
+    done && done(repo_url);
+  }
+  else {
+    var p = spawn('git', [ 'config', '--get', 'remote.origin.url' ]);
+    var buf = "";
+    p.stdout.on('data', function(d) {
+      buf += d;
+    });
+    p.stdout.on('end', function(code, signal) {
+      done && done(buf.replace(/[\n\r]/, ''));
+    });
+  }
+}
+
+
+function runTests(repo, sha, done) {
+  console.log(" >>> Starting selenium tests on", repo, sha);
+
+  // use a GET request so that new tests are not started but results 
+  // are received. GitHub will take care of kicking off the test run.
+  var p = spawn('curl', [ '-s', '-N', '-G', '--data', 'repo=' + repo + '&' + 'sha=' + sha, testy_url ]);
+
+  var buf = "";
+  p.stdout.on('data', function(d) {
+    buf += d.toString();
+  });
+
+  p.stdout.pipe(process.stdout);
+  p.stderr.pipe(process.stderr);
+
+  p.on('exit', function(exit_code, signal) {
+    done && done(null, getCode(exit_code, buf));
+  });
+}
+
+function getCode(exit_code, buf) {
+  // If there already exists a code, use it.
+  if (!exit_code) {
+    // search for the exiting post-install message, return the code. 
+    // If the code does not exist, assume failure and return 127
+    var result = (/Exiting tests with code: (\d+)/g).exec(buf);
+    exit_code = parseInt(result && result[1] || 127, 10);
+  }
+  return exit_code;
+}
+
+getRepoInfo(function(info) {
+  runTests(info.repo, info.sha, function(err, code) {
+    console.log("\nExiting " + path.basename(__filename) + " with code:", code);
+    process.exit(code);
+  });
+});

@@ -1,0 +1,2 @@
+exports.DEFAULT_POLL_MS = 500;
+exports.DEFAULT_TIMEOUT_MS = 20000;

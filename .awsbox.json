@@ -12,9 +12,12 @@
     "CONFIG_FILES": "$HOME/code/config/production.json,$HOME/code/config/aws.json,$HOME/config.json"
   },
   "hooks": {
-    "postdeploy": "scripts/awsbox/post_deploy.sh",
-    "poststart": "scripts/show_config.js",
-    "postcreate": "scripts/awsbox/post_create.sh"
+    "postdeploy": "scripts/awsbox_remote/post_deploy.sh",
+    "poststart": "scripts/awsbox_remote/post_start.sh",
+    "postcreate": "scripts/awsbox_remote/post_create.sh"
+  },
+  "local_hooks": {
+    "postcreate": "node scripts/awsbox_local/post_create.js"
   },
   "packages": [
     "mysql-server"
