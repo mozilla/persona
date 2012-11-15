@@ -47,11 +47,11 @@ var new_secondary_123done_two_browsers = {
       password: theEmail.split('@')[0]
     }, done);
   },
-  "get verification link from email": function(done) {
-    restmail.getVerificationLink({ email: theEmail }, done);
-  },
   "get another browser session": function(done) {
     testSetup.newBrowserSession(secondBrowser, done);
+  },
+  "get verification link from email": function(done) {
+    restmail.getVerificationLink({ email: theEmail }, done);
   },
   "open verification link in new browser window": function(done, link) {
     secondBrowser.get(link, done);
@@ -100,11 +100,11 @@ var new_secondary_mfb_two_browsers = {
       password: mfbEmail.split('@')[0], // we use the user part of email as password.  why not?
     }, done);
   },
-  "mfb get verification link from email": function(done) {
-    restmail.getVerificationLink({ email: mfbEmail }, done);
-  },
   "create a second selenium session": function(done) {
     testSetup.newBrowserSession(secondBrowser, done);
+  },
+  "mfb get verification link from email": function(done) {
+    restmail.getVerificationLink({ email: mfbEmail }, done);
   },
   "open verification link in second session and re-enter password": function(done, link) {
     secondBrowser.chain({onError: done})
