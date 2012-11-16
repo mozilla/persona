@@ -178,7 +178,6 @@
       log('checking and emitting');
       // this will re-certify the user if neccesary
       user.getSilentAssertion(loggedInUser, function(email, assertion) {
-        log('silent return: email, assertion ', email, assertion);
         if (email) {
           // only send login events when the assertion is defined - when
           // the 'loggedInUser' is already logged in, it's false - that is
@@ -210,8 +209,10 @@
     }
 
     function doLogin (params) {
-      log('doLogin', params);
-      callback({ method: 'login', assertion: params });
+      log('doLogin (with silent assertion)');
+      // Through the _internalParams, we signify to any RP callers that are 
+      // interested that this assertion was acquired without user interaction.
+      callback({ method: 'login', assertion: params, _internalParams: {silent: true} });
     }
 
     function doLogout () {
