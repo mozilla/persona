@@ -25,7 +25,9 @@ db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
 logger = require('../lib/logging.js').logger,
-views = require('../lib/static/views.js');
+views = require('../lib/static/views.js'),
+toobusy = require('../lib/busy_middleware.js'),
+shutdown = require('../lib/shutdown.js');
 
 var app = undefined;
 
@@ -41,6 +43,9 @@ if (config.get('env') === 'production') {
 // Setup health check / heartbeat middleware.
 // This is in front of logging on purpose.  see issue #537
 heartbeat.setup(app);
+
+// block requests when overloaded
+app.use(toobusy);
 
 // logging!  all requests other than __heartbeat__ are logged
 app.use(express.logger({
@@ -131,3 +136,5 @@ var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function() {
   logger.info("running on http://" + app.address().address + ":" + app.address().port);
 });
+
+shutdown.handleTerminationSignals(app, toobusy.shutdown);

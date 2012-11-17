@@ -186,7 +186,6 @@
   },
   "minimatch": {
     "0.0.5": "96bb490bbd3ba6836bbfac111adf75301b1584de",
-    "0.2.6": "afc731fd9874c4c47496bc27938e5014134eaa57",
     "0.2.7": "850e2708068bfb12b586c34491f2007cc0b52f67"
   },
   "mkdirp": {
@@ -298,6 +297,9 @@
   },
   "tinycolor": {
     "0.0.1": "320b5a52d83abb5978d81a3e887d4aefb15a6164"
+  },
+  "toobusy": {
+    "0.1.1": "267a16542980be4bab0acfbae22f594a6b52d323"
   },
   "traverse": {
     "0.6.3": "a053ffa1b6179b9240ea16d74bfd604bd6b6e41b"
