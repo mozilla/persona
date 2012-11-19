@@ -15,11 +15,11 @@ const platforms = {
     platform: 'MAC',
     browserName:'firefox',
     version:'14'
-  },
+  },*/
   "vista_chrome": {
     platform:'VISTA',
     browserName:'chrome'
-  },*/
+  },
   "vista_firefox_16": {
     platform:'VISTA',
     browserName:'firefox',
