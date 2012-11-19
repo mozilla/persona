@@ -170,7 +170,7 @@ function startTesting() {
     });
 
     var opts = {
-      cwd: undefined,
+      cwd: path.dirname(testPath),
       env: env
     };
     var testProcess = child_process.spawn(vows_path,
