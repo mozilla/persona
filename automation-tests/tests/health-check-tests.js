@@ -13,7 +13,8 @@ CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 restmail = require('../lib/restmail.js'),
 runner = require('../lib/runner.js'),
-testSetup = require('../lib/test-setup.js');
+testSetup = require('../lib/test-setup.js'),
+timeouts = require('../lib/timeouts.js');
 
 var pcss = CSS['persona.org'],
   browser, secondBrowser, eyedeemail, theEmail;
@@ -53,6 +54,8 @@ var primaryTest = {
   "switch to eyedeeme dialog, submit password, click ok": function(done) {
     browser.chain({onError: done})
       .wwin(pcss.verifyPrimaryDialogName)
+      // Give eyedee.me a bit of time to load itself up.
+      .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, eyedeemail.split('@')[0])
       .wclick(CSS['eyedee.me'].createAccountButton, done);
   },

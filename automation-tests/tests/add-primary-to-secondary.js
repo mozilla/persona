@@ -15,7 +15,8 @@ CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js'),
-user = require('../lib/user.js');
+user = require('../lib/user.js'),
+timeouts = require('../lib/timeouts.js');
 
 var browser,
     primaryEmail,
@@ -75,7 +76,9 @@ runner.run(module, {
       // make sense to me, since wclick implicitly calls wfind first o_O.
       .wfind(CSS['dialog'].verifyWithPrimaryButton)
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      // continuing past that button
+      // continuing past that button. Wait to give the dialog time to
+      // load.
+      .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, primaryEmail.pass)
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()

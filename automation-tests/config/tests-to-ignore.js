@@ -5,8 +5,5 @@
 // These are tests to ignore
 
 exports.tests_to_ignore = [
-  "add-primary-to-secondary.js",
-  "public-terminals.js",
-  "remove-email.js",
-  "returning-user.js"
+  "public-terminals.js"
 ];
