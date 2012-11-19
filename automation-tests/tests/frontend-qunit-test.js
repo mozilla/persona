@@ -52,9 +52,15 @@ var browser;
 runner.run(module, {
   "create a new selenium session": function(done) {
     testSetup.setup({b:1}, function(err, fix) {
-      browser = fix.b[0];
-      testSetup.newBrowserSession(browser, done);
+      if (fix) {
+        browser = fix.b[0];
+      }
+
+      done(err);
     });
+  },
+  "start the session": function(done) {
+    testSetup.newBrowserSession(browser, done);
   },
   "open the frontend test url": function(done) {
     browser.get(frontendTestUrl, done);
@@ -78,7 +84,7 @@ runner.run(module, {
       //XXX should have a better way to save off the elapsed time, test
       // counts, pass/fail, etc., somewhere better than just dumping it in the
       // console. Maybe set custom-data for Sauce after the job completes?
-      // - Should have a mode here where we just return the `res` back to 
+      // - Should have a mode here where we just return the `res` back to
       // a parallel test runner, which can then make assertions about
       // all the results.
       //console.dir(res); // commented out because stray JSON makes SAX parser, hence Jenkins, cry
@@ -94,7 +100,7 @@ runner.run(module, {
   "shut down": function(done) {
     browser.quit(done);
   }
-}, 
+},
 {
   suiteName: path.basename(__filename),
   cleanup: function(done) { testSetup.teardown(done) }

@@ -26,8 +26,10 @@ runner.run(module, {
   "setup": function(done) {
     // this is the more compact setup syntax
     testSetup.setup({b:2}, function(err, fix) {
-      browser = fix.b[0];
-      verificationBrowser = fix.b[1];
+      if (fix) {
+        browser = fix.b[0];
+        verificationBrowser = fix.b[1];
+      }
       done(err);
     });
   },
@@ -94,7 +96,7 @@ runner.run(module, {
   "shut down remaining browsers": function(done) {
     browser.quit(done);
   }
-}, 
+},
 {
   suiteName: path.basename(__filename),
   cleanup: function(done) { testSetup.teardown(done); }

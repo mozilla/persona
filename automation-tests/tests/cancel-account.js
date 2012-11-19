@@ -25,9 +25,11 @@ var browser,
 function setup(done) {
   emails = [];
   user.getVerifiedUser(function(err, info) {
-    browser = info.browser;
-    secondaryEmail = saveEmail(info.email);
-    secondaryPassword = info.password;
+    if (info) {
+      browser = info.browser;
+      secondaryEmail = saveEmail(info.email);
+      secondaryPassword = info.password;
+    }
     done(err);
   });
 }

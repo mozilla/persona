@@ -21,11 +21,13 @@ var new_secondary_123done_two_browsers = {
   "setup": function(done) {
     // this is the more compact setup syntax
     testSetup.setup({b:2, r:3}, function(err, fix) {
-      browser = fix.b[0];
-      secondBrowser = fix.b[1];
-      theEmail = fix.r[0];
-      mfbEmail = fix.r[1];
-      nspEmail = fix.r[2];
+      if (fix) {
+        browser = fix.b[0];
+        secondBrowser = fix.b[1];
+        theEmail = fix.r[0];
+        mfbEmail = fix.r[1];
+        nspEmail = fix.r[2];
+      }
       done(err);
     });
   },
@@ -148,7 +150,7 @@ var new_secondary_personaorg = {
     },
     "get verification link": function(done) {
       restmail.getVerificationLink({email: nspEmail}, done);
-    }, 
+    },
     "open link, verify you are redirected to acct mgr and see your email": function(done, link) {
       browser.chain({onError: done})
         .get(link)

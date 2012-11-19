@@ -31,11 +31,13 @@ function dialogEyedeemeFlow(b, email, cb) {
 var primary_123done = {
   "setup": function(done) {
     testSetup.setup({browsers: 1, eyedeemails: 3, restmails: 1}, function(err, fixtures) {
-      browser = fixtures.browsers[0];
-      eyedeemail = fixtures.eyedeemails[0];
-      eyedeemail_mfb = fixtures.eyedeemails[1];
-      porg_eyedeemail = fixtures.eyedeemails[2];
-      theEmail = fixtures.restmails[0];
+      if (fixtures) {
+        browser = fixtures.browsers[0];
+        eyedeemail = fixtures.eyedeemails[0];
+        eyedeemail_mfb = fixtures.eyedeemails[1];
+        porg_eyedeemail = fixtures.eyedeemails[2];
+        theEmail = fixtures.restmails[0];
+      }
       done(err);
     });
   },
