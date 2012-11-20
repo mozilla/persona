@@ -63,3 +63,4 @@ const defaultCapabilities = {
 
 exports.platforms = platforms;
 exports.defaultCapabilities = defaultCapabilities;
+exports.defaultPlatform = "vista_firefox_16";
