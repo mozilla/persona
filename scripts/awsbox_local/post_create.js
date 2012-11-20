@@ -4,9 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const fs            = require('fs'),
-      temp          = require('temp'),
-      scp           = require('./scp').scp;
+const fs              = require('fs'),
+      temp            = require('temp'),
+      scp             = require('./scp').scp,
+      defaultPlatform = require('../../automation-tests/config/sauce-platforms').defaultPlatform;
 
 function getFromEnv(name, defaultValue) {
   var envValue = process.env[name];
@@ -29,7 +30,7 @@ function copyConfig(done) {
       persona_sauce_user: getFromEnv("PERSONA_SAUCE_USER"),
       persona_sauce_api_key: getFromEnv("PERSONA_SAUCE_APIKEY"),
       persona_sauce_pass: getFromEnv("PERSONA_SAUCE_PASS"),
-      persona_browser: getFromEnv("PERSONA_BROWSER", "vista_chrome"),
+      persona_browser: getFromEnv("PERSONA_BROWSER", defaultPlatform),
       runners: parseInt(getFromEnv("RUNNERS", 30), 10)
     };
 
