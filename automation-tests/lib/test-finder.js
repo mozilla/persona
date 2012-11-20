@@ -26,6 +26,7 @@ exports.find = function(pattern, root, tests) {
               name: file.replace('.js', ''),
               path: filePath
             });
+            console.log("adding", file);
           }
         }
         else {
