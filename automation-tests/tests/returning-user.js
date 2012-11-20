@@ -28,9 +28,11 @@ var browser, primary, secondary;
 runner.run(module, {
   "setup": function(done) {
     testSetup.setup({browsers: 1, restmails: 1, eyedeemails:1}, function(err, fix) {
-      browser = fix.browsers[0];
-      primary = fix.eyedeemails[0];
-      secondary = fix.restmails[0];
+      if (fix) {
+        browser = fix.browsers[0];
+        primary = fix.eyedeemails[0];
+        secondary = fix.restmails[0];
+      }
       done(err);
     });
   },

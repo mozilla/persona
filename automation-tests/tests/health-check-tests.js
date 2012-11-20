@@ -32,10 +32,12 @@ var startup = function(b, email, cb) {
 var setup = {
   "setup stuff": function(done) {
     testSetup.setup({browsers: 2, eyedeemails: 1, restmails: 1}, function(err, fixtures) {
-      browser = fixtures.browsers[0];
-      secondBrowser = fixtures.browsers[1];
-      eyedeemail = fixtures.eyedeemails[0];
-      theEmail = fixtures.restmails[0];
+      if (fixtures) {
+        browser = fixtures.browsers[0];
+        secondBrowser = fixtures.browsers[1];
+        eyedeemail = fixtures.eyedeemails[0];
+        theEmail = fixtures.restmails[0];
+      }
       done(err)
     });
   }

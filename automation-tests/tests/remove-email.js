@@ -70,13 +70,15 @@ runner.run(module, {
   "setup all the things": function(done) {
     // this is the more compact setup syntax
     testSetup.setup({b:2, r:1, e:2}, function(err, fix) {
-      browser = fix.b[0];
-      firstPrimaryEmail = saveEmail(fix.e[0]);
-      secondPrimaryEmail = saveEmail(fix.e[1]);
-      secondaryEmail = saveEmail(fix.r[0]);
-      firstPrimaryPassword = firstPrimaryEmail.split('@')[0];
-      secondPrimaryPassword = secondPrimaryEmail.split('@')[0];
-      secondaryPassword = secondaryEmail.split('@')[0];
+      if (fix) {
+        browser = fix.b[0];
+        firstPrimaryEmail = saveEmail(fix.e[0]);
+        secondPrimaryEmail = saveEmail(fix.e[1]);
+        secondaryEmail = saveEmail(fix.r[0]);
+        firstPrimaryPassword = firstPrimaryEmail.split('@')[0];
+        secondPrimaryPassword = secondPrimaryEmail.split('@')[0];
+        secondaryPassword = secondaryEmail.split('@')[0];
+      }
       done(err);
     });
   },

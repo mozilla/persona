@@ -25,15 +25,17 @@ var browser,
 runner.run(module, {
   "setup all the things": function(done) {
     testSetup.setup({ b:1, e:2 }, function(err, fix) {
-      browser = fix.b[0];
-      primaryEmail = {
-        email: fix.e[0],
-        pass: fix.e[0].split('@')[0],
-      };
-      secondPrimaryEmail = {
-        email: fix.e[1],
-        pass: fix.e[1].split('@')[0],
-      };
+      if (fix) {
+        browser = fix.b[0];
+        primaryEmail = {
+          email: fix.e[0],
+          pass: fix.e[0].split('@')[0],
+        };
+        secondPrimaryEmail = {
+          email: fix.e[1],
+          pass: fix.e[1].split('@')[0],
+        };
+      }
       done(err);
     });
   },
