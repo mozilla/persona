@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 BrowserID.Mocks.xhr = (function() {
+  "use strict";
+
   var delay = 0,
       contextInfo = {
       server_time: new Date().getTime(),
@@ -221,10 +223,14 @@ BrowserID.Mocks.xhr = (function() {
 
       this.requests[request.url] = request;
 
+      if (!(responseKey in xhr.responses)) {
+        console.error("request for '" + request.url + "' is not mocked in resources/static/test/cases/xhr.js");
+      }
+
       if (typeofResponse === "function") {
         response(request.success);
       }
-      else if (!(typeofResponse == "number" || typeofResponse == "undefined")) {
+      else if (!(typeofResponse === "number" || typeofResponse === "undefined")) {
         if (request.success) {
           if (delay) {
             // simulate response delay
