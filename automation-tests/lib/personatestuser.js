@@ -1,4 +1,5 @@
 const utils = require("./utils.js"),
+urls = require('./urls.js'),
 request = require('request');
 
 // TODO factor out common bits with lib/restmail
@@ -16,7 +17,7 @@ exports.getVerifiedUser = function(args, cb) {
   }
   var timeout = args.timeout || DEFAULT_TIMEOUT;
   var env = args.env || process.env['PERSONA_ENV'] || 'dev';
-  var url = 'http://personatestuser.org/email/' + env;
+  var url = urls.personatestuser;
 
   request({ url: url, timeout: timeout, json:true}, function (error, response, body) {
     if (!error && response.statusCode == 200) {
