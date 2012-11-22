@@ -6,7 +6,8 @@
 
   var bid = BrowserID,
       tooltip = bid.Tooltip,
-      testHelpers = bid.TestHelpers;
+      testHelpers = bid.TestHelpers,
+      testUndefined = testHelpers.testUndefined;
 
   module("common/js/tooltip", {
     setup: function() {
@@ -44,6 +45,23 @@
     tooltip.showTooltip("#shortTooltip");
     tooltip.showTooltip("#shortTooltip");
     equal($(".tooltip:visible").length, 1, "only one tooltip shown at a time");
+  });
+
+  test("show a tooltip by specifying the text and the anchor", function() {
+    tooltip.showTooltip("some tooltip contents", "#page_head");
+    equal($(".tooltip:visible").text().trim(), "some tooltip contents", "correct contents when specified from the command line");
+  });
+
+  test("no exception thrown if tooltip element does not exist", function() {
+    var err;
+
+    try {
+      tooltip.showTooltip("#non_existent");
+    } catch(e) {
+      err = e;
+    }
+
+    testUndefined(err, "exception not thrown if tooltip element does not exist");
   });
 
 }());
