@@ -4,6 +4,15 @@
 <head><title>non-interactive iframe</title>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
   <meta charset="utf-8">
+  <%- cachify(util.format('/production/%s/dialog.js', locale), {tag_format: '<link rel="prefetch" href="%s">'}) %>
+  <%- cachify('/production/dialog.css', {tag_format: '<link rel="prefetch" href="%s">'}) %>
+  <%- cachify('/common/i/grain.png', {tag_format: '<link rel="prefetch" href="%s">'}) %>
+  <%- cachify('/dialog/i/persona-logo-transparent.png', {tag_format: '<link rel="prefetch" href="%s">'}) %>
+  <%- cachify('/dialog/i/arrow_grey.png', {tag_format: '<link rel="prefetch" href="%s">'}) %>
+  <%- cachify('/common/i/button-loader.gif', {tag_format: '<link rel="prefetch" href="%s">'}) %>
+  <%- cachify('/common/i/button-arrow.png', {tag_format: '<link rel="prefetch" href="%s">'}) %>
+  <%- cachify('/common/i/button-arrow-hover.png', {tag_format: '<link rel="prefetch" href="%s">'}) %>
+  <%- cachify('/common/i/button-arrow-active.png', {tag_format: '<link rel="prefetch" href="%s">'}) %>
   <%- cachify_js('/production/communication_iframe.js') %>
 </head>
 <body></body>
