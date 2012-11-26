@@ -1,5 +1,6 @@
-current train:
-  *
+train-2012.11.23:
+  * New selenium tests authored in node.js merged.
+  * Verifier rejects requests that don't supply a proper hostname: bug #806577
 
 train-2012.11.09:
   * code cleanup, including jshinting of source and code coverage: #2643, #2272
