@@ -24,12 +24,12 @@ const platforms = {
     platform:'VISTA',
     browserName:'firefox',
     version:'16'
-  }/*,
+  },
   "vista_ie_9": {
     platform:'VISTA',
     browserName:'internet explorer',
     version:'9'
-  },
+  }/*,
   "win8_ie_10": {
     platform: 'Windows 2012',
     browserName: 'internet explorer',
