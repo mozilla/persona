@@ -42,26 +42,13 @@ BrowserID.Modules.PickEmail = (function() {
     }
 
     var identity = user.getStoredEmailKeypair(email);
-    if ('foo@example.com' === email) {
-      identity.state = 'offline';
-      identity.issuer = 'example.com';
-    }
     if (!identity) {
       /*globals alert:true*/
       alert(gettext("The selected email is invalid or has been deleted."));
       this.publish("assertion_generated", {
         assertion: null
       });
-    } /* For authenticated users with more than one email.
-         This happens before email_chosen, but email_chosen seems 
-         like a better central place to handle all flows...
-
-      else if (identity.state && 'offline' === identity.state) {
-      this.publish("primary_offline", {
-        idpName: identity.issuer
-      });
-      return false;
-    } */
+    }
 
     return !!identity;
   }

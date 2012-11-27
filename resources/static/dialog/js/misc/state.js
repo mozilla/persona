@@ -285,10 +285,7 @@ BrowserID.State = (function() {
     });
 
     handleState("primary_offline", function(msg, info) {
-      info.idpName = info.idpName || 'TODO';
-      startAction("doPrimaryOffline", {
-        idpName: info.idpName
-      });
+      startAction("doPrimaryOffline", info);
     });
 
     handleState("pick_email", function() {
@@ -314,12 +311,8 @@ BrowserID.State = (function() {
 
       mediator.publish("kpi_data", { email_type: idInfo.type });
 
-      // TODO: backend would provide
-      idInfo.state = 'offline';
-      idInfo.issuer = 'example.com';
-
-      if (idInfo.state && 'offline' === idInfo.state) {
-	redirectToState("primary_offline", { idpName: idInfo.issuer });
+      if (info.state && 'offline' === info.state) {
+        redirectToState("primary_offline", info);
       } else if (idInfo.type === "primary") {
         if (idInfo.cert) {
           // Email is a primary and the cert is available - the user can log

@@ -16,18 +16,17 @@ BrowserID.Modules.PrimaryOffline = (function() {
     this.close("cancel_state");
   }
 
-
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       options = options || {};
-      var self = this;
+      var self = this,
+          parts = options.email ? options.email.split('@') : ['', ''];
+      options.idpName = parts[1];
       self.renderWait("primary_offline", options);
       self.click("#primary_offline_confirm", startDialogOver);
       Module.sc.start.call(self, options);
     }
   });
 
-
   return Module;
-
 }());
