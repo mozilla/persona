@@ -26,6 +26,8 @@ const TEST_DOMAIN = "example.domain",
       TEST_EMAIL = "test@" + TEST_DOMAIN,
       TEST_ORIGIN = 'http://127.0.0.1:10002';
 
+const SECONDARY_TEST_EMAIL = "test@example.com";
+
 var primaryUser = new primary({
   email: TEST_EMAIL,
   domain: TEST_DOMAIN
@@ -49,6 +51,21 @@ suite.addBatch({
       assert.equal(r.state, "unknown");
       assert.isString(r.auth);
       assert.isString(r.prov);
+    }
+  }
+});
+
+suite.addBatch({
+  "address_info for an unknown secondary address": {
+     topic: wsapi.get('/wsapi/address_info', {
+      email: SECONDARY_TEST_EMAIL
+     }),
+    "returns unknown": function(e, r) {
+      assert.isNull(e);
+      var r = JSON.parse(r.body);
+      assert.equal(r.type, "secondary");
+      assert.equal(r.issuer, "127.0.0.1");
+      assert.equal(r.state, "unknown");
     }
   }
 });
