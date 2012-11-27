@@ -231,6 +231,8 @@ BrowserID.Mocks.xhr = (function() {
       var responseKey = request.type + " " + request.url + " " + responseName,
           response = xhr.responses[responseKey],
           typeofResponse = typeof response;
+      // Unit tests busted with no feedback? Un-comment this bad boy and look for 'typeofResponse=undefined'
+      // Pull Request #2760 will automate this...
       //console.log('responseKey=' + responseKey + ' response=' + response + ' typeofResponse=' + typeofResponse);
 
       this.requests[request.url] = request;
