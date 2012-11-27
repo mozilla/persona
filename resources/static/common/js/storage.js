@@ -104,18 +104,6 @@ BrowserID.Storage = (function() {
     storeEmails(emails);
   }
 
-  function addPrimaryEmail(email, obj) {
-    obj = obj || {};
-    obj.type = "primary";
-    addEmail(email, obj);
-  }
-
-  function addSecondaryEmail(email, obj) {
-    obj = obj || {};
-    obj.type = "secondary";
-    addEmail(email, obj);
-  }
-
   function removeEmail(email) {
     var emails = getEmails();
     if(emails[email]) {
@@ -437,16 +425,6 @@ BrowserID.Storage = (function() {
      * @method addEmail
      */
     addEmail: addEmail,
-    /**
-     * Add a primary address
-     * @method addPrimaryEmail
-     */
-    addPrimaryEmail: addPrimaryEmail,
-    /**
-     * Add a secondary address
-     * @method addSecondaryEmail
-     */
-    addSecondaryEmail: addSecondaryEmail,
     /**
      * Get all email addresses and their associated key pairs
      * @method getEmails
