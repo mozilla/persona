@@ -11,11 +11,18 @@ BrowserID.Modules.PrimaryOffline = (function() {
       domHelpers = bid.DOMHelpers,
       email;
 
+  function startDialogOver() {
+    /*jshint validthis:true*/
+    this.close("cancel_state");
+  }
+
+
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       options = options || {};
       var self = this;
       self.renderWait("primary_offline", options);
+      self.click("#primary_offline_confirm", startDialogOver);
       Module.sc.start.call(self, options);
     }
   });
