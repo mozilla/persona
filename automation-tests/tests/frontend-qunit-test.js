@@ -53,7 +53,7 @@ runner.run(module, {
   "create a new selenium session": function(done) {
     testSetup.setup({b:1}, function(err, fix) {
       browser = fix.b[0];
-      browser.newSession(testSetup.sessionOpts, done);
+      testSetup.newBrowserSession(browser, done);
     });
   },
   "open the frontend test url": function(done) {
@@ -94,4 +94,8 @@ runner.run(module, {
   "shut down": function(done) {
     browser.quit(done);
   }
-}, {suiteName: path.basename(__filename)});
+}, 
+{
+  suiteName: path.basename(__filename),
+  cleanup: function(done) { testSetup.teardown(done) }
+});

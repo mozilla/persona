@@ -13,7 +13,8 @@ CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 restmail = require('../lib/restmail.js'),
 runner = require('../lib/runner.js'),
-testSetup = require('../lib/test-setup.js');
+testSetup = require('../lib/test-setup.js'),
+timeouts = require('../lib/timeouts.js');
 
 var pcss = CSS['persona.org'],
   browser, secondBrowser, eyedeemail, theEmail;
@@ -22,7 +23,6 @@ var pcss = CSS['persona.org'],
 // go to persona.org, click sign in, enter email, click next.
 var startup = function(b, email, cb) {
   b.chain({onError: cb})
-    .newSession(testSetup.sessionOpts)
     .get(persona_urls['persona'])
     .wclick(pcss.header.signIn)
     .wtype(pcss.signInForm.email, email)
@@ -42,7 +42,10 @@ var setup = {
 };
 
 var primaryTest = {
-  "start, go to personaorg, click sign in, type eyedeeme addy, click next": function(done) {
+  "setup browser": function(done) {
+    testSetup.newBrowserSession(browser, done);
+  },
+  "go to personaorg, click sign in, type eyedeeme addy, click next": function(done) {
     startup(browser, eyedeemail, done)
   },
   "click 'verify primary' to pop eyedeeme dialog": function(done) {
@@ -51,6 +54,8 @@ var primaryTest = {
   "switch to eyedeeme dialog, submit password, click ok": function(done) {
     browser.chain({onError: done})
       .wwin(pcss.verifyPrimaryDialogName)
+      // Give eyedee.me a bit of time to load itself up.
+      .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, eyedeemail.split('@')[0])
       .wclick(CSS['eyedee.me'].createAccountButton, done);
   },
@@ -69,7 +74,10 @@ var primaryTest = {
 };
 
 var secondaryTest = {
-  "start, go to personaorg, click sign in, type restmail addy, click next": function(done) {
+  "setup second browser": function(done) {
+    testSetup.newBrowserSession(secondBrowser, done);
+  },
+  "go to personaorg, click sign in, type restmail addy, click next": function(done) {
     startup(secondBrowser, theEmail, done);
   },
   "enter password and click verify": function(done) {
@@ -99,14 +107,5 @@ runner.run(
   [setup, secondaryTest, primaryTest],
   {
     suiteName: path.basename(__filename),
-    cleanup: function(done) {
-      // quit both browser sessions if they haven't been quit already
-      function quitIfDefined(b, cb) {
-        if (b) b.quit(cb);
-        else cb();
-      }
-      quitIfDefined(browser, function() {
-        quitIfDefined(secondBrowser, done);
-      });
-    }
+    cleanup: function(done) { testSetup.teardown(done) }
   });

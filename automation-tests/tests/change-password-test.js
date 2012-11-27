@@ -36,7 +36,7 @@ runner.run(module, {
     });
   },
   "create a new selenium session": function(done) {
-    browser.newSession(testSetup.sessionOpts, done);
+    testSetup.newBrowserSession(browser, done);
   },
   "go to 123done and click sign in": function(done) {
     browser.chain({onError: done})
@@ -60,9 +60,11 @@ runner.run(module, {
         done(err || assert.equal(text, testUser.email));
       });
   },
+  "setup second browser": function(done) {
+    testSetup.newBrowserSession(secondBrowser, done);
+  },
   "in the second browser, log in to persona.org": function(done) {
     secondBrowser.chain({onError: done})
-      .newSession(testSetup.sessionOpts)
       .get(persona_urls['persona'])
       .wclick(CSS['persona.org'].header.signIn)
       .wtype(CSS['persona.org'].signInForm.email, testUser.email)
@@ -80,18 +82,16 @@ runner.run(module, {
     secondBrowser.chain({onError: done})
       .wtype(CSS['persona.org'].oldPassword, testUser.pass)
       .wtype(CSS['persona.org'].newPassword, 'new' + testUser.pass)
-      .wclick(CSS['persona.org'].passwordChangeDoneButton, done);
-  },
-  "wait for the change password button to go back before leaving": function(done) {
-    secondBrowser.wfind(CSS['persona.org'].changePasswordButton, done);
+      .wclick(CSS['persona.org'].passwordChangeDoneButton)
+      // wait for the change password button to go back before leaving
+      .wfind(CSS['persona.org'].changePasswordButton)
+      .quit(done);
   },
   "back to the first browser: should be signed out of 123done on reload": function(done) {
     browser.chain({onError: done})
       .get(persona_urls["123done"])
-      .wfind(CSS['123done.org'].signinButton, done)
-  },
-  "start re-login flow in 123done": function(done) {
-    browser.wclick(CSS["123done.org"].signinButton, done)
+      .wfind(CSS['123done.org'].signinButton)
+      .wclick(CSS["123done.org"].signinButton, done)
   },
   "switch back to the dialog": function(done) {
     browser.wwin(CSS["persona.org"].windowName, done)
@@ -111,8 +111,10 @@ runner.run(module, {
       });
   },
   "shut down": function(done) {
-    browser.quit(function(err) {
-      secondBrowser.quit(done)
-    })
+    browser.quit(done);
   }
-}, {suiteName: path.basename(__filename)});
+},
+{
+  suiteName: path.basename(__filename),
+  cleanup: function(done) { testSetup.teardown(done) }
+});

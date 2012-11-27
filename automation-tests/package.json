@@ -4,13 +4,13 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "vows": "*",
+    "vows": "0.6.4",
     "wd": "git://github.com/lloyd/wd#bb612777",
-    "request": "*",
-    "optimist": "*",
-    "q": "*",
-    "underscore": "*",
-    "mkdirp": "*",
+    "request": "2.12.0",
+    "optimist": "0.3.5,
+    "q": "0.8.10",
+    "underscore": "1.4.2",
+    "mkdirp": "0.3.4",
     "minimatch": "0.2.6"
   }
 }

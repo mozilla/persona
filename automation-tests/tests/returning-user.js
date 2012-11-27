@@ -13,7 +13,8 @@ persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 testSetup = require('../lib/test-setup.js'),
-runner = require('../lib/runner.js');
+runner = require('../lib/runner.js'),
+timeouts = require('../lib/timeouts.js');
 
 var browser, primary, secondary;
 /*
@@ -33,15 +34,19 @@ runner.run(module, {
       done(err);
     });
   },
+  "start browser session": function(done) {
+    testSetup.newBrowserSession(browser, done);
+  },
   "startup, create primary acct on personaorg": function(done) {
     browser.chain({onError: done})
-      .newSession(testSetup.sessionOpts)
       .get(persona_urls['persona'])
       .wclick(CSS['persona.org'].header.signIn)
       .wtype(CSS['persona.org'].signInForm.email, primary)
       .wclick(CSS['persona.org'].signInForm.nextButton)
       .wclick(CSS['persona.org'].signInForm.verifyPrimaryButton)
       .wwin(CSS['persona.org'].verifyPrimaryDialogName)
+      // Give eyedee.me a bit of time to load itself up.
+      .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, primary.split('@')[0])
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()
@@ -110,11 +115,8 @@ runner.run(module, {
       done(err || assert.ok(!val));
     });
   }
-}, {
-  // regardless of success or failure, we should cleanup the browser session
-  cleanup: function(done) {
-    browser.quit(done);
-  },
-  suiteName: path.basename(__filename)
+},
+{
+  suiteName: path.basename(__filename),
+  cleanup: function(done) { testSetup.teardown(done) }
 });
-

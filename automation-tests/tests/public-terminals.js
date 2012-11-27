@@ -38,9 +38,11 @@ runner.run(module, {
       done(err);
     });
   },
+  'startup browser': function(done) {
+    testSetup.newBrowserSession(browser, done);
+  },
   'create new secondary via mfb': function(done) {
     browser.chain({onError: done})
-      .newSession(testSetup.sessionOpts)
       .get(persona_urls['myfavoritebeer'])
       .wclick(CSS['myfavoritebeer.org'].signinButton)
       .wwin(CSS['persona.org'].windowName, function(err) {
@@ -99,4 +101,8 @@ runner.run(module, {
   "until we decide what to do, at least end the session properly": function(done) {
     browser.quit(done)
   }
-}, {suiteName: path.basename(__filename)});
+}, 
+{
+  suiteName: path.basename(__filename),
+  cleanup: function(done) { testSetup.teardown(done) }
+});

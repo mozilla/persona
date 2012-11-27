@@ -1,6 +1,11 @@
 current train:
   *
 
+train-2012.11.09:
+  * code cleanup, including jshinting of source and code coverage: #2643, #2272
+  * principal domain now supplied as a query argument when fetching .well-known documents: #2565
+  * embedded IE running in compat mode (like in Lotus Notes) now works for email verification: #2566
+
 train-2012.10.26:
   * Upgrade to Node.JS 0.8.12
   * Fix redirect to /signin after email verification & unneeded password prompt: #1682
