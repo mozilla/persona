@@ -219,6 +219,7 @@ BrowserID.State = (function() {
       self.addPrimaryUser = !!info.add;
       var email = self.email = info.email,
           idInfo = storage.getEmail(email);
+
       if (idInfo && idInfo.cert) {
         redirectToState("primary_user_ready", info);
       }
@@ -293,7 +294,7 @@ BrowserID.State = (function() {
 
     handleState("email_chosen", function(msg, info) {
       var email = info.email,
-          idInfo = storage.getEmail(email);
+          record = storage.getEmail(email);
 
       self.email = email;
 
@@ -301,14 +302,14 @@ BrowserID.State = (function() {
         complete(info.complete);
       }
 
-      if (!idInfo) {
+      if (!record) {
         throw new Error("invalid email");
       }
 
-      mediator.publish("kpi_data", { email_type: idInfo.type });
+      mediator.publish("kpi_data", { email_type: info.type });
 
-      if (idInfo.type === "primary") {
-        if (idInfo.cert) {
+      if (info.type === "primary") {
+        if (record.cert) {
           // Email is a primary and the cert is available - the user can log
           // in without authenticating with the IdP. All invalid/expired
           // certs are assumed to have been checked and removed by this
@@ -324,7 +325,7 @@ BrowserID.State = (function() {
         }
       }
       // Anything below this point means the address is a secondary.
-      else if (!idInfo.verified) {
+      else if (info.state === 'unverified') {
         // user selected an unverified secondary email, kick them over to the
         // verify screen.
         redirectToState("stage_reverify_email", info);
