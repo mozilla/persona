@@ -40,9 +40,9 @@ start_stop.addStartupBatches(suite);
 
 suite.addBatch({
   "address_info for an unknown address": {
-     topic: wsapi.get('/wsapi/address_info', {
+    topic: wsapi.get('/wsapi/address_info', {
       email: TEST_EMAIL
-     }),
+    }),
     "returns unknown": function(e, r) {
       assert.isNull(e);
       var r = JSON.parse(r.body);

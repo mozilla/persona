@@ -397,17 +397,30 @@ suite.addBatch({
 });
 
 
-// test list emails
+// test verification status of emails
 suite.addBatch({
-  "list emails API": {
-    topic: wsapi.get('/wsapi/list_emails', {}),
+  "address_info for first": {
+    topic: wsapi.get('/wsapi/address_info', {
+      email: 'first@fakeemail.com'
+    }),
     "succeeds with HTTP 200" : function(err, r) {
       assert.strictEqual(r.code, 200);
     },
-    "returns an object with proper bits set": function(err, r) {
+    "reports the email is known (which implies it's also verified)": function(err, r) {
       r = JSON.parse(r.body);
-      assert.strictEqual(r['second@fakeemail.com'].verified, false);
-      assert.strictEqual(r['first@fakeemail.com'].verified, true);
+      assert.strictEqual(r.state, 'known');
+    }
+  },
+  "address_info for second": {
+    topic: wsapi.get('/wsapi/address_info', {
+      email: 'second@fakeemail.com'
+    }),
+    "succeeds with HTTP 200" : function(err, r) {
+      assert.strictEqual(r.code, 200);
+    },
+    "reports unverified": function(err, r) {
+      r = JSON.parse(r.body);
+      assert.strictEqual(r.state, 'unverified');
     }
   }
 });

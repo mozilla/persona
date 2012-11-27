@@ -82,7 +82,7 @@ suite.addBatch({
     topic: wsapi.get('/wsapi/list_emails'),
     "works fine": function(err, r) {
       assert.strictEqual(r.code, 200);
-      assert.equal(Object.keys(JSON.parse(r.body)).length, 1);
+      assert.equal(JSON.parse(r.body).emails.length, 1);
     }
   }
 });

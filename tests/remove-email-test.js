@@ -144,7 +144,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns two emails": function(err, r) {
-      r = Object.keys(JSON.parse(r.body));
+      r = JSON.parse(r.body).emails;
       assert.ok(r.indexOf('first@fakeemail.com') != -1);
       assert.ok(r.indexOf('second@fakeemail.com') != -1);
     }
@@ -167,7 +167,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns one emails": function(err, r) {
-      r = Object.keys(JSON.parse(r.body));
+      r = JSON.parse(r.body).emails;
       assert.ok(r.indexOf('first@fakeemail.com') !== -1);
       assert.ok(r.indexOf('second@fakeemail.com') === -1);
     }
