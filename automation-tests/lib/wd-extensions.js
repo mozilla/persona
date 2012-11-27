@@ -194,6 +194,8 @@ wd.prototype.wclick = function(opts, cb) {
           if (err || /submit_disabled/.test(classes)) return done(!!err, err);
 
           self.getAttribute(elToClick, "disabled", function(err, value) {
+            // IE returns a string value of "false" for false
+            if (value === "false") value = false;
             if (err || value) return done(!!err, err);
 
             self.clickElement(elToClick, function(err) {
