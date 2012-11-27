@@ -34,14 +34,6 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     complete(callback);
   }
 
-  function transitionComplete(callback) {
-    /*jshint validthis: true*/
-    var self = this;
-    user.completeTransition(email, function onSuccess() {
-      verify.call(self, callback);
-    }, self.getErrorDialog(errors.completeTransition));
-  }
-
   function cancel(callback) {
     /*jshint validthis:true*/
     this.close("cancel_state");
@@ -49,6 +41,10 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
   }
 
   function showsPrimaryTransition(state) {
+    // we know the type is "primary", and they aren't verified to be at
+    // this module. We need to show the transition is we've never seen
+    // this email before, or we have, but last time it was a secondary.
+    // The state should be marked "known" when the verification returns.
     return state === "unknown" || state === "transition_to_primary";
   }
 
@@ -68,11 +64,6 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
 
       user.addressInfo(email, function onSuccess(info) {
         if (showsPrimaryTransition(info.state)) {
-
-          if (canCompleteTransition(info.state)) {
-            self.submit = transitionComplete;
-          }
-
           self.renderDialog("verify_primary_user", {
             email: data.email,
             auth_url: data.auth_url,
