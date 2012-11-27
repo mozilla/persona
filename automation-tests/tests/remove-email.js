@@ -14,7 +14,8 @@ CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js'),
-user = require('../lib/user.js');
+user = require('../lib/user.js'),
+timeouts = require('../lib/timeouts.js');
 
 // pull in test environment, including wd
 var browser,
