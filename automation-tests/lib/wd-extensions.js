@@ -1,7 +1,7 @@
 // add helper routines onto wd that make common operations easy to do
 // correctly
 
-const wd        = require('wd/lib/webdriver')
+const wd        = require('wd/lib/webdriver'),
       utils     = require('./utils.js'),
       timeouts  = require('./timeouts.js');
 
@@ -159,14 +159,52 @@ wd.prototype.wwin = function(opts, cb) {
     self.waitForWindow(opts, cb);
   }
 };
-
 // wait for element to be displayed, then click on it.
 // optionally accepts waitForDisplayed opts object instead of CSS selector
 wd.prototype.wclick = function(opts, cb) {
+  if (typeof opts === 'string') opts = { which: opts };
+  if (!opts.which) throw "css selector required";
+
   var self = this;
-  self.waitForDisplayed(opts, function(err, el) {
+  // To click on an element, two conditions must be met:
+  // 1) The submit_disabled class must not be on the body
+  // 2) The "disabled" attribute must not be on the element to click.
+  // If both of these conditions are met, click the button, otherwise wait.
+  //
+  // The process used:
+  // 1) wait for the element to be displayed.
+  // 2) Once the element is displayed, the body is also displayed and
+  //  can be queried for a reference.
+  // 3) Check the body for the submit_disabled class name. If it exists, loop
+  // again. If not, continue
+  // 4) Check the element to click for the disabled attribute. If it exists,
+  // loop again, if not - click the button.
+  self.waitForDisplayed(opts, function(err, elToClick) {
     if (err) return cb(err);
-    self.clickElement(el, cb);
+
+    self.elementByTagName("body", function(err, bodyEl) {
+      if (err) return cb(err);
+
+      setTimeouts(opts);
+      utils.waitFor(opts.poll, opts.timeout, function(done) {
+        self.getAttribute(bodyEl, "class", function(err, classes) {
+          // done has a different signature to most callbacks. done's first
+          // parameter is whether the "waitFor" loop should complete. The
+          // second is the error. The third is passed up the stack.
+          if (err || /submit_disabled/.test(classes)) return done(!!err, err);
+
+          self.getAttribute(elToClick, "disabled", function(err, value) {
+            // IE returns a string value of "false" for false
+            if (value === "false") value = false;
+            if (err || value) return done(!!err, err);
+
+            self.clickElement(elToClick, function(err) {
+              done(!err, err, elToClick);
+            });
+          });
+        });
+      }, cb);
+    });
   });
 };
 

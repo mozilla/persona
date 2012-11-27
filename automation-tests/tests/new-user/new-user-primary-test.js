@@ -13,7 +13,8 @@ persona_urls = require('../../lib/urls.js'),
 CSS = require('../../pages/css.js'),
 dialog = require('../../pages/dialog.js'),
 testSetup = require('../../lib/test-setup.js'),
-runner = require('../../lib/runner.js');
+runner = require('../../lib/runner.js'),
+timeouts = require('../../lib/timeouts.js');
 
 var browser, eyedeemail, theEmail, eyedeemail_mfb, porg_eyedeemail;
 
@@ -23,7 +24,7 @@ function dialogEyedeemeFlow(b, email, cb) {
     .wtype(CSS['dialog'].emailInput, email)
     .wclick(CSS['dialog'].newEmailNextButton)
     .wclick(CSS['dialog'].verifyWithPrimaryButton)
-    .wclickIfExists(CSS['dialog'].verifyWithPrimaryButton) //XXX Why do we need to click twice?
+    .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
     .wtype(CSS['eyedee.me'].newPassword, email.split('@')[0])
     .wclick(CSS['eyedee.me'].createAccountButton, cb);
 }
@@ -109,6 +110,7 @@ var pcss = CSS['persona.org'],
         .wclick(pcss.signInForm.nextButton)
         .wclick(pcss.signInForm.verifyPrimaryButton)
         .wwin(pcss.verifyPrimaryDialogName)
+        .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
         .wtype(CSS['eyedee.me'].newPassword, porg_eyedeemail.split('@')[0])
         .wclick(CSS['eyedee.me'].createAccountButton)
         .wwin()

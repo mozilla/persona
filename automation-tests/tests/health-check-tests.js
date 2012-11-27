@@ -56,7 +56,6 @@ var primaryTest = {
   "switch to eyedeeme dialog, submit password, click ok": function(done) {
     browser.chain({onError: done})
       .wwin(pcss.verifyPrimaryDialogName)
-      // Give eyedee.me a bit of time to load itself up.
       .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, eyedeemail.split('@')[0])
       .wclick(CSS['eyedee.me'].createAccountButton, done);
