@@ -93,9 +93,7 @@ runner.run(module, {
       .wwin(CSS['dialog'].windowName)
       .wtype(CSS['dialog'].emailInput, firstPrimaryEmail)
       .wclick(CSS['dialog'].newEmailNextButton)
-      // sometimes the verifyWithPrimaryButton needs to be clicked twice
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      // Give eyedee.me a bit of time to load itself up.
       .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, firstPrimaryPassword)
       .wclick(CSS['eyedee.me'].createAccountButton)
@@ -113,9 +111,7 @@ runner.run(module, {
       .wclick(CSS['dialog'].useNewEmail)
       .wtype(CSS['dialog'].newEmail, secondPrimaryEmail)
       .wclick(CSS['dialog'].addNewEmailButton)
-      // sometimes the verifyWithPrimaryButton needs to be clicked twice
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      // Give eyedee.me a bit of time to load itself up.
       .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, secondPrimaryPassword)
       .wclick(CSS['eyedee.me'].createAccountButton)

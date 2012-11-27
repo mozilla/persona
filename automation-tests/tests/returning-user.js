@@ -47,7 +47,6 @@ runner.run(module, {
       .wclick(CSS['persona.org'].signInForm.nextButton)
       .wclick(CSS['persona.org'].signInForm.verifyPrimaryButton)
       .wwin(CSS['persona.org'].verifyPrimaryDialogName)
-      // Give eyedee.me a bit of time to load itself up.
       .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, primary.split('@')[0])
       .wclick(CSS['eyedee.me'].createAccountButton)
