@@ -39,20 +39,34 @@ Then run the tests just like you would locally:
 
 #### run all the tests
 It is possible to run all of the available tests either locally or against
-Sauce. The RUNNERS environment variable is used to specify the number of test
-runners to run in parallel.
+Sauce.
 
 To run all the tests locally against one browser:
 
-    PERSONA_ENV=stage PERSONA_BROWSER=osx_firefox_15 PERSONA_NO_SAUCE=true scripts/run-all.js
+    scripts/run-all.js --local --platform=osx_firefox_15 --env=stage
 
-To run all the tests on Sauce against one browser:
+To run all the tests on Sauce in parallel against one browser:
 
-    PERSONA_ENV=stage RUNNERS=15 PERSONA_BROWSER=osx_firefox_15 scripts/run-all.js
+    scripts/run-all.js --parallel=15 --platform=osx_firefox_15 --env=stage
 
 To run all the tests on Sauce against all supported browsers:
 
-    PERSONA_ENV=stage RUNNERS=30 PERSONA_BROWSER=all scripts/run-all.js
+    scripts/run-all.js --parallel=15 --platform=all --env=stage
+
+For help with other run-all.js options:
+    scripts/run-all.js --help
+
+#### disabling tests
+Tests can be disabled by adding the name of the test file to
+config/tests-to-ignore.js. This is useful while developing new test suites that
+are not yet ready to be consumed by all browsers.
+
+    exports.tests_to_ignore = [
+      "public-terminals.js"
+    ];
+
+This ignores the tests in public-terminals.js
+
 
 ## Test Setup
 

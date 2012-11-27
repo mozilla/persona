@@ -36,8 +36,9 @@ module.exports = function(spec, mod, opts) {
       "succeeds": function(err) {
         if (opts.bailOnError && err) {
           failedState = true;
-          // halt processing of subsequent vows
-          for (var i = myNumber; i < suite.batches.length; i++) {
+          // halt processing of subsequent batches (except for the cleanup batch,
+          // which is why we have a '- 1')
+          for (var i = myNumber; i < suite.batches.length - 1; i++) {
             suite.batches[i].pending = suite.batches[i].total;
             suite.batches[i].remaining = 0;
           }
@@ -48,11 +49,20 @@ module.exports = function(spec, mod, opts) {
     suite.addBatch(obj);
   });
 
+  // now add cleanup invocation as a batch
+
+  suite.addBatch({
+    "cleanup": {
+      topic: function() {
+        if (opts.cleanup) opts.cleanup(this.callback);
+      },
+      "done": function() { }
+    }
+  });
+
   if (path.basename(process.argv[1]) === 'vows') {
     suite.export(mod);
-    // how do we ensure cleanup runs when running under the vows program?
-  }
-  else {
-    suite.run({}, opts.cleanup);
+  } else {
+    suite.run({});
   }
 };

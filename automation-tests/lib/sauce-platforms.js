@@ -46,9 +46,18 @@ const platforms = {
   }
 };
 
+// see http://saucelabs.com/docs/ondemand/additional-config for other opts
 const defaultCapabilities = {
+  // the proxy leads to bugginess/sadness, avoid unless opera/IE
   avoidProxy: true,
-  public: true
+  // make tests public by default. set public:false in desiredCapabilities to override this.
+  public: true,
+  // timeout if no command received. if you juggle 2 browser sessions,
+  // one will possibly hit this, so don't be too conservative.
+  'idle-timeout': 90,
+  // timeout global time used by a test. should avoid runaway tests eating
+  // 10 min of sauce time. setting to 3 min for now, relax if needed. 
+  'max-session': 180
 };
 
 exports.platforms = platforms;

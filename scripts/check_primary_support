@@ -22,21 +22,25 @@ if (process.argv.length !== 3) {
 }
 var domain = process.argv[2];
 
-primary.checkSupport(domain, function(err, urls, publicKey) {
-  if (err || publicKey === null) {
+primary.checkSupport(domain, function(err, r) {
+  if (err || r.publicKey === null) {
     if (err) {
       process.stderr.write("error: " + err + "\n");
     }
     process.exit(1);
   }
-  console.log('Primary domain: ', domain);
-  console.log('Public Key: ', publicKey);
+
+  console.log('Primary domain:\t\t', domain);
+  console.log('Authoritative Domain:\t', r.authoritativeDomain);
+  console.log('Authentication URL:\t', r.urls.auth);
+  console.log('Provisioning URL:\t', r.urls.prov);
+  console.log('Public Key:\t\t', JSON.stringify(r.publicKey, null, "  "));
 
   var authopts = {
       xframe: false
   };
-  getResource('auth', urls.auth, urls, authopts, function () {
-    getResource('prov', urls.prov, urls, {
+  getResource('auth', r.urls.auth, authopts, function () {
+    getResource('prov', r.urls.prov, {
       xframe: true
     });
   });
@@ -46,7 +50,7 @@ primary.checkSupport(domain, function(err, urls, publicKey) {
 /**
  * Retrieve one of their urls and examine aspects of it for issues
  */
-function getResource(mode, url, urls, opts, cb) {
+function getResource(mode, url, opts, cb) {
   var path = urlp.parse(url).path;
   var body = "",
       r = https.request({

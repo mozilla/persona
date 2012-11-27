@@ -107,7 +107,6 @@ suite.addBatch({
 
                   self.callback(null, fullAssertion);
                 });
-              
             });
         });
     },
@@ -150,7 +149,7 @@ suite.addBatch({
       bigTentUser.setup(this.callback);
     },
     "works":  {
-      topic: function () {  
+      topic: function () {
         bigTentUser.getAssertion(TEST_ORIGIN, this.callback, 'bigtent.domain');
       },
       "succeeds": function (err, r) {

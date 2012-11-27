@@ -163,7 +163,6 @@ suite.addBatch({
   }
 });
 
-
 // now create a lame cert: valid signature by the wrong party
 const OTHER_EMAIL = 'otheruser@other.domain'; // *not* TEST_DOMAIN
 var bad_cert, bad_assertion;

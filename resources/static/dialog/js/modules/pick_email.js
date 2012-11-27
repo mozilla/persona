@@ -73,7 +73,11 @@ BrowserID.Modules.PickEmail = (function() {
 
     var valid = checkEmail.call(self, email);
     if (valid) {
-      self.close("email_chosen", { email: email });
+      user.addressInfo(email, function (info) {
+        self.close("email_chosen", _.extend({ email: email }, info));
+      }, function() {
+        //TODO: Handle xhr failure
+      });
     }
   }
 

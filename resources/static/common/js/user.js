@@ -675,7 +675,7 @@ BrowserID.User = (function() {
     requestPasswordReset: function(email, password, onComplete, onFailure) {
       User.addressInfo(email, function(info) {
         // user is not known.  Can't request a password reset.
-        if (!info.known) {
+        if (info.state === "unknown") {
           complete(onComplete, { success: false, reason: "invalid_user" });
         }
         // user is trying to reset the password of a primary address.
@@ -1394,6 +1394,14 @@ BrowserID.User = (function() {
       } else {
         complete(onFailure, "user is not authenticated");
       }
+    },
+
+    /**
+     * Mark the transition state of this user as having been completed.
+     * @method completeTransition
+     */
+    completeTransition: function(email, onComplete, onFailure) {
+      network.completeTransition(email, onComplete, onFailure);
     }
 
   };

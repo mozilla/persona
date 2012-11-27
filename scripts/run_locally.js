@@ -57,7 +57,7 @@ process.env['CONFIG_FILES'] = configFiles.join(',');
 // primaries
 var oldShims = process.env['SHIMMED_PRIMARIES'] ? process.env['SHIMMED_PRIMARIES'] + "," : "";
 process.env['SHIMMED_PRIMARIES'] = oldShims +
-  "example.domain|http://" + HOST + ":10005|" + 
+  "example.domain|http://" + HOST + ":10005|" +
   path.join(__dirname, "..", "example", "primary", ".well-known", "browserid") +
   "," + "delegated.domain|http://" + HOST + ":10011|" +
   path.join(__dirname, "..", "example", "delegated_primary", ".well-known", "browserid") +

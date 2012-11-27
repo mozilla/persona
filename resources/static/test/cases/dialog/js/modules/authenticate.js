@@ -96,7 +96,7 @@
     createController({
       email: "registered@testuser.com",
       type: "secondary",
-      known: true,
+      state: "known",
       ready: function() {
         equal($(EMAIL_SELECTOR).val(), "registered@testuser.com", "email prefilled");
         equal($("input[type=password]").is(":visible"), true, "password is shown");

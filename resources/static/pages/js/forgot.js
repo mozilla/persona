@@ -66,7 +66,7 @@ BrowserID.forgot = (function() {
     // We know an email address was stored, now check if it is registered.  If
     // it is not registered, or is a primary, kick them over to the signin page.
     user.addressInfo(email, function(info) {
-      if (!info.known || info.type === "primary") {
+      if (info.state === "unknown" || info.type === "primary") {
         doc.location.href="/signin";
       }
 

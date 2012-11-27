@@ -37,7 +37,7 @@ BrowserID.Modules.Authenticate = (function() {
     var self=this;
 
     self.submit = checkEmail;
-    if(info && info.email && info.type === "secondary" && info.known) {
+    if(info && info.email && info.type === "secondary" && info.state === "known") {
       enterPasswordState.call(self, info.ready);
     }
     else {
@@ -71,7 +71,7 @@ BrowserID.Modules.Authenticate = (function() {
       if(info.type === "primary") {
         self.close("primary_user", info, info);
       }
-      else if(info.known) {
+      else if("known" === info.state) {
         enterPasswordState.call(self);
       } else {
         createSecondaryUser.call(self);
