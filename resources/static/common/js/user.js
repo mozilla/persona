@@ -315,11 +315,8 @@ BrowserID.User = (function() {
    * @param {string} options.verified - If the email is 'secondary', is it verified?
    */
   function persistEmail(options) {
-    checkEmailType(options.type);
     storage.addEmail(options.email, {
-      created: new Date(),
-      type: options.type,
-      verified: options.verified
+      created: new Date()
     });
   }
 
@@ -814,10 +811,9 @@ BrowserID.User = (function() {
       cleanupIdentities(function () {
         var issued_identities = User.getStoredEmailKeypairs();
 
-        network.listEmails(function(emails) {
+        network.listEmails(function(server_emails) {
           // lists of emails
           var client_emails = _.keys(issued_identities);
-          var server_emails = _.keys(emails);
 
           var emails_to_add = _.difference(server_emails, client_emails);
           var emails_to_remove = _.difference(client_emails, server_emails);
@@ -830,30 +826,10 @@ BrowserID.User = (function() {
 
           // these are new emails
           _.each(emails_to_add, function(email) {
-            var emailInfo = emails[email];
-
-            persistEmail({
-              email: email,
-              type: emailInfo.type || "secondary",
-              verified: emailInfo.verified
-            });
-          });
-
-          // update the type and verified status of stored emails
-          _.each(emails_to_update, function(email) {
-            var emailInfo = emails[email],
-                storedEmailInfo = storage.getEmail(email);
-
-            _.extend(storedEmailInfo, {
-              type: emailInfo.type,
-              verified: emailInfo.verified
-            });
-
-            storage.addEmail(email, storedEmailInfo);
+            persistEmail({ email: email });
           });
 
           complete(onComplete);
-
         }, onFailure);
       });
     },

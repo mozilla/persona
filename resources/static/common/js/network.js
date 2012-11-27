@@ -619,10 +619,10 @@ BrowserID.Network = (function() {
           // storage.
           // update our local storage map of email addresses to user ids
           if (userid) {
-            storage.updateEmailToUserIDMapping(userid, _.keys(emails));
+            storage.updateEmailToUserIDMapping(userid, emails.emails);
           }
 
-          onComplete && onComplete(emails);
+          onComplete && onComplete(emails.emails);
         },
         error: onFailure
       });
