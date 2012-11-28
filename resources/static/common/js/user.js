@@ -1004,16 +1004,9 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     passwordNeededToAddSecondaryEmail: function(onComplete, onFailure) {
-      var emails = storage.getEmails(),
-          passwordNeeded = true;
-
-      for(var key in emails) {
-        if(emails[key].type === "secondary") {
-          passwordNeeded = false;
-        }
-      }
-
-      complete(onComplete, passwordNeeded);
+      network.withContext(function(ctx) {
+        complete(onComplete, !ctx.has_password);
+      }, onFailure);
     },
 
     /**
