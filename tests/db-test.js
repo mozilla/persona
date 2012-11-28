@@ -185,6 +185,15 @@ suite.addBatch({
         assert.isNull(err);
         assert.ok(r);
       }
+    },
+    "and user": {
+      topic: function(err, uid) {
+        db.userKnown(uid, this.callback);
+      },
+      "has a password set and is known": function(err, known, hasPass) {
+        assert.equal(known, true);
+        assert.equal(hasPass, true);
+      }
     }
   }
 });
