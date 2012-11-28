@@ -262,6 +262,7 @@ BrowserID.Modules.InteractionData = (function() {
   }
 
   function updateStartTime(newStartTime) {
+    /*jshint validthis: true */
     var self=this,
         eventStream = self.getCurrentEventStream();
 
