@@ -191,6 +191,12 @@ BrowserID.State = (function() {
       complete(info.complete);
     });
 
+    handleState("transition_no_password", function(msg, info) {
+      self.resetPasswordEmail = info.email;
+      startAction(false, "doSetPassword", info);
+      complete(info.complete);
+    });
+
     handleState("password_set", function(msg, info) {
       /* A password can be set for one of three reasons - 1) This is a new user
        * or 2) a user is adding the first secondary address to an account that

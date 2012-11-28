@@ -140,6 +140,17 @@
     testUserUnregistered();
   });
 
+  asyncTest("checkEmail with transition_no_password, transition message", function() {
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
+    xhr.useResult("secondaryTransitionPassword");
+
+    register("transition_no_password", function(msg, info) {
+      ok(info.transition_no_password, "no_password state passed to set_password");
+      start();
+    });
+    controller.checkEmail();
+  });
+
   asyncTest("checkEmail with normal email, user registered - 'enter_password' message", function() {
     $(EMAIL_SELECTOR).val("registered@testuser.com");
     xhr.useResult("known_secondary");

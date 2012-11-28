@@ -90,6 +90,8 @@ BrowserID.Modules.Authenticate = (function() {
       }
       else if(hasPassword(info)) {
         enterPasswordState.call(self);
+      } else if ("transition_no_password" === info.state) {
+        transitionNoPassword.call(self, info);
       } else {
         createSecondaryUser.call(self);
       }
@@ -105,6 +107,17 @@ BrowserID.Modules.Authenticate = (function() {
       self.close("new_user", { email: email }, { email: email });
     } else {
       complete(callback);
+    }
+  }
+
+  function transitionNoPassword(info) {
+    /*jshint validthis: true*/
+    var self = this;
+    var email = getEmail();
+
+    if (email) {
+      var data = { email: email, transition_no_password: true };
+      self.close("transition_no_password", data, data);
     }
   }
 
