@@ -219,7 +219,7 @@ BrowserID.State = (function() {
       user.completeTransition(info.email, function () {
         info.state = 'known';
         redirectToState("email_chosen", info);
-      }, complete(info.complete));
+      }, info.complete);
     });
 
     handleState("primary_user", function(msg, info) {
@@ -334,7 +334,7 @@ BrowserID.State = (function() {
         } else if ("transition_to_primary" === info.state) {
           startAction("doUpgradeToPrimaryUser", info);
           complete(info.complete);
-	}
+        }
         else {
           // If the email is a primary and the cert is not available,
           // throw the user down the primary flow. The primary flow will
