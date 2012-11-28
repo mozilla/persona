@@ -95,8 +95,8 @@ BrowserID.PageHelpers = (function() {
     user[pollFuncName](email, function(status) {
       clearStoredEmail();
       userValidationComplete(status);
+      onComplete && onComplete();
     });
-    onComplete && onComplete();
   }
 
   function userValidationComplete(status) {

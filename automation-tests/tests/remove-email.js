@@ -14,7 +14,8 @@ CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
 runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js'),
-user = require('../lib/user.js');
+user = require('../lib/user.js'),
+timeouts = require('../lib/timeouts.js');
 
 // pull in test environment, including wd
 var browser,
@@ -70,13 +71,15 @@ runner.run(module, {
   "setup all the things": function(done) {
     // this is the more compact setup syntax
     testSetup.setup({b:2, r:1, e:2}, function(err, fix) {
-      browser = fix.b[0];
-      firstPrimaryEmail = saveEmail(fix.e[0]);
-      secondPrimaryEmail = saveEmail(fix.e[1]);
-      secondaryEmail = saveEmail(fix.r[0]);
-      firstPrimaryPassword = firstPrimaryEmail.split('@')[0];
-      secondPrimaryPassword = secondPrimaryEmail.split('@')[0];
-      secondaryPassword = secondaryEmail.split('@')[0];
+      if (fix) {
+        browser = fix.b[0];
+        firstPrimaryEmail = saveEmail(fix.e[0]);
+        secondPrimaryEmail = saveEmail(fix.e[1]);
+        secondaryEmail = saveEmail(fix.r[0]);
+        firstPrimaryPassword = firstPrimaryEmail.split('@')[0];
+        secondPrimaryPassword = secondPrimaryEmail.split('@')[0];
+        secondaryPassword = secondaryEmail.split('@')[0];
+      }
       done(err);
     });
   },
@@ -90,9 +93,7 @@ runner.run(module, {
       .wwin(CSS['dialog'].windowName)
       .wtype(CSS['dialog'].emailInput, firstPrimaryEmail)
       .wclick(CSS['dialog'].newEmailNextButton)
-      // sometimes the verifyWithPrimaryButton needs to be clicked twice
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      // Give eyedee.me a bit of time to load itself up.
       .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, firstPrimaryPassword)
       .wclick(CSS['eyedee.me'].createAccountButton)
@@ -110,9 +111,7 @@ runner.run(module, {
       .wclick(CSS['dialog'].useNewEmail)
       .wtype(CSS['dialog'].newEmail, secondPrimaryEmail)
       .wclick(CSS['dialog'].addNewEmailButton)
-      // sometimes the verifyWithPrimaryButton needs to be clicked twice
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      // Give eyedee.me a bit of time to load itself up.
       .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, secondPrimaryPassword)
       .wclick(CSS['eyedee.me'].createAccountButton)

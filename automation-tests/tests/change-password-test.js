@@ -29,10 +29,12 @@ var browser, secondBrowser, testUser;
 runner.run(module, {
   "setup tests": function(done) {
     testSetup.setup({browsers: 2, personatestusers: 1}, function(err, fixtures) {
-      browser = fixtures.browsers[0];
-      secondBrowser = fixtures.browsers[1];
-      testUser = fixtures.personatestusers[0];
-      done();
+      if (fixtures) {
+        browser = fixtures.browsers[0];
+        secondBrowser = fixtures.browsers[1];
+        testUser = fixtures.personatestusers[0];
+      }
+      done(err);
     });
   },
   "create a new selenium session": function(done) {

@@ -20,9 +20,11 @@ var browser, testUser, mfbUser;
 runner.run(module, {
   "setup": function(done) {
     testSetup.setup({browsers: 1, personatestusers: 2}, function(err, fixtures) {
-      browser = fixtures.browsers[0];
-      testUser = fixtures.personatestusers[0];
-      mfbUser = fixtures.personatestusers[1];
+      if (fixtures) {
+        browser = fixtures.browsers[0];
+        testUser = fixtures.personatestusers[0];
+        mfbUser = fixtures.personatestusers[1];
+      }
       done(err);
     });
   },
@@ -82,7 +84,7 @@ runner.run(module, {
         done(err || assert.equal(text, mfbUser.email));
       });
   }
-}, 
+},
 {
   suiteName: path.basename(__filename),
   cleanup: function(done) { testSetup.teardown(done) }

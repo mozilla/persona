@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 BrowserID.Mocks.xhr = (function() {
+  "use strict";
+
   var delay = 0,
       contextInfo = {
       server_time: new Date().getTime(),
@@ -76,6 +78,7 @@ BrowserID.Mocks.xhr = (function() {
 
       "get /wsapi/password_reset_status?email=registered%40testuser.com pending": { status: "pending" },
       "get /wsapi/password_reset_status?email=registered%40testuser.com complete": { status: "complete", userid: 4 },
+      "get /wsapi/password_reset_status?email=registered%40testuser.com valid": { status: "complete", userid: 4 },
       "get /wsapi/password_reset_status?email=registered%40testuser.com mustAuth": { status: "mustAuth" },
       "get /wsapi/password_reset_status?email=registered%40testuser.com noRegistration": { status: "noRegistration" },
       "get /wsapi/password_reset_status?email=registered%40testuser.com ajaxError": undefined,
@@ -94,6 +97,7 @@ BrowserID.Mocks.xhr = (function() {
 
       "get /wsapi/user_creation_status?email=registered%40testuser.com pending": { status: "pending" },
       "get /wsapi/user_creation_status?email=registered%40testuser.com complete": { status: "complete", userid: 4 },
+      "get /wsapi/user_creation_status?email=registered%40testuser.com valid": { status: "complete", userid: 4 },
       "get /wsapi/user_creation_status?email=registered%40testuser.com mustAuth": { status: "mustAuth" },
       "get /wsapi/user_creation_status?email=registered%40testuser.com noRegistration": { status: "noRegistration" },
       "get /wsapi/user_creation_status?email=registered%40testuser.com ajaxError": undefined,
@@ -142,6 +146,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/list_emails primary": { success: true, emails: [ "testuser@testuser.com" ] },
       "get /wsapi/list_emails multiple": { success: true, emails: [ "testuser@testuser.com", "testuser2@testuser.com" ] },
       "get /wsapi/list_emails no_identities": { success: true, emails: [] },
+      "get /wsapi/list_emails invalid": undefined,
       "get /wsapi/list_emails ajaxError": undefined,
       // Used in conjunction with registration to do a complete userflow
       "get /wsapi/list_emails complete": { success: true, emails: [ "registered@testuser.com", "synced_address@testuser.com" ] },
@@ -241,10 +246,14 @@ BrowserID.Mocks.xhr = (function() {
 
       this.requests[request.url] = request;
 
+      if (!(responseKey in xhr.responses) && responseName !== "ajaxError") {
+        console.error("request for '" + responseKey + "' is not mocked in resources/static/test/cases/xhr.js");
+      }
+
       if (typeofResponse === "function") {
         response(request.success);
       }
-      else if (!(typeofResponse == "number" || typeofResponse == "undefined")) {
+      else if (!(typeofResponse === "number" || typeofResponse === "undefined")) {
         if (request.success) {
           if (delay) {
             // simulate response delay

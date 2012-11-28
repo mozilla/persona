@@ -5,5 +5,6 @@
 // These are tests to ignore
 
 exports.tests_to_ignore = [
-  "public-terminals.js"
+  "public-terminals.js",
+  "remove-email.js"
 ];

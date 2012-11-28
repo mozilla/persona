@@ -33,8 +33,10 @@ var browser, secondary;
 runner.run(module, {
   'pull in test environment': function(done) {
     testSetup.setup({browsers: 1, restmails: 1}, function(err, fixtures) {
-      browser = fixtures.browsers[0];
-      secondary = fixtures.restmails[0];
+      if (fixtures) {
+        browser = fixtures.browsers[0];
+        secondary = fixtures.restmails[0];
+      }
       done(err);
     });
   },
@@ -46,7 +48,7 @@ runner.run(module, {
       .get(persona_urls['myfavoritebeer'])
       .wclick(CSS['myfavoritebeer.org'].signinButton)
       .wwin(CSS['persona.org'].windowName, function(err) {
-        if (err) return done(err); 
+        if (err) return done(err);
         dialog.signInAsNewUser({
           browser: browser,
           email: secondary,
@@ -64,7 +66,7 @@ runner.run(module, {
       .wfind(CSS['persona.org'].congratsMessage, done);
   },
   'hack localStorage to simulate 60 seconds of inactivity': function(done) {
-    // JSON.parse to get user id, JSON.parse usersCOmputer, rewind time, 
+    // JSON.parse to get user id, JSON.parse usersCOmputer, rewind time,
     // stringify and finally set as local storage.
     var rewindOneMinute = '(function() { ' +
       'var usersComputer = JSON.parse(localStorage.getItem("usersComputer")); ' +
@@ -101,7 +103,7 @@ runner.run(module, {
   "until we decide what to do, at least end the session properly": function(done) {
     browser.quit(done)
   }
-}, 
+},
 {
   suiteName: path.basename(__filename),
   cleanup: function(done) { testSetup.teardown(done) }

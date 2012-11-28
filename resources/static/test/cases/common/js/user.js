@@ -371,6 +371,7 @@
 
   asyncTest("waitForUserValidation with XHR failure", function() {
     storage.setReturnTo(testOrigin);
+    xhr.useResult("ajaxError");
     lib.waitForUserValidation(
       "registered@testuser.com",
       testHelpers.unexpectedSuccess,
@@ -771,7 +772,7 @@
   });
 
   asyncTest("isEmailRegistered with XHR failure", function() {
-    failureCheck(lib.isEmailRegistered, "registered");
+    failureCheck(lib.isEmailRegistered, "registered@testuser.com");
   });
 
   asyncTest("passwordNeededToAddSecondaryEmail, account only has primaries - call callback with true", function() {

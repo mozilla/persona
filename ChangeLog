@@ -1,10 +1,16 @@
 current train:
   *
 
+train-2012.11.23:
+  * New selenium tests authored in node.js merged.
+  * Verifier rejects requests that don't supply a proper hostname: bug #806577
+
 train-2012.11.09:
   * code cleanup, including jshinting of source and code coverage: #2643, #2272
   * principal domain now supplied as a query argument when fetching .well-known documents: #2565
   * embedded IE running in compat mode (like in Lotus Notes) now works for email verification: #2566
+  * (hotfix 2012.11.15) focus email field when dialog loads: #2711
+  * (hotfix 2012.11.28) browserid.spec designates wrong version of nodejs: #2791
 
 train-2012.10.26:
   * Upgrade to Node.JS 0.8.12

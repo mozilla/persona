@@ -16,5 +16,8 @@
   "kpi_backend_sample_rate": 1.0,
 
   // whether to show the development menu.
-  "enable_development_menu": true
+  "enable_development_menu": true,
+
+  // enable the measurement of the dom loading
+  "measure_dom_loading": true
 }

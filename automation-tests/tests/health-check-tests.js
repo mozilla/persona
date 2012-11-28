@@ -32,10 +32,12 @@ var startup = function(b, email, cb) {
 var setup = {
   "setup stuff": function(done) {
     testSetup.setup({browsers: 2, eyedeemails: 1, restmails: 1}, function(err, fixtures) {
-      browser = fixtures.browsers[0];
-      secondBrowser = fixtures.browsers[1];
-      eyedeemail = fixtures.eyedeemails[0];
-      theEmail = fixtures.restmails[0];
+      if (fixtures) {
+        browser = fixtures.browsers[0];
+        secondBrowser = fixtures.browsers[1];
+        eyedeemail = fixtures.eyedeemails[0];
+        theEmail = fixtures.restmails[0];
+      }
       done(err)
     });
   }
@@ -54,7 +56,6 @@ var primaryTest = {
   "switch to eyedeeme dialog, submit password, click ok": function(done) {
     browser.chain({onError: done})
       .wwin(pcss.verifyPrimaryDialogName)
-      // Give eyedee.me a bit of time to load itself up.
       .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, eyedeemail.split('@')[0])
       .wclick(CSS['eyedee.me'].createAccountButton, done);
