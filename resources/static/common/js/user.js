@@ -607,7 +607,9 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     canSetPassword: function(onComplete, onFailure) {
-      User.hasSecondary(onComplete, onFailure);
+      network.withContext(function(ctx) {
+        complete(onComplete, ctx.has_password);
+      }, onFailure);
     },
 
     /**
@@ -1261,27 +1263,6 @@ BrowserID.User = (function() {
           onComplete(!!authenticated);
         }
       }, onFailure);
-    },
-
-    /**
-     * Check if the user has any secondary addresses.
-     * @method hasSecondary
-     * @param {function} onComplete - called with true if user has at least one
-     * email address, false otw.
-     * @param {function} onFailure - called on XHR failure.
-     */
-    hasSecondary: function(onComplete, onFailure) {
-      var hasSecondary = false,
-          emails = storage.getEmails();
-
-      for(var key in emails) {
-        if(emails[key].type === "secondary") {
-          hasSecondary = true;
-          break;
-        }
-      }
-
-      onComplete(hasSecondary);
     },
 
     /**

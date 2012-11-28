@@ -342,7 +342,7 @@
       network.clearContext();
 
       // email is verified
-      storage.addSecondaryEmail("testuser@testuser.org");
+      storage.addEmail("testuser@testuser.org");
 
       // new page
       createController(false);

@@ -100,6 +100,7 @@ BrowserID.Storage = (function() {
 
   function addEmail(email, obj) {
     var emails = getEmails();
+    obj = obj || {};
     emails[email] = obj;
     storeEmails(emails);
   }

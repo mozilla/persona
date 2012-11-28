@@ -12,7 +12,8 @@ BrowserID.Mocks.xhr = (function() {
       auth_level: undefined,
       code_version: "ABC123",
       random_seed: "H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo=",
-      data_sample_rate: 1
+      data_sample_rate: 1,
+      has_password: false
     };
 
   // this cert is meaningless, but it has the right format
@@ -139,7 +140,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/list_emails unverified": { success: true, emails: [ "testuser@testuser.com" ] },
       //"get /wsapi/list_emails known_secondary": {"registered@testuser.com":{ type: "secondary" }},
       "get /wsapi/list_emails primary": { success: true, emails: [ "testuser@testuser.com" ] },
-      "get /wsapi/list_emails multiple": {  success: true, emails: [ "testuser@testuser.com" ] },
+      "get /wsapi/list_emails multiple": { success: true, emails: [ "testuser@testuser.com", "testuser2@testuser.com" ] },
       "get /wsapi/list_emails no_identities": { success: true, emails: [] },
       "get /wsapi/list_emails ajaxError": undefined,
       // Used in conjunction with registration to do a complete userflow
