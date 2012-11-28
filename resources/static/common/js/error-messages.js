@@ -50,7 +50,7 @@ BrowserID.Errors = (function(){
       title: "Checking Script Version"
     },
 
-    completeTransition: {
+    usedAddressAsPrimary: {
       title: "Completing Transition State"
     },
 

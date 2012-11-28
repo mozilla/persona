@@ -1398,10 +1398,10 @@ BrowserID.User = (function() {
 
     /**
      * Mark the transition state of this user as having been completed.
-     * @method completeTransition
+     * @method usedAddressAsPrimary
      */
-    completeTransition: function(email, onComplete, onFailure) {
-      network.completeTransition(email, onComplete, onFailure);
+    usedAddressAsPrimary: function(email, onComplete, onFailure) {
+      network.usedAddressAsPrimary(email, onComplete, onFailure);
     }
 
   };
