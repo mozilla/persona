@@ -11,7 +11,7 @@ URL:           https://github.com/mozilla/browserid
 Source0:       %{name}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root
 AutoReqProv:   no
-Requires:      openssl, nodejs == 0.8.12
+Requires:      openssl, nodejs == 0.8.12-3
 BuildRequires: gcc-c++, git, jre, make, npm, openssl-devel, expat-devel, nodejs == 0.8.12
 
 %description
