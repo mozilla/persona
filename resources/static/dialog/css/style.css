@@ -481,3 +481,6 @@ a.emphasize:active {
   display: block;
 }
 
+#authentication_form span.label {
+  display: none;
+}
