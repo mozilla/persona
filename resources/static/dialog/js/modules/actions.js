@@ -148,6 +148,10 @@ BrowserID.Modules.Actions = (function() {
       startService("verify_primary_user", info);
     },
 
+    doUpgradeToPrimaryUser: function(info) {
+      startService("upgrade_to_primary_user", info);
+    },
+
     doCannotVerifyRequiredPrimary: function(info) {
       this.renderError("cannot_verify_required_email", info);
     },

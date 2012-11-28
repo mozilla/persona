@@ -215,6 +215,13 @@ BrowserID.State = (function() {
 
     handleState("user_confirmed", handleEmailConfirmed);
 
+    handleState("upgraded_primary_user", function (msg, info) {
+      user.completeTransition(info.email, function () {
+        info.state = 'known';
+        redirectToState("email_chosen", info);
+      }, info.complete);
+    });
+
     handleState("primary_user", function(msg, info) {
       self.addPrimaryUser = !!info.add;
       var email = self.email = info.email,
@@ -313,13 +320,20 @@ BrowserID.State = (function() {
 
       if (info.state && 'offline' === info.state) {
         redirectToState("primary_offline", info);
-      } else if (idInfo.type === "primary") {
+      }
+      else if (info.type === "primary") {
+        // issuer MUST have changed... clear certs
+        if ("transition_to_primary" === info.state && idInfo.cert) delete idInfo.cert;
+
         if (idInfo.cert) {
           // Email is a primary and the cert is available - the user can log
           // in without authenticating with the IdP. All invalid/expired
           // certs are assumed to have been checked and removed by this
           // point.
           redirectToState("email_valid_and_ready", info);
+        } else if ("transition_to_primary" === info.state) {
+          startAction("doUpgradeToPrimaryUser", info);
+          complete(info.complete);
         }
         else {
           // If the email is a primary and the cert is not available,

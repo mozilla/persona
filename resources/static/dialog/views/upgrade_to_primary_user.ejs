@@ -1,0 +1,8 @@
+<% /* This Source Code Form is subject to the terms of the Mozilla Public
+      License, v. 2.0. If a copy of the MPL was not distributed with this
+      file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
+
+  <div id="your_computer_content">
+	<p><%= format(gettext('Your %(emailProvider) account has been upgraded to work even better with Persona. We will redirect you to %(emailProvider). Once you verify your account there, you will be signed into %(aWebsite).'), { emailProvider: idpName, aWebsite: siteName }) %></p>
+    <p><button id="upgradeToPrimary"><%= format(gettext("sign in with %s"), [idpName]) %></button></p>
+  </div>
