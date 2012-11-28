@@ -7,8 +7,7 @@
 
   window.BrowserID = window.BrowserID || {};
 
-  // Define some constants.
-  _.extend(window.BrowserID, {
+  var bid = window.BrowserID, constants = {
     // always use 1024/160 DSA keys - see issue #1293
     // this used to be called keysize 128, but that made
     // no sense since no component of this is 128 bits
@@ -24,5 +23,9 @@
     // See issue #2080 - https://github.com/mozilla/browserid/issues/2080
     URL_MAX_LENGTH: 2083,
     PATH_MAX_LENGTH: 2048
-  });
+  };
+
+  for (var key in constants) {
+    bid[key] = constants[key];
+  }
 }());

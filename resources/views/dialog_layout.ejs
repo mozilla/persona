@@ -3,6 +3,22 @@
 <html LANG="<%= lang %>" dir="<%= lang_dir %>">
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+  <% if (measureDomLoading) {
+    /* This has to be the very first item in the head to get the best
+    possible approximation as to when the DOM starts loading
+    */ %>
+    <script>
+      window.BrowserID = window.BrowserID || {};
+      try {
+        // default to the browser's performance timers if available.
+        BrowserID.DOM_LOADING = window.performance.timing.domLoading;
+      } catch(e) {
+        // use the current system date if performance timers are not available.
+        BrowserID.DOM_LOADING = new Date().getTime();
+      }
+    </script>
+  <% } %>
+
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
   <meta name="format-detection" content="email=no" />

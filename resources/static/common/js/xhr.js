@@ -46,6 +46,7 @@ BrowserID.XHR = (function() {
   }
 
   function xhrComplete(reqInfo) {
+    reqInfo.duration = new Date() - reqInfo.eventTime;
     mediator.publish("xhr_complete", reqInfo);
   }
 
@@ -60,7 +61,8 @@ BrowserID.XHR = (function() {
           network: {
             type: options.type.toUpperCase(),
             url: options.url
-          }
+          },
+          eventTime: new Date()
         },
         success = function(resp, jqXHR, textResponse) {
           if(delayTimeout) {

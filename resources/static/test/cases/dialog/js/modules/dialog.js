@@ -497,5 +497,29 @@
       rp_api: "invalid_value"
     }, "invalid value for rp_api: invalid_value");
   });
+
+  asyncTest("get with invalid start_time - not allowed", function() {
+    testExpectGetFailure({
+      start_time: "invalid_value"
+    }, "invalid value for start_time: invalid_value");
+  });
+
+  asyncTest("get with numeric start_time, the numeric value of the specified date as the number of milliseconds since January 1, 1970, 00:00:00 UTC - allowed", function() {
+    var now = new Date().getTime();
+
+    createController({
+      ready: function() {
+        mediator.subscribe("start_time", function(msg, info) {
+          equal(info, now, "correct time passed");
+          start();
+        });
+
+        controller.get(HTTPS_TEST_DOMAIN, {
+          start_time: now.toString()
+        });
+      }
+    });
+  });
+
 }());
 
