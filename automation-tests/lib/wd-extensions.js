@@ -38,7 +38,7 @@ wd.prototype.waitForDisplayed = function(opts, cb) {
     browser.elementByCss(opts.which, function(err, elem) {
       if (err) {
         var isComplete = false;
-        if (typeof err === "object" && err.cause && err.cause.value && err.cause.value.message) {
+        if (typeof err === "object" && err.inspect) {
           // window is no longer available, we are done.
           var errText = err.inspect();
           if(noSuchWindowErr(errText)) {
