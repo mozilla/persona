@@ -124,7 +124,7 @@ BrowserID.signIn = (function() {
 
   function signUpSubmit(oncomplete) {
     /*jshint validthis: true*/
-    var email = dom.getInner("#email"),
+    var email = helpers.getAndValidateEmail("#email"),
         pass = dom.getInner("#password"),
         vpass = dom.getInner("#vpassword"),
         valid = validation.passwordAndValidationPassword(pass, vpass);
@@ -135,7 +135,7 @@ BrowserID.signIn = (function() {
           // clearing the stored email from localStorage is taken care
           // of in emailSent.
           pageHelpers.emailSent("waitForUserValidation", email,
-            complete.curry(oncomplete, true));
+            complete.curry(oncomplete, email));
         }
         else {
           tooltip.showTooltip("#could_not_add");
