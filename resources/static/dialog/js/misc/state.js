@@ -282,6 +282,9 @@ BrowserID.State = (function() {
     });
 
     handleState("primary_user_ready", function(msg, info) {
+      // redirect to email_chosen, which is more a general codepath,
+      // ensure that it knows that this is a primary email address.
+      _.extend(info, { type: "primary" });
       redirectToState("email_chosen", info);
     });
 
