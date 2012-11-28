@@ -48,6 +48,7 @@ BrowserID.Modules.Authenticate = (function() {
 
     self.submit = checkEmail;
     if(hasPassword(info)) {
+      addressInfo = info;
       enterPasswordState.call(self, info.ready);
     }
     else {
@@ -165,7 +166,6 @@ BrowserID.Modules.Authenticate = (function() {
 
     dom.setInner(PASSWORD_SELECTOR, "");
 
-    self.publish("enter_password", addressInfo);
     self.submit = authenticate;
     var labelSelector = (addressInfo.state === "known") ? PASSWORD_LABEL : TRANSITION_TO_SECONDARY_LABEL;
     if (labelSelector === TRANSITION_TO_SECONDARY_LABEL) {
@@ -177,6 +177,7 @@ BrowserID.Modules.Authenticate = (function() {
     });
 
 
+    self.publish("enter_password", addressInfo);
     complete(callback);
   }
 

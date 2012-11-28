@@ -26,6 +26,11 @@
       PASSWORD_SELECTOR = "#authentication_password",
       FORGOT_PASSWORD_SELECTOR = "#forgotPassword",
       BODY_SELECTOR = "body",
+      AUTHENTICATION_LABEL = "#authentication_form label[for=authentication_email]",
+      EMAIL_LABEL = "#authentication_form .label.email_state",
+      TRANSITION_TO_SECONDARY_LABEL = "#authentication_form .label.transition_to_secondary",
+      PASSWORD_LABEL = "#authentication_form .label.password_state",
+      IDP_SELECTOR = "#authentication_form .authentication_idp_name",
       AUTHENTICATION_CLASS = "authentication";
 
 
@@ -140,7 +145,7 @@
     xhr.useResult("known_secondary");
 
     register("enter_password", function() {
-      ok(true, "email was valid, user registered");
+      equal($(AUTHENTICATION_LABEL).html(), $(PASSWORD_LABEL).html(), "enter password message shown");
       start();
     });
 
@@ -223,6 +228,19 @@
     controller.checkEmail();
   });
 
+  asyncTest("checkEmail with secondary that used to be a primary", function() {
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
+    xhr.useResult("secondaryTransition");
+
+    register("enter_password", function() {
+      equal($(AUTHENTICATION_LABEL).html(), $(TRANSITION_TO_SECONDARY_LABEL).html(), "transition message shown");
+      start();
+    });
+
+    controller.checkEmail();
+  });
+
+
   function testAuthenticated() {
     register("authenticated", function() {
       ok(true, "user authenticated as expected");
@@ -281,6 +299,7 @@
       start();
     });
   });
+
 
 }());
 
