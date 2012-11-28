@@ -37,7 +37,7 @@
     controller.start(options);
   }
 
-  function testPasswordChangeSuccess(oldPass, newPass, msg) {
+  function testPasswordChangeSuccess(oldPass, newPass, msg, xhrResult) {
     testPasswordChange(oldPass, newPass, function(status) {
       equal(status, true, msg);
       // if success is expected, both password fields should be visible.
@@ -48,21 +48,23 @@
         equal(authLevel, "password", "after password change, user authenticated to password level");
         start();
       }, testHelpers.unexpectedXHRFailure);
-    }, msg);
+    }, xhrResult);
   }
 
-  function testPasswordChangeFailure(oldPass, newPass, msg) {
+  function testPasswordChangeFailure(oldPass, newPass, msg, xhrResult) {
     testPasswordChange(oldPass, newPass, function(status) {
       equal(status, false, msg);
       testHelpers.testTooltipVisible();
       start();
-    }, msg);
+    }, xhrResult);
   }
 
-  function testPasswordChange(oldPass, newPass, testStrategy, msg) {
+  function testPasswordChange(oldPass, newPass, testStrategy, xhrResult) {
     createController(mocks, function() {
       $("#old_password").val(oldPass);
       $("#new_password").val(newPass);
+
+      if (xhrResult) xhr.useResult(xhrResult);
 
       controller.changePassword(testStrategy);
     });
@@ -260,15 +262,13 @@
 
   asyncTest("changePassword with user authenticated to password level, incorrect old password - tooltip", function() {
     xhr.setContextInfo("auth_level", "password");
-    xhr.useResult("incorrectPassword");
-    testPasswordChangeFailure("incorrectpassword", "newpassword", "incorrect old password, expected failure");
+    testPasswordChangeFailure("incorrectpassword", "newpassword", "incorrect old password, expected failure", "incorrectPassword");
   });
 
   asyncTest("changePassword with user authenticated to assertion level, incorrect password - show tooltip", function() {
     xhr.setContextInfo("auth_level", "assertion");
-    xhr.useResult("incorrectPassword");
 
-    testPasswordChangeFailure("oldpassword", "newpassword", "incorrect old password, expected failure");
+    testPasswordChangeFailure("oldpassword", "newpassword", "incorrect old password, expected failure", "incorrectPassword");
   });
 
   asyncTest("changePassword with user authenticated to password level, happy case", function() {
