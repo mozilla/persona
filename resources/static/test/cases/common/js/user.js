@@ -425,7 +425,7 @@
 
   asyncTest("verifyUser with a good token", function() {
     storage.setReturnTo(testOrigin);
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.addEmail(TEST_EMAIL, {});
 
     lib.verifyUser("token", "password", function onSuccess(info) {
 
@@ -435,7 +435,6 @@
         returnTo: testOrigin
       });
       equal(storage.getReturnTo(), "", "initiating origin was removed");
-      equal(storage.getEmail(TEST_EMAIL).verified, true, "email marked as verified");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -534,7 +533,7 @@
   });
 
   asyncTest("completePasswordReset with a good token", function() {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.addEmail(TEST_EMAIL, { });
     storage.setReturnTo(testOrigin);
 
     lib.completePasswordReset("token", "password", function onSuccess(info) {
@@ -545,7 +544,6 @@
       });
 
       equal(storage.getReturnTo(), "", "initiating origin was removed");
-      equal(storage.getEmail(TEST_EMAIL).verified, true, "email now marked as verified");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -572,7 +570,7 @@
   });
 
   asyncTest("requestEmailReverify with owned verified email - false status", function() {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
+    storage.addEmail(TEST_EMAIL, { });
 
     var returnTo = "http://samplerp.org";
     lib.setReturnTo(returnTo);
