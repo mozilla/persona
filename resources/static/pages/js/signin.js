@@ -124,7 +124,7 @@ BrowserID.signIn = (function() {
 
   function signUpSubmit(oncomplete) {
     /*jshint validthis: true*/
-    var email = dom.getInner("#email"),
+    var email = helpers.getAndValidateEmail("#email"),
         pass = dom.getInner("#password"),
         vpass = dom.getInner("#vpassword"),
         valid = validation.passwordAndValidationPassword(pass, vpass);

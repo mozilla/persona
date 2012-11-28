@@ -12,13 +12,20 @@
       xhr = bid.Mocks.xhr,
       WindowMock = bid.Mocks.WindowMock,
       controller,
+      winMock,
       docMock;
 
   function createController(options) {
     options = options || {};
 
-    docMock = new WindowMock().document;
+
+    winMock = new WindowMock();
+    docMock = winMock.document;
     options.document = docMock;
+
+    pageHelpers.init({
+      window: winMock
+    });
 
     controller = bid.forgot.create();
     controller.start(options);

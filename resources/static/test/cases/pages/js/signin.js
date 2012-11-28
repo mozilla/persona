@@ -29,7 +29,7 @@
     docMock = winMock.document;
 
     pageHelpers.init({
-      win: winMock
+      window: winMock
     });
 
     options = options || {};
@@ -139,7 +139,7 @@
   });
 
   asyncTest("address with XHR error - show error screen", function() {
-    xhr.useResult("xhrError");
+    xhr.useResult("ajaxError");
     $("#email").val("unregistered@testuser.com");
 
     controller.emailSubmit(function() {
