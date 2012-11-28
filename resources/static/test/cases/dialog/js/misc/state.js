@@ -85,7 +85,7 @@
     // has received the "complete" message from the polling function, and all
     // addresses are synced.  Add the test email and make sure the email_chosen
     // message is triggered.
-    storage.addSecondaryEmail(TEST_EMAIL, { unverified: true });
+    storage.addEmail(TEST_EMAIL);
     mediator.publish(confirmationMessage);
   }
 
@@ -217,7 +217,7 @@
     // simulate the flow of a user being staged through to confirmation. Since
     // we are not actually doing the middle bits and saving off a cert for the
     // email address, we get an invalid email exception thrown.
-    storage.addSecondaryEmail(TEST_EMAIL);
+    storage.addEmail(TEST_EMAIL);
     mediator.publish("user_staged", { email: TEST_EMAIL });
     try {
       mediator.publish("user_confirmed");
@@ -231,7 +231,7 @@
   });
 
   asyncTest("primary_user with already provisioned primary user - redirect to primary_user_ready", function() {
-    storage.addEmail(TEST_EMAIL, { type: "primary", cert: "cert" });
+    storage.addEmail(TEST_EMAIL, { cert: "cert" });
     mediator.subscribe("primary_user_ready", function(msg, info) {
       equal(info.email, TEST_EMAIL, "primary_user_ready triggered with correct email");
       start();
@@ -289,7 +289,7 @@
   });
 
   asyncTest("primary_user_ready - redirect to `email_chosen`", function() {
-    storage.addEmail(TEST_EMAIL, {});
+    storage.addEmail(TEST_EMAIL);
     mediator.subscribe("email_chosen", function(msg, info) {
       equal(info.email, TEST_EMAIL, "correct email passed");
       start();
@@ -300,7 +300,7 @@
   });
 
   asyncTest("authenticated - redirect to `email_chosen`", function() {
-    storage.addEmail(TEST_EMAIL, {});
+    storage.addEmail(TEST_EMAIL);
     mediator.subscribe("email_chosen", function(msg, data) {
       equal(data.email, TEST_EMAIL);
       start();
@@ -338,7 +338,7 @@
 
   test("assertion_generated with assertion - doAssertionGenerated called", function() {
     setContextInfo("password");
-    storage.addEmail(TEST_EMAIL, {});
+    storage.addEmail(TEST_EMAIL);
     mediator.publish("assertion_generated", {
       assertion: "assertion"
     });
@@ -366,7 +366,7 @@
     setContextInfo("password");
     // First, set up the context info for the email.
 
-    storage.addEmail(TEST_EMAIL, {});
+    storage.addEmail(TEST_EMAIL);
     mediator.subscribe("generate_assertion", function() {
       ok(true, "redirect to generate_assertion");
       start();
@@ -379,7 +379,7 @@
       equal(info.email, TEST_EMAIL, "correct email passed");
       start();
     });
-    storage.addSecondaryEmail(TEST_EMAIL);
+    storage.addEmail(TEST_EMAIL);
     mediator.publish("email_staged", { email: TEST_EMAIL });
     // simulate the flow of a user being staged through to confirmation. Since
     // we are not actually doing the middle bits and saving off a cert for the
@@ -444,7 +444,7 @@
   });
 
   asyncTest("email_chosen with verified secondary email, user must authenticate - call doAuthenticateWithRequiredEmail", function() {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
+    storage.addEmail(TEST_EMAIL);
 
     xhr.setContextInfo("auth_level", "assertion");
 
@@ -459,7 +459,7 @@
   });
 
   asyncTest("email_chosen with verified secondary email, user authenticated to secondary - redirect to email_valid_and_ready", function() {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
+    storage.addEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", "password");
 
     mediator.subscribe("email_valid_and_ready", function(msg, info) {
@@ -473,7 +473,7 @@
   });
 
   function testReverifyEmailChosen(auth_level) {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.addEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", auth_level);
 
     mediator.subscribe("stage_reverify_email", function(msg, info) {
@@ -502,7 +502,7 @@
     // check here whether the cert is ready, but it is early days yet and
     // the format may change.
     var email = TEST_EMAIL;
-    storage.addEmail(email, { type: "primary" });
+    storage.addEmail(email);
     mediator.publish("email_chosen", { email: email });
 
     equal(actions.called.doProvisionPrimaryUser, true, "doProvisionPrimaryUser called");

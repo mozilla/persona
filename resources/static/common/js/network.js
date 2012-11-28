@@ -455,6 +455,9 @@ BrowserID.Network = (function() {
           newpass: newPassword
         },
         success: function(status) {
+          // successful change of password will upgrade a session to password
+          // level auth
+          if (status) auth_status = "password";
           complete(onComplete, status.success);
         },
         error: onFailure

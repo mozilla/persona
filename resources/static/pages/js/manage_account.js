@@ -129,6 +129,9 @@ BrowserID.manageAccount = (function() {
     function changePassword() {
       user.changePassword(oldPassword, newPassword, function(status) {
         if(status) {
+          // a successful password change always puts the session in a
+          // 'password' level authentication
+          authLevel = "password";
           dom.removeClass("#edit_password", "edit");
           dom.setInner("#old_password", "");
           dom.setInner("#new_password", "");
