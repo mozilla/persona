@@ -264,7 +264,7 @@ BrowserID.User = (function() {
   }
 
   function getIdPName(addressInfo) {
-    return addressInfo.email.replace(/.*@/, "");
+    return helpers.getDomainFromEmail(addressInfo.email);
   }
 
   /**
