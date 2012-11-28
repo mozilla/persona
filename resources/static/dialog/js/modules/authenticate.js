@@ -68,6 +68,9 @@ BrowserID.Modules.Authenticate = (function() {
       addressInfo = info;
       dom.removeAttr(EMAIL_SELECTOR, 'disabled');
 
+      // Used for side effect of clearing certificate in local storage
+      user.checkEmailIssuer(email, info);
+
       if ("offline" === info.state) {
         self.close("primary_offline", info, info);
       }

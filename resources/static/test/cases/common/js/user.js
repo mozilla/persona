@@ -1322,6 +1322,47 @@
     );
   });
 
+  // JWCrypto relies on there being a random seed.  The random seed is
+  // gotten whenever network.withContext is called.  Since this is
+  // supposed to mock the cert clearing step...
+  // add a random seed to ensure that we can get our keypair.
+  jwcrypto.addEntropy("H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo=");
+  function makeCert(email, issuer, cb) {
+    var opts = {algorithm: "DS", keysize: 256};
+    jwcrypto.generateKeypair(opts, function (err, keyPair) {
+      ok(!err, "We can generate a keypair");
+      // We don't care about idPSecretKey... reuse user's keyPair here
+      var idpSecretKey = keyPair.secretKey;
+
+      jwcrypto.cert.sign({
+        publicKey: keyPair.publicKey,
+        principal: {email: email}
+      }, {
+        issuer: issuer, expiresAt: new Date() + 10000, issuedAt: new Date()}, null, idpSecretKey, function (err, cert) {
+          ok(!err, "We can create a cert");
+          cb(cert);
+        });
+    });
+  }
+
+  asyncTest("checkEmailIssuer with changing issuer", function () {
+    var emailAddr = "registered@testuser.com";
+    makeCert(emailAddr, "secondary.domain", function (cert) {
+      storage.addEmail(emailAddr, { type: "secondary", cert: cert });
+      ok(storage.getEmail(emailAddr).cert, "cert exists");
+      xhr.useResult("primary");
+      provisioning.setStatus(provisioning.AUTHENTICATED);
+      var newInfo = lib.checkEmailIssuer(emailAddr, {
+        email: emailAddr,
+        // new issuer
+        issuer: "testuser.com",
+        state: "transition_to_primary"
+      });
+      ok(!storage.getEmail(emailAddr).cert, "cert was cleared up");
+      start();
+    });
+  });
+
   asyncTest("hasSecondary returns false if the user has 0 secondary email address", function() {
     lib.hasSecondary(function(hasSecondary) {
       equal(hasSecondary, false, "hasSecondary is false");
