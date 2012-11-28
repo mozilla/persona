@@ -243,11 +243,6 @@ BrowserID.User = (function() {
     }
   }
 
-  function checkEmailType(type) {
-    if (type !== 'secondary' && type !== 'primary')
-      throw new Error("invalid email type (should be 'secondary' or 'primary'): " + type);
-  }
-
   function getIdPName(addressInfo) {
     return addressInfo.email.replace(/.*@/, "");
   }
@@ -260,12 +255,10 @@ BrowserID.User = (function() {
    * @param {function} [onComplete] - Called on successful completion.
    * @param {function} [onFailure] - Called on error.
    */
-  function persistEmailKeypair(email, type, keypair, cert, onComplete, onFailure) {
-    checkEmailType(type);
+  function persistEmailKeypair(email, keypair, cert, onComplete, onFailure) {
     var now = new Date();
     var email_obj = storage.getEmails()[email] || {
-      created: now,
-      type: type
+      created: now
     };
 
     _.extend(email_obj, {
@@ -286,8 +279,7 @@ BrowserID.User = (function() {
    */
   function certifyEmailKeypair(email, keypair, onComplete, onFailure) {
     network.certKey(email, keypair.publicKey, function(cert) {
-      // emails that *we* certify are always secondary emails
-      persistEmailKeypair(email, "secondary", keypair, cert, onComplete, onFailure);
+      persistEmailKeypair(email, keypair, cert, onComplete, onFailure);
     }, onFailure);
   }
 
@@ -454,7 +446,7 @@ BrowserID.User = (function() {
 
       User.primaryUserAuthenticationInfo(email, info, function(authInfo) {
         if(authInfo.authenticated) {
-          persistEmailKeypair(email, "primary", authInfo.keypair, authInfo.cert,
+          persistEmailKeypair(email, authInfo.keypair, authInfo.cert,
             function() {
               // We are getting an assertion for persona.org.
               User.getAssertion(email, "https://login.persona.org", function(assertion) {
