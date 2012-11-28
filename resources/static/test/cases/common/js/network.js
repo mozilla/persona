@@ -99,7 +99,7 @@
   });
 
   asyncTest("checkAuth: simulate a delayed request - xhr_delay and xhr_complete both triggered", function() {
-    transport.setContextInfo("auth_level", "primary");
+    transport.setContextInfo("auth_level", "assertion");
     transport.setDelay(200);
     network.init({
       time_until_delay: 100
@@ -116,7 +116,7 @@
     });
 
     network.checkAuth(function onSuccess(authenticated) {
-      equal(authenticated, "primary", "we have an authentication");
+      equal(authenticated, "assertion", "we have an authentication");
       equal(delayInfo.network.url, "/wsapi/session_context", "delay info correct");
       equal(completeInfo.network.url, "/wsapi/session_context", "complete info correct");
       start();
@@ -124,7 +124,7 @@
   });
 
   asyncTest("checkAuth: immediate success return - no xhr_delay triggered", function() {
-    transport.setContextInfo("auth_level", "primary");
+    transport.setContextInfo("auth_level", "assertion");
 
     transport.setDelay(50);
     network.init({
@@ -142,10 +142,10 @@
   });
 
   asyncTest("checkAuth with valid authentication", function() {
-    transport.setContextInfo("auth_level", "primary");
+    transport.setContextInfo("auth_level", "assertion");
     network.checkAuth(function onSuccess(authenticated) {
       // a wait to happen to give xhr_delay a chance to return
-      equal(authenticated, "primary", "we have an authentication");
+      equal(authenticated, "assertion", "we have an authentication");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
