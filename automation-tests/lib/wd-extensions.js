@@ -10,6 +10,19 @@ function setTimeouts(opts) {
   opts.timeout = opts.timeout || timeouts.DEFAULT_TIMEOUT_MS;
 }
 
+function noSuchWindowErr(errText) {
+  // Firefox returns Window not found
+  // Chrome and Safari return NoSuchWindow
+  // IE returns a status of 13 and Unable to find element with css selector
+  //
+  // Side note for IE
+  // IE returns a status of 7 and Unable to find element with css selector if
+  // the window is still available.
+  return (/Window not found/.test(errText)        // Firefox
+       || /NoSuchWindow/.test(errText)            // Chrome && Safari
+       || (/"status": 13/.test(errText) && /Unable to find element with css selector/.test(errText))); // IE
+}
+
 // wait for a element to become part of the dom and be visible to
 // the user.  The element is identified by CSS selector.  options:
 //   which: css selector specifying which element
@@ -27,7 +40,8 @@ wd.prototype.waitForDisplayed = function(opts, cb) {
         var isComplete = false;
         if (typeof err === "object" && err.inspect) {
           // window is no longer available, we are done.
-          if(/Window not found/.test(err.inspect())) {
+          var errText = err.inspect();
+          if(noSuchWindowErr(errText)) {
             err = ("window gone - " + opts.which);
             isComplete = true;
           }
