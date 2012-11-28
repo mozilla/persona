@@ -49,7 +49,7 @@
   }
 
   function testStagingThrottledRetry(startMessage, expectedStagingAction) {
-    mediator.publish(startMessage, { email: TEST_EMAIL, complete: function() {
+    mediator.publish(startMessage, { email: TEST_EMAIL, type: "secondary", complete: function() {
         mediator.publish("password_set");
         actions.reset();
 
@@ -472,7 +472,8 @@
     });
   });
 
-  function testReverifyEmailChosen(auth_level) {
+  function testReverifyEmailChosen(auth_level, info) {
+    info = info || {};
     storage.addEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", auth_level);
 
@@ -481,17 +482,17 @@
       start();
     });
 
-    mediator.publish("email_chosen", {
+    mediator.publish("email_chosen", _.extend(info, {
       email: TEST_EMAIL
-    });
+    }));
   }
 
   asyncTest("email_chosen with unverified secondary email, user authenticated to secondary - redirect to stage_reverify_email", function() {
-    testReverifyEmailChosen("password");
+    testReverifyEmailChosen("password", { type: "secondary", state: "unverified" });
   });
 
   asyncTest("email_chosen with unverified secondary email, user authenticated to primary - redirect to stage_reverify_email", function() {
-    testReverifyEmailChosen("assertion");
+    testReverifyEmailChosen("assertion", { type: "secondary", state: "unverified" });
   });
 
   test("email_chosen with primary email - call doProvisionPrimaryUser", function() {
@@ -503,7 +504,7 @@
     // the format may change.
     var email = TEST_EMAIL;
     storage.addEmail(email);
-    mediator.publish("email_chosen", { email: email });
+    mediator.publish("email_chosen", { email: email, type: "primary" });
 
     equal(actions.called.doProvisionPrimaryUser, true, "doProvisionPrimaryUser called");
   });
@@ -541,6 +542,7 @@
   });
 
   asyncTest("stage_email - first secondary email - call doSetPassword", function() {
+    xhr.setContextInfo("has_password", false);
     mediator.publish("stage_email", {
       complete: function() {
         testActionStarted("doSetPassword");
@@ -551,9 +553,11 @@
 
 
   asyncTest("stage_email - second secondary email - call doStageEmail", function() {
-    storage.addSecondaryEmail("testuser@testuser.com");
+    storage.addEmail("testuser@testuser.com");
+    xhr.setContextInfo("has_password", true);
 
     mediator.publish("stage_email", {
+      type: "secondary",
       complete: function() {
         equal(actions.called.doStageEmail, true, "doStageEmail called");
         start();
@@ -562,6 +566,7 @@
   });
 
   asyncTest("multiple calls to password_set for stage_email, simulate throttling - call doAddEmail with correct email for each", function() {
+    xhr.setContextInfo("auth_level", "password");
     testStagingThrottledRetry("stage_email", "doStageEmail");
   });
 

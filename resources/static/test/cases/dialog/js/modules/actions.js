@@ -136,8 +136,7 @@
   });
 
   asyncTest("doStageReverifyEmail - trigger reverify_email_staged", function() {
-
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.addEmail(TEST_EMAIL);
     testStageAddress("doStageReverifyEmail", "reverify_email_staged");
   });
 

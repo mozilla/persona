@@ -73,7 +73,7 @@
       start();
     });
 
-    storage.addSecondaryEmail("testuser@testuser.com");
+    storage.addEmail("testuser@testuser.com");
     controller.addEmail();
   });
 

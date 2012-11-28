@@ -84,8 +84,8 @@
   });
 
   asyncTest("signIn - trigger 'email_chosen message'", function() {
-    storage.addEmail("testuser@testuser.com", {});
-    storage.addEmail("testuser2@testuser.com", {});
+    storage.addEmail("testuser@testuser.com");
+    storage.addEmail("testuser2@testuser.com");
 
     createController();
 
