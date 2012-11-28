@@ -172,6 +172,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/address_info?email=testuser%40testuser.com unknown_secondary": { type: "secondary", state: "unknown" },
       "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", state: "known", auth: "https://auth_url", prov: "https://prov_url" },
       "get /wsapi/address_info?email=testuser%40testuser.com ajaxError": undefined,
+      "get /wsapi/address_info?email=testuser2%40testuser.com valid": { type: "secondary", state: "known" },
       "post /wsapi/complete_transition primaryTransition": { success: true },
       "post /wsapi/complete_transition primaryUnknown": { success: true },
       "post /wsapi/complete_transition primary": { success: false },
@@ -230,6 +231,9 @@ BrowserID.Mocks.xhr = (function() {
       var responseKey = request.type + " " + request.url + " " + responseName,
           response = xhr.responses[responseKey],
           typeofResponse = typeof response;
+      // Unit tests busted with no feedback? Un-comment this bad boy and look for 'typeofResponse=undefined'
+      // Pull Request #2760 will automate this...
+      //console.log('responseKey=' + responseKey + ' response=' + response + ' typeofResponse=' + typeofResponse);
 
       this.requests[request.url] = request;
 

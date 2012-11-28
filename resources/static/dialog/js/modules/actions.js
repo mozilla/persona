@@ -156,6 +156,10 @@ BrowserID.Modules.Actions = (function() {
       startService("primary_user_provisioned", info);
     },
 
+    doPrimaryOffline: function(info) {
+      startService("primary_offline", info);
+    },
+
     doIsThisYourComputer: function(info) {
       startService("is_this_your_computer", info);
     },

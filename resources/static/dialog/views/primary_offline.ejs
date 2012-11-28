@@ -1,0 +1,8 @@
+<% /* This Source Code Form is subject to the terms of the Mozilla Public
+      License, v. 2.0. If a copy of the MPL was not distributed with this
+      file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
+
+  <div id="primary_offline">
+    <p><%= format(gettext('%(primary) is not responding. Please wait a few minutes and try again.'), {primary: idpName}) %></p>
+        <button id="primary_offline_confirm" tabindex="1"><%= gettext('Cancel') %></button>
+  </div>

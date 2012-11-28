@@ -68,7 +68,10 @@ BrowserID.Modules.Authenticate = (function() {
       addressInfo = info;
       dom.removeAttr(EMAIL_SELECTOR, 'disabled');
 
-      if(info.type === "primary") {
+      if ("offline" === info.state) {
+        self.close("primary_offline", info, info);
+      }
+      else if("primary" === info.type) {
         self.close("primary_user", info, info);
       }
       else if("known" === info.state) {
