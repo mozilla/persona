@@ -699,17 +699,12 @@ BrowserID.User = (function() {
      * @param {function} [onFailure]
      */
     requestEmailReverify: function(email, onComplete, onFailure) {
-      var idInfo = storage.getEmail(email);
-      if (!idInfo) {
+      if (!storage.getEmail(email)) {
         // user does not own this address.
         complete(onComplete, { success: false, reason: "invalid_email" });
       }
-      else if (idInfo.verified) {
-        // this email is already verified, cannot be reverified.
-        complete(onComplete, { success: false, reason: "verified_email" });
-      }
-      else if (!idInfo.verified) {
-        // this address is unverified, try to reverify it.
+      else {
+        // try to reverify this address.
         stageAddressVerification(email, null,
           network.requestEmailReverify.bind(network, email, origin),
           onComplete, onFailure);
