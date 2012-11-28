@@ -166,7 +166,7 @@ BrowserID.manageAccount = (function() {
     }
     else if(authLevel !== "password") {
       var email = getSecondary();
-      // go striaght to the network level instead of user level so that if
+      // go straight to the network level instead of user level so that if
       // the user gets the password wrong, we don't clear their info.
       network.authenticate(email, oldPassword, function(status) {
         if(status) {
