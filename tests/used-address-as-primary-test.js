@@ -75,7 +75,7 @@ suite.addBatch({
 
 suite.addBatch({
   "Mark a transition as having been seen": {
-    topic: wsapi.post('/wsapi/complete_transition', {
+    topic: wsapi.post('/wsapi/used_address_as_primary', {
         email: TEST_EMAIL
     }),
     "request successful": function(err, r) {

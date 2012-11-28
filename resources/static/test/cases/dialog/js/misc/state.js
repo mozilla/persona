@@ -504,8 +504,7 @@
     // the format may change.
     var email = TEST_EMAIL;
     storage.addEmail(email);
-    mediator.publish("email_chosen", { email: email, type: "primary" });
-
+    mediator.publish("email_chosen", { email: email, type: "primary", issuer: "testuser.com", state: "known" });
     equal(actions.called.doProvisionPrimaryUser, true, "doProvisionPrimaryUser called");
   });
 

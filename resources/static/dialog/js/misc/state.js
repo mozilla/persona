@@ -191,6 +191,12 @@ BrowserID.State = (function() {
       complete(info.complete);
     });
 
+    handleState("transition_no_password", function(msg, info) {
+      self.resetPasswordEmail = info.email;
+      startAction(false, "doSetPassword", info);
+      complete(info.complete);
+    });
+
     handleState("password_set", function(msg, info) {
       /* A password can be set for one of three reasons - 1) This is a new user
        * or 2) a user is adding the first secondary address to an account that
@@ -214,6 +220,13 @@ BrowserID.State = (function() {
     handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
 
     handleState("user_confirmed", handleEmailConfirmed);
+
+    handleState("upgraded_primary_user", function (msg, info) {
+      user.completeTransition(info.email, function () {
+        info.state = 'known';
+        redirectToState("email_chosen", info);
+      }, info.complete);
+    });
 
     handleState("primary_user", function(msg, info) {
       self.addPrimaryUser = !!info.add;
@@ -288,6 +301,10 @@ BrowserID.State = (function() {
       redirectToState("email_chosen", info);
     });
 
+    handleState("primary_offline", function(msg, info) {
+      startAction("doPrimaryOffline", info);
+    });
+
     handleState("pick_email", function() {
       startAction("doPickEmail", {
         origin: self.hostname,
@@ -311,13 +328,22 @@ BrowserID.State = (function() {
 
       mediator.publish("kpi_data", { email_type: info.type });
 
-      if (info.type === "primary") {
+      if (info.state && 'offline' === info.state) {
+        redirectToState("primary_offline", info);
+      }
+      else if (info.type === "primary") {
+        // issuer MUST have changed... clear certs
+        if ("transition_to_primary" === info.state && idInfo.cert) delete idInfo.cert;
+
         if (record.cert) {
           // Email is a primary and the cert is available - the user can log
           // in without authenticating with the IdP. All invalid/expired
           // certs are assumed to have been checked and removed by this
           // point.
           redirectToState("email_valid_and_ready", info);
+        } else if ("transition_to_primary" === info.state) {
+          startAction("doUpgradeToPrimaryUser", info);
+          complete(info.complete);
         }
         else {
           // If the email is a primary and the cert is not available,

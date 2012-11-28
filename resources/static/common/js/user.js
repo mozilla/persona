@@ -244,7 +244,7 @@ BrowserID.User = (function() {
   }
 
   function getIdPName(addressInfo) {
-    return addressInfo.email.replace(/.*@/, "");
+    return helpers.getDomainFromEmail(addressInfo.email);
   }
 
   /**
@@ -972,7 +972,39 @@ BrowserID.User = (function() {
         }, onFailure);
       }
     },
-
+    /**
+     * Checks for outdated certificates and clears them from storage.
+     * Returns original info or null if email info is now invalid.
+     * @param {string} email - Email address to check.
+     * @param {object} info - Output from addressInfo callback
+     * @return {object} or null
+     */
+    checkEmailIssuer: function(email, info) {
+      function clearCert(email, idInfo) {
+        delete idInfo.cert;
+        delete primaryAuthCache[email];
+        storage.addEmail(email, idInfo);
+      }
+      prepareDeps();
+      var identity = User.getStoredEmailKeypair(email);
+      if (identity && identity.cert && info && info.issuer) {
+        var prevIssuer;
+        try {
+          prevIssuer = jwcrypto.extractComponents(identity.cert).payload.iss;
+        } catch (e) {
+          // error parsing the certificate!  Maybe it's of an old/different
+          // format?  just delete it.
+          helpers.log("Looking for issuer, error parsing cert for"+ email +":" + e);
+          clearCert(email, identity);
+          return null;
+        }
+        if (prevIssuer && info.issuer !== prevIssuer) {
+          clearCert(email, identity);
+          return null;
+        }
+      }
+      return info;
+    },
     /**
      * Add an email address to an already created account.  Sends address and
      * keypair to the server, user then needs to verify account ownership. This
@@ -1320,10 +1352,10 @@ BrowserID.User = (function() {
 
     /**
      * Mark the transition state of this user as having been completed.
-     * @method completeTransition
+     * @method usedAddressAsPrimary
      */
-    completeTransition: function(email, onComplete, onFailure) {
-      network.completeTransition(email, onComplete, onFailure);
+    usedAddressAsPrimary: function(email, onComplete, onFailure) {
+      network.usedAddressAsPrimary(email, onComplete, onFailure);
     }
 
   };

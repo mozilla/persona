@@ -48,10 +48,6 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     return state === "unknown" || state === "transition_to_primary";
   }
 
-  function canCompleteTransition(state) {
-    return state === "transition_to_primary";
-  }
-
   var Module = bid.Modules.PageModule.extend({
     start: function(data) {
       var self=this;

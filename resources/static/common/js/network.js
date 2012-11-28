@@ -756,16 +756,16 @@ BrowserID.Network = (function() {
 
     /**
      * Mark the transition of this email as having been completed.
-     * @method completeTransition
+     * @method usedAddressAsPrimary
      * @param {string} [email] - The email that transitioned.
      * @param {function} [onComplete] - Called whenever complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    completeTransition: function(email, onComplete, onFailure) {
+    usedAddressAsPrimary: function(email, onComplete, onFailure) {
       Network.checkAuth(function authChecked(authenticated) {
         if (authenticated) {
           post({
-            url: "/wsapi/complete_transition",
+            url: "/wsapi/used_address_as_primary",
             data: { email: email },
             success: onComplete,
             error: onFailure
