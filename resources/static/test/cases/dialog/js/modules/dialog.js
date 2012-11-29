@@ -249,6 +249,35 @@
     });
   });
 
+
+  asyncTest("#AUTH_RETURN while authenticated should call usedAddressAsPrimary", function() {
+    winMock.location.hash = "#AUTH_RETURN";
+    winMock.sessionStorage.primaryVerificationFlow = JSON.stringify({
+      add: true,
+      email: TESTEMAIL
+    });
+    xhr.setContextInfo("authenticated", true);
+    xhr.setContextInfo("auth_level", "assertion");
+
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          var req = xhr.getLastRequest();
+          equal(req && req.url, "/wsapi/used_address_as_primary", "sent correct request");
+          start();
+        });
+
+        try {
+          controller.get(testHelpers.testOrigin, {}, function() {}, function() {});
+        }
+        catch(e) {
+          // do nothing, an exception will be thrown because no modules are
+          // registered for the any services.
+        }
+      }
+    });
+  });
+
   asyncTest("onWindowUnload", function() {
     createController({
       ready: function() {
