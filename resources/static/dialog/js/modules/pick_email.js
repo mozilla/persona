@@ -60,7 +60,7 @@ BrowserID.Modules.PickEmail = (function() {
 
     var valid = checkEmail.call(self, email);
     if (valid) {
-      dialogHelpers.refreshEmailInfo(function (validCert, info) {
+      dialogHelpers.refreshEmailInfo.call(self, email, function (validCert, info) {
         if (validCert)
           self.close("email_chosen", info);
         else
