@@ -565,8 +565,8 @@
     });
   });
 
-  asyncTest("multiple calls to password_set for stage_email, simulate throttling - call doAddEmail with correct email for each", function() {
-    xhr.setContextInfo("auth_level", "password");
+  asyncTest("multiple calls to password_set for stage_email, simulate throttling - call doStageEmail with correct email for each", function() {
+    xhr.setContextInfo("has_password", false);
     testStagingThrottledRetry("stage_email", "doStageEmail");
   });
 
