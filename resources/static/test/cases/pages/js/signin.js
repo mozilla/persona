@@ -262,8 +262,8 @@
     $("#email").val("  registered@testuser.com  ");
     $("#password, #vpassword").val("password");
 
-    controller.signUpSubmit(function(status) {
-      ok(status, "signUpSubmit success");
+    controller.signUpSubmit(function(email) {
+      equal(email, "registered@testuser.com", "signUpSubmit success with trimmed email");
       start();
     });
   });
