@@ -58,10 +58,7 @@ const defaultCapabilities = {
   'idle-timeout': 90,
   // timeout global time used by a test. should avoid runaway tests eating
   // 10 min of sauce time. setting to 3 min for now, relax if needed.
-  'max-session': 180,
-  // XXX pegged at latest selenium version for IE9 stability testing
-  // when IE9 default reaches this number, need to unset this value
-  'selenium-version': '2.26.0'
+  'max-session': 180
 };
 
 exports.platforms = platforms;
