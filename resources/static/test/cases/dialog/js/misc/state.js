@@ -473,6 +473,29 @@
     });
   });
 
+  test("email_chosen with secondary email, transition_to_secondary", function () {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
+    mediator.publish("email_chosen", {
+      email: TEST_EMAIL,
+      type: 'secondary',
+      state: 'transition_to_secondary'
+    });
+    console.log('actions called=' + JSON.stringify(actions.called));
+    equal(actions.called.doAuthenticate, true, "doAuthenticate called");
+  });
+
+  test("email_chosen with secondary email, transition_no_password", function () {
+    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
+    mediator.publish("email_chosen", {
+      email: TEST_EMAIL,
+      type: 'secondary',
+      state: 'transition_no_password'
+    });
+    equal(actions.called.doSetPassword, true, "doSetPassword called");
+    mediator.publish("password_set");
+    equal(actions.called.doStageResetPassword, true, "doSetPassword called");
+  });
+
   function testReverifyEmailChosen(auth_level, info) {
     info = info || {};
     storage.addEmail(TEST_EMAIL);

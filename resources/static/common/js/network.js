@@ -395,27 +395,6 @@ BrowserID.Network = (function() {
       });
     },
 
-
-    /**
-     * Set the password of the current user.
-     * @method setPassword
-     * @param {string} password - new password.
-     * @param {function} [onComplete] - Callback to call when complete.
-     * @param {function} [onFailure] - Called on XHR failure.
-     */
-    setPassword: function(password, onComplete, onFailure) {
-      post({
-        url: "/wsapi/set_password",
-        data: {
-          password: password
-        },
-        success: function(status) {
-          complete(onComplete, status.success);
-        },
-        error: onFailure
-      });
-    },
-
     /**
      * post interaction data
      * @method setPassword

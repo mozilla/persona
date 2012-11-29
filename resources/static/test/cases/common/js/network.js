@@ -514,18 +514,6 @@
   asyncTest("checkEmailReverify mustAuth", testVerificationMustAuth.curry("checkEmailReverify"));
   asyncTest("checkEmailReverify complete", testVerificationComplete.curry("checkEmailReverify"));
 
-
-  asyncTest("setPassword happy case expects true status", function() {
-    network.setPassword("password", function onComplete(status) {
-      equal(status, true, "correct status");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("setPassword with XHR failure", function() {
-    failureCheck(network.setPassword, "password");
-  });
-
   asyncTest("serverTime", function() {
     // I am forcing the server time to be 1.25 seconds off.
     transport.setContextInfo("server_time", new Date().getTime() - 1250);
