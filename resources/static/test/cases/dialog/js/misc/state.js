@@ -22,7 +22,7 @@
   };
   ActionsMock.prototype = {};
   for(var key in bid.Modules.Actions.prototype) {
-    if(bid.Modules.Actions.prototype.hasOwnProperty(key)) {
+    if (bid.Modules.Actions.prototype.hasOwnProperty(key)) {
       ActionsMock.prototype[key] = (function(key) {
         return function(info) {
           this.called[key] = true;
@@ -31,7 +31,7 @@
       }(key));
       ActionsMock.prototype.reset = function() {
         for(var key in ActionsMock.prototype) {
-          if(bid.Modules.Actions.prototype.hasOwnProperty(key)) {
+          if (bid.Modules.Actions.prototype.hasOwnProperty(key)) {
             delete this.called[key];
             delete this.info[key];
           }
@@ -43,6 +43,7 @@
   function testActionStarted(actionName, requiredOptions) {
     ok(actions.called[actionName], actionName + " called");
     for(var key in requiredOptions) {
+      ok(actions.info[actionName], "Expected actions.info to have [" + actionName + "]");
       equal(actions.info[actionName][key], requiredOptions[key],
           actionName + " called with " + key + "=" + requiredOptions[key]);
     }

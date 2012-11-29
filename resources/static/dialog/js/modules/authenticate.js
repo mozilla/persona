@@ -47,7 +47,7 @@ BrowserID.Modules.Authenticate = (function() {
     var self=this;
 
     self.submit = checkEmail;
-    if(hasPassword(info)) {
+    if (hasPassword(info)) {
       addressInfo = info;
       enterPasswordState.call(self, info.ready);
     }
@@ -66,7 +66,7 @@ BrowserID.Modules.Authenticate = (function() {
     if (!email) return;
 
     dom.setAttr(EMAIL_SELECTOR, 'disabled', 'disabled');
-    if(info && info.type) {
+    if (info && info.type) {
       onAddressInfo(info);
     }
     else {
@@ -85,10 +85,10 @@ BrowserID.Modules.Authenticate = (function() {
       if ("offline" === info.state) {
         self.close("primary_offline", info, info);
       }
-      else if("primary" === info.type) {
+      else if ("primary" === info.type) {
         self.close("primary_user", info, info);
       }
-      else if(hasPassword(info)) {
+      else if (hasPassword(info)) {
         enterPasswordState.call(self);
       } else if ("transition_no_password" === info.state) {
         transitionNoPassword.call(self, info);
@@ -146,7 +146,7 @@ BrowserID.Modules.Authenticate = (function() {
     currentHint = showSelector;
 
     _.each(hints, function(className) {
-      if(className !== showSelector) {
+      if (className !== showSelector) {
         dom.hide("." + className + ":not(." + showSelector + ")");
       }
     });

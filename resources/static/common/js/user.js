@@ -93,7 +93,7 @@ BrowserID.User = (function() {
   }
 
   function setAuthenticationStatus(authenticated) {
-    if(window.$) {
+    if (window.$) {
       // TODO get this out of here!
       // jQuery is not included in the communication_iframe
       var func = authenticated ? 'addClass' : 'removeClass';
@@ -194,7 +194,7 @@ BrowserID.User = (function() {
       // toggle the field to be up to date.  If the known field remains
       // false, then the user is redirected back to the authentication
       // page and the system thinks the address must be verified again.
-      if(addressCache[email]) {
+      if (addressCache[email]) {
         addressCache[email].known = true;
       }
 
@@ -445,7 +445,7 @@ BrowserID.User = (function() {
     provisionPrimaryUser: function(email, info, onComplete, onFailure) {
 
       User.primaryUserAuthenticationInfo(email, info, function(authInfo) {
-        if(authInfo.authenticated) {
+        if (authInfo.authenticated) {
           persistEmailKeypair(email, authInfo.keypair, authInfo.cert,
             function() {
               // We are getting an assertion for persona.org.
@@ -492,13 +492,13 @@ BrowserID.User = (function() {
         onComplete && _.defer(onComplete.curry(info));
       }
 
-      if(primaryAuthCache[email]) {
+      if (primaryAuthCache[email]) {
         // If we have the info in our cache, we most definitely do not have to
         // ask for it.
         complete(primaryAuthCache[email]);
         return;
       }
-      else if(idInfo && idInfo.cert) {
+      else if (idInfo && idInfo.cert) {
         // If we already have the info in storage, we know the user has a valid
         // cert with their IdP, we say they are authenticated and pass back the
         // appropriate info.
@@ -577,7 +577,7 @@ BrowserID.User = (function() {
      */
     tokenInfo: function(token, onComplete, onFailure) {
       network.emailForVerificationToken(token, function (info) {
-        if(info) {
+        if (info) {
           info = _.extend(info, { returnTo: storage.getReturnTo() });
         }
 
@@ -819,7 +819,7 @@ BrowserID.User = (function() {
      */
     checkAuthentication: function(onComplete, onFailure) {
       network.cookiesEnabled(function(cookiesEnabled) {
-        if(cookiesEnabled) {
+        if (cookiesEnabled) {
           network.checkAuth(function(authenticated) {
             setAuthenticationStatus(authenticated);
             if (!authenticated) authenticated = false;
@@ -876,7 +876,7 @@ BrowserID.User = (function() {
       network.authenticate(email, password, function(authenticated) {
         setAuthenticationStatus(authenticated);
 
-        if(authenticated) {
+        if (authenticated) {
           User.syncEmails(function() {
             onComplete && onComplete(authenticated);
           }, onFailure);
@@ -950,13 +950,13 @@ BrowserID.User = (function() {
         onComplete && onComplete(info);
       }
 
-      if(addressCache[email]) {
+      if (addressCache[email]) {
         complete(addressCache[email]);
       }
       else {
         network.addressInfo(email, function(info) {
           info.email = email;
-          if(info.type === "primary") {
+          if (info.type === "primary") {
             User.isEmailRegistered(email, function(registered) {
               User.isUserAuthenticatedToPrimary(email, info, function(authed) {
                 info.known = registered;
@@ -1210,7 +1210,7 @@ BrowserID.User = (function() {
           sortedIdentities = [];
 
       for(var key in identities) {
-        if(identities.hasOwnProperty(key)) {
+        if (identities.hasOwnProperty(key)) {
           sortedIdentities.push({ address: key, info: identities[key] });
         }
       }
@@ -1306,7 +1306,7 @@ BrowserID.User = (function() {
      */
     setComputerOwnershipStatus: function(userOwnsComputer, onComplete, onFailure) {
       var userID = network.userid();
-      if(typeof userID !== "undefined") {
+      if (typeof userID !== "undefined") {
         if (userOwnsComputer) {
           storage.usersComputer.setConfirmed(userID);
           network.prolongSession(onComplete, onFailure);
@@ -1326,7 +1326,7 @@ BrowserID.User = (function() {
      */
     isUsersComputer: function(onComplete, onFailure) {
       var userID = network.userid();
-      if(typeof userID !== "undefined") {
+      if (typeof userID !== "undefined") {
         complete(onComplete, storage.usersComputer.confirmed(userID));
       } else {
         complete(onFailure, "user is not authenticated");
@@ -1339,7 +1339,7 @@ BrowserID.User = (function() {
      */
     shouldAskIfUsersComputer: function(onComplete, onFailure) {
       var userID = network.userid();
-      if(typeof userID !== "undefined") {
+      if (typeof userID !== "undefined") {
         // A user should never be asked if they completed an email
         // registration/validation in this dialog session.
         var shouldAsk = storage.usersComputer.shouldAsk(userID)

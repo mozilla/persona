@@ -60,15 +60,11 @@ BrowserID.Modules.PickEmail = (function() {
 
     var valid = checkEmail.call(self, email);
     if (valid) {
-      user.addressInfo(email, function (info) {
-        info = user.checkEmailIssuer(email, info);
-        valid = !!info;
-        if (valid)
-          self.close("email_chosen", _.extend({ email: email }, info));
+      dialogHelpers.refreshEmailInfo(function (validCert, info) {
+        if (validCert)
+          self.close("email_chosen", info);
         else
-          self.notMe();
-      }, function(xhr) {
-        //TODO: Handle xhr failure
+          self.close('primary_user', info);
       });
     }
   }
