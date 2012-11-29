@@ -63,8 +63,12 @@ BrowserID.Modules.PickEmail = (function() {
       dialogHelpers.refreshEmailInfo.call(self, email, function (validCert, info) {
         if (validCert)
           self.close("email_chosen", info);
+        else if ("transition_no_password" === info.state)
+          self.close("transition_no_password", info);
+        else if ("secondary" === info.type)
+          self.close("authenticate", info);
         else
-          self.close('primary_user', info);
+          self.close("primary_user", info);
       });
     }
   }
