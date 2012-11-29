@@ -1413,4 +1413,25 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
+  asyncTest("usedAddressAsPrimary successfully calls wsapi", function () {
+    lib.authenticate(TEST_EMAIL, "password", function() {
+      xhr.useResult("primaryTransition");
+      lib.usedAddressAsPrimary(TEST_EMAIL, function (status) {
+        ok(status.success);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    });
+    
+  });
+
+  asyncTest("usedAddressAsPrimary successfully calls wsapi, but can receive no-op", function () {
+    lib.authenticate(TEST_EMAIL, "password", function() {
+      xhr.useResult("primary");
+      lib.usedAddressAsPrimary(TEST_EMAIL, function (status) {
+        equal(status.success, false);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    });
+  });
+
 }());

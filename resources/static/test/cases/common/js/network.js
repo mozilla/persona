@@ -691,4 +691,30 @@
     network.sendInteractionData(data, testHelpers.unexpectedSuccess, testHelpers.expectedXHRFailure);
   });
 
+  asyncTest("usedAddressAsPrimary success - call success", function () {
+    network.authenticate(TEST_EMAIL, "password", function() {
+      transport.useResult("primaryTransition");
+      network.usedAddressAsPrimary(TEST_EMAIL, function (status) {
+        ok(status.success);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    });
+  });
+
+  asyncTest("usedAddressAsPrimary success - call success", function () {
+    network.usedAddressAsPrimary(TEST_EMAIL,
+                                 testHelpers.unexpectedSuccess,
+                                 testHelpers.expectedXHRFailure);
+  });
+
+  asyncTest("usedAddressAsPrimary success - call no-op", function () {
+    network.authenticate(TEST_EMAIL, "password", function() {
+      transport.useResult("primary");
+      network.usedAddressAsPrimary(TEST_EMAIL, function (status) {
+        equal(status.success, false);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    });
+  });
+
 }());
