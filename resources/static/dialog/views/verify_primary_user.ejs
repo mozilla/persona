@@ -7,9 +7,16 @@
     <%= format(gettext("%s makes this easy"), [idpName]) %>
   </h3>
 
-  <p>
-    <%= format(gettext("Persona lets you use your %(emailProvider) account to sign into sites like %(aWebsite)."),
+  <p class="description">
+    <% if (transition_to_primary) { %>
+      <%=format(gettext("Your %(emailProvider) account has been upgraded to work even better with Persona. We will redirect you to %(emailProvider). Once you verify your account there, you will be signed into %(aWebsite)."), {
+        emailProvider: idpName,
+        aWebsite: siteName
+      })%>
+    <% } else { %>
+      <%= format(gettext("Persona lets you use your %(emailProvider) account to sign into sites like %(aWebsite)."),
                { emailProvider: idpName, aWebsite: siteName }) %>
+    <% } %>
   </p>
   <p>
     <%= format(gettext("Once you verify your account there, you will be signed in to %(aWebsite)."),
