@@ -66,7 +66,8 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
             requiredEmail: data.requiredEmail || false,
             personaTOSPP: data.personaTOSPP,
             siteName: data.siteName,
-            idpName: data.idpName
+            idpName: data.idpName,
+            transition_to_primary: info.state === "transition_to_primary"
           });
 
           if (data.siteTOSPP) {

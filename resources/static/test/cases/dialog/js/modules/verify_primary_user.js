@@ -173,6 +173,8 @@
       auth_url: "http://testuser.com/sign_in",
       ready: function r() {
         testElementExists("#verifyWithPrimary");
+        var text = $(".form_section .description").text();
+        ok(text.indexOf("Persona lets you use your") !== -1, "shows first-time transition message");
         start();
       }
     });
@@ -187,6 +189,8 @@
       auth_url: "http://testuser.com/sign_in",
       ready: function r() {
         testElementExists("#verifyWithPrimary");
+        var text = $(".form_section .description").text();
+        ok(text.indexOf("has been upgraded") !== -1, "shows upgraded transition message");
         start();
       }
     });
