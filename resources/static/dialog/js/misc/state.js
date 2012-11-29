@@ -223,7 +223,7 @@ BrowserID.State = (function() {
     handleState("user_confirmed", handleEmailConfirmed);
 
     handleState("upgraded_primary_user", function (msg, info) {
-      user.completeTransition(info.email, function () {
+      user.usedAddressAsPrimary(info.email, function () {
         info.state = 'known';
         redirectToState("email_chosen", info);
       }, info.complete);
