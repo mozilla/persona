@@ -36,7 +36,6 @@ BrowserID.Modules.SetPassword = (function() {
 
       self.renderDialog("set_password", {
         email: options.email,
-	idpName: helpers.getDomainFromEmail(options.email),
         password_reset: !!options.password_reset,
         transition_no_password: !!options.transition_no_password,
         domain: helpers.getDomainFromEmail(options.email),

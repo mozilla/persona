@@ -148,6 +148,7 @@
 
   function refreshEmailInfo(email, callback) {
     /*jshint validthis:true*/
+    var self=this;
     user.addressInfo(email, function (info) {
       var newInfo = user.checkEmailIssuer(email, info);
       var validCert = !!newInfo;
