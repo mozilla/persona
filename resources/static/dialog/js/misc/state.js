@@ -193,7 +193,7 @@ BrowserID.State = (function() {
     });
 
     handleState("transition_no_password", function(msg, info) {
-      self.resetPasswordEmail = info.email;
+      self.transitionNoPassword = info.email;
       startAction(false, "doSetPassword", info);
       complete(info.complete);
     });
