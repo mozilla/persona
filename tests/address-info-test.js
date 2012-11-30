@@ -179,23 +179,29 @@ suite.addBatch({
           assert.equal(r.type, "secondary");
           assert.equal(r.state, "transition_to_secondary");
         },
-        /* write me
         "removing the user's password": {
           topic: function() {
-            this.callback();
+            var self = this;
+            db.emailToUID('foo@example.com', function(err, uid) {
+              if (err) return self.callback(err);
+              db.updatePassword(uid, null, false, self.callback);
+            });
           },
           "works": function(err) {
-            assert.isNull(err);
+            assert(!err);
           },
           "and calling address info": {
-            topic: function() {
-              this.callback();
-            },
+            topic: wsapi.get('/wsapi/address_info', {
+              email: "foo@example.com"
+            }),
             "shows 'transition_no_password'": function(err, r) {
+              assert.isNull(err);
+              var r = JSON.parse(r.body);
+              assert.equal(r.type, "secondary");
+              assert.equal(r.state, "transition_no_password");
             }
           }
         }
-        */
       }
     }
   }
