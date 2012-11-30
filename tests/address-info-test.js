@@ -18,7 +18,8 @@ db = require('../lib/db.js'),
 primary = require('./lib/primary.js');
 config = require('../lib/configuration.js'),
 bcrypt = require('bcrypt'),
-primary = require('./lib/primary.js');
+primary = require('./lib/primary.js'),
+secondary = require('./lib/secondary.js');
 
 var suite = vows.describe('password-length');
 
@@ -145,8 +146,46 @@ suite.addBatch({
   }
 });
 
-// XXX: to test:
-//  * transition_to_secondary (easyish)
+//  test transition_to_secondary
+suite.addBatch({
+  "creating a secondary user": {
+     topic: function() {
+       secondary.create({ email: "foo@example.com" }, this.callback); 
+     },
+    "works": function(e, r) {
+      assert.isNull(e);
+    },
+    "setting type to primary": {
+      topic: function() {
+        db.updateEmailLastUsedAs("foo@example.com", 'primary', this.callback);
+      },
+      "succeeds": function(e) {
+        assert.isNull(e);
+      },
+      "and calling address info": {
+        topic: wsapi.get('/wsapi/address_info', {
+          email: "foo@example.com"
+        }),
+        "returns transition_to_secondary": function(e, r) {
+          assert.isNull(e);
+          var r = JSON.parse(r.body);
+          assert.equal(r.type, "secondary");
+          assert.equal(r.state, "transition_to_secondary");
+        },
+        "and calling cert key": {
+          topic: function() {
+            setTimeout(this.callback, 500);
+            // XXX
+          },
+          "causes lastUsedAs to be updated": function() {
+            // XXX
+          }
+        }
+      }
+    }
+  }
+});
+
 //  * transition_no_password (easyish)
 //  * offline (hardish)
 

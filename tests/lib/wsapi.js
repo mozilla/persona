@@ -6,12 +6,12 @@ const
 wcli = require('../../lib/wsapi_client');
 
 // the client "context"
-var context = {};
+var context = exports.context = {};
 
 // the configuration
-var configuration = {
+var configuration = exports.configuration = {
   browserid: 'http://127.0.0.1:10002/'
-}
+};
 
 exports.clearCookies = function(ctx) {
   wcli.clearCookies(ctx||context);
