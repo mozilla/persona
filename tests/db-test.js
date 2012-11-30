@@ -581,6 +581,23 @@ suite.addBatch({
           "returns an updated date object": function(err, lastSeen) {
             assert.isNull(err);
             assert.notEqual(lastSeen.getTime(), firstSeen.getTime());
+          },
+          "but deleting": {
+            topic: function() {
+              db.forgetIDP("idp.example.com", this.callback);
+            },
+            "works": function(err) {
+              assert.isNull(err);
+            },
+            "and then checking if that IDP is known": {
+              topic: function() {
+                db.getIDPLastSeen("idp.example.com", this.callback);
+              },
+              "returns zero": function(err, lastSeen) {
+                assert.isNull(err);
+                assert.strictEqual(lastSeen, null);
+              }
+            }
           }
         }
       }

@@ -261,6 +261,18 @@ suite.addBatch({
           var r = JSON.parse(r.body);
           assert.equal(r.type, "secondary");
           assert.equal(r.state, "known");
+        },
+        "causes IDPLastSeen": {
+          topic: function() { setTimeout(this.callback, 500); },
+          "after a moment": {
+            topic: function() {
+              db.getIDPLastSeen('disabled.domain', this.callback);
+            },
+            "to be purged": function(err, r) {
+              assert.isNull(err);
+              assert.strictEqual(r, null);
+            }
+          }
         }
       }
     }
