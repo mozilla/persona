@@ -483,27 +483,6 @@
     }, testHelpers.unexpectedFailure);
   });
 
-  asyncTest("setPassword with XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    lib.setPassword(
-      "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
-
-  asyncTest("setPassword success", function() {
-    lib.setPassword(
-      "password",
-      function(status) {
-        ok(status, true, "status is true for success");
-        start();
-      },
-      testHelpers.expectedXHRFailure
-    );
-  });
-
   asyncTest("requestPasswordReset with known email - true status", function() {
     var returnTo = "http://samplerp.org";
     lib.setReturnTo(returnTo);

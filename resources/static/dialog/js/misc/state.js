@@ -88,7 +88,7 @@ BrowserID.State = (function() {
       // staging request is throttled, the next time set_password is called,
       // these variables are needed to know which staging function to call.
       // See issue #2258.
-      self.newUserEmail = self.addEmailEmail = self.resetPasswordEmail = null;
+      self.newUserEmail = self.addEmailEmail = self.resetPasswordEmail = self.transitionNoPassword = null;
 
       startAction(actionName, actionInfo);
     }
@@ -199,13 +199,19 @@ BrowserID.State = (function() {
     });
 
     handleState("password_set", function(msg, info) {
-      /* A password can be set for one of three reasons - 1) This is a new user
-       * or 2) a user is adding the first secondary address to an account that
-       * consists only of primary addresses, or 3) an existing user has
-       * forgotten their password and wants to reset it.  #1 is taken care of
-       * by newUserEmail, #2 by addEmailEmail, #3 by resetPasswordEmail.
+      /* A password can be set for one of three reasons - 
+       * 1) This is a new user
+       * 2) A user is adding the first secondary address to an account that
+       *    consists only of primary addresses
+       * 3) An existing user has forgotten their password and wants to reset it.
+       * 4) A primary address was downgraded to a secondary and the user
+       *    has no password in the DB.
+       *
+       * #1 is taken care of by newUserEmail, #2 by addEmailEmail,
+       * #3 by resetPasswordEmail, and #4 by transitionNoPassword
        */
-      info = _.extend({ email: self.newUserEmail || self.addEmailEmail || self.resetPasswordEmail }, info);
+      info = _.extend({ email: self.newUserEmail || self.addEmailEmail ||
+                        self.resetPasswordEmail || self.transitionNoPassword }, info);
 
       if(self.newUserEmail) {
         startAction(false, "doStageUser", info);
@@ -214,6 +220,9 @@ BrowserID.State = (function() {
         startAction(false, "doStageEmail", info);
       }
       else if(self.resetPasswordEmail) {
+        startAction(false, "doStageResetPassword", info);
+      }
+      else if (self.transitionNoPassword) {
         startAction(false, "doStageResetPassword", info);
       }
     });
@@ -355,6 +364,13 @@ BrowserID.State = (function() {
         }
       }
       // Anything below this point means the address is a secondary.
+      else if ("transition_to_secondary" === info.state) {
+        startAction("doAuthenticate", info);
+      }
+      else if ("transition_no_password" === info.state) {
+        self.transitionNoPassword = info.email;
+        startAction("doSetPassword", _.extend({transition_no_password: true}, info));
+      }
       else if (info.state === 'unverified') {
         // user selected an unverified secondary email, kick them over to the
         // verify screen.

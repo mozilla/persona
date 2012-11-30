@@ -613,17 +613,6 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Set the initial password of the current user.
-     * @method setPassword
-     * @param {string} password - password to set
-     * @param {function} [onComplete] - Called on successful completion.
-     * @param {function} [onFailure] - Called on error.
-     */
-    setPassword: function(password, onComplete, onFailure) {
-      network.setPassword(password, onComplete, onFailure);
-    },
-
-    /**
      * update the password of the current user.
      * @method changePassword
      * @param {string} oldpassword - the old password.
