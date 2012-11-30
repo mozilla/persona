@@ -130,7 +130,6 @@ suite.addBatch({
       return primary.getPublicKey('hozed.domain', this.callback);
     },
     "succeeds": function(err, pubKey) {
-      console.log(err);
       assert.strictEqual(err.indexOf('Circular reference in delegating authority'), 39);
     }
   }
