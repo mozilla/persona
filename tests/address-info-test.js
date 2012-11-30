@@ -19,7 +19,9 @@ primary = require('./lib/primary.js');
 config = require('../lib/configuration.js'),
 bcrypt = require('bcrypt'),
 primary = require('./lib/primary.js'),
-secondary = require('./lib/secondary.js');
+secondary = require('./lib/secondary.js'),
+util = require('util'),
+path = require('path');
 
 var suite = vows.describe('password-length');
 
@@ -28,6 +30,11 @@ const TEST_DOMAIN = "example.domain",
       TEST_ORIGIN = 'http://127.0.0.1:10002';
 
 const SECONDARY_TEST_EMAIL = "test@example.com";
+
+// an explicitly disabled domain
+process.env['SHIMMED_PRIMARIES'] =
+  util.format("disabled.domain|http://127.0.0.1:10005|%s", path.join(__dirname, 'data',
+    'disabled.domain', '.well-known', 'browserid'));
 
 var primaryUser = new primary({
   email: TEST_EMAIL,
@@ -150,7 +157,7 @@ suite.addBatch({
 suite.addBatch({
   "creating a secondary user": {
      topic: function() {
-       secondary.create({ email: "foo@example.com" }, this.callback); 
+       secondary.create({ email: "foo@example.com" }, this.callback);
      },
     "works": function(e, r) {
       assert.isNull(e);
@@ -172,22 +179,87 @@ suite.addBatch({
           assert.equal(r.type, "secondary");
           assert.equal(r.state, "transition_to_secondary");
         },
-        "and calling cert key": {
+        /* write me
+        "removing the user's password": {
           topic: function() {
-            setTimeout(this.callback, 500);
-            // XXX
+            this.callback();
           },
-          "causes lastUsedAs to be updated": function() {
-            // XXX
+          "works": function(err) {
+            assert.isNull(err);
+          },
+          "and calling address info": {
+            topic: function() {
+              this.callback();
+            },
+            "shows 'transition_no_password'": function(err, r) {
+            }
           }
+        }
+        */
+      }
+    }
+  }
+});
+
+
+// test idp offline
+suite.addBatch({
+  "record that we've seen example.com": {
+     topic: function() {
+       db.updateIDPLastSeen('example.com', this.callback);
+     },
+    "works": function(e, r) {
+      assert.isNull(e);
+    },
+    "and waiting a moment": {
+      topic: function() {
+        setTimeout(this.callback, 500);
+      },
+      "and checking address info": {
+        topic: wsapi.get('/wsapi/address_info', {
+          email: "foo@example.com"
+        }),
+        "returns offline": function(e, r) {
+          assert.isNull(e);
+          var r = JSON.parse(r.body);
+          assert.equal(r.state, "offline");
+          assert.equal(r.type, "secondary");
         }
       }
     }
   }
 });
 
-//  * transition_no_password (easyish)
-//  * offline (hardish)
+// test idp explicitly disabled
+suite.addBatch({
+  "creating a secondary user": {
+     topic: function() {
+       secondary.create({ email: "foo@disabled.domain" }, this.callback);
+     },
+    "works": function(e, r) {
+      assert.isNull(e);
+    },
+    "and report domain as seen": {
+      topic: function() {
+        db.updateIDPLastSeen('disabled.domain', this.callback);
+      },
+      "works": function(e) {
+        assert.isNull(e);
+      },
+      "and calling address info": {
+        topic: wsapi.get('/wsapi/address_info', {
+          email: "foo@disabled.domain"
+        }),
+        "returns 'known' and not 'offline'": function(e, r) {
+          assert.isNull(e);
+          var r = JSON.parse(r.body);
+          assert.equal(r.type, "secondary");
+          assert.equal(r.state, "known");
+        }
+      }
+    }
+  }
+});
 
 start_stop.addShutdownBatches(suite);
 
