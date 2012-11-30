@@ -11,7 +11,8 @@ vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 email = require('../lib/email.js'),
-jwcrypto = require('jwcrypto');
+jwcrypto = require('jwcrypto'),
+secondary = require('./lib/secondary.js');
 
 var suite = vows.describe('forgotten-email');
 
@@ -28,42 +29,18 @@ var token = undefined;
 // stores wsapi client context
 var oldContext;
 
-// create a new account via the api with (first address)
+// create a new secondary account
 suite.addBatch({
-  "staging an account": {
-    topic: wsapi.post('/wsapi/stage_user', {
-      email: 'first@fakeemail.com',
-      pass: 'firstfakepass',
-      site:'http://localhost:123'
-    }),
-    "works": function(err, r) {
-      assert.strictEqual(r.code, 200);
-    }
-  }
-});
-
-// wait for the token
-suite.addBatch({
-  "a token": {
+  "creating a secondary account": {
     topic: function() {
-      start_stop.waitForToken(this.callback);
+      secondary.create({
+        email: 'first@fakeemail.com',
+        pass: 'firstfakepass',
+        site:'http://localhost:123'
+      }, this.callback);
     },
-    "is obtained": function (t) {
-      assert.strictEqual(typeof t, 'string');
-      token = t;
-    }
-  }
-});
-
-suite.addBatch({
-  "create first account": {
-    topic: function() {
-      wsapi.post('/wsapi/complete_user_creation', { token: token }).call(this);
-    },
-    "account created": function(err, r) {
-      assert.equal(r.code, 200);
-      assert.strictEqual(true, JSON.parse(r.body).success);
-      token = undefined;
+    "succeeds": function(err, r) {
+      assert.isNull(err);
     }
   }
 });

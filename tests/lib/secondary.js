@@ -7,7 +7,7 @@ jwcrypto = require("jwcrypto");
 exports.create = function(opts, cb) {
   opts = opts || {};
   opts.email = opts.email || 'testuser@example.com';
-  opts.password = opts.password || 'password';
+  opts.password = opts.password || opts.pass || 'password';
   opts.site = opts.site || 'http://rp.example.com';
 
   wcli.post(wsapi.configuration, '/wsapi/stage_user', wsapi.context, {
