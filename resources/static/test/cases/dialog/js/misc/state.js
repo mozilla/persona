@@ -474,7 +474,7 @@
   });
 
   test("email_chosen with secondary email, transition_to_secondary", function () {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
+    storage.addEmail(TEST_EMAIL);
     mediator.publish("email_chosen", {
       email: TEST_EMAIL,
       type: 'secondary',
@@ -485,7 +485,7 @@
   });
 
   test("email_chosen with secondary email, transition_no_password", function () {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
+    storage.addEmail(TEST_EMAIL);
     mediator.publish("email_chosen", {
       email: TEST_EMAIL,
       type: 'secondary',
