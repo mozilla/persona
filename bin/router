@@ -29,6 +29,11 @@ app = express.createServer();
 
 logger.info("router server starting up");
 
+if (config.get('env') === 'production') {
+  logger.info('node.js version: ' + process.version + ' at ' + process.execPath);
+  logger.info('configuration: ', JSON.stringify(JSON.parse(config.toString())));
+}
+
 // verify that we have a keysigner configured
 if (!config.get('keysigner_url')) {
   logger.error('missing required configuration - url for the keysigner (KEYSIGNER_URL in env)');
