@@ -39,6 +39,11 @@ app = express.createServer();
 
 logger.info("dbwriter starting up");
 
+if (config.get('env') === 'production') {
+  logger.info('node.js version: ' + process.version + ' at ' + process.execPath);
+  logger.info('configuration: ', JSON.stringify(JSON.parse(config.toString())));
+}
+
 // Setup health check / heartbeat middleware.
 // This is in front of logging on purpose.  see issue #537
 heartbeat.setup(app, function(cb) {
