@@ -32,10 +32,10 @@ wd.prototype.waitForDisplayed = function(opts, cb) {
   if (typeof opts === 'string') opts = { which: opts };
   if (!opts.which) throw "css selector required";
   setTimeouts(opts);
-  var browser = this;
+  var self = this;
 
   utils.waitFor(opts.poll, opts.timeout, function(done) {
-    browser.elementByCss(opts.which, function(err, elem) {
+    self.elementByCss(opts.which, function(err, elem) {
       if (err) {
         var isComplete = false;
         if (typeof err === "object" && err.inspect) {
@@ -52,7 +52,7 @@ wd.prototype.waitForDisplayed = function(opts, cb) {
         return done(isComplete, err, elem);
       }
 
-      browser.displayed(elem, function(err, displayed) {
+      self.displayed(elem, function(err, displayed) {
         done(!err && displayed, err, elem);
       });
     });
@@ -61,23 +61,23 @@ wd.prototype.waitForDisplayed = function(opts, cb) {
 
 // allocate a new browser session and sets implicit wait timeout
 wd.prototype.newSession = function(opts, cb) {
-  var browser = this;
+  var self = this;
   if (typeof opts === 'function') {
     cb = opts;
     opts = {};
   }
 
-  browser.init(opts, function(err) {
+  self.init(opts, function(err) {
     if (err) return cb(err);
     // let's set the http timeout at 2x the implicit wait timeout for
     // faster failures. (!300s)
-    browser.setHTTPInactivityTimeout(2 * timeouts.DEFAULT_TIMEOUT_MS);
+    self.setHTTPInactivityTimeout(2 * timeouts.DEFAULT_TIMEOUT_MS);
     // note!  the implicit wait timeout is different from other timeouts,
     // it's the amount of time certain wire transactions will wait for
     // procedures like find_element to succeed (we'll actually wait on the
     // *server* side for an element to become visible).  Having this be
     // the same as the global default timeout is interesting.
-    browser.setImplicitWaitTimeout(timeouts.DEFAULT_TIMEOUT_MS, cb);
+    self.setImplicitWaitTimeout(timeouts.DEFAULT_TIMEOUT_MS, cb);
   });
 };
 
@@ -91,11 +91,11 @@ wd.prototype.newSession = function(opts, cb) {
 wd.prototype.waitForWindow = function(opts, cb) {
   if (typeof opts === 'string') opts = { name: opts };
   if (!opts.name) throw "waitForWindow missing window `name`";
-  var browser = this;
+  var self = this;
 
   setTimeouts(opts);
   utils.waitFor(opts.poll, opts.timeout, function(done) {
-    browser.window(opts.name, function(err) {
+    self.window(opts.name, function(err) {
       done(!err, err);
     });
   }, cb);
