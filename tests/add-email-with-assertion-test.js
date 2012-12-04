@@ -238,7 +238,7 @@ suite.addBatch({
     "returns an object with what we'd expect": function(err, r) {
       var respObj = JSON.parse(r.body);
       var emails = Object.keys(respObj);
-      assert.strictEqual(emails.length, 2)
+      assert.strictEqual(emails.length, 2);
       assert.ok(emails.indexOf(TEST_EMAIL) != -1);
       assert.ok(emails.indexOf(TEST_FIRST_ACCT) != -1);
       assert.equal(respObj[TEST_EMAIL].type, "primary");
