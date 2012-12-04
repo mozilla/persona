@@ -179,20 +179,23 @@ function startTesting() {
                                           [testPath].concat(vows_args), opts);
 
     testProcess.stdout.on('data', function (data) {
-      if (aggregator) aggregator.parseLine(data.toString());
-      if (stdOutReporter) stdOutReporter.report(data.toString());
+      var msg = data.toString().trim();
+
+      if (aggregator) aggregator.parseLine(msg);
+      if (stdOutReporter) stdOutReporter.report(msg);
     });
 
     testProcess.stderr.on('data', function (data) {
-      data.toString().split("\n").forEach(function(line) {
-        line = prettifyLine(line, function(url) {
-          if (aggregator) aggregator.addInterestingURL(url);
-        });
-        // output the line to console when we're in xunit mode
-        if (line && args.output === 'xunit') {
-          stdErrReporter.report(testName + ' | ' + platform + ' | ' + line + "\n");
-        }
-      });
+      // remove any leading newline characters and trim the rest of the output.
+      var line = prettifyLine(data.toString().replace(/^[\r\n]+/, '').trim());
+      if (!line) return;
+
+      if (aggregator) aggregator.parseErrorLine(line);
+
+      // output the line to console when we're in xunit mode
+      if (args.output === 'xunit') {
+        stdErrReporter.report(testName + ' | ' + platform + ' | ' + line + "\n");
+      }
     });
 
     testProcess.on('exit', function(code) {
@@ -201,10 +204,11 @@ function startTesting() {
     });
   }
 
-  function prettifyLine(line, onInterestingURL) {
+  function prettifyLine(line) {
     // decolorize
-    line = line.replace(/\x1b\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]/, "");
+    line = line.replace(/\x1b\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]/g, "");
     line = line.trim();
+
     // skip blank lines
     if (!line.length) return;
     // skip useless lines
@@ -215,7 +219,6 @@ function startTesting() {
       if (process.env.PERSONA_NO_SAUCE) line = "id: " + m[1];
       else {
         line = 'https://saucelabs.com/tests/' + m[1];
-        if (onInterestingURL) onInterestingURL(line);
       }
     }
 
