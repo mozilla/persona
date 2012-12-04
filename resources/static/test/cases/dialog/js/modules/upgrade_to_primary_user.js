@@ -39,7 +39,7 @@
       auth_url: 'https://testuser.com/auth',
       idpName: 'testuser.com'
     });
-    var copy = $('#your_computer_content').html();
+    var copy = $('#upgrade_to_primary').html();
     ok(copy.length > 0, "We have some copy");
     ok(copy.indexOf('redirect you to testuser.com') > 0, "idPName shows up");
   });
