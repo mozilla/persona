@@ -161,6 +161,11 @@ function setSessionOpts(opts) {
     sessionOpts.proxy = { proxyType: 'direct' };
   }
 
+  if (sessionOpts.browserName == 'internet explorer' && sessionOpts.version == 9) {
+    // fix ugly java errors with IE9 specifically
+    sessionOpts['selenium-version'] = '2.26.0';
+  }
+
   // Ensure a test name for saucelabs
   if (!sessionOpts.name) sessionOpts.name = createTestName();
 
