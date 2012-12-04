@@ -945,6 +945,7 @@ BrowserID.User = (function() {
       else {
         network.addressInfo(email, function(info) {
           info.email = email;
+          info = User.checkEmailIssuer(email, info);
           if (info.type === "primary") {
             User.isEmailRegistered(email, function(registered) {
               User.isUserAuthenticatedToPrimary(email, info, function(authed) {
@@ -963,7 +964,7 @@ BrowserID.User = (function() {
     },
     /**
      * Checks for outdated certificates and clears them from storage.
-     * Returns original info or null if email info is now invalid.
+     * Returns original info, may have been altered
      * @param {string} email - Email address to check.
      * @param {object} info - Output from addressInfo callback
      * @return {object} or null
@@ -977,20 +978,25 @@ BrowserID.User = (function() {
       prepareDeps();
       var identity = User.getStoredEmailKeypair(email);
       if (identity && identity.cert && info && info.issuer) {
-        var prevIssuer;
-        try {
-          prevIssuer = jwcrypto.extractComponents(identity.cert).payload.iss;
-        } catch (e) {
-          // error parsing the certificate!  Maybe it's of an old/different
-          // format?  just delete it.
-          helpers.log("Looking for issuer, error parsing cert for"+ email +":" + e);
+
+        // issuer MUST have changed... clear certs
+        if ("transition_to_primary" === info.state && identity.cert) {
           clearCert(email, identity);
-          return null;
-        }
-        if (prevIssuer && info.issuer !== prevIssuer) {
-          clearCert(email, identity);
-          return null;
-        }
+	} else {
+
+          var prevIssuer;
+          try {
+            prevIssuer = jwcrypto.extractComponents(identity.cert).payload.iss;
+          } catch (e) {
+            // error parsing the certificate!  Maybe it's of an old/different
+            // format?  just delete it.
+            helpers.log("Looking for issuer, error parsing cert for"+ email +":" + e);
+            clearCert(email, identity);
+          }
+          if (prevIssuer && info.issuer !== prevIssuer) {
+            clearCert(email, identity);
+          }
+	}
       }
       return info;
     },

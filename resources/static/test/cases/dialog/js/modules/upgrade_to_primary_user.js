@@ -40,7 +40,7 @@
       idpName: 'testuser.com'
     });
     var copy = $('#upgrade_to_primary').html();
-    ok(copy.length > 0, "We have some copy");
+    ok(!!copy && copy.length > 0, "We have some copy");
     ok(copy.indexOf('redirect you to testuser.com') > 0, "idPName shows up");
   });
 }());

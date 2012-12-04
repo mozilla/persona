@@ -50,7 +50,7 @@ BrowserID.Modules.PickEmail = (function() {
       });
     }
 
-    return !!identity;
+    return identity;
   }
 
   function signIn() {
@@ -58,10 +58,11 @@ BrowserID.Modules.PickEmail = (function() {
     var self=this,
         email = dom.getInner("input[type=radio]:checked");
 
-    var valid = checkEmail.call(self, email);
-    if (valid) {
-      dialogHelpers.refreshEmailInfo.call(self, email, function (validCert, info) {
-        if (validCert)
+    var record = checkEmail.call(self, email);
+    if (!! record) {
+      dialogHelpers.refreshEmailInfo.call(self, email, function (info) {
+	record = checkEmail.call(self, email);
+        if (record.cert)
           self.close("email_chosen", info);
         else if ("transition_no_password" === info.state)
           self.close("transition_no_password", info);

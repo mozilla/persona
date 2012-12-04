@@ -342,8 +342,6 @@ BrowserID.State = (function() {
         redirectToState("primary_offline", info);
       }
       else if (info.type === "primary") {
-        // issuer MUST have changed... clear certs
-        if ("transition_to_primary" === info.state && record.cert) delete record.cert;
 
         if (record.cert) {
           // Email is a primary and the cert is available - the user can log

@@ -150,9 +150,7 @@
     /*jshint validthis:true*/
     var self=this;
     user.addressInfo(email, function (info) {
-      var newInfo = user.checkEmailIssuer(email, info);
-      var validCert = !!newInfo;
-      callback(validCert, _.extend({ email: email }, info));
+      callback(_.extend({ email: email }, info));
     }, self.getErrorDialog(errors.addressInfo, callback));
   }
 
