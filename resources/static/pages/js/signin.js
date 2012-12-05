@@ -135,7 +135,7 @@ BrowserID.signIn = (function() {
           // clearing the stored email from localStorage is taken care
           // of in emailSent.
           pageHelpers.emailSent("waitForUserValidation", email,
-            complete.curry(oncomplete, true));
+            complete.curry(oncomplete, email));
         }
         else {
           tooltip.showTooltip("#could_not_add");

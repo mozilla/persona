@@ -35,6 +35,9 @@
   "browserify": {
     "1.13.5": "b5f0a160733779d27547885dfb598a65ef6fdaad"
   },
+  "cef": {
+    "0.3.3": "74a521e3c5c702fe1dc240e6250a2583f885227f"
+  },
   "cjson": {
     "0.0.6": "f53a8664cd5f195c0bed06235cd4a38df88b4208"
   },
@@ -91,6 +94,9 @@
   },
   "cycle": {
     "1.0.0": "7d2bfce4be6c81cc76d1fc12bcbaec0b89c1bc55"
+  },
+  "dateformat": {
+    "1.0.2-1.2.3": "b0220c02de98617433b72851cf47de3df2cdbee9"
   },
   "deputy": {
     "0.0.4": "edc00a9ef5c53527c405328534c99795ada41cbf"

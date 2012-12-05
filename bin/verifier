@@ -22,6 +22,11 @@ statsd = require('../lib/statsd');
 
 logger.info("verifier server starting up");
 
+if (config.get('env') === 'production') {
+  logger.info('node.js version: ' + process.version + ' at ' + process.execPath);
+  logger.info('configuration: ', JSON.stringify(JSON.parse(config.toString())));
+}
+
 var app = express.createServer();
 
 // setup health check / heartbeat (before logging)
