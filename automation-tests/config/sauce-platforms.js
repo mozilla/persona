@@ -29,17 +29,17 @@ const platforms = {
     platform:'VISTA',
     browserName:'internet explorer',
     version:'9'
-  }/*,
+  },/*
   "win8_ie_10": {
     platform: 'Windows 2012',
     browserName: 'internet explorer',
     version: '10'
-  },
+  },*/
   "xp_ie_8": {
     platform:'XP',
     browserName: 'internet explorer',
     version:'8'
-  },
+  }/*,
   "osx_safari_5": {
     platform:'Mac 10.6',
     browserName: 'safari',
