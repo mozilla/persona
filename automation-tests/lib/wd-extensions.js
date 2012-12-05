@@ -80,8 +80,8 @@ wd.prototype.newSession = function(opts, cb) {
     browser.setImplicitWaitTimeout(timeouts.DEFAULT_TIMEOUT_MS, function(err) {
       if (err) return cb(err);
       // keep track of the ID of the first window
-      browser.windowHandle(function(err, handle) {
-        browser._parentWindow = handle;
+      self.windowHandle(function(err, handle) {
+        self._parentWindow = handle;
         return cb(err);
       });
     });
@@ -161,7 +161,7 @@ wd.prototype.wwin = function(opts, cb) {
     cb = arguments[0];
     self.windowHandles(function(err, handles) {
       if (err) return cb(err);
-      self.window(browser._parentWindow, function(err) { cb(err); }); // fire cb whether err is defined or not
+      self.window(self._parentWindow, cb); // fire cb whether err is defined or not
     });
   } else {
     self.waitForWindow(opts, cb);
