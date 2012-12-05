@@ -23,6 +23,13 @@ shutdown = require('../lib/shutdown'),
 computecluster = require('compute-cluster'),
 urlparse = require('urlparse');
 
+logger.info("keysigner starting up");
+
+if (config.get('env') === 'production') {
+  logger.info('node.js version: ' + process.version + ' at ' + process.execPath);
+  logger.info('configuration: ', JSON.stringify(JSON.parse(config.toString())));
+}
+
 const HOSTNAME = urlparse(config.get('public_url')).host;
 logger.info("Certs will be issued from: " + HOSTNAME);
 
