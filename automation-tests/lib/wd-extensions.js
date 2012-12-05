@@ -77,7 +77,14 @@ wd.prototype.newSession = function(opts, cb) {
     // procedures like find_element to succeed (we'll actually wait on the
     // *server* side for an element to become visible).  Having this be
     // the same as the global default timeout is interesting.
-    self.setImplicitWaitTimeout(timeouts.DEFAULT_TIMEOUT_MS, cb);
+    self.setImplicitWaitTimeout(timeouts.DEFAULT_TIMEOUT_MS, function(err) {
+      if (err) return cb(err);
+      // keep track of the ID of the first window
+      self.windowHandle(function(err, handle) {
+        self._parentWindow = handle;
+        return cb(err);
+      });
+    });
   });
 };
 
@@ -142,7 +149,8 @@ wd.prototype.find = wd.prototype.elementByCss;
 // convenience method to switch windows
 //
 // if no arguments are passed, switch to the base window--in a dialog flow,
-// this will be the zeroth window in the list of handles.
+// this will be the first window opened in the session, which *should* always
+// be the parent window.
 //
 // if arguments are passed in, they are forwarded to waitForWindow.
 wd.prototype.wwin = function(opts, cb) {
@@ -153,7 +161,7 @@ wd.prototype.wwin = function(opts, cb) {
     cb = arguments[0];
     self.windowHandles(function(err, handles) {
       if (err) return cb(err);
-      self.window(handles[0], function(err) { cb(err); }); // fire cb whether err is defined or not
+      self.window(self._parentWindow, cb); // fire cb whether err is defined or not
     });
   } else {
     self.waitForWindow(opts, cb);
