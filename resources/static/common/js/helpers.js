@@ -73,6 +73,11 @@
     }
   }
 
+  var emailRe = /.*@/;
+  function getDomainFromEmail(email) {
+    return String(email).replace(emailRe, "");
+  }
+
   _.extend(helpers, {
     /**
      * Get an email from a DOM element and validate it.
@@ -127,7 +132,9 @@
      * @method log
      * @param {string} msg
      */
-    log: log
+    log: log,
+
+    getDomainFromEmail: getDomainFromEmail
   });
 
 

@@ -93,7 +93,7 @@ BrowserID.User = (function() {
   }
 
   function setAuthenticationStatus(authenticated) {
-    if(window.$) {
+    if (window.$) {
       // TODO get this out of here!
       // jQuery is not included in the communication_iframe
       var func = authenticated ? 'addClass' : 'removeClass';
@@ -127,12 +127,6 @@ BrowserID.User = (function() {
     }, onFailure);
   }
 
-  function markAddressVerified(email) {
-    var idInfo = storage.getEmail(email) || {};
-    idInfo.verified = true;
-    storage.addSecondaryEmail(email, idInfo);
-  }
-
   function completeAddressVerification(completeFunc, token, password, onComplete, onFailure) {
     User.tokenInfo(token, function(info) {
       var invalidInfo = { valid: false };
@@ -142,10 +136,6 @@ BrowserID.User = (function() {
 
           if (valid) {
             result = _.extend({ valid: valid }, info);
-            // Now that the address is verified, its verified bit has to be
-            // updated as well or else the user will be forced to verify the
-            // address again.
-            markAddressVerified(info.email);
             storage.setReturnTo("");
           }
 
@@ -196,11 +186,6 @@ BrowserID.User = (function() {
       // data.
       storage.setReturnTo("");
 
-      // Now that the address is verified, its verified bit has to be
-      // updated as well or else the user will be forced to verify the
-      // address again.
-      markAddressVerified(email);
-
       // To avoid too many address_info requests, returns from each
       // address_info request are cached.  If the user is doing
       // a addressVerificationPoll, it means the user was registering the address
@@ -209,7 +194,7 @@ BrowserID.User = (function() {
       // toggle the field to be up to date.  If the known field remains
       // false, then the user is redirected back to the authentication
       // page and the system thinks the address must be verified again.
-      if(addressCache[email]) {
+      if (addressCache[email]) {
         addressCache[email].known = true;
       }
 
@@ -258,13 +243,8 @@ BrowserID.User = (function() {
     }
   }
 
-  function checkEmailType(type) {
-    if (type !== 'secondary' && type !== 'primary')
-      throw new Error("invalid email type (should be 'secondary' or 'primary'): " + type);
-  }
-
   function getIdPName(addressInfo) {
-    return addressInfo.email.replace(/.*@/, "");
+    return helpers.getDomainFromEmail(addressInfo.email);
   }
 
   /**
@@ -275,12 +255,10 @@ BrowserID.User = (function() {
    * @param {function} [onComplete] - Called on successful completion.
    * @param {function} [onFailure] - Called on error.
    */
-  function persistEmailKeypair(email, type, keypair, cert, onComplete, onFailure) {
-    checkEmailType(type);
+  function persistEmailKeypair(email, keypair, cert, onComplete, onFailure) {
     var now = new Date();
     var email_obj = storage.getEmails()[email] || {
-      created: now,
-      type: type
+      created: now
     };
 
     _.extend(email_obj, {
@@ -301,8 +279,7 @@ BrowserID.User = (function() {
    */
   function certifyEmailKeypair(email, keypair, onComplete, onFailure) {
     network.certKey(email, keypair.publicKey, function(cert) {
-      // emails that *we* certify are always secondary emails
-      persistEmailKeypair(email, "secondary", keypair, cert, onComplete, onFailure);
+      persistEmailKeypair(email, keypair, cert, onComplete, onFailure);
     }, onFailure);
   }
 
@@ -315,11 +292,8 @@ BrowserID.User = (function() {
    * @param {string} options.verified - If the email is 'secondary', is it verified?
    */
   function persistEmail(options) {
-    checkEmailType(options.type);
     storage.addEmail(options.email, {
-      created: new Date(),
-      type: options.type,
-      verified: options.verified
+      created: new Date()
     });
   }
 
@@ -471,8 +445,8 @@ BrowserID.User = (function() {
     provisionPrimaryUser: function(email, info, onComplete, onFailure) {
 
       User.primaryUserAuthenticationInfo(email, info, function(authInfo) {
-        if(authInfo.authenticated) {
-          persistEmailKeypair(email, "primary", authInfo.keypair, authInfo.cert,
+        if (authInfo.authenticated) {
+          persistEmailKeypair(email, authInfo.keypair, authInfo.cert,
             function() {
               // We are getting an assertion for persona.org.
               User.getAssertion(email, "https://login.persona.org", function(assertion) {
@@ -518,13 +492,13 @@ BrowserID.User = (function() {
         onComplete && _.defer(onComplete.curry(info));
       }
 
-      if(primaryAuthCache[email]) {
+      if (primaryAuthCache[email]) {
         // If we have the info in our cache, we most definitely do not have to
         // ask for it.
         complete(primaryAuthCache[email]);
         return;
       }
-      else if(idInfo && idInfo.cert) {
+      else if (idInfo && idInfo.cert) {
         // If we already have the info in storage, we know the user has a valid
         // cert with their IdP, we say they are authenticated and pass back the
         // appropriate info.
@@ -603,7 +577,7 @@ BrowserID.User = (function() {
      */
     tokenInfo: function(token, onComplete, onFailure) {
       network.emailForVerificationToken(token, function (info) {
-        if(info) {
+        if (info) {
           info = _.extend(info, { returnTo: storage.getReturnTo() });
         }
 
@@ -633,18 +607,9 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     canSetPassword: function(onComplete, onFailure) {
-      User.hasSecondary(onComplete, onFailure);
-    },
-
-    /**
-     * Set the initial password of the current user.
-     * @method setPassword
-     * @param {string} password - password to set
-     * @param {function} [onComplete] - Called on successful completion.
-     * @param {function} [onFailure] - Called on error.
-     */
-    setPassword: function(password, onComplete, onFailure) {
-      network.setPassword(password, onComplete, onFailure);
+      network.withContext(function(ctx) {
+        complete(onComplete, ctx.has_password);
+      }, onFailure);
     },
 
     /**
@@ -675,7 +640,7 @@ BrowserID.User = (function() {
     requestPasswordReset: function(email, password, onComplete, onFailure) {
       User.addressInfo(email, function(info) {
         // user is not known.  Can't request a password reset.
-        if (!info.known) {
+        if (info.state === "unknown") {
           complete(onComplete, { success: false, reason: "invalid_user" });
         }
         // user is trying to reset the password of a primary address.
@@ -725,17 +690,12 @@ BrowserID.User = (function() {
      * @param {function} [onFailure]
      */
     requestEmailReverify: function(email, onComplete, onFailure) {
-      var idInfo = storage.getEmail(email);
-      if (!idInfo) {
+      if (!storage.getEmail(email)) {
         // user does not own this address.
         complete(onComplete, { success: false, reason: "invalid_email" });
       }
-      else if (idInfo.verified) {
-        // this email is already verified, cannot be reverified.
-        complete(onComplete, { success: false, reason: "verified_email" });
-      }
-      else if (!idInfo.verified) {
-        // this address is unverified, try to reverify it.
+      else {
+        // try to reverify this address.
         stageAddressVerification(email, null,
           network.requestEmailReverify.bind(network, email, origin),
           onComplete, onFailure);
@@ -814,10 +774,9 @@ BrowserID.User = (function() {
       cleanupIdentities(function () {
         var issued_identities = User.getStoredEmailKeypairs();
 
-        network.listEmails(function(emails) {
+        network.listEmails(function(server_emails) {
           // lists of emails
           var client_emails = _.keys(issued_identities);
-          var server_emails = _.keys(emails);
 
           var emails_to_add = _.difference(server_emails, client_emails);
           var emails_to_remove = _.difference(client_emails, server_emails);
@@ -830,30 +789,10 @@ BrowserID.User = (function() {
 
           // these are new emails
           _.each(emails_to_add, function(email) {
-            var emailInfo = emails[email];
-
-            persistEmail({
-              email: email,
-              type: emailInfo.type || "secondary",
-              verified: emailInfo.verified
-            });
-          });
-
-          // update the type and verified status of stored emails
-          _.each(emails_to_update, function(email) {
-            var emailInfo = emails[email],
-                storedEmailInfo = storage.getEmail(email);
-
-            _.extend(storedEmailInfo, {
-              type: emailInfo.type,
-              verified: emailInfo.verified
-            });
-
-            storage.addEmail(email, storedEmailInfo);
+            persistEmail({ email: email });
           });
 
           complete(onComplete);
-
         }, onFailure);
       });
     },
@@ -869,7 +808,7 @@ BrowserID.User = (function() {
      */
     checkAuthentication: function(onComplete, onFailure) {
       network.cookiesEnabled(function(cookiesEnabled) {
-        if(cookiesEnabled) {
+        if (cookiesEnabled) {
           network.checkAuth(function(authenticated) {
             setAuthenticationStatus(authenticated);
             if (!authenticated) authenticated = false;
@@ -926,7 +865,7 @@ BrowserID.User = (function() {
       network.authenticate(email, password, function(authenticated) {
         setAuthenticationStatus(authenticated);
 
-        if(authenticated) {
+        if (authenticated) {
           User.syncEmails(function() {
             onComplete && onComplete(authenticated);
           }, onFailure);
@@ -1000,13 +939,14 @@ BrowserID.User = (function() {
         onComplete && onComplete(info);
       }
 
-      if(addressCache[email]) {
+      if (addressCache[email]) {
         complete(addressCache[email]);
       }
       else {
         network.addressInfo(email, function(info) {
           info.email = email;
-          if(info.type === "primary") {
+          info = User.checkEmailIssuer(email, info);
+          if (info.type === "primary") {
             User.isEmailRegistered(email, function(registered) {
               User.isUserAuthenticatedToPrimary(email, info, function(authed) {
                 info.known = registered;
@@ -1022,7 +962,44 @@ BrowserID.User = (function() {
         }, onFailure);
       }
     },
+    /**
+     * Checks for outdated certificates and clears them from storage.
+     * Returns original info, may have been altered
+     * @param {string} email - Email address to check.
+     * @param {object} info - Output from addressInfo callback
+     * @return {object} or null
+     */
+    checkEmailIssuer: function(email, info) {
+      function clearCert(email, idInfo) {
+        delete idInfo.cert;
+        delete primaryAuthCache[email];
+        storage.addEmail(email, idInfo);
+      }
+      prepareDeps();
+      var identity = User.getStoredEmailKeypair(email);
+      if (identity && identity.cert && info && info.issuer) {
 
+        // issuer MUST have changed... clear certs
+        if ("transition_to_primary" === info.state && identity.cert) {
+          clearCert(email, identity);
+	} else {
+
+          var prevIssuer;
+          try {
+            prevIssuer = jwcrypto.extractComponents(identity.cert).payload.iss;
+          } catch (e) {
+            // error parsing the certificate!  Maybe it's of an old/different
+            // format?  just delete it.
+            helpers.log("Looking for issuer, error parsing cert for"+ email +":" + e);
+            clearCert(email, identity);
+          }
+          if (prevIssuer && info.issuer !== prevIssuer) {
+            clearCert(email, identity);
+          }
+	}
+      }
+      return info;
+    },
     /**
      * Add an email address to an already created account.  Sends address and
      * keypair to the server, user then needs to verify account ownership. This
@@ -1051,16 +1028,9 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     passwordNeededToAddSecondaryEmail: function(onComplete, onFailure) {
-      var emails = storage.getEmails(),
-          passwordNeeded = true;
-
-      for(var key in emails) {
-        if(emails[key].type === "secondary") {
-          passwordNeeded = false;
-        }
-      }
-
-      complete(onComplete, passwordNeeded);
+      network.withContext(function(ctx) {
+        complete(onComplete, !ctx.has_password);
+      }, onFailure);
     },
 
     /**
@@ -1235,7 +1205,7 @@ BrowserID.User = (function() {
           sortedIdentities = [];
 
       for(var key in identities) {
-        if(identities.hasOwnProperty(key)) {
+        if (identities.hasOwnProperty(key)) {
           sortedIdentities.push({ address: key, info: identities[key] });
         }
       }
@@ -1323,27 +1293,6 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Check if the user has any secondary addresses.
-     * @method hasSecondary
-     * @param {function} onComplete - called with true if user has at least one
-     * email address, false otw.
-     * @param {function} onFailure - called on XHR failure.
-     */
-    hasSecondary: function(onComplete, onFailure) {
-      var hasSecondary = false,
-          emails = storage.getEmails();
-
-      for(var key in emails) {
-        if(emails[key].type === "secondary") {
-          hasSecondary = true;
-          break;
-        }
-      }
-
-      onComplete(hasSecondary);
-    },
-
-    /**
      * Set whether the user owns the computer or not.
      * @method setComputerOwnershipStatus
      * @param {boolean} userOwnsComputer - true if user owns computer, false otw.
@@ -1352,7 +1301,7 @@ BrowserID.User = (function() {
      */
     setComputerOwnershipStatus: function(userOwnsComputer, onComplete, onFailure) {
       var userID = network.userid();
-      if(typeof userID !== "undefined") {
+      if (typeof userID !== "undefined") {
         if (userOwnsComputer) {
           storage.usersComputer.setConfirmed(userID);
           network.prolongSession(onComplete, onFailure);
@@ -1372,7 +1321,7 @@ BrowserID.User = (function() {
      */
     isUsersComputer: function(onComplete, onFailure) {
       var userID = network.userid();
-      if(typeof userID !== "undefined") {
+      if (typeof userID !== "undefined") {
         complete(onComplete, storage.usersComputer.confirmed(userID));
       } else {
         complete(onFailure, "user is not authenticated");
@@ -1385,7 +1334,7 @@ BrowserID.User = (function() {
      */
     shouldAskIfUsersComputer: function(onComplete, onFailure) {
       var userID = network.userid();
-      if(typeof userID !== "undefined") {
+      if (typeof userID !== "undefined") {
         // A user should never be asked if they completed an email
         // registration/validation in this dialog session.
         var shouldAsk = storage.usersComputer.shouldAsk(userID)
@@ -1394,6 +1343,14 @@ BrowserID.User = (function() {
       } else {
         complete(onFailure, "user is not authenticated");
       }
+    },
+
+    /**
+     * Mark the transition state of this user as having been completed.
+     * @method usedAddressAsPrimary
+     */
+    usedAddressAsPrimary: function(email, onComplete, onFailure) {
+      network.usedAddressAsPrimary(email, onComplete, onFailure);
     }
 
   };

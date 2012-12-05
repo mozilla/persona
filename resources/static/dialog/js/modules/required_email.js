@@ -121,31 +121,32 @@ BrowserID.Modules.RequiredEmail = (function() {
         // a user could not be looking at stale data and/or authenticate as
         // somebody else.
         var storedEmailInfo = user.getStoredEmailKeypair(email);
-        if(storedEmailInfo && storedEmailInfo.type === "secondary") {
-          // secondary user, show the password field if they are not
-          // authenticated to the "password" level.
-          showTemplate({
-            signin: true,
-            password: auth_level !== "password",
-            secondary_auth: secondaryAuth,
-            cancelable: options.cancelable
-          });
-          ready();
-        }
-        else if(storedEmailInfo && storedEmailInfo.type === "primary" && storedEmailInfo.cert) {
-          // primary user with valid cert, user can sign in normally.
-          primaryInfo = storedEmailInfo;
-          showTemplate({ signin: true, primary: true });
-          ready();
-        }
-        else {
-          // At this point, there are several possibilities:
-          // 1) Authenticated primary user who has an expired cert.
-          // 2) Authenticated user who does not control address.
-          // 3) Unauthenticated user.
-          user.addressInfo(email, function(info) {
-            if(info.type === "primary") primaryInfo = info;
 
+        user.addressInfo(email, function(info) {
+          if(storedEmailInfo && info.type === "secondary") {
+            // secondary user, show the password field if they are not
+            // authenticated to the "password" level.
+            showTemplate({
+              signin: true,
+              password: auth_level !== "password",
+              secondary_auth: secondaryAuth,
+              cancelable: options.cancelable
+            });
+            ready();
+          }
+          else if(storedEmailInfo && info.type === "primary" && storedEmailInfo.cert) {
+            // primary user with valid cert, user can sign in normally.
+            primaryInfo = storedEmailInfo;
+            showTemplate({ signin: true, primary: true });
+            ready();
+          }
+          else {
+            // At this point, there are several possibilities:
+            // 1) Authenticated primary user who has an expired cert.
+            // 2) Authenticated user who does not control address.
+            // 3) Unauthenticated user.
+            if(info.type === "primary") primaryInfo = info;
+            
             if (info.type === "primary" && info.authed) {
               // this is a primary user who is authenticated with their IdP.
               // We know the user has control of this address, give them
@@ -198,7 +199,7 @@ BrowserID.Modules.RequiredEmail = (function() {
                 }
               });
             }
-            else if(info.type === "secondary" && info.known) {
+            else if(info.type === "secondary" && info.state === "known") {
               // address is a known secondary but the user is not logged in.
 
               // Make the user log in.
@@ -211,8 +212,9 @@ BrowserID.Modules.RequiredEmail = (function() {
               self.close("new_user", { email: email });
             }
             ready();
-          }, self.getErrorDialog(errors.addressInfo, ready));
-        }
+          }
+        }, self.getErrorDialog(errors.addressInfo, ready));
+          
       }, self.getErrorDialog(errors.checkAuthentication, ready));
 
       function showTemplate(templateData) {

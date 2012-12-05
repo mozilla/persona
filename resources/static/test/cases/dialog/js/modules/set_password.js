@@ -10,8 +10,7 @@
       testHelpers = bid.TestHelpers,
       testElementExists = testHelpers.testElementExists,
       testElementNotExists = testHelpers.testElementDoesNotExist,
-      register = testHelpers.register,
-      controller;
+      register = testHelpers.register;
 
   function createController(options) {
     controller = bid.Modules.SetPassword.create();
@@ -56,6 +55,17 @@
     controller.destroy();
     createController({ cancelable: false });
     testElementNotExists("#cancel");
+  });
+
+  test("create with transition_no_password", function() {
+    controller.destroy();
+    createController({
+      email: "transition@password.no",
+      transition_no_password: true
+    });
+    var msg = $("#set_password .inputs li").text();
+    ok(msg.indexOf("no longer allows"), "transition message shown");
+    ok(msg.indexOf("password.no"), "message shows IdP domain");
   });
 
   asyncTest("submit with good password/vpassword - password_set message raised", function() {

@@ -62,7 +62,7 @@ suite.addBatch({
     "succeeds": function(err, r) {
       assert.isString(r);
     },
-    "and logging in with the assertion succeeds": {
+    "and logging in with the assertion": {
       topic: function(err, assertion)  {
         wsapi.post('/wsapi/auth_with_assertion', {
           assertion: assertion,
@@ -78,7 +78,54 @@ suite.addBatch({
   }
 });
 
-// now let's generate an assertion using this user
+// next, let's verify that auth_with_assertion properly update
+// `lastUsedAs`
+suite.addBatch({
+  "setting lastUsedAs to secondary": {
+    topic: function(err, certs_and_assertion) {
+      db.updateEmailLastUsedAs(TEST_EMAIL, 'secondary', this.callback);
+    },
+    "works": function (err, lastUsedAs) {
+      assert.isNull(err);
+    },
+    "then generating an assertion": {
+      topic: function() {
+        primaryUser.getAssertion(TEST_ORIGIN, this.callback);
+      },
+      "succeeds": function(err, r) {
+        assert.isString(r);
+      },
+      "and logging in with the assertion": {
+        topic: function(err, assertion)  {
+          wsapi.post('/wsapi/auth_with_assertion', {
+            assertion: assertion,
+            ephemeral: true
+          }).call(this);
+        },
+        "works": function(err, r) {
+          var resp = JSON.parse(r.body);
+          assert.isObject(resp);
+          assert.isTrue(resp.success);
+        },
+        "and after a moment": {
+          topic: function() {
+            setTimeout(this.callback, 500);
+          },
+          "lastUsedAs": {
+            topic: function() {
+              db.emailLastUsedAs(TEST_EMAIL, this.callback);
+            },
+            "is set back to 'primary'": function(err, r) {
+              assert.isNull(err);
+              assert.equal(r, 'primary');
+            }
+          }
+        }
+      }
+    }
+  }
+});
+
 suite.addBatch({
   "generating a new intermediate keypair and then an assertion": {
     topic: function() {
@@ -88,7 +135,7 @@ suite.addBatch({
       jwcrypto.generateKeypair(
         {algorithm: "DS", keysize: 256},
         function(err, innerKeypair) {
-          
+
           // sign this innerkeypair with the key from g_cert (g_keypair)
           jwcrypto.cert.sign(
             {publicKey: innerKeypair.publicKey, principal: {email: OTHER_EMAIL}},
@@ -107,7 +154,6 @@ suite.addBatch({
 
                   self.callback(null, fullAssertion);
                 });
-              
             });
         });
     },
@@ -150,7 +196,7 @@ suite.addBatch({
       bigTentUser.setup(this.callback);
     },
     "works":  {
-      topic: function () {  
+      topic: function () {
         bigTentUser.getAssertion(TEST_ORIGIN, this.callback, 'bigtent.domain');
       },
       "succeeds": function (err, r) {

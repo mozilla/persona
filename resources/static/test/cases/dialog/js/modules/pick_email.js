@@ -84,11 +84,10 @@
   });
 
   asyncTest("signIn - trigger 'email_chosen message'", function() {
-    storage.addEmail("testuser@testuser.com", {});
-    storage.addEmail("testuser2@testuser.com", {});
+    storage.addEmail("testuser@testuser.com");
+    storage.addEmail("testuser2@testuser.com", {cert: 'sdlkjfsdfj'});
 
     createController();
-
     // this should only be triggered once.  testHelpers.register checks this
     // for us.
     var assertion;
@@ -96,7 +95,6 @@
       ok(info.email, "email_chosen message triggered with email");
       start();
     });
-
     // trying to sign in without an email selected shows a tooltip.
     controller.signIn();
     testHelpers.testTooltipVisible();

@@ -395,27 +395,6 @@ BrowserID.Network = (function() {
       });
     },
 
-
-    /**
-     * Set the password of the current user.
-     * @method setPassword
-     * @param {string} password - new password.
-     * @param {function} [onComplete] - Callback to call when complete.
-     * @param {function} [onFailure] - Called on XHR failure.
-     */
-    setPassword: function(password, onComplete, onFailure) {
-      post({
-        url: "/wsapi/set_password",
-        data: {
-          password: password
-        },
-        success: function(status) {
-          complete(onComplete, status.success);
-        },
-        error: onFailure
-      });
-    },
-
     /**
      * post interaction data
      * @method setPassword
@@ -455,6 +434,9 @@ BrowserID.Network = (function() {
           newpass: newPassword
         },
         success: function(status) {
+          // successful change of password will upgrade a session to password
+          // level auth
+          if (status) auth_status = "password";
           complete(onComplete, status.success);
         },
         error: onFailure
@@ -619,10 +601,10 @@ BrowserID.Network = (function() {
           // storage.
           // update our local storage map of email addresses to user ids
           if (userid) {
-            storage.updateEmailToUserIDMapping(userid, _.keys(emails));
+            storage.updateEmailToUserIDMapping(userid, emails.emails);
           }
 
-          onComplete && onComplete(emails);
+          onComplete && onComplete(emails.emails);
         },
         error: onFailure
       });
@@ -746,6 +728,28 @@ BrowserID.Network = (function() {
           });
         }
         else {
+          complete(onFailure, "user not authenticated");
+        }
+      }, onFailure);
+    },
+
+    /**
+     * Mark the transition of this email as having been completed.
+     * @method usedAddressAsPrimary
+     * @param {string} [email] - The email that transitioned.
+     * @param {function} [onComplete] - Called whenever complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    usedAddressAsPrimary: function(email, onComplete, onFailure) {
+      Network.checkAuth(function authChecked(authenticated) {
+        if (authenticated) {
+          post({
+            url: "/wsapi/used_address_as_primary",
+            data: { email: email },
+            success: onComplete,
+            error: onFailure
+          });
+        } else {
           complete(onFailure, "user not authenticated");
         }
       }, onFailure);

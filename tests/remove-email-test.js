@@ -11,7 +11,8 @@ vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 email = require('../lib/email.js'),
-jwcrypto = require('jwcrypto');
+jwcrypto = require('jwcrypto'),
+secondary = require('./lib/secondary.js');
 
 var suite = vows.describe('forgotten-email');
 
@@ -23,44 +24,18 @@ start_stop.addStartupBatches(suite);
 
 // every time a new token is sent out, let's update the global
 // var 'token'
-var token = undefined;
-
-// create a new account via the api with (first address)
+// create a new secondary account
 suite.addBatch({
-  "staging an account": {
-    topic: wsapi.post('/wsapi/stage_user', {
-      email: 'first@fakeemail.com',
-      pass: 'firstfakepass',
-      site:'http://localhost:123'
-    }),
-    "works": function(err, r) {
-      assert.strictEqual(r.code, 200);
-    }
-  }
-});
-
-// wait for the token
-suite.addBatch({
-  "a token": {
+  "creating a secondary account": {
     topic: function() {
-      start_stop.waitForToken(this.callback);
-    },
-    "is obtained": function (t) {
-      assert.strictEqual(typeof t, 'string');
-      token = t;
-    }
-  }
-});
-
-suite.addBatch({
-  "create first account": {
-    topic: function() {
-      wsapi.post('/wsapi/complete_user_creation', { token: token }).call(this);
-    },
-    "account created": function(err, r) {
-      assert.equal(r.code, 200);
-      assert.strictEqual(true, JSON.parse(r.body).success);
-      token = undefined;
+      secondary.create({
+        email: 'first@fakeemail.com',
+        pass: 'firstfakepass',
+        site:'http://fakesite.com:123'
+      }, this.callback);
+    }, 
+    "succeeds": function(err, r) {
+      assert.isNull(err);
     }
   }
 });
@@ -88,6 +63,8 @@ suite.addBatch({
   }
 });
 
+var token = undefined;
+
 // wait for the token
 suite.addBatch({
   "a token": {
@@ -101,7 +78,7 @@ suite.addBatch({
   }
 });
 
-// confirm second email email address to the account
+// confirm second email address on the account
 suite.addBatch({
   "create second account": {
     topic: function() {
@@ -144,7 +121,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns two emails": function(err, r) {
-      r = Object.keys(JSON.parse(r.body));
+      r = JSON.parse(r.body).emails;
       assert.ok(r.indexOf('first@fakeemail.com') != -1);
       assert.ok(r.indexOf('second@fakeemail.com') != -1);
     }
@@ -167,7 +144,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns one emails": function(err, r) {
-      r = Object.keys(JSON.parse(r.body));
+      r = JSON.parse(r.body).emails;
       assert.ok(r.indexOf('first@fakeemail.com') !== -1);
       assert.ok(r.indexOf('second@fakeemail.com') === -1);
     }

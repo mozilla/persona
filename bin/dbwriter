@@ -20,7 +20,8 @@ heartbeat = require('../lib/heartbeat.js'),
 logger = require('../lib/logging.js').logger,
 shutdown = require('../lib/shutdown'),
 cachify = require('connect-cachify'),
-assets = require('../lib/static_resources').all;
+assets = require('../lib/static_resources').all,
+primary = require('../lib/primary');
 
 // dbwriter needs cachify to properly render emails with cachified URLs,
 // but it serves no cachified content, so it's not necc to register it as
@@ -120,6 +121,18 @@ db.open(config.get('database'), function (error) {
     // let async logging flush, then exit 1
     return process.nextTick(function() { process.exit(1); });
   }
+
+  // As we detect primaries are online in the browserid process,
+  // we must record this.  This allows us to handle cases where
+  // IdP's transition online or off.
+  primary.events.on('idp_seen', function(domain) {
+    db.updateIDPLastSeen(domain, function(err) {
+      if (err) {
+        logger.error("error writing successful fetch of .well-known for "
+                     + domain + " to database: " + err.toString());
+      }
+    });
+  });
 
   // shut down express gracefully on SIGINT
   shutdown.handleTerminationSignals(app, doShutdown);

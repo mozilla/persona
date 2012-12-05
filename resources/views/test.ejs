@@ -35,6 +35,10 @@
         <div id="authentication_form">
           <input type="text" id="authentication_email" />
           <input type="password" id="authentication_password" class="returning" />
+          <label for="authentication_email"></label>
+          <span class="label email_state">enter email</span>
+          <span class="label transition_to_secondary"><strong class="authentication_idp_name"></strong> transition</span>
+          <span class="label password_state">enter password</span>
         </div>
 
         <div id="controller_head">
@@ -142,6 +146,8 @@
     <script src="/dialog/js/modules/generate_assertion.js"></script>
     <script src="/dialog/js/modules/provision_primary_user.js"></script>
     <script src="/dialog/js/modules/primary_user_provisioned.js"></script>
+    <script src="/dialog/js/modules/primary_offline.js"></script>
+    <script src="/dialog/js/modules/upgrade_to_primary_user.js"></script>
     <script src="/dialog/js/modules/is_this_your_computer.js"></script>
     <script src="/dialog/js/modules/set_password.js"></script>
     <script src="/dialog/js/modules/rp_info.js"></script>
@@ -208,6 +214,8 @@
     <script src="cases/dialog/js/modules/generate_assertion.js"></script>
     <script src="cases/dialog/js/modules/provision_primary_user.js"></script>
     <script src="cases/dialog/js/modules/primary_user_provisioned.js"></script>
+    <script src="cases/dialog/js/modules/primary_offline.js"></script>
+    <script src="cases/dialog/js/modules/upgrade_to_primary_user.js"></script>
     <script src="cases/dialog/js/modules/is_this_your_computer.js"></script>
     <script src="cases/dialog/js/modules/set_password.js"></script>
     <script src="cases/dialog/js/modules/rp_info.js"></script>

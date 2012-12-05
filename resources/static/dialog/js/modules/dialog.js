@@ -287,7 +287,18 @@ BrowserID.Modules.Dialog = (function() {
       // XXX Perhaps put this into the state machine.
       self.bind(win, "unload", onWindowUnload);
 
-      self.publish("start", params);
+      function start() {
+        self.publish("start", params);
+      }
+
+      if (params.type === "primary") {
+        // at this point, we will only have type of primary if we're
+        // returning from #AUTH_RETURN. Mark that email as having been
+        // used as a primary, in case it used to be a secondary.
+        user.usedAddressAsPrimary(params.email, start, start);
+      } else {
+        start();
+      }
     }
 
     // BEGIN TESTING API

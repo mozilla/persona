@@ -51,6 +51,15 @@ process.env['SHIMMED_PRIMARIES'] += "," +
   util.format("cycle2.domain|http://127.0.0.1:10005|%s", path.join(__dirname, 'data',
     'cycle2.domain', '.well-known', 'browserid'));
 
+// a domain with a well-known document with an unparsable authority
+process.env['SHIMMED_PRIMARIES'] += "," +
+  util.format("borkedauthority.domain|http://127.0.0.1:10005|%s", path.join(__dirname, 'data',
+    'borkedauthority.domain', '.well-known', 'browserid'));
+
+// an explicitly disabled domain
+process.env['SHIMMED_PRIMARIES'] += "," +
+  util.format("disabled.domain|http://127.0.0.1:10005|%s", path.join(__dirname, 'data',
+    'disabled.domain', '.well-known', 'browserid'));
 
 var primary = require('../lib/primary.js');
 
@@ -94,7 +103,8 @@ suite.addBatch({
     },
     "succeeds": function(err, pubKey) {
       assert.strictEqual(err,
-        'Circular reference in delegating authority {"cycle.domain":0,"cycle2.domain":1}');
+        "can't get public key for cycle.domain: " +
+        'Circular reference in delegating authority: cycle.domain > cycle2.domain');
     }
   }
 });
@@ -106,9 +116,10 @@ suite.addBatch({
     },
     "succeeds": function(err, pubKey) {
       assert.strictEqual(err,
-        'Too many hops while delegating authority ["delegate0.domain","delegate1.domain",' +
-        '"delegate2.domain","delegate3.domain","delegate4.domain","delegate5.domain",' +
-        '"delegate6.domain"]');
+        "can't get public key for delegate0.domain: " +
+        'Too many hops while delegating authority: delegate0.domain > delegate1.domain > ' +
+        'delegate2.domain > delegate3.domain > delegate4.domain > delegate5.domain > ' +
+        'delegate6.domain');
     }
   }
 });
@@ -119,10 +130,36 @@ suite.addBatch({
       return primary.getPublicKey('hozed.domain', this.callback);
     },
     "succeeds": function(err, pubKey) {
-      assert.strictEqual(err.indexOf('Circular reference in delegating authority '), 0);
+      assert.strictEqual(err.indexOf('Circular reference in delegating authority'), 39);
     }
   }
 });
+
+suite.addBatch({
+  "if the authority key is malformed": {
+    topic: function() {
+      return primary.checkSupport('borkedauthority.domain', this.callback);
+    },
+    "support is disabled": function(err, r) {
+      assert.equal(
+        err,
+        "bad support document for 'borkedauthority.domain': malformed authority");
+    }
+  }
+});
+
+suite.addBatch({
+  "if `disabled: true` is present": {
+    topic: function() {
+      return primary.checkSupport('disabled.domain', this.callback);
+    },
+    "support is disabled": function(err, r) {
+      assert.isNull(err);
+      assert.strictEqual(r.disabled, true);
+    }
+  }
+});
+
 
 // run or export the suite.
 if (process.argv[1] === __filename) suite.run();

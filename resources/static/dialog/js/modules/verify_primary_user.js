@@ -11,6 +11,8 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email,
       auth_url,
       dom = bid.DOM,
+      user = bid.User,
+      errors = bid.Errors,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
       complete = helpers.complete;
@@ -35,7 +37,15 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
   function cancel(callback) {
     /*jshint validthis:true*/
     this.close("cancel_state");
-    callback && callback();
+    complete(callback);
+  }
+
+  function showsPrimaryTransition(state) {
+    // we know the type is "primary", and they aren't verified to be at
+    // this module. We need to show the transition is we've never seen
+    // this email before, or we have, but last time it was a secondary.
+    // The state should be marked "known" when the verification returns.
+    return state === "unknown" || state === "transition_to_primary";
   }
 
   var Module = bid.Modules.PageModule.extend({
@@ -48,20 +58,29 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email = data.email;
       auth_url = data.auth_url;
 
-      self.renderDialog("verify_primary_user", {
-        email: data.email,
-        auth_url: data.auth_url,
-        requiredEmail: data.requiredEmail || false,
-        personaTOSPP: data.personaTOSPP,
-        siteName: data.siteName,
-        idpName: data.idpName
-      });
+      user.addressInfo(email, function onSuccess(info) {
+        if (showsPrimaryTransition(info.state)) {
+          self.renderDialog("verify_primary_user", {
+            email: data.email,
+            auth_url: data.auth_url,
+            requiredEmail: data.requiredEmail || false,
+            personaTOSPP: data.personaTOSPP,
+            siteName: data.siteName,
+            idpName: data.idpName,
+            transition_to_primary: info.state === "transition_to_primary"
+          });
 
-      if (data.siteTOSPP) {
-        dialogHelpers.showRPTosPP.call(self);
-      }
+          if (data.siteTOSPP) {
+            dialogHelpers.showRPTosPP.call(self);
+          }
 
-      self.click("#cancel", cancel);
+          self.click("#cancel", cancel);
+          complete(data.ready);
+        } else {
+          verify.call(self, data.ready);
+        }
+      }, self.getErrorDialog(errors.addressInfo));
+
 
       sc.start.call(self, data);
     },

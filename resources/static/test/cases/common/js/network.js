@@ -99,7 +99,7 @@
   });
 
   asyncTest("checkAuth: simulate a delayed request - xhr_delay and xhr_complete both triggered", function() {
-    transport.setContextInfo("auth_level", "primary");
+    transport.setContextInfo("auth_level", "assertion");
     transport.setDelay(200);
     network.init({
       time_until_delay: 100
@@ -116,7 +116,7 @@
     });
 
     network.checkAuth(function onSuccess(authenticated) {
-      equal(authenticated, "primary", "we have an authentication");
+      equal(authenticated, "assertion", "we have an authentication");
       equal(delayInfo.network.url, "/wsapi/session_context", "delay info correct");
       equal(completeInfo.network.url, "/wsapi/session_context", "complete info correct");
       start();
@@ -124,7 +124,7 @@
   });
 
   asyncTest("checkAuth: immediate success return - no xhr_delay triggered", function() {
-    transport.setContextInfo("auth_level", "primary");
+    transport.setContextInfo("auth_level", "assertion");
 
     transport.setDelay(50);
     network.init({
@@ -142,10 +142,10 @@
   });
 
   asyncTest("checkAuth with valid authentication", function() {
-    transport.setContextInfo("auth_level", "primary");
+    transport.setContextInfo("auth_level", "assertion");
     network.checkAuth(function onSuccess(authenticated) {
       // a wait to happen to give xhr_delay a chance to return
-      equal(authenticated, "primary", "we have an authentication");
+      equal(authenticated, "assertion", "we have an authentication");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -514,18 +514,6 @@
   asyncTest("checkEmailReverify mustAuth", testVerificationMustAuth.curry("checkEmailReverify"));
   asyncTest("checkEmailReverify complete", testVerificationComplete.curry("checkEmailReverify"));
 
-
-  asyncTest("setPassword happy case expects true status", function() {
-    network.setPassword("password", function onComplete(status) {
-      equal(status, true, "correct status");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("setPassword with XHR failure", function() {
-    failureCheck(network.setPassword, "password");
-  });
-
   asyncTest("serverTime", function() {
     // I am forcing the server time to be 1.25 seconds off.
     transport.setContextInfo("server_time", new Date().getTime() - 1250);
@@ -568,7 +556,7 @@
 
     network.addressInfo(TEST_EMAIL, function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
-      equal(data.known, false, "address is unknown to BrowserID");
+      equal(data.state, "unknown", "address is unknown to BrowserID");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -578,7 +566,7 @@
 
     network.addressInfo(TEST_EMAIL, function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
-      equal(data.known, true, "address is known to BrowserID");
+      equal(data.state, "known", "address is known to BrowserID");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -689,6 +677,32 @@
     var data = {};
     transport.useResult("ajaxError");
     network.sendInteractionData(data, testHelpers.unexpectedSuccess, testHelpers.expectedXHRFailure);
+  });
+
+  asyncTest("usedAddressAsPrimary success - call success", function () {
+    network.authenticate(TEST_EMAIL, "password", function() {
+      transport.useResult("primaryTransition");
+      network.usedAddressAsPrimary(TEST_EMAIL, function (status) {
+        ok(status.success);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    });
+  });
+
+  asyncTest("usedAddressAsPrimary success - call success", function () {
+    network.usedAddressAsPrimary(TEST_EMAIL,
+                                 testHelpers.unexpectedSuccess,
+                                 testHelpers.expectedXHRFailure);
+  });
+
+  asyncTest("usedAddressAsPrimary success - call no-op", function () {
+    network.authenticate(TEST_EMAIL, "password", function() {
+      transport.useResult("primary");
+      network.usedAddressAsPrimary(TEST_EMAIL, function (status) {
+        equal(status.success, false);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    });
   });
 
 }());

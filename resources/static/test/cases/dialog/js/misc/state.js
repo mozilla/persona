@@ -22,7 +22,7 @@
   };
   ActionsMock.prototype = {};
   for(var key in bid.Modules.Actions.prototype) {
-    if(bid.Modules.Actions.prototype.hasOwnProperty(key)) {
+    if (bid.Modules.Actions.prototype.hasOwnProperty(key)) {
       ActionsMock.prototype[key] = (function(key) {
         return function(info) {
           this.called[key] = true;
@@ -31,7 +31,7 @@
       }(key));
       ActionsMock.prototype.reset = function() {
         for(var key in ActionsMock.prototype) {
-          if(bid.Modules.Actions.prototype.hasOwnProperty(key)) {
+          if (bid.Modules.Actions.prototype.hasOwnProperty(key)) {
             delete this.called[key];
             delete this.info[key];
           }
@@ -43,13 +43,14 @@
   function testActionStarted(actionName, requiredOptions) {
     ok(actions.called[actionName], actionName + " called");
     for(var key in requiredOptions) {
+      ok(actions.info[actionName], "Expected actions.info to have [" + actionName + "]");
       equal(actions.info[actionName][key], requiredOptions[key],
           actionName + " called with " + key + "=" + requiredOptions[key]);
     }
   }
 
   function testStagingThrottledRetry(startMessage, expectedStagingAction) {
-    mediator.publish(startMessage, { email: TEST_EMAIL, complete: function() {
+    mediator.publish(startMessage, { email: TEST_EMAIL, type: "secondary", complete: function() {
         mediator.publish("password_set");
         actions.reset();
 
@@ -85,7 +86,7 @@
     // has received the "complete" message from the polling function, and all
     // addresses are synced.  Add the test email and make sure the email_chosen
     // message is triggered.
-    storage.addSecondaryEmail(TEST_EMAIL, { unverified: true });
+    storage.addEmail(TEST_EMAIL);
     mediator.publish(confirmationMessage);
   }
 
@@ -217,7 +218,7 @@
     // simulate the flow of a user being staged through to confirmation. Since
     // we are not actually doing the middle bits and saving off a cert for the
     // email address, we get an invalid email exception thrown.
-    storage.addSecondaryEmail(TEST_EMAIL);
+    storage.addEmail(TEST_EMAIL);
     mediator.publish("user_staged", { email: TEST_EMAIL });
     try {
       mediator.publish("user_confirmed");
@@ -231,7 +232,7 @@
   });
 
   asyncTest("primary_user with already provisioned primary user - redirect to primary_user_ready", function() {
-    storage.addEmail(TEST_EMAIL, { type: "primary", cert: "cert" });
+    storage.addEmail(TEST_EMAIL, { cert: "cert" });
     mediator.subscribe("primary_user_ready", function(msg, info) {
       equal(info.email, TEST_EMAIL, "primary_user_ready triggered with correct email");
       start();
@@ -289,7 +290,7 @@
   });
 
   asyncTest("primary_user_ready - redirect to `email_chosen`", function() {
-    storage.addEmail(TEST_EMAIL, {});
+    storage.addEmail(TEST_EMAIL);
     mediator.subscribe("email_chosen", function(msg, info) {
       equal(info.email, TEST_EMAIL, "correct email passed");
       start();
@@ -300,7 +301,7 @@
   });
 
   asyncTest("authenticated - redirect to `email_chosen`", function() {
-    storage.addEmail(TEST_EMAIL, {});
+    storage.addEmail(TEST_EMAIL);
     mediator.subscribe("email_chosen", function(msg, data) {
       equal(data.email, TEST_EMAIL);
       start();
@@ -338,7 +339,7 @@
 
   test("assertion_generated with assertion - doAssertionGenerated called", function() {
     setContextInfo("password");
-    storage.addEmail(TEST_EMAIL, {});
+    storage.addEmail(TEST_EMAIL);
     mediator.publish("assertion_generated", {
       assertion: "assertion"
     });
@@ -366,7 +367,7 @@
     setContextInfo("password");
     // First, set up the context info for the email.
 
-    storage.addEmail(TEST_EMAIL, {});
+    storage.addEmail(TEST_EMAIL);
     mediator.subscribe("generate_assertion", function() {
       ok(true, "redirect to generate_assertion");
       start();
@@ -379,7 +380,7 @@
       equal(info.email, TEST_EMAIL, "correct email passed");
       start();
     });
-    storage.addSecondaryEmail(TEST_EMAIL);
+    storage.addEmail(TEST_EMAIL);
     mediator.publish("email_staged", { email: TEST_EMAIL });
     // simulate the flow of a user being staged through to confirmation. Since
     // we are not actually doing the middle bits and saving off a cert for the
@@ -444,7 +445,7 @@
   });
 
   asyncTest("email_chosen with verified secondary email, user must authenticate - call doAuthenticateWithRequiredEmail", function() {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
+    storage.addEmail(TEST_EMAIL);
 
     xhr.setContextInfo("auth_level", "assertion");
 
@@ -459,7 +460,7 @@
   });
 
   asyncTest("email_chosen with verified secondary email, user authenticated to secondary - redirect to email_valid_and_ready", function() {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
+    storage.addEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", "password");
 
     mediator.subscribe("email_valid_and_ready", function(msg, info) {
@@ -472,8 +473,32 @@
     });
   });
 
-  function testReverifyEmailChosen(auth_level) {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+  test("email_chosen with secondary email, transition_to_secondary", function () {
+    storage.addEmail(TEST_EMAIL);
+    mediator.publish("email_chosen", {
+      email: TEST_EMAIL,
+      type: 'secondary',
+      state: 'transition_to_secondary'
+    });
+    console.log('actions called=' + JSON.stringify(actions.called));
+    equal(actions.called.doAuthenticate, true, "doAuthenticate called");
+  });
+
+  test("email_chosen with secondary email, transition_no_password", function () {
+    storage.addEmail(TEST_EMAIL);
+    mediator.publish("email_chosen", {
+      email: TEST_EMAIL,
+      type: 'secondary',
+      state: 'transition_no_password'
+    });
+    equal(actions.called.doSetPassword, true, "doSetPassword called");
+    mediator.publish("password_set");
+    equal(actions.called.doStageResetPassword, true, "doSetPassword called");
+  });
+
+  function testReverifyEmailChosen(auth_level, info) {
+    info = info || {};
+    storage.addEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", auth_level);
 
     mediator.subscribe("stage_reverify_email", function(msg, info) {
@@ -481,17 +506,17 @@
       start();
     });
 
-    mediator.publish("email_chosen", {
+    mediator.publish("email_chosen", _.extend(info, {
       email: TEST_EMAIL
-    });
+    }));
   }
 
   asyncTest("email_chosen with unverified secondary email, user authenticated to secondary - redirect to stage_reverify_email", function() {
-    testReverifyEmailChosen("password");
+    testReverifyEmailChosen("password", { type: "secondary", state: "unverified" });
   });
 
   asyncTest("email_chosen with unverified secondary email, user authenticated to primary - redirect to stage_reverify_email", function() {
-    testReverifyEmailChosen("assertion");
+    testReverifyEmailChosen("assertion", { type: "secondary", state: "unverified" });
   });
 
   test("email_chosen with primary email - call doProvisionPrimaryUser", function() {
@@ -502,9 +527,8 @@
     // check here whether the cert is ready, but it is early days yet and
     // the format may change.
     var email = TEST_EMAIL;
-    storage.addEmail(email, { type: "primary" });
-    mediator.publish("email_chosen", { email: email });
-
+    storage.addEmail(email);
+    mediator.publish("email_chosen", { email: email, type: "primary", issuer: "testuser.com", state: "known" });
     equal(actions.called.doProvisionPrimaryUser, true, "doProvisionPrimaryUser called");
   });
 
@@ -541,6 +565,7 @@
   });
 
   asyncTest("stage_email - first secondary email - call doSetPassword", function() {
+    xhr.setContextInfo("has_password", false);
     mediator.publish("stage_email", {
       complete: function() {
         testActionStarted("doSetPassword");
@@ -551,9 +576,11 @@
 
 
   asyncTest("stage_email - second secondary email - call doStageEmail", function() {
-    storage.addSecondaryEmail("testuser@testuser.com");
+    storage.addEmail("testuser@testuser.com");
+    xhr.setContextInfo("has_password", true);
 
     mediator.publish("stage_email", {
+      type: "secondary",
       complete: function() {
         equal(actions.called.doStageEmail, true, "doStageEmail called");
         start();
@@ -561,7 +588,8 @@
     });
   });
 
-  asyncTest("multiple calls to password_set for stage_email, simulate throttling - call doAddEmail with correct email for each", function() {
+  asyncTest("multiple calls to password_set for stage_email, simulate throttling - call doStageEmail with correct email for each", function() {
+    xhr.setContextInfo("has_password", false);
     testStagingThrottledRetry("stage_email", "doStageEmail");
   });
 

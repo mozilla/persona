@@ -38,6 +38,18 @@ suite.addBatch({
       assert.lengthOf(errors, 0);
     }
   },
+/* We should DO this:
+  "run jshint on the tests directory": {
+    topic: function () {
+      var libPath = [path.join(__dirname, '../tests')];
+      var libRc = JSON.parse(fs.readFileSync(path.join(__dirname, '../.jshintrc')).toString());
+      return jshintFormatter(jshint(libPath, libRc, function noop_reporter(){}));
+    },
+    "should have no jshint warnings" : function (errors) {
+      assert.lengthOf(errors, 0);
+    }
+  },
+*/
   "run jshint on the static directory": {
     topic: function() {
       // we want most of the static js files, except for test, build,

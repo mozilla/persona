@@ -62,7 +62,7 @@ BrowserID.signIn = (function() {
               title = gettext("Sign In"),
               submit = signInSubmit;
 
-          if (!info.known) {
+          if (info.state === "unknown") {
             bodyClassName = "unknown_secondary";
             showClassName = "vpassword_entry";
             title = gettext("Sign Up"),

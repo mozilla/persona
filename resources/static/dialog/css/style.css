@@ -452,6 +452,11 @@ a.emphasize:active {
     display: none;
 }
 
+#upgrade_to_primary {
+  max-width: 230px;
+  float: left;
+}
+
 #your_computer_content {
   max-width: 490px;
   margin: auto;
@@ -481,3 +486,6 @@ a.emphasize:active {
   display: block;
 }
 
+#authentication_form span.label {
+  display: none;
+}

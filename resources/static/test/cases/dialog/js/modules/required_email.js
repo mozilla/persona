@@ -327,6 +327,7 @@
 
   asyncTest("unknown_secondary: user who is authenticated to assertion level, account already has password - user sees verify screen", function() {
     xhr.setContextInfo("auth_level",  "assertion");
+    xhr.setContextInfo("has_password",  true);
     xhr.useResult("unknown_secondary");
 
     storage.addEmail("testuser@testuser.com", { type: "secondary" });
@@ -344,6 +345,7 @@
 
   asyncTest("unknown_secondary: user who is authenticated to assertion level, account needs password - stage_email triggered", function() {
     xhr.setContextInfo("auth_level",  "assertion");
+    xhr.setContextInfo("has_password",  false);
     xhr.useResult("unknown_secondary");
 
     var email = "unregistered@testuser.com";

@@ -114,8 +114,8 @@
   });
 
   test("setOriginEmail/getOriginEmail", function() {
-    storage.addEmail("testuser@testuser.com", { type: "primary" });
-    storage.addEmail("testuser2@testuser.com", { type: "primary" });
+    storage.addEmail("testuser@testuser.com");
+    storage.addEmail("testuser2@testuser.com");
 
     lib.setOrigin("http://testdomain.org");
 
@@ -135,9 +135,9 @@
   });
 
   test("getSortedEmailKeypairs - return array sorted by address", function() {
-    storage.addEmail("third", {});
-    storage.addEmail("second", {});
-    storage.addEmail("first", {});
+    storage.addEmail("third");
+    storage.addEmail("second");
+    storage.addEmail("first");
 
     var sortedIdentities = lib.getSortedEmailKeypairs();
 
@@ -426,7 +426,7 @@
 
   asyncTest("verifyUser with a good token", function() {
     storage.setReturnTo(testOrigin);
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.addEmail(TEST_EMAIL);
 
     lib.verifyUser("token", "password", function onSuccess(info) {
 
@@ -436,7 +436,6 @@
         returnTo: testOrigin
       });
       equal(storage.getReturnTo(), "", "initiating origin was removed");
-      equal(storage.getEmail(TEST_EMAIL).verified, true, "email marked as verified");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -463,7 +462,9 @@
   });
 
   asyncTest("canSetPassword with only primary addresses - expect false", function() {
-    storage.addEmail(TEST_EMAIL, { type: "primary" });
+    xhr.setContextInfo("has_password", false);
+
+    storage.addEmail(TEST_EMAIL);
 
     lib.canSetPassword(function(status) {
       equal(false, status, "status is false with user with only primaries");
@@ -472,33 +473,14 @@
   });
 
   asyncTest("canSetPassword with secondary addresses - expect true", function() {
-    storage.addEmail(TEST_EMAIL, { type: "secondary" });
+    xhr.setContextInfo("has_password", true);
+
+    storage.addEmail(TEST_EMAIL);
 
     lib.canSetPassword(function(status) {
       equal(true, status, "status is true with user with secondaries");
       start();
     }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("setPassword with XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    lib.setPassword(
-      "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
-
-  asyncTest("setPassword success", function() {
-    lib.setPassword(
-      "password",
-      function(status) {
-        ok(status, true, "status is true for success");
-        start();
-      },
-      testHelpers.expectedXHRFailure
-    );
   });
 
   asyncTest("requestPasswordReset with known email - true status", function() {
@@ -535,7 +517,7 @@
   });
 
   asyncTest("completePasswordReset with a good token", function() {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.addEmail(TEST_EMAIL);
     storage.setReturnTo(testOrigin);
 
     lib.completePasswordReset("token", "password", function onSuccess(info) {
@@ -546,7 +528,6 @@
       });
 
       equal(storage.getReturnTo(), "", "initiating origin was removed");
-      equal(storage.getEmail(TEST_EMAIL).verified, true, "email now marked as verified");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -572,23 +553,8 @@
     );
   });
 
-  asyncTest("requestEmailReverify with owned verified email - false status", function() {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: true });
-
-    var returnTo = "http://samplerp.org";
-    lib.setReturnTo(returnTo);
-    lib.requestEmailReverify(TEST_EMAIL, function(status) {
-      testObjectValuesEqual(status, {
-        success: false,
-        reason: "verified_email"
-      });
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
   asyncTest("requestEmailReverify with owned unverified email - false status", function() {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.addEmail(TEST_EMAIL);
 
     var returnTo = "http://samplerp.org";
     lib.setReturnTo(returnTo);
@@ -612,7 +578,7 @@
 
   asyncTest("requestEmailReverify owned email with throttle - false status, throttle", function() {
     xhr.useResult("throttle");
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.addEmail(TEST_EMAIL);
 
     lib.requestEmailReverify(TEST_EMAIL, function(status) {
       testObjectValuesEqual(status, {
@@ -624,7 +590,7 @@
   });
 
   asyncTest("requestEmailReverify with XHR failure", function() {
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.addEmail(TEST_EMAIL);
     failureCheck(lib.requestEmailReverify, TEST_EMAIL);
   });
 
@@ -689,7 +655,7 @@
   });
 
   asyncTest("checkAuthentication with valid authentication", function() {
-    storage.addSecondaryEmail(TEST_EMAIL);
+    storage.addEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", "assertion");
 
     lib.checkAuthentication(function(authenticated) {
@@ -702,7 +668,7 @@
 
 
   asyncTest("checkAuthentication with invalid authentication - localStorage cleared", function() {
-    storage.addSecondaryEmail(TEST_EMAIL);
+    storage.addEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", undefined);
 
     lib.checkAuthentication(function(authenticated) {
@@ -714,7 +680,7 @@
 
 
   asyncTest("checkAuthentication with cookies disabled - localStorage is not cleared, user can enable their cookies and try again", function() {
-    storage.addSecondaryEmail(TEST_EMAIL);
+    storage.addEmail(TEST_EMAIL);
     network.init({ cookiesEnabledOverride: false });
 
     lib.checkAuthentication(function(authenticated) {
@@ -742,7 +708,7 @@
 
 
   asyncTest("checkAuthenticationAndSync with invalid authentication - localStorage cleared", function() {
-    storage.addSecondaryEmail(TEST_EMAIL);
+    storage.addEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", undefined);
 
     lib.checkAuthenticationAndSync(function onComplete(authenticated) {
@@ -753,7 +719,7 @@
   });
 
   asyncTest("checkAuthenticationAndSync with cookies disabled - localStorage not cleared, user can enable their cookies and try again", function() {
-    storage.addSecondaryEmail(TEST_EMAIL);
+    storage.addEmail(TEST_EMAIL);
     network.init({ cookiesEnabledOverride: false });
 
     lib.checkAuthenticationAndSync(function onComplete(authenticated) {
@@ -789,7 +755,7 @@
   });
 
   asyncTest("passwordNeededToAddSecondaryEmail, account only has primaries - call callback with true", function() {
-    storage.addEmail("testuser@testuser.com", { type: "primary" });
+    xhr.setContextInfo("has_password", false);    
 
     lib.passwordNeededToAddSecondaryEmail(function(passwordNeeded) {
       equal(passwordNeeded, true, "password correctly needed");
@@ -798,7 +764,7 @@
   });
 
   asyncTest("passwordNeededToAddSecondaryEmail, account already has secondary - call callback with false", function() {
-    storage.addEmail("testuser@testuser.com", { type: "secondary" });
+    xhr.setContextInfo("has_password", true);
 
     lib.passwordNeededToAddSecondaryEmail(function(passwordNeeded) {
       equal(passwordNeeded, false, "password not needed");
@@ -807,8 +773,7 @@
   });
 
   asyncTest("passwordNeededToAddSecondaryEmail, mix of types - call callback with false", function() {
-    storage.addEmail("testuser@testuser.com", { type: "primary" });
-    storage.addEmail("testuser1@testuser.com", { type: "secondary" });
+    xhr.setContextInfo("has_password", true);
 
     lib.passwordNeededToAddSecondaryEmail(function(passwordNeeded) {
       equal(passwordNeeded, false, "password not needed");
@@ -910,7 +875,7 @@
 
   asyncTest("verifyEmail with a good token - callback with email, returnTo, valid", function() {
     storage.setReturnTo(testOrigin);
-    storage.addSecondaryEmail(TEST_EMAIL, { verified: false });
+    storage.addEmail(TEST_EMAIL);
     lib.verifyEmail("token", "password", function onSuccess(info) {
       testObjectValuesEqual(info, {
         valid: true,
@@ -918,7 +883,6 @@
         returnTo: testOrigin
       });
       equal(storage.getReturnTo(), "", "initiating returnTo was removed");
-      equal(storage.getEmail(TEST_EMAIL).verified, true, "email now marked as verified");
 
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -1027,7 +991,7 @@
   });
 
   asyncTest("syncEmails with identities preloaded and none to add", function() {
-    storage.addEmail(TEST_EMAIL, {});
+    storage.addEmail(TEST_EMAIL);
     lib.syncEmails(function onSuccess() {
       var identities = lib.getStoredEmailKeypairs();
       ok(TEST_EMAIL in identities, "Our new email is added");
@@ -1046,6 +1010,7 @@
       var identities = lib.getStoredEmailKeypairs();
       ok(TEST_EMAIL in identities, "Our old email address is still there");
       ok("testuser2@testuser.com" in identities, "Our new email is added");
+
       equal(_.size(identities), 2, "there are two identities");
       start();
     }, testHelpers.unexpectedXHRFailure);
@@ -1061,20 +1026,6 @@
       ok(TEST_EMAIL in identities, "Our old email address is still there");
       equal("testuser2@testuser.com" in identities, false, "Our unknown email is removed");
       equal(_.size(identities), 1, "there is one identity");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("syncEmails with one to update", function() {
-    // verified is set to false here,  the mock for list_emails has verified
-    // set to true.  If emails are being updated, verified will be set to true
-    // whenever syncEmails is complete.
-    storage.addEmail(TEST_EMAIL, {pub: pubkey, cert: random_cert, verified: false});
-
-    lib.syncEmails(function onSuccess() {
-      var identities = lib.getStoredEmailKeypairs();
-      ok(TEST_EMAIL in identities, "refreshed key is synced");
-      equal(identities[TEST_EMAIL].verified, true, "verified was correctly updated");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -1245,8 +1196,7 @@
       function(info) {
         equal(info.email, "unregistered@testuser.com", "correct address");
         equal(info.type, "secondary", "correct type");
-        equal(info.email, "unregistered@testuser.com", "correct email");
-        equal(info.known, false, "address not known to Persona");
+        equal(info.state, "unknown", "address not known to Persona");
         start();
       },
       testHelpers.unexpectedFailure
@@ -1260,7 +1210,7 @@
       function(info) {
         equal(info.type, "secondary", "correct type");
         equal(info.email, "registered@testuser.com", "correct email");
-        equal(info.known, true, "address known to Persona");
+        equal(info.state, "known", "address known to Persona");
         start();
       },
       testHelpers.unexpectedFailure
@@ -1324,19 +1274,46 @@
     );
   });
 
-  asyncTest("hasSecondary returns false if the user has 0 secondary email address", function() {
-    lib.hasSecondary(function(hasSecondary) {
-      equal(hasSecondary, false, "hasSecondary is false");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
+  // JWCrypto relies on there being a random seed.  The random seed is
+  // gotten whenever network.withContext is called.  Since this is
+  // supposed to mock the cert clearing step...
+  // add a random seed to ensure that we can get our keypair.
+  jwcrypto.addEntropy("H+ZgKuhjVckv/H4i0Qvj/JGJEGDVOXSIS5RCOjY9/Bo=");
+  function makeCert(email, issuer, cb) {
+    var opts = {algorithm: "DS", keysize: 256};
+    jwcrypto.generateKeypair(opts, function (err, keyPair) {
+      ok(!err, "We can generate a keypair");
+      // We don't care about idPSecretKey... reuse user's keyPair here
+      var idpSecretKey = keyPair.secretKey;
 
-  asyncTest("hasSecondary returns true if the user has at least one secondary email address", function() {
-    storage.addEmail(TEST_EMAIL, { type: "secondary" });
-    lib.hasSecondary(function(hasSecondary) {
-      equal(hasSecondary, true, "hasSecondary is true");
+      jwcrypto.cert.sign({
+        publicKey: keyPair.publicKey,
+        principal: {email: email}
+      }, {
+        issuer: issuer, expiresAt: new Date() + 10000, issuedAt: new Date()}, null, idpSecretKey, function (err, cert) {
+          ok(!err, "We can create a cert");
+          cb(cert);
+        });
+    });
+  }
+
+  asyncTest("checkEmailIssuer with changing issuer", function () {
+    var emailAddr = "registered@testuser.com";
+    makeCert(emailAddr, "secondary.domain", function (cert) {
+      storage.addEmail(emailAddr, { cert: cert });
+      ok(storage.getEmail(emailAddr).cert, "cert exists");
+      xhr.useResult("primary");
+      provisioning.setStatus(provisioning.AUTHENTICATED);
+      var newInfo = lib.checkEmailIssuer(emailAddr, {
+        email: emailAddr,
+        // new issuer
+        type: "secondary",
+        issuer: "testuser.com",
+        state: "transition_to_primary"
+      });
+      ok(!storage.getEmail(emailAddr).cert, "cert was cleared up");
       start();
-    }, testHelpers.unexpectedXHRFailure);
+    });
   });
 
   asyncTest("setComputerOwnershipStatus with true, isUsersComputer - mark the computer as the users, prolongs the user's session", function() {
@@ -1413,6 +1390,27 @@
         }, testHelpers.expectedXHRFailure);
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("usedAddressAsPrimary successfully calls wsapi", function () {
+    lib.authenticate(TEST_EMAIL, "password", function() {
+      xhr.useResult("primaryTransition");
+      lib.usedAddressAsPrimary(TEST_EMAIL, function (status) {
+        ok(status.success);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    });
+    
+  });
+
+  asyncTest("usedAddressAsPrimary successfully calls wsapi, but can receive no-op", function () {
+    lib.authenticate(TEST_EMAIL, "password", function() {
+      xhr.useResult("primary");
+      lib.usedAddressAsPrimary(TEST_EMAIL, function (status) {
+        equal(status.success, false);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    });
   });
 
 }());

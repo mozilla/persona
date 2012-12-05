@@ -88,7 +88,7 @@ BrowserID.State = (function() {
       // staging request is throttled, the next time set_password is called,
       // these variables are needed to know which staging function to call.
       // See issue #2258.
-      self.newUserEmail = self.addEmailEmail = self.resetPasswordEmail = null;
+      self.newUserEmail = self.addEmailEmail = self.resetPasswordEmail = self.transitionNoPassword = null;
 
       startAction(actionName, actionInfo);
     }
@@ -192,14 +192,26 @@ BrowserID.State = (function() {
       complete(info.complete);
     });
 
+    handleState("transition_no_password", function(msg, info) {
+      self.transitionNoPassword = info.email;
+      startAction(false, "doSetPassword", info);
+      complete(info.complete);
+    });
+
     handleState("password_set", function(msg, info) {
-      /* A password can be set for one of three reasons - 1) This is a new user
-       * or 2) a user is adding the first secondary address to an account that
-       * consists only of primary addresses, or 3) an existing user has
-       * forgotten their password and wants to reset it.  #1 is taken care of
-       * by newUserEmail, #2 by addEmailEmail, #3 by resetPasswordEmail.
+      /* A password can be set for one of three reasons - 
+       * 1) This is a new user
+       * 2) A user is adding the first secondary address to an account that
+       *    consists only of primary addresses
+       * 3) An existing user has forgotten their password and wants to reset it.
+       * 4) A primary address was downgraded to a secondary and the user
+       *    has no password in the DB.
+       *
+       * #1 is taken care of by newUserEmail, #2 by addEmailEmail,
+       * #3 by resetPasswordEmail, and #4 by transitionNoPassword
        */
-      info = _.extend({ email: self.newUserEmail || self.addEmailEmail || self.resetPasswordEmail }, info);
+      info = _.extend({ email: self.newUserEmail || self.addEmailEmail ||
+                        self.resetPasswordEmail || self.transitionNoPassword }, info);
 
       if(self.newUserEmail) {
         startAction(false, "doStageUser", info);
@@ -210,16 +222,27 @@ BrowserID.State = (function() {
       else if(self.resetPasswordEmail) {
         startAction(false, "doStageResetPassword", info);
       }
+      else if (self.transitionNoPassword) {
+        startAction(false, "doStageResetPassword", info);
+      }
     });
 
     handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
 
     handleState("user_confirmed", handleEmailConfirmed);
 
+    handleState("upgraded_primary_user", function (msg, info) {
+      user.usedAddressAsPrimary(info.email, function () {
+        info.state = 'known';
+        redirectToState("email_chosen", info);
+      }, info.complete);
+    });
+
     handleState("primary_user", function(msg, info) {
       self.addPrimaryUser = !!info.add;
       var email = self.email = info.email,
           idInfo = storage.getEmail(email);
+
       if (idInfo && idInfo.cert) {
         redirectToState("primary_user_ready", info);
       }
@@ -282,7 +305,14 @@ BrowserID.State = (function() {
     });
 
     handleState("primary_user_ready", function(msg, info) {
+      // redirect to email_chosen, which is more a general codepath,
+      // ensure that it knows that this is a primary email address.
+      _.extend(info, { type: "primary" });
       redirectToState("email_chosen", info);
+    });
+
+    handleState("primary_offline", function(msg, info) {
+      startAction("doPrimaryOffline", info);
     });
 
     handleState("pick_email", function() {
@@ -294,7 +324,7 @@ BrowserID.State = (function() {
 
     handleState("email_chosen", function(msg, info) {
       var email = info.email,
-          idInfo = storage.getEmail(email);
+          record = storage.getEmail(email);
 
       self.email = email;
 
@@ -302,19 +332,26 @@ BrowserID.State = (function() {
         complete(info.complete);
       }
 
-      if (!idInfo) {
+      if (!record) {
         throw new Error("invalid email");
       }
 
-      mediator.publish("kpi_data", { email_type: idInfo.type });
+      mediator.publish("kpi_data", { email_type: info.type });
 
-      if (idInfo.type === "primary") {
-        if (idInfo.cert) {
+      if (info.state && 'offline' === info.state) {
+        redirectToState("primary_offline", info);
+      }
+      else if (info.type === "primary") {
+
+        if (record.cert) {
           // Email is a primary and the cert is available - the user can log
           // in without authenticating with the IdP. All invalid/expired
           // certs are assumed to have been checked and removed by this
           // point.
           redirectToState("email_valid_and_ready", info);
+        } else if ("transition_to_primary" === info.state) {
+          startAction("doUpgradeToPrimaryUser", info);
+          complete(info.complete);
         }
         else {
           // If the email is a primary and the cert is not available,
@@ -325,7 +362,14 @@ BrowserID.State = (function() {
         }
       }
       // Anything below this point means the address is a secondary.
-      else if (!idInfo.verified) {
+      else if ("transition_to_secondary" === info.state) {
+        startAction("doAuthenticate", info);
+      }
+      else if ("transition_no_password" === info.state) {
+        self.transitionNoPassword = info.email;
+        startAction("doSetPassword", _.extend({transition_no_password: true}, info));
+      }
+      else if (info.state === 'unverified') {
         // user selected an unverified secondary email, kick them over to the
         // verify screen.
         redirectToState("stage_reverify_email", info);

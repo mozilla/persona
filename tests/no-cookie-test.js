@@ -11,52 +11,26 @@ assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
-http = require('http');
+http = require('http'),
+secondary = require('./lib/secondary.js');
 
 var suite = vows.describe('registration-status-wsapi');
-
-// ever time a new token is sent out, let's update the global
-// var 'token'
-var token = undefined;
 
 // start up a pristine server
 start_stop.addStartupBatches(suite);
 
-// now start a registration
+// create a new secondary account
 suite.addBatch({
-  "start registration": {
-    topic: wsapi.post('/wsapi/stage_user', {
-      email: 'first@fakeemail.com',
-      pass: 'firstfakepass',
-      site:'http://fakesite.com:123'
-    }),
-    "returns 200": function(err, r) {
-      assert.strictEqual(r.code, 200);
-    }
-  }
-});
-
-// wait for the token
-suite.addBatch({
-  "a token": {
+  "creating a secondary account": {
     topic: function() {
-      start_stop.waitForToken(this.callback);
+      secondary.create({
+        email: 'first@fakeemail.com',
+        pass: 'firstfakepass',
+        site:'http://fakesite.com:123'
+      }, this.callback);
     },
-    "is obtained": function (t) {
-      assert.strictEqual(typeof t, 'string');
-      token = t;
-    }
-  }
-});
-
-suite.addBatch({
-  "completing user creation": {
-    topic: function() {
-      wsapi.post('/wsapi/complete_user_creation', { token: token }).call(this);
-    },
-    "works": function(err, r) {
-      assert.equal(r.code, 200);
-      token = undefined;
+    "succeeds": function(err, r) {
+      assert.isNull(err);
     }
   }
 });

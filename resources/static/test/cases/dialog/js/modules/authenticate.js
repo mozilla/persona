@@ -26,6 +26,11 @@
       PASSWORD_SELECTOR = "#authentication_password",
       FORGOT_PASSWORD_SELECTOR = "#forgotPassword",
       BODY_SELECTOR = "body",
+      AUTHENTICATION_LABEL = "#authentication_form label[for=authentication_email]",
+      EMAIL_LABEL = "#authentication_form .label.email_state",
+      TRANSITION_TO_SECONDARY_LABEL = "#authentication_form .label.transition_to_secondary",
+      PASSWORD_LABEL = "#authentication_form .label.password_state",
+      IDP_SELECTOR = "#authentication_form .authentication_idp_name",
       AUTHENTICATION_CLASS = "authentication";
 
 
@@ -100,7 +105,7 @@
     createController({
       email: "registered@testuser.com",
       type: "secondary",
-      known: true,
+      state: "known",
       ready: function() {
         equal($(EMAIL_SELECTOR).val(), "registered@testuser.com", "email prefilled");
         equal($("input[type=password]").is(":visible"), true, "password is shown");
@@ -135,12 +140,23 @@
     testUserUnregistered();
   });
 
+  asyncTest("checkEmail with transition_no_password, transition message", function() {
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
+    xhr.useResult("secondaryTransitionPassword");
+
+    register("transition_no_password", function(msg, info) {
+      ok(info.transition_no_password, "no_password state passed to set_password");
+      start();
+    });
+    controller.checkEmail();
+  });
+
   asyncTest("checkEmail with normal email, user registered - 'enter_password' message", function() {
     $(EMAIL_SELECTOR).val("registered@testuser.com");
     xhr.useResult("known_secondary");
 
     register("enter_password", function() {
-      ok(true, "email was valid, user registered");
+      equal($(AUTHENTICATION_LABEL).html(), $(PASSWORD_LABEL).html(), "enter password message shown");
       start();
     });
 
@@ -223,6 +239,19 @@
     controller.checkEmail();
   });
 
+  asyncTest("checkEmail with secondary that used to be a primary", function() {
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
+    xhr.useResult("secondaryTransition");
+
+    register("enter_password", function() {
+      equal($(AUTHENTICATION_LABEL).html(), $(TRANSITION_TO_SECONDARY_LABEL).html(), "transition message shown");
+      start();
+    });
+
+    controller.checkEmail();
+  });
+
+
   function testAuthenticated() {
     register("authenticated", function() {
       ok(true, "user authenticated as expected");
@@ -281,6 +310,7 @@
       start();
     });
   });
+
 
 }());
 

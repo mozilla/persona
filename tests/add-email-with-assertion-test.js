@@ -163,7 +163,6 @@ suite.addBatch({
   }
 });
 
-
 // now create a lame cert: valid signature by the wrong party
 const OTHER_EMAIL = 'otheruser@other.domain'; // *not* TEST_DOMAIN
 var bad_cert, bad_assertion;
@@ -236,13 +235,35 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     },
     "returns an object with what we'd expect": function(err, r) {
-      var respObj = JSON.parse(r.body);
-      var emails = Object.keys(respObj);
-      assert.strictEqual(emails.length, 2);
+      var emails = JSON.parse(r.body).emails;
+      assert.strictEqual(emails.length, 2)
       assert.ok(emails.indexOf(TEST_EMAIL) != -1);
       assert.ok(emails.indexOf(TEST_FIRST_ACCT) != -1);
-      assert.equal(respObj[TEST_EMAIL].type, "primary");
-      assert.equal(respObj[TEST_FIRST_ACCT].type, "secondary");
+    }
+  },
+  "address info for TEST_EMAIL": {
+    topic: wsapi.get('/wsapi/address_info', {
+      email: TEST_EMAIL
+    }),
+    "returns type of primary": function(e, r) {
+      assert.isNull(e);
+      var r = JSON.parse(r.body);
+      assert.equal(r.type, "primary");
+      assert.equal(r.issuer, TEST_DOMAIN);
+      assert.equal(r.state, "known");
+      assert.isString(r.auth);
+      assert.isString(r.prov);
+    }
+  },
+  "address info for TEST_FIRST_ACCT": {
+    topic: wsapi.get('/wsapi/address_info', {
+      email: TEST_FIRST_ACCT
+    }),
+    "returns type of primary": function(e, r) {
+      assert.isNull(e);
+      var r = JSON.parse(r.body);
+      assert.equal(r.type, "secondary");
+      assert.equal(r.state, "known");
     }
   }
 });

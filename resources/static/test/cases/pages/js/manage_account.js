@@ -199,17 +199,17 @@
     });
   });
 
-  asyncTest("user with only primary emails should not have 'canSetPassword' class", function() {
-    xhr.useResult("primary");
+  asyncTest("user with no password should not have 'canSetPassword' class", function() {
+    xhr.setContextInfo("has_password", false);
 
     createController(mocks, function() {
-      equal($("body").hasClass("canSetPassword"), false, "canSetPassword class not added to body");
+      equal($("body").hasClass("canSetPassword"), false, "canSetPassword added to body");
       start();
     });
   });
 
-  asyncTest("user with >= 1 secondary email should see have 'canSetPassword' class", function() {
-    storage.addEmail("primary_user@primaryuser.com", { type: "secondary" });
+  asyncTest("user with a password should see have 'canSetPassword' class", function() {
+    xhr.setContextInfo("has_password", true);
 
     createController(mocks, function() {
       equal($("body").hasClass("canSetPassword"), true, "canSetPassword class added to body");

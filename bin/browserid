@@ -22,7 +22,9 @@ db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
 logger = require('../lib/logging.js').logger,
-shutdown = require('../lib/shutdown');
+shutdown = require('../lib/shutdown'),
+primary = require('../lib/primary'),
+forward = require('../lib/http_forward.js');
 
 var app = undefined;
 
@@ -130,6 +132,17 @@ db.open(config.get('database'), function (error) {
     // let async logging flush, then exit 1
     return setTimeout(function() { process.exit(1); }, 0);
   }
+
+  // As we detect primaries are online in the browserid process,
+  // we must record this.  This allows us to handle cases where
+  // IdP's transition online or off.
+  primary.events.on('idp_seen', function(domain) {
+    wsapi.requestToDBWriter({
+      path: '/wsapi/saw_idp?domain=' + encodeURIComponent(domain)
+    }, function(err, r) {
+      if (err) logger.warn("failed to note IDP seen for domain " + domain + ": " + err);
+    });
+  });
 
   // shut down express gracefully on SIGINT
   shutdown.handleTerminationSignals(app, function(readyForShutdownCB) {

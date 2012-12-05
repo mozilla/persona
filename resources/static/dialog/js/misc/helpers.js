@@ -146,6 +146,14 @@
     }
   }
 
+  function refreshEmailInfo(email, callback) {
+    /*jshint validthis:true*/
+    var self=this;
+    user.addressInfo(email, function (info) {
+      callback(_.extend({ email: email }, info));
+    }, self.getErrorDialog(errors.addressInfo, callback));
+  }
+
   function addSecondaryEmail(email, password, callback) {
     /*jshint validthis:true*/
     var self=this;
@@ -173,6 +181,7 @@
     authenticateUser: authenticateUser,
     createUser: createUser,
     addEmail: addEmail,
+    refreshEmailInfo: refreshEmailInfo,
     addSecondaryEmail: addSecondaryEmail,
     resetPassword: resetPassword,
     reverifyEmail: reverifyEmail,

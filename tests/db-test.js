@@ -185,6 +185,15 @@ suite.addBatch({
         assert.isNull(err);
         assert.ok(r);
       }
+    },
+    "and user": {
+      topic: function(err, uid) {
+        db.userKnown(uid, this.callback);
+      },
+      "has a password set and is known": function(err, known, hasPass) {
+        assert.equal(known, true);
+        assert.equal(hasPass, true);
+      }
     }
   }
 });
@@ -472,6 +481,39 @@ suite.addBatch({
 });
 
 suite.addBatch({
+  ".emailInfo for primary email address": {
+    topic: function() {
+      db.emailInfo('lloyd@primary.domain', this.callback);
+    },
+    "returns a lastUsedAs of primary": function(err, r) {
+      assert.isNull(err);
+      assert.equal(r.lastUsedAs, 'primary');
+      assert.equal(r.hasPassword, false);
+    }
+  },
+  ".emailInfo for secondary email address": {
+    topic: function() {
+      db.emailInfo('lloyd@somewhe.re', this.callback);
+    },
+    "returns a lastUsedAs of secondary": function(err, r) {
+      assert.isNull(err);
+      assert(!!r);
+      assert.equal(r.lastUsedAs, 'secondary');
+      assert.equal(r.hasPassword, true);
+    }
+  },
+  ".emailInfo for unknown email address": {
+    topic: function() {
+      db.emailInfo('unknown_email@example.domain', this.callback);
+    },
+    "returns no error and null": function(err, r) {
+      assert.isNull(err);
+      assert.isNull(r);
+    }
+  }
+});
+
+suite.addBatch({
   "canceling an account": {
     topic: function() {
       var cb = this.callback;
@@ -489,6 +531,75 @@ suite.addBatch({
       "to return false": function (err, r) {
         assert.isNull(err);
         assert.strictEqual(r, false);
+      }
+    }
+  }
+});
+
+var firstSeen;
+suite.addBatch({
+  "checking database for an IDP we don't know": {
+    topic: function() {
+      db.getIDPLastSeen("example.com", this.callback);
+    },
+    "returns null as lastSeen": function(err, lastSeen) {
+      assert.isNull(err);
+      assert.isNull(lastSeen);
+    }
+  },
+  "noting that we've seen an IDP": {
+    topic: function() {
+      db.updateIDPLastSeen("idp.example.com", this.callback);
+    },
+    "works": function(err) {
+        assert.isNull(err);
+    },
+    "and then checking if that IDP is known": {
+      topic: function() {
+        db.getIDPLastSeen("idp.example.com", this.callback);
+      },
+      "returns a recent date object": function(err, lastSeen) {
+        assert.isNull(err);
+        var delta = new Date() - lastSeen;
+        assert(delta < 1000, "idp was not seen in the last second (" + delta + "ms ago)");
+        firstSeen = lastSeen;
+      },
+      "and updating again after a second": {
+        topic: function() {
+          var cb = this.callback;
+          setTimeout(function() {
+            db.updateIDPLastSeen("idp.example.com", cb);
+          }, 1000);
+        },
+        "works": function(err) {
+          assert.isNull(err);
+        },
+        "and then checking if that IDP is known": {
+          topic: function() {
+            db.getIDPLastSeen("idp.example.com", this.callback);
+          },
+          "returns an updated date object": function(err, lastSeen) {
+            assert.isNull(err);
+            assert.notEqual(lastSeen.getTime(), firstSeen.getTime());
+          },
+          "but deleting": {
+            topic: function() {
+              db.forgetIDP("idp.example.com", this.callback);
+            },
+            "works": function(err) {
+              assert.isNull(err);
+            },
+            "and then checking if that IDP is known": {
+              topic: function() {
+                db.getIDPLastSeen("idp.example.com", this.callback);
+              },
+              "returns zero": function(err, lastSeen) {
+                assert.isNull(err);
+                assert.strictEqual(lastSeen, null);
+              }
+            }
+          }
+        }
       }
     }
   }
