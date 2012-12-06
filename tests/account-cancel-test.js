@@ -7,7 +7,7 @@
 /*
 Leaving out the requests for session_context which wsapi_client will make automagically.
 This is for a secondary email address that is not known.
-GET  200 application/json /wsapi/address_info?email=someuser%40somedomain.com -> JSON {"type":"secondary","known":false}
+GET  200 application/json /wsapi/address_info?email=someuser%40somedomain.com
 POST 200 application/json /wsapi/stage_user
 GET  200 application/json /wsapi/user_creation_status?email=someuser%40somedomain.com ... repeats
 GET  200 application/json /wsapi/email_for_token?token=XfffffffoGowzPuZi5oVP50NXuTW4DBENSv47NI5PgMJSV
@@ -26,7 +26,8 @@ vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 db = require('../lib/db.js'),
-config = require('../lib/configuration.js');
+config = require('../lib/configuration.js'),
+secrets = require('../lib/secrets.js');
 
 var suite = vows.describe('account-cancel');
 
@@ -36,26 +37,11 @@ suite.options.error = false;
 start_stop.addStartupBatches(suite);
 
 const
-TEST_EMAIL = 'someuser@somedomain.com',
+TEST_EMAIL = secrets.weakGenerate(12) + '@somedomain.com',
 TEST_PASS = 'thisismypassword',
 TEST_SITE = 'http://fakesite.com';
 
 var token;
-
-// ensure that this user is not already known
-suite.addBatch({
-  "the test user": {
-    topic: wsapi.get('/wsapi/address_info', {
-        email: TEST_EMAIL,
-    }),
-    "is not a known user": function(err, r) {
-      assert.strictEqual(r.code, 200);
-      var resp = JSON.parse(r.body);
-      assert.strictEqual(resp.type, "secondary");
-      assert.strictEqual(resp.known, false);
-    }
-  }
-});
 
 // Okay now stage the user
 suite.addBatch({
@@ -155,10 +141,9 @@ suite.addBatch({
     },
     "returns an object with proper email": function(err, r) {
       var respObj = JSON.parse(r.body);
-      var emails = Object.keys(respObj);
+      var emails = respObj.emails;
+      assert.strictEqual(respObj.success, true);
       assert.strictEqual(emails[0], TEST_EMAIL);
-      assert.strictEqual(respObj[emails[0]].type, "secondary");
-      assert.strictEqual(respObj[emails[0]].verified, true);
       assert.strictEqual(emails.length, 1);
     }
   }
@@ -188,7 +173,8 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
       var resp = JSON.parse(r.body);
       assert.strictEqual(resp.type, "secondary");
-      assert.strictEqual(resp.known, false);
+      assert.strictEqual(resp.state, "unknown");
+      assert.strictEqual(resp.disabled, false);
     }
   }
 });
