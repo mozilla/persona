@@ -21,10 +21,13 @@ process.on('exit', function () {
 var nextTokenFunction = undefined;
 var tokenStack = [];
 
-exports.waitForToken = function(cb) {
+exports.waitForToken = function(email, cb) {
+  // allow first argument to be omitted
+  if (typeof email === 'function') cb = email;
+
   if (tokenStack.length) {
     var t = tokenStack.shift();
-    process.nextTick(function() { cb(t); });
+    process.nextTick(function() { cb(null, t); });
   }
   else {
     if (nextTokenFunction) throw "can't wait for a verification token when someone else is!";
@@ -57,7 +60,7 @@ function setupProc(proc) {
         if (!(/forwarding request:/.test(x))) {
           tokenStack.push(m[1]);
           if (nextTokenFunction) {
-            nextTokenFunction(tokenStack.shift());
+            nextTokenFunction(null, tokenStack.shift());
             nextTokenFunction = undefined;
           }
         }

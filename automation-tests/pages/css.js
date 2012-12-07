@@ -80,5 +80,8 @@ module.exports = {
     createAccountButton: 'button#create_account',
     existingPassword: 'input#password',
     signInButton: 'button#sign_in'
+  },
+  "testidp.org": {
+    loginButton: "#login"
   }
 };

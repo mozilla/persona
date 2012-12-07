@@ -45,7 +45,8 @@ suite.addBatch({
       topic: function() {
         start_stop.waitForToken(this.callback);
       },
-      "a verification token": function (t) {
+      "a verification token": function (err, t) {
+        assert.isNull(err);
         assert.strictEqual(typeof t, 'string');
         token = t;
       }
@@ -68,7 +69,8 @@ suite.addBatch({
       topic: function() {
         start_stop.waitForToken(this.callback);
       },
-      "a verification token": function (t) {
+      "a verification token": function (err, t) {
+        assert.isNull(err);
         assert.strictEqual(typeof t, 'string');
         token = t;
       }

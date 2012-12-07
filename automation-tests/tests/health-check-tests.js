@@ -91,7 +91,7 @@ var secondaryTest = {
   },
   // if we asserted against contents of #congrats message, our tests would
   // break if we ran them against a non-English deploy of the site
-  "open verification link and verify we see congrats node": function(done, link) {
+  "open verification link and verify we see congrats node": function(done, token, link) {
     secondBrowser.chain({onError: done})
       .get(link)
       .wfind(pcss.congratsMessage, done);

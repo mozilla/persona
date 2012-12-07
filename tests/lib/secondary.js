@@ -9,6 +9,7 @@ exports.create = function(opts, cb) {
   opts.email = opts.email || 'testuser@example.com';
   opts.password = opts.password || opts.pass || 'password';
   opts.site = opts.site || 'http://rp.example.com';
+  opts.fetchVerificationLinkCallback = opts.fetchVerificationLinkCallback || start_stop.waitForToken;
 
   wcli.post(wsapi.configuration, '/wsapi/stage_user', wsapi.context, {
     email: opts.email,
@@ -16,11 +17,17 @@ exports.create = function(opts, cb) {
     site:  opts.site
   }, function(err, r) {
     if (err) return cb("cannot stage: " + err);
-    start_stop.waitForToken(function(t) {
-      if (typeof t !== 'string') return cb("no token");
-      wcli.post(wsapi.configuration, '/wsapi/complete_user_creation', wsapi.context, {      
+    if (r.code !== 200) return cb("cannot stage: " + r.body);
+
+    opts.fetchVerificationLinkCallback(opts.email, function(err, t) {
+      if (err) return cb("no verification token could be fetched: " + err);
+      wcli.post(wsapi.configuration, '/wsapi/complete_user_creation', wsapi.context, {
         token: t
-      }, cb);
+      }, function(err, r) {
+        if (err) return cb("cannot complete: " + err);
+        if (r.code !== 200) return cb("cannot complete: " + r.body);
+        cb(err, r);
+      });
     });
   });
 };

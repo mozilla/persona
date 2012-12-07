@@ -53,11 +53,12 @@ function makeBatch(site, user) {
         topic: function() {
           start_stop.waitForToken(this.callback);
         },
-        "is obtained": function (t) {
+        "is obtained": function (err, t) {
+          assert.isNull(err);
           assert.strictEqual(typeof t, 'string');
         },
         "and the token can be used": {
-          topic: function(token) {
+          topic: function(err, token) {
             wsapi.post('/wsapi/complete_user_creation', { token: token }).call(this);
           },
           "to verify email ownership": function(err, r) {

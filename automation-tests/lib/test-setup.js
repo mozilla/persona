@@ -1,16 +1,25 @@
 const
 personatestuser = require('../lib/personatestuser.js'),
 Q = require('q'),
+request = require('request'),
 restmail = require('../lib/restmail.js'),
 saucePlatforms = require('../config/sauce-platforms.js'),
+testidp = require('./testidp.js'),
 wd = require('wd'),
 path = require('path'),
-_ = require('underscore');
+_ = require('underscore'),
+persona_urls = require('./urls.js');
 
 require('./wd-extensions.js');
 
 var testSetup = {};
 
+// as part of test setup, configure wsapi_client to use the proper environment,
+// this way, any code which wants to programatically interact with the
+// (internal) browserid HTTP API via libraries under tests/lib will be able
+// to do so.
+wsapi = require('../../tests/lib/wsapi.js'),
+wsapi.configuration.browserid = persona_urls.persona;
 
 /* public API */
 
@@ -74,6 +83,7 @@ testSetup.setup = function(opts, cb) {
   var fixtures = {},
     restmails = opts.restmails || opts.r,
     eyedeemails = opts.eyedeemails || opts.e,
+    testidps = opts.testidps || opts.t,
     personatestusers = opts.personatestusers || opts.p,
     browsers = opts.browsers || opts.b,
     promises = [];
@@ -88,6 +98,17 @@ testSetup.setup = function(opts, cb) {
     fixtures.e = fixtures.eyedeemails = [];
     for (var i = 0; i < eyedeemails; i++) {
       fixtures.eyedeemails.push(restmail.randomEmail(10, 'eyedee.me'));
+    }
+  }
+  if (testidps) {
+    fixtures.t = fixtures.testidps = [];
+    for (var i=0; i < testidps; i++) {
+      var userPromise = Q.ncall(testidp.qCreateIdP)
+      .then(function (qRes) {
+        fixtures.testidps.push(qRes);
+      })
+      .fail(function (error) {return cb(error);});
+      promises.push(userPromise);
     }
   }
   if (personatestusers) {
