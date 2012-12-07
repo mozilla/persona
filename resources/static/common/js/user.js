@@ -115,8 +115,9 @@ BrowserID.User = (function() {
 
     // stagingStrategy is a curried function that will have all but the
     // onComplete and onFailure functions already set up.
-    stagingStrategy(function(staged) {
-      var status = { success: staged };
+    stagingStrategy(function(status) {
+      if (!status) status = { success: false };
+      var staged = status.success;
 
       if (!staged) status.reason = "throttle";
       // Used on the main site when the user verifies - once

@@ -40,7 +40,7 @@ suite.addBatch({
       topic: function() {
         var expiration = new Date();
         expiration.setTime(new Date().valueOf() + 5000);
-        ca.certify(issuer, email_addr, kp.publicKey, expiration, this.callback);
+        ca.certify(issuer, email_addr, kp.publicKey, expiration, false, this.callback);
       },
       "does not error out": function(err, cert_raw) {
         assert.isNull(err);

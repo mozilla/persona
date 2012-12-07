@@ -451,7 +451,7 @@
 
   asyncTest("requestPasswordReset - true status", function() {
     network.requestPasswordReset(TEST_EMAIL, "password", "origin", function onSuccess(status) {
-      equal(status, true, "password reset request success");
+      ok(status, "password reset request success");
       start();
     }, testHelpers.unexpectedFailure);
   });
@@ -501,7 +501,7 @@
 
   asyncTest("requestEmailReverify - true status", function() {
     network.requestEmailReverify(TEST_EMAIL, "origin", function onSuccess(status) {
-      equal(status, true, "password reset request success");
+      ok(status, "password reset request success");
       start();
     }, testHelpers.unexpectedFailure);
   });

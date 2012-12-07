@@ -82,7 +82,13 @@
     user.createSecondaryUser(email, password, function(status) {
       if (status.success) {
         var info = { email: email, password: password };
-        self.publish("user_staged", info, info);
+        if (status.unverified) {
+          info.type = "secondary";
+          info.unverified = true;
+          self.publish("unverified_created", info, info);
+        } else {
+          self.publish("user_staged", info, info);
+        }
         complete(callback, true);
       }
       else {

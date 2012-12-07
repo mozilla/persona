@@ -80,6 +80,9 @@ pre {
     </li><li>
       <input type="checkbox" id="forceAuthentication">
       <label for="forceAuthentication">Force Authentication</label><br />
+    </li><li>
+      <input type="checkbox" id="allowUnverified">
+      <label for="allowUnverified">Allow Unverified</label><br />
     </li>
   </ul>
     <button class="assertion">Get an assertion</button>
@@ -143,7 +146,8 @@ function checkAssertion(assertion) {
     data: {
       assertion: assertion,
       audience: window.location.protocol + "//" + window.location.host,
-      forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined
+      forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined,
+      allowUnverified: $('#allowUnverified').attr('checked') ? true : false
     },
     success: function(data, textStatus, jqXHR) {
       var old = $(".loginEvents > pre").text() + "\n";
@@ -192,6 +196,7 @@ $(document).ready(function() {
       returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,
       forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined,
       forceAuthentication: $('#forceAuthentication').attr('checked') ? true : false,
+      allowUnverified: $('#allowUnverified').attr('checked') ? true : false,
       oncancel: function() {
         loggit("oncancel");
         $(".specify button.assertion").removeAttr('disabled');

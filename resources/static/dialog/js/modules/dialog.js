@@ -319,6 +319,13 @@ BrowserID.Modules.Dialog = (function() {
           params.forceAuthentication = true;
         }
 
+        // allowUnverified means that the user doesn't need to have
+        // verified their email address in order to send an assertion.
+        // if the user *has* verified, it will be a verified assertion.
+        if (paramsFromRP.allowUnverified) {
+          params.allowUnverified = true;
+        }
+
         if (hash.indexOf("#AUTH_RETURN") === 0) {
           var primaryParams = JSON.parse(win.sessionStorage.primaryVerificationFlow);
           params.email = primaryParams.email;
