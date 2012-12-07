@@ -52,9 +52,8 @@ suite.addBatch({
         site:  TEST_SITE,
       }, this.callback);
     },
-    "succeeds": function(err, r) {
+    "succeeds": function(err) {
       assert.isNull(err);
-      assert.strictEqual(r.code, 200);
     }
   }
 });
