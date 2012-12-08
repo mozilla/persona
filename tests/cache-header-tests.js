@@ -46,7 +46,7 @@ function doRequest(path, headers, cb) {
 }
 
 function hasProperFramingHeaders(r, path) {
-  if (['/communication_iframe', '/relay'].indexOf(path) !== -1) {
+  if (['/communication_iframe', '/relay', '/tos', '/privacy'].indexOf(path) !== -1) {
     assert.strictEqual(r.headers['x-frame-options'], undefined);
   } else {
     assert.strictEqual(r.headers['x-frame-options'],"DENY");
