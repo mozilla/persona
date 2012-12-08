@@ -67,7 +67,7 @@ BrowserID.Modules.PickEmail = (function() {
         else if ("transition_no_password" === info.state)
           self.close("transition_no_password", info);
         else if ("secondary" === info.type)
-          self.close("authenticate", info);
+          self.close("email_chosen", info);
         else
           self.close("primary_user", info);
       });
