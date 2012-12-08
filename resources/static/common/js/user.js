@@ -186,18 +186,6 @@ BrowserID.User = (function() {
       // data.
       storage.setReturnTo("");
 
-      // To avoid too many address_info requests, returns from each
-      // address_info request are cached.  If the user is doing
-      // a addressVerificationPoll, it means the user was registering the address
-      // and the registration has completed.  Because the status is
-      // "complete" or "known", we know that the address is known, so we
-      // toggle the field to be up to date.  If the known field remains
-      // false, then the user is redirected back to the authentication
-      // page and the system thinks the address must be verified again.
-      if (addressCache[email]) {
-        addressCache[email].known = true;
-      }
-
       // registrationComplete is used in shouldAskIfUsersComputer to
       // prevent the user from seeing the "is this your computer" screen if
       // they just completed a registration.
@@ -947,13 +935,10 @@ BrowserID.User = (function() {
           info.email = email;
           info = User.checkEmailIssuer(email, info);
           if (info.type === "primary") {
-            User.isEmailRegistered(email, function(registered) {
-              User.isUserAuthenticatedToPrimary(email, info, function(authed) {
-                info.known = registered;
-                info.authed = authed;
-                info.idpName = getIdPName(info);
-                complete(info);
-              }, onFailure);
+            User.isUserAuthenticatedToPrimary(email, info, function(authed) {
+              info.authed = authed;
+              info.idpName = getIdPName(info);
+              complete(info);
             }, onFailure);
           }
           else {
@@ -1115,61 +1100,62 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     getAssertion: function(email, audience, onComplete, onFailure) {
-      // we use the current time from the browserid servers
-      // to avoid issues with clock drift on user's machine.
-      // (issue #329)
-        function complete(status) {
-          onComplete && onComplete(status);
+      function complete(status) {
+        onComplete && onComplete(status);
+      }
+
+      var storedID = storage.getEmail(email),
+        assertion,
+        self=this;
+
+      function createAssertion(idInfo) {
+        // we use the current time from the browserid servers
+        // to avoid issues with clock drift on user's machine.
+        // (issue #329)
+        network.serverTime(function(serverTime) {
+          var sk = jwcrypto.loadSecretKeyFromObject(idInfo.priv);
+
+          // assertions are valid for 2 minutes
+          var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
+          var expirationDate = new Date(expirationMS);
+
+          // yield to the render thread, important on IE8 so we don't
+          // raise "script has become unresponsive" errors.
+          setTimeout(function() {
+            jwcrypto.assertion.sign(
+              {}, {audience: audience, expiresAt: expirationDate},
+              sk,
+              function(err, signedAssertion) {
+                assertion = jwcrypto.cert.bundle([idInfo.cert], signedAssertion);
+                storage.site.set(audience, "email", email);
+                complete(assertion);
+              });
+          }, 0);
+        }, onFailure);
+      }
+
+      if (storedID) {
+        prepareDeps();
+        if (storedID.priv) {
+          // parse the secret key
+          // yield to the render thread!
+          setTimeout(function() {
+            createAssertion(storedID);
+          }, 0);
         }
-
-        var storedID = storage.getEmail(email),
-            assertion,
-            self=this;
-
-        function createAssertion(idInfo) {
-          network.serverTime(function(serverTime) {
-            var sk = jwcrypto.loadSecretKeyFromObject(idInfo.priv);
-
-            setTimeout(function() {
-              // assertions are valid for 2 minutes
-              var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
-              var expirationDate = new Date(expirationMS);
-
-              jwcrypto.assertion.sign(
-                {}, {audience: audience, expiresAt: expirationDate},
-                sk,
-                function(err, signedAssertion) {
-                  assertion = jwcrypto.cert.bundle([idInfo.cert], signedAssertion);
-                  storage.site.set(audience, "email", email);
-                  complete(assertion);
-                });
-            }, 0);
-          }, onFailure);
-        }
-
-        if (storedID) {
-          prepareDeps();
-          if (storedID.priv) {
-            // parse the secret key
-            // yield to the render thread!
-            setTimeout(function() {
-              createAssertion(storedID);
-            }, 0);
-          }
-          else {
-            if (storedID.type === "primary") {
-              // first we have to get the address info, then attempt
-              // a provision, then if the user is provisioned, go and get an
-              // assertion.
-              User.addressInfo(email, function(info) {
-                User.provisionPrimaryUser(email, info, function(status) {
-                  if (status === "primary.verified") {
-                    User.getAssertion(email, audience, onComplete, onFailure);
-                  }
-                  else {
-                    complete(null);
-                  }
-                }, onFailure);
+        else {
+          // first we have to get the address info, then attempt
+          // a provision, then if the user is provisioned, go and get an
+          // assertion.
+          User.addressInfo(email, function(info) {
+            if (info.type === "primary") {
+              User.provisionPrimaryUser(email, info, function(status) {
+                if (status === "primary.verified") {
+                  User.getAssertion(email, audience, onComplete, onFailure);
+                }
+                else {
+                  complete(null);
+                }
               }, onFailure);
             }
             else {
@@ -1179,11 +1165,12 @@ BrowserID.User = (function() {
                 User.getAssertion(email, audience, onComplete, onFailure);
               }, onFailure);
             }
-          }
+          }, onFailure);
         }
-        else {
-          complete(null);
-        }
+      }
+      else {
+        complete(null);
+      }
     },
 
     /**
