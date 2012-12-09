@@ -107,6 +107,13 @@
     testHelpers.testTooltipVisible();
   });
 
+  asyncTest("signIn with a primary that has gone offline - trigger 'primary_offline' message", function() {
+    xhr.useResult("primaryOffline");
+    storage.addEmail("testuser@testuser.com", {cert: 'sdlkjfsdfj'});
+
+    testEmailSelected("testuser@testuser.com", "primary_offline");
+  });
+
   asyncTest("signIn with address that has a cert - trigger 'email_chosen message'", function() {
     storage.addEmail("testuser@testuser.com", {cert: 'sdlkjfsdfj'});
 
