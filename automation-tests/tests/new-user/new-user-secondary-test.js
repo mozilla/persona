@@ -55,7 +55,7 @@ var new_secondary_123done_two_browsers = {
   "get verification link from email": function(done) {
     restmail.getVerificationLink({ email: theEmail }, done);
   },
-  "open verification link in new browser window": function(done, link) {
+  "open verification link in new browser window": function(done, token, link) {
     secondBrowser.get(link, done);
   },
   "re-enter password and click login on persona.org": function(done) {
@@ -108,7 +108,7 @@ var new_secondary_mfb_two_browsers = {
   "mfb get verification link from email": function(done) {
     restmail.getVerificationLink({ email: mfbEmail }, done);
   },
-  "open verification link in second session and re-enter password": function(done, link) {
+  "open verification link in second session and re-enter password": function(done, token, link) {
     secondBrowser.chain({onError: done})
       .get(link)
       .wtype(CSS['persona.org'].signInForm.password, mfbEmail.split('@')[0])
@@ -151,7 +151,7 @@ var new_secondary_personaorg = {
     "get verification link": function(done) {
       restmail.getVerificationLink({email: nspEmail}, done);
     },
-    "open link, verify you are redirected to acct mgr and see your email": function(done, link) {
+    "open link, verify you are redirected to acct mgr and see your email": function(done, token, link) {
       browser.chain({onError: done})
         .get(link)
         .wtext(CSS['persona.org'].accountEmail, done)
