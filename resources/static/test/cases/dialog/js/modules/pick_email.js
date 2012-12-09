@@ -121,7 +121,7 @@
   });
 
   asyncTest("signIn with secondary address on account that just transitioned from a primary - trigger 'transition_no_password message'", function() {
-    xhr.useResult("transition_no_password");
+    xhr.useResult("secondaryTransitionPassword");
     storage.addEmail("testuser@testuser.com");
 
     testEmailSelected("testuser@testuser.com", "transition_no_password");
