@@ -27,6 +27,7 @@ module.exports = function(spec, mod, opts) {
           lastArgs = Array.prototype.slice.call(arguments, 0);
           self.callback.apply(self, lastArgs);
         });
+
         if (!opts.bailOnError || !failedState) {
           spec[name].apply(this, args);
         } else {
@@ -43,7 +44,7 @@ module.exports = function(spec, mod, opts) {
             suite.batches[i].remaining = 0;
           }
         }
-        if (err) assert.fail(err)
+        if (err) assert.fail(err);
       }
     };
     suite.addBatch(obj);
@@ -51,14 +52,16 @@ module.exports = function(spec, mod, opts) {
 
   // now add cleanup invocation as a batch
 
-  suite.addBatch({
-    "cleanup": {
-      topic: function() {
-        if (opts.cleanup) opts.cleanup(this.callback);
-      },
-      "done": function() { }
-    }
-  });
+  if (opts.cleanup) {
+    suite.addBatch({
+      "cleanup": {
+        topic: function() {
+          opts.cleanup(this.callback);
+        },
+        "done": function() { }
+      }
+    });
+  }
 
   if (path.basename(process.argv[1]) === 'vows') {
     suite.export(mod);
