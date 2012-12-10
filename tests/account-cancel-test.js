@@ -4,20 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/*
-Leaving out the requests for session_context which wsapi_client will make automagically.
-This is for a secondary email address that is not known.
-GET  200 application/json /wsapi/address_info?email=someuser%40somedomain.com
-POST 200 application/json /wsapi/stage_user
-GET  200 application/json /wsapi/user_creation_status?email=someuser%40somedomain.com ... repeats
-GET  200 application/json /wsapi/email_for_token?token=XfffffffoGowzPuZi5oVP50NXuTW4DBENSv47NI5PgMJSV
-POST 200 application/json /wsapi/complete_user_creation
-GET  200 application/json /wsapi/user_creation_status?email=someuser%40somedomain.com
-POST 200 application/json /wsapi/authenticate_user
-GET  200 application/json /wsapi/list_emails
-POST 200 application/json /wsapi/account_cancel
-*/
-
 require('./lib/test_env.js');
 
 const
