@@ -9,10 +9,23 @@
       storage = bid.Storage,
       testHelpers = bid.TestHelpers,
       testOrigin = testHelpers.testOrigin,
+      xhr = bid.Mocks.xhr,
       testElementFocused = testHelpers.testElementFocused,
       testElementChecked = testHelpers.testElementChecked,
       testElementNotChecked = testHelpers.testElementNotChecked,
       register = bid.TestHelpers.register;
+
+  function testEmailSelected(email, message) {
+    createController();
+    register(message, function(msg, info) {
+      equal(info.email, email, "email_chosen message triggered with email");
+      start();
+    });
+
+    $("input[type=radio]").eq(0).trigger("click");
+    controller.signIn();
+  }
+
 
   module("dialog/js/modules/pick_email", {
     setup: function() {
@@ -83,25 +96,42 @@
     equal(label.hasClass("preselected"), false, "the label has no class");
   });
 
-  asyncTest("signIn - trigger 'email_chosen message'", function() {
+  test("signIn with without selecting an address shows a tooltip", function() {
     storage.addEmail("testuser@testuser.com");
     storage.addEmail("testuser2@testuser.com", {cert: 'sdlkjfsdfj'});
 
     createController();
-    // this should only be triggered once.  testHelpers.register checks this
-    // for us.
-    var assertion;
-    register("email_chosen", function(msg, info) {
-      ok(info.email, "email_chosen message triggered with email");
-      start();
-    });
+
     // trying to sign in without an email selected shows a tooltip.
     controller.signIn();
     testHelpers.testTooltipVisible();
+  });
 
-    // trying to sign in with an email selected operates as expected.
-    $("input[type=radio]").eq(0).trigger("click");
-    controller.signIn();
+  asyncTest("signIn with address that has a cert - trigger 'email_chosen message'", function() {
+    storage.addEmail("testuser@testuser.com", {cert: 'sdlkjfsdfj'});
+
+    testEmailSelected("testuser@testuser.com", "email_chosen");
+  });
+
+  asyncTest("signIn with secondary address - trigger 'email_chosen message'", function() {
+    xhr.useResult("known_secondary");
+    storage.addEmail("testuser@testuser.com");
+
+    testEmailSelected("testuser@testuser.com", "email_chosen");
+  });
+
+  asyncTest("signIn with secondary address on account that just transitioned from a primary - trigger 'transition_no_password message'", function() {
+    xhr.useResult("secondaryTransitionPassword");
+    storage.addEmail("testuser@testuser.com");
+
+    testEmailSelected("testuser@testuser.com", "transition_no_password");
+  });
+
+  asyncTest("signIn with primary address without a cert - trigger 'primary_user message'", function() {
+    xhr.useResult("primary");
+    storage.addEmail("testuser@testuser.com");
+
+    testEmailSelected("testuser@testuser.com", "primary_user");
   });
 
   asyncTest("addEmail triggers an 'add_email' message", function() {

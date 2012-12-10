@@ -61,15 +61,22 @@ BrowserID.Modules.PickEmail = (function() {
     var record = checkEmail.call(self, email);
     if (!! record) {
       dialogHelpers.refreshEmailInfo.call(self, email, function (info) {
-	record = checkEmail.call(self, email);
-        if (record.cert)
+        record = checkEmail.call(self, email);
+        if (record.cert) {
           self.close("email_chosen", info);
-        else if ("transition_no_password" === info.state)
+        }
+        // A secondary address that transitioned from a primary. The
+        // user does not have a password - make them set one.
+        else if ("transition_no_password" === info.state) {
           self.close("transition_no_password", info);
-        else if ("secondary" === info.type)
-          self.close("authenticate", info);
-        else
+        }
+        // A secondary address on an account with a password
+        else if ("secondary" === info.type) {
+          self.close("email_chosen", info);
+        }
+        else {
           self.close("primary_user", info);
+        }
       });
     }
   }
