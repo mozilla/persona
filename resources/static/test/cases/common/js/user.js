@@ -1227,8 +1227,7 @@
           type: "primary",
           email: "unregistered@testuser.com",
           authed: true,
-          idpName: "testuser.com",
-          known: false
+          idpName: "testuser.com"
         });
         start();
       },
@@ -1246,8 +1245,7 @@
           type: "primary",
           email: "registered@testuser.com",
           authed: true,
-          idpName: "testuser.com",
-          known: true
+          idpName: "testuser.com"
         });
         start();
       },
@@ -1265,8 +1263,7 @@
           type: "primary",
           email: "registered@testuser.com",
           authed: false,
-          idpName: "testuser.com",
-          known: true
+          idpName: "testuser.com"
         });
         start();
       },
