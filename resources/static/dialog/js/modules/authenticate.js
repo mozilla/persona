@@ -226,6 +226,7 @@ BrowserID.Modules.Authenticate = (function() {
       currentHint = null;
       dom.setInner(CONTENTS_SELECTOR, "");
       dom.hide(".returning,.start");
+      self.hideError();
 
       // We have to show the TOS/PP agreements to *all* users here. Users who
       // are already authenticated to their IdP but do not have a Persona
