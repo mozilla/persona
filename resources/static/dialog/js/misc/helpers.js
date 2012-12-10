@@ -132,7 +132,7 @@
       complete(callback, false);
     }
     else {
-      user.addressInfo(email, 'default', function(info) {
+      user.addressInfo(email, user.forceIssuer, function(info) {
         if (info.type === "primary") {
           info = _.extend(info, { email: email, add: true });
           self.publish("primary_user", info, info);
@@ -149,7 +149,7 @@
   function refreshEmailInfo(email, callback) {
     /*jshint validthis:true*/
     var self=this;
-    user.addressInfo(email, function (info) {
+    user.addressInfo(email, user.forceIssuer, function (info) {
       callback(_.extend({ email: email }, info));
     }, self.getErrorDialog(errors.addressInfo, callback));
   }

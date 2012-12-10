@@ -47,6 +47,7 @@ BrowserID.Storage = (function() {
   }
 
   function storeForceIssuerEmails(emails, forceIssuer) {
+    if (! forceIssuer) forceIssuer = 'issuer.domain';
     storage[emailsStorageKey(forceIssuer)] = JSON.stringify(emails);
   }
 
@@ -129,6 +130,13 @@ BrowserID.Storage = (function() {
     obj = obj || {};
     emails[email] = obj;
     storeEmails(emails);
+  }
+
+  function addForceIssuerEmail(email, forceIssuer, obj) {
+    var emails = getForceIssuerEmails(forceIssuer);
+    obj = obj || {};
+    emails[email] = obj;
+    storeForceIssuerEmails(emails);
   }
 
   function removeEmail(email) {

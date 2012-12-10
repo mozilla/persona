@@ -84,8 +84,12 @@ BrowserID.Modules.Authenticate = (function() {
       else if ("primary" === info.type) {
         self.close("primary_user", info, info);
       }
-      else if (info.known && info.state === "transition_no_password") {
-        createFxAccount.call(self);
+      else if (!!self.forceIssuer && 'default' !== self.forceIssuer) {
+	if (hasPassword(info)) {
+          enterPasswordState.call(self);
+	} else {
+          createFxAccount.call(self, self.forceIssuer);
+	}
       }
       else if (hasPassword(info)) {
         enterPasswordState.call(self);
@@ -120,11 +124,11 @@ BrowserID.Modules.Authenticate = (function() {
     }
   }
 
-  function createFxAccount(callback) {
+  function createFxAccount(callback, forceIssuer) {
     /*jshint validthis: true*/
     var self=this,
         email = getEmail();
-
+    
     if (email) {
       self.close("new_fxaccount", { email: email, fxaccount: true }, { email: email });
     } else {

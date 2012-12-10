@@ -580,14 +580,14 @@ BrowserID.Network = (function() {
      * @method certKey
      */
     certKey: function(email, pubkey, forceIssuer, onComplete, onFailure) {
+      var opts = 'default' === forceIssuer ? {} : {forceIssuer: forceIssuer};
       post({
         url: "/wsapi/cert_key",
-        data: {
+        data: _.extend(opts, {
           email: email,
           pubkey: pubkey.serialize(),
-          ephemeral: !storage.usersComputer.confirmed(email),
-          forceIssuer: forceIssuer
-        },
+          ephemeral: !storage.usersComputer.confirmed(email)
+        }),
         success: onComplete,
         error: onFailure
       });

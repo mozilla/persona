@@ -287,7 +287,6 @@ BrowserID.User = (function() {
    * @param {function} [onFailure] - Called on error.
    */
   function persistForceIssuerEmailKeypair(email, keypair, cert, forceIssuer, onComplete, onFailure) {
-    checkEmailType(type);
     var now = new Date();
     var email_obj = storage.getForceIssuerEmails(forceIssuer)[email] || {
       created: now
@@ -336,7 +335,7 @@ BrowserID.User = (function() {
   }
 
   function persistForceIssuerEmail(options) {
-    storage.addForceIssuerEmail(options.email, 'issuer.domain', {
+    storage.addForceIssuerEmail(options.email, User.forceIssuer, {
       created: new Date(),
       verified: options.verified
     });
@@ -818,19 +817,18 @@ BrowserID.User = (function() {
     syncEmails: function(onComplete, onFailure) {
       cleanupIdentities(function () {
         var issued_identities = User.getStoredEmailKeypairs();
-        var force_issuer_identities = storage.getForceIssuerEmails('issuer.domain');
 
         network.listEmails(function(server_emails) {
           // lists of emails
           var client_emails = _.keys(issued_identities);
-          var force_issuer_emails = _.keys(force_issuer_identities);
-          var server_emails = _.keys(emails);
 
           var emails_to_add_pair = [_.difference(server_emails, client_emails)];
           var emails_to_remove_pair = [_.difference(client_emails, server_emails)];
           var emails_to_update_pair = [_.intersection(client_emails, server_emails)];
 
           if (!! User.forceIssuer && 'default' !== User.forceIssuer) {
+            var force_issuer_identities = storage.getForceIssuerEmails(User.forceIssuer);
+            var force_issuer_emails = _.keys(force_issuer_identities);
             emails_to_add_pair.push(_.difference(server_emails, force_issuer_emails));
             emails_to_remove_pair.push(_.difference(force_issuer_emails, server_emails));
             emails_to_update_pair.push(_.intersection(force_issuer_emails, server_emails));
@@ -847,17 +845,18 @@ BrowserID.User = (function() {
           });
 
           // these are new emails
-          _.each(emails_to_add, function(email) {
-            if (0 === i) {
-              persistEmail({ email: email });
-            } else {
+          _.each(emails_to_add_pair, function(emails_to_add, i) {
+            _.each(emails_to_add, function(email) {
+              if (0 === i) {
+                persistEmail({ email: email });
+              } else {
                 // forceIssuer is always a secondary
                 persistForceIssuerEmail({
-                  email: email,
-                  verified: emailInfo.verified
+                  email: email
                 });
-            }
-	  });
+              }
+            });
+          });
           complete(onComplete);
         }, onFailure);
       });
@@ -934,7 +933,7 @@ BrowserID.User = (function() {
         setAuthenticationStatus(authenticated);
 
         if (authenticated) {
-          if ('default' !== User.forceIssuer) User.forceIssuerEmail = email;
+          if (User.forceIssuer && 'default' !== User.forceIssuer) User.forceIssuerEmail = email;
 
           User.syncEmails(function() {
             onComplete && onComplete(authenticated);
@@ -1307,6 +1306,15 @@ BrowserID.User = (function() {
      */
     getStoredEmailKeypair: function(email) {
       return storage.getEmail(email);
+    },
+
+    /**
+     * Get the list of forced issuer identities stored locally.
+     * @method getStoredEmailKeypairs
+     * @return {object} identities.
+     */
+    getStoredForceIssuerEmailKeypair: function(email, forceIssuer) {
+      return storage.getForceIssuerEmail(email, forceIssuer);
     },
 
     /**

@@ -121,7 +121,7 @@ BrowserID.Modules.RequiredEmail = (function() {
         // a user could not be looking at stale data and/or authenticate as
         // somebody else.
         var storedEmailInfo = user.getStoredEmailKeypair(email);
-        user.addressInfo(email, function(info) {
+        user.addressInfo(email, user.forceIssuer, function(info) {
           if(storedEmailInfo && info.type === "secondary") {
             // secondary user, show the password field if they are not
             // authenticated to the "password" level.
