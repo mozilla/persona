@@ -24,6 +24,7 @@ const
 assert = require('assert'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
+secondary = require('./lib/secondary.js'),
 wsapi = require('./lib/wsapi.js'),
 db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
@@ -41,110 +42,33 @@ TEST_EMAIL = secrets.weakGenerate(12) + '@somedomain.com',
 TEST_PASS = 'thisismypassword',
 TEST_SITE = 'http://fakesite.com';
 
-var token;
-
-// Okay now stage the user
+// create a new secondary account
 suite.addBatch({
-  "POST stage_user": {
-    topic: wsapi.post('/wsapi/stage_user', {
-      email: TEST_EMAIL,
-      pass:  TEST_PASS,
-      site:  TEST_SITE,
-    }),
-    "yields a HTTP 200": function (err, r) {
-      assert.strictEqual(r.code, 200);
-    },
-    "Content-type is 'application/json'": function(err, r) {
-      assert.strictEqual(r.headers['content-type'].indexOf('application/json'), 0);
-    },
-    "returns json string with { success: true }": function (err, r) {
-      assert.strictEqual(JSON.parse(r.body).success, true);
-    },
-  },
-});
-
-// wait for the verification token
-suite.addBatch({
-  "a verification token": {
+  "creating a secondary account": {
     topic: function() {
-      start_stop.waitForToken(this.callback);
+      secondary.create({
+        email: TEST_EMAIL,
+        pass:  TEST_PASS,
+        site:  TEST_SITE,
+      }, this.callback);
     },
-    "is obtained": function (t) {
-      assert.strictEqual(typeof t, 'string');
-      token = t;
-    }
-  }
-});
-
-// create a new account
-suite.addBatch({
-  "POST complete_user_creation with token": {
-    topic: function() {
-      wsapi.post('/wsapi/complete_user_creation', {
-        token: token
-      }).call(this);
-    },
-    "yields a HTTP 200": function (err, r) {
-      assert.strictEqual(r.code, 200);
-    },
-    "Content-type is 'application/json'": function(err, r) {
-      assert.strictEqual(r.headers['content-type'].indexOf('application/json'), 0);
-    },
-    "returns json string with { success: true }": function (err, r) {
-      assert.strictEqual(JSON.parse(r.body).success, true);
-    },
-  },
-});
-
-suite.addBatch({
-  "GET user_creation_status after a creation is complete": {
-    topic: wsapi.get("/wsapi/user_creation_status", {
-      email: TEST_EMAIL,
-    }),
-    "yields a HTTP 200": function (err, r) {
-      assert.strictEqual(r.code, 200);
-    },
-    "Content-type is 'application/json'": function(err, r) {
-      assert.strictEqual(r.headers['content-type'].indexOf('application/json'), 0);
-    },
-    "returns json string with { status: 'complete', userid: \\d+ }": function (err, r) {
-      assert.strictEqual(JSON.parse(r.body).status, "complete");
-      assert(/\d+/.test(JSON.parse(r.body).userid));
-    },
-  }
-});
-
-suite.addBatch({
-  "POST authenticate_user with the email and password": {
-    topic: wsapi.post('/wsapi/authenticate_user', {
-      email: TEST_EMAIL,
-      pass: TEST_PASS,
-      ephemeral: true
-    }),
-    "yields a HTTP 200": function (err, r) {
-      assert.strictEqual(r.code, 200);
-    },
-    "Content-type is 'application/json'": function(err, r) {
-      assert.strictEqual(r.headers['content-type'].indexOf('application/json'), 0);
-    },
-    "returns json string with { success: true }": function (err, r) {
-      assert.strictEqual(JSON.parse(r.body).success, true);
+    "succeeds": function(err) {
+      assert.isNull(err);
     }
   }
 });
 
 suite.addBatch({
-  "GET list_emails": {
-    topic: wsapi.get('/wsapi/list_emails', {}),
-    "succeeds with HTTP 200" : function(err, r) {
+  "the test user": {
+    topic: wsapi.get('/wsapi/address_info', {
+        email: TEST_EMAIL,
+    }),
+    "is a known user after account was created": function(err, r) {
       assert.strictEqual(r.code, 200);
-    },
-    "returns an object with proper email": function(err, r) {
-      var respObj = JSON.parse(r.body);
-      var emails = respObj.emails;
-      assert.strictEqual(respObj.success, true);
-      assert.strictEqual(emails[0], TEST_EMAIL);
-      assert.strictEqual(emails.length, 1);
+      var resp = JSON.parse(r.body);
+      assert.strictEqual(resp.type, "secondary");
+      assert.strictEqual(resp.state, "known");
+      assert.strictEqual(resp.disabled, false);
     }
   }
 });
