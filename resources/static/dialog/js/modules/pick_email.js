@@ -41,7 +41,13 @@ BrowserID.Modules.PickEmail = (function() {
       return;
     }
 
-    var identity = user.getStoredEmailKeypair(email);
+    var identity;
+    if ('default' !== user.forceIssuer) {
+      identity = user.getStoredForceIssuerEmailKeypair(email, user.forceIssuer);
+    } else {
+      identity = user.getStoredEmailKeypair(email);
+    }
+
     if (!identity) {
       /*globals alert:true*/
       alert(gettext("The selected email is invalid or has been deleted."));

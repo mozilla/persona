@@ -87,7 +87,7 @@ function doVerification(req, resp, next) {
 
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req. body.assertion;
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
-  var forceIssuer = 'default';
+  var forceIssuer = undefined;
   if (req.query && req.query.forceIssuer) {
     forceIssuer =  req.query.forceIssuer;
   } else if (req.body && req.body.forceIssuer) {

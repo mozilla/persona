@@ -14,6 +14,7 @@ express = require('express'),
 statsd = require('../lib/statsd');
 
 const
+_ = require('underscore'),
 config = require('../lib/configuration.js'),
 httputils = require('../lib/httputils.js'),
 validate = require('../lib/validate.js'),
@@ -94,18 +95,20 @@ try {
 app.post('/wsapi/cert_key', validate(certKey.args), function(req, resp) {
   var startTime = new Date();
   var forceIssuer = req.params.forceIssuer;
-  if ('default' !== forceIssuer &&
-      config.get('forcable_issuers').indexOf(forceIssuer) === -1) {
-    logger.error("Invalid issuer [" + forceIssuer + "]");
-    return httputils.badRequest("Invalid issuer, unable to issue certificate");
+  var opts = {};
+  if (!! forceIssuer) {
+    if (config.get('forcable_issuers').indexOf(forceIssuer) === -1) {
+      logger.error("Invalid issuer [" + forceIssuer + "]");
+      return httputils.badRequest(resp, "Invalid issuer, unable to issue certificate");
+    }
+    opts.forceIssuer = forceIssuer;
   }
-  cc.enqueue({
+  cc.enqueue(_.extend(opts, {
     pubkey: req.params.pubkey,
-    email: req.params.email,
-    forceIssuer: forceIssuer,
+    email: req.params.email,    
     validityPeriod: (req.params.ephemeral ? config.get('ephemeral_session_duration_ms') : config.get('certificate_validity_ms')),
     hostname: HOSTNAME
-  }, function (err, r) {
+  }), function (err, r) {
     var reqTime = new Date - startTime;
     statsd.timing('certification_time', reqTime);
 

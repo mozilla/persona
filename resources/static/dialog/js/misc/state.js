@@ -206,8 +206,10 @@ BrowserID.State = (function() {
       complete(info.complete);
     });
 
+    // B2G forceIssuer on primary
     handleState("new_fxaccount", function(msg, info) {
       self.newFxAccountEmail = info.email;
+
       startAction(false, "doSetPassword", info);
       complete(info.complete);
     });
@@ -218,10 +220,12 @@ BrowserID.State = (function() {
        * 2) A user is adding the first secondary address to an account that
        * consists only of primary addresses
        * 3) an existing user has forgotten their password and wants to reset it.
-       * 4) RP is using forceIssuer and we have a primary email address with
+       * 4) A primary address was downgraded to a secondary and the user
+       *    has no password in the DB.
+       * 5) RP is using forceIssuer and we have a primary email address with
        * no password for the user
        * #1 is taken care of by newUserEmail, #2 by addEmailEmail, #3 by resetPasswordEmail,
-       * and #4 by fxAccountEmail
+       * #4 by transitionNoPassword and #5 by fxAccountEmail
        */
       info = _.extend({ email: self.newUserEmail || self.addEmailEmail ||
                                self.resetPasswordEmail || self.transitionNoPassword ||
@@ -237,6 +241,7 @@ BrowserID.State = (function() {
       }
       else if(self.newFxAccountEmail) {
         startAction(false, "doStageUser", info);
+// TODO         startAction(false, "doStageResetPassword", info); ???
       }
     });
 
@@ -353,15 +358,16 @@ BrowserID.State = (function() {
 
     handleState("email_chosen", function(msg, info) {
       var email = info.email,
-          record = storage.getEmail(email),
-          idInfo;
+          record;
+
       // qunit tests won't have run start state... reinit selfIssuer
       self.forceIssuer = self.forceIssuer || 'default';
 
       if ('default' === self.forceIssuer)
-        idInfo = storage.getEmail(email);
+        record = storage.getEmail(email);
       else
-        idInfo = storage.getForceIssuerEmail(email, self.forceIssuer);
+        record = storage.getForceIssuerEmail(email, self.forceIssuer);
+
       // Maybe use a second global variable so we know which email address was chosen?
       self.email = user.forceIssuerEmail = email;
 
@@ -398,13 +404,12 @@ BrowserID.State = (function() {
           redirectToState("primary_user", info);
         }
       }
-      else if ('default' !== self.forceIssuer && !idInfo.cert) {
+      else if ('default' !== self.forceIssuer && !record.cert) {
         // TODO: Duplicates some of the logic in the authentication action module.
         user.addressInfo(info.email, self.forceIssuer, function (serverInfo) {
           // We'll end up in this state again, but we want to see serverInfo.state change
           user.resetCaches();
-
-          if (serverInfo.known && serverInfo.state === "transition_no_password") {
+          if (serverInfo.state === "transition_no_password") {
             var newInfo = _.extend(info, { fxaccount: true });
             self.newFxAccountEmail = info.email;
             startAction(false, "doSetPassword", info);
