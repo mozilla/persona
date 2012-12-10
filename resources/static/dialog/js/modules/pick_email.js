@@ -62,7 +62,11 @@ BrowserID.Modules.PickEmail = (function() {
     if (!! record) {
       dialogHelpers.refreshEmailInfo.call(self, email, function (info) {
         record = checkEmail.call(self, email);
-        if (record.cert) {
+        // The primary has gone offline, notify the user.
+        if ("offline" === info.state) {
+          self.close("primary_offline", info);
+        }
+        else if (record.cert) {
           self.close("email_chosen", info);
         }
         // A secondary address that transitioned from a primary. The
