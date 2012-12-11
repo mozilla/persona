@@ -38,7 +38,7 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function hasPassword(info) {
-    return (info && info.email && info.type === "secondary" && 
+    return (info && info.email && info.type === "secondary" &&
       (info.state === "known" || info.state === "transition_to_secondary" ));
   }
 
@@ -182,13 +182,18 @@ BrowserID.Modules.Authenticate = (function() {
       dom.setInner(IDP_SELECTOR, helpers.getDomainFromEmail(addressInfo.email));
     }
     dom.setInner(AUTHENTICATION_LABEL, dom.getInner(labelSelector));
+
     showHint("returning", function() {
-      dom.focus(PASSWORD_SELECTOR);
+      try {
+        dom.focus(PASSWORD_SELECTOR);
+      } catch(e) {
+        // IE8 blows up if the element is disabled.
+        helpers.log("Could not focus password element: " + String(e));
+      }
+
+      self.publish("enter_password", addressInfo);
+      complete(callback);
     });
-
-
-    self.publish("enter_password", addressInfo);
-    complete(callback);
   }
 
   function forgotPassword() {
