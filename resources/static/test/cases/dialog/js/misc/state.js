@@ -480,7 +480,6 @@
       type: 'secondary',
       state: 'transition_to_secondary'
     });
-    console.log('actions called=' + JSON.stringify(actions.called));
     equal(actions.called.doAuthenticate, true, "doAuthenticate called");
   });
 
