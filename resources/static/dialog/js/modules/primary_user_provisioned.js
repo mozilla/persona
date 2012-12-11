@@ -25,7 +25,7 @@ BrowserID.Modules.PrimaryUserProvisioned = (function() {
 
       self.checkRequired(options, "email", "assertion");
 
-      self.renderDialog("primary_user_verified", { email: email });
+      self.renderForm("primary_user_verified", { email: email });
 
       if(addEmailToCurrentUser) {
         network.addEmailWithAssertion(assertion, function(status) {
