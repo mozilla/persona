@@ -295,6 +295,9 @@ BrowserID.Modules.Dialog = (function() {
         // at this point, we will only have type of primary if we're
         // returning from #AUTH_RETURN. Mark that email as having been
         // used as a primary, in case it used to be a secondary.
+        // NOTE: calling start for a request failure is the desired behavior.
+        // If this call fails, it is no big deal, the user should not be
+        // blocked.
         user.usedAddressAsPrimary(params.email, start, start);
       } else {
         start();

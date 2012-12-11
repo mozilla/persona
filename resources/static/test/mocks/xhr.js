@@ -182,6 +182,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", state: "known", auth: "https://auth_url", prov: "https://prov_url" },
       "get /wsapi/address_info?email=testuser%40testuser.com primaryOffline": { type: "primary", state: "offline", auth: "https://auth_url", prov: "https://prov_url" },
       "get /wsapi/address_info?email=testuser%40testuser.com ajaxError": undefined,
+      "post /wsapi/used_address_as_primary valid": { success: true },
       "post /wsapi/used_address_as_primary primaryTransition": { success: true },
       "post /wsapi/used_address_as_primary primaryUnknown": { success: true },
       "post /wsapi/used_address_as_primary primary": { success: false },
