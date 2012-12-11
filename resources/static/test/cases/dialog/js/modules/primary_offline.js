@@ -6,7 +6,8 @@
 
   var controller,
       bid = BrowserID,
-      testHelpers = bid.TestHelpers;
+      testHelpers = bid.TestHelpers,
+      testElementTextContains = testHelpers.testElementTextContains;
 
   module("dialog/js/modules/primary_offline", {
     setup: function() {
@@ -22,7 +23,7 @@
           // could already be destroyed from the close
         }
       }
-      testHelpers.setup();
+      testHelpers.teardown();
     }
   });
 
@@ -30,7 +31,6 @@
   function createController(config) {
     controller = bid.Modules.PrimaryOffline.create();
     config = config || {};
-    config.complete_delay = 1;
     controller.start(config);
   }
 
@@ -45,12 +45,12 @@
     equal(error.message, "missing config option: email", "correct error message printed");
   });
 
-  test("start controller with `add: false` and XHR error displays error screen", function() {
+  test("start controller idp that is not responding - display offline screen", function() {
     createController({
       email: "unregistered@testuser.com"
     });
-    ok($('#primary_offline').text().indexOf('testuser.com is not responding') > 0,
-       "Copy includes idpName");
+    testElementTextContains("#primary_offline",
+        'testuser.com is not responding', "Copy includes idpName");
   });
 
 }());
