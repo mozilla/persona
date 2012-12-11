@@ -34,7 +34,7 @@ BrowserID.Modules.SetPassword = (function() {
       var self=this;
       options = options || {};
 
-      self.renderDialog("set_password", {
+      self.renderForm("set_password", {
         email: options.email,
         password_reset: !!options.password_reset,
         transition_no_password: !!options.transition_no_password,
