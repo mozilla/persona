@@ -553,8 +553,7 @@
 
   asyncTest("addressInfo with unknown secondary email", function() {
     transport.useResult("unknown_secondary");
-
-    network.addressInfo(TEST_EMAIL, function onComplete(data) {
+    network.addressInfo(TEST_EMAIL, 'default', function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
       equal(data.state, "unknown", "address is unknown to BrowserID");
       start();
@@ -564,7 +563,7 @@
   asyncTest("addressInfo with known seconday email", function() {
     transport.useResult("known_secondary");
 
-    network.addressInfo(TEST_EMAIL, function onComplete(data) {
+    network.addressInfo(TEST_EMAIL, 'default', function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
       equal(data.state, "known", "address is known to BrowserID");
       start();
@@ -574,7 +573,7 @@
   asyncTest("addressInfo with primary email", function() {
     transport.useResult("primary");
 
-    network.addressInfo(TEST_EMAIL, function onComplete(data) {
+    network.addressInfo(TEST_EMAIL, 'default', function onComplete(data) {
       equal(data.type, "primary", "type is primary");
       ok("auth" in data, "auth field exists");
       ok("prov" in data, "prov field exists");
@@ -583,7 +582,7 @@
   });
 
   asyncTest("addressInfo with XHR failure", function() {
-    failureCheck(network.addressInfo, TEST_EMAIL);
+    failureCheck(network.addressInfo, TEST_EMAIL, 'default');
   });
 
   asyncTest("changePassword happy case, expect complete callback with true status", function() {

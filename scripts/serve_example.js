@@ -32,7 +32,6 @@ exampleServer.use(express.bodyParser());
 exampleServer.post('/process_assertion', function(req, res, next) {
   var verifier = urlparse(process.env['VERIFIER_URL']);
   var meth = verifier.scheme === 'http' ? require('http') : require('https');
-
   var vreq = meth.request({
     host: verifier.host,
     port: verifier.port,
@@ -66,10 +65,13 @@ exampleServer.post('/process_assertion', function(req, res, next) {
   // Because this one server runs on multiple different domain names we just use
   // the host parameter out of the request.
   var audience = req.headers['host'] ? req.headers['host'] : localHostname;
-  var data = querystring.stringify({
+  var params = {
     assertion: req.body.assertion,
     audience: audience
-  });
+  };
+  if (!! req.body.forceIssuer) params['forceIssuer'] = req.body.forceIssuer;
+  var data = querystring.stringify(params);
+
   vreq.setHeader('Content-Length', data.length);
   vreq.write(data);
   vreq.end();

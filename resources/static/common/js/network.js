@@ -534,6 +534,7 @@ BrowserID.Network = (function() {
      * (is it a primary or a secondary)
      * @method addressInfo
      * @param {string} email - Email address to check.
+     * @param {string} issuer - Force a specific Issuer by specifing a domain. null for default.
      * @param {function} [onComplete] - Called with an object on success,
      *   containing these properties:
      *     type: <secondary|primary>
@@ -542,9 +543,11 @@ BrowserID.Network = (function() {
      *     prov: string - url to embed for silent provisioning - present if type is secondary
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    addressInfo: function(email, onComplete, onFailure) {
+    addressInfo: function(email, issuer, onComplete, onFailure) {
+      issuer = issuer || 'default';
       get({
-        url: "/wsapi/address_info?email=" + encodeURIComponent(email),
+        url: "/wsapi/address_info?email=" + encodeURIComponent(email) +
+             "&issuer=" + encodeURIComponent(issuer),
         success: function(data, textStatus, xhr) {
           complete(onComplete, data);
         },
@@ -576,14 +579,15 @@ BrowserID.Network = (function() {
      * Certify the public key for the email address.
      * @method certKey
      */
-    certKey: function(email, pubkey, onComplete, onFailure) {
+    certKey: function(email, pubkey, forceIssuer, onComplete, onFailure) {
+      var opts = 'default' === forceIssuer ? {} : {forceIssuer: forceIssuer};
       post({
         url: "/wsapi/cert_key",
-        data: {
+        data: _.extend(opts, {
           email: email,
           pubkey: pubkey.serialize(),
           ephemeral: !storage.usersComputer.confirmed(email)
-        },
+        }),
         success: onComplete,
         error: onFailure
       });

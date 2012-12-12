@@ -260,7 +260,7 @@ suite.addBatch({
           assert.isNull(e);
           var r = JSON.parse(r.body);
           assert.equal(r.type, "secondary");
-          assert.equal(r.state, "known");
+          assert.equal(r.state, "transition_to_secondary");
         },
         "causes IDPLastSeen": {
           topic: function() { setTimeout(this.callback, 500); },

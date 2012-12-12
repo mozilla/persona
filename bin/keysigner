@@ -14,6 +14,7 @@ express = require('express'),
 statsd = require('../lib/statsd');
 
 const
+_ = require('underscore'),
 config = require('../lib/configuration.js'),
 httputils = require('../lib/httputils.js'),
 validate = require('../lib/validate.js'),
@@ -21,7 +22,8 @@ logger = require('../lib/logging.js').logger,
 heartbeat = require('../lib/heartbeat'),
 shutdown = require('../lib/shutdown'),
 computecluster = require('compute-cluster'),
-urlparse = require('urlparse');
+urlparse = require('urlparse'),
+certKey = require('../lib/wsapi/cert_key.js');
 
 logger.info("keysigner starting up");
 
@@ -86,14 +88,23 @@ try {
 
 
 // and our single function
-app.post('/wsapi/cert_key', validate({ 'email': 'email', 'pubkey': 'pubkey', 'ephemeral': 'boolean' }), function(req, resp) {
+app.post('/wsapi/cert_key', validate(certKey.args), function(req, resp) {
   var startTime = new Date();
-  cc.enqueue({
+  var forceIssuer = req.params.forceIssuer;
+  var opts = {};
+  if (!! forceIssuer) {
+    if (config.get('forcable_issuers').indexOf(forceIssuer) === -1) {
+      logger.error("Invalid issuer [" + forceIssuer + "]");
+      return httputils.badRequest(resp, "Invalid issuer, unable to issue certificate");
+    }
+    opts.forceIssuer = forceIssuer;
+  }
+  cc.enqueue(_.extend(opts, {
     pubkey: req.params.pubkey,
-    email: req.params.email,
+    email: req.params.email,    
     validityPeriod: (req.params.ephemeral ? config.get('ephemeral_session_duration_ms') : config.get('certificate_validity_ms')),
     hostname: HOSTNAME
-  }, function (err, r) {
+  }), function (err, r) {
     var reqTime = new Date - startTime;
     statsd.timing('certification_time', reqTime);
 

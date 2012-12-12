@@ -16,6 +16,7 @@ BrowserID.Modules.Authenticate = (function() {
       dom = bid.DOM,
       lastEmail = "",
       addressInfo,
+      forceIssuer,
       hints = ["returning","start","addressInfo"],
       CONTENTS_SELECTOR = "#formWrap .contents",
       AUTH_FORM_SELECTOR = "#authentication_form",
@@ -45,7 +46,6 @@ BrowserID.Modules.Authenticate = (function() {
   function initialState(info) {
     /*jshint validthis: true*/
     var self=this;
-
     self.submit = checkEmail;
     if (hasPassword(info)) {
       addressInfo = info;
@@ -62,7 +62,6 @@ BrowserID.Modules.Authenticate = (function() {
     /*jshint validthis: true*/
     var email = getEmail(),
         self = this;
-
     if (!email) return;
 
     dom.setAttr(EMAIL_SELECTOR, 'disabled', 'disabled');
@@ -71,7 +70,7 @@ BrowserID.Modules.Authenticate = (function() {
     }
     else {
       showHint("addressInfo");
-      user.addressInfo(email, onAddressInfo,
+      user.addressInfo(email, this.forceIssuer, onAddressInfo,
         self.getErrorDialog(errors.addressInfo));
     }
 
@@ -84,6 +83,13 @@ BrowserID.Modules.Authenticate = (function() {
       }
       else if ("primary" === info.type) {
         self.close("primary_user", info, info);
+      }
+      else if (!!self.forceIssuer && 'default' !== self.forceIssuer) {
+	if (hasPassword(info)) {
+          enterPasswordState.call(self);
+	} else {
+          createFxAccount.call(self, self.forceIssuer);
+	}
       }
       else if (hasPassword(info)) {
         enterPasswordState.call(self);
@@ -115,6 +121,18 @@ BrowserID.Modules.Authenticate = (function() {
     if (email) {
       var data = { email: email, transition_no_password: true };
       self.close("transition_no_password", data, data);
+    }
+  }
+
+  function createFxAccount(callback, forceIssuer) {
+    /*jshint validthis: true*/
+    var self=this,
+        email = getEmail();
+    
+    if (email) {
+      self.close("new_fxaccount", { email: email, fxaccount: true }, { email: email });
+    } else {
+      complete(callback);
     }
   }
 
@@ -161,6 +179,7 @@ BrowserID.Modules.Authenticate = (function() {
   function enterEmailState() {
     /*jshint validthis: true*/
     var self=this;
+
     if (!dom.is(EMAIL_SELECTOR, ":disabled")) {
       self.publish("enter_email");
       dom.setInner(AUTHENTICATION_LABEL, dom.getInner(EMAIL_LABEL));
@@ -217,6 +236,8 @@ BrowserID.Modules.Authenticate = (function() {
       lastEmail = options.email || "";
 
       var self=this;
+
+      self.forceIssuer = options.forceIssuer;
 
       dom.addClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
       dom.addClass(BODY_SELECTOR, FORM_CLASS);

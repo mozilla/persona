@@ -84,6 +84,12 @@ function doVerification(req, resp, next) {
 
   var assertion = (req.query && req.query.assertion) ? req.query.assertion : req. body.assertion;
   var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
+  var forceIssuer = undefined;
+  if (req.query && req.query.forceIssuer) {
+    forceIssuer =  req.query.forceIssuer;
+  } else if (req.body && req.body.forceIssuer) {
+    forceIssuer =  req.body.forceIssuer;
+  }
 
   if (!(assertion && audience)) {
     // why couldn't we extract these guys?  Is it because the request parameters weren't encoded as we expect? GH-643
@@ -114,7 +120,8 @@ function doVerification(req, resp, next) {
   var startTime = new Date();
   cc.enqueue({
     assertion: assertion,
-    audience: audience
+    audience: audience,
+    forceIssuer: forceIssuer
   }, function (err, r) {
     var reqTime = new Date - startTime;
     statsd.timing('assertion_verification_time', reqTime);
