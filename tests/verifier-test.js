@@ -15,7 +15,9 @@ config = require('../lib/configuration.js'),
 jwcrypto = require('jwcrypto'),
 http = require('http'),
 querystring = require('querystring'),
-path = require('path');
+path = require('path'),
+url = require('url'),
+compareAudiences = require('../lib/verifier/certassertion').compareAudiences;
 
 var suite = vows.describe('verifier');
 
@@ -33,6 +35,36 @@ const TEST_EMAIL = 'someuser@somedomain.com',
       TEST_ORIGIN = 'http://fakesite.com:8080';
 
 var token = undefined;
+
+function matchesAudience(expected) {
+  var context = {
+    topic: function() {
+      var origins = this.context.name.split(' and ');
+      this.callback(!!compareAudiences(origins[0], origins[1]));
+    }
+  };
+
+  context['should' + (expected ? '' : ' not') + ' match'] = function(err) {
+    assert(err !== expected);
+  };
+
+  return context;
+}
+
+suite.addBatch({
+  'audiences': {
+    'http://fakesite.com and http://fakesite.com:80': matchesAudience(true),
+    'https://fakesite.com and https://fakesite.com:443': matchesAudience(true),
+    'http://fakesite.com:8000 and http://fakesite.com:8000': matchesAudience(true),
+    'https://fakesite.com:9000 and https://fakesite.com:9000': matchesAudience(true),
+
+    'http://fakesite.com:8100 and http://fakesite.com:80': matchesAudience(false),
+    'https://fakesite.com:9100 and https://fakesite.com:443': matchesAudience(false),
+    'http://fakesite.com:80 and http://fakesite.com:8000': matchesAudience(false),
+    'https://fakesite.com:443 and https://fakesite.com:9000': matchesAudience(false)
+  }
+});
+
 
 // let's create a user and certify a key so we can
 // generate assertions
