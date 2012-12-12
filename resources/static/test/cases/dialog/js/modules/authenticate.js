@@ -18,6 +18,7 @@
       testElementHasClass = testHelpers.testHasClass,
       testElementNotHasClass = testHelpers.testNotHasClass,
       testElementFocused = testHelpers.testElementFocused,
+      testElementTextEquals = testHelpers.testElementTextEquals,
       register = testHelpers.register,
       provisioning = bid.Mocks.Provisioning,
       AUTH_FORM_SELECTOR = "#authentication_form",
@@ -176,7 +177,7 @@
     xhr.useResult("known_secondary");
 
     register("enter_password", function() {
-      equal($(AUTHENTICATION_LABEL).html(), $(PASSWORD_LABEL).html(), "enter password message shown");
+      testElementTextEquals(AUTHENTICATION_LABEL, $(PASSWORD_LABEL).html(), "enter password message shown");
       start();
     });
 
