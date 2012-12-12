@@ -328,12 +328,17 @@ BrowserID.TestHelpers = (function() {
     },
 
     testElementTextContains: function(selector, expected, msg) {
-      var elText = $(selector).eq(0).text();
+      var el = $(selector).eq(0),
+          elText = (el && el.text()) || "";
+
       ok(elText.indexOf(expected) > -1, msg || (selector + " text contains: " + expected));
     },
 
     testElementTextEquals: function(selector, expected, msg) {
-      equal($(selector).eq(0).text(), expected, msg || (selector + " text is: " + expected));
+      var el = $(selector).eq(0),
+          elText = (el && el.text()) || "";
+
+      equal(elText, expected, msg || (selector + " text is: " + expected));
     },
 
     testEmailMarkedVerified: function(email, msg) {
