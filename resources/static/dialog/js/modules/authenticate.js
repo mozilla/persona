@@ -184,14 +184,11 @@ BrowserID.Modules.Authenticate = (function() {
     dom.setInner(AUTHENTICATION_LABEL, dom.getInner(labelSelector));
 
     showHint("returning", function() {
-      try {
-        dom.focus(PASSWORD_SELECTOR);
-      } catch(e) {
-        // IE8 blows up if the element is disabled.
-        helpers.log("Could not focus password element: " + String(e));
-      }
-
+      dom.focus(PASSWORD_SELECTOR);
       self.publish("enter_password", addressInfo);
+      // complete must be called after focus or else the front end unit tests
+      // fail. When complete was called outside of showHint, IE8 complained
+      // because the element we are trying to focus was no longer available.
       complete(callback);
     });
   }
