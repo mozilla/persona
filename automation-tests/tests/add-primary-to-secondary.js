@@ -72,7 +72,6 @@ runner.run(module, {
       .wtype(CSS['dialog'].newEmail, primaryEmail.email)
       .wclick(CSS['dialog'].addNewEmailButton)
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, primaryEmail.pass)
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()

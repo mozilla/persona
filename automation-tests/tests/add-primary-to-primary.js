@@ -52,7 +52,6 @@ runner.run(module, {
       .wtype(CSS['dialog'].emailInput, primaryEmail.email)
       .wclick(CSS['dialog'].newEmailNextButton)
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, primaryEmail.pass)
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()
@@ -69,9 +68,9 @@ runner.run(module, {
       .wtype(CSS['dialog'].newEmail, secondPrimaryEmail.email)
       .wclick(CSS['dialog'].addNewEmailButton)
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      .delay(timeouts.DEFAULT_LOAD_PAGE_MS)
       .wtype(CSS['eyedee.me'].newPassword, secondPrimaryEmail.pass)
       .wclick(CSS['eyedee.me'].createAccountButton)
+      .wclickIfExists(CSS['dialog'].notMyComputerButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, secondPrimaryEmail.email))
