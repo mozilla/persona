@@ -91,7 +91,10 @@ runner.run(module, {
   },
   "back to the first browser: should be signed out of 123done on reload": function(done) {
     browser.chain({onError: done})
-      .get(persona_urls["123done"])
+      /* since we want to reload the same page, we have to use .refresh instead
+       * of .get. with .get, IE and Chrome do not re-load the page as expected.
+       */
+      .refresh()
       .wfind(CSS['123done.org'].signinButton)
       .wclick(CSS["123done.org"].signinButton, done)
   },
