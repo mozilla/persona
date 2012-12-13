@@ -5,12 +5,7 @@ BrowserID.Modules.PrimaryOffline = (function() {
   "use strict";
 
   var bid = BrowserID,
-      dom = bid.DOM,
-      helpers = bid.Helpers,
-      user = bid.User,
-      errors = bid.Errors,
-      domHelpers = bid.DOMHelpers,
-      email;
+      helpers = bid.Helpers;
 
   function startDialogOver() {
     /*jshint validthis:true*/

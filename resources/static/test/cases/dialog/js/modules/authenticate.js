@@ -18,6 +18,7 @@
       testElementHasClass = testHelpers.testHasClass,
       testElementNotHasClass = testHelpers.testNotHasClass,
       testElementFocused = testHelpers.testElementFocused,
+      testElementTextEquals = testHelpers.testElementTextEquals,
       register = testHelpers.register,
       provisioning = bid.Mocks.Provisioning,
       AUTH_FORM_SELECTOR = "#authentication_form",
@@ -68,19 +69,39 @@
 
   asyncTest("authentication form initialized on startup, hidden on stop", function() {
     $(CONTENTS_SELECTOR).text("some contents that need to be removed");
+
     createController({
       ready: function() {
         // auth form visible when controller is ready
         testElementHasClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
 
         equal($(CONTENTS_SELECTOR).text(), "", "normal form contents are removed");
-
         testElementFocused("#authentication_email", "email field is focused");
 
         // auth form not visible after stop;
         controller.stop();
         testElementNotHasClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
 
+        start();
+      }
+    });
+  });
+
+  asyncTest("warning sreens hidden on startup", function() {
+    var classNames = ["waiting", "error", "delay"];
+
+    // simulate the warning screens being shown in a module other than
+    // authenticate.
+    _.each(classNames, function(className) {
+      $(BODY_SELECTOR).addClass(className);
+    });
+
+    // the authenticate module should hide the screens.
+    createController({
+      ready: function() {
+        _.each(classNames, function(className) {
+          testElementNotHasClass(BODY_SELECTOR, className);
+        });
         start();
       }
     });
@@ -156,7 +177,7 @@
     xhr.useResult("known_secondary");
 
     register("enter_password", function() {
-      equal($(AUTHENTICATION_LABEL).html(), $(PASSWORD_LABEL).html(), "enter password message shown");
+      testElementTextEquals(AUTHENTICATION_LABEL, $(PASSWORD_LABEL).html(), "enter password message shown");
       start();
     });
 

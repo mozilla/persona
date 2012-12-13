@@ -3,6 +3,8 @@
       file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
 
   <div id="primary_offline">
-    <p><%= format(gettext('%(primary) is not responding. Please wait a few minutes and try again.'), {primary: idpName}) %></p>
-        <button id="primary_offline_confirm" tabindex="1"><%= gettext('Cancel') %></button>
+    <p>
+      <%= format(gettext('%(primary) is not responding. Please wait a few minutes and try again.'), { primary: idpName }) %>
+    </p>
+    <button id="primary_offline_confirm"><%= gettext('Cancel') %></button>
   </div>

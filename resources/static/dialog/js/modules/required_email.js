@@ -229,7 +229,7 @@ BrowserID.Modules.RequiredEmail = (function() {
           cancelable: true
         }, templateData);
 
-        self.renderDialog("required_email", templateData);
+        self.renderForm("required_email", templateData);
 
         if (options.siteTOSPP) {
           dialogHelpers.showRPTosPP.call(self);
