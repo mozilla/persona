@@ -253,7 +253,7 @@
   asyncTest("#AUTH_RETURN while authenticated should call usedAddressAsPrimary", function() {
     winMock.location.hash = "#AUTH_RETURN";
     winMock.sessionStorage.primaryVerificationFlow = JSON.stringify({
-      add: true,
+      add: false,
       email: TESTEMAIL
     });
     xhr.setContextInfo("authenticated", true);
@@ -264,6 +264,35 @@
         mediator.subscribe("start", function(msg, info) {
           var req = xhr.getLastRequest();
           equal(req && req.url, "/wsapi/used_address_as_primary", "sent correct request");
+          start();
+        });
+
+        try {
+          controller.get(testHelpers.testOrigin, {}, function() {}, function() {});
+        }
+        catch(e) {
+          // do nothing, an exception will be thrown because no modules are
+          // registered for the any services.
+        }
+      }
+    });
+  });
+  
+  asyncTest("#AUTH_RETURN with add=true should not call usedAddressAsPrimary", function() {
+    winMock.location.hash = "#AUTH_RETURN";
+    winMock.sessionStorage.primaryVerificationFlow = JSON.stringify({
+      add: true,
+      email: TESTEMAIL
+    });
+    xhr.setContextInfo("authenticated", true);
+    xhr.setContextInfo("auth_level", "assertion");
+    delete xhr.request;
+
+    createController({
+      ready: function() {
+        mediator.subscribe("start", function(msg, info) {
+          var req = xhr.getLastRequest();
+          notEqual(req && req.url, "/wsapi/used_address_as_primary", "request should not be sent");
           start();
         });
 
