@@ -125,7 +125,7 @@ BrowserID.Modules.PickEmail = (function() {
 
       var identities = getSortedIdentities();
 
-      self.renderDialog("pick_email", {
+      self.renderForm("pick_email", {
         identities: identities,
         siteEmail: user.getOriginEmail()
       });

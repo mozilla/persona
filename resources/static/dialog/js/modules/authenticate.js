@@ -229,6 +229,12 @@ BrowserID.Modules.Authenticate = (function() {
       dom.setInner(CONTENTS_SELECTOR, "");
       dom.hide(".returning,.start");
 
+      // Since the authentication form is ALWAYS in the DOM, there is no
+      // renderForm call which will hide the error, wait or delay screens.
+      // Because one of those may be shown, just show the normal form. See
+      // issue #2839
+      self.hideWarningScreens();
+
       // We have to show the TOS/PP agreements to *all* users here. Users who
       // are already authenticated to their IdP but do not have a Persona
       // account automatically have an account created with no further

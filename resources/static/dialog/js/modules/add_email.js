@@ -60,7 +60,7 @@ BrowserID.Modules.AddEmail = (function() {
       var self=this,
           originEmail = user.getOriginEmail();
 
-      self.renderDialog("add_email", options);
+      self.renderForm("add_email", options);
       hideHint("addressInfo");
 
       self.click("#cancel", cancelAddEmail);

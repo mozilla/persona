@@ -60,7 +60,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
 
       user.addressInfo(email, function onSuccess(info) {
         if (showsPrimaryTransition(info.state)) {
-          self.renderDialog("verify_primary_user", {
+          self.renderForm("verify_primary_user", {
             email: data.email,
             auth_url: data.auth_url,
             requiredEmail: data.requiredEmail || false,

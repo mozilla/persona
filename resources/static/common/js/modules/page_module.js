@@ -52,16 +52,13 @@ BrowserID.Modules.PageModule = (function() {
       sc.stop.call(this);
     },
 
-    renderDialog: function(template, data) {
+    renderForm: function(template, data) {
       var self=this;
-
-      self.hideWait();
-      self.hideError();
-      self.hideDelay();
 
       dom.removeClass("body", "rptospp");
 
       screens.form.show(template, data);
+      self.hideWarningScreens();
       dom.focus("input:visible:not(:disabled):eq(0)");
       // XXX jQuery.  bleck.
       if($("*:focus").length === 0) {
@@ -69,6 +66,7 @@ BrowserID.Modules.PageModule = (function() {
       }
     },
 
+    // the wait, error and delay screens make up the warning screens.
     renderWait: showScreen.curry(screens.wait),
     hideWait: hideScreen.curry(screens.wait),
 
@@ -77,6 +75,17 @@ BrowserID.Modules.PageModule = (function() {
 
     renderDelay: showScreen.curry(screens.delay),
     hideDelay: hideScreen.curry(screens.delay),
+
+    /**
+     * Hides the warning screens
+     * @method hideWarningScreens
+     */
+    hideWarningScreens: function() {
+      var self=this;
+      self.hideWait();
+      self.hideError();
+      self.hideDelay();
+    },
 
     /**
      * Validate the form, if returns false when called, submit will not be

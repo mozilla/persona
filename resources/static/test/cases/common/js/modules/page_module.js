@@ -8,7 +8,32 @@
       bodyTemplate = "test_template_with_input",
       waitTemplate = "wait",
       bid = BrowserID,
+      testHelpers = bid.TestHelpers,
+      testElementExists = testHelpers.testElementExists,
+      testElementDoesNotExist = testHelpers.testElementDoesNotExist,
+      testElementFocused = testHelpers.testElementFocused,
+      FORM_CONTENTS_SELECTOR = "#formWrap .contents",
+      DELAY_CONTENTS_SELECTOR = "#delay .contents",
+      DELAY_SHOWN_SELECTOR = "body.delay",
+      ERROR_CONTENTS_SELECTOR = "#error .contents",
+      ERROR_SHOWN_SELECTOR = "body.error",
+      WAIT_CONTENTS_SELECTOR = "#wait .contents",
+      WAIT_SHOWN_SELECTOR = "body.waiting",
+      BODY_SELECTOR = "body",
+      FIRST_INPUT_SELECTOR = "input:visible:eq(0)",
       mediator = bid.Mediator;
+
+  function testRenderMessagingScreen(renderer, contentEl) {
+    createController();
+
+    controller[renderer]("wait", {
+      title: "screen title",
+      message: "screen message"
+    });
+    var html = el.find(contentEl).html();
+    ok(/screen message/.test(html), "message correctly rendered");
+    ok(/screen title/.test(html), "title correctly rendered");
+  }
 
   function createController(options) {
     controller = bid.Modules.PageModule.create(options);
@@ -30,49 +55,52 @@
   test("page controller with no template causes no side effects", function() {
     createController();
 
-    var html = el.find("#formWrap .contents").html();
+    var html = el.find(FORM_CONTENTS_SELECTOR).html();
     equal(html, "", "with no template specified, no text is loaded");
 
-    html = el.find("#wait .contents").html();
+    html = el.find(WAIT_CONTENTS_SELECTOR).html();
     equal(html, "", "with no template specified, no text is loaded");
   });
 
-  test("renderDialog with template with input element - render the correct dialog, focus first input element", function() {
+  test("renderForm with template with input element - render the correct dialog, focus first input element", function() {
     createController();
 
-    controller.renderDialog("test_template_with_input", {
+    controller.renderForm("test_template_with_input", {
       title: "Test title",
       message: "Test message"
     });
 
-    var html = el.find("#formWrap .contents").html();
+    var html = el.find(FORM_CONTENTS_SELECTOR).html();
     ok(html.length, "with template specified, form text is loaded");
-
-    html = el.find("#wait .contents").html();
-    equal(html, "", "with body template specified, wait text is not loaded");
+    testElementFocused(FIRST_INPUT_SELECTOR);
   });
 
-  test("renderError renders an error message", function() {
-    createController();
-
-    controller.renderError("wait", {
-      title: "error title",
-      message: "error message"
-    });
-    var html = el.find("#error .contents").html();
-    ok(html.length, "with error template specified, error text is loaded");
+  test("renderError renders an error screen", function() {
+    testRenderMessagingScreen("renderError", ERROR_CONTENTS_SELECTOR);
   });
 
-  test("renderDelay renders a delay", function() {
+  test("renderDelay renders a delay screen", function() {
+    testRenderMessagingScreen("renderDelay", DELAY_CONTENTS_SELECTOR);
+  });
+
+  test("renderWait renders a wait screen", function() {
+    testRenderMessagingScreen("renderWait", WAIT_CONTENTS_SELECTOR);
+  });
+
+  test("hideWarningScreens hides the wait, error and delay screens", function() {
     createController();
 
-    controller.renderDelay("wait", {
-      title: "delay title",
-      message: "delay message"
+    _.each(["renderWait", "renderError", "renderDelay"], function(renderer) {
+      controller[renderer]("wait", {
+        title: renderer + " screen title",
+        message: renderer + " screen message"
+      });
     });
 
-    var html = el.find("#delay .contents").html();
-    ok(html.length, "with delay template specified, delay text is loaded");
+    controller.hideWarningScreens();
+    _.each([WAIT_SHOWN_SELECTOR, DELAY_SHOWN_SELECTOR, ERROR_SHOWN_SELECTOR], function(selector) {
+      testElementDoesNotExist(selector);
+    });
   });
 
   asyncTest("getErrorDialog gets a function that can be used to render an error message", function() {
@@ -102,13 +130,13 @@
       submitCalled = true;
     };
 
-    $("body").addClass("submit_disabled");
+    $(BODY_SELECTOR).addClass("submit_disabled");
     controller.onSubmit();
 
     equal(submitCalled, false, "submit was prevented from being called");
 
 
-    $("body").removeClass("submit_disabled");
+    $(BODY_SELECTOR).removeClass("submit_disabled");
     controller.onSubmit();
     equal(submitCalled, true, "submit permitted to complete");
   });
