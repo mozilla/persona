@@ -4,4 +4,3 @@ exports.DEFAULT_TIMEOUT_MS = 40000;
 // using explicit waits. This helps reduce the number of errors due to explicit
 // timeouts.
 exports.DEFAULT_IMPLICIT_WAIT_MS = 0;
-exports.DEFAULT_LOAD_PAGE_MS = 1500;
