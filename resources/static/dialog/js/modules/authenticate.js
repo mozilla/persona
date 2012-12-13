@@ -38,7 +38,7 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function hasPassword(info) {
-    return (info && info.email && info.type === "secondary" && 
+    return (info && info.email && info.type === "secondary" &&
       (info.state === "known" || info.state === "transition_to_secondary" ));
   }
 
@@ -226,6 +226,12 @@ BrowserID.Modules.Authenticate = (function() {
       currentHint = null;
       dom.setInner(CONTENTS_SELECTOR, "");
       dom.hide(".returning,.start");
+
+      // Since the authentication form is ALWAYS in the DOM, there is no
+      // renderForm call which will hide the error, wait or delay screens.
+      // Because one of those may be shown, just show the normal form. See
+      // issue #2839
+      self.hideWarningScreens();
 
       // We have to show the TOS/PP agreements to *all* users here. Users who
       // are already authenticated to their IdP but do not have a Persona

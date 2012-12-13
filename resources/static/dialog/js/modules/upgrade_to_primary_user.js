@@ -35,7 +35,7 @@ BrowserID.Modules.UpgradeToPrimaryUser = (function() {
       add = data.add;
       email = data.email;
       auth_url = data.auth_url;
-      self.renderDialog("upgrade_to_primary_user", {
+      self.renderForm("upgrade_to_primary_user", {
         email: data.email,
         auth_url: data.auth,
         requiredEmail: data.requiredEmail || false,
