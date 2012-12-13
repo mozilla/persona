@@ -10,6 +10,7 @@
       testHelpers = bid.TestHelpers,
       testElementExists = testHelpers.testElementExists,
       testElementNotExists = testHelpers.testElementDoesNotExist,
+      testElementTextContains = testHelpers.testElementTextContains,
       register = testHelpers.register;
 
   function createController(options) {
@@ -63,9 +64,9 @@
       email: "transition@password.no",
       transition_no_password: true
     });
-    var msg = $("#set_password .inputs li").text();
-    ok(msg.indexOf("no longer allows"), "transition message shown");
-    ok(msg.indexOf("password.no"), "message shows IdP domain");
+    var selector = "#set_password .inputs li";
+    testElementTextContains(selector, "no longer allows", "transition message shown");
+    testElementTextContains(selector, "password.no", "message shows IdP domain");
   });
 
   asyncTest("submit with good password/vpassword - password_set message raised", function() {
