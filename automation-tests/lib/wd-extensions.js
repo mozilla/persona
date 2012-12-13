@@ -229,51 +229,15 @@ wd.prototype.click = function(which, cb) {
 // great, click it. If not, move on.
 wd.prototype.wclickIfExists = function(opts, cb) {
   var self=this;
-  // This function assumes the implicit wait when entering wclickIfExists is
-  // the same as the DEFAULT_IMPLICIT_WAIT_MS. Calling this function allows us
-  // to set the implicit wait and only send the request over the wire if the
-  // implicit wait actually needs updated. If the default is set to 0, no wire
-  // protocol request will be made.
-  var currImplicitWaitMS = timeouts.DEFAULT_IMPLICIT_WAIT_MS;
-  function setImplicitWaitTimeout(implicitWaitMS, done) {
-    if (implicitWaitMS !== currImplicitWaitMS) {
-      self.setImplicitWaitTimeout(implicitWaitMS, function(err) {
-        if (!err) currImplicitWaitMS = implicitWaitMS;
-        done(err);
-      });
+  self.wclick(opts, function(err, el) {
+    // These two errors mean the element does not exist (or is not shown)
+    // and we can move on without failing. Any other failures should be
+    // propagated.
+    if (err && /timeout hit/.test(err) || /window gone/.test(err)) {
+      err = null;
     }
-    else {
-      done(null);
-    }
-  }
 
-  // webdriver has a problem where if you search for an element that is
-  // contained in a window that has closed itself, no response is returned. To
-  // avoid this, set the implicit wait timeout to 0, try the click, if the
-  // timeout hit or window gone exceptions are thrown, things are ok,
-  // just move on.
-  setImplicitWaitTimeout(0, function() {
-    self.wclick(opts, function(err, el) {
-      if (err) {
-        // These two errors mean the element does not exist (or is not shown)
-        // and we can move on without failing. Any other failures should cause
-        // a stop in action.
-        if(!(/timeout hit/.test(err) || /window gone/.test(err))) {
-          return cb(err);
-        }
-      }
-
-      // setImplictWaitTimeout fails if the 'window gone' error is
-      // returned from wclick.
-      if (!/window gone/.test(err)) {
-        setImplicitWaitTimeout(timeouts.DEFAULT_IMPLICIT_WAIT_MS, function(err) {
-          cb(err, el);
-        });
-      }
-      else {
-        cb(null, el);
-      }
-    });
+    cb && cb(err, el);
   });
 };
 
