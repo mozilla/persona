@@ -69,15 +69,14 @@ wd.prototype.newSession = function(opts, cb) {
 
   self.init(opts, function(err) {
     if (err) return cb(err);
-    // let's set the http timeout at 2x the implicit wait timeout for
-    // faster failures. (!300s)
+    // let's set the http timeout at 2x the default wait timeout for
+    // faster failures. (without this set, http timeouts are 300s)
     self.setHTTPInactivityTimeout(2 * timeouts.DEFAULT_TIMEOUT_MS);
     // note!  the implicit wait timeout is different from other timeouts,
     // it's the amount of time certain wire transactions will wait for
     // procedures like find_element to succeed (we'll actually wait on the
-    // *server* side for an element to become visible).  Having this be
-    // the same as the global default timeout is interesting.
-    self.setImplicitWaitTimeout(timeouts.DEFAULT_TIMEOUT_MS, function(err) {
+    // *server* side for an element to become visible).
+    self.setImplicitWaitTimeout(timeouts.DEFAULT_IMPLICIT_WAIT_MS, function(err) {
       if (err) return cb(err);
       // keep track of the ID of the first window
       self.windowHandle(function(err, handle) {
@@ -230,33 +229,15 @@ wd.prototype.click = function(which, cb) {
 // great, click it. If not, move on.
 wd.prototype.wclickIfExists = function(opts, cb) {
   var self=this;
-  // webdriver has a problem where if you search for an element that is
-  // contained in a window that has closed itself, no response is returned. To
-  // avoid this, set the implicit wait timeout to 0, try the click, if the
-  // timeout hit or window gone exceptions are thrown, things are ok,
-  // just move on.
-  self.setImplicitWaitTimeout(0, function() {
-    self.wclick(opts, function(err, el) {
-      if (err) {
-        // These two errors mean the element does not exist (or is not shown)
-        // and we can move on without failing. Any other failures should cause
-        // a stop in action.
-        if(!(/timeout hit/.test(err) || /window gone/.test(err))) {
-          return cb(err);
-        }
-      }
+  self.wclick(opts, function(err, el) {
+    // These two errors mean the element does not exist (or is not shown)
+    // and we can move on without failing. Any other failures should be
+    // propagated.
+    if (err && /timeout hit/.test(err) || /window gone/.test(err)) {
+      err = null;
+    }
 
-      // setImplictWaitTimeout fails if the 'window gone' error is
-      // returned from wclick.
-      if (!/window gone/.test(err)) {
-        self.setImplicitWaitTimeout(timeouts.DEFAULT_TIMEOUT_MS, function(err) {
-          cb(err, el);
-        });
-      }
-      else {
-        cb(null, el);
-      }
-    });
+    cb && cb(err, el);
   });
 };
 
