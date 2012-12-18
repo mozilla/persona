@@ -291,10 +291,17 @@ BrowserID.Modules.Dialog = (function() {
         self.publish("start", params);
       }
 
-      if (params.type === "primary") {
+      if (params.type === "primary" && !params.add) {
         // at this point, we will only have type of primary if we're
         // returning from #AUTH_RETURN. Mark that email as having been
         // used as a primary, in case it used to be a secondary.
+        // If being added, the user doesn't own this email yet, and the
+        // status will be changed in add_email_with_assertion.
+        //
+        // NOTE: calling start for a request failure is the desired behavior.
+        // If this call fails, it is no big deal, the user should not be
+        // blocked. See
+        // https://github.com/mozilla/browserid/issues/2840#issuecomment-11215155
         user.usedAddressAsPrimary(params.email, start, start);
       } else {
         start();
