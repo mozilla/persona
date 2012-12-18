@@ -15,37 +15,46 @@ exports.qCreateIdP = function (cb) {
   }, function(err, response, body) {
     if (err) return cb(err);
 
-    // the response from testidp includes a 'domain' and a 'password'
-    // property
     var obj = {
-      idp: JSON.parse(body)
+      // details of the created idp, including 'domain' and 'password'
+      // properties
+      idp: JSON.parse(body),
+
+      // getRandomEmail() - a function to generate a random email for
+      // this domain
+      getRandomEmail: function() {
+        return restmail.randomEmail(10, this.idp.domain + '.testidp.org');
+      },
+
+      // given a well known document as an argument, add the domain's public
+      // key to it as a property 'public-key'.
+      //
+      // (NOTE: what is actually inserted is a substitution marker that
+      //  testidp.org will replace with the domain's pub key.)
+      addPublicKey: module.exports.addPublicKey,
+
+      // setWellKnown() - set the well-known document for the domain, represented
+      // as a string or javascript object.
+      setWellKnown: function(document, cb) {
+        if (typeof document === 'object') document = JSON.stringify(document, null, 3);
+
+        request.put({
+          url: TESTIDP_API + this.idp.domain + "/well-known",
+          json: true,
+          body: document,
+          headers: {
+            'x-password': this.idp.password
+          }
+        }, function(err, response, body) {
+          if (err) return cb(err);
+          if (!body.ok) return cb(body.why);
+          cb(null);
+        });
+      }
     };
 
-    // getRandomEmail() - allocate a random email on the testidp's domain
-    obj.getRandomEmail = function() {
-      return restmail.randomEmail(10, this.idp.domain + '.testidp.org');
-    };
-
-    obj.addPublicKey = module.exports.addPublicKey;
-
-    // setWellKnown() - set the well-known document for the domain
-    obj.setWellKnown = function(document, cb) {
-      if (typeof document === 'object') document = JSON.stringify(document, null, 3);
-
-      request.put({
-        url: TESTIDP_API + this.idp.domain + "/well-known",
-        json: true,
-        body: document,
-        headers: {
-          'x-password': this.idp.password
-        }
-      }, function(err, response, body) {
-        if (err) return cb(err);
-        if (!body.ok) return cb(body.why);
-        cb(err);
-      });
-    };
-
+    // pre-populate the response object with a single random email for
+    // convenience.
     obj.email = obj.getRandomEmail();
 
     cb(err, obj);
