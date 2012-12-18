@@ -2,58 +2,46 @@ o hai!
 
 ## Getting started
 
-#### Install deps:
+#### Install node dependencies:
 
     ```npm install```
 
-#### You need the selenium-server-standalone jar to run tests locally:
+#### To run tests locally against Firefox, download the selenium-server and make sure it's running:
 
-   ```curl http://selenium.googlecode.com/files/selenium-server-standalone-2.25.0.jar > selenium-server-standalone-2.25.0.jar```
+    curl http://selenium.googlecode.com/files/selenium-server-standalone-2.25.0.jar > selenium-server-standalone-2.25.0.jar
+    java -jar selenium-server-standalone-2.25.0.jar```
 
-#### Fire up selenium:
+#### To run tests locally against other browsers, you need to install that browser's driver. See the Selenium wiki for details.
 
-    ```java -jar selenium-server-standalone-2.25.0.jar```
+#### To run tests against sauce, put your creds in environment variables:
 
-#### run some tests locally
+    * specify sauce username as `PERSONA_SAUCE_USER`
+    * specify sauce api key as `PERSONA_SAUCE_APIKEY`
+    * Note: If you have these environment variables set, you need to use the "--local" argument to run locally.
 
-There isn't a test runner yet, but you can do this for each test under `tests`:
+#### Running tests
 
-    PERSONA_ENV=stage node tests/change-password-test.js
-
-`PERSONA_ENV` sets the target you want to test. **stage** is the most stable environment at present, so run your tests against it.
-
-#### run some tests against sauce
-
-Set some more environment variables:
-
-    * specify sauce username as `PERSONA_SAUCE_USER` (in persona-secrets bundle for mozilla identity devs)
-    * specify sauce api key as `PERSONA_SAUCE_APIKEY` (in persona-secrets bundle for mozilla identity devs)
-    * specify your sauce browser and OS combo as `PERSONA_BROWSER`
-        * current list: `linux_firefox_13`, `linux_opera_12`, `osx_firefox_14`, `vista_chrome`, `vista_firefox_13`, `vista_ie_9`, `xp_ie_8`
-        * the list is in config/sauce-platforms.js
-    * You can temporarily force a local browser run with `PERSONA_NO_SAUCE`. If you do this, make sure `PERSONA_BROWSER` is set to something that can be run locally.
-
-Then run the tests just like you would locally:
-
-    PERSONA_ENV=stage node tests/change-password-test.js
-
-#### run all the tests
 It is possible to run all of the available tests either locally or against
 Sauce.
 
+To run one test locally against one browser:
+
+    scripts/run-all.js --local --platform=osx_firefox_15 --tests change-password-test
+
 To run all the tests locally against one browser:
 
-    scripts/run-all.js --local --platform=osx_firefox_15 --env=stage
+    scripts/run-all.js --local --platform=osx_firefox_15
 
 To run all the tests on Sauce in parallel against one browser:
 
-    scripts/run-all.js --parallel=15 --platform=osx_firefox_15 --env=stage
+    scripts/run-all.js --parallel=15 --platform=osx_firefox_15
 
-To run all the tests on Sauce against all supported browsers:
+To run all the tests on Sauce against all supported browsers (beware, totally hogs resources):
 
-    scripts/run-all.js --parallel=15 --platform=all --env=stage
+    scripts/run-all.js --parallel=15 --platform=all
 
 For help with other run-all.js options:
+
     scripts/run-all.js --help
 
 #### disabling tests
@@ -123,8 +111,51 @@ This code lives in lib/wd-extensions.js
 * `newSession(cb(err))`: allocate a new browser session and sets implicit wait timeout
 * `delay(timeout, cb(err))`: delay for the specified amount of time before continuing
 
+## How to run tests on Jenkins and figure out what happened at the Sauce website
+
+#### 1. get jenkins to run a bunch of jobs.
+  - jenkins is here: ci.mozilla.org.
+  - 1. kick off individual jobs using the IRC bot. yes, really.
+    - jenkins lives in #identity and other rooms.
+    - syntax: "jenkins: build jobname now"
+  - 2. kick off jobs via cron.
+    - log in to jenkins using ldap creds.
+    - go to the job, click configure, go down to "build triggers" section,
+      check "build periodically", use cron-style timers. eg, */5 * * * *
+      means every 5 minutes.
+
+#### 2. Get list of failed tests.
+For each failed job, click on the date to get to the job view.
+This is oddly the only place you can see the list of failed tests.
+It might only show an incomplete list of >4 have failed, read carefully.
+
+#### 3. Get sauce links.
+Click on 'console output' to get the raw log from the run.
+Search for the name of each test, copy the sauce links.
+
+Console output--see anything weird?
+Sometimes tests fail because the job crashed.
+If you see any weird errors in the console output, that's likely the cause.
+
+#### 4. Look at sauce.
+The sauce links go to a page with the video, the JSON wire session, and the 
+raw log.
+Watch the video, for starters.
+After a while, you'll learn to read the commands fired in the session.
+What's tricky is that Selenium generally dies trying to find the next thing,
+so you have to look at the previous element to see what didn't appear, or
+didn't get clicked, or didn't respond soon enough.
+The raw log contains java exceptions thrown by the selenium server; if weird
+errors or timeouts after 300 sec occur, you'll see better diagnostics here.
+Note that the raw log just refers to, say, "element 10". The main page actually
+shows what the CSS selector was for element 10.
+
+#### 5. Write down WTF happened; I use github gists usually.
+
+#### 6. Classify your failures by type, file bugs, fix 'em
+
 ## Refs
 
 * [admc/wd](https://github.com/admc/wd) is our webdriver library
 * WebDriver's [JSON wire protocol](http://code.google.com/p/selenium/wiki/JsonWireProtocol#/session/:sessionId/timeouts/implicit_wait) is what lives under the language bindings
-* we keep a list of tests to write in an [etherpad](https://id.etherpad.mozilla.org/test-automation-spec).
+* Currently open testing bugs are filed against [mozilla/browserid](https://github.com/mozilla/browserid)
