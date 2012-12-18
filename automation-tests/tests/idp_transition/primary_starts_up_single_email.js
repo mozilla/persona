@@ -39,10 +39,10 @@ runner.run(module, {
       done(err);
     });
   },
-  "disable idps so we can create secondary users": function(done) {
-    testidp.setWellKnown("", function(err) {
-      if (err) return done(err);
-      testidp2.setWellKnown("", done);
+  "turn off idps so we can create secondary users": function(done) {
+    testidp.turnOffSupport(function(err) {
+      if (err) done(err);
+      else testidp2.turnOffSupport(done);
     });
   },
   "create two secondary users using the domain": function(done) {

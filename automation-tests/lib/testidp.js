@@ -50,6 +50,17 @@ exports.qCreateIdP = function (cb) {
           if (!body.ok) return cb(body.why);
           cb(null);
         });
+      },
+      // *explicitly* disable this domain.  Meaning persona should
+      // detect that this domain has intentionally disabled support and immediately
+      // fallback to secondary verification of email addresses
+      disableSupport: function(cb) {
+        this.setWellKnown({ disabled: true }, cb);
+      },
+      // turn off support for this domain.  If persona has seen this
+      // domain recently, it will assume the domain is temporarily broken.
+      turnOffSupport: function(cb) {
+        this.setWellKnown("", cb);
       }
     };
 
