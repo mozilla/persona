@@ -61,6 +61,29 @@ exports.qCreateIdP = function (cb) {
       // domain recently, it will assume the domain is temporarily broken.
       turnOffSupport: function(cb) {
         this.setWellKnown("", cb);
+      },
+      // Enable primary support for this domain.  support comes in two flavors:
+      // * click - the user is always redirected to the domain inside the dialog
+      //    to "authenticate".  authentication is simply clicking a button.
+      // * noauth - the user is always considered authenticated to the IdP.
+      // if a boolean first argument is provided, true is click, false is noauth.
+      enableSupport: function(click, cb) {
+        // default to 'click' if the caller doesn't specify desired behavior for the
+        // idp
+        if (typeof click === 'function') {
+          cb = click;
+          click = true;
+        }
+        var obj = {};
+        if (click) {
+          obj.authentication = '/click/auth.html';
+          obj.provisioning = '/click/prov.html';
+        } else {
+          obj.authentication = '/noauth/auth.html';
+          obj.provisioning = '/noauth/prov.html';
+        }
+        this.addPublicKey(obj);
+        this.setWellKnown(obj, cb);
       }
     };
 

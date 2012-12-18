@@ -87,11 +87,7 @@ runner.run(module, {
       });
   },
   "enable primary support for the transition when authed test": function(done) {
-    testidp2.setWellKnown({
-      authentication: '/click/auth.html',
-      provisioning: '/click/prov.html',
-      "public-key": '<TEST IDP PROVIDED>'
-    }, done);
+    testidp2.enableSupport(done);
   },
   "now log out and enter the dialog": function(done) {
     browser.chain()
@@ -121,11 +117,7 @@ runner.run(module, {
   // now a secondary
   //
   "enable primary support for the transition when not authed test": function(done) {
-    testidp.setWellKnown({
-      authentication: '/click/auth.html',
-      provisioning: '/click/prov.html',
-      "public-key": '<TEST IDP PROVIDED>'
-    }, done);
+    testidp.enableSupport(done);
   },
   "setup for the second test - log out and enter the dialog, and logout of persona": function(done) {
     browser.chain()
