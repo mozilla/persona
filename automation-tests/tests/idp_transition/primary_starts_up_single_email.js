@@ -49,6 +49,9 @@ runner.run(module, {
     email1 = testidp.getRandomEmail();
     email2 = testidp2.getRandomEmail();
 
+    // Here we'll use an abstraction around server APIs to programatically
+    // create secondary accounts.  By directly hitting server APIs we don't
+    // needlessly re-test secondary account creation flows and tests run faster.
     secondary.create({
       email: email1,
       password: 'password',
