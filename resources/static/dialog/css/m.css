@@ -16,7 +16,7 @@
    * horizontal lines to appear while the dialog is loading.
    */
   body {
-    /*background-image: url('/common/i/grain.png');*/
+    background-image: url('/common/i/grain.png');
   }
 
 
@@ -78,7 +78,7 @@
        */
       position: static;
       padding: 10px;
-      /*border-bottom: 1px solid rgba(0,0,0,0.05);*/
+      border-bottom: 1px solid rgba(0,0,0,0.05);
       text-align: center;
       left: 0;
   }
