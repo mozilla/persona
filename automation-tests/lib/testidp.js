@@ -15,7 +15,8 @@ exports.qCreateIdP = function (cb) {
   }, function(err, response, body) {
     if (err) return cb(err);
 
-    // resp would be 0
+    // the response from testidp includes a 'domain' and a 'password'
+    // property
     var obj = {
       idp: JSON.parse(body)
     };
