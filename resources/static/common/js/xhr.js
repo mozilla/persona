@@ -8,7 +8,6 @@ BrowserID.XHR = (function() {
       mediator = bid.Mediator,
       context,
       csrf_token,
-      allow_unverified = false,
       transport = bid.XHRTransport,
       time_until_delay;
 
@@ -113,11 +112,9 @@ BrowserID.XHR = (function() {
   function withContext(cb, onFailure) {
     if (typeof context !== 'undefined') cb(context);
     else {
-      var data = allow_unverified ? { allowUnverified: true } : undefined;
       request({
         type: "GET",
         url: "/wsapi/session_context",
-        data: data,
         success: function(result) {
           csrf_token = result.csrf_token;
           context = result;
@@ -190,11 +187,8 @@ BrowserID.XHR = (function() {
      * Clear the current context
      * @method clearContext
      */
-    clearContext: clearContext,
+    clearContext: clearContext
 
-    setAllowUnverified: function(allow) {
-      allow_unverified = allow;
-    }
   };
 }());
 
