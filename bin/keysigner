@@ -92,7 +92,7 @@ try {
 
 
 // and our single function
-app.post('/wsapi/cert_key', validate({ 'email': 'email', 'pubkey': 'pubkey', 'ephemeral': 'boolean', 'unverified': { type: 'boolean', required: false } }), function(req, resp) {
+app.post('/wsapi/cert_key', validate({ 'email': 'email', 'pubkey': 'pubkey', 'ephemeral': 'boolean', 'unverified': { type: 'boolean', required: false }, 'forceIssuer': {type: 'hostname', required: false}}), function(req, resp) {
   var startTime = new Date();
   var forceIssuer = req.params.forceIssuer;
   var opts = {};
