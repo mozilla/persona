@@ -13,7 +13,7 @@ dialog = require('../pages/dialog.js'),
 testSetup = require('../lib/test-setup.js');
 
 exports.verifyEmail = function(email, password, index, browser, done) {
-  restmail.getVerificationLink({ email: email, index: index }, function(err, link) {
+  restmail.getVerificationLink({ email: email, index: index }, function(err, token, link) {
     testSetup.newBrowserSession(browser, function(err) {
       if (err) return done(err);
 
