@@ -59,7 +59,7 @@ runner.run(module, {
   'do the restmail verification step': function(done) {
     restmail.getVerificationLink({ email: secondary }, done);
   },
-  'open persona.org verification link and wait for congrats message': function(done, link) {
+  'open persona.org verification link and wait for congrats message': function(done, token, link) {
     browser.chain({onError: done})
       .wwin()
       .get(link)

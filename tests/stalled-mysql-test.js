@@ -190,11 +190,12 @@ suite.addBatch({
     topic: function() {
       start_stop.waitForToken(this.callback);
     },
-    "is obtained": function (t) {
+    "is obtained": function (err, t) {
+      assert.isNull(err);
       assert.strictEqual(typeof t, 'string');
     },
     "setting password": {
-      topic: function(token) {
+      topic: function(err, token) {
         wsapi.post('/wsapi/complete_user_creation', {
           token: token
         }).call(this);

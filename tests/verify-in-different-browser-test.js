@@ -93,7 +93,8 @@ suite.addBatch({
       topic: function() {
         start_stop.waitForToken(this.callback);
       },
-      "successfully": function (t) {
+      "successfully": function (err, t) {
+        assert.isNull(err);
         this._token = t;
         assert.strictEqual(typeof t, 'string');
       },
@@ -164,7 +165,8 @@ suite.addBatch({
       topic: function() {
         start_stop.waitForToken(this.callback);
       },
-      "successfully": function (t) {
+      "successfully": function (err, t) {
+        assert.isNull(err);
         this._token = t;
         assert.strictEqual(typeof t, 'string');
       },
@@ -238,7 +240,8 @@ suite.addBatch({
       topic: function() {
         start_stop.waitForToken(this.callback);
       },
-      "successfully": function (t) {
+      "successfully": function (err, t) {
+        assert.isNull(err);
         this._token = t;
         assert.strictEqual(typeof t, 'string');
       },
@@ -284,7 +287,8 @@ suite.addBatch({
       topic: function() {
         start_stop.waitForToken(this.callback);
       },
-      "successfully": function (t) {
+      "successfully": function (err, t) {
+        assert.isNull(err);
         this._token = t;
         assert.strictEqual(typeof t, 'string');
       },

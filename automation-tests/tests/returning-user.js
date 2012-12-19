@@ -69,7 +69,7 @@ runner.run(module, {
   "get verification link": function(done) {
     restmail.getVerificationLink({ email: secondary }, done);
   },
-  "follow link, wait for redirect, secondary should be displayed": function(done, link) {
+  "follow link, wait for redirect, secondary should be displayed": function(done, token, link) {
     browser.chain({onError: done})
       .wwin()
       .get(link)

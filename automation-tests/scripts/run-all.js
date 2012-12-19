@@ -38,6 +38,9 @@ var argv = require('optimist')
     if (!a.parallel) a.parallel = parseInt(process.env.RUNNERS, 10) || 10;
   })
   .describe('platform', 'the browser/os to test (globs supported)')
+  .alias('iterations', 'i')
+  .describe('iterations', 'the number of times to repeat specified tests')
+  .default("iterations", "1")
   .alias('list-tests', 'lt')
   .describe('list-tests', 'list available tests')
   .alias('tests', 't')
@@ -145,7 +148,11 @@ function startTesting() {
       setPlatformOfTests(platformTests, platform);
       allTests = allTests.concat(platformTests);
     }
-
+    // handle multiple iterations
+    var allTestsCopy = toolbelt.deepCopy(allTests);
+    for (var i = 1; i < parseInt(args.iterations); i++) {
+      allTests = allTests.concat(allTestsCopy);
+    }
     return allTests;
   }
 

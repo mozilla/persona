@@ -138,12 +138,13 @@ suite.addBatch({
         topic: function() {
           start_stop.waitForToken(this.callback);
         },
-        "successfully": function (t) {
+        "successfully": function (err, t) {
+          assert.isNull(err);
           this._token = t;
           assert.strictEqual(typeof t, 'string');
         },
         "and complete":  {
-          topic: function(t) {
+          topic: function(err, t) {
             wsapi.get('/wsapi/email_for_token', {
               token: t
             }).call(this);
@@ -216,12 +217,13 @@ suite.addBatch({
         topic: function() {
           start_stop.waitForToken(this.callback);
         },
-        "successfully": function (t) {
+        "successfully": function (err, t) {
+          assert.isNull(err);
           this._token = t;
           assert.strictEqual(typeof t, 'string');
         },
         "and to complete":  {
-          topic: function(t) {
+          topic: function(err, t) {
             wsapi.get('/wsapi/email_for_token', {
               token: t
             }).call(this);

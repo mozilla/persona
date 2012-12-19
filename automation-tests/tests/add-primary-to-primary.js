@@ -8,7 +8,6 @@
 const
 path = require('path'),
 assert = require('../lib/asserts.js'),
-restmail = require('../lib/restmail.js'),
 utils = require('../lib/utils.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
