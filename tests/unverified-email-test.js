@@ -48,6 +48,7 @@ suite.addBatch({
       }).call(this);
     },
     "is 200 OK":     function(err, r) {
+      assert.isNull(err);
       assert.equal(r.code, 200);
       var json = JSON.parse(r.body);
       assert.isTrue(json.success);
