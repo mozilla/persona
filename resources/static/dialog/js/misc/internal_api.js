@@ -61,6 +61,13 @@
    * options.silent defaults to false.
    */
   internal.get = function(origin, callback, options) {
+    if (typeof options === 'string') {
+      // Firefox forbids sending objects across the blood-brain barrier from
+      // gecko into userland JS.  So we just stringify and destringify our
+      // objects when calling from b2g native code.
+      options = JSON.parse(options);
+    }
+
     function complete(assertion) {
       assertion = assertionObjectToString(assertion);
       // If no assertion, give no reason why there was a failure.
