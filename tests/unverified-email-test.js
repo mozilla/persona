@@ -18,7 +18,7 @@ http = require('http'),
 querystring = require('querystring'),
 path = require('path');
 
-var suite = vows.describe('verifier');
+var suite = vows.describe('unverified-email-test');
 
 require("jwcrypto/lib/algs/rs");
 require("jwcrypto/lib/algs/ds");
