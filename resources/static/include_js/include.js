@@ -1227,6 +1227,12 @@
     };
 
     navigator.id = {
+      watch: function(options) {
+        if (this != navigator.id)
+          throw new Error("all navigator.id calls must be made on the navigator.id object");
+        checkCompat(false);
+        internalWatch(options);
+      },
       request: function(options) {
         if (this != navigator.id)
           throw new Error("all navigator.id calls must be made on the navigator.id object");
@@ -1236,12 +1242,6 @@
         // returnTo is used for post-email-verification redirect
         if (!options.returnTo) options.returnTo = document.location.pathname;
         return internalRequest(options);
-      },
-      watch: function(options) {
-        if (this != navigator.id)
-          throw new Error("all navigator.id calls must be made on the navigator.id object");
-        checkCompat(false);
-        internalWatch(options);
       },
       // logout from the current website
       // The callback parameter is DEPRECATED, instead you should use the

@@ -4,6 +4,7 @@ train-2012.11.23:
   * (hotfix 2012.12.03) nodejs version in .spec file >= 0.8.12
   * (hotfix 2012.12.05) when an email is re-staged, ensure the latest password is used: issue #2822
   * (hotfix 2012.12.11) verifier default port number fix
+  * (hotfix 2012.12.19) resolve issue caused by improper ETag header: issue #2863
 
 train-2012.11.09:
   * code cleanup, including jshinting of source and code coverage: #2643, #2272

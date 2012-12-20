@@ -17,8 +17,8 @@ html, body {
 }
 
 body {
-  font: 14px/21px 'Open Sans', "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
   overflow-y: auto;
+  font: 14px/21px 'Open Sans', "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
 }
 
 /* for floats */
