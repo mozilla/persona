@@ -1,6 +1,6 @@
 ;WinChan = (function() {
-  var RELAY_FRAME_NAME = "__winchan_relay_frame";
   var CLOSE_CMD = "die";
+  var RELAY_FRAME_NAME = "__winchan_relay_frame";
 
   // a portable addListener implementation
   function addListener(w, event, cb) {
