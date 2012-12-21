@@ -157,7 +157,7 @@ suite.addBatch({
         assert.strictEqual(resp.status, 'okay');
         //assert.strictEqual(resp.issuer, "example.domain");
         assert.strictEqual(resp.audience, UNVERIFIED_ORIGIN);
-        assert.strictEqual(resp.email, UNVERIFIED_EMAIL);
+        assert.strictEqual(resp['unverified-email'], UNVERIFIED_EMAIL);
       }
     },
     "without sending allowUnverified to verifier": {

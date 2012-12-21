@@ -7,6 +7,7 @@
 require('../lib/baseExceptions').addExceptionHandler();
 
 const
+_ = require('underscore'),
 util = require("util"),
 path = require('path'),
 url = require('url'),
@@ -146,13 +147,11 @@ function doVerification(req, resp, next) {
         rp: audience
       });
     } else {
-      resp.json({
+      resp.json(_.extend(r.success, {
         status : "okay",
-        email : r.success.email,
         audience : audience, // NOTE: we return the audience formatted as the RP provided it, not normalized in any way.
-        expires : new Date(r.success.expires).valueOf(),
-        issuer: r.success.issuer
-      });
+        expires : new Date(r.success.expires).valueOf()
+      }));
 
       metrics.report('verify', {
         result: 'success',
