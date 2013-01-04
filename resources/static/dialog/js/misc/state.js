@@ -164,7 +164,8 @@ BrowserID.State = (function() {
       _.extend(info, {
         siteName: self.siteName,
         siteTOSPP: self.siteTOSPP,
-        forceIssuer: self.forceIssuer
+        forceIssuer: self.forceIssuer,
+        allowUnverified: self.allowUnverified
       });
 
       startAction("doAuthenticate", info);

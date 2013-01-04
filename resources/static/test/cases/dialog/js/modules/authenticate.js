@@ -114,6 +114,21 @@
     });
   });
 
+  asyncTest("allowUnverified with an unverified email declared in options - show password field", function() {
+    controller.destroy();
+    $(EMAIL_SELECTOR).val("");
+    createController({
+      email: "unverified@testuser.com",
+      type: "secondary",
+      state: "unverified",
+      allowUnverified: true,
+      ready: function() {
+        equal($(EMAIL_SELECTOR).val(), "unverified@testuser.com", "email prefilled");
+        equal($("input[type=password]").is(":visible"), true, "password is shown");
+        start();
+      }
+    });
+  });
   function testUserUnregistered() {
     register("new_user", function(msg, info, rehydrate) {
       ok(info.email, "new_user triggered with info.email");

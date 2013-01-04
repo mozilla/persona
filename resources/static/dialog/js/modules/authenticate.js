@@ -39,15 +39,18 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function hasPassword(info) {
+    /*jshint validthis:true*/
     return (info && info.email && info.type === "secondary" && 
-      (info.state === "known" || info.state === "transition_to_secondary" ));
+      (info.state === "known" ||
+       info.state === "transition_to_secondary" ||
+       info.state === "unverified" && this.allowUnverified));
   }
 
   function initialState(info) {
     /*jshint validthis: true*/
     var self=this;
     self.submit = checkEmail;
-    if (hasPassword(info)) {
+    if (hasPassword.call(self, info)) {
       addressInfo = info;
       enterPasswordState.call(self, info.ready);
     }
@@ -85,13 +88,13 @@ BrowserID.Modules.Authenticate = (function() {
         self.close("primary_user", info, info);
       }
       else if (!!self.forceIssuer && 'default' !== self.forceIssuer) {
-	if (hasPassword(info)) {
+        if (hasPassword.call(self, info)) {
           enterPasswordState.call(self);
-	} else {
+        } else {
           createFxAccount.call(self, self.forceIssuer);
-	}
+        }
       }
-      else if (hasPassword(info)) {
+      else if (hasPassword.call(self, info)) {
         enterPasswordState.call(self);
       } else if ("transition_no_password" === info.state) {
         transitionNoPassword.call(self, info);
@@ -196,7 +199,7 @@ BrowserID.Modules.Authenticate = (function() {
     dom.setInner(PASSWORD_SELECTOR, "");
 
     self.submit = authenticate;
-    var labelSelector = (addressInfo.state === "known") ? PASSWORD_LABEL : TRANSITION_TO_SECONDARY_LABEL;
+    var labelSelector = (addressInfo.state === "transition_to_secondary") ? TRANSITION_TO_SECONDARY_LABEL : PASSWORD_LABEL;
     if (labelSelector === TRANSITION_TO_SECONDARY_LABEL) {
       dom.setInner(IDP_SELECTOR, helpers.getDomainFromEmail(addressInfo.email));
     }
@@ -238,6 +241,7 @@ BrowserID.Modules.Authenticate = (function() {
       var self=this;
 
       self.forceIssuer = options.forceIssuer;
+      self.allowUnverified = options.allowUnverified;
 
       dom.addClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
       dom.addClass(BODY_SELECTOR, FORM_CLASS);
