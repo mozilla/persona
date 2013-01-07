@@ -21,7 +21,7 @@
   },
   "proxy": { "bind_to": { "port": 10006 } },
   "router": { "bind_to": { "port": 8080 } },
-  "kpi_backend_db_url" : "https://kpiggybank.hacksign.in/wsapi/interaction_data",
+  "kpi_backend_db_url" : "https://piggy.personatest.org/wsapi/interaction_data",
   // whether to show the development menu.
   "enable_development_menu": true,
   // explicitly undefine public_static_url, as the configuration will then fallback to
