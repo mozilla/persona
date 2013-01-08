@@ -12,7 +12,8 @@ path = require('path'),
 url = require('url'),
 http = require('http'),
 urlparse = require('urlparse'),
-express = require('express');
+express = require('express'),
+shutdown = require('../lib/shutdown');
 
 const
 assets = require('../lib/static_resources').all,
@@ -106,6 +107,14 @@ app.use(function(req, res, next) {
 });
 
 app.use(express.static(static_root));
+
+// Do this only when PERSONA_WITH_COVER is set. Without a graceful shutdown,
+// `cover` will not generate .coverage_data
+if (process.env.PERSONA_WITH_COVER) {
+  shutdown.handleTerminationSignals(app, function() {
+    // nothing particular to do here for static daemon, yet..
+  });
+}
 
 var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function() {
