@@ -12,8 +12,7 @@ path = require('path'),
 url = require('url'),
 http = require('http'),
 urlparse = require('urlparse'),
-express = require('express'),
-shutdown = require('../lib/shutdown');
+express = require('express');
 
 const
 assets = require('../lib/static_resources').all,
