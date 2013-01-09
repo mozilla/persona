@@ -753,6 +753,56 @@ BrowserID.Network = (function() {
           complete(onFailure, "user not authenticated");
         }
       }, onFailure);
+    },
+
+    /**
+     * Request that an account transitions from a primary to a secondary. Used
+     * whenever a user has only primary addresses and one of the addresses
+     * belongs to an IdP which converts to a secondary.
+     * @method requestTransitionToSecondary
+     * @param {string} email
+     * @param {string} password
+     * @param {string} origin - site user is trying to sign in to.
+     * @param {function} [onComplete] - Callback to call when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    requestTransitionToSecondary: function(email, password, origin, onComplete, onFailure) {
+      var postData = {
+        email: email,
+        pass: password,
+        site : origin
+      };
+      // XXX - This is going to have to change when zaach adds a transition
+      // function.
+      stageAddressForVerification(postData, "/wsapi/stage_reset", onComplete, onFailure);
+    },
+
+    /**
+     * Complete transition to secondary
+     * @method completeTransitionToSecondary
+     * @param {string} token - token to register for.
+     * @param {string} password
+     * @param {function} [onComplete] - Called when complete.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+      // XXX - This is going to have to change when zaach adds a transition
+      // completion function.
+    completeTransitionToSecondary: completeAddressVerification.curry("/wsapi/complete_reset"),
+
+    /**
+     * Check the registration status of a transition to secondary
+     * @method checkPasswordReset
+     * @param {function} [onsuccess] - called when complete.
+     * @param {function} [onfailure] - called on xhr failure.
+     */
+    checkTransitionToSecondary: function(email, onComplete, onFailure) {
+      // XXX - This is going to have to change when zaach adds a check
+      // transition function.
+      get({
+        url: "/wsapi/password_reset_status?email=" + encodeURIComponent(email),
+        success: handleAddressVerifyCheckResponse.curry(onComplete),
+        error: onFailure
+      });
     }
   };
 

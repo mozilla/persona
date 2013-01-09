@@ -24,38 +24,213 @@
     }
   });
 
-  function testVerificationPending(funcName) {
-    transport.useResult("pending");
+  /*
+   * The staging functions are generic and can be tested using equally generic
+   * test functions. First, create a list of staging functions and whether the
+   * staging function takes a password or not. Then create a list of tests to
+   * run. Run each test for each method.
+   */
+  var stagingMethods = {
+    createUser: true,
+    addSecondaryEmail: true,
+    // XXX - This is going to have to change to not take a password.
+    requestPasswordReset: true,
+    requestEmailReverify: false,
+    requestTransitionToSecondary: true,
+  };
 
-    network[funcName]("registered@testuser.com", function(status) {
-      equal(status, "pending");
-      start();
-    }, testHelpers.unexpectedFailure);
+  function getStagingMethodArgs(email, onComplete, usePassword) {
+      var args = [email, "origin", onComplete, testHelpers.unexpectedFailure];
+      if (usePassword) {
+        args.splice(1, 0, "password");
+      }
+      return args;
   }
 
-  function testVerificationMustAuth(funcName) {
-    transport.useResult("mustAuth");
+  var stagingTests = {
+    testStagingMethodSuccess: function(stagingMethod, usePassword) {
+      asyncTest(stagingMethod + " success", function() {
+        var onComplete = function(status) {
+          equal(status, true, stagingMethod + " request success");
+          start();
+        };
 
-    network.checkAuth(function(auth_status) {
-      equal(!!auth_status, false, "user not yet authenticated");
-      network[funcName]("registered@testuser.com", function(status) {
-        equal(status, "mustAuth");
-        network.checkAuth(function(auth_status) {
-          equal(!!auth_status, false, "user not yet authenticated");
+        network[stagingMethod].apply(network, getStagingMethodArgs(TEST_EMAIL, onComplete, usePassword));
+      });
+    },
+
+    testStagingMethodInvalid: function(stagingMethod, usePassword) {
+      asyncTest(stagingMethod + " invalid", function() {
+        transport.useResult("invalid");
+        var onComplete = function(status) {
+          equal(status, false);
+          start();
+        };
+
+        network[stagingMethod].apply(network, getStagingMethodArgs("invaliduser", onComplete, usePassword));
+      });
+    },
+
+    testStagingMethodThrottled: function(stagingMethod, usePassword) {
+      asyncTest(stagingMethod + " throttled", function() {
+        transport.useResult("throttle");
+
+        var onComplete = function(status) {
+          equal(status, false, "throttled email calls onSuccess but with false as the value");
+          start();
+        };
+
+        network[stagingMethod].apply(network, getStagingMethodArgs(TEST_EMAIL, onComplete, usePassword));
+      });
+    },
+
+    testStagingMethodFailure: function(stagingMethod, usePassword) {
+      asyncTest(stagingMethod + " XHR failure", function() {
+        if (usePassword) {
+          failureCheck(network[stagingMethod], TEST_EMAIL, "password", "origin");
+        }
+        else {
+          failureCheck(network[stagingMethod], TEST_EMAIL, "origin");
+        }
+      });
+    }
+  };
+
+  for(var stagingMethod in stagingMethods) {
+    var usePassword = stagingMethods[stagingMethod];
+    for( var stagingTest in stagingTests) {
+      stagingTests[stagingTest](stagingMethod, usePassword);
+    }
+  }
+
+
+  /*
+   * The verification methods complete some sort of registration. They are
+   * generic and can be generically tested.
+   */
+  var verificationMethods = {
+    completeUserRegistration: true,
+    completeEmailRegistration: true,
+    completePasswordReset: true,
+    completeTransitionToSecondary: true
+  };
+
+
+  var verificationTests = {
+    verificationSuccess: function(verificationMethod) {
+      asyncTest(verificationMethod + " with valid token, no password required", function() {
+        network[verificationMethod]("token", null, function(registered) {
+          ok(registered);
           start();
         }, testHelpers.unexpectedFailure);
-      }, testHelpers.unexpectedFailure);
-    }, testHelpers.unexpectedFailure);
+      });
+    },
+
+    verificationBadPassword: function(verificationMethod) {
+      asyncTest(verificationMethod + " with valid token, bad password", function() {
+        transport.useResult("badPassword");
+        network[verificationMethod]("token", "password",
+          testHelpers.unexpectedSuccess,
+          testHelpers.expectedXHRFailure);
+      });
+    },
+    verificationPasswordRequired: function(verificationMethod) {
+      asyncTest(verificationMethod + " with valid token, password required", function() {
+        network[verificationMethod]("token", "password", function(registered) {
+          ok(registered);
+          start();
+        }, testHelpers.unexpectedFailure);
+      });
+    },
+    verificationInvalidToken: function(verificationMethod) {
+      asyncTest(verificationMethod + " with invalid token", function() {
+        transport.useResult("invalid");
+
+        network[verificationMethod]("token", "password", function(registered) {
+          equal(registered, false);
+          start();
+        }, testHelpers.unexpectedFailure);
+      });
+    },
+    verificationXHRFailure: function(verificationMethod) {
+      asyncTest(verificationMethod + " with XHR failure", function() {
+        failureCheck(network[verificationMethod], "token", "password");
+      });
+    }
+  };
+
+  for(var verificationMethod in verificationMethods) {
+    var usePassword = verificationMethods[verificationMethod];
+    for( var verificationTest in verificationTests) {
+      verificationTests[verificationTest](verificationMethod, usePassword);
+    }
   }
 
-  function testVerificationComplete(funcName) {
-    network.withContext(function() {
-      transport.useResult("complete");
-      network[funcName]("registered@testuser.com", function(status) {
-        equal(status, "complete");
-        start();
-      }, testHelpers.unexpectedFailure);
-    });
+  /*
+   * The registration status check methods are generic and can be
+   * generically tested.
+   */
+  var checkingMethods = {
+    checkUserRegistration: true,
+    checkEmailRegistration: true,
+    checkPasswordReset: true,
+    checkEmailReverify: true,
+    checkTransitionToSecondary: true
+  };
+
+  var checkingTests = {
+    pending: function(checkMethod) {
+      asyncTest(checkMethod + " pending", function() {
+        transport.useResult("pending");
+
+        network[checkMethod]("registered@testuser.com", function(status) {
+          equal(status, "pending");
+          start();
+        }, testHelpers.unexpectedFailure);
+      });
+    },
+
+    mustAuth: function(checkMethod) {
+      asyncTest(checkMethod + " mustAuth", function() {
+        transport.useResult("mustAuth");
+
+        network.checkAuth(function(auth_status) {
+          equal(!!auth_status, false, "user not yet authenticated");
+          network[checkMethod]("registered@testuser.com", function(status) {
+            equal(status, "mustAuth");
+            network.checkAuth(function(auth_status) {
+              equal(!!auth_status, false, "user not yet authenticated");
+              start();
+            }, testHelpers.unexpectedFailure);
+          }, testHelpers.unexpectedFailure);
+        }, testHelpers.unexpectedFailure);
+      });
+    },
+
+    complete: function(checkMethod) {
+      asyncTest(checkMethod + " complete", function() {
+        network.withContext(function() {
+          transport.useResult("complete");
+          network[checkMethod]("registered@testuser.com", function(status) {
+            equal(status, "complete");
+            start();
+          }, testHelpers.unexpectedFailure);
+        });
+      });
+    },
+
+    xhrFailure: function(checkMethod) {
+      asyncTest(checkMethod + " with XHR failure", function() {
+        failureCheck(network[checkMethod], "registered@testuser.com");
+      });
+    }
+  }
+
+  for(var checkingMethod in checkingMethods) {
+    var usePassword = checkingMethods[checkingMethod];
+    for( var checkingTest in checkingTests) {
+      checkingTests[checkingTest](checkingMethod, usePassword);
+    }
   }
 
 
@@ -198,104 +373,6 @@
   });
 
 
-  asyncTest("completeEmailRegistration valid", function() {
-    network.completeEmailRegistration("goodtoken", "password", function onSuccess(proven) {
-      equal(proven, true, "good token proved");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("completeEmailRegistration with valid token, bad password", function() {
-    transport.useResult("badPassword");
-    network.completeEmailRegistration("token", "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure);
-  });
-
-  asyncTest("completeEmailRegistration with invalid token", function() {
-    transport.useResult("invalid");
-    network.completeEmailRegistration("badtoken", "password", function onSuccess(proven) {
-      equal(proven, false, "bad token could not be proved");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("completeEmailRegistration with XHR failure", function() {
-    failureCheck(network.completeEmailRegistration, "goodtoken", "password");
-  });
-
-  asyncTest("createUser with valid user", function() {
-    network.createUser("validuser", "password", "origin", function onSuccess(created) {
-      ok(created);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("createUser with invalid user", function() {
-    transport.useResult("invalid");
-    network.createUser("invaliduser", "password", "origin", function onSuccess(created) {
-      equal(created, false);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("createUser throttled", function() {
-    transport.useResult("throttle");
-
-    network.createUser("validuser", "password", "origin", function onSuccess(added) {
-      equal(added, false, "throttled email returns onSuccess but with false as the value");
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("createUser with XHR failure", function() {
-    failureCheck(network.createUser, "validuser", "password", "origin");
-  });
-
-  asyncTest("checkUserRegistration returns pending - pending status, user is not logged in", testVerificationPending.curry("checkUserRegistration"));
-
-  asyncTest("checkUserRegistration returns mustAuth - mustAuth status, user is not logged in", testVerificationMustAuth.curry("checkUserRegistration"));
-
-  asyncTest("checkUserRegistration returns complete - complete status, user is logged in", testVerificationComplete.curry("checkUserRegistration"));
-
-  asyncTest("checkUserRegistration with XHR failure", function() {
-    failureCheck(network.checkUserRegistration, "registered@testuser.com");
-  });
-
-  asyncTest("completeUserRegistration with valid token, no password required", function() {
-    network.completeUserRegistration("token", undefined, function(registered) {
-      ok(registered);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("completeUserRegistration with valid token, bad password", function() {
-    transport.useResult("badPassword");
-    network.completeUserRegistration("token", "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure);
-  });
-
-  asyncTest("completeUserRegistration with valid token, password required", function() {
-    network.completeUserRegistration("token", "password", function(registered) {
-      ok(registered);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("completeUserRegistration with invalid token", function() {
-    transport.useResult("invalid");
-
-    network.completeUserRegistration("token", "password", function(registered) {
-      equal(registered, false);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("completeUserRegistration with XHR failure", function() {
-    failureCheck(network.completeUserRegistration, "token", "password");
-  });
-
   asyncTest("cancelUser valid", function() {
 
     network.cancelUser(function() {
@@ -337,42 +414,6 @@
     failureCheck(network.emailRegistered, "registered@testuser.com");
   });
 
-
-  asyncTest("addSecondaryEmail valid", function() {
-    network.addSecondaryEmail(TEST_EMAIL, TEST_PASSWORD, "origin", function onSuccess(added) {
-      ok(added);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("addSecondaryEmail invalid", function() {
-    transport.useResult("invalid");
-    network.addSecondaryEmail(TEST_EMAIL, TEST_PASSWORD, "origin", function onSuccess(added) {
-      equal(added, false);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("addSecondaryEmail throttled", function() {
-    transport.useResult("throttle");
-
-    network.addSecondaryEmail(TEST_EMAIL, TEST_PASSWORD, "origin", function onSuccess(added) {
-      equal(added, false, "throttled email returns onSuccess but with false as the value");
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("addSecondaryEmail with XHR failure", function() {
-    failureCheck(network.addSecondaryEmail, TEST_EMAIL, TEST_PASSWORD, "origin");
-  });
-
-  asyncTest("checkEmailRegistration pending", testVerificationPending.curry("checkEmailRegistration"));
-  asyncTest("checkEmailRegistration mustAuth", testVerificationMustAuth.curry("checkEmailRegistration"));
-  asyncTest("checkEmailRegistration complete", testVerificationComplete.curry("checkEmailRegistration"));
-
-  asyncTest("checkEmailRegistration with XHR failure", function() {
-    failureCheck(network.checkEmailRegistration, TEST_EMAIL);
-  });
 
 
   asyncTest("addEmailWithAssertion, user not authenticated or invalid assertion, returns false status", function() {
@@ -448,71 +489,6 @@
     failureCheck(network.removeEmail, "invalidemail");
   });
 
-
-  asyncTest("requestPasswordReset - true status", function() {
-    network.requestPasswordReset(TEST_EMAIL, "password", "origin", function onSuccess(status) {
-      equal(status, true, "password reset request success");
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("requestPasswordReset with XHR failure", function() {
-    failureCheck(network.requestPasswordReset, TEST_EMAIL, "password", "origin");
-  });
-
-  asyncTest("completePasswordReset with valid token, no password required", function() {
-    network.completePasswordReset("token", undefined, function(registered) {
-      ok(registered);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("completePasswordReset with valid token, bad password", function() {
-    transport.useResult("badPassword");
-    network.completePasswordReset("token", "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure);
-  });
-
-  asyncTest("completePasswordReset with valid token, password required", function() {
-    network.completePasswordReset("token", "password", function(registered) {
-      ok(registered);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("completePasswordReset with invalid token", function() {
-    transport.useResult("invalid");
-
-    network.completePasswordReset("token", "password", function(registered) {
-      equal(registered, false);
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("completePasswordReset with XHR failure", function() {
-    failureCheck(network.completePasswordReset, "token", "password");
-  });
-
-  asyncTest("checkPasswordReset pending", testVerificationPending.curry("checkPasswordReset"));
-  asyncTest("checkPasswordReset mustAuth", testVerificationMustAuth.curry("checkPasswordReset"));
-  asyncTest("checkPasswordReset complete", testVerificationComplete.curry("checkPasswordReset"));
-
-
-  asyncTest("requestEmailReverify - true status", function() {
-    network.requestEmailReverify(TEST_EMAIL, "origin", function onSuccess(status) {
-      equal(status, true, "password reset request success");
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("requestEmailReverify with XHR failure", function() {
-    failureCheck(network.requestEmailReverify, TEST_EMAIL, "origin");
-  });
-
-  asyncTest("checkEmailReverify pending", testVerificationPending.curry("checkEmailReverify"));
-  asyncTest("checkEmailReverify mustAuth", testVerificationMustAuth.curry("checkEmailReverify"));
-  asyncTest("checkEmailReverify complete", testVerificationComplete.curry("checkEmailReverify"));
 
   asyncTest("serverTime", function() {
     // I am forcing the server time to be 1.25 seconds off.
