@@ -25,6 +25,7 @@ start_stop.addStartupBatches(suite);
 
 const
 TEST_EMAIL = secrets.weakGenerate(12) + '@somedomain.com',
+TEST_STAGED = secrets.weakGenerate(12) + '@otherdomain.com',
 TEST_PASS = 'thisismypassword',
 TEST_SITE = 'http://fakesite.com';
 
@@ -55,6 +56,19 @@ suite.addBatch({
       assert.strictEqual(resp.type, "secondary");
       assert.strictEqual(resp.state, "known");
       assert.strictEqual(resp.disabled, false);
+    }
+  }
+});
+
+// add a stage_email to check that staged foreign keys are torn down
+suite.addBatch({
+  "add a new email address to our account": {
+    topic: wsapi.post('/wsapi/stage_email', {
+      email: TEST_STAGED,
+      site: TEST_SITE
+    }),
+    "works": function(err, r) {
+      assert.strictEqual(r.code, 200);
     }
   }
 });
