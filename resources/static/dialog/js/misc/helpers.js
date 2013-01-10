@@ -86,8 +86,6 @@
         complete(callback, true);
       }
       else {
-        // XXX will this tooltip ever be shown, the authentication screen has
-        // already been torn down by this point?
         tooltip.showTooltip("#could_not_add");
         complete(callback, false);
       }
