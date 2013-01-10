@@ -492,7 +492,7 @@
     });
     equal(actions.called.doSetPassword, true, "doSetPassword called");
     mediator.publish("password_set");
-    equal(actions.called.doStageResetPassword, true, "doSetPassword called");
+    equal(actions.called.doStageTransitionToSecondary, true, "doStageTransitionToSecondary called");
   });
 
   function testReverifyEmailChosen(auth_level, info) {

@@ -199,7 +199,7 @@ BrowserID.State = (function() {
     });
 
     handleState("password_set", function(msg, info) {
-      /* A password can be set for one of three reasons - 
+      /* A password can be set for one of three reasons -
        * 1) This is a new user
        * 2) A user is adding the first secondary address to an account that
        *    consists only of primary addresses
@@ -223,7 +223,7 @@ BrowserID.State = (function() {
         startAction(false, "doStageResetPassword", info);
       }
       else if (self.transitionNoPassword) {
-        startAction(false, "doStageResetPassword", info);
+        startAction(false, "doStageTransitionToSecondary", info);
       }
     });
 

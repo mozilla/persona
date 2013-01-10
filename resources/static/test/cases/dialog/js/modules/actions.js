@@ -145,6 +145,10 @@
       "check_registration");
   });
 
+  asyncTest("doStageTransitionToSecondary - trigger transition_to_secondary_staged", function() {
+    testStageAddress("doStageTransitionToSecondary", "transition_to_secondary_staged");
+  });
+
   asyncTest("doGenerateAssertion - start the generate_assertion service", function() {
     testActionStartsModule('doGenerateAssertion', { email: TEST_EMAIL }, "generate_assertion");
   });
@@ -164,5 +168,6 @@
       }
     });
   });
+
 }());
 

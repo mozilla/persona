@@ -102,10 +102,27 @@
         self.publish("reset_password_staged", { email: email });
       }
       else {
+        // XXX the tooltip should talk about being unable to reset the
+        // password.
         tooltip.showTooltip("#could_not_add");
       }
       complete(callback, status.success);
     }, self.getErrorDialog(errors.requestPasswordReset, callback));
+  }
+
+  function transitionToSecondary(email, password, callback) {
+    /*jshint validthis:true*/
+    var self=this;
+    user.requestTransitionToSecondary(email, password, function(status) {
+      if (status.success) {
+        self.publish("transition_to_secondary_staged", { email: email });
+      }
+      else {
+        // XXX the tooltip should talk about being unable to set the password.
+        tooltip.showTooltip("#could_not_add");
+      }
+      complete(callback, status.success);
+    }, self.getErrorDialog(errors.transitionToSecondary, callback));
   }
 
   function reverifyEmail(email, callback) {
@@ -116,6 +133,8 @@
         self.publish("reverify_email_staged", { email: email });
       }
       else {
+        // XXX the tooltip should show something about being unable to reverify
+        // email
         tooltip.showTooltip("#could_not_add");
       }
       complete(callback, status.success);
@@ -184,6 +203,7 @@
     refreshEmailInfo: refreshEmailInfo,
     addSecondaryEmail: addSecondaryEmail,
     resetPassword: resetPassword,
+    transitionToSecondary: transitionToSecondary,
     reverifyEmail: reverifyEmail,
     cancelEvent: helpers.cancelEvent,
     animateClose: animateClose,

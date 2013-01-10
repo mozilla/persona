@@ -717,6 +717,63 @@ BrowserID.User = (function() {
     cancelWaitForEmailReverifyComplete: cancelRegistrationPoll,
 
     /**
+     * Request a transition to secondary for the given email address.
+     * @method requestTransitionToSecondary
+     * @param {string} email
+     * @param {string} password
+     * @param {function} [onComplete] - Callback to call when complete, called
+     * with a single object, info.
+     *    info.status {boolean} - true or false whether request was successful.
+     *    info.reason {string} - if status false, reason of failure.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    requestTransitionToSecondary: function(email, password, onComplete, onFailure) {
+      User.addressInfo(email, function(info) {
+        // user is not known.  Can't request a transition to secondary.
+        if (info.state === "unknown") {
+          complete(onComplete, { success: false, reason: "invalid_user" });
+        }
+        // user is trying to transition to a secondary for a primary address.
+        else if (info.type === "primary") {
+          complete(onComplete, { success: false, reason: "primary_address" });
+        }
+        else {
+          stageAddressVerification(email, password,
+            network.requestTransitionToSecondary.bind(network, email, password, origin),
+            onComplete, onFailure);
+        }
+      }, onFailure);
+    },
+
+    /**
+     * Verify the transition to secondary for a user.
+     * @method completeTransitionToSecondary
+     * @param {string} token - token to verify.
+     * @param {string} password
+     * @param {function} [onComplete] - Called on completion.
+     *   Called with an object with valid, email, and origin if valid, called
+     *   with valid=false otw.
+     * @param {function} [onFailure] - Called on error.
+     */
+    completeTransitionToSecondary: completeAddressVerification.curry(network.completeTransitionToSecondary),
+
+    /**
+     * Wait for the transition to secondary to complete
+     * @method waitForTransitionToSecondaryComplete
+     * @param {string} email - email address to check.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    waitForTransitionToSecondaryComplete: addressVerificationPoll.curry(network.checkTransitionToSecondary),
+
+    /**
+     * Cancel the waitForTransitionToSecondaryComplete poll
+     * @method cancelWaitForTransitionToSecondaryComplete
+     */
+    cancelWaitForTransitionToSecondaryComplete: cancelRegistrationPoll,
+
+
+    /**
      * Cancel the current user's account.  Remove last traces of their
      * identity.
      * @method cancelUser

@@ -115,6 +115,10 @@ BrowserID.Modules.Actions = (function() {
       startRegCheckService.call(this, info, "waitForEmailReverifyComplete", "reverify_email_confirmed");
     },
 
+    doStageTransitionToSecondary: function(info) {
+      dialogHelpers.transitionToSecondary.call(this, info.email, info.password, info.ready);
+    },
+
     doAssertionGenerated: function(info) {
       // Clear onerror before the call to onsuccess - the code to onsuccess
       // calls window.close, which would trigger the onerror callback if we

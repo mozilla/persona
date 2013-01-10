@@ -524,7 +524,7 @@
       testObjectValuesEqual(info, {
         valid: true,
         email: TEST_EMAIL,
-        returnTo: testOrigin,
+        returnTo: testOrigin
       });
 
       equal(storage.getReturnTo(), "", "initiating origin was removed");
@@ -1393,5 +1393,147 @@
       }, testHelpers.unexpectedXHRFailure);
     });
   });
+
+
+  /**
+   * XXX - These are copied from the password reset flows which are going to
+   * change. The completion, waitFor and cancelWaitFor tests can probably be
+   * generalized and combined with other tests.
+   */
+  asyncTest("requestTransitionToSecondary with known email - true status", function() {
+    var returnTo = "http://samplerp.org";
+    lib.setReturnTo(returnTo);
+
+    lib.requestTransitionToSecondary("registered@testuser.com", "password", function(status) {
+      equal(status.success, true, "password reset for known user");
+      equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
+
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("requestTransitionToSecondary with unknown email - false status, invalid_user", function() {
+    lib.requestTransitionToSecondary("unregistered@testuser.com", "password", function(status) {
+      equal(status.success, false, "password not reset for unknown user");
+      equal(status.reason, "invalid_user", "invalid_user is the reason");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("requestTransitionToSecondary with throttle - false status, throttle", function() {
+    xhr.useResult("throttle");
+    lib.requestTransitionToSecondary("registered@testuser.com", "password", function(status) {
+      equal(status.success, false, "password not reset for throttle");
+      equal(status.reason, "throttle", "password reset was throttled");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("requestTransitionToSecondary with XHR failure", function() {
+    failureCheck(lib.requestTransitionToSecondary, "registered@testuser.com", "password");
+  });
+
+  asyncTest("completeTransitionToSecondary with a good token", function() {
+    storage.addEmail(TEST_EMAIL);
+    storage.setReturnTo(testOrigin);
+
+    lib.completeTransitionToSecondary("token", "password", function onSuccess(info) {
+      testObjectValuesEqual(info, {
+        valid: true,
+        email: TEST_EMAIL,
+        returnTo: testOrigin
+      });
+
+      equal(storage.getReturnTo(), "", "initiating origin was removed");
+
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("completeTransitionToSecondary with a bad token", function() {
+    xhr.useResult("invalid");
+
+    lib.completeTransitionToSecondary("token", "password", function onSuccess(info) {
+      equal(info.valid, false, "bad token calls onSuccess with a false validity");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("completeTransitionToSecondary with an XHR failure", function() {
+    xhr.useResult("ajaxError");
+
+    lib.completeTransitionToSecondary(
+      "token",
+      "password",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
+  asyncTest("waitForTransitionToSecondaryComplete with no authentication & complete backend response - `mustAuth` response", function() {
+    testAddressVerificationPoll(undefined, "complete", "waitForTransitionToSecondaryComplete", "mustAuth");
+  });
+
+  asyncTest("waitForTransitionToSecondaryComplete with assertion authentication & complete backend response - `mustAuth` response", function() {
+    testAddressVerificationPoll("assertion", "complete", "waitForTransitionToSecondaryComplete", "mustAuth");
+  });
+
+  asyncTest("waitForTransitionToSecondaryComplete with password authentication - `complete` response", function() {
+    testAddressVerificationPoll("password", "complete", "waitForTransitionToSecondaryComplete", "complete");
+  });
+
+  asyncTest("waitForTransitionToSecondaryComplete with `mustAuth` response", function() {
+    testAddressVerificationPoll(undefined, "mustAuth", "waitForTransitionToSecondaryComplete", "mustAuth");
+  });
+
+  asyncTest("waitForTransitionToSecondaryComplete with `noRegistration` response", function() {
+    xhr.useResult("noRegistration");
+
+    storage.setReturnTo(testOrigin);
+    lib.waitForTransitionToSecondaryComplete(
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      function(status) {
+        ok(storage.getReturnTo(), "staged on behalf of is not cleared for noRegistration response");
+        ok(status, "noRegistration", "noRegistration response causes failure");
+        start();
+      }
+    );
+  });
+
+
+  asyncTest("waitForTransitionToSecondaryComplete with XHR failure", function() {
+    storage.setReturnTo(testOrigin);
+    xhr.useResult("ajaxError");
+    lib.waitForTransitionToSecondaryComplete(
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      function() {
+        ok(storage.getReturnTo(), "staged on behalf of is not cleared on XHR failure");
+        ok(true, "xhr failure should always be a failure");
+        start();
+      }
+    );
+  });
+
+  asyncTest("cancelWaitForTransitionToSecondaryComplete: ~1 second", function() {
+    xhr.useResult("pending");
+
+    storage.setReturnTo(testOrigin);
+    // yes, we are neither expected succes nor failure because we are
+    // cancelling the wait.
+    lib.waitForTransitionToSecondaryComplete(
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      testHelpers.unexpectedXHRFailure
+    );
+
+    setTimeout(function() {
+      lib.cancelWaitForTransitionToSecondaryComplete();
+      ok(storage.getReturnTo(), "staged on behalf of is not cleared when validation cancelled");
+      start();
+    }, 500);
+  });
+
 
 }());
