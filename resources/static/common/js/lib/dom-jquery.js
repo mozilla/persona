@@ -199,7 +199,13 @@ BrowserID.DOM = ( function() {
         * @return {boolean} true if the element has the attribute, false otw.
         */
         hasAttr: function( element, attrName ) {
-            var val = jQuery( element )[ 0 ].getAttribute( attrName );
+            var el = jQuery( element )[ 0 ],
+                val = null;
+
+            if (el) {
+              val = el.getAttribute( attrName );
+            }
+
             return val !== null;
         },
 

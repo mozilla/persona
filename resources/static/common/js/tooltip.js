@@ -9,13 +9,16 @@ BrowserID.Tooltip = (function() {
       TOOLTIP_MIN_DISPLAY = 2000,
       READ_WPM = 200,
       bid = BrowserID,
+      dom = bid.DOM,
       renderer = bid.Renderer,
       hideTimer,
       tooltip;
 
-  function createTooltip(el) {
+  function createTooltip(tooltipText) {
+    // There is only one global tooltip, update its reference to the new
+    // tooltip. All other tooltips should have been removed by this point.
     tooltip = renderer.append("body", "tooltip", {
-      contents: el.html()
+      contents: tooltipText
     });
 
     return tooltip;
@@ -43,46 +46,57 @@ BrowserID.Tooltip = (function() {
         return displayTimeMS;
   }
 
-  function animateTooltip(el, complete) {
-    var displayTimeMS = calculateDisplayTime(el.text());
+  function animateTooltip(complete) {
+    var displayTimeMS = calculateDisplayTime(tooltip.text());
 
     bid.Tooltip.shown = true;
-    el.fadeIn(ANIMATION_TIME, function() {
+    tooltip.fadeIn(ANIMATION_TIME, function() {
       hideTimer = setTimeout(function() {
-        el.fadeOut(ANIMATION_TIME, complete);
+        tooltip.fadeOut(ANIMATION_TIME, complete);
       }, displayTimeMS);
     });
 
     return displayTimeMS;
   }
 
-  function showTooltip(el, complete) {
-    // Only one tooltip can be shown at a time, see issue #1615
-    removeTooltips();
+  function showTooltipString(tooltipText, tooltipAnchor, complete) {
+    createTooltip(tooltipText);
+    anchorTooltip(tooltipAnchor);
 
-    // By default, the element passed in is the tooltip element.  If it has
-    // a "for" attribute, that means this tooltip should be anchored to the
-    // element listed in the "for" attribute. If that is the case, create a new
-    // tooltip and anchor it to the other element.
-    var tooltipEl = $(el),
-        tooltipAnchor = tooltipEl.attr("for");
-
-    if (tooltipAnchor) {
-      // The tooltip should be anchored to another element.  Place the tooltip
-      // directly above the element and remove it when it is no longer needed.
-      tooltipEl = createTooltip(tooltipEl);
-      anchorTooltip("#" + tooltipAnchor);
-    }
-
-    return animateTooltip(tooltipEl, function() {
+    return animateTooltip(function() {
       removeTooltips();
       complete && complete();
     });
   }
 
+  // Interfaces:
+  // showTooltip(tooltipEl, [complete])
+  // showTooltip(tooltipText, tooltipAnchor, [complete])
+  function showTooltip(tooltipText, tooltipAnchor, complete) {
+    // look at tooltipText because complete is optional
+    var getContentFromDOM = !complete && typeof tooltipAnchor !== "string";
+    if (getContentFromDOM) {
+      var tooltipEl = tooltipText;
+      complete = tooltipAnchor;
+
+      // By default, the element passed in is the tooltip element.  If it has
+      // a "for" attribute, that means this tooltip should be anchored to the
+      // element listed in the "for" attribute. If that is the case, create a new
+      // tooltip and anchor it to the other element.
+      tooltipAnchor = dom.hasAttr(tooltipEl, "for") ? "#" + dom.getAttr(tooltipEl, "for") : "body";
+      tooltipText = dom.getInner(tooltipEl);
+    }
+
+    // Only one tooltip can be shown at a time, see issue #1615
+    removeTooltips();
+
+
+    return showTooltipString(tooltipText, tooltipAnchor, complete);
+  }
+
   function removeTooltips() {
     if (tooltip) {
-      tooltip.remove();
+      dom.removeElement(tooltip);
       tooltip = null;
     }
 
@@ -91,7 +105,7 @@ BrowserID.Tooltip = (function() {
       hideTimer = null;
     }
 
-    $('.tooltip').hide();
+    dom.hide('.tooltip');
     bid.Tooltip.shown = false;
   }
 
