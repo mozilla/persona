@@ -95,12 +95,8 @@ BrowserID.Modules.Actions = (function() {
       startService("required_email", info);
     },
 
-    doResetPassword: function(info) {
-      startService("set_password", _.extend(info, { password_reset: true }), "reset_password");
-    },
-
     doStageResetPassword: function(info) {
-      dialogHelpers.resetPassword.call(this, info.email, info.password, info.ready);
+      dialogHelpers.resetPassword.call(this, info.email, info.ready);
     },
 
     doConfirmResetPassword: function(info) {

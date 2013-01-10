@@ -46,38 +46,6 @@
                       <%- gettext('Cannot reset the password of that address.') %>
                     </div>
                 </li>
-
-                <li>
-                    <label for="password"><%= format(gettext("Create a new password to use with %s."), ["Persona"]) %></label>
-                    <input id="password" placeholder="<%- gettext('Password') %>" type="password" maxlength="80" autofocus />
-
-                    <div id="password_required" class="tooltip" for="password">
-                        <%- gettext('Password is required.') %>
-                    </div>
-
-                    <div class="tooltip" id="password_length" for="password">
-                        <%- gettext('Password must be between 8 and 80 characters long.') %>
-                    </div>
-
-                    <div id="could_not_add" class="tooltip" for="password">
-                        <%- gettext('We just sent an email to that address! If you really want to send another, wait a minute or two and try again.') %>
-                    </div>
-                </li>
-
-                <li>
-                    <label for="vpassword"><%- gettext('Verify Password') %></label>
-                    <input id="vpassword" placeholder="<%- gettext('Verify Password') %>" type="password" maxlength="80">
-
-                    <div id="password_required" class="tooltip" for="vpassword">
-                      <%- gettext('Verification password is required.') %>
-                    </div>
-
-                    <div class="tooltip" id="passwords_no_match" for="vpassword">
-                      <%- gettext('These passwords don\'t match!') %>
-                    </div>
-
-                </li>
-
             </ul>
 
             <div class="submit cf forminputs">

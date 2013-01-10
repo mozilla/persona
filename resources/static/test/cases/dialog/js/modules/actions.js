@@ -122,10 +122,6 @@
       "check_registration");
   });
 
-  asyncTest("doResetPassword - call the set_password controller with reset_password true", function() {
-    testActionStartsModule('doResetPassword', { email: TEST_EMAIL }, "set_password", "reset_password");
-  });
-
   asyncTest("doStageResetPassword - trigger reset_password_staged", function() {
     testStageAddress("doStageResetPassword", "reset_password_staged");
   });

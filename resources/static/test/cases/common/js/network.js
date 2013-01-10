@@ -33,8 +33,7 @@
   var stagingMethods = {
     createUser: true,
     addSecondaryEmail: true,
-    // XXX - This is going to have to change to not take a password.
-    requestPasswordReset: true,
+    requestPasswordReset: false,
     requestEmailReverify: false,
     requestTransitionToSecondary: true,
   };

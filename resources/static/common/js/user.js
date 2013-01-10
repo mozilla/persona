@@ -624,14 +624,13 @@ BrowserID.User = (function() {
      * Request a password reset for the given email address.
      * @method requestPasswordReset
      * @param {string} email
-     * @param {string} password
      * @param {function} [onComplete] - Callback to call when complete, called
      * with a single object, info.
      *    info.status {boolean} - true or false whether request was successful.
      *    info.reason {string} - if status false, reason of failure.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestPasswordReset: function(email, password, onComplete, onFailure) {
+    requestPasswordReset: function(email, onComplete, onFailure) {
       User.addressInfo(email, function(info) {
         // user is not known.  Can't request a password reset.
         if (info.state === "unknown") {
@@ -642,8 +641,8 @@ BrowserID.User = (function() {
           complete(onComplete, { success: false, reason: "primary_address" });
         }
         else {
-          stageAddressVerification(email, password,
-            network.requestPasswordReset.bind(network, email, password, origin),
+          stageAddressVerification(email, null,
+            network.requestPasswordReset.bind(network, email, origin),
             onComplete, onFailure);
         }
       }, onFailure);

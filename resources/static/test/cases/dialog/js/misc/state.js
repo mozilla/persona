@@ -144,32 +144,6 @@
     equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate called with the correct email");
   });
 
-  test("cancel new_user password_set flow, then forgot_password, password_set - email sent to forgot password email address", function() {
-    // This comes from issue #2231
-    // * Sign in (e.g. at http://translate.123done.org) with a wrong email adress (for example mistyped).
-    // * Click cancel
-    // * Enter your correct email (from an existing account)
-    // * Click 'Forgot your password?'
-    // * Enter a new password and send the form
-    //
-    //
-    //
-    // User types in an incorrect email address, the address is unknown to
-    // Persona who treats it as a new user.
-    mediator.publish("authenticate");
-    mediator.publish("new_user", { email: "incorrect@testuser.com" });
-    // The user is now looking at the set_password screen, they cancel out.
-    mediator.publish("cancel_state");
-    // The user has entered the correct email address but has forgot their
-    // password.
-    mediator.publish("forgot_password", { email: TEST_EMAIL });
-    // The user sets the password for the correct account.
-    mediator.publish("password_set");
-    // The email should be sent to the email specified in forgot_password
-    testActionStarted("doStageResetPassword", { email: TEST_EMAIL });
-  });
-
-
   test("password_set for new user - call doStageUser with correct email", function() {
     mediator.publish("new_user", { email: TEST_EMAIL });
     mediator.publish("password_set");
@@ -186,13 +160,6 @@
     mediator.publish("password_set");
 
     equal(actions.info.doStageEmail.email, TEST_EMAIL, "correct email sent to doStageEmail");
-  });
-
-  test("password_set for reset password - call doStageResetPassword with correct email", function() {
-    mediator.publish("forgot_password", { email: TEST_EMAIL });
-    mediator.publish("password_set");
-
-    equal(actions.info.doStageResetPassword.email, TEST_EMAIL, "correct email sent to doStageResetPassword");
   });
 
   test("start - RPInfo always started", function() {
@@ -309,18 +276,13 @@
     mediator.publish("authenticated", { email: TEST_EMAIL });
   });
 
-  test("forgot_password - call doResetPassword with correct options", function() {
+  test("forgot_password - call doStageResetPassword with correct options", function() {
     mediator.publish("start", { privacyPolicy: "priv.html", termsOfService: "tos.html" });
     mediator.publish("forgot_password", {
       email: TEST_EMAIL
     });
-    testActionStarted("doResetPassword", { email: TEST_EMAIL });
+    testActionStarted("doStageResetPassword", { email: TEST_EMAIL });
   });
-
-  asyncTest("multiple calls to password_set for forgot_password, simulate throttling - call doStageResetPassword with correct email for each", function() {
-    testStagingThrottledRetry("forgot_password", "doStageResetPassword");
-  });
-
 
   asyncTest("reset_password_staged to reset_password_confirmed - call doConfirmResetPassword then doEmailConfirmed", function() {
     testVerifyStagedAddress("reset_password_staged", "reset_password_confirmed", "doConfirmResetPassword");

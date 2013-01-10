@@ -85,7 +85,6 @@
 
   asyncTest("submit with invalid email", function() {
     $("#email").val("invalid");
-    $("#password,#vpassword").val("password");
 
     xhr.useResult("invalid");
 
@@ -94,7 +93,6 @@
 
   asyncTest("submit with known secondary email, happy case - show email sent notice", function() {
     $("#email").val("registered@testuser.com");
-    $("#password,#vpassword").val("password");
 
     controller.submit(function() {
       ok($(".emailsent").is(":visible"), "email sent successfully");
@@ -104,7 +102,6 @@
 
   asyncTest("submit with known secondary email with leading/trailing whitespace - show email sent notice", function() {
     $("#email").val("   registered@testuser.com  ");
-    $("#password,#vpassword").val("password");
 
     controller.submit(function() {
       ok($(".emailsent").is(":visible"), "email sent successfully");
@@ -112,24 +109,14 @@
     });
   });
 
-  testHelpers.testInvalidPasswordAndValidationPassword("submit with", function(password, vpassword) {
-    $("#email").val("unregistered@testuser.com");
-    $("#password").val(password);
-    $("#vpassword").val(vpassword);
-
-    testEmailNotSent();
-  });
-
   asyncTest("submit with unknown secondary email", function() {
     $("#email").val("unregistered@testuser.com");
-    $("#password,#vpassword").val("password");
 
     testEmailNotSent();
   });
 
   asyncTest("submit with throttling", function() {
     $("#email").val("registered@testuser.com");
-    $("#password,#vpassword").val("password");
 
     xhr.useResult("throttle");
     testEmailNotSent();
@@ -137,7 +124,6 @@
 
   asyncTest("submit with XHR Error", function() {
     $("#email").val("testuser@testuser.com");
-    $("#password,#vpassword").val("password");
 
     xhr.useResult("ajaxError");
     testEmailNotSent({

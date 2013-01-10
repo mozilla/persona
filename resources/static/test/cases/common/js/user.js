@@ -487,7 +487,7 @@
     var returnTo = "http://samplerp.org";
     lib.setReturnTo(returnTo);
 
-    lib.requestPasswordReset("registered@testuser.com", "password", function(status) {
+    lib.requestPasswordReset("registered@testuser.com", function(status) {
       equal(status.success, true, "password reset for known user");
       equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
 
@@ -496,7 +496,7 @@
   });
 
   asyncTest("requestPasswordReset with unknown email - false status, invalid_user", function() {
-    lib.requestPasswordReset("unregistered@testuser.com", "password", function(status) {
+    lib.requestPasswordReset("unregistered@testuser.com", function(status) {
       equal(status.success, false, "password not reset for unknown user");
       equal(status.reason, "invalid_user", "invalid_user is the reason");
       start();
@@ -505,7 +505,7 @@
 
   asyncTest("requestPasswordReset with throttle - false status, throttle", function() {
     xhr.useResult("throttle");
-    lib.requestPasswordReset("registered@testuser.com", "password", function(status) {
+    lib.requestPasswordReset("registered@testuser.com", function(status) {
       equal(status.success, false, "password not reset for throttle");
       equal(status.reason, "throttle", "password reset was throttled");
       start();
@@ -513,7 +513,7 @@
   });
 
   asyncTest("requestPasswordReset with XHR failure", function() {
-    failureCheck(lib.requestPasswordReset, "registered@testuser.com", "password");
+    failureCheck(lib.requestPasswordReset, "registered@testuser.com");
   });
 
   asyncTest("completePasswordReset with a good token", function() {

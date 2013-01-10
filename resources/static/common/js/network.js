@@ -322,15 +322,13 @@ BrowserID.Network = (function() {
      * Request a password reset for the given email address.
      * @method requestPasswordReset
      * @param {string} email
-     * @param {string} password
      * @param {string} origin
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestPasswordReset: function(email, password, origin, onComplete, onFailure) {
+    requestPasswordReset: function(email, origin, onComplete, onFailure) {
       var postData = {
         email: email,
-        pass: password,
         site : origin
       };
       stageAddressForVerification(postData, "/wsapi/stage_reset", onComplete, onFailure);

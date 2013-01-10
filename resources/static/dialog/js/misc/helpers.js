@@ -94,10 +94,10 @@
     }, self.getErrorDialog(errors.createUser, callback));
   }
 
-  function resetPassword(email, password, callback) {
+  function resetPassword(email, callback) {
     /*jshint validthis:true*/
     var self=this;
-    user.requestPasswordReset(email, password, function(status) {
+    user.requestPasswordReset(email, function(status) {
       if (status.success) {
         self.publish("reset_password_staged", { email: email });
       }
