@@ -106,6 +106,17 @@ app.use(function(req, res, next) {
   next();
 });
 
+// catch urls that express can't handle (issue #2887)
+app.use(function(req, res, next) {
+  try {
+    decodeURIComponent(req.url);
+    next();
+  } catch (e) {
+    logger.error('invalid url: ' + req.url);
+    httputils.notFound(res);
+  }
+});
+
 app.use(express.static(static_root));
 
 // Do this only when PERSONA_WITH_COVER is set. Without a graceful shutdown,
