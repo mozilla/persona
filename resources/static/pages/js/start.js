@@ -166,7 +166,10 @@ $(function() {
         verifySecondaryAddress("verifyUser");
       }
       else if (path === "/reset_password") {
-        verifySecondaryAddress("completePasswordReset");
+        module = bid.resetPassword.create();
+        module.start({
+          token: token
+        });
       }
       else if (path === "/about") {
         module = bid.about.create();
