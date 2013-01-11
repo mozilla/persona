@@ -260,20 +260,28 @@ BrowserID.User = (function() {
    * @param {function} [onFailure] - Called on error.
    */
   function persistEmailKeypair(email, keypair, cert, onComplete, onFailure) {
-    var now = new Date();
-    var email_obj = storage.getEmails()[email] || {
-      created: now
-    };
+    User.addressInfo(email, User.forceIssuer, function(info) {
+      var now = new Date();
+      var email_obj = storage.getEmails()[email] || {
+        created: now
+      };
 
-    _.extend(email_obj, {
-      updated: now,
-      pub: keypair.publicKey.toSimpleObject(),
-      priv: keypair.secretKey.toSimpleObject(),
-      cert: cert
-    });
+      _.extend(email_obj, {
+        updated: now,
+        pub: keypair.publicKey.toSimpleObject(),
+        priv: keypair.secretKey.toSimpleObject(),
+        cert: cert
+      });
 
-    storage.addEmail(email, email_obj);
-    if (onComplete) onComplete(true);
+      if (info.state === "unverified") {
+        email_obj.unverified = true;
+      } else if (email_obj.unverified) {
+        delete email_obj.unverified;
+      }
+
+      storage.addEmail(email, email_obj);
+      if (onComplete) onComplete(true);
+    }, onFailure);
   }
 
   /**

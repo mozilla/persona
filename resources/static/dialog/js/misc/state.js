@@ -424,6 +424,12 @@ BrowserID.State = (function() {
         redirectToState("stage_reverify_email", info);
       }
       else {
+        // make sure an unverified-certs are removed
+        if (record.unverified && info.state !== 'unverified') {
+          storage.invalidateEmail(email);
+        }
+
+
         // Address is verified, check the authentication, if the user is not
         // authenticated to the assertion level, force them to enter their
         // password.
