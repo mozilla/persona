@@ -92,8 +92,16 @@
   });
 
   chan.bind("logout", function(trans, params) {
-    if (loggedInUser != null) {
+    // set remote origin so that .logout can be called even if .request has
+    // not.
+    // See https://github.com/mozilla/browserid/pull/2529
+    setRemoteOrigin(trans.origin);
+    // loggedInUser will be undefined if none of loaded, loggedInUser nor
+    // logout have been called before. This allows the user to be force logged
+    // out.
+    if (loggedInUser !== null) {
       storage.setLoggedIn(remoteOrigin, false);
+      loggedInUser = null;
       chan.notify({ method: 'logout' });
     }
   });
