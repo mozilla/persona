@@ -281,7 +281,13 @@ BrowserID.User = (function() {
         cert: cert
       });
 
-      storage.addEmail(email, email_obj, issuer);
+      if (info.state === "unverified") {
+        email_obj.unverified = true;
+      } else if (email_obj.unverified) {
+        delete email_obj.unverified;
+      }
+
+      storage.addEmail(email, email_obj);
       if (onComplete) onComplete(true);
     }, onFailure);
   }
