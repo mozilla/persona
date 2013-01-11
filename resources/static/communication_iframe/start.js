@@ -92,10 +92,8 @@
   });
 
   chan.bind("logout", function(trans, params) {
-    // The assumption is that the intention behind a call to
-    // navigator.id.logout is to clear any session, whether it's locally
-    // cached or not; and that this intention should be honored until a new
-    // session is requested through navigator.id.request.
+    // set remote origin so that .logout can be called even if .request has
+    // not.
     // See https://github.com/mozilla/browserid/pull/2529
     setRemoteOrigin(trans.origin);
     // loggedInUser will be undefined if none of loaded, loggedInUser nor
