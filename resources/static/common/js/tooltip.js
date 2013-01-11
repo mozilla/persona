@@ -11,20 +11,46 @@ BrowserID.Tooltip = (function() {
       bid = BrowserID,
       dom = bid.DOM,
       renderer = bid.Renderer,
-      hideTimer,
-      tooltip;
+      onlyAttachedTooltip;
 
-  function createTooltip(tooltipText) {
-    // There is only one global tooltip, update its reference to the new
-    // tooltip. All other tooltips should have been removed by this point.
-    tooltip = renderer.append("body", "tooltip", {
-      contents: tooltipText
-    });
+  // This file is made up of two parts, the first part is the Tooltip generic
+  // object type, the second half is the BrowserID.Tooltip singleton logic.
 
-    return tooltip;
-  }
 
-  function anchorTooltip(target) {
+  // Tooltip generic object type.
+  var Tooltip = function() {};
+  _.extend(Tooltip.prototype, {
+    start: function(options) {
+      var self = this;
+
+      self.tooltipEl = renderer.append("body", "tooltip", {
+        contents: options.text
+      });
+
+      anchorTooltip(self.tooltipEl, options.anchor);
+
+      // The unit tests expect the display time
+      return animateTooltip.call(self, options.done);
+    },
+
+    stop: function() {
+      // stop any fadeIn animations that are occurring. This prevents
+      // the fadeIn completion callback from being invoked for the tooltip
+      // after stop is called.
+      var self = this;
+      dom.stopAnimations(self.tooltipEl);
+      dom.hide(self.tooltipEl);
+      dom.removeElement(self.tooltipEl);
+      self.tooltipEl = null;
+
+      if (self.hideTimer) {
+        clearTimeout(self.hideTimer);
+        self.hideTimer = null;
+      }
+    }
+  });
+
+  function anchorTooltip(tooltip, target) {
     target = $(target);
     var targetOffset = target.offset();
     targetOffset.top -= (tooltip.outerHeight() + 5);
@@ -47,27 +73,37 @@ BrowserID.Tooltip = (function() {
   }
 
   function animateTooltip(complete) {
-    var displayTimeMS = calculateDisplayTime(tooltip.text());
+    /*jshint validthis: true*/
+    var self = this,
+        tooltip = self.tooltipEl,
+        displayTimeMS = calculateDisplayTime(tooltip.text());
 
-    bid.Tooltip.shown = true;
-    tooltip.fadeIn(ANIMATION_TIME, function() {
-      hideTimer = setTimeout(function() {
-        tooltip.fadeOut(ANIMATION_TIME, complete);
+    // The animation will be stopped for 'this' tooltip if stop is invoked.
+    dom.fadeIn(tooltip, ANIMATION_TIME, function() {
+      self.hideTimer = setTimeout(function() {
+        dom.fadeOut(tooltip, ANIMATION_TIME, complete);
       }, displayTimeMS);
     });
 
     return displayTimeMS;
   }
 
-  function showTooltipString(tooltipText, tooltipAnchor, complete) {
-    createTooltip(tooltipText);
-    anchorTooltip(tooltipAnchor);
 
-    return animateTooltip(function() {
-      removeTooltips();
-      complete && complete();
-    });
-  }
+
+
+  // BrowserID.Tooltip singleton public interface.
+
+  return {
+    // Interfaces:
+    // showTooltip(tooltipEl, [complete])
+    // showTooltip(tooltipText, tooltipAnchor, [complete])
+    showTooltip: showTooltip
+    // BEGIN TESTING API
+    ,
+    reset: removeTooltips
+    // END TESTING API
+  };
+
 
   // Interfaces:
   // showTooltip(tooltipEl, [complete])
@@ -87,35 +123,31 @@ BrowserID.Tooltip = (function() {
       tooltipText = dom.getInner(tooltipEl);
     }
 
-    // Only one tooltip can be shown at a time, see issue #1615
-    removeTooltips();
-
-
     return showTooltipString(tooltipText, tooltipAnchor, complete);
   }
 
-  function removeTooltips() {
-    if (tooltip) {
-      dom.removeElement(tooltip);
-      tooltip = null;
-    }
+  function showTooltipString(tooltipText, tooltipAnchor, complete) {
+    // Only one tooltip can be shown at a time, see issue #1615
+    removeTooltips();
 
-    if (hideTimer) {
-      clearTimeout(hideTimer);
-      hideTimer = null;
-    }
+    onlyAttachedTooltip = new Tooltip();
+    var displayTimeMS = onlyAttachedTooltip.start({
+      text: tooltipText,
+      anchor: tooltipAnchor,
+      done: complete
+    });
 
-    dom.hide('.tooltip');
-    bid.Tooltip.shown = false;
+    bid.Tooltip.shown = true;
+
+    return displayTimeMS;
   }
 
 
- return {
-   showTooltip: showTooltip
-   // BEGIN TESTING API
-   ,
-   reset: removeTooltips
-   // END TESTING API
- };
+  function removeTooltips() {
+    if (onlyAttachedTooltip) {
+      onlyAttachedTooltip.stop();
+    }
 
+    bid.Tooltip.shown = false;
+  }
 }());
