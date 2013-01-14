@@ -12,7 +12,8 @@ vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 http = require('http'),
-secondary = require('./lib/secondary.js');
+secondary = require('./lib/secondary.js'),
+version = require('../lib/version.js');
 
 var suite = vows.describe('registration-status-wsapi');
 
@@ -40,28 +41,33 @@ suite.addBatch({
     topic: function() {
       var cb = this.callback;
 
-      var req = http.request({
-        host: '127.0.0.1',
-        port: 10002,
-        path: '/wsapi/authenticate_user',
-        headers: { 'Content-Type': 'application/json' },
-        method: "POST",
-        agent: false // disable node.js connection pooling
-      }, function(res) {
-        var body = '';
-        res.on('data', function(chunk) { body += chunk; })
-          .on('end', function() {
-            cb(null, {code: res.statusCode, headers: res.headers, body: body});
-          });
-      }).on('error', function (e) {
-        cb(e);
+      version(function(commit) {
+        var req = http.request({
+          host: '127.0.0.1',
+          port: 10002,
+          path: '/wsapi/authenticate_user',
+          headers: {
+            'Content-Type': 'application/json',
+            'BrowserID-Version': commit
+          },
+          method: "POST",
+          agent: false // disable node.js connection pooling
+        }, function(res) {
+          var body = '';
+          res.on('data', function(chunk) { body += chunk; })
+            .on('end', function() {
+              cb(null, {code: res.statusCode, headers: res.headers, body: body});
+            });
+        }).on('error', function (e) {
+          cb(e);
+        });
+        req.write(JSON.stringify({
+          csrf: wsapi.getCSRF(),
+          email: 'first@fakeemail.com',
+          pass: 'firstfakepass'
+        }));
+        req.end();
       });
-      req.write(JSON.stringify({
-        csrf: wsapi.getCSRF(),
-        email: 'first@fakeemail.com',
-        pass: 'firstfakepass'
-      }));
-      req.end();
     },
     "returns a 403 with 'no cookie' as the body": function(err, r) {
       assert.equal(err, null);

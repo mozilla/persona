@@ -10,6 +10,11 @@ fi
 
 node scripts/l10n-update.js
 
+echo ">> generating ver.txt"
+cd ../git
+git log --pretty=%h -1 > ../code/resources/static/ver.txt
+cd ../code
+
 echo ">> generating production resources"
 env CONFIG_FILES=config/aws.json scripts/compress
 

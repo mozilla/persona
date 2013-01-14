@@ -122,7 +122,13 @@ window.Micrajax = (function() {
           data = getData(contentType, type, options.data);
 
       xhrObject.open(type, url, true);
-      setRequestHeaders({ "Content-type" : contentType }, xhrObject);
+      var headers = {
+        "Content-type" : contentType
+      };
+      for(var k in options.headers) {
+        headers[k] = options.headers[k];
+      }
+      setRequestHeaders(headers, xhrObject);
       xhrObject.send(data);
     }
     else {

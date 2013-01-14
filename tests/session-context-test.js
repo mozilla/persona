@@ -99,6 +99,20 @@ suite.addBatch({
   }
 });
 
+suite.addBatch({
+  "code version mismatch using session_context API": {
+    topic: wsapi.get('/wsapi/session_context', {}, {
+      headers: {
+        "Browserid-Version": "INVALID_SHA"
+      }
+    }),
+    "will still respond correctly": function (err, r) {
+      assert.equal(r.code, 200);
+    }
+  }
+});
+
+
 start_stop.addShutdownBatches(suite);
 
 // run or export the suite.
