@@ -39,8 +39,7 @@ BrowserID.Modules.SetPassword = (function() {
         password_reset: !!options.password_reset,
         transition_no_password: !!options.transition_no_password,
         domain: helpers.getDomainFromEmail(options.email),
-        cancelable: options.cancelable !== false,
-        personaTOSPP: options.personaTOSPP
+        cancelable: options.cancelable !== false
       });
 
       if (options.siteTOSPP) {

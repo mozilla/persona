@@ -21,18 +21,11 @@
     <%= format(gettext("Once you verify your account there, you will be signed in to %(aWebsite)."),
                {aWebsite : siteName}) %>
   </p>
-    <p class="submit cf buttonrow">
-        <button id="verifyWithPrimary"><%= format(gettext("sign in with %s"), [idpName]) %></button>
-        <a href="#" id="cancel" class="emphasize right"><%= gettext("Use a different email address") %></a>
-    </p>
 
-    <% if (personaTOSPP) { %>
-      <p id="persona_tospp" class="submit tospp">
-         <%- format(gettext("By proceeding, you agree to %(site)'s <a %(terms)>Terms</a> and <a %(privacy)>Privacy Policy</a>."),
-                    { site: "Persona",
-                      terms: 'href="https://login.persona.org/tos" target="_new"',
-                      privacy: 'href="https://login.persona.org/privacy" target="_new"' }) %>
-      </p>
-    <% } %>
+  <p class="submit cf buttonrow">
+      <button id="verifyWithPrimary"><%= format(gettext("sign in with %s"), [idpName]) %></button>
+      <a href="#" id="cancel" class="emphasize right"><%= gettext("Use a different email address") %></a>
+  </p>
+
 
 </div>
