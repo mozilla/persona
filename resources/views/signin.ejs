@@ -77,6 +77,17 @@
                 </li>
             </ul>
 
+            <!-- The TOS/PP agreement must be shown to all users who are not
+                 signed in before they enter their email address. -->
+            <p class="submit tospp cf">
+               <%- format(
+                    gettext('By proceeding, you agree to %(persona)\'s <a %(termsLink)>Terms</a> and <a %(privacyLink)>Privacy Policy</a>.'),
+                         { persona: "Persona",
+                           termsLink: 'href="https://login.persona.org/tos" target="_new"',
+                           privacyLink: 'href="https://login.persona.org/privacy" target="_new"',
+                         }) %>
+            </p>
+
             <div class="submit cf forminputs start">
                 <button id="next"><%- gettext('Next') %></button>
             </div>
@@ -90,14 +101,6 @@
                   <button id="verifyEmail"><%- gettext('Verify Email') %></button>
                 </p>
 
-                <p class="tospp cf">
-                   <%- format(
-                        gettext('By proceeding, you agree to %(persona)\'s <a %(termsLink)>Terms</a> and <a %(privacyLink)>Privacy Policy</a>.'),
-                             { persona: "Persona",
-                               termsLink: 'href="https://login.persona.org/tos" target="_new"',
-                               privacyLink: 'href="https://login.persona.org/privacy" target="_new"',
-                             }) %>
-                  </p>
 
             </div>
 
