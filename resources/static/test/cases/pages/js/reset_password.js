@@ -26,7 +26,7 @@
   module("pages/js/reset_password", {
     setup: function() {
       testHelpers.setup();
-      bid.Renderer.render("#page_head", "site/verify_reset_password", {});
+      bid.Renderer.render("#page_head", "site/reset_password", {});
       $(document.body).append($('<div id=redirectTimeout>'));
       $(".siteinfo,.password_entry").hide();
     },
