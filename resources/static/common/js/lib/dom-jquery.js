@@ -142,12 +142,19 @@ BrowserID.DOM = ( function() {
         */
         setInner: function( element, value ) {
             var target = jQuery( element );
-            if( isValBased( target ) ) {
-                target.val( value );
-            }
-            else {
-                target.html( value );
-            }
+
+            // If using a class selector, multiple elements can be returned.
+            // One element could be an input, another a normal DOM element.
+            // Loop over each element and inspect one at a time.
+            target.each(function(idx, element) {
+                element = $( element );
+                if( isValBased( element ) ) {
+                    element.val( value );
+                }
+                else {
+                    element.html( value );
+                }
+            });
         },
 
         /**

@@ -22,7 +22,7 @@ BrowserID.resetPassword = (function() {
   function showRegistrationInfo(info) {
     /*jshint validthis: true*/
     var self=this;
-    dom.setInner("#email", info.email);
+    dom.setInner(".email", info.email);
     dom.setInner(".website", self.redirectTo);
 
     if (self.uiTimeoutID) self.uiTimeoutID = clearTimeout(self.uiTimeoutID);
