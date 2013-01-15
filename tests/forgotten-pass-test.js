@@ -179,7 +179,6 @@ suite.addBatch({
   "reset password on first account": {
     topic: wsapi.post('/wsapi/stage_reset', {
       email: 'first@fakeemail.com',
-      pass: 'secondfakepass',
       site:'https://otherfakesite.com'
     }),
     "works": function(err, r) {
@@ -211,7 +210,7 @@ suite.addBatch({
       assert.equal(r.code, 200);
       var body = JSON.parse(r.body);
       assert.strictEqual(body.success, true);
-      assert.strictEqual(body.must_auth, false);
+      assert.strictEqual(body.needs_password, true);
     }
   }
 });
@@ -252,7 +251,10 @@ suite.addBatch({
 suite.addBatch({
   "complete password reset": {
     topic: function() {
-      wsapi.post('/wsapi/complete_reset', { token: token }).call(this);
+      wsapi.post('/wsapi/complete_reset', {
+        pass: 'secondfakepass',
+        token: token
+      }).call(this);
     },
     "account created": function(err, r) {
       assert.equal(r.code, 200);
@@ -331,7 +333,6 @@ suite.addBatch({
   "reset password on first account": {
     topic: wsapi.post('/wsapi/stage_reset', {
       email: 'first@fakeemail.com',
-      pass: 'secondfakepass',
       site:'https://otherfakesite.com'
     }),
     "works": function(err, r) {
@@ -371,7 +372,7 @@ suite.addBatch({
       var body = JSON.parse(r.body);
       assert.strictEqual(body.success, true);
       assert.strictEqual(body.email, 'first@fakeemail.com');
-      assert.strictEqual(body.must_auth, true);
+      assert.strictEqual(body.needs_password, true);
     }
   }
 });
@@ -507,7 +508,6 @@ suite.addBatch({
       var body = JSON.parse(r.body);
       assert.strictEqual(body.success, true);
       assert.strictEqual(body.email, 'second@fakeemail.com');
-      assert.strictEqual(body.must_auth, false);
     }
   }
 });
