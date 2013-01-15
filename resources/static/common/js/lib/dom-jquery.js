@@ -391,7 +391,7 @@ BrowserID.DOM = ( function() {
          * @param {function} [done] called when animation completes
          */
         fadeOut: function( elementToFade, animationTime, done ) {
-          return jQuery( elementToFade ).fadeOut( animationTime );
+          return jQuery( elementToFade ).fadeOut( animationTime, done );
         },
 
         /**
@@ -400,7 +400,7 @@ BrowserID.DOM = ( function() {
          * @param {selector || element} elementToStop
          */
         stopAnimations: function( elementToStop ) {
-          return jQuery( elementToStop );
+          return jQuery( elementToStop ).stop();
         }
     };
 
