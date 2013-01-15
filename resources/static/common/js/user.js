@@ -154,6 +154,11 @@ BrowserID.User = (function() {
 
   }
 
+  /**
+   * onSuccess, if called, will return with "complete" if the verification
+   * completes and the user is authed to the "password" level, or "mustAuth" if
+   * the user must enter their password.
+   */
   function addressVerificationPoll(checkFunc, email, onSuccess, onFailure) {
     function userVerified(completionStatus) {
       if (stagedEmail && stagedPassword) {
@@ -172,11 +177,18 @@ BrowserID.User = (function() {
       }
       else {
         // If the user's completionStatus is complete but their
-        // authStatus is not password, that means they have not entered in
-        // their authentication credentials this session and *must*
-        // do so.  If not, the backend will reject any requests to certify
-        // a key because the user will not have the correct creds to do so.
+        // original authStatus was not password, meaning they have
+        // not entered in their authentication credentials this session.
+        // If the user is not authenticated to the password level, the backend
+        // will reject any requests to certify a key because the user will
+        // not have the correct creds to do so.
         // See issue #2088 https://github.com/mozilla/browserid/issues/2088
+        //
+        // Since a user may have entered their password on the main site during
+        // a password reset, the only reliable way to know the user's auth
+        // status is to ask the backend. Clear the current context and ask
+        // the backend for an updated session_context.
+        network.clearContext();
         network.checkAuth(function(authStatus) {
           if (completionStatus === "complete" && authStatus !== "password")
             completionStatus = "mustAuth";
@@ -558,9 +570,7 @@ BrowserID.User = (function() {
      * Cancel the waitForUserValidation poll
      * @method cancelUserValidation
      */
-    cancelUserValidation: function() {
-      cancelRegistrationPoll();
-    },
+    cancelUserValidation: cancelRegistrationPoll,
 
     /**
      * Get site and email info for a token
@@ -1085,9 +1095,7 @@ BrowserID.User = (function() {
      * Cancel the waitForEmailValidation poll
      * @method cancelEmailValidation
      */
-    cancelEmailValidation: function() {
-      cancelRegistrationPoll();
-    },
+    cancelEmailValidation: cancelRegistrationPoll,
 
     /**
      * Verify a users email address given by the token

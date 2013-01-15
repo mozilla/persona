@@ -84,6 +84,139 @@
     }, testHelpers.unexpectedXHRFailure);
   }
 
+  function testAddressVerificationPollNoRegistration(pollFuncName) {
+    xhr.useResult("noRegistration");
+
+    storage.setReturnTo(testOrigin);
+    lib[pollFuncName](
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      function(status) {
+        ok(storage.getReturnTo(), "staged on behalf of is not cleared for noRegistration response");
+        ok(status, "noRegistration", "noRegistration response causes failure");
+        start();
+      }
+    );
+  }
+
+  function testAddressVerificationPollXHRFailure(waitFuncName) {
+    storage.setReturnTo(testOrigin);
+    xhr.useResult("ajaxError");
+    lib[waitFuncName](
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      function() {
+        ok(storage.getReturnTo(), "staged on behalf of is not cleared on XHR failure");
+        ok(true, "xhr failure should always be a failure");
+        start();
+      }
+    );
+  }
+
+
+  function testCancelAddressVerification(waitFuncName, cancelFuncName) {
+    xhr.useResult("pending");
+
+    storage.setReturnTo(testOrigin);
+    // yes, we are neither expected succes nor failure because we are
+    // cancelling the wait.
+    lib[waitFuncName](
+      "registered@testuser.com",
+      testHelpers.unexpectedSuccess,
+      testHelpers.unexpectedXHRFailure
+    );
+
+    setTimeout(function() {
+    lib[cancelFuncName]();
+    ok(storage.getReturnTo(), "staged on behalf of is not cleared when validation cancelled");
+      start();
+    }, 500);
+  }
+
+
+  function testVerificationPoll(waitFuncName, cancelFuncName) {
+    // If the user is for some reason not authed after verifying an address,
+    // they must enter their password.
+    asyncTest(waitFuncName + " with no authentication & complete backend response - `mustAuth` response", function() {
+      testAddressVerificationPoll(undefined, "complete", waitFuncName, "mustAuth");
+    });
+
+    // If the user is only authed to the assertion level after verifying an
+    // address, they must enter their password. This can happen if the user is
+    // authed to the assertion level and verifies in a second browser. The
+    // backend still gives a response of "complete" but then cert_key fails
+    // when trying to certify a key for a secondary. DOH.
+    asyncTest(waitFuncName + " with assertion authentication & complete backend response - `mustAuth` response", function() {
+      testAddressVerificationPoll("assertion", "complete", waitFuncName, "mustAuth");
+    });
+
+    // User is authed to the password level, they are A-OK.
+    asyncTest(waitFuncName + " with password authentication - `complete` response", function() {
+      testAddressVerificationPoll("password", "complete", waitFuncName, "complete");
+    });
+
+    // User received an explicit "mustAuth" response from the backend. They
+    // have to enter their password.
+    asyncTest(waitFuncName + " with `mustAuth` response", function() {
+      testAddressVerificationPoll(undefined, "mustAuth", waitFuncName, "mustAuth");
+    });
+
+    asyncTest(waitFuncName + " with `noRegistration` response", function() {
+      testAddressVerificationPollNoRegistration(waitFuncName);
+    });
+
+
+    asyncTest(waitFuncName + " with XHR failure", function() {
+      testAddressVerificationPollXHRFailure(waitFuncName);
+    });
+
+    asyncTest(cancelFuncName + ": ~1 second", function() {
+      testCancelAddressVerification(waitFuncName, cancelFuncName);
+    });
+
+  }
+
+
+  function testVerificationComplete(completeFuncName) {
+    asyncTest(completeFuncName + " with a good token", function() {
+      storage.addEmail(TEST_EMAIL);
+      storage.setReturnTo(testOrigin);
+
+      lib[completeFuncName]("token", "password", function onSuccess(info) {
+        testObjectValuesEqual(info, {
+          valid: true,
+          email: TEST_EMAIL,
+          returnTo: testOrigin
+        });
+
+        equal(storage.getReturnTo(), "", "initiating origin was removed");
+
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    });
+
+    asyncTest(completeFuncName + " with a bad token", function() {
+      xhr.useResult("invalid");
+
+      lib[completeFuncName]("token", "password", function onSuccess(info) {
+        equal(info.valid, false, "bad token calls onSuccess with a false validity");
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    });
+
+    asyncTest(completeFuncName + " with an XHR failure", function() {
+      xhr.useResult("ajaxError");
+
+      lib[completeFuncName](
+        "token",
+        "password",
+        testHelpers.unexpectedSuccess,
+        testHelpers.expectedXHRFailure
+      );
+    });
+  }
+
+
 
   module("common/js/user", {
     setup: function() {
@@ -337,70 +470,7 @@
     );
   });
 
-  asyncTest("waitForUserValidation with no authentication & complete backend response - `mustAuth` response", function() {
-    testAddressVerificationPoll(undefined, "complete", "waitForUserValidation", "mustAuth");
-  });
-
-  asyncTest("waitForUserValidation with assertion authentication & complete backend response - `mustAuth` response", function() {
-    testAddressVerificationPoll("assertion", "complete", "waitForUserValidation", "mustAuth");
-  });
-
-  asyncTest("waitForUserValidation with password authentication - `complete` response", function() {
-    testAddressVerificationPoll("password", "complete", "waitForUserValidation", "complete");
-  });
-
-  asyncTest("waitForUserValidation with `mustAuth` response", function() {
-    testAddressVerificationPoll(undefined, "mustAuth", "waitForUserValidation", "mustAuth");
-  });
-
-  asyncTest("waitForUserValidation with `noRegistration` response", function() {
-    xhr.useResult("noRegistration");
-
-    storage.setReturnTo(testOrigin);
-    lib.waitForUserValidation(
-      "registered@testuser.com",
-      testHelpers.unexpectedSuccess,
-      function(status) {
-        ok(storage.getReturnTo(), "staged on behalf of is not cleared for noRegistration response");
-        ok(status, "noRegistration", "noRegistration response causes failure");
-        start();
-      }
-    );
-  });
-
-
-  asyncTest("waitForUserValidation with XHR failure", function() {
-    storage.setReturnTo(testOrigin);
-    xhr.useResult("ajaxError");
-    lib.waitForUserValidation(
-      "registered@testuser.com",
-      testHelpers.unexpectedSuccess,
-      function() {
-        ok(storage.getReturnTo(), "staged on behalf of is not cleared on XHR failure");
-        ok(true, "xhr failure should always be a failure");
-        start();
-      }
-    );
-  });
-
-  asyncTest("cancelUserValidation: ~1 second", function() {
-    xhr.useResult("pending");
-
-    storage.setReturnTo(testOrigin);
-    // yes, we are neither expected succes nor failure because we are
-    // cancelling the wait.
-    lib.waitForUserValidation(
-      "registered@testuser.com",
-      testHelpers.unexpectedSuccess,
-      testHelpers.unexpectedXHRFailure
-    );
-
-    setTimeout(function() {
-      lib.cancelUserValidation();
-      ok(storage.getReturnTo(), "staged on behalf of is not cleared when validation cancelled");
-      start();
-    }, 500);
-  });
+  testVerificationPoll("waitForUserValidation", "cancelUserValidation");
 
   asyncTest("tokenInfo with a good token and returnTo info, expect returnTo in results", function() {
     storage.setReturnTo(testOrigin);
@@ -424,42 +494,7 @@
     failureCheck(lib.tokenInfo, "token");
   });
 
-  asyncTest("verifyUser with a good token", function() {
-    storage.setReturnTo(testOrigin);
-    storage.addEmail(TEST_EMAIL);
-
-    lib.verifyUser("token", "password", function onSuccess(info) {
-
-      testObjectValuesEqual(info, {
-        valid: true,
-        email: TEST_EMAIL,
-        returnTo: testOrigin
-      });
-      equal(storage.getReturnTo(), "", "initiating origin was removed");
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("verifyUser with a bad token", function() {
-    xhr.useResult("invalid");
-
-    lib.verifyUser("token", "password", function onSuccess(info) {
-      equal(info.valid, false, "bad token calls onSuccess with a false validity");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("verifyUser with an XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    lib.verifyUser(
-      "token",
-      "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
+  testVerificationComplete("verifyUser");
 
   asyncTest("canSetPassword with only primary addresses - expect false", function() {
     xhr.setContextInfo("has_password", false);
@@ -516,42 +551,9 @@
     failureCheck(lib.requestPasswordReset, "registered@testuser.com");
   });
 
-  asyncTest("completePasswordReset with a good token", function() {
-    storage.addEmail(TEST_EMAIL);
-    storage.setReturnTo(testOrigin);
+  testVerificationPoll("waitForPasswordResetComplete", "cancelWaitForPasswordResetComplete");
 
-    lib.completePasswordReset("token", "password", function onSuccess(info) {
-      testObjectValuesEqual(info, {
-        valid: true,
-        email: TEST_EMAIL,
-        returnTo: testOrigin
-      });
-
-      equal(storage.getReturnTo(), "", "initiating origin was removed");
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("completePasswordReset with a bad token", function() {
-    xhr.useResult("invalid");
-
-    lib.completePasswordReset("token", "password", function onSuccess(info) {
-      equal(info.valid, false, "bad token calls onSuccess with a false validity");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("completePasswordReset with an XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    lib.completePasswordReset(
-      "token",
-      "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
+  testVerificationComplete("completePasswordReset");
 
   asyncTest("requestEmailReverify with owned unverified email - false status", function() {
     storage.addEmail(TEST_EMAIL);
@@ -593,6 +595,8 @@
     storage.addEmail(TEST_EMAIL);
     failureCheck(lib.requestEmailReverify, TEST_EMAIL);
   });
+
+  testVerificationPoll("waitForEmailReverifyComplete", "cancelWaitForEmailReverifyComplete");
 
   asyncTest("authenticate with valid credentials, also syncs email with server", function() {
     lib.authenticate(TEST_EMAIL, "testuser", function(authenticated) {
@@ -800,98 +804,9 @@
     failureCheck(lib.addEmail, "testemail@testemail.com", "password");
   });
 
+  testVerificationPoll("waitForEmailValidation", "cancelEmailValidation");
 
- asyncTest("waitForEmailValidation with `complete` backend response, user authenticated to assertion level - expect 'mustAuth'", function() {
-    testAddressVerificationPoll("password", "complete", "waitForEmailValidation", "complete");
-  });
-
-  asyncTest("waitForEmailValidation with assertion authentication, complete from backend - return mustAuth status", function() {
-    testAddressVerificationPoll("assertion", "complete", "waitForEmailValidation", "mustAuth");
-  });
-
-  asyncTest("waitForEmailValidation `mustAuth` response", function() {
-    testAddressVerificationPoll("assertion", "mustAuth", "waitForEmailValidation", "mustAuth");
-  });
-
-  asyncTest("waitForEmailValidation with `noRegistration` response", function() {
-    storage.setReturnTo(testOrigin);
-    xhr.useResult("noRegistration");
-
-    lib.waitForEmailValidation(
-      "registered@testuser.com",
-      testHelpers.unexpectedSuccess,
-      function(status) {
-        ok(storage.getReturnTo(), "staged on behalf of is cleared when validation completes");
-        ok(status, "noRegistration", "noRegistration response causes failure");
-        start();
-      });
-  });
-
-
- asyncTest("waitForEmailValidation XHR failure", function() {
-    storage.setReturnTo(testOrigin);
-    xhr.useResult("ajaxError");
-
-    lib.waitForEmailValidation(
-      "registered@testuser.com",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
-
-
-  asyncTest("cancelEmailValidation: ~1 second", function() {
-    xhr.useResult("pending");
-
-    storage.setReturnTo(testOrigin);
-    lib.waitForEmailValidation(
-      "registered@testuser.com",
-      testHelpers.unexpectedSuccess,
-      testHelpers.unexpectedXHRFailure
-    );
-
-    setTimeout(function() {
-      lib.cancelUserValidation();
-      ok(storage.getReturnTo(), "staged on behalf of is not cleared when validation cancelled");
-      start();
-    }, 500);
-  });
-
-  asyncTest("verifyEmail with a good token - callback with email, returnTo, valid", function() {
-    storage.setReturnTo(testOrigin);
-    storage.addEmail(TEST_EMAIL);
-    lib.verifyEmail("token", "password", function onSuccess(info) {
-      testObjectValuesEqual(info, {
-        valid: true,
-        email: TEST_EMAIL,
-        returnTo: testOrigin
-      });
-      equal(storage.getReturnTo(), "", "initiating returnTo was removed");
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("verifyEmail with a bad token - callback with valid: false", function() {
-    xhr.useResult("invalid");
-
-    lib.verifyEmail("token", "password", function onSuccess(info) {
-      equal(info.valid, false, "bad token calls onSuccess with a false validity");
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("verifyEmail with an XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    lib.verifyEmail(
-      "token",
-      "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
+  testVerificationComplete("verifyEmail");
 
   asyncTest("syncEmailKeypair with successful sync", function() {
     lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
@@ -1433,107 +1348,8 @@
     failureCheck(lib.requestTransitionToSecondary, "registered@testuser.com", "password");
   });
 
-  asyncTest("completeTransitionToSecondary with a good token", function() {
-    storage.addEmail(TEST_EMAIL);
-    storage.setReturnTo(testOrigin);
 
-    lib.completeTransitionToSecondary("token", "password", function onSuccess(info) {
-      testObjectValuesEqual(info, {
-        valid: true,
-        email: TEST_EMAIL,
-        returnTo: testOrigin
-      });
+  testVerificationPoll("waitForTransitionToSecondaryComplete", "cancelWaitForTransitionToSecondaryComplete");
 
-      equal(storage.getReturnTo(), "", "initiating origin was removed");
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("completeTransitionToSecondary with a bad token", function() {
-    xhr.useResult("invalid");
-
-    lib.completeTransitionToSecondary("token", "password", function onSuccess(info) {
-      equal(info.valid, false, "bad token calls onSuccess with a false validity");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("completeTransitionToSecondary with an XHR failure", function() {
-    xhr.useResult("ajaxError");
-
-    lib.completeTransitionToSecondary(
-      "token",
-      "password",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
-
-  asyncTest("waitForTransitionToSecondaryComplete with no authentication & complete backend response - `mustAuth` response", function() {
-    testAddressVerificationPoll(undefined, "complete", "waitForTransitionToSecondaryComplete", "mustAuth");
-  });
-
-  asyncTest("waitForTransitionToSecondaryComplete with assertion authentication & complete backend response - `mustAuth` response", function() {
-    testAddressVerificationPoll("assertion", "complete", "waitForTransitionToSecondaryComplete", "mustAuth");
-  });
-
-  asyncTest("waitForTransitionToSecondaryComplete with password authentication - `complete` response", function() {
-    testAddressVerificationPoll("password", "complete", "waitForTransitionToSecondaryComplete", "complete");
-  });
-
-  asyncTest("waitForTransitionToSecondaryComplete with `mustAuth` response", function() {
-    testAddressVerificationPoll(undefined, "mustAuth", "waitForTransitionToSecondaryComplete", "mustAuth");
-  });
-
-  asyncTest("waitForTransitionToSecondaryComplete with `noRegistration` response", function() {
-    xhr.useResult("noRegistration");
-
-    storage.setReturnTo(testOrigin);
-    lib.waitForTransitionToSecondaryComplete(
-      "registered@testuser.com",
-      testHelpers.unexpectedSuccess,
-      function(status) {
-        ok(storage.getReturnTo(), "staged on behalf of is not cleared for noRegistration response");
-        ok(status, "noRegistration", "noRegistration response causes failure");
-        start();
-      }
-    );
-  });
-
-
-  asyncTest("waitForTransitionToSecondaryComplete with XHR failure", function() {
-    storage.setReturnTo(testOrigin);
-    xhr.useResult("ajaxError");
-    lib.waitForTransitionToSecondaryComplete(
-      "registered@testuser.com",
-      testHelpers.unexpectedSuccess,
-      function() {
-        ok(storage.getReturnTo(), "staged on behalf of is not cleared on XHR failure");
-        ok(true, "xhr failure should always be a failure");
-        start();
-      }
-    );
-  });
-
-  asyncTest("cancelWaitForTransitionToSecondaryComplete: ~1 second", function() {
-    xhr.useResult("pending");
-
-    storage.setReturnTo(testOrigin);
-    // yes, we are neither expected succes nor failure because we are
-    // cancelling the wait.
-    lib.waitForTransitionToSecondaryComplete(
-      "registered@testuser.com",
-      testHelpers.unexpectedSuccess,
-      testHelpers.unexpectedXHRFailure
-    );
-
-    setTimeout(function() {
-      lib.cancelWaitForTransitionToSecondaryComplete();
-      ok(storage.getReturnTo(), "staged on behalf of is not cleared when validation cancelled");
-      start();
-    }, 500);
-  });
-
-
+  testVerificationComplete("completeTransitionToSecondary");
 }());
