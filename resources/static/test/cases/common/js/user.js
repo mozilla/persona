@@ -66,6 +66,66 @@
     });
   }
 
+  function testStageAddress(stageFuncName, config) {
+    function addPasswordArg(args, password) {
+      if (password) {
+        args.splice(1, 0, password);
+      }
+    }
+
+    asyncTest(stageFuncName + " success - callback with true status", function() {
+      storage.addEmail(TEST_EMAIL);
+
+      var returnTo = "http://samplerp.org";
+      lib.setReturnTo(returnTo);
+      var args = [TEST_EMAIL, function(status) {
+        ok(status.success, "address staged");
+        equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
+        start();
+      }, testHelpers.unexpectedXHRFailure];
+      addPasswordArg(args, config.password);
+
+      lib[stageFuncName].apply(lib, args);
+    });
+
+    asyncTest(stageFuncName + " throttled - callback with false status", function() {
+      xhr.useResult("throttle");
+
+      storage.addEmail("registered@testuser.com");
+      var args = ["registered@testuser.com", function(status) {
+        testObjectValuesEqual(status, {
+          success: false,
+          reason: "throttle"
+        });
+        start();
+      }, testHelpers.unexpectedXHRFailure];
+      addPasswordArg(args, config.password);
+
+      lib[stageFuncName].apply(lib, args);
+    });
+
+    if (config.invalid_reason) {
+      asyncTest(stageFuncName + " with unknown email - false status", function() {
+        var args = ["unregistered@testuser.com", function(status) {
+          equal(status.success, false, "failure for unknown user");
+          equal(status.reason, config.invalid_reason, "correct reason");
+          start();
+        }, testHelpers.unexpectedXHRFailure];
+        addPasswordArg(args, config.password);
+
+        lib[stageFuncName].apply(lib, args);
+      });
+    }
+
+    asyncTest(stageFuncName + " with XHR failure", function() {
+      storage.addEmail(TEST_EMAIL);
+      var args = [lib[stageFuncName], TEST_EMAIL];
+      if (config.password) args.push(config.password);
+
+      failureCheck.apply(null, args);
+    });
+  }
+
   function testAddressVerificationPoll(authLevel, xhrResultName, pollFuncName, expectedResult) {
     storage.setReturnTo(testOrigin);
     xhr.useResult(xhrResultName);
@@ -306,28 +366,9 @@
     equal(0, count, "after clearing, there are no identities");
   });
 
-  asyncTest("createSecondaryUser success - callback with true status", function() {
-    lib.createSecondaryUser(TEST_EMAIL, "password", function(status) {
-      ok(status.success, "user created");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("createSecondaryUser throttled - callback with false status", function() {
-    xhr.useResult("throttle");
-
-    lib.createSecondaryUser(TEST_EMAIL, "password", function(status) {
-      testObjectValuesEqual(status, {
-        success: false,
-        reason: "throttle"
-      });
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("createSecondaryUser with XHR failure", function() {
-    failureCheck(lib.createSecondaryUser, TEST_EMAIL, "password");
-  });
+  testStageAddress("createSecondaryUser", { password: "password" });
+  testVerificationPoll("waitForUserValidation", "cancelUserValidation");
+  testVerificationComplete("verifyUser");
 
 
   asyncTest("createPrimaryUser with primary, user verified with primary - expect 'primary.verified'", function() {
@@ -470,8 +511,6 @@
     );
   });
 
-  testVerificationPoll("waitForUserValidation", "cancelUserValidation");
-
   asyncTest("tokenInfo with a good token and returnTo info, expect returnTo in results", function() {
     storage.setReturnTo(testOrigin);
 
@@ -493,8 +532,6 @@
   asyncTest("tokenInfo with XHR error", function() {
     failureCheck(lib.tokenInfo, "token");
   });
-
-  testVerificationComplete("verifyUser");
 
   asyncTest("canSetPassword with only primary addresses - expect false", function() {
     xhr.setContextInfo("has_password", false);
@@ -518,84 +555,11 @@
     }, testHelpers.unexpectedFailure);
   });
 
-  asyncTest("requestPasswordReset with known email - true status", function() {
-    var returnTo = "http://samplerp.org";
-    lib.setReturnTo(returnTo);
-
-    lib.requestPasswordReset("registered@testuser.com", function(status) {
-      equal(status.success, true, "password reset for known user");
-      equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("requestPasswordReset with unknown email - false status, invalid_user", function() {
-    lib.requestPasswordReset("unregistered@testuser.com", function(status) {
-      equal(status.success, false, "password not reset for unknown user");
-      equal(status.reason, "invalid_user", "invalid_user is the reason");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("requestPasswordReset with throttle - false status, throttle", function() {
-    xhr.useResult("throttle");
-    lib.requestPasswordReset("registered@testuser.com", function(status) {
-      equal(status.success, false, "password not reset for throttle");
-      equal(status.reason, "throttle", "password reset was throttled");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("requestPasswordReset with XHR failure", function() {
-    failureCheck(lib.requestPasswordReset, "registered@testuser.com");
-  });
-
+  testStageAddress("requestPasswordReset", { invalid_reason: "invalid_user" });
   testVerificationPoll("waitForPasswordResetComplete", "cancelWaitForPasswordResetComplete");
-
   testVerificationComplete("completePasswordReset");
 
-  asyncTest("requestEmailReverify with owned unverified email - false status", function() {
-    storage.addEmail(TEST_EMAIL);
-
-    var returnTo = "http://samplerp.org";
-    lib.setReturnTo(returnTo);
-    lib.requestEmailReverify(TEST_EMAIL, function(status) {
-      equal(status.success, true, "password reset for known user");
-      equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("requestEmailReverify with unowned email - false status, invalid_user", function() {
-    lib.requestEmailReverify(TEST_EMAIL, function(status) {
-      testObjectValuesEqual(status, {
-        success: false,
-        reason: "invalid_email"
-      });
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("requestEmailReverify owned email with throttle - false status, throttle", function() {
-    xhr.useResult("throttle");
-    storage.addEmail(TEST_EMAIL);
-
-    lib.requestEmailReverify(TEST_EMAIL, function(status) {
-      testObjectValuesEqual(status, {
-        success: false,
-        reason: "throttle"
-      });
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("requestEmailReverify with XHR failure", function() {
-    storage.addEmail(TEST_EMAIL);
-    failureCheck(lib.requestEmailReverify, TEST_EMAIL);
-  });
-
+  testStageAddress("requestEmailReverify", { invalid_reason: "invalid_email" });
   testVerificationPoll("waitForEmailReverifyComplete", "cancelWaitForEmailReverifyComplete");
 
   asyncTest("authenticate with valid credentials, also syncs email with server", function() {
@@ -769,43 +733,8 @@
     });
   });
 
-  asyncTest("addEmail", function() {
-    var returnTo = "http://samplerp.org";
-    lib.setReturnTo(returnTo);
-
-    lib.addEmail("testemail@testemail.com", "password", function(added) {
-      ok(added, "user was added");
-
-      var identities = lib.getStoredEmailKeypairs();
-      equal("testemail@testemail.com" in identities, false, "new email is not added until confirmation.");
-
-      equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("addEmail with addition refused", function() {
-    xhr.useResult("throttle");
-
-    lib.addEmail("testemail@testemail.com", "password", function(added) {
-      equal(added, false, "user addition was refused");
-
-      var identities = lib.getStoredEmailKeypairs();
-      equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
-
-      equal(typeof storage.getReturnTo(), "undefined", "initiatingOrigin is not stored");
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("addEmail with XHR failure", function() {
-    failureCheck(lib.addEmail, "testemail@testemail.com", "password");
-  });
-
+  testStageAddress("addEmail", { password: "password" });
   testVerificationPoll("waitForEmailValidation", "cancelEmailValidation");
-
   testVerificationComplete("verifyEmail");
 
   asyncTest("syncEmailKeypair with successful sync", function() {
@@ -1310,46 +1239,7 @@
   });
 
 
-  /**
-   * XXX - These are copied from the password reset flows which are going to
-   * change. The completion, waitFor and cancelWaitFor tests can probably be
-   * generalized and combined with other tests.
-   */
-  asyncTest("requestTransitionToSecondary with known email - true status", function() {
-    var returnTo = "http://samplerp.org";
-    lib.setReturnTo(returnTo);
-
-    lib.requestTransitionToSecondary("registered@testuser.com", "password", function(status) {
-      equal(status.success, true, "password reset for known user");
-      equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
-
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("requestTransitionToSecondary with unknown email - false status, invalid_user", function() {
-    lib.requestTransitionToSecondary("unregistered@testuser.com", "password", function(status) {
-      equal(status.success, false, "password not reset for unknown user");
-      equal(status.reason, "invalid_user", "invalid_user is the reason");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("requestTransitionToSecondary with throttle - false status, throttle", function() {
-    xhr.useResult("throttle");
-    lib.requestTransitionToSecondary("registered@testuser.com", "password", function(status) {
-      equal(status.success, false, "password not reset for throttle");
-      equal(status.reason, "throttle", "password reset was throttled");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("requestTransitionToSecondary with XHR failure", function() {
-    failureCheck(lib.requestTransitionToSecondary, "registered@testuser.com", "password");
-  });
-
-
+  testStageAddress("requestTransitionToSecondary", { password: "password", invalid_reason: "invalid_user" });
   testVerificationPoll("waitForTransitionToSecondaryComplete", "cancelWaitForTransitionToSecondaryComplete");
-
   testVerificationComplete("completeTransitionToSecondary");
 }());

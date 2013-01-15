@@ -177,15 +177,15 @@
     /*jshint validthis:true*/
     var self=this;
 
-    user.addEmail(email, password, function(added) {
-      if (added) {
+    user.addEmail(email, password, function(status) {
+      if (status.success) {
         var info = { email: email, password: password };
         self.publish("email_staged", info, info );
       }
       else {
         tooltip.showTooltip("#could_not_add");
       }
-      complete(callback, added);
+      complete(callback, status.success);
     }, self.getErrorDialog(errors.addEmail, callback));
   }
 
