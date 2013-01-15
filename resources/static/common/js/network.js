@@ -106,12 +106,16 @@ BrowserID.Network = (function() {
   }
 
   function completeAddressVerification(wsapiName, token, password, onComplete, onFailure) {
+      var data = {
+        token: token
+      };
+
+      // Only send the password along if it was actually given
+      if (password !== null) data.pass = password;
+
       post({
         url: wsapiName,
-        data: {
-          token: token,
-          pass: password
-        },
+        data: data,
         success: function(status, textStatus, jqXHR) {
           // If the user has successfully completed an address verification,
           // they are authenticated to the password status.

@@ -119,6 +119,10 @@
     verificationSuccess: function(verificationMethod) {
       asyncTest(verificationMethod + " with valid token, no password required", function() {
         network[verificationMethod]("token", null, function(registered) {
+          var req = transport.getLastRequest();
+          var data = JSON.parse(req.data);
+          equal("pass" in data, false, "password not sent in request if not needed");
+
           ok(registered);
           start();
         }, testHelpers.unexpectedFailure);
