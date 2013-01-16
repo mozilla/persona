@@ -102,8 +102,6 @@
         self.publish("reset_password_staged", { email: email });
       }
       else {
-        // XXX the tooltip should talk about being unable to reset the
-        // password.
         tooltip.showTooltip("#could_not_add");
       }
       complete(callback, status.success);
@@ -118,7 +116,6 @@
         self.publish("transition_to_secondary_staged", { email: email });
       }
       else {
-        // XXX the tooltip should talk about being unable to set the password.
         tooltip.showTooltip("#could_not_add");
       }
       complete(callback, status.success);
@@ -133,8 +130,6 @@
         self.publish("reverify_email_staged", { email: email });
       }
       else {
-        // XXX the tooltip should show something about being unable to reverify
-        // email
         tooltip.showTooltip("#could_not_add");
       }
       complete(callback, status.success);
