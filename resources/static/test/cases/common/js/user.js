@@ -79,9 +79,9 @@
   // the staging function name should be passed in as stageFuncName.
   // config can take two parameters:
   //   password - if the staging function requires a password, enter it.
-  //   invalid_reason - if a staging method requires that the email address
-  //      already exist, an attempt will be made to stage an address that
-  //      does not exist. This is the expected reason that the backend returns.
+  //   require_valid_email - if true, indicates that a staging method
+  //      requires that the email address already exist. An attempt will
+  //      be made to stage an address that does not exist.
   function testStageAddress(stageFuncName, config) {
     function getStagingMethodArgs(email, onComplete, password) {
         var args = [email, onComplete, testHelpers.unexpectedXHRFailure];
@@ -129,13 +129,13 @@
           config.password));
     });
 
-    if (config.invalid_reason) {
+    if (config.require_valid_email) {
       asyncTest(stageFuncName + " with unknown email - false status",
           function() {
 
         var onComplete = function(status) {
           equal(status.success, false, "failure for unknown user");
-          equal(status.reason, config.invalid_reason, "correct reason");
+          equal(status.reason, "invalid_email", "correct reason");
           start();
         };
 
@@ -329,7 +329,7 @@
     testResetPassword: {
       stageAddress: {
         stageFunction: "requestPasswordReset",
-        config: { invalid_reason: "invalid_user" }
+        config: { require_valid_email: true }
       },
       pollingFunction: "waitForPasswordResetComplete",
       cancelPollingFunction: "cancelWaitForPasswordResetComplete",
@@ -339,7 +339,7 @@
     testReverifyEmail: {
       stageAddress: {
         stageFunction: "requestEmailReverify",
-        config: { invalid_reason: "invalid_email" }
+        config: { require_valid_email: true }
       },
       pollingFunction: "waitForEmailReverifyComplete",
       cancelPollingFunction: "cancelWaitForEmailReverifyComplete"
@@ -350,7 +350,7 @@
         stageFunction: "requestTransitionToSecondary",
         config: {
           password: "password",
-          invalid_reason: "invalid_user"
+          require_valid_email: true
         }
       },
       pollingFunction: "waitForTransitionToSecondaryComplete",

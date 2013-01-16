@@ -644,7 +644,7 @@ BrowserID.User = (function() {
       User.addressInfo(email, function(info) {
         // user is not known.  Can't request a password reset.
         if (info.state === "unknown") {
-          complete(onComplete, { success: false, reason: "invalid_user" });
+          complete(onComplete, { success: false, reason: "invalid_email" });
         }
         // user is trying to reset the password of a primary address.
         else if (info.type === "primary") {
@@ -740,7 +740,7 @@ BrowserID.User = (function() {
       User.addressInfo(email, function(info) {
         // user is not known.  Can't request a transition to secondary.
         if (info.state === "unknown") {
-          complete(onComplete, { success: false, reason: "invalid_user" });
+          complete(onComplete, { success: false, reason: "invalid_email" });
         }
         // user is trying to transition to a secondary for a primary address.
         else if (info.type === "primary") {

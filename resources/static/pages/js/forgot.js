@@ -26,7 +26,7 @@ BrowserID.forgot = (function() {
       else {
         var tooltipEls = {
           throttle: "#could_not_add",
-          invalid_user: "#not_registered",
+          invalid_email: "#not_registered",
           primary_address: "#primary_address"
         };
 
