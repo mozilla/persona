@@ -128,6 +128,13 @@ BrowserID.User = (function() {
   }
 
   function completeAddressVerification(completeFunc, token, password, onComplete, onFailure) {
+    if (password && password.length < bid.PASSWORD_MIN_LENGTH) {
+      // if the password is too short, call the onFailure callback with
+      // the "cannot authenticate" response. The backend blows up if trying to
+      // complete the verification with a password that is too short.
+      return complete(onFailure, { network: { status: 401 } });
+    }
+
     User.tokenInfo(token, function(info) {
       var invalidInfo = { valid: false };
       if (info) {

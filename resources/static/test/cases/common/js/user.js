@@ -441,6 +441,13 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
+  asyncTest("verifyUser with a good token but too short of a password", function() {
+    lib.verifyUser("token", "pass",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
   asyncTest("verifyUser with a bad token", function() {
     xhr.useResult("invalid");
 
@@ -540,6 +547,13 @@
       equal(info.valid, false, "bad token calls onSuccess with a false validity");
       start();
     }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("completePasswordReset with a good token but too short of a password", function() {
+    lib.completePasswordReset("token", "pass",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
 
   asyncTest("completePasswordReset with an XHR failure", function() {
@@ -755,7 +769,7 @@
   });
 
   asyncTest("passwordNeededToAddSecondaryEmail, account only has primaries - call callback with true", function() {
-    xhr.setContextInfo("has_password", false);    
+    xhr.setContextInfo("has_password", false);
 
     lib.passwordNeededToAddSecondaryEmail(function(passwordNeeded) {
       equal(passwordNeeded, true, "password correctly needed");
@@ -897,6 +911,14 @@
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
+
+  asyncTest("verifyEmail with a good token but too short of a password", function() {
+    lib.verifyEmail("token", "pass",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
+  });
+
 
   asyncTest("verifyEmail with an XHR failure", function() {
     xhr.useResult("ajaxError");
@@ -1397,7 +1419,7 @@
         start();
       }, testHelpers.unexpectedXHRFailure);
     });
-    
+
   });
 
   asyncTest("usedAddressAsPrimary successfully calls wsapi, but can receive no-op", function () {
