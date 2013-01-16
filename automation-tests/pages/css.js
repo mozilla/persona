@@ -49,11 +49,12 @@ module.exports = {
     forgotPassword: 'a#forgotPassword',
     choosePassword: 'div#set_password input#password',
     verifyPassword: 'input#vpassword',
+    postVerificationPassword: 'input#password',
     // the button you click on after typing and re-typing your password
     createUserButton: 'button#verify_user',
-    resetPasswordButton: 'button#password_reset',
     returningUserButton: 'button.returning',
     verifyWithPrimaryButton: 'button#verifyWithPrimary',
+    postVerificationPasswordButton: 'button#sign_in',
     thisIsNotMe: '#thisIsNotMe',
     useNewEmail: 'a#useNewEmail',
     newEmail: 'input#newEmail',

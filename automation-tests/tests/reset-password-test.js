@@ -8,6 +8,7 @@ const
 path = require('path'),
 assert = require('../lib/asserts.js'),
 utils = require('../lib/utils.js'),
+restmail = require('../lib/restmail.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
 dialog = require('../pages/dialog.js'),
@@ -51,17 +52,24 @@ runner.run(module, {
       .wclick(CSS['dialog'].forgotPassword, done);
   },
 
-  "choose new password": function(done) {
-    browser.chain({onError: done})
-      .wtype(CSS['dialog'].choosePassword, NEW_PASSWORD)
-      .wtype(CSS['dialog'].verifyPassword, NEW_PASSWORD)
-      .wclick(CSS['dialog'].resetPasswordButton, function(err) {
-        done(err);
+  "open reset verification link in new browser window": function(done) {
+    restmail.getVerificationLink({ email: theUser.email, index: 1 }, function(err, token, link) {
+      testSetup.newBrowserSession(verificationBrowser, function() {
+        verificationBrowser.chain({onError: done})
+          .get(link)
+          .wtype(CSS['persona.org'].signInForm.password, NEW_PASSWORD)
+          .wtype(CSS['persona.org'].signInForm.verifyPassword, NEW_PASSWORD)
+          .wclick(CSS['persona.org'].signInForm.finishButton)
+          .wfind(CSS['persona.org'].congratsMessage)
+          .quit(done);
       });
+    });
   },
 
-  "open reset verification link in new browser window": function(done) {
-    verifyEmail(theUser.email, NEW_PASSWORD, 1, verificationBrowser, done);
+  "after password reset, original browser asks for new password 'cause this is a different browser": function(done) {
+    browser.chain({onError: done})
+      .wtype(CSS['dialog'].postVerificationPassword, NEW_PASSWORD)
+      .wclick(CSS['dialog'].postVerificationPasswordButton, done);
   },
 
   "make sure user is signed in to RP after password reset": function(done) {
