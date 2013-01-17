@@ -21,7 +21,8 @@ config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
 logger = require('../lib/logging.js').logger,
 forward = require('../lib/http_forward').forward,
-shutdown = require('../lib/shutdown');
+shutdown = require('../lib/shutdown'),
+toobusy = require('../lib/busy_middleware.js');
 
 var app = undefined;
 
@@ -63,6 +64,8 @@ var static_url = urlparse(config.get('static_url')).validate().normalize().origi
 heartbeat.setup(app, {
   dependencies: [browserid_url, static_url]
 });
+
+app.use(toobusy);
 
 // #2 - logging!  all requests other than __heartbeat__ are logged
 app.use(express.logger({
@@ -167,14 +170,11 @@ app.use(function(req, res, next) {
     });
 });
 
-// Do this only when PERSONA_WITH_COVER is set. Without a graceful shutdown,
-// `cover` will not generate .coverage_data
-if (process.env.PERSONA_WITH_COVER) {
-  // shutdown nicely on signals
-  shutdown.handleTerminationSignals(app, function() {
-    // nothing particular to do here for router.
-  });
-}
+// shutdown nicely on signals
+shutdown.handleTerminationSignals(app, function() {
+  toobusy.shutdown();
+});
+
 
 var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function(conn) {

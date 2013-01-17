@@ -18,7 +18,8 @@ heartbeat = require('../lib/heartbeat'),
 logger = require('../lib/logging').logger,
 config = require('../lib/configuration'),
 shutdown = require('../lib/shutdown'),
-statsd = require('../lib/statsd');
+statsd = require('../lib/statsd'),
+toobusy = require('../lib/busy_middleware.js');
 
 logger.info("verifier server starting up");
 
@@ -31,6 +32,8 @@ var app = express.createServer();
 
 // setup health check / heartbeat (before logging)
 heartbeat.setup(app);
+
+app.use(toobusy);
 
 // request to logger, dev formatted which omits personal data in the requests
 app.use(express.logger({
@@ -154,6 +157,7 @@ app.post('/', doVerification);
 // shutdown nicely on signals
 shutdown.handleTerminationSignals(app, function() {
   cc.exit();
+  toobusy.shutdown();
 });
 
 var bindTo = config.get('bind_to');

@@ -21,7 +21,8 @@ logger = require('../lib/logging.js').logger,
 heartbeat = require('../lib/heartbeat'),
 shutdown = require('../lib/shutdown'),
 computecluster = require('compute-cluster'),
-urlparse = require('urlparse');
+urlparse = require('urlparse'),
+toobusy = require('../lib/busy_middleware.js');
 
 logger.info("keysigner starting up");
 
@@ -38,6 +39,9 @@ var app = express.createServer();
 
 // respond to health checks (before logging)
 heartbeat.setup(app);
+
+// block requests when overloaded
+app.use(toobusy);
 
 // our server will log
 app.use(express.logger({
@@ -115,6 +119,7 @@ app.post('/wsapi/cert_key', validate({ 'email': 'email', 'pubkey': 'pubkey', 'ep
 // shutdown nicely on signals
 shutdown.handleTerminationSignals(app, function() {
   cc.exit();
+  toobusy.shutdown();
 });
 
 var bindTo = config.get('bind_to');

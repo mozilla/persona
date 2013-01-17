@@ -9,6 +9,7 @@
  * a browserid deployment can support */
 
 require('../lib/baseExceptions').addExceptionHandler();
+var wsapi_client = require('../lib/wsapi_client');
 
 const winston = require('winston');
 
@@ -204,12 +205,11 @@ function poll() {
         outstanding[act]--;
         if (undefined === completed[act]) completed[act] = [ 0, 0, 0 ];
         if (err) {
-          if (typeof err != 'string') err = err.toString();
-          if (err.indexOf('server is too busy') != -1) {
+          if (err.code === 'serverTooBusy') {
             completed[act][2]++;
           } else {
             completed[act][1]++;
-            winston.error('('+act+') ' + err);
+            winston.error('('+act+') ' + err.toString());
           }
         } else {
           completed[act][0]++;
@@ -256,12 +256,14 @@ function poll() {
     });
     actSumString += " (" + actNums.join(' ') + ")";
 
-    console.log("\t", averages[0].toFixed(2),
+    console.log("[" + wsapi_client.recentLatency().toFixed(0) + "ms]",
+                averages[0].toFixed(2),
                 "\t", averages[1].toFixed(2),
                 "\t", averages[2].toFixed(2),
                 "\t", actSumString,
                 "\t", numErrors ? "(" + numErrors + " ERRORS!)" : "",
-                "\t", num503s ? " (" + num503s + " 503s)" : "");
+                "\t", num503s ? " (" + num503s + " 503s)" : ""
+               );
   }
 
   // ** how much time has elapsed since the last poll?
