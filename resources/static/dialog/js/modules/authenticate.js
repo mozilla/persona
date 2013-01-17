@@ -118,7 +118,7 @@ BrowserID.Modules.Authenticate = (function() {
     }
   }
 
-  function authenticate() {
+  function authenticate(done) {
     /*jshint validthis: true*/
     var email = getEmail(),
         pass = helpers.getAndValidatePassword(PASSWORD_SELECTOR),
@@ -131,7 +131,11 @@ BrowserID.Modules.Authenticate = (function() {
             email: email
           });
         }
+        complete(done);
       });
+    }
+    else {
+      complete(done);
     }
   }
 

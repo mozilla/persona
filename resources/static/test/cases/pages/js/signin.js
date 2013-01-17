@@ -71,6 +71,14 @@
     });
   }
 
+  function testInvalidPassword(password) {
+    $("#email").val("registered@testuser.com");
+    $("#password").val(password);
+
+    testUserNotSignedIn();
+  }
+
+
   asyncTest("start with no email stored - nothing fancy", function() {
     createController({
       ready: function() {
@@ -224,12 +232,19 @@
   });
 
   asyncTest("signInSubmit with missing password", function() {
-    $("#email").val("registered@testuser.com");
-    $("#password").val("");
-
-    testUserNotSignedIn();
+    testInvalidPassword("");
   });
 
+
+  asyncTest("signInSubmit with too short password", function() {
+    testInvalidPassword(testHelpers.generateString(
+        bid.MIN_PASSWORD_LENGTH - 1));
+  });
+
+  asyncTest("signInSubmit with too long of a password", function() {
+    testInvalidPassword(testHelpers.generateString(
+        bid.MAX_PASSWORD_LENGTH + 1));
+  });
 
   asyncTest("signInSubmit with bad username/password", function() {
     xhr.useResult("invalid");
