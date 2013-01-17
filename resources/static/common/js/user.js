@@ -128,6 +128,18 @@ BrowserID.User = (function() {
   }
 
   function completeAddressVerification(completeFunc, token, password, onComplete, onFailure) {
+    if (password && password.length < bid.PASSWORD_MIN_LENGTH) {
+      // If the password is too short, the backend throws a 400 error saying
+      // the password string is out of range. If the password is within range
+      // but incorrect, it returns a 401 error. The desired behavior if the
+      // user types an incorrect password is to show a tooltip and allow the
+      // user to re-enter their password. If the password is too short, do not
+      // make the request but instead call the onFailure callback with
+      // a synthesized "incorrect password" response. The front end will take
+      // care of the rest.
+      return complete(onFailure, { network: { status: 401 } });
+    }
+
     User.tokenInfo(token, function(info) {
       var invalidInfo = { valid: false };
       if (info) {
