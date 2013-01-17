@@ -14,6 +14,14 @@
     tooltipShown = true;
   }
 
+  function testInvalidAuthenticationPassword(password) {
+    var valid = validation.password(password);
+
+    equal(valid, false, "invalid password is invalid");
+    equal(tooltipShown, true, "invalid password shows tooltip");
+  }
+
+
   module("common/js/validation", {
     setup: function() {
       origShowTooltip = bid.Tooltip.showTooltip;
@@ -164,6 +172,16 @@
 
     equal(valid, false, "invalid password is invalid");
     equal(tooltipShown, true, "invalid password shows tooltip");
+  });
+
+  test("password with too short of a password", function() {
+    testInvalidAuthenticationPassword(
+        testHelpers.generateString(bid.MIN_PASSWORD_LENGTH - 1));
+  });
+
+  test("password with too long of a password", function() {
+    testInvalidAuthenticationPassword(
+        testHelpers.generateString(bid.MAX_PASSWORD_LENGTH + 1));
   });
 
   test("validateEmailAndPassword with valid email and password", function() {

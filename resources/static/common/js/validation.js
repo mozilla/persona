@@ -59,10 +59,34 @@ BrowserID.Validation = (function() {
     return valid;
   }
 
-  function passwordLength(password) {
-    var valid = password && (password.length >= bid.PASSWORD_MIN_LENGTH && password.length <= bid.PASSWORD_MAX_LENGTH);
+  function authenticationPassword(password) {
+    var valid = passwordExists(password)
+                && passwordLengthForAuthenticationPassword(password);
 
-    if(!valid) {
+    return valid;
+  }
+
+  function passwordLengthForAuthenticationPassword(password) {
+    var valid = password
+                && (password.length >= bid.PASSWORD_MIN_LENGTH
+                    && password.length <= bid.PASSWORD_MAX_LENGTH);
+
+    if (!valid) {
+      // If the authentication password is out of range, don't even bother to
+      // send the password to the backend. Fail quickly without wasting
+      // electrons.
+      tooltip.showTooltip("#cannot_authenticate");
+    }
+
+    return valid;
+  }
+
+  function passwordLengthForNewPassword(password) {
+    var valid = password
+                && (password.length >= bid.PASSWORD_MIN_LENGTH
+                    && password.length <= bid.PASSWORD_MAX_LENGTH);
+
+    if (!valid) {
       tooltip.showTooltip("#password_length");
     }
 
@@ -72,7 +96,7 @@ BrowserID.Validation = (function() {
   function validationPasswordExists(vpass) {
     var valid = !!vpass;
 
-    if(!valid) {
+    if (!valid) {
       tooltip.showTooltip("#vpassword_required");
     }
 
@@ -80,7 +104,9 @@ BrowserID.Validation = (function() {
   }
 
   function passwordAndValidationPassword(pass, vpass) {
-    var valid = passwordExists(pass) && passwordLength(pass) && validationPasswordExists(vpass);
+    var valid = passwordExists(pass)
+                && passwordLengthForNewPassword(pass)
+                && validationPasswordExists(vpass);
 
     if (valid && pass !== vpass) {
       valid = false;
@@ -92,7 +118,7 @@ BrowserID.Validation = (function() {
 
   return {
     email: validateEmail,
-    password: passwordExists,
+    password: authenticationPassword,
     emailAndPassword: validateEmailAndPassword,
     passwordAndValidationPassword: passwordAndValidationPassword
   };
