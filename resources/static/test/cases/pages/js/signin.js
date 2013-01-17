@@ -231,20 +231,7 @@
     testUserNotSignedIn();
   });
 
-  asyncTest("signInSubmit with missing password", function() {
-    testInvalidPassword("");
-  });
-
-
-  asyncTest("signInSubmit with too short password", function() {
-    testInvalidPassword(testHelpers.generateString(
-        bid.MIN_PASSWORD_LENGTH - 1));
-  });
-
-  asyncTest("signInSubmit with too long of a password", function() {
-    testInvalidPassword(testHelpers.generateString(
-        bid.MAX_PASSWORD_LENGTH + 1));
-  });
+  testHelpers.testInvalidAuthenticationPassword("signInSubmit with", testInvalidPassword);
 
   asyncTest("signInSubmit with bad username/password", function() {
     xhr.useResult("invalid");
@@ -290,36 +277,10 @@
     testUserNotSignedUp();
   });
 
-  asyncTest("signUpSubmit with missing password", function() {
+  testHelpers.testInvalidNewPasswords("signUpSubmit with", function(password, vpassword) {
     $("#email").val("registered@testuser.com");
-    $("#password").val("");
-    $("#vpassword").val("password");
-
-    testUserNotSignedUp();
-  });
-
-  asyncTest("signUpSubmit with missing vpassword", function() {
-    $("#email").val("registered@testuser.com");
-    $("#password").val("password");
-    $("#vpassword").val("");
-
-    testUserNotSignedUp();
-  });
-
-  asyncTest("signUpSubmit with too short of a password", function() {
-    $("#email").val("registered@testuser.com");
-    var pass = testHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1);
-    $("#password").val(pass);
-    $("#vpassword").val(pass);
-
-    testUserNotSignedUp();
-  });
-
-  asyncTest("signUpSubmit with too long of a password", function() {
-    $("#email").val("registered@testuser.com");
-    var pass = testHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1);
-    $("#password").val(pass);
-    $("#vpassword").val(pass);
+    $("#password").val(password);
+    $("#vpassword").val(vpassword);
 
     testUserNotSignedUp();
   });

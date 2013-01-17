@@ -310,19 +310,7 @@
     testAuthenticated();
   });
 
-  asyncTest("missing password does not authenticate", function() {
-    testInvalidPassword("");
-  });
-
-  asyncTest("too short of a password does not authenticate", function() {
-    testInvalidPassword(testHelpers.generateString(
-        bid.MIN_PASSWORD_LENGTH - 1));
-  });
-
-  asyncTest("too long of a password does not authenticate", function() {
-    testInvalidPassword(testHelpers.generateString(
-        bid.MAX_PASSWORD_LENGTH + 1));
-  });
+  testHelpers.testInvalidAuthenticationPassword(testInvalidPassword);
 
   asyncTest("forgotPassword - trigger forgot_password message", function() {
     $(EMAIL_SELECTOR).val("registered@testuser.com");

@@ -123,19 +123,7 @@
     });
   });
 
-  asyncTest("missing password does not authenticate", function() {
-    testInvalidPassword("");
-  });
-
-  asyncTest("too short of a password does not authenticate", function() {
-    testInvalidPassword(testHelpers.generateString(
-        bid.MIN_PASSWORD_LENGTH - 1));
-  });
-
-  asyncTest("too long of a password does not authenticate", function() {
-    testInvalidPassword(testHelpers.generateString(
-        bid.MAX_PASSWORD_LENGTH + 1));
-  });
+  testHelpers.testInvalidAuthenticationPassword(testInvalidPassword);
 
   asyncTest("incorrect password does not authenticate", function() {
     $("#password").val("password");

@@ -84,6 +84,20 @@
     });
   });
 
+  function testInvalidNewPasswords(password, vpassword) {
+    $("#password").val(password);
+    $("#vpassword").val(vpassword);
+    register("password_set", function(msg, info) {
+      ok(false, "password_set should not be called");
+    });
+
+    controller.submit(function() {
+      start();
+    });
+  }
+
+  testHelpers.testInvalidNewPasswords("submit with", testInvalidNewPasswords);
+
   asyncTest("cancel - cancel_state message raised", function() {
     register("cancel_state", function(msg, info) {
       ok(true, "state cancelled");

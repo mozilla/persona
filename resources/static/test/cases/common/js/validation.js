@@ -19,6 +19,15 @@
 
     equal(valid, false, "invalid password is invalid");
     equal(tooltipShown, true, "invalid password shows tooltip");
+    start();
+  }
+
+  function testInvalidPasswordAndValidationPassword(password, vpassword) {
+    var valid = validation.passwordAndValidationPassword("", "password");
+
+    equal(valid, false, "password combination is not valid");
+    equal(tooltipShown, true, "tooltip is displayed for invalid password combination");
+    start();
   }
 
 
@@ -167,22 +176,8 @@
     equal(tooltipShown, false, "valid password shows no tooltip");
   });
 
-  test("password with missing password", function() {
-    var valid = validation.password("");
-
-    equal(valid, false, "invalid password is invalid");
-    equal(tooltipShown, true, "invalid password shows tooltip");
-  });
-
-  test("password with too short of a password", function() {
-    testInvalidAuthenticationPassword(
-        testHelpers.generateString(bid.MIN_PASSWORD_LENGTH - 1));
-  });
-
-  test("password with too long of a password", function() {
-    testInvalidAuthenticationPassword(
-        testHelpers.generateString(bid.MAX_PASSWORD_LENGTH + 1));
-  });
+  testHelpers.testInvalidAuthenticationPassword(
+      testInvalidAuthenticationPassword);
 
   test("validateEmailAndPassword with valid email and password", function() {
     var valid = validation.emailAndPassword("testuser@testuser.com", "password");
@@ -212,45 +207,7 @@
     equal(tooltipShown, true, "empty password shows tooltip");
   });
 
-
-  test("passwordAndValidationPassword with empty password", function() {
-    var valid = validation.passwordAndValidationPassword("", "password");
-
-    equal(valid, false, "empty password is invalid");
-    equal(tooltipShown, true, "empty password shows tooltip");
-  });
-
-
-  test("passwordAndValidationPassword with too short password", function() {
-    var tooShort = testHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1);
-    var valid = validation.passwordAndValidationPassword(tooShort, tooShort);
-
-    equal(valid, false, "too short password is invalid");
-    equal(tooltipShown, true, "too short password shows tooltip");
-  });
-
-  test("passwordAndValidationPassword with too long password", function() {
-    var tooLong = testHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1);
-    var valid = validation.passwordAndValidationPassword(tooLong, tooLong);
-
-    equal(valid, false, "too long password is invalid");
-    equal(tooltipShown, true, "too long password shows tooltip");
-  });
-
-  test("passwordAndValidationPassword with empty validation password", function() {
-    var valid = validation.passwordAndValidationPassword("password", "");
-
-    equal(valid, false, "empty validation password is invalid");
-    equal(tooltipShown, true, "empty validation password shows tooltip");
-  });
-
-
-  test("passwordAndValidationPassword with different validation password", function() {
-    var valid = validation.passwordAndValidationPassword("password", "pass");
-
-    equal(valid, false, "different password is invalid");
-    equal(tooltipShown, true, "different password shows tooltip");
-  });
+  testHelpers.testInvalidNewPasswords("validate" testInvalidPasswordAndValidationPassword);
 
   test("passwordAndValidationPassword all valid", function() {
     var valid = validation.passwordAndValidationPassword("password", "password");
