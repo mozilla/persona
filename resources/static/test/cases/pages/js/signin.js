@@ -277,7 +277,7 @@
     testUserNotSignedUp();
   });
 
-  testHelpers.testInvalidNewPasswords("signUpSubmit with", function(password, vpassword) {
+  testHelpers.testInvalidPasswordAndValidationPassword("signUpSubmit with", function(password, vpassword) {
     $("#email").val("registered@testuser.com");
     $("#password").val(password);
     $("#vpassword").val(vpassword);

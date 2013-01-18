@@ -389,7 +389,7 @@ BrowserID.TestHelpers = (function() {
       });
     },
 
-    testInvalidNewPasswords: function(msg, testInvalidPassword) {
+    testInvalidPasswordAndAuthenticationPassword: function(msg, testInvalidPassword) {
       if (!testInvalidPassword) {
         testInvalidPassword = msg;
         msg = "";

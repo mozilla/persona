@@ -112,7 +112,7 @@
     });
   });
 
-  testHelpers.testInvalidNewPasswords("submit with", function(password, vpassword) {
+  testHelpers.testInvalidPasswordAndValidationPassword("submit with", function(password, vpassword) {
     $("#email").val("unregistered@testuser.com");
     $("#password").val(password);
     $("#vpassword").val(vpassword);

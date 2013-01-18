@@ -84,7 +84,7 @@
     });
   });
 
-  function testInvalidNewPasswords(password, vpassword) {
+  function testInvalidPasswordAndValidationPassword(password, vpassword) {
     $("#password").val(password);
     $("#vpassword").val(vpassword);
     register("password_set", function(msg, info) {
@@ -96,7 +96,7 @@
     });
   }
 
-  testHelpers.testInvalidNewPasswords("submit with", testInvalidNewPasswords);
+  testHelpers.testInvalidPasswordAndValidationPassword("submit with", testInvalidPasswordAndValidationPassword);
 
   asyncTest("cancel - cancel_state message raised", function() {
     register("cancel_state", function(msg, info) {
