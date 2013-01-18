@@ -774,9 +774,7 @@ BrowserID.Network = (function() {
         pass: password,
         site : origin
       };
-      // XXX - This is going to have to change when zaach adds a transition
-      // function.
-      stageAddressForVerification(postData, "/wsapi/stage_reset", onComplete, onFailure);
+      stageAddressForVerification(postData, "/wsapi/stage_transition", onComplete, onFailure);
     },
 
     /**
@@ -787,21 +785,17 @@ BrowserID.Network = (function() {
      * @param {function} [onComplete] - Called when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-      // XXX - This is going to have to change when zaach adds a transition
-      // completion function.
-    completeTransitionToSecondary: completeAddressVerification.curry("/wsapi/complete_reset"),
+    completeTransitionToSecondary: completeAddressVerification.curry("/wsapi/complete_transition"),
 
     /**
      * Check the registration status of a transition to secondary
-     * @method checkPasswordReset
+     * @method checkTransitionToSecondary
      * @param {function} [onsuccess] - called when complete.
      * @param {function} [onfailure] - called on xhr failure.
      */
     checkTransitionToSecondary: function(email, onComplete, onFailure) {
-      // XXX - This is going to have to change when zaach adds a check
-      // transition function.
       get({
-        url: "/wsapi/password_reset_status?email=" + encodeURIComponent(email),
+        url: "/wsapi/transition_status?email=" + encodeURIComponent(email),
         success: handleAddressVerifyCheckResponse.curry(onComplete),
         error: onFailure
       });

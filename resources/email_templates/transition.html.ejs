@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Persona</title>
+        <style type="text/css">
+            #outlook a{padding:0;} /* Force Outlook to provide a "view in browser" button. */
+            body{width:100% !important;} .ReadMsgBody{width:100%;} .ExternalClass{width:100%;} /* Force Hotmail to display emails at full width */
+            body{-webkit-text-size-adjust:none;} /* Prevent Webkit platforms from changing default text sizes. */
+
+            body{
+              background: #45505b;
+              margin:0;
+              padding:0;
+              width:100% !important;
+              -webkit-text-size-adjust:none;
+              font-family: Helvetica, Arial, sans-serif;
+              font-size: 14px;
+              color: #424f5a;
+            }
+            img{
+              border:0;
+              height:auto;
+              line-height:100%;
+              outline:none;
+              text-decoration:none;
+            }
+            a{
+              color: #3b9bda;
+              text-decoration: none;
+            }
+            a:hover{
+              text-decoration: underline;
+            }
+            p{
+              margin: 0 0 15px;
+              line-height: 1.5;
+            }
+
+            h2{
+              font-size: 18px;
+              margin: 20px 0 15px;
+            }
+
+            p:last-child{
+              margin-bottom: 0;
+            }
+            table td{
+              border-collapse:collapse;
+            }
+        </style>
+  </head>
+  <body style="-webkit-text-size-adjust: none;margin: 0;padding: 0;background-color: #45505b;width: 100% !important;">
+    <center>
+    <table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
+      <tr style="margin: 0;
+        padding: 0;
+        height: 100% !important;
+        width: 100% !important; 
+        background: #45505b;
+        -webkit-text-size-adjust:none;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        color: #424f5a;">
+        <td align="center" valign="top" style="border-collapse: collapse;">
+          
+
+                <table border="0" cellpadding="0" cellspacing="0" width="90%">
+                  <tr class="spacer">
+                    <td height="30px"></td>
+                  </tr>
+                  <tr>
+                    <td align="left" valign="top" style="border-collapse: collapse;">
+                      <img src="<%= cachify('/pages/i/persona-logo-wordmark.png') %>" alt="Mozilla Persona" />
+                    </td>
+                  </tr>
+                  <tr class="spacer">
+                    <td height="30px"></td>
+                  </tr>
+                </table><!-- #header -->
+                <table id="content" border="0" cellpadding="0" cellspacing="0" width="90%" style="background-color: #fff; border-radius: 3px; margin-bottom: 60px;">
+                  <tr>
+                    <td align="left" valign="top" class="email-content" style="border-collapse: collapse; padding: 30px;">
+                      <p><%= gettext('It looks like your email provider is having trouble with their Persona support.') %></p>
+                      <p><%= gettext('To continue, you need to re-confirm this email address and set up a new, Persona-specific password.') %></p>
+
+                      <p><a href="<%= link %>" style="color: #3b9bda; font-weight: bold;"><%= gettext('Click here to set your new password.') %></a></p>
+
+                      <p><%= gettext('Thank you,') %><br />
+                      <%= gettext('The Persona team') %></p>
+                    </td>
+                  </tr>
+                </table><!-- #content -->
+              
+
+        </td>
+      </tr>
+    </table><!-- #container table -->
+    </center>
+
+  </body>
+</html>
