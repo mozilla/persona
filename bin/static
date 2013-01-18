@@ -123,14 +123,6 @@ app.use(function(req, res, next) {
 
 app.use(express.static(static_root));
 
-// Do this only when PERSONA_WITH_COVER is set. Without a graceful shutdown,
-// `cover` will not generate .coverage_data
-if (process.env.PERSONA_WITH_COVER) {
-  shutdown.handleTerminationSignals(app, function() {
-    // nothing particular to do here for static daemon, yet..
-  });
-}
-
 var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function() {
   logger.info("running on http://" + app.address().address + ":" + app.address().port);
