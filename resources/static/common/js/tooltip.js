@@ -7,6 +7,8 @@ BrowserID.Tooltip = (function() {
 
   var ANIMATION_TIME = 250,
       TOOLTIP_MIN_DISPLAY = 2000,
+      TOOLTIP_OFFSET_TOP_PX = 5,
+      TOOLTIP_OFFSET_LEFT_PX = 10,
       READ_WPM = 200,
       bid = BrowserID,
       dom = bid.DOM,
@@ -69,8 +71,8 @@ BrowserID.Tooltip = (function() {
   function anchorTooltip(tooltip, target) {
     target = $(target);
     var targetOffset = target.offset();
-    targetOffset.top -= (tooltip.outerHeight() + 5);
-    targetOffset.left += 10;
+    targetOffset.top -= (tooltip.outerHeight() + TOOLTIP_OFFSET_TOP_PX);
+    targetOffset.left += TOOLTIP_OFFSET_LEFT_PX;
 
     tooltip.css(targetOffset);
   }
@@ -90,7 +92,6 @@ BrowserID.Tooltip = (function() {
 
 
 
-
   // BrowserID.Tooltip singleton public interface.
 
   return {
@@ -100,6 +101,7 @@ BrowserID.Tooltip = (function() {
     showTooltip: showTooltip
     // BEGIN TESTING API
     ,
+    visible: isTooltipVisible,
     reset: removeAttachedTooltip
     // END TESTING API
   };
@@ -115,8 +117,6 @@ BrowserID.Tooltip = (function() {
     onlyAttachedTooltip = new Tooltip();
     var tooltipConfig = getTooltipConfig(tooltipText, tooltipAnchor, complete);
     var displayTimeMS = onlyAttachedTooltip.start(tooltipConfig);
-
-    bid.Tooltip.shown = true;
 
     return displayTimeMS;
   }
@@ -147,8 +147,12 @@ BrowserID.Tooltip = (function() {
   function removeAttachedTooltip() {
     if (onlyAttachedTooltip) {
       onlyAttachedTooltip.stop();
+      onlyAttachedTooltip = null;
     }
-
-    bid.Tooltip.shown = false;
   }
+
+  function isTooltipVisible() {
+    return !!onlyAttachedTooltip;
+  }
+
 }());

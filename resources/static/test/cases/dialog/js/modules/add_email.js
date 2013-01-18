@@ -12,6 +12,7 @@
       xhr = bid.Mocks.xhr,
       modules = bid.Modules,
       testHelpers = bid.TestHelpers,
+      testTooltipVisible = testHelpers.testTooltipVisible,
       register = testHelpers.register;
 
 
@@ -119,7 +120,7 @@
       // another line to the XHR mock for syncEmailKeypair.
       xhr.useResult("known_secondary");
       controller.addEmail(function() {
-        ok(bid.Tooltip.shown, "tooltip should be shown");
+        testTooltipVisible();
         start();
       });
     });

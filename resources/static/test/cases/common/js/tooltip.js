@@ -7,7 +7,9 @@
   var bid = BrowserID,
       tooltip = bid.Tooltip,
       testHelpers = bid.TestHelpers,
-      testUndefined = testHelpers.testUndefined;
+      testUndefined = testHelpers.testUndefined,
+      testTooltipVisible = testHelpers.testTooltipVisible,
+      testTooltipNotVisible = testHelpers.testTooltipNotVisible;
 
   module("common/js/tooltip", {
     setup: function() {
@@ -22,7 +24,7 @@
   test("show short tooltip - shows for about 2.5 seconds", function() {
     var displayTime = tooltip.showTooltip("#shortTooltip");
     ok(2000 <= displayTime && displayTime <= 3000, displayTime + " - minimum of 2 seconds, max of 3 seconds");
-    equal(tooltip.shown, true, "tooltip says that it is shown");
+    testTooltipVisible();
   });
 
   test("show long tooltip - shows for about 5 seconds", function() {
@@ -36,7 +38,7 @@
       tooltip.reset();
 
       equal($(".tooltip:visible").length, 0, "after reset, all tooltips are hidden");
-      equal(tooltip.shown, false, "after reset, tooltip status is reset");
+      testTooltipNotVisible();
       start();
     }, 100);
   });
@@ -50,6 +52,11 @@
   test("show a tooltip by specifying the text and the anchor", function() {
     tooltip.showTooltip("some tooltip contents", "#page_head");
     equal($(".tooltip:visible").text().trim(), "some tooltip contents", "correct contents when specified from the command line");
+  });
+
+  test("tooltip contents are escaped", function() {
+    tooltip.showTooltip("4 < 5", "#page_head");
+    equal($(".tooltip:visible .contents").html().trim(), "4 &lt; 5", "tooltip contents are escaped");
   });
 
   test("no exception thrown if tooltip element does not exist", function() {

@@ -10,11 +10,12 @@
       xhr = bid.Mocks.xhr,
       storage = bid.Storage,
       tooltip = bid.Tooltip,
-      testHelpers = bid.TestHelpers,
       user = bid.User,
       provisioning = bid.Mocks.Provisioning,
       mediator = bid.Mediator,
       errorCB,
+      testHelpers = bid.TestHelpers,
+      testTooltipVisible = testHelpers.testTooltipVisible,
       expectedError = testHelpers.expectedXHRFailure,
       expectedMessage = testHelpers.expectedMessage,
       unexpectedMessage = testHelpers.unexpectedMessage,
@@ -157,7 +158,7 @@
     storage.addEmail("registered@testuser.com", {});
     dialogHelpers.addEmail.call(controllerMock, "registered@testuser.com", function(added) {
       equal(added, false, "email should not have been added");
-      equal(bid.Tooltip.shown, true, "tooltip should be shown");
+      testTooltipVisible();
       start();
     });
   });
