@@ -11,6 +11,7 @@
       testElementExists = testHelpers.testElementExists,
       testElementNotExists = testHelpers.testElementDoesNotExist,
       testElementTextContains = testHelpers.testElementTextContains,
+      testTooltipVisible = testHelpers.testTooltipVisible,
       register = testHelpers.register;
 
   function createController(options) {
@@ -92,6 +93,7 @@
     });
 
     controller.submit(function() {
+      testTooltipVisible();
       start();
     });
   }
