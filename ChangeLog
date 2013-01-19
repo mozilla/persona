@@ -1,5 +1,19 @@
-current train:
-  *
+train-2012.01.18:
+  * upgrade to node.js 0.8.17
+  * metrics (KPI) improvements: #1931
+  * code cleanup: #2825, #2762
+  * test improvements: #2745, #2832, #2828, #2846, #2857, #2807
+  * fix non-functional cancel button when email provider is broken: #2839
+  * fix bug in verifier where if default port is provided verification would fail with 'port mismatch': bug 820446
+  * fixes related to gracefully handling of email providers implementing or removing persona support: #2840
+  * added debugging scripts: #2880
+  * update to newer versions of dependencies: #2893 #2911
+  * eliminate innocuous but annoying 500 errors when bogus URLs are requested: #2887
+  * fix bug where users cannot delete accounts when staged but unverified emails exist: #2919
+  * Allow logout to be called before .request or .watch: #2529
+  * Blocking requests when the server is too busy: #2722
+  * improvements to load generation utility
+  * fix one wrong password blocking user from verifying email in different browser: #2943
 
 train-2012.12.07:
   * persona now handles gracefully (UX and code) when email providers implement or remove support: #2606, #2607, #2608, #2678, #2404, #2688, #2674, #2717, #2770, #2779, #2794, #2795, #2836, #2834, #2839, #2838
