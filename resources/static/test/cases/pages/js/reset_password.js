@@ -66,9 +66,11 @@
     testHelpers.testErrorVisible();
   }
 
-  function testNeedsPasswordCannotSubmit() {
-    xhr.useResult("needsPassword");
+  function testInvalidPasswordAndAuthenticationPassword(password, vpassword) {
+    $("#password").val(password);
+    $("#vpassword").val(vpassword);
 
+    xhr.useResult("needsPassword");
     createController(config, function() {
       controller.submit(function(status) {
         equal(status, false, "correct status");
@@ -187,33 +189,8 @@
     });
   });
 
-  asyncTest("needsPassword - missing password", function() {
-    $("#password").val();
-    $("#vpassword").val("password");
-    testNeedsPasswordCannotSubmit();
-  });
-
-  asyncTest("needsPassword - too short of a password", function() {
-    $("#password,#vpassword").val(testHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1));
-    testNeedsPasswordCannotSubmit();
-  });
-
-  asyncTest("needsPassword - too long of a password", function() {
-    $("#password,#vpassword").val(testHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1));
-    testNeedsPasswordCannotSubmit();
-  });
-
-  asyncTest("needsPassword - missing vpassword", function() {
-    $("#password").val("password");
-    $("#vpassword").val();
-    testNeedsPasswordCannotSubmit();
-  });
-
-  asyncTest("needsPassword - password mismatch", function() {
-    $("#password").val("password");
-    $("#vpassword").val("password1");
-    testNeedsPasswordCannotSubmit();
-  });
+  testHelpers.testInvalidPasswordAndAuthenticationPassword(
+      testInvalidPasswordAndAuthenticationPassword);
 
   asyncTest("needsPassword: bad password", function() {
     $("#password,#vpassword").val("password");
