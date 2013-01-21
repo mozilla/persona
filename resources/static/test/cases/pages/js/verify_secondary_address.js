@@ -49,7 +49,9 @@
     controller.start(options);
   }
 
-  function expectTooltipVisible() {
+  function testInvalidPassword(password) {
+    $("#password").val(password);
+
     xhr.useResult("mustAuth");
     createController(config, function() {
       controller.submit(function() {
@@ -121,13 +123,23 @@
     });
   });
 
-  asyncTest("password: missing password", function() {
-    $("#password").val();
+  testHelpers.testInvalidAuthenticationPassword(testInvalidPassword);
 
-    expectTooltipVisible();
+  asyncTest("incorrect password does not authenticate", function() {
+    $("#password").val("password");
+
+    xhr.useResult("mustAuth");
+    createController(config, function() {
+      xhr.useResult("badPassword");
+      controller.submit(function(status) {
+        equal(status, false, "correct status");
+        testHelpers.testTooltipVisible();
+        start();
+      });
+    });
   });
 
-  asyncTest("password: good password", function() {
+  asyncTest("submit good password and token authenticates", function() {
     $("#password").val("password");
 
     xhr.useResult("mustAuth");
@@ -142,21 +154,7 @@
     });
   });
 
-  asyncTest("password: bad password", function() {
-    $("#password").val("password");
-
-    xhr.useResult("mustAuth");
-    createController(config, function() {
-      xhr.useResult("badPassword");
-      controller.submit(function(status) {
-        equal(status, false, "correct status");
-        testHelpers.testTooltipVisible();
-        start();
-      });
-    });
-  });
-
-  asyncTest("password: good password bad token", function() {
+  asyncTest("good password & bad token shows an error message", function() {
     $("#password").val("password");
 
     xhr.useResult("invalid");

@@ -363,6 +363,63 @@ BrowserID.TestHelpers = (function() {
 
       checkEmail("registered@testuser.com");
       checkEmail("synced_address@testuser.com");
+    },
+
+    testInvalidAuthenticationPassword: function(msg, testInvalidPassword) {
+      if (!testInvalidPassword) {
+        testInvalidPassword = msg;
+        msg = "";
+      }
+      else {
+        msg = msg + " ";
+      }
+
+      asyncTest(msg + "missing password does not authenticate", function() {
+        testInvalidPassword("");
+      });
+
+      asyncTest(msg + "too short of a password does not authenticate", function() {
+        testInvalidPassword(TestHelpers.generateString(
+            bid.MIN_PASSWORD_LENGTH - 1));
+      });
+
+      asyncTest(msg + "too long of a password does not authenticate", function() {
+        testInvalidPassword(TestHelpers.generateString(
+            bid.MAX_PASSWORD_LENGTH + 1));
+      });
+    },
+
+    testInvalidPasswordAndAuthenticationPassword: function(msg, testInvalidPassword) {
+      if (!testInvalidPassword) {
+        testInvalidPassword = msg;
+        msg = "";
+      }
+      else {
+        msg = msg + " ";
+      }
+
+      asyncTest(msg + "missing password", function() {
+        testInvalidPassword("", "password");
+      });
+
+      asyncTest(msg + "too short of a password", function() {
+        testInvalidPassword(
+            TestHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1));
+      });
+
+      asyncTest(msg + "too long of a password", function() {
+        testInvalidPassword(
+            TestHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1));
+      });
+
+      asyncTest(msg + "missing vpassword", function() {
+        testInvalidPassword("password", "");
+      });
+
+      asyncTest(msg + "password, vpassword mismatch", function() {
+        testInvalidPassword("password", "different_password");
+      });
+
     }
   };
 

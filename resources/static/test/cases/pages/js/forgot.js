@@ -112,30 +112,10 @@
     });
   });
 
-  asyncTest("submit with missing password", function() {
+  testHelpers.testInvalidPasswordAndValidationPassword("submit with", function(password, vpassword) {
     $("#email").val("unregistered@testuser.com");
-    $("#vpassword").val("password");
-
-    testEmailNotSent();
-  });
-
-  asyncTest("submit with too short of a password", function() {
-    $("#email").val("unregistered@testuser.com");
-    $("#password,#vpassword").val(testHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1));
-
-    testEmailNotSent();
-  });
-
-  asyncTest("submit with too long of a password", function() {
-    $("#email").val("unregistered@testuser.com");
-    $("#password,#vpassword").val(testHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1));
-
-    testEmailNotSent();
-  });
-
-  asyncTest("submit with missing vpassword", function() {
-    $("#email").val("unregistered@testuser.com");
-    $("#password").val("password");
+    $("#password").val(password);
+    $("#vpassword").val(vpassword);
 
     testEmailNotSent();
   });

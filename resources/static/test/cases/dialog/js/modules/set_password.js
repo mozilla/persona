@@ -11,6 +11,7 @@
       testElementExists = testHelpers.testElementExists,
       testElementNotExists = testHelpers.testElementDoesNotExist,
       testElementTextContains = testHelpers.testElementTextContains,
+      testTooltipVisible = testHelpers.testTooltipVisible,
       register = testHelpers.register;
 
   function createController(options) {
@@ -83,6 +84,21 @@
       start();
     });
   });
+
+  function testInvalidPasswordAndValidationPassword(password, vpassword) {
+    $("#password").val(password);
+    $("#vpassword").val(vpassword);
+    register("password_set", function(msg, info) {
+      ok(false, "password_set should not be called");
+    });
+
+    controller.submit(function() {
+      testTooltipVisible();
+      start();
+    });
+  }
+
+  testHelpers.testInvalidPasswordAndValidationPassword("submit with", testInvalidPasswordAndValidationPassword);
 
   asyncTest("cancel - cancel_state message raised", function() {
     register("cancel_state", function(msg, info) {

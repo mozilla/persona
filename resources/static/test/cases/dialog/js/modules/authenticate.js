@@ -67,6 +67,29 @@
     }
   });
 
+  function testAuthenticated() {
+    var authenticatedCalled = false;
+    register("authenticated", function() {
+      authenticatedCalled = true;
+    });
+    controller.authenticate(start);
+  }
+
+  function testNotAuthenticated() {
+    register("authenticated", function() {
+      ok(false, "authenticated should not be called");
+    });
+    controller.authenticate(start);
+  }
+
+  function testInvalidPassword(password) {
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
+    $(PASSWORD_SELECTOR).val(password);
+
+    testNotAuthenticated();
+  }
+
+
   asyncTest("authentication form initialized on startup, hidden on stop", function() {
     $(CONTENTS_SELECTOR).text("some contents that need to be removed");
 
@@ -273,14 +296,6 @@
   });
 
 
-  function testAuthenticated() {
-    register("authenticated", function() {
-      ok(true, "user authenticated as expected");
-      start();
-    });
-    controller.authenticate();
-  }
-
   asyncTest("normal authentication is kosher", function() {
     $(EMAIL_SELECTOR).val("registered@testuser.com");
     $(PASSWORD_SELECTOR).val("password");
@@ -294,6 +309,8 @@
 
     testAuthenticated();
   });
+
+  testHelpers.testInvalidAuthenticationPassword(testInvalidPassword);
 
   asyncTest("forgotPassword - trigger forgot_password message", function() {
     $(EMAIL_SELECTOR).val("registered@testuser.com");

@@ -441,13 +441,6 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("verifyUser with a good token but too short of a password", function() {
-    lib.verifyUser("token", "pass",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
-
   asyncTest("verifyUser with a bad token", function() {
     xhr.useResult("invalid");
 
@@ -549,13 +542,6 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("completePasswordReset with a good token but too short of a password", function() {
-    lib.completePasswordReset("token", "pass",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
-
   asyncTest("completePasswordReset with an XHR failure", function() {
     xhr.useResult("ajaxError");
 
@@ -617,22 +603,6 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
-
-  asyncTest("authenticate with too short a password - user not authenticated", function() {
-    var password = testHelpers.generateString(bid.PASSWORD_MIN_LENGTH - 1);
-    lib.authenticate(TEST_EMAIL, password, function onComplete(authenticated) {
-      equal(false, authenticated, "invalid authentication.");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("authenticate with too long a password - user not authenticated", function() {
-    var password = testHelpers.generateString(bid.PASSWORD_MAX_LENGTH + 1);
-    lib.authenticate(TEST_EMAIL, password, function onComplete(authenticated) {
-      equal(false, authenticated, "invalid authentication.");
-      start();
-    }, testHelpers.unexpectedXHRFailure);
-  });
 
   asyncTest("authenticate with invalid credentials", function() {
     xhr.useResult("invalid");
@@ -911,14 +881,6 @@
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
-
-  asyncTest("verifyEmail with a good token but too short of a password", function() {
-    lib.verifyEmail("token", "pass",
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
-
 
   asyncTest("verifyEmail with an XHR failure", function() {
     xhr.useResult("ajaxError");
