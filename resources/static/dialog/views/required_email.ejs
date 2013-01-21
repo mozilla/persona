@@ -49,25 +49,15 @@
 
       </ul>
 
-      <div class="submit cf">
-          <p class="cf">
-            <% if (signin) { %>
-              <button id="sign_in" tabindex="3"><%= gettext("sign in") %></button>
-            <% } else if (verify) { %>
-              <button id="verify_address" tabindex="3"><%= gettext("verify email") %></button>
-            <% } %>
+      <p class="submit cf buttonrow">
+        <% if (signin) { %>
+          <button id="sign_in" tabindex="3"><%= gettext("sign in") %></button>
+        <% } else if (verify) { %>
+          <button id="verify_address" tabindex="3"><%= gettext("verify email") %></button>
+        <% } %>
 
-            <% if (cancelable && secondary_auth) { %>
-              <a href="#" id="cancel" class="action" tabindex="4"><%= gettext("cancel") %></a>
-            <% } %>
-          </p>
-          <% if (personaTOSPP) { %>
-            <p class="tospp">
-               <%- format(gettext("By proceeding, you agree to %(site)'s <a %(terms)>Terms</a> and <a %(privacy)>Privacy Policy</a>."),
-                          { site: "Persona",
-                            terms: 'href="https://login.persona.org/tos" target="_new"',
-                            privacy: 'href="https://login.persona.org/privacy" target="_new"' }) %>
-            </p>
-          <% } %>
-      </div>
+        <% if (cancelable && secondary_auth) { %>
+          <a href="#" id="cancel" class="action" tabindex="4"><%= gettext("cancel") %></a>
+        <% } %>
+      </p>
   </div>

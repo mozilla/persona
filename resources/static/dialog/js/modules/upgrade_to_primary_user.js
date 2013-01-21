@@ -39,7 +39,6 @@ BrowserID.Modules.UpgradeToPrimaryUser = (function() {
         email: data.email,
         auth_url: data.auth,
         requiredEmail: data.requiredEmail || false,
-        personaTOSPP: data.personaTOSPP,
         siteName: data.siteName,
         idpName: data.idpName
       });

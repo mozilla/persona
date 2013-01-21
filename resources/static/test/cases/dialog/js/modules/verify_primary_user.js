@@ -35,38 +35,6 @@
     }
   });
 
-  asyncTest("personaTOSPP true, requiredEmail: true - show TOS/PP", function() {
-    createController({
-      window: win,
-      add: false,
-      email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
-      requiredEmail: true,
-      personaTOSPP: false,
-      ready: function ready() {
-        testElementNotExists("#persona_tospp");
-        start();
-      }
-    });
-
-  });
-
-  asyncTest("personaTOSPP true, requiredEmail: false - show TOS/PP", function() {
-    createController({
-      window: win,
-      add: false,
-      email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
-      requiredEmail: false,
-      personaTOSPP: false,
-      ready: function ready() {
-        testElementNotExists("#persona_tospp");
-        start();
-      }
-    });
-
-  });
-
   asyncTest("submit with `add: false` option opens a new tab with proper URL (updated for sessionStorage)", function() {
 
     xhr.useResult("primaryUnknown");
@@ -77,10 +45,7 @@
       add: false,
       email: "unregistered@testuser.com",
       auth_url: "http://testuser.com/sign_in",
-      personaTOSPP: true,
       ready: function ready() {
-        testElementExists("#persona_tospp");
-
         mediator.subscribe("primary_user_authenticating", function() {
           messageTriggered = true;
         });
@@ -106,10 +71,7 @@
       add: true,
       email: "unregistered@testuser.com",
       auth_url: "http://testuser.com/sign_in",
-      personaTOSPP: true,
       ready: function ready() {
-        testElementExists("#persona_tospp");
-
         // Also checking to make sure the NATIVE is stripped out.
         win.document.location.href = "sign_in";
         win.document.location.hash = "#NATIVE";
@@ -121,7 +83,7 @@
       }
     });
 
-    
+
 
   });
 
@@ -195,7 +157,7 @@
       }
     });
   });
-  
+
   asyncTest("known_primary doesn't show verify_primary_user dialog", function() {
     xhr.useResult("primary");
 

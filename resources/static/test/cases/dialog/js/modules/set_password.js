@@ -36,7 +36,6 @@
     ok($("#set_password").length, "set_password template added");
     testElementExists("#verify_user");
     testElementExists("#cancel");
-    testElementNotExists("#persona_tospp");
   });
 
   test("create with password_reset option - show template, show reset password button", function() {
@@ -45,12 +44,6 @@
     testElementExists("#set_password");
     testElementExists("#password_reset");
     testElementExists("#cancel");
-  });
-
-  test("create with personaTOSPP option - show Persona TOS/PP", function() {
-    controller.destroy();
-    createController({ personaTOSPP: true });
-    testElementExists("#persona_tospp");
   });
 
   test("create with cancelable=false option - cancel button not shown", function() {
