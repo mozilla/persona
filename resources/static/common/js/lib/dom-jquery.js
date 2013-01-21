@@ -199,14 +199,7 @@ BrowserID.DOM = ( function() {
         * @return {boolean} true if the element has the attribute, false otw.
         */
         hasAttr: function( element, attrName ) {
-            var el = jQuery( element )[ 0 ],
-                val = null;
-
-            if (el) {
-              val = el.getAttribute( attrName );
-            }
-
-            return val !== null;
+            return typeof jQuery( element ).attr( attrName ) !== "undefined";
         },
 
         /**
@@ -362,9 +355,10 @@ BrowserID.DOM = ( function() {
          * @method slideDown
          * @param {selector || element} elementToSlide
          * @param {number} [animationTime]
+         * @param {function} [done] called when animation completes
          */
-        slideDown: function( elementToSlide, animationTime ) {
-          return jQuery( elementToSlide ).slideDown( animationTime );
+        slideDown: function( elementToSlide, animationTime, done ) {
+          return jQuery( elementToSlide ).slideDown( animationTime, done );
         },
 
         /**
@@ -372,9 +366,10 @@ BrowserID.DOM = ( function() {
          * @method slideUp
          * @param {selector || element} elementToSlide
          * @param {number} [animationTime]
+         * @param {function} [done] called when animation completes
          */
-        slideUp: function( elementToSlide, animationTime ) {
-          return jQuery( elementToSlide ).slideUp( animationTime );
+        slideUp: function( elementToSlide, animationTime, done ) {
+          return jQuery( elementToSlide ).slideUp( animationTime, done );
         },
 
         /**
@@ -382,9 +377,10 @@ BrowserID.DOM = ( function() {
          * @method fadeIn
          * @param {selector || element} elementToFade
          * @param {number} [animationTime]
+         * @param {function} [done] called when animation completes
          */
-        fadeIn: function( elementToFade, animationTime ) {
-          return jQuery( elementToFade ).fadeIn( animationTime );
+        fadeIn: function( elementToFade, animationTime, done ) {
+          return jQuery( elementToFade ).fadeIn( animationTime, done );
         },
 
         /**
@@ -392,9 +388,19 @@ BrowserID.DOM = ( function() {
          * @method fadeOut
          * @param {selector || element} elementToFade
          * @param {number} [animationTime]
+         * @param {function} [done] called when animation completes
          */
-        fadeOut: function( elementToFade, animationTime ) {
-          return jQuery( elementToFade ).fadeOut( animationTime );
+        fadeOut: function( elementToFade, animationTime, done ) {
+          return jQuery( elementToFade ).fadeOut( animationTime, done );
+        },
+
+        /**
+         * Stop any animations that are occurring on an element.
+         * @method stopAnimations
+         * @param {selector || element} elementToStop
+         */
+        stopAnimations: function( elementToStop ) {
+          return jQuery( elementToStop ).stop();
         }
     };
 

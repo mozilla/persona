@@ -12,6 +12,20 @@
   <!--[if lt IE 9]>
     <script src="/common/js/lib/html5shim.js"></script>
   <![endif]-->
+  <style>
+    #qunit-fixture {
+      position: absolute;
+      top: -1000px;
+      left: 100px;
+      right: 100px;
+      height: 300px;
+    }
+
+    .tooltip {
+      display: none;
+    }
+
+  </style>
 	</head>
 	<body>
 
@@ -22,7 +36,7 @@
 		<ol id="qunit-tests"></ol>
 		<div id="qunit-test-area"></div>
 
-    <div id="qunit-fixture" style="position: absolute; top: -1000px; left: 100px; right: 100px; height: 300px;">
+    <div id="qunit-fixture">
         <a href="#" onclick="$('#contents').hide(); return false;">Close</a>
         <h3>Test Contents, this will be updated and can be safely ignored</h3>
 

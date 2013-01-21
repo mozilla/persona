@@ -191,11 +191,11 @@ BrowserID.TestHelpers = (function() {
     },
 
     testTooltipVisible: function() {
-      equal(tooltip.shown, true, "tooltip is visible");
+      equal(tooltip.visible(), true, "tooltip is visible");
     },
 
     testTooltipNotVisible: function() {
-      equal(tooltip.shown, false, "tooltip is not visible");
+      equal(tooltip.visible(), false, "tooltip is not visible");
     },
 
     failureCheck: function failureCheck(cb) {
