@@ -42,7 +42,7 @@ runner.run(module, {
     browser.wwin(CSS["persona.org"].windowName, done);
   },
   "Happy, healthy primary": function(done) {
-    testIdp.putWellKnown(testIdp.getNoAuth(), true, function(err, resp, body) {
+    testIdp.enableSupport(false, function(err, resp, body) {
       testIdp.putEnv(persona_urls['persona'] + '/', done);
     });
   },
@@ -59,7 +59,7 @@ runner.run(module, {
        });
   },
   "The IdP disables support": function(done) {
-    testIdp.putWellKnown({disabled: true}, false, done);
+    testIdp.disableSupport(done);
   },
   "Authed user tries to log in": function(done) {
     browser.chain({onError: done})
@@ -100,6 +100,7 @@ runner.run(module, {
       .wclick(CSS['dialog'].newEmailNextButton)
       .wtype(CSS['dialog'].existingPassword, 'password')
       .wclick(CSS['dialog'].returningUserButton)
+      .wclickIfExists(CSS['dialog'].notMyComputerButton)
       .wwin(done);
   },
   "Check testUser is logged in again": function(done) {
