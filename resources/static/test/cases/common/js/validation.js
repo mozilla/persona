@@ -207,7 +207,7 @@
     equal(tooltipShown, true, "empty password shows tooltip");
   });
 
-  testHelpers.testInvalidPasswordAndValidationPassword("validate", testInvalidPasswordAndValidationPassword);
+  testHelpers.testInvalidPasswordAndValidationPassword("passwordAndValidationPassword", testInvalidPasswordAndValidationPassword);
 
   test("passwordAndValidationPassword all valid", function() {
     var valid = validation.passwordAndValidationPassword("password", "password");

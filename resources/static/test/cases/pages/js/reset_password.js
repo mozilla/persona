@@ -66,7 +66,7 @@
     testHelpers.testErrorVisible();
   }
 
-  function testInvalidPasswordAndAuthenticationPassword(password, vpassword) {
+  function testInvalidPasswordAndValidationPassword(password, vpassword) {
     $("#password").val(password);
     $("#vpassword").val(vpassword);
 
@@ -189,8 +189,8 @@
     });
   });
 
-  testHelpers.testInvalidPasswordAndAuthenticationPassword(
-      testInvalidPasswordAndAuthenticationPassword);
+  testHelpers.testInvalidPasswordAndValidationPassword(
+      testInvalidPasswordAndValidationPassword);
 
   asyncTest("needsPassword: bad password", function() {
     $("#password,#vpassword").val("password");
