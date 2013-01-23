@@ -7,7 +7,6 @@
 const
 assert = require('../../lib/asserts.js'),
 CSS = require('../../pages/css.js'),
-CreateIdP = require('../../lib/testidp.js').CreateIdP,
 path = require('path'),
 persona_urls = require('../../lib/urls.js'),
 restmail = require('../../lib/restmail.js'),
@@ -21,10 +20,9 @@ runner.run(module, {
     testSetup.setup({browsers: 1, testidps: 1}, function(err, fixtures) {
       if (fixtures) {
         browser = fixtures.browsers[0];
-        var idp = fixtures.testidps[0];
-        testIdp = new CreateIdP(idp.idp);
-        testUser = idp.getRandomEmail();
-        noAuthTestUser = idp.getRandomEmail();
+        testIdp = fixtures.testidps[0];
+        testUser = testIdp.getRandomEmail();
+        noAuthTestUser = testIdp.getRandomEmail();
       }
       done(err);
     });
@@ -42,9 +40,7 @@ runner.run(module, {
     browser.wwin(CSS["persona.org"].windowName, done);
   },
   "Happy, healthy primary": function(done) {
-    testIdp.enableSupport(false, function(err, resp, body) {
-      testIdp.putEnv(persona_urls['persona'] + '/', done);
-    });
+    testIdp.enableSupport(false, done);
   },
   "Sign in": function(done) {
     browser.chain({onError: done})
