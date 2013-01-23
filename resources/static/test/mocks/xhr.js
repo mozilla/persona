@@ -105,6 +105,26 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/complete_user_creation badPassword": 401,
       "post /wsapi/complete_user_creation invalid": { success: false },
       "post /wsapi/complete_user_creation ajaxError": undefined,
+
+      "post /wsapi/stage_transition unknown_secondary": { success: true },
+      "post /wsapi/stage_transition valid": { success: true },
+      "post /wsapi/stage_transition invalid": { success: false },
+      "post /wsapi/stage_transition throttle": 429,
+      "post /wsapi/stage_transition ajaxError": undefined,
+
+      "post /wsapi/complete_transition valid": { success: true },
+      "post /wsapi/complete_transition badPassword": 401,
+      "post /wsapi/complete_transition invalid": { success: false },
+      "post /wsapi/complete_transition ajaxError": undefined,
+
+      "get /wsapi/transition_status?email=registered%40testuser.com pending": { status: "pending" },
+      "get /wsapi/transition_status?email=registered%40testuser.com complete": { status: "complete", userid: 4 },
+      "get /wsapi/transition_status?email=registered%40testuser.com valid": { status: "complete", userid: 4 },
+      "get /wsapi/transition_status?email=registered%40testuser.com mustAuth": { status: "mustAuth" },
+      "get /wsapi/transition_status?email=registered%40testuser.com noRegistration": { status: "noRegistration" },
+      "get /wsapi/transition_status?email=registered%40testuser.com ajaxError": undefined,
+
+
       "post /wsapi/logout valid": { success: true },
       "post /wsapi/logout not_authenticated": 400,
       "post /wsapi/logout ajaxError": 401,
