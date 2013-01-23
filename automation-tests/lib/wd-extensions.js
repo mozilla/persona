@@ -170,7 +170,7 @@ wd.prototype.wwin = function(opts, cb) {
 // optionally accepts waitForDisplayed opts object instead of CSS selector
 wd.prototype.wclick = function(opts, cb) {
   if (typeof opts === 'string') opts = { which: opts };
-  if (!opts.which) throw "css selector required";
+  if (!opts || !opts.which) throw "css selector required";
 
   var self = this;
   // To click on an element, two conditions must be met:
