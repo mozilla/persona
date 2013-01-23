@@ -64,7 +64,8 @@ module.exports = {
     thirdEmail: '#email_2',
     signInButton: 'button#signInButton',
     notMyComputerButton: 'button#this_is_not_my_computer',
-    myComputerButton: 'button#this_is_my_computer'
+    myComputerButton: 'button#this_is_my_computer',
+    primaryOfflineCancel: '#primary_offline_confirm'
   },
   "myfavoritebeer.org": {
     // XXX Change all signinButton's to signInButton to be consistent
