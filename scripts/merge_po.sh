@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # syntax:
 # compile-mo.sh locale-dir/
@@ -10,7 +10,7 @@ function usage() {
 }
 
 # check if file and dir are there
-if [[ ($# -ne 1) || (! -d "$1") ]]; then usage; fi
+if [ $# -ne 1 ] || [ ! -d "$1" ]; then usage; fi
 
 for lang in `find $1 -type f -name "*.po" -not -path '*/db_LB/*'`; do
     dir=`dirname $lang`

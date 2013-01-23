@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # syntax:
 # check-po.sh
