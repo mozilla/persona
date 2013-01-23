@@ -86,7 +86,7 @@ if (statsd_config && statsd_config.enabled) {
 if (config.get('scheme') == 'https') {
   app.use(function(req, resp, next) {
     // expires in 30 days, include subdomains like www
-    resp.setHeader("Strict-Transport-Security", "max-age=2592000; includeSubdomains");
+    resp.setHeader("Strict-Transport-Security", "max-age=10886400; includeSubdomains");
     next();
     });
 }
