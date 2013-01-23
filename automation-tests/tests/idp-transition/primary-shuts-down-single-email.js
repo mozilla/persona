@@ -21,10 +21,10 @@ runner.run(module, {
     testSetup.setup({browsers: 1, testidps: 1}, function(err, fixtures) {
       if (fixtures) {
         browser = fixtures.browsers[0];
-        var llIdP = fixtures.testidps[0];
-        testIdp = new CreateIdP(llIdP.idp);
-        testUser = llIdP.getRandomEmail();
-        noAuthTestUser = llIdP.getRandomEmail();
+        var idp = fixtures.testidps[0];
+        testIdp = new CreateIdP(idp.idp);
+        testUser = idp.getRandomEmail();
+        noAuthTestUser = idp.getRandomEmail();
       }
       done(err);
     });
