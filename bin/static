@@ -116,7 +116,7 @@ app.use(function(req, res, next) {
     decodeURIComponent(req.url);
     next();
   } catch (e) {
-    logger.error('invalid url: ' + req.url);
+    logger.info('invalid url requested: ' + req.url);
     httputils.notFound(res);
   }
 });
