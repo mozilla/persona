@@ -162,6 +162,9 @@ $(function() {
       else if (path === "/confirm") {
         verifySecondaryAddress("verifyEmail");
       }
+      else if (path === "/complete_transition") {
+        verifySecondaryAddress("completeTransitionToSecondary");
+      }
       else if (path === "/verify_email_address") {
         verifySecondaryAddress("verifyUser");
       }
