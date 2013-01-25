@@ -19,6 +19,8 @@ BrowserID.forgot = (function() {
     dom.hide(".notification");
 
     var email = helpers.getAndValidateEmail("#email");
+    if (!email) return complete(oncomplete);
+
     user.requestPasswordReset(email, function onSuccess(info) {
       if (info.success) {
         pageHelpers.emailSent("waitForPasswordResetComplete", email, oncomplete);
