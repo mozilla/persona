@@ -8,13 +8,13 @@ const
 assert = require('../lib/asserts.js'),
 utils = require('../lib/utils.js'),
 runner = require('../lib/runner.js'),
+persona_urls = require('../lib/urls.js'),
 path = require('path'),
 testSetup = require('../lib/test-setup.js');
 
-// Intentionally hardcoded to dev instance. This test cannot be run in
-// either stage or prod. (Although can be run against ephemeral via env).
-var frontendTestUrl = (process.env.PERSONA_FRONTEND_TESTURL ||
-                       'https://login.dev.anosrep.org/test/');
+// target the proper instance (modified by run-all.js -e or PERSONA_ENV
+// environment variable, just like all the other automation tests)
+var frontendTestUrl = persona_urls['persona'] + '/test/';
 
 // The test page has jquery and underscore available.
 var queryResult = [
