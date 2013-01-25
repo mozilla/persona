@@ -277,7 +277,7 @@
         ok(info.cert, "cert passed");
         start();
       },
-      testHelpers.unexpectedXHRError
+      testHelpers.unexpectedXHRFailure
     );
   });
 
@@ -289,7 +289,7 @@
         equal(info.authenticated, false, "user is not authenticated");
         start();
       },
-      testHelpers.unexpectedXHRError
+      testHelpers.unexpectedXHRFailure
     );
   });
 
@@ -312,7 +312,7 @@
         equal(status, true, "user is authenticated, correct status");
         start();
       },
-      testHelpers.unexpectedXHRError
+      testHelpers.unexpectedXHRFailure
     );
   });
 
@@ -324,7 +324,7 @@
         equal(status, false, "user is not authenticated, correct status");
         start();
       },
-      testHelpers.unexpectedXHRError
+      testHelpers.unexpectedXHRFailure
     );
   });
 

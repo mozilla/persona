@@ -180,6 +180,16 @@ BrowserID.TestHelpers = (function() {
       start();
     },
 
+    expectedFailure: function() {
+      ok(true, "expected failure");
+      start();
+    },
+
+    unexpectedFailure: function() {
+      ok(false, "unexpected failure");
+      start();
+    },
+
     expectedXHRFailure: function() {
       ok(true, "expected XHR failure");
       start();
@@ -380,12 +390,12 @@ BrowserID.TestHelpers = (function() {
 
       asyncTest(msg + "too short of a password does not authenticate", function() {
         testInvalidPassword(TestHelpers.generateString(
-            bid.MIN_PASSWORD_LENGTH - 1));
+            bid.PASSWORD_MIN_LENGTH - 1));
       });
 
       asyncTest(msg + "too long of a password does not authenticate", function() {
         testInvalidPassword(TestHelpers.generateString(
-            bid.MAX_PASSWORD_LENGTH + 1));
+            bid.PASSWORD_MAX_LENGTH + 1));
       });
     },
 
