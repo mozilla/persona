@@ -238,7 +238,7 @@
   });
 
   asyncTest("changePassword with too long of a new password - tooltip", function() {
-    testPasswordChangeFailure("oldpassword", generateString(bid.PASSWORD_MAN_LENGTH + 1), "too short new password, expected failure");
+    testPasswordChangeFailure("oldpassword", generateString(bid.PASSWORD_MAX_LENGTH + 1), "too short new password, expected failure");
   });
 
 
