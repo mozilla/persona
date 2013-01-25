@@ -112,7 +112,14 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doStageTransitionToSecondary: function(info) {
-      dialogHelpers.transitionToSecondary.call(this, info.email, info.password, info.ready);
+      dialogHelpers.transitionToSecondary.call(this, info.email,
+          info.password, info.ready);
+    },
+
+    doConfirmTransitionToSecondary: function(info) {
+      startRegCheckService.call(this, info,
+          "waitForTransitionToSecondaryComplete",
+          "transition_to_secondary_confirmed");
     },
 
     doAssertionGenerated: function(info) {

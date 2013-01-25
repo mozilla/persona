@@ -42,11 +42,25 @@
 
   function testActionStarted(actionName, requiredOptions) {
     ok(actions.called[actionName], actionName + " called");
+    if (!actions.called[actionName]) {
+       console.error("Actions started: "
+          + JSON.stringify(actions.called, null, 2));
+    }
+
     for(var key in requiredOptions) {
       ok(actions.info[actionName], "Expected actions.info to have [" + actionName + "]");
       equal(actions.info[actionName][key], requiredOptions[key],
           actionName + " called with " + key + "=" + requiredOptions[key]);
     }
+  }
+
+  function testPasswordUsedForStaging(stagingMessage, stagingAction) {
+    mediator.publish(stagingMessage, { email: TEST_EMAIL });
+    testActionStarted("doSetPassword");
+    mediator.publish("password_set");
+
+    equal(actions.info[stagingAction].email, TEST_EMAIL,
+              "correct email sent to " + stagingAction);
   }
 
   function testStagingThrottledRetry(startMessage, expectedStagingAction) {
@@ -155,15 +169,15 @@
   //   confirmed: the message that is triggered when an address is confirmed.
   //
   var stageAddressTests = [ {
-      // stage and stageAction are tested elsewhere because the user must set
-      // a password before the stageAction is called.
+      stage_with_password: "new_user",
+      stageAction: "doStageUser",
       staged: "user_staged",
       stagedAction: "doConfirmUser",
       confirmed: "user_confirmed"
     },
     {
-      // stage and stageAction are tested elsewhere because the outcome
-      // depends on whether a user has a password.
+      stage_with_password: "stage_email",
+      stageAction: "doStageEmail",
       staged: "email_staged",
       stagedAction: "doConfirmEmail",
       confirmed: "email_confirmed"
@@ -181,11 +195,42 @@
       staged: "reverify_email_staged",
       stagedAction: "doConfirmReverifyEmail",
       confirmed: "reverify_email_confirmed"
+    },
+    {
+      stage_with_password: "transition_no_password",
+      stageAction: "doStageTransitionToSecondary",
+      staged: "transition_to_secondary_staged",
+      stagedAction: "doConfirmTransitionToSecondary",
+      confirmed: "transition_to_secondary_confirmed"
     }
   ];
 
   for (var i = 0, stageAddressTest; stageAddressTest = stageAddressTests[i]; ++i) {
       var testName;
+
+      if (stageAddressTest.stage_with_password && stageAddressTest.stageAction) {
+        // simulate a staging that requires a password. First, the user goes to
+        // the set password screen, the password is subitted, and then the
+        // stage action is called.
+        testName = "staging process for "
+                       + stageAddressTest.stage_with_password
+                       + " through password_set - call " + stageAddressTest.stageAction;
+
+        test(testName,
+          testPasswordUsedForStaging.curry(stageAddressTest.stage_with_password,
+              stageAddressTest.stageAction));
+
+
+        // simulate throttling. The user stays at the current screen.
+        testName = "simulate throttling for "
+                      + stageAddressTest.stage_with_password
+                      + " go back to " + stageAddressTest.stageAction;
+
+        asyncTest(testName, testStagingThrottledRetry.curry(
+              stageAddressTest.stage_with_password,
+              stageAddressTest.stageAction));
+      }
+
       // First test whether stage_XXX messages call the correct action.
       // Only do this test if there is a stage and stageAction defined
       if (stageAddressTest.stage && stageAddressTest.stageAction) {
@@ -195,8 +240,6 @@
           mediator.publish(stageMessage, { email: TEST_EMAIL });
           testActionStarted(stageAction, { email: TEST_EMAIL });
         }.curry(stageAddressTest.stage, stageAddressTest.stageAction));
-
-        testName = "multiple calls to password_set for " + stageAddressTest.stage + " - show throttling message using " + stageAddressTest.stageAction;
       }
 
 
@@ -239,24 +282,6 @@
     actions.info.doAuthenticate = {};
     mediator.publish("cancel_state");
     equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate called with the correct email");
-  });
-
-  test("password_set for new user - call doStageUser with correct email", function() {
-    mediator.publish("new_user", { email: TEST_EMAIL });
-    mediator.publish("password_set");
-
-    equal(actions.info.doStageUser.email, TEST_EMAIL, "correct email sent to doStageUser");
-  });
-
-  asyncTest("multiple calls to password_set for new_user, simulate throttling - call doStageUser with correct email for each", function() {
-    testStagingThrottledRetry("new_user", "doStageUser");
-  });
-
-  test("password_set for add secondary email - call doStageEmail with correct email", function() {
-    mediator.publish("stage_email", { email: TEST_EMAIL });
-    mediator.publish("password_set");
-
-    equal(actions.info.doStageEmail.email, TEST_EMAIL, "correct email sent to doStageEmail");
   });
 
   test("start - RPInfo always started", function() {
@@ -345,14 +370,6 @@
       start();
     });
     mediator.publish("authenticated", { email: TEST_EMAIL });
-  });
-
-  test("forgot_password - call doStageResetPassword with correct options", function() {
-    mediator.publish("start", { privacyPolicy: "priv.html", termsOfService: "tos.html" });
-    mediator.publish("forgot_password", {
-      email: TEST_EMAIL
-    });
-    testActionStarted("doStageResetPassword", { email: TEST_EMAIL });
   });
 
   asyncTest("assertion_generated with null assertion - redirect to pick_email", function() {
@@ -568,16 +585,6 @@
     equal(actions.called.doAddEmail, true, "doAddEmail called");
   });
 
-  asyncTest("stage_email - first secondary email - call doSetPassword", function() {
-    xhr.setContextInfo("has_password", false);
-    mediator.publish("stage_email", {
-      complete: function() {
-        testActionStarted("doSetPassword");
-        start();
-      }
-    });
-  });
-
   asyncTest("stage_email - second secondary email - call doStageEmail", function() {
     storage.addEmail("testuser@testuser.com");
     xhr.setContextInfo("has_password", true);
@@ -589,11 +596,6 @@
         start();
       }
     });
-  });
-
-  asyncTest("multiple calls to password_set for stage_email, simulate throttling - call doStageEmail with correct email for each", function() {
-    xhr.setContextInfo("has_password", false);
-    testStagingThrottledRetry("stage_email", "doStageEmail");
   });
 
 
@@ -635,6 +637,5 @@
   asyncTest("authenticate_specified_email without cancelable - call doAuthenticateWithRequiredEmail, cancelable defaults to true", function() {
     testAuthenticateSpecifiedEmail(undefined, true);
   });
-
 
 }());

@@ -194,6 +194,7 @@ BrowserID.State = (function() {
 
     handleState("transition_no_password", function(msg, info) {
       self.transitionNoPassword = info.email;
+      info.transition_no_password = true;
       startAction(false, "doSetPassword", info);
       complete(info.complete);
     });
@@ -219,13 +220,21 @@ BrowserID.State = (function() {
         startAction(false, "doStageEmail", info);
       }
       else if (self.transitionNoPassword) {
-        startAction(false, "doStageTransitionToSecondary", info);
+        redirectToState("stage_transition_to_secondary", info);
       }
     });
 
     handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
 
     handleState("user_confirmed", handleEmailConfirmed);
+
+    handleState("stage_transition_to_secondary", function(msg, info) {
+      startAction(false, "doStageTransitionToSecondary", info);
+    });
+
+    handleState("transition_to_secondary_staged", handleEmailStaged.curry("doConfirmTransitionToSecondary"));
+
+    handleState("transition_to_secondary_confirmed", handleEmailConfirmed);
 
     handleState("upgraded_primary_user", function (msg, info) {
       user.usedAddressAsPrimary(info.email, function () {
@@ -362,8 +371,7 @@ BrowserID.State = (function() {
         startAction("doAuthenticate", info);
       }
       else if ("transition_no_password" === info.state) {
-        self.transitionNoPassword = info.email;
-        startAction("doSetPassword", _.extend({transition_no_password: true}, info));
+        redirectToState("transition_no_password", info);
       }
       else if (info.state === 'unverified') {
         // user selected an unverified secondary email, kick them over to the

@@ -141,8 +141,16 @@
       "check_registration");
   });
 
-  asyncTest("doStageTransitionToSecondary - trigger transition_to_secondary_staged", function() {
-    testStageAddress("doStageTransitionToSecondary", "transition_to_secondary_staged");
+  asyncTest("doStageTransitionToSecondary - "
+                + "trigger transition_to_secondary_staged", function() {
+    testStageAddress("doStageTransitionToSecondary",
+        "transition_to_secondary_staged");
+  });
+
+  asyncTest("doConfirmTransitionToSecondary - "
+                + "start the check_registration service", function() {
+    testActionStartsModule("doConfirmTransitionToSecondary",
+        { email: TEST_EMAIL }, "check_registration");
   });
 
   asyncTest("doGenerateAssertion - start the generate_assertion service", function() {
