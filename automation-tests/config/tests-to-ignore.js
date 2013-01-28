@@ -3,8 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // These are tests to ignore
+// XXX extract duplication if this file gets significantly longer
 
-exports.tests_to_ignore = [
+exports.dev = [
+  "public-terminals.js",
+  "remove-email.js"
+];
+exports.stage = [
+  "frontend-qunit-test.js",
+  "public-terminals.js",
+  "remove-email.js"
+];
+exports.prod = [
+  "frontend-qunit-test.js",
   "public-terminals.js",
   "remove-email.js"
 ];
