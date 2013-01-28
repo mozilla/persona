@@ -26,7 +26,7 @@
   <!--[if lt IE 9]>
     <%- cachify_js('/production/html5shim.js') %>
   <![endif]-->
-  <%- cachify_css('/production/dialog.css') %>
+  <%- cachify_css(util.format('/production/%s/dialog.css', locale)) %>
   <!--[if lt IE 9]>
     <%- cachify_css('/production/ie8_dialog.css') %>
   <![endif]-->
