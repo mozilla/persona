@@ -22,9 +22,9 @@ notifications:
     - jrgm@mozilla.com
 
 env:
- - WHAT_TESTS=front MYSQL_USER=root
- - WHAT_TESTS=back_mysql MYSQL_USER=root
- - WHAT_TESTS=back
+ - WHAT_TESTS=front MYSQL_USER=root DISABLE_REQUEST_THROTTLING=true
+ - WHAT_TESTS=back_mysql MYSQL_USER=root DISABLE_REQUEST_THROTTLING=true
+ - WHAT_TESTS=back DISABLE_REQUEST_THROTTLING=true
 
 mysql:
   adapter: mysql2
