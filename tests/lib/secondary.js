@@ -1,7 +1,5 @@
-var start_stop = require('./start-stop.js'),
-wsapi = require('./wsapi.js'),
-wcli = require('../../lib/wsapi_client.js'),
-jwcrypto = require("jwcrypto");
+var wsapi = require('./wsapi.js'),
+wcli = require('../../lib/wsapi_client.js');
 
 // create a new account via the api with (first address)
 exports.create = function(opts, cb) {
@@ -9,7 +7,7 @@ exports.create = function(opts, cb) {
   opts.email = opts.email || 'testuser@example.com';
   opts.password = opts.password || opts.pass || 'password';
   opts.site = opts.site || 'http://rp.example.com';
-  opts.fetchVerificationLinkCallback = opts.fetchVerificationLinkCallback || start_stop.waitForToken;
+  opts.fetchVerificationLinkCallback = opts.fetchVerificationLinkCallback || require('./start-stop.js').waitForToken;
 
   wcli.post(wsapi.configuration, '/wsapi/stage_user', wsapi.context, {
     email: opts.email,
