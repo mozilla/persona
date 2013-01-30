@@ -524,7 +524,7 @@
       testObjectValuesEqual(info, {
         valid: true,
         email: TEST_EMAIL,
-        returnTo: testOrigin,
+        returnTo: testOrigin
       });
 
       equal(storage.getReturnTo(), "", "initiating origin was removed");
@@ -785,11 +785,11 @@
     var returnTo = "http://samplerp.org";
     lib.setReturnTo(returnTo);
 
-    lib.addEmail("testemail@testemail.com", "password", function(added) {
+    lib.addEmail("testuser@testuser.com", "password", function(added) {
       ok(added, "user was added");
 
       var identities = lib.getStoredEmailKeypairs();
-      equal("testemail@testemail.com" in identities, false, "new email is not added until confirmation.");
+      equal("testuser@testuser.com" in identities, false, "new email is not added until confirmation.");
 
       equal(storage.getReturnTo(), returnTo, "RP URL is stored for verification");
 
@@ -800,11 +800,11 @@
   asyncTest("addEmail with addition refused", function() {
     xhr.useResult("throttle");
 
-    lib.addEmail("testemail@testemail.com", "password", function(added) {
+    lib.addEmail("testuser@testuser.com", "password", function(added) {
       equal(added, false, "user addition was refused");
 
       var identities = lib.getStoredEmailKeypairs();
-      equal(false, "testemail@testemail.com" in identities, "Our new email is not added until confirmation.");
+      equal(false, "testuser@testuser.com" in identities, "Our new email is not added until confirmation.");
 
       equal(typeof storage.getReturnTo(), "undefined", "initiatingOrigin is not stored");
 
@@ -813,7 +813,7 @@
   });
 
   asyncTest("addEmail with XHR failure", function() {
-    failureCheck(lib.addEmail, "testemail@testemail.com", "password");
+    failureCheck(lib.addEmail, "testuser@testuser.com", "password");
   });
 
 
@@ -910,8 +910,8 @@
   });
 
   asyncTest("syncEmailKeypair with successful sync", function() {
-    lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
-      var identity = lib.getStoredEmailKeypair("testemail@testemail.com");
+    lib.syncEmailKeypair("testuser@testuser.com", function(keypair) {
+      var identity = lib.getStoredEmailKeypair("testuser@testuser.com");
 
       ok(identity, "we have an identity");
       ok(identity.priv, "a private key is on the identity");
@@ -925,10 +925,10 @@
   asyncTest("syncEmailKeypair with invalid sync", function() {
     xhr.useResult("invalid");
     lib.syncEmailKeypair(
-      "testemail@testemail.com",
+      "testuser@testuser.com",
       testHelpers.unexpectedSuccess,
       function() {
-        var identity = lib.getStoredEmailKeypair("testemail@testemail.com");
+        var identity = lib.getStoredEmailKeypair("testuser@testuser.com");
         equal(typeof identity, "undefined", "Invalid email is not synced");
 
         start();
@@ -937,16 +937,16 @@
   });
 
   asyncTest("syncEmailKeypair with XHR failure", function() {
-    failureCheck(lib.syncEmailKeypair, "testemail@testemail.com");
+    failureCheck(lib.syncEmailKeypair, "testuser@testuser.com");
   });
 
 
   asyncTest("removeEmail that is added", function() {
-    storage.addEmail("testemail@testemail.com", {pub: "pub", priv: "priv"});
+    storage.addEmail("testuser@testuser.com", {pub: "pub", priv: "priv"});
 
-    lib.removeEmail("testemail@testemail.com", function() {
+    lib.removeEmail("testuser@testuser.com", function() {
       var identities = lib.getStoredEmailKeypairs();
-      equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
+      equal(false, "testuser@testuser.com" in identities, "Our new email is removed");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -954,17 +954,17 @@
 
 
   asyncTest("removeEmail that is not added", function() {
-    lib.removeEmail("testemail@testemail.com", function() {
+    lib.removeEmail("testuser@testuser.com", function() {
       var identities = lib.getStoredEmailKeypairs();
-      equal(false, "testemail@testemail.com" in identities, "Our new email is removed");
+      equal(false, "testuser@testuser.com" in identities, "Our new email is removed");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("removeEmail with XHR failure", function() {
-    storage.addEmail("testemail@testemail.com", {pub: "pub", priv: "priv"});
+    storage.addEmail("testuser@testuser.com", {pub: "pub", priv: "priv"});
 
-    failureCheck(lib.removeEmail, "testemail@testemail.com");
+    failureCheck(lib.removeEmail, "testuser@testuser.com");
   });
 
 

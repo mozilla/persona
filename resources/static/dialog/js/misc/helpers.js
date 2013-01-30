@@ -81,15 +81,20 @@
     var self=this;
     user.createSecondaryUser(email, password, function(status) {
       if (status.success) {
-        var info = { email: email, password: password };
+        var msg = { email: email, password: password };
         if (status.unverified) {
-          info.type = "secondary";
-          info.unverified = true;
-          self.publish("unverified_created", info, info);
+          user.addressInfo(email, null, function(info) {
+            // modify the addressCache info to the new unverified state
+            info.state = "unverified";
+            msg.type = "secondary";
+            msg.unverified = true;
+            self.publish("unverified_created", msg, msg);
+            complete(callback, true);
+          }, self.getErrorDialog(errors.createUser, callback));
         } else {
-          self.publish("user_staged", info, info);
+          self.publish("user_staged", msg, msg);
+          complete(callback, true);
         }
-        complete(callback, true);
       }
       else {
         // XXX will this tooltip ever be shown, the authentication screen has
