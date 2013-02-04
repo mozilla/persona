@@ -1,4 +1,14 @@
-current train:
+train-2013.02.01:
+  * Improve handling of optional configuration (proxy_idps): #2790
+  * Code cleanup (tooltips): #2762
+  * Only show ToS/PP when needed: #2669
+  * Improve determination of current software version:
+  * Fix bad UX when enters short password on email verification: #2943
+  * Increase Strict-Transport-Security max-age:
+  * Image optimization: #2957
+  * Improve script portability: #2537
+  * Test coverage and fixes: #2920, #2963, #2968, #2974, #2973
+  * Logging cleanup: #2967
 
 train-2013.01.18:
   * upgrade to node.js 0.8.17
