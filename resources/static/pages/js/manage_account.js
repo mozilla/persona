@@ -104,7 +104,7 @@ BrowserID.manageAccount = (function() {
   }
 
   function cancelAccount(oncomplete) {
-    if (confirmAction(gettext("Are you sure you want to cancel your Persona account?"))) {
+    if (confirmAction(gettext("Are you sure you want to delete your Persona account?"))) {
       user.cancelUser(function() {
         doc.location="/";
         complete(oncomplete);
