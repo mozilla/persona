@@ -45,7 +45,13 @@ BrowserID.User = (function() {
 
           // or if it was issued before the last time the domain key
           // was updated, it's invalid
-          if (!cert.payload.iat || cert.payload.iat < creationTime) {
+          if (!cert.payload.iat) {
+            helpers.log('Data Format ERROR: expected cert to have iat ' +
+              'property, but found none, marking expired');
+            return true;
+          } else if (cert.payload.iat < creationTime) {
+            helpers.log('Certificate issued ' + cert.payload.iat +
+              ' is before creation time ' + creationTime + ', marking expired');
             return true;
           }
 
