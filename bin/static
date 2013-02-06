@@ -111,7 +111,7 @@ views.setup(app);
 app.use(function(req, res, next) {
   res.on('header', function() {
     // this allows fonts to be requested cross domain
-    /*res.setHeader("Access-Control-Allow-Origin", config.get('public_url'));*/
+    res.setHeader("Access-Control-Allow-Origin", config.get('public_url'));
     // this makes sure caches properly consider language headers
     res.setHeader('Vary', 'Accept-Encoding,Accept-Language');
   });
