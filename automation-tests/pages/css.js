@@ -52,6 +52,9 @@ module.exports = {
     postVerificationPassword: 'input#password',
     // the button you click on after typing and re-typing your password
     createUserButton: 'button#verify_user',
+    // BEGIN TRANSITION CODE
+    resetPasswordButton: 'button#password_reset',
+    // END TRANSITION CODE
     returningUserButton: 'button.returning',
     verifyWithPrimaryButton: 'button#verifyWithPrimary',
     postVerificationPasswordButton: 'button#sign_in',

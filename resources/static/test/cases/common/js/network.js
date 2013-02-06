@@ -33,7 +33,11 @@
   var stagingMethods = {
     createUser: true,
     addSecondaryEmail: true,
-    requestPasswordReset: false,
+    // BEGIN TRANSITION CODE
+    // password reset will not take a password once we fully merge the
+    // passwordReset/transitionToSecondary flow.
+    requestPasswordReset: true,
+    // END TRANSITION CODE
     requestEmailReverify: false,
     requestTransitionToSecondary: true,
   };
