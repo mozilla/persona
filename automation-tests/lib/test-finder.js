@@ -7,7 +7,7 @@ const path              = require('path'),
       fs                = require('fs'),
       test_root_path    = path.join(__dirname, "..", "tests"),
       env               = process.env['PERSONA_ENV'] || 'dev',
-      tests_to_ignore   = require('../config/tests-to-ignore')[env],
+      tests_to_ignore   = require('../config/tests-to-ignore')(env),
       glob              = require('minimatch');
 
 exports.find = function(pattern, root, tests) {
