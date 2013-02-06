@@ -5,17 +5,26 @@
 // These are tests to ignore
 // XXX extract duplication if this file gets significantly longer
 
-exports.dev = [
-  "public-terminals.js",
-  "remove-email.js"
-];
-exports.stage = [
-  "frontend-qunit-test.js",
-  "public-terminals.js",
-  "remove-email.js"
-];
-exports.prod = [
-  "frontend-qunit-test.js",
-  "public-terminals.js",
-  "remove-email.js"
-];
+var testsToIgnore = {
+  dev: [
+    "public-terminals.js",
+    "remove-email.js"
+  ],
+
+
+  stage: [
+    "frontend-qunit-test.js",
+    "public-terminals.js",
+    "remove-email.js"
+  ],
+
+  prod: [
+    "frontend-qunit-test.js",
+    "public-terminals.js",
+    "remove-email.js"
+  ]
+};
+
+module.exports = function(env) {
+  return testsToIgnore[env] || testsToIgnore.dev;
+};
