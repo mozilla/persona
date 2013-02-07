@@ -78,10 +78,10 @@
     "0.0.2": "cadd881d36e7d17fca102be77eded7f07846be1a"
   },
   "connect-fonts": {
-    "0.0.9-dev2": "*"
+    "0.0.9-alpha1": "072ced4f800c20ad5251d5521b1dd9c0b4de9a66"
   },
   "connect-fonts-opensans": {
-    "0.0.1": "*"
+    "0.0.1": "4f871d5595efa9b3ee34131c798a74f91918a806"
   },
   "connect-logger-statsd": {
     "0.0.1": "e1e350f0f6dc538a50a1868b4008806c45c409ea"
