@@ -6,6 +6,9 @@
 
 require('./lib/test_env.js');
 
+// disable email throttling so we can stage the same email twice without delay
+process.env.MIN_TIME_BETWEEN_EMAILS_MS = 0;
+
 const assert =
 require('assert'),
 vows = require('vows'),
@@ -79,6 +82,18 @@ suite.addBatch({
         }
       }
     }
+  }
+});
+
+suite.addBatch({
+  "swallow the first token": {
+     topic: function() {
+       start_stop.waitForToken(this.callback);
+     },
+     "correctly": function(t) {
+       assert.strictEqual(typeof t, 'string');
+       token = t;
+     }
   }
 });
 
@@ -172,6 +187,56 @@ suite.addBatch({
         assert.strictEqual(resp.status, "failure");
         assert.strictEqual(resp.reason, "unverified email");
       }
+    }
+  }
+});
+
+var token;
+
+suite.addBatch({
+  "reseting password": {
+    topic: wsapi.post('/wsapi/stage_reset', {
+      email: UNVERIFIED_EMAIL,
+      pass: 'secondfakepass',
+      site: UNVERIFIED_ORIGIN
+    }),
+    "works": function(err, r) {
+      assert.strictEqual(r.code, 200);
+    },
+    "gives a token": {
+      topic: function() {
+        start_stop.waitForToken(this.callback);
+      },
+      "correctly": function(t) {
+        assert.strictEqual(typeof t, 'string');
+        token = t;
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "complete password reset": {
+    topic: function() {
+      wsapi.post('/wsapi/complete_reset', {
+        token: token
+      }).call(this);
+    },
+    "account created": function(err, r) {
+      assert.equal(r.code, 200);
+    }
+  }
+});
+
+suite.addBatch({
+  "account is now verified": {
+    topic: wsapi.get('/wsapi/address_info', {
+      email: UNVERIFIED_EMAIL
+    }),
+    "yes": function(err, r) {
+      assert.equal(r.code, 200);
+      var json = JSON.parse(r.body);
+      assert.equal(json.state, "known");
     }
   }
 });
