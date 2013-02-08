@@ -72,16 +72,16 @@
     "1.8.7": "b620281884d455fab94c693d2db748652d6c8c17"
   },
   "connect-cachify": {
-    "0.0.13alpha": "*"
+    "0.0.13": "6434cdf1395127112c295fa2f32891a94900d672"
   },
   "connect-cookie-session": {
     "0.0.2": "cadd881d36e7d17fca102be77eded7f07846be1a"
   },
   "connect-fonts": {
-    "0.0.9-alpha1": "072ced4f800c20ad5251d5521b1dd9c0b4de9a66"
+    "0.0.9-alpha3": "01e0d5d465d92c2ebe8d01f15986007374e55be9"
   },
   "connect-fonts-opensans": {
-    "0.0.1": "4f871d5595efa9b3ee34131c798a74f91918a806"
+    "0.0.2": "5b524c8c06a66762cb09a20f93028b807ab58b69"
   },
   "connect-logger-statsd": {
     "0.0.1": "e1e350f0f6dc538a50a1868b4008806c45c409ea"
@@ -105,7 +105,7 @@
     "1.0.2-1.2.3": "b0220c02de98617433b72851cf47de3df2cdbee9"
   },
   "debug": {
-    "0.7.0": "f5be05ec0434c992d79940e50b2695cfb2e01b08"
+    "0.7.2": "056692c86670977f115de82917918b8e8b9a10f0"
   },
   "deputy": {
     "0.0.4": "edc00a9ef5c53527c405328534c99795ada41cbf"
