@@ -12,7 +12,9 @@ path = require('path'),
 url = require('url'),
 http = require('http'),
 urlparse = require('urlparse'),
-express = require('express');
+express = require('express'),
+connect_fonts = require('connect-fonts'),
+connect_fonts_opensans = require('connect-fonts-opensans');
 
 const
 assets = require('../lib/static_resources').all,
@@ -88,11 +90,17 @@ var static_root = path.join(__dirname, "..", "resources", "static");
 //  with https://diresworb.org)
 config.performSubstitution(app);
 
+var font_middleware = connect_fonts.setup({
+  fonts: [ connect_fonts_opensans ],
+  allow_origin: config.get('public_url')
+});
+
 app.use(cachify.setup(assets(config.get('supported_languages')),
         {
           prefix: config.get('cachify_prefix'),
           production: config.get('use_minified_resources'),
           root: static_root,
+          url_to_paths: connect_fonts.urlToPaths
         }));
 
 // #9 - handle views for dynamicish content
@@ -109,6 +117,8 @@ app.use(function(req, res, next) {
   });
   next();
 });
+
+app.use(font_middleware);
 
 // catch urls that express can't handle (issue #2887)
 app.use(function(req, res, next) {

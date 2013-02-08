@@ -11,7 +11,7 @@
         "convict": "0.0.6",
         "cjson": "0.0.6",
         "client-sessions": "0.0.9",
-        "connect-cachify": "0.0.11",
+        "connect-cachify": "0.0.13",
         "connect-cookie-session": "0.0.2",
         "connect-logger-statsd": "0.0.1",
         "cover": "0.2.8",
@@ -35,7 +35,9 @@
         "underscore": "1.3.1",
         "urlparse": "0.0.1",
         "validator": "0.4.9",
-        "winston": "0.6.2"
+        "winston": "0.6.2",
+        "connect-fonts": "0.0.9-alpha3",
+        "connect-fonts-opensans": "0.0.2"
     },
     "optionalDependencies": {
         "node-statsd": "https://github.com/downloads/lloyd/node-statsd/0509f85.tgz"

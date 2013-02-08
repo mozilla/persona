@@ -7,7 +7,14 @@ logger = require('../lib/logging.js').logger,
 pro = require("uglify-js").uglify,
 uglifycss = require('uglifycss'),
 mkdirp = require('mkdirp'),
+connect_fonts = require('connect-fonts'),
+connect_fonts_opensans = require('connect-fonts-opensans'),
 path = require('path');
+
+var font_middleware = connect_fonts.setup({
+  fonts: [ connect_fonts_opensans ],
+  "allow-origin": config.get('public_url')
+});
 
 function compressResource(staticPath, name, files, cb) {
   var orig_code = "";
@@ -16,7 +23,8 @@ function compressResource(staticPath, name, files, cb) {
   // Cachify only used in compress for CSS Images, so no asserts needed
   cachify.setup({}, {
     prefix: config.get('cachify_prefix'),
-    root: staticPath
+    root: staticPath,
+    url_to_paths: connect_fonts.urlToPaths
   });
   function writeFile(final_code) {
     mkdirp(path.join(staticPath, path.dirname(name)), function (err) {
@@ -115,6 +123,7 @@ function cachify_embedded (css_src) {
     // This will throw an error if url doesn't exist. This is good as we will
     // catch typos during build.
     logger.info("For " + str + " making " + url + " into " + cachify.cachify(url));
+
      return "url('" + cachify.cachify(url) + "')";
   });
 }

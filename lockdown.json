@@ -72,10 +72,16 @@
     "1.8.7": "b620281884d455fab94c693d2db748652d6c8c17"
   },
   "connect-cachify": {
-    "0.0.11": "d9d770f72a96b4f6ef9c7ffc66b01dd09750f9b8"
+    "0.0.13": "6434cdf1395127112c295fa2f32891a94900d672"
   },
   "connect-cookie-session": {
     "0.0.2": "cadd881d36e7d17fca102be77eded7f07846be1a"
+  },
+  "connect-fonts": {
+    "0.0.9-alpha3": "01e0d5d465d92c2ebe8d01f15986007374e55be9"
+  },
+  "connect-fonts-opensans": {
+    "0.0.2": "5b524c8c06a66762cb09a20f93028b807ab58b69"
   },
   "connect-logger-statsd": {
     "0.0.1": "e1e350f0f6dc538a50a1868b4008806c45c409ea"
@@ -97,6 +103,9 @@
   },
   "dateformat": {
     "1.0.2-1.2.3": "b0220c02de98617433b72851cf47de3df2cdbee9"
+  },
+  "debug": {
+    "0.7.2": "056692c86670977f115de82917918b8e8b9a10f0"
   },
   "deputy": {
     "0.0.4": "edc00a9ef5c53527c405328534c99795ada41cbf"
@@ -125,6 +134,9 @@
   },
   "formidable": {
     "1.0.11": "68f63325a035e644b6f7bb3d11243b9761de1b30"
+  },
+  "fresh": {
+    "0.1.0": "03e4b0178424e4c2d5d19a54d8814cdc97934850"
   },
   "glob": {
     "3.1.14": "f97a731c41da6695dc83944bbb2177e9a29b363d"
@@ -179,7 +191,8 @@
     "0.0.3": "c39a3d45fee6091189ccd329107312ea8fe14d8a"
   },
   "mime": {
-    "1.2.7": "c7a13f33a7073d9900f288436b06b3a16200865b"
+    "1.2.6": "b1f86c768c025fa87b48075f1709f28aeaf20365",
+    "1.2.9": "009cd40867bd35de521b3b966f04e2f8d4d13d09"
   },
   "mimelib": {
     "0.2.7": "cd37008674e939f4384748823b859ea9045636a7"
@@ -195,6 +208,9 @@
   },
   "mysql": {
     "0.9.5": "cc95e1c31d0653974d3fb3e9266ed466cd0f96b5"
+  },
+  "node-font-face-generator": {
+    "0.0.9": "f0c79874791ef000e5af6eae0bc256a6033ebbeb"
   },
   "node-inspector": {
     "0.2.0beta3": "2adb552da7757ff3d4ec549f5570799355952d20"
@@ -247,6 +263,9 @@
   "rai": {
     "0.1.6": "46a44ff529f503cbce4c8fa3054cc440adab1926"
   },
+  "range-parser": {
+    "0.0.4": "c0427ffef51c10acba0782a46c9602e744ff620b"
+  },
   "read-installed": {
     "0.0.1": "2d9b9086ae33ae42793210f519701169edabd2e2"
   },
@@ -277,6 +296,9 @@
     "1.0.12": "4686f056e5894a9cba708adeabc2c49dada90778",
     "1.0.14": "cac5e2d55a6fbf958cb220ae844045071c78f676"
   },
+  "send": {
+    "0.1.0": "cfb08ebd3cec9b7fc1a37d9ff9e875a971cf4640"
+  },
   "simplesmtp": {
     "0.1.25": "0a5a5528d03ae07495ad0370d1c8bbc0bcc47d7f"
   },
@@ -303,6 +325,9 @@
   },
   "traverse": {
     "0.6.3": "a053ffa1b6179b9240ea16d74bfd604bd6b6e41b"
+  },
+  "ua-parser": {
+    "0.2.4": "c25ef577be95350d0fe1d3361597282da4e9ba71"
   },
   "uglify-js": {
     "1.0.6": "f0d3aafd463f26a437b9ebc19f4947ab7e8078aa",
@@ -353,6 +378,9 @@
   },
   "xoauth2": {
     "0.1.3": "4448cb94fb1032c02cb2c81e95008674dcd2d1c6"
+  },
+  "yamlparser": {
+    "0.0.2": "e9f3e05e52762df751e4c522e0b6a43fff9ce1c4"
   },
   "zeparser": {
     "0.0.5": "03726561bc268f2e5444f54c665b7fd4a8c029e2"

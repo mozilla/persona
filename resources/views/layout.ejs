@@ -9,7 +9,7 @@
   <!--[if lt IE 9]>
     <%- cachify_js('/production/html5shim.js') %>
   <![endif]-->
-  <%- cachify_css('/production/browserid.css') %>
+  <%- cachify_css(util.format('/production/%s/browserid.css', locale)) %>
   <!--[if lt IE 9]>
     <%- cachify_css('/production/ie8_main.css') %>
   <![endif]-->

@@ -19,14 +19,26 @@ suite.addBatch({
     topic: function () {
       this.callback(resources.all(locales));
     },
-    "We get stuff": function (files) {
+
+    "and locale specific css bundles contain the same number of assets as the non-localized bundle": function (files) {
       var res = resources.resources;
-      assert.ok(files['/production/dialog.css'].length >= 3);
-      // Get ride of non-localized asset bundles
+      // Check to make sure that locale specific css bundles are generated.
+      // Each bundle should contain the same number of files as the
+      // non-localized bundle.
+      var numDialogCSSFiles = res['/production/:locale/dialog.css'].length;
+      assert.equal(files['/production/ar/dialog.css'].length,
+          numDialogCSSFiles);
+      assert.equal(files['/production/de/dialog.css'].length,
+          numDialogCSSFiles);
+      assert.equal(files['/production/fr/dialog.css'].length,
+          numDialogCSSFiles);
+    },
+
+    "and each localized asset has a per-locale entry in the list of files": function (files) {
+      var res = resources.resources;
+      // Get rid of non-localized asset bundles
       ['/production/communication_iframe.js',
        '/production/include.js',
-       '/production/dialog.css',
-       '/production/browserid.css',
        '/production/ie8_main.css',
        '/production/ie8_dialog.css',
        '/production/relay.js',
@@ -37,29 +49,52 @@ suite.addBatch({
           delete files[nonLocaleAsset];
         });
 
-      // Keys expand
+      // Make sure each localized asset has a per-locale entry in the list of
+      // files.
       // files ['/production/:locale/dialog.js']
       // becomes ['/production/ar/dialog.js', 'production/de/dialog.js', ...]
       assert.equal(Object.keys(files).length,
                    Object.keys(res).length * locales.length);
+    },
+
+    "and component assets are localized if needed": function (files) {
+      var res = resources.resources;
 
       // Let's use the first bundle
       var minFile = Object.keys(files)[0];
       var minRes = Object.keys(res)[0];
 
-      // Number of files underneath stay the same
-      assert.equal(files[minFile].length,
-                   res[minRes].length);
-      // Non-localized files underneath stay the same
-      [0, 1, 2, 3, 4, 5, 6, 7].forEach(function (nonLocalizedIndex) {
-        assert.equal(files[minFile][nonLocalizedIndex],
-                     res[minRes][nonLocalizedIndex]);
-      });
+      var nonLocalizedResource = res[minRes];
+      var localizedResource = files[minFile];
 
-      // testing :locale has been replaced
-      var localeIndex = res[minRes].indexOf('/i18n/:locale/client.json');
-      assert.notEqual(files[minFile][localeIndex],
-                      res[minRes][localeIndex]);
+      nonLocalizedResource.forEach(function(nonLocalizedAsset, index) {
+        var localizedAsset = localizedResource[index];
+
+        // Check to make sure :locale is replaced if it exists.
+        if (nonLocalizedAsset.indexOf(':locale') > -1) {
+          // localized resource - :locale has been replaced.
+          assert.equal(localizedAsset.indexOf(':locale'), -1);
+
+          // convert the non-localized path into a RegExp that can be used
+          // to search for the locale.
+          var localizedRegExp = new RegExp(nonLocalizedAsset
+                                    // allows searching on the locale
+                                    .replace(':locale', '(.*)')
+                                    // allow / in the path to be matched.
+                                    .replace(/\//g, '\\/'));
+
+          // make sure the only thing replaced in the path is the :locale
+          assert.ok(localizedRegExp.test(localizedAsset));
+        }
+        else {
+          // non-localized asset, name should remain the same.
+          assert.equal(localizedAsset, nonLocalizedAsset);
+        }
+      });
+    },
+
+    "and total count is sane": function (files) {
+      var res = resources.resources;
       var counter = 0;
       for (var key in res) {
         res[key].forEach(function (item) {
