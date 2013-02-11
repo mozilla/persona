@@ -81,7 +81,7 @@
     "0.0.9-alpha3": "01e0d5d465d92c2ebe8d01f15986007374e55be9"
   },
   "connect-fonts-opensans": {
-    "0.0.2": "5b524c8c06a66762cb09a20f93028b807ab58b69"
+    "0.0.3-alpha1": "3cefddbe9e17f70befccfdbc53eccf75364c16cb"
   },
   "connect-logger-statsd": {
     "0.0.1": "e1e350f0f6dc538a50a1868b4008806c45c409ea"
