@@ -18,10 +18,14 @@ BrowserID.forgot = (function() {
   function submit(oncomplete) {
     dom.hide(".notification");
 
+    // BEGIN TRANSITION CODE
+    // password will be removed once the transitionToSecondary and
+    // passwordReset code is fully merged.
     var email = helpers.getAndValidateEmail("#email"),
         pass = dom.getInner("#password"),
         vpass = dom.getInner("#vpassword"),
-        validPass = email && validation.passwordAndValidationPassword(pass, vpass);
+        validPass = email &&
+                        validation.passwordAndValidationPassword(pass, vpass);
 
     if (email && validPass) {
       user.requestPasswordReset(email, pass, function onSuccess(info) {
@@ -31,7 +35,7 @@ BrowserID.forgot = (function() {
         else {
           var tooltipEls = {
             throttle: "#could_not_add",
-            invalid_user: "#not_registered",
+            invalid_email: "#not_registered",
             primary_address: "#primary_address"
           };
 
@@ -45,6 +49,32 @@ BrowserID.forgot = (function() {
     } else {
       complete(oncomplete);
     }
+
+    // END TRANSITION CODE
+
+    /* BEGIN NEW CODE
+    var email = helpers.getAndValidateEmail("#email");
+    if (!email) return complete(oncomplete);
+
+    user.requestPasswordReset(email, function onSuccess(info) {
+      if (info.success) {
+        pageHelpers.emailSent("waitForPasswordResetComplete", email, oncomplete);
+      }
+      else {
+        var tooltipEls = {
+          throttle: "#could_not_add",
+          invalid_email: "#not_registered",
+          primary_address: "#primary_address"
+        };
+
+        var tooltipEl = tooltipEls[info.reason];
+        if (tooltipEl) {
+          tooltip.showTooltip(tooltipEl);
+        }
+        complete(oncomplete);
+      }
+    }, pageHelpers.getFailure(bid.Errors.requestPasswordReset, oncomplete));
+    END NEW CODE */
   }
 
   function back(oncomplete) {

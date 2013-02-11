@@ -122,10 +122,6 @@
       "check_registration");
   });
 
-  asyncTest("doResetPassword - call the set_password controller with reset_password true", function() {
-    testActionStartsModule('doResetPassword', { email: TEST_EMAIL }, "set_password", "reset_password");
-  });
-
   asyncTest("doStageResetPassword - trigger reset_password_staged", function() {
     testStageAddress("doStageResetPassword", "reset_password_staged");
   });
@@ -143,6 +139,18 @@
   asyncTest("doConfirmReverifyEmail - start the check_registration service", function() {
     testActionStartsModule("doConfirmReverifyEmail", {email: TEST_EMAIL, siteName: "Unit Test Site"},
       "check_registration");
+  });
+
+  asyncTest("doStageTransitionToSecondary - "
+                + "trigger transition_to_secondary_staged", function() {
+    testStageAddress("doStageTransitionToSecondary",
+        "transition_to_secondary_staged");
+  });
+
+  asyncTest("doConfirmTransitionToSecondary - "
+                + "start the check_registration service", function() {
+    testActionStartsModule("doConfirmTransitionToSecondary",
+        { email: TEST_EMAIL }, "check_registration");
   });
 
   asyncTest("doGenerateAssertion - start the generate_assertion service", function() {
@@ -164,5 +172,6 @@
       }
     });
   });
+
 }());
 

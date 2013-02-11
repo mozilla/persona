@@ -88,7 +88,13 @@ BrowserID.State = (function() {
       // staging request is throttled, the next time set_password is called,
       // these variables are needed to know which staging function to call.
       // See issue #2258.
-      self.newUserEmail = self.addEmailEmail = self.resetPasswordEmail = self.transitionNoPassword = null;
+      self.newUserEmail = self.addEmailEmail = self.transitionNoPassword = null;
+
+      // BEGIN TRANSITION CODE
+      // will be removed once the transitionToSecondary and
+      // passwordReset code is fully merged.
+      self.resetPasswordEmail = null;
+      // END TRANSITION CODE
 
       startAction(actionName, actionInfo);
     }
@@ -194,24 +200,29 @@ BrowserID.State = (function() {
 
     handleState("transition_no_password", function(msg, info) {
       self.transitionNoPassword = info.email;
+      info.transition_no_password = true;
       startAction(false, "doSetPassword", info);
       complete(info.complete);
     });
 
     handleState("password_set", function(msg, info) {
-      /* A password can be set for one of three reasons - 
+      /* A password can be set for one of three reasons -
        * 1) This is a new user
        * 2) A user is adding the first secondary address to an account that
        *    consists only of primary addresses
-       * 3) An existing user has forgotten their password and wants to reset it.
-       * 4) A primary address was downgraded to a secondary and the user
+       * 3) A primary address was downgraded to a secondary and the user
        *    has no password in the DB.
        *
        * #1 is taken care of by newUserEmail, #2 by addEmailEmail,
-       * #3 by resetPasswordEmail, and #4 by transitionNoPassword
+       * and #3 by transitionNoPassword
        */
       info = _.extend({ email: self.newUserEmail || self.addEmailEmail ||
-                        self.resetPasswordEmail || self.transitionNoPassword }, info);
+      // BEGIN TRANSITION CODE
+      // will be removed once the transitionToSecondary and
+      // passwordReset code is fully merged.
+                        self.resetPasswordEmail ||
+      // END TRANSITION CODE
+                        self.transitionNoPassword }, info);
 
       if(self.newUserEmail) {
         startAction(false, "doStageUser", info);
@@ -219,17 +230,29 @@ BrowserID.State = (function() {
       else if(self.addEmailEmail) {
         startAction(false, "doStageEmail", info);
       }
+      // BEGIN TRANSITION CODE
+      // will be removed once the transitionToSecondary and
+      // passwordReset code is fully merged.
       else if(self.resetPasswordEmail) {
         startAction(false, "doStageResetPassword", info);
       }
+      // END TRANSITION CODE
       else if (self.transitionNoPassword) {
-        startAction(false, "doStageResetPassword", info);
+        redirectToState("stage_transition_to_secondary", info);
       }
     });
 
     handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
 
     handleState("user_confirmed", handleEmailConfirmed);
+
+    handleState("stage_transition_to_secondary", function(msg, info) {
+      startAction(false, "doStageTransitionToSecondary", info);
+    });
+
+    handleState("transition_to_secondary_staged", handleEmailStaged.curry("doConfirmTransitionToSecondary"));
+
+    handleState("transition_to_secondary_confirmed", handleEmailConfirmed);
 
     handleState("upgraded_primary_user", function (msg, info) {
       user.usedAddressAsPrimary(info.email, function () {
@@ -366,8 +389,7 @@ BrowserID.State = (function() {
         startAction("doAuthenticate", info);
       }
       else if ("transition_no_password" === info.state) {
-        self.transitionNoPassword = info.email;
-        startAction("doSetPassword", _.extend({transition_no_password: true}, info));
+        redirectToState("transition_no_password", info);
       }
       else if (info.state === 'unverified') {
         // user selected an unverified secondary email, kick them over to the
@@ -446,13 +468,26 @@ BrowserID.State = (function() {
     });
 
     handleState("forgot_password", function(msg, info) {
+      // BEGIN TRANSITION CODE
+      // will be removed once the transitionToSecondary and
+      // passwordReset code is fully merged.
       // User has forgotten their password, let them reset it.  The response
       // message from the forgot_password controller will be a set_password.
       // the set_password handler needs to know the resetPasswordEmail so it
       // knows how to trigger the reset_password_staged message.  At this
       // point, the email confirmation screen will be shown.
       self.resetPasswordEmail = info.email;
-      startAction(false, "doResetPassword", info);
+      info.password_reset = true;
+      startAction(false, "doSetPassword", info);
+      // END TRANSITION CODE
+
+      /* BEGIN NEW CODE
+      // User has forgotten their password, let them reset it.  The user will
+      // be transitioned to the confirmation screen and must verify their email
+      // address. The new password will be entered on the main site after the
+      // user verifies their address.
+      startAction(false, "doStageResetPassword", info);
+      END NEW CODE */
       complete(info.complete);
     });
 

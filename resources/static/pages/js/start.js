@@ -162,11 +162,17 @@ $(function() {
       else if (path === "/confirm") {
         verifySecondaryAddress("verifyEmail");
       }
+      else if (path === "/complete_transition") {
+        verifySecondaryAddress("completeTransitionToSecondary");
+      }
       else if (path === "/verify_email_address") {
         verifySecondaryAddress("verifyUser");
       }
       else if (path === "/reset_password") {
-        verifySecondaryAddress("completePasswordReset");
+        module = bid.resetPassword.create();
+        module.start({
+          token: token
+        });
       }
       else if (path === "/about") {
         module = bid.about.create();

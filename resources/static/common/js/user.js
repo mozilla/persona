@@ -154,6 +154,11 @@ BrowserID.User = (function() {
 
   }
 
+  /**
+   * onSuccess, if called, will return with "complete" if the verification
+   * completes and the user is authed to the "password" level, or "mustAuth" if
+   * the user must enter their password.
+   */
   function addressVerificationPoll(checkFunc, email, onSuccess, onFailure) {
     function userVerified(completionStatus) {
       if (stagedEmail && stagedPassword) {
@@ -172,11 +177,18 @@ BrowserID.User = (function() {
       }
       else {
         // If the user's completionStatus is complete but their
-        // authStatus is not password, that means they have not entered in
-        // their authentication credentials this session and *must*
-        // do so.  If not, the backend will reject any requests to certify
-        // a key because the user will not have the correct creds to do so.
+        // original authStatus was not password, meaning they have
+        // not entered in their authentication credentials this session.
+        // If the user is not authenticated to the password level, the backend
+        // will reject any requests to certify a key because the user will
+        // not have the correct creds to do so.
         // See issue #2088 https://github.com/mozilla/browserid/issues/2088
+        //
+        // Since a user may have entered their password on the main site during
+        // a password reset, the only reliable way to know the user's auth
+        // status is to ask the backend. Clear the current context and ask
+        // the backend for an updated session_context.
+        network.clearContext();
         network.checkAuth(function(authStatus) {
           if (completionStatus === "complete" && authStatus !== "password")
             completionStatus = "mustAuth";
@@ -558,9 +570,7 @@ BrowserID.User = (function() {
      * Cancel the waitForUserValidation poll
      * @method cancelUserValidation
      */
-    cancelUserValidation: function() {
-      cancelRegistrationPoll();
-    },
+    cancelUserValidation: cancelRegistrationPoll,
 
     /**
      * Get site and email info for a token
@@ -624,27 +634,47 @@ BrowserID.User = (function() {
      * Request a password reset for the given email address.
      * @method requestPasswordReset
      * @param {string} email
+       // BEGIN TRANSITION CODE
+       // password is only needed until the full passwordReset and
+       // transitionToSecondary code paths are merged.
      * @param {string} password
+       // END TRANSITION CODE
      * @param {function} [onComplete] - Callback to call when complete, called
      * with a single object, info.
      *    info.status {boolean} - true or false whether request was successful.
      *    info.reason {string} - if status false, reason of failure.
      * @param {function} [onFailure] - Called on XHR failure.
      */
+    /* BEGIN NEW CODE
+    requestPasswordReset: function(email, onComplete, onFailure) {
+      END NEW CODE */
+    // BEGIN TRANSITION CODE
     requestPasswordReset: function(email, password, onComplete, onFailure) {
+    // END TRANSITION CODE
       User.addressInfo(email, function(info) {
         // user is not known.  Can't request a password reset.
         if (info.state === "unknown") {
-          complete(onComplete, { success: false, reason: "invalid_user" });
+          complete(onComplete, { success: false, reason: "invalid_email" });
         }
         // user is trying to reset the password of a primary address.
         else if (info.type === "primary") {
           complete(onComplete, { success: false, reason: "primary_address" });
         }
         else {
+          /* BEGIN NEW CODE
+           stageAddressVerification(email, null,
+            network.requestPasswordReset.bind(network, email, origin),
+            onComplete, onFailure);
+          END NEW CODE */
+          // BEGIN TRANSITION CODE
+          // this is only needed until the full passwordReset and
+          // transtionToSecondary code paths are merged. Once that is merged,
+          // delete this and use the above commented out
+          // stageAddressVerification
           stageAddressVerification(email, password,
             network.requestPasswordReset.bind(network, email, password, origin),
             onComplete, onFailure);
+          // END TRANSITION CODE
         }
       }, onFailure);
     },
@@ -715,6 +745,63 @@ BrowserID.User = (function() {
      * @method cancelWaitForEmailReverifyComplete
      */
     cancelWaitForEmailReverifyComplete: cancelRegistrationPoll,
+
+    /**
+     * Request a transition to secondary for the given email address.
+     * @method requestTransitionToSecondary
+     * @param {string} email
+     * @param {string} password
+     * @param {function} [onComplete] - Callback to call when complete, called
+     * with a single object, info.
+     *    info.status {boolean} - true or false whether request was successful.
+     *    info.reason {string} - if status false, reason of failure.
+     * @param {function} [onFailure] - Called on XHR failure.
+     */
+    requestTransitionToSecondary: function(email, password, onComplete, onFailure) {
+      User.addressInfo(email, function(info) {
+        // user is not known.  Can't request a transition to secondary.
+        if (info.state === "unknown") {
+          complete(onComplete, { success: false, reason: "invalid_email" });
+        }
+        // user is trying to transition to a secondary for a primary address.
+        else if (info.type === "primary") {
+          complete(onComplete, { success: false, reason: "primary_address" });
+        }
+        else {
+          stageAddressVerification(email, password,
+            network.requestTransitionToSecondary.bind(network, email, password, origin),
+            onComplete, onFailure);
+        }
+      }, onFailure);
+    },
+
+    /**
+     * Verify the transition to secondary for a user.
+     * @method completeTransitionToSecondary
+     * @param {string} token - token to verify.
+     * @param {string} password
+     * @param {function} [onComplete] - Called on completion.
+     *   Called with an object with valid, email, and origin if valid, called
+     *   with valid=false otw.
+     * @param {function} [onFailure] - Called on error.
+     */
+    completeTransitionToSecondary: completeAddressVerification.curry(network.completeTransitionToSecondary),
+
+    /**
+     * Wait for the transition to secondary to complete
+     * @method waitForTransitionToSecondaryComplete
+     * @param {string} email - email address to check.
+     * @param {function} [onSuccess] - Called to give status updates.
+     * @param {function} [onFailure] - Called on error.
+     */
+    waitForTransitionToSecondaryComplete: addressVerificationPoll.curry(network.checkTransitionToSecondary),
+
+    /**
+     * Cancel the waitForTransitionToSecondaryComplete poll
+     * @method cancelWaitForTransitionToSecondaryComplete
+     */
+    cancelWaitForTransitionToSecondaryComplete: cancelRegistrationPoll,
+
 
     /**
      * Cancel the current user's account.  Remove last traces of their
@@ -996,10 +1083,7 @@ BrowserID.User = (function() {
      */
     addEmail: function(email, password, onComplete, onFailure) {
       stageAddressVerification(email, password,
-        network.addSecondaryEmail.bind(network, email, password, origin),
-        function(status) {
-          complete(onComplete, status.success);
-        }, onFailure);
+        network.addSecondaryEmail.bind(network, email, password, origin), onComplete, onFailure);
     },
 
     /**
@@ -1029,9 +1113,7 @@ BrowserID.User = (function() {
      * Cancel the waitForEmailValidation poll
      * @method cancelEmailValidation
      */
-    cancelEmailValidation: function() {
-      cancelRegistrationPoll();
-    },
+    cancelEmailValidation: cancelRegistrationPoll,
 
     /**
      * Verify a users email address given by the token

@@ -95,13 +95,20 @@ BrowserID.Modules.Actions = (function() {
       startService("required_email", info);
     },
 
-    doResetPassword: function(info) {
-      startService("set_password", _.extend(info, { password_reset: true }), "reset_password");
-    },
-
+    // BEGIN TRANSITION CODE
+    // password will be removed once the transitionToSecondary and
+    // passwordReset code is fully merged.
     doStageResetPassword: function(info) {
-      dialogHelpers.resetPassword.call(this, info.email, info.password, info.ready);
+      dialogHelpers.resetPassword.call(this, info.email, info.password,
+          info.ready);
     },
+    // END TRANSITION CODE
+
+    /* BEGIN NEW CODE
+    doStageResetPassword: function(info) {
+      dialogHelpers.resetPassword.call(this, info.email, info.ready);
+    },
+    END NEW CODE */
 
     doConfirmResetPassword: function(info) {
       startRegCheckService.call(this, info, "waitForPasswordResetComplete", "reset_password_confirmed");
@@ -113,6 +120,17 @@ BrowserID.Modules.Actions = (function() {
 
     doConfirmReverifyEmail: function(info) {
       startRegCheckService.call(this, info, "waitForEmailReverifyComplete", "reverify_email_confirmed");
+    },
+
+    doStageTransitionToSecondary: function(info) {
+      dialogHelpers.transitionToSecondary.call(this, info.email,
+          info.password, info.ready);
+    },
+
+    doConfirmTransitionToSecondary: function(info) {
+      startRegCheckService.call(this, info,
+          "waitForTransitionToSecondaryComplete",
+          "transition_to_secondary_confirmed");
     },
 
     doAssertionGenerated: function(info) {

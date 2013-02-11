@@ -26,7 +26,7 @@
     getErrorDialog: function(info) {
       return function() {
         errorCB && errorCB(info);
-      }
+      };
     }
   };
 
@@ -204,7 +204,16 @@
       email: "registered@testuser.com"
     });
 
-    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", "password", function(reset) {
+    /* BEGIN NEW CODE
+    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", function(reset) {
+    END NEW CODE */
+
+    // BEGIN TRANSITION CODE
+    // password will be removed once the transitionToSecondary and
+    // passwordReset code is fully merged.
+    dialogHelpers.resetPassword.call(controllerMock,
+        "registered@testuser.com", "password", function(reset) {
+    // END TRANSITION CODE
       ok(reset, "password reset");
       start();
     });
@@ -213,7 +222,16 @@
 
   asyncTest("resetPassword throttled", function() {
     xhr.useResult("throttle");
-    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", "password", function(reset) {
+    /* BEGIN NEW CODE
+    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", function(reset) {
+    END NEW CODE */
+
+    // BEGIN TRANSITION CODE
+    // password will be removed once the transitionToSecondary and
+    // passwordReset code is fully merged.
+    dialogHelpers.resetPassword.call(controllerMock,
+        "registered@testuser.com", "password", function(reset) {
+    // END TRANSITION CODE
       equal(reset, false, "password not reset");
       start();
     });
@@ -223,8 +241,48 @@
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
-    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", "password", testHelpers.unexpectedSuccess);
+    /* BEGIN NEW CODE
+    dialogHelpers.resetPassword.call(controllerMock,
+        "registered@testuser.com", testHelpers.unexpectedSuccess);
+    END NEW CODE */
+
+    // BEGIN TRANSITION CODE
+    // password will be removed once the transitionToSecondary and
+    // passwordReset code is fully merged.
+    dialogHelpers.resetPassword.call(controllerMock,
+        "registered@testuser.com", "password", testHelpers.unexpectedSuccess);
+    // END TRANSITION CODE
   });
+
+
+  asyncTest("transitionToSecondary happy case", function() {
+    expectedMessage("transition_to_secondary_staged", {
+      email: "registered@testuser.com"
+    });
+
+    dialogHelpers.transitionToSecondary.call(controllerMock, "registered@testuser.com", "password", function(reset) {
+      ok(reset, "password reset");
+      start();
+    });
+  });
+
+
+  asyncTest("transitionToSecondary throttled", function() {
+    xhr.useResult("throttle");
+    dialogHelpers.transitionToSecondary.call(controllerMock, "registered@testuser.com", "password", function(reset) {
+      equal(reset, false, "password not reset");
+      start();
+    });
+  });
+
+  asyncTest("transitionToSecondary with XHR error", function() {
+    errorCB = expectedError;
+
+    xhr.useResult("ajaxError");
+    dialogHelpers.transitionToSecondary.call(controllerMock, "registered@testuser.com", "password", testHelpers.unexpectedSuccess);
+  });
+
+
 }());
 
 

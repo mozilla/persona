@@ -202,7 +202,7 @@ BrowserID.Modules.Authenticate = (function() {
     var email = getEmail();
     if (email) {
       var info = addressInfo || { email: email };
-      this.close("forgot_password", info, info );
+      this.publish("forgot_password", info, info );
     }
   }
 

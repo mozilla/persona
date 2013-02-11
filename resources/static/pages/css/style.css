@@ -473,7 +473,7 @@ button.delete:active {
   display: none;
 }
 
-.enter_password .password_entry {
+.enter_password .password_entry, .needs_password .vpassword_entry {
   display: block;
 }
 

@@ -47,10 +47,11 @@
                     </div>
                 </li>
 
+                <!-- BEGIN TRANSITION HTML -->
+
                 <li>
                     <label for="password"><%= format(gettext("Create a new password to use with %s."), ["Persona"]) %></label>
                     <input id="password" placeholder="<%- gettext('Password') %>" type="password" maxlength="80" autofocus />
-
                     <div id="password_required" class="tooltip" for="password">
                         <%- gettext('Password is required.') %>
                     </div>
@@ -72,12 +73,12 @@
                       <%- gettext('Verification password is required.') %>
                     </div>
 
+
                     <div class="tooltip" id="passwords_no_match" for="vpassword">
                       <%- gettext('These passwords don\'t match!') %>
                     </div>
-
                 </li>
-
+                <!-- END TRANSITION HTML -->
             </ul>
 
             <div class="submit cf forminputs">
