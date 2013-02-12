@@ -1,5 +1,5 @@
 var fs = require('fs'),
-    i18n = require('../lib/i18n'),
+    i18n = require('i18n-abide'),
     path = require('path'),
     util = require('util');
 

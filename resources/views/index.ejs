@@ -9,7 +9,7 @@
 
               <h1 class="white headline-main"><%- gettext('Connect with Mozilla Persona, the safest &amp; easiest way to sign in.') %></h1>
               <p class="tour white">
-                <%- format(gettext('<a %(aboutLink)>Take the tour</a> or <a %(signupButton)>Sign Up &rarr;</a>'),
+                <%- format(gettext('<a %(aboutLink)s>Take the tour</a> or <a %(signupButton)s>Sign Up &rarr;</a>'),
                       {
                         aboutLink: 'href="/about"',
                         signupButton: 'href="/signin" class="button create"',
@@ -34,7 +34,7 @@
   <script type="text/html" id="templateManage">
     <div id="content">
         <div class="newsbanner" id="newuser">
-          <%- format(gettext('New to Mozilla Persona? <a %(learnMoreLink)>Learn more</a>'), { learnMoreLink: 'href="/about"' }) %>
+          <%- format(gettext('New to Mozilla Persona? <a %(learnMoreLink)s>Learn more</a>'), { learnMoreLink: 'href="/about"' }) %>
         </div>
 
         <div id="manage">
@@ -78,7 +78,7 @@
             </section>
 
 
-            <p id="disclaimer"><%- format(gettext('You may, at any time, <a %(cancelLink)>cancel your account</a>'), { cancelLink: 'href="#" id="cancelAccount" class="action"' }) %></p>
+            <p id="disclaimer"><%- format(gettext('You may, at any time, <a %(cancelLink)s>cancel your account</a>'), { cancelLink: 'href="#" id="cancelAccount" class="action"' }) %></p>
         </div>
     </div>
 

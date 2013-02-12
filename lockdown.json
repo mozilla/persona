@@ -159,6 +159,9 @@
   "http-browserify": {
     "0.1.1": "d9d82735a5f85f950761ac3909ba9485ec0af4f1"
   },
+  "i18n-abide": {
+    "0.0.8beta4": "b106bdaa156f90652e04b75ef6a1079c271a1b45"
+  },
   "iconv": {
     "1.2.3": "4798b7d72c52ad463d65d72806a5fc08de3f1afd"
   },

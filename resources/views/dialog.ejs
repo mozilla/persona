@@ -29,7 +29,7 @@
                         <li>
                             <label for="authentication_email"></label>
                             <span class="label email_state"><%= gettext('To sign in with Persona, please enter your email address.') %></span>
-                            <span class="label transition_to_secondary"><%- format(gettext('%(idp) no longer allows you to log into Persona with your %(idp) password. You must now use your existing Persona password to log in with this email address.'), { idp: '<strong class="authentication_idp_name"></strong>'}) %></span>
+                            <span class="label transition_to_secondary"><%- format(gettext('%(idp)s no longer allows you to log into Persona with your %(idp)s password. You must now use your existing Persona password to log in with this email address.'), { idp: '<strong class="authentication_idp_name"></strong>'}) %></span>
                             <span class="label password_state"><%= gettext('Now enter your Persona password.') %></span>
                             <input id="authentication_email" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
 
@@ -70,7 +70,7 @@
                     </ul>
 
                     <p class="submit tospp">
-                       <%- format(gettext("By proceeding, you agree to %(site)'s <a %(terms)>Terms</a> and <a %(privacy)>Privacy Policy</a>."),
+                       <%- format(gettext("By proceeding, you agree to %(site)s's <a %(terms)s>Terms</a> and <a %(privacy)s>Privacy Policy</a>."),
                                   { site: "Persona",
                                     terms: 'href="https://login.persona.org/tos" target="_new"',
                                     privacy: 'href="https://login.persona.org/privacy" target="_new"' }) %>

@@ -52,7 +52,7 @@ BrowserID.manageAccount = (function() {
         displayStoredEmails.call(self, oncomplete);
       }
       else if (_.size(emails) > 1) {
-        if (confirmAction(format(gettext("Remove %(email) from your Persona account?"),
+        if (confirmAction(format(gettext("Remove %(email)s from your Persona account?"),
                                  { email: email }))) {
           user.removeEmail(email, function() {
             displayStoredEmails.call(self, oncomplete);

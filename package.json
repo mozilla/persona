@@ -19,6 +19,7 @@
         "etagify": "0.0.2",
         "express": "2.5.0",
         "gobbledygook": "0.0.3",
+        "i18n-abide": "0.0.8beta4",
         "lockdown": "0.0.3",
         "jwcrypto": "0.4.2",
         "mysql": "0.9.5",
