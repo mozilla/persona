@@ -25,15 +25,15 @@ exports.getCookie = function(which, ctx) {
   return wcli.getCookie(ctx||context, which);
 };
 
-exports.get = function (path, getArgs, ctx) {
+exports.get = function (path, getArgs, ctx, done) {
   return function () {
-    wcli.get(configuration, path, ctx||context, getArgs, this.callback);
+    wcli.get(configuration, path, ctx||context, getArgs, (done || this.callback).bind(this));
   };
 };
 
-exports.post = function (path, postArgs, ctx) {
+exports.post = function (path, postArgs, ctx, done) {
   return function () {
-    wcli.post(configuration, path, ctx||context, postArgs, this.callback);
+    wcli.post(configuration, path, ctx||context, postArgs, (done || this.callback).bind(this));
   };
 };
 
