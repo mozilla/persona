@@ -33,7 +33,7 @@ BrowserID.Modules.InteractionData = (function() {
       dom = bid.DOM,
       sc;
 
-  function handleXhr(msg, data) {
+  function removeGetData(msg, data) {
     if (msg && data.network && data.network.type && data.network.url) {
       return msg + "." + data.network.type + data.network.url.split('?')[0];
     } else {
@@ -101,7 +101,7 @@ BrowserID.Modules.InteractionData = (function() {
     password_submit: "authenticate.password_submitted",
     authentication_success: "authenticate.password_success",
     authentication_fail: "authenticate.password_fail",
-    xhr_complete: handleXhr
+    xhr_complete: removeGetData
   };
 
   function getKPIName(msg, data) {
