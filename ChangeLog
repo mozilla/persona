@@ -9,6 +9,7 @@ train-2013.02.01:
   * Improve script portability: #2537
   * Test coverage and fixes: #2920, #2963, #2968, #2974, #2973
   * Logging cleanup: #2967
+  * (hotfix 2012.02.14) resolve issue caused by old code served under new SHA: issue #3010
 
 train-2013.01.18:
   * upgrade to node.js 0.8.17

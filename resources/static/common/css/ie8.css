@@ -7,8 +7,8 @@
  */
 
 .submit button,
-.submit button:hover,
 .submit button:focus,
+.submit button:hover,
 .submit .button:hover,
 .submit .button:focus {
     background-image: url("/common/i/button-arrow.png");
