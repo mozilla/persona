@@ -305,18 +305,11 @@
   }
 
   // This is the configurationf or the staging tests.
-  // to the stageAddress config, two fields can be specified:
-  //   password - if the staging function requires a password, enter it.
-  //   require_valid_email - if true, indicates that a staging method
-  //     requires that the email address already exist. An attempt will
-  //     be made to stage an address that does not exist.
   var stagingTests = {
     testCreateUser: {
       stageAddress: {
         stageFunction: "createSecondaryUser",
-        config: {
-          password: "password"
-        }
+        config: { password: "password" }
       },
       pollingFunction: "waitForUserValidation",
       cancelPollingFunction: "cancelUserValidation",
@@ -326,9 +319,7 @@
     testAddEmail: {
       stageAddress: {
         stageFunction: "addEmail",
-        config: {
-          password: "password"
-        }
+        config: { password: "password" }
       },
       pollingFunction: "waitForEmailValidation",
       cancelPollingFunction: "cancelEmailValidation",
@@ -338,14 +329,7 @@
     testResetPassword: {
       stageAddress: {
         stageFunction: "requestPasswordReset",
-        config: {
-          // BEGIN TRANSITION CODE
-          // this is only needed until the full passwordReset and
-          // transtionToSecondary code paths are merged.
-          password: "password",
-          // END TRANSITION CODE
-          require_valid_email: true
-        }
+        config: { require_valid_email: true }
       },
       pollingFunction: "waitForPasswordResetComplete",
       cancelPollingFunction: "cancelWaitForPasswordResetComplete",

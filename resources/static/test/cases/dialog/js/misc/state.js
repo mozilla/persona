@@ -183,14 +183,7 @@
       confirmed: "email_confirmed"
     },
     {
-      // BEGIN TRANSITION CODE
-      // this is only needed until the full passwordReset and
-      // transtionToSecondary code paths are merged. Once that is merged,
-      stage_with_password: "forgot_password",
-      // END TRANSITION CODE
-      /* BEGIN NEW CODE
       stage: "forgot_password",
-      END NEW CODE */
       stageAction: "doStageResetPassword",
       staged: "reset_password_staged",
       stagedAction: "doConfirmResetPassword",

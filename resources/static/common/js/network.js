@@ -326,26 +326,13 @@ BrowserID.Network = (function() {
      * Request a password reset for the given email address.
      * @method requestPasswordReset
      * @param {string} email
-        // BEGIN TRANSITION CODE
-     * @param {string} password
-        // END TRANSITION CODE
      * @param {string} origin
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    /* BEGIN NEW CODE
     requestPasswordReset: function(email, origin, onComplete, onFailure) {
-      END NEW CODE */
-    // BEGIN TRANSITION CODE
-    requestPasswordReset: function(email, password, origin, onComplete, onFailure) {
-    // END TRANSITION CODE
       var postData = {
         email: email,
-        // BEGIN TRANSITION CODE
-        // password will be removed once the transitionToSecondary and
-        // passwordReset code is fully merged.
-        pass: password,
-        // END TRANSITION CODE
         site : origin
       };
       stageAddressForVerification(postData, "/wsapi/stage_reset", onComplete, onFailure);
@@ -787,15 +774,7 @@ BrowserID.Network = (function() {
         pass: password,
         site : origin
       };
-      /* BEGIN NEW CODE
-//      stageAddressForVerification(postData, "/wsapi/stage_transition", onComplete, onFailure);
-      END NEW CODE */
-      // BEGIN TRANSITION CODE
-      // this is only needed until the full passwordReset and
-      // transtionToSecondary code paths are merged. Once merged, replace this
-      // call with the commented out one above.
-      stageAddressForVerification(postData, "/wsapi/stage_reset", onComplete, onFailure);
-      // END TRANSITION CODE
+      stageAddressForVerification(postData, "/wsapi/stage_transition", onComplete, onFailure);
     },
 
     /**

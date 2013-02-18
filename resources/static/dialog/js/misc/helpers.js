@@ -92,21 +92,10 @@
     }, self.getErrorDialog(errors.createUser, callback));
   }
 
-  /* BEGIN NEW CODE
   function resetPassword(email, callback) {
-    /*jshint validthis:true*//*
-    var self=this;
-    user.requestPasswordReset(email, function(status) {
-  END NEW CODE */
-
-  // BEGIN TRANSITION CODE
-  // password will be removed once the transitionToSecondary and
-  // passwordReset code is fully merged.
-  function resetPassword(email, password, callback) {
     /*jshint validthis:true*/
     var self=this;
-    user.requestPasswordReset(email, password, function(status) {
-  // END TRANSITION CODE
+    user.requestPasswordReset(email, function(status) {
       if (status.success) {
         self.publish("reset_password_staged", { email: email });
       }
