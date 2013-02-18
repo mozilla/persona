@@ -8,6 +8,8 @@ else
     echo ">> no keypair needed.  you gots one"
 fi
 
+node scripts/l10n-update.js
+
 echo ">> generating production resources"
-scripts/compress
+env CONFIG_FILES=config/aws.json scripts/compress
 
