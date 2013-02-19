@@ -81,15 +81,7 @@ runner.run(module, {
       });
     };
     var complete = function complete(res) {
-      //XXX should have a better way to save off the elapsed time, test
-      // counts, pass/fail, etc., somewhere better than just dumping it in the
-      // console. Maybe set custom-data for Sauce after the job completes?
-      // - Should have a mode here where we just return the `res` back to
-      // a parallel test runner, which can then make assertions about
-      // all the results.
-      //console.dir(res); // commented out because stray JSON makes SAX parser, hence Jenkins, cry
-      assert.equal(res.result.failed, '0', 'no tests failed');
-      done();
+      done(assert.equal(res.result.failed, '0'));
     };
     // The frontend tests take at least 20 seconds to run locally (FF); Chrome
     // on ICS is the worst locally at >1500s, with stock on ICS at
