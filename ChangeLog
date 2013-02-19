@@ -1,4 +1,11 @@
-current train:
+train-2013.02.15:
+  * convert to optimized locale-specific fonts - 50% reduction in resource footprint: #2996
+  * upgrade toobusy to repair win32 support: #2978
+  * improve language for account cancel confirmation: #2462
+  * logging improvements: #2985
+  * test improvments: #2994
+  * add new APIs to prepare for improved reset flow: #1232, #2937
+  * increase STS to allow for better load performance in firefox (HSTS preload): #2903
 
 train-2013.02.01:
   * Improve handling of optional configuration (proxy_idps): #2790
