@@ -15,7 +15,8 @@ urlparse = require('urlparse'),
 express = require('express');
 
 const
-i18n = require('../lib/i18n.js'),
+i18n = require('i18n-abide'),
+i18n_check = require('../lib/i18n_client_check'),
 wsapi = require('../lib/wsapi.js'),
 httputils = require('../lib/httputils.js'),
 db = require('../lib/db.js'),
@@ -69,8 +70,11 @@ app.use(i18n.abide({
   default_lang: config.get('default_lang'),
   debug_lang: config.get('debug_lang'),
   translation_directory: config.get('translation_directory'),
-  disable_locale_check: config.get('disable_locale_check')
+  disable_locale_check: config.get('disable_locale_check'),
+  logger: logger
 }));
+
+i18n_check();
 
 var statsd_config = config.get('statsd');
 if (statsd_config && statsd_config.enabled) {

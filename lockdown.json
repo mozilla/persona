@@ -11,6 +11,9 @@
   "addressparser": {
     "0.1.3": "9e9ab43d257e1ae784e1df5f580c9f5240f58874"
   },
+  "amdefine": {
+    "0.0.4": "510e24a0f231314e1105b9c747e79aaed694a0e9"
+  },
   "ansi": {
     "0.1.2": "2627e29498f06e2a1c2ece9c21e28fd494430827"
   },
@@ -120,8 +123,15 @@
   "encoding": {
     "0.1.4": "dcd860c75975259d4159c840153d6ccdf82b899e"
   },
+  "escodegen": {
+    "0.0.16": "81410ecdb666e816c6b9cb707722272952ea7c9f"
+  },
   "esprima": {
-    "0.9.9": "1b90925c975d632d7282939c3bb9c3a423c30490"
+    "0.9.9": "1b90925c975d632d7282939c3bb9c3a423c30490",
+    "1.0.2": "8039bf9ceac4d9d2c15f623264fb292b5502ceaf"
+  },
+  "estraverse": {
+    "0.0.4": "01a0932dfee574684a598af5a67c3bf9b6428db2"
   },
   "etagify": {
     "0.0.2": "171c4f351c6d03e7e8a2c071b6bce2c05b41df44"
@@ -159,6 +169,9 @@
   "http-browserify": {
     "0.1.1": "d9d82735a5f85f950761ac3909ba9485ec0af4f1"
   },
+  "i18n-abide": {
+    "0.0.8beta4": "b106bdaa156f90652e04b75ef6a1079c271a1b45"
+  },
   "iconv": {
     "1.2.3": "4798b7d72c52ad463d65d72806a5fc08de3f1afd"
   },
@@ -173,6 +186,9 @@
   },
   "jshint": {
     "0.9.1": "ff32ec7f09f84001f7498eeafd63c9e4fbb2dc0e"
+  },
+  "jsxgettext": {
+    "0.0.4": "7dc442c1102ba73edfaa7fd60703ab1d03234194"
   },
   "jwcrypto": {
     "0.4.2": "3a5d0f1143e4b567f67c93eb4c9667107f4c38b8"
@@ -310,6 +326,9 @@
   },
   "socket.io-client": {
     "0.9.10": "3c2d32debd4a4509b44219b09ac06ba96aaa3408"
+  },
+  "source-map": {
+    "0.1.8": "0bcc088a50ed8c586f50c8da4833a27dc0cc0c30"
   },
   "stack-trace": {
     "0.0.6": "1e719bd6a2629ff09c189e17a9ef902a94fc5db0"

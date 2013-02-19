@@ -4,7 +4,7 @@ var
 path = require('path')
 resources = require('../lib/static_resources.js'),
 config = require('../lib/configuration.js'),
-i18n = require('../lib/i18n'),
+i18n = require('i18n-abide'),
 mkdirp = require('mkdirp'),
 computecluster = require('compute-cluster');
 

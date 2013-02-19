@@ -9,16 +9,16 @@
 
   <p class="description">
     <% if (transition_to_primary) { %>
-      <%=format(gettext("Your %(emailProvider) account has been upgraded to work even better with Persona. We will redirect you to %(emailProvider)."), {
+      <%=format(gettext("Your %(emailProvider)s account has been upgraded to work even better with Persona. We will redirect you to %(emailProvider)s."), {
         emailProvider: idpName
       })%>
     <% } else { %>
-      <%= format(gettext("Persona lets you use your %(emailProvider) account to sign into sites like %(aWebsite)."),
+      <%= format(gettext("Persona lets you use your %(emailProvider)s account to sign into sites like %(aWebsite)s."),
                { emailProvider: idpName, aWebsite: siteName }) %>
     <% } %>
   </p>
   <p>
-    <%= format(gettext("Once you verify your account there, you will be signed in to %(aWebsite)."),
+    <%= format(gettext("Once you verify your account there, you will be signed in to %(aWebsite)s."),
                {aWebsite : siteName}) %>
   </p>
 
