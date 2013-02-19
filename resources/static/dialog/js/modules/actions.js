@@ -95,20 +95,9 @@ BrowserID.Modules.Actions = (function() {
       startService("required_email", info);
     },
 
-    // BEGIN TRANSITION CODE
-    // password will be removed once the transitionToSecondary and
-    // passwordReset code is fully merged.
-    doStageResetPassword: function(info) {
-      dialogHelpers.resetPassword.call(this, info.email, info.password,
-          info.ready);
-    },
-    // END TRANSITION CODE
-
-    /* BEGIN NEW CODE
     doStageResetPassword: function(info) {
       dialogHelpers.resetPassword.call(this, info.email, info.ready);
     },
-    END NEW CODE */
 
     doConfirmResetPassword: function(info) {
       startRegCheckService.call(this, info, "waitForPasswordResetComplete", "reset_password_confirmed");

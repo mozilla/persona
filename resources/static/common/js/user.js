@@ -634,23 +634,13 @@ BrowserID.User = (function() {
      * Request a password reset for the given email address.
      * @method requestPasswordReset
      * @param {string} email
-       // BEGIN TRANSITION CODE
-       // password is only needed until the full passwordReset and
-       // transitionToSecondary code paths are merged.
-     * @param {string} password
-       // END TRANSITION CODE
      * @param {function} [onComplete] - Callback to call when complete, called
      * with a single object, info.
      *    info.status {boolean} - true or false whether request was successful.
      *    info.reason {string} - if status false, reason of failure.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    /* BEGIN NEW CODE
     requestPasswordReset: function(email, onComplete, onFailure) {
-      END NEW CODE */
-    // BEGIN TRANSITION CODE
-    requestPasswordReset: function(email, password, onComplete, onFailure) {
-    // END TRANSITION CODE
       User.addressInfo(email, function(info) {
         // user is not known.  Can't request a password reset.
         if (info.state === "unknown") {
@@ -661,20 +651,9 @@ BrowserID.User = (function() {
           complete(onComplete, { success: false, reason: "primary_address" });
         }
         else {
-          /* BEGIN NEW CODE
-           stageAddressVerification(email, null,
+          stageAddressVerification(email, null,
             network.requestPasswordReset.bind(network, email, origin),
             onComplete, onFailure);
-          END NEW CODE */
-          // BEGIN TRANSITION CODE
-          // this is only needed until the full passwordReset and
-          // transtionToSecondary code paths are merged. Once that is merged,
-          // delete this and use the above commented out
-          // stageAddressVerification
-          stageAddressVerification(email, password,
-            network.requestPasswordReset.bind(network, email, password, origin),
-            onComplete, onFailure);
-          // END TRANSITION CODE
         }
       }, onFailure);
     },

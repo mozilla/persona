@@ -85,11 +85,6 @@
 
   asyncTest("submit with invalid email", function() {
     $("#email").val("invalid");
-    // BEGIN TRANSITION CODE
-    // password will be removed once the transitionToSecondary and
-    // passwordReset code is fully merged.
-    $("#password,#vpassword").val("password");
-    // END TRANSITION CODE
 
     xhr.useResult("invalid");
 
@@ -98,11 +93,6 @@
 
   asyncTest("submit with known secondary email, happy case - show email sent notice", function() {
     $("#email").val("registered@testuser.com");
-    // BEGIN TRANSITION CODE
-    // password will be removed once the transitionToSecondary and
-    // passwordReset code is fully merged.
-    $("#password,#vpassword").val("password");
-    // END TRANSITION CODE
 
     controller.submit(function() {
       ok($(".emailsent").is(":visible"), "email sent successfully");
@@ -112,11 +102,6 @@
 
   asyncTest("submit with known secondary email with leading/trailing whitespace - show email sent notice", function() {
     $("#email").val("   registered@testuser.com  ");
-    // BEGIN TRANSITION CODE
-    // password will be removed once the transitionToSecondary and
-    // passwordReset code is fully merged.
-    $("#password,#vpassword").val("password");
-    // END TRANSITION CODE
 
     controller.submit(function() {
       ok($(".emailsent").is(":visible"), "email sent successfully");
@@ -124,36 +109,14 @@
     });
   });
 
-  // BEGIN TRANSITION CODE
-  // will be removed once the transitionToSecondary and
-  // passwordReset code is fully merged.
-  testHelpers.testInvalidPasswordAndValidationPassword("submit with", function(password, vpassword) {
-    $("#email").val("unregistered@testuser.com");
-    $("#password").val(password);
-    $("#vpassword").val(vpassword);
-
-    testEmailNotSent();
-  });
-  // END TRANSITION CODE
-
   asyncTest("submit with unknown secondary email", function() {
     $("#email").val("unregistered@testuser.com");
-    // BEGIN TRANSITION CODE
-    // password will be removed once the transitionToSecondary and
-    // passwordReset code is fully merged.
-    $("#password,#vpassword").val("password");
-    // END TRANSITION CODE
 
     testEmailNotSent();
   });
 
   asyncTest("submit with throttling", function() {
     $("#email").val("registered@testuser.com");
-    // BEGIN TRANSITION CODE
-    // password will be removed once the transitionToSecondary and
-    // passwordReset code is fully merged.
-    $("#password,#vpassword").val("password");
-    // END TRANSITION CODE
 
     xhr.useResult("throttle");
     testEmailNotSent();
@@ -161,11 +124,6 @@
 
   asyncTest("submit with XHR Error", function() {
     $("#email").val("testuser@testuser.com");
-    // BEGIN TRANSITION CODE
-    // password will be removed once the transitionToSecondary and
-    // passwordReset code is fully merged.
-    $("#password,#vpassword").val("password");
-    // END TRANSITION CODE
 
     xhr.useResult("ajaxError");
     testEmailNotSent({

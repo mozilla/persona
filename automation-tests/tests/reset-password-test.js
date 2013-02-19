@@ -52,20 +52,6 @@ runner.run(module, {
       .wclick(CSS['dialog'].forgotPassword, done);
   },
 
-  // BEGIN TRANSITION CODE
-  "choose new password": function(done) {
-    browser.chain({onError: done})
-      .wtype(CSS['dialog'].choosePassword, NEW_PASSWORD)
-      .wtype(CSS['dialog'].verifyPassword, NEW_PASSWORD)
-      .wclick(CSS['dialog'].resetPasswordButton, done);
-  },
-
-  "open reset verification link in new browser window": function(done) {
-      verifyEmail(theUser.email, NEW_PASSWORD, 1, verificationBrowser, done);
-  },
-  // END TRANSITION CODE
-
-  /* BEGIN NEW CODE
   "open reset verification link in new browser window": function(done) {
     restmail.getVerificationLink({ email: theUser.email, index: 1 }, function(err, token, link) {
       testSetup.newBrowserSession(verificationBrowser, function() {
@@ -85,7 +71,6 @@ runner.run(module, {
       .wtype(CSS['dialog'].postVerificationPassword, NEW_PASSWORD)
       .wclick(CSS['dialog'].postVerificationPasswordButton, done);
   },
-  END NEW CODE */
 
   "make sure user is signed in to RP after password reset": function(done) {
     browser.chain({onError: done})

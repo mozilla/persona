@@ -90,12 +90,6 @@ BrowserID.State = (function() {
       // See issue #2258.
       self.newUserEmail = self.addEmailEmail = self.transitionNoPassword = null;
 
-      // BEGIN TRANSITION CODE
-      // will be removed once the transitionToSecondary and
-      // passwordReset code is fully merged.
-      self.resetPasswordEmail = null;
-      // END TRANSITION CODE
-
       startAction(actionName, actionInfo);
     }
 
@@ -217,11 +211,6 @@ BrowserID.State = (function() {
        * and #3 by transitionNoPassword
        */
       info = _.extend({ email: self.newUserEmail || self.addEmailEmail ||
-      // BEGIN TRANSITION CODE
-      // will be removed once the transitionToSecondary and
-      // passwordReset code is fully merged.
-                        self.resetPasswordEmail ||
-      // END TRANSITION CODE
                         self.transitionNoPassword }, info);
 
       if(self.newUserEmail) {
@@ -230,13 +219,6 @@ BrowserID.State = (function() {
       else if(self.addEmailEmail) {
         startAction(false, "doStageEmail", info);
       }
-      // BEGIN TRANSITION CODE
-      // will be removed once the transitionToSecondary and
-      // passwordReset code is fully merged.
-      else if(self.resetPasswordEmail) {
-        startAction(false, "doStageResetPassword", info);
-      }
-      // END TRANSITION CODE
       else if (self.transitionNoPassword) {
         redirectToState("stage_transition_to_secondary", info);
       }
@@ -468,26 +450,11 @@ BrowserID.State = (function() {
     });
 
     handleState("forgot_password", function(msg, info) {
-      // BEGIN TRANSITION CODE
-      // will be removed once the transitionToSecondary and
-      // passwordReset code is fully merged.
-      // User has forgotten their password, let them reset it.  The response
-      // message from the forgot_password controller will be a set_password.
-      // the set_password handler needs to know the resetPasswordEmail so it
-      // knows how to trigger the reset_password_staged message.  At this
-      // point, the email confirmation screen will be shown.
-      self.resetPasswordEmail = info.email;
-      info.password_reset = true;
-      startAction(false, "doSetPassword", info);
-      // END TRANSITION CODE
-
-      /* BEGIN NEW CODE
       // User has forgotten their password, let them reset it.  The user will
       // be transitioned to the confirmation screen and must verify their email
       // address. The new password will be entered on the main site after the
       // user verifies their address.
       startAction(false, "doStageResetPassword", info);
-      END NEW CODE */
       complete(info.complete);
     });
 
