@@ -33,6 +33,14 @@ BrowserID.Modules.InteractionData = (function() {
       dom = bid.DOM,
       sc;
 
+  function removeGetData(msg, data) {
+    if (msg && data.network && data.network.type && data.network.url) {
+      return msg + "." + data.network.type + data.network.url.split('?')[0];
+    } else {
+      return 'xhr.malformed_report';
+    }
+  }
+
   /**
    * This is a translation table from a message on the mediator to a KPI name.
    * Names can be modified or added to the KPI storage directly.
@@ -66,6 +74,8 @@ BrowserID.Modules.InteractionData = (function() {
    *   user.user_staged/confirmed except it is when the user adds a secondary
    *   email to their account.
    * user.logout - that is the user has clicked "this is not me."
+   * xhr_complete.GET/wsapi/user_creation_status
+   *   Various network traffic
    */
 
   var MediatorToKPINameTable = {
@@ -91,7 +101,7 @@ BrowserID.Modules.InteractionData = (function() {
     password_submit: "authenticate.password_submitted",
     authentication_success: "authenticate.password_success",
     authentication_fail: "authenticate.password_fail",
-    xhr_complete: function(msg, data) { return "xhr." + data.network.url; }
+    xhr_complete: removeGetData
   };
 
   function getKPIName(msg, data) {
