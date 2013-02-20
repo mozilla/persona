@@ -963,6 +963,7 @@
     var observers = {
       login: null,
       logout: null,
+      match: null,
       ready: null
     };
 
@@ -1056,6 +1057,10 @@
             if (observers.login) observers.login(params);
           });
 
+          commChan.bind('match', function(trans, params) {
+            if (observers.match) observers.match();
+          });
+
           if (defined(loggedInUser)) {
             commChan.notify({
               method: 'loggedInUser',
@@ -1105,6 +1110,7 @@
 
       if (options.onlogin && typeof options.onlogin !== 'function' ||
           options.onlogout && typeof options.onlogout !== 'function' ||
+          options.onmatch && typeof options.onmatch !== 'function' ||
           options.onready && typeof options.onready !== 'function')
       {
         throw new Error("non-function where function expected in parameters to navigator.id.watch()");
@@ -1115,6 +1121,7 @@
 
       observers.login = options.onlogin || null;
       observers.logout = options.onlogout || null;
+      observers.match = options.onmatch || null;
       // NOTE: Do not modify without reading GH-2017
       observers.ready = options.onready || null;
 
@@ -1295,7 +1302,7 @@
             callback(null);
             callback = null;
           }
-          observers.login = observers.logout = observers.ready = null;
+          observers.login = observers.logout = observers.match = observers.ready = null;
         };
         internalRequest(opts);
       },

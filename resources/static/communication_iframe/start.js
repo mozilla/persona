@@ -50,7 +50,9 @@
 
     // this will re-certify the user if neccesary
     user.getSilentAssertion(loggedInUser, function(email, assertion) {
-      if (email) {
+      if (loggedInUser === email) {
+        chan.notify({ method: 'match' });
+      } else if (email) {
         // only send login events when the assertion is defined - when
         // the 'loggedInUser' is already logged in, it's false - that is
         // when the site already has the user logged in and does not want

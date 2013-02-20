@@ -103,6 +103,11 @@ pre {
   <pre> ... </pre>
 </div>
 
+<div class="matchEvents">
+  <h2>matches</h2>
+  <pre> ... </pre>
+</div>
+
 <div class="readiness">
   <h2>readiness</h2>
   <pre> ... </pre>
@@ -158,7 +163,6 @@ navigator.id.watch({
     loggit("onready");
     var txt = serial++ + ' navigator.id ready at ' + (new Date).toString();
     $(".readiness > pre").text(txt);
-
   },
   onlogin: function (assertion) {
     loggit("onlogin");
@@ -173,6 +177,11 @@ navigator.id.watch({
     loggit("onlogout");
     var txt = serial++ + ' logout callback invoked at ' + (new Date).toString();
     $(".logoutEvents > pre").text(txt);
+  },
+  onmatch: function() {
+    loggit("onmatch")
+    var txt = serial++ + ' match callback invoked at ' + (new Date).toString();
+    $(".matchEvents > pre").text(txt);
   }
 });
 
