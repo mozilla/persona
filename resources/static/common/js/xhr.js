@@ -6,9 +6,10 @@ BrowserID.XHR = (function() {
 
   var bid = BrowserID,
       mediator = bid.Mediator,
+      transport = bid.XHRTransport,
+      BROWSERID_VERSION = BrowserID.CODE_VERSION,
       context,
       csrf_token,
-      transport = bid.XHRTransport,
       time_until_delay;
 
   function clearContext() {
@@ -90,7 +91,10 @@ BrowserID.XHR = (function() {
 
     var req = _.extend({}, options, {
       success: success,
-      error: error
+      error: error,
+      headers: {
+        'BrowserID-Version': BROWSERID_VERSION
+      }
     });
 
     if(time_until_delay) {
