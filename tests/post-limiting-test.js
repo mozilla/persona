@@ -23,10 +23,6 @@ suite.options.error = false;
 
 start_stop.addStartupBatches(suite);
 
-function addCodeVersionHeader(path, code_version, headers) {
-  // All wsapi calls require the BrowserID-Version header
-}
-
 var code_version;
 
 function getVersion(done) {

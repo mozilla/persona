@@ -4,7 +4,7 @@ var
 path = require('path')
 resources = require('../lib/static_resources.js'),
 config = require('../lib/configuration.js'),
-generateCodeVersionJS = require('./generate_code_version.js'),
+generate_version_js = require('../lib/generate_code_version.js'),
 i18n = require('i18n-abide'),
 mkdirp = require('mkdirp'),
 computecluster = require('compute-cluster'),
@@ -14,7 +14,13 @@ const staticPath = path.join(__dirname, '..', 'resources', 'static');
 
 var langs = config.get('supported_languages');
 
-generateCodeVersionJS(function() {
+generate_version_js(function(err) {
+  if (err) {
+    console.error("Could not generate the code version, aborting: " 
+        + String(err));
+    process.exit(1);
+  }
+
   var all = resources.all(langs);
 
   var cc = new computecluster({
