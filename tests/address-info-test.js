@@ -94,6 +94,7 @@ suite.addBatch({
         assert.isNull(e)
         var r = JSON.parse(r.body);
         assert.equal(r.state, "known");
+        assert.equal(r.normalizedEmail, "test@capitalize.example.com");
       }
     },
     "calling address_info with upper case domain part": {
@@ -104,6 +105,7 @@ suite.addBatch({
         assert.isNull(e)
         var r = JSON.parse(r.body);
         assert.equal(r.state, "known");
+        assert.equal(r.normalizedEmail, "test@capitalize.example.com");
       }
     },
     "calling address_info with all upper case": {
@@ -114,6 +116,7 @@ suite.addBatch({
         assert.isNull(e)
         var r = JSON.parse(r.body);
         assert.equal(r.state, "known");
+        assert.equal(r.normalizedEmail, "test@capitalize.example.com");
       }
     },
     "calling address_info with camel case": {
@@ -124,6 +127,7 @@ suite.addBatch({
         assert.isNull(e)
         var r = JSON.parse(r.body);
         assert.equal(r.state, "known");
+        assert.equal(r.normalizedEmail, "test@capitalize.example.com");
       }
     }
   }
@@ -145,6 +149,7 @@ suite.addBatch({
         assert.isNull(e)
         var r = JSON.parse(r.body);
         assert.equal(r.state, "known");
+        assert.equal(r.normalizedEmail, "Test2@Capitalize.Example.Com");
       }
     },
     "calling address_info with upper case domain part": {
@@ -155,6 +160,7 @@ suite.addBatch({
         assert.isNull(e)
         var r = JSON.parse(r.body);
         assert.equal(r.state, "known");
+        assert.equal(r.normalizedEmail, "Test2@Capitalize.Example.Com");
       }
     },
     "calling address_info with all upper case": {
@@ -165,6 +171,7 @@ suite.addBatch({
         assert.isNull(e)
         var r = JSON.parse(r.body);
         assert.equal(r.state, "known");
+        assert.equal(r.normalizedEmail, "Test2@Capitalize.Example.Com");
       }
     },
     "calling address_info with camel case": {
@@ -175,6 +182,7 @@ suite.addBatch({
         assert.isNull(e)
         var r = JSON.parse(r.body);
         assert.equal(r.state, "known");
+        assert.equal(r.normalizedEmail, "Test2@Capitalize.Example.Com");
       }
     }
   }
