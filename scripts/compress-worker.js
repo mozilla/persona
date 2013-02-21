@@ -120,11 +120,17 @@ function cachify_embedded (css_src) {
   // RegExp is set up to handle multiple url's per declaration, which is
   // possible for things like background-images.
   return css_src.replace(/url\s*\(['"]([^\)'"]+)\s*['"]\s*\)/g, function (str, url) {
-    // This will throw an error if url doesn't exist. This is good as we will
-    // catch typos during build.
-    logger.info("For " + str + " making " + url + " into " + cachify.cachify(url));
+     var newurl = url;
 
-     return "url('" + cachify.cachify(url) + "')";
+     // Do not cachify data URIs
+     if (!/^data:/.test(url)) {
+       // This will throw an error if url doesn't exist. This is good as
+       // we will catch typos during build.
+       newurl = cachify.cachify(url);
+       logger.info("For " + str + " making " + url + " into " + newurl);
+     }
+
+     return "url('" + newurl + "')";
   });
 }
 
