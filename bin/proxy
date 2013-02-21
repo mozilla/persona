@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// I proxy requests.  That's what I do.
+// I proxy outgoing requests in dev/testing environments (not production).  That's what I do.
 
 require('../lib/baseExceptions').addExceptionHandler();
 
@@ -20,10 +20,11 @@ var addy = config.has('bind_to.host') ? config.get('bind_to.host') : "127.0.0.1"
 forward.setTimeout(config.get('declaration_of_support_timeout_ms'));
 
 const allowed = /^https:\/\/[a-zA-Z0-9\.\-_]+\/\.well-known\/browserid(\?.*)?$/;
+const allowed_kpi = /^https:\/\/[a-zA-Z0-9\.\-_]+\/wsapi\/interaction_data(\?.*)?$/;
 
 var server = http.createServer(function (req, res) {
   var url = req.url;
-  if (!allowed.test(url)) {
+  if (!allowed.test(url) && !allowed_kpi.test(url) ) {
     res.writeHead(400);
     res.end('You can\'t get there from here');
     return;
