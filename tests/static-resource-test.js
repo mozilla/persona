@@ -36,18 +36,15 @@ suite.addBatch({
 
     "and each localized asset has a per-locale entry in the list of files": function (files) {
       var res = resources.resources;
-      // Get rid of non-localized asset bundles
-      ['/production/communication_iframe.js',
-       '/production/include.js',
-       '/production/ie8_main.css',
-       '/production/ie8_dialog.css',
-       '/production/relay.js',
-       '/production/html5shim.js',
-       '/production/authenticate_with_primary.js'].forEach(
-        function (nonLocaleAsset) {
-          delete res[nonLocaleAsset];
-          delete files[nonLocaleAsset];
-        });
+      // Get rid of non-localized asset bundles or else they mess with our
+      // calculations.
+      for(var resource in res) {
+        if (resource.indexOf(":locale") === -1) {
+          // non localized asset, get rid of it.
+          delete res[resource];
+          delete files[resource];
+        }
+      }
 
       // Make sure each localized asset has a per-locale entry in the list of
       // files.
