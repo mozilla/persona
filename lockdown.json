@@ -57,7 +57,7 @@
     "1.3.3": "150d6b4cb522894369efed6a2101c20bc7f4a4f4"
   },
   "colors": {
-    "0.3.0": "*",
+    "0.3.0": "c247d64d34db0ca4dc8e43f3ecd6da98d0af94e7",
     "0.5.1": "7d0023eaeb154e8ee9fce75dcb923d0ed1667774",
     "0.6.0-1": "6dbb68ceb8bc60f2b313dcc5ce1599f06d19e67a"
   },
@@ -81,10 +81,10 @@
     "0.0.2": "cadd881d36e7d17fca102be77eded7f07846be1a"
   },
   "connect-fonts": {
-    "0.0.9-alpha3": "01e0d5d465d92c2ebe8d01f15986007374e55be9"
+    "0.0.9-alpha8": "3d4c983e5b93a8a0e7793e9ef606c4f8413d113f"
   },
   "connect-fonts-opensans": {
-    "0.0.3-alpha1": "3cefddbe9e17f70befccfdbc53eccf75364c16cb"
+    "0.0.3-alpha3": "963560d917a4a4cf64f74e5e1c4ac47b5b449be6"
   },
   "connect-logger-statsd": {
     "0.0.1": "e1e350f0f6dc538a50a1868b4008806c45c409ea"
@@ -226,7 +226,7 @@
     "0.9.5": "cc95e1c31d0653974d3fb3e9266ed466cd0f96b5"
   },
   "node-font-face-generator": {
-    "0.0.9": "f0c79874791ef000e5af6eae0bc256a6033ebbeb"
+    "0.0.10": "2c0ecf128b3f6d2250d1cb4b788ae4fc1a3037c5"
   },
   "node-inspector": {
     "0.2.0beta3": "2adb552da7757ff3d4ec549f5570799355952d20"
