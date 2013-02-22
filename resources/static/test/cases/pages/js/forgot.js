@@ -42,6 +42,15 @@
     }
   });
 
+  function testKnownSecondaryEmailSent(typedEmail, canonicalEmail) {
+    $("#email").val(typedEmail);
+
+    controller.submit(function() {
+      ok($(".emailsent").is(":visible"), "email sent successfully");
+      start();
+    });
+  }
+
   function testEmailNotSent(config) {
     config = config || {};
     controller.submit(function() {
@@ -92,21 +101,18 @@
   });
 
   asyncTest("submit with known secondary email, happy case - show email sent notice", function() {
-    $("#email").val("registered@testuser.com");
+    testKnownSecondaryEmailSent("registered@testuser.com",
+        "registered@testuser.com");
+  });
 
-    controller.submit(function() {
-      ok($(".emailsent").is(":visible"), "email sent successfully");
-      start();
-    });
+  asyncTest("submit with known secondary email, email must be normalized, happy case - show email sent notice", function() {
+    testKnownSecondaryEmailSent("REGISTERED@TESTUSER.COM",
+        "registered@testuser.com");
   });
 
   asyncTest("submit with known secondary email with leading/trailing whitespace - show email sent notice", function() {
-    $("#email").val("   registered@testuser.com  ");
-
-    controller.submit(function() {
-      ok($(".emailsent").is(":visible"), "email sent successfully");
-      start();
-    });
+    testKnownSecondaryEmailSent("   registered@testuser.com   ",
+        "registered@testuser.com");
   });
 
   asyncTest("submit with unknown secondary email", function() {

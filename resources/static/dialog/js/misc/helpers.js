@@ -138,24 +138,25 @@
     /*jshint validthis:true*/
     var self=this;
 
-    if (user.getStoredEmailKeypair(email)) {
-      // User already owns this address
-      tooltip.showTooltip("#already_own_address");
-      complete(callback, false);
-    }
-    else {
-      user.addressInfo(email, function(info) {
-        if (info.type === "primary") {
-          info = _.extend(info, { email: email, add: true });
-          self.publish("primary_user", info, info);
-          complete(callback, true);
-        }
-        else {
-          self.publish("stage_email", { email: email });
-          complete(callback, true);
-        }
-      }, self.getErrorDialog(errors.addressInfo, callback));
-    }
+    // go get the normalized address and then do the rest of the checks.
+    user.addressInfo(email, function(info) {
+      email = info.email;
+
+      if (user.getStoredEmailKeypair(email)) {
+        // User already owns this address
+        tooltip.showTooltip("#already_own_address");
+        complete(callback, false);
+      }
+      else if (info.type === "primary") {
+        info = _.extend(info, { email: email, add: true });
+        self.publish("primary_user", info, info);
+        complete(callback, true);
+      }
+      else {
+        self.publish("stage_email", { email: email });
+        complete(callback, true);
+      }
+    }, self.getErrorDialog(errors.addressInfo, callback));
   }
 
   function refreshEmailInfo(email, callback) {
