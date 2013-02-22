@@ -67,26 +67,34 @@
     }
   });
 
-  function testAuthenticated() {
-    var authenticatedCalled = false;
-    register("authenticated", function() {
-      authenticatedCalled = true;
+  function testAuthenticated(email, normalizedEmail) {
+    var emailInfo;
+    register("authenticated", function(msg, info) {
+      emailInfo = info;
     });
-    controller.authenticate(start);
-  }
 
-  function testNotAuthenticated() {
-    register("authenticated", function() {
-      ok(false, "authenticated should not be called");
+    $(EMAIL_SELECTOR).val(email);
+
+    controller.checkEmail(null, function() {
+      $(PASSWORD_SELECTOR).val("password");
+      controller.authenticate(function(info) {
+        equal(emailInfo.email, normalizedEmail);
+        start();
+      });
     });
-    controller.authenticate(start);
   }
 
   function testInvalidPassword(password) {
-    $(EMAIL_SELECTOR).val("registered@testuser.com");
-    $(PASSWORD_SELECTOR).val(password);
+    register("authenticated", function() {
+      ok(false, "authenticated should not be called");
+    });
 
-    testNotAuthenticated();
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
+
+    controller.checkEmail(null, function() {
+      $(PASSWORD_SELECTOR).val(password);
+      controller.authenticate(start);
+    });
   }
 
 
@@ -195,6 +203,18 @@
     controller.checkEmail();
   });
 
+  asyncTest("checkEmail with transition_no_password with incorrect case, transition message with normalized email", function() {
+    $(EMAIL_SELECTOR).val("REGISTERED@TESTUSER.COM");
+    xhr.useResult("secondaryTransitionPassword");
+
+    register("transition_no_password", function(msg, info) {
+      ok(info.transition_no_password, "no_password state passed to set_password");
+      equal(info.email, "registered@testuser.com");
+      start();
+    });
+    controller.checkEmail();
+  });
+
   asyncTest("checkEmail with normal email, user registered - 'enter_password' message", function() {
     $(EMAIL_SELECTOR).val("registered@testuser.com");
     xhr.useResult("known_secondary");
@@ -296,18 +316,31 @@
   });
 
 
-  asyncTest("normal authentication is kosher", function() {
-    $(EMAIL_SELECTOR).val("registered@testuser.com");
-    $(PASSWORD_SELECTOR).val("password");
+  asyncTest("checkEmail with secondary that used to be a primary - use incorrect case, make sure to use normalized email", function() {
+    $(EMAIL_SELECTOR).val("REGISTERED@TESTUSER.COM");
+    xhr.useResult("secondaryTransition");
 
-    testAuthenticated();
+    register("enter_password", function(msg, info) {
+      equal($(AUTHENTICATION_LABEL).html(), $(TRANSITION_TO_SECONDARY_LABEL).html(), "transition message shown");
+      equal(info.email, "registered@testuser.com");
+      start();
+    });
+
+    controller.checkEmail();
+  });
+
+
+  asyncTest("normal authentication is kosher", function() {
+    testAuthenticated("registered@testuser.com", "registered@testuser.com");
   });
 
   asyncTest("leading/trailing whitespace on the username is stripped for authentication", function() {
-    $(EMAIL_SELECTOR).val("    registered@testuser.com    ");
-    $(PASSWORD_SELECTOR).val("password");
+    testAuthenticated("    registered@testuser.com    ",
+        "registered@testuser.com");
+  });
 
-    testAuthenticated();
+  asyncTest("authentication with incorrect case uses normalized email", function() {
+    testAuthenticated("REGISTERED@TESTUSER.COM", "registered@testuser.com");
   });
 
   testHelpers.testInvalidAuthenticationPassword(testInvalidPassword);

@@ -34,7 +34,13 @@ BrowserID.Modules.Authenticate = (function() {
       currentHint;
 
   function getEmail() {
-    return helpers.getAndValidateEmail(EMAIL_SELECTOR);
+    // If available, use the email sent back by addressInfo because it contains
+    // the normalized email. If not, fetch from the DOM.
+    // Email should only be fetched from the DOM if the email is new OR
+    // if the user has edited the email field after the email address was
+    // checked.
+    return (addressInfo && addressInfo.email) ||
+               helpers.getAndValidateEmail(EMAIL_SELECTOR);
   }
 
   function hasPassword(info) {
@@ -58,7 +64,7 @@ BrowserID.Modules.Authenticate = (function() {
     }
   }
 
-  function checkEmail(info) {
+  function checkEmail(info, done) {
     /*jshint validthis: true*/
     var email = getEmail(),
         self = this;
@@ -92,6 +98,7 @@ BrowserID.Modules.Authenticate = (function() {
       } else {
         createSecondaryUser.call(self);
       }
+      done && done();
     }
   }
 
@@ -165,6 +172,7 @@ BrowserID.Modules.Authenticate = (function() {
   function enterEmailState() {
     /*jshint validthis: true*/
     var self=this;
+    addressInfo = null;
     if (!dom.is(EMAIL_SELECTOR, ":disabled")) {
       self.publish("enter_email");
       dom.setInner(AUTHENTICATION_LABEL, dom.getInner(EMAIL_LABEL));
