@@ -14,15 +14,14 @@ dialog = require('../pages/dialog.js'),
 runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js');
 
-var browser, testUser, mfbUser;
+var browser, testUser;
 
 runner.run(module, {
   "setup": function(done) {
-    testSetup.setup({browsers: 1, personatestusers: 2}, function(err, fixtures) {
+    testSetup.setup({browsers: 1, personatestusers: 1}, function(err, fixtures) {
       if (fixtures) {
         browser = fixtures.browsers[0];
         testUser = fixtures.personatestusers[0];
-        mfbUser = fixtures.personatestusers[1];
       }
       done(err);
     });
@@ -72,15 +71,15 @@ runner.run(module, {
   "mfb sign in with personatestuser account": function(done) {
     dialog.signInExistingUser({
       browser: browser,
-      email: mfbUser.email,
-      password: mfbUser.pass
+      email: testUser.email,
+      password: testUser.pass
     }, done);
   },
   "verify signed in to myfavoritebeer": function(done) {
     browser.chain({onError: done})
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
-        done(err || assert.equal(text, mfbUser.email));
+        done(err || assert.equal(text, testUser.email));
       });
   }
 },
