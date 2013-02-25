@@ -7,21 +7,17 @@
 
 var testsToIgnore = {
   dev: [
-    "public-terminals.js",
-    "remove-email.js"
+    "public-terminals.js"
   ],
-
 
   stage: [
     "frontend-qunit-test.js",
-    "public-terminals.js",
-    "remove-email.js"
+    "public-terminals.js"
   ],
 
   prod: [
     "frontend-qunit-test.js",
-    "public-terminals.js",
-    "remove-email.js"
+    "public-terminals.js"
   ]
 };
 
