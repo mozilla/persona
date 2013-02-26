@@ -40,7 +40,7 @@ If you get stuck and need help, you can find the core team on our [public mailin
 
 BrowserID needs the following dependencies before it can run:
 
-* node.js (>= 0.6.17)
+* node.js (>= 0.8.11)
 * libgmp3
 * g++
 
