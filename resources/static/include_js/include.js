@@ -1239,6 +1239,10 @@
       request: function(options) {
         if (this != navigator.id)
           throw new Error("all navigator.id calls must be made on the navigator.id object");
+
+        if (!observers.login)
+          throw new Error("navigator.id.watch must be called before navigator.id.request");
+
         options = options || {};
         checkCompat(false);
         api_called = "request";
