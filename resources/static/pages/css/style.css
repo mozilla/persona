@@ -305,20 +305,11 @@ button.delete:active {
 }
 
 .showedit {
-  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  opacity: 0;
-  visibility:hidden;
-  -webkit-transition: all 500ms;
-  -moz-transition: all 500ms;
-  -ms-transition: all 500ms;
-  -o-transition: all 500ms;
-  transition: all 500ms;
+  display: none;
 }
 
 .edit .showedit {
-  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-  opacity: 1;
-  visibility:visible;
+  display: block;
 }
 
 #changePassword{
