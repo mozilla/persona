@@ -102,8 +102,10 @@ var activity = {
     probability: (1.0 / (40 * 56))
   },
   "interaction_data" : {
-    // post interaction data to KPI server, use the proposed sample rate
-    probability: .01
+    // post interaction data to KPI server
+    // All non-include_only activities have the potential
+    // to send interaction_data, multiply by sample rate
+    probability: (9 / 40.0) * .1
   }
 };
 
