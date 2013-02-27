@@ -6,10 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 (function() {
-  // this is the file that the RP includes to shim in the
-  // navigator.id.getVerifiedEmail() function
-  //  "use strict";
-
   // local embedded copy of jschannel: http://github.com/mozilla/jschannel
   /**
    * js_channel is a very lightweight abstraction on top of
