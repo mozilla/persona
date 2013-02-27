@@ -12,6 +12,7 @@
 /resources/static/common/js/lib/bidbundle.js
 /resources/static/common/js/lib/gobbledygook.js
 /resources/static/dialog/views/site
+/resources/static/include_js/include.js
 .DS_Store
 Thumbs.db
 /locale

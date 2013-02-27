@@ -2,23 +2,6 @@
 // make symlinks
 var fs = require('fs');
 var path = require('path');
-var existsSync = fs.existsSync || path.existsSync;
-
-// symlink'ed directories work fine in both *nix and Windows
-function relativeLink(src, dest) {
-  src = path.join(__dirname, src);
-  dest = path.join(__dirname, dest);
-  var destParent = path.dirname(dest);
-  var cwd = process.cwd();
-  process.chdir(destParent);
-
-  if (existsSync(dest)) {
-    fs.unlinkSync(dest);
-  }
-  var relSrc = path.relative(destParent, src);
-  fs.symlinkSync(relSrc, dest, 'junction');
-  process.chdir(cwd);
-}
 
 // Windows requires Administrator cmd prompt to make file links,
 // so just make a copy instead.
@@ -41,3 +24,4 @@ function node(script) {
 }
 
 node('./generate_ephemeral_keys.js');
+node('./generate_include.js');
