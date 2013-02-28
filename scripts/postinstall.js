@@ -24,4 +24,3 @@ function node(script) {
 }
 
 node('./generate_ephemeral_keys.js');
-node('./generate_include.js');
