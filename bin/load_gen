@@ -100,6 +100,12 @@ var activity = {
   "change_pass": {
     // users change their passwords once every two months
     probability: (1.0 / (40 * 56))
+  },
+  "interaction_data" : {
+    // post interaction data to KPI server
+    // All non-include_only activities have the potential
+    // to send interaction_data, multiply by sample rate
+    probability: (9 / 40.0) * .1
   }
 };
 
