@@ -1,4 +1,14 @@
-current train:
+train-2013.03.01:
+  * Remove rollback code for new, improved password reset flow: #3018
+  * Fix double-escaping of RP site name in dialog: #3007
+  * Add optional onmatch callback to id.watch, fired if the browser's state matches loggedInUser: #2648
+  * Aid new RP debugging by throwing an error if nav.id.request is called before nav.id.watch: #3023
+  * Split include.js to enable one winchan/jschannel to be used everywhere: #3056
+  * Test improvements:
+    * Fix reference error in front-end unit tests: #3032
+    * Re-enable remove-email selenium test: #3046
+    * Add unit tests to ensure fonts are served OK: #3052
+    * Add KPI to load-gen: #3042
 
 train-2013.02.15:
   * convert to optimized locale-specific fonts - 50% reduction in resource footprint: #2996
