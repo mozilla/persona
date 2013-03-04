@@ -28,6 +28,9 @@ var argv = require('optimist')
 .alias('o', 'omit-static')
 .describe('o', 'when enabled, only dynamic WSAPI calls will be simulated, not static resource requests')
 .default('o', false)
+.alias('i', 'interaction-data')
+.describe('i', 'sort of like `data_sample_rate` (set to 0 to send nothing)')
+.default('i', 0.1)
 .alias('s', 'server')
 .string('s')
 .describe('s', 'base URL to browserid server')
@@ -105,7 +108,7 @@ var activity = {
     // post interaction data to KPI server
     // All non-include_only activities have the potential
     // to send interaction_data, multiply by sample rate
-    probability: (9 / 40.0) * .1
+    probability: (9 / 40.0) * args.i
   }
 };
 
