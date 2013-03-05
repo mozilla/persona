@@ -165,7 +165,7 @@ function setSessionOpts(opts) {
                     ' not found in list of available platforms');
   }
   // Default to *nothing* locally (server's choice), and chrome/VISTA for sauce
-  var defaultPlatform = process.env.PERSONA_NO_SAUCE ? 'any' : { browserName: 'chrome', platform: 'VISTA' };
+  var defaultPlatform = process.env.PERSONA_NO_SAUCE ? 'any' : { browserName: 'chrome', platform: 'Windows 2008' };
   var platform = requestedPlatform ? saucePlatforms.platforms[requestedPlatform] : defaultPlatform;
   // add platform, browserName, version to session opts
   _.extend(sessionOpts, platform);
