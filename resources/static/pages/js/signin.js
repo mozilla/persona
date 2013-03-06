@@ -22,6 +22,11 @@ BrowserID.signIn = (function() {
       addressInfo,
       sc;
 
+  function getEmail() {
+    return (addressInfo && addressInfo.email) ||
+               helpers.getAndValidateEmail("#email");
+  }
+
   function userAuthenticated() {
     pageHelpers.clearStoredEmail();
     doc.location = "/";
@@ -46,14 +51,18 @@ BrowserID.signIn = (function() {
   function emailSubmit(oncomplete) {
     /*jshint validthis: true*/
     var self=this,
-        email = helpers.getAndValidateEmail("#email");
+        email = getEmail();
 
     if (email) {
       dom.setAttr('#email', 'disabled', 'disabled');
       user.addressInfo(email, function(info) {
         dom.removeAttr('#email', 'disabled');
         addressInfo = info;
+        email = info.email;
 
+        // store the canonical email form in case the user forgets their
+        // password and are redirected.
+        pageHelpers.setStoredEmail(email);
         if (info.type === "secondary") {
           // A secondary user has to either sign in or sign up depending on the
           // status of their email address.
@@ -61,6 +70,7 @@ BrowserID.signIn = (function() {
               showClassName = "password_entry",
               title = gettext("Sign In"),
               submit = signInSubmit;
+
 
           if (info.state === "unknown") {
             bodyClassName = "unknown_secondary";
@@ -103,7 +113,7 @@ BrowserID.signIn = (function() {
   }
 
   function signInSubmit(oncomplete) {
-    var email = helpers.getAndValidateEmail("#email"),
+    var email = getEmail(),
         password = helpers.getAndValidatePassword("#password");
 
     if (email && password) {
@@ -124,7 +134,7 @@ BrowserID.signIn = (function() {
 
   function signUpSubmit(oncomplete) {
     /*jshint validthis: true*/
-    var email = helpers.getAndValidateEmail("#email"),
+    var email = getEmail(),
         pass = dom.getInner("#password"),
         vpass = dom.getInner("#vpassword"),
         valid = validation.passwordAndValidationPassword(pass, vpass);
@@ -171,6 +181,9 @@ BrowserID.signIn = (function() {
     // this is basically a state reset.
     var email = dom.getInner("#email");
     if(email !== self.lastEmail) {
+      // reset the addressInfo every time.
+      addressInfo = null;
+
       dom.removeClass("body", "primary");
       dom.removeClass("body", "known_secondary");
       dom.removeClass("body", "unknown_secondary");
@@ -188,6 +201,10 @@ BrowserID.signIn = (function() {
       if(options && options.winchan) winchan = options.winchan;
 
       pageHelpers.setupEmail();
+
+      // reset the addressInfo every time.
+      addressInfo = null;
+
 
       // set up the initial lastEmail so that if the user tabs into the email
       // field, the password field does not close. See issue #2353.

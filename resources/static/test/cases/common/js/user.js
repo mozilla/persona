@@ -373,6 +373,57 @@
     }
   }
 
+  function testKnownSecondaryUser(email, normalizedEmail) {
+    lib.addressInfo(
+      email,
+      function(info) {
+        testObjectValuesEqual(info, {
+          type: "secondary",
+          email: normalizedEmail,
+          state: "known"
+        });
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
+  }
+
+  function testAuthenticatedPrimaryUser(email, normalizedEmail) {
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+    lib.addressInfo(
+      email,
+      function(info) {
+        testObjectValuesEqual(info, {
+          type: "primary",
+          email: normalizedEmail,
+          authed: true,
+          idpName: "testuser.com"
+        });
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
+  }
+
+  function testUnauthenticatedPrimaryUser(email, normalizedEmail) {
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+    lib.addressInfo(
+      email,
+      function(info) {
+        testObjectValuesEqual(info, {
+          type: "primary",
+          email: normalizedEmail,
+          authed: false,
+          idpName: "testuser.com"
+        });
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
+  }
+
 
   test("setOrigin, getOrigin", function() {
     lib.setOrigin(testOrigin);
@@ -1103,71 +1154,28 @@
   });
 
   asyncTest("addressInfo with known secondary user", function() {
-    xhr.useResult("known_secondary");
-    lib.addressInfo(
-      "registered@testuser.com",
-      function(info) {
-        equal(info.type, "secondary", "correct type");
-        equal(info.email, "registered@testuser.com", "correct email");
-        equal(info.state, "known", "address known to Persona");
-        start();
-      },
-      testHelpers.unexpectedFailure
-    );
+    testKnownSecondaryUser("registered@testuser.com",
+        "registered@testuser.com");
+  });
+
+  asyncTest("addressInfo with known secondary user who typed address with wrong case", function() {
+    testKnownSecondaryUser("REGISTERED@TESTUSER.COM",
+        "registered@testuser.com");
   });
 
   asyncTest("addressInfo with unknown primary authenticated user", function() {
-    xhr.useResult("primary");
-    provisioning.setStatus(provisioning.AUTHENTICATED);
-    lib.addressInfo(
-      "unregistered@testuser.com",
-      function(info) {
-        testObjectValuesEqual(info, {
-          type: "primary",
-          email: "unregistered@testuser.com",
-          authed: true,
-          idpName: "testuser.com"
-        });
-        start();
-      },
-      testHelpers.unexpectedFailure
-    );
+    testAuthenticatedPrimaryUser("unregistered@testuser.com",
+        "unregistered@testuser.com");
   });
 
   asyncTest("addressInfo with known primary authenticated user", function() {
-    xhr.useResult("primary");
-    provisioning.setStatus(provisioning.AUTHENTICATED);
-    lib.addressInfo(
-      "registered@testuser.com",
-      function(info) {
-        testObjectValuesEqual(info, {
-          type: "primary",
-          email: "registered@testuser.com",
-          authed: true,
-          idpName: "testuser.com"
-        });
-        start();
-      },
-      testHelpers.unexpectedFailure
-    );
+    testAuthenticatedPrimaryUser("registered@testuser.com",
+        "registered@testuser.com");
   });
 
   asyncTest("addressInfo with known primary unauthenticated user", function() {
-    xhr.useResult("primary");
-    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
-    lib.addressInfo(
-      "registered@testuser.com",
-      function(info) {
-        testObjectValuesEqual(info, {
-          type: "primary",
-          email: "registered@testuser.com",
-          authed: false,
-          idpName: "testuser.com"
-        });
-        start();
-      },
-      testHelpers.unexpectedFailure
-    );
+    testUnauthenticatedPrimaryUser("registered@testuser.com",
+        "registered@testuser.com");
   });
 
   // JWCrypto relies on there being a random seed.  The random seed is
