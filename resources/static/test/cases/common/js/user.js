@@ -525,17 +525,18 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("createPrimaryUser with primary, unknown provisioning failure, expect XHR failure callback", function() {
+  asyncTest("createPrimaryUser with primary, unknown provisioning failure - expect primary.verify", function() {
     xhr.useResult("primary");
+
     provisioning.setFailure({
       code: "primaryError",
       msg: "some error"
     });
 
-    lib.createPrimaryUser({email: "unregistered@testuser.com"},
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
+    lib.createPrimaryUser({email: "unregistered@testuser.com"}, function(status) {
+      equal(status, "primary.verify", "primary must verify with primary, correct status");
+      start();
+    }, testHelpers.expectedXHRFailure);
   });
 
   asyncTest("provisionPrimaryUser authenticated with IdP, expect primary.verified", function() {
