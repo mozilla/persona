@@ -46,7 +46,8 @@
 
           <% if (action.message) { %>
             <p>
-              <%= action.message %>
+              <%= (typeof action.message === 'string') ? action.message
+                                                       : JSON.stringify(action.message, null, "  ") %>
             </p>
           <% } %>
         </li>
