@@ -12,6 +12,7 @@
       testElementExists = testHelpers.testElementExists,
       testElementDoesNotExist = testHelpers.testElementDoesNotExist,
       testElementFocused = testHelpers.testElementFocused,
+      testErrorVisible = testHelpers.testErrorVisible,
       FORM_CONTENTS_SELECTOR = "#formWrap .contents",
       DELAY_CONTENTS_SELECTOR = "#delay .contents",
       DELAY_SHOWN_SELECTOR = "body.delay",
@@ -106,20 +107,33 @@
   asyncTest("getErrorDialog gets a function that can be used to render an error message", function() {
     createController();
 
-    // This is the medium level info.
+    function escape(text) {
+      var escaped = _.escape(text);
+      // underscore escapes `/` whereas ejs does not
+      return escaped.replace(/&#x2F;/g, '/');
+    }
+
+    // Because these can come from the IdP, they must be escaped when displayed
+    // or else the IdP could XSS users
+    var title = "<span>error title</span>";
+    var message = "<span>extended error message</span>";
+
+    // Call getErrorDialog with the "action" info.
     var func = controller.getErrorDialog({
-      title: "medium level info error title",
-      message: "medium level info error message"
+      title: title
     }, function() {
-      ok(true, "onerror callback called when returned function is called");
-      var html = el.find("#error .contents").html();
-      // XXX underpowered test, we don't actually check the contents.
-      ok(html.length, "when function is run, error text is loaded");
+      testErrorVisible();
+      // make sure the text is escaped before IdPs start XSSing users.
+      equal($("#errorTitle").html().trim(), escape(title));
+      equal($("#errorMessage").html().trim(), escape(message));
       start();
     });
 
-    equal(typeof func, "function", "a function was returned from getErrorDialog");
-    func();
+    equal(typeof func, "function");
+
+    // action.message can be defined when calling getErrorDialog or when
+    // calling the returned function.
+    func({ action: { message: message }});
   });
 
   test("form is not submitted when 'submit_disabled' class is added to body", function() {

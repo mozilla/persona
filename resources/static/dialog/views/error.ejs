@@ -42,11 +42,12 @@
     <ul class="moreInfo">
       <% if (typeof action !== "undefined") { %>
         <li>
-          <strong id="action">Action: </strong><%= action.title %>
+          <strong id="action">Action: </strong><span id="errorTitle"><%= action.title %></span>
 
           <% if (action.message) { %>
-            <p>
-              <%= action.message %>
+            <p id="errorMessage">
+              <%= (typeof action.message === 'string') ? action.message
+                                                       : JSON.stringify(action.message, null, "  ") %>
             </p>
           <% } %>
         </li>

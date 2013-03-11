@@ -19,7 +19,7 @@
     $.get('/api/whoami')
       .success(function(who) {
         if (user != who) {
-          return navigator.id.raiseProvisioningFailure('user is not authenticated as target user');
+          return navigator.id.raiseProvisioningFailure('not authed');
         }
 
         // Awesome!  The user is authenticated as who we want to provision.  let's

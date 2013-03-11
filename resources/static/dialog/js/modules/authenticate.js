@@ -78,7 +78,7 @@ BrowserID.Modules.Authenticate = (function() {
     else {
       showHint("addressInfo");
       user.addressInfo(email, onAddressInfo,
-        self.getErrorDialog(errors.addressInfo));
+          self.getErrorDialog(errors.addressInfo));
     }
 
     function onAddressInfo(info) {
