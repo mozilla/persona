@@ -537,7 +537,7 @@ BrowserID.User = (function() {
             complete(userInfo);
           }
           else {
-            onFailure($.extend(info, { detailedError: error }));
+            onFailure($.extend(info, { action: { message: error }}));
           }
         }
       );
