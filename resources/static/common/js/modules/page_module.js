@@ -123,7 +123,10 @@ BrowserID.Modules.PageModule = (function() {
     getErrorDialog: function(action, onerror) {
       var self=this;
       return function(lowLevelInfo) {
-        self.renderError("error", $.extend({
+        // do a deep extension so that any action.messages defined in
+        // lowLevelInfo are added to the action without overwriting the
+        // action's title.
+        self.renderError("error", $.extend(true, {
           action: action
         }, lowLevelInfo), onerror);
       };
