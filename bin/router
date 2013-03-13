@@ -21,6 +21,7 @@ config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
 logger = require('../lib/logging.js').logger,
 forward = require('../lib/http_forward').forward,
+addP3PHeader = require('../lib/p3p.js'),
 shutdown = require('../lib/shutdown'),
 toobusy = require('../lib/busy_middleware.js');
 
@@ -100,6 +101,9 @@ if (config.get('scheme') == 'https') {
     });
 }
 
+// Add P3P headers to please IE8
+app.use(addP3PHeader);
+
 // redirect requests to the "verifier" processes
 if (config.get('verifier_url')) {
   var verifier_url = urlparse(config.get('verifier_url')).validate().normalize();
@@ -174,7 +178,6 @@ app.use(function(req, res, next) {
 shutdown.handleTerminationSignals(app, function() {
   toobusy.shutdown();
 });
-
 
 var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function(conn) {

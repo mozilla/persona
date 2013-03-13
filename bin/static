@@ -30,6 +30,7 @@ heartbeat = require('../lib/heartbeat.js'),
 logger = require('../lib/logging.js').logger,
 views = require('../lib/static/views.js'),
 toobusy = require('../lib/busy_middleware.js'),
+addP3PHeader = require('../lib/p3p.js'),
 shutdown = require('../lib/shutdown.js');
 
 var app = undefined;
@@ -80,6 +81,10 @@ if (statsd_config && statsd_config.enabled) {
     prefix: statsd_config.prefix || "browserid.static."
   }));
 }
+
+// Add P3P headers to please IE8
+app.use(addP3PHeader);
+
 // #4 - prevent framing of everything.  content underneath that needs to be
 // framed must explicitly remove the x-frame-options
 app.use(function(req, resp, next) {
