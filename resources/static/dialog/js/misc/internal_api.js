@@ -239,6 +239,7 @@
 
     user.setOrigin(options.origin);
     user.createSecondaryUser(options.email, options.password, function (status) {
+        storage.site.set(options.origin, "email", options.email);
         var forceIssuer = 'default';
         user.getAssertion(options.email, user.getOrigin(), forceIssuer, function(assertion) {
           callback(null, assertion);
@@ -265,17 +266,64 @@
 
     user.authenticate(options.email, options.password, function (status) {
         user.setOrigin(options.origin);
+        storage.site.set(options.origin, "email", options.email);
         var forceIssuer = 'default';
         user.getAssertion(options.email, user.getOrigin(), forceIssuer, function(assertion) {
+          dump('assertion = ' + assertion);
           callback(null, assertion);
         }, complete.curry(null));
       },
       function (err) {
+        dump('err??? ' + err);
         callback(err);
       });
   };
 
-  function internalWatch(callback, options) {
+  /**
+   * Log the user out of the current origin
+   * @method signOut
+   * @param {string} options, should have origin property
+   * @param {function} callback
+   */
+  internal.signOut = function(options, callback) {
+    options = parseOptions(options);
+    function complete(status) {
+      callback && callback(status);
+    }
+
+    dump('options origin??? ' + options.origin);
+
+    user.setOrigin(options.origin);
+    user.logoutUser(complete, complete.curry(null));
+  };
+
+
+  /**
+   * Get an assertion for the logged in user
+   * @method signOut
+   * @param {string} origin
+   * @param {function} callback
+   * @param {object} options
+   */
+  internal.getIdentity = function(origin, callback, options) {
+    options = parseOptions(options);
+    options.silent = true;
+    this.get(origin, function(assertion) {
+      dump('back in getIdentity' + assertion + '\n\n');
+      if (assertion) callback(null, assertion);
+      else callback(true, null)
+    }, options);
+  };
+
+  function internalWatch (callback, options, log) {
+    var bid = BrowserID,
+        network = bid.Network,
+        user = bid.User,
+        storage = bid.Storage;
+
+    network.init();
+
+    log('internal watch options', options);
     var remoteOrigin = options.origin;
     var loggedInUser = options.loggedInUser;
     setOrigin(remoteOrigin);
