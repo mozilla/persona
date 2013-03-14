@@ -218,6 +218,63 @@
   };
 
 
+  };
+
+  /**
+   * Create user using credentials
+   * @method login
+   * @param {string} username
+   * @param {string} password
+   * @param {function} callback
+   */
+  internal.createAccount = function(options, callback) {
+    options = parseOptions(options);
+
+    function complete(status) {
+      callback && callback(status);
+    }
+
+    // allowed unverified emails
+    BrowserID.Network.setAllowUnverified(!!options.allowUnverified);
+
+    user.setOrigin(options.origin);
+    user.createSecondaryUser(options.email, options.password, function (status) {
+        var forceIssuer = 'default';
+        user.getAssertion(options.email, user.getOrigin(), forceIssuer, function(assertion) {
+          callback(null, assertion);
+        }, complete.curry(null));
+      },
+      function (err) {
+        callback(err);
+      });
+  };
+
+  /**
+   * Log the user in using credentials
+   * @method login
+   * @param {string} username
+   * @param {string} password
+   * @param {string} origin
+   * @param {function} callback
+   */
+  internal.signIn = function(options, callback) {
+    options = parseOptions(options);
+    function complete(status) {
+      callback && callback(status);
+    }
+
+    user.authenticate(options.email, options.password, function (status) {
+        user.setOrigin(options.origin);
+        var forceIssuer = 'default';
+        user.getAssertion(options.email, user.getOrigin(), forceIssuer, function(assertion) {
+          callback(null, assertion);
+        }, complete.curry(null));
+      },
+      function (err) {
+        callback(err);
+      });
+  };
+
   function internalWatch(callback, options) {
     var remoteOrigin = options.origin;
     var loggedInUser = options.loggedInUser;
@@ -271,6 +328,13 @@
         callback({ method: 'logout' });
       }
     }
+  }
+
+  function parseOptions(options) {
+    // Firefox forbids sending objects across the blood-brain barrier from
+    // gecko into userland JS.  So we just stringify and destringify our
+    // objects when calling from b2g native code.
+    return  (typeof options === 'string') ? JSON.parse(options) : options;
   }
 
 }());
