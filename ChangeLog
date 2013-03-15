@@ -11,6 +11,7 @@ train-2013.03.01:
     * Re-enable remove-email selenium test: #3046
     * Add unit tests to ensure fonts are served OK: #3052
     * Add KPI to load-gen: #3042
+  * (hotfix 2013.03.15) fix certificate re-provisioning for primary email addresses: #3091
 
 train-2013.02.15:
   * convert to optimized locale-specific fonts - 50% reduction in resource footprint: #2996
