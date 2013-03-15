@@ -7,17 +7,20 @@
 
 var testsToIgnore = {
   dev: [
-    "public-terminals.js"
+    "public-terminals.js",
+    "can-interact-test.js"
   ],
 
   stage: [
     "frontend-qunit-test.js",
-    "public-terminals.js"
+    "public-terminals.js",
+    "can-interact-test.js"
   ],
 
   prod: [
     "frontend-qunit-test.js",
-    "public-terminals.js"
+    "public-terminals.js",
+    "can-interact-test.js"
   ]
 };
 

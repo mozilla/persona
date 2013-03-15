@@ -136,13 +136,13 @@ BrowserID.Modules.Dialog = (function() {
     }
   }
 
-  function validateStartTime(startTime) {
-    var parsedTime = parseInt(startTime, 10);
-    if (typeof parsedTime !== "number" || isNaN(parsedTime)) {
-      throw new Error("invalid value for start_time: " + startTime);
+  function validateNumber(title, numToValidate) {
+    var parsedNumber = parseInt(numToValidate, 10);
+    if (typeof parsedNumber !== "number" || isNaN(parsedNumber)) {
+      throw new Error("invalid value for " + title + ": " + numToValidate);
     }
 
-    return parsedTime;
+    return parsedNumber;
   }
 
 
@@ -204,8 +204,14 @@ BrowserID.Modules.Dialog = (function() {
       try {
         var startTime = paramsFromRP.start_time;
         if (startTime) {
-          startTime = validateStartTime(startTime);
+          startTime = validateNumber("start_time", startTime);
           self.publish("start_time", startTime);
+        }
+
+        var readyTimeMS = paramsFromRP.ready_time_ms;
+        if (readyTimeMS) {
+          readyTimeMS = validateNumber("ready_time_ms", readyTimeMS);
+          self.publish("kpi_data", { ready_time_ms: readyTimeMS });
         }
 
         self.publish("channel_established");

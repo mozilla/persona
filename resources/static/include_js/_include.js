@@ -128,6 +128,11 @@
 
     var w;
 
+    // used in performance timing to figure out how long the
+    // communication_iframe takes to respond
+    var watchStartTime,
+        watchReadyTime;
+
     // table of registered observers
     var observers = {
       login: null,
@@ -211,6 +216,7 @@
                 method: 'loaded',
                 success: function(){
                   // NOTE: Do not modify without reading GH-2017
+                  watchReadyTime = new Date();
                   if (observers.ready) observers.ready();
                 }, error: function() {
                 }
@@ -275,6 +281,8 @@
     }
 
     function internalWatch(options) {
+      watchStartTime = new Date();
+
       if (typeof options !== 'object') return;
 
       if (options.onlogin && typeof options.onlogin !== 'function' ||
@@ -312,6 +320,14 @@
       return rp_api;
     }
 
+    function getReadyTime() {
+      if (watchStartTime && watchReadyTime) {
+        return watchReadyTime.getTime() - watchStartTime.getTime();
+      }
+
+      return null;
+    }
+
     function internalRequest(options) {
       checkDeprecated(options, "requiredEmail");
       checkRenamed(options, "tosURL", "termsOfService");
@@ -326,6 +342,8 @@
       }
 
       options.rp_api = getRPAPI();
+      options.ready_time_ms = getReadyTime();
+
       // reset the api_called in case the site implementor changes which api
       // method called the next time around.
       api_called = null;

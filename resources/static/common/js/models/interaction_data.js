@@ -22,7 +22,8 @@ BrowserID.Models.InteractionData = (function() {
         'orphaned',
         'new_account',
         'email_type',
-        'rp_api'
+        'rp_api',
+        'ready_time_ms'
       ];
 
 
