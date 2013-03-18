@@ -27,8 +27,7 @@ BrowserID.getStorage = function() {
 BrowserID.Storage = (function() {
   "use strict";
 
-  var jwcrypto,
-      ONE_DAY_IN_MS = (1000 * 60 * 60 * 24),
+  var ONE_DAY_IN_MS = (1000 * 60 * 60 * 24),
       storage = BrowserID.getStorage();
 
   // Set default values immediately so that IE8 localStorage synchronization
