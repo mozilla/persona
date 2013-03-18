@@ -141,7 +141,7 @@ BrowserID.Modules.InteractionData = (function() {
     function onComplete() {
       model.stageCurrent();
       publishStored.call(self);
-      beginSampling.call(self, result);
+      beginSampling.call(self, result.data_sample_rate, result.server_time);
     }
 
     // if we were orphaned last time, but user is now authenticated,
@@ -153,21 +153,21 @@ BrowserID.Modules.InteractionData = (function() {
     // - email_staged => email count is higher?
     //
     // See https://github.com/mozilla/browserid/issues/1827
-    var current = model.getCurrent();
-    if (current && current.orphaned) {
-      var events = current.event_stream || [];
+    var lastSessionsKPIs = model.getCurrent();
+    if (lastSessionsKPIs && lastSessionsKPIs.orphaned) {
+      var events = lastSessionsKPIs.event_stream || [];
       if (hasEvent(events, MediatorToKPINameTable.user_staged)) {
         network.checkAuth(function(auth) {
           if (!!auth) {
-            current.orphaned = false;
-            model.setCurrent(current);
+            lastSessionsKPIs.orphaned = false;
+            model.setCurrent(lastSessionsKPIs);
           }
           complete(onComplete);
         });
       } else if (hasEvent(events, MediatorToKPINameTable.email_staged)) {
-        if ((storage.getEmailCount() || 0) > (current.number_emails || 0)) {
-          current.orphaned = false;
-          model.setCurrent(current);
+        if ((storage.getEmailCount() || 0) > (lastSessionsKPIs.number_emails || 0)) {
+          lastSessionsKPIs.orphaned = false;
+          model.setCurrent(lastSessionsKPIs);
         }
         complete(onComplete);
       } else {
@@ -180,14 +180,14 @@ BrowserID.Modules.InteractionData = (function() {
     }
   }
 
-  function beginSampling(result) {
+  function beginSampling(dataSampleRate, serverTime) {
     /*jshint validthis: true */
     var self = this;
 
     // set the sample rate as defined by the server.  It's a value
     // between 0..1, integer or float, and it specifies the percentage
     // of the time that we should capture
-    var sampleRate = result.data_sample_rate || 0;
+    var sampleRate = dataSampleRate || 0;
 
     if (typeof self.samplingEnabled === "undefined") {
       // now that we've got sample rate, let's smash it into a boolean
@@ -204,9 +204,9 @@ BrowserID.Modules.InteractionData = (function() {
     // safety is the timestamp would be at a 10 minute resolution.  Round to the
     // previous 10 minute mark.
     var TEN_MINS_IN_MS = 10 * 60 * 1000,
-        roundedServerTime = Math.floor(result.server_time / TEN_MINS_IN_MS) * TEN_MINS_IN_MS;
+        roundedServerTime = Math.floor(serverTime / TEN_MINS_IN_MS) * TEN_MINS_IN_MS;
 
-    var currentData = {
+    var newKPIs = {
       event_stream: self.initialEventStream,
       sample_rate: sampleRate,
       timestamp: roundedServerTime,
@@ -217,7 +217,7 @@ BrowserID.Modules.InteractionData = (function() {
     };
 
     if (window.screen) {
-      currentData.screen_size = {
+      newKPIs.screen_size = {
         width: window.screen.width,
         height: window.screen.height
       };
@@ -227,7 +227,7 @@ BrowserID.Modules.InteractionData = (function() {
     // as soon as the first session_context completes for the next dialog
     // session.  Use a push because old data *may not* have been correctly
     // published to a down server or erroring web service.
-    model.push(currentData);
+    model.push(newKPIs);
 
     self.initialEventStream = null;
 
@@ -248,11 +248,16 @@ BrowserID.Modules.InteractionData = (function() {
   }
 
   function onKPIData(msg, result) {
+    /*jshint validthis: true*/
+    this.addKPIData(result);
+  }
+
+  function addKPIData(kpiData) {
     /*jshint validthis: true */
     // currentData will be undefined if sampling is disabled.
-    var currentData = this.getCurrent();
+    var currentData = this.getCurrentKPIs();
     if (currentData) {
-      _.extend(currentData, result);
+      _.extend(currentData, kpiData);
       model.setCurrent(currentData);
     }
   }
@@ -314,7 +319,7 @@ BrowserID.Modules.InteractionData = (function() {
     return eventData;
   }
 
-  function getCurrent() {
+  function getCurrentKPIs() {
     /*jshint validthis: true */
     var self=this;
     if(self.samplingEnabled === false) return;
@@ -374,9 +379,9 @@ BrowserID.Modules.InteractionData = (function() {
       if (options.continuation) {
         // There will be no current data if the previous session was not
         // allowed to save.
-        var previousData = model.getCurrent();
-        if (previousData) {
-          self.startTime = Date.parse(previousData.local_timestamp);
+        var lastSessionsKPIs = model.getCurrent();
+        if (lastSessionsKPIs) {
+          self.startTime = Date.parse(lastSessionsKPIs.local_timestamp);
 
 
           // instead of waiting for session_context to start appending data to
@@ -411,11 +416,12 @@ BrowserID.Modules.InteractionData = (function() {
 
       // on all events, update event_stream
       self.subscribeAll(addEvent);
-      self.subscribe('kpi_data', onKPIData);
+      self.subscribe('kpi_data', onKPIData, this);
     },
 
+    addKPIData: addKPIData,
     addEvent: addEvent,
-    getCurrent: getCurrent,
+    getCurrentKPIs: getCurrentKPIs,
     getCurrentEventStream: getCurrentEventStream,
     publishStored: publishStored
 
