@@ -234,7 +234,7 @@
       callback && callback(status);
     }
 
-    // allowed unverified emails
+    // maybe allow unverified emails
     BrowserID.Network.setAllowUnverified(!!options.allowUnverified);
 
     user.setOrigin(options.origin);
@@ -260,22 +260,23 @@
    */
   internal.signIn = function(options, callback) {
     options = parseOptions(options);
-    function complete(status) {
-      callback && callback(status);
+    function complete(err, assertion) {
+      callback && callback(err || null, assertion);
     }
+
+    // maybe allow unverified emails
+    BrowserID.Network.setAllowUnverified(!!options.allowUnverified);
 
     user.authenticate(options.email, options.password, function (status) {
         user.setOrigin(options.origin);
         storage.site.set(options.origin, "email", options.email);
-        var forceIssuer = 'default';
+        var forceIssuer = options.forceIssuer || 'default';
         user.getAssertion(options.email, user.getOrigin(), forceIssuer, function(assertion) {
-          dump('assertion = ' + assertion);
-          callback(null, assertion);
+          complete(null, assertion);
         }, complete.curry(null));
       },
       function (err) {
-        dump('err??? ' + err);
-        callback(err);
+        complete(err);
       });
   };
 
@@ -290,8 +291,6 @@
     function complete(status) {
       callback && callback(status);
     }
-
-    dump('options origin??? ' + options.origin);
 
     user.setOrigin(options.origin);
     user.logoutUser(complete, complete.curry(null));
@@ -309,7 +308,6 @@
     options = parseOptions(options);
     options.silent = true;
     this.get(origin, function(assertion) {
-      dump('back in getIdentity' + assertion + '\n\n');
       if (assertion) callback(null, assertion);
       else callback(true, null)
     }, options);
