@@ -264,12 +264,12 @@ button::-moz-focus-inner, .button::-moz-focus-inner {
     padding: 6px 45px 7px 10px;
     background-color: #4eb5e5;
     background-image: url("/common/i/button-arrow.png");
-    background-image: url("/common/i/button-arrow.png"), -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
-    background-image: url("/common/i/button-arrow.png"), -webkit-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/common/i/button-arrow.png"),    -moz-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/common/i/button-arrow.png"),     -ms-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/common/i/button-arrow.png"),      -o-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/common/i/button-arrow.png"),         linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png#iefix"), -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
+    background-image: url("/common/i/button-arrow.png#iefix"), -webkit-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png#iefix"),    -moz-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png#iefix"),     -ms-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png#iefix"),      -o-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-arrow.png#iefix"),         linear-gradient(top, #4eb5e5, #3196cf);
     background-repeat: no-repeat, no-repeat;
     background-position: center right, center;
 }
@@ -280,23 +280,23 @@ button::-moz-focus-inner, .button::-moz-focus-inner {
 .submit .button:focus {
     background-color: #4aafe5;
     background-image: url("/common/i/button-arrow-hover.png");
-    background-image: url("/common/i/button-arrow-hover.png"), -webkit-gradient(linear, left top, left bottom, from(#4aafe5), to(#2c89c8));
-    background-image: url("/common/i/button-arrow-hover.png"), -webkit-linear-gradient(top, #4aafe5, #2c89c8);
-    background-image: url("/common/i/button-arrow-hover.png"),    -moz-linear-gradient(top, #4aafe5, #2c89c8);
-    background-image: url("/common/i/button-arrow-hover.png"),     -ms-linear-gradient(top, #4aafe5, #2c89c8);
-    background-image: url("/common/i/button-arrow-hover.png"),      -o-linear-gradient(top, #4aafe5, #2c89c8);
-    background-image: url("/common/i/button-arrow-hover.png"),         linear-gradient(top, #4aafe5, #2c89c8);
+    background-image: url("/common/i/button-arrow-hover.png#iefix"), -webkit-gradient(linear, left top, left bottom, from(#4aafe5), to(#2c89c8));
+    background-image: url("/common/i/button-arrow-hover.png#iefix"), -webkit-linear-gradient(top, #4aafe5, #2c89c8);
+    background-image: url("/common/i/button-arrow-hover.png#iefix"),    -moz-linear-gradient(top, #4aafe5, #2c89c8);
+    background-image: url("/common/i/button-arrow-hover.png#iefix"),     -ms-linear-gradient(top, #4aafe5, #2c89c8);
+    background-image: url("/common/i/button-arrow-hover.png#iefix"),      -o-linear-gradient(top, #4aafe5, #2c89c8);
+    background-image: url("/common/i/button-arrow-hover.png#iefix"),         linear-gradient(top, #4aafe5, #2c89c8);
 }
 
 .submit button:active,
 .submit .button:active {
     background-color: #184a73;
-    background-image: url("/common/i/button-arrow-active.png"), -webkit-gradient(linear, left top, left bottom, from(#184a73), to(#276084));
-    background-image: url("/common/i/button-arrow-active.png"), -webkit-linear-gradient(top, #184a73, #276084);
-    background-image: url("/common/i/button-arrow-active.png"),    -moz-linear-gradient(top, #184a73, #276084);
-    background-image: url("/common/i/button-arrow-active.png"),      -ms-linear-gradient(top, #184a73, #276084);
-    background-image: url("/common/i/button-arrow-active.png"),       -o-linear-gradient(top, #184a73, #276084);
-    background-image: url("/common/i/button-arrow-active.png"),          linear-gradient(top, #184a73, #276084);
+    background-image: url("/common/i/button-arrow-active.png#iefix"), -webkit-gradient(linear, left top, left bottom, from(#184a73), to(#276084));
+    background-image: url("/common/i/button-arrow-active.png#iefix"), -webkit-linear-gradient(top, #184a73, #276084);
+    background-image: url("/common/i/button-arrow-active.png#iefix"),    -moz-linear-gradient(top, #184a73, #276084);
+    background-image: url("/common/i/button-arrow-active.png#iefix"),      -ms-linear-gradient(top, #184a73, #276084);
+    background-image: url("/common/i/button-arrow-active.png#iefix"),       -o-linear-gradient(top, #184a73, #276084);
+    background-image: url("/common/i/button-arrow-active.png#iefix"),          linear-gradient(top, #184a73, #276084);
 }
 
 /* Override all previously applied styles so that the button does not change
@@ -327,12 +327,12 @@ button[disabled], .submit_disabled button, .submit_disabled .button,
 .submit_disabled .submit button:focus, .submit_disabled .submit .button:focus,
 .submit_disabled .submit button:active, .submit_disabled .submit .button:active {
     background-color: #4eb5e5;
-    background-image: url("/common/i/button-loader.gif"), -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
-    background-image: url("/common/i/button-loader.gif"), -webkit-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/common/i/button-loader.gif"),    -moz-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/common/i/button-loader.gif"),      -ms-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/common/i/button-loader.gif"),       -o-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image: url("/common/i/button-loader.gif"),          linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-loader.gif#iefix"), -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
+    background-image: url("/common/i/button-loader.gif#iefix"), -webkit-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-loader.gif#iefix"),    -moz-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-loader.gif#iefix"),      -ms-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-loader.gif#iefix"),       -o-linear-gradient(top, #4eb5e5, #3196cf);
+    background-image: url("/common/i/button-loader.gif#iefix"),          linear-gradient(top, #4eb5e5, #3196cf);
     background-position: 95% center;
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 1px 0 rgba(0, 0, 0, 0.2);
 }
@@ -473,12 +473,12 @@ footer .help {
 
 #wait, #delay, #error {
   background-color: #dadee1;
-  background-image: url("/common/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(#dadee1), to(#c7ccd0));
-  background-image: url("/common/i/grain.png"), -webkit-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/common/i/grain.png"),    -moz-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/common/i/grain.png"),     -ms-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/common/i/grain.png"),      -o-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/common/i/grain.png"),         linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png#iefix"), -webkit-gradient(linear, left top, left bottom, from(#dadee1), to(#c7ccd0));
+  background-image: url("/common/i/grain.png#iefix"), -webkit-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png#iefix"),    -moz-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png#iefix"),     -ms-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png#iefix"),      -o-linear-gradient(top, #dadee1, #c7ccd0);
+  background-image: url("/common/i/grain.png#iefix"),         linear-gradient(top, #dadee1, #c7ccd0);
 }
 
 #wait .contents, #error .contents, #delay .contents {

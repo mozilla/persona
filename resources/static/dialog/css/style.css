@@ -6,12 +6,12 @@ body {
   color: #383838;
   background-color: #dee3e6;
   background-image: url('/common/i/grain.png');
-  background-image: url("/common/i/grain.png"), -webkit-gradient(linear, left top, left bottom, from(rgba(113, 126, 137, 0)), to(rgba(113, 126, 137, 0.2)));
-  background-image: url('/common/i/grain.png'), -webkit-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/common/i/grain.png'),    -moz-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/common/i/grain.png'),     -ms-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/common/i/grain.png'),      -o-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/common/i/grain.png'),         linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url("/common/i/grain.png#iefix"), -webkit-gradient(linear, left top, left bottom, from(rgba(113, 126, 137, 0)), to(rgba(113, 126, 137, 0.2)));
+  background-image: url('/common/i/grain.png#iefix'), -webkit-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/common/i/grain.png#iefix'),    -moz-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/common/i/grain.png#iefix'),     -ms-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/common/i/grain.png#iefix'),      -o-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
+  background-image: url('/common/i/grain.png#iefix'),         linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
   line-height: 18px;
 }
 
