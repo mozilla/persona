@@ -206,7 +206,7 @@ BrowserID.Modules.InteractionData = (function() {
     var TEN_MINS_IN_MS = 10 * 60 * 1000,
         roundedServerTime = Math.floor(serverTime / TEN_MINS_IN_MS) * TEN_MINS_IN_MS;
 
-    var newKPIs = {
+    var newKPIs = _.extend(self.initialKPIs, {
       event_stream: self.initialEventStream,
       sample_rate: sampleRate,
       timestamp: roundedServerTime,
@@ -214,7 +214,7 @@ BrowserID.Modules.InteractionData = (function() {
       lang: dom.getAttr('html', 'lang') || null,
       // this will be overridden in state.js if a new account is created.
       new_account: false
-    };
+    });
 
     if (window.screen) {
       newKPIs.screen_size = {
@@ -229,7 +229,7 @@ BrowserID.Modules.InteractionData = (function() {
     // published to a down server or erroring web service.
     model.push(newKPIs);
 
-    self.initialEventStream = null;
+    self.initialEventStream = self.initialKPIs = null;
 
     self.samplesBeingStored = true;
 
@@ -247,9 +247,9 @@ BrowserID.Modules.InteractionData = (function() {
     return indexOfEvent(eventStream, eventName) !== -1;
   }
 
-  function onKPIData(msg, result) {
+  function onKPIData(msg, kpiData) {
     /*jshint validthis: true*/
-    this.addKPIData(result);
+    this.addKPIData(kpiData);
   }
 
   function addKPIData(kpiData) {
@@ -258,7 +258,7 @@ BrowserID.Modules.InteractionData = (function() {
     var currentData = this.getCurrentKPIs();
     if (currentData) {
       _.extend(currentData, kpiData);
-      model.setCurrent(currentData);
+      setCurrentKPIs.call(this, currentData);
     }
   }
 
@@ -326,6 +326,20 @@ BrowserID.Modules.InteractionData = (function() {
 
     if (self.samplesBeingStored) {
       return model.getCurrent();
+    }
+    else {
+      return self.initialKPIs;
+    }
+  }
+
+  function setCurrentKPIs(kpis) {
+    /*jshint validthis: true */
+    var self=this;
+    if (self.samplesBeingStored) {
+      model.setCurrent(kpis);
+    }
+    else {
+      self.initialKPIs = kpis;
     }
   }
 
@@ -406,6 +420,11 @@ BrowserID.Modules.InteractionData = (function() {
         // the user's data will be saved, initialEventStream will either be
         // discarded or added to the data set that is saved to localmodel.
         self.initialEventStream = [];
+
+        // the initialKPIs are used to store KPIs until onSessionContext is
+        // called.
+        self.initialKPIs = {};
+
         self.samplesBeingStored = false;
 
         // whenever session_context is hit, let's hear about it so we can
@@ -416,7 +435,7 @@ BrowserID.Modules.InteractionData = (function() {
 
       // on all events, update event_stream
       self.subscribeAll(addEvent);
-      self.subscribe('kpi_data', onKPIData, this);
+      self.subscribe('kpi_data', onKPIData, self);
     },
 
     addKPIData: addKPIData,
