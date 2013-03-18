@@ -101,6 +101,9 @@
     createController(true);
 
     controller.addEvent("before_session_context");
+    controller.addKPIData({
+      kpi_before_session_context: true
+    });
 
     var events = controller.getCurrentEventStream();
     ok(indexOfEvent(events, "before_session_context") > -1, "before_session_context correctly saved to event stream");
@@ -113,7 +116,7 @@
       var data = controller.getCurrentKPIs();
 
       // Make sure expected items are in the current stored data.
-      testHelpers.testKeysInObject(data, ["event_stream", "sample_rate", "timestamp", "lang", "new_account"]);
+      testHelpers.testKeysInObject(data, ["event_stream", "sample_rate", "timestamp", "lang", "new_account", "kpi_before_session_context"]);
 
       controller.addEvent("after_session_context");
       controller.addEvent("after_session_context");
