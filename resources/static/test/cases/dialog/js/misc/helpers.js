@@ -54,7 +54,7 @@
     });
 
     storage.addEmail("registered@testuser.com", {});
-    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", function(assertion) {
+    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", "default", function(assertion) {
       ok(assertion, "assertion given to close");
       start();
     });
@@ -66,7 +66,7 @@
 
     xhr.useResult("ajaxError");
     storage.addEmail("registered@testuser.com", {});
-    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", testHelpers.expectedFailure);
+    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", "default", testHelpers.expectedFailure);
   });
 
   asyncTest("authenticateUser happy case", function() {
