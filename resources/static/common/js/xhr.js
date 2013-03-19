@@ -10,7 +10,6 @@ BrowserID.XHR = (function() {
       BROWSERID_VERSION = BrowserID.CODE_VERSION,
       context,
       csrf_token,
-      allow_unverified = false,
       time_until_delay;
 
   function clearContext() {
@@ -117,11 +116,9 @@ BrowserID.XHR = (function() {
   function withContext(cb, onFailure) {
     if (typeof context !== 'undefined') cb(context);
     else {
-      var data = allow_unverified ? { allowUnverified: true } : undefined;
       request({
         type: "GET",
         url: "/wsapi/session_context",
-        data: data,
         success: function(result) {
           csrf_token = result.csrf_token;
           context = result;
@@ -194,15 +191,7 @@ BrowserID.XHR = (function() {
      * Clear the current context
      * @method clearContext
      */
-    clearContext: clearContext,
-
-    /**
-     * Set a flag permitting the use of unverified emails
-     * @method setAllowUnverified
-     */
-    setAllowUnverified: function(allow) {
-      allow_unverified = allow;
-    }
+    clearContext: clearContext
   };
 }());
 

@@ -49,6 +49,9 @@ suite.addBatch({
     },
     "is 200 OK":     function(err, r) {
       assert.equal(r.code, 200);
+      var json = JSON.parse(r.body);
+      assert.isTrue(json.success);
+      assert.isTrue(json.unverified);
     },
 
     "can then be authenticated": {
@@ -64,7 +67,7 @@ suite.addBatch({
         assert.isTrue(json.success);
       },
       "and completes user completion": {
-        topic: wsapi.get('/wsapi/session_context?allowUnverified=true'),
+        topic: wsapi.get('/wsapi/session_context'),
         "successfully": function(err, r) {
           assert.isNull(err);
           assert.strictEqual(r.code, 200);
@@ -72,7 +75,6 @@ suite.addBatch({
           assert.strictEqual(typeof resp.csrf_token, 'string');
           assert.strictEqual(resp.authenticated, true);
           assert.strictEqual(resp.auth_level, 'password');
-          assert.strictEqual(resp.unverified, true);
         }
       }
     }
@@ -172,20 +174,6 @@ suite.addBatch({
     }
   }
 });
-
-suite.addBatch({
-  "asking for session_context when unverified=false": {
-    topic: wsapi.get('/wsapi/session_context'),
-    "should not return the unverified session": function(err, r) {
-      assert.isNull(err);
-      assert.strictEqual(r.code, 200);
-      var resp = JSON.parse(r.body);
-      assert.strictEqual(resp.authenticated, false);
-      assert.isUndefined(resp.unverified);
-    }
-  }
-});
-
 
 start_stop.addShutdownBatches(suite);
 
