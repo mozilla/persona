@@ -222,33 +222,41 @@
 
   /**
    * Create user using credentials
-   * @method login
-   * @param {string} username
-   * @param {string} password
+   * @method createAccount
+   * @param {object} options
    * @param {function} callback
    */
   internal.createAccount = function(options, callback) {
     options = parseOptions(options);
 
-    function complete(status) {
-      callback && callback(status);
+    function complete(err, assertion) {
+      callback && callback(err || null, assertion);
+    }
+
+    var email = options.email;
+    var password = options.password;
+    if (!(email && password)) {
+      return callback({error: "Email and password required"});
     }
 
     // maybe allow unverified emails
     BrowserID.Network.setAllowUnverified(!!options.allowUnverified);
 
     user.setOrigin(options.origin);
-    user.createSecondaryUser(options.email, options.password, function (status) {
-        storage.site.set(options.origin, "email", options.email);
-        var forceIssuer = 'default';
-        user.getAssertion(options.email, user.getOrigin(), forceIssuer, function(assertion) {
-          callback(null, assertion);
+    user.createSecondaryUser(email, password, function (status) {
+      user.syncEmailKeypair(email, function(status) {
+        user.setOriginEmail(email);
+        user.getAssertion(email, user.getOrigin(), forceIssuer, function(assertion) {
+          complete(null, assertion);
         }, complete.curry(null));
       },
+      // on failure
       function (err) {
         callback(err);
       });
+    });
   };
+
 
   /**
    * Log the user in using credentials
