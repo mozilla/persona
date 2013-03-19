@@ -2,6 +2,7 @@
 *.pyc
 \#*\#
 .\#*
+*.swp
 /node_modules
 /var
 /rpmbuild

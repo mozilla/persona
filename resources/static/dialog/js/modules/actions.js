@@ -95,6 +95,13 @@ BrowserID.Modules.Actions = (function() {
       startService("required_email", info);
     },
 
+    doAuthenticateWithUnverifiedEmail: function(info) {
+      var self = this;
+      dialogHelpers.authenticateUser.call(this, info.email, info.password, function() {
+        self.publish("authenticated", info);
+      });
+    },
+
     doStageResetPassword: function(info) {
       dialogHelpers.resetPassword.call(this, info.email, info.ready);
     },

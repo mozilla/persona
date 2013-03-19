@@ -19,6 +19,7 @@ logger = require('../lib/logging').logger,
 config = require('../lib/configuration'),
 shutdown = require('../lib/shutdown'),
 statsd = require('../lib/statsd'),
+booleanQuery = require('../lib/boolean-query'),
 toobusy = require('../lib/busy_middleware.js');
 
 logger.info("verifier server starting up");
@@ -60,6 +61,7 @@ if (statsd_config && statsd_config.enabled) {
 }
 
 app.use(express.bodyParser());
+app.use(booleanQuery);
 
 try {
   // explicitly relay VAR_PATH to children
@@ -93,6 +95,7 @@ function doVerification(req, resp, next) {
   } else if (req.body && req.body.forceIssuer) {
     forceIssuer =  req.body.forceIssuer;
   }
+  var allowUnverified = (req.query && req.query.allowUnverified) || req.body.allowUnverified;
 
   if (!(assertion && audience)) {
     // why couldn't we extract these guys?  Is it because the request parameters weren't encoded as we expect? GH-643
@@ -124,7 +127,8 @@ function doVerification(req, resp, next) {
   cc.enqueue({
     assertion: assertion,
     audience: audience,
-    forceIssuer: forceIssuer
+    forceIssuer: forceIssuer,
+    allowUnverified: !!allowUnverified
   }, function (err, r) {
     var reqTime = new Date - startTime;
     statsd.timing('assertion_verification_time', reqTime);

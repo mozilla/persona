@@ -122,6 +122,9 @@ BrowserID.State = (function() {
         user.setIssuer(info.forceIssuer);
       }
 
+      self.allowUnverified = info.allowUnverified;
+      network.setAllowUnverified(info.allowUnverified);
+
       startAction(false, "doRPInfo", info);
 
       if (info.email && info.type === "primary") {
@@ -250,6 +253,10 @@ BrowserID.State = (function() {
     });
 
     handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
+
+    handleState("unverified_created", function(msg, info) {
+      startAction(false, "doAuthenticateWithUnverifiedEmail", info);
+    });
 
     handleState("user_confirmed", handleEmailConfirmed);
 
@@ -423,7 +430,7 @@ BrowserID.State = (function() {
       else if ("transition_no_password" === info.state) {
         redirectToState("transition_no_password", info);
       }
-      else if (info.state === 'unverified') {
+      else if (info.state === 'unverified' && !self.allowUnverified) {
         // user selected an unverified secondary email, kick them over to the
         // verify screen.
         redirectToState("stage_reverify_email", info);
