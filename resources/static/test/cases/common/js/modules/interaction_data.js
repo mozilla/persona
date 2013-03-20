@@ -101,6 +101,9 @@
     createController(true);
 
     controller.addEvent("before_session_context");
+    controller.addKPIData({
+      kpi_before_session_context: true
+    });
 
     var events = controller.getCurrentEventStream();
     ok(indexOfEvent(events, "before_session_context") > -1, "before_session_context correctly saved to event stream");
@@ -110,10 +113,10 @@
     xhr.setDelay(5);
 
     mediator.subscribe("interaction_data_send_complete", function() {
-      var data = controller.getCurrent();
+      var data = controller.getCurrentKPIs();
 
       // Make sure expected items are in the current stored data.
-      testHelpers.testKeysInObject(data, ["event_stream", "sample_rate", "timestamp", "lang", "new_account"]);
+      testHelpers.testKeysInObject(data, ["event_stream", "sample_rate", "timestamp", "lang", "new_account", "kpi_before_session_context"]);
 
       controller.addEvent("after_session_context");
       controller.addEvent("after_session_context");
@@ -158,7 +161,7 @@
     network.withContext(function() {
       controller.addEvent("after_session_context");
 
-      equal(typeof controller.getCurrent(), "undefined", "no stored data");
+      equal(typeof controller.getCurrentKPIs(), "undefined", "no stored data");
       equal(typeof controller.getCurrentEventStream(), "undefined", "no data stored");
 
       controller.publishStored(function(status) {
@@ -216,7 +219,7 @@
       network.withContext(function() {
         controller.addEvent("session2_after_session_context");
 
-        equal(typeof controller.getCurrent(), "undefined", "no data collected");
+        equal(typeof controller.getCurrentKPIs(), "undefined", "no data collected");
         equal(typeof controller.getCurrentEventStream(), "undefined", "no data collected");
 
         controller.publishStored(function(status) {
@@ -268,7 +271,7 @@
     var TEN_MINS_IN_MS = 10 * 60 * 1000;
     createController();
     network.withContext(function() {
-      var timestamp = controller.getCurrent().timestamp;
+      var timestamp = controller.getCurrentKPIs().timestamp;
       ok(timestamp, "a timestamp has been passed: " + timestamp);
       equal(timestamp % TEN_MINS_IN_MS, 0, "timestamp has been rounded to a 10 minute interval");
       start();
@@ -282,13 +285,13 @@
       // disabled.
       controller.disable();
       mediator.publish("kpi_data", { number_emails: 1 });
-      testHelpers.testUndefined(controller.getCurrent());
+      testHelpers.testUndefined(controller.getCurrentKPIs());
 
       // number_emails will be added to KPI data because sampling is
       // disabled.
       controller.enable();
       mediator.publish("kpi_data", { number_emails: 2 });
-      testHelpers.testObjectValuesEqual(controller.getCurrent(), {
+      testHelpers.testObjectValuesEqual(controller.getCurrentKPIs(), {
         number_emails: 2
       });
 
