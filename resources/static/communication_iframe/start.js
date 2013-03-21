@@ -17,15 +17,6 @@
   user.init();
 
 
-  // Do not check to see if cookies are supported in the iframe.  Just
-  // optimistically try to work by running network requests.  There are
-  // cases (especially in IE) where our checks will fail but our actual
-  // requests will not.  issue #2183
-  // (NOTE: if we want to try to improve failure modes for users with
-  //  a "disable 3rd party cookies"-like preference set in their browser,
-  //  we may need to re-visit this)
-  network.cookiesEnabledOverride = true;
-
   var chan = Channel.build({
     window: window.parent,
     origin: "*",
@@ -50,28 +41,36 @@
   function checkAndEmit(oncomplete) {
     if (pause) return;
 
-    // this will re-certify the user if neccesary
-    user.getSilentAssertion(loggedInUser, function(email, assertion) {
-      if (loggedInUser === email) {
-        chan.notify({ method: 'match' });
-      } else if (email) {
-        // only send login events when the assertion is defined - when
-        // the 'loggedInUser' is already logged in, it's false - that is
-        // when the site already has the user logged in and does not want
-        // the resources or cost required to generate an assertion
-        if (assertion) chan.notify({ method: 'login', params: assertion });
-        loggedInUser = email;
-      } else if (loggedInUser !== null) {
-        // only send logout events when loggedInUser is not null, which is an
-        // indicator that the site thinks the user is logged out
+    network.cookiesEnabled(function(enabled) {
+      if (!enabled) {
+        // cookies are disabled, call onready and do nothing more.
+        loggedInUser = null;
+        return oncomplete && oncomplete();
+      }
+
+      // this will re-certify the user if neccesary
+      user.getSilentAssertion(loggedInUser, function(email, assertion) {
+        if (loggedInUser === email) {
+          chan.notify({ method: 'match' });
+        } else if (email) {
+          // only send login events when the assertion is defined - when
+          // the 'loggedInUser' is already logged in, it's false - that is
+          // when the site already has the user logged in and does not want
+          // the resources or cost required to generate an assertion
+          if (assertion) chan.notify({ method: 'login', params: assertion });
+          loggedInUser = email;
+        } else if (loggedInUser !== null) {
+          // only send logout events when loggedInUser is not null, which is an
+          // indicator that the site thinks the user is logged out
+          chan.notify({ method: 'logout' });
+          loggedInUser = null;
+        }
+        oncomplete && oncomplete();
+      }, function(err) {
         chan.notify({ method: 'logout' });
         loggedInUser = null;
-      }
-      oncomplete && oncomplete();
-    }, function(err) {
-      chan.notify({ method: 'logout' });
-      loggedInUser = null;
-      oncomplete && oncomplete();
+        oncomplete && oncomplete();
+      });
     });
   }
 
