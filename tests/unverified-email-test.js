@@ -90,7 +90,7 @@ suite.addBatch({
      topic: function() {
        start_stop.waitForToken(this.callback);
      },
-     "correctly": function(t) {
+     "correctly": function(err, t) {
        assert.strictEqual(typeof t, 'string');
        token = t;
      }
@@ -194,7 +194,7 @@ suite.addBatch({
 var token;
 
 suite.addBatch({
-  "reseting password": {
+  "resetting password": {
     topic: wsapi.post('/wsapi/stage_reset', {
       email: UNVERIFIED_EMAIL,
       pass: 'secondfakepass',
@@ -207,7 +207,7 @@ suite.addBatch({
       topic: function() {
         start_stop.waitForToken(this.callback);
       },
-      "correctly": function(t) {
+      "correctly": function(err, t) {
         assert.strictEqual(typeof t, 'string');
         token = t;
       }
@@ -219,7 +219,8 @@ suite.addBatch({
   "complete password reset": {
     topic: function() {
       wsapi.post('/wsapi/complete_reset', {
-        token: token
+        token: token,
+        pass: 'attack at dawn!!!',
       }).call(this);
     },
     "account created": function(err, r) {
