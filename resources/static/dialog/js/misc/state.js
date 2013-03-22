@@ -359,12 +359,7 @@ BrowserID.State = (function() {
 
     handleState("email_chosen", function(msg, info) {
       var email = info.email,
-          record;
-
-      if (user.isDefaultIssuer())
-        record = storage.getEmail(email);
-      else
-        record = storage.getForceIssuerEmail(email, user.getIssuer());
+          record = user.getStoredEmailKeypair(email);
 
       // Maybe use a second global variable so we know which email address was chosen?
       self.email = user.forceIssuerEmail = email;

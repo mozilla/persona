@@ -41,12 +41,7 @@ BrowserID.Modules.PickEmail = (function() {
       return;
     }
 
-    var identity;
-    if (!user.isDefaultIssuer()) {
-      identity = user.getStoredForceIssuerEmailKeypair(email, user.forceIssuer);
-    } else {
-      identity = user.getStoredEmailKeypair(email);
-    }
+    var identity = user.getStoredEmailKeypair(email);
 
     if (!identity) {
       /*globals alert:true*/
