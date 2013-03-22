@@ -268,20 +268,25 @@ BrowserID.User = (function() {
    * @param {function} [onFailure] - Called on error.
    */
   function persistEmailKeypair(email, keypair, cert, onComplete, onFailure) {
-    var now = new Date();
-    var email_obj = storage.getEmails()[email] || {
-      created: now
-    };
+    // XXX This needs to be looked at to make sure caching does not bite us.
+    // I would rather pass in the unverified flag so that caching does not
+    // cause problems here.
+    User.addressInfo(email, User.forceIssuer, function(info) {
+      var now = new Date();
+      var email_obj = storage.getEmails()[email] || {
+        created: now
+      };
 
-    _.extend(email_obj, {
-      updated: now,
-      pub: keypair.publicKey.toSimpleObject(),
-      priv: keypair.secretKey.toSimpleObject(),
-      cert: cert
-    });
+      _.extend(email_obj, {
+        updated: now,
+        pub: keypair.publicKey.toSimpleObject(),
+        priv: keypair.secretKey.toSimpleObject(),
+        cert: cert
+      });
 
-    storage.addEmail(email, email_obj);
-    if (onComplete) onComplete(true);
+      storage.addEmail(email, email_obj);
+      if (onComplete) onComplete(true);
+    }, onFailure);
   }
 
   /**
@@ -769,7 +774,7 @@ BrowserID.User = (function() {
      *    info.reason {string} - if status false, reason of failure.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestPasswordReset: function(email, password, onComplete, onFailure) {
+    requestPasswordReset: function(email, onComplete, onFailure) {
       User.addressInfo(email, 'default', function(info) {
         // user is not known.  Can't request a password reset.
         if (info.state === "unknown") {
