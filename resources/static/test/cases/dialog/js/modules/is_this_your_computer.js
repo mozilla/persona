@@ -18,6 +18,8 @@
   module("dialog/js/modules/is_this_your_computer", {
     setup: function() {
       testHelpers.setup();
+      xhr.setContextInfo("auth_level", "password");
+      xhr.setContextInfo("userid", 1);
     },
 
     teardown: function() {
