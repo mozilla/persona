@@ -16,7 +16,6 @@ BrowserID.Modules.Authenticate = (function() {
       dom = bid.DOM,
       lastEmail = "",
       addressInfo,
-      forceIssuer,
       hints = ["returning","start","addressInfo"],
       CONTENTS_SELECTOR = "#formWrap .contents",
       AUTH_FORM_SELECTOR = "#authentication_form",
@@ -78,7 +77,7 @@ BrowserID.Modules.Authenticate = (function() {
     }
     else {
       showHint("addressInfo");
-      user.addressInfo(email, this.forceIssuer, onAddressInfo,
+      user.addressInfo(email, onAddressInfo,
         self.getErrorDialog(errors.addressInfo));
     }
 
@@ -92,12 +91,12 @@ BrowserID.Modules.Authenticate = (function() {
       else if ("primary" === info.type) {
         self.close("primary_user", info, info);
       }
-      else if (!!self.forceIssuer && 'default' !== self.forceIssuer) {
-	if (hasPassword(info)) {
+      else if (!user.isDefaultIssuer()) {
+        if (hasPassword.call(self, info)) {
           enterPasswordState.call(self);
-	} else {
-          createFxAccount.call(self, self.forceIssuer);
-	}
+        } else {
+          createFxAccount.call(self);
+        }
       }
       else if (hasPassword(info)) {
         enterPasswordState.call(self);
@@ -133,11 +132,11 @@ BrowserID.Modules.Authenticate = (function() {
     }
   }
 
-  function createFxAccount(callback, forceIssuer) {
+  function createFxAccount(callback) {
     /*jshint validthis: true*/
     var self=this,
         email = getEmail();
-    
+
     if (email) {
       self.close("new_fxaccount", { email: email, fxaccount: true }, { email: email });
     } else {
@@ -258,8 +257,6 @@ BrowserID.Modules.Authenticate = (function() {
       lastEmail = options.email || "";
 
       var self=this;
-
-      self.forceIssuer = options.forceIssuer;
 
       dom.addClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
       dom.addClass(BODY_SELECTOR, FORM_CLASS);

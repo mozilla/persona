@@ -19,7 +19,7 @@ BrowserID.Modules.GenerateAssertion = (function() {
         throw new Error("email required");
       }
 
-      dialogHelpers.getAssertion.call(self, email, options.forceIssuer, options.ready);
+      dialogHelpers.getAssertion.call(self, email, options.ready);
       sc.start.call(self, options);
     }
   });

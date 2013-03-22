@@ -159,8 +159,9 @@
     user.checkAuthenticationAndSync(function(authenticated) {
       // User must be authenticated to get an assertion.
       if(authenticated) {
-        var forceIssuer = 'default';
-        user.getAssertion(email, user.getOrigin(), forceIssuer, function(assertion) {
+        user.setOrigin(origin);
+        user.setIssuer('default');
+        user.getAssertion(email, user.getOrigin(), function(assertion) {
           complete(assertion || null);
         }, complete.curry(null));
       }

@@ -42,7 +42,7 @@ BrowserID.Modules.PickEmail = (function() {
     }
 
     var identity;
-    if ('default' !== user.forceIssuer) {
+    if (!user.isDefaultIssuer()) {
       identity = user.getStoredForceIssuerEmailKeypair(email, user.forceIssuer);
     } else {
       identity = user.getStoredEmailKeypair(email);

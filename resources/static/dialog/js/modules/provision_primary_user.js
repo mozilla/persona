@@ -54,7 +54,7 @@ BrowserID.Modules.ProvisionPrimaryUser = (function() {
         throw new Error("missing config option: email");
       }
 
-      user.addressInfo(email, 'default', function(status) {
+      user.addressInfo(email, function(status) {
         self.addressInfo = status;
         if(status.type === "primary") {
           provisionPrimaryUser.call(self, email, status.auth, status.prov);
