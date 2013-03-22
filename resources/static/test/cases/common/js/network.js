@@ -51,7 +51,7 @@
     testStagingMethodSuccess: function(stagingMethod, usePassword) {
       asyncTest(stagingMethod + " success", function() {
         var onComplete = function(status) {
-          equal(status, true, stagingMethod + " request success");
+          equal(status.success, true, stagingMethod + " request success");
           start();
         };
 
