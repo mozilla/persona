@@ -69,7 +69,8 @@
 
         var validate = function() {
             if (!this.scheme) throw INV_URL +"missing scheme";
-            if (this.scheme !== 'http' && this.scheme !== 'https')
+            if (this.scheme !== 'http' && this.scheme !== 'https' && 
+                this.scheme !== 'app' && this.scheme !== 'resource')
                 throw INV_URL + "unsupported scheme: " + this.scheme;
             if (!this.host) throw INV_URL + "missing host";
             if (this.port) {
