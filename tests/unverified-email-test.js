@@ -197,7 +197,6 @@ suite.addBatch({
   "resetting password": {
     topic: wsapi.post('/wsapi/stage_reset', {
       email: UNVERIFIED_EMAIL,
-      pass: 'secondfakepass',
       site: UNVERIFIED_ORIGIN
     }),
     "works": function(err, r) {
