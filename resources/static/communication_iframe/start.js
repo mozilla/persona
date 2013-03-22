@@ -44,7 +44,9 @@
     network.cookiesEnabled(function(enabled) {
       if (!enabled) {
         // cookies are disabled, call onready and do nothing more.
-        loggedInUser = null;
+        // By not setting loggedInUser to null, the RP can call .logout
+        // a single time and have the .onlogout callback fired, which in
+        // turn allows the RP to sign the user out of their site.
         return oncomplete && oncomplete();
       }
 
