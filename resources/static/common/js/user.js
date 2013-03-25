@@ -163,6 +163,9 @@ BrowserID.User = (function() {
         // completed verification. See issue #1682
         // https://github.com/mozilla/browserid/issues/1682
         User.authenticate(stagedEmail, stagedPassword, function(authenticated) {
+          // The address verification poll does not send back a userid if
+          // the status is mustAuth. use the userid set in onContextChange.
+          resp.userid = userid;
           resp.status = authenticated ? "complete" : "mustAuth";
           completeVerification(resp);
         }, onFailure);
@@ -183,7 +186,7 @@ BrowserID.User = (function() {
         // status is to ask the backend. Clear the current context and ask
         // the backend for an updated session_context.
         clearContext();
-        network.checkAuth(function(authStatus) {
+        User.checkAuthentication(function(authStatus) {
           if (resp.status === "complete" && authStatus !== "password")
             resp.status = "mustAuth";
 
@@ -359,6 +362,7 @@ BrowserID.User = (function() {
 
   User = {
     init: function(config) {
+      config = config || {};
       mediator.subscribe('context_info', onContextChange);
 
       if (config.provisioning) {
