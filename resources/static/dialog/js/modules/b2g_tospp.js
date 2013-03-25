@@ -9,10 +9,13 @@ BrowserID.Modules.B2gTosPp = (function() {
 
   var bid = BrowserID,
       dom = bid.DOM,
+      renderer = bid.Renderer,
       complete = bid.Helpers.complete,
       BODY_SELECTOR = "body",
-      TOSPP_SELECTOR = ".tospp a",
+      TOSPP_OPENER_SELECTOR = ".tospp a",
+      TOSPP_SELECTOR = "#tosppmodal",
       TOSPP_CLOSE_SELECTOR = "#tosppmodal .close",
+      TOSPP_IFRAME = "#tosppframe",
       IFRAME_PARENT_SELECTOR = "body",
       sc;
 
@@ -27,7 +30,7 @@ BrowserID.Modules.B2gTosPp = (function() {
       // Use event propagation to avoid using jQuery .live events directly.
       self.bind(BODY_SELECTOR, 'click', function(event) {
         var target = event.target;
-        if (dom.is(target, TOSPP_SELECTOR)) {
+        if (dom.is(target, TOSPP_OPENER_SELECTOR)) {
           event.preventDefault();
           showTOSPP.call(self, target.href);
         }
@@ -52,45 +55,28 @@ BrowserID.Modules.B2gTosPp = (function() {
 
   function showTOSPP(url) {
     /*jshint validthis:true*/
-    var iframe;
-    var modal;
-    if (!this._tospp) {
-      this._tospp = {};
-      modal = this._tospp.modal = document.createElement('div');
-      modal.id = 'tosppmodal';
+    var self=this;
 
-      var closeEl = document.createElement('span');
-      closeEl.className = "close";
-      closeEl.innerHTML = 'X';
-      closeEl.onclick = close.bind(this);
-      modal.appendChild(closeEl);
-
-      iframe = this._tospp.iframe = document.createElement('iframe');
-      iframe.id = 'tosppframe';
-      iframe.setAttribute('sandbox', '');
-      iframe.setAttribute('name', 'tosppframe');
-      dom.appendTo(iframe, modal);
-      dom.appendTo(modal, IFRAME_PARENT_SELECTOR);
-    } else {
-      iframe = this._tospp.iframe;
-      modal = this._tospp.modal;
+    if (!self._tospp) {
+      self._tospp = renderer.append(IFRAME_PARENT_SELECTOR, "b2g_tospp", {});
+      self.click(TOSPP_CLOSE_SELECTOR, closeTOSPP, self);
     }
-    modal.style.display = "block";
-    iframe.setAttribute('src', url);
+
+    dom.setAttr(TOSPP_IFRAME, 'src', url);
+    dom.show(TOSPP_SELECTOR);
   }
 
   function closeTOSPP() {
     /*jshint validthis:true*/
     if (this._tospp) {
-      this._tospp.modal.style.display = "none";
+      dom.hide(TOSPP_SELECTOR);
     }
   }
 
   function removeTOSPP() {
-    var tosppEls = this._tospp;
-    if (tosppEls) {
-      dom.removeElement(tosppEls.modal);
-      dom.removeElement(tosppEls.iframe);
+    var tosppEl = this._tospp;
+    if (tosppEl) {
+      dom.removeElement(tosppEl);
     }
   }
 
