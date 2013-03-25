@@ -13,9 +13,6 @@ BrowserID.Modules.Dialog = (function() {
       helpers = bid.Helpers,
       win = window,
       startExternalDependencies = true,
-      TOSPP_SELECTOR = ".tospp a",
-      TOSPP_CLOSE_SELECTOR = "#tosppmodal .close",
-      IFRAME_PARENT_SELECTOR = "body",
       channel,
       sc;
 
@@ -170,43 +167,6 @@ BrowserID.Modules.Dialog = (function() {
     return bool;
   }
 
-  function showTOSPP(e) {
-    /*jshint validthis:true*/
-    var url = e.target.href;
-    var iframe;
-    var modal;
-    if (!this._tospp) {
-      this._tospp = {};
-      modal = this._tospp.modal = document.createElement('div');
-      modal.id = 'tosppmodal';
-
-      var close = document.createElement('span');
-      close.className = "close";
-      close.innerHTML = 'X';
-      close.onclick = closeTOSPP.bind(this);
-      modal.appendChild(close);
-
-      iframe = this._tospp.iframe = document.createElement('iframe');
-      iframe.id = 'tosppframe';
-      iframe.setAttribute('sandbox', '');
-      iframe.setAttribute('name', 'tosppframe');
-      dom.appendTo(iframe, modal);
-      dom.appendTo(modal, IFRAME_PARENT_SELECTOR);
-    } else {
-      iframe = this._tospp.iframe;
-      modal = this._tospp.modal;
-    }
-    modal.style.display = "block";
-    iframe.setAttribute('src', url);
-  }
-
-  function closeTOSPP() {
-    /*jshint validthis:true*/
-    if (this._tospp) {
-      this._tospp.modal.style.display = "none";
-    }
-  }
-
   var Dialog = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
@@ -231,14 +191,6 @@ BrowserID.Modules.Dialog = (function() {
       if (startExternalDependencies) {
         startChannel.call(self);
       }
-
-      // if B2G
-      //this.click(TOSPP_SELECTOR, showTOSPP);
-      $(TOSPP_SELECTOR).live('click', function(e) {
-        e.preventDefault();
-        showTOSPP.call(self, e);
-      });
-      // endif
 
       options.ready && _.defer(options.ready);
     },
