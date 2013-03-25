@@ -27,7 +27,7 @@ BrowserID.Modules.InteractionData = (function() {
 
   var bid = BrowserID,
       model = bid.Models.InteractionData,
-      network = bid.Network,
+      user = bid.User,
       storage = bid.Storage,
       complete = bid.Helpers.complete,
       dom = bid.DOM,
@@ -157,7 +157,7 @@ BrowserID.Modules.InteractionData = (function() {
     if (lastSessionsKPIs && lastSessionsKPIs.orphaned) {
       var events = lastSessionsKPIs.event_stream || [];
       if (hasEvent(events, MediatorToKPINameTable.user_staged)) {
-        network.checkAuth(function(auth) {
+        user.checkAuthentication(function(auth) {
           if (!!auth) {
             lastSessionsKPIs.orphaned = false;
             model.setCurrent(lastSessionsKPIs);

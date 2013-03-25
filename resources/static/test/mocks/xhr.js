@@ -280,6 +280,10 @@ BrowserID.Mocks.xhr = (function() {
         response(request.success);
       }
       else if (!(typeofResponse === "number" || typeofResponse === "undefined")) {
+        if (typeofResponse === "object") {
+          response = _.extend({}, response);
+        }
+
         if (request.success) {
           if (delay) {
             // simulate response delay

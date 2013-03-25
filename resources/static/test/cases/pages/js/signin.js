@@ -5,7 +5,6 @@
   "use strict";
 
   var bid = BrowserID,
-      network = bid.Network,
       user = bid.User,
       xhr = bid.Mocks.xhr,
       WinChanMock = bid.Mocks.WinChan,
@@ -213,7 +212,7 @@
     $("#email").val("registered@testuser.com");
 
     controller.emailSubmit(function() {
-      network.checkAuth(function(status) {
+      user.checkAuthentication(function(status) {
         equal(status, "assertion", "user is authenticated with an assertion");
         equal(docMock.location, "/", "user signed in, page redirected");
         start();
@@ -357,7 +356,7 @@
         user.resetCaches();
 
         controller.primaryAuthComplete(null, "yar", function() {
-          network.checkAuth(function(status) {
+          user.checkAuthentication(function(status) {
             equal(status, "assertion", "user is authenticated with an assertion");
             equal(docMock.location, "/", "user signed in, page redirected");
             start();

@@ -5,33 +5,17 @@ BrowserID.Network = (function() {
   "use strict";
   /*globals require:true*/
 
-  var jwcrypto = require("./lib/jwcrypto"),
-      bid = BrowserID,
+  var bid = BrowserID,
       complete = bid.Helpers.complete,
       context,
       server_time,
       domain_key_creation_time,
-      auth_status,
       code_version,
-      userid,
-      time_until_delay,
       mediator = bid.Mediator,
       xhr = bid.XHR,
       post = xhr.post,
       get = xhr.get,
       storage = bid.Storage;
-
-  function setUserID(uid) {
-    userid = uid;
-
-    // TODO - Get this out of here and put it into user!
-
-    // when session context returns with an authenticated user, update localstorage
-    // to indicate we've seen this user on this device
-    if (userid) {
-      storage.usersComputer.setSeen(userid);
-    }
-  }
 
   function onContextChange(msg, result) {
     context = result;
@@ -40,12 +24,7 @@ BrowserID.Network = (function() {
       local: (new Date()).getTime()
     };
     domain_key_creation_time = result.domain_key_creation_time;
-    auth_status = result.auth_level;
     code_version = result.code_version;
-    setUserID(result.userid);
-
-    // seed the PRNG
-    jwcrypto.addEntropy(result.random_seed);
   }
 
   function withContext(cb, onFailure) {
@@ -58,28 +37,7 @@ BrowserID.Network = (function() {
   function clearContext() {
     xhr.clearContext();
     var undef;
-    context = server_time = auth_status = userid = undef;
-  }
-
-  function handleAuthenticationResponse(type, onComplete, onFailure, status) {
-    try {
-      var authenticated = status.success;
-
-      if (typeof authenticated !== 'boolean') throw status;
-
-      // now update the userid which is set once the user is authenticated.
-      // this is used to key off client side state, like whether this user has
-      // confirmed ownership of this device
-      setUserID(status.userid);
-
-      // at this point we know the authentication status of the
-      // session, let's set it to perhaps save a network request
-      // (to fetch session context).
-      auth_status = authenticated && type;
-      complete(onComplete, authenticated);
-    } catch (e) {
-      onFailure("unexpected server response: " + e);
-    }
+    context = server_time = undef;
   }
 
   function stageAddressForVerification(data, wsapiName, onComplete, onFailure) {
@@ -99,12 +57,6 @@ BrowserID.Network = (function() {
     });
   }
 
-  function handleAddressVerifyCheckResponse(onComplete, status, textStatus, jqXHR) {
-    if (status.status === 'complete' && status.userid)
-      setUserID(status.userid);
-    complete(onComplete, status.status);
-  }
-
   function completeAddressVerification(wsapiName, token, password, onComplete, onFailure) {
       var data = {
         token: token
@@ -116,12 +68,7 @@ BrowserID.Network = (function() {
       post({
         url: wsapiName,
         data: data,
-        success: function(status, textStatus, jqXHR) {
-          // If the user has successfully completed an address verification,
-          // they are authenticated to the password status.
-          if (status.success) auth_status = "password";
-          complete(onComplete, status.success);
-        },
+        success: onComplete,
         error: onFailure
       });
 
@@ -160,7 +107,7 @@ BrowserID.Network = (function() {
           pass: password,
           ephemeral: !storage.usersComputer.confirmed(email)
         },
-        success: handleAuthenticationResponse.curry("password", onComplete, onFailure),
+        success: onComplete,
         error: onFailure
       });
     },
@@ -181,30 +128,15 @@ BrowserID.Network = (function() {
           assertion: assertion,
           ephemeral: !storage.usersComputer.confirmed(email)
         },
-        success: handleAuthenticationResponse.curry("assertion", onComplete, onFailure),
+        success: onComplete,
         error: onFailure
       });
     },
 
-    /**
-     * Check whether a user is currently logged in.
-     * @method checkAuth
-     * @param {function} [onComplete] - called with one
-     * boolean parameter, whether the user is authenticated.
-     * @param {function} [onFailure] - called on XHR failure.
-     */
-    checkAuth: function(onComplete, onFailure) {
-      withContext(function() {
-        try {
-          complete(onComplete, auth_status);
-        } catch(e) {
-          complete(onFailure, e.toString());
-        }
-      }, onFailure);
-    },
+    withContext: withContext,
 
-    withContext: function(onComplete, onFailure) {
-      withContext(onComplete, onFailure);
+    setContext: function(field, value) {
+      if (context) context[field] = value;
     },
 
     /**
@@ -224,23 +156,13 @@ BrowserID.Network = (function() {
     logout: function(onComplete, onFailure) {
       post({
         url: "/wsapi/logout",
-        success: function() {
-          // assume the logout request is successful and
-          // log the user out.  There is no need to reset the
-          // CSRF token.
-          // FIXME: we should return a confirmation that the
-          // user was successfully logged out.
-          auth_status = false;
-          setUserID(undefined);
-          complete(onComplete);
-        },
+        success: onComplete,
         error: function(info, xhr, textStatus) {
           if (info.network.status === 400) {
-            auth_status = false;
             complete(onComplete);
           }
           else {
-            onFailure && onFailure(info);
+            complete(onFailure, info);
           }
         }
       });
@@ -296,7 +218,7 @@ BrowserID.Network = (function() {
     checkUserRegistration: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/user_creation_status?email=" + encodeURIComponent(email),
-        success: handleAddressVerifyCheckResponse.curry(onComplete),
+        success: onComplete,
         error: onFailure
       });
     },
@@ -357,7 +279,7 @@ BrowserID.Network = (function() {
     checkPasswordReset: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/password_reset_status?email=" + encodeURIComponent(email),
-        success: handleAddressVerifyCheckResponse.curry(onComplete),
+        success: onComplete,
         error: onFailure
       });
     },
@@ -392,7 +314,7 @@ BrowserID.Network = (function() {
     checkEmailReverify: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/email_reverify_status?email=" + encodeURIComponent(email),
-        success: handleAddressVerifyCheckResponse.curry(onComplete),
+        success: onComplete,
         error: onFailure
       });
     },
@@ -435,12 +357,7 @@ BrowserID.Network = (function() {
           oldpass: oldPassword,
           newpass: newPassword
         },
-        success: function(status) {
-          // successful change of password will upgrade a session to password
-          // level auth
-          if (status) auth_status = "password";
-          complete(onComplete, status.success);
-        },
+        success: onComplete,
         error: onFailure
       });
     },
@@ -507,7 +424,7 @@ BrowserID.Network = (function() {
     checkEmailRegistration: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/email_addition_status?email=" + encodeURIComponent(email),
-        success: handleAddressVerifyCheckResponse.curry(onComplete),
+        success: onComplete,
         error: onFailure
       });
     },
@@ -599,28 +516,10 @@ BrowserID.Network = (function() {
       get({
         url: "/wsapi/list_emails",
         success: function(emails) {
-          // TODO - Put this into user.js or storage.js when emails are synced/saved to
-          // storage.
-          // update our local storage map of email addresses to user ids
-          if (userid) {
-            storage.updateEmailToUserIDMapping(userid, emails.emails);
-          }
-
-          onComplete && onComplete(emails.emails);
+          complete(onComplete, emails.emails);
         },
         error: onFailure
       });
-    },
-
-    /**
-     * TODO - move this into user.
-     * Return the user's userid, which will an integer if the user
-     * is authenticated, undefined otherwise.
-     *
-     * @method userid
-     */
-    userid: function() {
-      return userid;
     },
 
     /**
@@ -721,18 +620,11 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     prolongSession: function(onComplete, onFailure) {
-      Network.checkAuth(function(authenticated) {
-        if(authenticated) {
-          post({
-            url: "/wsapi/prolong_session",
-            success: onComplete,
-            error: onFailure
-          });
-        }
-        else {
-          complete(onFailure, "user not authenticated");
-        }
-      }, onFailure);
+      post({
+        url: "/wsapi/prolong_session",
+        success: onComplete,
+        error: onFailure
+      });
     },
 
     /**
@@ -743,18 +635,12 @@ BrowserID.Network = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     usedAddressAsPrimary: function(email, onComplete, onFailure) {
-      Network.checkAuth(function authChecked(authenticated) {
-        if (authenticated) {
-          post({
-            url: "/wsapi/used_address_as_primary",
-            data: { email: email },
-            success: onComplete,
-            error: onFailure
-          });
-        } else {
-          complete(onFailure, "user not authenticated");
-        }
-      }, onFailure);
+      post({
+        url: "/wsapi/used_address_as_primary",
+        data: { email: email },
+        success: onComplete,
+        error: onFailure
+      });
     },
 
     /**
@@ -796,7 +682,7 @@ BrowserID.Network = (function() {
     checkTransitionToSecondary: function(email, onComplete, onFailure) {
       get({
         url: "/wsapi/transition_status?email=" + encodeURIComponent(email),
-        success: handleAddressVerifyCheckResponse.curry(onComplete),
+        success: onComplete,
         error: onFailure
       });
     }

@@ -8,7 +8,6 @@
       bid = BrowserID,
       storage = bid.Storage,
       user = bid.User,
-      network = bid.Network,
       testHelpers = bid.TestHelpers,
       register = testHelpers.register,
       xhr = bid.Mocks.xhr,
@@ -83,7 +82,7 @@
 
   asyncTest("start controller with `add: false` authenticates user", function() {
     register("primary_user_ready", function(msg, info) {
-      network.checkAuth(function(status) {
+      user.checkAuthentication(function(status) {
         equal(status, "assertion", "status is correct");
         start();
       });

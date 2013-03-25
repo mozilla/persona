@@ -6,6 +6,7 @@
   var bid = BrowserID,
       moduleManager = bid.module,
       modules = bid.Modules,
+      user = bid.User,
       network = bid.Network,
       mediator = bid.Mediator,
       xhr = bid.XHR;
@@ -13,6 +14,7 @@
   // A request that takes more than 10 seconds is considered delayed.
   xhr.init({ time_until_delay: 10 * 1000 });
   network.init();
+  user.init();
 
   var hash = window.location.hash || "",
       continuation = hash.indexOf("#AUTH_RETURN") > -1;

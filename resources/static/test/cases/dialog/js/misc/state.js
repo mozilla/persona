@@ -116,14 +116,14 @@
     machine.start({controller: actions});
   }
 
-  function setContextInfo(auth_status) {
+  function setContextInfo(auth_level) {
     // Make sure there is context info for network.
     var serverTime = (new Date().getTime()) - 10;
     mediator.publish("context_info", {
       server_time: serverTime,
       domain_key_creation_time: serverTime,
       code_version: "ABCDEF",
-      auth_status: auth_status || "password",
+      auth_level: auth_level || "password",
       userid: 1,
       random_seed: "ABCDEFGH"
     });
@@ -397,7 +397,7 @@
 
   asyncTest("email_valid_and_ready, need to ask user whether it's their computer - redirect to is_this_your_computer", function() {
     setContextInfo("password");
-    storage.usersComputer.forceAsk(network.userid());
+    storage.usersComputer.forceAsk(user.userid());
     mediator.subscribe("is_this_your_computer", function() {
       ok(true, "redirect to is_this_your_computer");
       start();
