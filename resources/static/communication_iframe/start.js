@@ -29,6 +29,8 @@
     if (!remoteOrigin) {
       remoteOrigin = o;
       user.setOrigin(remoteOrigin);
+      var issuer = storage.site.get(o, "issuer");
+      user.setIssuer(issuer || "default");
     }
   }
 

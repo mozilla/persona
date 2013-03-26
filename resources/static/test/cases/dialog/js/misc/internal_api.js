@@ -209,6 +209,31 @@
     }, {});
   });
 
+  asyncTest(".watch - authenticated user requests an assertion with saved issuer - assertion generated with cert for that issuer", function() {
+    user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
+      storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
+      storage.site.set(ORIGIN, "email", TEST_EMAIL);
+      storage.site.set(ORIGIN, "issuer", "fxos_issuer");
+
+      internal.watch(function(resp) {
+        if (resp.method === "login") {
+          ok(resp.assertion);
+        }
+        else if (resp.method === "ready") {
+          start();
+        }
+        else {
+          ok(false, "unexpected method call: " + resp.method);
+        }
+      }, {
+        origin: ORIGIN,
+        loggedInUser: "testuser2@testuser.com"
+      }, console.log);
+    });
+  });
+
+
+
   asyncTest(".watch with invalid string passed for options - options.error is returned", function() {
     dialogModule.get_success_value = "simulated_assertion";
 

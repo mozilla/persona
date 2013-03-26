@@ -1022,6 +1022,8 @@
       lib.getAssertion(TEST_EMAIL, lib.getOrigin(), function onSuccess(assertion) {
         testAssertion(assertion, start);
         equal(storage.site.get(testOrigin, "email"), TEST_EMAIL, "email address was persisted");
+        // issuer is used when getting a silent assertion.
+        equal(storage.site.get(testOrigin, "issuer"), "default", "issuer was persisted");
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
   });

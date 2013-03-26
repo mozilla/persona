@@ -200,6 +200,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/address_info?email=registered%40testuser.com&issuer=default primaryTransition": { type: "primary", state: "transition_to_primary", auth: "https://auth_url", prov: "https://prov_url", normalizedEmail: "registered@testuser.com" },
       "get /wsapi/address_info?email=registered%40testuser.com&issuer=default primaryOffline": { type: "primary", state: "offline", auth: "https://auth_url", prov: "https://prov_url", normalizedEmail: "registered@testuser.com" },
 
+      "get /wsapi/address_info?email=testuser%40testuser.com&issuer=fxos_issuer valid": { type: "secondary", state: "known", normalizedEmail: "testuser@testuser.com" },
       "get /wsapi/address_info?email=testuser%40testuser.com&issuer=default valid": { type: "secondary", state: "known", normalizedEmail: "testuser@testuser.com" },
       "get /wsapi/address_info?email=testuser2%40testuser.com&issuer=default valid": { type: "secondary", state: "known", normalizedEmail: "testuser@testuser.com" },
       "get /wsapi/address_info?email=testuser%40testuser.com&issuer=default known_secondary": { type: "secondary", state: "known", normalizedEmail: "testuser@testuser.com" },
