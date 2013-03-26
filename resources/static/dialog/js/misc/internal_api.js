@@ -229,14 +229,14 @@
   internal.createAccount = function(options, callback) {
     options = parseOptions(options);
 
-    function complete(err, assertion) {
-      callback && callback(err || null, assertion);
-    }
-
     var email = options.email;
     var password = options.password;
     if (!(email && password)) {
       return callback({error: "Email and password required"});
+    }
+
+    function complete(err, assertion) {
+      callback && callback(err || null, assertion);
     }
 
     // maybe allow unverified emails
@@ -244,19 +244,22 @@
 
     user.setOrigin(options.origin);
     user.createSecondaryUser(email, password, function (status) {
-      user.syncEmailKeypair(email, function(status) {
-        user.setOriginEmail(email);
-        user.getAssertion(email, user.getOrigin(), forceIssuer, function(assertion) {
-          complete(null, assertion);
-        }, complete.curry(null));
-      },
-      // on failure
-      function (err) {
-        callback(err);
+      internal.signIn(options, function(err, assertion) {
+        if (err) {
+          return callback(err);
+        }
+        // On successful sign-in, sync the keypair we generated
+        // upon creating the account.  Then return the assertion.
+        user.syncEmailKeypair(email,
+          function(status) {
+            user.setOriginEmail(email);
+            complete(null, assertion);
+          },
+          complete.curry(null)
+        );
       });
     });
   };
-
 
   /**
    * Log the user in using credentials
@@ -276,16 +279,16 @@
     BrowserID.Network.setAllowUnverified(!!options.allowUnverified);
 
     user.authenticate(options.email, options.password, function (status) {
-        user.setOrigin(options.origin);
-        storage.site.set(options.origin, "email", options.email);
-        var forceIssuer = options.forceIssuer || 'default';
-        user.getAssertion(options.email, user.getOrigin(), forceIssuer, function(assertion) {
-          complete(null, assertion);
-        }, complete.curry(null));
-      },
-      function (err) {
-        complete(err);
-      });
+      user.setOrigin(options.origin);
+      storage.site.set(options.origin, "email", options.email);
+      var forceIssuer = options.forceIssuer || 'default';
+      user.getAssertion(options.email, user.getOrigin(), forceIssuer, function(assertion) {
+        complete(null, assertion);
+      }, complete.curry(null));
+    },
+    function (err) {
+      complete(err);
+    });
   };
 
   /**
@@ -319,6 +322,30 @@
       if (assertion) callback(null, assertion);
       else callback(true, null)
     }, options);
+  };
+
+  /**
+   * Determine whether the account exists
+   * @method accountExists
+   * @param {string} email
+   * @param {function} callback
+   */
+  internal.accountExists = function(options, callback) {
+    options = parseOptions(options);
+    var email = options.email;
+    var issuer = options.issuer || null;
+    BrowserID.Network.addressInfo(email, issuer,
+      function accountExists_onComplete(data) {
+        try {
+          callback(null, JSON.stringify(data));
+        } catch (err) {
+          callback(String(err));
+        }
+      },
+      function accountExists_onFailure(err) {
+        callback(String(err));
+      }
+    );
   };
 
   function internalWatch (callback, options, log) {
