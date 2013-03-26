@@ -123,7 +123,7 @@ BrowserID.State = (function() {
       }
 
       self.allowUnverified = info.allowUnverified;
-      network.setAllowUnverified(info.allowUnverified);
+      user.setAllowUnverified(info.allowUnverified);
 
       startAction(false, "doRPInfo", info);
 

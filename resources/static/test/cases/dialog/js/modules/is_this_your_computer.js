@@ -42,7 +42,7 @@
 
   asyncTest("yes - sets ownership flag to true for the user", function() {
     createController();
-    network.authenticate("testuser@testuser.com", "password", function() {
+    user.authenticate("testuser@testuser.com", "password", function() {
       register("user_computer_status_set", function(msg, data) {
         equal(data.users_computer, true, "user_computer_status_set called with correct status");
         start();
@@ -53,7 +53,7 @@
 
   asyncTest("no - set the ownership flag to false for the user", function() {
     createController();
-    network.authenticate("testuser@testuser.com", "password", function() {
+    user.authenticate("testuser@testuser.com", "password", function() {
       register("user_computer_status_set", function(msg, data) {
         equal(data.users_computer, false, "user_computer_status_set called with correct status");
         start();
