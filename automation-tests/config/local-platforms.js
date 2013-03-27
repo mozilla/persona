@@ -11,6 +11,16 @@ const platforms = {
     browserName: 'firefox',
     version: ''
   },
+  /* if you wish to add a second firefox, give it a unique name and specify
+     the path to the binary, which will vary across systems.
+
+  "firefox-nightly": {
+    platform: 'ANY',
+    browserName: 'firefox',
+    version: '',
+    firefox_binary: '/Applications/FirefoxNightly.app/Contents/MacOS/firefox-bin'
+  },
+  */
   "chrome": {
     platform: 'ANY',
     browserName: 'chrome',
