@@ -13,6 +13,8 @@ const platforms = {
   },
   /* if you wish to add a second firefox, give it a unique name and specify
      the path to the binary, which will vary across systems.
+     --> This won't work for other browsers, only FF.
+     --> The example shows a Mac path, but you could insert a Linux or Win path too.
 
   "firefox-nightly": {
     platform: 'ANY',
