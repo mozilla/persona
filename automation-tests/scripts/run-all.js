@@ -14,7 +14,8 @@
  * should be tested.
  */
 
-const sauce_platforms = require('../config/sauce-platforms');
+const sauce_platforms = require('../config/sauce-platforms'),
+  local_platforms = require('../config/local-platforms');
 
 const outputFormats = ["console", "json", "xunit"];
 
@@ -62,10 +63,14 @@ if (args.h) {
   process.exit(0);
 }
 
+// switch between sauce and local platform list depending on results of
+// parsing args.local or seeing PERSONA_NO_SAUCE in env vars
+var config_platforms = process.env.PERSONA_NO_SAUCE ? local_platforms : sauce_platforms;
+
 // optimist only runs "check" if an option is defined. Since we are checking if
 // an option is not defined, its check has to be outside of the option.
-if (!args.platform && !process.env.PERSONA_NO_SAUCE) {
-  args.platform = process.env.PERSONA_BROWSER || sauce_platforms.defaultPlatform;
+if (!args.platform) {
+  args.platform = process.env.PERSONA_BROWSER || config_platforms.defaultPlatform;
 }
 // all is a supported alias "match everything"
 if (args.platform === 'all') args.platform = "*";
@@ -86,7 +91,7 @@ const path = require('path'),
       vows_path = path.join(__dirname, "../node_modules/.bin/vows"),
       vows_args = [(args.output === 'xunit') ? "--xunit" : "--json", "-i"],
       result_extension = process.env.RESULT_EXTENSION || "xml",
-      supported_platforms = sauce_platforms.platforms,
+      supported_platforms = config_platforms.platforms,
       start_time = new Date().getTime(),
       glob = require('minimatch');
 
