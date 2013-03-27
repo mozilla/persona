@@ -149,7 +149,9 @@
     // if the current domain uses a special issuer, if it does, set the issuer
     // in user.js.
     var issuer = storage.site.get(user.getOrigin(), "issuer");
-    user.setIssuer(issuer || 'default');
+    if (issuer) {
+      user.setIssuer(issuer);
+    }
   }
 
   /*
