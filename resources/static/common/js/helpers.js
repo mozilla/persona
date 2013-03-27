@@ -64,8 +64,24 @@
     }
   }
 
-  function log(msg) {
+  function log() {
     try {
+      var msg = "";
+      var args = [].slice.call(arguments, 0);
+      _.each(args, function(arg, index) {
+        if (index > 0) msg += " ";
+
+        var type = Object.prototype.toString.apply(arg);
+        if (type === "[object String]") {
+          msg += arg;
+        }
+        else if (type === "[object Object]") {
+          msg += JSON.stringify(arg, null, 2);
+        }
+        else {
+          msg += String(arg);
+        }
+      });
       window.console.log(msg);
     } catch(e) {
       // Catch all if console is not available or if it for some reason blows
