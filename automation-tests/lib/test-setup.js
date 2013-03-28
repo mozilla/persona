@@ -4,6 +4,7 @@ Q = require('q'),
 request = require('request'),
 restmail = require('../lib/restmail.js'),
 saucePlatforms = require('../config/sauce-platforms.js'),
+localPlatforms = require('../config/local-platforms.js'),
 testidp = require('./testidp.js'),
 wd = require('wd'),
 path = require('path'),
@@ -13,6 +14,8 @@ persona_urls = require('./urls.js');
 require('./wd-extensions.js');
 
 var testSetup = {};
+
+var configPlatforms = process.env['PERSONA_NO_SAUCE'] ? localPlatforms : saucePlatforms;
 
 // as part of test setup, configure wsapi_client to use the proper environment,
 // this way, any code which wants to programatically interact with the
@@ -27,13 +30,18 @@ wsapi.configuration.browserid = persona_urls.persona;
 // startup determines if browser sessions will be local or use saucelabs.
 // should only be called once per session (potentially, once for many tests)
 //
-// saucelabs is used if:
+// saucelabs is definitely not used if
+//  - env vars include PERSONA_NO_SAUCE
+//
+// otherwise, saucelabs is used if:
 //  - opts include sauceUser and sauceApiKey or
 //  - env vars include PERSONA_SAUCE_USER and PERSONA_SAUCE_APIKEY
 //
 // opts may also include
-//  - platform (a browser from the list in lib/sauce_platforms)
-//  - desiredCapabilities (see json wire protocol for list of capabilities)
+//  - platform (a browser from the list in config/sauce_platforms or
+//              config/local_platforms)
+//  - desiredCapabilities (see json wire protocol for list of capabilities;
+//                         varies for local vs sauce)
 // env var equivalents are PERSONA_BROWSER and PERSONA_BROWSER_CAPABILITIES
 testSetup.startup = function(opts) {
   opts = opts || {};
@@ -160,20 +168,20 @@ function setSessionOpts(opts) {
 
   // check for typos: throw error if requestedPlatform not found in list of supported sauce platforms
   var requestedPlatform = opts.platform || process.env['PERSONA_BROWSER'];
-  if (requestedPlatform && requestedPlatform != 'any' && !saucePlatforms.platforms[requestedPlatform]) {
+  if (requestedPlatform && requestedPlatform != 'any' && !configPlatforms.platforms[requestedPlatform]) {
     throw new Error('requested platform ' + requestedPlatform +
                     ' not found in list of available platforms');
   }
   // Default to *nothing* locally (server's choice), and chrome/VISTA for sauce
   var defaultPlatform = process.env.PERSONA_NO_SAUCE ? 'any' : { browserName: 'chrome', platform: 'Windows 2008' };
-  var platform = requestedPlatform ? saucePlatforms.platforms[requestedPlatform] : defaultPlatform;
+  var platform = requestedPlatform ? configPlatforms.platforms[requestedPlatform] : defaultPlatform;
   // add platform, browserName, version to session opts
   _.extend(sessionOpts, platform);
 
   // pull the default desired capabilities out of the sauce-platforms file
   // overwrite if specified by user
   var desiredCapabilities = opts.desiredCapabilities || process.env['PERSONA_BROWSER_CAPABILITIES'] || {};
-  _.extend(sessionOpts, saucePlatforms.defaultCapabilities);
+  _.extend(sessionOpts, configPlatforms.defaultCapabilities);
   _.extend(sessionOpts, desiredCapabilities);
 
   if (sessionOpts.browserName === 'opera' && !sessionOpts.proxy) {
