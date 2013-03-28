@@ -477,7 +477,7 @@ BrowserID.State = (function() {
     handleState("assertion_generated", function(msg, info) {
       self.success = true;
       if (info.assertion !== null) {
-        storage.setLoggedIn(user.getOrigin(), self.email);
+        storage.site.set(user.getOrigin(), "logged_in", self.email);
 
         startAction("doAssertionGenerated", { assertion: info.assertion, email: self.email });
       }

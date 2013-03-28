@@ -13,18 +13,20 @@ BrowserID.PageHelpers = (function() {
       helpers = bid.Helpers,
       dom = bid.DOM,
       ANIMATION_SPEED = 250,
-      origStoredEmail;
+      origStoredEmail,
+      origin = "https://login.persona.org",
+      storageKey = "sign_in_email";
 
   function setStoredEmail(email) {
-    storage.signInEmail.set(email);
+    storage.site.set(origin, storageKey, email);
   }
 
   function clearStoredEmail() {
-    storage.signInEmail.remove();
+    storage.site.remove(origin, storageKey);
   }
 
   function getStoredEmail() {
-    return storage.signInEmail.get() || "";
+    return storage.site.get(origin, storageKey) || "";
   }
 
   function onEmailChange(event) {
