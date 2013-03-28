@@ -93,7 +93,7 @@ BrowserID.XHR = (function() {
       success: success,
       error: error,
       headers: {
-        'BrowserID-Version': BROWSERID_VERSION
+        'BrowserID-git-sha': BROWSERID_VERSION
       }
     });
 
