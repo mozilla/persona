@@ -1,4 +1,17 @@
-current train:
+train-2013.03.29:
+  * Improve privacy policy! Clarify that we don't retain a list of sites users visit, plus other tweaks: #2922
+    * Mozilla Persona: respecting users' privacy since 2011 <3
+  * Refactor network.js and user.js to separate user state from network code: #3134
+  * Remove unused winchan code from communication_iframe, saving space: #3109
+  * Tweak background image URLs to prevent 404s on IE8: #1736
+  * Update connect-fonts-opensans dependency, fixing local font lookup on Mac OS: #3113
+  * Fix HTML double-escaping on cookies_disabled dialog screen: #2979
+  * Ensure KPI doesn't lose info gathered prior to session_context firing: #3104
+  * Add logging for KPI backend responses: #3100
+  * Test improvements:
+    * split out local selenium configs and use platform-agnostic browser identifiers: #3118
+    * enable local simultaneous selenium testing with multiple firefox binaries: #3138
+    * automation-tests README enhancements: #3117
 
 train-2013.03.15:
   * When a user types an email, it's no longer case sensitive: #3078, #2891, #2866, #2049, #2551, #1104
