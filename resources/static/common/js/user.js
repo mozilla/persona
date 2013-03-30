@@ -64,7 +64,7 @@ BrowserID.User = (function() {
         var emails = storage.getEmails();
         var issued_identities = {};
         prepareDeps();
-        _(emails).each(function(email_obj, email_address) {
+        _.each(emails, function(email_obj, email_address) {
           try {
             email_obj.pub = jwcrypto.loadPublicKeyFromObject(email_obj.pub);
           } catch (x) {
