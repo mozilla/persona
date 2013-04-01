@@ -110,7 +110,7 @@
     xhr.setDelay(5);
 
     mediator.subscribe("interaction_data_send_complete", function() {
-      var data = controller.getCurrentKPIs();
+      var data = controller.getCurrent();
 
       // Make sure expected items are in the current stored data.
       testHelpers.testKeysInObject(data, ["event_stream", "sample_rate", "timestamp", "lang", "new_account"]);
@@ -158,7 +158,7 @@
     network.withContext(function() {
       controller.addEvent("after_session_context");
 
-      equal(typeof controller.getCurrentKPIs(), "undefined", "no stored data");
+      equal(typeof controller.getCurrent(), "undefined", "no stored data");
       equal(typeof controller.getCurrentEventStream(), "undefined", "no data stored");
 
       controller.publishStored(function(status) {
@@ -216,7 +216,7 @@
       network.withContext(function() {
         controller.addEvent("session2_after_session_context");
 
-        equal(typeof controller.getCurrentKPIs(), "undefined", "no data collected");
+        equal(typeof controller.getCurrent(), "undefined", "no data collected");
         equal(typeof controller.getCurrentEventStream(), "undefined", "no data collected");
 
         controller.publishStored(function(status) {
@@ -268,7 +268,7 @@
     var TEN_MINS_IN_MS = 10 * 60 * 1000;
     createController();
     network.withContext(function() {
-      var timestamp = controller.getCurrentKPIs().timestamp;
+      var timestamp = controller.getCurrent().timestamp;
       ok(timestamp, "a timestamp has been passed: " + timestamp);
       equal(timestamp % TEN_MINS_IN_MS, 0, "timestamp has been rounded to a 10 minute interval");
       start();
@@ -282,13 +282,13 @@
       // disabled.
       controller.disable();
       mediator.publish("kpi_data", { number_emails: 1 });
-      testHelpers.testUndefined(controller.getCurrentKPIs());
+      testHelpers.testUndefined(controller.getCurrent());
 
       // number_emails will be added to KPI data because sampling is
       // disabled.
       controller.enable();
       mediator.publish("kpi_data", { number_emails: 2 });
-      testHelpers.testObjectValuesEqual(controller.getCurrentKPIs(), {
+      testHelpers.testObjectValuesEqual(controller.getCurrent(), {
         number_emails: 2
       });
 
