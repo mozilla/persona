@@ -24,12 +24,3 @@ function node(script) {
 }
 
 node('./generate_ephemeral_keys.js');
-
-console.log(">>> Installing automation-tests dependencies");
-// install automation-test dependencies
-var npm_process = child_process.spawn('npm', ['install'], {
-  cwd: path.join(__dirname, '..', 'automation-tests'),
-  env: process.env
-});
-npm_process.stdout.pipe(process.stdout);
-npm_process.stderr.pipe(process.stderr);
