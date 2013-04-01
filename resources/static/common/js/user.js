@@ -1352,21 +1352,19 @@ BrowserID.User = (function() {
      * @param {function} onFailure - called on XHR failure.
      */
     setComputerOwnershipStatus: function(userOwnsComputer, onComplete, onFailure) {
-      network.withContext(function() {
-        var userID = network.userid();
-        if (typeof userID !== "undefined") {
-          if (userOwnsComputer) {
-            storage.usersComputer.setConfirmed(userID);
-            network.prolongSession(onComplete, onFailure);
-          }
-          else {
-            storage.usersComputer.setDenied(userID);
-            complete(onComplete);
-          }
-        } else {
-          complete(onFailure, "user is not authenticated");
+      var userID = network.userid();
+      if (typeof userID !== "undefined") {
+        if (userOwnsComputer) {
+          storage.usersComputer.setConfirmed(userID);
+          network.prolongSession(onComplete, onFailure);
         }
-      }, onFailure);
+        else {
+          storage.usersComputer.setDenied(userID);
+          complete(onComplete);
+        }
+      } else {
+        complete(onFailure, "user is not authenticated");
+      }
     },
 
     /**
@@ -1374,14 +1372,12 @@ BrowserID.User = (function() {
      * @method isUsersComputer
      */
     isUsersComputer: function(onComplete, onFailure) {
-      network.withContext(function() {
-        var userID = network.userid();
-        if (typeof userID !== "undefined") {
-          complete(onComplete, storage.usersComputer.confirmed(userID));
-        } else {
-          complete(onFailure, "user is not authenticated");
-        }
-      }, onFailure);
+      var userID = network.userid();
+      if (typeof userID !== "undefined") {
+        complete(onComplete, storage.usersComputer.confirmed(userID));
+      } else {
+        complete(onFailure, "user is not authenticated");
+      }
     },
 
     /**
@@ -1389,18 +1385,16 @@ BrowserID.User = (function() {
      * @method shouldAskIfUsersComputer
      */
     shouldAskIfUsersComputer: function(onComplete, onFailure) {
-      network.withContext(function() {
-        var userID = network.userid();
-        if (typeof userID !== "undefined") {
-          // A user should never be asked if they completed an email
-          // registration/validation in this dialog session.
-          var shouldAsk = storage.usersComputer.shouldAsk(userID)
-                          && !registrationComplete;
-          complete(onComplete, shouldAsk);
-        } else {
-          complete(onFailure, "user is not authenticated");
-        }
-      }, onFailure);
+      var userID = network.userid();
+      if (typeof userID !== "undefined") {
+        // A user should never be asked if they completed an email
+        // registration/validation in this dialog session.
+        var shouldAsk = storage.usersComputer.shouldAsk(userID)
+                        && !registrationComplete;
+        complete(onComplete, shouldAsk);
+      } else {
+        complete(onFailure, "user is not authenticated");
+      }
     },
 
     /**
