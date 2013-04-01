@@ -28,20 +28,12 @@ generate_version_js(function(err) {
     max_backlog: -1
   });
 
-  process.env['BUILD_DIR'] = path.join(staticPath, "build");
-  mkdirp.sync(process.env['BUILD_DIR']);
-
-  // generate include.js
-  require('./create_include.js')(function(err) {
-    if (err) console.error("Could not generate include.js, aborting: " 
-          + String(err));
-    process.exit(1);
-  });
-
-  // first we'll "generate templates" - which is to concatenate
+  // first and foremost we'll "generate templates" - which is to concatenate
   // a bunch of ejs into a javascript file
   // NOTE: env setting could be cleaned up here, this is like this to minimally
   // change things during migration of compress{,-locales}.sh to javascript
+  process.env['BUILD_DIR'] = path.join(staticPath, "build");
+  mkdirp.sync(process.env['BUILD_DIR']);
   process.env['TEMPLATE_DIR'] = path.join(staticPath, "dialog", "views");
   require('./create_templates.js')();
   require('./create_font_css.js')();
