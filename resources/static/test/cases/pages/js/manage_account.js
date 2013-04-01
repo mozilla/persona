@@ -24,8 +24,6 @@
       testHelpers.setup();
       bid.Renderer.render("#page_head", "site/index", {});
       xhr.setContextInfo("auth_level", "password");
-      xhr.setContextInfo("userid", 1);
-      xhr.setContextInfo("has_password", true);
       mocks.document.location = "";
     },
     teardown: function() {
@@ -46,7 +44,7 @@
       equal($("#old_password").val(), "", "old_password field is cleared");
       equal($("#new_password").val(), "", "new_password field is cleared");
       testHelpers.testTooltipNotVisible();
-      user.checkAuthentication(function(authLevel) {
+      network.checkAuth(function(authLevel) {
         equal(authLevel, "password", "after password change, user authenticated to password level");
         start();
       }, testHelpers.unexpectedXHRFailure);
@@ -263,6 +261,7 @@
   });
 
   asyncTest("changePassword with user authenticated to password level, incorrect old password - tooltip", function() {
+    xhr.setContextInfo("auth_level", "password");
     testPasswordChangeFailure("incorrectpassword", "newpassword", "incorrect old password, expected failure", "incorrectPassword");
   });
 
@@ -273,6 +272,8 @@
   });
 
   asyncTest("changePassword with user authenticated to password level, happy case", function() {
+    xhr.setContextInfo("auth_level", "password");
+
     testPasswordChangeSuccess("oldpassword", "newpassword", "proper completion, no need to authenticate");
   });
 

@@ -31,8 +31,6 @@
   module("common/js/user", {
     setup: function() {
       testHelpers.setup();
-      xhr.setContextInfo("auth_level", "password");
-      xhr.setContextInfo("userid", 1);
     },
     teardown: function() {
       testHelpers.teardown();
@@ -157,7 +155,6 @@
   }
 
   function testAddressVerificationPoll(authLevel, xhrResultName, pollFuncName, expectedResult) {
-    lib.clearContext();
     storage.setReturnTo(testOrigin);
     xhr.useResult(xhrResultName);
 
@@ -1226,7 +1223,7 @@
 
   asyncTest("setComputerOwnershipStatus with true, isUsersComputer - mark the computer as the users, prolongs the user's session", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.clear(lib.userid());
+      storage.usersComputer.clear(network.userid());
       lib.setComputerOwnershipStatus(true, function() {
         lib.isUsersComputer(function(usersComputer) {
           equal(usersComputer, true, "user is marked as owner of computer");
@@ -1238,7 +1235,7 @@
 
   asyncTest("setComputerOwnershipStatus with false, isUsersComputer - mark the computer as not the users", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.clear(lib.userid());
+      storage.usersComputer.clear(network.userid());
       lib.setComputerOwnershipStatus(false, function() {
         lib.isUsersComputer(function(usersComputer) {
           equal(usersComputer, false, "user is marked as not an owner");
@@ -1249,8 +1246,6 @@
   });
 
   asyncTest("setComputerOwnershipStatus with unauthenticated user - call onFailure", function() {
-    xhr.setContextInfo("auth_status", false);
-    xhr.setContextInfo("userid", undefined);
     lib.setComputerOwnershipStatus(false,
       testHelpers.unexpectedSuccess,
       testHelpers.expectedXHRFailure
@@ -1269,7 +1264,7 @@
 
   asyncTest("shouldAskIfUsersComputer with user who has been asked - call onSuccess with false", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.setConfirmed(lib.userid());
+      storage.usersComputer.setConfirmed(network.userid());
       lib.shouldAskIfUsersComputer(function(shouldAsk) {
         equal(shouldAsk, false, "user has been asked already, do not ask again");
         start();
@@ -1279,7 +1274,7 @@
 
   asyncTest("shouldAskIfUsersComputer with user who has not been asked and has not verified email this dialog session - call onSuccess with true", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.forceAsk(lib.userid());
+      storage.usersComputer.forceAsk(network.userid());
       lib.shouldAskIfUsersComputer(function(shouldAsk) {
         equal(shouldAsk, true, "user has not verified an email this dialog session and should be asked");
         start();
@@ -1293,7 +1288,7 @@
       xhr.useResult("complete");
 
       lib.waitForEmailValidation(TEST_EMAIL, function() {
-        storage.usersComputer.forceAsk(lib.userid());
+        storage.usersComputer.forceAsk(network.userid());
         lib.shouldAskIfUsersComputer(function(shouldAsk) {
           equal(shouldAsk, false, "user has verified an email this dialog session and should be asked");
           start();
@@ -1322,30 +1317,4 @@
       }, testHelpers.unexpectedXHRFailure);
     });
   });
-
-  asyncTest("changePassword success - user's auth_level updated to password", function() {
-    xhr.setContextInfo("auth_level", "assertion");
-    lib.changePassword("oldpassword", "newpassword", function(changed) {
-      equal(change, true);
-      lib.checkAuthentication(function(auth_level) {
-        equal(auth_level, "password");
-        start();
-      }, testHelpers.unexpectedXHRFailure);
-    }, testHelpers.unexpectedXHRFailure);
-    start();
-  });
-
-  asyncTest("changePassword with incorrect password - user's auth_level not updated", function() {
-    xhr.setContextInfo("auth_level", "assertion");
-    xhr.useResult("incorrectPassword");
-    lib.changePassword("oldpassword", "newpassword", function(changed) {
-      equal(change, false);
-      lib.checkAuthentication(function(auth_level) {
-        equal(auth_level, "assertion");
-        start();
-      }, testHelpers.unexpectedXHRFailure);
-    }, testHelpers.unexpectedXHRFailure);
-    start();
-  });
-
 }());

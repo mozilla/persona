@@ -30,8 +30,6 @@
   module("dialog/js/modules/pick_email", {
     setup: function() {
       testHelpers.setup();
-      xhr.setContextInfo("auth_level", "password");
-      xhr.setContextInfo("userid", 1);
     },
 
     teardown: function() {

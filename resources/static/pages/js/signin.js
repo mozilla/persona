@@ -8,6 +8,7 @@ BrowserID.signIn = (function() {
   var bid = BrowserID,
       dom = bid.DOM,
       user = bid.User,
+      network = bid.Network,
       helpers = bid.Helpers,
       errors = bid.Errors,
       pageHelpers = bid.PageHelpers,
@@ -35,7 +36,7 @@ BrowserID.signIn = (function() {
     // primary user who is authenticated with the primary.
     user.provisionPrimaryUser(email, info, function(status, provInfo) {
       if (status === "primary.verified") {
-        user.authenticateWithAssertion(email, provInfo.assertion, function(status) {
+        network.authenticateWithAssertion(email, provInfo.assertion, function(status) {
           userAuthenticated();
           complete(callback);
         }, pageHelpers.getFailure(errors.authenticateWithAssertion, callback));
