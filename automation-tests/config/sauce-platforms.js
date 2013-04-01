@@ -1,11 +1,8 @@
-//
-// Platforms supported by sauce that we test. See
-// https://saucelabs.com/docs/browsers for available versions and OS.
-//
+// platforms supported by sauce that we test
 const platforms = {
   // Firefox
-  "win7_firefox_16": {
-    platform:'Windows 2008',
+  "vista_firefox_16": {
+    platform:'VISTA',
     browserName:'firefox',
     version:'16'
   },
@@ -21,8 +18,8 @@ const platforms = {
   },
 
   // Chrome
-  "win7_chrome": {
-    platform:'Windows 2008',
+  "vista_chrome": {
+    platform:'VISTA',
     browserName:'chrome'
   },
 
@@ -32,8 +29,8 @@ const platforms = {
     browserName: 'internet explorer',
     version:'8'
   },
-  "win7_ie_9": {
-    platform:'Windows 2008',
+  "vista_ie_9": {
+    platform:'VISTA',
     browserName:'internet explorer',
     version:'9'
   },
@@ -77,4 +74,4 @@ const defaultCapabilities = {
 
 exports.platforms = platforms;
 exports.defaultCapabilities = defaultCapabilities;
-exports.defaultPlatform = "win7_firefox_16";
+exports.defaultPlatform = "vista_firefox_16";
