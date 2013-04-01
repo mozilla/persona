@@ -1,5 +1,3 @@
-current train:
-
 train-2013.03.15:
   * When a user types an email, it's no longer case sensitive: #3078, #2891, #2866, #2049, #2551, #1104
   * IDP API improvment - .raiseProvisioningFailure() requires no specific string argument: #2339
