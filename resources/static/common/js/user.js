@@ -449,6 +449,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - called on failure
      */
     provisionPrimaryUser: function(email, info, onComplete, onFailure) {
+
       User.primaryUserAuthenticationInfo(email, info, function(authInfo) {
         if (authInfo.authenticated) {
           persistEmailKeypair(email, authInfo.keypair, authInfo.cert,
@@ -528,16 +529,14 @@ BrowserID.User = (function() {
           complete(userInfo);
         },
         function(error) {
-          // issue #2339 - in case an error is raised we don't care
-          // about the specific error code.
-          if (error.code === "primaryError") {
+          if (error.code === "primaryError" && error.msg === "user is not authenticated as target user") {
             var userInfo = _.extend({
               authenticated: false
             }, info);
             complete(userInfo);
           }
           else {
-            onFailure($.extend(info, { detailedError: error }));
+            onFailure(info);
           }
         }
       );
