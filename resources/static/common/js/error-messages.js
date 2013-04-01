@@ -56,7 +56,7 @@ BrowserID.Errors = (function(){
 
     cookiesDisabled: {
       title: gettext("Persona requires cookies to remember you."),
-      noescape_message: format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" id='enable_cookies' target='_blank' href='" + enableCookiesURL + "'"])
+      message: format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='" + enableCookiesURL + "'"])
 
     },
 

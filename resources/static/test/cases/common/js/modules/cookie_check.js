@@ -35,9 +35,6 @@
       ready: function(status) {
         equal(status, false, "cookies are disabled, false status");
         testHelpers.testErrorVisible();
-        // make sure the message is not escaped. If it is escaped, the anchor
-        // will not be found. see issue #2979
-        ok($("#enable_cookies").length);
         start();
       }
     });
