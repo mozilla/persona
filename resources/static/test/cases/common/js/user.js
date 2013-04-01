@@ -512,7 +512,7 @@
     provisioning.setStatus(provisioning.AUTHENTICATED);
     lib.createPrimaryUser({email: "unregistered@testuser.com"}, function(status) {
       equal(status, "primary.verified", "primary user is already verified, correct status");
-      lib.checkAuthentication(function(authenticated) {
+      network.checkAuth(function(authenticated) {
         equal(authenticated, "assertion", "after provisioning user, user should be automatically authenticated to Persona");
         start();
       });
@@ -1326,24 +1326,26 @@
   asyncTest("changePassword success - user's auth_level updated to password", function() {
     xhr.setContextInfo("auth_level", "assertion");
     lib.changePassword("oldpassword", "newpassword", function(changed) {
-      equal(changed, true);
+      equal(change, true);
       lib.checkAuthentication(function(auth_level) {
         equal(auth_level, "password");
         start();
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
+    start();
   });
 
   asyncTest("changePassword with incorrect password - user's auth_level not updated", function() {
     xhr.setContextInfo("auth_level", "assertion");
     xhr.useResult("incorrectPassword");
     lib.changePassword("oldpassword", "newpassword", function(changed) {
-      equal(changed, false);
+      equal(change, false);
       lib.checkAuthentication(function(auth_level) {
         equal(auth_level, "assertion");
         start();
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
+    start();
   });
 
 }());

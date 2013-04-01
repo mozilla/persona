@@ -138,10 +138,29 @@ BrowserID.Network = (function() {
       });
     },
 
-    withContext: withContext,
+    /**
+     * Check whether a user is currently logged in.
+     * @method checkAuth
+     * @param {function} [onComplete] - called with one
+     * boolean parameter, whether the user is authenticated.
+     * @param {function} [onFailure] - called on XHR failure.
+     */
+    checkAuth: function(onComplete, onFailure) {
+      withContext(function() {
+        try {
+          complete(onComplete, context.auth_level);
+        } catch(e) {
+          complete(onFailure, e.toString());
+        }
+      }, onFailure);
+    },
+
+    withContext: function(onComplete, onFailure) {
+      withContext(onComplete, onFailure);
+    },
 
     setContext: function(field, value) {
-      if (context) context[field] = value;
+      context[field] = value;
     },
 
     /**

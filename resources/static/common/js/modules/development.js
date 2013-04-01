@@ -9,7 +9,7 @@ BrowserID.Modules.Development = (function() {
       dom = bid.DOM,
       renderer = bid.Renderer,
       storage = bid.Storage,
-      user = bid.User,
+      network = bid.Network,
       clickCount = 0;
 
 

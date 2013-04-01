@@ -7,14 +7,13 @@
   var bid = BrowserID,
       mediator = bid.Mediator,
       transport = bid.Mocks.xhr,
-      user = bid.User,
-      network = bid.Network,
       testHelpers = bid.TestHelpers,
       TEST_EMAIL = "testuser@testuser.com",
       TEST_PASSWORD = "password",
       failureCheck = testHelpers.failureCheck,
       testObjectValuesEqual = testHelpers.testObjectValuesEqual;
 
+  var network = BrowserID.Network;
 
   module("common/js/network", {
     setup: function() {
@@ -198,11 +197,11 @@
       asyncTest(checkMethod + " mustAuth", function() {
         transport.useResult("mustAuth");
 
-        user.checkAuthentication(function(auth_status) {
+        network.checkAuth(function(auth_status) {
           equal(!!auth_status, false, "user not yet authenticated");
           network[checkMethod]("registered@testuser.com", function(status) {
             equal(status.status, "mustAuth");
-            user.checkAuthentication(function(auth_status) {
+            network.checkAuth(function(auth_status) {
               equal(!!auth_status, false, "user not yet authenticated");
               start();
             }, testHelpers.unexpectedFailure);
@@ -276,6 +275,84 @@
   asyncTest("authenticateWithAssertion with XHR failure", function() {
     failureCheck(network.authenticateWithAssertion, TEST_EMAIL, "test_assertion");
   });
+
+  asyncTest("checkAuth: simulate a delayed request - xhr_delay and xhr_complete both triggered", function() {
+    transport.setContextInfo("auth_level", "assertion");
+    transport.setDelay(200);
+    network.init({
+      time_until_delay: 100
+    });
+
+    var delayInfo;
+    mediator.subscribe("xhr_delay", function(msg, delay_info) {
+      delayInfo = delay_info;
+    });
+
+    var completeInfo;
+    mediator.subscribe("xhr_complete", function(msg, complete_info) {
+      completeInfo = complete_info;
+    });
+
+    network.checkAuth(function onSuccess(authenticated) {
+      equal(authenticated, "assertion", "we have an authentication");
+      equal(delayInfo.network.url, "/wsapi/session_context", "delay info correct");
+      equal(completeInfo.network.url, "/wsapi/session_context", "complete info correct");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("checkAuth: immediate success return - no xhr_delay triggered", function() {
+    transport.setContextInfo("auth_level", "assertion");
+
+    transport.setDelay(50);
+    network.init({
+      time_until_delay: 100
+    });
+
+    mediator.subscribe("xhr_delay", function(msg, delay_info) {
+      ok(false, "unexpected call to xhr_delay");
+    });
+
+    network.checkAuth(function onSuccess(authenticated) {
+      // a wait to happen to give xhr_delay a chance to return
+      setTimeout(start, 150);
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("checkAuth with valid authentication", function() {
+    transport.setContextInfo("auth_level", "assertion");
+    network.checkAuth(function onSuccess(authenticated) {
+      // a wait to happen to give xhr_delay a chance to return
+      equal(authenticated, "assertion", "we have an authentication");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("checkAuth with invalid authentication", function() {
+    transport.useResult("invalid");
+    transport.setContextInfo("auth_level", undefined);
+
+    network.checkAuth(function onSuccess(authenticated) {
+      equal(authenticated, undefined, "we are not authenticated");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+
+
+  asyncTest("checkAuth with XHR failure", function() {
+    transport.useResult("ajaxError");
+    transport.setContextInfo("auth_level", undefined);
+
+    // Do not convert this to failureCheck, we do this manually because
+    // checkAuth does not make an XHR request.  Since it does not make an XHR
+    // request, we do not test whether the app is notified of an XHR failure
+    network.checkAuth(function onSuccess() {
+      ok(true, "checkAuth does not make an ajax call, all good");
+      start();
+    }, testHelpers.unexpectedFailure);
+  });
+
 
   asyncTest("logout", function() {
     network.logout(function onSuccess() {
