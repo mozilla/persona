@@ -304,10 +304,6 @@ BrowserID.User = (function() {
 
 
   function onContextChange(msg, context) {
-    // seed the PRNG
-    prepareDeps();
-    jwcrypto.addEntropy(context.random_seed);
-
     setAuthenticationStatus(context.auth_level, context.userid);
   }
 

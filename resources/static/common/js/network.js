@@ -5,12 +5,14 @@ BrowserID.Network = (function() {
   "use strict";
   /*globals require:true*/
 
-  var bid = BrowserID,
+  var jwcrypto = require("./lib/jwcrypto"),
+      bid = BrowserID,
       complete = bid.Helpers.complete,
       context,
       server_time,
       domain_key_creation_time,
       code_version,
+      time_until_delay,
       mediator = bid.Mediator,
       xhr = bid.XHR,
       post = xhr.post,
@@ -25,6 +27,9 @@ BrowserID.Network = (function() {
     };
     domain_key_creation_time = result.domain_key_creation_time;
     code_version = result.code_version;
+
+    // seed the PRNG
+    jwcrypto.addEntropy(result.random_seed);
   }
 
   function withContext(cb, onFailure) {
