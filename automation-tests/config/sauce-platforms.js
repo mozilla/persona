@@ -10,12 +10,12 @@ const platforms = {
     version:'16'
   },
   "linux_firefox_16": {
-    platform: 'Linux',
+    platform: 'LINUX',
     browserName: 'firefox',
     version: '16'
   },
   "osx_firefox_14": {
-    platform: 'Mac 10.6',
+    platform: 'MAC',
     browserName:'firefox',
     version:'14'
   },
@@ -27,8 +27,8 @@ const platforms = {
   },
 
   // IE
-  "winxp_ie_8": {
-    platform:'Windows 2003',
+  "xp_ie_8": {
+    platform:'XP',
     browserName: 'internet explorer',
     version:'8'
   },
@@ -45,7 +45,7 @@ const platforms = {
 
   // Opera
   "linux_opera_12": {
-    platform: 'Linux',
+    platform: 'LINUX',
     browserName: 'opera',
     version: '12'
   },
