@@ -985,10 +985,9 @@ BrowserID.User = (function() {
      */
     addressInfo: function(email, onComplete, onFailure) {
       function complete(info) {
-        // key off of both the normalized email entered typed email so
-        // that the cache is maximally effective.
+        info.email = email;
+
         addressCache[email] = info;
-        addressCache[info.email] = info;
         onComplete && onComplete(info);
       }
 
@@ -997,14 +996,10 @@ BrowserID.User = (function() {
       }
       else {
         network.addressInfo(email, function(info) {
-          // update the email with the normalized email if it is available.
-          // The normalized email is stored in the cache.
-          var normalizedEmail = info.normalizedEmail || email;
-          info.email = normalizedEmail;
-          info = User.checkEmailIssuer(normalizedEmail, info);
+          info.email = email;
+          info = User.checkEmailIssuer(email, info);
           if (info.type === "primary") {
-            User.isUserAuthenticatedToPrimary(normalizedEmail, info,
-                function(authed) {
+            User.isUserAuthenticatedToPrimary(email, info, function(authed) {
               info.authed = authed;
               info.idpName = getIdPName(info);
               complete(info);

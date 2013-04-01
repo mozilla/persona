@@ -40,64 +40,54 @@
     controller.start(options || {});
   }
 
-  function testEmailBelongsToUser(typedEmail, normalizedEmail) {
-    createController();
-
-    $("#newEmail").val(typedEmail);
-
-    register("stage_email", function(msg, info) {
-      ok(false, "unexpected stage_email message");
-    });
-
-    // simulate the email being already added.
-    user.syncEmailKeypair(normalizedEmail, function() {
-      controller.addEmail(function() {
-        testTooltipVisible();
-        start();
-      });
-    });
-  }
-
-  function testEmailCanBeAdded(typedEmail, normalizedEmail) {
-    createController();
-
-    equal($("#addEmail").length, 1, "control rendered correctly");
-
-    $("#newEmail").val(typedEmail);
-
-    register("stage_email", function(msg, info) {
-      equal(info.email, normalizedEmail, "stage_email called with correct email");
-      start();
-    });
-
-    controller.addEmail();
-  }
-
-
-
   test("addEmail with specified email address - fill in email", function() {
     createController({ email: "testuser@testuser.com" });
     ok($("#newEmail").val(), "testuser@testuser.com", "email prepopulated");
   });
 
   asyncTest("addEmail with first valid unknown secondary email - trigger stage_email", function() {
-    testEmailCanBeAdded("unregistered@testuser.com",
-        "unregistered@testuser.com");
+    createController();
+    xhr.useResult("unknown_secondary");
+
+    equal($("#addEmail").length, 1, "control rendered correctly");
+
+    $("#newEmail").val("unregistered@testuser.com");
+
+    register("stage_email", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "stage_email called with correct email");
+      start();
+    });
+
+    controller.addEmail();
   });
 
   asyncTest("addEmail with second valid unknown secondary email - trigger stage_email", function() {
-    testEmailCanBeAdded("unregistered@testuser.com",
-        "unregistered@testuser.com");
-  });
+    createController();
+    xhr.useResult("unknown_secondary");
 
-  asyncTest("addEmail with second valid unknown secondary email that needs to be normalized - trigger stage_email", function() {
-    testEmailCanBeAdded("UNREGISTERED@TESTUSER.COM",
-        "unregistered@testuser.com");
+    equal($("#addEmail").length, 1, "control rendered correctly");
+
+    $("#newEmail").val("unregistered@testuser.com");
+
+    register("stage_email", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "stage_email called with correct email");
+      start();
+    });
+
+    storage.addEmail("testuser@testuser.com");
+    controller.addEmail();
   });
 
   asyncTest("addEmail with valid unknown secondary email with leading/trailing whitespace - allows address, triggers stage_email", function() {
-    testEmailCanBeAdded("    unregistered@testuser.com    ",
-        "unregistered@testuser.com");
+    createController();
+    xhr.useResult("unknown_secondary");
+
+    $("#newEmail").val("   unregistered@testuser.com  ");
+    register("stage_email", function(msg, info) {
+      equal(info.email, "unregistered@testuser.com", "stage_email called with correct email");
+      start();
+    });
+    controller.addEmail();
   });
 
   asyncTest("addEmail with invalid email", function() {
@@ -115,20 +105,37 @@
     });
   });
 
+  asyncTest("addEmail with email belonging to current user - prints tooltip", function() {
+    createController();
+
+    $("#newEmail").val("registered@testuser.com");
+
+    register("stage_email", function(msg, info) {
+      ok(false, "unexpected stage_email message");
+    });
+
+    // simulate the email being already added.
+    user.syncEmailKeypair("registered@testuser.com", function() {
+      // Set result to known_secondary in here so that we do not have to add
+      // another line to the XHR mock for syncEmailKeypair.
+      xhr.useResult("known_secondary");
+      controller.addEmail(function() {
+        testTooltipVisible();
+        start();
+      });
+    });
+  });
+
   asyncTest("addEmail with first secondary email belonging to another user - allows for account consolidation", function() {
+    createController();
     xhr.useResult("known_secondary");
-    testEmailCanBeAdded("registered@testuser.com",
-        "registered@testuser.com");
-  });
 
-  asyncTest("addEmail with email belonging to current user - prints tooltip", function() {
-    testEmailBelongsToUser("registered@testuser.com",
-        "registered@testuser.com");
-  });
-
-  asyncTest("addEmail with email belonging to current user - prints tooltip", function() {
-    testEmailBelongsToUser("REGISTERED@TESTUSER.COM",
-        "registered@testuser.com");
+    $("#newEmail").val("registered@testuser.com");
+    register("stage_email", function(msg, info) {
+      equal(info.email, "registered@testuser.com", "stage_email called with correct email");
+      start();
+    });
+    controller.addEmail();
   });
 
   asyncTest("cancelAddEmail", function() {
