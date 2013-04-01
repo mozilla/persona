@@ -12,6 +12,8 @@ train-2013.03.29:
     * split out local selenium configs and use platform-agnostic browser identifiers: #3118
     * enable local simultaneous selenium testing with multiple firefox binaries: #3138
     * automation-tests README enhancements: #3117
+  * (hotfix 2013.04.01) remove build of automation-tests due to error messages in build: issue #3160
+	
 
 train-2013.03.15:
   * When a user types an email, it's no longer case sensitive: #3078, #2891, #2866, #2049, #2551, #1104
