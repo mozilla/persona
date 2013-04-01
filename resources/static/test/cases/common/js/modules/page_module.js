@@ -107,25 +107,16 @@
   asyncTest("getErrorDialog gets a function that can be used to render an error message", function() {
     createController();
 
-    function escape(text) {
-      var escaped = _.escape(text);
-      // underscore escapes `/` whereas ejs does not
-      return escaped.replace(/&#x2F;/g, '/');
-    }
-
-    // Because these can come from the IdP, they must be escaped when displayed
-    // or else the IdP could XSS users
-    var title = "<span>error title</span>";
-    var message = "<span>extended error message</span>";
+    var title = "error title";
+    var message = "extended error message";
 
     // Call getErrorDialog with the "action" info.
     var func = controller.getErrorDialog({
       title: title
     }, function() {
       testErrorVisible();
-      // make sure the text is escaped before IdPs start XSSing users.
-      equal($("#errorTitle").html().trim(), escape(title));
-      equal($("#errorMessage").html().trim(), escape(message));
+      equal($("#errorTitle").text().trim(), title);
+      equal($("#errorMessage").text().trim(), message);
       start();
     });
 
