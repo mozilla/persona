@@ -36,6 +36,8 @@ Testing strategy overview in the github wiki: [Automated-Browser-Testing](https:
 
     npm install
 
+#### Note that this step is only needed if 'npm install' was not run in the parent 'browserid' directory.
+
 #### To run tests locally against Firefox, download the selenium-server and make sure it's running:
 
     // no need to use 2.25, just use the latest version available :-)
@@ -48,7 +50,32 @@ Testing strategy overview in the github wiki: [Automated-Browser-Testing](https:
 
     * specify sauce username as `PERSONA_SAUCE_USER`
     * specify sauce api key as `PERSONA_SAUCE_APIKEY`
-    * Note: If you DO NOT have these environment variables set, you need to use the "--local" argument to run locally.
+    * Note: If you have these environment variables set, you will need to use the "--local" argument to run locally.
+    Otherwise, the tests will be run against sauce by default.
+
+## Configuration Files
+
+    *   Selecting the --local option, or setting PERSONA_NO_SAUCE=1 in the environment, will now switch to a different
+    config file. The set of supported platforms will be totally generic.
+
+### The sauce configuration file is located here: 
+
+    * browserid/config/sauce-platforms.js
+    * Note: This config file should be treated as read-only since the platform list is based on Selenium test support
+    through sauce.
+    * Note: This file should always be in sync with the Selenium list
+
+### The local host configuration file is located here: browserid/config/config/local-platform.js
+
+    * Five platforms are configured (defined) by default for testing on Mac, Windows, and Linux: firefox, chrome, 
+    opera, safari, ie
+    * Note: the default binary in the default location is assumed for all supported browsers per platform
+
+### Editing the local host configuration file
+
+    * You can edit this file to add support for more than one FireFox channel
+    * The JS file has an example of how that would work
+    * Note: You can add support for all four FireFox channels, then run them using the --platform option
 
 ## Running tests: scripts/run-all cookbook
 
@@ -57,15 +84,15 @@ Sauce.
 
 ### One test, one browser, locally:
 
-    scripts/run-all.js --local --platform=osx_firefox_15 --tests change-password-test
+    scripts/run-all.js --local --platform=firefox --tests change-password-test
 
 ### All tests, one browser, locally:
 
-    scripts/run-all.js --local --platform=osx_firefox_15
+    scripts/run-all.js --local --platform=firefox
 
 ### All tests, one browser, saucelabs:
 
-    scripts/run-all.js --parallel=15 --platform=osx_firefox_15
+    scripts/run-all.js --parallel=15 --platform=irefox
 
 ### All tests, all browsers, saucelabs: 
 
