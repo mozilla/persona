@@ -488,4 +488,41 @@
     start();
   });
 
+  asyncTest("Consecutive xhr_complete messages for the same URL only have one entry", function() {
+    createController();
+
+    var REPEAT_COUNT = 5;
+
+    controller.addEvent("xhr_complete", {
+      network: {
+        type: "GET",
+        url: "/wsapi/session_context",
+        duration: 13
+      }
+    });
+
+    for(var i = 0; i < REPEAT_COUNT; i++) {
+      controller.addEvent("xhr_complete", {
+        network: {
+          type: "GET",
+          url: "/wsapi/user_creation_status?email=testuser@testuser.com",
+          duration: 6
+        }
+      });
+    }
+
+    var eventStream = controller.getCurrentEventStream();
+    // Were consecutive XHR events of the same URL prevented?
+    equal(eventStream.length, 2);
+
+    var firstEvent = eventStream[0];
+    var secondEvent = eventStream[1];
+
+    equal(firstEvent[0], "xhr_complete.GET/wsapi/session_context");
+    equal(secondEvent[0], "xhr_complete.GET/wsapi/user_creation_status");
+    equal(secondEvent[controller.REPEAT_COUNT_INDEX], REPEAT_COUNT);
+
+    start();
+  });
+
 }());
