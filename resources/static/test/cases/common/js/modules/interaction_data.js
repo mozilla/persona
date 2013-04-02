@@ -317,8 +317,11 @@
 
       // new page
       createController(false);
+
       // make user authenticated
       xhr.setContextInfo("auth_level", "password");
+      xhr.setContextInfo("userid", 1);
+
       network.withContext(function() {
         var request = xhr.getLastRequest('/wsapi/interaction_data');
         var data = JSON.parse(request.data).data[0];
@@ -377,8 +380,11 @@
 
       // new page
       createController(false);
+
       // make user authenticated
       xhr.setContextInfo("auth_level", "password");
+      xhr.setContextInfo("userid", 1);
+
       network.withContext(function() {
         var request = xhr.getLastRequest('/wsapi/interaction_data');
         var data = JSON.parse(request.data).data[0];
@@ -459,6 +465,25 @@
     var event = eventStream[index];
     var newOffset = event[1];
     ok(newOffset >= 1000, "event's offset has been updated (orig-new): " + origOffset + "-" + newOffset);
+
+    start();
+  });
+
+  asyncTest("GET data stripped from xhr_complete messages", function() {
+    createController();
+
+    controller.addEvent("xhr_complete", {
+      network: {
+        type: "GET",
+        url: "/wsapi/user_creation_status?email=testuser@testuser.com"
+      }
+    });
+
+    var eventStream = controller.getCurrentEventStream();
+    var xhrEvent = eventStream[eventStream.length - 1];
+
+    // Is GET data stripped?
+    equal(xhrEvent[0], "xhr_complete.GET/wsapi/user_creation_status");
 
     start();
   });
