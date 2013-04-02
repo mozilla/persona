@@ -33,7 +33,7 @@ BrowserID.User = (function() {
   }
 
   // remove identities that are no longer valid
-  function cleanupIdentities(cb) {
+  function cleanupIdentities(onSuccess, onFailure) {
     network.serverTime(function(serverTime) {
       network.domainKeyCreationTime(function(creationTime) {
         // Determine if a certificate is expired.  That will be
@@ -93,12 +93,9 @@ BrowserID.User = (function() {
             }
           }
         });
-        cb();
-      }, function(e) {
-        // we couldn't get domain key creation time!  uh oh.
-        cb();
-      });
-    });
+        onSuccess();
+      }, onFailure);
+    }, onFailure);
   }
 
   function stageAddressVerification(email, password, stagingStrategy, onComplete, onFailure) {
@@ -953,7 +950,7 @@ BrowserID.User = (function() {
 
           complete(onComplete);
         }, onFailure);
-      });
+      }, onFailure);
     },
 
     /**
