@@ -123,7 +123,7 @@
     pause = true;
   });
 
-  chan.bind("dialog_complete", function(trans, params) {
+  chan.bind("dialog_complete", function(trans, checkAuthStatus) {
     pause = false;
     // The dialog has closed, so that we get results from users who only open
     // the dialog a single time, send the KPIs immediately. Note, this does not
@@ -145,9 +145,11 @@
       }
     } catch(e) {}
 
-    // the dialog running can change authentication status,
-    // lets manually purge our network cache
-    network.clearContext();
-    checkAndEmit();
+    if (checkAuthStatus) {
+      // the dialog running can change authentication status,
+      // lets manually purge our network cache
+      user.clearContext();
+      checkAndEmit();
+    }
   });
 }());

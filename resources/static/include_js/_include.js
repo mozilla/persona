@@ -390,7 +390,10 @@
           if (!err && r && r.email) {
             commChan.notify({ method: 'loggedInUser', params: r.email });
           }
-          commChan.notify({ method: 'dialog_complete' });
+          // do not check the authentication status in the dialog if an
+          // assertion has been generated. onmatch is incorrectly called
+          // if an assertion has already been generated. See #3170
+          commChan.notify({ method: 'dialog_complete', params: !r.assertion });
         }
 
         // clear the window handle
