@@ -954,6 +954,25 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
+  asyncTest("syncEmails with one invalid cert preloaded and none to add - remove expired cert but not identity", function() {
+    storage.addEmail(TEST_EMAIL, {
+      cert: "bad cert that should be removed when certs are checked"
+    });
+
+    lib.syncEmails(function onSuccess() {
+      var records = lib.getStoredEmailKeypairs();
+
+      ok(TEST_EMAIL in records, "Our new email is added");
+      equal(_.size(records), 1, "there is one identity");
+
+      // cert was invalid and should be wiped.
+      var identity = records[TEST_EMAIL];
+      equal("cert" in identity, false);
+
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
 
   asyncTest("syncEmails with identities preloaded and one to add", function() {
     storage.addEmail(TEST_EMAIL, {pubkey: pubkey, cert: random_cert});
@@ -987,6 +1006,12 @@
   asyncTest("syncEmails with XHR failure", function() {
     failureCheck(lib.syncEmails);
   });
+
+  asyncTest("syncEmails, could not get context - call error", function() {
+    xhr.useResult("contextAjaxError");
+    failureCheck(lib.syncEmails);
+  });
+
 
   asyncTest("getAssertion with known email that has key", function() {
     lib.syncEmailKeypair(TEST_EMAIL, function() {
