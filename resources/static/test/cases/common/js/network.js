@@ -7,14 +7,13 @@
   var bid = BrowserID,
       mediator = bid.Mediator,
       transport = bid.Mocks.xhr,
-      user = bid.User,
-      network = bid.Network,
       testHelpers = bid.TestHelpers,
       TEST_EMAIL = "testuser@testuser.com",
       TEST_PASSWORD = "password",
       failureCheck = testHelpers.failureCheck,
       testObjectValuesEqual = testHelpers.testObjectValuesEqual;
 
+  var network = BrowserID.Network;
 
   module("common/js/network", {
     setup: function() {
@@ -124,7 +123,7 @@
           var data = JSON.parse(req.data);
           equal("pass" in data, false, "password not sent in request if not needed");
 
-          ok(registered.success);
+          ok(registered);
           start();
         }, testHelpers.unexpectedFailure);
       });
@@ -141,7 +140,7 @@
     verificationPasswordRequired: function(verificationMethod) {
       asyncTest(verificationMethod + " with valid token, password required", function() {
         network[verificationMethod]("token", "password", function(registered) {
-          ok(registered.success);
+          ok(registered);
           start();
         }, testHelpers.unexpectedFailure);
       });
@@ -151,7 +150,7 @@
         transport.useResult("invalid");
 
         network[verificationMethod]("token", "password", function(registered) {
-          equal(registered.success, false);
+          equal(registered, false);
           start();
         }, testHelpers.unexpectedFailure);
       });
@@ -188,7 +187,7 @@
         transport.useResult("pending");
 
         network[checkMethod]("registered@testuser.com", function(status) {
-          equal(status.status, "pending");
+          equal(status, "pending");
           start();
         }, testHelpers.unexpectedFailure);
       });
@@ -198,11 +197,11 @@
       asyncTest(checkMethod + " mustAuth", function() {
         transport.useResult("mustAuth");
 
-        user.checkAuthentication(function(auth_status) {
+        network.checkAuth(function(auth_status) {
           equal(!!auth_status, false, "user not yet authenticated");
           network[checkMethod]("registered@testuser.com", function(status) {
-            equal(status.status, "mustAuth");
-            user.checkAuthentication(function(auth_status) {
+            equal(status, "mustAuth");
+            network.checkAuth(function(auth_status) {
               equal(!!auth_status, false, "user not yet authenticated");
               start();
             }, testHelpers.unexpectedFailure);
@@ -216,7 +215,7 @@
         network.withContext(function() {
           transport.useResult("complete");
           network[checkMethod]("registered@testuser.com", function(status) {
-            equal(status.status, "complete");
+            equal(status, "complete");
             start();
           }, testHelpers.unexpectedFailure);
         });
@@ -239,16 +238,16 @@
 
 
   asyncTest("authenticate with valid user", function() {
-    network.authenticate(TEST_EMAIL, "testuser", function onSuccess(status) {
-      equal(status.success, true, "valid authentication");
+    network.authenticate(TEST_EMAIL, "testuser", function onSuccess(authenticated) {
+      equal(authenticated, true, "valid authentication");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("authenticate with invalid user", function() {
     transport.useResult("invalid");
-    network.authenticate(TEST_EMAIL, "invalid", function onSuccess(status) {
-      equal(status.success, false, "invalid authentication");
+    network.authenticate(TEST_EMAIL, "invalid", function onSuccess(authenticated) {
+      equal(authenticated, false, "invalid authentication");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -259,7 +258,7 @@
 
   asyncTest("authenticateWithAssertion with valid email/assertioni, returns true status", function() {
     network.authenticateWithAssertion(TEST_EMAIL, "test_assertion", function(status) {
-      equal(status.success, true, "user authenticated, status set to true");
+      equal(status, true, "user authenticated, status set to true");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -268,7 +267,7 @@
     transport.useResult("invalid");
 
     network.authenticateWithAssertion(TEST_EMAIL, "test_assertion", function(status) {
-      equal(status.success, false, "user not authenticated, status set to false");
+      equal(status, false, "user not authenticated, status set to false");
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -276,6 +275,84 @@
   asyncTest("authenticateWithAssertion with XHR failure", function() {
     failureCheck(network.authenticateWithAssertion, TEST_EMAIL, "test_assertion");
   });
+
+  asyncTest("checkAuth: simulate a delayed request - xhr_delay and xhr_complete both triggered", function() {
+    transport.setContextInfo("auth_level", "assertion");
+    transport.setDelay(200);
+    network.init({
+      time_until_delay: 100
+    });
+
+    var delayInfo;
+    mediator.subscribe("xhr_delay", function(msg, delay_info) {
+      delayInfo = delay_info;
+    });
+
+    var completeInfo;
+    mediator.subscribe("xhr_complete", function(msg, complete_info) {
+      completeInfo = complete_info;
+    });
+
+    network.checkAuth(function onSuccess(authenticated) {
+      equal(authenticated, "assertion", "we have an authentication");
+      equal(delayInfo.network.url, "/wsapi/session_context", "delay info correct");
+      equal(completeInfo.network.url, "/wsapi/session_context", "complete info correct");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("checkAuth: immediate success return - no xhr_delay triggered", function() {
+    transport.setContextInfo("auth_level", "assertion");
+
+    transport.setDelay(50);
+    network.init({
+      time_until_delay: 100
+    });
+
+    mediator.subscribe("xhr_delay", function(msg, delay_info) {
+      ok(false, "unexpected call to xhr_delay");
+    });
+
+    network.checkAuth(function onSuccess(authenticated) {
+      // a wait to happen to give xhr_delay a chance to return
+      setTimeout(start, 150);
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("checkAuth with valid authentication", function() {
+    transport.setContextInfo("auth_level", "assertion");
+    network.checkAuth(function onSuccess(authenticated) {
+      // a wait to happen to give xhr_delay a chance to return
+      equal(authenticated, "assertion", "we have an authentication");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("checkAuth with invalid authentication", function() {
+    transport.useResult("invalid");
+    transport.setContextInfo("auth_level", undefined);
+
+    network.checkAuth(function onSuccess(authenticated) {
+      equal(authenticated, undefined, "we are not authenticated");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+
+
+  asyncTest("checkAuth with XHR failure", function() {
+    transport.useResult("ajaxError");
+    transport.setContextInfo("auth_level", undefined);
+
+    // Do not convert this to failureCheck, we do this manually because
+    // checkAuth does not make an XHR request.  Since it does not make an XHR
+    // request, we do not test whether the app is notified of an XHR failure
+    network.checkAuth(function onSuccess() {
+      ok(true, "checkAuth does not make an ajax call, all good");
+      start();
+    }, testHelpers.unexpectedFailure);
+  });
+
 
   asyncTest("logout", function() {
     network.logout(function onSuccess() {
@@ -490,7 +567,7 @@
 
   asyncTest("changePassword happy case, expect complete callback with true status", function() {
     network.changePassword("oldpassword", "newpassword", function onComplete(status) {
-      equal(status.success, true, "calls onComplete with true status");
+      equal(status, true, "calls onComplete with true status");
       start();
     }, testHelpers.unexpectedFailure);
   });
@@ -499,7 +576,7 @@
     transport.useResult("incorrectPassword");
 
     network.changePassword("oldpassword", "newpassword", function onComplete(status) {
-      equal(status.success, false, "calls onComplete with false status");
+      equal(status, false, "calls onComplete with false status");
       start();
     }, testHelpers.unexpectedFailure);
   });
@@ -557,6 +634,11 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
+  asyncTest("prolongSession with unauthenticated user - call failure", function() {
+    transport.useResult("unauthenticated");
+    network.prolongSession(testHelpers.unexpectedSuccess, testHelpers.expectedXHRFailure);
+  });
+
   asyncTest("prolongSession with XHR Failure - call failure", function() {
     transport.useResult("ajaxError");
     network.prolongSession(testHelpers.unexpectedSuccess, testHelpers.expectedXHRFailure);
@@ -584,6 +666,12 @@
         start();
       }, testHelpers.unexpectedXHRFailure);
     });
+  });
+
+  asyncTest("usedAddressAsPrimary success - call success", function () {
+    network.usedAddressAsPrimary(TEST_EMAIL,
+                                 testHelpers.unexpectedSuccess,
+                                 testHelpers.expectedXHRFailure);
   });
 
   asyncTest("usedAddressAsPrimary success - call no-op", function () {

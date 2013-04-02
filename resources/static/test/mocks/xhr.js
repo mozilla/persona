@@ -98,7 +98,6 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/user_creation_status?email=registered%40testuser.com pending": { status: "pending" },
       "get /wsapi/user_creation_status?email=registered%40testuser.com complete": { status: "complete", userid: 4 },
       "get /wsapi/user_creation_status?email=registered%40testuser.com valid": { status: "complete", userid: 4 },
-      "get /wsapi/user_creation_status?email=unregistered%40testuser.com valid": { status: "complete", userid: 4 },
       "get /wsapi/user_creation_status?email=registered%40testuser.com mustAuth": { status: "mustAuth" },
       "get /wsapi/user_creation_status?email=registered%40testuser.com noRegistration": { status: "noRegistration" },
       "get /wsapi/user_creation_status?email=registered%40testuser.com ajaxError": undefined,
@@ -181,31 +180,27 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/address_info?email=unregistered%40testuser.com invalid": undefined,
       "get /wsapi/address_info?email=unregistered%40testuser.com throttle": { type: "secondary", state: "unknown" },
       "get /wsapi/address_info?email=unregistered%40testuser.com valid": { type: "secondary", state: "unknown" },
-      "get /wsapi/address_info?email=UNREGISTERED%40TESTUSER.COM valid": { type: "secondary", state: "unknown", normalizedEmail: "unregistered@testuser.com" },
       "get /wsapi/address_info?email=unregistered%40testuser.com unknown_secondary": { type: "secondary", state: "unknown" },
       "get /wsapi/address_info?email=unregistered%40testuser.com primary": { type: "primary", state: "unknown", auth: "https://auth_url", prov: "https://prov_url" },
       "get /wsapi/address_info?email=unregistered%40testuser.com primaryUnknown": { type: "primary", state: "unknown", auth: "https://auth_url", prov: "https://prov_url" },
 
-      "get /wsapi/address_info?email=registered%40testuser.com valid": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
-      "get /wsapi/address_info?email=REGISTERED%40TESTUSER.COM valid": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
-      "get /wsapi/address_info?email=registered%40testuser.com known_secondary": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
-      "get /wsapi/address_info?email=registered%40testuser.com throttle": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
-      "get /wsapi/address_info?email=registered%40testuser.com primary": { type: "primary", state: "known", auth: "https://auth_url", prov: "https://prov_url", normalizedEmail: "registered@testuser.com" },
-      "get /wsapi/address_info?email=registered%40testuser.com mustAuth": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
-      "get /wsapi/address_info?email=registered%40testuser.com secondaryTransition": { type: "secondary", state: "transition_to_secondary", normalizedEmail: "registered@testuser.com" },
-      "get /wsapi/address_info?email=REGISTERED%40TESTUSER.COM secondaryTransition": { type: "secondary", state: "transition_to_secondary", normalizedEmail: "registered@testuser.com" },
-      "get /wsapi/address_info?email=registered%40testuser.com secondaryTransitionPassword": { type: "secondary", state: "transition_no_password", normalizedEmail: "registered@testuser.com" },
-      "get /wsapi/address_info?email=REGISTERED%40TESTUSER.COM secondaryTransitionPassword": { type: "secondary", state: "transition_no_password", normalizedEmail: "registered@testuser.com" },
-      "get /wsapi/address_info?email=registered%40testuser.com primaryTransition": { type: "primary", state: "transition_to_primary", auth: "https://auth_url", prov: "https://prov_url", normalizedEmail: "registered@testuser.com" },
-      "get /wsapi/address_info?email=registered%40testuser.com primaryOffline": { type: "primary", state: "offline", auth: "https://auth_url", prov: "https://prov_url", normalizedEmail: "registered@testuser.com" },
+      "get /wsapi/address_info?email=registered%40testuser.com valid": { type: "secondary", state: "known" },
+      "get /wsapi/address_info?email=registered%40testuser.com known_secondary": { type: "secondary", state: "known" },
+      "get /wsapi/address_info?email=registered%40testuser.com throttle": { type: "secondary", state: "known" },
+      "get /wsapi/address_info?email=registered%40testuser.com primary": { type: "primary", state: "known", auth: "https://auth_url", prov: "https://prov_url" },
+      "get /wsapi/address_info?email=registered%40testuser.com mustAuth": { type: "secondary", state: "known" },
+      "get /wsapi/address_info?email=registered%40testuser.com secondaryTransition": { type: "secondary", state: "transition_to_secondary" },
+      "get /wsapi/address_info?email=registered%40testuser.com secondaryTransitionPassword": { type: "secondary", state: "transition_no_password" },
+      "get /wsapi/address_info?email=registered%40testuser.com primaryTransition": { type: "primary", state: "transition_to_primary", auth: "https://auth_url", prov: "https://prov_url" },
+      "get /wsapi/address_info?email=registered%40testuser.com primaryOffline": { type: "primary", state: "offline", auth: "https://auth_url", prov: "https://prov_url" },
 
-      "get /wsapi/address_info?email=testuser%40testuser.com valid": { type: "secondary", state: "known", normalizedEmail: "testuser@testuser.com" },
-      "get /wsapi/address_info?email=testuser2%40testuser.com valid": { type: "secondary", state: "known", normalizedEmail: "testuser@testuser.com" },
-      "get /wsapi/address_info?email=testuser%40testuser.com known_secondary": { type: "secondary", state: "known", normalizedEmail: "testuser@testuser.com" },
+      "get /wsapi/address_info?email=testuser%40testuser.com valid": { type: "secondary", state: "known" },
+      "get /wsapi/address_info?email=testuser2%40testuser.com valid": { type: "secondary", state: "known" },
+      "get /wsapi/address_info?email=testuser%40testuser.com known_secondary": { type: "secondary", state: "known" },
       "get /wsapi/address_info?email=testuser%40testuser.com unknown_secondary": { type: "secondary", state: "unknown" },
-      "get /wsapi/address_info?email=testuser%40testuser.com secondaryTransitionPassword": { type: "secondary", state: "transition_no_password", normalizedEmail: "testuser@testuser.com" },
-      "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", state: "known", auth: "https://auth_url", prov: "https://prov_url", normalizedEmail: "testuser@testuser.com" },
-      "get /wsapi/address_info?email=testuser%40testuser.com primaryOffline": { type: "primary", state: "offline", auth: "https://auth_url", prov: "https://prov_url", normalizedEmail: "testuser@testuser.com" },
+      "get /wsapi/address_info?email=testuser%40testuser.com secondaryTransitionPassword": { type: "secondary", state: "transition_no_password" },
+      "get /wsapi/address_info?email=testuser%40testuser.com primary": { type: "primary", state: "known", auth: "https://auth_url", prov: "https://prov_url" },
+      "get /wsapi/address_info?email=testuser%40testuser.com primaryOffline": { type: "primary", state: "offline", auth: "https://auth_url", prov: "https://prov_url" },
       "get /wsapi/address_info?email=testuser%40testuser.com ajaxError": undefined,
       "post /wsapi/used_address_as_primary valid": { success: true },
       "post /wsapi/used_address_as_primary primaryTransition": { success: true },
@@ -280,10 +275,6 @@ BrowserID.Mocks.xhr = (function() {
         response(request.success);
       }
       else if (!(typeofResponse === "number" || typeofResponse === "undefined")) {
-        if (typeofResponse === "object") {
-          response = _.extend({}, response);
-        }
-
         if (request.success) {
           if (delay) {
             // simulate response delay

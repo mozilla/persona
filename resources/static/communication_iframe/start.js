@@ -14,8 +14,6 @@
   storage.setDefaultValues();
 
   network.init();
-  user.init();
-
 
   // Do not check to see if cookies are supported in the iframe.  Just
   // optimistically try to work by running network requests.  There are

@@ -38,8 +38,6 @@
       user.init({
         provisioning: provisioning
       });
-      xhr.setContextInfo("auth_level", "password");
-      xhr.setContextInfo("userid", 1);
     },
 
     teardown: function() {

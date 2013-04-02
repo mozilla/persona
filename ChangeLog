@@ -1,18 +1,3 @@
-current train:
-
-train-2013.03.15:
-  * When a user types an email, it's no longer case sensitive: #3078, #2891, #2866, #2049, #2551, #1104
-  * IDP API improvment - .raiseProvisioningFailure() requires no specific string argument: #2339
-  * internal_api (for embedding) should not require callbacks to have curry() method on prototype: #3067
-  * speed improvment - 8% reduction in resources loaded by sites using .watch() - #3060
-  * Test improvements:
-    * better error messages from automation test runner: #3095
-    * all tests npm depndencies are installed at top level npm install: #3084
-    * list of platforms we run on saucelabs harmonized with documented names: #3072
-  * Infrastructure improvments:
-    * load testing improvements for testing KPI mechanisms: #3064
-    * generate include.js more frequently: #3061
-
 train-2013.03.01:
   * Remove rollback code for new, improved password reset flow: #3018
   * Fix double-escaping of RP site name in dialog: #3007

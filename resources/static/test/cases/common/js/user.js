@@ -31,8 +31,6 @@
   module("common/js/user", {
     setup: function() {
       testHelpers.setup();
-      xhr.setContextInfo("auth_level", "password");
-      xhr.setContextInfo("userid", 1);
     },
     teardown: function() {
       testHelpers.teardown();
@@ -157,7 +155,6 @@
   }
 
   function testAddressVerificationPoll(authLevel, xhrResultName, pollFuncName, expectedResult) {
-    lib.clearContext();
     storage.setReturnTo(testOrigin);
     xhr.useResult(xhrResultName);
 
@@ -376,57 +373,6 @@
     }
   }
 
-  function testKnownSecondaryUser(email, normalizedEmail) {
-    lib.addressInfo(
-      email,
-      function(info) {
-        testObjectValuesEqual(info, {
-          type: "secondary",
-          email: normalizedEmail,
-          state: "known"
-        });
-        start();
-      },
-      testHelpers.unexpectedFailure
-    );
-  }
-
-  function testAuthenticatedPrimaryUser(email, normalizedEmail) {
-    xhr.useResult("primary");
-    provisioning.setStatus(provisioning.AUTHENTICATED);
-    lib.addressInfo(
-      email,
-      function(info) {
-        testObjectValuesEqual(info, {
-          type: "primary",
-          email: normalizedEmail,
-          authed: true,
-          idpName: "testuser.com"
-        });
-        start();
-      },
-      testHelpers.unexpectedFailure
-    );
-  }
-
-  function testUnauthenticatedPrimaryUser(email, normalizedEmail) {
-    xhr.useResult("primary");
-    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
-    lib.addressInfo(
-      email,
-      function(info) {
-        testObjectValuesEqual(info, {
-          type: "primary",
-          email: normalizedEmail,
-          authed: false,
-          idpName: "testuser.com"
-        });
-        start();
-      },
-      testHelpers.unexpectedFailure
-    );
-  }
-
 
   test("setOrigin, getOrigin", function() {
     lib.setOrigin(testOrigin);
@@ -512,7 +458,7 @@
     provisioning.setStatus(provisioning.AUTHENTICATED);
     lib.createPrimaryUser({email: "unregistered@testuser.com"}, function(status) {
       equal(status, "primary.verified", "primary user is already verified, correct status");
-      lib.checkAuthentication(function(authenticated) {
+      network.checkAuth(function(authenticated) {
         equal(authenticated, "assertion", "after provisioning user, user should be automatically authenticated to Persona");
         start();
       });
@@ -528,18 +474,17 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
-  asyncTest("createPrimaryUser with primary, unknown provisioning failure - expect primary.verify", function() {
+  asyncTest("createPrimaryUser with primary, unknown provisioning failure, expect XHR failure callback", function() {
     xhr.useResult("primary");
-
     provisioning.setFailure({
       code: "primaryError",
       msg: "some error"
     });
 
-    lib.createPrimaryUser({email: "unregistered@testuser.com"}, function(status) {
-      equal(status, "primary.verify", "primary must verify with primary, correct status");
-      start();
-    }, testHelpers.expectedXHRFailure);
+    lib.createPrimaryUser({email: "unregistered@testuser.com"},
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure
+    );
   });
 
   asyncTest("provisionPrimaryUser authenticated with IdP, expect primary.verified", function() {
@@ -1158,28 +1103,71 @@
   });
 
   asyncTest("addressInfo with known secondary user", function() {
-    testKnownSecondaryUser("registered@testuser.com",
-        "registered@testuser.com");
-  });
-
-  asyncTest("addressInfo with known secondary user who typed address with wrong case", function() {
-    testKnownSecondaryUser("REGISTERED@TESTUSER.COM",
-        "registered@testuser.com");
+    xhr.useResult("known_secondary");
+    lib.addressInfo(
+      "registered@testuser.com",
+      function(info) {
+        equal(info.type, "secondary", "correct type");
+        equal(info.email, "registered@testuser.com", "correct email");
+        equal(info.state, "known", "address known to Persona");
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
   });
 
   asyncTest("addressInfo with unknown primary authenticated user", function() {
-    testAuthenticatedPrimaryUser("unregistered@testuser.com",
-        "unregistered@testuser.com");
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+    lib.addressInfo(
+      "unregistered@testuser.com",
+      function(info) {
+        testObjectValuesEqual(info, {
+          type: "primary",
+          email: "unregistered@testuser.com",
+          authed: true,
+          idpName: "testuser.com"
+        });
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
   });
 
   asyncTest("addressInfo with known primary authenticated user", function() {
-    testAuthenticatedPrimaryUser("registered@testuser.com",
-        "registered@testuser.com");
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.AUTHENTICATED);
+    lib.addressInfo(
+      "registered@testuser.com",
+      function(info) {
+        testObjectValuesEqual(info, {
+          type: "primary",
+          email: "registered@testuser.com",
+          authed: true,
+          idpName: "testuser.com"
+        });
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
   });
 
   asyncTest("addressInfo with known primary unauthenticated user", function() {
-    testUnauthenticatedPrimaryUser("registered@testuser.com",
-        "registered@testuser.com");
+    xhr.useResult("primary");
+    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
+    lib.addressInfo(
+      "registered@testuser.com",
+      function(info) {
+        testObjectValuesEqual(info, {
+          type: "primary",
+          email: "registered@testuser.com",
+          authed: false,
+          idpName: "testuser.com"
+        });
+        start();
+      },
+      testHelpers.unexpectedFailure
+    );
   });
 
   // JWCrypto relies on there being a random seed.  The random seed is
@@ -1226,7 +1214,7 @@
 
   asyncTest("setComputerOwnershipStatus with true, isUsersComputer - mark the computer as the users, prolongs the user's session", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.clear(lib.userid());
+      storage.usersComputer.clear(network.userid());
       lib.setComputerOwnershipStatus(true, function() {
         lib.isUsersComputer(function(usersComputer) {
           equal(usersComputer, true, "user is marked as owner of computer");
@@ -1238,7 +1226,7 @@
 
   asyncTest("setComputerOwnershipStatus with false, isUsersComputer - mark the computer as not the users", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.clear(lib.userid());
+      storage.usersComputer.clear(network.userid());
       lib.setComputerOwnershipStatus(false, function() {
         lib.isUsersComputer(function(usersComputer) {
           equal(usersComputer, false, "user is marked as not an owner");
@@ -1249,8 +1237,6 @@
   });
 
   asyncTest("setComputerOwnershipStatus with unauthenticated user - call onFailure", function() {
-    xhr.setContextInfo("auth_status", false);
-    xhr.setContextInfo("userid", undefined);
     lib.setComputerOwnershipStatus(false,
       testHelpers.unexpectedSuccess,
       testHelpers.expectedXHRFailure
@@ -1269,7 +1255,7 @@
 
   asyncTest("shouldAskIfUsersComputer with user who has been asked - call onSuccess with false", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.setConfirmed(lib.userid());
+      storage.usersComputer.setConfirmed(network.userid());
       lib.shouldAskIfUsersComputer(function(shouldAsk) {
         equal(shouldAsk, false, "user has been asked already, do not ask again");
         start();
@@ -1279,7 +1265,7 @@
 
   asyncTest("shouldAskIfUsersComputer with user who has not been asked and has not verified email this dialog session - call onSuccess with true", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.forceAsk(lib.userid());
+      storage.usersComputer.forceAsk(network.userid());
       lib.shouldAskIfUsersComputer(function(shouldAsk) {
         equal(shouldAsk, true, "user has not verified an email this dialog session and should be asked");
         start();
@@ -1293,7 +1279,7 @@
       xhr.useResult("complete");
 
       lib.waitForEmailValidation(TEST_EMAIL, function() {
-        storage.usersComputer.forceAsk(lib.userid());
+        storage.usersComputer.forceAsk(network.userid());
         lib.shouldAskIfUsersComputer(function(shouldAsk) {
           equal(shouldAsk, false, "user has verified an email this dialog session and should be asked");
           start();
@@ -1322,28 +1308,4 @@
       }, testHelpers.unexpectedXHRFailure);
     });
   });
-
-  asyncTest("changePassword success - user's auth_level updated to password", function() {
-    xhr.setContextInfo("auth_level", "assertion");
-    lib.changePassword("oldpassword", "newpassword", function(changed) {
-      equal(changed, true);
-      lib.checkAuthentication(function(auth_level) {
-        equal(auth_level, "password");
-        start();
-      }, testHelpers.unexpectedXHRFailure);
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
-  asyncTest("changePassword with incorrect password - user's auth_level not updated", function() {
-    xhr.setContextInfo("auth_level", "assertion");
-    xhr.useResult("incorrectPassword");
-    lib.changePassword("oldpassword", "newpassword", function(changed) {
-      equal(changed, false);
-      lib.checkAuthentication(function(auth_level) {
-        equal(auth_level, "assertion");
-        start();
-      }, testHelpers.unexpectedXHRFailure);
-    }, testHelpers.unexpectedXHRFailure);
-  });
-
 }());

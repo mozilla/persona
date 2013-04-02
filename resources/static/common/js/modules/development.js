@@ -9,7 +9,7 @@ BrowserID.Modules.Development = (function() {
       dom = bid.DOM,
       renderer = bid.Renderer,
       storage = bid.Storage,
-      user = bid.User,
+      network = bid.Network,
       clickCount = 0;
 
 
@@ -83,7 +83,7 @@ BrowserID.Modules.Development = (function() {
   }
 
   function forceIsThisYourComputer() {
-    storage.usersComputer.forceAsk(user.userid());
+    storage.usersComputer.forceAsk(network.userid());
   }
 
   function close() {

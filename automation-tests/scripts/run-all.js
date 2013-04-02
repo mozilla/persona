@@ -117,16 +117,6 @@ function startTesting() {
   // more tests are run in parallel, they will all check the tests array to see
   // if there are any more tests to run.
   var platforms = args.platform ? getTestedPlatforms(args.platform) : { any: {} };
-  if (Object.keys(platforms).length === 0) {
-    console.log("You asked to use platform '%s', but that is not available. %s",
-                args.platform, "Your choices are:");
-    var supportedPlatforms = Object.keys(supported_platforms);
-    supportedPlatforms.forEach(function(plat) {
-      console.log("  *", plat);
-    });
-    process.exit(1);
-  }
-
   var tests = getTheTests(platforms);
   var howManyAtOnce = (tests.length < args.parallel ? tests.length : args.parallel);
   console.log("Running %s suite(s) on %s platform(s), %s at a time against %s",

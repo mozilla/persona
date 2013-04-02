@@ -48,7 +48,7 @@ Testing strategy overview in the github wiki: [Automated-Browser-Testing](https:
 
     * specify sauce username as `PERSONA_SAUCE_USER`
     * specify sauce api key as `PERSONA_SAUCE_APIKEY`
-    * Note: If you DO NOT have these environment variables set, you need to use the "--local" argument to run locally.
+    * Note: If you have these environment variables set, you need to use the "--local" argument to run locally.
 
 ## Running tests: scripts/run-all cookbook
 

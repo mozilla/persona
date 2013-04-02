@@ -9,9 +9,6 @@ config = require('../lib/configuration.js'),
 temp = require('temp'),
 secrets = require('../lib/secrets.js');
 
-// force a build of include.js
-require('./create_include')();
-
 var daemons = exports.daemons = {};
 
 const HOST = process.env['IP_ADDRESS'] || process.env['HOST'] || "127.0.0.1";

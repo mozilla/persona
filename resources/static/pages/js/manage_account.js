@@ -8,6 +8,7 @@ BrowserID.manageAccount = (function() {
 
   var bid = BrowserID,
       user = bid.User,
+      network = bid.Network,
       errors = bid.Errors,
       dom = bid.DOM,
       storage = bid.Storage,
@@ -91,7 +92,7 @@ BrowserID.manageAccount = (function() {
 
     var template = dom.getInner("#templateUser");
 
-    _.each(emails, function(item) {
+    _(emails).each(function(item) {
       var e = _.escape(item.address);
       var identity = substitute(template, { email: e });
 
@@ -180,7 +181,7 @@ BrowserID.manageAccount = (function() {
   }
 
   function displayChangePassword(oncomplete) {
-    user.withContext(function(ctx) {
+    network.withContext(function(ctx) {
       dom[ctx.has_password ? "addClass" : "removeClass"]("body", "canSetPassword");
       complete(oncomplete);
     });

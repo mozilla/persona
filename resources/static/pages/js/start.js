@@ -71,7 +71,6 @@ $(function() {
 
   xhr.init({ time_until_delay: 10 * 1000 });
   network.init();
-  user.init();
 
   $(".display_always,.display_auth,.display_nonauth").hide();
 

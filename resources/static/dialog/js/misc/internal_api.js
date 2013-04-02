@@ -142,12 +142,8 @@
    * @param {function} callback
    */
   internal.logout = function(origin, callback) {
-    function complete(status) {
-      callback && callback(status);
-    }
-
     user.setOrigin(origin);
-    user.logout(callback, complete.curry(null));
+    user.logout(callback, callback.curry(null));
   };
 
   /**
@@ -156,11 +152,7 @@
    * @param {function} callback
    */
   internal.logoutEverywhere = function(callback) {
-    function complete(success) {
-      callback && callback(status);
-    }
-
-    user.logoutUser(callback, complete.curry(null));
+    user.logoutUser(callback, callback.curry(null));
   };
 
 }());

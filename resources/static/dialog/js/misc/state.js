@@ -121,12 +121,6 @@ BrowserID.State = (function() {
       startAction(false, "doRPInfo", info);
 
       if (info.email && info.type === "primary") {
-        // this case is where a users is returning to the dialog from
-        // authentication with a primary.  Elsewhere in
-        // code we key off of whether .primaryVerificationInfo is
-        // set to behave differently the first time the dialog is
-        // loaded vs. when a user returns to the dialog after auth with
-        // primary.
         self.primaryVerificationInfo = info;
         redirectToState("primary_user", info);
       }
@@ -290,14 +284,6 @@ BrowserID.State = (function() {
         idpName: info.idpName || URLParse(info.auth_url).host
       });
 
-      // If .primaryVerificationInfo is set, that means the user is
-      // returning to the dialog after authentication with their IdP.
-      // When provisioning fails and:
-      // 1. it's the first provisioning attempt - we send the user to
-      //    authentication with their IdP
-      // 2. it's the second provisioning attempt - we sent the user back
-      //    to the proper screen to pick a new email address.
-      // related to issue #2339
       if (self.primaryVerificationInfo) {
         self.primaryVerificationInfo = null;
         if (info.add) {
