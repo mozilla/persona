@@ -20,7 +20,7 @@
     controller.start(config);
   }
 
-  module("controllers/verify_primary_user", {
+  module("dialog/js/modules/verify_primary_user", {
     setup: function() {
       testHelpers.setup();
       win = new WindowMock();
@@ -33,6 +33,35 @@
       }
       testHelpers.teardown();
     }
+  });
+
+  asyncTest("siteName and idpName are only escaped once", function() {
+    xhr.useResult("primaryUnknown");
+
+    var messageTriggered = false;
+
+    // siteName and idpName are escaped when they come into the system. The
+    // values do not need to be escaped again. See issue #3173
+    var siteName = _.escape("a / b");
+    var idpName = _.escape("idp / idp++");
+
+    createController({
+      siteName: siteName,
+      idpName: idpName,
+      window: win,
+      add: false,
+      email: "unregistered@testuser.com",
+      auth_url: "http://testuser.com/sign_in",
+      ready: function ready() {
+        var description = $(".description").html();
+        // If there is double escaping going on, the indexOfs will all fail.
+        equal(description.indexOf(_.escape(idpName)), -1);
+        equal(description.indexOf(_.escape(siteName)), -1);
+        equal($("#postVerify").html().indexOf(_.escape(siteName)), -1);
+        start();
+      }
+    });
+
   });
 
   asyncTest("submit with `add: false` option opens a new tab with proper URL (updated for sessionStorage)", function() {
