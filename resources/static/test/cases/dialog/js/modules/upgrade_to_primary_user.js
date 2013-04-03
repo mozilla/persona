@@ -34,14 +34,23 @@
   }
 
   test("Render dialog", function() {
+    // siteName and idpName are escaped when they come into the system. The
+    // values do not need to be escaped again. See issue #3173
+    var siteName = _.escape("a / b");
+    var idpName = "testuser.com";
+
     createController({
       email: 'transitioningS2P@testuser.com',
       auth_url: 'https://testuser.com/auth',
-      idpName: 'testuser.com'
+      siteName: siteName,
+      idpName: idpName
     });
     var copy = $('#upgrade_to_primary').html();
     ok(!!copy && copy.length > 0, "We have some copy");
-    ok(copy.indexOf('redirect you to testuser.com') > 0, "idPName shows up");
+    ok(copy.indexOf('redirect you to testuser.com') > -1, "idPName shows up");
+
+    // If there is double escaping going on, the indexOf will all fail.
+    equal(copy.indexOf(_.escape(siteName)), -1);
   });
 }());
 
