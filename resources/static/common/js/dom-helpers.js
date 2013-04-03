@@ -13,7 +13,7 @@ BrowserID.DOMHelpers = (function() {
     // widest, and then go from there.
     els.css({
       "min-width": "0px",
-      "width": null
+      "width": ""
     });
 
     els.each(function(index, element) {
