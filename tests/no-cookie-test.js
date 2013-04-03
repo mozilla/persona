@@ -48,7 +48,7 @@ suite.addBatch({
           path: '/wsapi/authenticate_user',
           headers: {
             'Content-Type': 'application/json',
-            'BrowserID-Version': commit
+            'BrowserID-git-sha': commit
           },
           method: "POST",
           agent: false // disable node.js connection pooling

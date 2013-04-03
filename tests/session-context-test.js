@@ -103,7 +103,7 @@ suite.addBatch({
   "code version mismatch using session_context API": {
     topic: wsapi.get('/wsapi/session_context', {}, {
       headers: {
-        "Browserid-Version": "INVALID_SHA"
+        "BrowserID-git-sha": "INVALID_SHA"
       }
     }),
     "will still respond correctly": function (err, r) {
