@@ -28,7 +28,7 @@ const svnRepo =
 const localePath = path.join(__dirname, '..', 'locale');
 
 // where compile script is located.
-const compileScriptPath = path.join(localePath, 'compile-json.sh');
+const compileScriptPath = path.join(__dirname, '..', 'node_modules', '.bin', 'compile-json');
 
 // where to place the json files.
 const jsonOutputPath = path.join(__dirname, '..', 'resources', 'static', 'i18n');
@@ -67,7 +67,10 @@ function compileJSON() {
   }
 
   logStage("compiling json files");
-  spawn(compileScriptPath, [localePath, jsonOutputPath], null, quit);
+  // the compile script expects its cwd to be the root directory of the repo.
+  spawn(compileScriptPath, [localePath, jsonOutputPath], {
+    cwd: path.join(__dirname, '..')
+  }, quit);
 }
 
 function quit(code) {
