@@ -209,8 +209,17 @@ BrowserID.User = (function() {
       // they just completed a registration.
       registrationComplete = true;
 
+      // If the status is still complete, the user's auth status is
+      // definitively password.
       if (resp.status === "complete") {
         setAuthenticationStatus("password", resp.userid);
+      }
+
+      // If there is any sort of userid and auth_status, sync the emails.
+      // If the user has to enter their password and status is mustAuth,
+      // the required_email module expects the emails to already be synced.
+      // See issue #3178
+      if (userid && auth_status) {
         User.syncEmails(function() {
           complete(onSuccess, resp.status);
         }, onFailure);
