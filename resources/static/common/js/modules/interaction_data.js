@@ -31,6 +31,7 @@ BrowserID.Modules.InteractionData = (function() {
       storage = bid.Storage,
       complete = bid.Helpers.complete,
       dom = bid.DOM,
+      REPEAT_COUNT_INDEX = 3,
       sc;
 
   function removeGetData(msg, data) {
@@ -307,6 +308,8 @@ BrowserID.Modules.InteractionData = (function() {
     var eventName = getKPIName.call(self, msg, data);
     if (!eventName) return;
 
+    if (preventDuplicateXhrEvents.call(self, eventName)) return;
+
     var eventData = [ eventName,
       (data.eventTime || new Date()) - self.startTime ];
 
@@ -317,6 +320,26 @@ BrowserID.Modules.InteractionData = (function() {
     setCurrentEventStream.call(self, eventStream);
 
     return eventData;
+  }
+
+  function preventDuplicateXhrEvents(eventName) {
+    /*jshint validthis: true */
+    var self=this;
+    var eventStream = self.getCurrentEventStream();
+
+    // Check if event is the same as the last event. If it is, update the
+    // number of times the last event was called. If not, continue as always.
+    if (/^xhr_complete/.test(eventName) && eventStream.length) {
+      var lastEvent = eventStream[eventStream.length - 1];
+      if (lastEvent[0] === eventName) {
+        // same xhr event as the last one. Update the count.
+        var eventCallCount = lastEvent[REPEAT_COUNT_INDEX] || 1;
+        eventCallCount++;
+        lastEvent[REPEAT_COUNT_INDEX] = eventCallCount;
+        setCurrentEventStream.call(self, eventStream);
+        return lastEvent;
+      }
+    }
   }
 
   function getCurrentKPIs() {
@@ -456,7 +479,8 @@ BrowserID.Modules.InteractionData = (function() {
 
     disable: function() {
       this.samplingEnabled = false;
-    }
+    },
+    REPEAT_COUNT_INDEX: REPEAT_COUNT_INDEX
     // END TEST API
   });
 
