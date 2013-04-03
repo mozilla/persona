@@ -160,8 +160,8 @@ BrowserID.User = (function() {
         // completed verification. See issue #1682
         // https://github.com/mozilla/browserid/issues/1682
         User.authenticate(stagedEmail, stagedPassword, function(authenticated) {
-          // The address verification poll does not send back a userid if
-          // the status is mustAuth. use the userid set in onContextChange.
+          // The address verification poll does not send back a userid.
+          // Use the userid set in User.authenticate
           resp.userid = userid;
           resp.status = authenticated ? "complete" : "mustAuth";
           completeVerification(resp);
@@ -187,6 +187,9 @@ BrowserID.User = (function() {
           if (resp.status === "complete" && authStatus !== "password")
             resp.status = "mustAuth";
 
+          // The address verification poll does not send back a userid.
+          // use the userid set in onContextChange.
+          resp.userid = userid;
           completeVerification(resp);
         }, onFailure);
       }

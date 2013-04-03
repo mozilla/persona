@@ -169,6 +169,8 @@
       // synced_address should be added as a result of syncing email addresses
       // when the verification poll completes.
       if (expectedResult === "complete") {
+        // after completion, the userid must be set. See issue #3172
+        ok(lib.userid());
         testHelpers.testAddressesSyncedAfterUserRegistration();
       }
       start();
