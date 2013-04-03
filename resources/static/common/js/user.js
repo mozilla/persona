@@ -33,7 +33,7 @@ BrowserID.User = (function() {
   }
 
   // remove identities that are no longer valid
-  function cleanupIdentities(cb) {
+  function cleanupIdentities(onSuccess, onFailure) {
     network.serverTime(function(serverTime) {
       network.domainKeyCreationTime(function(creationTime) {
         // Determine if a certificate is expired.  That will be
@@ -64,7 +64,7 @@ BrowserID.User = (function() {
         var emails = storage.getEmails();
         var issued_identities = {};
         prepareDeps();
-        _(emails).each(function(email_obj, email_address) {
+        _.each(emails, function(email_obj, email_address) {
           try {
             email_obj.pub = jwcrypto.loadPublicKeyFromObject(email_obj.pub);
           } catch (x) {
@@ -93,12 +93,9 @@ BrowserID.User = (function() {
             }
           }
         });
-        cb();
-      }, function(e) {
-        // we couldn't get domain key creation time!  uh oh.
-        cb();
-      });
-    });
+        onSuccess();
+      }, onFailure);
+    }, onFailure);
   }
 
   function stageAddressVerification(email, password, stagingStrategy, onComplete, onFailure) {
@@ -953,7 +950,7 @@ BrowserID.User = (function() {
 
           complete(onComplete);
         }, onFailure);
-      });
+      }, onFailure);
     },
 
     /**
