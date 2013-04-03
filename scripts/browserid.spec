@@ -2,7 +2,7 @@
 
 Name:          browserid-server
 Version:       0.2013.03.29
-Release:       2%{?dist}_%{svnrev}
+Release:       3%{?dist}_%{svnrev}
 Summary:       BrowserID server
 Packager:      Gene Wood <gene@mozilla.com>
 Group:         Development/Libraries
