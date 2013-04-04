@@ -92,7 +92,7 @@ Sauce.
 
 ### All tests, one browser, saucelabs:
 
-    scripts/run-all.js --parallel=15 --platform=irefox
+    scripts/run-all.js --parallel=15 --platform=firefox
 
 ### All tests, all browsers, saucelabs: 
 
