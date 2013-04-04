@@ -293,7 +293,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "Chrome",
       "version": 20
     },
@@ -323,7 +323,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "Chrome",
       "version": 19
     },
@@ -335,7 +335,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "Chrome",
       "version": 19
     },
@@ -353,7 +353,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.0 Safari/536.3",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "Chrome",
       "version": 19
     },
@@ -365,7 +365,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "Chrome",
       "version": 19
     },
@@ -461,13 +461,13 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.66 Safari/535.11",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "Chrome",
       "version": 17
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.66 Safari/535.11",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "Chrome",
       "version": 17
     },
@@ -563,7 +563,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.65 Safari/535.11",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "Chrome",
       "version": 17
     },
@@ -3809,7 +3809,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.198 Safari/532.0",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Chrome",
       "version": 3
     },
@@ -3935,7 +3935,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.6 Safari/532.0",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Chrome",
       "version": 3
     },
@@ -3953,7 +3953,7 @@
     },
     {
       "ua": "Mozilla/4.0 (Windows; U; Windows NT 5.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.33 Safari/532.0",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Chrome",
       "version": 3
     },
@@ -4007,7 +4007,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.27 Safari/532.0",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Chrome",
       "version": 3
     },
@@ -4559,7 +4559,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.55 Safari/525.19",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Chrome",
       "version": 1
     },
@@ -4811,7 +4811,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.2.149.27 Safari/525.13",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Chrome",
       "version": 0
     },
@@ -5360,7 +5360,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-en) AppleWebKit/533.16 (KHTML, like Gecko) Version/4.1 Safari/533.16",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Safari",
       "version": 533
     },
@@ -6914,7 +6914,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en) AppleWebKit/522.12.1 (KHTML, like Gecko) Version/3.0.1 Safari/522.12.2",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Safari",
       "version": 522
     },
@@ -8441,7 +8441,7 @@
     },
     {
       "ua": "Mozilla/5.0 (compatible; Windows; U; Windows NT 6.2; WOW64; en-US; rv:12.0) Gecko/20120403211507 Firefox/12.0",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "Firefox",
       "version": 12
     },
@@ -8489,7 +8489,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 6.2; rv:9.0.1) Gecko/20100101 Firefox/9.0.1",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "Firefox",
       "version": 9
     },
@@ -8531,7 +8531,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 5.0; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 6
     },
@@ -8615,7 +8615,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "Firefox",
       "version": 5
     },
@@ -8657,13 +8657,13 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 5.0; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 5
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 5.0; rv:5.0) Gecko/20100101 Firefox/5.0",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 5
     },
@@ -11405,7 +11405,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; ru; rv:1.9.1.13) Gecko/20100914 Firefox/3.5.13",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 3
     },
@@ -11951,7 +11951,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.9.0.2) Gecko/2008092313 Firefox/3.1.6",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 3
     },
@@ -12149,7 +12149,7 @@
     },
     {
       "ua": "Mozilla/5.0 (X11; U; Windows NT 5.0; en-US; rv:1.9b4) Gecko/2008030318 Firefox/3.0b4",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 3
     },
@@ -14501,7 +14501,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8.1b1) Gecko/20060710 Firefox/2.0b1",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 2
     },
@@ -15989,13 +15989,13 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; fr; rv:1.8.1.17) Gecko/20080829 Firefox/2.0.0.17",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 2
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; de; rv:1.8.1.17) Gecko/20080829 Firefox/2.0.0.17",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 2
     },
@@ -16175,7 +16175,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8.1.15) Gecko/20080623 Firefox/2.0.0.15",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 2
     },
@@ -16967,7 +16967,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8.1.4) Gecko/20070509 Firefox/2.0.0",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 2
     },
@@ -17135,19 +17135,19 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; ; rv:1.8.0.7) Gecko/20060917 Firefox/1.9.0.1",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; ; rv:1.8.0.10) Gecko/20070216 Firefox/1.9.0.1",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; ; rv:1.8.0.1) Gecko/20060111 Firefox/1.9.0",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
@@ -18077,7 +18077,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; es-ES; rv:1.8.0.3) Gecko/20060426 Firefox/1.5.0.3",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
@@ -18455,37 +18455,37 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; pl; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; it; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; fr; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; es-ES; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; de; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
@@ -18977,7 +18977,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8b4) Gecko/20050908 Firefox/1.4",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
@@ -19355,7 +19355,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.9) Gecko/20050711 Firefox/1.0.5",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
@@ -19577,19 +19577,19 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; fr-FR; rv:1.7.7) Gecko/20050414 Firefox/1.0.3",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.7) Gecko/20050414 Firefox/1.0.3",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; de-DE; rv:1.7.7) Gecko/20050414 Firefox/1.0.3",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
@@ -19715,19 +19715,19 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.6) Gecko/20050317 Firefox/1.0.2",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-GB; rv:1.7.6) Gecko/20050321 Firefox/1.0.2",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; de-DE; rv:1.7.6) Gecko/20050321 Firefox/1.0.2",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
@@ -19835,25 +19835,25 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.6) Gecko/20050225 Firefox/1.0.1",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; de-DE; rv:1.7.6) Gecko/20050226 Firefox/1.0.1",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; de-DE; rv:1.7.6) Gecko/20050223 Firefox/1.0.1",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; de-DE; rv:1.6) Gecko/20040206 Firefox/1.0.1",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 1
     },
@@ -20039,13 +20039,13 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7) Gecko/20040803 Firefox/0.9.3",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 0
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; de-DE; rv:1.7) Gecko/20040803 Firefox/0.9.3",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 0
     },
@@ -20081,7 +20081,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7) Gecko/20040707 Firefox/0.9.2",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 0
     },
@@ -20099,7 +20099,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; de-DE; rv:1.7) Gecko/20040626 Firefox/0.9.1",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 0
     },
@@ -20153,13 +20153,13 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.6) Gecko/20040206 Firefox/0.8",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 0
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; de-DE; rv:1.6) Gecko/20040206 Firefox/0.8",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 0
     },
@@ -20219,13 +20219,13 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; rv:1.7.3) Gecko/20041001 Firefox/0.10.1",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 0
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; rv:1.7.3) Gecko/20040913 Firefox/0.10.1",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 0
     },
@@ -20255,13 +20255,13 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; zh-TW; rv:1.8.0.1) Gecko/20060111 Firefox/0.10",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 0
     },
     {
       "ua": "Mozilla/5.0 (Windows; U; Windows NT 5.0; rv:1.7.3) Gecko/20040913 Firefox/0.10",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Firefox",
       "version": 0
     },
@@ -21758,7 +21758,7 @@
     },
     {
       "ua": "Opera/9.60 (Windows NT 5.0; U; en) Presto/2.1.1",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": 2
     },
@@ -21848,7 +21848,7 @@
     },
     {
       "ua": "Opera/9.52 (Windows NT 5.0; U; en)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -22400,13 +22400,13 @@
     },
     {
       "ua": "Opera/9.25 (Windows NT 5.0; U; en)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/9.25 (Windows NT 5.0; U; cs)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -22466,7 +22466,7 @@
     },
     {
       "ua": "Opera/9.24 (Windows NT 5.0; U; ru)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -22574,13 +22574,13 @@
     },
     {
       "ua": "Opera/9.23 (Windows NT 5.0; U; en)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/9.23 (Windows NT 5.0; U; de)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -22790,7 +22790,7 @@
     },
     {
       "ua": "Opera/9.21 (Windows NT 5.0; U; de)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -22952,13 +22952,13 @@
     },
     {
       "ua": "Opera/9.12 (Windows NT 5.0; U; ru)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/9.12 (Windows NT 5.0; U)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -23192,19 +23192,19 @@
     },
     {
       "ua": "Opera/9.02 (Windows NT 5.0; U; sv)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/9.02 (Windows NT 5.0; U; pl)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/9.02 (Windows NT 5.0; U; en)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -23312,13 +23312,13 @@
     },
     {
       "ua": "Opera/9.01 (Windows NT 5.0; U; en)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/9.01 (Windows NT 5.0; U; de)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -23444,7 +23444,7 @@
     },
     {
       "ua": "Opera/9.00 (Windows NT 5.0; U; en)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -23582,13 +23582,13 @@
     },
     {
       "ua": "Opera/8.54 (Windows NT 5.0; U; en)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/8.54 (Windows NT 5.0; U; de)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -23660,13 +23660,13 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; pl) Opera 8.54",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; en) Opera 8.54",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -23702,7 +23702,7 @@
     },
     {
       "ua": "Opera/8.53 (Windows NT 5.0; U; en)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -23738,7 +23738,7 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; en) Opera 8.53",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -23774,7 +23774,7 @@
     },
     {
       "ua": "Opera/8.52 (Windows NT 5.0; U; en)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -23828,7 +23828,7 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; en) Opera 8.52",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -23888,7 +23888,7 @@
     },
     {
       "ua": "Opera/8.51 (Windows NT 5.0; U; en)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24002,19 +24002,19 @@
     },
     {
       "ua": "Opera/8.50 (Windows NT 5.0; U; fr)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/8.50 (Windows NT 5.0; U; en)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/8.50 (Windows NT 5.0; U; de)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24056,7 +24056,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 5.0; U; de) Opera 8.50",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24140,13 +24140,13 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; en) Opera 8.02",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; de) Opera 8.02",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24188,7 +24188,7 @@
     },
     {
       "ua": "Opera/8.01 (Windows NT 5.0; U; de)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24284,13 +24284,13 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; en) Opera 8.0",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; de) Opera 8.0",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24356,13 +24356,13 @@
     },
     {
       "ua": "Opera/7.54 (Windows NT 5.0; U)  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/7.54 (Windows NT 5.0; U)  [de]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24392,7 +24392,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 5.0; U) Opera 7.54  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24428,13 +24428,13 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.54  [pl]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.54  [de]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24500,7 +24500,7 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.52  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24542,7 +24542,7 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.51  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24572,13 +24572,13 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.50  [ru]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.50  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24614,19 +24614,19 @@
     },
     {
       "ua": "Opera/7.23 (Windows NT 5.0; U) [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/7.23 (Windows NT 5.0; U)  [fr]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/7.23 (Windows NT 5.0; U)  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24674,19 +24674,19 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.23  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.23  [de]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.23  [ca]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24716,7 +24716,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 5.0; U) Opera 7.21  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24734,7 +24734,7 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.20  [de]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24770,13 +24770,13 @@
     },
     {
       "ua": "Opera/7.11 (Windows NT 5.0; U)  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/7.11 (Windows NT 5.0; U)  [de]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24806,7 +24806,7 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 5.0; U) Opera 7.11  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24818,7 +24818,7 @@
     },
     {
       "ua": "Mozilla/4.78 (Windows NT 5.0; U) Opera 7.11  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24842,19 +24842,19 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.11  [fr]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.11  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.11  [de]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24884,7 +24884,7 @@
     },
     {
       "ua": "Opera/7.10 (Windows NT 5.0; U)  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24914,7 +24914,7 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.10  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24926,7 +24926,7 @@
     },
     {
       "ua": "Mozilla/3.0 (Windows NT 5.0; U) Opera 7.10  [de]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24944,13 +24944,13 @@
     },
     {
       "ua": "Opera/7.03 (Windows NT 5.0; U)  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Opera/7.03 (Windows NT 5.0; U)  [de]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -24998,13 +24998,13 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.0) Opera 7.03  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.0) Opera 7.03  [de]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -25082,7 +25082,7 @@
     },
     {
       "ua": "Opera/7.01 (Windows NT 5.0; U)  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -25100,13 +25100,13 @@
     },
     {
       "ua": "Mozilla/5.0 (Windows NT 5.0; U) Opera 7.01  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.78 (Windows NT 5.0; U) Opera 7.01  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -25124,7 +25124,7 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.0) Opera 7.01  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -25136,7 +25136,7 @@
     },
     {
       "ua": "Mozilla/3.0 (Windows NT 5.0; U) Opera 7.01  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -25196,13 +25196,13 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.0) Opera 7.0  [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.0) Opera 7.0  [de]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -26126,7 +26126,7 @@
     },
     {
       "ua": " Opera/5.02 (Windows NT 5.0; U) [en]",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "Opera",
       "version": "Unknown"
     },
@@ -27791,19 +27791,19 @@
     },
     {
       "ua": "Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.0; Trident/4.0; InfoPath.1; SV1; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 3.0.04506.30)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 8
     },
     {
       "ua": "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.0; Trident/4.0; FBSMTWB; .NET CLR 2.0.34861; .NET CLR 3.0.3746.3218; .NET CLR 3.5.33652; msn OptimizedIE8;ENUS)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 7
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)",
-      "os": "Unknown",
+      "os": "Windows NT 6.2",
       "browser": "MSIE",
       "version": 8
     },
@@ -28007,7 +28007,7 @@
     },
     {
       "ua": "Mozilla/4.79 [en] (compatible; MSIE 7.0; Windows NT 5.0; .NET CLR 2.0.50727; InfoPath.2; .NET CLR 1.1.4322; .NET CLR 3.0.04506.30; .NET CLR 3.0.04506.648)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 7
     },
@@ -28103,31 +28103,31 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0b; Windows NT 5.0; YComp 5.0.2.6)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 6
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0b; Windows NT 5.0; YComp 5.0.0.0) (Compatible;  ;  ; Trident/4.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 6
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0b; Windows NT 5.0; YComp 5.0.0.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 6
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0b; Windows NT 5.0; .NET CLR 1.1.4322)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 6
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 6.0b; Windows NT 5.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 6
     },
@@ -28169,7 +28169,7 @@
     },
     {
       "ua": " Mozilla/4.0 (compatible; MSIE 6.0b; Windows NT 5.0; .NET CLR 1.0.3705)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 6
     },
@@ -28241,7 +28241,7 @@
     },
     {
       "ua": "Mozilla/4.0 (Windows; MSIE 6.0; Windows NT 5.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 6
     },
@@ -28259,7 +28259,7 @@
     },
     {
       "ua": "Mozilla/4.0 (MSIE 6.0; Windows NT 5.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 6
     },
@@ -28577,91 +28577,91 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; YComp 5.0.2.6; MSIECrawler)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; YComp 5.0.2.6; Hotbar 4.2.8.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; YComp 5.0.2.6; Hotbar 3.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; YComp 5.0.2.6)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; YComp 5.0.2.4)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; YComp 5.0.0.0; Hotbar 4.1.8.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; YComp 5.0.0.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Wanadoo 5.6)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Wanadoo 5.3; Wanadoo 5.5)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Wanadoo 5.1)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; SV1; .NET CLR 1.1.4322; .NET CLR 1.0.3705; .NET CLR 2.0.50727)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; SV1)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Q312461; T312461)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; Q312461)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0; MSIECrawler)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
@@ -28757,7 +28757,7 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT 5.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 5
     },
@@ -28841,7 +28841,7 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 4.01; Windows NT 5.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 4
     },
@@ -29027,7 +29027,7 @@
     },
     {
       "ua": "Mozilla/3.0 (compatible; MSIE 3.0; Windows NT 5.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 3
     },
@@ -29045,7 +29045,7 @@
     },
     {
       "ua": "Mozilla/4.0 (compatible; MSIE 2.0; Windows NT 5.0; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)",
-      "os": "Unknown",
+      "os": "Windows NT 5.0",
       "browser": "MSIE",
       "version": 2
     },
