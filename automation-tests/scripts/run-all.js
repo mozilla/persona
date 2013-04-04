@@ -35,6 +35,7 @@ var argv = require('optimist')
   })
   .alias('parallel', 'p')
   .describe('parallel', 'the number of tests to run at the same time')
+  .default('parallel', "10")
   .check(function(a) {
     if (!a.parallel) a.parallel = parseInt(process.env.RUNNERS, 10) || 10;
   })
