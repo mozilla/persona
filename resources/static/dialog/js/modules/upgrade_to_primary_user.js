@@ -35,6 +35,11 @@ BrowserID.Modules.UpgradeToPrimaryUser = (function() {
       add = data.add;
       email = data.email;
       auth_url = data.auth_url;
+
+      // major assumption:
+      // both siteName and idpName are escaped before they make it here.
+      // siteName is escaped in dialog/js/modules/dialog.js
+      // idpName is escaped in common/js/user.js->addressInfo
       self.renderForm("upgrade_to_primary_user", {
         email: data.email,
         auth_url: data.auth,

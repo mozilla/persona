@@ -58,6 +58,10 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email = data.email;
       auth_url = data.auth_url;
 
+      // major assumption:
+      // both siteName and idpName are escaped before they make it here.
+      // siteName is escaped in dialog/js/modules/dialog.js
+      // idpName is escaped in common/js/user.js->addressInfo
       user.addressInfo(email, function onSuccess(info) {
         if (showsPrimaryTransition(info.state)) {
           self.renderForm("verify_primary_user", {

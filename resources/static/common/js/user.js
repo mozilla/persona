@@ -1084,7 +1084,7 @@ BrowserID.User = (function() {
             User.isUserAuthenticatedToPrimary(normalizedEmail, info,
                 function(authed) {
               info.authed = authed;
-              info.idpName = getIdPName(info);
+              info.idpName = _.escape(getIdPName(info));
               complete(info);
             }, onFailure);
           }, onFailure);

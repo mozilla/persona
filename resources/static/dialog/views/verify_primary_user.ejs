@@ -4,26 +4,27 @@
 
 <div class="cf form_section">
 	<h3>
-    <%= format(gettext("%s makes this easy"), [idpName]) %>
+    <%- format(gettext("%s makes this easy"), [idpName]) %>
   </h3>
 
   <p class="description">
     <% if (transition_to_primary) { %>
-      <%=format(gettext("Your %(emailProvider)s account has been upgraded to work even better with Persona. We will redirect you to %(emailProvider)s."), {
+      <%- format(gettext("Your %(emailProvider)s account has been upgraded to work even better with Persona. We will redirect you to %(emailProvider)s."), {
         emailProvider: idpName
       })%>
     <% } else { %>
-      <%= format(gettext("Persona lets you use your %(emailProvider)s account to sign into sites like %(aWebsite)s."),
+      <%- format(gettext("Persona lets you use your %(emailProvider)s account to sign into sites like %(aWebsite)s."),
                { emailProvider: idpName, aWebsite: siteName }) %>
     <% } %>
   </p>
-  <p>
-    <%= format(gettext("Once you verify your account there, you will be signed in to %(aWebsite)s."),
+
+  <p id="postVerify">
+    <%- format(gettext("Once you verify your account there, you will be signed in to %(aWebsite)s."),
                {aWebsite : siteName}) %>
   </p>
 
   <p class="submit cf buttonrow">
-      <button id="verifyWithPrimary"><%= format(gettext("sign in with %s"), [idpName]) %></button>
+      <button id="verifyWithPrimary"><%- format(gettext("sign in with %s"), [idpName]) %></button>
       <a href="#" id="cancel" class="emphasize right"><%= gettext("Use a different email address") %></a>
   </p>
 
