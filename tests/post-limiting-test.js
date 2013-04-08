@@ -35,7 +35,7 @@ function getVersion(done) {
 function request(opts, done) {
   var headers = opts.headers = opts.headers || {};
   if (opts.path.indexOf('/wsapi') > -1) {
-    headers['BrowserID-Version'] = code_version;
+    headers['BrowserID-git-sha'] = code_version;
   }
   return http.request(opts, done);
 }
