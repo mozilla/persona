@@ -118,6 +118,18 @@
         boundingRectEl.css("top", favIconHeight + "px");
     }
 
+    // this can be used to keep the footer text on one line, #3129.
+    function resizeFooterText(cb) {
+      function shrinkFooter() {
+        var footerText = $('#footerText');
+        if (footerText.width() < $('footer').width()) return;
+        var newFontSize = parseInt(footerText.css('fontSize'), 10) - 1 + 'px';
+        footerText.css('fontSize', newFontSize);
+        setTimeout(shrinkFooter); // let UI loop run before measuring again
+      }
+      shrinkFooter();
+    }
+
     // The mobile breakpoint is 640px in the CSS.  If the max-width is changed
     // there, it must be changed here as well.
     if($(window).width() > 640) {
@@ -126,7 +138,7 @@
     else {
       mobileHacks();
     }
-
+    resizeFooterText();
     scrollableEl.css("position", "");
   }
 
