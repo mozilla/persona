@@ -103,6 +103,14 @@ footer {
     background-image:         linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
 }
 
+/* prevent the footer text from wrapping so that its non-wrapped width can be
+ * calculated and used to dynamically size the text to fit on one line in the
+ * footer. See issue #3144.
+ */
+#footerText {
+  white-space: nowrap;
+}
+
 label {
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
