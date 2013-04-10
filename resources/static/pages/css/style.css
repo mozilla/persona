@@ -397,6 +397,15 @@ button.delete:active {
   background-image:         linear-gradient(top, #338fd1, #0e6bb6);
 }
 
+.tour .button:active {
+  background-image: -webkit-linear-gradient(bottom, #338fd1, #0e6bb6);
+  background-image:    -moz-linear-gradient(bottom, #338fd1, #0e6bb6);
+  background-image:     -ms-linear-gradient(bottom, #338fd1, #0e6bb6);
+  background-image:      -o-linear-gradient(bottom, #338fd1, #0e6bb6);
+  background-image:         linear-gradient(bottom, #338fd1, #0e6bb6);
+
+}
+
 .create {
   float: none;
   vertical-align: middle;
