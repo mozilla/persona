@@ -378,7 +378,7 @@ button.delete:active {
   border-radius: 7px;
   border-color: #68b8e8 #5da8dc #2f597b #5aa4d9;
   display:inline-block;
-  padding: 11px 25px;
+  padding: 15px 25px;
   background-image: -webkit-linear-gradient(top, #42a5e1, #2970aa);
   background-image:    -moz-linear-gradient(top, #42a5e1, #2970aa);
   background-image:     -ms-linear-gradient(top, #42a5e1, #2970aa);
