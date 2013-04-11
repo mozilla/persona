@@ -21,8 +21,8 @@
   <p id="rptospp" class="tospp">
     <%- format(gettext("By proceeding, you agree to %(site)s's <a %(terms)s>Terms</a> and <a %(privacy)s>Privacy Policy</a>."),
                {
-                 terms: 'href="' + termsOfService + '" id="rp_tos" target="_blank"',
-                 privacy: 'href="' + privacyPolicy + '" id="rp_pp" target="_blank"',
+                 terms: 'href="' + termsOfService + '" id="rp_tos" target="_blank" tabindex="10"',
+                 privacy: 'href="' + privacyPolicy + '" id="rp_pp" target="_blank" tabindex="10"',
                  site: siteName || hostname
                })
     %>

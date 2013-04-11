@@ -72,8 +72,10 @@
                     <p class="submit tospp">
                        <%- format(gettext("By proceeding, you agree to %(site)s's <a %(terms)s>Terms</a> and <a %(privacy)s>Privacy Policy</a>."),
                                   { site: "Persona",
-                                    terms: 'href="https://login.persona.org/tos" target="_new"',
-                                    privacy: 'href="https://login.persona.org/privacy" target="_new"' }) %>
+                                    terms:
+                                        'href="https://login.persona.org/tos" target="_new" tabindex="1"',
+                                    privacy:
+                                        'href="https://login.persona.org/privacy" target="_new" tabindex="1"' }) %>
                     </p>
 
 
