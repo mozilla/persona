@@ -69,14 +69,22 @@
       var msg = "";
       var args = [].slice.call(arguments, 0);
       _.each(args, function(arg, index) {
-        if (index > 0) msg += " ";
+        if (index > 0) msg += ", ";
 
         var type = Object.prototype.toString.apply(arg);
         if (type === "[object String]") {
           msg += arg;
         }
         else if (type === "[object Object]") {
-          msg += JSON.stringify(arg, null, 2);
+          try {
+            msg += JSON.stringify(arg, null, 2);
+          } catch(err) {
+            // could be recursive
+            msg += "<<object>>";
+          }
+        }
+        else if (type === "[object Function]") {
+          msg += "<<function>>";
         }
         else {
           msg += String(arg);
