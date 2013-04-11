@@ -6,16 +6,16 @@
 
   var controller,
       bid = BrowserID,
-      B2gTosPp = bid.Modules.B2gTosPp,
+      InlineTosPp = bid.Modules.InlineTosPp,
       testHelpers = bid.TestHelpers;
 
   function createController(options) {
     options = options || {};
-    controller = B2gTosPp.create();
+    controller = InlineTosPp.create();
     controller.start(options);
   }
 
-  module("dialog/js/modules/b2g_tospp", {
+  module("dialog/js/modules/inline_tospp", {
     setup: function() {
       testHelpers.setup();
     },

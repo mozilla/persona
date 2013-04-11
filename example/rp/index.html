@@ -66,6 +66,9 @@ pre {
       <input type="checkbox" id="termsOfService">
       <label for="termsOfService">Supply a ToS</label>
     </li><li>
+      <input type="checkbox" id="inlineTermsOfService">
+      <label for="inlineTermsOfService">Show TOS/PP agreements inline</label>
+    </li><li>
       <input type="checkbox" id="siteName">
       <label for="siteName">Supply Site Name</label><br />
     </li><li>
@@ -200,6 +203,7 @@ $(document).ready(function() {
     navigator.id.request({
       privacyPolicy: $('#privacyPolicy').attr('checked') ? "/privacy.html" : undefined,
       termsOfService: $('#termsOfService').attr('checked') ? "/TOS.html" : undefined,
+      inlineTermsOfService: $('#inlineTermsOfService').attr('checked'),
       siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
       siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined,
       returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,

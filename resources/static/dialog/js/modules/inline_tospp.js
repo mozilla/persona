@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-BrowserID.Modules.B2gTosPp = (function() {
+BrowserID.Modules.InlineTosPp = (function() {
   "use strict";
 
   // B2G requires special TOS/PP handling. TOS/PP agreements must be shown in
@@ -58,7 +58,7 @@ BrowserID.Modules.B2gTosPp = (function() {
     var self=this;
 
     if (!self._tospp) {
-      self._tospp = renderer.append(IFRAME_PARENT_SELECTOR, "b2g_tospp", {});
+      self._tospp = renderer.append(IFRAME_PARENT_SELECTOR, "inline_tospp", {});
       self.click(TOSPP_CLOSE_SELECTOR, closeTOSPP, self);
     }
 
@@ -74,6 +74,7 @@ BrowserID.Modules.B2gTosPp = (function() {
   }
 
   function removeTOSPP() {
+    /*jshint validthis: true*/
     var tosppEl = this._tospp;
     if (tosppEl) {
       dom.removeElement(tosppEl);

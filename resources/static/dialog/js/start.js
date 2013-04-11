@@ -53,14 +53,11 @@
       moduleManager.register("xhr_disable_form", modules.XHRDisableForm);
       moduleManager.register("set_password", modules.SetPassword);
       moduleManager.register("rp_info", modules.RPInfo);
-      moduleManager.register("b2g_tospp", modules.B2gTosPp);
+      moduleManager.register("inline_tospp", modules.InlineTosPp);
 
       moduleManager.start("xhr_delay");
       moduleManager.start("xhr_disable_form");
       moduleManager.start("dialog");
-
-      // XXX This should only take effect for B2G
-      moduleManager.start("b2g_tospp");
     }
   });
 }());
