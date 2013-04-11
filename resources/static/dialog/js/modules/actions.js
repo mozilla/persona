@@ -140,6 +140,8 @@ BrowserID.Modules.Actions = (function() {
 
     doCheckAuth: function(info) {
       var self=this;
+
+      info = info || {};
       user.checkAuthenticationAndSync(function (authenticated) {
         // Does the RP want us to force the user to authenticate?
         authenticated = info.forceAuthentication ? false : authenticated;
