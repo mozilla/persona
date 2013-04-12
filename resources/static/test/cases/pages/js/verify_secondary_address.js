@@ -89,7 +89,7 @@
       testHasClass("body", "complete");
       testElementTextEquals(".website", returnTo, "origin is set to redirect to login.persona.org");
       testDocumentRedirected(doc, returnTo, "redirection occurred to correct URL");
-      equal(storage.getLoggedIn("https://test.domain"), "testuser@testuser.com", "logged in status set");
+      equal(storage.site.get("https://test.domain", "logged_in"), "testuser@testuser.com", "logged in status set");
       start();
     });
   });

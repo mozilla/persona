@@ -74,7 +74,8 @@ BrowserID.verifySecondaryAddress = (function() {
             // closes the dialog OR if redirection happens before the dialog
             // has had a chance to finish its business.
             /*jshint newcap:false*/
-            storage.setLoggedIn(URLParse(self.redirectTo).originOnly(), self.email);
+            storage.site.set(URLParse(self.redirectTo).originOnly(),
+                "logged_in", self.email);
 
             countdownTimeout.call(self, function() {
               self.doc.location = self.redirectTo;

@@ -160,24 +160,17 @@
     equal(storage.getReturnTo(), "http://some.domain/path", "setReturnTo/getReturnTo working as expected");
   });
 
-  test("signInEmail.set/.get/.remove - set, get, and remove the signInEmail", function() {
-    storage.signInEmail.set("testuser@testuser.com");
-    equal(storage.signInEmail.get(), "testuser@testuser.com", "correct email gotten");
-    storage.signInEmail.remove();
-    equal(typeof storage.signInEmail.get(), "undefined", "after remove, signInEmail is empty");
-  });
-
-  test("setLoggedIn, getLoggedIn, loggedInCount", function() {
+  test("site.set->logged_in, site.get->logged_in, loggedInCount", function() {
     var email = "testuser@testuser.com";
     storage.addEmail(email, {});
-    storage.setLoggedIn(TEST_ORIGIN, email);
-    equal(storage.getLoggedIn(TEST_ORIGIN), email, "correct email");
-    storage.setLoggedIn("http://another.domain", email);
+    storage.site.set(TEST_ORIGIN, "logged_in", email);
+    storage.site.set("http://another.domain", "logged_in", email);
+
     equal(storage.loggedInCount(), 2, "correct logged in count");
 
     storage.removeEmail(email);
     equal(storage.loggedInCount(), 0, "after email removed, not logged in anywhere");
-    testHelpers.testUndefined(storage.getLoggedIn(TEST_ORIGIN), "sites with email no longer logged in");
+    testHelpers.testUndefined(storage.site.get(TEST_ORIGIN, "logged_in"), "sites with email no longer logged in");
   });
 
 }());

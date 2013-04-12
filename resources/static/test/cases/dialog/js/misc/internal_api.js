@@ -95,7 +95,7 @@
   asyncTest("get with silent: true, authenticated user, no requiredEmail, email address associated with site, XHR failure - return null assertion.", function() {
     user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
       user.syncEmails(function() {
-        storage.setLoggedIn(ORIGIN, "email", TEST_EMAIL);
+        storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
 
         xhr.useResult("invalid");
 
@@ -194,16 +194,16 @@
   asyncTest("logout of authenticated user logs the user out of origin", function() {
     user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
       // simulate multiple origin->email associations.
-      storage.setLoggedIn(ORIGIN, "email", TEST_EMAIL);
-      storage.setLoggedIn(ORIGIN + "2", "email", TEST_EMAIL);
+      storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
+      storage.site.set(ORIGIN + "2", "logged_in", TEST_EMAIL);
 
       internal.logout(ORIGIN, function(success) {
         equal(success, true, "user has been successfully logged out");
 
         // with logout, only the association specified for the origin is
         // cleared.
-        testUndefined(storage.getLoggedIn(ORIGIN, "email"));
-        testNotUndefined(storage.getLoggedIn(ORIGIN + "2", "email"));
+        testUndefined(storage.site.get(ORIGIN, "logged_in"));
+        testNotUndefined(storage.site.get(ORIGIN + "2", "logged_in"));
 
         start();
       });
@@ -220,14 +220,14 @@
   asyncTest("logoutEverywhere of authenticated user logs the user out everywhere", function() {
     user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
       // simulate multiple origin->email associations.
-      storage.setLoggedIn(ORIGIN, "email", TEST_EMAIL);
-      storage.setLoggedIn(ORIGIN + "2", "email", TEST_EMAIL);
+      storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
+      storage.site.set(ORIGIN + "2", "logged_in", TEST_EMAIL);
 
       internal.logoutEverywhere(function(success) {
         equal(success, true, "user has been successfully logged out everywhere");
         // with logoutEverywhere, both associations should be cleared.
-        testUndefined(storage.getLoggedIn(ORIGIN, "email"));
-        testUndefined(storage.getLoggedIn(ORIGIN + "2", "email"));
+        testUndefined(storage.site.get(ORIGIN, "logged_in"));
+        testUndefined(storage.site.get(ORIGIN + "2", "logged_in"));
 
         start();
       });

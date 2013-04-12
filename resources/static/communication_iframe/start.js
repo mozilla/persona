@@ -104,7 +104,7 @@
     // logout have been called before. This allows the user to be force logged
     // out.
     if (loggedInUser !== null) {
-      storage.setLoggedIn(remoteOrigin, false);
+      storage.site.remove(remoteOrigin, "logged_in");
       loggedInUser = null;
       chan.notify({ method: 'logout' });
     }

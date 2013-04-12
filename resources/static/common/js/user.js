@@ -1383,7 +1383,7 @@ BrowserID.User = (function() {
       //      might have fewer race conditions and do fewer network requests.
       User.checkAuthenticationAndSync(function(authenticated) {
         if (authenticated) {
-          var loggedInEmail = storage.getLoggedIn(origin);
+          var loggedInEmail = storage.site.get(origin, "logged_in");
           if (loggedInEmail !== siteSpecifiedEmail) {
             if (loggedInEmail) {
               User.getAssertion(loggedInEmail, origin, function(assertion) {
@@ -1412,7 +1412,7 @@ BrowserID.User = (function() {
     logout: function(onComplete, onFailure) {
       User.checkAuthentication(function(authenticated) {
         if (authenticated) {
-          storage.setLoggedIn(origin, false);
+          storage.site.remove(origin, "logged_in");
         }
 
         if (onComplete) {

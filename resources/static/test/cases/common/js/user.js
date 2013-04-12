@@ -1087,7 +1087,7 @@
     xhr.setContextInfo("auth_level", "password");
 
     lib.syncEmailKeypair(LOGGED_IN_EMAIL, function() {
-      storage.setLoggedIn(lib.getOrigin(), LOGGED_IN_EMAIL);
+      storage.site.set(lib.getOrigin(), "logged_in", LOGGED_IN_EMAIL);
       lib.getSilentAssertion(LOGGED_IN_EMAIL, function(email, assertion) {
         equal(email, LOGGED_IN_EMAIL, "correct email");
         strictEqual(assertion, null, "correct assertion");
@@ -1102,7 +1102,7 @@
     var REQUESTED_EMAIL = "requested@testuser.com";
 
     lib.syncEmailKeypair(LOGGED_IN_EMAIL, function() {
-      storage.setLoggedIn(lib.getOrigin(), LOGGED_IN_EMAIL);
+      storage.site.set(lib.getOrigin(), "logged_in", LOGGED_IN_EMAIL);
       lib.getSilentAssertion(REQUESTED_EMAIL, function(email, assertion) {
         equal(email, LOGGED_IN_EMAIL, "correct email");
         testAssertion(assertion, start);
