@@ -78,7 +78,7 @@ function getResource(mode, url, opts, cb) {
       return;
     }
     if (opts.xframe === true) {
-      verifyResponseHeaders(resp);
+      verifyResponseHeaders(resp, url);
     }
     resp.setEncoding('utf8');
 
@@ -110,7 +110,7 @@ function getResource(mode, url, opts, cb) {
 /**
  * Verify response headers do not contain X-Frame-Options header.
  */
-function verifyResponseHeaders(resp) {
+function verifyResponseHeaders(resp, url) {
   var xframe = und.filter(Object.keys(resp.headers), function (header) {
     return header.toLowerCase() === 'x-frame-options';
   });
