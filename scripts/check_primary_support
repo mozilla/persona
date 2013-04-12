@@ -88,13 +88,13 @@ function getResource(mode, url, opts, cb) {
 
     resp.on('end', function() {
       var includes = {
-        'auth': '/authentication_api.js',
-        'prov': '/provisioning_api.js'
+        'auth': 'authentication_api.js',
+        'prov': 'provisioning_api.js'
       };
-      if (body.indexOf(util.format("https://login.persona.org%s", includes[mode])) === -1 &&
-          body.indexOf(util.format("https://login.anosrep.org%s", includes[mode])) === -1 &&
-          body.indexOf(util.format("https://login.dev.anosrep.org%s", includes[mode])) === -1) {
-          console.log(util.format("WARNING: No https://persona.org/%s script tag detected", includes[mode]));
+      if (body.indexOf(util.format("https://login.persona.org/%s", includes[mode])) === -1 &&
+          body.indexOf(util.format("https://login.anosrep.org/%s", includes[mode])) === -1 &&
+          body.indexOf(util.format("https://login.dev.anosrep.org/%s", includes[mode])) === -1) {
+          console.log(util.format("WARNING: Unable to detect %s script tag", includes[mode]));
       }
       else {
           console.log(util.format("%s contains proper script tag"), url);
