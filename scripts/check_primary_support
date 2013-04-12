@@ -91,13 +91,19 @@ function getResource(mode, url, opts, cb) {
         'auth': 'authentication_api.js',
         'prov': 'provisioning_api.js'
       };
-      if (body.indexOf(util.format("https://login.persona.org/%s", includes[mode])) === -1 &&
-          body.indexOf(util.format("https://login.anosrep.org/%s", includes[mode])) === -1 &&
-          body.indexOf(util.format("https://login.dev.anosrep.org/%s", includes[mode])) === -1) {
-          console.log(util.format("WARNING: Unable to detect %s script tag", includes[mode]));
-      }
-      else {
-          console.log(util.format("%s contains proper script tag"), url);
+
+      var foundRefs = 0;
+
+      if (body.indexOf('https://login.persona.org/' + includes[mode]) !== -1) {
+        console.log(util.format('Detected production %s on %s', includes[mode], url));
+      } else if (body.indexOf('https://login.anosrep.org/' + includes[mode]) !== -1) {
+        console.log(util.format('Detected staging %s on %s', includes[mode], url));
+      } else if (body.indexOf('https://login.dev.anosrep.org/' + includes[mode]) !== -1) {
+        console.log(util.format('Detected dev %s on %s', includes[mode], url));
+      } else if (body.indexOf('/' + includes[mode]) !== -1) {
+        console.log(util.format('WARNING: Unknown %s detected on %s', includes[mode], url));
+      } else {
+        console.log(util.format('WARNING: Unable to detect required script, %, on %s', includes[mode], url));
       }
       if (cb) {
           cb();
