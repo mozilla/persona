@@ -11,6 +11,7 @@ urlp = require('url'),
 util = require('util'),
 fs = require('fs');
 
+const
 primary = require('../lib/primary'),
 logging = require('../lib/logging.js');
 
@@ -65,17 +66,17 @@ function getResource(mode, url, opts, cb) {
     path: path,
     method: 'GET'
   });
-  
+
   r.on('error', function (e) {
     console.log("ERROR: ", e.message);
   });
-  
+
   r.on('response', function (resp) {
     var body = "";
-    if (resp.statusCode != 200) {
+    if (resp.statusCode !== 200) {
       console.log("ERROR: HTTP status code=", resp.statusCode, url);
       return;
-    } 
+    }
     if (opts.xframe === true) {
       verifyResponseHeaders(resp);
     }
@@ -89,10 +90,10 @@ function getResource(mode, url, opts, cb) {
       var includes = {
         'auth': '/authentication_api.js',
         'prov': '/provisioning_api.js'
-      };     
-      if (body.indexOf(util.format("https://login.persona.org%s", includes[mode])) == -1 &&
-          body.indexOf(util.format("https://login.anosrep.org%s", includes[mode])) == -1 &&
-          body.indexOf(util.format("https://login.dev.anosrep.org%s", includes[mode])) == -1) {
+      };
+      if (body.indexOf(util.format("https://login.persona.org%s", includes[mode])) === -1 &&
+          body.indexOf(util.format("https://login.anosrep.org%s", includes[mode])) === -1 &&
+          body.indexOf(util.format("https://login.dev.anosrep.org%s", includes[mode])) === -1) {
           console.log(util.format("WARNING: No https://persona.org/%s script tag detected", includes[mode]));
       }
       else {
@@ -100,20 +101,20 @@ function getResource(mode, url, opts, cb) {
       }
       if (cb) {
           cb();
-      } 
+      }
     });
   });
   r.end();
-};
+}
 
 /**
- * Verify response headers do not contain X-Frame-Options header. 
+ * Verify response headers do not contain X-Frame-Options header.
  */
 function verifyResponseHeaders(resp) {
   var xframe = und.filter(Object.keys(resp.headers), function (header) {
-    return header.toLowerCase() == 'x-frame-options';
+    return header.toLowerCase() === 'x-frame-options';
   });
-  if (xframe.length == 1) {
+  if (xframe.length === 1) {
     console.log("ERROR: X-Frame-Options=", resp.headers[xframe[0]], ", BrowserID will not be able to communicate with your site." +
         " Suppress X-Frame-Options for ", url);
   }
