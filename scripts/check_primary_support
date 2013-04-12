@@ -9,18 +9,26 @@ https = require('https'),
 und = require('underscore'),
 urlp = require('url'),
 util = require('util'),
+fs = require('fs');
 
 primary = require('../lib/primary'),
 logging = require('../lib/logging.js');
 
 logging.enableConsoleLogging();
 
-if (process.argv.length !== 3) {
+if (process.argv.length < 3) {
   console.log('Checks to see if a domain has a proper declaration of support as a browserid primary');
-  console.log('Usage:', process.argv[1], '<domain>');
+  console.log('Usage:', process.argv[1], '<domain>', '[CA cert file path]');
   process.exit(1);
 }
 var domain = process.argv[2];
+
+// allow passing in a particular CA cert to use
+var caPath = process.argv[3];
+if (caPath) {
+  var cas = [fs.readFileSync(caPath)];
+  https.globalAgent.options.ca = cas;
+}
 
 primary.checkSupport(domain, function(err, r) {
   if (err || r.publicKey === null) {
@@ -52,56 +60,61 @@ primary.checkSupport(domain, function(err, r) {
  */
 function getResource(mode, url, opts, cb) {
   var path = urlp.parse(url).path;
-  var body = "",
-      r = https.request({
+  var r = https.request({
     host: domain,
     path: path,
     method: 'GET'
-  }, checkResource(url, opts, body));
-  r.on('data', function (chunk) {
-    body += chunk;
   });
+  
   r.on('error', function (e) {
     console.log("ERROR: ", e.message);
   });
-  r.on('close', function () {
-    var includes = {
-      'auth': '/authentication_api.js',
-      'prov': '/provisioning_api.js'
-    };
-    if (body.indexOf(util.format("https://login.persona.org%s", includes[mode])) == -1 &&
-        body.indexOf(util.format("https://login.anosrep.org%s", includes[mode])) == -1 &&
-        body.indexOf(util.format("https://login.dev.anosrep.org%s", includes[mode])) == -1) {
-        console.log(util.format("WARNING: No https://persona.org/%s script tag detected", includes[mode]));
+  
+  r.on('response', function (resp) {
+    var body = "";
+    if (resp.statusCode != 200) {
+      console.log("ERROR: HTTP status code=", resp.statusCode, url);
+      return;
+    } 
+    if (opts.xframe === true) {
+      verifyResponseHeaders(resp);
     }
-    if (cb) {
-        cb();
-    }
+    resp.setEncoding('utf8');
+
+    resp.on('data', function (chunk) {
+      body += chunk;
+    });
+
+    resp.on('end', function() {
+      var includes = {
+        'auth': '/authentication_api.js',
+        'prov': '/provisioning_api.js'
+      };     
+      if (body.indexOf(util.format("https://login.persona.org%s", includes[mode])) == -1 &&
+          body.indexOf(util.format("https://login.anosrep.org%s", includes[mode])) == -1 &&
+          body.indexOf(util.format("https://login.dev.anosrep.org%s", includes[mode])) == -1) {
+          console.log(util.format("WARNING: No https://persona.org/%s script tag detected", includes[mode]));
+      }
+      else {
+          console.log(util.format("%s contains proper script tag"), url);
+      }
+      if (cb) {
+          cb();
+      } 
+    });
   });
   r.end();
 };
 
 /**
- * Called once we have a response.
- *
- * Do the provisioning and signin resources look kosher?
+ * Verify response headers do not contain X-Frame-Options header. 
  */
-function checkResource (url, opts, body) {
-  return function (resp) {
-    // Their are no X-Frame options
-    if (resp.statusCode != 200) {
-      console.log("ERROR: HTTP status code=", resp.statusCode, url);
-    } else {
-      if (opts.xframe === true) {
-        var xframe = und.filter(Object.keys(resp.headers), function (header) {
-          return header.toLowerCase() == 'x-frame-options';
-        });
-        if (xframe.length == 1) {
-          console.log("ERROR: X-Frame-Options=", resp.headers[xframe[0]], ", BrowserID will not be able to communicate with your site." +
-              " Suppress X-Frame-Options for ", url);
-        }
-      }
-      resp.setEncoding('utf8');
-    }
-  };
-};
+function verifyResponseHeaders(resp) {
+  var xframe = und.filter(Object.keys(resp.headers), function (header) {
+    return header.toLowerCase() == 'x-frame-options';
+  });
+  if (xframe.length == 1) {
+    console.log("ERROR: X-Frame-Options=", resp.headers[xframe[0]], ", BrowserID will not be able to communicate with your site." +
+        " Suppress X-Frame-Options for ", url);
+  }
+}
