@@ -1,4 +1,20 @@
-current train:
+train-2013.04.12:
+  * Key Performance Indicator (anonymous metrics) improvements: #3148
+  * l10n fix - "Removing the last email..." string now translated: #2492
+  * UI improvements:
+    * dynamic scaling of "is this your computer" button: #2066
+    * fix double escaping of website name: #3173
+    * fix flash of wait screen on IE8/9: #2618, #2492
+    * (mobile) shrink footer text on mobile: #3129
+  * Improve frontend code versioning (to detect frontend/backend code mismatch during deployment): #3125
+  * Fix npm install errors related to automation test dependencies: #3160
+  * Keyboard accessibility improvment - allow tab from email/password to submit button: #3079
+  * Potential server performance improvement: don't use the node.js global connection agent anywhere: #3217
+  * Test improvements:
+    * improve usage of selenium test runner: #3204
+    * Add KPI load testing documentation: #3203
+    * Add a script to post an assertion to a verifier and check response: #3209
+    * Improve check_primary_support script: #3185
 
 train-2013.03.29:
   * Improve privacy policy! Clarify that we don't retain a list of sites users visit, plus other tweaks: #2922
