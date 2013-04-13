@@ -11,11 +11,11 @@ urlp = require('url'),
 util = require('util'),
 fs = require('fs');
 
-const
-primary = require('../lib/primary'),
-logging = require('../lib/logging.js');
-
+const logging = require('../lib/logging.js');
 logging.enableConsoleLogging();
+
+const primary = require('../lib/primary');
+
 
 if (process.argv.length < 3) {
   console.log('Checks to see if a domain has a proper declaration of support as a browserid primary');
