@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "JSONSelect": "0.4.0",
-        "bcrypt": "0.7.4",
+        "bcrypt": "0.7.3",
         "cef": "0.3.3",
         "compute-cluster": "0.0.6",
         "connect": "1.7.2",
