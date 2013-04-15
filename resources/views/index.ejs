@@ -9,10 +9,9 @@
 
               <h1 class="white headline-main"><%- gettext('Connect with Mozilla Persona, the safest &amp; easiest way to sign in.') %></h1>
               <p class="tour white">
-                <%- format(gettext('<a %(aboutLink)s>Take the tour</a> or <a %(signupButton)s>Sign Up &rarr;</a>'),
+                <%- format(gettext('<a %(aboutLink)s>Take the tour</a>'),
                       {
-                        aboutLink: 'href="/about"',
-                        signupButton: 'href="/signin" class="button create"',
+                        aboutLink: 'href="/about" class="button create"'
                       }) %>
               </p>
           </div>

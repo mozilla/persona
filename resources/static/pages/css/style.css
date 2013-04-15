@@ -337,14 +337,6 @@ button.delete:active {
   padding: 0 0 0 250px;
 }
 
-.tour a[href="/about"] {
-  color: #6dc7ff;
-}
-
-.tour a[href="/about"]:hover {
-  color: #58a7e7;
-}
-
 #signUp h1 {
   max-width: 390px;
 }
