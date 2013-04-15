@@ -11,10 +11,11 @@ urlp = require('url'),
 util = require('util'),
 fs = require('fs');
 
-primary = require('../lib/primary'),
-logging = require('../lib/logging.js');
-
+const logging = require('../lib/logging.js');
 logging.enableConsoleLogging();
+
+const primary = require('../lib/primary');
+
 
 if (process.argv.length < 3) {
   console.log('Checks to see if a domain has a proper declaration of support as a browserid primary');
@@ -65,19 +66,19 @@ function getResource(mode, url, opts, cb) {
     path: path,
     method: 'GET'
   });
-  
+
   r.on('error', function (e) {
     console.log("ERROR: ", e.message);
   });
-  
+
   r.on('response', function (resp) {
     var body = "";
-    if (resp.statusCode != 200) {
+    if (resp.statusCode !== 200) {
       console.log("ERROR: HTTP status code=", resp.statusCode, url);
       return;
-    } 
+    }
     if (opts.xframe === true) {
-      verifyResponseHeaders(resp);
+      verifyResponseHeaders(resp, url);
     }
     resp.setEncoding('utf8');
 
@@ -87,33 +88,39 @@ function getResource(mode, url, opts, cb) {
 
     resp.on('end', function() {
       var includes = {
-        'auth': '/authentication_api.js',
-        'prov': '/provisioning_api.js'
-      };     
-      if (body.indexOf(util.format("https://login.persona.org%s", includes[mode])) == -1 &&
-          body.indexOf(util.format("https://login.anosrep.org%s", includes[mode])) == -1 &&
-          body.indexOf(util.format("https://login.dev.anosrep.org%s", includes[mode])) == -1) {
-          console.log(util.format("WARNING: No https://persona.org/%s script tag detected", includes[mode]));
-      }
-      else {
-          console.log(util.format("%s contains proper script tag"), url);
+        'auth': 'authentication_api.js',
+        'prov': 'provisioning_api.js'
+      };
+
+      var foundRefs = 0;
+
+      if (body.indexOf('https://login.dev.anosrep.org/' + includes[mode]) !== -1) {
+        console.log(util.format('WARNING: Detected dev %s on %s', includes[mode], url));
+      } else if (body.indexOf('https://login.anosrep.org/' + includes[mode]) !== -1) {
+        console.log(util.format('WARNING: Detected staging %s on %s', includes[mode], url));
+      } else if (body.indexOf('https://login.persona.org/' + includes[mode]) !== -1) {
+        console.log(util.format('Detected production %s on %s', includes[mode], url));
+      } else if (body.indexOf(includes[mode]) !== -1) {
+        console.log(util.format('WARNING: Unknown %s detected on %s', includes[mode], url));
+      } else {
+        console.log(util.format('WARNING: Unable to detect required script, %, on %s', includes[mode], url));
       }
       if (cb) {
           cb();
-      } 
+      }
     });
   });
   r.end();
-};
+}
 
 /**
- * Verify response headers do not contain X-Frame-Options header. 
+ * Verify response headers do not contain X-Frame-Options header.
  */
-function verifyResponseHeaders(resp) {
+function verifyResponseHeaders(resp, url) {
   var xframe = und.filter(Object.keys(resp.headers), function (header) {
-    return header.toLowerCase() == 'x-frame-options';
+    return header.toLowerCase() === 'x-frame-options';
   });
-  if (xframe.length == 1) {
+  if (xframe.length === 1) {
     console.log("ERROR: X-Frame-Options=", resp.headers[xframe[0]], ", BrowserID will not be able to communicate with your site." +
         " Suppress X-Frame-Options for ", url);
   }
