@@ -527,13 +527,16 @@ header .nav a {
   font-size: 16px;
   padding: 4px 8px;
   color: #fff;
-  text-shadow: 0 1px 0 #999;
+  text-shadow: 0 1px 0 #333;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
 }
 
 header .nav a:hover {
   color: #383838;
   background-color: #f4f3f0;
   border-radius: 3px;
+  text-shadow: 0 1px 0 #fff;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
 }
 
 header ul {
