@@ -38,17 +38,11 @@
     // it is lost in IE whenever the page redirects to the IdP.
     // See issue #2287 - https://github.com/mozilla/browserid/issues/2287
     navigator.id.completeAuthentication = function(cb) {
-      if (window.name === 'auth_with_primary')
-        window.location = 'https://login.persona.org/authenticate_with_primary#complete';
-      else
-        window.location = 'https://login.persona.org/sign_in#AUTH_RETURN';
+      window.location = 'https://login.persona.org/sign_in#AUTH_RETURN';
     };
 
     navigator.id.raiseAuthenticationFailure = function(reason) {
-      if (window.name === 'auth_with_primary')
-        window.location = 'https://login.persona.org/authenticate_with_primary#complete';
-      else
-        window.location = 'https://login.persona.org/sign_in#AUTH_RETURN_CANCEL';
+      window.location = 'https://login.persona.org/sign_in#AUTH_RETURN_CANCEL';
     };
 
     navigator.id._primaryAPIIsShimmed = true;
