@@ -523,6 +523,14 @@ label.vpassword_entry {
   z-index: 1;
 }
 
+/* Hide the nav until the user's auth status is known. This
+ * reduces the amount of flicker because buttons are not drawn
+ * unless they are needed.
+ */
+header .nav {
+  display: none;
+}
+
 header .nav a {
   font-size: 16px;
   padding: 4px 8px;

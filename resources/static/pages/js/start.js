@@ -196,6 +196,10 @@ $(function() {
         displayNonAuthenticated();
       }
 
+      // Now that the user's authentication status is known, the nav can
+      // be shown with no visible flicker
+      dom.show('.nav');
+
       // The footer is initially tied to the bottom while the page is loading
       // so that it does not appear to flicker.  Untie the footer and let it
       // rest in its natural position.
