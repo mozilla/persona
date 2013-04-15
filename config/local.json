@@ -15,6 +15,9 @@
   "env": "local",
   "kpi_backend_sample_rate": 1.0,
 
+  // increase to tolerate slower server responses; useful for testing
+  "maximum_event_loop_lag": 100,
+
   // whether to show the development menu.
   "enable_development_menu": true,
 
