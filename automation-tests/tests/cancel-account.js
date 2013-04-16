@@ -98,9 +98,10 @@ function testEmailNotRegistered(browser, email, done) {
   browser.chain({onError: done})
     .get(persona_urls['persona'])
     .wclick(CSS['persona.org'].header.signIn)
-    .wtype(CSS['persona.org'].signInForm.email, email)
-    .wclick(CSS['persona.org'].signInForm.nextButton)
-    .wfind(CSS['persona.org'].signInForm.verifyPassword, done)
+    .wwin(CSS['dialog'].windowName)
+    .wtype(CSS['dialog'].emailInput, email)
+    .wclick(CSS['dialog'].newEmailNextButton)
+    .wfind(CSS['dialog'].verifyPassword, done)
 }
 
 runner.run(module, {

@@ -43,10 +43,10 @@ runner.run(module, {
     browser.chain({onError: done})
       .get(persona_urls['persona'])
       .wclick(CSS['persona.org'].header.signIn)
-      .wtype(CSS['persona.org'].signInForm.email, primary)
-      .wclick(CSS['persona.org'].signInForm.nextButton)
-      .wclick(CSS['persona.org'].signInForm.verifyPrimaryButton)
-      .wwin(CSS['persona.org'].verifyPrimaryDialogName)
+      .wwin(CSS['dialog'].windowName)
+      .wtype(CSS['dialog'].emailInput, primary)
+      .wclick(CSS['dialog'].newEmailNextButton)
+      .wclick(CSS['dialog'].verifyWithPrimaryButton)
       .wtype(CSS['eyedee.me'].newPassword, primary.split('@')[0])
       .wclick(CSS['eyedee.me'].createAccountButton)
       .wwin()
@@ -81,7 +81,7 @@ runner.run(module, {
     browser.chain({onError: done})
       .get(persona_urls['myfavoritebeer'])
       .wclick(CSS['myfavoritebeer.org'].signinButton)
-      .wwin(CSS['persona.org'].windowName, done)
+      .wwin(CSS['persona.org'].windowName, done);
   },
   "check first radio is not selected":function(done, el) {
     browser.wgetAttribute(CSS['dialog'].firstEmail, 'selected', function(err, val) {

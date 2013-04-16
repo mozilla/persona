@@ -142,17 +142,19 @@ var new_secondary_personaorg = {
       browser.chain({onError: done})
         .get(persona_urls['persona'])
         .wclick(CSS['persona.org'].header.signIn)
-        .wtype(CSS['persona.org'].signInForm.email, nspEmail)
-        .wclick(CSS['persona.org'].signInForm.nextButton)
-        .wtype(CSS['persona.org'].signInForm.password, nspEmail.split('@')[0])
-        .wtype(CSS['persona.org'].signInForm.verifyPassword, nspEmail.split('@')[0])
-        .wclick(CSS['persona.org'].signInForm.verifyEmailButton, done);
+        .wwin(CSS['dialog'].windowName)
+        .wtype(CSS['dialog'].emailInput, nspEmail)
+        .wclick(CSS['dialog'].newEmailNextButton)
+        .wtype(CSS['dialog'].choosePassword, nspEmail.split('@')[0])
+        .wtype(CSS['dialog'].verifyPassword, nspEmail.split('@')[0])
+        .wclick(CSS['dialog'].createUserButton, done);
     },
     "get verification link": function(done) {
       restmail.getVerificationLink({email: nspEmail}, done);
     },
     "open link, verify you are redirected to acct mgr and see your email": function(done, token, link) {
       browser.chain({onError: done})
+        .wwin()
         .get(link)
         .wtext(CSS['persona.org'].accountEmail, done)
     },

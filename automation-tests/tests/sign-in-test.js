@@ -82,24 +82,8 @@ runner.run(module, {
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, testUser.email));
       });
-  },
-
-  // Go to main site and make sure sign in is case insensitive
-  "go to main site, sign in using all caps - sign in is case insensitive": function(done) {
-    browser.chain({onError: done})
-      .get(persona_urls['persona'])
-      .wclick(CSS['persona.org'].header.signOut)
-      .wclick(CSS['persona.org'].header.signIn)
-      .wtype(CSS['persona.org'].signInForm.email, testUser.email.toUpperCase())
-      .wclick(CSS['persona.org'].signInForm.nextButton)
-      .wtype(CSS['persona.org'].signInForm.password, testUser.pass)
-      .wclick(CSS['persona.org'].signInForm.finishButton, done)
-  },
-
-  "check to make sure user is signed in": function(done) {
-    browser.chain({onError: done})
-      .wfind(CSS['persona.org'].accountManagerHeader, done);
   }
+
 },
 {
   suiteName: path.basename(__filename),
