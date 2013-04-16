@@ -46,7 +46,7 @@
     },
     "devDependencies": {
         "vows": "0.5.13",
-        "awsbox": "0.4.2",
+        "awsbox": "0.4.4",
         "irc": "0.3.3",
         "jshint": "0.9.1",
         "which": "1.0.5",

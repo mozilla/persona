@@ -24,7 +24,7 @@
     "0.0.5": "971b8995078d83c80f2372f134c496e71b293a46"
   },
   "awsbox": {
-    "0.4.2": "ed0a831f7b39156b63ae2e9d95e7c1289bb5c73e"
+    "0.4.4": "97c12630b5828aafc4e1a8cb278cd3c743264e7b"
   },
   "bcrypt": {
     "0.7.3": "7523db1fdd8b0bda337bade63b5b90a7ee9c448a"
@@ -307,7 +307,7 @@
   },
   "sax": {
     "0.1.5": "d1829a6120fa01665eb4dbff6c43f29fd6d61471",
-    "0.5.1": "920206438bd102f2f4fe2594ecd1b962907bb733"
+    "0.5.2": "735ffaa39a1cff8ffb9598f0223abdb03a9fb2ea"
   },
   "semver": {
     "1.0.12": "4686f056e5894a9cba708adeabc2c49dada90778",
