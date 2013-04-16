@@ -1069,19 +1069,19 @@ BrowserID.User = (function() {
           // The normalized email is stored in the cache.
           var normalizedEmail = info.normalizedEmail || email;
           info.email = normalizedEmail;
-          User.checkEmailIssuer(normalizedEmail, info, function(info) {
-            if (info.type === "primary") {
+          User.checkEmailIssuer(normalizedEmail, info, function(cleanedInfo) {
+            if (cleanedInfo.type === "primary") {
               withContext(function() {
-                User.isUserAuthenticatedToPrimary(normalizedEmail, info,
+                User.isUserAuthenticatedToPrimary(normalizedEmail, cleanedInfo,
                     function(authed) {
-                  info.authed = authed;
-                  info.idpName = getIdPName(info);
-                  complete(info);
+                  cleanedInfo.authed = authed;
+                  cleanedInfo.idpName = getIdPName(cleanedInfo);
+                  complete(cleanedInfo);
                 }, onFailure);
               }, onFailure);
             }
             else {
-              complete(info);
+              complete(cleanedInfo);
             }
           });
         }, onFailure);
