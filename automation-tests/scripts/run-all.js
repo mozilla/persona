@@ -51,6 +51,8 @@ var argv = require('optimist')
   .alias('output', 'o')
   .describe('output', 'desired ouput format.  one of ' + outputFormats.join(", "))
   .default("output", "console")
+  .alias('ignore-tests', 'it')
+  .describe('ignore-tests', 'test(s) to ignore (csv supported)')
   .check(function(a) {
     if (outputFormats.indexOf(a.output) === -1) {
       throw "unsupported output format: " + a.output;
@@ -151,7 +153,7 @@ function startTesting() {
   }
 
   function getTheTests(platforms) {
-    var testSet = test_finder.find(args.tests);
+    var testSet = test_finder.find(args.tests, '', '', args['ignore-tests']);
     allTests = [];
 
     // make a copy of the test set for each platform, set the platform of each
