@@ -30,6 +30,19 @@ BrowserID.Network = (function() {
   function withContext(cb, onFailure) {
     if(typeof context !== "undefined") cb(context);
     else {
+      // session_context always checks for a javascript readable cookie,
+      // this allows our javascript code in the dialog and communication iframe
+      // to determine whether cookies are (partially) disabled.  See #2999 for
+      // more context.
+      // NOTE - the cookie is set here instead of cookiesEnabled because
+      // session_context is only ever called once per context session. We have
+      // to ensure the cookie is set for that single call.
+      try {
+        document.cookie = "can_set_cookies=1";
+      } catch(e) {
+        // If cookies are disabled, some browsers throw an exception. Ignore
+        // this, the backend will see that cookies are disabled.
+      }
       xhr.withContext(cb, onFailure);
     }
   }
@@ -584,32 +597,21 @@ BrowserID.Network = (function() {
      * @method cookiesEnabled
      */
     cookiesEnabled: function(onComplete, onFailure) {
-      var enabled;
-      try {
-        // NOTE - The Android 3.3 and 4.0 default browsers will still pass
-        // this check.  This causes the Android browsers to only display the
-        // cookies diabled error screen only after the user has entered and
-        // submitted input.
-        // http://stackoverflow.com/questions/8509387/android-browser-not-respecting-cookies-disabled
+      withContext(function(context) {
+        // session_context always checks for a javascript readable cookie,
+        // this allows our javascript code in the dialog and communication
+        // iframe to determine whether cookies are (partially) disabled.
+        // See #2999 for more context.
+        var enabled = context.cookies;
 
-        document.cookie = "__cookiesEnabledCheck=1";
-        enabled = document.cookie.indexOf("__cookiesEnabledCheck") > -1;
+        // BEGIN TESTING API
+        if (typeof Network.cookiesEnabledOverride === "boolean") {
+          enabled = Network.cookiesEnabledOverride;
+        }
+        // END TESTING API
 
-        // expire the cookie NOW by setting its expires date to yesterday.
-        var expires = new Date();
-        expires.setDate(expires.getDate() - 1);
-        document.cookie = "__cookiesEnabledCheck=; expires=" + expires.toGMTString();
-      } catch(e) {
-        enabled = false;
-      }
-
-      // BEGIN TESTING API
-      if (typeof Network.cookiesEnabledOverride === "boolean") {
-        enabled = Network.cookiesEnabledOverride;
-      }
-      // END TESTING API
-
-      complete(onComplete, enabled);
+        complete(onComplete, enabled);
+      }, onFailure);
     },
 
     /**

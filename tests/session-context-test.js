@@ -112,6 +112,30 @@ suite.addBatch({
   }
 });
 
+suite.addBatch({
+  "cookie check using session_context": {
+    "with can_set_cookie cookie": {
+      topic: wsapi.get('/wsapi/session_context', {}, {
+        cookieJar: {
+          "can_set_cookies": "1"
+        }
+      }),
+      "responds with 'cookies=true' in response": function (err, r) {
+        var body = JSON.parse(r.body);
+        assert.equal(body.cookies, true);
+      }
+    },
+    "without can_set_cookie_cookies": {
+      topic: wsapi.get('/wsapi/session_context', {}, {
+      }),
+      "responds with 'cookies=false' in response": function (err, r) {
+        var body = JSON.parse(r.body);
+        assert.equal(body.cookies, false);
+      }
+    }
+  }
+});
+
 
 start_stop.addShutdownBatches(suite);
 
