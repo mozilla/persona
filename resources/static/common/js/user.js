@@ -1111,29 +1111,27 @@ BrowserID.User = (function() {
       if (addressCache[email]) {
         return complete(addressCache[email]);
       }
-      else {
-        network.addressInfo(email, function(info) {
-          // update the email with the normalized email if it is available.
-          // The normalized email is stored in the cache.
-          var normalizedEmail = info.normalizedEmail || email;
-          info.email = normalizedEmail;
-          User.checkEmailIssuer(normalizedEmail, info, function(cleanedInfo) {
-            if (cleanedInfo.type === "primary") {
-              withContext(function() {
-                User.isUserAuthenticatedToPrimary(normalizedEmail, cleanedInfo,
-                    function(authed) {
-                  cleanedInfo.authed = authed;
-                  cleanedInfo.idpName = getIdPName(cleanedInfo);
-                  complete(cleanedInfo);
-                }, onFailure);
-              }, onFailure);
-            }
-            else {
-              complete(cleanedInfo);
-            }
-          });
-        }, onFailure);
-      }
+
+      network.addressInfo(email, forceIssuer, function(info) {
+        // update the email with the normalized email if it is available.
+        // The normalized email is stored in the cache.
+        var normalizedEmail = info.normalizedEmail || email;
+        info.email = normalizedEmail;
+        info = User.checkEmailIssuer(normalizedEmail, info);
+        if (info.type === "primary") {
+          withContext(function() {
+            User.isUserAuthenticatedToPrimary(normalizedEmail, info,
+                function(authed) {
+              info.authed = authed;
+              info.idpName = _.escape(getIdPName(info));
+              complete(info);
+            }, onFailure);
+          }, onFailure);
+        }
+        else {
+          complete(info);
+        }
+      }, onFailure);
     },
 
     /**
