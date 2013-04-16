@@ -209,6 +209,8 @@ $(function() {
         event.preventDefault();
         navigator.id.get(function(assertion) {
           document.location.href = "/";
+        }, {
+          siteName: "Mozilla Persona"
         });
       });
     }
