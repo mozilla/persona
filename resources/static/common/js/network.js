@@ -57,8 +57,9 @@ BrowserID.Network = (function() {
     post({
       url: wsapiName,
       data: data,
-      success: function(status) {
-        complete(onComplete, status.success);
+      success: function(info) {
+        if (info.success) complete(onComplete, info);
+        else complete(onComplete, false);
       },
       error: function(info) {
         // 429 is throttling.
