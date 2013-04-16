@@ -66,7 +66,7 @@
   });
 
   asyncTest("replaceFormWithNotice replaces contents", function() {
-    bid.Renderer.render("#page_head", "site/verify_email_address", {});
+    bid.Renderer.render("#page_head", "site/reset_password", {});
     pageHelpers.replaceFormWithNotice("#congrats", function() {
       testNotVisible("form");
       testVisible("#congrats");

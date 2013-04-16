@@ -19,7 +19,7 @@
      */ %>
   <title><%= format(gettext("Mozilla Persona: %s"), [gettext(title)]) %></title>
 </head>
-<body class="loading">
+<body class="loading" <%- typeof start_blank !== "undefined" ? 'style="display: none;"' : "" %>>
 <% if (enable_development_menu) { %>
   <a href="#" id="showDevelopment">&nbsp;</a>
 <% } %>

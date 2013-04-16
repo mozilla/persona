@@ -63,7 +63,7 @@ runner.run(module, {
     browser.chain({onError: done})
       .wwin()
       .get(link)
-      .wfind(CSS['persona.org'].congratsMessage, done);
+      .wfind(CSS['persona.org'].accountManagerHeader, done);
   },
   'hack localStorage to simulate 60 seconds of inactivity': function(done) {
     // JSON.parse to get user id, JSON.parse usersCOmputer, rewind time,

@@ -63,8 +63,8 @@ var new_secondary_123done_two_browsers = {
       .wtype(CSS['persona.org'].signInForm.password, theEmail.split('@')[0])
       .wclick(CSS['persona.org'].signInForm.finishButton, done);
   },
-  "verify the congrats message is displayed": function(done) {
-    secondBrowser.wfind(CSS['persona.org'].congratsMessage, done);
+  "verify the user is redirected to the manage page": function(done) {
+    secondBrowser.wfind(CSS['persona.org'].accountManagerHeader, done);
   },
   "verify logged in automatically to 123done in first browser": function(done) {
     browser.chain({onError: done})

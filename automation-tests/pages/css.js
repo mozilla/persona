@@ -38,7 +38,6 @@ module.exports = {
       verifyEmailButton: '#signUpForm button#verifyEmail',
       finishButton: '#signUpForm .password_entry button'
     },
-    congratsMessage: 'div#congrats',
     verifyPrimaryDialogName: 'auth_with_primary'
   },
   "dialog": {
