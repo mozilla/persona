@@ -259,8 +259,8 @@ BrowserID.Modules.Dialog = (function() {
 
         // forceAuthentication is used by the Marketplace to ensure that the
         // user knows the password to this account. We ignore any active session.
-        if (paramsFromRP.forceAuthentication &&
-            true === paramsFromRP.forceAuthentication) {
+        if (paramsFromRP._experimental_forceAuthentication &&
+            true === paramsFromRP._experimental_forceAuthentication) {
           params.forceAuthentication = true;
         }
 

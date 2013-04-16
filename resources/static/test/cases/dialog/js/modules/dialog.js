@@ -535,6 +535,13 @@
     });
   });
 
+  asyncTest("_experimental_forceAuthentication", function() {
+    testExpectGetSuccess(
+      {_experimental_forceAuthentication: true},
+      {forceAuthentication: true}
+    );
+  });
+
   asyncTest("get with valid rp_api - allowed", function() {
     createController({
       ready: function() {
