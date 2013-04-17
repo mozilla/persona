@@ -73,7 +73,7 @@ runner.run(module, {
       browser.chain({onError: done})
           .newWindow(verificationURL, verifyWindow)
           .wwin(verifyWindow)
-          .waitForDisplayed({which: CSS['persona.org'].congratsMessage})
+          .waitForDisplayed({which: CSS['123done.org'].logoutLink})
           .close()
           .wwin(done);
     });
@@ -122,7 +122,7 @@ runner.run(module, {
       browser.chain({onError: done})
           .newWindow(verificationURL, verifyWindow)
           .wwin(verifyWindow)
-          .waitForDisplayed({which: CSS['persona.org'].congratsMessage})
+          .waitForDisplayed({which: CSS['123done.org'].logoutLink})
           .close()
           .wwin(done);
     });

@@ -89,12 +89,10 @@ var secondaryTest = {
   "get verification link": function(done) {
     restmail.getVerificationLink({email: theEmail}, done);
   },
-  // if we asserted against contents of #congrats message, our tests would
-  // break if we ran them against a non-English deploy of the site
-  "open verification link and verify we see congrats node": function(done, token, link) {
+  "open verification link and verify we are redirected to the manage page": function(done, token, link) {
     secondBrowser.chain({onError: done})
       .get(link)
-      .wfind(pcss.congratsMessage, done);
+      .wfind(pcss.accountManagerHeader, done);
   },
   "shut down secondary test": function(done) {
     secondBrowser.quit(done);

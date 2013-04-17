@@ -60,7 +60,7 @@ runner.run(module, {
           .wtype(CSS['persona.org'].signInForm.password, NEW_PASSWORD)
           .wtype(CSS['persona.org'].signInForm.verifyPassword, NEW_PASSWORD)
           .wclick(CSS['persona.org'].signInForm.finishButton)
-          .wfind(CSS['persona.org'].congratsMessage)
+          .wfind(CSS['persona.org'].accountManagerHeader)
           .quit(done);
       });
     });

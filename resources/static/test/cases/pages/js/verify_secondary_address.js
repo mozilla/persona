@@ -85,7 +85,6 @@
     storage.setReturnTo(returnTo);
 
     createController(config, function() {
-      testVisible("#congrats");
       testHasClass("body", "complete");
       testElementTextEquals(".website", returnTo, "origin is set to redirect to login.persona.org");
       testDocumentRedirected(doc, returnTo, "redirection occurred to correct URL");
