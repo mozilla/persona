@@ -10,18 +10,18 @@ const path              = require('path'),
       tests_to_ignore   = require('../config/tests-to-ignore')(env),
       glob              = require('minimatch');
 
-exports.find = function(pattern, root, tests) {
+exports.find = function(pattern, root, tests, ignoreTests) {
   root = root || test_root_path;
   tests = tests || [];
   pattern = pattern || "*";
-
+  ignoreTests = ignoreTests || "";
   try {
     var files = fs.readdirSync(root);
     files.forEach(function(file) {
       var filePath = path.join(root, file);
       var stats = fs.statSync(filePath);
       if (stats.isFile() && /\.js$/.test(file)) {
-        if (tests_to_ignore.indexOf(file) === -1) {
+        if (tests_to_ignore.indexOf(file) === -1 && ignoreTests.split(',').indexOf(file.slice(0,-3)) === -1) {
           if (glob(file.replace(/\.js$/, ""), pattern)) {
             tests.push({
               name: file.replace('.js', ''),
