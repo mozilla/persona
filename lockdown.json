@@ -71,8 +71,7 @@
     "0.0.6": "8e7a52d9bfcd46ee65e2a084c32ce145ff6c3f79"
   },
   "connect": {
-    "1.7.2": "ae50fee4a98c939f78451691ea640c1b4d9c1164",
-    "1.8.7": "b620281884d455fab94c693d2db748652d6c8c17"
+    "1.7.2": "ae50fee4a98c939f78451691ea640c1b4d9c1164"
   },
   "connect-cachify": {
     "0.0.13": "6434cdf1395127112c295fa2f32891a94900d672"
@@ -143,9 +142,6 @@
   "eyes": {
     "0.1.8": "62cf120234c683785d902348a800ef3e0cc20bc0"
   },
-  "formidable": {
-    "1.0.11": "68f63325a035e644b6f7bb3d11243b9761de1b30"
-  },
   "fresh": {
     "0.1.0": "03e4b0178424e4c2d5d19a54d8814cdc97934850"
   },
@@ -160,9 +156,6 @@
   },
   "hashish": {
     "0.0.4": "6d60bc6ffaf711b6afd60e426d077988014e6554"
-  },
-  "hiredis": {
-    "0.1.14": "37a8742dc26c14a7be8cf69549d96781403188b2"
   },
   "htmlparser": {
     "1.7.6": "6a263c7ee5930f3e5c56fa564011f99e49f80d34"
@@ -268,9 +261,6 @@
   "pkginfo": {
     "0.2.3": "7239c42a5ef6c30b8f328439d9b9ff71042490f8"
   },
-  "policyfile": {
-    "0.0.4": "d6b82ead98ae79ebe228e2daf5903311ec982e4d"
-  },
   "postprocess": {
     "0.2.4": "f74512742b1d2c908182a4b60717faa226acf2fb"
   },
@@ -288,9 +278,6 @@
   },
   "read-package-json": {
     "0.1.8": "e4dee9337fa0ed24bf5cb45fbf317dec004a5b68"
-  },
-  "redis": {
-    "0.7.2": "fa557fef4985ab3e3384fdc5be6e2541a0bb49af"
   },
   "relative-date": {
     "1.1.1": "75c97c5446fa1146c1d250c47ca3629fb9a2e764"
@@ -321,12 +308,6 @@
   },
   "slide": {
     "1.1.3": "a16975ba76b766b92f98ef337243336c1fa3238f"
-  },
-  "socket.io": {
-    "0.9.10": "20aff51bdfd33066aacdd5df7a44f244e7d2cc6a"
-  },
-  "socket.io-client": {
-    "0.9.10": "3c2d32debd4a4509b44219b09ac06ba96aaa3408"
   },
   "source-map": {
     "0.1.8": "0bcc088a50ed8c586f50c8da4833a27dc0cc0c30"
