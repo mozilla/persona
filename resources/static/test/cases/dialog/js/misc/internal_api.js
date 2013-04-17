@@ -71,7 +71,7 @@
     });
   });
 
-  asyncTest("get with silent: true, non-authenticated user - returns null assertion", function() {
+  asyncTest(".get with silent: true, non-authenticated user - returns null assertion", function() {
     internal.get(ORIGIN, function(assertion) {
       strictEqual(assertion, null, "user not logged in, assertion impossible to get");
       start();
@@ -81,7 +81,7 @@
     });
   });
 
-  asyncTest("get with silent: true, authenticated user, no requiredEmail, and no email address associated with site - not enough info to generate an assertion", function() {
+  asyncTest(".get with silent: true, authenticated user, no requiredEmail, and no email address associated with site - not enough info to generate an assertion", function() {
     user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
       internal.get(ORIGIN, function(assertion) {
         strictEqual(assertion, null, "not enough info to generate an assertion, assertion should not be generated");
@@ -92,7 +92,7 @@
     });
   });
 
-  asyncTest("get with silent: true, authenticated user, no requiredEmail, email address associated with site, XHR failure - return null assertion.", function() {
+  asyncTest(".get with silent: true, authenticated user, no requiredEmail, email address associated with site, XHR failure - return null assertion.", function() {
     user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
       user.syncEmails(function() {
         storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
@@ -109,7 +109,7 @@
     });
   });
 
-  asyncTest("get with silent: true, authenticated user, no requiredEmail, email address associated with site - use info stored for site to get assertion", function() {
+  asyncTest(".get with silent: true, authenticated user, no requiredEmail, email address associated with site - use info stored for site to get assertion", function() {
     user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
       user.syncEmails(function() {
         storage.site.set(ORIGIN, "email", TEST_EMAIL);
@@ -124,7 +124,7 @@
     });
   });
 
-  asyncTest("get with silent: true, authenticated user, requiredEmail set to uncontrolled email address - return null assertion", function() {
+  asyncTest(".get with silent: true, authenticated user, requiredEmail set to uncontrolled email address - return null assertion", function() {
     user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
       // email addresses will not be synced just because we authenticated.
       // Depending on get to do the sync.
@@ -138,7 +138,7 @@
     });
   });
 
-  asyncTest("get with silent: true, authenticated user, requiredEmail and XHR error - return null assertion", function() {
+  asyncTest(".get with silent: true, authenticated user, requiredEmail and XHR error - return null assertion", function() {
     user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
       xhr.useResult("invalid");
       internal.get(ORIGIN, function(assertion) {
@@ -151,7 +151,7 @@
     });
   });
 
-  asyncTest("get with silent: true, authenticated user, requiredEmail, and registered email address - return an assertion", function() {
+  asyncTest(".get with silent: true, authenticated user, requiredEmail, and registered email address - return an assertion", function() {
     user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
       internal.get(ORIGIN, function(assertion) {
         ok(assertion, "assertion has been returned");
@@ -163,7 +163,7 @@
     });
   });
 
-  asyncTest("get with dialog - simulate the user return of an assertion", function() {
+  asyncTest(".get with dialog - simulate the user return of an assertion", function() {
     dialogModule.get_success_value = "simulated_assertion";
 
     internal.get(ORIGIN, function onComplete(assertion) {
@@ -173,7 +173,25 @@
     }, {});
   });
 
-  asyncTest("get with dialog with failure - simulate the return of a null assertion", function() {
+  asyncTest(".get with valid string passed for options - all good", function() {
+    dialogModule.get_success_value = "simulated_assertion";
+
+    internal.get(ORIGIN, function onComplete(assertion) {
+        equal(dialogModule.controllerOrigin, ORIGIN, "correct origin passed");
+        equal(assertion, "simulated_assertion", "Kosher assertion");
+        start();
+    }, "{}");
+  });
+
+  test(".get with invalid string passed for options - assertion is not generated", function() {
+    dialogModule.get_success_value = "simulated_assertion";
+
+    internal.get(ORIGIN, function(assertion) {
+      ok(false, "callback should not be called if invalid JSON is used");
+    }, "{invalid_json:}");
+  });
+
+  asyncTest(".get with dialog with failure - simulate the return of a null assertion", function() {
     dialogModule.get_success_value = undefined;
 
     internal.get(ORIGIN, function onComplete(assertion) {
@@ -182,7 +200,7 @@
     }, {});
   });
 
-  asyncTest("get with dialog with user cancellation - return null assertion", function() {
+  asyncTest(".get with dialog with user cancellation - return null assertion", function() {
     dialogModule.get_success_value = null;
 
     internal.get(ORIGIN, function onComplete(assertion) {
@@ -190,6 +208,15 @@
         start();
     }, {});
   });
+
+  test(".watch with invalid string passed for options - assertion is not generated", function() {
+    dialogModule.get_success_value = "simulated_assertion";
+
+    internal.watch(function(options) {
+      ok(false, "callback should not be called if invalid JSON is used");
+    }, "{invalid_json:}", console.log);
+  });
+
 
   asyncTest("logout of authenticated user logs the user out of origin", function() {
     user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
@@ -240,7 +267,8 @@
       equal(success, false, "user was not logged in so cannot be logged out");
       start();
     });
-
   });
+
+
 
 }());

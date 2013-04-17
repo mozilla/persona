@@ -10,8 +10,25 @@
       internal = bid.internal = bid.internal || {},
       user = bid.User,
       storage = bid.Storage,
+      log = bid.Helpers.log,
       moduleManager = bid.module;
 
+  function parseOptions(options) {
+    if (typeof options === 'string') {
+      // Firefox forbids sending objects across the blood-brain barrier from
+      // gecko into userland JS.  So we just stringify and destringify our
+      // objects when calling from b2g native code.
+        try {
+          options = JSON.parse(options);
+        } catch(e) {
+          log("invalid options string: " + options);
+          // rethrow the error
+          throw e;
+        }
+    }
+
+    return options;
+  }
   // given an object containing an assertion, extract the assertion string,
   // as the internal API is supposed to return a string assertion, not an
   // object.  issue #1395
@@ -61,11 +78,10 @@
    * options.silent defaults to false.
    */
   internal.get = function(origin, callback, options) {
-    if (typeof options === 'string') {
-      // Firefox forbids sending objects across the blood-brain barrier from
-      // gecko into userland JS.  So we just stringify and destringify our
-      // objects when calling from b2g native code.
-      options = JSON.parse(options);
+    try {
+      options = parseOptions(options);
+    } catch(e) {
+      return;
     }
 
     function complete(assertion) {
@@ -171,7 +187,12 @@
   };
 
   internal.watch = function (callback, options, log) {
-    if (typeof options === 'string') options = JSON.parse(options);
+    try {
+      options = parseOptions(options);
+    } catch(e) {
+      // should we call the callback with an error message?
+      return;
+    }
     internalWatch(callback, options, log);
   };
 
@@ -225,7 +246,7 @@
 
     function doLogin (params) {
       log('doLogin (with silent assertion)');
-      // Through the _internalParams, we signify to any RP callers that are 
+      // Through the _internalParams, we signify to any RP callers that are
       // interested that this assertion was acquired without user interaction.
       callback({ method: 'login', assertion: params, _internalParams: {silent: true} });
     }
