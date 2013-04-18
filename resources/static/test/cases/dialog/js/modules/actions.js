@@ -8,6 +8,7 @@
       user = bid.User,
       storage = bid.Storage,
       mediator = bid.Mediator,
+      xhr = bid.Mocks.xhr,
       controller,
       el,
       testHelpers = bid.TestHelpers,
@@ -63,6 +64,22 @@
     });
   }
 
+  function testDoCheckAuth(forceAuthentication, authLevel, userId,
+      expectedAuthLevel) {
+    createController({
+      ready: function() {
+        mediator.subscribe("authentication_checked", function(msg, info) {
+          equal(info.authenticated, expectedAuthLevel);
+          start();
+        });
+        if (authLevel && userId) {
+          xhr.setContextInfo("auth_level", authLevel);
+          xhr.setContextInfo("userid", userId);
+        }
+        controller.doCheckAuth({ forceAuthentication: forceAuthentication });
+      }
+    });
+  }
 
   module("dialog/js/modules/actions", {
     setup: function() {
@@ -171,6 +188,20 @@
         start();
       }
     });
+  });
+
+  asyncTest("doCheckAuth of authenticated user without forceAuthentication",
+      function() {
+    testDoCheckAuth(false, "password", 1, "password");
+  });
+
+  asyncTest("doCheckAuth of authenticated user with forceAuthentication",
+      function() {
+    testDoCheckAuth(true, "password", 1, false);
+  });
+
+  asyncTest("doCheckAuth of unauthenticated user", function() {
+    testDoCheckAuth(true, undefined, undefined, false);
   });
 
 }());
