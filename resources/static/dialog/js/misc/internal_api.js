@@ -9,6 +9,7 @@
       bid = BrowserID,
       internal = bid.internal = bid.internal || {},
       user = bid.User,
+      network = bid.Network,
       storage = bid.Storage,
       log = bid.Helpers.log,
       moduleManager = bid.module;
@@ -186,32 +187,29 @@
     user.logoutUser(callback, complete.curry(null));
   };
 
-  internal.watch = function (callback, options, log) {
+  internal.watch = function (callback, options, externalLog) {
+    log = externalLog || bid.Helpers.log;
+
     try {
       options = parseOptions(options);
     } catch(e) {
       // should we call the callback with an error message?
       return;
     }
-    internalWatch(callback, options, log);
+    internalWatch(callback, options);
   };
 
 
-  function internalWatch (callback, options, log) {
-    var bid = BrowserID,
-        network = bid.Network,
-        user = bid.User,
-        storage = bid.Storage;
-
+  function internalWatch(callback, options) {
     network.init();
 
-    log('internal watch options', options);
     var remoteOrigin = options.origin;
     var loggedInUser = options.loggedInUser;
     user.setOrigin(remoteOrigin);
+    network.clearContext();
+    checkAndEmit();
 
     function checkAndEmit() {
-      log('checking and emitting');
       // this will re-certify the user if neccesary
       user.getSilentAssertion(loggedInUser, function(email, assertion) {
         if (email) {
@@ -225,36 +223,29 @@
           // only send logout events when loggedInUser is not null, which is an
           // indicator that the site thinks the user is logged out
           doLogout();
-          loggedInUser = null;
         }
         doReady();
       }, function(err) {
         log('silent return: err', err);
         doLogout();
-        loggedInUser = null;
         doReady();
       }, log);
     }
 
-    network.clearContext();
-    checkAndEmit();
-
-    function doReady (params) {
-      log('doReady');
+    function doReady(params) {
       callback({ method: 'ready' });
     }
 
-    function doLogin (params) {
-      log('doLogin (with silent assertion)');
+    function doLogin(params) {
       // Through the _internalParams, we signify to any RP callers that are
       // interested that this assertion was acquired without user interaction.
       callback({ method: 'login', assertion: params, _internalParams: {silent: true} });
     }
 
-    function doLogout () {
-      log('doLogout');
+    function doLogout() {
       if (loggedInUser !== null) {
-        storage.setLoggedIn(remoteOrigin, false);
+        loggedInUser = null;
+        storage.site.remove(remoteOrigin, "logged_in");
         callback({ method: 'logout' });
       }
     }
