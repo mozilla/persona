@@ -31,10 +31,10 @@
 
         <ul class="nav cf">
             <li><a href="/about"><%= gettext("How it works") %></a></li>
-            <li><a href="https://developer.mozilla.org/docs/persona" target="_blank"><%= gettext("Developers") %></a></li>
+            <li class="ifAuthenticated"><a href="/"><%= gettext("Account") %></a></li>
 
-            <li class="signIn"><a class="signIn" href="/signin"><%= gettext("Sign In") %></a></li>
-            <li class="signOut"><a class="signOut" href="/"><%= gettext("Sign Out") %></a></li>
+            <li class="ifNotAuthenticated"><a class="signIn" href="/signin"><%= gettext("Sign In") %></a></li>
+            <li class="ifAuthenticated"><a class="signOut" href="/"><%= gettext("Sign Out") %></a></li>
 
         </ul>
     </header>
@@ -53,6 +53,7 @@
                        [" href='http://identity.mozilla.com' target='_blank'", " href='https://mozilla.org' target='_blank'"]) %></li>
         <li><a href="/privacy"><%= gettext('Privacy &rarr;') %></a></li>
         <li><a href="/tos"><%= gettext('TOS &rarr;') %></a></li>
+        <li><a href="https://developer.mozilla.org/docs/persona" target="_blank"><%= gettext("Developers &rarr;") %></a></li>
         <li class="help"><a
         href="https://support.mozilla.com/kb/what-is-persona-and-how-does-it-work" target="_blank"><%= gettext('Need Help? &rarr;') %></a></li>
     </ul>
