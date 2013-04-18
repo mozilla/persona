@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
   <meta charset="utf-8">
   <%- cachify_prefetch(util.format('/production/%s/dialog.js', locale)) %>
-  <%- cachify_prefetch('/production/dialog.css') %>
+  <%- cachify_prefetch(util.format('/production/%s/dialog.css', locale)) %>
   <%- cachify_prefetch('/common/i/grain.png') %>
   <%- cachify_prefetch('/dialog/i/persona-logo-transparent.png') %>
   <%- cachify_prefetch('/dialog/i/arrow_grey.png') %>
