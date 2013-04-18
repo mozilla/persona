@@ -112,6 +112,21 @@ function hasProperCacheHeaders(path) {
   }
 }
 
+// verify that cache control headers exist
+function hasETaglessCacheHeaders(path) {
+  return {
+    topic: function() {
+      var self = this;
+      doRequest(path, {}, self.callback);
+    },
+    "returns 200 with content": function(err, r) {
+      assert.strictEqual(r.statusCode, 200);
+      // ensure public, max-age=10
+      assert.strictEqual(r.headers['cache-control'], 'public, max-age=10');
+    }
+  }
+}
+
 // TODO: the commented urls should gain proper cache headers for conditional GET
 suite.addBatch({
   '/': hasProperCacheHeaders('/'),
@@ -131,7 +146,7 @@ suite.addBatch({
   '/add_email_address': hasProperCacheHeaders('/add_email_address'),
   '/confirm': hasProperCacheHeaders('/confirm'),
 //  '/pk': hasProperCacheHeaders('/pk'),
-//  '/.well-known/browserid': hasProperCacheHeaders('/.well-known/browserid')
+  '/.well-known/browserid': hasETaglessCacheHeaders('/.well-known/browserid')
 });
 
 // related to cache headers are correct headers which let us serve static resources
