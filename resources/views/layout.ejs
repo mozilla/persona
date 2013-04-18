@@ -31,10 +31,10 @@
 
         <ul class="nav cf">
             <li><a href="/about"><%= gettext("How it works") %></a></li>
-            <li class="signOut"><a href="/"><%= gettext("Account") %></a></li>
+            <li class="ifAuthenticated"><a href="/"><%= gettext("Account") %></a></li>
 
-            <li class="signIn"><a class="signIn" href="/signin"><%= gettext("Sign In") %></a></li>
-            <li class="signOut"><a class="signOut" href="/"><%= gettext("Sign Out") %></a></li>
+            <li class="ifNotAuthenticated"><a class="signIn" href="/signin"><%= gettext("Sign In") %></a></li>
+            <li class="ifAuthenticated"><a class="signOut" href="/"><%= gettext("Sign Out") %></a></li>
 
         </ul>
     </header>

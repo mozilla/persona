@@ -573,11 +573,11 @@ header a.signIn, header a.signOut {
   box-shadow: 0 0 1px #777;
 }
 
-.authenticated .signIn, .signOut {
+.authenticated .ifNotAuthenticated, .ifAuthenticated {
   display: none;
 }
 
-.authenticated .signOut {
+.authenticated .ifAuthenticated {
   display: inline;
 }
 
