@@ -209,11 +209,11 @@
     }, {});
   });
 
-  test(".watch with invalid string passed for options - assertion is not generated", function() {
+  test(".watch with invalid string passed for options - options.error is returned", function() {
     dialogModule.get_success_value = "simulated_assertion";
 
     internal.watch(function(options) {
-      ok(false, "callback should not be called if invalid JSON is used");
+      ok(options.error, "options.error in callback if invalid JSON is used");
     }, "{invalid_json:}", console.log);
   });
 

@@ -193,8 +193,7 @@
     try {
       options = parseOptions(options);
     } catch(e) {
-      // should we call the callback with an error message?
-      return;
+      return callback({error: e.toString()});
     }
     internalWatch(callback, options);
   };
