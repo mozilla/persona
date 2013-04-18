@@ -4,8 +4,7 @@
 BrowserID.Provisioning = (function() {
   "use strict";
   /*globals require:true*/
-  var jwcrypto = require("./lib/jwcrypto"),
-       network = BrowserID.Network;
+  var cryptoLoader = BrowserID.CryptoLoader;
 
   var MAX_TIMEOUT = 20000; // 20s
 
@@ -100,7 +99,7 @@ BrowserID.Provisioning = (function() {
       trans.delayReturn(true);
       // ensure we have session_context at this point so that the random number
       // generator is seeded
-      network.withContext(function() {
+      cryptoLoader.load(function(jwcrypto) {
         jwcrypto.generateKeypair({algorithm: "DS", keysize: BrowserID.KEY_LENGTH}, function(err, kp) {
           keypair = kp;
           trans.complete(keypair.publicKey.serialize());

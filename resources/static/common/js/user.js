@@ -5,12 +5,13 @@
 BrowserID.User = (function() {
   "use strict";
 
-  var jwcrypto, origin,
+  var origin,
       bid = BrowserID,
       network = bid.Network,
       storage = bid.Storage,
       helpers = bid.Helpers,
       mediator = bid.Mediator,
+      cryptoLoader = bid.CryptoLoader,
       User,
       pollTimeout,
       provisioning = bid.Provisioning,
@@ -24,13 +25,6 @@ BrowserID.User = (function() {
       stagedPassword,
       userid,
       auth_status;
-
-  function prepareDeps() {
-    /*globals require:true*/
-    if (!jwcrypto) {
-      jwcrypto= require("./lib/jwcrypto");
-    }
-  }
 
   // remove identities that are no longer valid
   function cleanupIdentities(onSuccess, onFailure) {
@@ -63,35 +57,36 @@ BrowserID.User = (function() {
 
         var emails = storage.getEmails();
         var issued_identities = {};
-        prepareDeps();
-        _.each(emails, function(email_obj, email_address) {
-          try {
-            email_obj.pub = jwcrypto.loadPublicKeyFromObject(email_obj.pub);
-          } catch (x) {
-            storage.invalidateEmail(email_address);
-            return;
-          }
-
-          // no cert? reset
-          if (!email_obj.cert) {
-            storage.invalidateEmail(email_address);
-          } else {
+        cryptoLoader.load(function(jwcrypto) {
+          _.each(emails, function(email_obj, email_address) {
             try {
-              // parse the cert
-              var cert = jwcrypto.extractComponents(emails[email_address].cert);
+              email_obj.pub = jwcrypto.loadPublicKeyFromObject(email_obj.pub);
+            } catch (x) {
+              storage.invalidateEmail(email_address);
+              return;
+            }
 
-              // check if this certificate is still valid.
-              if (isExpired(cert)) {
+            // no cert? reset
+            if (!email_obj.cert) {
+              storage.invalidateEmail(email_address);
+            } else {
+              try {
+                // parse the cert
+                var cert = jwcrypto.extractComponents(emails[email_address].cert);
+
+                // check if this certificate is still valid.
+                if (isExpired(cert)) {
+                  storage.invalidateEmail(email_address);
+                }
+
+              } catch (e) {
+                // error parsing the certificate!  Maybe it's of an old/different
+                // format?  just delete it.
+                helpers.log("error parsing cert for"+ email_address +":" + e);
                 storage.invalidateEmail(email_address);
               }
-
-            } catch (e) {
-              // error parsing the certificate!  Maybe it's of an old/different
-              // format?  just delete it.
-              helpers.log("error parsing cert for"+ email_address +":" + e);
-              storage.invalidateEmail(email_address);
             }
-          }
+          });
         });
         onSuccess();
       }, onFailure);
@@ -313,10 +308,6 @@ BrowserID.User = (function() {
 
 
   function onContextChange(msg, context) {
-    // seed the PRNG
-    prepareDeps();
-    jwcrypto.addEntropy(context.random_seed);
-
     setAuthenticationStatus(context.auth_level, context.userid);
   }
 
@@ -1072,65 +1063,70 @@ BrowserID.User = (function() {
       if (addressCache[email]) {
         return complete(addressCache[email]);
       }
-
-      network.addressInfo(email, function(info) {
-        // update the email with the normalized email if it is available.
-        // The normalized email is stored in the cache.
-        var normalizedEmail = info.normalizedEmail || email;
-        info.email = normalizedEmail;
-        info = User.checkEmailIssuer(normalizedEmail, info);
-        if (info.type === "primary") {
-          withContext(function() {
-            User.isUserAuthenticatedToPrimary(normalizedEmail, info,
-                function(authed) {
-              info.authed = authed;
-              info.idpName = _.escape(getIdPName(info));
-              complete(info);
-            }, onFailure);
-          }, onFailure);
-        }
-        else {
-          complete(info);
-        }
-      }, onFailure);
+      else {
+        network.addressInfo(email, function(info) {
+          // update the email with the normalized email if it is available.
+          // The normalized email is stored in the cache.
+          var normalizedEmail = info.normalizedEmail || email;
+          info.email = normalizedEmail;
+          User.checkEmailIssuer(normalizedEmail, info, function(cleanedInfo) {
+            if (cleanedInfo.type === "primary") {
+              withContext(function() {
+                User.isUserAuthenticatedToPrimary(normalizedEmail, cleanedInfo,
+                    function(authed) {
+                  cleanedInfo.authed = authed;
+                  cleanedInfo.idpName = getIdPName(cleanedInfo);
+                  complete(cleanedInfo);
+                }, onFailure);
+              }, onFailure);
+            }
+            else {
+              complete(cleanedInfo);
+            }
+          });
+        }, onFailure);
+      }
     },
+
     /**
      * Checks for outdated certificates and clears them from storage.
      * Returns original info, may have been altered
      * @param {string} email - Email address to check.
      * @param {object} info - Output from addressInfo callback
-     * @return {object} or null
+     * @param {function} done - called with object when complete.
      */
-    checkEmailIssuer: function(email, info) {
+    checkEmailIssuer: function(email, info, done) {
       function clearCert(email, idInfo) {
         delete idInfo.cert;
         delete primaryAuthCache[email];
         storage.addEmail(email, idInfo);
       }
-      prepareDeps();
-      var identity = User.getStoredEmailKeypair(email);
-      if (identity && identity.cert && info && info.issuer) {
+      cryptoLoader.load(function(jwcrypto) {
+        var identity = User.getStoredEmailKeypair(email);
+        if (identity && identity.cert && info && info.issuer) {
 
-        // issuer MUST have changed... clear certs
-        if ("transition_to_primary" === info.state && identity.cert) {
-          clearCert(email, identity);
-        } else {
+          // issuer MUST have changed... clear certs
+          if ("transition_to_primary" === info.state && identity.cert) {
+            clearCert(email, identity);
+          } else {
 
-          var prevIssuer;
-          try {
-            prevIssuer = jwcrypto.extractComponents(identity.cert).payload.iss;
-          } catch (e) {
-            // error parsing the certificate!  Maybe it's of an old/different
-            // format?  just delete it.
-            helpers.log("Looking for issuer, error parsing cert for"+ email +":" + e);
-            clearCert(email, identity);
+            var prevIssuer;
+            try {
+              prevIssuer = jwcrypto.extractComponents(identity.cert).payload.iss;
+            } catch (e) {
+              // error parsing the certificate!  Maybe it's of an old/different
+              // format?  just delete it.
+              helpers.log("Looking for issuer, error parsing cert for"+ email +":" + e);
+              clearCert(email, identity);
+            }
+
+            if (prevIssuer && info.issuer !== prevIssuer) {
+              clearCert(email, identity);
+            }
           }
-          if (prevIssuer && info.issuer !== prevIssuer) {
-            clearCert(email, identity);
-          }
-	}
-      }
-      return info;
+        }
+        complete(done, info);
+      });
     },
     /**
      * Add an email address to an already created account.  Sends address and
@@ -1220,14 +1216,15 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     syncEmailKeypair: function(email, onComplete, onFailure) {
-      prepareDeps();
       // jwcrypto depends on a random seed being set to generate a keypair.
       // The seed is set with a call to withContext.  Ensure the
       // random seed is set before continuing or else the seed may not be set,
       // the key never created, and the onComplete callback never called.
       withContext(function() {
-        jwcrypto.generateKeypair({algorithm: "DS", keysize: bid.KEY_LENGTH}, function(err, keypair) {
-          certifyEmailKeypair(email, keypair, onComplete, onFailure);
+        cryptoLoader.load(function(jwcrypto) {
+          jwcrypto.generateKeypair({algorithm: "DS", keysize: bid.KEY_LENGTH}, function(err, keypair) {
+            certifyEmailKeypair(email, keypair, onComplete, onFailure);
+          });
         });
       });
     },
@@ -1255,29 +1252,30 @@ BrowserID.User = (function() {
         // to avoid issues with clock drift on user's machine.
         // (issue #329)
         network.serverTime(function(serverTime) {
-          var sk = jwcrypto.loadSecretKeyFromObject(idInfo.priv);
+          cryptoLoader.load(function(jwcrypto) {
+            var sk = jwcrypto.loadSecretKeyFromObject(idInfo.priv);
 
-          // assertions are valid for 2 minutes
-          var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
-          var expirationDate = new Date(expirationMS);
+            // assertions are valid for 2 minutes
+            var expirationMS = serverTime.getTime() + (2 * 60 * 1000);
+            var expirationDate = new Date(expirationMS);
 
-          // yield to the render thread, important on IE8 so we don't
-          // raise "script has become unresponsive" errors.
-          setTimeout(function() {
-            jwcrypto.assertion.sign(
-              {}, {audience: audience, expiresAt: expirationDate},
-              sk,
-              function(err, signedAssertion) {
-                assertion = jwcrypto.cert.bundle([idInfo.cert], signedAssertion);
-                storage.site.set(audience, "email", email);
-                complete(assertion);
-              });
-          }, 0);
+            // yield to the render thread, important on IE8 so we don't
+            // raise "script has become unresponsive" errors.
+            setTimeout(function() {
+              jwcrypto.assertion.sign(
+                {}, {audience: audience, expiresAt: expirationDate},
+                sk,
+                function(err, signedAssertion) {
+                  assertion = jwcrypto.cert.bundle([idInfo.cert], signedAssertion);
+                  storage.site.set(audience, "email", email);
+                  complete(assertion);
+                });
+            }, 0);
+          });
         }, onFailure);
       }
 
       if (storedID) {
-        prepareDeps();
         if (storedID.priv) {
           // parse the secret key
           // yield to the render thread!
