@@ -112,6 +112,13 @@
 
   if (!navigator.id) {
     navigator.id = {};
+    // Is there a native implementation on this platform?
+    // If so, hook navigator.id onto it.
+    if (navigator.mozId) {
+      navigator.id = navigator.mozId;
+    } else {
+      navigator.id = {};
+    }
   }
 
   if (!navigator.id.request || navigator.id._shimmed) {
