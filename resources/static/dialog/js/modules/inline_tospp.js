@@ -14,7 +14,7 @@ BrowserID.Modules.InlineTosPp = (function() {
       BODY_SELECTOR = "body",
       TOSPP_OPENER_SELECTOR = ".tospp a",
       TOSPP_SELECTOR = "#tosppmodal",
-      TOSPP_CLOSE_SELECTOR = "#tosppmodal .close",
+      TOSPP_CLOSE_SELECTOR = "#tosppmodal",
       TOSPP_IFRAME = "#tosppframe",
       IFRAME_PARENT_SELECTOR = "body",
       sc;
