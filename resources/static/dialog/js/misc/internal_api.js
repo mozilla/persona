@@ -53,7 +53,7 @@
       callback && callback(status);
     }
 
-    user.checkAuthentication(function onComplete(authenticated) {
+    user.checkAuthentication(function(authenticated) {
       if (authenticated) {
         storage.site.set(origin, "remember", true);
       }
@@ -193,7 +193,7 @@
     try {
       options = parseOptions(options);
     } catch(e) {
-      return callback({error: e.toString()});
+      return callback({error: String(e)});
     }
     internalWatch(callback, options);
   };
