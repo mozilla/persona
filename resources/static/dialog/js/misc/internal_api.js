@@ -14,18 +14,21 @@
       log = bid.Helpers.log,
       moduleManager = bid.module;
 
+  network.init();
+  network.clearContext();
+
   function parseOptions(options) {
     if (typeof options === 'string') {
       // Firefox forbids sending objects across the blood-brain barrier from
       // gecko into userland JS.  So we just stringify and destringify our
       // objects when calling from b2g native code.
-        try {
-          options = JSON.parse(options);
-        } catch(e) {
-          log("invalid options string: " + options);
-          // rethrow the error
-          throw e;
-        }
+      try {
+        options = JSON.parse(options);
+      } catch(e) {
+        log("invalid options string: " + options);
+        // rethrow the error
+        throw e;
+      }
     }
 
     return options;
@@ -136,6 +139,10 @@
     controller.get(origin, options, complete, complete);
   }
 
+  function setOrigin(origin) {
+    user.setOrigin(origin);
+  }
+
   /*
    * Get an assertion without user interaction - internal use
    */
@@ -145,10 +152,11 @@
       callback && callback(assertion || null);
     }
 
+    setOrigin(origin);
+
     user.checkAuthenticationAndSync(function(authenticated) {
       // User must be authenticated to get an assertion.
       if(authenticated) {
-        user.setOrigin(origin);
         user.getAssertion(email, user.getOrigin(), function(assertion) {
           complete(assertion || null);
         }, complete.curry(null));
@@ -170,7 +178,7 @@
       callback && callback(status);
     }
 
-    user.setOrigin(origin);
+    setOrigin(origin);
     user.logout(callback, complete.curry(null));
   };
 
@@ -200,12 +208,9 @@
 
 
   function internalWatch(callback, options) {
-    network.init();
-
     var remoteOrigin = options.origin;
     var loggedInUser = options.loggedInUser;
-    user.setOrigin(remoteOrigin);
-    network.clearContext();
+    setOrigin(remoteOrigin);
     checkAndEmit();
 
     function checkAndEmit() {

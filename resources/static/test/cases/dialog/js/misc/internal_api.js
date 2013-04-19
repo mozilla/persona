@@ -46,10 +46,6 @@
     }
   });
 
-  test("make sure internal api namespace is there", function() {
-    ok(bid.internal, "BrowserID.internal exists");
-  });
-
   asyncTest("setPersistent unauthenticated user", function() {
     internal.setPersistent(ORIGIN, function(status) {
       strictEqual(status, null, "user is not authenticated should not succeed in setting persistent");
@@ -218,6 +214,83 @@
     }, "{invalid_json:}", console.log);
   });
 
+  asyncTest(".watch with authenticated user, no loggedInUser passed - assertion generated", function() {
+    user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
+      storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
+      storage.site.set(ORIGIN, "email", TEST_EMAIL);
+      var und;
+
+      var count = 0;
+      internal.watch(function(resp) {
+        count++;
+        // login should happen before ready
+        if (resp.method === "login") {
+          equal(count, 1);
+          ok(resp.assertion);
+        }
+        else if (resp.method === "ready") {
+          equal(count, 2);
+          start();
+        }
+        else {
+          ok(false, "unexpected method call: " + resp.method);
+        }
+      }, {
+        origin: ORIGIN,
+        loggedInUser: und
+      });
+    });
+  });
+
+  asyncTest(".watch with authenticated user, loggedInUser passed - only call with ready method", function() {
+    user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
+      storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
+      storage.site.set(ORIGIN, "email", TEST_EMAIL);
+      var und;
+
+      var count = 0;
+      internal.watch(function(resp) {
+        count++;
+        if (resp.method === "ready") {
+          equal(count, 1);
+          start();
+        }
+        else {
+          ok(false, "unexpected method call: " + resp.method);
+        }
+      }, {
+        origin: ORIGIN,
+        loggedInUser: TEST_EMAIL
+      });
+    });
+  });
+
+  asyncTest(".watch with authenticated user, different loggedInUser passed - call logout on old user, then ready", function() {
+    user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
+      storage.addEmail("testuser2@testuser.com", {});
+      storage.site.set(ORIGIN, "logged_in", "testuser2@testuser.com");
+      storage.site.set(ORIGIN, "email", "testuser2@testuser.com");
+      var und;
+
+      var count = 0;
+      internal.watch(function(resp) {
+        count++;
+        if (resp.method === "logout") {
+          equal(count, 1);
+        }
+        else if (resp.method === "ready") {
+          equal(count, 2);
+          start();
+        }
+        else {
+          ok(false, "unexpected method call: " + resp.method);
+        }
+      }, {
+        origin: ORIGIN,
+        loggedInUser: TEST_EMAIL
+      });
+    });
+  });
 
   asyncTest("logout of authenticated user logs the user out of origin", function() {
     user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
@@ -269,7 +342,5 @@
       start();
     });
   });
-
-
 
 }());
