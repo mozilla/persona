@@ -437,9 +437,9 @@
     });
   });
 
-  asyncTest("get with valid inlineTermsOfService - pass on inlineTermsOfService", function() {
+  asyncTest("get with valid _experimental_inlineTermsOfService - pass on inlineTermsOfService", function() {
     testExpectGetSuccess({
-      inlineTermsOfService: true
+      _experimental_inlineTermsOfService: true
     },
     {
       inlineTermsOfService: true

@@ -238,7 +238,7 @@ BrowserID.Modules.Dialog = (function() {
           self.publish("kpi_data", { rp_api: rpAPI });
         }
 
-        if (paramsFromRP.inlineTermsOfService === true) {
+        if (paramsFromRP._experimental_inlineTermsOfService === true) {
           params.inlineTermsOfService = true;
         }
 

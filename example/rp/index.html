@@ -203,7 +203,7 @@ $(document).ready(function() {
     navigator.id.request({
       privacyPolicy: $('#privacyPolicy').attr('checked') ? "/privacy.html" : undefined,
       termsOfService: $('#termsOfService').attr('checked') ? "/TOS.html" : undefined,
-      inlineTermsOfService: $('#inlineTermsOfService').attr('checked'),
+      _experimental_inlineTermsOfService: $('#inlineTermsOfService').attr('checked'),
       siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
       siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined,
       returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,
