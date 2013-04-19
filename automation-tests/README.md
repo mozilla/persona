@@ -1,4 +1,4 @@
-Hey! You've found the selenium tests for browserid.
+Howdy! You've found the selenium tests for browserid.
 
 # Contents
 
