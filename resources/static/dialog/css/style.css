@@ -594,3 +594,34 @@ a.emphasize:active {
 #authentication_form span.label {
   display: none;
 }
+
+.lightbox {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 900;
+  background-color: #999;
+  background-color: rgba(0,0,0,.2);
+  padding: 25px 30px 20px 30px;
+}
+
+.lightbox .contents {
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  border: 2px solid grey;
+  box-shadow: 5px 5px 5px #777;
+  background-color: #fff;
+}
+
+.lightbox .close {
+  margin-top: -15px;
+  display: block;
+  color: red;
+  position: absolute;
+  right: 10px;
+}
+
