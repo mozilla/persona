@@ -1054,10 +1054,10 @@
   asyncTest("getAssertion with known primary email, expired cert, user not authenticated with IdP - expect null assertion", function() {
     xhr.useResult("primary");
     provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
-    storage.addEmail("unregistered@testuser.com", { type: "primary" });
+    storage.addEmail("registered@testuser.com", { type: "primary" });
 
     lib.getAssertion(
-      "unregistered@testuser.com",
+      "registered@testuser.com",
       lib.getOrigin(),
       function(assertion) {
         equal(assertion, null, "user must authenticate with IdP, no assertion");

@@ -81,12 +81,11 @@
       if (status.success) {
         var info = { email: email, password: password };
         self.publish("user_staged", info, info);
-        complete(callback, true);
       }
       else {
         tooltip.showTooltip("#could_not_add");
-        complete(callback, false);
       }
+      complete(callback, status.success);
     }, self.getErrorDialog(errors.createUser, callback));
   }
 

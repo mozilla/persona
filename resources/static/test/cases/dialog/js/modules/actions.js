@@ -55,7 +55,7 @@
         });
 
         controller[actionName]({ email: TEST_EMAIL, password: "password", ready: function(status) {
-          equal(status, true, "correct status");
+          equal(status.success, true, "correct status");
           equal(message, expectedMessage, "correct message triggered");
           equal(email, TEST_EMAIL, "address successfully staged");
           start();

@@ -1117,20 +1117,21 @@ BrowserID.User = (function() {
         // The normalized email is stored in the cache.
         var normalizedEmail = info.normalizedEmail || email;
         info.email = normalizedEmail;
-        info = User.checkEmailIssuer(normalizedEmail, info);
-        if (info.type === "primary") {
-          withContext(function() {
-            User.isUserAuthenticatedToPrimary(normalizedEmail, info,
-                function(authed) {
-              info.authed = authed;
-              info.idpName = _.escape(getIdPName(info));
-              complete(info);
+        User.checkEmailIssuer(normalizedEmail, info, function(issuerInfo) {
+          if (issuerInfo.type === "primary") {
+            withContext(function() {
+              User.isUserAuthenticatedToPrimary(normalizedEmail, issuerInfo,
+                  function(authed) {
+                issuerInfo.authed = authed;
+                issuerInfo.idpName = _.escape(getIdPName(issuerInfo));
+                complete(issuerInfo);
+              }, onFailure);
             }, onFailure);
-          }, onFailure);
-        }
-        else {
-          complete(info);
-        }
+          }
+          else {
+            complete(issuerInfo);
+          }
+        });
       }, onFailure);
     },
 
@@ -1282,14 +1283,9 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     getAssertion: function(email, audience, onComplete, onFailure) {
-      var storedID,
+      var storedID = storage.getEmail(email, forceIssuer),
           assertion,
           self=this;
-
-      if (User.isDefaultIssuer())
-        storedID = storage.getEmail(email);
-      else
-        storedID = storage.getForceIssuerEmail(email, forceIssuer);
 
       function createAssertion(idInfo) {
         // we use the current time from the browserid servers
@@ -1339,7 +1335,7 @@ BrowserID.User = (function() {
                   User.getAssertion(email, audience, onComplete, onFailure);
                 }
                 else {
-                  complete(null);
+                  complete(onComplete, null);
                 }
               }, onFailure);
             }, onFailure);
