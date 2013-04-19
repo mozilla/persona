@@ -30,20 +30,18 @@ module.exports = {
       signOut: '#header a.signOut'
     },
     signInForm: {
-      email: '#signUpForm input#email',
-      nextButton: '#signUpForm button#next',
-      verifyPrimaryButton: '#signUpForm button#authWithPrimary',
       password: '#signUpForm input#password',
       verifyPassword: '#signUpForm input#vpassword',
       verifyEmailButton: '#signUpForm button#verifyEmail',
       finishButton: '#signUpForm .password_entry button'
     },
-    verifyPrimaryDialogName: 'auth_with_primary'
+    congratsMessage: 'div#congrats'
   },
   "dialog": {
     windowName: "__persona_dialog",
     emailInput: 'input#authentication_email',
     newEmailNextButton: 'p.submit.buttonrow button.start',
+    submitCancelButton: 'p.submit.buttonrow #cancel',
     existingPassword: 'div#signIn input#authentication_password',
     forgotPassword: 'a#forgotPassword',
     choosePassword: 'div#set_password input#password',

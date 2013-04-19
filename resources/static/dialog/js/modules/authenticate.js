@@ -31,6 +31,8 @@ BrowserID.Modules.Authenticate = (function() {
       TRANSITION_TO_SECONDARY_LABEL = "#authentication_form .label.transition_to_secondary",
       PASSWORD_LABEL = "#authentication_form .label.password_state",
       IDP_SELECTOR = "#authentication_form .authentication_idp_name",
+      PERSONA_INTRO_SELECTOR = ".persona_intro",
+      PERSONA_URL = "https://login.persona.org",
       currentHint;
 
   function getEmail() {
@@ -179,6 +181,12 @@ BrowserID.Modules.Authenticate = (function() {
       self.submit = checkEmail;
       showHint("start");
       dom.focus(EMAIL_SELECTOR);
+    }
+
+    // If we are signing in to the Persona main site, do not show
+    // the Persona intro that says "<site> uses Persona to sign you in!"
+    if (user.getOrigin() === PERSONA_URL) {
+      dom.hide(PERSONA_INTRO_SELECTOR);
     }
   }
 

@@ -17,38 +17,6 @@ BrowserID.PageHelpers = (function() {
       origin = "https://login.persona.org",
       storageKey = "sign_in_email";
 
-  function setStoredEmail(email) {
-    storage.site.set(origin, storageKey, email);
-  }
-
-  function clearStoredEmail() {
-    storage.site.remove(origin, storageKey);
-  }
-
-  function getStoredEmail() {
-    return storage.site.get(origin, storageKey) || "";
-  }
-
-  function onEmailChange(event) {
-    var email = dom.getInner("#email");
-    setStoredEmail(email);
-  }
-
-  function prefillEmail() {
-    // If the user tried to sign in on the sign up page with an existing email,
-    // place that email in the email field, then focus the password.
-    var el = $("#email"),
-        email = getStoredEmail();
-
-    if (email) {
-      el.val(email);
-      if ($("#password").length) $("#password").focus();
-    }
-
-    dom.bindEvent("#email", "change", onEmailChange);
-    dom.bindEvent("#email", "keyup", onEmailChange);
-  }
-
   function getParameterByName( name ) {
     name = name.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");
     var regexS = "[\\?&]"+name+"=([^&#]*)";
@@ -77,77 +45,6 @@ BrowserID.PageHelpers = (function() {
     $(selector).fadeIn(ANIMATION_SPEED).promise().done(onComplete);
   }
 
-  function replaceInputsWithNotice(selector, onComplete) {
-    $('.forminputs').hide();
-    $(selector).stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED)
-      .promise().done(onComplete);
-  }
-
-  function showInputs(onComplete) {
-    $('.notification').hide();
-    $('.forminputs').stop().hide().css({opacity:1}).fadeIn(ANIMATION_SPEED)
-      .promise().done(onComplete);
-  }
-
-  function emailSent(pollFuncName, email, onComplete) {
-    dom.setInner('#sentToEmail', email);
-
-    replaceInputsWithNotice(".emailsent");
-
-    user[pollFuncName](email, function(status) {
-      clearStoredEmail();
-      userValidationComplete(status);
-      onComplete && onComplete();
-    });
-  }
-
-  function userValidationComplete(status) {
-    var loc = doc.location;
-    if(status === "complete") {
-      loc.href = "/";
-    }
-    else if(status === "mustAuth") {
-      loc.href = "/signin";
-    }
-  }
-
-  function cancelEmailSent(onComplete) {
-    showInputs(onComplete);
-
-    user.cancelEmailValidation();
-
-    dom.focus("input:visible:eq(0)");
-  }
-
-  function openPrimaryAuth(winchan, email, baseURL, callback) {
-    if(!(email && baseURL)) {
-      throw new Error("cannot verify with primary without an email address and URL");
-    }
-
-    winchan.open({
-      url: "https://login.persona.org/authenticate_with_primary",
-      // This is the relay that will be used when the IdP redirects to sign_in_complete
-      relay_url: "https://login.persona.org/relay",
-      window_features: "width=700,height=375",
-      // Set the window name from window.open or else IE resets the name to
-      // null whenever the user is redirected to the IdP. Without window.name,
-      // the IdP tries to redirect back to the normal BrowserID dialog and an
-      // exception is thrown.
-      // See issue #2287 - https://github.com/mozilla/browserid/issues/2287
-      window_name: "auth_with_primary",
-      params: helpers.toURL(baseURL, {email: email})
-    }, function(error, result) {
-      // We have to force a reset of the primary caches because the user's
-      // authentication status may be incorrect.
-      // XXX a better solution here would be to change the authentication
-      // status of the user inside of the cache.
-      if(!error) {
-        user.resetCaches();
-      }
-      callback && callback(error, result);
-    });
-  }
-
   return {
     init: function(config) {
       win = config.window || window;
@@ -157,10 +54,6 @@ BrowserID.PageHelpers = (function() {
       win = window;
       doc = win.document;
     },
-    setupEmail: prefillEmail,
-    setStoredEmail: setStoredEmail,
-    clearStoredEmail: clearStoredEmail,
-    getStoredEmail: getStoredEmail,
     getParameterByName: getParameterByName,
     /**
      * shows a failure screen immediately
@@ -172,13 +65,7 @@ BrowserID.PageHelpers = (function() {
      * @method getFailure
      */
     getFailure: getFailure,
-    replaceInputsWithNotice: replaceInputsWithNotice,
     replaceFormWithNotice: replaceFormWithNotice,
-    showInputs: showInputs,
-    emailSent: emailSent,
-    cancelEmailSent: cancelEmailSent,
-    userValidationComplete: userValidationComplete,
-    cancelEvent: helpers.cancelEvent,
-    openPrimaryAuth: openPrimaryAuth
+    cancelEvent: helpers.cancelEvent
   };
 }());

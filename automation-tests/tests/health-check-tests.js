@@ -25,8 +25,9 @@ var startup = function(b, email, cb) {
   b.chain({onError: cb})
     .get(persona_urls['persona'])
     .wclick(pcss.header.signIn)
-    .wtype(pcss.signInForm.email, email)
-    .wclick(pcss.signInForm.nextButton, cb);
+    .wwin(CSS['dialog'].windowName)
+    .wtype(CSS['dialog'].emailInput, email)
+    .wclick(CSS['dialog'].newEmailNextButton, cb);
 }
 
 var setup = {
@@ -50,12 +51,11 @@ var primaryTest = {
   "go to personaorg, click sign in, type eyedeeme addy, click next": function(done) {
     startup(browser, eyedeemail, done)
   },
-  "click 'verify primary' to pop eyedeeme dialog": function(done) {
-    browser.wclick(pcss.signInForm.verifyPrimaryButton, done);
+  "click 'verify primary' to open eyedeeme": function(done) {
+    browser.wclick(CSS['dialog'].verifyWithPrimaryButton, done);
   },
   "switch to eyedeeme dialog, submit password, click ok": function(done) {
     browser.chain({onError: done})
-      .wwin(pcss.verifyPrimaryDialogName)
       .wtype(CSS['eyedee.me'].newPassword, eyedeemail.split('@')[0])
       .wclick(CSS['eyedee.me'].createAccountButton, done);
   },
@@ -82,15 +82,16 @@ var secondaryTest = {
   },
   "enter password and click verify": function(done) {
     secondBrowser.chain({onError: done})
-      .wtype(pcss.signInForm.password, theEmail.split('@')[0])
-      .wtype(pcss.signInForm.verifyPassword, theEmail.split('@')[0])
-      .wclick(pcss.signInForm.verifyEmailButton, done);
+      .wtype(CSS['dialog'].choosePassword, theEmail.split('@')[0])
+      .wtype(CSS['dialog'].verifyPassword, theEmail.split('@')[0])
+      .wclick(CSS['dialog'].createUserButton, done);
   },
   "get verification link": function(done) {
     restmail.getVerificationLink({email: theEmail}, done);
   },
   "open verification link and verify we are redirected to the manage page": function(done, token, link) {
     secondBrowser.chain({onError: done})
+      .wwin()
       .get(link)
       .wfind(pcss.accountManagerHeader, done);
   },

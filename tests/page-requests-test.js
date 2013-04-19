@@ -25,9 +25,6 @@ start_stop.addStartupBatches(suite);
 
 suite.addBatch({
   'GET /':                       respondsWith(200),
-  'GET /forgot':                 respondsWith(200),
-  'GET /signup':                 respondsWith(301),
-  'GET /signin':                 respondsWith(200),
   'GET /about':                  respondsWith(200),
   'GET /tos':                    respondsWith(200),
   'GET /privacy':                respondsWith(200),
@@ -35,7 +32,6 @@ suite.addBatch({
   'GET /add_email_address':      respondsWith(200),
   'GET /confirm':                respondsWith(200),
   'GET /reset_password':         respondsWith(200),
-  'GET /idp_auth_complete':      respondsWith(200),
   'GET /pk':                     respondsWith(200),
   'GET /.well-known/browserid':  respondsWith(200),
   'GET /.well-known/browserid?domain=yahoo.com':

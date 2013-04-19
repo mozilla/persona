@@ -65,20 +65,23 @@ runner.run(module, {
   "setup second browser": function(done) {
     testSetup.newBrowserSession(secondBrowser, done);
   },
-  "in the second browser, log in to persona.org": function(done) {
+  "in the second browser, open the dialog to sign in": function(done) {
     secondBrowser.chain({onError: done})
       .get(persona_urls['persona'])
       .wclick(CSS['persona.org'].header.signIn)
-      .wtype(CSS['persona.org'].signInForm.email, testUser.email)
-      .wclick(CSS['persona.org'].signInForm.nextButton)
-      .wtype(CSS['persona.org'].signInForm.password, testUser.pass)
-      .wclick(CSS['persona.org'].signInForm.finishButton)
-      .wtext(CSS['persona.org'].accountManagerHeader, function(err, text) {
-        done(err || assert.equal(text, 'Account Manager'));
-      });
-    },
+      .wwin(CSS['dialog'].windowName, done);
+  },
+  "in the second browser, log in to persona.org": function(done) {
+    dialog.signInExistingUser({
+      browser: secondBrowser,
+      email: testUser.email,
+      password: testUser.pass
+    }, done);
+  },
   "click the change password button": function(done) {
-    secondBrowser.wclick(CSS["persona.org"].changePasswordButton, done);
+    secondBrowser.chain({onError: done})
+      .wwin()
+      .wclick(CSS["persona.org"].changePasswordButton, done);
   },
   "enter old and new passwords and click done": function(done) {
     secondBrowser.chain({onError: done})
@@ -96,10 +99,10 @@ runner.run(module, {
        */
       .refresh()
       .wfind(CSS['123done.org'].signinButton)
-      .wclick(CSS["123done.org"].signinButton, done)
+      .wclick(CSS["123done.org"].signinButton, done);
   },
   "switch back to the dialog": function(done) {
-    browser.wwin(CSS["persona.org"].windowName, done)
+    browser.wwin(CSS["persona.org"].windowName, done);
   },
   "sign in using the changed password": function(done) {
     dialog.signInExistingUser({
@@ -121,5 +124,5 @@ runner.run(module, {
 },
 {
   suiteName: path.basename(__filename),
-  cleanup: function(done) { testSetup.teardown(done) }
+  cleanup: function(done) { testSetup.teardown(done); }
 });

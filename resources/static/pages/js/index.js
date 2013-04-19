@@ -9,9 +9,5 @@
     $('.tour a').hover(function() {
       $('#card').toggleClass('insert');
     });
-
-    $('.create').hover(function() {
-      $('#hint').addClass('signUp').removeClass('info');
-    });
   };
 }());

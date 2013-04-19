@@ -25,8 +25,7 @@ $(function() {
       XHRDisableForm = modules.XHRDisableForm,
       Development = modules.Development,
       ANIMATION_TIME = 500,
-      checkCookiePaths = [ "/signin", "/forgot", "/add_email_address", "/confirm", "/verify_email_address" ],
-      redirectIfAuthenticatedPaths = [ "/signin", "/forgot" ];
+      checkCookiePaths = [ "/add_email_address", "/confirm", "/verify_email_address" ];
 
 
   function shouldCheckCookies(path) {
@@ -137,29 +136,9 @@ $(function() {
       // user is authenticated, redirect them back to the main page. See issue
       // #1345 https://github.com/mozilla/browserid/issues/1345
       var module;
-      if (authenticated && _.indexOf(redirectIfAuthenticatedPaths, path) > -1) {
-        document.location = "/";
-        return;
-      }
-      else if (path === "/") {
+      if (path === "/") {
         bid.index();
       }
-      else if (path === "/signin") {
-        module = bid.signIn.create();
-        module.start({});
-      }
-      else if (path === "/forgot") {
-        module = bid.forgot.create();
-        module.start({});
-      }
-      // START TRANSITION CODE
-      // add_email_address has been renamed to confirm. Once all outstanding
-      // emails are verified or expired, this can be removed. This change is
-      // scheduled to go into train-2012.07.20
-      else if (path === "/add_email_address") {
-        verifySecondaryAddress("verifyEmail");
-      }
-      // END TRANSITION CODE
       else if (path === "/confirm") {
         verifySecondaryAddress("verifyEmail");
       }
@@ -230,6 +209,14 @@ $(function() {
       $(".display_always").fadeIn(ANIMATION_TIME);
       dom.addClass("body", "not_authenticated");
       $(".display_nonauth").fadeIn(ANIMATION_TIME);
+      dom.bindEvent("a.signIn", "click", function(event) {
+        event.preventDefault();
+        navigator.id.get(function(assertion) {
+          document.location.href = "/";
+        }, {
+          siteName: "Mozilla Persona"
+        });
+      });
     }
   }
 

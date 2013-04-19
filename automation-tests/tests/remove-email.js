@@ -201,15 +201,17 @@ runner.run(module, {
     browser.chain({onError: done})
       .get(persona_urls['persona'])
       .wclick(CSS['persona.org'].header.signIn)
-      .wtype(CSS['persona.org'].signInForm.email, secondaryEmail)
-      .wclick(CSS['persona.org'].signInForm.nextButton)
-      .wfind(CSS['persona.org'].signInForm.verifyPassword)
-      .wclear(CSS['persona.org'].signInForm.email)
+      .wwin(CSS['dialog'].windowName)
+      .wtype(CSS['dialog'].emailInput, secondaryEmail)
+      .wclick(CSS['dialog'].newEmailNextButton)
+      .wfind(CSS['dialog'].verifyPassword)
+      .wclick(CSS['dialog'].submitCancelButton)
+      .wclear(CSS['dialog'].emailInput)
       // the user will still be logged in to eyedee.me under the
       // secondPrimaryEmail, so try logging in using the firstPrimaryEmail
-      .wtype(CSS['persona.org'].signInForm.email, firstPrimaryEmail)
-      .wclick(CSS['persona.org'].signInForm.nextButton)
-      .wfind(CSS['persona.org'].signInForm.verifyPrimaryButton, done);
+      .wtype(CSS['dialog'].emailInput, firstPrimaryEmail)
+      .wclick(CSS['dialog'].newEmailNextButton)
+      .wclick(CSS['dialog'].verifyWithPrimaryButton, done);
   }
 },
 {

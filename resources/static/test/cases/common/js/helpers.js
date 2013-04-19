@@ -11,7 +11,6 @@
   module("common/js/helpers", {
     setup: function() {
       testHelpers.setup();
-      bid.Renderer.render("#page_head", "site/signin", {});
     },
 
     teardown: function() {
@@ -20,33 +19,38 @@
   });
 
   test("getAndValidateEmail with valid email", function() {
-    $("#email").val("testuser@testuser.com");
-    var email = helpers.getAndValidateEmail("#email");
+    bid.Renderer.render("#page_head", "add_email", {});
+    $("#newEmail").val("testuser@testuser.com");
+    var email = helpers.getAndValidateEmail("#newEmail");
 
     equal(email, "testuser@testuser.com", "valid email returns email");
   });
 
   test("getAndValidateEmail with valid email with leading and trailing whitespace", function() {
-    $("#email").val(" testuser@testuser.com ");
-    var email = helpers.getAndValidateEmail("#email");
+    bid.Renderer.render("#page_head", "add_email", {});
+    $("#newEmail").val(" testuser@testuser.com ");
+    var email = helpers.getAndValidateEmail("#newEmail");
 
     equal(email, "testuser@testuser.com", "valid email with leading/trailing whitespace returns trimmed email");
   });
 
   test("getAndValidateEmail with invalid email returns null", function() {
-    $("#email").val("testuser");
-    var email = helpers.getAndValidateEmail("#email");
+    bid.Renderer.render("#page_head", "add_email", {});
+    $("#newEmail").val("testuser");
+    var email = helpers.getAndValidateEmail("#newEmail");
 
     strictEqual(email, null, "invalid email returns null");
   });
 
   test("getAndValidateEmail with invalid target returns null", function() {
+    bid.Renderer.render("#page_head", "add_email", {});
     var email = helpers.getAndValidateEmail("#nonexistent");
 
     strictEqual(email, null, "invalid target returns null");
   });
 
   test("getAndValidatePassword with valid password returns password", function() {
+    bid.Renderer.render("#page_head", "set_password", { password_reset: false, transition_no_password: false, email: "testuser@testuser.com", cancelable: false });
     $("#password").val("password");
     var password = helpers.getAndValidatePassword("#password");
 
@@ -54,6 +58,7 @@
   });
 
   test("getAndValidatePassword with invalid password returns null", function() {
+    bid.Renderer.render("#page_head", "set_password", { password_reset: false, transition_no_password: false, email: "testuser@testuser.com", cancelable: false });
     $("#password").val("");
     var password = helpers.getAndValidatePassword("#password");
 
@@ -61,6 +66,7 @@
   });
 
   test("getAndValidatePassword with invalid target returns null", function() {
+    bid.Renderer.render("#page_head", "set_password", { password_reset: false, transition_no_password: false, email: "testuser@testuser.com", cancelable: false });
     var password = helpers.getAndValidatePassword("#nonexistent");
 
     strictEqual(password, null, "invalid target returns null");
