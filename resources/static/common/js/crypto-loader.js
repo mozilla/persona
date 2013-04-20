@@ -19,7 +19,7 @@ BrowserID.CryptoLoader = (function() {
     var script = document.createElement("script");
     script.setAttribute("src", src);
     var entryPoint = document.getElementsByTagName("script")[0];
-    entryPoint.parentNode.insertBefore(script, entry);
+    entryPoint.parentNode.insertBefore(script, entryPoint);
   }
 
   function waitUntilExists(checkFor, context, done) {
