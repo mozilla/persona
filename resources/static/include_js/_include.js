@@ -131,7 +131,7 @@
 
     var windowOpenOpts =
       (isFennec ? undefined :
-       "menubar=0,location=1,resizable=1,scrollbars=1,status=0,dialog=1,minimizable=1,width=700,height=375");
+       "menubar=0,location=1,resizable=1,scrollbars=1,status=0,width=700,height=375");
 
     var w;
 
