@@ -33,6 +33,10 @@
     }
   };
 
+  function suppressLog(msg) {
+    // do nothing with the log message;
+  }
+
   module("dialog/js/misc/internal_api", {
     setup: function() {
       testHelpers.setup();
@@ -184,7 +188,7 @@
 
     internal.get(ORIGIN, function(assertion) {
       ok(false, "callback should not be called if invalid JSON is used");
-    }, "{invalid_json:}");
+    }, "{invalid_json:}", suppressLog);
   });
 
   asyncTest(".get with dialog with failure - simulate the return of a null assertion", function() {
@@ -211,7 +215,7 @@
     internal.watch(function(options) {
       ok(options.error, "options.error in callback if invalid JSON is used");
       start();
-    }, "{invalid_json:}", console.log);
+    }, "{invalid_json:}", suppressLog);
   });
 
   asyncTest(".watch with authenticated user, no loggedInUser passed - assertion generated", function() {

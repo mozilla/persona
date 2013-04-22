@@ -81,7 +81,9 @@
    * @param {object} options.  See options block for navigator.id.get.
    * options.silent defaults to false.
    */
-  internal.get = function(origin, callback, options) {
+  internal.get = function(origin, callback, options, externalLog) {
+    log = externalLog || bid.Helpers.log;
+
     try {
       options = parseOptions(options);
     } catch(e) {
