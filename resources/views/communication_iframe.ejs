@@ -4,6 +4,7 @@
 <head><title>non-interactive iframe</title>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
   <meta charset="utf-8">
+  <% if (production) { %>
   <%- cachify_prefetch(util.format('/production/%s/dialog.js', locale)) %>
   <%- cachify_prefetch(util.format('/production/%s/dialog.css', locale)) %>
   <%- cachify_prefetch('/common/i/grain.png') %>
@@ -13,6 +14,7 @@
   <%- cachify_prefetch('/common/i/button-arrow.png') %>
   <%- cachify_prefetch('/common/i/button-arrow-hover.png') %>
   <%- cachify_prefetch('/common/i/button-arrow-active.png') %>
+  <% } %>
   <%- cachify_js('/production/communication_iframe.js') %>
 </head>
 <body></body>
