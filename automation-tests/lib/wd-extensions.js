@@ -3,7 +3,15 @@
 
 const wd        = require('wd/lib/webdriver'),
       utils     = require('./utils.js'),
-      timeouts  = require('./timeouts.js');
+      timeouts  = require('./timeouts.js'),
+      fs        = require('fs'),
+      mkdirp    = require('mkdirp'),
+      SCREENSHOT_PATH = process.env['SCREENSHOT_PATH'] || __dirname + '/../screenshots/';
+
+// stat fs once for screenshot path at startup.
+mkdirp.sync(SCREENSHOT_PATH, function(err) {
+  if (err) throw new Error(err);
+});
 
 function setTimeouts(opts) {
   opts.poll = opts.poll || timeouts.DEFAULT_POLL_MS;
@@ -279,5 +287,19 @@ wd.prototype.wclear = function(opts, cb) {
   self.waitForDisplayed(opts, function(err, el) {
     if (err) return cb(err);
     self.clear(el, cb);
+  });
+};
+
+// take a screenshot and asynchronously save to file system
+// if name isn't passed, we use a timestamp.
+// names should include path and .png extension.
+// mainly included for debugging headless phantomjs failures.
+wd.prototype.screenshot = function(filename, cb) {
+  var filename = filename || (Date.now() + '.png'),
+    self = this;
+  self.takeScreenshot(function(err, screenshot) {
+    // fail silently if screenshotting fails.
+    if (screenshot) fs.writeFile(SCREENSHOT_PATH + filename, screenshot, 'base64');
+    cb(err);
   });
 };
