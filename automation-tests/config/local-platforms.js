@@ -42,6 +42,11 @@ const platforms = {
     platform: 'ANY',
     browserName: 'internet explorer',
     version: ''
+  },
+  "phantomjs": {
+    platform: 'ANY',
+    browserName: 'phantomjs',
+    version: ''
   }
 };
 
