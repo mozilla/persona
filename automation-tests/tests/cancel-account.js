@@ -7,10 +7,8 @@
 const
 path = require('path'),
 assert = require('../lib/asserts.js'),
-utils = require('../lib/utils.js'),
 persona_urls = require('../lib/urls.js'),
 CSS = require('../pages/css.js'),
-dialog = require('../pages/dialog.js'),
 runner = require('../lib/runner.js'),
 testSetup = require('../lib/test-setup.js'),
 user = require('../lib/user.js');
