@@ -80,6 +80,16 @@
     testRenderMessagingScreen("renderError", ERROR_CONTENTS_SELECTOR);
   });
 
+  test("renderError publishes an error_screen event", function() {
+    createController();
+    mediator.subscribe("error_screen", function(msg, data) {
+      equal(msg, 'error_screen', 'error_screen event triggered');
+      equal(data.foo, 'bar', 'passed error object');
+    });
+
+    controller.renderError("error", { foo: 'bar' });
+  });
+
   test("renderDelay renders a delay screen", function() {
     testRenderMessagingScreen("renderDelay", DELAY_CONTENTS_SELECTOR);
   });

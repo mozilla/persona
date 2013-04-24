@@ -58,6 +58,14 @@
       return -1;
     },
 
+    keyOf: function(obj, value) {
+      for (var key in obj) {
+        if (obj[key] === value) {
+          return key;
+        }
+      }
+    },
+
     size: function(obj) {
       return _.isArray(obj) ? obj.length : _.keys(obj).length;
     },
