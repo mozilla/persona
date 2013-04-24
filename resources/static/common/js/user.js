@@ -510,7 +510,16 @@ BrowserID.User = (function() {
     createSecondaryUser: function(email, password, onComplete, onFailure) {
       stageAddressVerification(email, password,
         network.createUser.bind(network, email, password,
-            origin, allowUnverified), onComplete, onFailure);
+            origin, allowUnverified), function(status) {
+              // update the cache if necessary
+              if (status.unverified) {
+                var cachedAddress = addressCache[email];
+                if (cachedAddress) {
+                  cachedAddress.state = "unverified";
+                }
+              }
+              complete(onComplete, status);
+            }, onFailure);
     },
 
     /**

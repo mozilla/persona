@@ -81,23 +81,18 @@
       if (status.success) {
         var msg = { email: email, password: password };
         if (status.unverified) {
-          user.addressInfo(email, null, function(info) {
-            // modify the addressCache info to the new unverified state
-            info.state = "unverified";
-            msg.type = "secondary";
-            msg.unverified = true;
-            self.publish("unverified_created", msg, msg);
-            complete(callback, true);
-          }, self.getErrorDialog(errors.createUser, callback));
+          msg.type = "secondary";
+          msg.unverified = true;
+          self.publish("unverified_created", msg, msg);
         } else {
           self.publish("user_staged", msg, msg);
-          complete(callback, true);
         }
+        complete(callback, status.success);
       }
       else {
         tooltip.showTooltip("#could_not_add");
+        complete(callback, status.success);
       }
-      complete(callback, status.success);
     }, self.getErrorDialog(errors.createUser, callback));
   }
 
