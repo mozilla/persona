@@ -542,6 +542,15 @@
     );
   });
 
+  // TODO Add a test for forceIssuer
+
+  asyncTest("_experimental_allowUnverified", function() {
+    testExpectGetSuccess(
+      {_experimental_allowUnverified: true},
+      {allowUnverified: true}
+    );
+  });
+
   asyncTest("get with valid rp_api - allowed", function() {
     createController({
       ready: function() {
