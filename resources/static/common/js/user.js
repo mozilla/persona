@@ -512,6 +512,7 @@ BrowserID.User = (function() {
         network.createUser.bind(network, email, password,
             origin, allowUnverified), function(status) {
               // update the cache if necessary
+              // XXX this needs a test.
               if (status.unverified) {
                 var cachedAddress = addressCache[email];
                 if (cachedAddress) {

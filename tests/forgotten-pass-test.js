@@ -179,7 +179,6 @@ suite.addBatch({
   "reset password on first account": {
     topic: wsapi.post('/wsapi/stage_reset', {
       email: 'first@fakeemail.com',
-      pass: 'secondfakepass',
       site:'https://otherfakesite.com'
     }),
     "works": function(err, r) {
@@ -334,7 +333,6 @@ suite.addBatch({
   "reset password on first account": {
     topic: wsapi.post('/wsapi/stage_reset', {
       email: 'first@fakeemail.com',
-      pass: 'secondfakepass',
       site:'https://otherfakesite.com'
     }),
     "works": function(err, r) {

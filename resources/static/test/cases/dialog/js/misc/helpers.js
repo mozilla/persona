@@ -54,7 +54,8 @@
     });
 
     storage.addEmail("registered@testuser.com", {});
-    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", function(assertion) {
+    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com",
+        function(assertion) {
       ok(assertion, "assertion given to close");
       start();
     });
@@ -66,13 +67,15 @@
 
     xhr.useResult("ajaxError");
     storage.addEmail("registered@testuser.com", {});
-    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com", testHelpers.expectedFailure);
+    dialogHelpers.getAssertion.call(controllerMock,
+        "registered@testuser.com", testHelpers.expectedFailure);
   });
 
   asyncTest("authenticateUser happy case", function() {
     expectedMessage("password_submit");
     expectedMessage("authentication_success");
-    dialogHelpers.authenticateUser.call(controllerMock, "testuser@testuser.com", "password", function(authenticated) {
+    dialogHelpers.authenticateUser.call(controllerMock,
+        "testuser@testuser.com", "password", function(authenticated) {
       equal(authenticated, true, "user is authenticated");
       start();
     });
@@ -82,7 +85,8 @@
     xhr.useResult("invalid");
     expectedMessage("password_submit");
     expectedMessage("authentication_fail");
-    dialogHelpers.authenticateUser.call(controllerMock, "testuser@testuser.com", "password", function(authenticated) {
+    dialogHelpers.authenticateUser.call(controllerMock,
+        "testuser@testuser.com", "password", function(authenticated) {
       equal(authenticated, false, "user is not authenticated");
       start();
     });
@@ -93,7 +97,8 @@
 
     xhr.useResult("ajaxError");
     expectedMessage("password_submit");
-    dialogHelpers.authenticateUser.call(controllerMock, "testuser@testuser.com", "password", testHelpers.unexpectedSuccess);
+    dialogHelpers.authenticateUser.call(controllerMock,
+        "testuser@testuser.com", "password", testHelpers.unexpectedSuccess);
   });
 
   asyncTest("createUser with unknown secondary happy case, expect 'user_staged' message", function() {
@@ -103,9 +108,9 @@
       password: "password"
     });
 
-    dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com",
-        "password", function(staged) {
-      equal(staged, true, "user was staged");
+    dialogHelpers.createUser.call(controllerMock,
+        "unregistered@testuser.com", "password", function(status) {
+      equal(status.success, true, "user was staged");
       start();
     });
   });
@@ -114,8 +119,9 @@
     unexpectedMessage("user_staged");
 
     xhr.useResult("throttle");
-    dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", "password", function(staged) {
-      equal(staged, false, "user was not staged");
+    dialogHelpers.createUser.call(controllerMock,
+        "unregistered@testuser.com", "password", function(status) {
+      equal(status.success, false, "user was not staged");
       start();
     });
   });
@@ -178,7 +184,7 @@
 
     dialogHelpers.addSecondaryEmail.call(controllerMock,
         "testuser@testuser.com", "password", function(status) {
-      equal(status, true, "email reported as added");
+      equal(status.success, true, "email reported as added");
     });
   });
 
@@ -187,8 +193,9 @@
     xhr.useResult("throttle");
     unexpectedMessage("email_staged");
 
-    dialogHelpers.addSecondaryEmail.call(controllerMock, "testuser@testuser.com", "password", function(added) {
-      equal(added, false, "email not added");
+    dialogHelpers.addSecondaryEmail.call(controllerMock,
+        "testuser@testuser.com", "password", function(status) {
+      equal(status.success, false, "email not added");
       testHelpers.testTooltipVisible();
       start();
     });
@@ -200,7 +207,8 @@
     unexpectedMessage("email_staged");
     errorCB = expectedError;
 
-    dialogHelpers.addSecondaryEmail.call(controllerMock, "testuser@testuser.com", "password", testHelpers.unexpectedSuccess);
+    dialogHelpers.addSecondaryEmail.call(controllerMock,
+        "testuser@testuser.com", "password", testHelpers.unexpectedSuccess);
   });
 
   asyncTest("resetPassword happy case", function() {
@@ -208,8 +216,9 @@
       email: "registered@testuser.com"
     });
 
-    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", function(reset) {
-      ok(reset, "password reset");
+    dialogHelpers.resetPassword.call(controllerMock,
+        "registered@testuser.com", function(status) {
+      ok(status.success, "password reset");
       start();
     });
   });
@@ -217,8 +226,9 @@
 
   asyncTest("resetPassword throttled", function() {
     xhr.useResult("throttle");
-    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", function(reset) {
-      equal(reset, false, "password not reset");
+    dialogHelpers.resetPassword.call(controllerMock,
+        "registered@testuser.com", function(status) {
+      equal(status.success, false, "password not reset");
       start();
     });
   });
@@ -227,7 +237,8 @@
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
-    dialogHelpers.resetPassword.call(controllerMock, "registered@testuser.com", testHelpers.unexpectedSuccess);
+    dialogHelpers.resetPassword.call(controllerMock,
+        "registered@testuser.com", testHelpers.unexpectedSuccess);
   });
 
 
@@ -236,8 +247,9 @@
       email: "registered@testuser.com"
     });
 
-    dialogHelpers.transitionToSecondary.call(controllerMock, "registered@testuser.com", "password", function(reset) {
-      ok(reset, "password reset");
+    dialogHelpers.transitionToSecondary.call(controllerMock,
+        "registered@testuser.com", "password", function(status) {
+      ok(status.success, "password reset");
       start();
     });
   });
@@ -245,8 +257,9 @@
 
   asyncTest("transitionToSecondary throttled", function() {
     xhr.useResult("throttle");
-    dialogHelpers.transitionToSecondary.call(controllerMock, "registered@testuser.com", "password", function(reset) {
-      equal(reset, false, "password not reset");
+    dialogHelpers.transitionToSecondary.call(controllerMock,
+        "registered@testuser.com", "password", function(status) {
+      equal(status.success, false, "password not reset");
       start();
     });
   });
@@ -255,7 +268,8 @@
     errorCB = expectedError;
 
     xhr.useResult("ajaxError");
-    dialogHelpers.transitionToSecondary.call(controllerMock, "registered@testuser.com", "password", testHelpers.unexpectedSuccess);
+    dialogHelpers.transitionToSecondary.call(controllerMock,
+        "registered@testuser.com", "password", testHelpers.unexpectedSuccess);
   });
 
 

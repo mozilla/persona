@@ -80,6 +80,7 @@
     user.createSecondaryUser(email, password, function(status) {
       if (status.success) {
         var msg = { email: email, password: password };
+        // XXX these need tests.
         if (status.unverified) {
           msg.type = "secondary";
           msg.unverified = true;
@@ -87,12 +88,11 @@
         } else {
           self.publish("user_staged", msg, msg);
         }
-        complete(callback, status.success);
       }
       else {
         tooltip.showTooltip("#could_not_add");
-        complete(callback, status.success);
       }
+      complete(callback, status);
     }, self.getErrorDialog(errors.createUser, callback));
   }
 
@@ -106,7 +106,7 @@
       else {
         tooltip.showTooltip("#could_not_add");
       }
-      complete(callback, status.success);
+      complete(callback, status);
     }, self.getErrorDialog(errors.requestPasswordReset, callback));
   }
 
@@ -120,7 +120,7 @@
       else {
         tooltip.showTooltip("#could_not_add");
       }
-      complete(callback, status.success);
+      complete(callback, status);
     }, self.getErrorDialog(errors.transitionToSecondary, callback));
   }
 
@@ -134,7 +134,7 @@
       else {
         tooltip.showTooltip("#could_not_add");
       }
-      complete(callback, status.success);
+      complete(callback, status);
     }, self.getErrorDialog(errors.requestPasswordReset, callback));
   }
 
@@ -183,7 +183,7 @@
       else {
         tooltip.showTooltip("#could_not_add");
       }
-      complete(callback, status.success);
+      complete(callback, status);
     }, self.getErrorDialog(errors.addEmail, callback));
   }
 
