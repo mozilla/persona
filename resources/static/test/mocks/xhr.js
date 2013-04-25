@@ -186,6 +186,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/address_info?email=unregistered%40testuser.com&issuer=default unknown_secondary": { type: "secondary", state: "unknown" },
       "get /wsapi/address_info?email=unregistered%40testuser.com&issuer=default primary": { type: "primary", state: "unknown", auth: "https://auth_url", prov: "https://prov_url" },
       "get /wsapi/address_info?email=unregistered%40testuser.com&issuer=default primaryUnknown": { type: "primary", state: "unknown", auth: "https://auth_url", prov: "https://prov_url" },
+      "get /wsapi/address_info?email=unregistered%40testuser.com&issuer=fxos_issuer unknown_secondary": { type: "secondary", state: "unknown" },
 
       "get /wsapi/address_info?email=registered%40testuser.com&issuer=default valid": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
       "get /wsapi/address_info?email=REGISTERED%40TESTUSER.COM&issuer=default valid": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },

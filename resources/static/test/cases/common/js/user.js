@@ -1377,4 +1377,17 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
+
+  test("getIssuer/isDefaultIssuer with default issuer", function() {
+    equal(lib.getIssuer(), "default");
+    equal(lib.isDefaultIssuer(), true);
+  });
+
+  test("setIssuer/getIssuer/isDefaultIssuer with updated issuer", function() {
+    var issuer = "fxos.personatest.org";
+    lib.setIssuer(issuer);
+    equal(lib.getIssuer(), issuer);
+    equal(lib.isDefaultIssuer(), false);
+  });
+
 }());

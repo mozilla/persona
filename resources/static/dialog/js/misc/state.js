@@ -211,6 +211,7 @@ BrowserID.State = (function() {
     handleState("new_fxaccount", function(msg, info) {
       self.newFxAccountEmail = info.email;
 
+      info.fxaccount = true;
       startAction(false, "doSetPassword", info);
       complete(info.complete);
     });

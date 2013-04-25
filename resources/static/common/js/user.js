@@ -456,8 +456,8 @@ BrowserID.User = (function() {
       return this.returnTo;
     },
 
-    setIssuer: function(issuer) {
-      issuer = issuer;
+    setIssuer: function(forcedIssuer) {
+      issuer = forcedIssuer;
     },
 
     getIssuer: function() {

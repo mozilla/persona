@@ -7,6 +7,7 @@
   var controller,
       el = $("body"),
       bid = BrowserID,
+      user = bid.User,
       storage = bid.Storage,
       network = bid.Network,
       xhr = bid.Mocks.xhr,
@@ -185,6 +186,19 @@
     testUserUnregistered();
   });
 
+  asyncTest("checkEmail with unknown email & forced issuer", function() {
+    $(EMAIL_SELECTOR).val("unregistered@testuser.com");
+
+    testHelpers.expectedMessage("new_fxaccount", {
+      email: "unregistered@testuser.com"
+    });
+
+    user.setIssuer("fxos_issuer");
+    xhr.useResult("unknown_secondary");
+    controller.checkEmail(null, start);
+  });
+
+
   asyncTest("checkEmail with email with leading/trailing whitespace, user not registered - 'new_user' message", function() {
     $(EMAIL_SELECTOR).val("    unregistered@testuser.com   ");
     xhr.useResult("unknown_secondary");
@@ -192,27 +206,37 @@
     testUserUnregistered();
   });
 
+  asyncTest("checkEmail with primary offline", function() {
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
+
+    testHelpers.expectedMessage("primary_offline", {
+      email: "registered@testuser.com"
+    });
+
+    xhr.useResult("primaryOffline");
+    controller.checkEmail(null, start);
+  });
+
   asyncTest("checkEmail with transition_no_password, transition message", function() {
     $(EMAIL_SELECTOR).val("registered@testuser.com");
-    xhr.useResult("secondaryTransitionPassword");
 
-    register("transition_no_password", function(msg, info) {
-      ok(info.transition_no_password, "no_password state passed to set_password");
-      start();
+    testHelpers.expectedMessage("transition_no_password", {
+      email: "registered@testuser.com"
     });
-    controller.checkEmail();
+
+    xhr.useResult("secondaryTransitionPassword");
+    controller.checkEmail(null, start);
   });
 
   asyncTest("checkEmail with transition_no_password with incorrect case, transition message with normalized email", function() {
     $(EMAIL_SELECTOR).val("REGISTERED@TESTUSER.COM");
     xhr.useResult("secondaryTransitionPassword");
 
-    register("transition_no_password", function(msg, info) {
-      ok(info.transition_no_password, "no_password state passed to set_password");
-      equal(info.email, "registered@testuser.com");
-      start();
+    testHelpers.expectedMessage("transition_no_password", {
+      email: "registered@testuser.com"
     });
-    controller.checkEmail();
+
+    controller.checkEmail(null, start);
   });
 
   asyncTest("checkEmail with normal email, user registered - 'enter_password' message", function() {
@@ -293,14 +317,13 @@
     $(EMAIL_SELECTOR).val("unregistered@testuser.com");
     xhr.useResult("primary");
 
-    register("primary_user", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "email correctly passed");
-      equal(info.auth, "https://auth_url", "IdP authentication URL passed");
-      equal(info.prov, "https://prov_url", "IdP provisioning URL passed");
-      start();
+    testHelpers.expectedMessage("primary_user", {
+      email: "unregistered@testuser.com",
+      auth: "https://auth_url",
+      prov: "https://prov_url"
     });
 
-    controller.checkEmail();
+    controller.checkEmail(null, start);
   });
 
   asyncTest("checkEmail with secondary that used to be a primary", function() {
@@ -358,30 +381,49 @@
 
   asyncTest("createUser with valid email", function() {
     $(EMAIL_SELECTOR).val("unregistered@testuser.com");
-    xhr.useResult("unknown_secondary");
 
-    register("new_user", function(msg, info) {
-      equal(info.email, "unregistered@testuser.com", "new_user with correct email triggered");
-      start();
+    testHelpers.expectedMessage("new_user", {
+      email: "unregistered@testuser.com"
     });
 
-    controller.createUser();
+    controller.createUser(start);
   });
 
   asyncTest("createUser with invalid email", function() {
     $(EMAIL_SELECTOR).val("unregistered");
 
-    var handlerCalled = false;
-    register("new_user", function(msg, info) {
-      handlerCalled = true;
-    });
+    testHelpers.unexpectedMessage("new_user");
 
-    controller.createUser(function() {
-      equal(handlerCalled, false, "bad jiji, new_user should not have been called with invalid email");
-      start();
-    });
+    controller.createUser(start);
   });
 
+  asyncTest("createFxAccount with valid email", function() {
+    $(EMAIL_SELECTOR).val("unregistered@testuser.com");
+
+    testHelpers.expectedMessage("new_fxaccount", {
+      email: "unregistered@testuser.com"
+    });
+
+    controller.createFxAccount(start);
+  });
+
+  asyncTest("createFxAccount with invalid email", function() {
+    $(EMAIL_SELECTOR).val("unregistered");
+
+    testHelpers.unexpectedMessage("new_fxaccount");
+
+    controller.createFxAccount(start);
+  });
+
+  asyncTest("transitionNoPassword with valid email", function() {
+    $(EMAIL_SELECTOR).val("unregistered@testuser.com");
+
+    testHelpers.expectedMessage("transition_no_password", {
+      email: "unregistered@testuser.com"
+    });
+
+    controller.transitionNoPassword(start);
+  });
 
 }());
 
