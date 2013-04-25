@@ -273,7 +273,6 @@ BrowserID.Modules.Dialog = (function() {
         // forceIsuser is used by the Marketplace to disable primary support
         // and replace fxos.login.persona.org as the issuer of certs
         if (paramsFromRP._experimental_forceIssuer) {
-          // TODO check for valid domain
           params.forceIssuer =
               fixupIssuer(paramsFromRP._experimental_forceIssuer);
         }

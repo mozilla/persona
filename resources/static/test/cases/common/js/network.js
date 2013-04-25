@@ -592,4 +592,27 @@
     });
   });
 
+  asyncTest("certKey valid", function() {
+    var pubKeyMock = {
+      serialize: function() {}
+    };
+
+    network.certKey(TEST_EMAIL, pubKeyMock, "fxos.personatest.org",
+      function(cert) {
+      equal(typeof cert, "string");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("certKey ajaxError", function() {
+    var pubKeyMock = {
+      serialize: function() {}
+    };
+
+    transport.useResult("ajaxError");
+    network.certKey(TEST_EMAIL, pubKeyMock, "fxos.personatest.org",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure);
+  });
+
 }());

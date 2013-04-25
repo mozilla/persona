@@ -374,7 +374,7 @@ BrowserID.State = (function() {
 
       mediator.publish("kpi_data", { email_type: info.type });
 
-      if (info.state && 'offline' === info.state) {
+      if ('offline' === info.state) {
         redirectToState("primary_offline", info);
       }
       else if (info.type === "primary") {

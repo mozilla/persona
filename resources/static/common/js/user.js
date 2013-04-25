@@ -25,7 +25,7 @@ BrowserID.User = (function() {
       stagedPassword,
       userid,
       auth_status,
-      forceIssuer = "default";
+      issuer = "default";
 
   // remove identities that are no longer valid
   function cleanupIdentities(onSuccess, onFailure) {
@@ -56,7 +56,7 @@ BrowserID.User = (function() {
           return false;
         }
 
-        var emails = storage.getEmails(forceIssuer);
+        var emails = storage.getEmails(issuer);
         var issued_identities = {};
         cryptoLoader.load(function(jwcrypto) {
           _.each(emails, function(email_obj, email_address) {
@@ -77,14 +77,14 @@ BrowserID.User = (function() {
 
                 // check if this certificate is still valid.
                 if (isExpired(cert)) {
-                  storage.invalidateEmail(email_address, forceIssuer);
+                  storage.invalidateEmail(email_address, issuer);
                 }
 
               } catch (e) {
                 // error parsing the certificate!  Maybe it's of an old/different
                 // format?  just delete it.
                 helpers.log("error parsing cert for"+ email_address +":" + e);
-                storage.invalidateEmail(email_address, forceIssuer);
+                storage.invalidateEmail(email_address, issuer);
               }
             }
           });
@@ -267,11 +267,9 @@ BrowserID.User = (function() {
    */
   function persistEmailKeypair(email, keypair, cert, onComplete, onFailure) {
     // XXX This needs to be looked at to make sure caching does not bite us.
-    // I would rather pass in the unverified flag so that caching does not
-    // cause problems here.
     User.addressInfo(email, function(info) {
       var now = new Date();
-      var email_obj = storage.getEmails(forceIssuer)[email] || {
+      var email_obj = storage.getEmail(email, issuer) || {
         created: now
       };
 
@@ -282,11 +280,22 @@ BrowserID.User = (function() {
         cert: cert
       });
 
-      storage.addEmail(email, email_obj, forceIssuer);
+      storage.addEmail(email, email_obj, issuer);
       if (onComplete) onComplete(true);
     }, onFailure);
   }
 
+  /**
+   * Persist an email address without a keypair
+   * @method persistEmailWithoutKeypair
+   * @param {object} options - options to save
+   * @param {string} options.email - Email address to persist.
+   */
+  function persistEmailWithoutKeypair(options, issuer) {
+    storage.addEmail(options.email, {
+      created: new Date()
+    }, issuer);
+  }
 
   /**
    * Certify an identity with the server, persist it to storage if the server
@@ -294,25 +303,11 @@ BrowserID.User = (function() {
    * @method certifyEmailKeypair
    */
   function certifyEmailKeypair(email, keypair, onComplete, onFailure) {
-    network.certKey(email, keypair.publicKey, forceIssuer, function(cert) {
+    network.certKey(email, keypair.publicKey, issuer, function(cert) {
       persistEmailKeypair(email, keypair, cert, onComplete, onFailure);
     }, onFailure);
   }
 
-  /**
-   * Persist an email address without a keypair
-   * @method persistEmail
-   * @param {object} options - options to save
-   * @param {string} options.email - Email address to persist.
-   * @param {string} options.type - Is the email a 'primary' or a 'secondary' address?
-   * @param {string} options.verified - If the email is 'secondary', is it verified?
-   */
-  function persistEmail(options, issuer) {
-    storage.addEmail(options.email, {
-      created: new Date(),
-      verified: options.verified
-    }, issuer);
-  }
 
   function onContextChange(msg, context) {
     setAuthenticationStatus(context.auth_level, context.userid);
@@ -389,8 +384,8 @@ BrowserID.User = (function() {
       }
       // END TESTING API
 
-      if (config.forceIssuer) {
-        forceIssuer = config.forceIssuer;
+      if (config.issuer) {
+        issuer = config.issuer;
       }
     },
 
@@ -400,7 +395,7 @@ BrowserID.User = (function() {
       registrationComplete = false;
       pollDuration = POLL_DURATION;
       stagedEmail = stagedPassword = userid = auth_status = null;
-      forceIssuer = "default";
+      issuer = "default";
     },
 
     resetCaches: function() {
@@ -462,15 +457,15 @@ BrowserID.User = (function() {
     },
 
     setIssuer: function(issuer) {
-      forceIssuer = issuer;
+      issuer = issuer;
     },
 
     getIssuer: function() {
-      return forceIssuer;
+      return issuer;
     },
 
     isDefaultIssuer: function() {
-      return forceIssuer === "default";
+      return issuer === "default";
     },
 
     /**
@@ -590,7 +585,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - called on failure
      */
     primaryUserAuthenticationInfo: function(email, info, onComplete, onFailure) {
-      var idInfo = storage.getEmail(email, forceIssuer),
+      var idInfo = storage.getEmail(email, issuer),
           self=this;
 
       primaryAuthCache = primaryAuthCache || {};
@@ -802,7 +797,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure]
      */
     requestEmailReverify: function(email, onComplete, onFailure) {
-      if (!storage.getEmail(email, forceIssuer)) {
+      if (!storage.getEmail(email, issuer)) {
         // user does not own this address.
         complete(onComplete, { success: false, reason: "invalid_email" });
       }
@@ -936,7 +931,6 @@ BrowserID.User = (function() {
      * Sync local identities with login.persona.org.  Generally should not need to
      * be called.
      * @method syncEmails
-     * @param {string} - TODO
      * @param {function} [onComplete] - Called whenever complete.
      * @param {function} [onFailure] - Called on error.
      */
@@ -958,7 +952,7 @@ BrowserID.User = (function() {
           var emails_to_update_pair = [_.intersection(client_emails, server_emails)];
 
           if (!User.isDefaultIssuer()) {
-            var force_issuer_identities = storage.getEmails(forceIssuer);
+            var force_issuer_identities = storage.getEmails(issuer);
             var force_issuer_emails = _.keys(force_issuer_identities);
             emails_to_add_pair.push(_.difference(server_emails, force_issuer_emails));
             emails_to_remove_pair.push(_.difference(force_issuer_emails, server_emails));
@@ -971,7 +965,7 @@ BrowserID.User = (function() {
               if (0 === i)
                 storage.removeEmail(email, "default");
               else
-                storage.removeEmail(email, forceIssuer);
+                storage.removeEmail(email, issuer);
             });
           });
 
@@ -979,10 +973,10 @@ BrowserID.User = (function() {
           _.each(emails_to_add_pair, function(emails_to_add, i) {
             _.each(emails_to_add, function(email) {
               if (0 === i) {
-                persistEmail({ email: email }, "default");
+                persistEmailWithoutKeypair({ email: email }, "default");
               } else {
-                // forceIssuer is always a secondary
-                persistEmail({ email: email }, forceIssuer);
+                // issuer is always a secondary
+                persistEmailWithoutKeypair({ email: email }, issuer);
               }
             });
           });
@@ -1085,7 +1079,6 @@ BrowserID.User = (function() {
      * (is it a primary or a secondary)
      * @method addressInfo
      * @param {string} email - Email address to check.
-     * @param {string} issuer - Force a specific Issuer by specifing a domain. null for default.
      * @param {function} [onComplete] - Called with an object on success,
      *   containing these properties:
      *     type: <secondary|primary>
@@ -1112,24 +1105,24 @@ BrowserID.User = (function() {
         return complete(addressCache[email]);
       }
 
-      network.addressInfo(email, forceIssuer, function(info) {
+      network.addressInfo(email, issuer, function(info) {
         // update the email with the normalized email if it is available.
         // The normalized email is stored in the cache.
         var normalizedEmail = info.normalizedEmail || email;
         info.email = normalizedEmail;
-        User.checkEmailIssuer(normalizedEmail, info, function(issuerInfo) {
-          if (issuerInfo.type === "primary") {
+        User.checkEmailIssuer(normalizedEmail, info, function(cleanedInfo) {
+          if (cleanedInfo.type === "primary") {
             withContext(function() {
-              User.isUserAuthenticatedToPrimary(normalizedEmail, issuerInfo,
+              User.isUserAuthenticatedToPrimary(normalizedEmail, cleanedInfo,
                   function(authed) {
-                issuerInfo.authed = authed;
-                issuerInfo.idpName = _.escape(getIdPName(issuerInfo));
-                complete(issuerInfo);
+                cleanedInfo.authed = authed;
+                cleanedInfo.idpName = _.escape(getIdPName(cleanedInfo));
+                complete(cleanedInfo);
               }, onFailure);
             }, onFailure);
           }
           else {
-            complete(issuerInfo);
+            complete(cleanedInfo);
           }
         });
       }, onFailure);
@@ -1240,9 +1233,9 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     removeEmail: function(email, onComplete, onFailure) {
-      if (storage.getEmail(email, forceIssuer)) {
+      if (storage.getEmail(email, issuer)) {
         network.removeEmail(email, function() {
-          storage.removeEmail(email, forceIssuer);
+          storage.removeEmail(email, issuer);
           complete(onComplete);
         }, onFailure);
       } else if (onComplete) {
@@ -1283,7 +1276,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     getAssertion: function(email, audience, onComplete, onFailure) {
-      var storedID = storage.getEmail(email, forceIssuer),
+      var storedID = storage.getEmail(email, issuer),
           assertion,
           self=this;
 
@@ -1310,7 +1303,7 @@ BrowserID.User = (function() {
                   storage.site.set(audience, "email", email);
                   // issuer is used for B2G to get silent assertions to get
                   // assertions backed by certs from a special issuer.
-                  storage.site.set(audience, "issuer", forceIssuer);
+                  storage.site.set(audience, "issuer", issuer);
                   complete(onComplete, assertion);
                 });
             }, 0);
@@ -1327,7 +1320,6 @@ BrowserID.User = (function() {
           }, 0);
         }
         else {
-          // TODO what will the type of forceIssuer email addresses be?
           if (storedID.type === "primary" && User.isDefaultIssuer()) {
             // first we have to get the address info, then attempt
             // a provision, then if the user is provisioned, go and get an
@@ -1363,7 +1355,7 @@ BrowserID.User = (function() {
      * @return {object} identities.
      */
     getStoredEmailKeypairs: function() {
-      return storage.getEmails(forceIssuer);
+      return storage.getEmails(issuer);
     },
 
     /**
@@ -1396,7 +1388,7 @@ BrowserID.User = (function() {
      * otw.
      */
     getStoredEmailKeypair: function(email) {
-      return storage.getEmail(email, forceIssuer);
+      return storage.getEmail(email, issuer);
     },
 
     /**
