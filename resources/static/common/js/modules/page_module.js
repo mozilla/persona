@@ -70,7 +70,10 @@ BrowserID.Modules.PageModule = (function() {
     renderWait: showScreen.curry(screens.wait),
     hideWait: hideScreen.curry(screens.wait),
 
-    renderError: showScreen.curry(screens.error),
+    renderError: function(template, info, oncomplete) {
+      this.publish('error_screen', info);
+      return showScreen.call(this, screens.error, template, info, oncomplete);
+    },
     hideError: hideScreen.curry(screens.error),
 
     renderDelay: showScreen.curry(screens.delay),

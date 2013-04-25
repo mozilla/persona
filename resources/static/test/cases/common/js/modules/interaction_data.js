@@ -8,6 +8,7 @@
       testHelpers = bid.TestHelpers,
       network = bid.Network,
       storage = bid.Storage,
+      errors = bid.Errors,
       model = bid.Models.InteractionData,
       xhr = bid.Mocks.xhr,
       mediator = bid.Mediator,
@@ -486,6 +487,21 @@
     equal(xhrEvent[0], "xhr_complete.GET/wsapi/user_creation_status");
 
     start();
+  });
+
+  test("error_screen formats an error object", function() {
+    createController();
+    controller.addEvent("error_screen", {
+      action: errors.addressInfo,
+      network: {
+        status: 503
+      }
+    });
+
+    var eventStream = controller.getCurrentEventStream();
+    var errorEvent = eventStream.pop();
+
+    equal(errorEvent[0], "screen.error.addressInfo.503");
   });
 
   asyncTest("Consecutive xhr_complete messages for the same URL only have one entry", function() {

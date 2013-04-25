@@ -29,6 +29,7 @@ BrowserID.Modules.InteractionData = (function() {
       model = bid.Models.InteractionData,
       user = bid.User,
       storage = bid.Storage,
+      errors = bid.Errors,
       complete = bid.Helpers.complete,
       dom = bid.DOM,
       REPEAT_COUNT_INDEX = 3,
@@ -40,6 +41,20 @@ BrowserID.Modules.InteractionData = (function() {
     } else {
       return 'xhr.malformed_report';
     }
+  }
+
+  function parseErrorScreen(msg, data) {
+    var parts = [];
+
+    if (data.action) {
+      parts.push(_.keyOf(errors, data.action));
+    }
+
+    if (data.network && data.network.status > 399) {
+      parts.push(data.network.status);
+    }
+
+    return 'screen.error.' + parts.join('.');
   }
 
   /**
@@ -102,7 +117,8 @@ BrowserID.Modules.InteractionData = (function() {
     password_submit: "authenticate.password_submitted",
     authentication_success: "authenticate.password_success",
     authentication_fail: "authenticate.password_fail",
-    xhr_complete: removeGetData
+    xhr_complete: removeGetData,
+    error_screen: parseErrorScreen
   };
 
   function getKPIName(msg, data) {
