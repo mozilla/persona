@@ -126,6 +126,7 @@ BrowserID.Modules.Dialog = (function() {
     // An issuer should not have a scheme on the front of it.
     // The URL parser requires a scheme. Prepend the scheme to do the
     // verification.
+    /*jshint newcap:false*/
     var u = URLParse("http://" + issuer);
     if (u.host !== issuer) {
       var encodedURI = encodeURI(u.validate().normalize().toString());

@@ -56,8 +56,9 @@ BrowserID.Storage = (function() {
     // all emails are stored under the emails namespace. Each issuer has its
     // own subspace, allowing there to be multiple forced issuers. The default
     // namespace is "default"
+    var allEmails;
     try {
-      var allEmails = JSON.parse(storage.emails || "{}");
+      allEmails = JSON.parse(storage.emails || "{}");
     } catch(e) {
       clear();
       allEmails = {};
