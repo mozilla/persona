@@ -49,19 +49,26 @@ BrowserID.Storage = (function() {
   // END TRANSITION CODE
 
   function emailsStorageKey(issuer) {
-    if (issuer && issuer !== "default")
-      return 'forceIssuerEmails';
-    else
-      return 'emails';
+    return issuer || "default";
   }
 
   function storeEmails(emails, issuer) {
-    storage[emailsStorageKey(issuer)] = JSON.stringify(emails);
+    // all emails are stored under the emails namespace. Each issuer has its
+    // own subspace, allowing there to be multiple forced issuers. The default
+    // namespace is "default"
+    try {
+      var allEmails = JSON.parse(storage.emails || "{}");
+    } catch(e) {
+      clear();
+      allEmails = {};
+    }
+
+    allEmails[emailsStorageKey(issuer)] = emails;
+    storage.emails = JSON.stringify(allEmails);
   }
 
   function clear() {
     storage.removeItem("emails");
-    storage.removeItem("forceIssuerEmails");
     storage.removeItem("siteInfo");
     storage.removeItem("managePage");
     // Ensure there are default values after they are removed.  This is
@@ -81,7 +88,6 @@ BrowserID.Storage = (function() {
     _.each({
       emailToUserID: {},
       emails: {},
-      forceIssuerEmails: {},
       interaction_data: {},
       main_site: {},
       managePage: {},
@@ -98,9 +104,9 @@ BrowserID.Storage = (function() {
 
   function getEmails(issuer) {
     try {
-      var emails = JSON.parse(storage[emailsStorageKey(issuer)] || "{}");
-      if (emails !== null)
-        return emails;
+      var allEmails = JSON.parse(storage.emails || "{}");
+      if (allEmails)
+        return allEmails[emailsStorageKey(issuer)] || {};
     } catch(e) {
     }
 
