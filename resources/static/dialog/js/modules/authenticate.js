@@ -90,6 +90,10 @@ BrowserID.Modules.Authenticate = (function() {
       // the user has an address that is normally a primary, but is now using
       // forcedIssuer, info.state will be either transition_to_secondary or
       // transition_no_password depending on whether the user has a password.
+
+      // XXX There are 3 nearly identical copies of this. Here, state.js and
+      // pick_email.js. Pick one. Test the shit out of it. Get rid of the
+      // others.
       if (hasPassword(info)) {
         enterPasswordState.call(self);
       }

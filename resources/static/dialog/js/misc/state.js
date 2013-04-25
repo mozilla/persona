@@ -400,9 +400,9 @@ BrowserID.State = (function() {
       }
       else if (!user.isDefaultIssuer() && !record.cert) {
         // TODO: Duplicates some of the logic in the authentication action module.
+        user.resetCaches();
         user.addressInfo(info.email, function (serverInfo) {
           // We'll end up in this state again, but we want to see serverInfo.state change
-          user.resetCaches();
           if (serverInfo.state === "transition_no_password") {
             var newInfo = _.extend(info, { fxaccount: true });
             self.newFxAccountEmail = info.email;
