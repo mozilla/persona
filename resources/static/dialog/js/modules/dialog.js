@@ -122,10 +122,17 @@ BrowserID.Modules.Dialog = (function() {
     return returnTo;
   }
 
-  function fixupIssuer(url) {
-    // XXX do something awesome here.
-    window.console.warn("Sane issuer checks are needed");
-    return url;
+  function fixupIssuer(issuer) {
+    // An issuer should not have a scheme on the front of it.
+    // The URL parser requires a scheme. Prepend the scheme to do the
+    // verification.
+    var u = URLParse("http://" + issuer);
+    if (u.host !== issuer) {
+      var encodedURI = encodeURI(u.validate().normalize().toString());
+      throw new Error("invalid issuer: " + encodedURI);
+    }
+
+    return issuer;
   }
 
   function validateRPAPI(rpAPI) {
