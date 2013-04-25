@@ -22,5 +22,5 @@
   "enable_development_menu": true,
   // enable the measurement of the dom loading
   "measure_dom_loading": true,
-  "forcable_issuers": ["issuer.domain"]
+  "forcible_issuers": ["issuer.domain"]
 }
