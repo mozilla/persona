@@ -417,21 +417,18 @@
 
 
   asyncTest("serverTime", function() {
-    // I am forcing the server time to be 1.25 seconds off.
-    transport.setContextInfo("server_time", new Date().getTime() - 1250);
+    // Pretend the local clock is 1.25 seconds ahead of the server clock.
+    var LOCAL_SKEW = 1250;
+    transport.setContextInfo("server_time", new Date().getTime() - LOCAL_SKEW);
 
-    network.serverTime(function onSuccess(time) {
+    network.serverTime(function(time) {
+      // Allow 100 ms for all of the onContextChagne handlers to complete
+      var MAX_ALLOWED_TIME_DIFF = LOCAL_SKEW + 100;
       var diff = Math.abs((new Date()) - time);
-      equal(1245 < diff && diff < 1255, true, "server time and local time should be less than 100ms different (is " + diff + "ms different)");
-      // XXX by stomlinson - I think this is an incorrect test.  The time returned here is the
-      // time as it is on the server, which could be more than 100ms off of
-      // what the local machine says it is.
-      //equal(Math.abs(diff) < 100, true, "server time and local time should be less than 100ms different (is " + diff + "ms different)");
-      start();
-    }, function onfailure() {
-      start();
-    });
 
+      ok(diff < MAX_ALLOWED_TIME_DIFF, "server time and local time should be less than " + MAX_ALLOWED_TIME_DIFF + "ms different (is " + diff + "ms different)");
+      start();
+    }, testHelpers.unexpectedFailure);
   });
 
   asyncTest("serverTime with XHR failure before context has been setup", function() {
