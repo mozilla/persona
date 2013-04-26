@@ -312,7 +312,8 @@ BrowserID.User = (function() {
    * @method certifyEmailKeypair
    */
   function certifyEmailKeypair(email, keypair, onComplete, onFailure) {
-    network.certKey(email, keypair.publicKey, issuer, function(cert) {
+    network.certKey(email, keypair.publicKey, issuer, allowUnverified,
+        function(cert) {
       persistEmailKeypair(email, keypair, cert, onComplete, onFailure);
     }, onFailure);
   }
