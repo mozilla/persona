@@ -359,8 +359,6 @@ BrowserID.User = (function() {
 
     setAuthenticationStatus(authenticated && type, status.userid);
     if (authenticated) {
-      if (!User.isDefaultIssuer()) User.forceIssuerEmail = email;
-
       User.syncEmails(function() {
         complete(onComplete, authenticated);
       }, onFailure);

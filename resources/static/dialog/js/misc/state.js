@@ -364,8 +364,7 @@ BrowserID.State = (function() {
       var email = info.email,
           record = user.getStoredEmailKeypair(email);
 
-      // Maybe use a second global variable so we know which email address was chosen?
-      self.email = user.forceIssuerEmail = email;
+      self.email = email;
 
       function oncomplete() {
         complete(info.complete);
