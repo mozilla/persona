@@ -5,6 +5,8 @@
 
 
   <div id="selectEmail" class="form_section">
+      <h2><%= gettext('Sign in with Persona') %></h2>
+
       <p>
         <%= gettext('Sign in as...') %>
       </p>
@@ -26,11 +28,16 @@
         <%= gettext('Please choose an email address.') %>
       </div>
 
-      <a id="useNewEmail" class="emphasize" href="#"><%= gettext('Add another email address') %></a>
-      <a id="thisIsNotMe" class="emphasize" href="#"><%= gettext('This is not me') %></a>
+      <p style="font-size: 13px;">
+        <a id="useNewEmail" href="#"><%= gettext('Add an email address') %></a>
+      </p>
+      <p style="font-size: 13px;">
+        <a id="thisIsNotMe" href="#"><%= gettext('Use another account') %></a>
+      </p>
 
 
-      <p class="submit add cf">
+      <p class="submit add cf buttonrow">
         <button id="signInButton"><%= gettext('sign in') %></button>
+        <a href="#" class="right cancelDialog"><%= gettext('cancel') %></a>
       </p>
   </div>

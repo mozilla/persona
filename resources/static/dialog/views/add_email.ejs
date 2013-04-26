@@ -3,10 +3,12 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
   <div id="addEmail" class="cf form_section">
+      <h2>
+          <%= gettext('Add an email address') %>
+      </h2>
 
       <ul class="inputs">
           <li>
-              <label for="newEmail"><%= gettext('Add another email address to your Persona password.') %></label>
               <input id="newEmail" name="newEmail" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="254" <% if (typeof email !== "undefined") { %> value="<%= email %>" <% } %> placeholder="<%= gettext("email address") %>"/>
 
               <div id="email_format" class="tooltip" for="newEmail">

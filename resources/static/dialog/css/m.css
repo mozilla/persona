@@ -32,14 +32,17 @@
   input[type=email],
   input[type=password] {
     font-size: 17px;
+    padding: 11px 5px;
+    border-radius: 5px;
   }
 
   section, .arrow, .arrowContainer {
     display: none;
   }
 
-  .h2 {
+  h2 {
     font-size: 19px;
+    margin-bottom: 15px;
   }
 
   .inputs > li > label {
@@ -100,7 +103,13 @@
       display: none;
   }
 
-  #selectEmail > .inputs > li > label {
+  #emailList {
+    border-bottom: 1px dotted #cbcbcb;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+  }
+
+  #emailList > li > label {
     margin: 0;
     padding: 8px 0;
   }
@@ -133,6 +142,10 @@
     bottom: 0;
   }
 
+  .form_section {
+    font-size: 14px;
+  }
+
   .form_section,
   .vertical {
     position: relative;
@@ -148,6 +161,13 @@
 
   .form_section p {
     margin-top: 0;
+  }
+
+  /*
+   * The first p directly after the input should have a margin
+   */
+  .form_section .inputs + p {
+    margin-top: 17px;
   }
 
   .buttonrow a {
@@ -201,6 +221,12 @@
   #error.unsupported, #error.cookies_disabled {
     position: static;
     height: 250px;
+  }
+
+  .tospp {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #323232;
   }
 
 }

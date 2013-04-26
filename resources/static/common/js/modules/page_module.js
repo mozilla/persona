@@ -14,6 +14,7 @@ BrowserID.Modules.PageModule = (function() {
       screens = bid.Screens,
       helpers = bid.Helpers,
       cancelEvent = helpers.cancelEvent,
+      CANCEL_DIALOG_SELECTOR = ".cancelDialog",
       sc;
 
    function onSubmit() {
@@ -24,13 +25,20 @@ BrowserID.Modules.PageModule = (function() {
      return false;
    }
 
+  function cancelDialog(win) {
+    /*jshint validthis: true*/
+    try {
+      win.close();
+    } catch(e) {}
+  }
+
   function showScreen(screen, template, vars, oncomplete) {
     screen.show(template, vars);
     // Fire a window resize event any time a new section is displayed that
     // may change the content's innerHeight.  this will cause the "screen
     // size hacks" to resize the screen appropriately so scroll bars are
     // displayed when needed.
-    dom.fireEvent(window, "resize");
+    dom.fireEvent(win, "resize");
     oncomplete && oncomplete();
   }
 
@@ -40,11 +48,16 @@ BrowserID.Modules.PageModule = (function() {
 
   var Module = bid.Modules.DOMModule.extend({
     start: function(options) {
+      options = options || {};
+
       var self=this;
 
       sc.start.call(self, options);
 
+      var win = options.window || window;
+
       self.bind("form", "submit", cancelEvent(onSubmit));
+      self.click(CANCEL_DIALOG_SELECTOR, cancelDialog.curry(win));
     },
 
     stop: function() {

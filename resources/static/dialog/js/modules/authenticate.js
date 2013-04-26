@@ -27,6 +27,7 @@ BrowserID.Modules.Authenticate = (function() {
       AUTHENTICATION_CLASS = "authentication",
       FORM_CLASS = "form",
       AUTHENTICATION_LABEL = "#authentication_form label[for=authentication_email]",
+      ENTER_EMAIL_LABEL = "#authentication_form .label.enter_email",
       EMAIL_LABEL = "#authentication_form .label.email_state",
       TRANSITION_TO_SECONDARY_LABEL = "#authentication_form .label.transition_to_secondary",
       PASSWORD_LABEL = "#authentication_form .label.password_state",
@@ -210,6 +211,7 @@ BrowserID.Modules.Authenticate = (function() {
       dom.setInner(AUTHENTICATION_LABEL, dom.getInner(EMAIL_LABEL));
       self.submit = checkEmail;
       showHint("start");
+      dom.hide(".persona_intro");
       dom.focus(EMAIL_SELECTOR);
     }
 

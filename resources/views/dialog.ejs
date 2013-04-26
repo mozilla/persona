@@ -19,16 +19,19 @@
                      DOMContentLoaded or else the Firefox password manager does
                      not fill in passwords -->
                 <div id="authentication_form" class="form_section">
-                    <p class="start persona_intro">
+                    <h2 class="start persona_intro">
                         <%- format(gettext('%s uses Persona instead of usernames to sign you in.'), ['<strong id="start_rp_name"></strong>']) %>
 
-                    </p>
+                    </h2>
+                    <h2 class="start persona_intro_mobile">
+                        <%- format(gettext('Sign in with Persona')) %>
+                    </h2>
 
                     <ul class="inputs">
 
                         <li>
                             <label for="authentication_email"></label>
-                            <span class="label email_state"><%= gettext('To sign in with Persona, please enter your email address.') %></span>
+                            <span class="label email_state"><%= gettext('Enter your email address') %></span>
                             <span class="label transition_to_secondary"><%- format(gettext('%(idp)s no longer allows you to log into Persona with your %(idp)s password. You must now use your existing Persona password to log in with this email address.'), { idp: '<strong class="authentication_idp_name"></strong>'}) %></span>
                             <span class="label password_state"><%= gettext('Now enter your Persona password.') %></span>
                             <input id="authentication_email" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
@@ -80,7 +83,11 @@
 
 
                     <p class="submit cf buttonrow">
+
+
                       <button class="start addressInfo"><%= gettext('next') %></button>
+                      <a href="#" class="start right addressInfo cancelDialog"><%= gettext('cancel') %></a>
+
                       <button class="returning"><%= gettext('sign in') %></button>
                       <a id="forgotPassword" class="returning" href="#"><%= gettext('Forgot your password?') %></a>
                     </p>
