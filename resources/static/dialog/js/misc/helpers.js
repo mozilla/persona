@@ -48,7 +48,7 @@
 
     user.getAssertion(email, user.getOrigin(), function(assert) {
       assert = assert || null;
-      wait.hide();
+      /*wait.hide();*/
       self.publish("assertion_generated", {
         assertion: assert
       });

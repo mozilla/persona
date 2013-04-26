@@ -19,6 +19,10 @@ BrowserID.Modules.GenerateAssertion = (function() {
         throw new Error("email required");
       }
 
+      self.renderWait("wait", {
+        title: gettext("signing in")
+      });
+
       dialogHelpers.getAssertion.call(self, email, options.ready);
       sc.start.call(self, options);
     }

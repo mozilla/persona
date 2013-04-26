@@ -4,4 +4,6 @@
 
   <h2 <% if(typeof id !== "undefined") { %>id="<%= id %>"<% } %>><%= title %></h2>
 
-  <p><%= message %></p>
+  <% if (typeof message !== "undefined") { %>
+    <p><%= message %></p>
+  <% } %>
