@@ -361,29 +361,29 @@ div#required_email {
   margin-top: 8px;
 }
 
-.inputs > li > label {
+#emailList > li {
+    margin: 0;
+}
+
+#emailList > li > label {
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-#selectEmail > .inputs > li {
-    margin: 0;
-}
-
-#selectEmail > .inputs > li > label {
+#emailList > li > label {
     padding: 3px 1px;
     white-space: nowrap;
 }
 
-#selectEmail > .inputs > li > label.preselected {
+#emailList > li > label.preselected {
     font-weight: bold;
 }
 
-#selectEmail > .inputs > li:only-child > label.selectable {
+#emailList > li:only-child > label.selectable {
     cursor: default;
 }
 
-#selectEmail > .inputs > li:only-child input[type=radio] {
+#emailList > li:only-child input[type=radio] {
     display: none;
 }
 

@@ -51,6 +51,8 @@
     function mobileHacks() {
         // First, remove the desktop hacks
         scrollableEl.removeClass("vcenter");
+        boundingRectEl.css("top", "");
+        scrollableEl.css("width", "");
 
         // Hack to make sure the email addresses stay within their container.
         // We have to do this ghettoness because table-cells (which are used to
@@ -60,7 +62,7 @@
         // First, find the maximum width that emails can be. First set the
         // width of the scrollable element to be very narrow so that we can
         // find the natural innerWidth of the parent.
-        scrollableEl.css("width", "10px");
+        /*scrollableEl.css("width", "10px");*/
         var parentNaturalWidth = scrollableEl.parent().innerWidth();
 
         // Unconstrain the scrollableEl's width to find the real maximum
@@ -82,15 +84,17 @@
         $("section,#signIn").css("position", "static");
         contentEl.css("min-height", "0"); // required for Chrome to correctly resize the window
 
+        /*
         var headerHeight = $("header").outerHeight();
         var footerHeight = $("footer").outerHeight();
+        */
         var windowHeight = $(window).height();
 
         // Get the amount of space between the header and footer with the
         // caveat that we are forcing the footer to be at the bottom of the
         // screen if the form's unconstrained height is smaller than the
         // content area's height.
-        var contentHeight = windowHeight - headerHeight - footerHeight;
+        var contentHeight = windowHeight;// - headerHeight - footerHeight;
 
         // Get the natural height of the form
         var formHeight = $("#formWrap").outerHeight();
@@ -112,10 +116,10 @@
         // the position specified in CSS.
         $("section,#signIn").css("position", "");
 
-        var favIconHeight = $("#favicon").outerHeight();
+        /*var favIconHeight = $("#favicon").outerHeight();*/
 
         // Force the top of the main content area to be below the favicon area.
-        boundingRectEl.css("top", favIconHeight + "px");
+        /*boundingRectEl.css("top", favIconHeight + "px");*/
     }
 
     // this can be used to keep the footer text on one line, #3129.

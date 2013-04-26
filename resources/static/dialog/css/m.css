@@ -16,17 +16,12 @@
    * horizontal lines to appear while the dialog is loading.
    */
   body {
-    background-image: url('/common/i/grain.png');
+    background: #eff0f2 none;
   }
 
 
-  header, footer {
-    position: static;
-    padding: 5px 20px;
-  }
-
-  footer{
-    padding: 10px 20px;
+  header, footer, #favicon, .persona_intro {
+    display: none;
   }
 
   button {
@@ -43,9 +38,12 @@
     display: none;
   }
 
+  .h2 {
+    font-size: 19px;
+  }
+
   .inputs > li > label {
-    font-size: 16px;
-    margin-bottom: 5px;
+    font-size: 15px;
   }
 
   .vertical > strong {
@@ -63,56 +61,18 @@
   }
 
   #signIn {
-    top: auto;  /* this will be set in JS to be at the bottom of the header */
+    top: 0;
     right: 0;
     width: auto;
     padding: 0;
   }
 
-  #favicon {
-      overflow: inherit;
-      display: block;
-      width: 100%;
-      /* Changed this from relative to static to fix issue #1309 - tooltips
-       * being partially cut off by the site URL bar
-       */
-      position: static;
-      padding: 10px;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-      text-align: center;
-      left: 0;
-  }
-
-  #favicon img {
-      max-width: 32px;
-      max-height: 32px;
-      display: inline;
-      margin: 0 10px 0 0;
-      vertical-align: middle;
-  }
-
-  #favicon h2, #favicon h3 {
-      margin: 0 5px;
-      height: auto;
-      line-height: 32px;
-      font-size: 20px;
-      display: inline;
-      vertical-align: middle;
-  }
-
-  #favicon h3 {
-      font-size: 16px;
-  }
-
-  #favicon .vertical {
-      height: auto;
-      line-height: 32px;
-      vertical-align: middle;
-  }
-
-
   #signIn .table, #signIn .container {
       width: 100%;
+      display: block;
+      /*
+      height: 100%;
+      */
   }
 
   #signIn .table{
@@ -120,7 +80,8 @@
   }
 
   #signIn .vertical {
-    position: static;
+    display: block;
+    vertical-align: top;
   }
 
   #signIn form {
@@ -142,6 +103,17 @@
   #selectEmail > .inputs > li > label {
     margin: 0;
     padding: 8px 0;
+  }
+
+  #signIn .buttonrow {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background-color: #dcdcdc;
+    border-top: 1px solid #bcbcbc;
+    box-shadow: 0px 1px #fff inset;
   }
 
   #signIn .submit > p {
@@ -174,7 +146,11 @@
     bottom: 0;
   }
 
-  .submit #cancel, #signIn .submit #cancel {
+  .form_section p {
+    margin-top: 0;
+  }
+
+  .buttonrow a {
     line-height: 40px; /* Match the height of the buttons on the right */
     font-size: 18px;
   }
@@ -226,5 +202,6 @@
     position: static;
     height: 250px;
   }
+
 }
 
