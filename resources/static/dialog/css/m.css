@@ -95,7 +95,21 @@
       background-color: transparent;
   }
 
-  .form #formWrap, .waiting #wait, .delay #delay, #error #error {
+  /**
+   * XXX We may want to replace this with the "wait" screen to reduce
+   * complexity.
+   */
+  #load {
+    opacity: 1;
+    background-color: #fff;
+    background-color: rgba(255, 255, 255, .85);
+  }
+
+  #load h2 {
+    font-size: 15.5px;
+  }
+
+  .form #formWrap, .waiting #wait, .delay #delay, .error #error, .loading #load {
       display: block;
   }
 

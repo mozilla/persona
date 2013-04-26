@@ -202,7 +202,7 @@ section > .contents {
     _height: 250px;
 }
 
-#wait, #error, #delay {
+.message_screen {
     z-index: -1;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
     opacity: 0;
@@ -229,25 +229,26 @@ section > .contents {
 }
 
 
-.waiting #wait {
+.waiting #wait, .delay #delay, .error #error, .loading #load {
     display: block;
-    z-index: 1;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
+}
+
+.loading #load {
+    z-index: 10;
+}
+
+.waiting #wait {
+    z-index: 10;
 }
 
 .delay #delay {
-    display: block;
-    z-index: 2;
-    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-    opacity: 1;
+    z-index: 20;
 }
 
 .error #error, #error.unsupported, #error.cookies_disabled {
-    display: block;
-    z-index: 3;
-    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-    opacity: 1;
+    z-index: 30;
 }
 
 #error.unsupported {
@@ -277,7 +278,7 @@ section > .contents {
     color: #777;
 }
 
-#wait .vertical, #error .vertical, #delay .vertical {
+.message_screen .vertical {
     padding: 0 20px;
 }
 

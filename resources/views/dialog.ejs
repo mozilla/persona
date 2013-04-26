@@ -104,18 +104,27 @@
     </section>
 
 
-    <section id="wait">
+    <section id="load" class="message_screen">
+      <div class="table">
+          <div class="vertical">
+              <div class="contents">
+                  <h2 class="center"><%= gettext('Connecting to Persona...') %></h2>
+              </div>
+          </div>
+      </div>
+    </section>
+
+    <section id="wait" class="message_screen">
         <!-- because each section is an absolutely positioned element, we have to use the inner table container element to be able to vertically/horizontally center correctly.  Without the table element, the layout gets all messed up. -->
         <div class="table">
             <div class="vertical">
                 <div class="contents">
-                    <h2 class="center"><%= gettext('Connecting to Persona...') %></h2>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="error">
+    <section id="error" class="message_screen">
         <div class="table">
             <div class="vertical">
                 <div class="contents">
@@ -124,7 +133,7 @@
         </div>
     </section>
 
-    <section id="delay">
+    <section id="delay" class="message_screen">
         <div class="table">
             <div class="vertical">
                 <div class="contents">

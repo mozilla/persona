@@ -55,7 +55,7 @@ BrowserID.Modules.PageModule = (function() {
     },
 
     stop: function() {
-      dom.removeClass("body", "waiting");
+      dom.removeClass("body", "loading");
       sc.stop.call(this);
     },
 
