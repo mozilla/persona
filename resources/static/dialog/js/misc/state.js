@@ -117,8 +117,10 @@ BrowserID.State = (function() {
       self.hostname = info.hostname;
       self.siteName = info.siteName || info.hostname;
       self.siteTOSPP = !!(info.privacyPolicy && info.termsOfService);
-      var forceIssuer = (!!info.forceIssuer ? info.forceIssuer : 'default');
-      user.setIssuer(forceIssuer);
+
+      if (info.forceIssuer) {
+        user.setIssuer(info.forceIssuer);
+      }
 
       startAction(false, "doRPInfo", info);
 
