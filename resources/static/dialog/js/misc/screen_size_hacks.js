@@ -8,6 +8,9 @@
    * Fennec and Android native browser.  On desktop/tablet browsers, resizing
    * the #content element causes the contents to be vertically centered.
    */
+
+  var initialHeight;
+
   function onResize() {
     var scrollableEl = $(".form_section"),
         contentEl = $("#content"),
@@ -95,6 +98,7 @@
         // screen if the form's unconstrained height is smaller than the
         // content area's height.
         var contentHeight = windowHeight;// - headerHeight - footerHeight;
+        initialHeight = initialHeight || contentHeight;
 
         // Get the natural height of the form
         var formHeight = $("#formWrap").outerHeight();
@@ -109,17 +113,16 @@
         // mobile user must scroll the entire content area up and down
         // - contrast this to the desktop version where users with many email
         // addresses only have to scroll the list of emails.
-        contentHeight = Math.max(100, contentHeight, formHeight);
+        // Don't let the screen shrink to less than its initial height. This
+        // minimizes jerkiness associated with the virtual keyboard being
+        // displayed.
+        contentHeight = Math.max(100, contentHeight,
+                            formHeight, initialHeight);
         contentEl.css("min-height", contentHeight + "px");
 
         // Remove the explicit static position we added to let this go back to
         // the position specified in CSS.
         $("section,#signIn").css("position", "");
-
-        /*var favIconHeight = $("#favicon").outerHeight();*/
-
-        // Force the top of the main content area to be below the favicon area.
-        /*boundingRectEl.css("top", favIconHeight + "px");*/
     }
 
     // this can be used to keep the footer text on one line, #3129.

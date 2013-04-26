@@ -42,7 +42,7 @@
 
   h2 {
     font-size: 19px;
-    margin-bottom: 15px;
+    margin: 20px 0 15px 0;
   }
 
   .inputs > li > label {
@@ -99,14 +99,15 @@
    * XXX We may want to replace this with the "wait" screen to reduce
    * complexity.
    */
-  #load {
+  #load, #wait {
     opacity: 1;
     background-color: #fff;
     background-color: rgba(255, 255, 255, .85);
   }
 
-  #load h2 {
+  #load h2, #wait h2 {
     font-size: 15.5px;
+    text-align: center;
   }
 
   .form #formWrap, .waiting #wait, .delay #delay, .error #error, .loading #load {
@@ -129,7 +130,7 @@
   }
 
   #signIn .buttonrow {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
@@ -156,14 +157,9 @@
     bottom: 0;
   }
 
-  .form_section {
-    font-size: 14px;
-  }
-
   .form_section,
   .vertical {
-    position: relative;
-    height: auto;
+    position: absolute;
     width: 100%;
     max-height: none;
     overflow: visible;
@@ -171,6 +167,12 @@
     right: 0;
     top: 0;
     bottom: 0;
+    padding: 0;
+  }
+
+  .form_section {
+    font-size: 14px;
+    padding: 0 20px;
   }
 
   .form_section p {
