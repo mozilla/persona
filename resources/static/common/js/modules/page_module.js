@@ -25,11 +25,9 @@ BrowserID.Modules.PageModule = (function() {
      return false;
    }
 
-  function cancelDialog(win) {
+  function cancelDialog() {
     /*jshint validthis: true*/
-    try {
-      win.close();
-    } catch(e) {}
+    window.close();
   }
 
   function showScreen(screen, template, vars, oncomplete) {
@@ -38,7 +36,7 @@ BrowserID.Modules.PageModule = (function() {
     // may change the content's innerHeight.  this will cause the "screen
     // size hacks" to resize the screen appropriately so scroll bars are
     // displayed when needed.
-    dom.fireEvent(win, "resize");
+    dom.fireEvent(window, "resize");
     oncomplete && oncomplete();
   }
 
@@ -48,16 +46,12 @@ BrowserID.Modules.PageModule = (function() {
 
   var Module = bid.Modules.DOMModule.extend({
     start: function(options) {
-      options = options || {};
-
       var self=this;
 
       sc.start.call(self, options);
 
-      var win = options.window || window;
-
       self.bind("form", "submit", cancelEvent(onSubmit));
-      self.click(CANCEL_DIALOG_SELECTOR, cancelDialog.curry(win));
+      self.click(CANCEL_DIALOG_SELECTOR, cancelDialog);
     },
 
     stop: function() {
