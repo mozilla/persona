@@ -1,4 +1,24 @@
-current train:
+train-2013.04.26:
+  * up to 25% performance improvement on mobile (delayed loading of crypto code): #3060, #3287
+  * when user is verifying email, show nothing on persona.org, just verify and redirect: #2871
+  * better handling of disabled 3rd party cookies: #2308, #2999
+  * _experimental_forceAuthentication flag added to support FirefoxOS: #3235
+  * add explicit cache headers on .well-known/browserid #3249
+  * "internal" api improvements for FirefoxOS: #3238
+  * main site now uses the dialog: issue #900
+  * UI improvements:
+    * improve readability of nav links in the header nav: #3223
+    * better display of "this is not me" button in non-english locales: #3250
+    * refine button content and organization on login.persona.org: #3196, #3197
+    * dialog no longer steals focus on FF/linux/gnome: #3211
+  * Code/infrastructure improvements:
+    * ignore specific selenium tests with a command line option: #3259
+    * helpers.log() function now takes handles multiple arguments: #3237
+    * remove issue assignment round-robin script, obsolesced by process improvements: #3205
+    * remove dep. on node-inspector: #3268
+    * remove confusing console output during frontend tests: #3290
+    * better error reporting to KPI: #3302
+    * make it harder to poison user caches during deployment #3315
 
 train-2013.04.12:
   * Key Performance Indicator (anonymous metrics) improvements: #3148
