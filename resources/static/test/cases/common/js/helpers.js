@@ -50,7 +50,7 @@
   });
 
   test("getAndValidatePassword with valid password returns password", function() {
-    bid.Renderer.render("#page_head", "set_password", { password_reset: false, transition_no_password: false, email: "testuser@testuser.com", cancelable: false });
+    bid.Renderer.render("#page_head", "set_password", { password_reset: false, transition_no_password: false, email: "testuser@testuser.com", cancelable: false, fxaccount: false });
     $("#password").val("password");
     var password = helpers.getAndValidatePassword("#password");
 
@@ -58,7 +58,7 @@
   });
 
   test("getAndValidatePassword with invalid password returns null", function() {
-    bid.Renderer.render("#page_head", "set_password", { password_reset: false, transition_no_password: false, email: "testuser@testuser.com", cancelable: false });
+    bid.Renderer.render("#page_head", "set_password", { password_reset: false, transition_no_password: false, email: "testuser@testuser.com", cancelable: false, fxaccount: false });
     $("#password").val("");
     var password = helpers.getAndValidatePassword("#password");
 
@@ -66,7 +66,7 @@
   });
 
   test("getAndValidatePassword with invalid target returns null", function() {
-    bid.Renderer.render("#page_head", "set_password", { password_reset: false, transition_no_password: false, email: "testuser@testuser.com", cancelable: false });
+    bid.Renderer.render("#page_head", "set_password", { password_reset: false, transition_no_password: false, email: "testuser@testuser.com", cancelable: false, fxaccount: false });
     var password = helpers.getAndValidatePassword("#nonexistent");
 
     strictEqual(password, null, "invalid target returns null");

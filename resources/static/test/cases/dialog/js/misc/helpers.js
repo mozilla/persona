@@ -103,8 +103,9 @@
       password: "password"
     });
 
-    dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com", "password", function(staged) {
-      equal(staged, true, "user was staged");
+    dialogHelpers.createUser.call(controllerMock, "unregistered@testuser.com",
+        "password", function(info) {
+      equal(info.success, true, "user was staged");
       start();
     });
   });
@@ -175,8 +176,9 @@
       start();
     });
 
-    dialogHelpers.addSecondaryEmail.call(controllerMock, "testuser@testuser.com", "password", function(added) {
-      equal(added, true, "email reported as added");
+    dialogHelpers.addSecondaryEmail.call(controllerMock,
+        "testuser@testuser.com", "password", function(status) {
+      equal(status.success, true, "email reported as added");
     });
   });
 

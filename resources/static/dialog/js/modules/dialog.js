@@ -122,6 +122,20 @@ BrowserID.Modules.Dialog = (function() {
     return returnTo;
   }
 
+  function fixupIssuer(issuer) {
+    // An issuer should not have a scheme on the front of it.
+    // The URL parser requires a scheme. Prepend the scheme to do the
+    // verification.
+    /*jshint newcap:false*/
+    var u = URLParse("http://" + issuer);
+    if (u.host !== issuer) {
+      var encodedURI = encodeURI(u.validate().normalize().toString());
+      throw new Error("invalid issuer: " + encodedURI);
+    }
+
+    return issuer;
+  }
+
   function validateRPAPI(rpAPI) {
     var VALID_RP_API_VALUES = [
       "watch_without_onready",
@@ -262,6 +276,13 @@ BrowserID.Modules.Dialog = (function() {
         if (paramsFromRP._experimental_forceAuthentication &&
             true === paramsFromRP._experimental_forceAuthentication) {
           params.forceAuthentication = true;
+        }
+
+        // forceIsuser is used by the Marketplace to disable primary support
+        // and replace fxos.login.persona.org as the issuer of certs
+        if (paramsFromRP._experimental_forceIssuer) {
+          params.forceIssuer =
+              fixupIssuer(paramsFromRP._experimental_forceIssuer);
         }
 
         if (hash.indexOf("#AUTH_RETURN") === 0) {

@@ -77,6 +77,9 @@ pre {
     </li><li>
       <input type="checkbox" id="forceAuthentication">
       <label for="forceAuthentication">Force Authentication</label><br />
+    </li><li>
+      <input type="checkbox" id="forceIssuer">
+      <label for="forceIssuer">Force Issuer to issuer.domain</label><br />
     </li>
   </ul>
     <button class="assertion">Get an assertion</button>
@@ -144,7 +147,8 @@ function checkAssertion(assertion) {
     dataType: "json",
     data: {
       assertion: assertion,
-      audience: window.location.protocol + "//" + window.location.host
+      audience: window.location.protocol + "//" + window.location.host,
+      forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined
     },
     success: function(data, textStatus, jqXHR) {
       var old = $(".loginEvents > pre").text() + "\n";
@@ -196,6 +200,7 @@ $(document).ready(function() {
       siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined,
       returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,
       _experimental_forceAuthentication: $('#forceAuthentication').attr('checked') ? true : false,
+      _experimental_forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined,
       oncancel: function() {
         loggit("oncancel");
         $(".specify button.assertion").removeAttr('disabled');

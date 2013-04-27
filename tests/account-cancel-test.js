@@ -91,7 +91,7 @@ suite.addBatch({
 suite.addBatch({
   "the test user": {
     topic: wsapi.get('/wsapi/address_info', {
-        email: TEST_EMAIL,
+        email: TEST_EMAIL
     }),
     "is not a known user after account was cancelled": function(err, r) {
       assert.strictEqual(r.code, 200);

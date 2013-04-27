@@ -57,8 +57,9 @@ BrowserID.Network = (function() {
     post({
       url: wsapiName,
       data: data,
-      success: function(status) {
-        complete(onComplete, status.success);
+      success: function(info) {
+        if (info.success) complete(onComplete, info);
+        else complete(onComplete, false);
       },
       error: function(info) {
         // 429 is throttling.
@@ -466,6 +467,7 @@ BrowserID.Network = (function() {
      * (is it a primary or a secondary)
      * @method addressInfo
      * @param {string} email - Email address to check.
+     * @param {string} issuer - Force a specific Issuer by specifing a domain. null for default.
      * @param {function} [onComplete] - Called with an object on success,
      *   containing these properties:
      *     type: <secondary|primary>
@@ -474,9 +476,11 @@ BrowserID.Network = (function() {
      *     prov: string - url to embed for silent provisioning - present if type is secondary
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    addressInfo: function(email, onComplete, onFailure) {
+    addressInfo: function(email, issuer, onComplete, onFailure) {
+      issuer = issuer || 'default';
       get({
-        url: "/wsapi/address_info?email=" + encodeURIComponent(email),
+        url: "/wsapi/address_info?email=" + encodeURIComponent(email) +
+             "&issuer=" + encodeURIComponent(issuer),
         success: function(data, textStatus, xhr) {
           complete(onComplete, data);
         },
@@ -508,14 +512,20 @@ BrowserID.Network = (function() {
      * Certify the public key for the email address.
      * @method certKey
      */
-    certKey: function(email, pubkey, onComplete, onFailure) {
+    certKey: function(email, pubkey, forceIssuer, onComplete, onFailure) {
+      var postData = {
+        email: email,
+        pubkey: pubkey.serialize(),
+        ephemeral: !storage.usersComputer.confirmed(email)
+      };
+
+      if (forceIssuer !== "default") {
+        postData.forceIssuer = forceIssuer;
+      }
+
       post({
         url: "/wsapi/cert_key",
-        data: {
-          email: email,
-          pubkey: pubkey.serialize(),
-          ephemeral: !storage.usersComputer.confirmed(email)
-        },
+        data: postData,
         success: onComplete,
         error: onFailure
       });

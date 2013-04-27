@@ -118,6 +118,10 @@ BrowserID.State = (function() {
       self.siteName = info.siteName || info.hostname;
       self.siteTOSPP = !!(info.privacyPolicy && info.termsOfService);
 
+      if (info.forceIssuer) {
+        user.setIssuer(info.forceIssuer);
+      }
+
       startAction(false, "doRPInfo", info);
 
       if (info.email && info.type === "primary") {
@@ -205,20 +209,31 @@ BrowserID.State = (function() {
       complete(info.complete);
     });
 
+    // B2G forceIssuer on primary
+    handleState("new_fxaccount", function(msg, info) {
+      self.newFxAccountEmail = info.email;
+
+      info.fxaccount = true;
+      startAction(false, "doSetPassword", info);
+      complete(info.complete);
+    });
+
     handleState("password_set", function(msg, info) {
-      /* A password can be set for one of three reasons -
+      /* A password can be set for several reasons
        * 1) This is a new user
        * 2) A user is adding the first secondary address to an account that
-       *    consists only of primary addresses
-       * 3) A primary address was downgraded to a secondary and the user
+       * consists only of primary addresses
+       * 3) an existing user has forgotten their password and wants to reset it.
+       * 4) A primary address was downgraded to a secondary and the user
        *    has no password in the DB.
-       *
-       * #1 is taken care of by newUserEmail, #2 by addEmailEmail,
-       * and #3 by transitionNoPassword
+       * 5) RP is using forceIssuer and we have a primary email address with
+       * no password for the user
+       * #1 is taken care of by newUserEmail, #2 by addEmailEmail, #3 by resetPasswordEmail,
+       * #4 by transitionNoPassword and #5 by fxAccountEmail
        */
       info = _.extend({ email: self.newUserEmail || self.addEmailEmail ||
-                        self.transitionNoPassword }, info);
-
+                               self.resetPasswordEmail || self.transitionNoPassword ||
+                               self.newFxAccountEmail}, info);
       if(self.newUserEmail) {
         startAction(false, "doStageUser", info);
       }
@@ -227,6 +242,10 @@ BrowserID.State = (function() {
       }
       else if (self.transitionNoPassword) {
         redirectToState("stage_transition_to_secondary", info);
+      }
+      else if(self.newFxAccountEmail) {
+        startAction(false, "doStageUser", info);
+// TODO         startAction(false, "doStageResetPassword", info); ???
       }
     });
 
@@ -343,7 +362,7 @@ BrowserID.State = (function() {
 
     handleState("email_chosen", function(msg, info) {
       var email = info.email,
-          record = storage.getEmail(email);
+          record = user.getStoredEmailKeypair(email);
 
       self.email = email;
 
@@ -357,7 +376,7 @@ BrowserID.State = (function() {
 
       mediator.publish("kpi_data", { email_type: info.type });
 
-      if (info.state && 'offline' === info.state) {
+      if ('offline' === info.state) {
         redirectToState("primary_offline", info);
       }
       else if (info.type === "primary") {
@@ -379,6 +398,23 @@ BrowserID.State = (function() {
           // and the user must re-verify with their IdP.
           redirectToState("primary_user", info);
         }
+      }
+      else if (!user.isDefaultIssuer() && !record.cert) {
+        // TODO: Duplicates some of the logic in the authentication action module.
+        user.resetCaches();
+        user.addressInfo(info.email, function (serverInfo) {
+          // We'll end up in this state again, but we want to see serverInfo.state change
+          if (serverInfo.state === "transition_no_password") {
+            var newInfo = _.extend(info, { fxaccount: true });
+            self.newFxAccountEmail = info.email;
+            startAction(false, "doSetPassword", info);
+          } else {
+            redirectToState("email_valid_and_ready", info);
+            oncomplete();
+          }
+        }, function () {
+          throw new Error('Unable to check with address info from email_chosen');
+        });
       }
       // Anything below this point means the address is a secondary.
       else if ("transition_to_secondary" === info.state) {

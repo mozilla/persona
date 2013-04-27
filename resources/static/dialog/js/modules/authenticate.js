@@ -53,7 +53,6 @@ BrowserID.Modules.Authenticate = (function() {
   function initialState(info) {
     /*jshint validthis: true*/
     var self=this;
-
     self.submit = checkEmail;
     if (hasPassword(info)) {
       addressInfo = info;
@@ -70,7 +69,6 @@ BrowserID.Modules.Authenticate = (function() {
     /*jshint validthis: true*/
     var email = getEmail(),
         self = this;
-
     if (!email) return;
 
     dom.setAttr(EMAIL_SELECTOR, 'disabled', 'disabled');
@@ -80,51 +78,79 @@ BrowserID.Modules.Authenticate = (function() {
     else {
       showHint("addressInfo");
       user.addressInfo(email, onAddressInfo,
-          self.getErrorDialog(errors.addressInfo));
+        self.getErrorDialog(errors.addressInfo));
     }
 
     function onAddressInfo(info) {
       addressInfo = info;
       dom.removeAttr(EMAIL_SELECTOR, 'disabled');
 
-      if ("offline" === info.state) {
+      // We rely on user.addressInfo to tell us when an address that would
+      // normally be a primary is a secondary because of forcedIssuer. If
+      // the user has an address that is normally a primary, but is now using
+      // forcedIssuer, info.state will be either transition_to_secondary or
+      // transition_no_password depending on whether the user has a password.
+
+      // XXX There are 3 nearly identical copies of this. Here, state.js and
+      // pick_email.js. Pick one. Test the shit out of it. Get rid of the
+      // others.
+      if (hasPassword(info)) {
+        enterPasswordState.call(self);
+      }
+      else if ("offline" === info.state) {
         self.close("primary_offline", info, info);
       }
       else if ("primary" === info.type) {
         self.close("primary_user", info, info);
       }
-      else if (hasPassword(info)) {
-        enterPasswordState.call(self);
-      } else if ("transition_no_password" === info.state) {
-        transitionNoPassword.call(self, info);
-      } else {
-        createSecondaryUser.call(self);
+      else if ("transition_no_password" === info.state) {
+        transitionNoPassword.call(self);
       }
-      done && done();
+      else if (user.isDefaultIssuer()) {
+        createPersonaAccount.call(self);
+      }
+      else {
+        createFxAccount.call(self);
+      }
+      complete(done);
     }
   }
 
-  function createSecondaryUser(callback) {
+  function createPersonaAccount(callback) {
     /*jshint validthis: true*/
     var self=this,
         email = getEmail();
 
     if (email) {
       self.close("new_user", { email: email }, { email: email });
-    } else {
-      complete(callback);
     }
+
+    complete(callback);
   }
 
-  function transitionNoPassword(info) {
+  function transitionNoPassword(callback) {
     /*jshint validthis: true*/
     var self = this;
     var email = getEmail();
 
     if (email) {
-      var data = { email: email, transition_no_password: true };
+      var data = { email: email };
       self.close("transition_no_password", data, data);
     }
+
+    complete(callback);
+  }
+
+  function createFxAccount(callback) {
+    /*jshint validthis: true*/
+    var self=this,
+        email = getEmail();
+
+    if (email) {
+      self.close("new_fxaccount", { email: email }, { email: email });
+    }
+
+    complete(callback);
   }
 
   function authenticate(done) {
@@ -175,6 +201,7 @@ BrowserID.Modules.Authenticate = (function() {
     /*jshint validthis: true*/
     var self=this;
     addressInfo = null;
+
     if (!dom.is(EMAIL_SELECTOR, ":disabled")) {
       self.publish("enter_email");
       dom.setInner(AUTHENTICATION_LABEL, dom.getInner(EMAIL_LABEL));
@@ -283,7 +310,9 @@ BrowserID.Modules.Authenticate = (function() {
     // BEGIN TESTING API
     ,
     checkEmail: checkEmail,
-    createUser: createSecondaryUser,
+    createUser: createPersonaAccount,
+    createFxAccount: createFxAccount,
+    transitionNoPassword: transitionNoPassword,
     authenticate: authenticate,
     forgotPassword: forgotPassword
     // END TESTING API

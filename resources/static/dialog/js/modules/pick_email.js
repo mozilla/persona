@@ -42,6 +42,7 @@ BrowserID.Modules.PickEmail = (function() {
     }
 
     var identity = user.getStoredEmailKeypair(email);
+
     if (!identity) {
       /*globals alert:true*/
       alert(gettext("The selected email is invalid or has been deleted."));
@@ -61,6 +62,8 @@ BrowserID.Modules.PickEmail = (function() {
     var record = checkEmail.call(self, email);
     if (!! record) {
       dialogHelpers.refreshEmailInfo.call(self, email, function (info) {
+        // XXX Why is this here? This is almost a complete duplication of
+        // the logic in state.js, and it should be there.
         record = checkEmail.call(self, email);
         // The primary has gone offline, notify the user.
         if ("offline" === info.state) {

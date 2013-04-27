@@ -277,7 +277,7 @@
       }
     });
   });
-  
+
   asyncTest("#AUTH_RETURN with add=true should not call usedAddressAsPrimary", function() {
     winMock.location.hash = "#AUTH_RETURN";
     winMock.sessionStorage.primaryVerificationFlow = JSON.stringify({
@@ -584,6 +584,19 @@
         });
       }
     });
+  });
+
+  asyncTest("get with valid issuer - allowed", function() {
+    var issuer = "fxos.persona.org";
+    testExpectGetSuccess(
+      { _experimental_forceIssuer: issuer },
+      { forceIssuer: issuer }
+    );
+  });
+
+  asyncTest("get with non hostname issuer - bzzzt", function() {
+    var issuer = "https://issuer.must.be.a.hostname";
+    testExpectGetFailure({ _experimental_forceIssuer: issuer });
   });
 
 }());

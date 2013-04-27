@@ -868,8 +868,8 @@
   });
 
   asyncTest("syncEmailKeypair with successful sync", function() {
-    lib.syncEmailKeypair("testemail@testemail.com", function(keypair) {
-      var identity = lib.getStoredEmailKeypair("testemail@testemail.com");
+    lib.syncEmailKeypair("testuser@testuser.com", function(keypair) {
+      var identity = lib.getStoredEmailKeypair("testuser@testuser.com");
 
       ok(identity, "we have an identity");
       ok(identity.priv, "a private key is on the identity");
@@ -883,10 +883,10 @@
   asyncTest("syncEmailKeypair with invalid sync", function() {
     xhr.useResult("invalid");
     lib.syncEmailKeypair(
-      "testemail@testemail.com",
+      "testuser@testuser.com",
       testHelpers.unexpectedSuccess,
       function() {
-        var identity = lib.getStoredEmailKeypair("testemail@testemail.com");
+        var identity = lib.getStoredEmailKeypair("testuser@testuser.com");
         equal(typeof identity, "undefined", "Invalid email is not synced");
 
         start();
@@ -895,7 +895,7 @@
   });
 
   asyncTest("syncEmailKeypair with XHR failure", function() {
-    failureCheck(lib.syncEmailKeypair, "testemail@testemail.com");
+    failureCheck(lib.syncEmailKeypair, "testuser@testuser.com");
   });
 
 
@@ -1022,6 +1022,8 @@
       lib.getAssertion(TEST_EMAIL, lib.getOrigin(), function onSuccess(assertion) {
         testAssertion(assertion, start);
         equal(storage.site.get(testOrigin, "email"), TEST_EMAIL, "email address was persisted");
+        // issuer is used when getting a silent assertion.
+        equal(storage.site.get(testOrigin, "issuer"), "default", "issuer was persisted");
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -1054,10 +1056,10 @@
   asyncTest("getAssertion with known primary email, expired cert, user not authenticated with IdP - expect null assertion", function() {
     xhr.useResult("primary");
     provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
-    storage.addEmail("unregistered@testuser.com", { type: "primary" });
+    storage.addEmail("registered@testuser.com", { type: "primary" });
 
     lib.getAssertion(
-      "unregistered@testuser.com",
+      "registered@testuser.com",
       lib.getOrigin(),
       function(assertion) {
         equal(assertion, null, "user must authenticate with IdP, no assertion");
@@ -1373,6 +1375,19 @@
         start();
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
+  });
+
+
+  test("getIssuer/isDefaultIssuer with default issuer", function() {
+    equal(lib.getIssuer(), "default");
+    equal(lib.isDefaultIssuer(), true);
+  });
+
+  test("setIssuer/getIssuer/isDefaultIssuer with updated issuer", function() {
+    var issuer = "fxos.personatest.org";
+    lib.setIssuer(issuer);
+    equal(lib.getIssuer(), issuer);
+    equal(lib.isDefaultIssuer(), false);
   });
 
 }());

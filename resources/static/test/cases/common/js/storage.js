@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 (function() {
+  "use strict";
+
   var bid = BrowserID,
       storage = bid.Storage,
       testHelpers = bid.TestHelpers,
@@ -56,6 +58,38 @@
     equal(error.message, "unknown email address", "removing an unknown email address");
   });
 
+  test("addEmail/getEmail/removeEmail with issuer", function() {
+    var email = "testuser@testuser.com";
+    var issuer = "fxos_issuer";
+
+    storage.addEmail(email, { created: new Date(), for_who: "fxos" }, issuer);
+
+    ok(storage.getEmail(email, issuer));
+    // There should be no email under the default namespace
+    ok(!storage.getEmail(email));
+
+    // add a default issuer email to see if namespacing worksto
+    storage.addEmail(email, { created: new Date() });
+
+    storage.removeEmail(email, issuer);
+    ok(!storage.getEmail(email, issuer));
+
+    // namespaced remove should not affect default issuer.
+    ok(storage.getEmail(email));
+  });
+
+  test("addEmail/getEmail/removeEmail with multiple forced issuers",
+      function() {
+    var email = "testuser@testuser.com";
+    var issuer = "fxos_issuer";
+    var issuer2 = "picl_issuer";
+
+    storage.addEmail(email, { created: new Date(), for_who: "fxos" }, issuer);
+    storage.addEmail(email, { for_who: "picl" }, issuer2);
+
+    equal(storage.getEmail(email, issuer).for_who, "fxos");
+    equal(storage.getEmail(email, issuer2).for_who, "picl");
+  });
 
   test("clear - there should be default values", function() {
     storage.addEmail("testuser@testuser.com", {priv: "key"});

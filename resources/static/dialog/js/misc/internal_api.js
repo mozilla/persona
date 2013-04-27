@@ -33,6 +33,8 @@
 
     return options;
   }
+
+
   // given an object containing an assertion, extract the assertion string,
   // as the internal API is supposed to return a string assertion, not an
   // object.  issue #1395
@@ -143,6 +145,13 @@
 
   function setOrigin(origin) {
     user.setOrigin(origin);
+    // B2G and marketplace use special issuers that disable primaries. Go see
+    // if the current domain uses a special issuer, if it does, set the issuer
+    // in user.js.
+    var issuer = storage.site.get(user.getOrigin(), "issuer");
+    if (issuer) {
+      user.setIssuer(issuer);
+    }
   }
 
   /*

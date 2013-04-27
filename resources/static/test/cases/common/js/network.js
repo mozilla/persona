@@ -51,7 +51,7 @@
     testStagingMethodSuccess: function(stagingMethod, usePassword) {
       asyncTest(stagingMethod + " success", function() {
         var onComplete = function(status) {
-          equal(status, true, stagingMethod + " request success");
+          equal(status.success, true, stagingMethod + " request success");
           start();
         };
 
@@ -452,8 +452,7 @@
 
   asyncTest("addressInfo with unknown secondary email", function() {
     transport.useResult("unknown_secondary");
-
-    network.addressInfo(TEST_EMAIL, function onComplete(data) {
+    network.addressInfo(TEST_EMAIL, 'default', function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
       equal(data.state, "unknown", "address is unknown to BrowserID");
       start();
@@ -463,7 +462,7 @@
   asyncTest("addressInfo with known seconday email", function() {
     transport.useResult("known_secondary");
 
-    network.addressInfo(TEST_EMAIL, function onComplete(data) {
+    network.addressInfo(TEST_EMAIL, 'default', function onComplete(data) {
       equal(data.type, "secondary", "type is secondary");
       equal(data.state, "known", "address is known to BrowserID");
       start();
@@ -473,7 +472,7 @@
   asyncTest("addressInfo with primary email", function() {
     transport.useResult("primary");
 
-    network.addressInfo(TEST_EMAIL, function onComplete(data) {
+    network.addressInfo(TEST_EMAIL, 'default', function onComplete(data) {
       equal(data.type, "primary", "type is primary");
       ok("auth" in data, "auth field exists");
       ok("prov" in data, "prov field exists");
@@ -482,7 +481,7 @@
   });
 
   asyncTest("addressInfo with XHR failure", function() {
-    failureCheck(network.addressInfo, TEST_EMAIL);
+    failureCheck(network.addressInfo, TEST_EMAIL, 'default');
   });
 
   asyncTest("changePassword happy case, expect complete callback with true status", function() {
@@ -591,6 +590,29 @@
         start();
       }, testHelpers.unexpectedXHRFailure);
     });
+  });
+
+  asyncTest("certKey valid", function() {
+    var pubKeyMock = {
+      serialize: function() {}
+    };
+
+    network.certKey(TEST_EMAIL, pubKeyMock, "fxos.personatest.org",
+      function(cert) {
+      equal(typeof cert, "string");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("certKey ajaxError", function() {
+    var pubKeyMock = {
+      serialize: function() {}
+    };
+
+    transport.useResult("ajaxError");
+    network.certKey(TEST_EMAIL, pubKeyMock, "fxos.personatest.org",
+      testHelpers.unexpectedSuccess,
+      testHelpers.expectedXHRFailure);
   });
 
 }());
