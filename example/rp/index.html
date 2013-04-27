@@ -195,7 +195,7 @@ $(document).ready(function() {
       siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
       siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined,
       returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,
-      forceAuthentication: $('#forceAuthentication').attr('checked') ? true : false,
+      _experimental_forceAuthentication: $('#forceAuthentication').attr('checked') ? true : false,
       oncancel: function() {
         loggit("oncancel");
         $(".specify button.assertion").removeAttr('disabled');
