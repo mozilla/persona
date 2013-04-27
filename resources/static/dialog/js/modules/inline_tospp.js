@@ -58,7 +58,9 @@ BrowserID.Modules.InlineTosPp = (function() {
     var self=this;
 
     if (!self._tospp) {
-      self._tospp = renderer.append(IFRAME_PARENT_SELECTOR, "inline_tospp", {});
+      self._tospp = renderer.append(IFRAME_PARENT_SELECTOR, "inline_tospp", {
+        no_iframe: self.options.no_iframe
+      });
       self.click(TOSPP_CLOSE_SELECTOR, closeTOSPP, self);
     }
 

@@ -11,6 +11,13 @@
 
   function createController(options) {
     options = options || {};
+    // Travis-CI uses PhantomJS 1.8.1 which contains a crash bug when appending
+    // and removing an iframe. The Phantom bug is tracked at:
+    // https://github.com/ariya/phantomjs/issues/10947
+    // The Travis bug is tracked at:
+    // https://github.com/travis-ci/travis-ci/issues/1074
+    // When Travis updates its version of Phantom, this can be removed.
+    options.no_iframe = true;
     controller = InlineTosPp.create();
     controller.start(options);
   }
