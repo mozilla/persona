@@ -289,7 +289,7 @@ BrowserID.User = (function() {
         delete email_obj.unverified;
       }
 
-      storage.addEmail(email, email_obj);
+      storage.addEmail(email, email_obj, issuer);
       if (onComplete) onComplete(true);
     }, onFailure);
   }

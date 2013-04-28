@@ -620,7 +620,7 @@
       serialize: function() {}
     };
 
-    network.certKey(TEST_EMAIL, pubKeyMock, "fxos.personatest.org",
+    network.certKey(TEST_EMAIL, pubKeyMock, "fxos.personatest.org", true,
       function(cert) {
       equal(typeof cert, "string");
       start();
@@ -633,7 +633,7 @@
     };
 
     transport.useResult("ajaxError");
-    network.certKey(TEST_EMAIL, pubKeyMock, "fxos.personatest.org",
+    network.certKey(TEST_EMAIL, pubKeyMock, "fxos.personatest.org", true,
       testHelpers.unexpectedSuccess,
       testHelpers.expectedXHRFailure);
   });
