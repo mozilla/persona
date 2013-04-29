@@ -31,6 +31,7 @@ BrowserID.Modules.Authenticate = (function() {
       EMAIL_LABEL = "#authentication_form .label.email_state",
       TRANSITION_TO_SECONDARY_LABEL = "#authentication_form .label.transition_to_secondary",
       PASSWORD_LABEL = "#authentication_form .label.password_state",
+      CANCEL_PASSWORD_SELECTOR = ".cancelPassword",
       IDP_SELECTOR = "#authentication_form .authentication_idp_name",
       PERSONA_INTRO_SELECTOR = ".persona_intro",
       PERSONA_URL = "https://login.persona.org",
@@ -303,6 +304,7 @@ BrowserID.Modules.Authenticate = (function() {
       // element blurs but it has been updated via autofill.  See issue #406
       self.bind(EMAIL_SELECTOR, "change", emailChange);
       self.click(FORGOT_PASSWORD_SELECTOR, forgotPassword);
+      self.click(CANCEL_PASSWORD_SELECTOR, enterEmailState);
 
       Module.sc.start.call(self, options);
       initialState.call(self, options);

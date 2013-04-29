@@ -29,7 +29,7 @@
 
                     <ul class="inputs">
 
-                        <li>
+                        <li class="start">
                             <label for="authentication_email"></label>
                             <span class="label email_state"><%= gettext('Enter your email address') %></span>
                             <span class="label transition_to_secondary"><%- format(gettext('%(idp)s no longer allows you to log into Persona with your %(idp)s password. You must now use your existing Persona password to log in with this email address.'), { idp: '<strong class="authentication_idp_name"></strong>'}) %></span>
@@ -60,6 +60,8 @@
 
                         <li class="returning">
 
+                            <h2><%- gettext('Enter password') %></h2>
+
                             <label for="authentication_password" class="hidden"><%= gettext('Password') %></label>
 
                             <input id="authentication_password" type="password" maxlength="80" placeholder="<%= gettext('password') %>" />
@@ -72,7 +74,12 @@
 
                     </ul>
 
-                    <p class="submit tospp">
+                    <p class="submit cf returning">
+                      <a id="forgotPassword" class="returning" href="#"><%= gettext('Forgot your password?') %></a>
+                    </p>
+
+
+                    <p class="submit tospp start cf">
                        <%- format(gettext("By proceeding, you agree to %(site)s's <a %(terms)s>Terms</a> and <a %(privacy)s>Privacy Policy</a>."),
                                   { site: "Persona",
                                     terms:
@@ -85,11 +92,12 @@
                     <p class="submit cf buttonrow">
 
 
-                      <button class="start addressInfo"><%= gettext('next') %></button>
+                      <button class="start addressInfo "><%= gettext('next') %></button>
+
                       <a href="#" class="start right addressInfo cancelDialog"><%= gettext('cancel') %></a>
 
                       <button class="returning"><%= gettext('sign in') %></button>
-                      <a id="forgotPassword" class="returning" href="#"><%= gettext('Forgot your password?') %></a>
+                      <a href="#" class="returning right cancelPassword"><%= gettext('cancel') %></a>
                     </p>
 
 

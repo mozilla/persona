@@ -20,7 +20,7 @@
   }
 
 
-  header, footer, #favicon, .persona_intro {
+  header, footer, .persona_intro {
     display: none;
   }
 
@@ -180,10 +180,13 @@
   }
 
   /*
-   * The first p directly after the input should have a margin
+   * The p's within a form_section should have a margin and look pretty.
    */
-  .form_section .inputs + p {
+  .form_section > p {
     margin-top: 17px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #323232;
   }
 
   .buttonrow a {
@@ -237,12 +240,6 @@
   #error.unsupported, #error.cookies_disabled {
     position: static;
     height: 250px;
-  }
-
-  .tospp {
-    font-size: 12px;
-    line-height: 1.5;
-    color: #323232;
   }
 
 }
