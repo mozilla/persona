@@ -86,17 +86,13 @@ try {
 }
 
 function doVerification(req, resp, next) {
+  req.query = req.query || {};
   req.body = req.body || {};
 
-  var assertion = (req.query && req.query.assertion) ? req.query.assertion : req. body.assertion;
-  var audience = (req.query && req.query.audience) ? req.query.audience : req.body.audience;
-  var forceIssuer = undefined;
-  if (req.query && req.query.forceIssuer) {
-    forceIssuer =  req.query.forceIssuer;
-  } else if (req.body && req.body.forceIssuer) {
-    forceIssuer =  req.body.forceIssuer;
-  }
-  var allowUnverified = (req.query && req.query.allowUnverified) || req.body.allowUnverified;
+  var assertion = req.query.assertion ? req.query.assertion : req.body.assertion;
+  var audience = req.query.audience ? req.query.audience : req.body.audience;
+  var forceIssuer = req.query.forceIssuer ? req.query.forceIssuer : req.body.forceIssuer;
+  var allowUnverified = req.query.allowUnverified ? req.query.allowUnverified : req.body.allowUnverified;
 
   if (!(assertion && audience)) {
     // why couldn't we extract these guys?  Is it because the request parameters weren't encoded as we expect? GH-643
