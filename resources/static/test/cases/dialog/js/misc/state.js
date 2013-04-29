@@ -289,7 +289,6 @@
       mediator.publish("start", {
         termsOfService: "https://browserid.org/TOS.html",
         privacyPolicy: "https://browserid.org/priv.html",
-        inlineTermsOfService: false,
         forceIssuer: "fxos_issuer"
       });
     } catch(e) {
@@ -300,20 +299,6 @@
     ok(actions.info.doRPInfo.privacyPolicy, "doRPInfo called with privacyPolicy set");
 
     equal(user.getIssuer(), "fxos_issuer");
-  });
-
-  test("start with inlineTermsOfService - inline_tospp started", function() {
-    var err;
-
-    try {
-      mediator.publish("start", {
-        inlineTermsOfService: true
-      });
-    } catch(e) {
-      err = e;
-    }
-
-    equal(String(err), "Error: module not registered for inline_tospp");
   });
 
   asyncTest("primary_user with already provisioned primary user - redirect to primary_user_ready", function() {

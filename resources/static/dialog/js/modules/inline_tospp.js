@@ -64,9 +64,6 @@ BrowserID.Modules.InlineTosPp = (function() {
       self.click(TOSPP_CLOSE_SELECTOR, closeTOSPP, self);
     }
 
-    // If a TOS/PP agreement is shown inline, give the host a hint of the
-    // display context, it may want to not display headers/footers.
-    url = url + '?embedded';
     dom.setAttr(TOSPP_IFRAME, 'src', url);
     dom.show(TOSPP_SELECTOR);
   }

@@ -437,15 +437,6 @@
     });
   });
 
-  asyncTest("get with valid _experimental_inlineTermsOfService - pass on inlineTermsOfService", function() {
-    testExpectGetSuccess({
-      _experimental_inlineTermsOfService: true
-    },
-    {
-      inlineTermsOfService: true
-    });
-  });
-
   asyncTest("get with relative siteLogo - not allowed", function() {
     var URL = "logo.png";
     testMustBeAbsolutePath({ siteLogo: URL }, URL);

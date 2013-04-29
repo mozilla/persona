@@ -45,7 +45,7 @@
         controller.show(url);
         equal($("#tosppmodal:visible").length, 1);
 
-        equal($("#tosppframe").attr('src'), url + "?embedded");
+        equal($("#tosppframe").attr('src'), url);
 
         controller.close();
         equal($("#tosppmodal:visible").length, 0);

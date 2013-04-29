@@ -132,10 +132,6 @@ BrowserID.State = (function() {
 
       startAction(false, "doRPInfo", info);
 
-      if (info.inlineTermsOfService) {
-        moduleManager.start("inline_tospp");
-      }
-
       if (info.email && info.type === "primary") {
         // this case is where a users is returning to the dialog from
         // authentication with a primary.  Elsewhere in

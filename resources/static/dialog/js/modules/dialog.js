@@ -238,10 +238,6 @@ BrowserID.Modules.Dialog = (function() {
           self.publish("kpi_data", { rp_api: rpAPI });
         }
 
-        if (paramsFromRP._experimental_inlineTermsOfService === true) {
-          params.inlineTermsOfService = true;
-        }
-
         if (paramsFromRP.requiredEmail) {
           helpers.log("requiredEmail has been deprecated");
         }
