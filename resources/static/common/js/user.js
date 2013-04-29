@@ -96,7 +96,8 @@ BrowserID.User = (function() {
     }, onFailure);
   }
 
-  function stageAddressVerification(email, password, stagingStrategy, onComplete, onFailure) {
+  function stageAddressVerification(email, password, stagingStrategy,
+      onComplete, onFailure) {
     // These are saved for the addressVerificationPoll.  If there is
     // a stagedEmail or stagedPassword when the poll completes, try to
     // authenticate the user.
@@ -501,7 +502,8 @@ BrowserID.User = (function() {
     clearContext: clearContext,
 
     /**
-     * Create a user account - this creates an user account that must be verified.
+     * Create a user account - this creates an user account that must
+     * be verified.
      * @method createSecondaryUser
      * @param {string} email
      * @param {string} password
@@ -512,8 +514,9 @@ BrowserID.User = (function() {
       stageAddressVerification(email, password,
         network.createUser.bind(network, email, password,
             origin, allowUnverified), function(status) {
-              // update the cache if necessary
-              // XXX this needs a test.
+              // If creating an unverified account, the user will not go
+              // through the verification flow while the dialog is open and the
+              // cache will not be updated accordingly. Update the cache now.
               if (status.unverified) {
                 var cachedAddress = addressCache[email];
                 if (cachedAddress) {

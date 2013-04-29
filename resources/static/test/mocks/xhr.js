@@ -61,6 +61,7 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/complete_email_confirmation ajaxError": undefined,
       "post /wsapi/stage_user unknown_secondary": { success: true },
       "post /wsapi/stage_user valid": { success: true },
+      "post /wsapi/stage_user unverified": { success: true, unverified: true },
       "post /wsapi/stage_user invalid": { success: false },
       "post /wsapi/stage_user throttle": 429,
       "post /wsapi/stage_user ajaxError": undefined,

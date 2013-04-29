@@ -79,15 +79,9 @@
     var self=this;
     user.createSecondaryUser(email, password, function(status) {
       if (status.success) {
-        var msg = { email: email, password: password };
-        // XXX these need tests.
-        if (status.unverified) {
-          msg.type = "secondary";
-          msg.unverified = true;
-          self.publish("unverified_created", msg, msg);
-        } else {
-          self.publish("user_staged", msg, msg);
-        }
+        var data = { email: email, password: password };
+        var msg = status.unverified ? "unverified_created" : "user_staged";
+        self.publish(msg, data, data);
       }
       else {
         tooltip.showTooltip("#could_not_add");

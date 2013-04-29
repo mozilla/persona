@@ -1390,4 +1390,26 @@
     equal(lib.isDefaultIssuer(), false);
   });
 
+  asyncTest("createSecondaryUser with allowUnverified " +
+                " should update address cache", function() {
+    lib.setAllowUnverified(true);
+    // This is an initial call to addressInfo to prime the cache.
+    lib.addressInfo(TEST_EMAIL, function(addressInfo) {
+      xhr.useResult("unverified");
+
+      lib.createSecondaryUser(TEST_EMAIL, "password", function(status) {
+        equal(status.success, true);
+
+        // If creating an unverified account, the user will not go
+        // through the verification flow while the dialog is open and the
+        // cache will not be updated accordingly. Update the cache now.
+        xhr.useResult("valid");
+        lib.addressInfo(TEST_EMAIL, function(addressInfo) {
+          equal(addressInfo.state, "unverified");
+          start();
+        }, testHelpers.unexpectedXHRFailure);
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
 }());

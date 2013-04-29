@@ -255,6 +255,8 @@ BrowserID.State = (function() {
 
     handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
 
+    // Once an unverified user is created, skip the confirmation step and
+    // sign them in directly.
     handleState("unverified_created", function(msg, info) {
       startAction(false, "doAuthenticateWithUnverifiedEmail", info);
     });

@@ -97,7 +97,8 @@ BrowserID.Modules.Actions = (function() {
 
     doAuthenticateWithUnverifiedEmail: function(info) {
       var self = this;
-      dialogHelpers.authenticateUser.call(this, info.email, info.password, function() {
+      dialogHelpers.authenticateUser.call(this, info.email, info.password,
+          function() {
         self.publish("authenticated", info);
       });
     },

@@ -115,6 +115,21 @@
     });
   });
 
+  asyncTest("createUser with unknown secondary & allowUnverified, " +
+                "expect 'unverified_created' message", function() {
+    xhr.useResult("unverified");
+    expectedMessage("unverified_created", {
+      email: "unregistered@testuser.com",
+      password: "password"
+    });
+
+    dialogHelpers.createUser.call(controllerMock,
+        "unregistered@testuser.com", "password", function(status) {
+      equal(status.success, true, "user was staged");
+      start();
+    });
+  });
+
   asyncTest("createUser with unknown secondary, user throttled", function() {
     unexpectedMessage("user_staged");
 
