@@ -159,6 +159,13 @@ BrowserID.Modules.Dialog = (function() {
     return parsedTime;
   }
 
+  function validateBoolean(bool, name) {
+    if (typeof bool !== "boolean") {
+      throw new Error("invalid value for " + name + ": " + bool);
+    }
+
+    return bool;
+  }
 
   var Dialog = bid.Modules.PageModule.extend({
     start: function(options) {
@@ -273,11 +280,10 @@ BrowserID.Modules.Dialog = (function() {
 
         // forceAuthentication is used by the Marketplace to ensure that the
         // user knows the password to this account. We ignore any active session.
-        if (paramsFromRP._experimental_forceAuthentication &&
-            // TODO this and _experimental_allowUnverified should throw an
-            // error if not boolean.
-            true === paramsFromRP._experimental_forceAuthentication) {
-          params.forceAuthentication = true;
+        if (paramsFromRP._experimental_forceAuthentication) {
+          params.forceAuthentication = validateBoolean(
+              paramsFromRP._experimental_forceAuthentication,
+              "_experimental_forceAuthentication");
         }
 
         // forceIsuser is used by the Marketplace to disable primary support
@@ -290,9 +296,10 @@ BrowserID.Modules.Dialog = (function() {
         // allowUnverified means that the user doesn't need to have
         // verified their email address in order to send an assertion.
         // if the user *has* verified, it will be a verified assertion.
-        if (paramsFromRP._experimental_allowUnverified &&
-            true === paramsFromRP._experimental_allowUnverified) {
-          params.allowUnverified = true;
+        if (paramsFromRP._experimental_allowUnverified) {
+          params.allowUnverified = validateBoolean(
+              paramsFromRP._experimental_allowUnverified,
+              "_experimental_allowUnverified");
         }
 
         if (hash.indexOf("#AUTH_RETURN") === 0) {
