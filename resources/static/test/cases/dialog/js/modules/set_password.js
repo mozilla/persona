@@ -38,14 +38,6 @@
     testElementExists("#cancel");
   });
 
-  test("create with password_reset option - show template, show reset password button", function() {
-    controller.destroy();
-    createController({ password_reset: true });
-    testElementExists("#set_password");
-    testElementExists("#password_reset");
-    testElementExists("#cancel");
-  });
-
   test("create with cancelable=false option - cancel button not shown", function() {
     controller.destroy();
     createController({ cancelable: false });

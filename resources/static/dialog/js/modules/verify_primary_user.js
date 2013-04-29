@@ -15,7 +15,8 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       errors = bid.Errors,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
-      complete = helpers.complete;
+      complete = helpers.complete,
+      CANCEL_SELECTOR = ".cancel";
 
   function verify(callback) {
     /*jshint validthis:true*/
@@ -77,7 +78,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
             dialogHelpers.showRPTosPP.call(self);
           }
 
-          self.click("#cancel", cancel);
+          self.click(CANCEL_SELECTOR, cancel);
           complete(data.ready);
         } else {
           verify.call(self, data.ready);

@@ -53,6 +53,36 @@
     font-size: 20px;
   }
 
+
+  .isMobile {
+    display: block;
+  }
+
+  .isDesktop, a.emphasize.isDesktop {
+    display: none;
+  }
+
+  /**
+   * This corresponds to the .hidden in common/css/style.css
+   */
+  label.isDesktop {
+    /* This funkiness is so that labels still appear for screen readers */
+    visibility: hidden;
+    display: block;
+    height: 0;
+  }
+
+  /**
+   * This corresponds to the label.hidden + <selector> in common/css/style.css
+   * If these labels are hidden due to mobile styling, remove the top margin.
+   */
+  label.isDesktop + input[type=text],
+  label.isDesktop + input[type=password],
+  label.isDesktop + input[type=email] {
+    margin-top: 0;
+  }
+
+
   #selectEmail {
     top: auto;
     left: auto;

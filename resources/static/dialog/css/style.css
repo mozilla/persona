@@ -75,6 +75,10 @@ h3 {
 }
 
 
+.isMobile {
+  display: none;
+}
+
 .home {
   width: 161px;
   height: 40px;
