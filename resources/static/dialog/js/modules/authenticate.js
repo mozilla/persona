@@ -58,6 +58,15 @@ BrowserID.Modules.Authenticate = (function() {
        info.state === "unverified" && this.allowUnverified));
   }
 
+  function isNewPersonaAccount(info) {
+    return (info.state === "unknown" && info.type === "secondary"
+                && user.isDefaultIssuer());
+  }
+
+  function isNewFxAccount(info) {
+    return (info.state === "unknown" && !user.isDefaultIssuer());
+  }
+
   function initialState(info) {
     /*jshint validthis: true*/
     var self=this;
@@ -104,64 +113,46 @@ BrowserID.Modules.Authenticate = (function() {
       // the user has an address that is normally a primary, but is now using
       // forcedIssuer, info.state will be either transition_to_secondary or
       // transition_no_password depending on whether the user has a password.
-
-      // XXX There are 3 nearly identical copies of this. Here, state.js and
-      // pick_email.js. Pick one. Test the shit out of it. Get rid of the
-      // others.
       if (hasPassword.call(self, info)) {
         enterPasswordState.call(self);
       }
-      else if ("offline" === info.state) {
-        self.close("primary_offline", info, info);
-      }
-      else if ("primary" === info.type) {
-        self.close("primary_user", info, info);
-      }
-      else if ("transition_no_password" === info.state) {
-        transitionNoPassword.call(self);
-      }
-      else if (user.isDefaultIssuer()) {
+      else if (isNewPersonaAccount(info)) {
         createPersonaAccount.call(self);
       }
-      else {
+      else if (isNewFxAccount(info)) {
         createFxAccount.call(self);
       }
+      else {
+        // This is either a transition_no_password or a primary address.
+        // The email chosen handler will have the user set a password for
+        // transition_no_password. Primary email addresses will be handled
+        // accordingly. Either way, a record may not be available because
+        // the user may not eyt be authenticated.
+        info.allow_new_record = true;
+        self.publish("email_chosen", info, info);
+      }
+
       complete(done);
     }
   }
 
   function createPersonaAccount(callback) {
     /*jshint validthis: true*/
-    var self=this,
-        email = getEmail();
-
-    if (email) {
-      self.close("new_user", { email: email }, { email: email });
-    }
-
-    complete(callback);
-  }
-
-  function transitionNoPassword(callback) {
-    /*jshint validthis: true*/
-    var self = this;
-    var email = getEmail();
-
-    if (email) {
-      var data = { email: email };
-      self.close("transition_no_password", data, data);
-    }
-
-    complete(callback);
+    createAccount.call(this, "new_user", callback);
   }
 
   function createFxAccount(callback) {
     /*jshint validthis: true*/
+    createAccount.call(this, "new_fxaccount", callback);
+  }
+
+  function createAccount(msg, callback) {
+    /*jshint validthis: true*/
     var self=this,
         email = getEmail();
 
     if (email) {
-      self.close("new_fxaccount", { email: email }, { email: email });
+      self.close(msg, { email: email }, { email: email });
     }
 
     complete(callback);
@@ -341,7 +332,6 @@ BrowserID.Modules.Authenticate = (function() {
     checkEmail: checkEmail,
     createUser: createPersonaAccount,
     createFxAccount: createFxAccount,
-    transitionNoPassword: transitionNoPassword,
     authenticate: authenticate,
     forgotPassword: forgotPassword,
     emailChange: emailChange

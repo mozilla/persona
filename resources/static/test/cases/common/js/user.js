@@ -1259,23 +1259,48 @@
     });
   }
 
-  asyncTest("checkEmailIssuer with changing issuer", function () {
+  function testCertCleared(startIssuer, addressInfo, unverified) {
     var emailAddr = "registered@testuser.com";
-    makeCert(emailAddr, "secondary.domain", function (cert) {
-      storage.addEmail(emailAddr, { cert: cert });
-      ok(storage.getEmail(emailAddr).cert, "cert exists");
-      xhr.useResult("primary");
-      provisioning.setStatus(provisioning.AUTHENTICATED);
-      var newInfo = lib.checkEmailIssuer(emailAddr, {
-        email: emailAddr,
-        // new issuer
-        type: "secondary",
-        issuer: "testuser.com",
-        state: "transition_to_primary"
-      });
+    makeCert(emailAddr, startIssuer, function (cert) {
+      storage.addEmail(emailAddr, { cert: cert, unverified: unverified });
+      addressInfo.email = emailAddr;
+      var newInfo = lib.checkForInvalidCerts(emailAddr, addressInfo);
       ok(!storage.getEmail(emailAddr).cert, "cert was cleared up");
       start();
     });
+  }
+
+  asyncTest("checkForInvalidCerts with transition_to_primary", function () {
+    testCertCleared("secondary.domain", {
+      type: "primary",
+      issuer: "testuser.com",
+      state: "transition_to_primary"
+    });
+  });
+
+  asyncTest("checkForInvalidCerts with transition_to_secondary", function () {
+    testCertCleared("primary.domain", {
+      type: "secondary",
+      issuer: "login.persona.org",
+      state: "transition_to_secondary"
+    });
+  });
+
+  asyncTest("checkForInvalidCerts with transition_no_password", function () {
+    testCertCleared("primary.domain", {
+      type: "secondary",
+      issuer: "login.persona.org",
+      state: "transition_no_password"
+    });
+  });
+
+  asyncTest("checkForInvalidCerts with unverified cert and verified address",
+      function () {
+    testCertCleared("secondary.domain", {
+      type: "secondary",
+      issuer: "login.persona.org",
+      state: "known"
+    }, true);
   });
 
   asyncTest("setComputerOwnershipStatus with true, isUsersComputer - mark the computer as the users, prolongs the user's session", function() {

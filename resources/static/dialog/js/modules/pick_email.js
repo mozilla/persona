@@ -74,30 +74,7 @@ BrowserID.Modules.PickEmail = (function() {
         title: ""
       });
 
-      dialogHelpers.refreshEmailInfo.call(self, email, function (info) {
-        // XXX Why is this here? This is almost a complete duplication of
-        // the logic in state.js, and it should be there.
-        record = checkEmail.call(self, email);
-        // The primary has gone offline, notify the user.
-        if ("offline" === info.state) {
-          self.close("primary_offline", info);
-        }
-        else if (record.cert) {
-          self.close("email_chosen", info);
-        }
-        // A secondary address that transitioned from a primary. The
-        // user does not have a password - make them set one.
-        else if ("transition_no_password" === info.state) {
-          self.close("transition_no_password", info);
-        }
-        // A secondary address on an account with a password
-        else if ("secondary" === info.type) {
-          self.close("email_chosen", info);
-        }
-        else {
-          self.close("primary_user", info);
-        }
-      });
+      self.close("email_chosen", { email: email });
     }
   }
 
