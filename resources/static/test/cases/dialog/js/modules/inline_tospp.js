@@ -41,8 +41,11 @@
   asyncTest("can create and show", function() {
     createController({
       ready: function() {
-        controller.show("https://login.persona.org/privacy");
+        var url = "https://login.persona.org/privacy";
+        controller.show(url);
         equal($("#tosppmodal:visible").length, 1);
+
+        equal($("#tosppframe").attr('src'), url + "?embedded");
 
         controller.close();
         equal($("#tosppmodal:visible").length, 0);
