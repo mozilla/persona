@@ -97,7 +97,7 @@ BrowserID.Modules.Authenticate = (function() {
       // XXX There are 3 nearly identical copies of this. Here, state.js and
       // pick_email.js. Pick one. Test the shit out of it. Get rid of the
       // others.
-      if (hasPassword(info)) {
+      if (hasPassword.call(self, info)) {
         enterPasswordState.call(self);
       }
       else if ("offline" === info.state) {

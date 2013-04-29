@@ -213,7 +213,6 @@
     controller.checkEmail(null, start);
   });
 
-
   asyncTest("checkEmail with email with leading/trailing whitespace, user not registered - 'new_user' message", function() {
     $(EMAIL_SELECTOR).val("    unregistered@testuser.com   ");
     xhr.useResult("unknown_secondary");
@@ -259,12 +258,37 @@
     xhr.useResult("known_secondary");
 
     register("enter_password", function() {
-      testElementTextEquals(AUTHENTICATION_LABEL, $(PASSWORD_LABEL).html(), "enter password message shown");
+      testElementTextEquals(AUTHENTICATION_LABEL,
+          $(PASSWORD_LABEL).html(), "enter password message shown");
       start();
     });
 
     controller.checkEmail();
   });
+
+  asyncTest("checkEmail with registered, unverified email, allowUnverified" +
+      " set to true - 'enter_password' message", function() {
+    controller.destroy();
+    $(EMAIL_SELECTOR).val("");
+    createController({
+      allowUnverified: true,
+      ready: function() {
+        $(EMAIL_SELECTOR).val("registered@testuser.com");
+
+        register("enter_password", function() {
+          testElementTextEquals(AUTHENTICATION_LABEL,
+              $(PASSWORD_LABEL).html(), "enter password message shown");
+          start();
+        });
+
+        user.setAllowUnverified(true);
+        xhr.useResult("unverified");
+        controller.checkEmail();
+      }
+    });
+  });
+
+
 
   asyncTest("clear password if user changes email address", function() {
     xhr.useResult("known_secondary");

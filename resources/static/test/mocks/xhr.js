@@ -190,6 +190,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/address_info?email=unregistered%40testuser.com&issuer=fxos_issuer unknown_secondary": { type: "secondary", state: "unknown" },
 
       "get /wsapi/address_info?email=registered%40testuser.com&issuer=default valid": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
+      "get /wsapi/address_info?email=registered%40testuser.com&issuer=default unverified": { type: "secondary", state: "unverified" },
       "get /wsapi/address_info?email=REGISTERED%40TESTUSER.COM&issuer=default valid": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
       "get /wsapi/address_info?email=registered%40testuser.com&issuer=default known_secondary": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
       "get /wsapi/address_info?email=registered%40testuser.com&issuer=default throttle": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
