@@ -195,7 +195,7 @@
       start();
     });
 
-    $("#thisIsNotMe").click();
+    $(".thisIsNotMe:eq(0)").click();
   });
 
 }());

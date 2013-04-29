@@ -219,6 +219,16 @@
     color: #323232;
   }
 
+  /*
+   * generic anchor for a form section
+   */
+  .form_section a {
+    font-size: 13px;
+  }
+
+  /*
+   * button row anchor, which is also under form_section
+   */
   .buttonrow a {
     line-height: 40px; /* Match the height of the buttons on the right */
     font-size: 18px;

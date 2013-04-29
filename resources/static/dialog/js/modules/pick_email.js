@@ -12,6 +12,8 @@ BrowserID.Modules.PickEmail = (function() {
       dialogHelpers = helpers.Dialog,
       tooltip = bid.Tooltip,
       dom = bid.DOM,
+      ADD_EMAIL_SELECTOR = ".useNewEmail",
+      NOT_ME_SELECTOR = ".thisIsNotMe",
       sc;
 
   function pickEmailState(event) {
@@ -145,12 +147,12 @@ BrowserID.Modules.PickEmail = (function() {
         dom.focus("#signInButton");
       }
 
-      self.click("#useNewEmail", addEmail);
+      self.click(ADD_EMAIL_SELECTOR, addEmail);
       // The click function does not pass the event to the function.  The event
       // is needed for the label handler so that the correct radio button is
       // selected.
       self.bind("#selectEmail label", "click", proxyEventToInput);
-      self.click("#thisIsNotMe", notMe);
+      self.click(NOT_ME_SELECTOR, notMe);
 
       sc.start.call(self, options);
 
