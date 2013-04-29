@@ -4,7 +4,7 @@
 
 
 <div id="tosppmodal" class="lightbox">
-  <a href="#" class="close">X</a>
+  <a href="#" class="close">Close</a>
     <!--
     Travis-CI uses PhantomJS 1.8.1 which contains a crash bug when appending
     and removing an iframe. The Phantom bug is tracked at:
@@ -17,7 +17,7 @@
   <% if (typeof no_iframe !== "undefined" && no_iframe === true) { %>
     <div class="contents" id="tosppframe" name="tosppframe"></div>
   <% } else { %>
-    <iframe class="contents" id="tosppframe" name="tosppframe" sandbox security="restricted" border="0"></iframe>
+    <iframe class="contents" id="tosppframe" name="tosppframe" sandbox security="restricted"></iframe>
   <% } %>
 </div>
 

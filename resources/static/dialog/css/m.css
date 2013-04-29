@@ -516,5 +516,9 @@
     overflow: auto;
     width:100%;
   }
+
+  .lightbox {
+    padding: 25px 5px 20px 5px;
+  }
 }
 

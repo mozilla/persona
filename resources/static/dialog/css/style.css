@@ -615,6 +615,7 @@ a.emphasize:active {
   border: 2px solid grey;
   box-shadow: 5px 5px 5px #777;
   background-color: #fff;
+  border: 0;
 }
 
 .lightbox .close {
