@@ -55,7 +55,7 @@
     display: none;
   }
 
-  h2 {
+  .form_section h2 {
     font-size: 19px;
     margin: 20px 0 15px 0;
   }
@@ -149,6 +149,10 @@
       height: auto;
       line-height: 32px;
       vertical-align: middle;
+  }
+
+  .tospp {
+    font-size: 12.5px;
   }
 
   #rptospp {
@@ -368,7 +372,8 @@
    */
   .form_section > p {
     margin: 17px 0 10px 0;
-    font-size: 12px;
+    /*
+    font-size: 12.5px;
     line-height: 1.5;
     /*
     The designs call for this to be 323232, but I am commenting it out

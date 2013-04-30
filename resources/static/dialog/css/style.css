@@ -70,6 +70,14 @@ h2 {
     font-size: 20px;
 }
 
+.form_section h2 {
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 18px;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
 h3 {
     font-size: 18px;
 }

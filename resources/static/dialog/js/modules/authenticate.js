@@ -215,7 +215,6 @@ BrowserID.Modules.Authenticate = (function() {
       dom.setInner(AUTHENTICATION_LABEL, dom.getInner(EMAIL_LABEL));
       self.submit = checkEmail;
       showHint("start");
-      dom.hide(".persona_intro");
       dom.focus(EMAIL_SELECTOR);
     }
 

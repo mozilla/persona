@@ -2,17 +2,17 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-  <strong><%= gettext("Sign in using") %></strong>
   <div class="form_section" id="primary_user_verified">
+      <h2><%= gettext("Address Verified!") %></h2>
+
       <ul class="inputs">
 
           <li>
-              <label for="email"><%= gettext("Email") %></label>
+              <label for="email" class="isDesktop"><%= gettext("Email") %></label>
               <input id="email" type="email" disabled value="<%= email %>" />
           </li>
 
           <li>
-              <p><strong><%= gettext("Address Verified!") %></strong></p>
               <%= gettext("Your identity has been verified with your email provider, we will now try to sign you in.") %>
           </li>
       </ul>

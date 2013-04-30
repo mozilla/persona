@@ -19,13 +19,17 @@
                      DOMContentLoaded or else the Firefox password manager does
                      not fill in passwords -->
                 <div id="authentication_form" class="form_section">
-                    <h2 class="start persona_intro">
-                        <%- format(gettext('%s uses Persona instead of usernames to sign you in.'), ['<strong id="start_rp_name"></strong>']) %>
+                    <div class="isDesktop">
+                      <h2 class="start persona_intro">
+                          <%- format(gettext('%s uses Persona instead of usernames to sign you in.'), ['<strong id="start_rp_name"></strong>']) %>
 
-                    </h2>
-                    <h2 class="start persona_intro_mobile">
-                        <%- format(gettext('Sign in with Persona')) %>
-                    </h2>
+                      </h2>
+                    </div>
+                    <div class="isMobile">
+                      <h2 class="start">
+                          <%- format(gettext('Sign in with Persona')) %>
+                      </h2>
+                    </div>
 
                     <ul class="inputs">
 
