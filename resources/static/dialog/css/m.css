@@ -178,6 +178,12 @@
    */
   #load, #wait {
     opacity: 1;
+  }
+
+  /*
+   * The tables must have the background or else the background is grey
+   */
+  #load .table, #wait .table {
     background-color: #fff;
     background-color: rgba(255, 255, 255, .85);
   }
@@ -191,7 +197,8 @@
       display: block;
   }
 
-  .waiting #formWrap, .delay #formWrap, .error #formWrap, .delay #wait, .error #wait, .error #delay {
+  .loading #formWrap, .waiting #formWrap, .delay #formWrap, .error #formWrap, .delay #wait, .error #wait,
+  .error #delay {
       display: none;
   }
 
@@ -229,7 +236,7 @@
   }
 
   #content {
-    position: relative;
+    position: absolute;
     top: 0;
     bottom: 0;
   }

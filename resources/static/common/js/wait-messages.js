@@ -10,6 +10,10 @@ BrowserID.Wait = (function(){
       message:  gettext("In just a moment you'll be signed into Persona.")
     },
 
+    checkingEmail: {
+      title: gettext("Checking with your email provider.")
+    },
+
     slowXHR: {
       title:  gettext("We are sorry, this is taking longer than it should."),
       message:  gettext("If this doesn't resolve itself within a few seconds, please close the window and try again."),

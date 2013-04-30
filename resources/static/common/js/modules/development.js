@@ -24,7 +24,7 @@ BrowserID.Modules.Development = (function() {
         this.click("#showError", showError);
         this.click("#showDelay", showDelay);
         this.click("#showWait", showWait);
-        this.click("#showLoading", showLoading);
+        this.click("#showLoad", showLoad);
         this.click("#hideAll,footer,#errorBackground", hideScreens);
         this.click("#clearLocalStorage", clearLocalStorage);
         this.click("#clearEmailsForSites", clearEmailsForSites);
@@ -66,9 +66,12 @@ BrowserID.Modules.Development = (function() {
     });
   }
 
-  function showLoading() {
+  function showLoad() {
     /*jshint validthis:true*/
-    dom.addClass("body", "loading");
+    this.renderLoad("load", {
+      title: "Load Screen",
+      message: "Load Message"
+    });
   }
 
   function hideScreens() {
@@ -76,7 +79,7 @@ BrowserID.Modules.Development = (function() {
     this.hideError();
     this.hideDelay();
     this.hideWait();
-    dom.removeClass("loading");
+    this.hideLoad();
   }
 
   function clearLocalStorage() {

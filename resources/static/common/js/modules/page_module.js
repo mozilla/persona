@@ -73,6 +73,10 @@ BrowserID.Modules.PageModule = (function() {
       }
     },
 
+    // the laoding wait, error and delay screens make up the warning screens.
+    renderLoad: showScreen.curry(screens.load),
+    hideLoad: hideScreen.curry(screens.load),
+
     // the wait, error and delay screens make up the warning screens.
     renderWait: showScreen.curry(screens.wait),
     hideWait: hideScreen.curry(screens.wait),

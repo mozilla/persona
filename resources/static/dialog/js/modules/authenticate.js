@@ -82,6 +82,7 @@ BrowserID.Modules.Authenticate = (function() {
     }
     else {
       showHint("addressInfo");
+      self.renderLoad("load", bid.Wait.checkingEmail);
       user.addressInfo(email, onAddressInfo,
         self.getErrorDialog(errors.addressInfo));
     }
@@ -89,6 +90,8 @@ BrowserID.Modules.Authenticate = (function() {
     function onAddressInfo(info) {
       addressInfo = info;
       dom.removeAttr(EMAIL_SELECTOR, 'disabled');
+
+      self.hideLoad();
 
       // We rely on user.addressInfo to tell us when an address that would
       // normally be a primary is a secondary because of forcedIssuer. If
