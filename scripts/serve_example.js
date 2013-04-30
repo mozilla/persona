@@ -67,7 +67,8 @@ exampleServer.post('/process_assertion', function(req, res, next) {
   var audience = req.headers['host'] ? req.headers['host'] : localHostname;
   var params = {
     assertion: req.body.assertion,
-    audience: audience
+    audience: audience,
+    allowUnverified: req.body.allowUnverified
   };
   if (!! req.body.forceIssuer) params['forceIssuer'] = req.body.forceIssuer;
   var data = querystring.stringify(params);

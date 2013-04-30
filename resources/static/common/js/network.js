@@ -15,6 +15,7 @@ BrowserID.Network = (function() {
       xhr = bid.XHR,
       post = xhr.post,
       get = xhr.get,
+      // XXX get this out of here!
       storage = bid.Storage;
 
   function onContextChange(msg, result) {
@@ -113,13 +114,15 @@ BrowserID.Network = (function() {
      * with status parameter - true if authenticated, false otw.
      * @param {function} [onFailure] - called on XHR failure
      */
-    authenticate: function(email, password, onComplete, onFailure) {
+    authenticate: function(email, password, allowUnverified,
+        onComplete, onFailure) {
       post({
         url: "/wsapi/authenticate_user",
         data: {
           email: email,
           pass: password,
-          ephemeral: !storage.usersComputer.confirmed(email)
+          ephemeral: !storage.usersComputer.confirmed(email),
+          allowUnverified: allowUnverified
         },
         success: onComplete,
         error: onFailure
@@ -188,14 +191,17 @@ BrowserID.Network = (function() {
      * @param {string} email
      * @param {string} password
      * @param {string} origin - site user is trying to sign in to.
+     * @param {boolean} allowUnverified
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    createUser: function(email, password, origin, onComplete, onFailure) {
+    createUser: function(email, password, origin, allowUnverified,
+        onComplete, onFailure) {
       var postData = {
         email: email,
         pass: password,
-        site : origin
+        site : origin,
+        allowUnverified: allowUnverified
       };
       stageAddressForVerification(postData, "/wsapi/stage_user", onComplete, onFailure);
     },
@@ -512,11 +518,13 @@ BrowserID.Network = (function() {
      * Certify the public key for the email address.
      * @method certKey
      */
-    certKey: function(email, pubkey, forceIssuer, onComplete, onFailure) {
+    certKey: function(email, pubkey, forceIssuer, allowUnverified,
+        onComplete, onFailure) {
       var postData = {
         email: email,
         pubkey: pubkey.serialize(),
-        ephemeral: !storage.usersComputer.confirmed(email)
+        ephemeral: !storage.usersComputer.confirmed(email),
+        allowUnverified: allowUnverified
       };
 
       if (forceIssuer !== "default") {

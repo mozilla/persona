@@ -61,6 +61,7 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/complete_email_confirmation ajaxError": undefined,
       "post /wsapi/stage_user unknown_secondary": { success: true },
       "post /wsapi/stage_user valid": { success: true },
+      "post /wsapi/stage_user unverified": { success: true, unverified: true },
       "post /wsapi/stage_user invalid": { success: false },
       "post /wsapi/stage_user throttle": 429,
       "post /wsapi/stage_user ajaxError": undefined,
@@ -189,6 +190,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/address_info?email=unregistered%40testuser.com&issuer=fxos_issuer unknown_secondary": { type: "secondary", state: "unknown" },
 
       "get /wsapi/address_info?email=registered%40testuser.com&issuer=default valid": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
+      "get /wsapi/address_info?email=registered%40testuser.com&issuer=default unverified": { type: "secondary", state: "unverified" },
       "get /wsapi/address_info?email=REGISTERED%40TESTUSER.COM&issuer=default valid": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
       "get /wsapi/address_info?email=registered%40testuser.com&issuer=default known_secondary": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },
       "get /wsapi/address_info?email=registered%40testuser.com&issuer=default throttle": { type: "secondary", state: "known", normalizedEmail: "registered@testuser.com" },

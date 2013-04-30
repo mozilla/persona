@@ -542,6 +542,36 @@
     );
   });
 
+  asyncTest("_experimental_forceAuthentication invalid", function() {
+    testExpectGetFailure(
+      {_experimental_forceAuthentication: "true"});
+  });
+
+  asyncTest("get with valid issuer - allowed", function() {
+    var issuer = "fxos.persona.org";
+    testExpectGetSuccess(
+      { _experimental_forceIssuer: issuer },
+      { forceIssuer: issuer }
+    );
+  });
+
+  asyncTest("get with non hostname issuer - bzzzt", function() {
+    var issuer = "https://issuer.must.be.a.hostname";
+    testExpectGetFailure({ _experimental_forceIssuer: issuer });
+  });
+
+  asyncTest("_experimental_allowUnverified", function() {
+    testExpectGetSuccess(
+      {_experimental_allowUnverified: true},
+      {allowUnverified: true}
+    );
+  });
+
+  asyncTest("_experimental_allowUnverified invalid", function() {
+    testExpectGetFailure(
+      {_experimental_allowUnverified: "true"});
+  });
+
   asyncTest("get with valid rp_api - allowed", function() {
     createController({
       ready: function() {
@@ -584,19 +614,6 @@
         });
       }
     });
-  });
-
-  asyncTest("get with valid issuer - allowed", function() {
-    var issuer = "fxos.persona.org";
-    testExpectGetSuccess(
-      { _experimental_forceIssuer: issuer },
-      { forceIssuer: issuer }
-    );
-  });
-
-  asyncTest("get with non hostname issuer - bzzzt", function() {
-    var issuer = "https://issuer.must.be.a.hostname";
-    testExpectGetFailure({ _experimental_forceIssuer: issuer });
   });
 
 }());

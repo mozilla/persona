@@ -122,6 +122,9 @@ BrowserID.State = (function() {
         user.setIssuer(info.forceIssuer);
       }
 
+      self.allowUnverified = info.allowUnverified;
+      user.setAllowUnverified(info.allowUnverified);
+
       startAction(false, "doRPInfo", info);
 
       if (info.email && info.type === "primary") {
@@ -169,7 +172,8 @@ BrowserID.State = (function() {
     handleState("authenticate", function(msg, info) {
       _.extend(info, {
         siteName: self.siteName,
-        siteTOSPP: self.siteTOSPP
+        siteTOSPP: self.siteTOSPP,
+        allowUnverified: self.allowUnverified
       });
 
       startAction("doAuthenticate", info);
@@ -250,6 +254,12 @@ BrowserID.State = (function() {
     });
 
     handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
+
+    // Once an unverified user is created, skip the confirmation step and
+    // sign them in directly.
+    handleState("unverified_created", function(msg, info) {
+      startAction(false, "doAuthenticateWithUnverifiedEmail", info);
+    });
 
     handleState("user_confirmed", handleEmailConfirmed);
 
@@ -423,12 +433,18 @@ BrowserID.State = (function() {
       else if ("transition_no_password" === info.state) {
         redirectToState("transition_no_password", info);
       }
-      else if (info.state === 'unverified') {
+      else if (info.state === 'unverified' && !self.allowUnverified) {
         // user selected an unverified secondary email, kick them over to the
         // verify screen.
         redirectToState("stage_reverify_email", info);
       }
       else {
+        // make sure an unverified-certs are removed
+        if (record.unverified && info.state !== 'unverified') {
+          storage.invalidateEmail(email, user.getIssuer());
+        }
+
+
         // Address is verified, check the authentication, if the user is not
         // authenticated to the assertion level, force them to enter their
         // password.

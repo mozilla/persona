@@ -167,6 +167,21 @@
     });
   });
 
+  asyncTest("allowUnverified with an unverified email declared in options - show password field", function() {
+    controller.destroy();
+    $(EMAIL_SELECTOR).val("");
+    createController({
+      email: "unverified@testuser.com",
+      type: "secondary",
+      state: "unverified",
+      allowUnverified: true,
+      ready: function() {
+        equal($(EMAIL_SELECTOR).val(), "unverified@testuser.com", "email prefilled");
+        equal($("input[type=password]").is(":visible"), true, "password is shown");
+        start();
+      }
+    });
+  });
   function testUserUnregistered() {
     register("new_user", function(msg, info, rehydrate) {
       ok(info.email, "new_user triggered with info.email");
@@ -197,7 +212,6 @@
     xhr.useResult("unknown_secondary");
     controller.checkEmail(null, start);
   });
-
 
   asyncTest("checkEmail with email with leading/trailing whitespace, user not registered - 'new_user' message", function() {
     $(EMAIL_SELECTOR).val("    unregistered@testuser.com   ");
@@ -244,12 +258,37 @@
     xhr.useResult("known_secondary");
 
     register("enter_password", function() {
-      testElementTextEquals(AUTHENTICATION_LABEL, $(PASSWORD_LABEL).html(), "enter password message shown");
+      testElementTextEquals(AUTHENTICATION_LABEL,
+          $(PASSWORD_LABEL).html(), "enter password message shown");
       start();
     });
 
     controller.checkEmail();
   });
+
+  asyncTest("checkEmail with registered, unverified email, allowUnverified" +
+      " set to true - 'enter_password' message", function() {
+    controller.destroy();
+    $(EMAIL_SELECTOR).val("");
+    createController({
+      allowUnverified: true,
+      ready: function() {
+        $(EMAIL_SELECTOR).val("registered@testuser.com");
+
+        register("enter_password", function() {
+          testElementTextEquals(AUTHENTICATION_LABEL,
+              $(PASSWORD_LABEL).html(), "enter password message shown");
+          start();
+        });
+
+        user.setAllowUnverified(true);
+        xhr.useResult("unverified");
+        controller.checkEmail();
+      }
+    });
+  });
+
+
 
   asyncTest("clear password if user changes email address", function() {
     xhr.useResult("known_secondary");

@@ -25,7 +25,9 @@ BrowserID.User = (function() {
       stagedPassword,
       userid,
       auth_status,
-      issuer = "default";
+      issuer = "default",
+      allowUnverified = false;
+
 
   // remove identities that are no longer valid
   function cleanupIdentities(onSuccess, onFailure) {
@@ -63,17 +65,18 @@ BrowserID.User = (function() {
             try {
               email_obj.pub = jwcrypto.loadPublicKeyFromObject(email_obj.pub);
             } catch (x) {
-              storage.invalidateEmail(email_address);
+              storage.invalidateEmail(email_address, issuer);
               return;
             }
 
             // no cert? reset
             if (!email_obj.cert) {
-              storage.invalidateEmail(email_address);
+              storage.invalidateEmail(email_address, issuer);
             } else {
               try {
                 // parse the cert
-                var cert = jwcrypto.extractComponents(emails[email_address].cert);
+                var cert = jwcrypto.extractComponents(
+                                emails[email_address].cert);
 
                 // check if this certificate is still valid.
                 if (isExpired(cert)) {
@@ -81,20 +84,21 @@ BrowserID.User = (function() {
                 }
 
               } catch (e) {
-                // error parsing the certificate!  Maybe it's of an old/different
-                // format?  just delete it.
+                // error parsing the certificate!  Maybe it's of an
+                // old/different format?  just delete it.
                 helpers.log("error parsing cert for"+ email_address +":" + e);
                 storage.invalidateEmail(email_address, issuer);
               }
             }
           });
+          onSuccess();
         });
-        onSuccess();
       }, onFailure);
     }, onFailure);
   }
 
-  function stageAddressVerification(email, password, stagingStrategy, onComplete, onFailure) {
+  function stageAddressVerification(email, password, stagingStrategy,
+      onComplete, onFailure) {
     // These are saved for the addressVerificationPoll.  If there is
     // a stagedEmail or stagedPassword when the poll completes, try to
     // authenticate the user.
@@ -103,8 +107,9 @@ BrowserID.User = (function() {
 
     // stagingStrategy is a curried function that will have all but the
     // onComplete and onFailure functions already set up.
-    stagingStrategy(function(staged) {
-      var status = { success: staged };
+    stagingStrategy(function(status) {
+      if (!status) status = { success: false };
+      var staged = status.success;
 
       if (!staged) status.reason = "throttle";
       // Used on the main site when the user verifies - once
@@ -280,6 +285,12 @@ BrowserID.User = (function() {
         cert: cert
       });
 
+      if (info.state === "unverified") {
+        email_obj.unverified = true;
+      } else if (email_obj.unverified) {
+        delete email_obj.unverified;
+      }
+
       storage.addEmail(email, email_obj, issuer);
       if (onComplete) onComplete(true);
     }, onFailure);
@@ -303,7 +314,8 @@ BrowserID.User = (function() {
    * @method certifyEmailKeypair
    */
   function certifyEmailKeypair(email, keypair, onComplete, onFailure) {
-    network.certKey(email, keypair.publicKey, issuer, function(cert) {
+    network.certKey(email, keypair.publicKey, issuer, allowUnverified,
+        function(cert) {
       persistEmailKeypair(email, keypair, cert, onComplete, onFailure);
     }, onFailure);
   }
@@ -394,6 +406,7 @@ BrowserID.User = (function() {
       pollDuration = POLL_DURATION;
       stagedEmail = stagedPassword = userid = auth_status = null;
       issuer = "default";
+      allowUnverified = false;
     },
 
     resetCaches: function() {
@@ -467,6 +480,16 @@ BrowserID.User = (function() {
     },
 
     /**
+     * Set whether the network should pass allowUnverified=true in
+     * its requests.
+     * @method setAllowUnverified
+     * @param {boolean} [allow] - True or false, to allow.
+     */
+    setAllowUnverified: function(allow) {
+      allowUnverified = allow;
+    },
+
+    /**
      * Return the user's userid, which will an integer if the user
      * is authenticated, undefined otherwise.
      *
@@ -480,7 +503,8 @@ BrowserID.User = (function() {
     clearContext: clearContext,
 
     /**
-     * Create a user account - this creates an user account that must be verified.
+     * Create a user account - this creates an user account that must
+     * be verified.
      * @method createSecondaryUser
      * @param {string} email
      * @param {string} password
@@ -489,8 +513,19 @@ BrowserID.User = (function() {
      */
     createSecondaryUser: function(email, password, onComplete, onFailure) {
       stageAddressVerification(email, password,
-        network.createUser.bind(network, email, password, origin),
-        onComplete, onFailure);
+        network.createUser.bind(network, email, password,
+            origin, allowUnverified), function(status) {
+              // If creating an unverified account, the user will not go
+              // through the verification flow while the dialog is open and the
+              // cache will not be updated accordingly. Update the cache now.
+              if (status.unverified) {
+                var cachedAddress = addressCache[email];
+                if (cachedAddress) {
+                  cachedAddress.state = "unverified";
+                }
+              }
+              complete(onComplete, status);
+            }, onFailure);
     },
 
     /**
@@ -1037,7 +1072,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     authenticate: function(email, password, onComplete, onFailure) {
-      network.authenticate(email, password,
+      network.authenticate(email, password, allowUnverified,
           handleAuthenticationResponse.curry(email, "password", onComplete,
               onFailure), onFailure);
     },
