@@ -65,17 +65,18 @@ BrowserID.User = (function() {
             try {
               email_obj.pub = jwcrypto.loadPublicKeyFromObject(email_obj.pub);
             } catch (x) {
-              storage.invalidateEmail(email_address);
+              storage.invalidateEmail(email_address, issuer);
               return;
             }
 
             // no cert? reset
             if (!email_obj.cert) {
-              storage.invalidateEmail(email_address);
+              storage.invalidateEmail(email_address, issuer);
             } else {
               try {
                 // parse the cert
-                var cert = jwcrypto.extractComponents(emails[email_address].cert);
+                var cert = jwcrypto.extractComponents(
+                                emails[email_address].cert);
 
                 // check if this certificate is still valid.
                 if (isExpired(cert)) {
@@ -83,15 +84,15 @@ BrowserID.User = (function() {
                 }
 
               } catch (e) {
-                // error parsing the certificate!  Maybe it's of an old/different
-                // format?  just delete it.
+                // error parsing the certificate!  Maybe it's of an
+                // old/different format?  just delete it.
                 helpers.log("error parsing cert for"+ email_address +":" + e);
                 storage.invalidateEmail(email_address, issuer);
               }
             }
           });
+          onSuccess();
         });
-        onSuccess();
       }, onFailure);
     }, onFailure);
   }

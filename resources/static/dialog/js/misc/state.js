@@ -441,7 +441,7 @@ BrowserID.State = (function() {
       else {
         // make sure an unverified-certs are removed
         if (record.unverified && info.state !== 'unverified') {
-          storage.invalidateEmail(email);
+          storage.invalidateEmail(email, user.getIssuer());
         }
 
 
