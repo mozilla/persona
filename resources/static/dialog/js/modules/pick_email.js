@@ -63,6 +63,13 @@ BrowserID.Modules.PickEmail = (function() {
 
     var record = checkEmail.call(self, email);
     if (!! record) {
+      // Show the signing in screen as soon as the user presses the button so
+      // that it does not seem like there is a huge delay while things being
+      // processed.
+      self.renderLoad("load", {
+        title: gettext("signing in")
+      });
+
       dialogHelpers.refreshEmailInfo.call(self, email, function (info) {
         // XXX Why is this here? This is almost a complete duplication of
         // the logic in state.js, and it should be there.

@@ -19,7 +19,7 @@ BrowserID.Modules.GenerateAssertion = (function() {
         throw new Error("email required");
       }
 
-      self.renderWait("wait", {
+      self.renderLoad("load", {
         title: gettext("signing in")
       });
 
