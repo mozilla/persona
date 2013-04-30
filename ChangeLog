@@ -20,6 +20,7 @@ train-2013.04.26:
     * better error reporting to KPI: #3302
     * make it harder to poison user caches during deployment #3315
   * (hotfix 2013.04.29) fix js exception when sample rate !== 1.0: issue #3319
+  * (hotfix 2013.04.29) Fix sporatic 503s: #3309
 
 train-2013.04.12:
   * Key Performance Indicator (anonymous metrics) improvements: #3148
