@@ -603,7 +603,7 @@ a.emphasize:active {
   left: 0;
   bottom: 0;
   z-index: 900;
-  background-color: #999;
+  background-color: #111;
   background-color: rgba(0,0,0,.9);
   padding: 50px 60px 20px 60px;
 }
@@ -623,6 +623,7 @@ a.emphasize:active {
   color: red;
   position: absolute;
   right: 10px;
+  background: url("/common/i/closex.png") no-repeat scroll right center #000;
   background: url("/common/i/closex.png") no-repeat scroll right center rgba(0, 0, 0, 0.6);
   border-radius: 6px;
   padding: 5px 28px 5px 5px;

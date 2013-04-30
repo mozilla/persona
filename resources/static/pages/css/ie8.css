@@ -8,18 +8,18 @@
 
 /**
  * IE8 can only handle one background image in a CSS declaration
- * IE8 for some reason requires the background be set on the wrapper or
- * else it shows a black background
  */
-body, .embedded #wrapper {
+body {
   background: #6a7b86 url("/pages/i/marketplace-header.png") repeat-x center top;
 }
+
 
 /**
  * IE8 in the embedded context does not respect the IFRAME size and shows a
  * scroll bar unless the wrapper's width is set to auto
  */
 .embedded #wrapper {
+  background: #fff;
   width: auto;
 }
 
