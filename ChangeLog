@@ -19,6 +19,7 @@ train-2013.04.26:
     * remove confusing console output during frontend tests: #3290
     * better error reporting to KPI: #3302
     * make it harder to poison user caches during deployment #3315
+  * (hotfix 2013.04.29) fix js exception when sample rate !== 1.0: issue #3319
 
 train-2013.04.12:
   * Key Performance Indicator (anonymous metrics) improvements: #3148
