@@ -196,7 +196,7 @@
     display: none;
   }
 
-  #legal {
+  #legal, .embedded #legal {
     padding: 20px;
     text-align: left;
   }
