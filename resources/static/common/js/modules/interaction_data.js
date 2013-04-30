@@ -332,8 +332,10 @@ BrowserID.Modules.InteractionData = (function() {
     if (data.duration) eventData.push(data.duration);
 
     var eventStream = self.getCurrentEventStream();
-    if (eventStream) eventStream.push(eventData);
-    setCurrentEventStream.call(self, eventStream);
+    if (eventStream) {
+      eventStream.push(eventData);
+      setCurrentEventStream.call(self, eventStream);
+    }
 
     return eventData;
   }

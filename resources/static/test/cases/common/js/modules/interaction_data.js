@@ -442,6 +442,21 @@
     });
   });
 
+  test("start_time does not cause blowup if sampling disabled", function() {
+    createController(true, {
+      samplingEnabled: false
+    });
+
+    // set a fake startTime to simulate the dialog load delay. This should make
+    // every event be offset by at least 1000 ms.
+    var startTime = new Date().getTime() - 1000;
+    try {
+      controller.addEvent("start_time", startTime);
+    } catch(e) {
+      ok(false);
+    }
+  });
+
   asyncTest("start_time adjusts date of already added events", function() {
     // create a date that is one second ago that will be used to update the
     // start_time.
