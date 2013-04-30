@@ -8,7 +8,6 @@
 @media screen and (max-width: 640px) {
 
   html, body {
-    height: auto;
     -webkit-text-size-adjust: none;
   }
 
@@ -16,6 +15,7 @@
    * horizontal lines to appear while the dialog is loading.
    */
   body {
+    height: 100%;
     background: #eff0f2 none;
   }
 
@@ -36,7 +36,16 @@
     border-radius: 5px;
   }
 
-  section, .arrow, .arrowContainer {
+  /**
+   * Reset the absolute positioning and coloring that is placed on
+   * each section.
+   */
+  #formWrap {
+    background-color: transparent;
+    position: static;
+  }
+
+  section {
     display: none;
   }
 
@@ -82,7 +91,7 @@
     margin-top: 0;
   }
 
-
+  /*
   #selectEmail {
     top: auto;
     left: auto;
@@ -91,11 +100,11 @@
     overflow-y: inherit;
     position: static;
     width: auto;
-  }
+  }*/
 
-  #favicon {
+  .favicon {
       overflow: inherit;
-      display: block;
+      /*display: block;*/
       width: 100%;
         /* Changed this from relative to static to fix issue #1309 tooltips
        * being partially cut off by the site URL bar
@@ -109,7 +118,7 @@
       box-shadow: 0px -1px #fff inset;
   }
 
-  #favicon img {
+  .favicon img {
       max-width: 32px;
       max-height: 32px;
       display: inline;
@@ -117,7 +126,7 @@
       vertical-align: middle;
   }
 
-  #favicon h2, #favicon h3 {
+  .favicon h2, .favicon h3 {
       margin: 0 5px;
       height: auto;
       line-height: 32px;
@@ -126,11 +135,11 @@
       vertical-align: middle;
   }
 
-  #favicon h3 {
+  .favicon h3 {
       font-size: 16px;
   }
 
-  #favicon .vertical {
+  .favicon .vertical {
       height: auto;
       line-height: 32px;
       vertical-align: middle;
@@ -141,49 +150,47 @@
   }
 
   #signIn {
-    top: auto;  /* this will be set in JS to be at the bottom of the header */
-    right: 0;
+    position: static;
+    /*
+    top: auto;  /* this will be set in JS to be at the bottom of the header *//*
+    right: 0;*/
     width: auto;
     padding: 0;
   }
 
+  /*
   #signIn .table, #signIn .container {
       width: 100%;
       /*display: block;
-      height: 100%;*/
-  }
+      height: 100%;*//*
+  }*/
 
+  /*
   #signIn .table{
     padding: 20px;
-  }
+  }*/
 
+  /*
+  .table .vertical {
+    position: static;
+    display: block;
+  }*/
   #signIn .vertical {
     position: static;
-    /*
     display: block;
-    vertical-align: top;*/
+    /*
+    vertical-align: top;
+    */
   }
 
   #signIn form {
       padding: 0;
   }
 
-  #formWrap {
-      background-color: transparent;
-  }
-
-  /**
-   * XXX We may want to replace this with the "wait" screen to reduce
-   * complexity.
-   */
-  #load, #wait {
-    opacity: 1;
-  }
-
   /*
-   * The tables must have the background or else the background is grey
+   * The load table must have the background or else the background is grey
    */
-  #load .table, #wait .table {
+  #load .table {
     background-color: #fff;
     background-color: rgba(255, 255, 255, .85);
   }
@@ -213,15 +220,27 @@
     padding: 8px 0;
   }
 
+  /*
+   * The button row should always be against the bottom border of the
+   * dialog. Get rid of its margin.
+   */
   #signIn .buttonrow {
     position: absolute;
-    bottom: 0;
     left: 0;
     right: 0;
     padding: 20px;
     background-color: #dcdcdc;
     border-top: 1px solid #bcbcbc;
     box-shadow: 0px 1px #fff inset;
+    margin: 0;
+  }
+
+  /**
+   * If the button row must be scrolled off screen because of height
+   * constraints, the scrollButtonRow class will be placed on the body
+   */
+  .scrollButtonRow #signIn .buttonrow {
+    bottom: 0;
   }
 
   #signIn .submit > p {
@@ -236,27 +255,19 @@
   }
 
   #content {
+    position: static;
+    /*
     position: absolute;
     top: 0;
     bottom: 0;
-  }
-
-  .form_section {
-    position: absolute;
-    width: 100%;
-    max-height: none;
-    overflow: visible;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    padding: 0;
+    */
   }
 
   .vertical {
+    position: static;
+/*
     position: relative;
     height: auto;
-    /*position: absolute;*/
     width: 100%;
     max-height: none;
     overflow: visible;
@@ -268,10 +279,24 @@
   }
 
   .form_section {
+    position: static;
+    width: 100%;
+    /*
+    max-height: none;
+    overflow: visible;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding: 0;*/
     font-size: 14px;
-    padding: 0 20px;
+    /*padding: 0 20px;*/
+    overflow: visible;
   }
 
+  /*
+   * Get rid of the margin's set by the desktop CSS
+   */
   .form_section p {
     margin-top: 0;
   }
@@ -280,10 +305,14 @@
    * The p's within a form_section should have a margin and look pretty.
    */
   .form_section > p {
-    margin-top: 17px;
+    margin: 17px 0 10px 0;
     font-size: 12px;
     line-height: 1.5;
+    /*
+    The designs call for this to be 323232, but I am commenting it out
+    for now to keep consistency with the desktop site and the RPs TOS/PP.
     color: #323232;
+    */
   }
 
   /*

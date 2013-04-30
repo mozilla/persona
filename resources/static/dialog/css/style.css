@@ -319,7 +319,7 @@ section > .contents {
     background-color: transparent;
 }
 
-#favicon {
+.favicon {
     position: absolute;
     left: 400px;
     top: 0;
@@ -329,34 +329,34 @@ section > .contents {
     z-index: 10;
 }
 
-#favicon strong {
+.favicon strong {
     font-size: 18px;
     line-height: 24px;
     text-shadow: 0 1px #fff;
 }
 
-#favicon img {
+.favicon img {
     display: block;
     margin: 0 auto;
     max-height: 100px;
     max-width: 100px;
 }
 
-#favicon h2, #favicon h3 {
+.favicon h2, .favicon h3 {
     line-height: 1.2em;
     margin: 10px 0 0 0;
 }
 
-#favicon h2 {
+.favicon h2 {
     margin: 10px 0 0 0;
 }
 
-#favicon h3 {
+.favicon h3 {
     font-size: 16px;
     margin-top: 0;
 }
 
-#favicon .vertical {
+.favicon .vertical {
     display: table-cell;
     text-align: center;
     max-width: 0;

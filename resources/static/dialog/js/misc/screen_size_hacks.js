@@ -65,7 +65,7 @@
         // First, find the maximum width that emails can be. First set the
         // width of the scrollable element to be very narrow so that we can
         // find the natural innerWidth of the parent.
-        /*scrollableEl.css("width", "10px");*/
+        scrollableEl.css("width", "10px");
         var parentNaturalWidth = scrollableEl.parent().innerWidth();
 
         // Unconstrain the scrollableEl's width to find the real maximum
@@ -74,8 +74,8 @@
         var maxEmailWidth = scrollableEl.innerWidth();
 
         // If we have a too large an email, constrain the width.
-        if(maxEmailWidth > parentNaturalWidth) {
-          scrollableEl.css("width", parentNaturalWidth + "px");
+        if (maxEmailWidth > parentNaturalWidth) {
+          /*scrollableEl.css("width", parentNaturalWidth + "px");*/
         }
 
         // Hack to find the min-height of the content area the footer is pushed
@@ -84,8 +84,8 @@
 
         // Unconstrain everything so that we can find natural heights of all
         // elements.
-        $("section,#signIn").css("position", "static");
-        contentEl.css("min-height", "0"); // required for Chrome to correctly resize the window
+        /*$("section,#signIn").css("position", "static");*/
+        /*contentEl.css("min-height", "0"); // required for Chrome to correctly resize the window*/
 
         /*
         var headerHeight = $("header").outerHeight();
@@ -116,21 +116,33 @@
         // Don't let the screen shrink to less than its initial height. This
         // minimizes jerkiness associated with the virtual keyboard being
         // displayed.
+        /*
         contentHeight = Math.max(100, contentHeight,
                             formHeight, initialHeight);
-        contentEl.css("min-height", contentHeight + "px");
+        /
+        /*contentEl.css("min-height", contentHeight + "px");*/
 
+        var totalInnerHeight = formHeight + $(".buttonrow").outerHeight();
+        var bodyHeight = $("body").innerHeight();
+        console.log("body " + bodyHeight + " inner " + totalInnerHeight);
+        if (totalInnerHeight < bodyHeight) {
+          $("body").addClass("scrollButtonRow");
+        }
+        else {
+          $("body").removeClass("scrollButtonRow");
+        }
         // Remove the explicit static position we added to let this go back to
         // the position specified in CSS.
-        $("section,#signIn").css("position", "");
+        /*$("section,#signIn").css("position", "");*/
 
+        /*
         var favIconHeight = 0;
         if ($("#favicon:visible").length) {
           favIconHeight = $("#favicon").outerHeight();
         }
 
         // Force the top of the main content area to be below the favicon area.
-        boundingRectEl.css("top", favIconHeight + "px");
+        boundingRectEl.css("top", favIconHeight + "px");*/
     }
 
     // this can be used to keep the footer text on one line, #3129.

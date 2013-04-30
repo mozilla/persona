@@ -28,7 +28,7 @@ BrowserID.Modules.RPInfo = (function() {
        * so it will not be escaped.  It is set initially in user.js at the very
        * bottom for the main site, and then in dialog.js->get for the dialog.
        */
-      renderer.render("#rp_info", "rp_info", {
+      renderer.render(".rpInfo", "rp_info", {
         hostname: options.hostname,
         siteName: options.siteName,
         siteLogo: options.siteLogo,
