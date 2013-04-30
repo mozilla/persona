@@ -37,7 +37,7 @@
         var userAgent = navigator.userAgent;
         return (userAgent.indexOf('Fennec/') != -1) ||  // XUL
                (userAgent.indexOf('Firefox/') != -1 && userAgent.indexOf('Android') != -1);   // Java
-      } catch(e) {};
+      } catch(e) {}
       return false;
     }
 
@@ -132,12 +132,26 @@
 
           if (!messageTarget) messageTarget = w;
 
+          // lets listen in case the window blows up before telling us
+          var closeInterval = setInterval(function() {
+            if (w && w.closed) {
+              cleanup();
+              if (cb) {
+                cb('unknown closed window');
+                cb = null;
+              }
+            }
+          }, 500);
+
           var req = JSON.stringify({a: 'request', d: opts.params});
 
           // cleanup on unload
           function cleanup() {
             if (iframe) document.body.removeChild(iframe);
             iframe = undefined;
+            if (closeInterval) closeInterval = clearInterval(closeInterval);
+            removeListener(window, 'message', onMessage);
+            removeListener(window, 'unload', cleanup);
             if (w) {
               try {
                 w.close();
@@ -157,13 +171,12 @@
               var d = JSON.parse(e.data);
               if (d.a === 'ready') messageTarget.postMessage(req, origin);
               else if (d.a === 'error') {
+                cleanup();
                 if (cb) {
                   cb(d.d);
                   cb = null;
                 }
               } else if (d.a === 'response') {
-                removeListener(window, 'message', onMessage);
-                removeListener(window, 'unload', cleanup);
                 cleanup();
                 if (cb) {
                   cb(null, d.d);
@@ -197,8 +210,6 @@
       };
     }
   })();
-
-
 
   // END WINCHAN
 
