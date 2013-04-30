@@ -36,6 +36,11 @@
     border-radius: 5px;
   }
 
+  a {
+    color: #24a4de;
+    text-shadow: none;
+  }
+
   /**
    * Reset the absolute positioning and coloring that is placed on
    * each section.
@@ -46,6 +51,7 @@
   }
 
   section {
+    position: fixed;
     display: none;
   }
 
@@ -190,22 +196,78 @@
   /*
    * The load table must have the background or else the background is grey
    */
-  #load .table {
+  #load .table, #delay .table {
     background-color: #fff;
     background-color: rgba(255, 255, 255, .85);
   }
 
-  #load h2, #wait h2 {
+  .message_screen h2 {
     font-size: 15.5px;
     text-align: center;
+  }
+
+
+  #error {
+    position: fixed;
+    background: #3b3b3b;
+    background: rgba(64, 64, 64, .95);
+    color: #fff;
+  }
+
+  /**
+   * Override for hover state on an anchor. The black background makes it
+   * difficult to see the normal hover state
+   */
+  #error a:hover {
+    color: #30b2d9;
+  }
+
+  #error h2 {
+    text-align: left;
+    text-shadow: none;
+    font-weight: 300;
+    font-size: 18px;
+    border-bottom: 1px solid #656161;
+    letter-spacing: .25px;
+    padding-bottom: 10px;
+  }
+
+  #error h3, #error p.emphasis {
+    text-shadow: none;
+    font-weight: 300;
+    font-size: 22px;
+    letter-spacing: .25px;
+    padding-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  #error .emphasis {
+    color: #fff;
+  }
+
+  #error .buttonrow {
+    background-color: #3a3a3a;
+    padding: 20px 25px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  #error .buttonrow button {
+    color: #414343;
+    text-shadow: 1px 1px #fff;
+    background: #30bed9;
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   .form #formWrap, .waiting #wait, .delay #delay, .error #error, .loading #load {
       display: block;
   }
 
-  .loading #formWrap, .waiting #formWrap, .delay #formWrap, .error #formWrap, .delay #wait, .error #wait,
-  .error #delay {
+  .delay #wait, .error #wait, .error #delay {
       display: none;
   }
 

@@ -239,17 +239,11 @@ section > .contents {
     opacity: 1;
 }
 
-.loading #load {
-    z-index: 10;
-}
-
-#load img {
-  display: block;
-  margin: 0 auto;
-}
-
-
 .waiting #wait {
+    z-index: 5;
+}
+
+.loading #load {
     z-index: 10;
 }
 
@@ -264,6 +258,12 @@ section > .contents {
 #error.unsupported {
   padding: 20px 0;
 }
+
+.message_screen img {
+  display: block;
+  margin: 0 auto;
+}
+
 
 .unsupported {
   /*

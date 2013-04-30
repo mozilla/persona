@@ -52,7 +52,7 @@ BrowserID.Modules.Development = (function() {
 
   function showDelay() {
     /*jshint validthis:true*/
-    this.renderDelay("wait", {
+    this.renderDelay("load", {
       title: "Delay Screen",
       message: "Delay Message"
     });

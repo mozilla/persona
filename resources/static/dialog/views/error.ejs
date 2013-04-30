@@ -5,23 +5,21 @@
 
   <div id="error_contents">
 
+  <h2><%= gettext("Error") %></h2>
+
   <% if (typeof network !== "undefined" && network.status == 503) { %>
-    <h2 id="error_503">
+    <h3 id="error_503">
       <%= gettext("We are very sorry.") %><span class="emphasis"> <%= gettext("The server is under extreme load!") %></span>
-    </h2>
+    </h3>
   <% } else if (typeof network !== "undefined" && network.status == 403) { %>
-    <h2 id="error_403">
+    <h3 id="error_403">
       <%= gettext("Persona requires cookies to remember you.") %>
-    </h2>
+    </h3>
     <%- format(gettext("Please close this window, <a %s>enable cookies</a> and try again"), [" target='_blank' href='http://support.mozilla.org/kb/Websites%20say%20cookies%20are%20blocked'"]) %>
   <% } else if(typeof title === "string") { %>
-    <h2>
+    <h3>
       <span class="emphasis"><%= title %></span>
-    </h2>
-  <% } else { %>
-    <h2 id="defaultError">
-      <%= gettext("We are very sorry.") %><span class="emphasis"> <%= gettext("There has been an error!") %></span>
-    </h2>
+    </h3>
   <% } %>
 
   <% if (!(typeof network !== "undefined" && network.status == 403)) { %>
@@ -76,8 +74,7 @@
         </li>
 
       <% } %>
-    <% } %>
-
-  </ul>
+    </ul>
+  <% } %>
 
   </div>
