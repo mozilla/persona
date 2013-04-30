@@ -123,6 +123,14 @@
         // Remove the explicit static position we added to let this go back to
         // the position specified in CSS.
         $("section,#signIn").css("position", "");
+
+        var favIconHeight = 0;
+        if ($("#favicon:visible").length) {
+          favIconHeight = $("#favicon").outerHeight();
+        }
+
+        // Force the top of the main content area to be below the favicon area.
+        boundingRectEl.css("top", favIconHeight + "px");
     }
 
     // this can be used to keep the footer text on one line, #3129.
