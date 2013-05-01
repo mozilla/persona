@@ -300,7 +300,7 @@ BrowserID.Modules.InteractionData = (function() {
 
     // Base the offset of any event already on the event stream off of the new
     // startTime.
-    if (eventStream.length) {
+    if (eventStream && eventStream.length) {
       var delta = self.startTime - newStartTime;
 
       for (var i=0, event; event=eventStream[i]; ++i) {
@@ -332,8 +332,10 @@ BrowserID.Modules.InteractionData = (function() {
     if (data.duration) eventData.push(data.duration);
 
     var eventStream = self.getCurrentEventStream();
-    eventStream.push(eventData);
-    setCurrentEventStream.call(self, eventStream);
+    if (eventStream) {
+      eventStream.push(eventData);
+      setCurrentEventStream.call(self, eventStream);
+    }
 
     return eventData;
   }
@@ -345,7 +347,7 @@ BrowserID.Modules.InteractionData = (function() {
 
     // Check if event is the same as the last event. If it is, update the
     // number of times the last event was called. If not, continue as always.
-    if (/^xhr_complete/.test(eventName) && eventStream.length) {
+    if (/^xhr_complete/.test(eventName) && eventStream && eventStream.length) {
       var lastEvent = eventStream[eventStream.length - 1];
       if (lastEvent[0] === eventName) {
         // same xhr event as the last one. Update the count.
