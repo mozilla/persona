@@ -61,7 +61,9 @@ suite.addBatch({
     'http://fakesite.com:8100 and http://fakesite.com:80': matchesAudience(false),
     'https://fakesite.com:9100 and https://fakesite.com:443': matchesAudience(false),
     'http://fakesite.com:80 and http://fakesite.com:8000': matchesAudience(false),
-    'https://fakesite.com:443 and https://fakesite.com:9000': matchesAudience(false)
+    'https://fakesite.com:443 and https://fakesite.com:9000': matchesAudience(false),
+
+    'app://browser.gaiamobile.org and app://browser.gaiamobile.org:80': matchesAudience(true)
   }
 });
 
