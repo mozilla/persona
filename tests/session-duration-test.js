@@ -29,6 +29,9 @@ const PRIMARY_DOMAIN = 'example.domain',
       PRIMARY_EMAIL = 'testuser@' + PRIMARY_DOMAIN,
       PRIMARY_ORIGIN = 'http://127.0.0.1:10002';
 
+// testing FirefoxOS session durations.
+const TEN_YEARS_MS = 315360000000;
+
 // here we go!  let's authenticate with an assertion from
 // a primary.
 
@@ -99,6 +102,48 @@ suite.addBatch({
       },
       "has expected duration": function(err, r) {
         assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('authentication_duration_ms'));
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "generating an assertion": {
+    topic: function() {
+      primaryUser.getAssertion(PRIMARY_ORIGIN, this.callback);
+    },
+    "and logging in with the assertion with ephemeral = true": {
+      topic: function(err, assertion)  {
+        wsapi.post('/wsapi/auth_with_assertion', {
+          assertion: assertion,
+          ephemeral: true
+        }, {
+          headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
+        }).call(this);
+      },
+      "has expected duration for FirefoxOS": function(err, r) {
+        assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('ephemeral_session_duration_ms'));
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "generating an assertion": {
+    topic: function() {
+      primaryUser.getAssertion(PRIMARY_ORIGIN, this.callback);
+    },
+    "and logging in with the assertion with ephemeral = false": {
+      topic: function(err, assertion)  {
+        wsapi.post('/wsapi/auth_with_assertion', {
+          assertion: assertion,
+          ephemeral: false
+        }, {
+          headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
+        }).call(this);
+      },
+      "has expected duration FirefoxOS": function(err, r) {
+        assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), TEN_YEARS_MS);
       }
     }
   }
