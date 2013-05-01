@@ -124,7 +124,6 @@
 
         var totalInnerHeight = formHeight + $(".buttonrow").outerHeight();
         var bodyHeight = $("body").innerHeight();
-        console.log("body " + bodyHeight + " inner " + totalInnerHeight);
         if (totalInnerHeight < bodyHeight) {
           $("body").addClass("scrollButtonRow");
         }
