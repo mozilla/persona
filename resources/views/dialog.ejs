@@ -20,25 +20,25 @@
                      not fill in passwords -->
                 <div id="authentication_form" class="form_section">
                     <div class="isDesktop">
-                      <h2 class="start persona_intro">
+                      <h2 class="isStart persona_intro">
                           <%- format(gettext('%s uses Persona instead of usernames to sign you in.'), ['<strong id="start_rp_name"></strong>']) %>
 
                       </h2>
                     </div>
                     <div class="isMobile">
-                      <h2 class="start">
+                      <h2 class="isStart">
                           <%- format(gettext('Sign in with Persona')) %>
                       </h2>
                     </div>
 
                     <ul class="inputs">
 
-                        <li class="start">
-                            <label for="authentication_email"></label>
+                        <li>
+                            <label for="authentication_email" class="isDesktopStart"></label>
                             <span class="label email_state"><%= gettext('Enter your email address') %></span>
                             <span class="label transition_to_secondary"><%- format(gettext('%(idp)s no longer allows you to log into Persona with your %(idp)s password. You must now use your existing Persona password to log in with this email address.'), { idp: '<strong class="authentication_idp_name"></strong>'}) %></span>
                             <span class="label password_state"><%= gettext('Now enter your Persona password.') %></span>
-                            <input id="authentication_email" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
+                            <input id="authentication_email" class="isDesktopStart" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
 
                             <div id="email_format" class="tooltip" for="authentication_email">
                               <%= gettext('This field must be an email address.') %>
@@ -58,16 +58,16 @@
                         </li>
 
 
-                        <li id="hint_section" class="addressInfo submit isDesktop">
+                        <!--li id="hint_section" class="isAddressInfo submit isDesktop">
                             <%= gettext("Checking with your email provider.") %>
-                        </li>
+                        </li-->
 
-                        <li class="returning">
+                        <li class="isReturning">
 
-                            <h2><%- gettext('Enter password') %></h2>
 
                             <label for="authentication_password" class="hidden"><%= gettext('Password') %></label>
 
+                            <h2 class="isMobile"><%- gettext('Enter password') %></h2>
                             <input id="authentication_password" type="password" maxlength="80" placeholder="<%= gettext('password') %>" />
 
                             <div id="password_required" class="tooltip" for="authentication_password">
@@ -78,12 +78,14 @@
 
                     </ul>
 
-                    <p class="submit cf returning">
-                      <a id="forgotPassword" class="returning" href="#"><%= gettext('Forgot your password?') %></a>
+                    <p class="submit cf isReturning">
+                      <a class="isMobile forgotPassword" href="#">
+                        <%= gettext('Forgot your password?') %>
+                      </a>
                     </p>
 
 
-                    <p class="submit tospp start cf">
+                    <p class="submit tospp cf isDesktopStart">
                        <%- format(gettext("By proceeding, you agree to %(site)s's <a %(terms)s>Terms</a> and <a %(privacy)s>Privacy Policy</a>."),
                                   { site: "Persona",
                                     terms:
@@ -93,14 +95,29 @@
                     </p>
 
                     <p class="submit cf buttonrow">
-                      <button class="start addressInfo "><%= gettext('next') %></button>
+                      <button class="isStart isAddressInfo "><%= gettext('next') %></button>
 
-                      <a href="#" class="start right addressInfo cancelDialog isMobile">
-                        <%= gettext('cancel') %>
-                      </a>
+                      <span class="isStart isAddressInfo right">
+                        <a href="#" class="isMobile cancelDialog">
+                          <%= gettext('cancel') %>
+                        </a>
+                      </span>
 
-                      <button class="returning"><%= gettext('sign in') %></button>
-                      <a href="#" class="returning right cancelPassword"><%= gettext('cancel') %></a>
+                      <button class="isReturning">
+                        <%= gettext('sign in') %>
+                      </button>
+
+                      <span class="isReturning right">
+                        <a href="#" class="isMobile cancelPassword">
+                          <%= gettext('cancel') %>
+                        </a>
+                      </span>
+
+                      <span class="submit cf isReturning">
+                        <a class="isDesktop forgotPassword" href="#">
+                          <%= gettext('Forgot your password?') %>
+                        </a>
+                      </span>
                     </p>
 
 

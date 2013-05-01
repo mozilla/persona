@@ -21,7 +21,7 @@ BrowserID.Modules.Authenticate = (function() {
       AUTH_FORM_SELECTOR = "#authentication_form",
       EMAIL_SELECTOR = "#authentication_email",
       PASSWORD_SELECTOR = "#authentication_password",
-      FORGOT_PASSWORD_SELECTOR = "#forgotPassword",
+      FORGOT_PASSWORD_SELECTOR = ".forgotPassword",
       RP_NAME_SELECTOR = "#start_rp_name",
       BODY_SELECTOR = "body",
       AUTHENTICATION_CLASS = "authentication",
@@ -190,19 +190,16 @@ BrowserID.Modules.Authenticate = (function() {
     currentHint = showSelector;
 
     _.each(hints, function(className) {
-      if (className !== showSelector) {
-        dom.hide("." + className + ":not(." + showSelector + ")");
-      }
+      dom.removeClass("body", className);
     });
 
-    $("." + showSelector).fadeIn(ANIMATION_TIME, function() {
-      // Fire a window resize event any time a new section is displayed that
-      // may change the content's innerHeight.  this will cause the "screen
-      // size hacks" to resize the screen appropriately so scroll bars are
-      // displayed when needed.
-      dom.fireEvent(window, "resize");
-      complete(callback);
-    });
+    // Fire a window resize event any time a new section is displayed that
+    // may change the content's innerHeight.  this will cause the "screen
+    // size hacks" to resize the screen appropriately so scroll bars are
+    // displayed when needed.
+    dom.fireEvent(window, "resize");
+    dom.addClass("body", showSelector);
+    complete(callback);
   }
 
   function enterEmailState() {
@@ -284,7 +281,7 @@ BrowserID.Modules.Authenticate = (function() {
 
       currentHint = null;
       dom.setInner(CONTENTS_SELECTOR, "");
-      dom.hide(".returning,.start");
+      /*dom.hide(".returning,.start");*/
 
       // Since the authentication form is ALWAYS in the DOM, there is no
       // renderForm call which will hide the error, wait or delay screens.

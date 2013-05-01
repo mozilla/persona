@@ -475,8 +475,15 @@ a.emphasize:active {
     margin: 0 0 0 5px;
 }
 
-.newuser,
-.returning {
+.isReturning, .isStart, .isAddressInfo {
+  display: none;
+}
+
+.returning .isReturning, .start .isStart, .addressInfo .isAddressInfo {
+  display: block;
+}
+
+.newuser {
     display: none;
 }
 
