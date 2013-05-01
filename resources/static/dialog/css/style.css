@@ -247,6 +247,16 @@ section > .contents {
     z-index: 5;
 }
 
+#load {
+  background: #fff;
+  /*
+   * We want the loading screen to take up the entire screen, not just
+   * within the borders of the content
+   */
+  position: fixed;
+  text-align: center;
+}
+
 .loading #load {
     z-index: 10;
 }
@@ -281,6 +291,18 @@ section > .contents {
   }
 }
 
+/**
+ * Older firefoxes require -moz
+ */
+@-moz-keyframes rotate {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+
 @keyframes rotate {
   from {
     transform: rotate(0deg);
@@ -293,12 +315,16 @@ section > .contents {
 
 .loadingSpinner {
   -webkit-animation-name: rotate;
+     -moz-animation-name: rotate;
           animation-name: rotate;
   -webkit-animation-duration: 0.5s;
+     -moz-animation-duration: 0.5s;
           animation-duration: 0.5s;
   -webkit-animation-iteration-count: infinite;
+     -moz-animation-iteration-count: infinite;
           animation-iteration-count: infinite;
   -webkit-animation-timing-function: linear;
+     -moz-animation-timing-function: linear;
           animation-timing-function: linear;
   margin-bottom: 10px;
 }

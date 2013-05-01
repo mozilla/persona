@@ -47,6 +47,21 @@
         <%- body %>
       </div>
 
+      <!-- the loading screen should take up the entire
+           screen and not just within the borders of the content
+           -->
+      <section id="load" class="message_screen">
+        <div class="table">
+            <div class="vertical">
+                <div class="contents">
+                    <img class="loadingSpinner" src="/common/i/loading-large.png" alt="loading"/>
+                    <h2 class="center"><%= gettext('Connecting to Persona...') %></h2>
+                </div>
+            </div>
+        </div>
+      </section>
+
+
       <footer>
 <span id="footerText"><%- format(gettext('<strong>Persona.</strong> Simplified sign-in, built by a non-profit. <a %s>Learn more&rarr;</a>'), [" href='/about' target='_blank'"]) %></span>
       </footer>
