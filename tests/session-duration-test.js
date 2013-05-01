@@ -40,6 +40,18 @@ var primaryUser = new primary({
   domain: PRIMARY_DOMAIN
 });
 
+function getSessionDuration(context) {
+  // if context is undefined, cookies will be fetched from wsapi.js's internal
+  // context state.
+  var cookie = wsapi.getCookie(/^browserid_state/, context);
+  if (!cookie) throw new Error("Could not get browserid_state cookie");
+
+  var durationStr = cookie.split('.')[3];
+  if (!durationStr) throw new Error("Malformed browserid_state cookie - does not contain duration");
+
+  return parseInt(durationStr, 10);
+}
+
 suite.addBatch({
   "setup user": {
     topic: function() {
@@ -74,7 +86,7 @@ suite.addBatch({
         assert.isTrue(resp.success);
       },
       "has expected duration": function(err, r) {
-        assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('ephemeral_session_duration_ms'));
+        assert.strictEqual(getSessionDuration(), config.get('ephemeral_session_duration_ms'));
       }
     }
   }
@@ -101,7 +113,7 @@ suite.addBatch({
         assert.isTrue(resp.success);
       },
       "has expected duration": function(err, r) {
-        assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('authentication_duration_ms'));
+        assert.strictEqual(getSessionDuration(), config.get('authentication_duration_ms'));
       }
     }
   }
@@ -114,15 +126,16 @@ suite.addBatch({
     },
     "and logging in with the assertion with ephemeral = true": {
       topic: function(err, assertion)  {
+        this.context = {
+          headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
+        };
         wsapi.post('/wsapi/auth_with_assertion', {
           assertion: assertion,
           ephemeral: true
-        }, {
-          headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
-        }).call(this);
+        }, this.context).call(this);
       },
       "has expected duration for FirefoxOS": function(err, r) {
-        assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('ephemeral_session_duration_ms'));
+        assert.strictEqual(getSessionDuration(this.context), config.get('ephemeral_session_duration_ms'));
       }
     }
   }
@@ -135,15 +148,16 @@ suite.addBatch({
     },
     "and logging in with the assertion with ephemeral = false": {
       topic: function(err, assertion)  {
+        this.context = {
+          headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
+        };
         wsapi.post('/wsapi/auth_with_assertion', {
           assertion: assertion,
           ephemeral: false
-        }, {
-          headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
-        }).call(this);
+        }, this.context).call(this);
       },
       "has expected duration FirefoxOS": function(err, r) {
-        assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), TEN_YEARS_MS);
+        assert.strictEqual(getSessionDuration(this.context), TEN_YEARS_MS);
       }
     }
   }
@@ -209,7 +223,7 @@ suite.addBatch({
       assert.strictEqual(JSON.parse(r.body).success, true);
     },
     "yields a session of expected length": function(err, r) {
-      assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('ephemeral_session_duration_ms'));
+      assert.strictEqual(getSessionDuration(), config.get('ephemeral_session_duration_ms'));
     }
   }
 });
@@ -225,7 +239,7 @@ suite.addBatch({
       assert.strictEqual(JSON.parse(r.body).success, true);
     },
     "yields a session of expected length": function(err, r) {
-      assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('authentication_duration_ms'));
+      assert.strictEqual(getSessionDuration(), config.get('authentication_duration_ms'));
     }
   }
 });
