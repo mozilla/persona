@@ -83,10 +83,6 @@ h3 {
 }
 
 
-.isMobile {
-  display: none;
-}
-
 .home {
   width: 161px;
   height: 40px;
@@ -269,9 +265,43 @@ section > .contents {
 
 .message_screen img {
   display: block;
-  margin: 0 auto;
+  margin: 0 auto 30px;
 }
 
+
+/**
+ * Webkit still must use the -webkit prefix
+ */
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.loadingSpinner {
+  -webkit-animation-name: rotate;
+          animation-name: rotate;
+  -webkit-animation-duration: 0.5s;
+          animation-duration: 0.5s;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+          animation-timing-function: linear;
+  margin-bottom: 10px;
+}
 
 .unsupported {
   /*
@@ -475,9 +505,10 @@ a.emphasize:active {
     margin: 0 0 0 5px;
 }
 
-.isReturning, .isStart, .isAddressInfo {
+.isReturning, .isStart, .isAddressInfo, .isMobile {
   display: none;
 }
+
 
 .returning .isReturning, .start .isStart, .addressInfo .isAddressInfo {
   display: block;

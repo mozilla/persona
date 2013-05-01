@@ -24,10 +24,22 @@
     display: none;
   }
 
+  a {
+    color: #0095dd;
+    text-shadow: none;
+  }
+
+  /*
+   * generic anchor for a form section
+   */
+  .form_section a {
+    font-size: 13px;
+  }
+
   button, .submit button, .buttonrow a {
     height: 40px;
     min-width: 110px;
-    font-size: 14px !important;
+    font-size: 14px;
     padding: 6px 25px 8px;
     float: right;
     font-weight: 400;
@@ -98,11 +110,6 @@
     font-size: 17px;
     padding: 11px 5px;
     border-radius: 5px;
-  }
-
-  a {
-    color: #24a4de;
-    text-shadow: none;
   }
 
   /**
@@ -451,12 +458,6 @@
     */
   }
 
-  /*
-   * generic anchor for a form section
-   */
-  .form_section a {
-    font-size: 13px;
-  }
 
   /*
    * button row anchor, which is also under form_section
