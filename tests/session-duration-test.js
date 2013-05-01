@@ -177,6 +177,48 @@ suite.addBatch({
   }
 });
 
+suite.addBatch({
+  "generating an assertion": {
+    topic: function() {
+      primaryUser.getAssertion(PRIMARY_ORIGIN, this.callback);
+    },
+    "and logging in with the assertion with ephemeral = true": {
+      topic: function(err, assertion)  {
+        wsapi.post('/wsapi/auth_with_assertion', {
+          assertion: assertion,
+          ephemeral: true
+        }, {
+          headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
+        }).call(this);
+      },
+      "has expected duration for FirefoxOS": function(err, r) {
+        assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), config.get('ephemeral_session_duration_ms'));
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "generating an assertion": {
+    topic: function() {
+      primaryUser.getAssertion(PRIMARY_ORIGIN, this.callback);
+    },
+    "and logging in with the assertion with ephemeral = false": {
+      topic: function(err, assertion)  {
+        wsapi.post('/wsapi/auth_with_assertion', {
+          assertion: assertion,
+          ephemeral: false
+        }, {
+          headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
+        }).call(this);
+      },
+      "has expected duration FirefoxOS": function(err, r) {
+        assert.strictEqual(parseInt(wsapi.getCookie(/^browserid_state/).split('.')[3], 10), TEN_YEARS_MS);
+      }
+    }
+  }
+});
+
 // now test that authenticate_user & secondary emails properly respect the 'ephemeral' argument to
 // alter session length
 const TEST_EMAIL = 'someuser@somedomain.com',
