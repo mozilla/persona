@@ -214,6 +214,12 @@ suite.addBatch({
           ephemeral: false
         }, this.context).call(this);
       },
+      "works": function(err, r) {
+        var resp = JSON.parse(r.body);
+        assert.isObject(resp);
+        assert.isTrue(resp.success);
+        assert.isTrue(resp.suppress_ask_if_users_computer);
+      },
       "has expected duration FirefoxOS": function(err, r) {
         assert.strictEqual(getSessionDuration(this.context), TEN_YEARS_MS);
       }
