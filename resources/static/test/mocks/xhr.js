@@ -43,12 +43,34 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/email_for_token?token=token needsPassword": { email: "testuser@testuser.com", needs_password: true },
       "get /wsapi/email_for_token?token=token badPassword": { email: "testuser@testuser.com", must_auth: true },
       "get /wsapi/email_for_token?token=token invalid": { success: false },
-      "post /wsapi/authenticate_user valid": { success: true, userid: 1 },
+      "post /wsapi/authenticate_user valid": {
+          success: true,
+          userid: 1,
+          suppress_ask_if_users_computer: false
+      },
+      "post /wsapi/authenticate_user foreverSession": {
+          success: true,
+          userid: 1,
+          suppress_ask_if_users_computer: true
+      },
       "post /wsapi/authenticate_user invalid": { success: false },
       "post /wsapi/authenticate_user incorrectPassword": { success: false },
       "post /wsapi/authenticate_user ajaxError": undefined,
-      "post /wsapi/auth_with_assertion primary": { success: true, userid: 1 },
-      "post /wsapi/auth_with_assertion primaryTransition": { success: true, userid: 1 },
+      "post /wsapi/auth_with_assertion primary": {
+          success: true,
+          userid: 1,
+          suppress_ask_if_users_computer: false
+      },
+      "post /wsapi/auth_with_assertion foreverSession": {
+          success: true,
+          userid: 1,
+          suppress_ask_if_users_computer: true
+        },
+      "post /wsapi/auth_with_assertion primaryTransition": {
+          success: true,
+          userid: 1,
+          suppress_ask_if_users_computer: false
+      },
       "post /wsapi/auth_with_assertion valid": { success: true, userid: 1 },
       "post /wsapi/auth_with_assertion invalid": { success: false },
       "post /wsapi/auth_with_assertion ajaxError": undefined,
@@ -164,6 +186,7 @@ BrowserID.Mocks.xhr = (function() {
       "get /wsapi/email_addition_status?email=registered%40testuser.com noRegistration": { status: "noRegistration" },
       "get /wsapi/email_addition_status?email=registered%40testuser.com ajaxError": undefined,
       "get /wsapi/list_emails valid": { success: true, emails: [ "testuser@testuser.com" ] },
+      "get /wsapi/list_emails foreverSession": { success: true, emails: [ "testuser@testuser.com" ] },
       "get /wsapi/list_emails unverified": { success: true, emails: [ "testuser@testuser.com" ] },
       //"get /wsapi/list_emails known_secondary": {"registered@testuser.com":{ type: "secondary" }},
       "get /wsapi/list_emails primary": { success: true, emails: [ "testuser@testuser.com" ] },

@@ -371,6 +371,14 @@ BrowserID.User = (function() {
 
     setAuthenticationStatus(authenticated && type, status.userid);
     if (authenticated) {
+
+      // The back end can suppress asking the user whether this is their
+      // computer. This happens on FirefoxOS devices for now and may expand
+      // in the future.
+      if (status.suppress_ask_if_users_computer) {
+        storage.usersComputer.setConfirmed(userid);
+      }
+
       User.syncEmails(function() {
         complete(onComplete, authenticated);
       }, onFailure);
