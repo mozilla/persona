@@ -84,6 +84,7 @@ suite.addBatch({
         var resp = JSON.parse(r.body);
         assert.isObject(resp);
         assert.isTrue(resp.success);
+        assert.isFalse(resp.suppress_ask_if_users_computer);
       },
       "has expected duration": function(err, r) {
         assert.strictEqual(getSessionDuration(), config.get('ephemeral_session_duration_ms'));
@@ -111,6 +112,7 @@ suite.addBatch({
         var resp = JSON.parse(r.body);
         assert.isObject(resp);
         assert.isTrue(resp.success);
+        assert.isFalse(resp.suppress_ask_if_users_computer);
       },
       "has expected duration": function(err, r) {
         assert.strictEqual(getSessionDuration(), config.get('authentication_duration_ms'));
@@ -134,6 +136,12 @@ suite.addBatch({
           ephemeral: true
         }, this.context).call(this);
       },
+      "works": function(err, r) {
+        var resp = JSON.parse(r.body);
+        assert.isObject(resp);
+        assert.isTrue(resp.success);
+        assert.isFalse(resp.suppress_ask_if_users_computer);
+      },
       "has expected duration for FirefoxOS": function(err, r) {
         assert.strictEqual(getSessionDuration(this.context), config.get('ephemeral_session_duration_ms'));
       }
@@ -155,6 +163,12 @@ suite.addBatch({
           assertion: assertion,
           ephemeral: false
         }, this.context).call(this);
+      },
+      "works": function(err, r) {
+        var resp = JSON.parse(r.body);
+        assert.isObject(resp);
+        assert.isTrue(resp.success);
+        assert.isTrue(resp.suppress_ask_if_users_computer);
       },
       "has expected duration FirefoxOS": function(err, r) {
         assert.strictEqual(getSessionDuration(this.context), TEN_YEARS_MS);
@@ -220,7 +234,9 @@ suite.addBatch({
       ephemeral: true
     }),
     "works as expected": function(err, r) {
-      assert.strictEqual(JSON.parse(r.body).success, true);
+      var resp = JSON.parse(r.body);
+      assert.strictEqual(resp.success, true);
+      assert.strictEqual(resp.suppress_ask_if_users_computer, false);
     },
     "yields a session of expected length": function(err, r) {
       assert.strictEqual(getSessionDuration(), config.get('ephemeral_session_duration_ms'));
@@ -236,10 +252,35 @@ suite.addBatch({
       ephemeral: false
     }),
     "works as expected": function(err, r) {
-      assert.strictEqual(JSON.parse(r.body).success, true);
+      var resp = JSON.parse(r.body);
+      assert.strictEqual(resp.success, true);
+      assert.strictEqual(resp.suppress_ask_if_users_computer, false);
     },
     "yields a session of expected length": function(err, r) {
       assert.strictEqual(getSessionDuration(), config.get('authentication_duration_ms'));
+    }
+  }
+});
+
+suite.addBatch({
+  "authenticating with the password and ephemeral = false and FirefoxOS phone": {
+    topic: function() {
+      this.context = {
+        headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
+      };
+      wsapi.post('/wsapi/authenticate_user', {
+        email: TEST_EMAIL,
+        pass: PASSWORD,
+        ephemeral: false
+      }, this.context).call(this);
+    },
+    "works as expected": function(err, r) {
+      var resp = JSON.parse(r.body);
+      assert.strictEqual(resp.success, true);
+      assert.strictEqual(resp.suppress_ask_if_users_computer, true);
+    },
+    "yields a session of expected length": function(err, r) {
+      assert.strictEqual(getSessionDuration(this.context), TEN_YEARS_MS);
     }
   }
 });
