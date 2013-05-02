@@ -103,6 +103,13 @@ BrowserID.Validation = (function() {
     return valid;
   }
 
+  function newPassword(pass) {
+    var valid = passwordExists(pass)
+                && passwordLengthForNewPassword(pass);
+
+    return valid;
+  }
+
   function passwordAndValidationPassword(pass, vpass) {
     var valid = passwordExists(pass)
                 && passwordLengthForNewPassword(pass)
@@ -120,6 +127,7 @@ BrowserID.Validation = (function() {
     email: validateEmail,
     password: authenticationPassword,
     emailAndPassword: validateEmailAndPassword,
+    newPassword: newPassword,
     passwordAndValidationPassword: passwordAndValidationPassword
   };
 

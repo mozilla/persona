@@ -55,6 +55,16 @@
     testElementTextContains(selector, "password.no", "message shows IdP domain");
   });
 
+  asyncTest("submit in password field with good password - skip to vpassword field", function() {
+    $("#password").val("password");
+    $("#password").focus();
+
+    controller.submit(function() {
+      testHelpers.testElementFocused("#vpassword");
+      start();
+    });
+  });
+
   asyncTest("submit with good password/vpassword - password_set message raised", function() {
     $("#password").val("password");
     $("#vpassword").val("password");
