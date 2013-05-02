@@ -13,6 +13,7 @@ BrowserID.Modules.PageModule = (function() {
       dom = bid.DOM,
       screens = bid.Screens,
       helpers = bid.Helpers,
+      complete = helpers.complete,
       cancelEvent = helpers.cancelEvent,
       CANCEL_DIALOG_SELECTOR = ".cancelDialog",
       sc;
@@ -25,9 +26,10 @@ BrowserID.Modules.PageModule = (function() {
      return false;
    }
 
-  function cancelDialog() {
+  function cancelDialog(done) {
     /*jshint validthis: true*/
-    window.close();
+    this.publish("cancel");
+    complete(done);
   }
 
   function showScreen(screen, template, vars, oncomplete) {
@@ -148,7 +150,8 @@ BrowserID.Modules.PageModule = (function() {
 
     // BEGIN TESTING API
     ,
-    onSubmit: onSubmit
+    onSubmit: onSubmit,
+    cancelDialog: cancelDialog
     // END TESTING API
   });
 

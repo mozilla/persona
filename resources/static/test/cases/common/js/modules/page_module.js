@@ -171,5 +171,11 @@
     equal(submitCalled, true, "submit permitted to complete");
   });
 
+  asyncTest("cancelDialog publishes cancel message", function() {
+    createController();
+    testHelpers.expectedMessage("cancel");
+    controller.cancelDialog(start);
+  });
+
 }());
 
