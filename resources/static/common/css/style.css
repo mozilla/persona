@@ -393,6 +393,11 @@ button.negative:active,
   margin-top: 8px;
 }
 
+.hideButtonrow .buttonrow {
+  display: none;
+}
+
+
 a.secondary[disabled], .submit_disabled a.secondary, .submit_disabled a.secondary:focus, .submit_disabled a.secondary:active {
   color: #999;
 }

@@ -9,6 +9,8 @@ BrowserID.Modules.IsThisYourComputer = (function() {
       user = bid.User,
       errors = bid.Errors,
       domHelpers = bid.DOMHelpers,
+      SCREEN_SELECTOR = "#error",
+      SKIN_CLASS = "hideButtonrow",
       email;
 
   var Module = bid.Modules.PageModule.extend({
@@ -18,9 +20,17 @@ BrowserID.Modules.IsThisYourComputer = (function() {
 
       var self = this;
 
-      self.renderWait("is_this_your_computer", options);
+      // The "signing in" screen is shown right now. Hide it while showing this
+      // screen.
+      self.hideWarningScreens();
 
-      // renderWait does not automatically focus the first input element or
+      // The error screen normally has a button row. Hide the button row before
+      // rendering the error or CSS transitions make the content shift around.
+      dom.addClass(SCREEN_SELECTOR, SKIN_CLASS);
+
+      self.renderError("is_this_your_computer", options);
+
+      // renderError does not automatically focus the first input element or
       // button, so it must be done manually.
       dom.focus("#this_is_my_computer");
 
@@ -46,8 +56,12 @@ BrowserID.Modules.IsThisYourComputer = (function() {
 
     confirmed: function(status) {
       var self=this;
+
+      // Bring back the button row.
+      dom.removeClass(SCREEN_SELECTOR, SKIN_CLASS);
+
       user.setComputerOwnershipStatus(status, function() {
-        self.close("user_computer_status_set", { users_computer: status });
+        self.publish("user_computer_status_set", { users_computer: status });
       }, self.getErrorDialog(errors.setComputerOwnershipStatus));
     }
   });

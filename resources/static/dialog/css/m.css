@@ -256,8 +256,8 @@
    * can be collapsed into one.
    */
   #load .table, #delay .table {
-    background-color: #fff;
-    background-color: rgba(255, 255, 255, .85);
+    /*background-color: #fff;*/
+    /*background-color: rgba(255, 255, 255, .85);*/
   }
 
   .message_screen h2 {
@@ -270,6 +270,16 @@
     background: #3b3b3b;
     background: rgba(64, 64, 64, .95);
     color: #fff;
+    text-align: left;
+    /**
+     * The bottom OK button area is 80px. Force the rest of the
+     * text to be vertically centered.
+     */
+    padding-bottom: 80px;
+  }
+
+  #error.hideButtonrow {
+    padding-bottom: 0;
   }
 
   /**
@@ -443,11 +453,16 @@
     text-align: center;
   }
 
+  /**
+   * The red background of the negative button makes the black text look
+   * terrible. Change it to white and remove the text-shadow for both buttons.
+   */
   #your_computer_content button {
     display: block;
     margin: 0 auto;
+    color: #fff;
+    text-shadow: none;
   }
-
 
   .inputs > li {
     margin-top: 12px;
