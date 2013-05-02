@@ -43,7 +43,9 @@ module.exports = {
     newEmailNextButton: 'p.submit.buttonrow button.isStart',
     submitCancelButton: 'p.submit.buttonrow #cancel',
     existingPassword: 'div#signIn input#authentication_password',
-    forgotPassword: 'a.forgotPassword',
+    // This is a bit of a hack Selenium does not deal well with both of the
+    // .forgotPassword's being in the dom at once and we are testing
+    forgotPassword: 'a.isDesktop.forgotPassword',
     choosePassword: 'div#set_password input#password',
     verifyPassword: 'input#vpassword',
     postVerificationPassword: 'input#password',
