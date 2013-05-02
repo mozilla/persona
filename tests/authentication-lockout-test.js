@@ -57,7 +57,10 @@ suite.addBatch({
     "works as expected": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
-  },
+  }
+});
+
+suite.addBatch({
   "authenticating with the wrong password": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: TEST_EMAIL,
@@ -86,6 +89,15 @@ suite.addBatch({
           assert.strictEqual(JSON.parse(r.body).success, false);
           assert.strictEqual(JSON.parse(r.body).reason,
                              "password mismatch for user: someuser@somedomain.com");
+        },
+        "and we wait to let asynchronous increments": {
+          topic: function() {
+            setTimeout(this.callback, 200);
+          },
+          "complete": function() {
+            // ... at this point all increments are complete.
+            // the account should be locked, we'll test below
+          }
         }
       }
     }
@@ -93,7 +105,7 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  "after four failures, authentication": {
+  "after too many failures, authentication": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: TEST_EMAIL,
       pass: OLD_PASSWORD,
