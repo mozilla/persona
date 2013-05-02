@@ -19,6 +19,7 @@ config = require('../lib/configuration.js'),
 jwcrypto = require('jwcrypto'),
 http = require('http'),
 querystring = require('querystring'),
+logger = require('../lib/logging.js').logger,
 path = require('path');
 
 var suite = vows.describe('unverified-email-test');
@@ -40,9 +41,29 @@ const UNVERIFIED_ORIGIN = "http://testdomain.com:8080";
 const UNVERIFIED_DOMAIN = "testdomain.com";
 const UNVERIFIED_PASSWORD = "unverifiedpassword";
 
+// testing FirefoxOS session durations.
+const TEN_YEARS_MS = 315360000000;
+
+function getSessionDuration(context) {
+  // if context is undefined, cookies will be fetched from wsapi.js's internal
+  // context state.
+  var cookie = wsapi.getCookie(/^browserid_state/, context);
+  if (!cookie) throw new Error("Could not get browserid_state cookie");
+
+  var durationStr = cookie.split('.')[3];
+  if (!durationStr) throw new Error("Malformed browserid_state cookie - does not contain duration");
+
+  return parseInt(durationStr, 10);
+}
+
+var token;
+
 suite.addBatch({
   "account staging of unverified user": {
     topic: function() {
+      wsapi.setContext({
+        headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
+      });
       wsapi.post('/wsapi/stage_user', {
         email: UNVERIFIED_EMAIL,
         pass: UNVERIFIED_PASSWORD,
@@ -62,13 +83,17 @@ suite.addBatch({
       topic: wsapi.post('/wsapi/authenticate_user', {
         email: UNVERIFIED_EMAIL,
         pass: UNVERIFIED_PASSWORD,
-        ephemeral: true,
+        ephemeral: false,
         allowUnverified: true
       }),
       'successfully': function(err, r) {
         assert.equal(r.code, 200);
         var json = JSON.parse(r.body);
         assert.isTrue(json.success);
+        assert.isTrue(json.suppress_ask_if_users_computer);
+      },
+      "yields a session of expected length": function(err, r) {
+        assert.strictEqual(getSessionDuration(), TEN_YEARS_MS);
       },
       "and completes user completion": {
         topic: wsapi.get('/wsapi/session_context'),
@@ -86,7 +111,7 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  "swallow the first token": {
+  "get the stage_user token": {
      topic: function() {
        start_stop.waitForToken(this.callback);
      },
@@ -191,8 +216,6 @@ suite.addBatch({
   }
 });
 
-var token;
-
 suite.addBatch({
   "resetting password": {
     topic: wsapi.post('/wsapi/stage_reset', {
@@ -222,8 +245,9 @@ suite.addBatch({
         pass: 'attack at dawn!!!',
       }).call(this);
     },
-    "account created": function(err, r) {
+    "account created and session duration is not reset": function(err, r) {
       assert.equal(r.code, 200);
+      assert.strictEqual(getSessionDuration(), TEN_YEARS_MS);
     }
   }
 });

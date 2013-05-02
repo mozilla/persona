@@ -140,10 +140,10 @@ suite.addBatch({
         var resp = JSON.parse(r.body);
         assert.isObject(resp);
         assert.isTrue(resp.success);
-        assert.isFalse(resp.suppress_ask_if_users_computer);
+        assert.isTrue(resp.suppress_ask_if_users_computer);
       },
       "has expected duration for FirefoxOS": function(err, r) {
-        assert.strictEqual(getSessionDuration(this.context), config.get('ephemeral_session_duration_ms'));
+        assert.strictEqual(getSessionDuration(this.context), TEN_YEARS_MS);
       }
     }
   }
@@ -230,7 +230,9 @@ suite.addBatch({
 // now test that authenticate_user & secondary emails properly respect the 'ephemeral' argument to
 // alter session length
 const TEST_EMAIL = 'someuser@somedomain.com',
-      PASSWORD = 'thisismypassword';
+      PASSWORD = 'thisismypassword',
+      RESET_PASSWORD = 'thisismynewpassword';
+
 
 var token = undefined;
 
@@ -385,6 +387,55 @@ suite.addBatch({
     }
   }
 });
+
+/**
+ * Check to make sure completing an email verification does not reset
+ * the session duration
+ */
+
+// stage a reset
+suite.addBatch({
+  "account staging": {
+    topic: wsapi.post('/wsapi/stage_reset', {
+      email: TEST_EMAIL,
+      site: 'http://a.really.fakesite123.com:999'
+    }),
+    "works":     function(err, r) {
+      assert.equal(r.code, 200);
+    }
+  }
+});
+
+// wait for the token
+suite.addBatch({
+  "a token": {
+    topic: function() {
+      start_stop.waitForToken(this.callback);
+    },
+    "is obtained": function (err, t) {
+      assert.isNull(err);
+      assert.strictEqual(typeof t, 'string');
+      token = t;
+    }
+  }
+});
+
+// verify the reset
+suite.addBatch({
+  "setting password": {
+    topic: function() {
+      wsapi.post('/wsapi/complete_reset', {
+        pass: RESET_PASSWORD,
+        token: token
+      }).call(this);
+    },
+    "does not shorten session duration": function(err, r) {
+      assert.equal(r.code, 200);
+      assert.strictEqual(getSessionDuration(), config.get('authentication_duration_ms'));
+    }
+  }
+});
+
 
 start_stop.addShutdownBatches(suite);
 
