@@ -82,7 +82,10 @@ BrowserID.Modules.Authenticate = (function() {
     }
     else {
       showHint("addressInfo");
-      self.renderLoad("load", bid.Wait.checkingEmail);
+      self.renderLoad("load", {
+        title: gettext("Checking with your email provider.")
+      });
+
       user.addressInfo(email, onAddressInfo,
         self.getErrorDialog(errors.addressInfo));
     }
