@@ -284,7 +284,6 @@ BrowserID.Modules.Authenticate = (function() {
 
       currentHint = null;
       dom.setInner(CONTENTS_SELECTOR, "");
-      /*dom.hide(".returning,.start");*/
 
       // Since the authentication form is ALWAYS in the DOM, there is no
       // renderForm call which will hide the error, wait or delay screens.
