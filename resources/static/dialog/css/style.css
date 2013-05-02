@@ -127,16 +127,6 @@ label.selectable {
     cursor: pointer;
 }
 
-section {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 0;
-}
-
 .table {
     display: table;
     width: 100%;
@@ -146,12 +136,6 @@ section {
 .table .vertical {
     display: table-cell;
     vertical-align: middle;
-}
-
-section > .contents {
-    display: table-cell;
-    vertical-align: middle;
-    height: 250px;
 }
 
 .form_section {
@@ -210,6 +194,27 @@ section > .contents {
     _height: 250px;
 }
 
+
+section {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 0;
+}
+
+section > .contents {
+    display: table-cell;
+    vertical-align: middle;
+    height: 250px;
+}
+
+/**
+ * .message_screen are sections that are overlayed on top of the main content.
+ * Things like the loading, delay, error and wait screens.
+ */
 .message_screen {
     z-index: -1;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
@@ -236,15 +241,13 @@ section > .contents {
     transition-delay: 0.5s;
 }
 
-
-.waiting #wait, .delay #delay, .error #error, .loading #load {
-    display: block;
-    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-    opacity: 1;
+.message_screen .vertical {
+    padding: 0 20px;
 }
 
-.waiting #wait {
-    z-index: 5;
+.message_screen img {
+  display: block;
+  margin: 0 auto 30px;
 }
 
 #load {
@@ -255,6 +258,16 @@ section > .contents {
    */
   position: fixed;
   text-align: center;
+}
+
+.waiting #wait, .delay #delay, .error #error, .loading #load {
+    display: block;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    opacity: 1;
+}
+
+.waiting #wait {
+    z-index: 5;
 }
 
 .loading #load {
@@ -273,11 +286,11 @@ section > .contents {
   padding: 20px 0;
 }
 
-.message_screen img {
-  display: block;
-  margin: 0 auto 30px;
-}
 
+
+/**
+ * These animations are used for the loading spinner. No animated gifs here.
+ */
 
 /**
  * Webkit still must use the -webkit prefix
@@ -350,10 +363,6 @@ section > .contents {
 
 #error .lighter {
     color: #777;
-}
-
-.message_screen .vertical {
-    padding: 0 20px;
 }
 
 

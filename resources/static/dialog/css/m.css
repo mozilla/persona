@@ -2,6 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/**
+ * Pretty much everything in this file overrides styles set in style.css.
+ * Many styling changes are to allow content to be in its natural position at
+ * the top of the screen, some styling changes are to make things easier to use
+ * on mobile, some changes are to match the standard B2G styling.
+ */
+
+
 /* If the max-width changes, the size given in screen_size_hacks.js must be
  * updated as well.
  */
@@ -70,6 +78,10 @@
     background-image: none;
   }
 
+  /**
+   * On mobile, the anchors are meant to look like buttons. Give them an
+   * overhaul.
+   */
   .buttonrow a {
     background-color: #ededed;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#fcfcfb), to(#d8d9d8)));
@@ -168,20 +180,9 @@
     margin-top: 0;
   }
 
-  /*
-  #selectEmail {
-    top: auto;
-    left: auto;
-    bottom: auto;
-    right: auto;
-    overflow-y: inherit;
-    position: static;
-    width: auto;
-  }*/
 
   .favicon {
       overflow: inherit;
-      /*display: block;*/
       width: 100%;
         /* Changed this from relative to static to fix issue #1309 tooltips
        * being partially cut off by the site URL bar
@@ -232,36 +233,13 @@
 
   #signIn {
     position: static;
-    /*
-    top: auto;  /* this will be set in JS to be at the bottom of the header *//*
-    right: 0;*/
     width: auto;
     padding: 0;
   }
 
-  /*
-  #signIn .table, #signIn .container {
-      width: 100%;
-      /*display: block;
-      height: 100%;*//*
-  }*/
-
-  /*
-  #signIn .table{
-    padding: 20px;
-  }*/
-
-  /*
-  .table .vertical {
-    position: static;
-    display: block;
-  }*/
   #signIn .vertical {
     position: static;
     display: block;
-    /*
-    vertical-align: top;
-    */
   }
 
   #signIn form {
@@ -269,7 +247,9 @@
   }
 
   /*
-   * The load table must have the background or else the background is grey
+   * The load table must have the background or else the background is grey.
+   * The delay screen looks identical to the load screen. Perhaps someday they
+   * can be collapsed into one.
    */
   #load .table, #delay .table {
     background-color: #fff;
@@ -283,7 +263,6 @@
 
 
   #error {
-    position: fixed;
     background: #3b3b3b;
     background: rgba(64, 64, 64, .95);
     color: #fff;
@@ -398,41 +377,16 @@
   #content {
     position: static;
     overflow: visible;
-    /*
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    */
   }
 
   .vertical {
     position: static;
-/*
-    position: relative;
-    height: auto;
-    width: 100%;
-    max-height: none;
-    overflow: visible;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    /*padding: 0;*/
   }
 
   .form_section {
     position: static;
     width: 100%;
-    /*
-    max-height: none;
-    overflow: visible;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    padding: 0;*/
     font-size: 14px;
-    /*padding: 0 20px;*/
     overflow: visible;
   }
 
@@ -448,25 +402,12 @@
    */
   .form_section > p {
     margin: 17px 0 10px 0;
-    /*
-    font-size: 12.5px;
-    line-height: 1.5;
-    /*
-    The designs call for this to be 323232, but I am commenting it out
-    for now to keep consistency with the desktop site and the RPs TOS/PP.
-    color: #323232;
-    */
   }
 
 
   /*
    * button row anchor, which is also under form_section
    */
-  /*
-  .buttonrow a {
-    line-height: 40px; /* Match the height of the buttons on the right *//*
-    font-size: 18px;
-  }*/
 
   .submit #cancel.emphasize, #signIn .submit #cancel.emphasize {
     line-height: 22px; /* override the default cancel button height for

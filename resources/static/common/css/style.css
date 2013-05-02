@@ -488,12 +488,10 @@ footer .help {
 }
 
 .message_screen h2 {
-/* #wait h2, #delay h2 { */
     font-size: 20px;
 }
 
 .message_screen p {
-/*#wait p, #error p, #delay p {*/
     margin-top: 20px;
 }
 
