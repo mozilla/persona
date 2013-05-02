@@ -7,7 +7,10 @@ BrowserID.Modules.CheckRegistration = (function() {
   var bid = BrowserID,
       user = bid.User,
       dom = bid.DOM,
-      errors = bid.Errors;
+      errors = bid.Errors,
+      SCREEN_SELECTOR = "#error",
+      SKIN_CLASS = "hideButtonrow";
+
 
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
@@ -20,7 +23,12 @@ BrowserID.Modules.CheckRegistration = (function() {
         required: options.required,
         siteName: options.siteName
       };
-      self.renderWait("confirm_email", templateData);
+
+      // The error screen normally has a button row. Hide the button row before
+      // rendering the error or CSS transitions make the content shift around.
+      dom.addClass(SCREEN_SELECTOR, SKIN_CLASS);
+
+      self.renderError("confirm_email", templateData);
 
       self.email = options.email;
       self.verifier = options.verifier;
@@ -35,6 +43,8 @@ BrowserID.Modules.CheckRegistration = (function() {
     startCheck: function(oncomplete) {
       var self=this;
       user[self.verifier](self.email, function(status) {
+        // Bring back the button row.
+        dom.removeClass(SCREEN_SELECTOR, SKIN_CLASS);
         self.close(self.verificationMessage, { mustAuth: status === "mustAuth" });
 
         oncomplete && oncomplete();
