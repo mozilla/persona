@@ -25,6 +25,36 @@ suite.addBatch({
     "returns a 404": function(err, r) {
       assert.strictEqual(r.code, 404);
     }
+  },
+  "requesting to forget an idp": {
+    topic: wsapi.get('/wsapi/forget_idp', { }),
+    "returns a 404": function(err, r) {
+      assert.strictEqual(r.code, 404);
+    }
+  },
+  "requesting to increment failed authentication attempts": {
+    topic: wsapi.get('/wsapi/increment_failed_auth_tries', { }),
+    "returns a 404": function(err, r) {
+      assert.strictEqual(r.code, 404);
+    }
+  },
+  "requesting to reset failed authentication attempts": {
+    topic: wsapi.get('/wsapi/reset_failed_auth_tries', { }),
+    "returns a 404": function(err, r) {
+      assert.strictEqual(r.code, 404);
+    }
+  },
+  "indicating that we've seen an IdP": {
+    topic: wsapi.get('/wsapi/saw_idp', { }),
+    "returns a 404": function(err, r) {
+      assert.strictEqual(r.code, 404);
+    }
+  },
+  "indicating that a user has used an email as (primary|secondary)": {
+    topic: wsapi.post('/wsapi/user_used_email_as', { }),
+    "returns a 404": function(err, r) {
+      assert.strictEqual(r.code, 404);
+    }
   }
 });
 
