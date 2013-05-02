@@ -197,8 +197,8 @@ BrowserID.Modules.Authenticate = (function() {
     // may change the content's innerHeight.  this will cause the "screen
     // size hacks" to resize the screen appropriately so scroll bars are
     // displayed when needed.
-    dom.fireEvent(window, "resize");
     dom.addClass("body", showSelector);
+    dom.fireEvent(window, "resize");
     complete(callback);
   }
 

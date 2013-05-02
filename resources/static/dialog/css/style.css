@@ -217,6 +217,11 @@ section > .contents {
  */
 .message_screen {
     z-index: -1;
+    /* Since all of the screens are overlayed on top of each other
+     * and since the main screen does not have styles of its own (because of
+     * header and footer styles), use opacity to control whether a screen is
+     * shown or not.
+     */
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
     opacity: 0;
 
@@ -339,7 +344,6 @@ section > .contents {
   -webkit-animation-timing-function: linear;
      -moz-animation-timing-function: linear;
           animation-timing-function: linear;
-  margin-bottom: 10px;
 }
 
 .unsupported {

@@ -128,14 +128,18 @@
    * Reset the absolute positioning and coloring that is placed on
    * each section.
    */
-  #formWrap {
-    background-color: transparent;
-    position: static;
-  }
-
   section {
     position: fixed;
     display: none;
+  }
+
+  /**
+   * formWrap is the section that holds the main content.
+   */
+  #formWrap {
+    background-color: transparent;
+    position: static;
+    display: block;
   }
 
   .form_section h2 {
@@ -317,7 +321,7 @@
     padding: 0;
   }
 
-  .form #formWrap, .waiting #wait, .delay #delay, .error #error, .loading #load {
+  .waiting #wait, .delay #delay, .error #error, .loading #load {
       display: block;
   }
 
@@ -455,6 +459,14 @@
   #error.unsupported, #error.cookies_disabled {
     position: static;
     height: 250px;
+  }
+
+  /**
+   * Chrome for Android 4.2.2 shows a completely white screen because of the
+   * keyframe animations on the loading spinner. Sorry mobile webkit.
+   */
+  .loadingSpinner {
+    -webkit-animation-name: none;
   }
 
 }
