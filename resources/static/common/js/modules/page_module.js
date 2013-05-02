@@ -56,11 +56,6 @@ BrowserID.Modules.PageModule = (function() {
       self.click(CANCEL_DIALOG_SELECTOR, cancelDialog);
     },
 
-    stop: function() {
-      dom.removeClass("body", "loading");
-      sc.stop.call(this);
-    },
-
     renderForm: function(template, data) {
       var self=this;
 
@@ -101,6 +96,7 @@ BrowserID.Modules.PageModule = (function() {
       self.hideWait();
       self.hideError();
       self.hideDelay();
+      self.hideLoad();
     },
 
     /**
