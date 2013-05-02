@@ -270,27 +270,14 @@
       padding: 0;
   }
 
-  /*
-   * The load table must have the background or else the background is grey.
-   * The delay screen looks identical to the load screen. Perhaps someday they
-   * can be collapsed into one.
-   */
-  #load .table, #delay .table {
-    /*background-color: #fff;*/
-    /*background-color: rgba(255, 255, 255, .85);*/
-  }
-
-  .message_screen h2 {
-    font-size: 15.5px;
-    text-align: center;
-  }
-
-
-  #error {
+  #error, .black {
     background: #3b3b3b;
     background: rgba(64, 64, 64, .95);
     color: #fff;
     text-align: left;
+  }
+
+  #error {
     /**
      * The bottom OK button area is 80px. Force the rest of the
      * text to be vertically centered.
@@ -298,19 +285,15 @@
     padding-bottom: 80px;
   }
 
-  #error.hideButtonrow {
-    padding-bottom: 0;
-  }
-
   /**
    * Override for hover state on an anchor. The black background makes it
    * difficult to see the normal hover state
    */
-  #error a:hover {
+  #error a:hover, .black a:hover {
     color: #30b2d9;
   }
 
-  #error h2 {
+  #error h2, .black h2 {
     text-align: left;
     text-shadow: none;
     font-weight: 300;
@@ -320,7 +303,7 @@
     padding-bottom: 10px;
   }
 
-  #error h3, #error p.emphasis {
+  #error h3, #error p.emphasis, .black h3, .black p.emphasis {
     text-shadow: none;
     font-weight: 300;
     font-size: 22px;
@@ -329,7 +312,7 @@
     line-height: 1.3;
   }
 
-  #error .emphasis {
+  #error .emphasis, .black p.emphasis {
     color: #fff;
   }
 

@@ -393,10 +393,6 @@ button.negative:active,
   margin-top: 8px;
 }
 
-.hideButtonrow .buttonrow {
-  display: none;
-}
-
 
 a.secondary[disabled], .submit_disabled a.secondary, .submit_disabled a.secondary:focus, .submit_disabled a.secondary:active {
   color: #999;
@@ -477,7 +473,7 @@ footer .help {
   font-weight: bold;
 }
 
-#loading, #wait, #delay, #error {
+.message_screen {
   background-color: #dadee1;
   background-image: url("/common/i/grain.png#iefix"), -webkit-gradient(linear, left top, left bottom, from(#dadee1), to(#c7ccd0));
   background-image: url("/common/i/grain.png#iefix"), -webkit-linear-gradient(top, #dadee1, #c7ccd0);
