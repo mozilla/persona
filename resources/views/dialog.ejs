@@ -3,9 +3,9 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
     <section id="formWrap">
       <form novalidate>
-        <div id="favicon">
+        <div class="favicon">
             <div class="table">
-                <div class="vertical" id="rp_info">
+                <div class="vertical rpInfo">
                 </div>
             </div>
         </div>
@@ -19,19 +19,26 @@
                      DOMContentLoaded or else the Firefox password manager does
                      not fill in passwords -->
                 <div id="authentication_form" class="form_section">
-                    <p class="start persona_intro">
-                        <%- format(gettext('%s uses Persona instead of usernames to sign you in.'), ['<strong id="start_rp_name"></strong>']) %>
+                    <div class="isDesktop">
+                      <h2 class="isStart persona_intro">
+                          <%- format(gettext('%s uses Persona instead of usernames to sign you in.'), ['<strong id="start_rp_name"></strong>']) %>
 
-                    </p>
+                      </h2>
+                    </div>
+                    <div class="isMobile">
+                      <h2 class="isStart">
+                          <%- format(gettext('Sign in with Persona')) %>
+                      </h2>
+                    </div>
 
                     <ul class="inputs">
 
                         <li>
-                            <label for="authentication_email"></label>
-                            <span class="label email_state"><%= gettext('To sign in with Persona, please enter your email address.') %></span>
+                            <label for="authentication_email" class="isDesktopStart"></label>
+                            <span class="label email_state"><%= gettext('Enter your email address') %></span>
                             <span class="label transition_to_secondary"><%- format(gettext('%(idp)s no longer allows you to log into Persona with your %(idp)s password. You must now use your existing Persona password to log in with this email address.'), { idp: '<strong class="authentication_idp_name"></strong>'}) %></span>
                             <span class="label password_state"><%= gettext('Now enter your Persona password.') %></span>
-                            <input id="authentication_email" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
+                            <input id="authentication_email" class="isDesktopStart" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
 
                             <div id="email_format" class="tooltip" for="authentication_email">
                               <%= gettext('This field must be an email address.') %>
@@ -51,14 +58,16 @@
                         </li>
 
 
-                        <li id="hint_section" class="addressInfo submit">
+                        <!--li id="hint_section" class="isAddressInfo submit isDesktop">
                             <%= gettext("Checking with your email provider.") %>
-                        </li>
+                        </li-->
 
-                        <li class="returning">
+                        <li class="isReturning">
+
 
                             <label for="authentication_password" class="hidden"><%= gettext('Password') %></label>
 
+                            <h2 class="isMobile"><%- gettext('Enter password') %></h2>
                             <input id="authentication_password" type="password" maxlength="80" placeholder="<%= gettext('password') %>" />
 
                             <div id="password_required" class="tooltip" for="authentication_password">
@@ -69,7 +78,14 @@
 
                     </ul>
 
-                    <p class="submit tospp">
+                    <p class="submit cf isReturning">
+                      <a class="isMobile forgotPassword" href="#">
+                        <%= gettext('Forgot your password?') %>
+                      </a>
+                    </p>
+
+
+                    <p class="submit tospp cf isDesktopStart">
                        <%- format(gettext("By proceeding, you agree to %(site)s's <a %(terms)s>Terms</a> and <a %(privacy)s>Privacy Policy</a>."),
                                   { site: "Persona",
                                     terms:
@@ -78,18 +94,37 @@
                                         'href="https://login.persona.org/privacy" target="_new" tabindex="1"' }) %>
                     </p>
 
-
                     <p class="submit cf buttonrow">
-                      <button class="start addressInfo"><%= gettext('next') %></button>
-                      <button class="returning"><%= gettext('sign in') %></button>
-                      <a id="forgotPassword" class="returning" href="#"><%= gettext('Forgot your password?') %></a>
+                      <button class="isStart isAddressInfo "><%= gettext('next') %></button>
+
+                      <span class="isStart isAddressInfo right">
+                        <a href="#" class="isMobile cancelDialog">
+                          <%= gettext('cancel') %>
+                        </a>
+                      </span>
+
+                      <button class="isReturning">
+                        <%= gettext('sign in') %>
+                      </button>
+
+                      <span class="isReturning right">
+                        <a href="#" class="isMobile cancelPassword">
+                          <%= gettext('cancel') %>
+                        </a>
+                      </span>
+
+                      <span class="submit cf isReturning">
+                        <a class="isDesktop forgotPassword" href="#">
+                          <%= gettext('Forgot your password?') %>
+                        </a>
+                      </span>
                     </p>
 
 
                 </div>
               </div>
             </div>
-            <div class="arrowContainer">
+            <div class="arrowContainer isDesktop">
               <div class="arrow"></div>
             </div>
         </div>
@@ -97,27 +132,29 @@
     </section>
 
 
-    <section id="wait">
+    <section id="wait" class="message_screen">
         <!-- because each section is an absolutely positioned element, we have to use the inner table container element to be able to vertically/horizontally center correctly.  Without the table element, the layout gets all messed up. -->
         <div class="table">
             <div class="vertical">
                 <div class="contents">
-                    <h2 class="center"><%= gettext('Connecting to Persona...') %></h2>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="error">
+    <section id="error" class="message_screen">
         <div class="table">
             <div class="vertical">
                 <div class="contents">
                 </div>
             </div>
         </div>
+        <p class="submit cf buttonrow isMobile">
+            <button class="cancelDialog"><%= gettext('OK') %></button>
+        </p>
     </section>
 
-    <section id="delay">
+    <section id="delay" class="message_screen">
         <div class="table">
             <div class="vertical">
                 <div class="contents">

@@ -70,6 +70,14 @@ h2 {
     font-size: 20px;
 }
 
+.form_section h2 {
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 18px;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
 h3 {
     font-size: 18px;
 }
@@ -119,16 +127,6 @@ label.selectable {
     cursor: pointer;
 }
 
-section {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 0;
-}
-
 .table {
     display: table;
     width: 100%;
@@ -138,12 +136,6 @@ section {
 .table .vertical {
     display: table-cell;
     vertical-align: middle;
-}
-
-section > .contents {
-    display: table-cell;
-    vertical-align: middle;
-    height: 250px;
 }
 
 .form_section {
@@ -202,8 +194,34 @@ section > .contents {
     _height: 250px;
 }
 
-#wait, #error, #delay {
+
+section {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 0;
+}
+
+section > .contents {
+    display: table-cell;
+    vertical-align: middle;
+    height: 250px;
+}
+
+/**
+ * .message_screen are sections that are overlayed on top of the main content.
+ * Things like the loading, delay, error and wait screens.
+ */
+.message_screen {
     z-index: -1;
+    /* Since all of the screens are overlayed on top of each other
+     * and since the main screen does not have styles of its own (because of
+     * header and footer styles), use opacity to control whether a screen is
+     * shown or not.
+     */
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
     opacity: 0;
 
@@ -228,30 +246,104 @@ section > .contents {
     transition-delay: 0.5s;
 }
 
+.message_screen .vertical {
+    padding: 0 20px;
+}
 
-.waiting #wait {
+.message_screen img {
+  display: block;
+  margin: 0 auto 30px;
+}
+
+#load {
+  background: #fff;
+  /*
+   * We want the loading screen to take up the entire screen, not just
+   * within the borders of the content
+   */
+  position: fixed;
+  text-align: center;
+}
+
+.waiting #wait, .delay #delay, .error #error, .loading #load {
     display: block;
-    z-index: 1;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     opacity: 1;
+}
+
+.waiting #wait {
+    z-index: 5;
+}
+
+.loading #load {
+    z-index: 10;
 }
 
 .delay #delay {
-    display: block;
-    z-index: 2;
-    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-    opacity: 1;
+    z-index: 20;
 }
 
 .error #error, #error.unsupported, #error.cookies_disabled {
-    display: block;
-    z-index: 3;
-    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-    opacity: 1;
+    z-index: 30;
 }
 
 #error.unsupported {
   padding: 20px 0;
+}
+
+
+
+/**
+ * These animations are used for the loading spinner. No animated gifs here.
+ */
+
+/**
+ * Webkit still must use the -webkit prefix
+ */
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+/**
+ * Older firefoxes require -moz
+ */
+@-moz-keyframes rotate {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.loadingSpinner {
+  -webkit-animation-name: rotate;
+     -moz-animation-name: rotate;
+          animation-name: rotate;
+  -webkit-animation-duration: 0.5s;
+     -moz-animation-duration: 0.5s;
+          animation-duration: 0.5s;
+  -webkit-animation-iteration-count: infinite;
+     -moz-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+     -moz-animation-timing-function: linear;
+          animation-timing-function: linear;
 }
 
 .unsupported {
@@ -275,10 +367,6 @@ section > .contents {
 
 #error .lighter {
     color: #777;
-}
-
-#wait .vertical, #error .vertical, #delay .vertical {
-    padding: 0 20px;
 }
 
 
@@ -308,7 +396,7 @@ section > .contents {
     background-color: transparent;
 }
 
-#favicon {
+.favicon {
     position: absolute;
     left: 400px;
     top: 0;
@@ -318,34 +406,34 @@ section > .contents {
     z-index: 10;
 }
 
-#favicon strong {
+.favicon strong {
     font-size: 18px;
     line-height: 24px;
     text-shadow: 0 1px #fff;
 }
 
-#favicon img {
+.favicon img {
     display: block;
     margin: 0 auto;
     max-height: 100px;
     max-width: 100px;
 }
 
-#favicon h2, #favicon h3 {
+.favicon h2, .favicon h3 {
     line-height: 1.2em;
     margin: 10px 0 0 0;
 }
 
-#favicon h2 {
+.favicon h2 {
     margin: 10px 0 0 0;
 }
 
-#favicon h3 {
+.favicon h3 {
     font-size: 16px;
     margin-top: 0;
 }
 
-#favicon .vertical {
+.favicon .vertical {
     display: table-cell;
     text-align: center;
     max-width: 0;
@@ -361,29 +449,29 @@ div#required_email {
   margin-top: 8px;
 }
 
-.inputs > li > label {
+#emailList > li {
+    margin: 0;
+}
+
+#emailList > li > label {
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-#selectEmail > .inputs > li {
-    margin: 0;
-}
-
-#selectEmail > .inputs > li > label {
+#emailList > li > label {
     padding: 3px 1px;
     white-space: nowrap;
 }
 
-#selectEmail > .inputs > li > label.preselected {
+#emailList > li > label.preselected {
     font-weight: bold;
 }
 
-#selectEmail > .inputs > li:only-child > label.selectable {
+#emailList > li:only-child > label.selectable {
     cursor: default;
 }
 
-#selectEmail > .inputs > li:only-child input[type=radio] {
+#emailList > li:only-child input[type=radio] {
     display: none;
 }
 
@@ -456,8 +544,16 @@ a.emphasize:active {
     margin: 0 0 0 5px;
 }
 
-.newuser,
-.returning {
+.isReturning, .isStart, .isAddressInfo, .isMobile {
+  display: none;
+}
+
+
+.returning .isReturning, .start .isStart, .addressInfo .isAddressInfo {
+  display: block;
+}
+
+.newuser {
     display: none;
 }
 

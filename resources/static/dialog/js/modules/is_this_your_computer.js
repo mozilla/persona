@@ -9,6 +9,8 @@ BrowserID.Modules.IsThisYourComputer = (function() {
       user = bid.User,
       errors = bid.Errors,
       domHelpers = bid.DOMHelpers,
+      SCREEN_SELECTOR = "#wait",
+      SKIN_CLASS = "black",
       email;
 
   var Module = bid.Modules.PageModule.extend({
@@ -17,6 +19,14 @@ BrowserID.Modules.IsThisYourComputer = (function() {
       email = options.email;
 
       var self = this;
+
+      // The "signing in" screen is shown right now. Hide it while showing this
+      // screen.
+      self.hideWarningScreens();
+
+      // The error screen normally has a button row. Hide the button row before
+      // rendering the error or CSS transitions make the content shift around.
+      dom.addClass(SCREEN_SELECTOR, SKIN_CLASS);
 
       self.renderWait("is_this_your_computer", options);
 
@@ -46,8 +56,10 @@ BrowserID.Modules.IsThisYourComputer = (function() {
 
     confirmed: function(status) {
       var self=this;
+
+      dom.removeClass(SCREEN_SELECTOR, SKIN_CLASS);
       user.setComputerOwnershipStatus(status, function() {
-        self.close("user_computer_status_set", { users_computer: status });
+        self.publish("user_computer_status_set", { users_computer: status });
       }, self.getErrorDialog(errors.setComputerOwnershipStatus));
     }
   });

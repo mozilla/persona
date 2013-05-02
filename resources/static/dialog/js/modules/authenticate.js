@@ -21,15 +21,17 @@ BrowserID.Modules.Authenticate = (function() {
       AUTH_FORM_SELECTOR = "#authentication_form",
       EMAIL_SELECTOR = "#authentication_email",
       PASSWORD_SELECTOR = "#authentication_password",
-      FORGOT_PASSWORD_SELECTOR = "#forgotPassword",
+      FORGOT_PASSWORD_SELECTOR = ".forgotPassword",
       RP_NAME_SELECTOR = "#start_rp_name",
       BODY_SELECTOR = "body",
       AUTHENTICATION_CLASS = "authentication",
       FORM_CLASS = "form",
       AUTHENTICATION_LABEL = "#authentication_form label[for=authentication_email]",
+      ENTER_EMAIL_LABEL = "#authentication_form .label.enter_email",
       EMAIL_LABEL = "#authentication_form .label.email_state",
       TRANSITION_TO_SECONDARY_LABEL = "#authentication_form .label.transition_to_secondary",
       PASSWORD_LABEL = "#authentication_form .label.password_state",
+      CANCEL_PASSWORD_SELECTOR = ".cancelPassword",
       IDP_SELECTOR = "#authentication_form .authentication_idp_name",
       PERSONA_INTRO_SELECTOR = ".persona_intro",
       PERSONA_URL = "https://login.persona.org",
@@ -80,6 +82,10 @@ BrowserID.Modules.Authenticate = (function() {
     }
     else {
       showHint("addressInfo");
+      self.renderLoad("load", {
+        title: gettext("Checking with your email provider.")
+      });
+
       user.addressInfo(email, onAddressInfo,
         self.getErrorDialog(errors.addressInfo));
     }
@@ -87,6 +93,8 @@ BrowserID.Modules.Authenticate = (function() {
     function onAddressInfo(info) {
       addressInfo = info;
       dom.removeAttr(EMAIL_SELECTOR, 'disabled');
+
+      self.hideLoad();
 
       // We rely on user.addressInfo to tell us when an address that would
       // normally be a primary is a secondary because of forcedIssuer. If
@@ -185,19 +193,16 @@ BrowserID.Modules.Authenticate = (function() {
     currentHint = showSelector;
 
     _.each(hints, function(className) {
-      if (className !== showSelector) {
-        dom.hide("." + className + ":not(." + showSelector + ")");
-      }
+      dom.removeClass("body", className);
     });
 
-    $("." + showSelector).fadeIn(ANIMATION_TIME, function() {
-      // Fire a window resize event any time a new section is displayed that
-      // may change the content's innerHeight.  this will cause the "screen
-      // size hacks" to resize the screen appropriately so scroll bars are
-      // displayed when needed.
-      dom.fireEvent(window, "resize");
-      complete(callback);
-    });
+    // Fire a window resize event any time a new section is displayed that
+    // may change the content's innerHeight.  this will cause the "screen
+    // size hacks" to resize the screen appropriately so scroll bars are
+    // displayed when needed.
+    dom.addClass("body", showSelector);
+    dom.fireEvent(window, "resize");
+    complete(callback);
   }
 
   function enterEmailState() {
@@ -279,7 +284,6 @@ BrowserID.Modules.Authenticate = (function() {
 
       currentHint = null;
       dom.setInner(CONTENTS_SELECTOR, "");
-      dom.hide(".returning,.start");
 
       // Since the authentication form is ALWAYS in the DOM, there is no
       // renderForm call which will hide the error, wait or delay screens.
@@ -301,6 +305,7 @@ BrowserID.Modules.Authenticate = (function() {
       // element blurs but it has been updated via autofill.  See issue #406
       self.bind(EMAIL_SELECTOR, "change", emailChange);
       self.click(FORGOT_PASSWORD_SELECTOR, forgotPassword);
+      self.click(CANCEL_PASSWORD_SELECTOR, enterEmailState);
 
       Module.sc.start.call(self, options);
       initialState.call(self, options);

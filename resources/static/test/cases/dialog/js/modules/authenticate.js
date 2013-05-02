@@ -26,7 +26,7 @@
       CONTENTS_SELECTOR = "#formWrap .contents",
       EMAIL_SELECTOR = "#authentication_email",
       PASSWORD_SELECTOR = "#authentication_password",
-      FORGOT_PASSWORD_SELECTOR = "#forgotPassword",
+      FORGOT_PASSWORD_SELECTOR = ".forgotPassword",
       BODY_SELECTOR = "body",
       AUTHENTICATION_LABEL = "#authentication_form label[for=authentication_email]",
       EMAIL_LABEL = "#authentication_form .label.email_state",
@@ -161,7 +161,7 @@
       state: "known",
       ready: function() {
         equal($(EMAIL_SELECTOR).val(), "registered@testuser.com", "email prefilled");
-        equal($("input[type=password]").is(":visible"), true, "password is shown");
+        ok($("body").hasClass("returning"));
         start();
       }
     });
@@ -177,7 +177,7 @@
       allowUnverified: true,
       ready: function() {
         equal($(EMAIL_SELECTOR).val(), "unverified@testuser.com", "email prefilled");
-        equal($("input[type=password]").is(":visible"), true, "password is shown");
+        ok($("body").hasClass("returning"));
         start();
       }
     });

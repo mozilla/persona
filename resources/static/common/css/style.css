@@ -393,6 +393,7 @@ button.negative:active,
   margin-top: 8px;
 }
 
+
 a.secondary[disabled], .submit_disabled a.secondary, .submit_disabled a.secondary:focus, .submit_disabled a.secondary:active {
   color: #999;
 }
@@ -472,7 +473,7 @@ footer .help {
   font-weight: bold;
 }
 
-#wait, #delay, #error {
+.message_screen {
   background-color: #dadee1;
   background-image: url("/common/i/grain.png#iefix"), -webkit-gradient(linear, left top, left bottom, from(#dadee1), to(#c7ccd0));
   background-image: url("/common/i/grain.png#iefix"), -webkit-linear-gradient(top, #dadee1, #c7ccd0);
@@ -482,21 +483,21 @@ footer .help {
   background-image: url("/common/i/grain.png#iefix"),         linear-gradient(top, #dadee1, #c7ccd0);
 }
 
-#wait .contents, #error .contents, #delay .contents {
+.message_screen .contents {
     max-width: 430px;
     margin: 0 auto;
 }
 
-#wait h2, #delay h2 {
+.message_screen h2 {
     font-size: 20px;
+}
+
+.message_screen p {
+    margin-top: 20px;
 }
 
 #error h2 {
     font-size: 22px;
-}
-
-#wait p, #error p, #delay p {
-    margin-top: 20px;
 }
 
 #error .emphasis {
@@ -519,14 +520,6 @@ footer .help {
     color: #999;
 }
 
-.forgot {
-  font-size: 11px;
-}
-
-.forgot:hover {
-  color: #333;
-}
-
 .submit {
     margin-top: 10px;
 }
@@ -547,6 +540,7 @@ footer .help {
   width: 50px;
   height: 50px;
   cursor: default;
+  z-index: 99999;
 }
 
 #development {

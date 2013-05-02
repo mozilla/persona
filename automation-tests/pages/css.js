@@ -40,20 +40,22 @@ module.exports = {
   "dialog": {
     windowName: "__persona_dialog",
     emailInput: 'input#authentication_email',
-    newEmailNextButton: 'p.submit.buttonrow button.start',
+    newEmailNextButton: 'p.submit.buttonrow button.isStart',
     submitCancelButton: 'p.submit.buttonrow #cancel',
     existingPassword: 'div#signIn input#authentication_password',
-    forgotPassword: 'a#forgotPassword',
+    // This is a bit of a hack Selenium does not deal well with both of the
+    // .forgotPassword's being in the dom at once and we are testing
+    forgotPassword: 'a.isDesktop.forgotPassword',
     choosePassword: 'div#set_password input#password',
     verifyPassword: 'input#vpassword',
     postVerificationPassword: 'input#password',
     // the button you click on after typing and re-typing your password
     createUserButton: 'button#verify_user',
-    returningUserButton: 'button.returning',
+    returningUserButton: 'button.isReturning',
     verifyWithPrimaryButton: 'button#verifyWithPrimary',
     postVerificationPasswordButton: 'button#sign_in',
-    thisIsNotMe: '#thisIsNotMe',
-    useNewEmail: 'a#useNewEmail',
+    thisIsNotMe: '.thisIsNotMe',
+    useNewEmail: 'a.useNewEmail',
     newEmail: 'input#newEmail',
     addNewEmailButton: 'button#addNewEmail',
     emailPrefix: '#email_',

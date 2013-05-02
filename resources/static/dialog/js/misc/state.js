@@ -113,6 +113,11 @@ BrowserID.State = (function() {
     }
 
 
+    /**
+     * The entry point to the state machine. Users who are returning from
+     * authenticating with their primary will have info.email and info.type set
+     * to primary.
+     */
     handleState("start", function(msg, info) {
       self.hostname = info.hostname;
       self.siteName = info.siteName || info.hostname;
@@ -160,7 +165,6 @@ BrowserID.State = (function() {
 
     handleState("authentication_checked", function(msg, info) {
       var authenticated = info.authenticated;
-
       if (authenticated) {
         redirectToState("pick_email");
       } else {

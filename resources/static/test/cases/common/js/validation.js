@@ -216,6 +216,19 @@
     equal(tooltipShown, false, "tooltip not shown");
   });
 
+  testHelpers.testInvalidAuthenticationPassword("newPassword", function(pass) {
+    var valid = validation.newPassword(pass);
+    equal(valid, false);
+    equal(tooltipShown, true);
+    start();
+  });
+
+  test("newPassword with valid password", function() {
+    var valid = validation.newPassword("password");
+    equal(valid, true);
+    equal(tooltipShown, false);
+  });
+
 }());
 
 

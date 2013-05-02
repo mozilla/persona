@@ -13,7 +13,9 @@ BrowserID.Modules.PageModule = (function() {
       dom = bid.DOM,
       screens = bid.Screens,
       helpers = bid.Helpers,
+      complete = helpers.complete,
       cancelEvent = helpers.cancelEvent,
+      CANCEL_DIALOG_SELECTOR = ".cancelDialog",
       sc;
 
    function onSubmit() {
@@ -23,6 +25,12 @@ BrowserID.Modules.PageModule = (function() {
      }
      return false;
    }
+
+  function cancelDialog(done) {
+    /*jshint validthis: true*/
+    this.publish("cancel");
+    complete(done);
+  }
 
   function showScreen(screen, template, vars, oncomplete) {
     screen.show(template, vars);
@@ -45,11 +53,7 @@ BrowserID.Modules.PageModule = (function() {
       sc.start.call(self, options);
 
       self.bind("form", "submit", cancelEvent(onSubmit));
-    },
-
-    stop: function() {
-      dom.removeClass("body", "waiting");
-      sc.stop.call(this);
+      self.click(CANCEL_DIALOG_SELECTOR, cancelDialog);
     },
 
     renderForm: function(template, data) {
@@ -65,6 +69,10 @@ BrowserID.Modules.PageModule = (function() {
         dom.focus("button:visible:eq(0)");
       }
     },
+
+    // the laoding wait, error and delay screens make up the warning screens.
+    renderLoad: showScreen.curry(screens.load),
+    hideLoad: hideScreen.curry(screens.load),
 
     // the wait, error and delay screens make up the warning screens.
     renderWait: showScreen.curry(screens.wait),
@@ -88,6 +96,7 @@ BrowserID.Modules.PageModule = (function() {
       self.hideWait();
       self.hideError();
       self.hideDelay();
+      self.hideLoad();
     },
 
     /**
@@ -137,7 +146,8 @@ BrowserID.Modules.PageModule = (function() {
 
     // BEGIN TESTING API
     ,
-    onSubmit: onSubmit
+    onSubmit: onSubmit,
+    cancelDialog: cancelDialog
     // END TESTING API
   });
 

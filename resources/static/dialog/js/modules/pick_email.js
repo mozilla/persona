@@ -12,6 +12,8 @@ BrowserID.Modules.PickEmail = (function() {
       dialogHelpers = helpers.Dialog,
       tooltip = bid.Tooltip,
       dom = bid.DOM,
+      ADD_EMAIL_SELECTOR = ".useNewEmail",
+      NOT_ME_SELECTOR = ".thisIsNotMe",
       sc;
 
   function pickEmailState(event) {
@@ -61,6 +63,13 @@ BrowserID.Modules.PickEmail = (function() {
 
     var record = checkEmail.call(self, email);
     if (!! record) {
+      // Show the signing in screen as soon as the user presses the button so
+      // that it does not seem like there is a huge delay while things being
+      // processed.
+      self.renderLoad("load", {
+        title: gettext("signing in")
+      });
+
       dialogHelpers.refreshEmailInfo.call(self, email, function (info) {
         // XXX Why is this here? This is almost a complete duplication of
         // the logic in state.js, and it should be there.
@@ -145,12 +154,12 @@ BrowserID.Modules.PickEmail = (function() {
         dom.focus("#signInButton");
       }
 
-      self.click("#useNewEmail", addEmail);
+      self.click(ADD_EMAIL_SELECTOR, addEmail);
       // The click function does not pass the event to the function.  The event
       // is needed for the label handler so that the correct radio button is
       // selected.
       self.bind("#selectEmail label", "click", proxyEventToInput);
-      self.click("#thisIsNotMe", notMe);
+      self.click(NOT_ME_SELECTOR, notMe);
 
       sc.start.call(self, options);
 

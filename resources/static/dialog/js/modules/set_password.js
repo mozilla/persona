@@ -8,17 +8,30 @@ BrowserID.Modules.SetPassword = (function() {
       helpers = bid.Helpers,
       complete = helpers.complete,
       dialogHelpers = helpers.Dialog,
+      PASSWORD_SELECTOR = "#password",
+      VPASSWORD_SELECTOR = "#vpassword",
       sc;
 
   function submit(callback) {
     /*jshint validthis: true*/
-    var pass = dom.getInner("#password"),
-        vpass = dom.getInner("#vpassword"),
-        options = this.options;
+    var pass = dom.getInner(PASSWORD_SELECTOR),
+        vpass = dom.getInner(VPASSWORD_SELECTOR),
+        options = this.options,
+        valid;
 
-    var valid = bid.Validation.passwordAndValidationPassword(pass, vpass);
-    if(valid) {
-      this.publish("password_set", { password: pass });
+    if (dom.is(PASSWORD_SELECTOR, ":focus") && pass && !vpass) {
+      // user is in the password field, hits enter and there is no vpass. User
+      // should go to the vpass field without there being an error.
+      valid = bid.Validation.newPassword(pass);
+      if (valid) {
+        dom.focus(VPASSWORD_SELECTOR);
+      }
+    }
+    else {
+      valid = bid.Validation.passwordAndValidationPassword(pass, vpass);
+      if (valid) {
+        this.publish("password_set", { password: pass });
+      }
     }
 
     complete(callback, valid);
@@ -36,7 +49,6 @@ BrowserID.Modules.SetPassword = (function() {
 
       self.renderForm("set_password", {
         email: options.email,
-        password_reset: !!options.password_reset,
         transition_no_password: !!options.transition_no_password,
         domain: helpers.getDomainFromEmail(options.email),
         fxaccount: !!options.fxaccount,

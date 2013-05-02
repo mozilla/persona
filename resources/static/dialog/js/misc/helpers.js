@@ -43,12 +43,11 @@
 
   function getAssertion(email, callback) {
     /*jshint validthis:true*/
-    var self=this,
-        wait = bid.Screens.wait;
+    var self=this;
 
     user.getAssertion(email, user.getOrigin(), function(assert) {
       assert = assert || null;
-      wait.hide();
+
       self.publish("assertion_generated", {
         assertion: assert
       });

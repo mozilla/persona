@@ -38,14 +38,6 @@
     testElementExists("#cancel");
   });
 
-  test("create with password_reset option - show template, show reset password button", function() {
-    controller.destroy();
-    createController({ password_reset: true });
-    testElementExists("#set_password");
-    testElementExists("#password_reset");
-    testElementExists("#cancel");
-  });
-
   test("create with cancelable=false option - cancel button not shown", function() {
     controller.destroy();
     createController({ cancelable: false });
@@ -61,6 +53,16 @@
     var selector = "#set_password .inputs li";
     testElementTextContains(selector, "no longer allows", "transition message shown");
     testElementTextContains(selector, "password.no", "message shows IdP domain");
+  });
+
+  asyncTest("submit in password field with good password - skip to vpassword field", function() {
+    $("#password").val("password");
+    $("#password").focus();
+
+    controller.submit(function() {
+      testHelpers.testElementFocused("#vpassword");
+      start();
+    });
   });
 
   asyncTest("submit with good password/vpassword - password_set message raised", function() {
