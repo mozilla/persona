@@ -595,6 +595,9 @@ a.emphasize:active {
   display: none;
 }
 
+/**
+ * The lightbox shows TOS/PP agreements.
+ */
 .lightbox {
   display: block;
   position: fixed;
