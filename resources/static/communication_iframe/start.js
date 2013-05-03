@@ -119,6 +119,11 @@
     }
   });
 
+  chan.bind("redirect_flow", function(trans, params) {
+    setRemoteOrigin(trans.origin);
+    localStorage.rpRequest = JSON.stringify({ origin: remoteOrigin, params: JSON.parse(params) });
+  });
+
   chan.bind("dialog_running", function(trans, params) {
     pause = true;
   });

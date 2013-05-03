@@ -133,6 +133,8 @@
       (isFennec ? undefined :
        "menubar=0,location=1,resizable=1,scrollbars=1,status=0,width=700,height=375");
 
+    var needsPopupFix = true;
+
     var w;
 
     // table of registered observers
@@ -369,6 +371,21 @@
       // notify the iframe that the dialog is running so we
       // don't do duplicative work
       if (commChan) commChan.notify({ method: 'dialog_running' });
+
+      if (needsPopupFix) {
+        if (commChan) {
+          commChan.notify({
+            method: 'popup_fix',
+            params: JSON.stringify(options)
+          });
+          window.location = ipServer + '/sign_in';
+          return;
+        } else {
+          //it's not ganna work on this browser without watch()!
+          //XXX: warn the console? bail as an error?
+          throw new Error("bonkers");
+        }
+      }
 
       w = WinChan.open({
         url: ipServer + '/sign_in',
