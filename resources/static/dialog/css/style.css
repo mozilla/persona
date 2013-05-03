@@ -277,6 +277,16 @@ section > .contents {
     opacity: 1;
 }
 
+/**
+ * If the error or delay screens are shown, hide the load screen. If
+ * not hidden, the load screen causes a white top and bottom margin.
+ */
+.error #load, .delay #load {
+  opacity: 0;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  z-index: -1;
+}
+
 .waiting #wait {
     z-index: 5;
 }
