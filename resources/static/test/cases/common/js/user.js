@@ -696,11 +696,24 @@
     }, testHelpers.unexpectedFailure);
   });
 
-  asyncTest("authenticate with valid credentials, also syncs email with server", function() {
+  asyncTest("authenticate with valid normal credentials, syncs email with server", function() {
     lib.authenticate(TEST_EMAIL, "testuser", function(authenticated) {
       equal(true, authenticated, "we are authenticated!");
       var emails = lib.getStoredEmailKeypairs();
       equal(_.size(emails) > 0, true, "emails have been synced to server");
+      // user is not authenticating with a forever session, they should be
+      // still be asked whether this is their computer.
+      equal(storage.usersComputer.confirmed(lib.userid()), false);
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("authenticate with valid forever session credentials", function() {
+    xhr.useResult("foreverSession");
+    lib.authenticate(TEST_EMAIL, "testuser", function(authenticated) {
+      // user is authenticating with a forever session, they should be marked
+      // as "confirmed"
+      equal(storage.usersComputer.confirmed(lib.userid()), true);
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -724,6 +737,16 @@
       equal(true, authenticated, "we are authenticated!");
       var emails = lib.getStoredEmailKeypairs();
       equal(_.size(emails) > 0, true, "emails have been synced to server");
+      equal(storage.usersComputer.confirmed(lib.userid()), false);
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+  asyncTest("authenticateWithAssertion with valid assertion and a forever session", function() {
+    xhr.useResult("foreverSession");
+    lib.authenticateWithAssertion(TEST_EMAIL, "test_assertion", function(authenticated) {
+      equal(true, authenticated, "we are authenticated!");
+      equal(storage.usersComputer.confirmed(lib.userid()), true);
       start();
     }, testHelpers.unexpectedXHRFailure);
   });
