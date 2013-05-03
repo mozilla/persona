@@ -36,14 +36,14 @@
   <title><%= format(gettext("Mozilla Persona: %s"), [gettext(title)]) %></title>
 </head>
   <body class="loading">
+      <% if (useJavascript !== false && enable_development_menu) { %>
+        <a href="#" id="showDevelopment">&nbsp;</a>
+      <% } %>
       <header id="header">
          <h1><a class="home" target="_blank" href="/">Mozilla Persona Home</a></h1>
       </header>
 
       <div id="content">
-        <% if (useJavascript !== false && enable_development_menu) { %>
-          <a href="#" id="showDevelopment">&nbsp;</a>
-        <% } %>
         <%- body %>
       </div>
 

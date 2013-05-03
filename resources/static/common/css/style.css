@@ -535,7 +535,11 @@ footer .help {
 
 #showDevelopment {
   position: absolute;
-  top: 0;
+  /**
+   * The TOS/PP agreement close button is in the upper right corner. To avoid
+   * interfering with it, push the development button down a bit.
+   */
+  top: 50px;
   right: 0;
   width: 50px;
   height: 50px;
