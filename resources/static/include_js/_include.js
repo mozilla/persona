@@ -324,6 +324,12 @@
       checkRenamed(options, "tosURL", "termsOfService");
       checkRenamed(options, "privacyURL", "privacyPolicy");
 
+      if (document.location.protocol !== "https:") {
+        warn("privacyPolicy and termsOfService are only allowed on https domains");
+        delete options.termsOfService;
+        delete options.privacyPolicy;
+      }
+
       if (options.termsOfService && !options.privacyPolicy) {
         warn("termsOfService ignored unless privacyPolicy also defined");
       }
@@ -331,6 +337,7 @@
       if (options.privacyPolicy && !options.termsOfService) {
         warn("privacyPolicy ignored unless termsOfService also defined");
       }
+
 
       options.rp_api = getRPAPI();
       // reset the api_called in case the site implementor changes which api

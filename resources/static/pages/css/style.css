@@ -24,6 +24,13 @@ body {
   color: #fff;
 }
 
+/**
+ * In an embedded context, get rid of all background colors
+ */
+.embedded {
+  background: #fff;
+}
+
 #errorBackground {
   position: absolute;
   position: fixed;
@@ -107,6 +114,13 @@ body {
   padding: 50px 0;
 }
 
+/**
+ * embedded content should not show any of the sandstone background
+ */
+.embedded #content {
+  padding: 0;
+}
+
 h1 {
   margin-bottom: 35px;
 }
@@ -118,6 +132,13 @@ h1 {
 
 #legal {
   padding: 75px 125px;
+}
+
+/**
+ * embedded content doesn't really need that humongous padding.
+ */
+.embedded #legal {
+  padding: 25px 50px;
 }
 
 #manage {

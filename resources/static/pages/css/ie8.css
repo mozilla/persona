@@ -6,10 +6,29 @@
  * These fixes are specific to IE8 for the main site
  */
 
+/**
+ * IE8 can only handle one background image in a CSS declaration
+ */
 body {
-  background-image: url("/pages/i/marketplace-header.png");
-  background-position: center top;
-  background-repeat: repeat-x;
+  background: #6a7b86 url("/pages/i/marketplace-header.png") repeat-x center top;
+}
+
+
+/**
+ * IE8 in the embedded context does not respect the IFRAME size and shows a
+ * scroll bar unless the wrapper's width is set to auto
+ */
+.embedded #wrapper {
+  background: #fff;
+  width: auto;
+}
+
+/**
+ * IE8 doesn't respect media queries that sets the padding to 20px. Duplicate
+ * that logic here.
+ */
+.embedded #content {
+  padding: 20px;
 }
 
 

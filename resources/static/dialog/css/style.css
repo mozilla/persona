@@ -594,3 +594,52 @@ a.emphasize:active {
 #authentication_form span.label {
   display: none;
 }
+
+/**
+ * The lightbox shows TOS/PP agreements.
+ */
+.lightbox {
+  display: block;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  /**
+   * The width and height are needed for webkit browsers
+   * to size the iframe properly
+   */
+  width: 100%;
+  height: 100%;
+  z-index: 900;
+  background-color: #111;
+  background-color: rgba(0,0,0,.9);
+  padding: 50px 60px 20px 60px;
+}
+
+.lightbox .contents {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  border: 2px solid grey;
+  background-color: #fff;
+  border: 0;
+}
+
+.lightbox .close {
+  margin-top: -35px;
+  display: block;
+  color: red;
+  position: absolute;
+  right: 10px;
+  background: url("/common/i/closex.png") no-repeat scroll right center #000;
+  background: url("/common/i/closex.png") no-repeat scroll right center rgba(0, 0, 0, 0.6);
+  border-radius: 6px;
+  padding: 5px 28px 5px 5px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: none;
+  color: #ccc;
+}
+

@@ -284,12 +284,16 @@
     equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate called with the correct email");
   });
 
-  test("start - RPInfo always started, issuer set", function() {
-    mediator.publish("start", {
-      termsOfService: "https://browserid.org/TOS.html",
-      privacyPolicy: "https://browserid.org/priv.html",
-      forceIssuer: "fxos_issuer"
-    });
+  test("start - RPInfo always started, issuer set, inline_tosspp not started", function() {
+    try {
+      mediator.publish("start", {
+        termsOfService: "https://browserid.org/TOS.html",
+        privacyPolicy: "https://browserid.org/priv.html",
+        forceIssuer: "fxos_issuer"
+      });
+    } catch(e) {
+      ok(false, "exception not expected");
+    }
 
     ok(actions.info.doRPInfo.termsOfService, "doRPInfo called with termsOfService set");
     ok(actions.info.doRPInfo.privacyPolicy, "doRPInfo called with privacyPolicy set");

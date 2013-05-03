@@ -487,5 +487,11 @@
     -webkit-animation-name: none;
   }
 
+  /**
+   * The margins are too large on the desktop lightbox.
+   */
+  .lightbox {
+    padding: 45px 5px 5px 5px;
+  }
 }
 

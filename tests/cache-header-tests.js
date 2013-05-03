@@ -46,7 +46,7 @@ function doRequest(path, headers, cb) {
 }
 
 function hasProperFramingHeaders(r, path) {
-  if (['/communication_iframe', '/relay'].indexOf(path) !== -1) {
+  if (['/communication_iframe', '/relay', '/embedded_tos', '/embedded_privacy'].indexOf(path) !== -1) {
     assert.strictEqual(r.headers['x-frame-options'], undefined);
   } else {
     assert.strictEqual(r.headers['x-frame-options'],"DENY");
@@ -137,7 +137,9 @@ suite.addBatch({
   '/relay': hasProperCacheHeaders('/relay'),
   '/about': hasProperCacheHeaders('/about'),
   '/tos': hasProperCacheHeaders('/tos'),
+  '/embedded_tos': hasProperCacheHeaders('/embedded_tos'),
   '/privacy': hasProperCacheHeaders('/privacy'),
+  '/embedded_privacy': hasProperCacheHeaders('/embedded_privacy'),
   '/verify_email_address': hasProperCacheHeaders('/verify_email_address'),
   '/add_email_address': hasProperCacheHeaders('/add_email_address'),
   '/confirm': hasProperCacheHeaders('/confirm'),

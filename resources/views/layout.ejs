@@ -19,13 +19,14 @@
      */ %>
   <title><%= format(gettext("Mozilla Persona: %s"), [gettext(title)]) %></title>
 </head>
-<body class="loading" <%- typeof start_blank !== "undefined" ? 'style="display: none;"' : "" %>>
+<body class="loading <%- typeof embedded !== "undefined" && embedded === true ? "embedded" : "" %>" <%- typeof start_blank !== "undefined" ? 'style="display: none;"' : "" %>>
 <% if (enable_development_menu) { %>
   <a href="#" id="showDevelopment">&nbsp;</a>
 <% } %>
 <div id="errorBackground"></div>
 
 <div id="wrapper">
+<% if (typeof embedded === "undefined" || embedded !== true) { %>
     <header id="header" class="cf">
         <a class="home" href="/"><%= gettext("Persona Home") %></a>
 
@@ -38,6 +39,7 @@
 
         </ul>
     </header>
+<% } %>
 
     <div id="wait"><div class="contents"></div></div>
     <div id="error"><div class="contents"></div></div>
@@ -47,6 +49,7 @@
 
 </div>
 
+<% if (typeof embedded === "undefined" || embedded !== true) { %>
 <footer style="position: absolute; bottom: 0;">
     <ul class="cf">
         <li><%- format(gettext('By the <a %s>Identity Team</a> @ <a %s>Mozilla</a>'),
@@ -58,7 +61,7 @@
         href="https://support.mozilla.com/kb/what-is-persona-and-how-does-it-work" target="_blank"><%= gettext('Need Help? &rarr;') %></a></li>
     </ul>
 </footer>
-
+<% } %>
 <script src="https://login.persona.org/include.js"></script>
 
 </body>

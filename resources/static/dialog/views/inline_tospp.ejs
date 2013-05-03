@@ -1,0 +1,23 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+
+<div id="tosppmodal" class="lightbox">
+  <a href="#" class="close">Close</a>
+    <!--
+    Travis-CI uses PhantomJS 1.8.1 which contains a crash bug when appending
+    and removing an iframe. The Phantom bug is tracked at:
+    https://github.com/ariya/phantomjs/issues/10947
+    The Travis bug is tracked at:
+    https://github.com/travis-ci/travis-ci/issues/1074
+    When Travis updates its version of Phantom, the no_iframe branch
+    can be removed.
+    -->
+  <% if (typeof no_iframe !== "undefined" && no_iframe === true) { %>
+    <div class="contents" id="tosppframe" name="tosppframe"></div>
+  <% } else { %>
+    <iframe class="contents" id="tosppframe" name="tosppframe" sandbox security="restricted"></iframe>
+  <% } %>
+</div>
+
