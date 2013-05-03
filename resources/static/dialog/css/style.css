@@ -71,6 +71,10 @@ h2 {
 }
 
 .form_section h2 {
+  font-size: 18px;
+}
+
+.form_section h2.small {
   font-size: 13px;
   font-weight: normal;
   line-height: 18px;
@@ -203,6 +207,8 @@ section {
     bottom: 0;
     right: 0;
     z-index: 0;
+    width: 100%;
+    height: 100%;
 }
 
 section > .contents {
