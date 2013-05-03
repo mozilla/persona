@@ -177,56 +177,6 @@ suite.addBatch({
   }
 });
 
-suite.addBatch({
-  "generating an assertion": {
-    topic: function() {
-      primaryUser.getAssertion(PRIMARY_ORIGIN, this.callback);
-    },
-    "and logging in with the assertion with ephemeral = true": {
-      topic: function(err, assertion)  {
-        this.context = {
-          headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
-        };
-        wsapi.post('/wsapi/auth_with_assertion', {
-          assertion: assertion,
-          ephemeral: true
-        }, this.context).call(this);
-      },
-      "has expected duration for FirefoxOS": function(err, r) {
-        assert.strictEqual(getSessionDuration(this.context), config.get('ephemeral_session_duration_ms'));
-      }
-    }
-  }
-});
-
-suite.addBatch({
-  "generating an assertion": {
-    topic: function() {
-      primaryUser.getAssertion(PRIMARY_ORIGIN, this.callback);
-    },
-    "and logging in with the assertion with ephemeral = false": {
-      topic: function(err, assertion)  {
-        this.context = {
-          headers: {'user-agent': 'Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'}
-        };
-        wsapi.post('/wsapi/auth_with_assertion', {
-          assertion: assertion,
-          ephemeral: false
-        }, this.context).call(this);
-      },
-      "works": function(err, r) {
-        var resp = JSON.parse(r.body);
-        assert.isObject(resp);
-        assert.isTrue(resp.success);
-        assert.isTrue(resp.suppress_ask_if_users_computer);
-      },
-      "has expected duration FirefoxOS": function(err, r) {
-        assert.strictEqual(getSessionDuration(this.context), TEN_YEARS_MS);
-      }
-    }
-  }
-});
-
 // now test that authenticate_user & secondary emails properly respect the 'ephemeral' argument to
 // alter session length
 const TEST_EMAIL = 'someuser@somedomain.com',
