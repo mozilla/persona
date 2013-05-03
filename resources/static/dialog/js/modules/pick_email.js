@@ -65,9 +65,11 @@ BrowserID.Modules.PickEmail = (function() {
     if (!! record) {
       // Show the signing in screen as soon as the user presses the button so
       // that it does not seem like there is a huge delay while things being
-      // processed.
+      // processed. Show the load screen without a title (instead of "signing
+      // in") because the user may have to take some action after this - like
+      // verify their email address or answer yes/no to "is this your computer"
       self.renderLoad("load", {
-        title: gettext("signing in")
+        title: ""
       });
 
       dialogHelpers.refreshEmailInfo.call(self, email, function (info) {

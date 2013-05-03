@@ -9,6 +9,7 @@
       user = bid.User,
       xhr = bid.Mocks.xhr,
       network = bid.Network,
+      screens = bid.Screens,
       testHelpers = bid.TestHelpers,
       register = testHelpers.register;
 
@@ -58,6 +59,20 @@
     controller.startCheck();
   }
 
+  /**
+   * The loading screen could be shown when the check registration screen is
+   * shown. If it is, make sure that it is hidden before showing this screen or
+   * else the user never sees the "check your email" message.
+   */
+  test("all other warning screens hidden on startup", function() {
+    xhr.useResult("mustAuth");
+
+    screens.load.show("load", { title: "test screen" });
+    ok(screens.load.visible);
+    createController("loadForUserValidation", "user_verified");
+    equal(screens.load.visible, false);
+  });
+
   asyncTest("user validation with mustAuth result - userVerified with mustAuth: true", function() {
     xhr.useResult("mustAuth");
     testMustAuthUserEvent("user_verified");
@@ -67,6 +82,7 @@
     user.init({ pollDuration: 100 });
     xhr.useResult("pending");
     xhr.setContextInfo("auth_level", "assertion");
+    xhr.setContextInfo("userid", 1);
     testMustAuthUserEvent("user_verified");
 
     // use setTimeout to simulate a delay in the user opening the email.
@@ -79,6 +95,7 @@
     user.init({ pollDuration: 100 });
     xhr.useResult("pending");
     xhr.setContextInfo("auth_level", "password");
+    xhr.setContextInfo("userid", 1);
 
     testVerifiedUserEvent("user_verified");
 

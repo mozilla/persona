@@ -28,6 +28,8 @@ BrowserID.Modules.CheckRegistration = (function() {
       // rendering the error or CSS transitions make the content shift around.
       dom.addClass(SCREEN_SELECTOR, SKIN_CLASS);
 
+      // The laoding screen may be shown right now. If it is, get rid of it.
+      self.hideWarningScreens();
       self.renderWait("confirm_email", templateData);
 
       self.email = options.email;
