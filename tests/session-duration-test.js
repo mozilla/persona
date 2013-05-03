@@ -180,6 +180,7 @@ suite.addBatch({
 // now test that authenticate_user & secondary emails properly respect the 'ephemeral' argument to
 // alter session length
 const TEST_EMAIL = 'someuser@somedomain.com',
+      SECOND_EMAIL = 'someotheruser@somedomain.com',
       PASSWORD = 'thisismypassword',
       RESET_PASSWORD = 'thisismynewpassword';
 
@@ -339,6 +340,107 @@ suite.addBatch({
 });
 
 /**
+ * Check to make sure completing an add email verification does not reset
+ * the session duration
+ */
+
+// stage an add email
+suite.addBatch({
+  "account staging": {
+    topic: wsapi.post('/wsapi/stage_email', {
+      email: SECOND_EMAIL,
+      site: 'http://a.really.fakesite123.com:999'
+    }),
+    "works":     function(err, r) {
+      assert.equal(r.code, 200);
+    }
+  }
+});
+
+// wait for the token
+suite.addBatch({
+  "a token": {
+    topic: function() {
+      start_stop.waitForToken(this.callback);
+    },
+    "is obtained": function (err, t) {
+      assert.isNull(err);
+      assert.strictEqual(typeof t, 'string');
+      token = t;
+    }
+  }
+});
+
+// complete the addition
+suite.addBatch({
+  "complete addition": {
+    topic: function() {
+      wsapi.post('/wsapi/complete_email_confirmation', {
+        pass: RESET_PASSWORD,
+        token: token
+      }).call(this);
+    },
+    "does not shorten session duration": function(err, r) {
+      assert.equal(r.code, 200);
+      var resp = JSON.parse(r.body);
+      // ensure the session duration has not been reset
+      assert.strictEqual(getSessionDuration(), config.get('authentication_duration_ms'));
+    }
+  }
+});
+
+/**
+ * Check to make sure completing an transition email state verification
+ * does not reset the session duration
+ */
+
+
+// stage a transition
+suite.addBatch({
+  "stage transition": {
+    topic: wsapi.post('/wsapi/stage_transition', {
+      email: TEST_EMAIL,
+      pass: PASSWORD,
+      site: 'http://a.really.fakesite123.com:999'
+    }),
+    "works":     function(err, r) {
+      assert.equal(r.code, 200);
+    }
+  }
+});
+
+// wait for the token
+suite.addBatch({
+  "a token": {
+    topic: function() {
+      start_stop.waitForToken(this.callback);
+    },
+    "is obtained": function (err, t) {
+      assert.isNull(err);
+      assert.strictEqual(typeof t, 'string');
+      token = t;
+    }
+  }
+});
+
+// complete the transition
+suite.addBatch({
+  "complete addition": {
+    topic: function() {
+      wsapi.post('/wsapi/complete_transition', {
+        pass: RESET_PASSWORD,
+        token: token
+      }).call(this);
+    },
+    "does not shorten session duration": function(err, r) {
+      assert.equal(r.code, 200);
+      // ensure the session duration has not been reset
+      assert.strictEqual(getSessionDuration(), config.get('authentication_duration_ms'));
+    }
+  }
+});
+
+/**
  * Check to make sure completing an email verification does not reset
  * the session duration
  */
@@ -381,11 +483,66 @@ suite.addBatch({
     },
     "does not shorten session duration": function(err, r) {
       assert.equal(r.code, 200);
+      // ensure the session duration has not been reset
       assert.strictEqual(getSessionDuration(), config.get('authentication_duration_ms'));
     }
   }
 });
 
+
+
+/**
+ * Check to make sure completing an email re-verification
+ * does not reset the session duration. Reverification is necessary
+ * on secondary addresses after the user did a reset password
+ * on one address.
+ */
+
+
+// stage a reverification
+suite.addBatch({
+  "stage transition": {
+    topic: wsapi.post('/wsapi/stage_reverify', {
+      email: SECOND_EMAIL,
+      site: 'http://a.really.fakesite123.com:999'
+    }),
+    "works":     function(err, r) {
+      assert.equal(r.code, 200);
+      assert.isTrue(JSON.parse(r.body).success);
+    }
+  }
+});
+
+// wait for the token
+suite.addBatch({
+  "a token": {
+    topic: function() {
+      start_stop.waitForToken(this.callback);
+    },
+    "is obtained": function (err, t) {
+      assert.isNull(err);
+      assert.strictEqual(typeof t, 'string');
+      token = t;
+    }
+  }
+});
+
+// complete the reverification
+suite.addBatch({
+  "complete addition": {
+    topic: function() {
+      wsapi.post('/wsapi/complete_email_confirmation', {
+        pass: RESET_PASSWORD,
+        token: token
+      }).call(this);
+    },
+    "does not shorten session duration": function(err, r) {
+      assert.equal(r.code, 200);
+      // ensure the session duration has not been reset
+      assert.strictEqual(getSessionDuration(), config.get('authentication_duration_ms'));
+    }
+  }
+});
 
 start_stop.addShutdownBatches(suite);
 
