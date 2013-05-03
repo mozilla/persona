@@ -605,6 +605,12 @@ a.emphasize:active {
   right: 0;
   left: 0;
   bottom: 0;
+  /**
+   * The width and height are needed for webkit browsers
+   * to size the iframe properly
+   */
+  width: 100%;
+  height: 100%;
   z-index: 900;
   background-color: #111;
   background-color: rgba(0,0,0,.9);
