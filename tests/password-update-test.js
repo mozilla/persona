@@ -37,7 +37,7 @@ suite.addBatch({
         pass: OLD_PASSWORD,
         site: 'https://fakesite.com:123'
       }, this.callback);
-    }, 
+    },
     "succeeds": function(err, r) {
       assert.isNull(err);
     }
