@@ -74,7 +74,7 @@ h2 {
   font-size: 18px;
 }
 
-.form_section h2.small {
+.form_section h2.deemphasize {
   font-size: 13px;
   font-weight: normal;
   line-height: 18px;
