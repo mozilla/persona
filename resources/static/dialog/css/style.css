@@ -293,6 +293,11 @@ section > .contents {
 
 .loading #load {
     z-index: 10;
+    /*
+     * Do NOT display the "loading" screen on desktop. Too many people
+     * think it is jarring.
+     */
+    display: none;
 }
 
 .delay #delay {
