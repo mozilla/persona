@@ -35,6 +35,7 @@ BrowserID.Modules.Authenticate = (function() {
       TRANSITION_TO_SECONDARY_LABEL = "#authentication_form .label.transition_to_secondary",
       PASSWORD_LABEL = "#authentication_form .label.password_state",
       CANCEL_PASSWORD_SELECTOR = ".cancelPassword",
+      REQUIRED_EMAIL_CLASS = "requiredEmail",
       IDP_SELECTOR = "#authentication_form .authentication_idp_name",
       PERSONA_INTRO_SELECTOR = ".persona_intro",
       PERSONA_URL = "https://login.persona.org",
@@ -52,10 +53,18 @@ BrowserID.Modules.Authenticate = (function() {
 
   function hasPassword(info) {
     /*jshint validthis:true*/
-    return (info && info.email && info.type === "secondary" &&
-      (info.state === "known" ||
-       info.state === "transition_to_secondary" ||
-       info.state === "unverified" && this.allowUnverified));
+    /*
+     * If this is is a required email, we are making the assumption
+     * that it is a secondary address and has a password. The only two ways to
+     * get here with requiredEmail are post-reset-password where the email
+     * verification occurs in a second browser and when signed in to the
+     * assertion level and then choose a secondary backed address.
+     */
+    return this.requiredEmail ||
+              (info && info.email && info.type === "secondary" &&
+                  (info.state === "known" ||
+                   info.state === "transition_to_secondary" ||
+                   info.state === "unverified" && this.allowUnverified));
   }
 
   function isNewPersonaAccount(info) {
@@ -247,6 +256,22 @@ BrowserID.Modules.Authenticate = (function() {
     });
   }
 
+  function cancelPassword() {
+    /*jshint validthis: true*/
+    var self = this;
+    // If there is a requiredEmail, the user is coming to the authentication
+    // screen to authenticate with a specific email address. This is
+    // probably a post-verification auth or an assertion->password level
+    // authentication. If the user hits cancel, they go back one state
+    // in the state machine.
+    if (self.requiredEmail) {
+      self.publish("cancel_state");
+    }
+    else {
+      enterEmailState.call(this);
+    }
+  }
+
   function forgotPassword() {
     /*jshint validthis: true*/
     var email = getEmail();
@@ -282,9 +307,19 @@ BrowserID.Modules.Authenticate = (function() {
       options = options || {};
 
       addressInfo = null;
-      lastEmail = options.email || "";
 
       var self=this;
+
+      lastEmail = options.email || "";
+
+      dom.removeClass(BODY_SELECTOR, REQUIRED_EMAIL_CLASS);
+      dom.removeAttr(EMAIL_SELECTOR, "disabled");
+
+      self.requiredEmail = options.email;
+      if (self.requiredEmail) {
+        dom.addClass(BODY_SELECTOR, REQUIRED_EMAIL_CLASS);
+        dom.setAttr(EMAIL_SELECTOR, "disabled", "disabled");
+      }
 
       self.allowUnverified = options.allowUnverified;
 
@@ -316,7 +351,7 @@ BrowserID.Modules.Authenticate = (function() {
       // element blurs but it has been updated via autofill.  See issue #406
       self.bind(EMAIL_SELECTOR, "change", emailChange);
       self.click(FORGOT_PASSWORD_SELECTOR, forgotPassword);
-      self.click(CANCEL_PASSWORD_SELECTOR, enterEmailState);
+      self.click(CANCEL_PASSWORD_SELECTOR, cancelPassword);
 
       Module.sc.start.call(self, options);
       initialState.call(self, options);
@@ -325,6 +360,14 @@ BrowserID.Modules.Authenticate = (function() {
     stop: function() {
       dom.removeClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
       dom.removeClass(BODY_SELECTOR, FORM_CLASS);
+      dom.removeClass(BODY_SELECTOR, REQUIRED_EMAIL_CLASS);
+
+      _.each(hints, function(className) {
+        dom.removeClass("body", className);
+      });
+
+      dom.removeAttr(EMAIL_SELECTOR, "disabled");
+
       Module.sc.stop.call(this);
     }
 

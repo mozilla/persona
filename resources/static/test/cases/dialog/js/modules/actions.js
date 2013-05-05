@@ -104,18 +104,6 @@
       "verify_primary_user");
   });
 
-  asyncTest("doCannotVerifyRequiredPrimary - show the error screen", function() {
-    createController({
-      ready: function() {
-        controller.doCannotVerifyRequiredPrimary({ email: TEST_EMAIL});
-
-        testHelpers.testErrorVisible();
-        start();
-      }
-    });
-
-  });
-
   asyncTest("doPrimaryUserProvisioned - start the primary_user_verified service", function() {
     testActionStartsModule("doPrimaryUserProvisioned", {},
       "primary_user_provisioned");

@@ -472,7 +472,7 @@ a.emphasize:active {
 /**
  * Start off hiding all of the state specific elements
  */
-.isReturning, .isStart, .isAddressInfo, .isMobile {
+.isReturning, .isStart, .isAddressInfo, .isMobile, .isRequiredEmail {
   display: none;
 }
 
@@ -481,14 +481,16 @@ a.emphasize:active {
 * These handle the authentication page states, but do not take into account
 * any elements that have the .isMobile class.
 */
-.returning .isReturning, .start .isStart, .addressInfo .isAddressInfo {
+.returning .isReturning, .start .isStart, .addressInfo .isAddressInfo,
+.requiredEmail .isRequiredEmail {
   display: block;
 }
 
 /**
  * Re-disable any elements that have the .isMobile class.
  */
-.newuser, .isReturning.isMobile, .isStart.isMobile, .isAddressInfo.isMobile {
+.newuser, .isReturning.isMobile, .isStart.isMobile, .isAddressInfo.isMobile,
+.requiredEmail .isNotRequiredEmail {
     display: none;
 }
 

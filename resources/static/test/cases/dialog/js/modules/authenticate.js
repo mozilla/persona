@@ -140,29 +140,15 @@
     });
   });
 
-  asyncTest("email declared in options - prefill address field", function() {
+  asyncTest("email declared in options - required email, straight to password field", function() {
     controller.destroy();
     $(EMAIL_SELECTOR).val("");
 
     createController({ email: "registered@testuser.com",
       ready: function() {
         equal($(EMAIL_SELECTOR).val(), "registered@testuser.com", "email prefilled");
-        equal($("input[type=password]").is(":visible"), false, "password is not shown");
-        start();
-      }
-    });
-  });
-
-  asyncTest("known secondary email declared in options - show password field", function() {
-    controller.destroy();
-    $(EMAIL_SELECTOR).val("");
-    createController({
-      email: "registered@testuser.com",
-      type: "secondary",
-      state: "known",
-      ready: function() {
-        equal($(EMAIL_SELECTOR).val(), "registered@testuser.com", "email prefilled");
         ok($("body").hasClass("returning"));
+        ok($("body").hasClass("requiredEmail"));
         start();
       }
     });
@@ -183,6 +169,7 @@
       }
     });
   });
+
   function testUserUnregistered() {
     register("new_user", function(msg, info, rehydrate) {
       ok(info.email, "new_user triggered with info.email");

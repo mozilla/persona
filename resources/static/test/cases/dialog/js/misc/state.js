@@ -93,10 +93,10 @@
     //
     // There are two possibilities here, first, the user must authenticate. If
     // the user must authenticate, send them to the
-    // authenticate_specified_email screen. If the user is already
-    // authenticated, call email_valid_and_ready so that an assertion is generated.
+    // authenticate screen. If the user is already authenticated, call
+    // email_valid_and_ready so that an assertion is generated.
 
-    var expectedMessage = mustAuth ? "authenticate_specified_email" : "email_valid_and_ready";
+    var expectedMessage = mustAuth ? "authenticate" : "email_valid_and_ready";
     mediator.subscribe(expectedMessage, function(msg, info) {
       equal(info.email, TEST_EMAIL, expectedMessage + " triggered with the correct email");
       start();
@@ -260,10 +260,10 @@
 
       // Test the flow from "address staged" which shows the "check your email"
       // screen, simulating a user confirming ownership but must authenticate
-      // in the dialog. The "authenticate_specified_email" message should be
+      // in the dialog. The "authenticate" message should be
       // triggered.
       testName = stageAddressTest.staged + " to " + stageAddressTest.confirmed +
-          " with mustAuth - redirect to authenticate_specified_email";
+          " with mustAuth - redirect to authenticate";
 
       asyncTest(testName, testVerifyStagedAddress.curry(
               stageAddressTest.staged,
@@ -485,16 +485,16 @@
   });
 
 
-  asyncTest("email_chosen with verified secondary email, user must authenticate - call doAuthenticateWithRequiredEmail", function() {
+  asyncTest("email_chosen with verified secondary email, user must authenticate - call doAuthenticate", function() {
     storage.addEmail(TEST_EMAIL);
 
     xhr.setContextInfo("auth_level", "assertion");
 
-    mediator.publish("start", { privacyPolicy: "priv.html", termsOfService: "tos.html" });
+    mediator.publish("start");
     mediator.publish("email_chosen", {
       email: TEST_EMAIL,
       complete: function() {
-        testActionStarted("doAuthenticateWithRequiredEmail", { siteTOSPP: false });
+        testActionStarted("doAuthenticate");
         start();
       }
     });
@@ -704,34 +704,6 @@
   });
 
 
-  function testAuthenticateSpecifiedEmail(specified, expected) {
-    var options = {
-      email: TEST_EMAIL,
-      complete: function() {
-        testActionStarted("doAuthenticateWithRequiredEmail", {
-          cancelable: expected
-        });
-        start();
-      }
-    };
-
-    if (typeof specified !== "undefined") options.cancelable = specified;
-
-    mediator.publish("authenticate_specified_email", options);
-  }
-
-  asyncTest("authenticate_specified_email with false specified - call doAuthenticateWithRequiredEmail using specified cancelable", function() {
-    testAuthenticateSpecifiedEmail(false, false);
-  });
-
-  asyncTest("authenticate_specified_email with true specified - call doAuthenticateWithRequiredEmail using specified cancelable", function() {
-    testAuthenticateSpecifiedEmail(true, true);
-  });
-
-  asyncTest("authenticate_specified_email without cancelable - call doAuthenticateWithRequiredEmail, cancelable defaults to true", function() {
-    testAuthenticateSpecifiedEmail(undefined, true);
-  });
-
   test("pick_email passes along TOS/PP options if no email " +
       "is selected for domain", function() {
     var tos = "https://browserid.org/TOS.html";
@@ -820,5 +792,4 @@
 
     mediator.publish("cancel_state");
   });
-
 }());
