@@ -71,6 +71,10 @@ h2 {
 }
 
 .form_section h2 {
+  font-size: 18px;
+}
+
+.form_section h2.deemphasize {
   font-size: 13px;
   font-weight: normal;
   line-height: 18px;
@@ -203,6 +207,8 @@ section {
     bottom: 0;
     right: 0;
     z-index: 0;
+    width: 100%;
+    height: 100%;
 }
 
 section > .contents {
@@ -271,12 +277,27 @@ section > .contents {
     opacity: 1;
 }
 
+/**
+ * If the error or delay screens are shown, hide the load screen. If
+ * not hidden, the load screen causes a white top and bottom margin.
+ */
+.error #load, .delay #load {
+  opacity: 0;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  z-index: -1;
+}
+
 .waiting #wait {
     z-index: 5;
 }
 
 .loading #load {
     z-index: 10;
+    /*
+     * Do NOT display the "loading" screen on desktop. Too many people
+     * think it is jarring.
+     */
+    display: none;
 }
 
 .delay #delay {
