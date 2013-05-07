@@ -280,26 +280,26 @@ BrowserID.Modules.Dialog = (function() {
 
         // forceAuthentication is used by the Marketplace to ensure that the
         // user knows the password to this account. We ignore any active session.
-        if (paramsFromRP._experimental_forceAuthentication) {
+        if (paramsFromRP.experimental_forceAuthentication) {
           params.forceAuthentication = validateBoolean(
-              paramsFromRP._experimental_forceAuthentication,
-              "_experimental_forceAuthentication");
+              paramsFromRP.experimental_forceAuthentication,
+              "experimental_forceAuthentication");
         }
 
         // forceIsuser is used by the Marketplace to disable primary support
         // and replace fxos.login.persona.org as the issuer of certs
-        if (paramsFromRP._experimental_forceIssuer) {
+        if (paramsFromRP.experimental_forceIssuer) {
           params.forceIssuer =
-              fixupIssuer(paramsFromRP._experimental_forceIssuer);
+              fixupIssuer(paramsFromRP.experimental_forceIssuer);
         }
 
         // allowUnverified means that the user doesn't need to have
         // verified their email address in order to send an assertion.
         // if the user *has* verified, it will be a verified assertion.
-        if (paramsFromRP._experimental_allowUnverified) {
+        if (paramsFromRP.experimental_allowUnverified) {
           params.allowUnverified = validateBoolean(
-              paramsFromRP._experimental_allowUnverified,
-              "_experimental_allowUnverified");
+              paramsFromRP.experimental_allowUnverified,
+              "experimental_allowUnverified");
         }
 
         if (hash.indexOf("#AUTH_RETURN") === 0) {
