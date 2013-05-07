@@ -13,7 +13,8 @@ BrowserID.Modules.AddEmail = (function() {
       complete = helpers.complete,
       tooltip = bid.Tooltip,
       hints = ["addressInfo"],
-      ANIMATION_TIME = 250;
+      ANIMATION_TIME = 250,
+      EMAIL_SELECTOR = "#newEmail";
 
   function hideHint(selector) {
     $("." + selector).hide();
@@ -34,13 +35,19 @@ BrowserID.Modules.AddEmail = (function() {
 
   function addEmail(callback) {
     /*jshint validthis:true*/
-    var email = helpers.getAndValidateEmail("#newEmail"),
+    var email = helpers.getAndValidateEmail(EMAIL_SELECTOR),
         self=this;
 
     if (email) {
       showHint("addressInfo");
+      dom.setAttr(EMAIL_SELECTOR, 'disabled', 'disabled');
+      dom.addClass("body", "submit_disabled");
       dialogHelpers.addEmail.call(self, email, function removeHint(status) {
-        hideHint("addressInfo");
+        if (!status) {
+          hideHint("addressInfo");
+          dom.removeAttr(EMAIL_SELECTOR, 'disabled');
+          dom.removeClass("body", "submit_disabled");
+        }
         complete(callback, status);
       });
     }
