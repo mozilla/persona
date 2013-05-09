@@ -30,5 +30,9 @@
   "public_static_url": null,
 
   // enable the measurement of the dom loading
-  "measure_dom_loading": true
+  "measure_dom_loading": true,
+
+  // enable experimental forceIssuer for this domain
+  "forcible_issuers": [
+  ]
 }
