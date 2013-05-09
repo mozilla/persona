@@ -226,6 +226,13 @@
 
     function checkAndEmit() {
       // this will re-certify the user if neccesary
+      // Firefox OS 1.0.1 keeps one copy of the communication iframe in memory
+      // all the time. The communication iframe gets a copy of session context
+      // when it first loads and caches it, it is never updated even if the user
+      // uses the dialog to sign in. To avoid manually updating the cache when the user
+      // signs in using the dialog, clear the cache every time a new tab
+      // requires internalWatch.
+      user.clearContext();
       user.getSilentAssertion(loggedInUser, function(email, assertion) {
         if (email) {
           // only send login events when the assertion is defined - when
