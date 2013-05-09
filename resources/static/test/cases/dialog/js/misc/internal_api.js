@@ -210,26 +210,28 @@
   });
 
   asyncTest(".watch - authenticated user requests an assertion with saved issuer - assertion generated with cert for that issuer", function() {
-    user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
-      storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
-      storage.site.set(ORIGIN, "email", TEST_EMAIL);
-      storage.site.set(ORIGIN, "issuer", "fxos_issuer");
+    xhr.setContextInfo("auth_level", "password");
+    xhr.setContextInfo("userid", 1);
+    storage.addEmail(TEST_EMAIL);
 
-      internal.watch(function(resp) {
-        if (resp.method === "login") {
-          ok(resp.assertion);
-        }
-        else if (resp.method === "ready") {
-          start();
-        }
-        else {
-          ok(false, "unexpected method call: " + resp.method);
-        }
-      }, {
-        origin: ORIGIN,
-        loggedInUser: "testuser2@testuser.com"
-      }, console.log);
-    });
+    storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
+    storage.site.set(ORIGIN, "email", TEST_EMAIL);
+    storage.site.set(ORIGIN, "issuer", "fxos_issuer");
+
+    internal.watch(function(resp) {
+      if (resp.method === "login") {
+        ok(resp.assertion);
+      }
+      else if (resp.method === "ready") {
+        start();
+      }
+      else {
+        ok(false, "unexpected method call: " + resp.method);
+      }
+    }, {
+      origin: ORIGIN,
+      loggedInUser: "testuser2@testuser.com"
+    }, console.log);
   });
 
 
@@ -244,53 +246,57 @@
   });
 
   asyncTest(".watch with authenticated user, no loggedInUser passed - assertion generated", function() {
-    user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
-      storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
-      storage.site.set(ORIGIN, "email", TEST_EMAIL);
-      var und;
+    xhr.setContextInfo("auth_level", "password");
+    xhr.setContextInfo("userid", 1);
+    storage.addEmail(TEST_EMAIL);
 
-      var count = 0;
-      internal.watch(function(resp) {
-        count++;
-        // login should happen before ready
-        if (resp.method === "login") {
-          equal(count, 1);
-          ok(resp.assertion);
-        }
-        else if (resp.method === "ready") {
-          equal(count, 2);
-          start();
-        }
-        else {
-          ok(false, "unexpected method call: " + resp.method);
-        }
-      }, {
-        origin: ORIGIN,
-        loggedInUser: und
-      });
+    storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
+    storage.site.set(ORIGIN, "email", TEST_EMAIL);
+    var und;
+
+    var count = 0;
+    internal.watch(function(resp) {
+      count++;
+      // login should happen before ready
+      if (resp.method === "login") {
+        equal(count, 1);
+        ok(resp.assertion);
+      }
+      else if (resp.method === "ready") {
+        equal(count, 2);
+        start();
+      }
+      else {
+        ok(false, "unexpected method call: " + resp.method);
+      }
+    }, {
+      origin: ORIGIN,
+      loggedInUser: und
     });
   });
 
   asyncTest(".watch with authenticated user, loggedInUser passed - only call with ready method", function() {
-    user.authenticate(TEST_EMAIL, TEST_PASSWORD, function() {
-      storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
-      storage.site.set(ORIGIN, "email", TEST_EMAIL);
-      var und;
+    xhr.setContextInfo("auth_level", "password");
+    xhr.setContextInfo("userid", 1);
+    storage.addEmail(TEST_EMAIL);
 
-      var count = 0;
-      internal.watch(function(resp) {
-        count++;
-        if (resp.method === "ready") {
-          equal(count, 1);
-          start();
-        }
-        else {
-          ok(false, "unexpected method call: " + resp.method);
-        }
-      }, {
-        origin: ORIGIN,
-        loggedInUser: TEST_EMAIL
-      });
+    storage.site.set(ORIGIN, "logged_in", TEST_EMAIL);
+    storage.site.set(ORIGIN, "email", TEST_EMAIL);
+    var und;
+
+    var count = 0;
+    internal.watch(function(resp) {
+      count++;
+      if (resp.method === "ready") {
+        equal(count, 1);
+        start();
+      }
+      else {
+        ok(false, "unexpected method call: " + resp.method);
+      }
+    }, {
+      origin: ORIGIN,
+      loggedInUser: TEST_EMAIL
     });
   });
 
