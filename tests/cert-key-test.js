@@ -117,7 +117,7 @@ suite.addBatch({
           var self = this;
           jwcrypto.assertion.sign({}, {issuer: "127.0.0.1", expiresAt: expiration, issuedAt: new Date()}, kp.secretKey, function(err, signedObject) {
             if (err) return self.callback(err);
-            
+
             self.callback(null, {
               certificates: [serializedCert],
               assertion: signedObject

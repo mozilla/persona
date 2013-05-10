@@ -16,7 +16,8 @@ config = require('../lib/configuration.js'),
 jwcrypto = require('jwcrypto'),
 http = require('http'),
 querystring = require('querystring'),
-path = require("path");
+path = require("path"),
+secondary = require("./lib/secondary");
 
 var suite = vows.describe('auth-with-assertion');
 
@@ -118,33 +119,16 @@ suite.addBatch({
 
 // create a new account via the api with
 suite.addBatch({
-  "stage an account": {
-    topic: wsapi.post('/wsapi/stage_user', {
-      email: TEST_FIRST_ACCT,
-      pass: 'fakepass',
-      site:'http://fakesite.com:652'
-    }),
-    "works": function(err, r) {
-      assert.strictEqual(r.code, 200);
+  "creating a new secondary account": {
+    topic: function() {
+      secondary.create({
+        email: TEST_FIRST_ACCT,
+        pass: 'fakepass',
+        site:'http://fakesite.com:652'
+      }, this.callback);
     },
-    "and a token": {
-      topic: function() {
-        start_stop.waitForToken(this.callback);
-      },
-      "is obtained": function (err, t) {
-        assert.isNull(err);
-        assert.strictEqual(typeof t, 'string');
-      },
-      "can be used": {
-        topic: function(err, token) {
-          wsapi.post('/wsapi/complete_user_creation', { token: token }).call(this);
-        },
-        "to verify email ownership": function(err, r) {
-          assert.equal(r.code, 200);
-          assert.strictEqual(JSON.parse(r.body).success, true);
-          token = undefined;
-        }
-      }
+    "succeeds": function(err) {
+      assert.isNull(err);
     }
   }
 });
