@@ -19,10 +19,9 @@ timeouts = require('../lib/timeouts.js');
 
 // pull in test environment, including wd
 var browser,
+    testIdp,
     firstPrimaryEmail,
-    firstPrimaryPassword,
     secondPrimaryEmail,
-    secondPrimaryPassword,
     secondaryEmail,
     secondaryPassword,
     emails = [];
@@ -70,19 +69,22 @@ function removeEmail(email, done) {
 runner.run(module, {
   "setup all the things": function(done) {
     // this is the more compact setup syntax
-    testSetup.setup({b:2, r:1, e:2}, function(err, fix) {
+    testSetup.setup({b:2, r:1, testidps:1}, function(err, fix) {
       if (fix) {
         browser = fix.b[0];
-        firstPrimaryEmail = saveEmail(fix.e[0]);
-        secondPrimaryEmail = saveEmail(fix.e[1]);
+        testIdp = fix.testidps[0];
+        firstPrimaryEmail = saveEmail(testIdp.getRandomEmail());
+        secondPrimaryEmail = saveEmail(testIdp.getRandomEmail());
         secondaryEmail = saveEmail(fix.r[0]);
-        firstPrimaryPassword = firstPrimaryEmail.split('@')[0];
-        secondPrimaryPassword = secondPrimaryEmail.split('@')[0];
         secondaryPassword = secondaryEmail.split('@')[0];
       }
       done(err);
     });
   },
+  "enable primary support": function(done) {
+    testIdp.enableSupport(done);
+  },
+
   "init browser session": function(done) {
     testSetup.newBrowserSession(browser, done);
   },
@@ -94,11 +96,10 @@ runner.run(module, {
       .wtype(CSS['dialog'].emailInput, firstPrimaryEmail)
       .wclick(CSS['dialog'].newEmailNextButton)
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      .wtype(CSS['eyedee.me'].newPassword, firstPrimaryPassword)
-      .wclick(CSS['eyedee.me'].createAccountButton)
+      .wclick(CSS['testidp.org'].loginButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        done(err || assert.equal(text, firstPrimaryEmail))
+        done(err || assert.equal(text, firstPrimaryEmail));
       });
   },
 
@@ -111,11 +112,10 @@ runner.run(module, {
       .wtype(CSS['dialog'].newEmail, secondPrimaryEmail)
       .wclick(CSS['dialog'].addNewEmailButton)
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      .wtype(CSS['eyedee.me'].newPassword, secondPrimaryPassword)
-      .wclick(CSS['eyedee.me'].createAccountButton)
+      .wclick(CSS['testidp.org'].loginButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        done(err || assert.equal(text, secondPrimaryEmail))
+        done(err || assert.equal(text, secondPrimaryEmail));
       });
   },
 
@@ -129,7 +129,7 @@ runner.run(module, {
       .wclick(CSS['dialog'].addNewEmailButton)
       .wtype(CSS['dialog'].choosePassword, secondaryPassword)
       .wtype(CSS['dialog'].verifyPassword, secondaryPassword)
-      .wclick(CSS['dialog'].createUserButton, done)
+      .wclick(CSS['dialog'].createUserButton, done);
   },
 
   "get verification link": function(done) {
@@ -155,7 +155,7 @@ runner.run(module, {
       .wclickIfExists(CSS['dialog'].notMyComputerButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        done(err || assert.equal(text, secondPrimaryEmail))
+        done(err || assert.equal(text, secondPrimaryEmail));
       });
   },
 
@@ -169,7 +169,7 @@ runner.run(module, {
       .wclickIfExists(CSS['dialog'].notMyComputerButton)
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
-        done(err || assert.equal(text, secondaryEmail))
+        done(err || assert.equal(text, secondaryEmail));
       });
   },
 
@@ -207,7 +207,7 @@ runner.run(module, {
       .wfind(CSS['dialog'].verifyPassword)
       .wclick(CSS['dialog'].submitCancelButton)
       .wclear(CSS['dialog'].emailInput)
-      // the user will still be logged in to eyedee.me under the
+      // the user will still be logged in to testidp.org under the
       // secondPrimaryEmail, so try logging in using the firstPrimaryEmail
       .wtype(CSS['dialog'].emailInput, firstPrimaryEmail)
       .wclick(CSS['dialog'].newEmailNextButton)
@@ -216,5 +216,5 @@ runner.run(module, {
 },
 {
   suiteName: path.basename(__filename),
-  cleanup: function(done) { testSetup.teardown(done) }
+  cleanup: function(done) { testSetup.teardown(done); }
 });

@@ -18,44 +18,45 @@ user = require('../lib/user.js'),
 timeouts = require('../lib/timeouts.js');
 
 var browser,
+    testIdp,
     primaryEmail,
     secondPrimaryEmail;
 
 runner.run(module, {
   "setup all the things": function(done) {
-    testSetup.setup({ b:1, e:2 }, function(err, fix) {
+    testSetup.setup({ b:1, testidps:1 }, function(err, fix) {
       if (fix) {
         browser = fix.b[0];
-        primaryEmail = {
-          email: fix.e[0],
-          pass: fix.e[0].split('@')[0],
-        };
-        secondPrimaryEmail = {
-          email: fix.e[1],
-          pass: fix.e[1].split('@')[0],
-        };
+        testIdp = fix.testidps[0];
+        primaryEmail = testIdp.getRandomEmail();
+        secondPrimaryEmail = testIdp.getRandomEmail();
       }
       done(err);
     });
   },
+
+  "enable primary support": function(done) {
+    testIdp.enableSupport(done);
+  },
+
   //XXX figure out how to parameterize the RP
   "start the session": function(done) {
     testSetup.newBrowserSession(browser, done);
   },
+
   //XXX obviously in need of refactoring between this primary and the second one.
   "signup a new account with a primary": function(done) {
     browser.chain({onError: done})
       .get(persona_urls["123done"])
       .wclick(CSS['123done.org'].signInButton)
       .wwin(CSS['dialog'].windowName)
-      .wtype(CSS['dialog'].emailInput, primaryEmail.email)
+      .wtype(CSS['dialog'].emailInput, primaryEmail)
       .wclick(CSS['dialog'].newEmailNextButton)
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      .wtype(CSS['eyedee.me'].newPassword, primaryEmail.pass)
-      .wclick(CSS['eyedee.me'].createAccountButton)
+      .wclick(CSS['testidp.org'].loginButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        done(err || assert.equal(text, primaryEmail.email));
+        done(err || assert.equal(text, primaryEmail));
       });
   },
   "add a primary email to the account": function(done) {
@@ -64,15 +65,14 @@ runner.run(module, {
       .wclick(CSS['123done.org'].signInButton)
       .wwin(CSS['dialog'].windowName)
       .wclick(CSS['dialog'].useNewEmail)
-      .wtype(CSS['dialog'].newEmail, secondPrimaryEmail.email)
+      .wtype(CSS['dialog'].newEmail, secondPrimaryEmail)
       .wclick(CSS['dialog'].addNewEmailButton)
       .wclick(CSS['dialog'].verifyWithPrimaryButton)
-      .wtype(CSS['eyedee.me'].newPassword, secondPrimaryEmail.pass)
-      .wclick(CSS['eyedee.me'].createAccountButton)
+      .wclick(CSS['testidp.org'].loginButton)
       .wclickIfExists(CSS['dialog'].notMyComputerButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        done(err || assert.equal(text, secondPrimaryEmail.email))
+        done(err || assert.equal(text, secondPrimaryEmail))
       });
   },
   //XXX This could be much more comprehensive by bringing up the dialog

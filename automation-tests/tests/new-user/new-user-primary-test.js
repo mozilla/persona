@@ -16,30 +16,33 @@ testSetup = require('../../lib/test-setup.js'),
 runner = require('../../lib/runner.js'),
 timeouts = require('../../lib/timeouts.js');
 
-var browser, eyedeemail, theEmail, eyedeemail_mfb, porg_eyedeemail;
+var browser, testIdp, primaryEmail, theEmail, primaryEmail_mfb, porg_primaryEmail;
 
-function dialogEyedeemeFlow(b, email, cb) {
+function dialogTestIdpFlow(b, email, cb) {
   b.chain({onError: cb})
     .wwin(CSS['persona.org'].windowName)
     .wtype(CSS['dialog'].emailInput, email)
     .wclick(CSS['dialog'].newEmailNextButton)
     .wclick(CSS['dialog'].verifyWithPrimaryButton)
-    .wtype(CSS['eyedee.me'].newPassword, email.split('@')[0])
-    .wclick(CSS['eyedee.me'].createAccountButton, cb);
+    .wclick(CSS['testidp.org'].loginButton, cb);
 }
 
 var primary_123done = {
   "setup": function(done) {
-    testSetup.setup({browsers: 1, eyedeemails: 3, restmails: 1}, function(err, fixtures) {
+    testSetup.setup({browsers: 1, testidps: 1, restmails: 1}, function(err, fixtures) {
       if (fixtures) {
         browser = fixtures.browsers[0];
-        eyedeemail = fixtures.eyedeemails[0];
-        eyedeemail_mfb = fixtures.eyedeemails[1];
-        porg_eyedeemail = fixtures.eyedeemails[2];
+        testIdp = fixtures.testidps[0];
+        primaryEmail = testIdp.getRandomEmail();
+        primaryEmail_mfb = testIdp.getRandomEmail();
+        porg_primaryEmail = testIdp.getRandomEmail();
         theEmail = fixtures.restmails[0];
       }
       done(err);
     });
+  },
+  "enable primary support": function(done) {
+    testIdp.enableSupport(done);
   },
   "startup browser": function(done) {
     testSetup.newBrowserSession(browser, done);
@@ -49,15 +52,15 @@ var primary_123done = {
       .get(persona_urls['123done'])
       .wclick(CSS['123done.org'].signinButton, done)
   },
-  "sign in a new eyedeemee user": function(done) {
-    dialogEyedeemeFlow(browser, eyedeemail, done);
+  "sign in a new testIdp user": function(done) {
+    dialogTestIdpFlow(browser, primaryEmail, done);
   },
   // TODO 123done never seems to log in. something up with beta server?
   "switch back to main window and verify we're logged in": function(done) {
     browser.chain({onError: done})
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        done(err || assert.equal(text, eyedeemail));
+        done(err || assert.equal(text, primaryEmail));
       });
   },
   "123done end this browser session": function(done) {
@@ -75,14 +78,14 @@ var mcss = CSS['myfavoritebeer.org'],
         .get(persona_urls['myfavoritebeer'])
         .wclick(mcss.signinButton, done)
     },
-    "sign in using eyedeeme": function(done) {
-      dialogEyedeemeFlow(browser, eyedeemail_mfb, done);
+    "sign in using testIdp": function(done) {
+      dialogTestIdpFlow(browser, primaryEmail_mfb, done);
     },
     "back to mfb, check we logged in OK": function(done) {
       browser.chain({onError: done})
         .wwin()
         .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
-          done(err || assert.equal(text, eyedeemail_mfb));
+          done(err || assert.equal(text, primaryEmail_mfb));
         });
     },
     "mfb tear down browser": function(done) {
@@ -95,25 +98,24 @@ var pcss = CSS['persona.org'],
     // how much do we really need to split this out into separate vows?
     // is this too compact or actually better?
     //
-    // open browser, go to persona.org, click sign in, enter eyedeemail, click next
+    // open browser, go to persona.org, click sign in, enter primaryEmail, click next
     // click verify primary button, switch to popup, enter password, click ok
     // switch back to main window, look for email in acct mgr, log out
     "startup browser": function(done) {
       testSetup.newBrowserSession(browser, done);
     },
-    "create eyedee.me primary at persona.org and verify logged in OK": function(done) {
+    "create testidp primary at persona.org and verify logged in OK": function(done) {
       browser.chain({onError: done})
         .get(persona_urls['persona'])
         .wclick(pcss.header.signIn)
         .wwin(CSS['dialog'].windowName)
-        .wtype(CSS['dialog'].emailInput, porg_eyedeemail)
+        .wtype(CSS['dialog'].emailInput, porg_primaryEmail)
         .wclick(CSS['dialog'].newEmailNextButton)
         .wclick(CSS['dialog'].verifyWithPrimaryButton)
-        .wtype(CSS['eyedee.me'].newPassword, porg_eyedeemail.split('@')[0])
-        .wclick(CSS['eyedee.me'].createAccountButton)
+        .wclick(CSS['testidp.org'].loginButton)
         .wwin()
         .wtext(pcss.accountEmail, function(err, text) {
-          done(err || assert.equal(porg_eyedeemail.toLowerCase(), text)) // note
+          done(err || assert.equal(porg_primaryEmail.toLowerCase(), text)) // note
         });
     },
     "log out": function(done) {
