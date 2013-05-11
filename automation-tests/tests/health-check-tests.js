@@ -69,8 +69,10 @@ var primaryTest = {
       .wwin()
       .wtext(pcss.accountEmail, function(err, text) {
         done(err || assert.equal(primaryEmail.toLowerCase(), text)); // note, had to lower case it.
-      })
-      .wclick(pcss.header.signOut, done);
+      });
+  },
+  "sign out": function(done) {
+    browser.wclick(pcss.header.signOut, done);
   },
   "shut down primary test": function(done) {
     browser.quit(done);
@@ -111,5 +113,5 @@ runner.run(
   [setup, secondaryTest, primaryTest],
   {
     suiteName: path.basename(__filename),
-    cleanup: function(done) { testSetup.teardown(done) }
+    cleanup: function(done) { testSetup.teardown(done); }
   });
