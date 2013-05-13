@@ -1,3 +1,5 @@
+current train:
+
 train-2013.05.08:
   * SCHEMA CHANGE: the user table gained an integer field: auth
   * CONFIG CHANGE: in production we need "forcible_issuers": [ "login.persona.org" ]
