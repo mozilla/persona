@@ -13,7 +13,8 @@ wsapi = require('./lib/wsapi.js'),
 ca = require('../lib/keysigner/ca.js'),
 db = require('../lib/db.js'),
 jwcrypto = require("jwcrypto"),
-secondary = require('./lib/secondary.js');
+secondary = require('./lib/secondary.js'),
+primary = require('./lib/primary.js');
 
 var suite = vows.describe('cert-emails');
 
@@ -21,6 +22,10 @@ var suite = vows.describe('cert-emails');
 suite.options.error = false;
 
 start_stop.addStartupBatches(suite);
+
+const PRIMARY_DOMAIN = 'example.domain',
+      PRIMARY_EMAIL = 'testuser@' + PRIMARY_DOMAIN,
+      PRIMARY_ORIGIN = 'http://127.0.0.1:10002';
 
 // create a new secondary account
 suite.addBatch({
@@ -161,6 +166,47 @@ suite.addBatch({
     }
   },
 });
+
+// now let's add a primary address to the account so we can test cert_key's behavior
+// when one attempts to certify keys on the fallback for an email that is spoken for
+// by an IdP
+var primaryUser = new primary({
+  email: PRIMARY_EMAIL,
+  domain: PRIMARY_DOMAIN
+});
+
+// now let's generate an assertion using this user
+suite.addBatch({
+  "setting up the primary user": {
+    topic: function() {
+      primaryUser.setup(this.callback);
+    },
+    "works": function(err) {
+      assert.isNull(err);
+    },
+    "generating an assertion": {
+      topic: function() {
+        primaryUser.getAssertion(PRIMARY_ORIGIN, this.callback);
+      },
+      "succeeds": function(err, r) {
+        assert.isString(r);
+      },
+      "and adding this email": {
+        topic: function(assertion)  {
+          wsapi.post('/wsapi/add_email_with_assertion', {
+            assertion: assertion
+          }).call(this);
+        },
+        "works": function(err, r) {
+          var resp = JSON.parse(r.body);
+          assert.isObject(resp);
+          assert.isTrue(resp.success);
+        }
+      }
+    }
+  }
+});
+
 
 start_stop.addShutdownBatches(suite);
 
