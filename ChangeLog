@@ -1,4 +1,17 @@
-current-train:
+train-2013.05.08:
+  * SCHEMA CHANGE: the user table gained an integer field: auth
+  * CONFIG CHANGE: in production we need "forcible_issuers": [ "login.persona.org" ]
+  * FirefoxOS specific changes and features:
+    * experimental_forceAuthentication feature to force re-authentication: #3312
+    * experimental_forceIssuer feature to disable federation
+    * experimental_allowUnverified feature to support "unverified" email addresses.
+    * Show the Persona TOS/PP in the dialog without headers and footers when experimental_inlineTermsOfService is specified: #2905
+  * Test improvements: #3310
+  * Fixes to the key performance indicator mechanism: 3319
+  * Mobile styling improvements (motivated by FirefoxOS): #3341, #3343, #3355, #3350, #3352, #3354
+  * Fix an issue where slow database replication could block primary logins: #3309
+  * Require a password reset when too many failed password attempts are made: #2656
+  * Don't reset sessions to ephemeral duration after email verification: #3336
 
 train-2013.04.26:
   * up to 25% performance improvement on mobile (delayed loading of crypto code): #3060, #3287
