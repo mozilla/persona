@@ -203,26 +203,31 @@ function processRows(err, rows) {
       value = value.toString('ucs2'); // Chrome/Safari store as BLOB
     }
     value = JSON.parse(value);
+
     if (key === 'interaction_data' && !args.i) {
       if (Object.keys(value).length !== 0) {
         value = '{...}';
       }
     }
+
     if (key === 'emails') {
-      Object.keys(value).forEach(function(email) {
-        var elt = value[email];
-        Object.keys(elt).forEach(function(emailKey) {
-          if (emailKey === 'cert') {
-            elt[emailKey] = processCertificate(elt[emailKey]);
-          }
-          if ((emailKey === 'pub' || emailKey === 'priv') && !args.P) {
-            elt[emailKey] = '{...}';
-          }
+      Object.keys(value).forEach(function(issuer) {
+        Object.keys(value[issuer]).forEach(function(email) {
+          var elt = value[issuer][email];
+          Object.keys(elt).forEach(function(emailKey) {
+            if (emailKey === 'cert') {
+              elt[emailKey] = processCertificate(elt[emailKey]);
+            }
+            if ((emailKey === 'pub' || emailKey === 'priv') && !args.P) {
+              elt[emailKey] = '{...}';
+            }
+          });
         });
       });
     }
     localStorage[key] = value;
   });
+
   if (args.k) {
     Object.keys(localStorage).forEach(function(key) {
       if (args.k.indexOf(key) === -1) {
@@ -230,6 +235,7 @@ function processRows(err, rows) {
       }
     });
   }
+
   console.log(JSON.stringify(localStorage, null, 2));
 }
 
