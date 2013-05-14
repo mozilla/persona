@@ -192,7 +192,7 @@ suite.addBatch({
         assert.isString(r);
       },
       "and adding this email": {
-        topic: function(assertion)  {
+        topic: function(err, assertion)  {
           wsapi.post('/wsapi/add_email_with_assertion', {
             assertion: assertion
           }).call(this);
