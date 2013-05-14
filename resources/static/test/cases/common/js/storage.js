@@ -173,5 +173,20 @@
     testHelpers.testUndefined(storage.site.get(TEST_ORIGIN, "logged_in"), "sites with email no longer logged in");
   });
 
+  // BEGIN TRANSITION CODE
+  test("upgradeLoggedInInfo upgrades old loggedInInfo and removes namespace",
+      function() {
+      localStorage.loggedIn = JSON.stringify({
+        'testrp.com': 'testuser@testuser.com'
+      });
+
+      storage.upgradeLoggedInInfo();
+      equal(storage.site.get("testrp.com", "logged_in"),
+          'testuser@testuser.com');
+
+      equal(localStorage.getItem('loggedIn'), null);
+  });
+  // END TRANSITION CODE
+
 }());
 
