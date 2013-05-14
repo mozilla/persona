@@ -44,6 +44,7 @@ BrowserID.Storage = (function() {
     for (var site in allInfo) {
       siteSet(site, "logged_in", allInfo[site]);
     }
+    storage.removeItem("loggedIn");
   }
   upgradeLoggedInInfo();
   // END TRANSITION CODE
@@ -612,5 +613,13 @@ BrowserID.Storage = (function() {
      * @method setDefaultValues
      */
     setDefaultValues: setDefaultValues
+    // BEGIN TRANSITION CODE
+    /**
+     * Upgrade the site->user logged in info from the loggedIn namespace to be
+     * under the site namespace.
+     */
+    ,
+    upgradeLoggedInInfo: upgradeLoggedInInfo
+    // END TRANSITION CODE
   };
 }());
