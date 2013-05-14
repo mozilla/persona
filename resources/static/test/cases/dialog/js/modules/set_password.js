@@ -57,6 +57,10 @@
 
   asyncTest("submit in password field with good password - skip to vpassword field", function() {
     $("#password").val("password");
+    $("#vpassword").val("");
+    // IE8 is difficult. To programatically focus a new element, sometimes it
+    // is necessary to blur the old element.
+    $(":focus").blur();
     $("#password").focus();
 
     controller.submit(function() {
