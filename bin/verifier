@@ -91,8 +91,8 @@ function doVerification(req, resp, next) {
 
   var assertion = req.query.assertion ? req.query.assertion : req.body.assertion;
   var audience = req.query.audience ? req.query.audience : req.body.audience;
-  var forceIssuer = req.query.forceIssuer ? req.query.forceIssuer : req.body.forceIssuer;
-  var allowUnverified = req.query.allowUnverified ? req.query.allowUnverified : req.body.allowUnverified;
+  var forceIssuer = req.query.experimental_forceIssuer ? req.query.experimental_forceIssuer : req.body.experimental_forceIssuer;
+  var allowUnverified = req.query.experimental_allowUnverified ? req.query.experimental_allowUnverified : req.body.experimental_allowUnverified;
 
   if (!(assertion && audience)) {
     // why couldn't we extract these guys?  Is it because the request parameters weren't encoded as we expect? GH-643
@@ -170,3 +170,4 @@ var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function(conn) {
   logger.info("running on http://" + app.address().address + ":" + app.address().port);
 });
+ 
