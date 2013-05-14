@@ -24,7 +24,7 @@ window.Micrajax = (function() {
     }
     else if (window.ActiveXObject) {
       // ...if not, try the ActiveX control
-      xhrObject = new ActiveXObject('Microsoft.XM/LHTTP');
+      xhrObject = new ActiveXObject('Microsoft.XMLHTTP');
     }
 
     return xhrObject;
