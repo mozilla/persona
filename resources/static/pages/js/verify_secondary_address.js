@@ -98,6 +98,7 @@ BrowserID.verifySecondaryAddress = (function() {
       else {
         // renderError is used directly instead of pageHelpers.showFailure
         // because showFailure hides the title in the extended info.
+        dom.show("body");
         self.renderError("error", errors.cannotConfirm);
         complete(oncomplete, false);
       }
