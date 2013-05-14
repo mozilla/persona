@@ -189,7 +189,7 @@ suite.addBatch({
         wsapi.post('/verify', {
           audience: UNVERIFIED_ORIGIN,
           assertion: assertion,
-          allowUnverified: true
+          experimental_allowUnverified: true
         }).call(this);
       },
       "to succeed": function (err, r) {
