@@ -322,7 +322,17 @@ BrowserID.DOM = ( function() {
          * @param {selelector || element} elementToFocus
          */
         focus: function( elementToFocus ) {
-          jQuery( elementToFocus ).focus();
+          var el = jQuery( elementToFocus );
+
+          // IE8 blows up when trying to focus an invisible or disabled
+          // element. Keep that from happening. See issue #3385
+          if ( el.is( ':visible' ) && el.is( ':enabled' ) ) {
+            // IE8 is difficult. Sometimes a new element cannot be
+            // programatically focused if the old element is not first blurred.
+            jQuery( ':focus' ).blur();
+
+            el.focus();
+          }
         },
 
         /**
