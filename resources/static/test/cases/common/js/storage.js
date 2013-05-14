@@ -219,6 +219,13 @@
           'testuser@testuser.com');
 
       equal(localStorage.getItem('loggedIn'), null);
+
+      try {
+        // make sure re-invoking upgrade path does not cause an error.
+        storage.upgradeLoggedInInfo();
+      } catch(e) {
+        ok(false, "unexpected error");
+      }
   });
   // END TRANSITION CODE
 
