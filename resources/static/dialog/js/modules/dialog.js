@@ -300,6 +300,10 @@ BrowserID.Modules.Dialog = (function() {
           params.allowUnverified = validateBoolean(
               paramsFromRP.experimental_allowUnverified,
               "experimental_allowUnverified");
+        } else if (paramsFromRP.allowUnverified) {
+          params.allowUnverified = validateBoolean(
+            paramsFromRP.allowUnverified,
+            "experimental_allowUnverified");
         }
 
         if (hash.indexOf("#AUTH_RETURN") === 0) {
