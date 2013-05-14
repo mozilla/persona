@@ -16,5 +16,4 @@ git log --pretty=%h -1 > ../code/resources/static/ver.txt
 cd ../code
 
 echo ">> generating production resources"
-env CONFIG_FILES=config/aws.json scripts/compress
-
+scripts/compress
