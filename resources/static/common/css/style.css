@@ -402,6 +402,10 @@ a.secondary[disabled], .submit_disabled a.secondary, .submit_disabled a.secondar
   float: right;
 }
 
+.left {
+  float: left;
+}
+
 .center {
   text-align: center;
 }

@@ -16,7 +16,8 @@ BrowserID.Modules.AddEmail = (function() {
       ANIMATION_TIME = 250,
       BODY_SELECTOR = "body",
       EMAIL_SELECTOR = "#newEmail",
-      SUBMIT_DISABLED_CLASS = "submit_disabled";
+      SUBMIT_DISABLED_CLASS = "submit_disabled",
+      CANCEL_SELECTOR = "#cancel";
 
   function hideHint(selector) {
     $("." + selector).hide();
@@ -72,7 +73,7 @@ BrowserID.Modules.AddEmail = (function() {
       self.renderForm("add_email", options);
       hideHint("addressInfo");
 
-      self.click("#cancel", cancelAddEmail);
+      self.click(CANCEL_SELECTOR, cancelAddEmail);
       Module.sc.start.call(self, options);
     },
     submit: addEmail

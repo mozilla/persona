@@ -12,6 +12,7 @@
       testElementNotExists = testHelpers.testElementDoesNotExist,
       testElementTextContains = testHelpers.testElementTextContains,
       testTooltipVisible = testHelpers.testTooltipVisible,
+      CANCEL_SELECTOR = "#cancel",
       register = testHelpers.register;
 
   function createController(options) {
@@ -35,13 +36,13 @@
   test("create with no options - show template, user must verify email, can cancel", function() {
     ok($("#set_password").length, "set_password template added");
     testElementExists("#verify_user");
-    testElementExists("#cancel");
+    testElementExists(CANCEL_SELECTOR);
   });
 
   test("create with cancelable=false option - cancel button not shown", function() {
     controller.destroy();
     createController({ cancelable: false });
-    testElementNotExists("#cancel");
+    testElementNotExists(CANCEL_SELECTOR);
   });
 
   test("create with transition_no_password", function() {
@@ -105,6 +106,6 @@
       start();
     });
 
-    $("#cancel").click();
+    $(CANCEL_SELECTOR).click();
   });
 }());

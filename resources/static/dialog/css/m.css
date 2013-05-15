@@ -48,7 +48,7 @@
     height: 40px;
     min-width: 105px;
     font-size: 14px;
-    padding: 6px 25px 8px;
+    padding: 6px 0 8px;
     float: right;
     font-weight: 400;
     color: #414343;
@@ -134,7 +134,20 @@
   }
 
   .buttonrow > .right {
-    margin-right: 0;
+    margin: 0;
+  }
+
+  /**
+   * Oh, what hideousnous this is. All because flex box doesn't want to play
+   * nicely on B2G. The buttons are each 50% wide, but with a left margin
+   * to keep buttons separated. The margin causes buttons to overflow onto
+   * two lines. Pull the right button to the right by 10px to keep the
+   * buttons on one line. The buttonrow has its right hand padding adjusted by
+   * 10px to handle this.
+   */
+  .buttonrow > button,
+  .buttonrow > button.right {
+    margin: 0 -10px 0 10px;
   }
 
   input[type=email],
@@ -142,6 +155,14 @@
     font-size: 17px;
     padding: 11px 5px;
     border-radius: 5px;
+  }
+
+  /**
+   * Any buttons in the button row should be at minimum 50% wide. If the
+   * language causes the button to expand greater than that, great.
+   */
+  .buttonrow > button, .buttonrow > a {
+    min-width: 50%;
   }
 
   /**
@@ -176,12 +197,19 @@
   }
 
 
-  .isMobile {
+  .isMobile,
+  .returning .isReturning,
+  .start .isStart,
+  .addressInfo .isAddressInfo {
     display: block;
   }
 
-  .isDesktop, a.emphasize.isDesktop, .returning .isDesktopStart {
-    display: none;
+  /**
+   * If this is a desktop element, no way, no how should it be showing. This
+   * situation is what !important is for.
+   */
+  .isDesktop, .returning .isDesktopOrStart {
+    display: none !important;
   }
 
   /**
@@ -356,12 +384,16 @@
   /*
    * The button row should always be against the bottom border of the
    * dialog. Get rid of its margin.
+   *
+   * The 20px right hand padding is so we can place two buttons side by side at
+   * 50% and use a negative margin to keep them from scrolling over two lines.
+   * Hideous, but flex box is giving us difficulties.
    */
   #signIn .buttonrow {
     position: absolute;
     left: 0;
     right: 0;
-    padding: 20px;
+    padding: 20px 20px 20px 10px;
     background-color: #dcdcdc;
     border-top: 1px solid #bcbcbc;
     box-shadow: 0px 1px #fff inset;

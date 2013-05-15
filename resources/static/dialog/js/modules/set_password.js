@@ -8,6 +8,7 @@ BrowserID.Modules.SetPassword = (function() {
       helpers = bid.Helpers,
       complete = helpers.complete,
       dialogHelpers = helpers.Dialog,
+      CANCEL_SELECTOR = "#cancel",
       PASSWORD_SELECTOR = "#password",
       VPASSWORD_SELECTOR = "#vpassword",
       sc;
@@ -60,7 +61,7 @@ BrowserID.Modules.SetPassword = (function() {
         dialogHelpers.showRPTosPP.call(self);
       }
 
-      self.click("#cancel", cancel);
+      self.click(CANCEL_SELECTOR, cancel);
 
       sc.start.call(self, options);
     },
