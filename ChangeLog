@@ -21,6 +21,8 @@ train-2013.04.26:
     * make it harder to poison user caches during deployment #3315
   * (hotfix 2013.04.29) fix js exception when sample rate !== 1.0: issue #3319
   * (hotfix 2013.04.29) Fix sporatic 503s: #3309
+  * (hotfix 2013.04.29) update lockdown sha for yamlparser: issue #3328
+  * (hotfix 2013.05.15) Fix for users who are unable to sign out: issue #3398, #3386
 
 train-2013.04.12:
   * Key Performance Indicator (anonymous metrics) improvements: #3148
