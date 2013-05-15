@@ -52,8 +52,7 @@ util = require('util');
 var sqlite3, argv, args;
 try {
   sqlite3 = require('sqlite3');
-}
-catch(e) {
+} catch(e) {
   console.log("** ERROR: require('sqlite3'). Try `npm install sqlite3`.\n");
   process.exit(1);
 }
@@ -109,7 +108,7 @@ function databaseFilename(origin) {
     var subdir = (args.b === 'chrome') ? 'Local Storage' : 'LocalStorage';
     dbfile = path.join(args.p, subdir, parts.join('_') + '.localstorage');
   }
-  if (!path.existsSync(dbfile)) {
+  if (!fs.existsSync(dbfile)) {
     console.log('*** ERROR: No such sqlite file: ', dbfile);
     process.exit(1);
   }
@@ -151,14 +150,14 @@ function processOptions() {
   }
 
   if (!args.p) {
-    args.p = process.env['INSPECT_LS'];
+    args.p = process.env.INSPECT_LS;
     if (!args.p) {
       optionError('option -p: profile path is required');
     }
   }
-  args.p = args.p.replace(/^~/, process.env['HOME']);
+  args.p = args.p.replace(/^~/, process.env.HOME);
   if (args.p[0] !== '/') args.p = path.resolve(process.cwd(), args.p);
-  if (!path.existsSync(args.p)) {
+  if (!fs.existsSync(args.p)) {
     optionError('option -p: profile path does not exist :' + args.p);
   }
   var stat = fs.statSync(args.p);
@@ -194,6 +193,20 @@ function processCertificate(cert) {
   return components;
 }
 
+function processEmails(obj) {
+  Object.keys(obj).forEach(function(email) {
+    var elt = obj[email];
+    Object.keys(elt).forEach(function(emailKey) {
+      if (emailKey === 'cert') {
+        elt[emailKey] = processCertificate(elt[emailKey]);
+      }
+      if ((emailKey === 'pub' || emailKey === 'priv') && !args.P) {
+        elt[emailKey] = '{...}';
+      }
+    });
+  });
+}
+
 function processRows(err, rows) {
   if (err) throw err;
   var localStorage = {};
@@ -211,20 +224,17 @@ function processRows(err, rows) {
     }
 
     if (key === 'emails') {
-      Object.keys(value).forEach(function(issuer) {
-        Object.keys(value[issuer]).forEach(function(email) {
-          var elt = value[issuer][email];
-          Object.keys(elt).forEach(function(emailKey) {
-            if (emailKey === 'cert') {
-              elt[emailKey] = processCertificate(elt[emailKey]);
-            }
-            if ((emailKey === 'pub' || emailKey === 'priv') && !args.P) {
-              elt[emailKey] = '{...}';
-            }
-          });
+      // peek at the first key to see if it's email or issuer
+      var firstKey = Object.keys(value)[0];
+      if (firstKey.match(/@/)) {
+        processEmails(value);
+      } else {
+        Object.keys(value).forEach(function(issuer) {
+          processEmails(value[issuer]);
         });
-      });
+      }
     }
+
     localStorage[key] = value;
   });
 
