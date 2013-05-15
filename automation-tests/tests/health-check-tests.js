@@ -17,7 +17,7 @@ testSetup = require('../lib/test-setup.js'),
 timeouts = require('../lib/timeouts.js');
 
 var pcss = CSS['persona.org'],
-  browser, secondBrowser, eyedeemail, theEmail;
+  browser, secondBrowser, primaryEmail, theEmail, testIdp;
 
 // all the stuff common between primary and secondary tests:
 // go to persona.org, click sign in, enter email, click next.
@@ -32,11 +32,12 @@ var startup = function(b, email, cb) {
 
 var setup = {
   "setup stuff": function(done) {
-    testSetup.setup({browsers: 2, eyedeemails: 1, restmails: 1}, function(err, fixtures) {
+    testSetup.setup({browsers: 2, testidps: 1, restmails: 1}, function(err, fixtures) {
       if (fixtures) {
         browser = fixtures.browsers[0];
         secondBrowser = fixtures.browsers[1];
-        eyedeemail = fixtures.eyedeemails[0];
+        testIdp = fixtures.testidps[0];
+        primaryEmail = testIdp.getRandomEmail();
         theEmail = fixtures.restmails[0];
       }
       done(err)
@@ -45,27 +46,33 @@ var setup = {
 };
 
 var primaryTest = {
+  "enable primary support": function(done) {
+    testIdp.enableSupport(done);
+  },
+
   "setup browser": function(done) {
     testSetup.newBrowserSession(browser, done);
   },
-  "go to personaorg, click sign in, type eyedeeme addy, click next": function(done) {
-    startup(browser, eyedeemail, done)
+
+  "go to personaorg, click sign in, type testidp addy, click next": function(done) {
+    startup(browser, primaryEmail, done)
   },
-  "click 'verify primary' to open eyedeeme": function(done) {
+  "click 'verify primary' to open testidp": function(done) {
     browser.wclick(CSS['dialog'].verifyWithPrimaryButton, done);
   },
-  "switch to eyedeeme dialog, submit password, click ok": function(done) {
+  "switch to testidp dialog, submit password, click ok": function(done) {
     browser.chain({onError: done})
-      .wtype(CSS['eyedee.me'].newPassword, eyedeemail.split('@')[0])
-      .wclick(CSS['eyedee.me'].createAccountButton, done);
+      .wclick(CSS['testidp.org'].loginButton, done);
   },
   "switch back to main window, look for the email in acct mgr, then log out": function(done) {
     browser.chain({onError: done})
       .wwin()
       .wtext(pcss.accountEmail, function(err, text) {
-        done(err || assert.equal(eyedeemail.toLowerCase(), text)); // note, had to lower case it.
-      })
-      .wclick(pcss.header.signOut, done);
+        done(err || assert.equal(primaryEmail.toLowerCase(), text)); // note, had to lower case it.
+      });
+  },
+  "sign out": function(done) {
+    browser.wclick(pcss.header.signOut, done);
   },
   "shut down primary test": function(done) {
     browser.quit(done);
@@ -106,5 +113,5 @@ runner.run(
   [setup, secondaryTest, primaryTest],
   {
     suiteName: path.basename(__filename),
-    cleanup: function(done) { testSetup.teardown(done) }
+    cleanup: function(done) { testSetup.teardown(done); }
   });
