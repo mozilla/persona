@@ -314,59 +314,6 @@ section > .contents {
 
 
 
-/**
- * These animations are used for the loading spinner. No animated gifs here.
- */
-
-/**
- * Webkit still must use the -webkit prefix
- */
-@-webkit-keyframes rotate {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(360deg);
-  }
-}
-
-/**
- * Older firefoxes require -moz
- */
-@-moz-keyframes rotate {
-  from {
-    -moz-transform: rotate(0deg);
-  }
-  to {
-    -moz-transform: rotate(360deg);
-  }
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-
-.loadingSpinner {
-  -webkit-animation-name: rotate;
-     -moz-animation-name: rotate;
-          animation-name: rotate;
-  -webkit-animation-duration: 0.5s;
-     -moz-animation-duration: 0.5s;
-          animation-duration: 0.5s;
-  -webkit-animation-iteration-count: infinite;
-     -moz-animation-iteration-count: infinite;
-          animation-iteration-count: infinite;
-  -webkit-animation-timing-function: linear;
-     -moz-animation-timing-function: linear;
-          animation-timing-function: linear;
-}
-
 .unsupported {
   /*
    * These are fixes for IE6 - IE6 does not support the combination #id.class
