@@ -575,7 +575,7 @@
   test("null assertion generated - preserve original options in doPickEmail", function() {
     var hostname = "http://example.com",
         pp = "http://example.com/priv.html",
-        tos = http://example.com/tos.html";
+        tos = "http://example.com/tos.html";
 
     mediator.publish("start", {
       hostname: hostname,
