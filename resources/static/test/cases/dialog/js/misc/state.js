@@ -573,16 +573,22 @@
   });
 
   test("null assertion generated - preserve original options in doPickEmail", function() {
+    var hostname = "http://example.com",
+        pp = "http://example.com/priv.html",
+        tos = http://example.com/tos.html";
+
     mediator.publish("start", {
-      hostname: "http://example.com",
-      privacyPolicy: "http://example.com/priv.html",
-      termsOfService: "http://example.com/tos.html"
+      hostname: hostname,
+      privacyPolicy: pp,
+      termsOfService: tos
     });
     mediator.publish("assertion_generated", { assertion: null });
 
-    equal(actions.called.doPickEmail, true, "doPickEmail callled");
-    equal(actions.info.doPickEmail.origin, "http://example.com", "hostname preserved");
-    equal(actions.info.doPickEmail.siteTOSPP, true, "siteTOSPP preserved");
+    testActionStarted("doPickEmail", {
+      origin: hostname,
+      termsOfService: tos,
+      privacyPolicy: pp
+    });
   });
 
   test("add_email - call doAddEmail", function() {
@@ -642,6 +648,46 @@
 
   asyncTest("authenticate_specified_email without cancelable - call doAuthenticateWithRequiredEmail, cancelable defaults to true", function() {
     testAuthenticateSpecifiedEmail(undefined, true);
+  });
+
+  test("pick_email passes along TOS/PP options if no email " +
+      "is selected for domain", function() {
+    var tos = "https://browserid.org/TOS.html";
+    var pp = "https://browserid.org/priv.html";
+
+    mediator.publish("start", {
+      termsOfService: tos,
+      privacyPolicy: pp
+    });
+
+    mediator.publish("pick_email");
+
+    testActionStarted("doPickEmail", {
+      termsOfService: tos,
+      privacyPolicy: pp
+    });
+  });
+
+  test("pick_email does not pass along TOS/PP options if email " +
+      "is selected for domain", function() {
+    var tos = "https://browserid.org/TOS.html";
+    var pp = "https://browserid.org/priv.html";
+
+    mediator.publish("start", {
+      termsOfService: tos,
+      privacyPolicy: pp
+    });
+
+    user.setOrigin("browserid.org");
+    storage.addEmail("testuser@testuser.com");
+    user.setOriginEmail("testuser@testuser.com");
+
+    mediator.publish("pick_email");
+
+    testActionStarted("doPickEmail", {
+      termsOfService: false,
+      privacyPolicy: false
+    });
   });
 
 }());

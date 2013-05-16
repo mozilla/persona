@@ -12,7 +12,10 @@ BrowserID.Modules.RPInfo = (function() {
   "use strict";
 
   var bid = BrowserID,
+      dom = bid.DOM,
       renderer = bid.Renderer,
+      BODY_SELECTOR = "body",
+      FAVICON_CLASS = "showMobileFavicon",
       sc;
 
   var Module = bid.Modules.PageModule.extend({
@@ -28,13 +31,28 @@ BrowserID.Modules.RPInfo = (function() {
        * so it will not be escaped.  It is set initially in user.js at the very
        * bottom for the main site, and then in dialog.js->get for the dialog.
        */
-      renderer.render(".rpInfo", "rp_info", {
+      var templateData = {
         hostname: options.hostname,
         siteName: options.siteName,
         siteLogo: options.siteLogo,
         privacyPolicy: options.privacyPolicy,
         termsOfService: options.termsOfService
-      });
+      };
+
+      renderer.render(".rpInfo", "rp_info", templateData);
+
+      /**
+       * Mobile devices show the RP TOS/PP below the Persona TOS/PP
+       * information. A special template is used.
+       */
+      renderer.render(".isMobile.rpInfo", "rp_info_mobile", templateData);
+
+      /**
+       * If the user is signing in to FirefoxOS Marketplace on a mobile device,
+       * add a special class to the body which hides the normal favicon
+       */
+      dom[options.mobileFavicon ? "addClass" : "removeClass"]
+          (BODY_SELECTOR, FAVICON_CLASS);
 
       sc.start.call(this, options);
     }

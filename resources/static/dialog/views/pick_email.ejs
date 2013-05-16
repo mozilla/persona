@@ -39,6 +39,17 @@
         <a class="thisIsNotMe" href="#"><%= gettext('This is not me') %></a>
       </p>
 
+      <% if (privacyPolicy && termsOfService) { %>
+        <p class="tospp isMobile">
+          <%- format(gettext("By proceeding, you agree to %(site)s's <a %(terms)s>Terms</a> and <a %(privacy)s>Privacy Policy</a>."),
+                     {
+                       terms: 'href="' + termsOfService + '" class="rp_tos" target="_blank" tabindex="10"',
+                       privacy: 'href="' + privacyPolicy + '" class="rp_pp" target="_blank" tabindex="10"',
+                       site: siteName || hostname
+                     })
+          %>
+         </p>
+      <% } %>
 
       <p class="submit add cf buttonrow">
         <button id="signInButton"><%= gettext('sign in') %></button>

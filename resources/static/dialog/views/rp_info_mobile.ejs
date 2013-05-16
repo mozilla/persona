@@ -2,29 +2,12 @@
       License, v. 2.0. If a copy of the MPL was not distributed with this
       file, You can obtain one at http://mozilla.org/MPL/2.0/. */ %>
 
-<% if(siteLogo) { %>
-  <img id="rp_logo" src="<%= siteLogo %>" />
-<% } %>
-
-
-<% if(siteName) { %>
-  <h2 id="rp_name"><%- siteName %></h2>
-<% } %>
-
-<% if(siteName) { %>
-  <h3 id="rp_hostname"><%= hostname %></h3>
-<% } else { %>
-  <h2 id="rp_hostname"><%= hostname %></h2>
-<% } %>
-
 <% if(privacyPolicy && termsOfService) { %>
-  <p id="rptospp" class="tospp isDesktop">
-    <%- format(gettext("By proceeding, you agree to %(site)s's <a %(terms)s>Terms</a> and <a %(privacy)s>Privacy Policy</a>."),
+    <%- format(gettext("You also agree to %(site)s's <a %(terms)s>Terms</a> and <a %(privacy)s>Privacy Policy</a>."),
                {
                  terms: 'href="' + termsOfService + '" class="rp_tos" target="_blank" tabindex="10"',
                  privacy: 'href="' + privacyPolicy + '" class="rp_pp" target="_blank" tabindex="10"',
                  site: siteName || hostname
                })
     %>
-   </p>
 <% } %>

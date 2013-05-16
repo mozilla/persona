@@ -12,6 +12,8 @@ BrowserID.Modules.PickEmail = (function() {
       dialogHelpers = helpers.Dialog,
       tooltip = bid.Tooltip,
       dom = bid.DOM,
+      BODY_SELECTOR = "body",
+      PICK_EMAIL_CLASS = "pickemail",
       ADD_EMAIL_SELECTOR = ".useNewEmail",
       NOT_ME_SELECTOR = ".thisIsNotMe",
       sc;
@@ -135,20 +137,24 @@ BrowserID.Modules.PickEmail = (function() {
 
       options = options || {};
 
-      dom.addClass("body", "pickemail");
+      dom.addClass(BODY_SELECTOR, PICK_EMAIL_CLASS);
 
       var identities = getSortedIdentities();
 
       self.renderForm("pick_email", {
         identities: identities,
-        siteEmail: user.getOriginEmail()
+        siteEmail: user.getOriginEmail(),
+        privacyPolicy: options.privacyPolicy,
+        termsOfService: options.termsOfService,
+        siteName: options.siteName,
+        hostname: options.hostname
       });
 
-      if (options.siteTOSPP) {
+      if (options.privacyPolicy && options.termsOfService) {
         dialogHelpers.showRPTosPP.call(self);
       }
 
-      dom.getElements("body").css("opacity", "1");
+      dom.getElements(BODY_SELECTOR).css("opacity", "1");
       if (dom.getElements("#selectEmail input[type=radio]:visible").length === 0) {
         // If there is only one email address, the radio button is never shown,
         // instead focus the sign in button so that the user can click enter.
@@ -170,7 +176,7 @@ BrowserID.Modules.PickEmail = (function() {
 
     stop: function() {
       sc.stop.call(this);
-      dom.removeClass("body", "pickemail");
+      dom.removeClass(BODY_SELECTOR, PICK_EMAIL_CLASS);
     }
 
     // BEGIN TESTING API

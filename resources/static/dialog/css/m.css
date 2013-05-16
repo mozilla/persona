@@ -233,7 +233,11 @@
   }
 
 
+  /**
+   * The favicon is the RP info & TOS/PP agreement.
+   */
   .favicon {
+      display: none;
       overflow: inherit;
       width: 100%;
         /* Changed this from relative to static to fix issue #1309 tooltips
@@ -246,6 +250,15 @@
       background-color: #dcdcdc;
       border-bottom: 1px solid #bcbcbc;
       box-shadow: 0px -1px #fff inset;
+  }
+
+  /**
+   * Visitors to FirefoxOS Marketplace on mobile devices do not see the normal
+   * favicon/RP Info. They see special RP info placed below the Persona TOS/PP
+   * text.
+   */
+  .showMobileFavicon .favicon {
+    display: block;
   }
 
   .favicon img {
@@ -277,10 +290,6 @@
 
   .tospp {
     font-size: 12.5px;
-  }
-
-  #rptospp {
-    margin: 0;
   }
 
   #signIn {

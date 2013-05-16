@@ -121,6 +121,8 @@ BrowserID.State = (function() {
     handleState("start", function(msg, info) {
       self.hostname = info.hostname;
       self.siteName = info.siteName || info.hostname;
+      self.privacyPolicy = info.privacyPolicy;
+      self.termsOfService = info.termsOfService;
       self.siteTOSPP = !!(info.privacyPolicy && info.termsOfService);
 
       if (info.forceIssuer) {
@@ -130,6 +132,12 @@ BrowserID.State = (function() {
       self.allowUnverified = info.allowUnverified;
       user.setAllowUnverified(info.allowUnverified);
 
+      /**
+       * Only show the favicon on mobile devices if we are not signing in to
+       * FirefoxOS marketplace. Checking isDefaultIssuer is an ugly hack,
+       * but we use it in several places.
+       */
+      info.mobileFavicon = user.isDefaultIssuer();
       startAction(false, "doRPInfo", info);
 
       if (info.email && info.type === "primary") {
@@ -368,9 +376,13 @@ BrowserID.State = (function() {
     });
 
     handleState("pick_email", function() {
+      var originEmail = user.getOriginEmail();
       startAction("doPickEmail", {
         origin: self.hostname,
-        siteTOSPP: self.siteTOSPP && !user.getOriginEmail()
+        privacyPolicy: !originEmail && self.privacyPolicy,
+        termsOfService: !originEmail && self.termsOfService,
+        siteName: self.siteName,
+        hostname: self.hostname
       });
     });
 
