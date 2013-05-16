@@ -198,6 +198,7 @@
      * screen. See issue #3409
      */
     width: 0;
+    overflow: hidden;
   }
 
   /**
