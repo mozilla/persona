@@ -212,6 +212,16 @@ BrowserID.Modules.Authenticate = (function() {
     var self=this;
     addressInfo = null;
 
+    // If we are signing in to the Persona main site, do not show
+    // the Persona intro that says "<site> uses Persona to sign you in!"
+    if (user.getOrigin() === PERSONA_URL) {
+      dom.hide(PERSONA_INTRO_SELECTOR);
+    }
+
+    // If we are already in the enterEmailState, skip out or else we mess with
+    // auto-completion.
+    if (self.submit === checkEmail) return;
+
     if (!dom.is(EMAIL_SELECTOR, ":disabled")) {
       self.publish("enter_email");
       dom.setInner(AUTHENTICATION_LABEL, dom.getInner(EMAIL_LABEL));
@@ -220,11 +230,6 @@ BrowserID.Modules.Authenticate = (function() {
       dom.focus(EMAIL_SELECTOR);
     }
 
-    // If we are signing in to the Persona main site, do not show
-    // the Persona intro that says "<site> uses Persona to sign you in!"
-    if (user.getOrigin() === PERSONA_URL) {
-      dom.hide(PERSONA_INTRO_SELECTOR);
-    }
   }
 
   function enterPasswordState(callback) {
