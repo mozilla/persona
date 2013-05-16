@@ -14,7 +14,9 @@ BrowserID.Modules.AddEmail = (function() {
       tooltip = bid.Tooltip,
       hints = ["addressInfo"],
       ANIMATION_TIME = 250,
-      EMAIL_SELECTOR = "#newEmail";
+      BODY_SELECTOR = "body",
+      EMAIL_SELECTOR = "#newEmail",
+      SUBMIT_DISABLED_CLASS = "submit_disabled";
 
   function hideHint(selector) {
     $("." + selector).hide();
@@ -41,12 +43,12 @@ BrowserID.Modules.AddEmail = (function() {
     if (email) {
       showHint("addressInfo");
       dom.setAttr(EMAIL_SELECTOR, 'disabled', 'disabled');
-      dom.addClass("body", "submit_disabled");
+      dom.addClass(BODY_SELECTOR, SUBMIT_DISABLED_CLASS);
       dialogHelpers.addEmail.call(self, email, function removeHint(status) {
         if (!status) {
           hideHint("addressInfo");
           dom.removeAttr(EMAIL_SELECTOR, 'disabled');
-          dom.removeClass("body", "submit_disabled");
+          dom.removeClass(BODY_SELECTOR, SUBMIT_DISABLED_CLASS);
         }
         complete(callback, status);
       });

@@ -77,7 +77,7 @@ BrowserID.Modules.Authenticate = (function() {
     if (!email) return;
 
     dom.setAttr(EMAIL_SELECTOR, 'disabled', 'disabled');
-    dom.addClass("body", "submit_disabled");
+    dom.addClass(BODY_SELECTOR, "submit_disabled");
 
     if (info && info.type) {
       onAddressInfo(info);
