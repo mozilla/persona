@@ -82,7 +82,11 @@
    * Override all the disabled styles on the buttons. The mobile button
    * has no spinner.
    */
-  button[disabled], .submit_disabled button, .submit_disabled .button,
+  button[disabled],
+  button[disabled]:hover, .button[disabled]:hover,
+  button[disabled]:focus, .button[disabled]:focus,
+  button[disabled]:active, .button[disabled]:active,
+  .submit_disabled button, .submit_disabled .button,
   .submit_disabled button:hover, .submit_disabled .button:hover,
   .submit_disabled button:focus, .submit_disabled .button:focus,
   .submit_disabled button:active, .submit_disabled .button:active,
@@ -95,6 +99,7 @@
     background: #e8e8e8;
     border: 1px solid #a1c3cc;
     box-shadow: none;
+    text-shadow: none;
   }
 
 

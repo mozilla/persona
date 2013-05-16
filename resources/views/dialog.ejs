@@ -95,7 +95,13 @@
 
                     <p class="submit cf buttonrow">
 
-                      <button class="isStart isAddressInfo"><%= gettext('next') %></button>
+                      <button class="isDesktop isStart isAddressInfo right">
+                        <%= gettext('next') %>
+                      </button>
+
+                      <button class="isMobile isStart isAddressInfo continue right" disabled>
+                        <%= gettext('continue') %>
+                      </button>
 
                       <a href="#" class="isMobile isStart isAddressInfo cancelDialog">
                         <%= gettext('cancel') %>

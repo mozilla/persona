@@ -17,6 +17,7 @@ BrowserID.Modules.Authenticate = (function() {
       lastEmail = "",
       addressInfo,
       hints = ["returning","start","addressInfo"],
+      DISABLED_ATTRIBUTE = "disabled",
       CONTENTS_SELECTOR = "#formWrap .contents",
       AUTH_FORM_SELECTOR = "#authentication_form",
       EMAIL_SELECTOR = "#authentication_email",
@@ -25,6 +26,7 @@ BrowserID.Modules.Authenticate = (function() {
       RP_NAME_SELECTOR = "#start_rp_name",
       BODY_SELECTOR = "body",
       AUTHENTICATION_CLASS = "authentication",
+      CONTINUE_BUTTON_SELECTOR = ".continue",
       FORM_CLASS = "form",
       AUTHENTICATION_LABEL = "#authentication_form label[for=authentication_email]",
       ENTER_EMAIL_LABEL = "#authentication_form .label.enter_email",
@@ -76,9 +78,8 @@ BrowserID.Modules.Authenticate = (function() {
         self = this;
     if (!email) return;
 
-    dom.setAttr(EMAIL_SELECTOR, 'disabled', 'disabled');
+    dom.setAttr(EMAIL_SELECTOR, DISABLED_ATTRIBUTE, DISABLED_ATTRIBUTE);
     dom.addClass(BODY_SELECTOR, "submit_disabled");
-
     if (info && info.type) {
       onAddressInfo(info);
     }
@@ -94,7 +95,7 @@ BrowserID.Modules.Authenticate = (function() {
 
     function onAddressInfo(info) {
       addressInfo = info;
-      dom.removeAttr(EMAIL_SELECTOR, 'disabled');
+      dom.removeAttr(EMAIL_SELECTOR, DISABLED_ATTRIBUTE);
 
       self.hideLoad();
 
@@ -271,6 +272,18 @@ BrowserID.Modules.Authenticate = (function() {
       lastEmail = newEmail;
       enterEmailState.call(this);
     }
+
+    /**
+     * The continue button is only available on mobile after the user has
+     * started to type an email address.
+     */
+    if (newEmail) {
+      dom.removeAttr(CONTINUE_BUTTON_SELECTOR, DISABLED_ATTRIBUTE);
+    }
+    else {
+      dom.setAttr(CONTINUE_BUTTON_SELECTOR, DISABLED_ATTRIBUTE,
+        DISABLED_ATTRIBUTE);
+    }
   }
 
   var Module = bid.Modules.PageModule.extend({
@@ -331,7 +344,8 @@ BrowserID.Modules.Authenticate = (function() {
     createFxAccount: createFxAccount,
     transitionNoPassword: transitionNoPassword,
     authenticate: authenticate,
-    forgotPassword: forgotPassword
+    forgotPassword: forgotPassword,
+    emailChange: emailChange
     // END TESTING API
   });
 
