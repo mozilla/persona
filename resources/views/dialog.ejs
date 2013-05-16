@@ -38,7 +38,7 @@
                             <span class="label email_state"><%= gettext('Enter your email address') %></span>
                             <span class="label transition_to_secondary"><%- format(gettext('%(idp)s no longer allows you to log into Persona with your %(idp)s password. You must now use your existing Persona password to log in with this email address.'), { idp: '<strong class="authentication_idp_name"></strong>'}) %></span>
                             <span class="label password_state"><%= gettext('Now enter your Persona password.') %></span>
-                            <input id="authentication_email" class="isDesktopOrStart" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" />
+                            <input id="authentication_email" class="isDesktopOrStart" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
 
                             <div id="email_format" class="tooltip" for="authentication_email">
                               <%= gettext('This field must be an email address.') %>

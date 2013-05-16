@@ -181,6 +181,34 @@ background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAApCAYA
   }
 
   /**
+   * Do not show the placeholder text for the authentication email input box on
+   * mobile devices.
+   */
+  #authentication_email::-webkit-input-placeholder {
+    color: transparent;
+  }
+
+  /** Newer firefox */
+  #authentication_email::-moz-placeholder {
+    color: transparent;
+  }
+
+  /** Older firefox */
+  #authentication_email:-moz-placeholder {
+    color: transparent;
+  }
+
+  /** IE10+ */
+  #authentication_email:-ms-input-placeholder {
+    color: transparent;
+  }
+
+  /** Standards browsers */
+  #authentication_email::input-placeholder {
+    color: transparent;
+  }
+
+  /**
    * Reset the absolute positioning and coloring that is placed on
    * each section.
    */
