@@ -66,6 +66,7 @@
   }
 
   function testCannotConfirm() {
+    ok($("body").is(":visible"));
     testHelpers.testErrorVisible();
   }
 
@@ -108,8 +109,10 @@
   asyncTest("invalid token - show cannot confirm error", function() {
     xhr.useResult("invalid");
 
+    $("body").hide();
     createController(config, function() {
       testCannotConfirm();
+      $("body").show();
       start();
     });
   });
