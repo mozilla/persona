@@ -15,6 +15,8 @@
       RP_TOS_URL = "https://browserid.org/TOS.html",
       RP_PP_URL = "https://browserid.org/priv.html",
       RP_HTTPS_LOGO = "https://en.gravatar.com/userimage/6966791/c4feac761b8544cce13e0406f36230aa.jpg",
+      BODY_SELECTOR = "body",
+      FAVICON_CLASS = "showMobileFavicon",
       mediator = bid.Mediator;
 
   module("dialog/js/modules/rp_info", {
@@ -97,8 +99,30 @@
     });
 
     equal($("#rp_name").text(), RP_NAME, "RP's name is set");
-    equal($("#rp_tos").attr("href"), RP_TOS_URL, "RP's TOS is set");
-    equal($("#rp_pp").attr("href"), RP_PP_URL, "RP's Privacy Policy is set");
+
+    // Make sure both desktop and mobile TOS/PP agreements are written.
+    equal($("#desktopRpInfo .rp_tos").attr("href"), RP_TOS_URL,
+        "RP's Desktop TOS is set");
+    equal($("#mobileRpInfo .rp_tos").attr("href"), RP_TOS_URL,
+        "RP's Mobile TOS is set");
+
+    equal($("#desktopRpInfo .rp_pp").attr("href"), RP_PP_URL,
+        "RP's DesktopPrivacy Policy is set");
+    equal($("#mobileRpInfo .rp_pp").attr("href"), RP_PP_URL,
+        "RP's Mobile Privacy Policy is set");
+
+    // favicon not defined in options, there should be no favicon
+    // class on the body.
+    ok(! $(BODY_SELECTOR).hasClass(FAVICON_CLASS));
+  });
+
+  test("mobileFavicon defined in options, add showMobileFavicon class to body",
+      function() {
+    createController({
+      mobileFavicon: true
+    });
+
+    ok($(BODY_SELECTOR).hasClass(FAVICON_CLASS));
   });
 
 }());

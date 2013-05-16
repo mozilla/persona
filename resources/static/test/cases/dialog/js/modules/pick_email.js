@@ -48,9 +48,9 @@
   });
 
 
-  function createController() {
+  function createController(options) {
     controller = bid.Modules.PickEmail.create();
-    controller.start({});
+    controller.start(options || {});
   }
 
   test("multiple emails with no email assocated with site - print emails in alphabetical order, select none", function() {
@@ -196,6 +196,17 @@
     });
 
     $(".thisIsNotMe:eq(0)").click();
+  });
+
+  test("make sure RP tos/pp agreements are written to DOM", function() {
+    createController({
+      privacyPolicy: "https://testuser.com/pp.html",
+      termsOfService: "https://testuser.com/tos.html",
+      siteName: "TestUser.com",
+      hostname: "testuser.com"
+    });
+
+    ok($(".tospp.isMobile").length);
   });
 
 }());
