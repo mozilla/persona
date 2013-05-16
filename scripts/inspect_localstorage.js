@@ -224,14 +224,16 @@ function processRows(err, rows) {
     }
 
     if (key === 'emails') {
-      // peek at the first key to see if it's email or issuer
+      // peek at the first key to see if it's email or issuer (or empty {})
       var firstKey = Object.keys(value)[0];
-      if (firstKey.match(/@/)) {
-        processEmails(value);
-      } else {
-        Object.keys(value).forEach(function(issuer) {
-          processEmails(value[issuer]);
-        });
+      if (firstKey) {
+        if (firstKey.match(/@/)) {
+          processEmails(value);
+        } else {
+          Object.keys(value).forEach(function(issuer) {
+            processEmails(value[issuer]);
+          });
+        }
       }
     }
 
