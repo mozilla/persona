@@ -303,7 +303,11 @@ button::-moz-focus-inner, .button::-moz-focus-inner {
 /* Override all previously applied styles so that the button does not change
  * styles even if the user hovers, focuses or clicks on the button.
 */
-button[disabled], .submit_disabled button, .submit_disabled .button,
+button[disabled],
+button[disabled]:hover, .button[disabled]:hover,
+button[disabled]:focus, .button[disabled]:focus,
+button[disabled]:active, .button[disabled]:active,
+.submit_disabled button, .submit_disabled .button,
 .submit_disabled button:hover, .submit_disabled .button:hover,
 .submit_disabled button:focus, .submit_disabled .button:focus,
 .submit_disabled button:active, .submit_disabled .button:active {
@@ -320,7 +324,7 @@ button[disabled], .submit_disabled button, .submit_disabled .button,
   text-shadow: 0 1px #444, 0 0 2px #555;
   -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
   opacity: .5;
-  border-bottom: 1px solid #777;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .submit_disabled .submit button, .submit_disabled .submit .button,
@@ -335,7 +339,6 @@ button[disabled], .submit_disabled button, .submit_disabled .button,
     background-image: url("/common/i/button-loader.gif#iefix"),       -o-linear-gradient(top, #4eb5e5, #3196cf);
     background-image: url("/common/i/button-loader.gif#iefix"),          linear-gradient(top, #4eb5e5, #3196cf);
     background-position: 95% center;
-    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
 button.negative {

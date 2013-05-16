@@ -33,7 +33,8 @@
       TRANSITION_TO_SECONDARY_LABEL = "#authentication_form .label.transition_to_secondary",
       PASSWORD_LABEL = "#authentication_form .label.password_state",
       IDP_SELECTOR = "#authentication_form .authentication_idp_name",
-      AUTHENTICATION_CLASS = "authentication";
+      AUTHENTICATION_CLASS = "authentication",
+      CONTINUE_BUTTON_SELECTOR = ".continue";
 
 
   function reset() {
@@ -462,6 +463,24 @@
     });
 
     controller.transitionNoPassword(start);
+  });
+
+  test("emailChange - submit button disabled if there is no input",
+      function() {
+    // start off with nothing
+    $(EMAIL_SELECTOR).val("");
+    controller.emailChange();
+    ok($(CONTINUE_BUTTON_SELECTOR).attr("disabled"));
+
+    // type a char
+    $(EMAIL_SELECTOR).val("t");
+    controller.emailChange();
+    ok( ! $(CONTINUE_BUTTON_SELECTOR).attr("disabled"));
+
+    // delete the char.
+    $(EMAIL_SELECTOR).val("");
+    controller.emailChange();
+    ok($(CONTINUE_BUTTON_SELECTOR).attr("disabled"));
   });
 
 }());
