@@ -34,11 +34,11 @@
                     <ul class="inputs">
 
                         <li>
-                            <label for="authentication_email" class="isDesktopStart"></label>
+                            <label for="authentication_email" class="isDesktopOrStart"></label>
                             <span class="label email_state"><%= gettext('Enter your email address') %></span>
                             <span class="label transition_to_secondary"><%- format(gettext('%(idp)s no longer allows you to log into Persona with your %(idp)s password. You must now use your existing Persona password to log in with this email address.'), { idp: '<strong class="authentication_idp_name"></strong>'}) %></span>
                             <span class="label password_state"><%= gettext('Now enter your Persona password.') %></span>
-                            <input id="authentication_email" class="isDesktopStart" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
+                            <input id="authentication_email" class="isDesktopOrStart" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
 
                             <div id="email_format" class="tooltip" for="authentication_email">
                               <%= gettext('This field must be an email address.') %>
@@ -85,7 +85,7 @@
                     </p>
 
 
-                    <p class="submit tospp cf isDesktopStart">
+                    <p class="submit tospp cf isDesktopOrStart">
                        <%- format(gettext("By proceeding, you agree to %(site)s's <a %(terms)s>Terms</a> and <a %(privacy)s>Privacy Policy</a>."),
                                   { site: "Persona",
                                     terms:
@@ -95,29 +95,25 @@
                     </p>
 
                     <p class="submit cf buttonrow">
-                      <button class="isStart isAddressInfo "><%= gettext('next') %></button>
 
-                      <span class="isStart isAddressInfo right">
-                        <a href="#" class="isMobile cancelDialog">
-                          <%= gettext('cancel') %>
-                        </a>
-                      </span>
+                      <button class="isStart isAddressInfo"><%= gettext('next') %></button>
+
+                      <a href="#" class="isMobile isStart isAddressInfo cancelDialog">
+                        <%= gettext('cancel') %>
+                      </a>
 
                       <button class="isReturning">
                         <%= gettext('sign in') %>
                       </button>
 
-                      <span class="isReturning right">
-                        <a href="#" class="isMobile cancelPassword">
-                          <%= gettext('cancel') %>
-                        </a>
-                      </span>
+                      <a href="#" class="isMobile isReturning cancelPassword">
+                        <%= gettext('cancel') %>
+                      </a>
 
-                      <span class="submit cf isReturning">
-                        <a class="isDesktop forgotPassword" href="#">
-                          <%= gettext('Forgot your password?') %>
-                        </a>
-                      </span>
+                      <a class="isDesktop isReturning forgotPassword left" href="#">
+                        <%= gettext('Forgot your password?') %>
+                      </a>
+
                     </p>
 
 

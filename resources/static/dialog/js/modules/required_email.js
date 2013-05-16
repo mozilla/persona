@@ -15,6 +15,7 @@ BrowserID.Modules.RequiredEmail = (function() {
       auth_level,
       primaryInfo,
       secondaryAuth,
+      CANCEL_SELECTOR = "#cancel",
       FORGOT_PASSWORD_SELECTOR = ".forgotPassword";
 
   function closePrimaryUser(callback) {
@@ -231,7 +232,7 @@ BrowserID.Modules.RequiredEmail = (function() {
         self.click("#sign_in", signIn);
         self.click("#verify_address", verifyAddress);
         self.click(FORGOT_PASSWORD_SELECTOR, forgotPassword);
-        self.click("#cancel", cancel);
+        self.click(CANCEL_SELECTOR, cancel);
       }
 
       RequiredEmail.sc.start.call(self, options);
