@@ -225,6 +225,13 @@
     visibility: hidden;
     display: block;
     height: 0;
+    /* hidden items still take up their natural width in the DOM, which can
+     * cause some funkiness if there is a really long email address. Long
+     * addresses cause the set password input boxes to be wider than the
+     * screen. See issue #3409
+     */
+    width: 0;
+    overflow: hidden;
   }
 
   /**
