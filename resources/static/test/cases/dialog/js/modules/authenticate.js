@@ -290,6 +290,18 @@
   });
 
 
+  asyncTest("checkEmail leaves no traces - all inputs re-enabled when complete",
+      function() {
+    $(EMAIL_SELECTOR).val("registered@testuser.com");
+
+    controller.checkEmail(null, function() {
+      equal($("body").hasClass("submit_disabled"), false);
+      equal(typeof $("#authentication_email").attr("disabled"), "undefined");
+
+      start();
+    });
+  });
+
 
   asyncTest("clear password if user changes email address", function() {
     xhr.useResult("known_secondary");

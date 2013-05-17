@@ -18,6 +18,7 @@ BrowserID.Modules.Authenticate = (function() {
       addressInfo,
       hints = ["returning","start","addressInfo"],
       DISABLED_ATTRIBUTE = "disabled",
+      SUBMIT_DISABLED_CLASS = "submit_disabled",
       CONTENTS_SELECTOR = "#formWrap .contents",
       AUTH_FORM_SELECTOR = "#authentication_form",
       EMAIL_SELECTOR = "#authentication_email",
@@ -77,7 +78,7 @@ BrowserID.Modules.Authenticate = (function() {
     if (!email) return;
 
     dom.setAttr(EMAIL_SELECTOR, DISABLED_ATTRIBUTE, DISABLED_ATTRIBUTE);
-    dom.addClass(BODY_SELECTOR, "submit_disabled");
+    dom.addClass(BODY_SELECTOR, SUBMIT_DISABLED_CLASS);
     if (info && info.type) {
       onAddressInfo(info);
     }
@@ -94,6 +95,7 @@ BrowserID.Modules.Authenticate = (function() {
     function onAddressInfo(info) {
       addressInfo = info;
       dom.removeAttr(EMAIL_SELECTOR, DISABLED_ATTRIBUTE);
+      dom.removeClass(BODY_SELECTOR, SUBMIT_DISABLED_CLASS);
 
       self.hideLoad();
 
