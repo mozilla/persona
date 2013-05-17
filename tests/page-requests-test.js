@@ -26,8 +26,8 @@ start_stop.addStartupBatches(suite);
 suite.addBatch({
   'GET /':                       respondsWith(200),
   'GET /about':                  respondsWith(200),
-  'GET /tos':                    respondsWith(200),
-  'GET /privacy':                respondsWith(200),
+  'GET /en/tos':                 respondsWith(200),
+  'GET /en/privacy':             respondsWith(200),
   'GET /verify_email_address':   respondsWith(200),
   'GET /add_email_address':      respondsWith(200),
   'GET /confirm':                respondsWith(200),
