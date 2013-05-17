@@ -172,6 +172,7 @@ $(function() {
         module = bid.about.create();
         module.start({});
       }
+      // TODO /en/tos
       else if (path === "/tos" || path === "/privacy") {
         // do nothing.  This prevents "unknown path" from being displayed to the
         // user.
