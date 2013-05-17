@@ -82,6 +82,9 @@
   "connect-fonts": {
     "0.0.9-alpha8": "3d4c983e5b93a8a0e7793e9ef606c4f8413d113f"
   },
+  "connect-fonts-feurasans": {
+    "0.0.2": "7ae4b9e9062177959e29b9bafb70fee21f295a5d"
+  },
   "connect-fonts-opensans": {
     "0.0.3-beta1": "3a48105408514e7ef9fc2f4d1c784be0e102e744"
   },

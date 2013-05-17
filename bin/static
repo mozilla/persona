@@ -14,7 +14,8 @@ http = require('http'),
 urlparse = require('urlparse'),
 express = require('express'),
 connect_fonts = require('connect-fonts'),
-connect_fonts_opensans = require('connect-fonts-opensans');
+connect_fonts_opensans = require('connect-fonts-opensans'),
+connect_fonts_feurasans = require('connect-fonts-feurasans');
 
 const
 assets = require('../lib/static_resources').all,
@@ -94,7 +95,7 @@ var static_root = path.join(__dirname, "..", "resources", "static");
 config.performSubstitution(app);
 
 var font_middleware = connect_fonts.setup({
-  fonts: [ connect_fonts_opensans ],
+  fonts: [ connect_fonts_opensans, connect_fonts_feurasans ],
   allow_origin: config.get('public_url'),
   ua: 'all'
 });

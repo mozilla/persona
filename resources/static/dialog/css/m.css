@@ -21,12 +21,20 @@
 
   /* Remove background image gradients set in style.css which cause
    * horizontal lines to appear while the dialog is loading.
+   * Set the default font to Feura Sans
    */
   body {
     height: 100%;
     background: #eff0f2 none;
+    font-family: 'Feura Sans', 'Open Sans', 'Lucida Sans', 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif;
   }
 
+  /**
+   * Get rid of the OpenSans letter-spacing.
+   */
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: normal;
+  }
 
   header, footer, .persona_intro {
     display: none;

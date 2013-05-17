@@ -9,10 +9,11 @@ uglifycss = require('uglifycss'),
 mkdirp = require('mkdirp'),
 connect_fonts = require('connect-fonts'),
 connect_fonts_opensans = require('connect-fonts-opensans'),
+connect_fonts_feurasans = require('connect-fonts-feurasans'),
 path = require('path');
 
 var font_middleware = connect_fonts.setup({
-  fonts: [ connect_fonts_opensans ],
+  fonts: [ connect_fonts_opensans, connect_fonts_feurasans ],
   "allow-origin": config.get('public_url')
 });
 
