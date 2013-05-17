@@ -13,6 +13,7 @@ train-2013.05.08:
   * Require a password reset when too many failed password attempts are made: #2656
   * Don't reset sessions to ephemeral duration after email verification: #3336
   * (hotfix 2013.05.14) verifier parameters for forceIssuer and allowUnverified now have an experimental_ prefix
+  * (hotfix 2013.05.15) Fix for users who are unable to sign out: issue #3386, #3398
 
 train-2013.04.26:
   * up to 25% performance improvement on mobile (delayed loading of crypto code): #3060, #3287
