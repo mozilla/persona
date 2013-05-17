@@ -60,15 +60,13 @@ BrowserID.Modules.Authenticate = (function() {
   function initialState(info) {
     /*jshint validthis: true*/
     var self=this;
-    self.submit = checkEmail;
     if (hasPassword.call(self, info)) {
       addressInfo = info;
       enterPasswordState.call(self, info.ready);
     }
     else {
       showHint("start");
-      enterEmailState.call(self);
-      complete(info.ready);
+      enterEmailState.call(self, info.ready);
     }
   }
 
@@ -208,10 +206,15 @@ BrowserID.Modules.Authenticate = (function() {
     complete(callback);
   }
 
-  function enterEmailState() {
+  function enterEmailState(done) {
     /*jshint validthis: true*/
     var self=this;
     addressInfo = null;
+
+    // If we are already in the enterEmailState, skip out or else we mess with
+    // auto-completion.
+    if (self.submit === checkEmail) return;
+    self.submit = checkEmail;
 
     // If we are signing in to the Persona main site, do not show
     // the Persona intro that says "<site> uses Persona to sign you in!"
@@ -219,18 +222,12 @@ BrowserID.Modules.Authenticate = (function() {
       dom.hide(PERSONA_INTRO_SELECTOR);
     }
 
-    // If we are already in the enterEmailState, skip out or else we mess with
-    // auto-completion.
-    if (self.submit === checkEmail) return;
+    dom.setInner(AUTHENTICATION_LABEL, dom.getInner(EMAIL_LABEL));
+    showHint("start");
+    dom.focus(EMAIL_SELECTOR);
+    self.publish("enter_email");
 
-    if (!dom.is(EMAIL_SELECTOR, ":disabled")) {
-      self.publish("enter_email");
-      dom.setInner(AUTHENTICATION_LABEL, dom.getInner(EMAIL_LABEL));
-      self.submit = checkEmail;
-      showHint("start");
-      dom.focus(EMAIL_SELECTOR);
-    }
-
+    complete(done);
   }
 
   function enterPasswordState(callback) {
