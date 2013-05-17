@@ -329,7 +329,12 @@ BrowserID.DOM = ( function() {
           if ( el.is( ':visible' ) && el.is( ':enabled' ) ) {
             // IE8 is difficult. Sometimes a new element cannot be
             // programatically focused if the old element is not first blurred.
-            jQuery( ':focus' ).blur();
+            // IE8 is doubly difficult because the default element that is
+            // focused is the body. If you blur the body, it puts a dialog
+            // behind its parent window.
+            if (! jQuery( ':focus' ).is("body")) {
+              jQuery( ':focus' ).blur();
+            }
 
             el.focus();
           }
