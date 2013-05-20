@@ -412,7 +412,11 @@ background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAApCAYA
     color: #fff;
   }
 
-  #error .buttonrow {
+  #error .buttonrow,
+  /**
+   * Yuck, can't we collapse lightbox, #error and .black somehow?
+   */
+  .lightbox .buttonrow {
     background-color: #3a3a3a;
     padding: 20px 25px;
     position: fixed;
@@ -421,7 +425,8 @@ background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAApCAYA
     right: 0;
   }
 
-  #error .buttonrow button {
+  #error .buttonrow button,
+  .lightbox .buttonrow button {
     color: #414343;
     text-shadow: 1px 1px #fff;
     background: #30bed9;
@@ -580,10 +585,10 @@ background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAApCAYA
   }
 
   /**
-   * The margins are too large on the desktop lightbox.
+   * In mobile, the ligthbox shows its OK button at the bottom of the screen.
    */
   .lightbox {
-    padding: 45px 5px 5px 5px;
+    padding: 5px 5px 80px 5px;
   }
 }
 

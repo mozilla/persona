@@ -4,7 +4,7 @@
 
 
 <div id="tosppmodal" class="lightbox">
-  <a href="#" class="close">Close</a>
+  <a href="#" class="close isDesktop"><%= gettext("Close") %></a>
     <!--
     Travis-CI uses PhantomJS 1.8.1 which contains a crash bug when appending
     and removing an iframe. The Phantom bug is tracked at:
@@ -19,5 +19,8 @@
   <% } else { %>
     <iframe class="contents" id="tosppframe" name="tosppframe" sandbox security="restricted"></iframe>
   <% } %>
+  <p class="submit cf buttonrow isMobile">
+    <button href="#"><%= gettext("OK") %></button>
+  </p>
 </div>
 
