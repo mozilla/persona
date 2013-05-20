@@ -7,7 +7,9 @@
   var controller,
       bid = BrowserID,
       InlineTosPp = bid.Modules.InlineTosPp,
-      testHelpers = bid.TestHelpers;
+      WindowMock = bid.Mocks.WindowMock,
+      testHelpers = bid.TestHelpers,
+      TOSPP_URL = "https://login.persona.org/privacy";
 
   function createController(options) {
     options = options || {};
@@ -38,14 +40,41 @@
     }
   });
 
-  asyncTest("can create and show", function() {
+  // Simulate opening new windows in a normal browser.
+  asyncTest("window.open opens new window - show tos/pp in new window",
+      function() {
+
+    var winMock = new WindowMock({
+      suppressOpen: false
+    });
+
     createController({
+      window: winMock,
       ready: function() {
-        var url = "https://login.persona.org/privacy";
-        controller.show(url);
+        controller.show(TOSPP_URL);
+        equal($("#tosppmodal:visible").length, 0);
+
+        equal(winMock.open_url, TOSPP_URL);
+
+        start();
+      }
+    });
+  });
+
+  // Simulate FirefoxOS where new windows cannot be opened.
+  asyncTest("window.open does not open new window - show tos/pp in iframe",
+      function() {
+    var winMock = new WindowMock({
+      suppressOpen: true
+    });
+
+    createController({
+      window: winMock,
+      ready: function() {
+        controller.show(TOSPP_URL);
         equal($("#tosppmodal:visible").length, 1);
 
-        equal($("#tosppframe").attr('src'), url);
+        equal($("#tosppframe").attr('src'), TOSPP_URL);
 
         controller.close();
         equal($("#tosppmodal:visible").length, 0);
