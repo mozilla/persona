@@ -156,10 +156,25 @@
   }
 
   input[type=email],
-  input[type=password] {
+  input[type=password],
+  input[type=text] {
     font-size: 17px;
-    padding: 11px 5px;
+    padding: 9px 5px;
     border-radius: 5px;
+    border: 1px solid #e3e3e3;
+    box-shadow: 0 0 1px 1px #e3e3e3;
+  }
+
+  /**
+   * Android ICS (2.3.*) has an issue where the background image dissappears
+   * when the user clicks in the input box. See
+   * http://code.google.com/p/android/issues/detail?id=24746
+   */
+  #authentication_email {
+background-image: url(data:image/png;base64,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);
+    background-repeat: no-repeat;
+    background-position: left center;
+    padding-left: 60px;
   }
 
   /**
@@ -168,6 +183,38 @@
    */
   .buttonrow > button, .buttonrow > a {
     min-width: 50%;
+  }
+
+  /**
+   * Do not show the placeholder text for the authentication email input box on
+   * mobile devices.
+   */
+  #authentication_email::-webkit-input-placeholder {
+    color: transparent;
+  }
+
+  #authentication_email::-webkit-input-placeholder {
+    color: transparent;
+  }
+
+  /** Newer firefox */
+  #authentication_email::-moz-placeholder {
+    color: transparent;
+  }
+
+  /** Older firefox */
+  #authentication_email:-moz-placeholder {
+    color: transparent;
+  }
+
+  /** IE10+ */
+  #authentication_email:-ms-input-placeholder {
+    color: transparent;
+  }
+
+  /** Standards browsers */
+  #authentication_email::input-placeholder {
+    color: transparent;
   }
 
   /**
