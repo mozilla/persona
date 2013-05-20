@@ -580,14 +580,6 @@ background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAApCAYA
   }
 
   /**
-   * Chrome for Android 4.2.2 shows a completely white screen because of the
-   * keyframe animations on the loading spinner. Sorry mobile webkit.
-   */
-  .loadingSpinner {
-    -webkit-animation-name: none;
-  }
-
-  /**
    * The margins are too large on the desktop lightbox.
    */
   .lightbox {
