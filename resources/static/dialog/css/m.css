@@ -449,6 +449,19 @@ background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAApCAYA
     padding: 8px 0;
   }
 
+  /**
+   * Put a nice little persona icon next to an email address if there is only
+   * one address.
+   */
+  #emailList > li:only-child > label {
+    background-image: url('/dialog/i/email_input_blurred_bg.png');
+    background-repeat: no-repeat;
+    background-position: center left;
+    padding: 4px 0 4px 40px;
+    border-radius: 2px;
+    background-size: auto 100%;
+  }
+
   /*
    * The button row should always be against the bottom border of the
    * dialog. Get rid of its margin.
