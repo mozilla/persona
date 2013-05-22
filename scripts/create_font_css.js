@@ -12,6 +12,7 @@ templates = require('../lib/templates'),
 cachify = require('connect-cachify'),
 connect_fonts = require('connect-fonts'),
 connect_fonts_opensans = require('connect-fonts-opensans'),
+connect_fonts_feurasans = require('connect-fonts-feurasans'),
 config = require('../lib/configuration'),
 mkdirp = require('mkdirp');
 
@@ -19,7 +20,7 @@ var dir = process.cwd();
 var output_dir = process.env.BUILD_DIR || dir;
 
 connect_fonts.setup({
-  fonts: [ connect_fonts_opensans ],
+  fonts: [ connect_fonts_opensans, connect_fonts_feurasans ],
   "allow-origin": config.get('public_url')
 });
 

@@ -39,7 +39,8 @@
         "validator": "0.4.9",
         "winston": "0.6.2",
         "connect-fonts": "0.0.9-alpha8",
-        "connect-fonts-opensans": "0.0.3-beta1"
+        "connect-fonts-opensans": "0.0.3-beta1",
+        "connect-fonts-feurasans": "0.0.2"
     },
     "optionalDependencies": {
         "node-statsd": "https://github.com/downloads/lloyd/node-statsd/0509f85.tgz"
