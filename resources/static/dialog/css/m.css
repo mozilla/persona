@@ -171,9 +171,10 @@
    * http://code.google.com/p/android/issues/detail?id=24746
    */
   #authentication_email {
-    background-image: url('/dialog/i/email_input_blurred_bg.png');
+    background-image: url('/dialog/i/persona_watermark.png');
+    background-size: auto 100%;
     background-repeat: no-repeat;
-    background-position: left center;
+    background-position: left top;
     padding-left: 60px;
   }
 
@@ -455,7 +456,7 @@
    */
   #emailList > li > label,
   #emailList > li:only-child > label.selected {
-    background-image: url('/dialog/i/email_input_blurred_bg.png');
+    background-image: url('/dialog/i/persona_watermark.png');
     background-repeat: no-repeat;
     background-position: center left;
     padding: 4px 0 4px 40px;
@@ -469,7 +470,7 @@
    * address.
    */
   #emailList > li > label.selected {
-    background-image: url('/dialog/i/email_input_blurred_selected_bg.png');
+    background-image: url('/dialog/i/persona_watermark_dark.png');
   }
 
   #emailList > li input[type=radio] {
