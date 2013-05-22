@@ -61,17 +61,6 @@
     border-radius: 3px;
   }
 
-  .buttonrow a {
-    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 1px 0 rgba(0, 0, 0, 0.2);
-    background-color: #4eb5e5;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#4eb5e5), to(#3196cf));
-    background-image: -webkit-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image:    -moz-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image:      -ms-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image:       -o-linear-gradient(top, #4eb5e5, #3196cf);
-    background-image:          linear-gradient(top, #4eb5e5, #3196cf);
-  }
-
   button, .submit button {
     background: #30bed9;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#00caf2), to(#00aacc));
@@ -117,7 +106,7 @@
    * overhaul.
    */
   .buttonrow a {
-    background-color: #ededed;
+    background-color: #fcfcfb;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#fcfcfb), to(#d8d9d8)));
     background-image: -webkit-linear-gradient(top, #fcfcfb, #d8d9d8);
     background-image:    -moz-linear-gradient(top, #fcfcfb, #d8d9d8);
