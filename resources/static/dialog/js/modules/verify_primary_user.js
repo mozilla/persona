@@ -30,7 +30,10 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     // set up some information about what we're doing
     win.sessionStorage.primaryVerificationFlow = JSON.stringify({
       add: add,
-      email: email
+      email: email,
+      // native is used when the user returns from the primary to prevent
+      // WinChan from establishing the postMessage channel.
+      native: win.document.location.hash === "#NATIVE"
     });
 
     var url = helpers.toURL(auth_url, { email: email });

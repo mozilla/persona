@@ -29,6 +29,7 @@ BrowserID.Modules.Development = (function() {
         this.click("#clearLocalStorage", clearLocalStorage);
         this.click("#clearEmailsForSites", clearEmailsForSites);
         this.click("#forceIsThisYourComputer", forceIsThisYourComputer);
+        this.click("#redirectTo", redirectTo);
         this.click("#closeDevelopment", close);
       }
 
@@ -94,6 +95,15 @@ BrowserID.Modules.Development = (function() {
 
   function forceIsThisYourComputer() {
     storage.usersComputer.forceAsk(user.userid());
+  }
+
+  function redirectTo() {
+    var href = dom.getInner("#siteToRedirectTo");
+
+    if (href) {
+      bid.module.stopAll();
+      document.location = href;
+    }
   }
 
   function close() {

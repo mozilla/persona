@@ -620,3 +620,7 @@ footer .help {
 #development li a {
   color: #fff;
 }
+
+#development input[type=text] {
+  padding: 3px 5px;
+}
