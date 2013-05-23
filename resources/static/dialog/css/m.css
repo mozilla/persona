@@ -476,11 +476,10 @@
    */
   #emailList > li > label,
   #emailList > li:only-child > label.selected {
-    background-image: url('/dialog/i/persona_watermark.png');
+    background-image: url('/dialog/i/persona_watermark_sm.png');
     background-repeat: no-repeat;
     background-position: center left;
     padding: 4px 0 4px 40px;
-    background-size: auto 100%;
     margin: 5px 0;
   }
 
@@ -489,7 +488,7 @@
    * address.
    */
   #emailList > li > label.selected {
-    background-image: url('/dialog/i/persona_watermark_dark.png');
+    background-image: url('/dialog/i/persona_watermark_dark_sm.png');
   }
 
   #emailList > li input[type=radio] {
