@@ -125,6 +125,20 @@ BrowserID.Modules.PickEmail = (function() {
     }
   }
 
+  /**
+   * When an email address is selected on mobile layouts, the Persona icon
+   * color needs updated to indicate which address is currently selected.
+   */
+  function onEmailSelect(event) {
+    var id = dom.getAttr(event.target, 'id');
+    selectEmailByElementId(id);
+  }
+
+  function selectEmailByElementId(id) {
+    dom.removeClass("label.selected", "selected");
+    dom.addClass("label[for=" + id + "]", "selected");
+  }
+
   function notMe() {
     /*jshint validthis: true*/
     this.publish("notme");
@@ -167,6 +181,8 @@ BrowserID.Modules.PickEmail = (function() {
       // is needed for the label handler so that the correct radio button is
       // selected.
       self.bind("#selectEmail label", "click", proxyEventToInput);
+      self.bind("#selectEmail input[type=radio]", "click", onEmailSelect);
+
       self.click(NOT_ME_SELECTOR, notMe);
 
       sc.start.call(self, options);

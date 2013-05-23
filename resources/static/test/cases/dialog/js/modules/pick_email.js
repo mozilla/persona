@@ -27,6 +27,12 @@
   }
 
 
+  function testLabelForRadioButtonHasSelectedClass(radioButton, msg) {
+    // label must also have the "selected" class
+    var id = $(radioButton).attr("id");
+    ok($("label[for=" + id + "]").hasClass("selected"));
+  }
+
   module("dialog/js/modules/pick_email", {
     setup: function() {
       testHelpers.setup();
@@ -80,6 +86,7 @@
     var radioButton = $("input[type=radio]").eq(0);
     testElementChecked(radioButton, "the email address we specified is checked");
     testElementFocused(radioButton, "checked element is focused");
+    testLabelForRadioButtonHasSelectedClass(radioButton);
 
     var label = $("label[for=" + radioButton.attr("id") + "]");
     ok(label.hasClass("preselected"), "the label has the preselected class");
@@ -159,15 +166,17 @@
 
     createController();
 
-    testElementNotChecked("#mail_1", "radio button is not selected before click.");
+    testElementNotChecked("#email_1", "radio button is not selected before click.");
 
     // selects testuser@testuser.com
     $(".inputs label:eq(1)").trigger("click");
     testElementChecked("#email_1", "radio button is correctly selected after click");
+    testLabelForRadioButtonHasSelectedClass("#email_1");
 
     // selects testuser2@testuser.com
     $(".inputs label:eq(0)").trigger("click");
     testElementChecked("#email_0", "radio button is correctly selected after click");
+    testLabelForRadioButtonHasSelectedClass("#email_0");
   });
 
   test("click on an email label that contains a + - select corresponding radio button", function() {
@@ -181,10 +190,12 @@
     // selects testuser+test1@testuser.com
     $(".inputs label:eq(1)").trigger("click");
     testElementChecked("#email_1", "radio button is correctly selected after click");
+    testLabelForRadioButtonHasSelectedClass("#email_1");
 
     // selects testuser+test0@testuser.com
     $(".inputs label:eq(0)").trigger("click");
     testElementChecked("#email_0", "radio button is correctly selected after click");
+    testLabelForRadioButtonHasSelectedClass("#email_0");
   });
 
   asyncTest("click on not me button - trigger notme message", function() {

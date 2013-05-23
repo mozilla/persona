@@ -424,9 +424,6 @@ div#required_email {
 #emailList > li > label {
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-#emailList > li > label {
     padding: 3px 1px;
     white-space: nowrap;
 }
