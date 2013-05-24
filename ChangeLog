@@ -1,4 +1,22 @@
-current train:
+train-2013.05.22:
+  * fix persona in ActiveX-based browsing environments: #3383
+  * performance improvement: prefetch resources in communication iframe: #3273
+  * test fixes: #3389, #3385, #3411, #3424
+  * ui improvements:
+    * make spinners spin: #3394, #3342
+    * fix error/wait/delay screen transparent background: #3393
+    * improved spinner styling: #3404, #3349
+    * set password input width fix: #3409
+    * buttons use available space: #3407
+    * TOS/PP display fixes: #3413
+    * fix white screen when clicking through invalid verification links: #3362
+    * many general UI improvements for mobile: #3410
+    * focus email address input on dialog startup: #3424
+    * ensure buttons are re-enabled when appropriate: #3431
+    * change mobile font to Feura Sans: #3430
+  * fix users unable to sign out: #3386
+  * detect when dialog closes even if on a IdP's page: #1773
+  * IE8 no longer buries dialog: #3423
 
 train-2013.05.08:
   * SCHEMA CHANGE: the user table gained an integer field: auth
