@@ -17,11 +17,13 @@ BrowserID.Modules.InlineTosPp = (function() {
       TOSPP_CLOSE_SELECTOR = "#tosppmodal",
       TOSPP_IFRAME = "#tosppframe",
       IFRAME_PARENT_SELECTOR = "body",
+      win,
       sc;
 
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       options = options || {};
+      win = options.window || window;
 
       var self=this;
 
@@ -56,6 +58,21 @@ BrowserID.Modules.InlineTosPp = (function() {
   function showTOSPP(url) {
     /*jshint validthis:true*/
     var self=this;
+
+    /*
+     * Because of the hell that is cross-browser iframe support and scrolling,
+     * we are going to avoid all of those rendering issues by only opening the
+     * TOS/PP in an iframe IFF the device *DOES NOT SUPPORT* window.open. At
+     * the time of writing this code, this is only FirefoxOS. FirefoxOS does
+     * the right thing with respect to scrolling.
+     */
+    if (win.open) {
+      // A reference to the new window will be returned if the environment can
+      // open one. If there is no reference, window.opened failed and the
+      // TOS/PP should be shown in an iframe.
+      var winRef = win.open(url);
+      if (winRef) return;
+    }
 
     if (!self._tospp) {
       self._tospp = renderer.append(IFRAME_PARENT_SELECTOR, "inline_tospp", {

@@ -11,13 +11,33 @@ BrowserID.Mocks.WindowMock = (function() {
     };
   }
 
-  function WindowMock() {
+  function WindowMock(options) {
+    options = options || {};
+
     this.document = new DocumentMock();
+    if (options.href) {
+      this.document.location.href = options.href;
+    }
+
+    if (options.hash) {
+      this.document.location.hash = options.hash;
+    }
+
     this.sessionStorage = {};
+
+    this.suppressOpen = options.suppressOpen || false;
   }
+
   WindowMock.prototype = {
     open: function(url, name, options) {
+      if (this.suppressOpen) return;
+
       this.open_url = url;
+
+      return new WindowMock({
+        suppressOpen: this.suppressOpen,
+        href: url
+      });
     }
   };
 
