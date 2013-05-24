@@ -1,5 +1,3 @@
-/*global BrowserID _ $ test ok equal asyncTest start */
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -19,11 +17,11 @@
       modules = bid.Modules;
 
   function createController(options) {
-    controller = modules.UpgradeVerifyPrimaryUser.create();
+    controller = modules.VerifyPrimaryUser.create();
     controller.start(options || {});
   }
 
-  module("dialog/js/modules/upgrade_verify_primary_user", {
+  module("dialog/js/modules/verify_primary_user", {
     setup: function() {
       testHelpers.setup();
       win = new WindowMock();
@@ -42,25 +40,29 @@
     }
   });
 
-  test("Render dialog", function() {
+  asyncTest("Render dialog", function() {
     // siteName and idpName are escaped when they come into the system. The
     // values do not need to be escaped again. See issue #3173
     var siteName = _.escape("a / b");
     var idpName = "testuser.com";
 
+    xhr.useResult("primaryTransition");
+
     createController({
-      email: 'transitioningS2P@testuser.com',
-      auth_url: 'https://testuser.com/auth',
+      email: 'registered@testuser.com',
       siteName: siteName,
       idpName: idpName,
-      mtype: 'upgrade'
-    });
-    var copy = $('#upgrade_to_primary').html();
-    ok(!!copy && copy.length > 0, "We have some copy");
-    ok(copy.indexOf('redirect you to testuser.com') > -1, "idPName shows up");
+      ready: function() {
+        var copy = $('#upgrade_to_primary').html();
+        ok(!!copy && copy.length > 0, "We have some copy");
+        ok(copy.indexOf('redirect you to testuser.com') > -1,
+            "idPName shows up");
 
-    // If there is double escaping going on, the indexOf will all fail.
-    equal(copy.indexOf(_.escape(siteName)), -1);
+        // If there is double escaping going on, the indexOf will all fail.
+        equal(copy.indexOf(_.escape(siteName)), -1);
+        start();
+      }
+    });
   });
 
   asyncTest("siteName and idpName are only escaped once", function() {
@@ -77,7 +79,6 @@
       window: win,
       add: false,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
       ready: function ready() {
         var description = $(".description").html();
         // If there is double escaping going on, the indexOfs will all fail.
@@ -85,8 +86,7 @@
         equal(description.indexOf(_.escape(siteName)), -1);
         equal($("#postVerify").html().indexOf(_.escape(siteName)), -1);
         start();
-      },
-      mtype: 'verify'
+      }
     });
 
   });
@@ -99,7 +99,6 @@
       window: win,
       add: false,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
       ready: function ready() {
         mediator.subscribe("primary_user_authenticating", function() {
           messageTriggered = true;
@@ -110,12 +109,12 @@
         win.document.location.hash = "#NATIVE";
 
         controller.submit(function() {
-          equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com");
-          equal(messageTriggered, true, "primary_user_authenticating triggered");
+          equal(win.document.location,
+              "https://auth_url?email=unregistered%40testuser.com");
+          equal(messageTriggered, true);
           start();
         });
-      },
-      mtype: 'verify'
+      }
     });
   });
 
@@ -126,17 +125,16 @@
       window: win,
       add: true,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
       ready: function ready() {
         // Also checking to make sure the NATIVE is stripped out.
         win.document.location.href = "sign_in";
         win.document.location.hash = "#NATIVE";
         controller.submit(function() {
-          equal(win.document.location, "http://testuser.com/sign_in?email=unregistered%40testuser.com");
+          equal(win.document.location,
+              "https://auth_url?email=unregistered%40testuser.com");
           start();
         });
-      },
-      mtype: 'verify'
+      }
     });
 
   });
@@ -146,7 +144,6 @@
       window: win,
       add: true,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
       ready: function ready() {
         var error;
         try {
@@ -158,8 +155,7 @@
 
         equal(typeof error, "undefined", "error is undefined");
         start();
-      },
-      mtype: 'verify'
+      }
     });
   });
 
@@ -168,7 +164,6 @@
       window: win,
       add: true,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
       ready: function ready() {
         testHelpers.register("cancel_state");
 
@@ -176,8 +171,7 @@
           equal(testHelpers.isTriggered("cancel_state"), true, "cancel_state is triggered");
           start();
         });
-      },
-      mtype: 'verify'
+      }
     });
   });
 
@@ -186,14 +180,12 @@
     createController({
       window: win,
       email: "unregistered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
       ready: function r() {
-        testElementExists("#verifyWithPrimary");
+        testElementExists(".verifyWithPrimary");
         var text = $(".form_section .description").text();
         ok(text.indexOf("Persona lets you use your") !== -1, "shows first-time transition message");
         start();
-      },
-      mtype: 'verify'
+      }
     });
   });
 
@@ -202,14 +194,17 @@
     createController({
       window: win,
       email: "registered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
       ready: function r() {
-        testElementExists("#verifyWithPrimary");
+        testElementExists(".verifyWithPrimary");
         var text = $(".form_section .description").text();
-        ok(text.indexOf("has been upgraded") !== -1, "shows upgraded transition message");
-        start();
-      },
-      mtype: 'verify'
+        ok(text.indexOf("has been upgraded") !== -1);
+
+        controller.submit(function() {
+          equal(win.document.location,
+              "https://auth_url?email=registered%40testuser.com");
+          start();
+        });
+      }
     });
   });
 
@@ -218,12 +213,10 @@
     createController({
       window: win,
       email: "registered@testuser.com",
-      auth_url: "http://testuser.com/sign_in",
       ready: function r() {
-        testElementNotExists("#verifyWithPrimary");
+        testElementNotExists(".verifyWithPrimary");
         start();
-      },
-      mtype: 'verify'
+      }
     });
   });
 

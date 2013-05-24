@@ -52,7 +52,7 @@ module.exports = {
     // the button you click on after typing and re-typing your password
     createUserButton: 'button#verify_user',
     returningUserButton: 'button.isReturning',
-    verifyWithPrimaryButton: 'button#verifyWithPrimary',
+    verifyWithPrimaryButton: 'button.isDesktop.verifyWithPrimary',
     postVerificationPasswordButton: 'button#sign_in',
     thisIsNotMe: '.thisIsNotMe',
     useNewEmail: 'a.useNewEmail',

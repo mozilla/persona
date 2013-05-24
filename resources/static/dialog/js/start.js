@@ -1,5 +1,3 @@
-/*global BrowserID */
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -47,8 +45,7 @@
       moduleManager.register("is_this_your_computer", modules.IsThisYourComputer);
       moduleManager.register("pick_email", modules.PickEmail);
       moduleManager.register("required_email", modules.RequiredEmail);
-      moduleManager.register("verify_primary_user", modules.UpgradeVerifyPrimaryUser);
-      moduleManager.register("upgrade_to_primary_user", modules.UpgradeVerifyPrimaryUser);
+      moduleManager.register("verify_primary_user", modules.VerifyPrimaryUser);
       moduleManager.register("provision_primary_user", modules.ProvisionPrimaryUser);
       moduleManager.register("primary_user_provisioned", modules.PrimaryUserProvisioned);
       moduleManager.register("primary_offline", modules.PrimaryOffline);

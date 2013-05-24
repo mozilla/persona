@@ -1,5 +1,3 @@
-/*global _ BrowserID */
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -167,15 +165,7 @@ BrowserID.Modules.Actions = (function() {
     },
 
     doVerifyPrimaryUser: function(info) {
-      startService("verify_primary_user", _.extend({
-        mtype: "verify"
-      }, info));
-    },
-
-    doUpgradeToPrimaryUser: function(info) {
-      startService("upgrade_to_primary_user", _.extend({
-        mtype: "upgrade"
-      }, info));
+      startService("verify_primary_user", info);
     },
 
     doCannotVerifyRequiredPrimary: function(info) {
