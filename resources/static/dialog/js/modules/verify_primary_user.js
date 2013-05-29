@@ -100,10 +100,13 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
 
         if (showsPrimaryTransition(info.state)) {
           renderForm.call(self);
-          return complete(options.ready);
+          complete(options.ready);
         }
-
-        self.submit(options.ready);
+        else {
+          // The user doesn't need to press any buttons, send them to the
+          // primary NOW.
+          self.submit(options.ready);
+        }
       }, self.getErrorDialog(errors.addressInfo));
     },
 
