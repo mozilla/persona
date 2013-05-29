@@ -690,52 +690,53 @@
     });
   });
 
-  test("new_user KPI not sent when user hits 'cancel' from set_password screen",
-      function() {
+
+  asyncTest("new_user KPI for new users", function() {
     mediator.subscribe("kpi_data", function(msg, info) {
-      ok(false, "unexpected kpi_data message");
+      equal(info.new_account, true);
+      start();
     });
 
+    // Sequence:
+    // 1. user types in unrecognized email address, is shown set password screen
+    // 2. user enters password
+    //
+    // Expect:
+    // kpi_data message with new_account: true
+    mediator.publish("new_user", { email: TEST_EMAIL });
+  });
+
+  asyncTest("new_user KPI for new FirefoxOS users", function() {
+    mediator.subscribe("kpi_data", function(msg, info) {
+      equal(info.new_account, true);
+      start();
+    });
+
+    // Sequence:
+    // 1. user types in unrecognized email address, is shown set password screen
+    // 2. user enters password
+    //
+    // Expect:
+    // kpi_data message with new_account: true
+    mediator.publish("new_fxaccount", { email: TEST_EMAIL });
+  });
+
+  asyncTest("new_user KPI set to `false` when user hits 'cancel' " +
+      "from set_password screen", function() {
     // Sequence:
     // 1. user types in unrecognized email address, is shown set password screen
     // 2. user clicks "cancel" button
     //
     // Expect:
-    // No kpi_data message
+    // kpi_data message with new_account: false
     mediator.publish("new_user", { email: TEST_EMAIL });
-    mediator.publish("cancel");
-  });
 
-  asyncTest("new_user KPI sent on password_set for new users", function() {
     mediator.subscribe("kpi_data", function(msg, info) {
-      equal(info.new_account, true);
+      equal(info.new_account, false);
       start();
     });
 
-    // Sequence:
-    // 1. user types in unrecognized email address, is shown set password screen
-    // 2. user enters password
-    //
-    // Expect:
-    // kpi_data message with new_user: true
-    mediator.publish("new_user", { email: TEST_EMAIL });
-    mediator.publish("password_set");
-  });
-
-  asyncTest("new_user KPI sent on password_set for new FirefoxOS users", function() {
-    mediator.subscribe("kpi_data", function(msg, info) {
-      equal(info.new_account, true);
-      start();
-    });
-
-    // Sequence:
-    // 1. user types in unrecognized email address, is shown set password screen
-    // 2. user enters password
-    //
-    // Expect:
-    // kpi_data message with new_user: true
-    mediator.publish("new_fxaccount", { email: TEST_EMAIL });
-    mediator.publish("password_set");
+    mediator.publish("cancel_state");
   });
 
 }());
