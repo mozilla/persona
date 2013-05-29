@@ -283,13 +283,6 @@ BrowserID.State = (function() {
 
     handleState("transition_to_secondary_confirmed", handleEmailConfirmed);
 
-    handleState("upgraded_primary_user", function (msg, info) {
-      user.usedAddressAsPrimary(info.email, function () {
-        info.state = 'known';
-        redirectToState("email_chosen", info);
-      }, info.complete);
-    });
-
     handleState("primary_user", function(msg, info) {
       self.addPrimaryUser = !!info.add;
       var email = self.email = info.email,
@@ -414,7 +407,10 @@ BrowserID.State = (function() {
           // point.
           redirectToState("email_valid_and_ready", info);
         } else if ("transition_to_primary" === info.state) {
-          startAction("doUpgradeToPrimaryUser", info);
+          // the user's account is being upgraded, we know they do not have
+          // a cert. They may be able to provision with their IdP, but we want
+          // them to see a nice message. Make them verify with their primary.
+          startAction("doVerifyPrimaryUser", info);
           complete(info.complete);
         }
         else {

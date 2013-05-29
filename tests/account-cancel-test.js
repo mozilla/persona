@@ -83,7 +83,9 @@ suite.addBatch({
       assert.strictEqual(r.headers['content-type'].indexOf('application/json'), 0);
     },
     "returns json string with { success: true }": function (err, r) {
-      assert.strictEqual(JSON.parse(r.body).success, true);
+      try {
+        assert.strictEqual(JSON.parse(r.body).success, true);
+      } catch (e) { assert.fail("Couldn't parse JSON: " + r.body); }
     },
   },
 });

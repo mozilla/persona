@@ -1,6 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 BrowserID.Modules.VerifyPrimaryUser = (function() {
   "use strict";
 
@@ -10,7 +11,6 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       add,
       email,
       auth_url,
-      dom = bid.DOM,
       user = bid.User,
       errors = bid.Errors,
       helpers = bid.Helpers,
@@ -18,9 +18,14 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       complete = helpers.complete,
       CANCEL_SELECTOR = ".cancel";
 
-  function verify(callback) {
+  function submit(callback) {
     /*jshint validthis:true*/
-    this.publish("primary_user_authenticating");
+    var self=this;
+
+    // user.usedAddressAsPrimary will be called when the user returns from
+    // the Identity Provider. Trying to call user.usedAddressAsPrimary now,
+    // if the user is not authenticated, results in an error.
+    self.publish("primary_user_authenticating");
 
     // set up some information about what we're doing
     win.sessionStorage.primaryVerificationFlow = JSON.stringify({
@@ -28,16 +33,15 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email: email
     });
 
-    var url = helpers.toURL(auth_url, {email: email});
-
+    var url = helpers.toURL(auth_url, { email: email });
     win.document.location = url;
-
     complete(callback);
   }
 
   function cancel(callback) {
     /*jshint validthis:true*/
     this.close("cancel_state");
+
     complete(callback);
   }
 
@@ -49,47 +53,64 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     return state === "unknown" || state === "transition_to_primary";
   }
 
+
+  function renderForm() {
+    /*jshint validthis: true*/
+    var self = this,
+        options = self.options,
+        // major assumption:
+        // both siteName and idpName are escaped before they make it here.
+        // siteName is escaped in dialog/js/modules/dialog.js
+        // idpName is escaped in common/js/user.js->addressInfo
+        view = {
+          email: options.email,
+          auth_url: auth_url,
+          requiredEmail: options.requiredEmail || false,
+          siteName: options.siteName,
+          idpName: options.idpName,
+          transition_to_primary: options.transition_to_primary
+        };
+
+    self.renderForm("verify_primary_user", view);
+
+    if (options.siteTOSPP) {
+      dialogHelpers.showRPTosPP.call(self);
+    }
+
+    self.click(CANCEL_SELECTOR, cancel);
+  }
+
   var Module = bid.Modules.PageModule.extend({
-    start: function(data) {
-      var self=this;
-      data = data || {};
+    start: function(options) {
+      var self = this;
+      options = options || {};
 
-      win = data.window || window;
-      add = data.add;
-      email = data.email;
-      auth_url = data.auth_url;
+      win = options.window || window;
+      add = options.add;
+      email = options.email;
 
-      // major assumption:
-      // both siteName and idpName are escaped before they make it here.
-      // siteName is escaped in dialog/js/modules/dialog.js
-      // idpName is escaped in common/js/user.js->addressInfo
-      user.addressInfo(email, function onSuccess(info) {
+      sc.start.call(self, options);
+
+      user.addressInfo(email, function(info) {
+        auth_url = info.auth;
+
+        if ("transition_to_primary" === info.state) {
+          options.transition_to_primary = true;
+        }
+
         if (showsPrimaryTransition(info.state)) {
-          self.renderForm("verify_primary_user", {
-            email: data.email,
-            auth_url: data.auth_url,
-            requiredEmail: data.requiredEmail || false,
-            siteName: data.siteName,
-            idpName: data.idpName,
-            transition_to_primary: info.state === "transition_to_primary"
-          });
-
-          if (data.siteTOSPP) {
-            dialogHelpers.showRPTosPP.call(self);
-          }
-
-          self.click(CANCEL_SELECTOR, cancel);
-          complete(data.ready);
-        } else {
-          verify.call(self, data.ready);
+          renderForm.call(self);
+          complete(options.ready);
+        }
+        else {
+          // The user doesn't need to press any buttons, send them to the
+          // primary NOW.
+          self.submit(options.ready);
         }
       }, self.getErrorDialog(errors.addressInfo));
-
-
-      sc.start.call(self, data);
     },
 
-    submit: verify
+    submit: submit
 
     // BEGIN TESTING API
     ,
@@ -98,7 +119,6 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
   });
 
   sc = Module.sc;
-
   return Module;
-}());
 
+}());

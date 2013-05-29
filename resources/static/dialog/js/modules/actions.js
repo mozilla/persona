@@ -1,6 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 BrowserID.Modules.Actions = (function() {
   "use strict";
 
@@ -167,10 +168,6 @@ BrowserID.Modules.Actions = (function() {
       startService("verify_primary_user", info);
     },
 
-    doUpgradeToPrimaryUser: function(info) {
-      startService("upgrade_to_primary_user", info);
-    },
-
     doCannotVerifyRequiredPrimary: function(info) {
       this.renderError("cannot_verify_required_email", info);
     },
@@ -197,6 +194,6 @@ BrowserID.Modules.Actions = (function() {
   });
 
   sc = Module.sc;
-
   return Module;
+
 }());
