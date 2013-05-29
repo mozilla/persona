@@ -210,10 +210,6 @@ BrowserID.State = (function() {
     handleState("new_user", function(msg, info) {
       self.newUserEmail = info.email;
 
-      // Add new_account to the KPIs *before* the staging occurs allows us to
-      // know when we are losing users due to the email verification.
-      mediator.publish("kpi_data", { new_account: true });
-
       startAction(false, "doSetPassword", info);
       complete(info.complete);
     });
@@ -247,6 +243,17 @@ BrowserID.State = (function() {
        * #1 is taken care of by newUserEmail, #2 by addEmailEmail, #3 by resetPasswordEmail,
        * #4 by transitionNoPassword and #5 by fxAccountEmail
        */
+
+      if (self.newUserEmail || self.newFxAccountEmail) {
+        // Add new_account to the KPIs *before* the staging occurs allows us to
+        // know when we are losing users due to the email verification.
+        //
+        // Only set the new_account KPI post password-set so that we users who
+        // type the wrong email address and press "cancel" on the set password
+        // screen are not counted as new users.
+        mediator.publish("kpi_data", { new_account: true });
+      }
+
       info = _.extend({ email: self.newUserEmail || self.addEmailEmail ||
                                self.resetPasswordEmail || self.transitionNoPassword ||
                                self.newFxAccountEmail}, info);

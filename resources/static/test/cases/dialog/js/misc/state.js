@@ -690,4 +690,52 @@
     });
   });
 
+  test("new_user KPI not sent when user hits 'cancel' from set_password screen",
+      function() {
+    mediator.subscribe("kpi_data", function(msg, info) {
+      ok(false, "unexpected kpi_data message");
+    });
+
+    // Sequence:
+    // 1. user types in unrecognized email address, is shown set password screen
+    // 2. user clicks "cancel" button
+    //
+    // Expect:
+    // No kpi_data message
+    mediator.publish("new_user", { email: TEST_EMAIL });
+    mediator.publish("cancel");
+  });
+
+  asyncTest("new_user KPI sent on password_set for new users", function() {
+    mediator.subscribe("kpi_data", function(msg, info) {
+      equal(info.new_account, true);
+      start();
+    });
+
+    // Sequence:
+    // 1. user types in unrecognized email address, is shown set password screen
+    // 2. user enters password
+    //
+    // Expect:
+    // kpi_data message with new_user: true
+    mediator.publish("new_user", { email: TEST_EMAIL });
+    mediator.publish("password_set");
+  });
+
+  asyncTest("new_user KPI sent on password_set for new FirefoxOS users", function() {
+    mediator.subscribe("kpi_data", function(msg, info) {
+      equal(info.new_account, true);
+      start();
+    });
+
+    // Sequence:
+    // 1. user types in unrecognized email address, is shown set password screen
+    // 2. user enters password
+    //
+    // Expect:
+    // kpi_data message with new_user: true
+    mediator.publish("new_fxaccount", { email: TEST_EMAIL });
+    mediator.publish("password_set");
+  });
+
 }());
