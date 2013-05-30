@@ -229,6 +229,10 @@ BrowserID.State = (function() {
     handleState("new_fxaccount", function(msg, info) {
       self.newFxAccountEmail = info.email;
 
+      // Add new_account to the KPIs *before* the staging occurs allows us to
+      // know when we are losing users due to the email verification.
+      mediator.publish("kpi_data", { new_account: true });
+
       info.fxaccount = true;
       startAction(false, "doSetPassword", info);
       complete(info.complete);
@@ -593,6 +597,12 @@ BrowserID.State = (function() {
     handleState("email_confirmed", handleEmailConfirmed);
 
     handleState("cancel_state", function(msg, info) {
+      if (self.newUserEmail || self.newFxAccountEmail) {
+        // If the user cancels from the set_password screen, they should not be
+        // counted as new users.
+        mediator.publish("kpi_data", { new_account: false });
+      }
+
       cancelState(info);
     });
 
