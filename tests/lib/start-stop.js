@@ -12,6 +12,10 @@ events = require('events'),
 config = require('../../lib/configuration.js'),
 db = require('../../lib/db.js');
 
+// at test completion, allow a moment for in-flight backend requests to finish
+// before shutting down the backend daemons. GH-3465.
+const DELAY_KILL_SIGINT_MS = 50;
+
 var proc = undefined;
 
 process.on('exit', function () {
@@ -131,8 +135,10 @@ exports.addRestartBatch = function(suite) {
     "stop the server": {
       topic: function() {
         var cb = this.callback;
-        proc.kill('SIGINT');
-        proc.on('exit', this.callback);
+        setTimeout(function() {
+          proc.kill('SIGINT');
+          proc.on('exit', cb);
+        }, DELAY_KILL_SIGINT_MS);
       },
       "stopped": function(x) {
         assert.strictEqual(x, 0);
@@ -166,8 +172,10 @@ exports.addShutdownBatches = function(suite) {
     "stop the server": {
       topic: function() {
         var cb = this.callback;
-        proc.kill('SIGINT');
-        proc.on('exit', this.callback);
+        setTimeout(function() {
+          proc.kill('SIGINT');
+          proc.on('exit', cb);
+        }, DELAY_KILL_SIGINT_MS);
       },
       "stopped": function(x) {
         assert.strictEqual(x, 0);
