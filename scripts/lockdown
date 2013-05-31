@@ -168,7 +168,8 @@ server.listen(process.env['LOCKDOWN_PORT'] || 0, '127.0.0.1', function() {
     env: {
       NPM_CONFIG_REGISTRY: 'http://127.0.0.1:' + boundPort,
       NPM_LOCKDOWN_RUNNING: "true",
-      PATH: process.env['PATH']
+      PATH: process.env['PATH'],
+      HOME: process.env['HOME']
     },
     cwd: process.cwd()
   }, function(e) {
