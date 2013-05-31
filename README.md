@@ -2,7 +2,7 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-This repository contains the core [Mozilla Persona][] services.
+This repository contains the core [Mozilla Persona][] services. 
 Persona is a login system based on the [BrowserID protocol][].
 
 To learn about using Persona on your site, check out [our documentation][Persona Docs] on MDN.
