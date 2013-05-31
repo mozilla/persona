@@ -16,13 +16,12 @@ db = require('../../lib/db.js');
 // before shutting down the backend daemons. GH-3465.
 const DELAY_KILL_SIGINT_MS = 50;
 
-var proc = undefined;
-
 process.on('exit', function () {
   if (proc) { proc.kill(); }
 });
 
-var nextTokenFunction = undefined;
+var proc;
+var nextTokenFunction;
 var tokenStack = [];
 
 exports.waitForToken = function(email, cb) {
