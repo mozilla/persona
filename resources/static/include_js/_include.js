@@ -324,12 +324,6 @@
       checkRenamed(options, "tosURL", "termsOfService");
       checkRenamed(options, "privacyURL", "privacyPolicy");
 
-      if (document.location.protocol !== "https:") {
-        warn("privacyPolicy and termsOfService are only allowed on https domains");
-        delete options.termsOfService;
-        delete options.privacyPolicy;
-      }
-
       if (options.termsOfService && !options.privacyPolicy) {
         warn("termsOfService ignored unless privacyPolicy also defined");
       }
