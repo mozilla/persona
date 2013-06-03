@@ -20,6 +20,7 @@ BrowserID.Models.InteractionData = (function() {
         'number_sites_signed_in',
         'number_sites_remembered',
         'orphaned',
+        'linking_id',
         'new_account',
         'email_type',
         'rp_api'
@@ -48,6 +49,17 @@ BrowserID.Models.InteractionData = (function() {
     stageCurrent();
 
     var interactionData = getInteractionData();
+
+    // If there is a linking_id, the user staged an email in the last dialog
+    // session but never verified the email. Associate this session and the
+    // previous session to see if the user completed verification. The back end
+    // will take care of any linking.
+    var guid = localStorage.getItem("linking_id");
+    if (guid) {
+      newData.linking_id = guid;
+      localStorage.removeItem("linking_id");
+    }
+
     interactionData.current = newData;
 
     setInteractionData(interactionData);
@@ -79,6 +91,75 @@ BrowserID.Models.InteractionData = (function() {
       setInteractionData(interactionData);
     }
   }
+
+  function publishCurrent(oncomplete) {
+    // If this is data set where the user has to verify, save a session
+    // ID into localStorage so that the next KPI set has the same session
+    // ID and can be linked on the back end.
+    if (currentNeedsGUID()) {
+      var guid = generateGUID();
+      var currentKPIs = getCurrent();
+      currentKPIs.linking_id = guid;
+      setCurrent(currentKPIs);
+
+      localStorage.setItem("linking_id", guid);
+    }
+
+    stageCurrent();
+    publishStaged(oncomplete);
+  }
+
+  function currentNeedsGUID() {
+    // search each set of event pairs. If the dialog is marked as orphaned AND
+    // if there is a staging event without a corresponding confirmation event,
+    // then a GUID is needed to link data sets on the back end.
+    // Do NOT generate a GUID if the dialog is not orphaned, even if there is
+    // a staging event, because the user could have started the staging
+    // event, backed up a step, and selected an email address.
+    var currentKPIs = getCurrent();
+    if (!(currentKPIs && currentKPIs.orphaned)) return false;
+
+    var events = currentKPIs && currentKPIs.event_stream;
+    var eventPairs = {
+      'user.user_staged': 'user.user_confirmed',
+      'user.email_staged': 'user.email_confirmed',
+      'user.reset_password_staged': 'user.reset_password_confirmed',
+      'user.reverify_email_staged': 'user.reverify_email_confirmed'
+    };
+    for (var stagingEvent in eventPairs) {
+      var verifyingEvent = eventPairs[stagingEvent];
+
+      if (hasEvent(events, stagingEvent) &&
+              ! hasEvent(events, verifyingEvent)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function generateGUID() {
+    // From http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+  }
+
+  function indexOfEvent(eventStream, eventName) {
+    if (eventStream) {
+      for(var event, i = 0; event = eventStream[i]; ++i) {
+        if(event[0] === eventName) return i;
+      }
+    }
+
+    return -1;
+  }
+
+  function hasEvent(eventStream, eventName) {
+    return indexOfEvent(eventStream, eventName) !== -1;
+  }
+
 
   function getStaged() {
     var interactionData = getInteractionData();
@@ -116,7 +197,7 @@ BrowserID.Models.InteractionData = (function() {
 
       network.sendInteractionData(filtered, function() {
         clearStaged();
-        complete(oncomplete, true);
+        complete(oncomplete, filtered);
       }, function(status) {
         // if the server returns a 413 error, (too much data posted), then
         // let's clear our local storage and move on.  This does mean we
@@ -161,6 +242,11 @@ BrowserID.Models.InteractionData = (function() {
      * @method stageCurrent
      */
     stageCurrent: stageCurrent,
+    /**
+     * Stage the current data and publish all data
+     * @method publishCurrent
+     */
+    publishCurrent: publishCurrent,
     /**
      * get all past saved interaction data (returned as a JSON array), excluding
      * the "current" data (that which is being collected now).

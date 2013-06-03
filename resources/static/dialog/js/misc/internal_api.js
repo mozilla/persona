@@ -12,7 +12,8 @@
       network = bid.Network,
       storage = bid.Storage,
       log = bid.Helpers.log,
-      moduleManager = bid.module;
+      moduleManager = bid.module,
+      interactionData = bid.Models.InteractionData;
 
   network.init();
   network.clearContext();
@@ -93,6 +94,15 @@
     }
 
     function complete(assertion) {
+      // The dialog has closed, so that we get results from users who
+      // only open the dialog a single time, send the KPIs immediately.
+      // Note, this does not take care of shimmed contexts. Shimmed contexts
+      // are taken care of in in communication_iframe/start.js. Errors
+      // sending the KPI data should not affect anything else.
+      try {
+        interactionData.publishCurrent();
+      } catch(e) {}
+
       assertion = assertionObjectToString(assertion);
       // If no assertion, give no reason why there was a failure.
       callback && callback(assertion || null);
@@ -110,7 +120,7 @@
       // available, there is not enough information to continue.
       var requiredEmail = options.requiredEmail || storage.site.get(origin, "email");
       if(requiredEmail) {
-        getSilent(origin, requiredEmail, callback);
+        getSilent(origin, requiredEmail, complete);
       }
       else {
         complete();
@@ -143,17 +153,6 @@
     controller.get(origin, options, complete, complete);
   }
 
-  function setOrigin(origin) {
-    user.setOrigin(origin);
-    // B2G and marketplace use special issuers that disable primaries. Go see
-    // if the current domain uses a special issuer, if it does, set the issuer
-    // in user.js.
-    var issuer = storage.site.get(user.getOrigin(), "issuer");
-    if (issuer) {
-      user.setIssuer(issuer);
-    }
-  }
-
   /*
    * Get an assertion without user interaction - internal use
    */
@@ -177,6 +176,18 @@
       }
     }, complete.curry(null));
   }
+
+  function setOrigin(origin) {
+    user.setOrigin(origin);
+    // B2G and marketplace use special issuers that disable primaries. Go see
+    // if the current domain uses a special issuer, if it does, set the issuer
+    // in user.js.
+    var issuer = storage.site.get(user.getOrigin(), "issuer");
+    if (issuer) {
+      user.setIssuer(issuer);
+    }
+  }
+
 
   /**
    * Log the user out of the current origin

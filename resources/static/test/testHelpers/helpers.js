@@ -431,6 +431,15 @@ BrowserID.TestHelpers = (function() {
         testInvalidPassword("password", "different_password");
       });
 
+    },
+
+    /**
+     * Test to see if a number is within the specified range. min and max are
+     * inclusive.
+     */
+    testNumberInRange: function(numToTest, min, max, msg) {
+      ok(numToTest >= min, msg || (numToTest + "is >= " + min));
+      ok(numToTest <= max, msg || (numToTest + " is <= " + max));
     }
   };
 

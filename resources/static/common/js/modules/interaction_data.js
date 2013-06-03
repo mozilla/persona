@@ -132,18 +132,7 @@ BrowserID.Modules.InteractionData = (function() {
     if(type === "function") return kpiInfo(msg, data);
   }
 
-  function onSessionContext(msg, result) {
-    /*jshint validthis: true */
-    var self=this;
-
-    // defend against onSessionContext being called multiple times
-    if (self.sessionContextHandled) return;
-    self.sessionContextHandled = true;
-
-    publishPreviousSession.call(self, result);
-  }
-
-  function publishPreviousSession(result) {
+  function publishCurrent(done) {
     /*jshint validthis: true */
     // Publish any outstanding data.  Unless this is a continuation, previous
     // session data must be published independently of whether the current
@@ -155,51 +144,24 @@ BrowserID.Modules.InteractionData = (function() {
 
     var self = this;
 
-    function onComplete() {
-      model.stageCurrent();
-      publishStored.call(self);
-      beginSampling.call(self, result.data_sample_rate, result.server_time);
-    }
+    model.publishCurrent(function(status) {
+      user.withContext(function(context) {
+        beginSampling.call(self, context);
 
-    // if we were orphaned last time, but user is now authenticated,
-    // lets see if their action end in success, and if so,
-    // remove the orphaned flag
-    //
-    // actions:
-    // - user_staged => is authenticated?
-    // - email_staged => email count is higher?
-    //
-    // See https://github.com/mozilla/browserid/issues/1827
-    var lastSessionsKPIs = model.getCurrent();
-    if (lastSessionsKPIs && lastSessionsKPIs.orphaned) {
-      var events = lastSessionsKPIs.event_stream || [];
-      if (hasEvent(events, MediatorToKPINameTable.user_staged)) {
-        user.checkAuthentication(function(auth) {
-          if (!!auth) {
-            lastSessionsKPIs.orphaned = false;
-            model.setCurrent(lastSessionsKPIs);
-          }
-          complete(onComplete);
-        });
-      } else if (hasEvent(events, MediatorToKPINameTable.email_staged)) {
-        if ((storage.getEmailCount() || 0) > (lastSessionsKPIs.number_emails || 0)) {
-          lastSessionsKPIs.orphaned = false;
-          model.setCurrent(lastSessionsKPIs);
-        }
-        complete(onComplete);
-      } else {
-        // oh well, an orphan it is
-        complete(onComplete);
-      }
-    } else {
-      // not an orphan, move along
-      complete(onComplete);
-    }
+        var msg = status ? "interaction_data_send_complete"
+                         : "interaction_data_send_error";
+        self.publish(msg);
+
+        complete(done, status);
+      });
+    });
   }
 
-  function beginSampling(dataSampleRate, serverTime) {
+  function beginSampling(context) {
     /*jshint validthis: true */
-    var self = this;
+    var self = this,
+        dataSampleRate = context.data_sample_rate,
+        serverTime = context.server_time;
 
     // set the sample rate as defined by the server.  It's a value
     // between 0..1, integer or float, and it specifies the percentage
@@ -249,19 +211,6 @@ BrowserID.Modules.InteractionData = (function() {
     self.initialEventStream = self.initialKPIs = null;
 
     self.samplesBeingStored = true;
-
-  }
-
-  function indexOfEvent(eventStream, eventName) {
-    for(var event, i = 0; event = eventStream[i]; ++i) {
-      if(event[0] === eventName) return i;
-    }
-
-    return -1;
-  }
-
-  function hasEvent(eventStream, eventName) {
-    return indexOfEvent(eventStream, eventName) !== -1;
   }
 
   function onKPIData(msg, kpiData) {
@@ -277,20 +226,6 @@ BrowserID.Modules.InteractionData = (function() {
       _.extend(currentData, kpiData);
       setCurrentKPIs.call(this, currentData);
     }
-  }
-
-  // At every load, after session_context returns, try to publish the previous
-  // data.  We have to wait until session_context completes so that we have
-  // a csrf token to send.
-  function publishStored(oncomplete) {
-    /*jshint validthis: true */
-    var self=this;
-
-    model.publishStaged(function(status) {
-      var msg = status ? "interaction_data_send_complete" : "interaction_data_send_error";
-      self.publish(msg);
-      complete(oncomplete, status);
-    });
   }
 
   function updateStartTime(newStartTime) {
@@ -413,7 +348,7 @@ BrowserID.Modules.InteractionData = (function() {
     }
   }
 
-  var Module = bid.Modules.PageModule.extend({
+  var Module = bid.Modules.Module.extend({
     start: function(options) {
       options = options || {};
 
@@ -452,26 +387,25 @@ BrowserID.Modules.InteractionData = (function() {
         }
       }
       else {
+        // publish any outstanding KPIs as soon as we start. Do not even wait
+        // for onSesisonContext.
         // Set a default start time. The default is overridden if the
         // "start_time" message is triggerred
         self.startTime = new Date();
 
-        // The initialEventStream is used to store events until onSessionContext
-        // is called.  Once onSessionContext is called and it is known whether
-        // the user's data will be saved, initialEventStream will either be
-        // discarded or added to the data set that is saved to localmodel.
+        // The initialEventStream is used to store events until session context
+        // is fetched. Once it is known whether the user's data will be saved,
+        // initialEventStream will either be discarded or made into the data
+        // set that is sent to the server.
         self.initialEventStream = [];
 
-        // the initialKPIs are used to store KPIs until onSessionContext is
-        // called.
+        // the initialKPIs are used to store KPIs until session context is
+        // fetched.
         self.initialKPIs = {};
 
         self.samplesBeingStored = false;
 
-        // whenever session_context is hit, let's hear about it so we can
-        // extract the information that's important to us (like, whether we
-        // should be running or not)
-        self.subscribe('context_info', onSessionContext);
+        publishCurrent.call(self);
       }
 
       // on all events, update event_stream
@@ -483,7 +417,7 @@ BrowserID.Modules.InteractionData = (function() {
     addEvent: addEvent,
     getCurrentKPIs: getCurrentKPIs,
     getCurrentEventStream: getCurrentEventStream,
-    publishStored: publishStored
+    publishCurrent: publishCurrent
 
     // BEGIN TEST API
     ,

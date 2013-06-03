@@ -44,8 +44,58 @@
           "overwriting current interaction data works");
   });
 
+  asyncTest("publishCurrent, non orphaned - " +
+                "publish current data without linking_id", function() {
+    model.push({ orphaned: false });
+    model.publishCurrent(function(postedData) {
+      ok(postedData, "data successfully posted");
+      equal(typeof postedData[0].linking_id, "undefined");
+
+      start();
+    });
+  });
+
+  asyncTest("publishCurrent, non orphaned with staging event - " +
+                "publish current data without linking_id", function() {
+    model.push({
+      orphaned: false,
+      event_stream: [[ "user.user_staged" ]]
+    });
+    model.publishCurrent(function(postedData) {
+      equal(typeof postedData[0].linking_id, "undefined");
+
+      start();
+    });
+  });
+
+  asyncTest("publishCurrent, orphaned without staging event - " +
+                "publish current data without linking_id", function() {
+    model.push({
+      orphaned: true,
+      event_stream: []
+    });
+
+    model.publishCurrent(function(postedData) {
+      equal(typeof postedData[0].linking_id, "undefined");
+
+      start();
+    });
+  });
+
+  asyncTest("publishCurrent, orphaned with staging event - " +
+                "publish current data with linking_id", function() {
+    model.push({
+      orphaned: true,
+      event_stream: [[ "user.user_staged" ]]
+    });
+    model.publishCurrent(function(postedData) {
+      ok(postedData[0].linking_id);
+
+      start();
+    });
+  });
+
   test("clearStaged clears staged interaction data but leaves current data unaffected", function() {
-    model.push({ lang: "foo" });
     model.push({ lang: "bar" });
     model.clearStaged();
     equal(model.getStaged().length, 0,
@@ -66,7 +116,7 @@
     equal(typeof model.getCurrent(), "undefined", "current data removed after being staged");
   });
 
-  asyncTest("publishStored - publish any staged data", function() {
+  asyncTest("publishStaged - publish any staged data", function() {
     // There is no currently staged data.
     model.publishStaged(function(status) {
       equal(status, false, "no data currently staged");
@@ -104,14 +154,11 @@
         model.stageCurrent();
 
         xhr.useResult("valid");
-        model.publishStaged(function(status) {
-          equal(true, status, "data successfully posted");
-          var request = xhr.getLastRequest('/wsapi/interaction_data'),
-              previousSessionsData = JSON.parse(request.data).data;
+        model.publishStaged(function(postedData) {
+          ok(postedData, "data successfully posted");
+          equal(postedData.length, 1, "sending correct result sets");
 
-          equal(previousSessionsData.length, 1, "sending correct result sets");
-
-          var mostRecentSessionData = previousSessionsData[0];
+          var mostRecentSessionData = postedData[0];
           testObjectValuesEqual(mostRecentSessionData, {
             event_stream: [],
             sample_rate: 1,
@@ -126,7 +173,8 @@
             rp_api: "watch_without_onready"
           });
 
-          testHelpers.testUndefined(mostRecentSessionData.local_timestamp, "non-whitelisted valued stripped");
+          testHelpers.testUndefined(mostRecentSessionData.local_timestamp,
+              "non-whitelisted valued stripped");
           start();
         });
       });
