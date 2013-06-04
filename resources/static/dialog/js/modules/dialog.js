@@ -44,6 +44,24 @@ BrowserID.Modules.Dialog = (function() {
       return;
     }
 
+    // returning from the primary verification flow, we were native before, we
+    // are native now. This prevents the UI from trying to establish a channel
+    // back to the RP.
+    if (win.sessionStorage.primaryVerificationFlow) {
+      try {
+        var info = JSON.parse(win.sessionStorage.primaryVerificationFlow);
+        if (info.native) return;
+      } catch(e) {
+        self.renderError("error", {
+          action: {
+            title: "error in sessionStorage",
+            message: "could not decode sessionStorage.primaryVerificationFlow: "
+                          + String(e)
+          }
+        });
+      }
+    }
+
     // next, we see if the caller intends to call native APIs
     if (hash === "#NATIVE" || hash === "#INTERNAL") {
       // don't do winchan, let it be.
@@ -303,7 +321,9 @@ BrowserID.Modules.Dialog = (function() {
         }
 
         if (hash.indexOf("#AUTH_RETURN") === 0) {
-          var primaryParams = JSON.parse(win.sessionStorage.primaryVerificationFlow);
+          var primaryParams =
+              JSON.parse(win.sessionStorage.primaryVerificationFlow);
+
           params.email = primaryParams.email;
           params.add = primaryParams.add;
           params.type = "primary";

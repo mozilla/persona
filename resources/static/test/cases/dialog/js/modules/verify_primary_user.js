@@ -112,6 +112,14 @@
           equal(win.document.location,
               "https://auth_url?email=unregistered%40testuser.com");
           equal(messageTriggered, true);
+          // make sure the data used when returning from the primary is as
+          // expected.
+          var dataUsedOnReturnFromPrimary =
+              JSON.parse(win.sessionStorage.primaryVerificationFlow);
+          equal(dataUsedOnReturnFromPrimary.native, true);
+          equal(dataUsedOnReturnFromPrimary.add, false);
+          equal(dataUsedOnReturnFromPrimary.email, "unregistered@testuser.com");
+
           start();
         });
       }
@@ -132,6 +140,14 @@
         controller.submit(function() {
           equal(win.document.location,
               "https://auth_url?email=unregistered%40testuser.com");
+
+          // make sure the data used when returning from the primary is as
+          // expected.
+          var dataUsedOnReturnFromPrimary =
+              JSON.parse(win.sessionStorage.primaryVerificationFlow);
+          equal(dataUsedOnReturnFromPrimary.native, true);
+          equal(dataUsedOnReturnFromPrimary.add, true);
+          equal(dataUsedOnReturnFromPrimary.email, "unregistered@testuser.com");
           start();
         });
       }
