@@ -17,6 +17,7 @@ train-2013.05.22:
   * fix users unable to sign out: #3386
   * detect when dialog closes even if on a IdP's page: #1773
   * IE8 no longer buries dialog: #3423
+  * (hotfix 2013.06.04) Re-allow http TOS/PP agreements: #3485, #3469
 
 train-2013.05.08:
   * SCHEMA CHANGE: the user table gained an integer field: auth
