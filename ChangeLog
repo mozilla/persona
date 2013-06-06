@@ -1,5 +1,16 @@
 current train:
 
+train-2013.06.05:
+  * Fix primary IdP support on FirefoxOS: #3461
+  * Allow firefoxos.persona.org & login.persona.org to force issuers: #3382
+  * Allow TOS/PP pages to be served over HTTP, not HTTPS: #3469
+  * Configure ephemeral instances to send KPI data to a kpiggybank server they can reach: #3471
+  * Updates to make persona compatible with node 0.10.x: #3482
+  * Fix typo in verify-assertion script: #3449
+  * Fix new_user KPI gathering for two scenarios: #3359, #3459
+    * namely, new FirefoxOS users and users who bail at the 'set password' step
+  * Refactor & simplify handling of primary users in dialog: #3184
+
 train-2013.05.22:
   * fix persona in ActiveX-based browsing environments: #3383
   * performance improvement: prefetch resources in communication iframe: #3273
