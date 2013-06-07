@@ -73,11 +73,13 @@
     }
 
     // this can be used to keep the footer text on one line, #3129.
+    // but let's set a sensible lower limit, #3426.
     function resizeFooterText(cb) {
       function shrinkFooter() {
         var footerText = $('#footerText');
-        if (footerText.width() < $('footer').width()) return;
-        var newFontSize = parseInt(footerText.css('fontSize'), 10) - 1 + 'px';
+        var footerFontSize = parseInt(footerText.css('fontSize'), 10);
+        if (footerFontSize < 10 || footerText.width() < $('footer').width()) return;
+        var newFontSize = footerFontSize - 1 + 'px';
         footerText.css('fontSize', newFontSize);
         setTimeout(shrinkFooter); // let UI loop run before measuring again
       }
