@@ -398,8 +398,11 @@
         if (!err && r && r.assertion) {
           try {
             if (observers.login) observers.login(r.assertion);
-          } catch(e) {
+          } catch(clientError) {
             // client's observer threw an exception
+            // help developers debug by logging the error
+            console.log(clientError);
+            throw clientError;
           }
         }
 
