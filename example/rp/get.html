@@ -8,7 +8,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
 <title>
-Persona Relying Party
+Persona Relying Party - navigator.id.get
 </title>
 <style type="text/css">
 
@@ -51,12 +51,12 @@ pre {
 <body>
 <div class="title">
   <h1>Persona Test Relying Party</h1>
-  <h2>navigator.id.watch</h2>
+  <h2>navigator.id.get</h2>
 </div>
 
 <div class="intro">
-  This is a RP for testing, it allows you to drive the
-  <tt>navigator.id.watch() &amp; navigator.id.request()</tt> calls manually to locally test Persona.  Looking to test <a href="/get.html">navigator.id.get</a>?
+  This is a RP for testing, it allows you to drive the <tt>navigator.id.get()</tt> call manually
+  to locally test Persona. Looking to test <a href="/">navigator.id.watch</a>?
 </div>
 
 <div class="specify">
@@ -74,51 +74,13 @@ pre {
     </li><li>
       <input type="checkbox" id="siteLogo">
       <label for="siteLogo">Supply Site Logo</label><br />
-    </li><li>
-      <input type="checkbox" id="returnTo">
-      <label for="returnTo">Supply returnTo</label><br />
-    </li><li>
-      <input type="checkbox" id="forceAuthentication">
-      <label for="forceAuthentication">Force Authentication</label><br />
-    </li><li>
-      <input type="checkbox" id="forceIssuer">
-      <label for="forceIssuer">Force Issuer to issuer.domain</label><br />
-    </li><li>
-      <input type="checkbox" id="allowUnverified">
-      <label for="allowUnverified">Allow Unverified</label><br />
     </li>
   </ul>
     <button class="assertion">Get an assertion</button>
-    <button class="logout">logout</button>
-</div>
-
-<div class="session">
-  <p><b>Care to simulate a session?</b></p>
-  <p>If you enter an email address or 'null' here, upon reload this value will
-     be passed to .watch() as the first parameter.  This lets you test things like
-     assertion generation suppression when the site and browser agree on who is logged in.
-  </p>
-  <input type="text" id="loggedInUser" width="80">
-  <button class="update_session">Update "session"</button>
 </div>
 
 <div class="loginEvents">
   <h2>logins</h2>
-  <pre> ... </pre>
-</div>
-
-<div class="logoutEvents">
-  <h2>logouts</h2>
-  <pre> ... </pre>
-</div>
-
-<div class="matchEvents">
-  <h2>matches</h2>
-  <pre> ... </pre>
-</div>
-
-<div class="readiness">
-  <h2>readiness</h2>
   <pre> ... </pre>
 </div>
 
@@ -168,61 +130,32 @@ function checkAssertion(assertion) {
   });
 };
 
-navigator.id.watch({
-  loggedInUser: (storage.loggedInUser === 'null') ? null : storage.loggedInUser,
-  onready: function () {
-    loggit("onready");
-    var txt = serial++ + ' navigator.id ready at ' + (new Date).toString();
-    $(".readiness > pre").text(txt);
-  },
-  onlogin: function (assertion) {
-    loggit("onlogin");
-    var txt = serial++ + ' got assertion at ' + (new Date).toString();
-    $(".loginEvents > pre").text(txt);
-
-    checkAssertion(assertion);
-
-    $(".specify button.assertion").removeAttr('disabled');
-  },
-  onlogout: function () {
-    loggit("onlogout");
-    var txt = serial++ + ' logout callback invoked at ' + (new Date).toString();
-    $(".logoutEvents > pre").text(txt);
-  },
-  onmatch: function() {
-    loggit("onmatch")
-    var txt = serial++ + ' match callback invoked at ' + (new Date).toString();
-    $(".matchEvents > pre").text(txt);
-  }
-});
-
 $(document).ready(function() {
   $(".specify button.assertion").click(function() {
     $(".specify button.assertion").attr('disabled', 'true');
 
-    navigator.id.request({
-      privacyPolicy: $('#privacyPolicy').attr('checked') ? "/privacy.html" : undefined,
-      termsOfService: $('#termsOfService').attr('checked') ? "/TOS.html" : undefined,
-      siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
-      siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined,
-      returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,
-      experimental_forceAuthentication: $('#forceAuthentication').attr('checked') ? true : false,
-      experimental_forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined,
-      experimental_allowUnverified: $('#allowUnverified').attr('checked') ? true : false,
-      oncancel: function() {
+    navigator.id.get(function(assertion) {
+      if (assertion) {
+      var txt = serial++ + ' got assertion at ' + (new Date).toString();
+      $(".loginEvents > pre").text(txt);
+
+      checkAssertion(assertion);
+
+      $(".specify button.assertion").removeAttr('disabled');
+      }
+      else {
         loggit("oncancel");
         $(".specify button.assertion").removeAttr('disabled');
       }
+    },
+    {
+      privacyPolicy: $('#privacyPolicy').attr('checked') ? "/privacy.html" : undefined,
+      termsOfService: $('#termsOfService').attr('checked') ? "/TOS.html" : undefined,
+      siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
+      siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined
     });
   });
 
-  $(".specify button.logout").click(function() { navigator.id.logout() });
-
-  $(".session button.update_session").click(function() {
-    storage.loggedInUser = $.trim($('#loggedInUser').val());
-    $(".session input").fadeOut(100).fadeIn(350);
-  });
-  $('#loggedInUser').val(storage.loggedInUser ? storage.loggedInUser : "");
 });
 
 </script>
