@@ -4,20 +4,20 @@
 //
 const platforms = {
   // Firefox
-  "win7_firefox_16": {
+  "win7_firefox_21": {
     platform:'Windows 2008',
     browserName:'firefox',
-    version:'16'
+    version:'21'
   },
-  "linux_firefox_16": {
+  "linux_firefox_21": {
     platform: 'Linux',
     browserName: 'firefox',
-    version: '16'
+    version: '21'
   },
-  "osx_firefox_14": {
+  "osx_firefox_21": {
     platform: 'Mac 10.6',
     browserName:'firefox',
-    version:'14'
+    version:'21'
   },
 
   // Chrome
@@ -51,10 +51,10 @@ const platforms = {
   },
 
   // Safari
-  "osx_safari_5": {
-    platform:'Mac 10.6',
+  "osx_safari_6": {
+    platform:'Mac 10.8',
     browserName: 'safari',
-    version:'5'
+    version:'6'
   }
 };
 
@@ -72,9 +72,9 @@ const defaultCapabilities = {
   'max-session': 180,
   // use newest available selenium-server version
   // necessary for IE9 to work, but a good idea generally
-  'selenium-version': '2.26.0'
+  'selenium-version': '2.32.0'
 };
 
 exports.platforms = platforms;
 exports.defaultCapabilities = defaultCapabilities;
-exports.defaultPlatform = "win7_firefox_16";
+exports.defaultPlatform = "win7_firefox_21";
