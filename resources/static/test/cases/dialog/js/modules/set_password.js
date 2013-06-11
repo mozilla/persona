@@ -93,7 +93,12 @@
     });
 
     controller.submit(function() {
-      testTooltipVisible();
+      // The only combination that does not show a tooltip is when there is
+      // a password but not a vpassword. See issue #3502.
+      // https://github.com/mozilla/browserid/issues/3502
+      if (!(password && !vpassword)) {
+        testTooltipVisible();
+      }
       start();
     });
   }
