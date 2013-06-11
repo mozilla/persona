@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0; width=device-width;">
+<title>
+Persona Relying Party - navigator.id.get
+</title>
+<style type="text/css">
+
+body { margin: auto; font: 13px/1.5 Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; }
+a:link, a:visited { font-style: italic; text-decoration: none; color: #008; }
+a:hover { border-bottom: 2px solid black ; }
+.title { font-weight: bold; text-align: center; margin: 1.5em auto 1.5em auto; }
+.title h1 { font-size: 2em; }
+.title h2 { font-size: 1.5em; }
+.intro { font-size: 1.2em;  }
+.specify, .session { font-size: 1.1em; padding-top: 2em; }
+body div { width: 600px; margin: auto; }
+
+pre {
+  font-family: 'lucida console', monaco, 'andale mono', 'bitstream vera sans mono', consolas, monospace;
+  border: 3px solid #666;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  padding: .5em;
+  margin: .5em;
+  color: #ccc;
+  background-color: #333;
+/*  white-space: pre;*/
+  font-size: .9em;
+  word-wrap: break-word;
+}
+
+.specify ul { padding-left: 0px; }
+.specify li { list-style: none; }
+
+@media screen and (max-width: 640px) {
+  .intro, .output, .step {
+    width: 90%;
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="title">
+  <h1>Persona Test Relying Party</h1>
+  <h2>navigator.id.get</h2>
+</div>
+
+<div class="intro">
+  This is a RP for testing, it allows you to drive the <tt>navigator.id.get()</tt> call manually
+  to locally test Persona. Looking to test <a href="/">navigator.id.watch</a>?
+</div>
+
+<div class="specify">
+  <p><b>What flavor of assertion would you like?</b></p>
+  <ul>
+    <li>
+      <input type="checkbox" id="privacyPolicy">
+      <label for="privacyPolicy">Supply a privacy policy</label>
+    </li><li>
+      <input type="checkbox" id="termsOfService">
+      <label for="termsOfService">Supply a ToS</label>
+    </li><li>
+      <input type="checkbox" id="siteName">
+      <label for="siteName">Supply Site Name</label><br />
+    </li><li>
+      <input type="checkbox" id="siteLogo">
+      <label for="siteLogo">Supply Site Logo</label><br />
+    </li>
+  </ul>
+    <button class="assertion">Get an assertion</button>
+</div>
+
+<div class="loginEvents">
+  <h2>logins</h2>
+  <pre> ... </pre>
+</div>
+
+</body>
+
+<script src="jquery-min.js"></script>
+<script src="https://login.persona.org/include.js"></script>
+<script>
+
+try {
+  var storage = localStorage;
+}
+catch(e) {
+  // Fx with cookies disabled with blow up when trying to access localStorage.
+  storage = {};
+}
+
+
+function loggit() {
+  try {
+    console.log.apply(console, arguments);
+  } catch(e) {}
+}
+
+var serial = 1;
+
+// a function to check an assertion against the server
+function checkAssertion(assertion) {
+  $.ajax({
+    url: "/process_assertion",
+    type: "post",
+    dataType: "json",
+    data: {
+      assertion: assertion,
+      audience: window.location.protocol + "//" + window.location.host
+    },
+    success: function(data, textStatus, jqXHR) {
+      var old = $(".loginEvents > pre").text() + "\n";
+      $(".loginEvents > pre").text(old + JSON.stringify(data, null, 4));
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      var resp = jqXHR.responseText ? JSON.parse(jqXHR.responseText) : errorThrown;
+      $(".loginEvents > pre").text(resp);
+    }
+  });
+};
+
+$(document).ready(function() {
+  $(".specify button.assertion").click(function() {
+    $(".specify button.assertion").attr('disabled', 'true');
+
+    navigator.id.get(function(assertion) {
+      if (assertion) {
+      var txt = serial++ + ' got assertion at ' + (new Date).toString();
+      $(".loginEvents > pre").text(txt);
+
+      checkAssertion(assertion);
+
+      $(".specify button.assertion").removeAttr('disabled');
+      }
+      else {
+        loggit("oncancel");
+        $(".specify button.assertion").removeAttr('disabled');
+      }
+    },
+    {
+      privacyPolicy: $('#privacyPolicy').attr('checked') ? "/privacy.html" : undefined,
+      termsOfService: $('#termsOfService').attr('checked') ? "/TOS.html" : undefined,
+      siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
+      siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined
+    });
+  });
+
+});
+
+</script>
+
+</html>

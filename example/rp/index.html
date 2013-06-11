@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
+<meta name="viewport" content="initial-scale=1.0; width=device-width;">
 <title>
 Persona Relying Party
 </title>
@@ -15,7 +15,9 @@ Persona Relying Party
 body { margin: auto; font: 13px/1.5 Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; }
 a:link, a:visited { font-style: italic; text-decoration: none; color: #008; }
 a:hover { border-bottom: 2px solid black ; }
-.title { font-size: 2em; font-weight: bold; text-align: center; margin: 1.5em auto 1.5em auto; }
+.title { font-weight: bold; text-align: center; margin: 1.5em auto 1.5em auto; }
+.title h1 { font-size: 2em; }
+.title h2 { font-size: 1.5em; }
 .intro { font-size: 1.2em;  }
 .specify, .session { font-size: 1.1em; padding-top: 2em; }
 body div { width: 600px; margin: auto; }
@@ -48,12 +50,13 @@ pre {
 </head>
 <body>
 <div class="title">
-  Persona Test Relying Party
+  <h1>Persona Test Relying Party</h1>
+  <h2>navigator.id.watch</h2>
 </div>
 
 <div class="intro">
-  This is a RP for testing, it allows you to drive the <tt>navigator.id.get()</tt> call manually
-  to locally test Persona.
+  This is a RP for testing, it allows you to drive the
+  <tt>navigator.id.watch() &amp; navigator.id.request()</tt> calls manually to locally test Persona.  Looking to test <a href="/get.html">navigator.id.get</a>?
 </div>
 
 <div class="specify">
