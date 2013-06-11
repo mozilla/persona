@@ -20,7 +20,13 @@ BrowserID.Modules.SetPassword = (function() {
         options = this.options,
         valid;
 
-    if (dom.is(PASSWORD_SELECTOR, ":focus") && pass && !vpass) {
+    // In FirefoxOS, when the user clicks on the keyboard, it causes the
+    // form fields to lose focus, meaning positive checks for focus will not
+    // match. If the user is not focused on the vpass field and there is
+    // a password but no vpassword, put them in the vpassword field without
+    // showing an error. See issue #3502
+    // - https://github.com/mozilla/browserid/issues/3502
+    if (!dom.is(VPASSWORD_SELECTOR, ":focus") && pass && !vpass) {
       // user is in the password field, hits enter and there is no vpass. User
       // should go to the vpass field without there being an error.
       valid = bid.Validation.newPassword(pass);
