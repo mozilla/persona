@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
+<meta name="viewport" content="initial-scale=1.0; width=device-width;">
 <title>
 Persona Relying Party - navigator.id.get
 </title>
@@ -115,9 +115,7 @@ function checkAssertion(assertion) {
     dataType: "json",
     data: {
       assertion: assertion,
-      audience: window.location.protocol + "//" + window.location.host,
-      forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined,
-      allowUnverified: $('#allowUnverified').attr('checked') ? true : false
+      audience: window.location.protocol + "//" + window.location.host
     },
     success: function(data, textStatus, jqXHR) {
       var old = $(".loginEvents > pre").text() + "\n";
