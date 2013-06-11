@@ -75,8 +75,10 @@
     tooltip.showTooltip("#longTooltip");
     var visibleTooltip = $(".tooltip:visible");
 
-    ok(parseInt(visibleTooltip.css('top')) > 0);
-    ok(parseInt(visibleTooltip.css('right')) < visibleTooltip.outerWidth());
+    var offset = visibleTooltip.offset();
+    ok(offset.top > 0);
+    ok((offset.left + visibleTooltip.outerWidth())
+        < $(window).innerWidth());
   });
 
 }());
