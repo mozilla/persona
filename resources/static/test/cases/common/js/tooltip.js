@@ -71,4 +71,14 @@
     testUndefined(err, "exception not thrown if tooltip element does not exist");
   });
 
+  test("constrain tooltip to screen", function() {
+    tooltip.showTooltip("#longTooltip");
+    var visibleTooltip = $(".tooltip:visible");
+
+    var offset = visibleTooltip.offset();
+    ok(offset.top > 0);
+    ok((offset.left + visibleTooltip.outerWidth())
+        < $(window).innerWidth());
+  });
+
 }());
