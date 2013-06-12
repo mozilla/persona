@@ -225,6 +225,13 @@ BrowserID.Modules.Dialog = (function() {
 
       user.setOrigin(origin_url);
 
+      // By default, a dialog is an orphan. It is only not an orphan if an
+      // assertion is generated. When an asseriton is generated, orphaned will
+      // be set to false (currently in state.js).
+      var kpis = {
+        orphaned: true
+      };
+
 
       if (startExternalDependencies) {
         var actions = startActions.call(self, success, error);
@@ -254,7 +261,7 @@ BrowserID.Modules.Dialog = (function() {
         if (rpAPI) {
           // throws if an invalid rp_api value
           validateRPAPI(rpAPI);
-          self.publish("kpi_data", { rp_api: rpAPI });
+          kpis.rp_api = rpAPI;
         }
 
         if (paramsFromRP.requiredEmail) {
@@ -356,6 +363,9 @@ BrowserID.Modules.Dialog = (function() {
       function start() {
         self.publish("start", params);
       }
+
+      // only publish the kpi's in aggregate.
+      self.publish("kpi_data", kpis);
 
       if (params.type === "primary" && !params.add) {
         // at this point, we will only have type of primary if we're

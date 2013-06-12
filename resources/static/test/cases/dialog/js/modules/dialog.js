@@ -577,6 +577,7 @@
       ready: function() {
         mediator.subscribe("kpi_data", function(msg, info) {
           equal(info.rp_api, "get");
+          equal(info.orphaned, true);
           start();
         });
 

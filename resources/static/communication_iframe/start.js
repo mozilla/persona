@@ -127,7 +127,18 @@
     // dialog/js/misc/internal_api.js. Errors sending the KPI data should not
     // affect anything else.
     try {
-      interactionData.publishCurrent();
+      var currentData = interactionData.getCurrent();
+      if (currentData) {
+        // set the last KPIs from the current state of the world.
+        _.extend(currentData, {
+          number_emails: storage.getEmailCount() || 0,
+          number_sites_signed_in: storage.loggedInCount() || 0,
+          number_sites_remembered: storage.site.count() || 0
+        });
+
+        interactionData.setCurrent(currentData);
+        interactionData.publishCurrent();
+      }
     } catch(e) {}
 
     // the dialog running can change authentication status,
