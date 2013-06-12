@@ -190,6 +190,7 @@
   },
   "lru-cache": {
     "1.0.6": "aa50f97047422ac72543bda177a9c9d018d98452",
+    "2.2.4": "6c658619becf14031d0d0b594b16042ce4dc063d",
     "2.3.0": "1cee12d5a9f28ed1ee37e9c332b8888e6b85412a"
   },
   "mailcomposer": {
@@ -224,7 +225,7 @@
     "0.6.0": "41e64712dbd947aa9d9f466b5c0b5ee020bbcbbb"
   },
   "node-statsd": {
-    "0.0.2": "*"
+    "0.0.2": "ba96c26d4ec22b4f9501bb332fdf740db5a40ee7"
   },
   "nodemailer": {
     "0.3.21": "d9637a1d585f36fd30362c3036ce0692656fe771"
@@ -344,6 +345,9 @@
   },
   "urlparse": {
     "0.0.1": "d171ec4681fcd0d8bd00b64345637d89a9700876"
+  },
+  "useragent": {
+    "2.0.3": "f62b5a939271182eb7fa56c3b60593b866e595ed"
   },
   "validator": {
     "0.4.9": "0f2421e35abe4321054383ed5cc154264a984a94"

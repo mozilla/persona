@@ -25,6 +25,7 @@ heartbeat = require('../lib/heartbeat.js'),
 logger = require('../lib/logging.js').logger,
 shutdown = require('../lib/shutdown'),
 primary = require('../lib/primary'),
+addP3PHeader = require('../lib/p3p.js'),
 forward = require('../lib/http_forward.js'),
 toobusy = require('../lib/busy_middleware.js');
 
@@ -94,6 +95,10 @@ if (config.get('scheme') == 'https') {
     next();
     });
 }
+
+// Add P3P headers to please IE8
+app.use(addP3PHeader);
+
 
 // #4 - prevent framing of everything.  content underneath that needs to be
 // framed must explicitly remove the x-frame-options
