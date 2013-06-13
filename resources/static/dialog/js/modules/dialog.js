@@ -50,7 +50,8 @@ BrowserID.Modules.Dialog = (function() {
     if (win.sessionStorage.primaryVerificationFlow) {
       try {
         var info = JSON.parse(win.sessionStorage.primaryVerificationFlow);
-        if (info.native) return;
+        /*jshint sub: true */
+        if (info['native']) return;
       } catch(e) {
         self.renderError("error", {
           action: {
