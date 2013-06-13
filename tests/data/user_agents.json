@@ -29060,6 +29060,12 @@
       "os": "Unknown",
       "browser": "MSIE",
       "version": 2
+    },
+    {
+      "ua": "Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0",
+      "os": "FirefoxOS",
+      "browser": "Firefox",
+      "version": 18
     }
   ]
 }
