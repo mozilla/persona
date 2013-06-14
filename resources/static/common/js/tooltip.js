@@ -8,7 +8,8 @@ BrowserID.Tooltip = (function() {
   var ANIMATION_TIME = 250,
       TOOLTIP_MIN_DISPLAY = 2000,
       TOOLTIP_OFFSET_TOP_PX = 5,
-      TOOLTIP_OFFSET_LEFT_PX = 10,
+      TOOLTIP_OFFSET_LEFT_PX = 0,
+      TOOLTIP_MARGIN_TO_SCREEN_EDGE_PX = 20,
       READ_WPM = 200,
       bid = BrowserID,
       dom = bid.DOM,
@@ -71,8 +72,21 @@ BrowserID.Tooltip = (function() {
   function anchorTooltip(tooltip, target) {
     target = $(target);
     var targetOffset = target.offset();
+
     targetOffset.top -= (tooltip.outerHeight() + TOOLTIP_OFFSET_TOP_PX);
+
+    // make sure the tooltip does not run off the top
+    if (targetOffset.top < TOOLTIP_MARGIN_TO_SCREEN_EDGE_PX)
+      targetOffset.top = TOOLTIP_MARGIN_TO_SCREEN_EDGE_PX;
+
     targetOffset.left += TOOLTIP_OFFSET_LEFT_PX;
+
+    // make sure the tooltip does not run off the right
+    var right = targetOffset.left + tooltip.outerWidth();
+    var rightLimit = $(window).innerWidth() - TOOLTIP_MARGIN_TO_SCREEN_EDGE_PX;
+    if (right > rightLimit) {
+      targetOffset.right = TOOLTIP_MARGIN_TO_SCREEN_EDGE_PX;
+    }
 
     tooltip.css(targetOffset);
   }
