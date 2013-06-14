@@ -10,6 +10,8 @@ BrowserID.Models.InteractionData = (function() {
       network = bid.Network,
       complete = bid.Helpers.complete,
       whitelistFilter = bid.Helpers.whitelistFilter,
+      SENT_ORPHAN_WITH_STAGE = "sent_orphan_with_stage",
+      STAGING_CONTINUATION = "staging_continuation",
       KPI_WHITELIST = [
         'event_stream',
         'lang',
@@ -20,7 +22,6 @@ BrowserID.Models.InteractionData = (function() {
         'number_sites_signed_in',
         'number_sites_remembered',
         'orphaned',
-        'linking_id',
         'new_account',
         'email_type',
         'rp_api'
@@ -50,14 +51,18 @@ BrowserID.Models.InteractionData = (function() {
 
     var interactionData = getInteractionData();
 
-    // If there is a linking_id, the user staged an email in the last dialog
-    // session but never verified the email. Associate this session and the
-    // previous session to see if the user completed verification. The back end
-    // will take care of any linking.
-    var guid = localStorage.getItem("linking_id");
-    if (guid) {
-      newData.linking_id = guid;
-      localStorage.removeItem("linking_id");
+    // If there is a sent_orphan_with_stage, the user staged an email in the
+    // last dialog session but never verified the email. Let the back end know
+    // so they can do rough calculations on how many of stagings were
+    // successfully completed.
+    if (localStorage.getItem(SENT_ORPHAN_WITH_STAGE)) {
+      localStorage.removeItem(SENT_ORPHAN_WITH_STAGE);
+
+      var events = newData.event_stream || [];
+      if (! hasEvent(events, STAGING_CONTINUATION)) {
+        events.unshift([STAGING_CONTINUATION, 0]);
+        newData.event_stream = events;
+      }
     }
 
     interactionData.current = newData;
@@ -96,24 +101,20 @@ BrowserID.Models.InteractionData = (function() {
     // If this is data set where the user has to verify, save a session
     // ID into localStorage so that the next KPI set has the same session
     // ID and can be linked on the back end.
-    if (currentNeedsGUID()) {
-      var guid = generateGUID();
-      var currentKPIs = getCurrent();
-      currentKPIs.linking_id = guid;
-      setCurrent(currentKPIs);
-
-      localStorage.setItem("linking_id", guid);
+    if (isSendingOrphanWithStagingEvent()) {
+      localStorage.setItem(SENT_ORPHAN_WITH_STAGE, true);
     }
 
     stageCurrent();
     publishStaged(oncomplete);
   }
 
-  function currentNeedsGUID() {
+  function isSendingOrphanWithStagingEvent() {
     // search each set of event pairs. If the dialog is marked as orphaned AND
     // if there is a staging event without a corresponding confirmation event,
-    // then a GUID is needed to link data sets on the back end.
-    // Do NOT generate a GUID if the dialog is not orphaned, even if there is
+    // then a marker is sent on the next session that says "hey, this is the
+    // first session following a staging event".
+    // Do NOT set the flag if the dialog is not orphaned, even if there is
     // a staging event, because the user could have started the staging
     // event, backed up a step, and selected an email address.
     var currentKPIs = getCurrent();
@@ -136,14 +137,6 @@ BrowserID.Models.InteractionData = (function() {
     }
 
     return false;
-  }
-
-  function generateGUID() {
-    // From http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
-        return v.toString(16);
-    });
   }
 
   function indexOfEvent(eventStream, eventName) {
@@ -268,7 +261,15 @@ BrowserID.Models.InteractionData = (function() {
      * collection.
      * @method clearStaged()
      */
-    clearStaged: clearStaged
+    clearStaged: clearStaged,
+
+    // BEGIN TESTING API
+    /**
+     * Check whether an event stream contains an event
+     * @method hasEvent
+     */
+    hasEvent: hasEvent
+    // END TESTING API
   };
 
 }());

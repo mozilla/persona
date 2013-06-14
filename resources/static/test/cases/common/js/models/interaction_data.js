@@ -44,55 +44,51 @@
           "overwriting current interaction data works");
   });
 
-  asyncTest("publishCurrent, non orphaned - " +
-                "publish current data without linking_id", function() {
+  asyncTest("publishCurrent publish current data", function() {
     model.push({ orphaned: false });
     model.publishCurrent(function(postedData) {
       ok(postedData, "data successfully posted");
-      equal(typeof postedData[0].linking_id, "undefined");
 
       start();
     });
   });
 
-  asyncTest("publishCurrent, non orphaned with staging event - " +
-                "publish current data without linking_id", function() {
-    model.push({
+  function testStagingContinuation(config, shouldHaveStagingContinuation) {
+    model.push(config);
+
+    model.publishCurrent(function() {
+      model.push({ event_stream: [] });
+
+      var eventStream = model.getCurrent().event_stream;
+      equal(model.hasEvent(eventStream, "staging_continuation"),
+          shouldHaveStagingContinuation);
+
+      start();
+    });
+  }
+
+  asyncTest("publishCurrent->push, non-orphaned with staging event - " +
+                "no staging_continuation", function() {
+    testStagingContinuation({
       orphaned: false,
       event_stream: [[ "user.user_staged" ]]
-    });
-    model.publishCurrent(function(postedData) {
-      equal(typeof postedData[0].linking_id, "undefined");
-
-      start();
-    });
+    }, false);
   });
 
-  asyncTest("publishCurrent, orphaned without staging event - " +
-                "publish current data without linking_id", function() {
-    model.push({
+  asyncTest("publishCurrent->push, orphaned without staging event - " +
+                "no staging_continuation", function() {
+    testStagingContinuation({
       orphaned: true,
       event_stream: []
-    });
-
-    model.publishCurrent(function(postedData) {
-      equal(typeof postedData[0].linking_id, "undefined");
-
-      start();
-    });
+    }, false);
   });
 
-  asyncTest("publishCurrent, orphaned with staging event - " +
-                "publish current data with linking_id", function() {
-    model.push({
+  asyncTest("publishCurrent->push, orphaned with staging event - " +
+                "with staging_continuation", function() {
+    testStagingContinuation({
       orphaned: true,
       event_stream: [[ "user.user_staged" ]]
-    });
-    model.publishCurrent(function(postedData) {
-      ok(postedData[0].linking_id);
-
-      start();
-    });
+    }, true);
   });
 
   test("clearStaged clears staged interaction data but leaves current data unaffected", function() {
