@@ -380,6 +380,11 @@
   });
 
   asyncTest("assertion_generated with null assertion - redirect to pick_email", function() {
+    mediator.subscribe("kpi_data", function() {
+      // kpi_data should not be called with a null assertion.
+      ok(false);
+    });
+
     mediator.subscribe("pick_email", function() {
       ok(true, "redirect to pick_email");
       start();
@@ -392,6 +397,13 @@
   test("assertion_generated with assertion - doAssertionGenerated called", function() {
     setContextInfo("password");
     storage.addEmail(TEST_EMAIL);
+
+    mediator.subscribe("kpi_data", function(msg, info) {
+      // woohoo! an assertion was generated and the dialog is no longer
+      // considered orphaned!
+      equal(info.orphaned, false);
+    });
+
     mediator.publish("assertion_generated", {
       assertion: "assertion"
     });
@@ -646,17 +658,6 @@
     });
   });
 
-
-  asyncTest("window_unload - set the final KPIs", function() {
-    mediator.subscribe("kpi_data", function(msg, data) {
-      testHelpers.testKeysInObject(data, [
-        'number_emails', 'number_sites_signed_in', 'number_sites_remembered', 'orphaned'
-      ]);
-      start();
-    });
-
-    mediator.publish("window_unload");
-  });
 
   function testAuthenticateSpecifiedEmail(specified, expected) {
     var options = {

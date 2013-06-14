@@ -167,18 +167,6 @@ BrowserID.State = (function() {
       startAction("doCancel");
     });
 
-    handleState("window_unload", function() {
-      // Round up final KPI stats as the user is leaving the dialog.  This
-      // ensures the final state is sent to the KPI stats.  Any new logins are
-      // counted, any new sites are counted, any new emails are included, etc.
-      mediator.publish("kpi_data", {
-        number_emails: storage.getEmailCount() || 0,
-        number_sites_signed_in: storage.loggedInCount() || 0,
-        number_sites_remembered: storage.site.count() || 0,
-        orphaned: !self.success
-     });
-    });
-
     handleState("authentication_checked", function(msg, info) {
       var authenticated = info.authenticated;
       if (authenticated) {
@@ -560,11 +548,15 @@ BrowserID.State = (function() {
     handleState("reset_password_staged", handleEmailStaged.curry("doConfirmResetPassword"));
 
     handleState("assertion_generated", function(msg, info) {
-      self.success = true;
       if (info.assertion !== null) {
+        self.success = true;
         storage.site.set(user.getOrigin(), "logged_in", self.email);
 
-        startAction("doAssertionGenerated", { assertion: info.assertion, email: self.email });
+        mediator.publish("kpi_data", { orphaned: false });
+        startAction("doAssertionGenerated", {
+          assertion: info.assertion,
+          email: self.email
+        });
       }
       else {
         redirectToState("pick_email");
