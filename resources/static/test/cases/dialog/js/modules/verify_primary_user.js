@@ -116,7 +116,7 @@
           // expected.
           var dataUsedOnReturnFromPrimary =
               JSON.parse(win.sessionStorage.primaryVerificationFlow);
-          equal(dataUsedOnReturnFromPrimary.native, true);
+          equal(dataUsedOnReturnFromPrimary['native'], true);
           equal(dataUsedOnReturnFromPrimary.add, false);
           equal(dataUsedOnReturnFromPrimary.email, "unregistered@testuser.com");
 
@@ -145,7 +145,7 @@
           // expected.
           var dataUsedOnReturnFromPrimary =
               JSON.parse(win.sessionStorage.primaryVerificationFlow);
-          equal(dataUsedOnReturnFromPrimary.native, true);
+          equal(dataUsedOnReturnFromPrimary['native'], true);
           equal(dataUsedOnReturnFromPrimary.add, true);
           equal(dataUsedOnReturnFromPrimary.email, "unregistered@testuser.com");
           start();
