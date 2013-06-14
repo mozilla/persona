@@ -116,39 +116,12 @@
     testHelpers.testTooltipVisible();
   });
 
-  asyncTest("signIn with a primary that has gone offline - trigger 'primary_offline' message", function() {
-    xhr.useResult("primaryOffline");
-    storage.addEmail("testuser@testuser.com", {cert: 'sdlkjfsdfj'});
-
-    testEmailSelected("testuser@testuser.com", "primary_offline");
-  });
-
-  asyncTest("signIn with address that has a cert - trigger 'email_chosen message'", function() {
+  asyncTest("signIn with email selected - trigger 'email_chosen message'", function() {
     storage.addEmail("testuser@testuser.com", {cert: 'sdlkjfsdfj'});
 
     testEmailSelected("testuser@testuser.com", "email_chosen");
   });
 
-  asyncTest("signIn with secondary address - trigger 'email_chosen message'", function() {
-    xhr.useResult("known_secondary");
-    storage.addEmail("testuser@testuser.com");
-
-    testEmailSelected("testuser@testuser.com", "email_chosen");
-  });
-
-  asyncTest("signIn with secondary address on account that just transitioned from a primary - trigger 'transition_no_password message'", function() {
-    xhr.useResult("secondaryTransitionPassword");
-    storage.addEmail("testuser@testuser.com");
-
-    testEmailSelected("testuser@testuser.com", "transition_no_password");
-  });
-
-  asyncTest("signIn with primary address without a cert - trigger 'primary_user message'", function() {
-    xhr.useResult("primary");
-    storage.addEmail("testuser@testuser.com");
-
-    testEmailSelected("testuser@testuser.com", "primary_user");
-  });
 
   asyncTest("addEmail triggers an 'add_email' message", function() {
     createController();

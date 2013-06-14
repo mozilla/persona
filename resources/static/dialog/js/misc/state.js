@@ -108,7 +108,15 @@ BrowserID.State = (function() {
         });
       }
       else {
-        redirectToState("email_chosen", { email: self.stagedEmail });
+        // if mustAuth has not come through, we can assume the user is already
+        // authenticated, and this address is verified. Generate an assertion.
+        // This was changed from calling email_chosen because email_chosen
+        // checks the state of the address on the backend. An email address
+        // that was in the transition_no_password state and then verified is
+        // put into the transition_to_secondary state until an assertion is
+        // generated. email_chosen sees transition_to_secondary and forces the
+        // user to enter their password. Not what we want.
+        redirectToState("email_valid_and_ready", { email: self.stagedEmail });
       }
     }
 
@@ -219,8 +227,23 @@ BrowserID.State = (function() {
     });
 
     handleState("transition_no_password", function(msg, info) {
-      self.transitionNoPassword = info.email;
-      info.transition_no_password = true;
+      // In this state, the user has an account that used to consist only of
+      // primary IdP addresses and the user has no password. One of the
+      // IdPs no longer takes care of certifying their users so the user must
+      // create a fallback IdP password.
+
+      // If we are using the default issuer, then this is a normal
+      // transitionNoPassword. If not using the default issuer, then this is
+      // a FirefoxOS account. The second branch should not be used unless
+      // Marketplace decides it is going to support primaries.
+      if (user.isDefaultIssuer()) {
+        self.transitionNoPassword = info.email;
+        info.transition_no_password = true;
+      }
+      else {
+        self.newFxAccountEmail = info.email;
+        info.fxaccount = true;
+      }
       startAction(false, "doSetPassword", info);
       complete(info.complete);
     });
@@ -387,95 +410,89 @@ BrowserID.State = (function() {
       var email = info.email,
           record = user.getStoredEmailKeypair(email);
 
+      if (!(record || info.allow_new_record)) {
+        throw new Error("invalid email");
+      }
+
       self.email = email;
 
       function oncomplete() {
         complete(info.complete);
       }
 
-      if (!record) {
-        throw new Error("invalid email");
-      }
+      /**
+       * Before continuing, we make the assumption that user->syncEmails has
+       * been called, the list of addresses is up to date, and any invalid
+       * certs have been removed in addressInfo.
+       */
+      user.resetCaches();
+      user.addressInfo(info.email, function(addressInfo) {
+        mediator.publish("kpi_data", { email_type: addressInfo.type });
 
-      mediator.publish("kpi_data", { email_type: info.type });
+        // the cert could have been cleared by the call to addressInfo. re-load
+        // the record info.
+        record = user.getStoredEmailKeypair(email);
 
-      if ('offline' === info.state) {
-        redirectToState("primary_offline", info);
-      }
-      else if (info.type === "primary") {
-
-        if (record.cert) {
-          // Email is a primary and the cert is available - the user can log
+        // XXX If the user has a cert, do we really care of the primary is
+        // offline? Shouldn't we just sign them in?
+        if ('offline' === addressInfo.state) {
+          redirectToState("primary_offline", addressInfo);
+        }
+        else if (record && record.cert) {
+          // Email is valid and the cert is available - the user can log
           // in without authenticating with the IdP. All invalid/expired
           // certs are assumed to have been checked and removed by this
-          // point.
-          redirectToState("email_valid_and_ready", info);
-        } else if ("transition_to_primary" === info.state) {
+          // point. cert checking/removal is done in user.addressInfo
+          redirectToState("email_valid_and_ready", addressInfo);
+        }
+        else if ("transition_to_primary" === addressInfo.state) {
           // the user's account is being upgraded, we know they do not have
           // a cert. They may be able to provision with their IdP, but we want
           // them to see a nice message. Make them verify with their primary.
-          startAction("doVerifyPrimaryUser", info);
-          complete(info.complete);
+          startAction("doVerifyPrimaryUser", addressInfo);
+          complete(addressInfo.complete);
         }
-        else {
+        else if (addressInfo.type === "primary") {
           // If the email is a primary and the cert is not available,
           // throw the user down the primary flow. The primary flow will
           // catch cases where the primary certificate is expired
           // and the user must re-verify with their IdP.
-          redirectToState("primary_user", info);
+          redirectToState("primary_user", addressInfo);
         }
-      }
-      else if (!user.isDefaultIssuer() && !record.cert) {
-        // TODO: Duplicates some of the logic in the authentication action module.
-        user.resetCaches();
-        user.addressInfo(info.email, function (serverInfo) {
-          // We'll end up in this state again, but we want to see serverInfo.state change
-          if (serverInfo.state === "transition_no_password") {
-            var newInfo = _.extend(info, { fxaccount: true });
-            self.newFxAccountEmail = info.email;
-            startAction(false, "doSetPassword", info);
-          } else {
-            redirectToState("email_valid_and_ready", info);
+        // everything below here is a secondary of some sort.
+        else if ("transition_to_secondary" === addressInfo.state) {
+          // user must authenticate with their password, kick them over to
+          // the required email screen to enter the password.
+          redirectToState("authenticate", addressInfo);
+          oncomplete();
+        }
+        else if ("transition_no_password" === addressInfo.state) {
+          redirectToState("transition_no_password", addressInfo);
+        }
+        else if ("unverified" === addressInfo.state && !self.allowUnverified) {
+          // user selected an unverified secondary email, kick them over to the
+          // verify screen.
+          redirectToState("stage_reverify_email", addressInfo);
+        }
+        else {
+          // Address is verified, check the authentication, if the user is not
+          // authenticated to the assertion level, force them to enter their
+          // password.
+          return user.checkAuthentication(function(authentication) {
+            if (authentication !== "password") {
+              // user must authenticate with their password, kick them over to
+              // the required email screen to enter the password.
+              redirectToState("authenticate_specified_email", addressInfo);
+            }
+            else {
+              redirectToState("email_valid_and_ready", addressInfo);
+            }
             oncomplete();
-          }
-        }, function () {
-          throw new Error('Unable to check with address info from email_chosen');
-        });
-      }
-      // Anything below this point means the address is a secondary.
-      else if ("transition_to_secondary" === info.state) {
-        startAction("doAuthenticate", info);
-      }
-      else if ("transition_no_password" === info.state) {
-        redirectToState("transition_no_password", info);
-      }
-      else if (info.state === 'unverified' && !self.allowUnverified) {
-        // user selected an unverified secondary email, kick them over to the
-        // verify screen.
-        redirectToState("stage_reverify_email", info);
-      }
-      else {
-        // make sure an unverified-certs are removed
-        if (record.unverified && info.state !== 'unverified') {
-          storage.invalidateEmail(email, user.getIssuer());
+          }, oncomplete);
         }
 
-
-        // Address is verified, check the authentication, if the user is not
-        // authenticated to the assertion level, force them to enter their
-        // password.
-        user.checkAuthentication(function(authentication) {
-          if (authentication === "assertion") {
-             // user must authenticate with their password, kick them over to
-            // the required email screen to enter the password.
-            redirectToState("authenticate_specified_email", info);
-          }
-          else {
-            redirectToState("email_valid_and_ready", info);
-            oncomplete();
-          }
-        }, oncomplete);
-      }
+        oncomplete();
+      });
     });
 
     handleState("stage_reverify_email", function(msg, info) {

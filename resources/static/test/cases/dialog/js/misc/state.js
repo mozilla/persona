@@ -94,9 +94,9 @@
     // There are two possibilities here, first, the user must authenticate. If
     // the user must authenticate, send them to the
     // authenticate_specified_email screen. If the user is already
-    // authenticated, call email_chosen so that an assertion is generated.
+    // authenticated, call email_valid_and_ready so that an assertion is generated.
 
-    var expectedMessage = mustAuth ? "authenticate_specified_email" : "email_chosen";
+    var expectedMessage = mustAuth ? "authenticate_specified_email" : "email_valid_and_ready";
     mediator.subscribe(expectedMessage, function(msg, info) {
       equal(info.email, TEST_EMAIL, expectedMessage + " triggered with the correct email");
       start();
@@ -501,30 +501,47 @@
     });
   });
 
-  test("email_chosen with secondary email, transition_to_secondary", function () {
+  asyncTest("email_chosen with secondary email, transition_to_secondary", function () {
     storage.addEmail(TEST_EMAIL);
+    xhr.useResult("secondaryTransition");
     mediator.publish("email_chosen", {
       email: TEST_EMAIL,
-      type: 'secondary',
-      state: 'transition_to_secondary'
+      complete: function() {
+        equal(actions.called.doAuthenticate, true, "doAuthenticate called");
+        start();
+      }
     });
-    equal(actions.called.doAuthenticate, true, "doAuthenticate called");
   });
 
-  test("email_chosen with secondary email, transition_no_password", function () {
+  asyncTest("email_chosen with secondary email, transition_no_password", function () {
     storage.addEmail(TEST_EMAIL);
+    xhr.useResult("secondaryTransitionPassword");
     mediator.publish("email_chosen", {
       email: TEST_EMAIL,
-      type: 'secondary',
-      state: 'transition_no_password'
+      complete: function() {
+        equal(actions.called.doSetPassword, true, "doSetPassword called");
+        mediator.publish("password_set");
+        testActionStarted("doStageTransitionToSecondary", {
+          email: TEST_EMAIL
+        });
+        start();
+      }
     });
-    equal(actions.called.doSetPassword, true, "doSetPassword called");
-    mediator.publish("password_set");
-    equal(actions.called.doStageTransitionToSecondary, true, "doStageTransitionToSecondary called");
   });
 
-  function testReverifyEmailChosen(auth_level, info) {
-    info = info || {};
+  asyncTest("email_chosen with secondary email that is transitioned to a primary, call doVerifyPrimaryUser", function () {
+    storage.addEmail(TEST_EMAIL);
+    xhr.useResult("primaryTransition");
+    mediator.publish("email_chosen", {
+      email: TEST_EMAIL,
+      complete: function() {
+        ok(actions.called.doVerifyPrimaryUser);
+        start();
+      }
+    });
+  });
+
+  function testReverifyEmailChosen(auth_level) {
     storage.addEmail(TEST_EMAIL);
     xhr.setContextInfo("auth_level", auth_level);
 
@@ -533,30 +550,49 @@
       start();
     });
 
-    mediator.publish("email_chosen", _.extend(info, {
+    xhr.useResult("unverified");
+    mediator.publish("email_chosen", {
       email: TEST_EMAIL
-    }));
+    });
   }
 
   asyncTest("email_chosen with unverified secondary email, user authenticated to secondary - redirect to stage_reverify_email", function() {
-    testReverifyEmailChosen("password", { type: "secondary", state: "unverified" });
+    testReverifyEmailChosen("password");
   });
 
   asyncTest("email_chosen with unverified secondary email, user authenticated to primary - redirect to stage_reverify_email", function() {
-    testReverifyEmailChosen("assertion", { type: "secondary", state: "unverified" });
+    testReverifyEmailChosen("assertion");
   });
 
-  test("email_chosen with primary email - call doProvisionPrimaryUser", function() {
+  asyncTest("email_chosen with online primary email - call doProvisionPrimaryUser", function() {
     // If the email is a primary, throw the user down the primary flow.
     // Doing so will catch cases where the primary certificate is expired
     // and the user must re-verify with their IdP. This flow will
     // generate its own assertion when ready.  For efficiency, we could
     // check here whether the cert is ready, but it is early days yet and
     // the format may change.
-    var email = TEST_EMAIL;
-    storage.addEmail(email);
-    mediator.publish("email_chosen", { email: email, type: "primary", issuer: "testuser.com", state: "known" });
-    equal(actions.called.doProvisionPrimaryUser, true, "doProvisionPrimaryUser called");
+    storage.addEmail(TEST_EMAIL);
+    xhr.useResult("primary");
+    mediator.publish("email_chosen", {
+      email: TEST_EMAIL,
+      complete: function() {
+        equal(actions.called.doProvisionPrimaryUser, true,
+            "doProvisionPrimaryUser called");
+        start();
+      }
+    });
+  });
+
+  asyncTest("email_chosen with offline primary email - transition to primary_offline", function() {
+    storage.addEmail(TEST_EMAIL);
+    xhr.useResult("primaryOffline");
+    mediator.subscribe("primary_offline", function(msg, info) {
+      equal(info.email, TEST_EMAIL);
+      start();
+    });
+    mediator.publish("email_chosen", {
+      email: TEST_EMAIL
+    });
   });
 
   test("email_chosen with invalid email - throw exception", function() {

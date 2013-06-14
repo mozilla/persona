@@ -221,39 +221,6 @@
     testUserUnregistered();
   });
 
-  asyncTest("checkEmail with primary offline", function() {
-    $(EMAIL_SELECTOR).val("registered@testuser.com");
-
-    testHelpers.expectedMessage("primary_offline", {
-      email: "registered@testuser.com"
-    });
-
-    xhr.useResult("primaryOffline");
-    controller.checkEmail(null, start);
-  });
-
-  asyncTest("checkEmail with transition_no_password, transition message", function() {
-    $(EMAIL_SELECTOR).val("registered@testuser.com");
-
-    testHelpers.expectedMessage("transition_no_password", {
-      email: "registered@testuser.com"
-    });
-
-    xhr.useResult("secondaryTransitionPassword");
-    controller.checkEmail(null, start);
-  });
-
-  asyncTest("checkEmail with transition_no_password with incorrect case, transition message with normalized email", function() {
-    $(EMAIL_SELECTOR).val("REGISTERED@TESTUSER.COM");
-    xhr.useResult("secondaryTransitionPassword");
-
-    testHelpers.expectedMessage("transition_no_password", {
-      email: "registered@testuser.com"
-    });
-
-    controller.checkEmail(null, start);
-  });
-
   asyncTest("checkEmail with normal email, user registered - 'enter_password' message", function() {
     $(EMAIL_SELECTOR).val("registered@testuser.com");
     xhr.useResult("known_secondary");
@@ -365,19 +332,6 @@
     controller.submit();
   });
 
-  asyncTest("checkEmail with email that has IdP support - 'primary_user' message", function() {
-    $(EMAIL_SELECTOR).val("unregistered@testuser.com");
-    xhr.useResult("primary");
-
-    testHelpers.expectedMessage("primary_user", {
-      email: "unregistered@testuser.com",
-      auth: "https://auth_url",
-      prov: "https://prov_url"
-    });
-
-    controller.checkEmail(null, start);
-  });
-
   asyncTest("checkEmail with secondary that used to be a primary", function() {
     $(EMAIL_SELECTOR).val("registered@testuser.com");
     xhr.useResult("secondaryTransition");
@@ -467,16 +421,6 @@
     controller.createFxAccount(start);
   });
 
-  asyncTest("transitionNoPassword with valid email", function() {
-    $(EMAIL_SELECTOR).val("unregistered@testuser.com");
-
-    testHelpers.expectedMessage("transition_no_password", {
-      email: "unregistered@testuser.com"
-    });
-
-    controller.transitionNoPassword(start);
-  });
-
   test("emailChange - submit button disabled if there is no input",
       function() {
     // start off with nothing
@@ -494,6 +438,5 @@
     controller.emailChange();
     ok($(CONTINUE_BUTTON_SELECTOR).attr("disabled"));
   });
-
 }());
 

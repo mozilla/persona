@@ -1151,7 +1151,7 @@ BrowserID.User = (function() {
         // The normalized email is stored in the cache.
         var normalizedEmail = info.normalizedEmail || email;
         info.email = normalizedEmail;
-        User.checkEmailIssuer(normalizedEmail, info, function(cleanedInfo) {
+        User.checkForInvalidCerts(normalizedEmail, info, function(cleanedInfo) {
           if (cleanedInfo.type === "primary") {
             withContext(function() {
               User.isUserAuthenticatedToPrimary(normalizedEmail, cleanedInfo,
@@ -1176,39 +1176,55 @@ BrowserID.User = (function() {
      * @param {object} info - Output from addressInfo callback
      * @param {function} done - called with object when complete.
      */
-    checkEmailIssuer: function(email, info, done) {
+    checkForInvalidCerts: function(email, info, done) {
       function clearCert(email, idInfo) {
         delete idInfo.cert;
         delete primaryAuthCache[email];
         storage.addEmail(email, idInfo);
       }
+
+      var transitionStates = [
+        "transition_to_secondary",
+        "transition_no_password",
+        "transition_to_primary"
+      ];
+
       cryptoLoader.load(function(jwcrypto) {
-        var identity = User.getStoredEmailKeypair(email);
-        if (identity && identity.cert && info && info.issuer) {
+        var record = User.getStoredEmailKeypair(email);
 
-          // issuer MUST have changed... clear certs
-          if ("transition_to_primary" === info.state && identity.cert) {
-            clearCert(email, identity);
-          } else {
+        if (!(record && record.cert)) return complete(done, info);
 
-            var prevIssuer;
-            try {
-              prevIssuer = jwcrypto.extractComponents(identity.cert).payload.iss;
-            } catch (e) {
-              // error parsing the certificate!  Maybe it's of an old/different
-              // format?  just delete it.
-              helpers.log("Looking for issuer, error parsing cert for"+ email +":" + e);
-              clearCert(email, identity);
-            }
+        var prevIssuer;
+        try {
+          prevIssuer =
+              jwcrypto.extractComponents(record.cert).payload.iss;
+        } catch (e) {
+          // error parsing the certificate! Maybe it's of an
+          // old/different format? clear cert.
+          helpers.log("Looking for issuer, " +
+              "error parsing cert for"+ email +":" + String(e));
+          clearCert(email, record);
+        }
 
-            if (prevIssuer && info.issuer !== prevIssuer) {
-              clearCert(email, identity);
-            }
-          }
+        // If the address is vouched for by the fallback IdP, the issuer will
+        // be the fallback IdP.
+        if (info.issuer !== prevIssuer) {
+          // issuer has changed... clear cert.
+          clearCert(email, record);
+        }
+        else if (record.unverified && "unverified" !== info.state) {
+          // cert was created with an unverified email but the email
+          // is now verified... clear cert.
+          clearCert(email, record);
+        }
+        else if (transitionStates.indexOf(info.state) > -1) {
+          // On a transition, issuer MUST have changed... clear cert
+          clearCert(email, record);
         }
         complete(done, info);
       });
     },
+
     /**
      * Add an email address to an already created account.  Sends address and
      * keypair to the server, user then needs to verify account ownership. This
