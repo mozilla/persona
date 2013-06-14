@@ -6,7 +6,10 @@
   var bid = BrowserID,
       network = bid.Network,
       user = bid.User,
-      storage = bid.Storage;
+      storage = bid.Storage,
+      interactionData = bid.Models.InteractionData;
+
+
 
   // Initialize all localstorage values to default values.  Neccesary for
   // proper sync of IE8 localStorage across multiple simultaneous
@@ -15,7 +18,6 @@
 
   network.init();
   user.init();
-
 
   var chan = Channel.build({
     window: window.parent,
@@ -119,6 +121,15 @@
 
   chan.bind("dialog_complete", function(trans, params) {
     pause = false;
+    // The dialog has closed, so that we get results from users who only open
+    // the dialog a single time, send the KPIs immediately. Note, this does not
+    // take care of native contexts. Native contexts are taken care of in in
+    // dialog/js/misc/internal_api.js. Errors sending the KPI data should not
+    // affect anything else.
+    try {
+      interactionData.publishCurrent();
+    } catch(e) {}
+
     // the dialog running can change authentication status,
     // lets manually purge our network cache
     network.clearContext();

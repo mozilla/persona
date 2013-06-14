@@ -10,6 +10,8 @@ BrowserID.Models.InteractionData = (function() {
       network = bid.Network,
       complete = bid.Helpers.complete,
       whitelistFilter = bid.Helpers.whitelistFilter,
+      SENT_ORPHAN_WITH_STAGE = "sent_orphan_with_stage",
+      STAGING_CONTINUATION = "staging_continuation",
       KPI_WHITELIST = [
         'event_stream',
         'lang',
@@ -48,6 +50,21 @@ BrowserID.Models.InteractionData = (function() {
     stageCurrent();
 
     var interactionData = getInteractionData();
+
+    // If there is a sent_orphan_with_stage, the user staged an email in the
+    // last dialog session but never verified the email. Let the back end know
+    // so they can do rough calculations on how many of stagings were
+    // successfully completed.
+    if (localStorage.getItem(SENT_ORPHAN_WITH_STAGE)) {
+      localStorage.removeItem(SENT_ORPHAN_WITH_STAGE);
+
+      var events = newData.event_stream || [];
+      if (! hasEvent(events, STAGING_CONTINUATION)) {
+        events.unshift([STAGING_CONTINUATION, 0]);
+        newData.event_stream = events;
+      }
+    }
+
     interactionData.current = newData;
 
     setInteractionData(interactionData);
@@ -79,6 +96,63 @@ BrowserID.Models.InteractionData = (function() {
       setInteractionData(interactionData);
     }
   }
+
+  function publishCurrent(oncomplete) {
+    // If this is data set where the user has to verify, save a session
+    // ID into localStorage so that the next KPI set has the same session
+    // ID and can be linked on the back end.
+    if (isSendingOrphanWithStagingEvent()) {
+      localStorage.setItem(SENT_ORPHAN_WITH_STAGE, true);
+    }
+
+    stageCurrent();
+    publishStaged(oncomplete);
+  }
+
+  function isSendingOrphanWithStagingEvent() {
+    // search each set of event pairs. If the dialog is marked as orphaned AND
+    // if there is a staging event without a corresponding confirmation event,
+    // then a marker is sent on the next session that says "hey, this is the
+    // first session following a staging event".
+    // Do NOT set the flag if the dialog is not orphaned, even if there is
+    // a staging event, because the user could have started the staging
+    // event, backed up a step, and selected an email address.
+    var currentKPIs = getCurrent();
+    if (!(currentKPIs && currentKPIs.orphaned)) return false;
+
+    var events = currentKPIs && currentKPIs.event_stream;
+    var eventPairs = {
+      'user.user_staged': 'user.user_confirmed',
+      'user.email_staged': 'user.email_confirmed',
+      'user.reset_password_staged': 'user.reset_password_confirmed',
+      'user.reverify_email_staged': 'user.reverify_email_confirmed'
+    };
+    for (var stagingEvent in eventPairs) {
+      var verifyingEvent = eventPairs[stagingEvent];
+
+      if (hasEvent(events, stagingEvent) &&
+              ! hasEvent(events, verifyingEvent)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function indexOfEvent(eventStream, eventName) {
+    if (eventStream) {
+      for(var event, i = 0; event = eventStream[i]; ++i) {
+        if(event[0] === eventName) return i;
+      }
+    }
+
+    return -1;
+  }
+
+  function hasEvent(eventStream, eventName) {
+    return indexOfEvent(eventStream, eventName) !== -1;
+  }
+
 
   function getStaged() {
     var interactionData = getInteractionData();
@@ -116,7 +190,7 @@ BrowserID.Models.InteractionData = (function() {
 
       network.sendInteractionData(filtered, function() {
         clearStaged();
-        complete(oncomplete, true);
+        complete(oncomplete, filtered);
       }, function(status) {
         // if the server returns a 413 error, (too much data posted), then
         // let's clear our local storage and move on.  This does mean we
@@ -162,6 +236,11 @@ BrowserID.Models.InteractionData = (function() {
      */
     stageCurrent: stageCurrent,
     /**
+     * Stage the current data and publish all data
+     * @method publishCurrent
+     */
+    publishCurrent: publishCurrent,
+    /**
      * get all past saved interaction data (returned as a JSON array), excluding
      * the "current" data (that which is being collected now).
      * @method getStaged
@@ -182,7 +261,15 @@ BrowserID.Models.InteractionData = (function() {
      * collection.
      * @method clearStaged()
      */
-    clearStaged: clearStaged
+    clearStaged: clearStaged,
+
+    // BEGIN TESTING API
+    /**
+     * Check whether an event stream contains an event
+     * @method hasEvent
+     */
+    hasEvent: hasEvent
+    // END TESTING API
   };
 
 }());

@@ -6,6 +6,7 @@
 
   var bid = BrowserID,
       testHelpers = bid.TestHelpers,
+      user = bid.User,
       network = bid.Network,
       storage = bid.Storage,
       errors = bid.Errors,
@@ -27,6 +28,7 @@
   });
 
   function createController(setKPINameTable, config) {
+    user.clearContext();
     if (typeof setKPINameTable !== "boolean") {
       config = setKPINameTable;
       setKPINameTable = false;
@@ -83,7 +85,11 @@
         });
 
     equal(event[0], eventName, "event name set correctly");
-    ok(event[1] >= 10 && event[1] <= 15, "event offset set correctly: " + event[1]);
+    // this is a potentially fragile test, depending on how fast the
+    // environment is. If this is run on a slow VM, the event offset
+    // could be > 20.
+    testHelpers.testNumberInRange(event[1], 10, 20,
+        "event offset from start of controller set correctly");
     ok(event[2], 110, "duration has been stored");
 
     start();
@@ -165,7 +171,7 @@
       equal(typeof controller.getCurrentKPIs(), "undefined", "no stored data");
       equal(typeof controller.getCurrentEventStream(), "undefined", "no data stored");
 
-      controller.publishStored(function(status) {
+      controller.publishCurrent(function(status) {
         equal(status, false, "there was no data to publish");
         start();
       });
@@ -182,7 +188,7 @@
       // simulate a restart of the dialog.  Clear the session_context and then
       // re-get session context.
       controller = null;
-      network.clearContext();
+      user.clearContext();
       createController(true, { continuation: true });
 
       controller.addEvent("session2_before_session_context");
@@ -213,7 +219,7 @@
       // simulate a restart of the dialog.  Clear the session_context and then
       // re-get session context.
       controller = null;
-      network.clearContext();
+      user.clearContext();
       createController({ continuation: true });
 
       controller.addEvent("session2_before_session_context");
@@ -223,7 +229,7 @@
         equal(typeof controller.getCurrentKPIs(), "undefined", "no data collected");
         equal(typeof controller.getCurrentEventStream(), "undefined", "no data collected");
 
-        controller.publishStored(function(status) {
+        controller.publishCurrent(function(status) {
           equal(status, false, "there was no data to publish");
           start();
         });
@@ -244,28 +250,26 @@
 
     // First open dialog never has session_context complete. Data is not
     // collected.
+    xhr.useResult("contextAjaxError");
     createController();
     controller.addEvent("session1_before_session_context");
 
     // Second open dialog is the first to successfully complete
     // session_context, data should be collected.
+    xhr.useResult("valid");
     createController();
     controller.addEvent("session2_before_session_context");
-    network.withContext(function() {
 
-      // Third open dialog successfully completes session_context, should send
-      // data for the 2nd open dialog once session_context completes.
-      createController();
-      controller.addEvent("session2_before_session_context");
+    // Third open dialog successfully completes session_context, should send
+    // data for the 2nd open dialog once session_context completes.
+    createController();
+    controller.addEvent("session2_before_session_context");
 
-      network.withContext(function() {
-        var request = xhr.getLastRequest('/wsapi/interaction_data'),
-            previousSessionsData = JSON.parse(request.data).data;
+    var request = xhr.getLastRequest('/wsapi/interaction_data'),
+        previousSessionsData = JSON.parse(request.data).data;
 
-        equal(previousSessionsData.length, 1, "sending correct result sets");
-        start();
-      });
-    });
+    equal(previousSessionsData.length, 1, "sending correct result sets");
+    start();
   });
 
   asyncTest("timestamp rounded to 10 minute intervals", function() {
@@ -297,132 +301,6 @@
       });
 
       start();
-    });
-  });
-
-  asyncTest("kpi orphans are adopted if user.staged and user is signed in", function() {
-    // 1. user.user_staged
-    // 2. dialog is orphaned
-    // 3. user comes back, authenticated
-    // 4. the orphan found a good home
-    createController(false);
-    network.withContext(function() {
-      // user is staged
-      controller.addEvent("user_staged");
-      // dialog all done, its orphaned, oh noes! think of the kids!
-      mediator.publish("kpi_data", {
-        orphaned: true
-      });
-      network.clearContext();
-
-
-      // new page
-      createController(false);
-
-      // make user authenticated
-      xhr.setContextInfo("auth_level", "password");
-      xhr.setContextInfo("userid", 1);
-
-      network.withContext(function() {
-        var request = xhr.getLastRequest('/wsapi/interaction_data');
-        var data = JSON.parse(request.data).data[0];
-        equal(data.orphaned, false, "orphaned is not sent");
-        start();
-      });
-    });
-  });
-
-  asyncTest("kpi orphans are NOT adopted if NOT user.staged and user is signed in", function() {
-    // 1. user was not staged
-    // 2. dialog is orphaned
-    // 3. user comes back, authenticated
-    // 4. but he wasn't staged, so dont adopt
-    createController(false);
-    network.withContext(function() {
-      // dialog all done, its orphaned, oh noes! think of the kids!
-      mediator.publish("kpi_data", {
-        orphaned: true
-      });
-      network.clearContext();
-
-
-      // new page
-      createController(false);
-      // make user authenticated
-      xhr.setContextInfo("auth_level", "password");
-      network.withContext(function() {
-        var request = xhr.getLastRequest('/wsapi/interaction_data');
-        var data = JSON.parse(request.data).data[0];
-        equal(data.orphaned, true, "orphaned is sent");
-        start();
-      });
-    });
-  });
-
-    asyncTest("kpi orphans are adopted if add_email and email count increased", function() {
-    // 1. email_staged
-    // 2. dialog is orphaned
-    // 3. email is verified
-    // 4. user comes back, authenticated
-    // 5. the orphan found a good home
-    createController(false);
-    network.withContext(function() {
-      // email is staged
-      controller.addEvent("email_staged");
-      // dialog all done, its orphaned, oh noes! think of the kids!
-      mediator.publish("kpi_data", {
-        orphaned: true,
-        number_emails: storage.getEmailCount() || 0
-      });
-      network.clearContext();
-
-      // email is verified
-      storage.addEmail("testuser@testuser.org");
-
-      // new page
-      createController(false);
-
-      // make user authenticated
-      xhr.setContextInfo("auth_level", "password");
-      xhr.setContextInfo("userid", 1);
-
-      network.withContext(function() {
-        var request = xhr.getLastRequest('/wsapi/interaction_data');
-        var data = JSON.parse(request.data).data[0];
-        equal(data.orphaned, false, "orphaned is not sent");
-        start();
-      });
-    });
-  });
-
-  asyncTest("kpi orphans are NOT adopted if add_email but email count is same", function() {
-    // 1. email staged
-    // 2. dialog is orphaned
-    // 3. user comes back, authenticated
-    // 4. but no new email, so oprhan is true
-    createController(false);
-    network.withContext(function() {
-      // user is staged
-      controller.addEvent("email_staged");
-      // dialog all done, its orphaned, oh noes! think of the kids!
-      mediator.publish("kpi_data", {
-        orphaned: true,
-        number_emails: storage.getEmailCount() || 0
-      });
-      network.clearContext();
-
-      // user never confirms
-
-      // new page
-      createController(false);
-      // make user authenticated
-      xhr.setContextInfo("auth_level", "password");
-      network.withContext(function() {
-        var request = xhr.getLastRequest('/wsapi/interaction_data');
-        var data = JSON.parse(request.data).data[0];
-        equal(data.orphaned, true, "orphaned is sent");
-        start();
-      });
     });
   });
 
