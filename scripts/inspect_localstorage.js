@@ -193,17 +193,27 @@ function processCertificate(cert) {
   return components;
 }
 
+function processEmail(elt) {
+  Object.keys(elt).forEach(function(emailKey) {
+    if (emailKey === 'cert') {
+      elt[emailKey] = processCertificate(elt[emailKey]);
+    }
+    if ((emailKey === 'pub' || emailKey === 'priv') && !args.P) {
+      elt[emailKey] = '{...}';
+    }
+  });
+}
+
 function processEmails(obj) {
   Object.keys(obj).forEach(function(email) {
     var elt = obj[email];
-    Object.keys(elt).forEach(function(emailKey) {
-      if (emailKey === 'cert') {
-        elt[emailKey] = processCertificate(elt[emailKey]);
-      }
-      if ((emailKey === 'pub' || emailKey === 'priv') && !args.P) {
-        elt[emailKey] = '{...}';
-      }
-    });
+    if (email.match(/@/)) {
+      processEmail(elt);
+    } else {
+      Object.keys(elt).forEach(function(emailKey) {
+        processEmail(elt[emailKey]);
+      });
+    }
   });
 }
 
@@ -224,17 +234,7 @@ function processRows(err, rows) {
     }
 
     if (key === 'emails') {
-      // peek at the first key to see if it's email or issuer (or empty {})
-      var firstKey = Object.keys(value)[0];
-      if (firstKey) {
-        if (firstKey.match(/@/)) {
-          processEmails(value);
-        } else {
-          Object.keys(value).forEach(function(issuer) {
-            processEmails(value[issuer]);
-          });
-        }
-      }
+      processEmails(value);
     }
 
     localStorage[key] = value;
