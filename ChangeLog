@@ -10,6 +10,9 @@ train-2013.06.05:
   * Fix new_user KPI gathering for two scenarios: #3359, #3459
     * namely, new FirefoxOS users and users who bail at the 'set password' step
   * Refactor & simplify handling of primary users in dialog: #3184
+  * (hotfix 2013.06.14) dev site not loading dialog on android 2.2 stock ('native' is reserved kw on stock): #3522, #3535
+  * (hotfix 2013.06.14) [b2g] tooltips can run off the screen: #3496 , #3512
+  * (hotfix 2013.06.14) New account creation: Hitting 'enter' on first password field should focus the next: #3502, #3538
 
 train-2013.05.22:
   * fix persona in ActiveX-based browsing environments: #3383
