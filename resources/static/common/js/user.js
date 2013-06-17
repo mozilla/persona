@@ -28,6 +28,15 @@ BrowserID.User = (function() {
       issuer = "default",
       allowUnverified = false;
 
+  var TRANSITION_STATES = [
+    "transition_to_secondary",
+    "transition_no_password",
+    "transition_to_primary"
+  ];
+
+  function isTransitioning(state) {
+    return (_.indexOf(TRANSITION_STATES, state) > -1);
+  }
 
   // remove identities that are no longer valid
   function cleanupIdentities(onSuccess, onFailure) {
@@ -121,7 +130,8 @@ BrowserID.User = (function() {
     }, onFailure);
   }
 
-  function completeAddressVerification(completeFunc, token, password, onComplete, onFailure) {
+  function completeAddressVerification(completeFunc, token, password,
+      onComplete, onFailure) {
     User.tokenInfo(token, function(info) {
       var invalidInfo = { valid: false };
       if (info) {
@@ -1178,16 +1188,11 @@ BrowserID.User = (function() {
      */
     checkForInvalidCerts: function(email, info, done) {
       function clearCert(email, idInfo) {
+        delete idInfo.priv;
         delete idInfo.cert;
         delete primaryAuthCache[email];
         storage.addEmail(email, idInfo);
       }
-
-      var transitionStates = [
-        "transition_to_secondary",
-        "transition_no_password",
-        "transition_to_primary"
-      ];
 
       cryptoLoader.load(function(jwcrypto) {
         var record = User.getStoredEmailKeypair(email);
@@ -1207,17 +1212,24 @@ BrowserID.User = (function() {
         }
 
         // If the address is vouched for by the fallback IdP, the issuer will
-        // be the fallback IdP.
+        // be the fallback IdP. This takes care of addresses that are
+        // beginning the transition state.
         if (info.issuer !== prevIssuer) {
           // issuer has changed... clear cert.
           clearCert(email, record);
+
+          // If the issuer has changed, then silent assertions should not be
+          // generated until the user verifies with the new issuer. Keep tabs
+          // getSilentAssertion will handle this. If there is no prevIssuer,
+          // the user has no cert, and there is no problem.
+          info.issuerChange = !!prevIssuer;
         }
         else if (record.unverified && "unverified" !== info.state) {
           // cert was created with an unverified email but the email
           // is now verified... clear cert.
           clearCert(email, record);
         }
-        else if (_.indexOf(transitionStates, info.state) > -1) {
+        else if (isTransitioning(info.state)) {
           // On a transition, issuer MUST have changed... clear cert
           clearCert(email, record);
         }
@@ -1464,24 +1476,86 @@ BrowserID.User = (function() {
      * @param {function} onFailure - called on XHR failure.
      */
     getSilentAssertion: function(siteSpecifiedEmail, onComplete, onFailure) {
+      /**
+       * Here is everything I know about silent assertions.
+       *
+       * getSilentAssertion is used in both the communication_iframe and the
+       * internal_api to get assertions. Silent assertions drive the .watch
+       * API which in turn drives .get and .getVerifiedEmail.
+       *
+       * Silent assertions are supposed to be fetched under the following
+       * conditions (AND):
+       * 1) The user is signed in to Persona.
+       * 2) Persona believes the user is signed in to the current site.
+       * 3) The address in #2 is different to siteSpecifiedEmail. If the
+       *      addresses are the same, call onComplete with (email, null) to
+       *      specify "we agree with you"
+       * 4) The address in #2 is not in a transition state. If the address is
+       *      in a transition state, the user must go to the dialog to see
+       *      messaging and possibly verify their email address.
+       * 5) A cert must exist or be able to be created for the address in #2.
+       *      If a cert does not currently exist, try to fetch one from the
+       *      backing IdP. This allows an assertion to be generated for two
+       *      scenarios: a) a cert has expired but the IdP allows the user
+       *          to create one. b) a cert does not exist, but the IdP allows
+       *          the user to create one. Case b is used with
+       *          post-verification redirect and the .watch API.
+       *
+       * If any of the conditions are not met, call onComplete with a null
+       * assertion.
+       *
+       * There are 3 transition states:
+       * 1) transition_to_primary - an address that is marked as a "secondary"
+       *      is now backed by a primary IdP. The user should see messaging
+       *      that says they will authenticate with the IdP instead of
+       *      Persona.
+       * 2) transition_to_secondary - an address that is marked as a "primary"
+       *      no longer has primary IdP backing. It must be vouched for by
+       *      the fallback IdP. The user already has a Persona password.
+       *      The user should see messaging that explains to them they use
+       *      their Persona password, they then type their Persona password
+       *      and verify their ownership of the address via an email
+       *      verification.
+       * 3) transition_no_password - an address that is marked as a "primary"
+       *      no longer has primary IdP backing. It must be vouched for by
+       *      the fallback IdP. The user must set a Persona password. The user
+       *      should see messaging that explains to them they use their
+       *      Persona password for this address. The user sets a new password
+       *      and must verify their email address.
+       *
+       * In any transition state, the user has to see some messaging and
+       * possibly verify their email address. No assertion should be generated.
+       */
       User.checkAuthenticationAndSync(function(authenticated) {
-        if (authenticated) {
-          var loggedInEmail = storage.site.get(origin, "logged_in");
-          if (loggedInEmail !== siteSpecifiedEmail) {
-            if (loggedInEmail) {
-              User.getAssertion(loggedInEmail, origin, function(assertion) {
-                onComplete(assertion ? loggedInEmail : null, assertion);
-              }, onFailure);
-            } else {
-              onComplete(null, null);
-            }
-          } else {
-            onComplete(loggedInEmail, null);
+        var loggedInEmail = storage.site.get(origin, "logged_in");
+        // User is not signed in to Persona or not signed into the site.
+        if (!(authenticated && loggedInEmail))
+          return complete(onComplete, null, null);
+
+        User.resetCaches();
+        User.addressInfo(loggedInEmail, function(info) {
+          // If the address is in a transition state, the user must see
+          // messaging in the dialog before continuing.
+          if (isTransitioning(info.state))
+            return complete(onComplete, null, null);
+
+          // If there has not been an issuer change and Persona's view of the
+          // world agrees with the sites, then skip assertion generation.
+          if (( ! info.issuerChange)
+                  && (loggedInEmail === siteSpecifiedEmail)) {
+            return complete(onComplete, loggedInEmail, null);
           }
-        }
-        else if (onComplete) {
-          onComplete(null, null);
-        }
+
+          // Try to fetch an assertion. If a cert for the address exists or
+          // if one can be signed by the backing IdP, an assertion will be
+          // generated.
+          // If there has been an issuer change, this will check with the new
+          // issuer to make sure the user is authenticated there.
+          User.getAssertion(loggedInEmail, origin,
+              function(assertion) {
+            complete(onComplete, assertion ? loggedInEmail : null, assertion);
+          }, onFailure);
+        });
       }, onFailure);
     },
 

@@ -370,7 +370,7 @@ suite.addBatch({
           assert.isNull(e);
           var r = JSON.parse(r.body);
           assert.equal(r.type, "secondary");
-          assert.equal(r.state, "transition_to_secondary");
+          assert.equal(r.state, "known");
         },
         "causes IDPLastSeen": {
           topic: function() { setTimeout(this.callback, 500); },
