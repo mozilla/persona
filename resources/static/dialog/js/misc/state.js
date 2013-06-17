@@ -438,7 +438,6 @@ BrowserID.State = (function() {
           // a cert. They may be able to provision with their IdP, but we want
           // them to see a nice message. Make them verify with their primary.
           startAction("doVerifyPrimaryUser", addressInfo);
-          complete(addressInfo.complete);
         }
         else if (addressInfo.type === "primary") {
           // If the email is a primary and the cert is not available,
@@ -452,7 +451,6 @@ BrowserID.State = (function() {
           // user must authenticate with their password, kick them over to
           // the required email screen to enter the password.
           redirectToState("authenticate", addressInfo);
-          oncomplete();
         }
         else if ("transition_no_password" === addressInfo.state) {
           redirectToState("transition_no_password", addressInfo);
