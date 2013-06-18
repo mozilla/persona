@@ -54,12 +54,22 @@ runner.run(module, {
         done(err || assert.equal(text, testUser));
        });
   },
+  "verify user is logged in on page reload": function(done) {
+    browser.chain({onError: done})
+      .refresh()
+      .wfind(CSS['123done.org'].logoutLink, done);
+  },
   "The IdP disables support": function(done) {
     testIdp.disableSupport(done);
   },
+  "verify user is logged out on page reload - email is in transition state":
+      function(done) {
+    browser.chain({onError: done})
+      .refresh()
+      .wfind(CSS['123done.org'].signinButton, done);
+  },
   "Authed user tries to log in": function(done) {
     browser.chain({onError: done})
-      .wclick(CSS['123done.org'].logoutLink)
       .wclick(CSS['123done.org'].signinButton)
       .wwin(CSS['dialog'].windowName)
       .wclick(CSS['dialog'].signInButton)
@@ -104,7 +114,7 @@ runner.run(module, {
         done(err || assert.equal(text, testUser));
       });
   },
-  "noAuthTestUser tries to log in": function(done) {
+  "A new user (noAuthTestUser) tries to log in": function(done) {
     browser.chain({onError: done})
       .wclick(CSS['123done.org'].logoutLink)
       .wclick(CSS['123done.org'].signinButton)

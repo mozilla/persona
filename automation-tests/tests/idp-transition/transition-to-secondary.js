@@ -12,7 +12,8 @@ persona_urls = require('../../lib/urls.js'),
 restmail = require('../../lib/restmail.js'),
 runner = require('../../lib/runner.js'),
 testSetup = require('../../lib/test-setup.js'),
-dialog = require('../../pages/dialog.js');
+dialog = require('../../pages/dialog.js'),
+rp_123done = require('../../pages/123done.js');
 
 var browser, testIdp, primaryToSecondaryUser, secondaryUser;
 
@@ -52,7 +53,7 @@ runner.run(module, {
     browser.chain({onError: done})
            .get(persona_urls["123done"])
            .wclick(CSS['123done.org'].signinButton)
-           .wwin(CSS["persona.org"].windowName, done);
+           .wwin(CSS["dialog"].windowName, done);
   },
   "create account with secondary user": function(done) {
     dialog.signInAsNewUser({
@@ -62,40 +63,46 @@ runner.run(module, {
     }, done);
   },
   "verify secondary email": function(done) {
-    completeEmailVerification(secondaryUser, done);
+    rp_123done.completeEmailVerification({
+      browser: browser,
+      email: secondaryUser
+    }, done);
   },
   "verify we're signed in to 123done": function(done) {
-    testSignedInUser(secondaryUser, done);
+    rp_123done.testSignedInUser({
+      browser: browser,
+      email: secondaryUser
+    }, done);
   },
   "Happy, healthy primary": function(done) {
     testIdp.enableSupport(false, done);
   },
+  "re-open dialog to add primary email": function(done) {
+    rp_123done.logoutOpenDialog(browser, done);
+  },
   "add primary email to account": function(done) {
     browser.chain({onError: done})
-      .wclick(CSS['123done.org'].logoutLink)
-      .wclick(CSS['123done.org'].signinButton)
-      .wwin(CSS['dialog'].windowName)
       .wclick(CSS['dialog'].useNewEmail)
       .wtype(CSS['dialog'].newEmail, primaryToSecondaryUser)
       .wclick(CSS['dialog'].addNewEmailButton)
       .wwin(done);
   },
   "check primaryToSecondaryUser is logged in": function(done) {
-    testSignedInUser(primaryToSecondaryUser, done);
-  },
-  "Authed user logs out, reopen dialog, sign user out": function(done) {
-    browser.chain({onError: done})
-      .wclick(CSS['123done.org'].logoutLink)
-      .wclick(CSS['123done.org'].signinButton)
-      .wwin(CSS['dialog'].windowName)
-      .wclick(CSS['dialog'].thisIsNotMe, done);
+    rp_123done.testSignedInUser({
+      browser: browser,
+      email: primaryToSecondaryUser
+    }, done);
   },
   "The IdP disables support": function(done) {
     testIdp.disableSupport(done);
   },
+  "re-open dialog to convert primaryToSecondaryUser": function(done) {
+    rp_123done.logoutOpenDialog(browser, done);
+  },
   "try to sign in as primaryToSecondaryUser":
       function(done) {
     browser.chain({onError: done})
+      .wclick(CSS['dialog'].thisIsNotMe)
       .wtype(CSS['dialog'].emailInput, primaryToSecondaryUser)
       .wclick(CSS['dialog'].newEmailNextButton, done);
   },
@@ -107,10 +114,37 @@ runner.run(module, {
       .wfind(CSS['dialog'].confirmAddressScreen, done);
   },
   "User verifies ownership of previous primary address": function(done) {
-    completeEmailVerification(primaryToSecondaryUser, done);
+    rp_123done.completeEmailVerification({
+      browser: browser,
+      email: primaryToSecondaryUser
+    }, done);
   },
   "Check primaryToSecondaryUser is logged in": function(done) {
-    testSignedInUser(primaryToSecondaryUser, done);
+    rp_123done.testSignedInUser({
+      browser: browser,
+      email: primaryToSecondaryUser
+    }, done);
+  },
+  "Log user out of 123done to verify they can sign in with password":
+      function(done) {
+    rp_123done.logoutOpenDialog(browser, done);
+  },
+  "Sign primaryToSecondaryUser out of dialog to try to sign in with password":
+      function(done) {
+    browser.wclick(CSS['dialog'].thisIsNotMe, done);
+  },
+  "Sign primaryToSecondaryUser in with password": function(done) {
+    dialog.signInExistingUser({
+      browser: browser,
+      email: primaryToSecondaryUser,
+      password: "password"
+    }, done);
+  },
+  "Make sure primaryToSecondaryUser is signed in to 123done": function(done) {
+    rp_123done.testSignedInUser({
+      browser: browser,
+      email: primaryToSecondaryUser
+    }, done);
   }
 },
 {
@@ -118,20 +152,3 @@ runner.run(module, {
   cleanup: function(done) { testSetup.teardown(done); }
 });
 
-function completeEmailVerification(email, done) {
-  var verifyWindow = 'verifyWindow1';
-  restmail.getVerificationLink(email, function(err, token, verificationURL) {
-    browser.chain({onError: done})
-        .newWindow(verificationURL, verifyWindow)
-        .wwin(verifyWindow)
-        .waitForDisplayed({which: CSS['123done.org'].logoutLink})
-        .close()
-        .wwin(done);
-  });
-}
-
-function testSignedInUser(email, done) {
-  browser.wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-    done(err || assert.equal(text, email));
-  });
-}

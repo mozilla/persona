@@ -86,13 +86,24 @@ runner.run(module, {
         }, done);
       });
   },
+  "verify user is logged in on page reload": function(done) {
+    browser.chain({onError: done})
+      .wwin()
+      .refresh()
+      .wfind(CSS['123done.org'].logoutLink, done);
+  },
   "enable primary support for the transition when authed test": function(done) {
     testidp2.enableSupport(done);
   },
-  "now log out and enter the dialog": function(done) {
+  "verify user is logged out on page reload - email is in transition state":
+      function(done) {
+    browser.chain({onError: done})
+      .refresh()
+      .wfind(CSS['123done.org'].signinButton, done);
+  },
+  "enter the dialog": function(done) {
     browser.chain()
       .wwin()
-      .wclick(CSS['123done.org'].logoutLink)
       .wclick(CSS['123done.org'].signinButton)
       .wwin(CSS["persona.org"].windowName, done);
   },
