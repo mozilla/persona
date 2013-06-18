@@ -1217,7 +1217,7 @@ BrowserID.User = (function() {
           // is now verified... clear cert.
           clearCert(email, record);
         }
-        else if (transitionStates.indexOf(info.state) > -1) {
+        else if (_.indexOf(transitionStates, info.state) > -1) {
           // On a transition, issuer MUST have changed... clear cert
           clearCert(email, record);
         }
