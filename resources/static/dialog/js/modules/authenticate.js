@@ -168,7 +168,8 @@ BrowserID.Modules.Authenticate = (function() {
       dialogHelpers.authenticateUser.call(self, email, pass, function(authenticated) {
         if (authenticated) {
           self.close("authenticated", {
-            email: email
+            email: email,
+            password: pass
           });
         }
         complete(done);
