@@ -48,6 +48,7 @@ module.exports = {
     forgotPassword: 'a.isDesktop.forgotPassword',
     choosePassword: 'div#set_password input#password',
     verifyPassword: 'input#vpassword',
+    confirmAddressScreen: "#confirm_address",
     postVerificationPassword: 'input#password',
     // the button you click on after typing and re-typing your password
     createUserButton: 'button#verify_user',
