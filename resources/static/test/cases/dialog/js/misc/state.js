@@ -513,13 +513,37 @@
     });
   });
 
-  asyncTest("email_chosen with secondary email, transition_to_secondary", function () {
+  asyncTest("email_chosen, transition_to_secondary w/o password given - " +
+      "this is a user who selected an address in transition from the email picker - " +
+      "password needed to stage transition - go to doAuthenticate",
+      function () {
     storage.addEmail(TEST_EMAIL);
     xhr.useResult("secondaryTransition");
     mediator.publish("email_chosen", {
       email: TEST_EMAIL,
       complete: function() {
-        equal(actions.called.doAuthenticate, true, "doAuthenticate called");
+        testActionStarted("doAuthenticate", {
+          email: TEST_EMAIL
+        });
+        start();
+      }
+    });
+  });
+
+  asyncTest("email_chosen, transition_to_secondary w/ password given - " +
+      "this is a user who entered an address in transition from the authentication screen - " +
+      "password already known to stage transition - go to doStageTransitionToSecondary",
+      function () {
+    storage.addEmail(TEST_EMAIL);
+    xhr.useResult("secondaryTransition");
+    mediator.publish("email_chosen", {
+      email: TEST_EMAIL,
+      password: "password",
+      complete: function() {
+        testActionStarted("doStageTransitionToSecondary", {
+          email: TEST_EMAIL,
+          password: "password"
+        });
         start();
       }
     });

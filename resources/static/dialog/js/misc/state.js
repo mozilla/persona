@@ -448,9 +448,15 @@ BrowserID.State = (function() {
         }
         // everything below here is a secondary of some sort.
         else if ("transition_to_secondary" === addressInfo.state) {
-          // user must authenticate with their password, kick them over to
-          // the required email screen to enter the password.
-          redirectToState("authenticate", addressInfo);
+          // If the user is coming from the authentication screen, stage the
+          // address verification, autherwise the user must enter their
+          // password.
+          if (info.email && info.password) {
+            redirectToState("stage_transition_to_secondary", info);
+          }
+          else {
+            redirectToState("authenticate", addressInfo);
+          }
         }
         else if ("transition_no_password" === addressInfo.state) {
           redirectToState("transition_no_password", addressInfo);
