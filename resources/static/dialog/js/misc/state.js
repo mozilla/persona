@@ -421,8 +421,8 @@ BrowserID.State = (function() {
         // the record info.
         record = user.getStoredEmailKeypair(email);
 
-        // XXX If the user has a cert, do we really care of the primary is
-        // offline? Shouldn't we just sign them in?
+        // If a primary is offline, do not generate a cert for it because there
+        // is a good chance that the RP cannot fetch the IdP's public key.
         if ('offline' === addressInfo.state) {
           redirectToState("primary_offline", addressInfo);
         }

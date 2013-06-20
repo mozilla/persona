@@ -5,10 +5,14 @@ BrowserID.Modules.PrimaryOffline = (function() {
   "use strict";
 
   var bid = BrowserID,
-      helpers = bid.Helpers;
+      helpers = bid.Helpers,
+      user = bid.User;
 
   function startDialogOver() {
     /*jshint validthis:true*/
+    // Reset the caches so that a user who cancels from this screen can go back
+    // and try the same address again in a few minutes.
+    user.resetCaches();
     this.close("cancel_state");
   }
 
@@ -23,7 +27,11 @@ BrowserID.Modules.PrimaryOffline = (function() {
       self.renderError("primary_offline", options);
       self.click("#primary_offline_confirm", startDialogOver);
       Module.sc.start.call(self, options);
-    }
+    },
+
+    // BEGIN TESTING API
+    cancel: startDialogOver
+    // END TESTING API
   });
 
   return Module;
