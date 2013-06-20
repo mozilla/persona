@@ -110,17 +110,15 @@ runner.run(module, {
       .wtype(CSS['dialog'].emailInput, primaryToSecondaryUser)
       .wclick(CSS['dialog'].newEmailNextButton, done);
   },
-  "primaryToSecondaryUser is now in a transition state, user must enter Persona password and verify email address": function(done) {
+  "primaryToSecondaryUser is now in a transition state, user must enter Persona password - user clicks forgot password": function(done) {
 
-    browser.chain({onError: done})
-      .wtype(CSS['dialog'].existingPassword, "password")
-      .wclick(CSS['dialog'].returningUserButton)
-      .wfind(CSS['dialog'].confirmAddressScreen, done);
+    browser.wclick(CSS['dialog'].forgotPassword, done);
   },
-  "User verifies ownership of previous primary address": function(done) {
-    rp_123done.completeEmailVerification({
+  "User completes password reset of converted address, enters new password on main site": function(done) {
+    rp_123done.completePasswordReset({
       browser: browser,
-      email: primaryToSecondaryUser
+      email: primaryToSecondaryUser,
+      password: "resetpassword"
     }, done);
   },
   "Check primaryToSecondaryUser is logged in": function(done) {
@@ -141,7 +139,7 @@ runner.run(module, {
     dialog.signInExistingUser({
       browser: browser,
       email: primaryToSecondaryUser,
-      password: "password"
+      password: "resetpassword"
     }, done);
   },
   "Make sure primaryToSecondaryUser is signed in to 123done": function(done) {
