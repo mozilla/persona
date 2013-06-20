@@ -20,6 +20,7 @@
 
   // whether to show the development menu.
   "enable_development_menu": true,
+
   // enable the measurement of the dom loading
   "measure_dom_loading": true,
   "forcible_issuers": ["issuer.domain"]
