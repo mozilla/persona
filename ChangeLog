@@ -1,4 +1,24 @@
-current train:
+train-2013.06.19:
+  * Correctly transition users from primary IdP-based to fallback IdP-based accounts: #3551
+  * Bump version in package.json and add additional metadata: #3555
+  * Don't use Array.prototype.indexOf, as it's missing in IE8: #3548
+  * Improve script used to inspect contents of localstorage: #3542
+  * Ensure all expected KPI fields are present: #2280
+  * Refactor code that handles transitions between primary and the fallback IdP: #3517, #3543
+  * Improve KPI usage metrics by counting users who only open the Persona dialog once, and don't complete registration: #3306
+  * Avoid using ES3 reserved word 'native', it offends Android 2.2: #3522
+  * [FXOS] Add FXOS user-agent string to list of browsers recognized by KPI (client-side usage metrics): #3373
+  * [FXOS] UI tweak to avoid FXOS popping an error toolitp prematurely: #3502
+  * [FXOS] Ensure tooltips are rendered on screen, specifically on FxOS: #3496
+  * Serve P3P headers to IE, bringing its third-party cookie behavior in line with other browsers: #2340, #3417
+  * Move saucelabs Selenium tests to newer versions of browsers: #3510
+  * Add a new example RP for local testing of navigator.id.get: #3507
+  * Update terms of service to indicate that educational and government use of Persona is generally ok: #3509
+  * Better support RPs by console.logging, not swallowing, errors thrown by RP page inside watch() callbacks: #3374
+  * Improve backend test stability by delaying daemon shutdown: #3465
+  * UI tweaks: #3426
+  * Upgrade to awsbox 0.4.5, with improved security and error handling: #3483
+  * Show client local timestamp on dialog error screen: #3478
 
 train-2013.06.05:
   * Fix primary IdP support on FirefoxOS: #3461
