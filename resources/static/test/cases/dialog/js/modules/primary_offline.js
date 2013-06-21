@@ -6,6 +6,8 @@
 
   var controller,
       bid = BrowserID,
+      user = bid.User,
+      xhr = bid.Mocks.xhr,
       testHelpers = bid.TestHelpers,
       testElementTextContains = testHelpers.testElementTextContains;
 
@@ -34,7 +36,7 @@
     controller.start(config);
   }
 
-  test("starting the controller without email throws assertion", function() {
+  test("starting the controller without email throws exception", function() {
     var error;
     try {
       createController({});
@@ -51,6 +53,40 @@
     });
     testElementTextContains("#primary_offline",
         'testuser.com is not responding', "Copy includes idpName");
+  });
+
+  asyncTest("user pressing cancel resets address cache", function() {
+    createController({
+      email: "testuser@testuser.com"
+    });
+
+    // primary starts offline
+    xhr.useResult("primaryOffline");
+    user.addressInfo("testuser@testuser.com", function(info) {
+        testHelpers.testObjectValuesEqual(info, {
+          email: "testuser@testuser.com",
+          type: "primary",
+          state: "offline"
+        });
+
+        // user cancels dialog, which should reset cache.
+        controller.cancel();
+
+        // primary comes back online
+        xhr.useResult("primary");
+        user.addressInfo("testuser@testuser.com", function(info) {
+
+          // cache has indeed been updated.
+          testHelpers.testObjectValuesEqual(info, {
+            email: "testuser@testuser.com",
+            type: "primary",
+            state: "known"
+          });
+          xhr.useResult("primary");
+
+          start();
+        }, testHelpers.unexpectedFailure);
+      }, testHelpers.unexpectedFailure);
   });
 
 }());
