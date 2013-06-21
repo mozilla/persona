@@ -64,49 +64,26 @@ suite.addBatch({
       "succeeds": function(e) {
         assert.isNull(e);
       },
-      "removing the user's password": {
-        topic: function() {
-          var self = this;
-          db.emailToUID('foo@example.com', function(err, uid) {
-            if (err) return self.callback(err);
-            db.updatePassword(uid, null, false, self.callback);
-          });
-        },
-        "works": function(err) {
-          assert(!err);
-        },
-        "and calling address info": {
-          topic: wsapi.get('/wsapi/address_info', {
-            email: "foo@example.com"
-          }),
-          "shows 'transition_no_password'": function(err, r) {
-            assert.isNull(err);
-            var r = JSON.parse(r.body);
-            assert.equal(r.type, "secondary");
-            assert.equal(r.state, "transition_no_password");
-          }
+      "and calling address info": {
+        topic: wsapi.get('/wsapi/address_info', {
+          email: "foo@example.com"
+        }),
+        "shows 'transition_no_password'": function(err, r) {
+          assert.isNull(err);
+          var r = JSON.parse(r.body);
+          assert.equal(r.type, "secondary");
+          assert.equal(r.state, "transition_to_secondary");
         }
       }
     }
   }
 });
 
-suite.addBatch({
-  "transition status": {
-    topic: wsapi.get('/wsapi/transition_status', { email: 'foo@example.com' } ),
-    "returns 'complete' before transition": function(err, r) {
-      assert.strictEqual(r.code, 200);
-      assert.strictEqual(JSON.parse(r.body).status, "complete");
-    }
-  }
-});
-
-// Run the "forgot_email" flow with first address.
+// Run the forgot password flow with the address.
 suite.addBatch({
   "stage transition": {
-    topic: wsapi.post('/wsapi/stage_transition', {
+    topic: wsapi.post('/wsapi/stage_reset', {
       email: 'foo@example.com',
-      pass: 'testpass',
       site:'https://otherfakesite.com'
     }),
     "works": function(err, r) {
@@ -157,11 +134,12 @@ suite.addBatch({
 suite.addBatch({
   "complete transition": {
     topic: function() {
-      wsapi.post('/wsapi/complete_transition', {
-        token: token
+      wsapi.post('/wsapi/complete_reset', {
+        token: token,
+        pass: 'password'
       }).call(this);
     },
-    "password set": function(err, r) {
+    "password reset": function(err, r) {
       assert.equal(r.code, 200);
       assert.strictEqual(JSON.parse(r.body).success, true);
     },
@@ -189,7 +167,7 @@ suite.addBatch({
   "secondary account": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: 'foo@example.com',
-      pass: 'testpass',
+      pass: 'password',
       ephemeral: false
     }),
     "should work": function(err, r) {

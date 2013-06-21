@@ -1106,19 +1106,72 @@
     failureCheck(lib.getAssertion, TEST_EMAIL, lib.getOrigin());
   });
 
+  asyncTest("getSilentAssertion with logged out user, " +
+    "null email and assertion",
+      function() {
+    xhr.setContextInfo("auth_level", false);
 
-  asyncTest("getSilentAssertion with logged in user, emails match - user already logged in, call callback with email and null assertion", function() {
+    lib.getSilentAssertion("logged_in@testuser.com",
+        function(email, assertion) {
+      strictEqual(email, null, "correct email");
+      strictEqual(assertion, null, "correct assertion");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+
+  asyncTest("getSilentAssertion with logged in user, emails match, " +
+      "no transition - email and null assertion",  function() {
     var LOGGED_IN_EMAIL = TEST_EMAIL;
     xhr.setContextInfo("auth_level", "password");
 
     lib.syncEmailKeypair(LOGGED_IN_EMAIL, function() {
       storage.site.set(lib.getOrigin(), "logged_in", LOGGED_IN_EMAIL);
+
       lib.getSilentAssertion(LOGGED_IN_EMAIL, function(email, assertion) {
         equal(email, LOGGED_IN_EMAIL, "correct email");
         strictEqual(assertion, null, "correct assertion");
         start();
       }, testHelpers.unexpectedXHRFailure);
+    });
+  });
+
+  function testTransitionAddressSilentAssertion() {
+    xhr.setContextInfo("auth_level", "password");
+    storage.addEmail(TEST_EMAIL, {});
+    storage.site.set(lib.getOrigin(), "logged_in", TEST_EMAIL);
+
+    lib.getSilentAssertion("logged_in@testuser.com",
+        function(email, assertion) {
+      strictEqual(email, null, "correct email");
+      strictEqual(assertion, null, "correct assertion");
+      start();
     }, testHelpers.unexpectedXHRFailure);
+  }
+
+
+  asyncTest("getSilentAssertion with logged in user, emails different, " +
+      "primaryTransition - null email and assertion",
+      function() {
+    xhr.useResult("primaryTransition");
+
+    testTransitionAddressSilentAssertion();
+  });
+
+  asyncTest("getSilentAssertion with logged in user, emails different, " +
+      "secondaryTransition - null email and assertion",
+      function() {
+    xhr.useResult("secondaryTransition");
+
+    testTransitionAddressSilentAssertion();
+  });
+
+  asyncTest("getSilentAssertion with logged in user, emails different, " +
+      "secondaryTransitionPassword - null email and assertion",
+      function() {
+    xhr.useResult("secondaryTransitionPassword");
+
+    testTransitionAddressSilentAssertion();
   });
 
   asyncTest("getSilentAssertion with logged in user, request email different from logged in email, valid cert for logged in email - logged in user needs assertion - call callback with email and assertion.", function() {
