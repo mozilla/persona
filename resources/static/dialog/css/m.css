@@ -36,7 +36,7 @@
     letter-spacing: normal;
   }
 
-  header, footer, .persona_intro {
+  footer, .persona_intro {
     display: none;
   }
 
