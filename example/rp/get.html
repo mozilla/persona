@@ -74,6 +74,9 @@ pre {
     </li><li>
       <input type="checkbox" id="siteLogo">
       <label for="siteLogo">Supply Site Logo</label><br />
+    </li><li>
+      <input type="checkbox" id="backgroundColor">
+      <label for="backgroundColor">Supply Background Color</label><br />
     </li>
   </ul>
     <button class="assertion">Get an assertion</button>
@@ -150,6 +153,7 @@ $(document).ready(function() {
       privacyPolicy: $('#privacyPolicy').attr('checked') ? "/privacy.html" : undefined,
       termsOfService: $('#termsOfService').attr('checked') ? "/TOS.html" : undefined,
       siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
+      backgroundColor: $('#backgroundColor').attr('checked') ? "#81beed" : undefined,
       siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined
     });
   });

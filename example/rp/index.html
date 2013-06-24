@@ -75,6 +75,9 @@ pre {
       <input type="checkbox" id="siteLogo">
       <label for="siteLogo">Supply Site Logo</label><br />
     </li><li>
+      <input type="checkbox" id="backgroundColor">
+      <label for="backgroundColor">Supply Background Color</label><br />
+    </li><li>
       <input type="checkbox" id="returnTo">
       <label for="returnTo">Supply returnTo</label><br />
     </li><li>
@@ -205,6 +208,7 @@ $(document).ready(function() {
       termsOfService: $('#termsOfService').attr('checked') ? "/TOS.html" : undefined,
       siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
       siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined,
+      backgroundColor: $('#backgroundColor').attr('checked') ? "#008" : undefined,
       returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,
       experimental_forceAuthentication: $('#forceAuthentication').attr('checked') ? true : false,
       experimental_forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined,

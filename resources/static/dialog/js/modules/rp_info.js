@@ -40,6 +40,10 @@ BrowserID.Modules.RPInfo = (function() {
       };
 
       renderer.render(".rpInfo", "rp_info", templateData);
+      if (options.rpColors) {
+        $('.rpBackground').css('background-color', options.rpColors[0]);
+        $('.favicon').css('color', options.rpColors[1]);
+      }
 
       /**
        * Mobile devices show the RP TOS/PP below the Persona TOS/PP
