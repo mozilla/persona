@@ -20,8 +20,8 @@ body {
     left: 0;
     top: 0;
     bottom: 0;
-    width: 393px;
-    padding-right: 105px;
+    width: 424px;
+    padding-right: 136px;
 }
 
 .completing #signIn {
@@ -44,6 +44,7 @@ header, footer {
 }
 
 header {
+    display: none;
     top: 0;
     padding: 10px 20px;
     /* The *padding is a fix for IE6 and IE7 showing scroll bars in the
@@ -186,7 +187,7 @@ label.selectable {
     overflow: hidden;
     left: 0;
     right: 0;
-    top: 61px;
+    top: 0;
     bottom: 61px;
     /* Fix for IE6 not displaying the unsupported dialog correctly. IE6 by
      * default sets the height and width of the element to 0 meaning nothing
@@ -339,13 +340,13 @@ section > .contents {
 
 
 #signIn .table {
-    background-color: #eff0f2;
+    background-color: #fafafa;
     padding: 0 20px;
 }
 
 .arrowContainer {
     position: absolute;
-    width: 105px;
+    width: 135px;
     right:  0;
     top: 0;
     bottom: 0;
@@ -358,7 +359,7 @@ section > .contents {
     bottom: 0;
     left: 0;
     right: 0;
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGoAAAD5CAMAAAD4DVBIAAABSlBMVEXv8PL////v8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PK0tbbf4OK1trexsrTe3+Gys7W3uLixsrPCwsObnJ7x8vPk5eapqqzFxse5urvGxsesrKzn6On09favsLGdnZ7DxMXOzs/u7/DGyMnLy8zS09PExcaoqarw8fOam5vAwcKwsbO6u7y7vL2sra7T1NTKzM33+PjU1dbV1tfv8PHv8fLu8PHv8PKLr7NpAAAAQXRSTlMAAP4GDP0dKPpD/BJSc/fuM+eI+JxId5TpOGGn0YTv1q7d9OFlvsxX9fvEasm443zH66C08tmq1CMXAbuj7AjIgCcb4VYAAAN7SURBVHja3d3XUxNhGMXhZHs2PUBCSQgBRJEmNrB3wS5YQemoWM7/fyuDjBcLl5vf6Hvuws0zk8kws9++7/kycgqZbib7NxkpCjFKZQ+j1OYoXeUo1TnKyWGUogCjdMvFKDU5Sjc5SkWO8nMYpVKAUep3MUrTHKVejtI4R/kDGKVSHqNU5Sid5yg1OEqDHBVXMEqjeYzSGEfpBkepxlEqcFQcYpQuexilDkfpEkepxVFOAaMUhRilYQ+j1OYojXCU6hzl9GGUogCjVHYxSk2O0hBHqchRfg6j1BNglPpdjNI0R6mXozTOUf4ARqmUxyhVOUrnOUoNjtIgR8UVjNK5PEZpjKN0hqNU4yid5ag4xCiNehilDkdphqPU4iingFGaDDFKwx5Gqc1RGuEo1TnK6cMoRQFGqexilJocpSGOUpGj/BxGqSfAKPW7GKUJjlIvR2mKo/wBjFLpGkapylG6wFFqcJQGOcqvYJTO5TFKsxylMxylGkfpLEfFIUZp1MModThKMxylFkc5BYzSZIhRGvYwSlc4SiPdoH4mo6PMcZTTh1GKFjFKZRejtJCgupmhrlDP958+3X+uRIpdoO6/e7Gz8+Ldo8SfnVz61OPll6urL5cfnnx6TZ3a3/347NnH3X0lM++mTd3b25Q29x7oRCZSpt5uf97Y2tr4vP1WJ3IxPerHYVbWP7x+8uT1h/WVww9KZOp2mtTSpy9H+bR0CuXcuZ4itXtwnN3TqNk0qb3vx9k77Qv0silSrw7+SAevElS6P4tfh3m/9vUoa+8PPyR/7OlSb74d502SmnfTpJJJ/GOCKCeXpahilqKGshS1kKWosktR0WIWopy+DEXNZShqxOBDz7DHPaAafOxuGTwi6Rg8zopDg0ePNYPHxLMGj/T9isHXLw2Dr8qq4GtNgy9rpwy+WJ8AhyDsjXb4uX9yDOd/GS5qGhwEiwKDQ3t1gwOWbYPDsJOhwcHllsEh847BhYA4NLi8UTO4aDNmcCkqrhhcYGsYXDasgouhBtddxw2uJk8bXCPvCQyu/BcN1jM07VVpKAoM1p7UDVbUtA3WCUWhweqnlsGaro7BSrU4NFh/VzNYVThmsFYyrhisAG0YrGutgtW6BguDxw2WO08bLOIuBQZL04sGC+6bBi8jiAKDF0fU/4dLPv7Zq0vKnrVrZtDLc+5mIOo3f6TA3sIzTYgAAAAASUVORK5CYII='); /* source: /dialog/i/arrow_grey.png */
+    background-image: url('/dialog/i/arrow_grey.png');
     background-repeat: no-repeat;
     background-position: center;
     background-color: transparent;
@@ -390,6 +391,7 @@ section > .contents {
 .favicon h2, .favicon h3 {
     line-height: 1.2em;
     margin: 10px 0 0 0;
+    text-shadow: none;
 }
 
 .favicon h2 {
