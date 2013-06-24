@@ -29,12 +29,6 @@ body {
 
 
 
-footer {
-    position: absolute;
-    z-index: 2;
-    box-shadow: 0 0 24px rgba(0, 0, 0, 0.05) inset;
-}
-
 
 h2 {
     font-size: 20px;
@@ -57,7 +51,11 @@ h3 {
 }
 
 
+
 footer {
+    position: absolute;
+    z-index: 2;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.05) inset;
     bottom: 0;
     border-top: 1px solid #c7c6c1;
     /* The *padding is a fix for IE6 and IE7 showing scroll bars in the
@@ -76,6 +74,9 @@ footer {
  */
 #footerText {
   white-space: nowrap;
+  background-image: url('/dialog/i/persona_watermark_footer_sm.png');
+  background-repeat: no-repeat;
+  padding-left: 32px;
 }
 
 label {
