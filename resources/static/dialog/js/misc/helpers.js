@@ -10,7 +10,10 @@
       user = bid.User,
       tooltip = bid.Tooltip,
       errors = bid.Errors,
-      dom = bid.DOM;
+      dom = bid.DOM,
+      // This is a magic number, it is the same width as the arrow. See
+      // resources/static/dialog/css/style.css #signIn for the arrow width.
+      ARROW_WIDTH = 136;
 
   function animateClose(callback) {
     var body = $("body"),
@@ -21,7 +24,7 @@
       /**
        * Force the arrow to slide all the way off the screen.
        */
-      var endWidth = bodyWidth + $(".arrowContainer").outerWidth();
+      var endWidth = bodyWidth + ARROW_WIDTH;
 
       body.addClass("completing");
       /**

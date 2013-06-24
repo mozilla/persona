@@ -12,8 +12,11 @@ body {
     left: 0;
     top: 0;
     bottom: 0;
-    width: 424px;
+    width: 425px;
     padding-right: 136px;
+    background-image: url('/dialog/i/arrow_grey.png');
+    background-repeat: no-repeat;
+    background-position: center right;
 }
 
 .completing #signIn {
@@ -55,9 +58,8 @@ h3 {
 footer {
     position: absolute;
     z-index: 2;
-    box-shadow: 0 0 24px rgba(0, 0, 0, 0.05) inset;
     bottom: 0;
-    border-top: 1px solid #c7c6c1;
+    border-top: 1px solid #dfe1e2;
     /* The *padding is a fix for IE6 and IE7 showing scroll bars in the
      * unsupported dialog.  Since IE6 and IE7 do not support box-sizing:
      * border-box, the left and right padding cause these versions of IE to
@@ -301,27 +303,6 @@ section > .contents {
 #signIn .table {
     background-color: #fafafa;
     padding: 0 20px;
-}
-
-.arrowContainer {
-    position: absolute;
-    width: 135px;
-    right:  0;
-    top: 0;
-    bottom: 0;
-}
-
-.arrow {
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-image: url('/dialog/i/arrow_grey.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: transparent;
 }
 
 .favicon {
