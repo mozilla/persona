@@ -13,6 +13,7 @@
       xhr = bid.Mocks.xhr,
       WindowMock = bid.Mocks.WindowMock,
       win,
+      storage = bid.Storage,
       mediator = bid.Mediator,
       modules = bid.Modules;
 
@@ -91,7 +92,7 @@
 
   });
 
-  asyncTest("submit with `add: false` option opens a new tab with proper URL (updated for sessionStorage)", function() {
+  asyncTest("submit with `add: false` option opens a new tab with proper URL", function() {
     xhr.useResult("primaryUnknown");
 
     var messageTriggered = false;
@@ -114,8 +115,7 @@
           equal(messageTriggered, true);
           // make sure the data used when returning from the primary is as
           // expected.
-          var dataUsedOnReturnFromPrimary =
-              JSON.parse(win.sessionStorage.primaryVerificationFlow);
+          var dataUsedOnReturnFromPrimary = storage.idpVerification.get();
           equal(dataUsedOnReturnFromPrimary['native'], true);
           equal(dataUsedOnReturnFromPrimary.add, false);
           equal(dataUsedOnReturnFromPrimary.email, "unregistered@testuser.com");
@@ -126,7 +126,7 @@
     });
   });
 
-  asyncTest("submit with `add: true` option opens a new tab with proper URL (updated for sessionStorage)", function() {
+  asyncTest("submit with `add: true` option opens a new tab with proper URL", function() {
 
     xhr.useResult("primaryUnknown");
     createController({
@@ -143,8 +143,7 @@
 
           // make sure the data used when returning from the primary is as
           // expected.
-          var dataUsedOnReturnFromPrimary =
-              JSON.parse(win.sessionStorage.primaryVerificationFlow);
+          var dataUsedOnReturnFromPrimary = storage.idpVerification.get();
           equal(dataUsedOnReturnFromPrimary['native'], true);
           equal(dataUsedOnReturnFromPrimary.add, true);
           equal(dataUsedOnReturnFromPrimary.email, "unregistered@testuser.com");
