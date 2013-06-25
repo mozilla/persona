@@ -482,12 +482,6 @@ footer .help {
 
 .message_screen {
   background-color: #dadee1;
-  background-image: url("/common/i/grain.png#iefix"), -webkit-gradient(linear, left top, left bottom, from(#dadee1), to(#c7ccd0));
-  background-image: url("/common/i/grain.png#iefix"), -webkit-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/common/i/grain.png#iefix"),    -moz-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/common/i/grain.png#iefix"),     -ms-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/common/i/grain.png#iefix"),      -o-linear-gradient(top, #dadee1, #c7ccd0);
-  background-image: url("/common/i/grain.png#iefix"),         linear-gradient(top, #dadee1, #c7ccd0);
 }
 
 .message_screen .contents {

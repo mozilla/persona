@@ -14,9 +14,6 @@ body {
     bottom: 0;
     width: 425px;
     padding-right: 136px;
-    background-image: url('/dialog/i/arrow_grey.png');
-    background-repeat: no-repeat;
-    background-position: center right;
 }
 
 .completing #signIn {
@@ -297,12 +294,33 @@ section > .contents {
 
 
 .rpBackground {
-  background-color: #fafafa;
+  background-color: #ccc;
 }
 
 #signIn .table {
     background-color: #fafafa;
+    box-shadow: 0px 0px 20px -11px #000;
     padding: 0 20px;
+}
+
+.arrowContainer {
+    position: absolute;
+    width: 136px;
+    right:  0;
+    top: 0;
+    bottom: 0;
+}
+
+.arrow {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-image: url('/dialog/i/arrow_grey.png');
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .favicon {
