@@ -157,20 +157,20 @@ BrowserID.Modules.Dialog = (function() {
 
   function processBackgroundColor(value) {
 
-    if (value.substr(0, 1) == '#') {
+    if (value.substr(0, 1) === '#') {
       value = value.substr(1);
     }
 
     // Check if this is valid hex color
     if (!value.match(/[0-9a-fA-F]{3}|[0-9a-fA-F]{6}/)) {
-      console.log('invalid backgroundColor: ' + value);
+      throw new Error("invalid backgroundColor: ' + value);
       return null;
     }
 
     // Convert to RGB number values
     var list = [0, 0, 0];
     for (var i = 0; i < 3; i++) {
-      if (value.length == 3) {
+      if (value.length === 3) {
         list[i] = parseInt(value.charAt(i) + value.charAt(i), 16);
       } else {
         list[i] = parseInt(value.substr(i * 2, 2), 16);
@@ -181,10 +181,10 @@ BrowserID.Modules.Dialog = (function() {
     var r = list[0] / 255, g = list[1] / 255, b = list[2] / 255;
     var max = Math.max(r, g, b), min = Math.min(r, g, b);
     if ((max + min) / 2 > 0.5) {
-	  return ['#' + value, '#383838']; // high L => light background => dark text
+      return ['#' + value, '#383838']; // high L => light background => dark text
 	} else {
-	  return ['#' + value, '#c7c7c7']; // low L => dark background => light text
-	}
+      return ['#' + value, '#c7c7c7']; // low L => dark background => light text
+    }
 
   }
 
