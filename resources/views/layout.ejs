@@ -14,6 +14,7 @@
     <%- cachify_css('/production/ie8_main.css') %>
   <![endif]-->
   <%- cachify_js(util.format('/production/%s/browserid.js', locale)) %>
+  <link rel="shortcut icon" href=<%- cachify('/favicon.ico') -%>>
   <% /* the title comes from the server when the page is loaded.
          It still needs translated, so wrap it in its own gettext
      */ %>
