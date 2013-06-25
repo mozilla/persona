@@ -18,6 +18,25 @@ BrowserID.Modules.RPInfo = (function() {
       FAVICON_CLASS = "showMobileFavicon",
       sc;
 
+  function foregroundColor(bg) {
+
+    // Convert to RGB number values
+    var list = [0, 0, 0];
+    for (var i = 0; i < 3; i++) {
+      list[i] = parseInt(bg.substr(i * 2, 2), 16);
+    }
+
+    // Determine the luminance (L in HSL)
+    var r = list[0] / 255, g = list[1] / 255, b = list[2] / 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    if ((max + min) / 2 > 0.5) {
+      return '#383838'; // high L => light background => dark text
+    } else {
+      return '#c7c7c7'; // low L => dark background => light text
+    }
+
+  }
+
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       options = options || {};
@@ -40,9 +59,9 @@ BrowserID.Modules.RPInfo = (function() {
       };
 
       renderer.render(".rpInfo", "rp_info", templateData);
-      if (options.rpColors) {
-        $('.rpBackground').css('background-color', options.rpColors[0]);
-        $('.favicon').css('color', options.rpColors[1]);
+      if (options.backgroundColor) {
+        $('.rpBackground').css('background-color', '#' + options.backgroundColor);
+        $('.favicon').css('color', foregroundColor(options.backgroundColor));
       }
 
       /**
@@ -60,6 +79,12 @@ BrowserID.Modules.RPInfo = (function() {
 
       sc.start.call(this, options);
     }
+
+    // BEGIN TESTING API
+    ,
+    foregroundColor: foregroundColor
+    // END TESTING API
+
   });
 
   sc = Module.sc;

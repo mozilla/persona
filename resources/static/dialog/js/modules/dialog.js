@@ -155,7 +155,7 @@ BrowserID.Modules.Dialog = (function() {
     return issuer;
   }
 
-  function processBackgroundColor(value) {
+  function validateBackgroundColor(value) {
 
     if (value.substr(0, 1) === '#') {
       value = value.substr(1);
@@ -166,24 +166,17 @@ BrowserID.Modules.Dialog = (function() {
       throw new Error('invalid backgroundColor: ' + value);
     }
 
-    // Convert to RGB number values
-    var list = [0, 0, 0];
-    for (var i = 0; i < 3; i++) {
-      if (value.length === 3) {
-        list[i] = parseInt(value.charAt(i) + value.charAt(i), 16);
-      } else {
-        list[i] = parseInt(value.substr(i * 2, 2), 16);
-      }
+    if (value.length === 6) {
+      return value;
     }
 
-    // Determine the luminance (L in HSL)
-    var r = list[0] / 255, g = list[1] / 255, b = list[2] / 255;
-    var max = Math.max(r, g, b), min = Math.min(r, g, b);
-    if ((max + min) / 2 > 0.5) {
-      return ['#' + value, '#383838']; // high L => light background => dark text
-	} else {
-      return ['#' + value, '#c7c7c7']; // low L => dark background => light text
+    // Normalize 3- to 6-character hex color
+    var bits = [];
+    for (var i = 0; i < 3; i++) {
+      bits.push(value.charAt(i) + value.charAt(i));
     }
+
+    return bits.join('');
 
   }
 
@@ -326,8 +319,8 @@ BrowserID.Modules.Dialog = (function() {
         }
 
         if (paramsFromRP.backgroundColor) {
-          var rpColors = processBackgroundColor(paramsFromRP.backgroundColor);
-          if (rpColors) params.rpColors = rpColors;
+          var backgroundColor = validateBackgroundColor(paramsFromRP.backgroundColor);
+          if (backgroundColor) params.backgroundColor = backgroundColor;
         }
 
         if (paramsFromRP.siteName) {
