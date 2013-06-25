@@ -163,7 +163,7 @@ BrowserID.Modules.Dialog = (function() {
 
     // Check if this is valid hex color
     if (!value.match(/[0-9a-fA-F]{3}|[0-9a-fA-F]{6}/)) {
-      throw new Error("invalid backgroundColor: ' + value);
+      throw new Error('invalid backgroundColor: ' + value);
       return null;
     }
 
