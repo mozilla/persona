@@ -382,19 +382,37 @@
     start();
   });
 
-  test("error_screen formats an error object", function() {
+  function testErrorScreen(config, expectedErrorType) {
     createController();
-    controller.addEvent("error_screen", {
-      action: errors.addressInfo,
-      network: {
-        status: 503
-      }
-    });
+    controller.addEvent("error_screen", config);
 
     var eventStream = controller.getCurrentEventStream();
     var errorEvent = eventStream.pop();
 
-    equal(errorEvent[0], "screen.error.addressInfo.503");
+    equal(errorEvent[0], expectedErrorType);
+  }
+
+  test("error_screen formats an error object", function() {
+    testErrorScreen({
+      action: errors.addressInfo,
+      network: {
+        status: 503
+      }
+    }, "screen.error.addressInfo.503");
+  });
+
+  test("error_screen takes care of custom error types", function() {
+    testErrorScreen({
+      action: {
+        title: "custom error type"
+      }
+    }, "screen.error.custom error type");
+  });
+
+  test("error_screen takes care of error type without title", function() {
+    testErrorScreen({
+      action: { }
+    }, "screen.error.unknown");
   });
 
   asyncTest("Consecutive xhr_complete messages for the same URL only have one entry", function() {

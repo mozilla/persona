@@ -47,12 +47,16 @@ BrowserID.Modules.InteractionData = (function() {
     var parts = [];
 
     if (data.action) {
-      parts.push(_.keyOf(errors, data.action));
+      var errorType = _.keyOf(errors, data.action)
+                          || data.action.title || "unknown";
+      parts.push(errorType);
     }
 
     if (data.network && data.network.status > 399) {
       parts.push(data.network.status);
     }
+
+    if (!parts.length) parts[0] = "unknown";
 
     return 'screen.error.' + parts.join('.');
   }
