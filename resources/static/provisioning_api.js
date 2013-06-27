@@ -630,6 +630,15 @@
 
   if (!navigator.id.beginProvisioning || navigator.id._primaryAPIIsShimmed) {
     var ipServer = "https://login.persona.org";
+    // FirefoxOS UA string:
+    // "Mozilla/5.0 (Mobile; rv:18.0) Gecko/18.0 Firefox/18.0
+    // Android UA string:
+    // Mozilla/5.0 (Android; Mobile; rv:18.0) Gecko/18.0 Firefox/18.0
+    if (!!navigator.mozId && (navigator.userAgent.indexOf("(Mobile;") > -1)) {
+      // when running in dev/staging, this will be replaced by
+      // performSubstitution to point to the same as ipServer.
+      ipServer = "https://firefoxos.persona.org";
+    }
 
     var chan = Channel.build({window: window.parent, origin: ipServer, scope: "vep_prov"});
 
