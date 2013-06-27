@@ -28,7 +28,9 @@ BrowserID.Storage = (function() {
   "use strict";
 
   var ONE_DAY_IN_MS = (1000 * 60 * 60 * 24),
-      storage = BrowserID.getStorage();
+      IDP_INFO_LIFESPAN_MS = 1000 * 60 * 60,
+      storage = BrowserID.getStorage(),
+      win = window;
 
   // Set default values immediately so that IE8 localStorage synchronization
   // issues do not become a factor. See issue #2206
@@ -442,6 +444,105 @@ BrowserID.Storage = (function() {
     storage.emailToUserID = JSON.stringify(allInfo);
   }
 
+  function getIdpVerificationNonce() {
+    var nonce = sessionStorage.idpNonce || win.name;
+    var und;
+    // the dialog window name, when opened by the shim, is __persona_dialog.
+    // Ignore it, it's not a nonce.
+    if (nonce === "__persona_dialog") nonce = und;
+
+    return nonce;
+  }
+
+
+  function getIdpVerificationInfo(nonce) {
+    // set in dialog/modules/verify_with_primary.js if the user must
+    // verify with their primary.
+    nonce = nonce || getIdpVerificationNonce();
+
+    if (!nonce) return;
+
+    var storageKey = 'idpVerification' + nonce;
+    var data = storage[storageKey];
+
+    var primaryParams;
+    if (data)
+      try {
+        primaryParams = JSON.parse(data);
+      } catch(e) {
+        // invalid JSON, delete it
+        storage.removeItem(storageKey);
+        throw e;
+      }
+
+    return primaryParams;
+  }
+
+  function setIdpVerifcationInfo(nonce, info) {
+    // FirefoxOS has a bug where sessionStorage can be purged while the user
+    // is visiting their Idp. localStorage is safe. Instead of saving data
+    // to sessionStorage, which may go away, we have to save to localStorage
+    // in a way that avoids multi-window collisions. Create a per-window nonce.
+    // Save the nonce in a cross-browser compatible way (not as easy as it
+    // seems). Save the idpVerification info into localStorage using
+    // the nonce as a namespace. When the user returns from the Idp, look up
+    // the nonce and fetch the appropriate info.
+
+    if (!info) {
+      info = nonce;
+      nonce = String(Math.random());
+    }
+
+    // The nonce is a bit tricky. Since sessionStorage is not reliable in
+    // FirefoxOS, we need an alternate method. window.name survives across page
+    // redirects in FirefoxOS, but not in IE8. In IE8, when the user redirects
+    // to their primary, window.name is reset to "__persona_dialog". In IE8,
+    // sessionStorage survives redirects to the Idp. So, we save to both.
+    win.name = win.sessionStorage.idpNonce = nonce;
+
+    // save the date to allow expired info to be purged.
+    if (!info.created)
+      info.created = new Date().toString();
+
+    storage['idpVerification' + nonce] = JSON.stringify(info);
+  }
+
+  function clearIdpVerificationInfo() {
+    var nonce = getIdpVerificationNonce();
+
+    if (nonce) {
+      var storageKey = 'idpVerification' + nonce;
+      storage.removeItem(storageKey);
+    }
+
+    // clear any expired info
+    for (var i = 0; i < localStorage.length; ++i) {
+      var key = localStorage.key(i);
+      if (/^idpVerification/.test(key)) {
+        var info;
+        try {
+          info = JSON.parse(storage.getItem(key));
+        }
+        catch(e) {
+          storage.removeItem(key);
+          continue;
+        }
+
+        if (!(info && info.created)) {
+          storage.removeItem(key);
+          continue;
+        }
+
+        var createdTime = new Date(info.created).getTime();
+        var earliestValidTime = new Date().getTime() - IDP_INFO_LIFESPAN_MS;
+
+        if (createdTime < earliestValidTime)
+          storage.removeItem(key);
+      }
+    }
+  }
+
+
   return {
     /**
      * Add an email address and optional key pair.
@@ -612,7 +713,28 @@ BrowserID.Storage = (function() {
      * see issue #1637 for full details.
      * @method setDefaultValues
      */
-    setDefaultValues: setDefaultValues
+    setDefaultValues: setDefaultValues,
+
+    /**
+     * Info used after verifying ownership of an address with an Idp.
+     */
+    idpVerification: {
+      /**
+       * Get post-Idp verification info for this window
+       * @throws JSON.parse error if invalid JSON.
+       */
+      get: getIdpVerificationInfo,
+      /**
+       * Set post-Idp verification info for this window
+       */
+      set: setIdpVerifcationInfo,
+      /**
+       * Clear post-Idp verification info for this window as well as expired
+       * data
+       */
+      clear: clearIdpVerificationInfo,
+      INFO_LIFESPAN_MS: IDP_INFO_LIFESPAN_MS
+    }
     // BEGIN TRANSITION CODE
     /**
      * Upgrade the site->user logged in info from the loggedIn namespace to be

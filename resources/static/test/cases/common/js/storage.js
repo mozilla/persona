@@ -207,6 +207,39 @@
     testHelpers.testUndefined(storage.site.get(TEST_ORIGIN, "logged_in"), "sites with email no longer logged in");
   });
 
+  test("idpVerification functions, set, get, clear", function() {
+    storage.idpVerification.set({
+      email: "testuser@testuser.com",
+      'native': true
+    });
+
+    var info = storage.idpVerification.get();
+    equal(info.email, "testuser@testuser.com");
+    equal(info['native'], true);
+
+    storage.idpVerification.clear();
+    info = storage.idpVerification.get();
+    equal(typeof info, "undefined");
+  });
+
+  test("idpVerification - clear old info", function() {
+    var now = new Date().getTime();
+    // Set the start date to one second past the lifetime.
+    var expiredTime = now - storage.idpVerification.INFO_LIFESPAN_MS - 1;
+    var expiredDate = new Date();
+    expiredDate.setTime(expiredTime);
+    storage.idpVerification.set("expired", {
+      email: "expired@testuser.com",
+      created: expiredDate.toString()
+    });
+
+    sessionStorage.idpNonce = "hacked_in_for_testing";
+
+    storage.idpVerification.clear();
+    var info = storage.idpVerification.get("expired");
+    equal(typeof info, "undefined");
+  });
+
   // BEGIN TRANSITION CODE
   test("upgradeLoggedInInfo upgrades old loggedInInfo and removes namespace",
       function() {

@@ -11,6 +11,7 @@ BrowserID.Modules.Dialog = (function() {
       errors = bid.Errors,
       dom = bid.DOM,
       helpers = bid.Helpers,
+      storage = bid.Storage,
       win = window,
       startExternalDependencies = true,
       channel,
@@ -47,20 +48,17 @@ BrowserID.Modules.Dialog = (function() {
     // returning from the primary verification flow, we were native before, we
     // are native now. This prevents the UI from trying to establish a channel
     // back to the RP.
-    if (win.sessionStorage.primaryVerificationFlow) {
-      try {
-        var info = JSON.parse(win.sessionStorage.primaryVerificationFlow);
-        /*jshint sub: true */
-        if (info['native']) return;
-      } catch(e) {
-        self.renderError("error", {
-          action: {
-            title: "error in sessionStorage",
-            message: "could not decode sessionStorage.primaryVerificationFlow: "
-                          + String(e)
-          }
-        });
-      }
+    try {
+      var info = storage.idpVerification.get();
+      /*jshint sub: true */
+      if (info && info['native']) return;
+    } catch(e) {
+      self.renderError("error", {
+        action: {
+          title: "error in localStorage",
+          message: "could not decode localStorage: " + String(e)
+        }
+      });
     }
 
     // next, we see if the caller intends to call native APIs
@@ -329,8 +327,9 @@ BrowserID.Modules.Dialog = (function() {
         }
 
         if (hash.indexOf("#AUTH_RETURN") === 0) {
-          var primaryParams =
-              JSON.parse(win.sessionStorage.primaryVerificationFlow);
+          var primaryParams = storage.idpVerification.get();
+          if (!primaryParams)
+            throw new Error("Could not get IdP Verification Info");
 
           params.email = primaryParams.email;
           params.add = primaryParams.add;
@@ -342,7 +341,7 @@ BrowserID.Modules.Dialog = (function() {
         }
 
         // no matter what, we clear the primary flow state for this window
-        win.sessionStorage.primaryVerificationFlow = undefined;
+        storage.idpVerification.clear();
       } catch(e) {
         // note: renderError accepts HTML and cheerfully injects it into a
         // frame with a powerful origin. So convert 'e' first.
