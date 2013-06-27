@@ -16,6 +16,7 @@ BrowserID.Modules.RPInfo = (function() {
       renderer = bid.Renderer,
       BODY_SELECTOR = "body",
       FAVICON_CLASS = "showMobileFavicon",
+      TEXT_COLOR = {dark: '#383838', light: '#c7c7c7'},
       sc;
 
   function foregroundColor(bg) {
@@ -30,9 +31,9 @@ BrowserID.Modules.RPInfo = (function() {
     var r = list[0] / 255, g = list[1] / 255, b = list[2] / 255;
     var max = Math.max(r, g, b), min = Math.min(r, g, b);
     if ((max + min) / 2 > 0.5) {
-      return '#383838'; // high L => light background => dark text
+      return TEXT_COLOR.dark; // high L => light background => dark text
     } else {
-      return '#c7c7c7'; // low L => dark background => light text
+      return TEXT_COLOR.light; // low L => dark background => light text
     }
 
   }
@@ -82,6 +83,7 @@ BrowserID.Modules.RPInfo = (function() {
 
     // BEGIN TESTING API
     ,
+    TEXT_COLOR: TEXT_COLOR,
     foregroundColor: foregroundColor
     // END TESTING API
 
