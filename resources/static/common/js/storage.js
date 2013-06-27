@@ -444,19 +444,6 @@ BrowserID.Storage = (function() {
     storage.emailToUserID = JSON.stringify(allInfo);
   }
 
-  // generate a random string for use as a per-window nonce.
-  function generateRandomString(length) {
-    var chars =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-    var str = "";
-    for (var i = 0; i < length; ++i) {
-      str += chars.charAt(Math.ceil(Math.random() * chars.length));
-    }
-
-    return str;
-  }
-
   function getIdpVerificationNonce() {
     var nonce = sessionStorage.idpNonce || win.name;
     var und;
@@ -503,7 +490,7 @@ BrowserID.Storage = (function() {
 
     if (!info) {
       info = nonce;
-      nonce = generateRandomString(8);
+      nonce = String(Math.random());
     }
 
     // The nonce is a bit tricky. Since sessionStorage is not reliable in
