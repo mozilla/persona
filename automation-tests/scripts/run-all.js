@@ -280,11 +280,26 @@ function startTesting() {
     }
   }
 
+  function setupSigIntHandler(aggregators) {
+    // Sometimes, when running tests interactively from the command line,
+    // things start going badly, and you don't want to wait for the end of the
+    // test to find out what was failing. So, on SIGINT, show the state of the
+    // aggregators before exiting.
+    if (process.platform === 'win32') return; // signals are not supported
+    process.on('SIGINT', function() {
+      if (!aggregators.length) return process.exit(1);
+      if (args.output === 'console') process.stdout.write("\n\n");
+      summarizeResultsAndExit(aggregators);
+    });
+  }
+
   function runTests() {
     var aggregators = [];
     var totalTests = tests.length;
     var completeTests = 0;
     var allProcessesExitedCleanly = true;
+
+    setupSigIntHandler(aggregators);
 
     function getAggregator() {
       var aggregator;
