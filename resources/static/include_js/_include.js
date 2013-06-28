@@ -461,6 +461,7 @@
         opts.tosURL = passedOptions.tosURL || undefined;
         opts.siteName = passedOptions.siteName || undefined;
         opts.siteLogo = passedOptions.siteLogo || undefined;
+        opts.backgroundColor = passedOptions.backgroundColor || undefined;
         // api_called could have been set to getVerifiedEmail already
         api_called = api_called || "get";
         if (checkDeprecated(passedOptions, "silent")) {

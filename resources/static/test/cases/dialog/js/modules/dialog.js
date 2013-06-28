@@ -616,5 +616,56 @@
     });
   });
 
+  asyncTest("invalid backgroundColor - not allowed", function() {
+    testExpectGetFailure({
+      backgroundColor: "invalid_value"
+    }, "invalid backgroundColor: invalid_value");
+  });
+
+  asyncTest("incorrect length (2) backgroundColor - not allowed", function() {
+    testExpectGetFailure({
+      backgroundColor: "ab"
+    }, "invalid backgroundColor: ab");
+  });
+
+  asyncTest("incorrect length (4) backgroundColor - not allowed", function() {
+    testExpectGetFailure({
+      backgroundColor: "abcd"
+    }, "invalid backgroundColor: abcd");
+  });
+
+  asyncTest("incorrect length (5) backgroundColor - not allowed", function() {
+    testExpectGetFailure({
+      backgroundColor: "abcde"
+    }, "invalid backgroundColor: abcde");
+  });
+
+  asyncTest("incorrect length (7) backgroundColor - not allowed", function() {
+    testExpectGetFailure({
+      backgroundColor: "abcdeff"
+    }, "invalid backgroundColor: abcdeff");
+  });
+
+  asyncTest("valid 3 char backgroundColor - allowed & normalized", function() {
+    testExpectGetSuccess({backgroundColor: "abc"},
+                         {backgroundColor: "aabbcc"});
+  });
+
+  asyncTest("valid 3 char backgroundColor with hash - allowed & normalized",
+      function() {
+    testExpectGetSuccess({backgroundColor: "#123"},
+                         {backgroundColor: "112233"});
+  });
+
+  asyncTest("valid 6 char backgroundColor - allowed", function() {
+    testExpectGetSuccess({backgroundColor: "abcdef"},
+                         {backgroundColor: "abcdef"});
+  });
+
+  asyncTest("valid 6 char backgroundColor with hash - allowed", function() {
+    testExpectGetSuccess({backgroundColor: "#456DEF"},
+                         {backgroundColor: "456DEF"});
+  });
+
 }());
 

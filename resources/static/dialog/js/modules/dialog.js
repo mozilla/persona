@@ -153,6 +153,31 @@ BrowserID.Modules.Dialog = (function() {
     return issuer;
   }
 
+  function validateBackgroundColor(value) {
+
+    if (value.substr(0, 1) === '#') {
+      value = value.substr(1);
+    }
+
+    // Check if this is valid hex color
+    if (!value.match(/^[0-9a-fA-F]{3}$|^[0-9a-fA-F]{6}$/)) {
+      throw new Error('invalid backgroundColor: ' + value);
+    }
+
+    if (value.length === 6) {
+      return value;
+    }
+
+    // Normalize 3- to 6-character hex color
+    var bits = [];
+    for (var i = 0; i < 3; i++) {
+      bits.push(value.charAt(i) + value.charAt(i));
+    }
+
+    return bits.join('');
+
+  }
+
   function validateRPAPI(rpAPI) {
     var VALID_RP_API_VALUES = [
       "watch_without_onready",
@@ -289,6 +314,11 @@ BrowserID.Modules.Dialog = (function() {
           if (URLParse(origin_url).scheme !== "https") {
             throw new Error("only https sites can specify a siteLogo");
           }
+        }
+
+        if (paramsFromRP.backgroundColor) {
+          var backgroundColor = validateBackgroundColor(paramsFromRP.backgroundColor);
+          if (backgroundColor) params.backgroundColor = backgroundColor;
         }
 
         if (paramsFromRP.siteName) {

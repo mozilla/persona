@@ -4,15 +4,7 @@
 
 body {
   color: #383838;
-  background-color: #dee3e6;
-  background-image: url('/common/i/grain.png');
-  background-image: url("/common/i/grain.png#iefix"), -webkit-gradient(linear, left top, left bottom, from(rgba(113, 126, 137, 0)), to(rgba(113, 126, 137, 0.2)));
-  background-image: url('/common/i/grain.png#iefix'), -webkit-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/common/i/grain.png#iefix'),    -moz-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/common/i/grain.png#iefix'),     -ms-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/common/i/grain.png#iefix'),      -o-linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  background-image: url('/common/i/grain.png#iefix'),         linear-gradient(top, rgba(113, 126, 137, 0), rgba(113, 126, 137, 0.2));
-  line-height: 18px;
+  background-color: #ebeced;
 }
 
 #signIn {
@@ -20,8 +12,8 @@ body {
     left: 0;
     top: 0;
     bottom: 0;
-    width: 393px;
-    padding-right: 105px;
+    width: 425px;
+    padding-right: 136px;
 }
 
 .completing #signIn {
@@ -37,34 +29,6 @@ body {
 
 
 
-header, footer {
-    position: absolute;
-    z-index: 2;
-    box-shadow: 0 0 24px rgba(0, 0, 0, 0.05) inset;
-}
-
-header {
-    top: 0;
-    padding: 10px 20px;
-    /* The *padding is a fix for IE6 and IE7 showing scroll bars in the
-     * unsupported dialog.  Since IE6 and IE7 do not support box-sizing:
-     * border-box, the left and right padding cause these versions of IE to
-     * overflow the dialog box.
-     */
-    *padding: 10px 0;
-    border-bottom: 1px solid #c7c6c1;
-
-    /*-ms-filter through zoom: 1 are fixes for IE6 and IE7 so they show the header
-     */
-    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#0c000000,endColorstr=#0c000000);
-    zoom: 1;
-    background-image: -webkit-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
-    background-image:    -moz-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
-    background-image:     -ms-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
-    background-image:      -o-linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
-    background-image:         linear-gradient(top, rgba(0,0,0,.05), rgba(0,0,0,0));
-}
 
 h2 {
     font-size: 20px;
@@ -87,19 +51,12 @@ h3 {
 }
 
 
-.home {
-  width: 161px;
-  height: 40px;
-  background: url("data:image/png;base64,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") 0 0 no-repeat; /* source: /dialog/i/persona-logo-transparent.png */
-  text-indent: -9999px;
-  display: inline-block;
-  *display: block;
-  zoom: 1;
-}
 
 footer {
+    position: absolute;
+    z-index: 2;
     bottom: 0;
-    border-top: 1px solid #c7c6c1;
+    border-top: 1px solid #dfe1e2;
     /* The *padding is a fix for IE6 and IE7 showing scroll bars in the
      * unsupported dialog.  Since IE6 and IE7 do not support box-sizing:
      * border-box, the left and right padding cause these versions of IE to
@@ -108,11 +65,6 @@ footer {
     padding: 20px;
     *padding: 20px 0;
     text-align: center;
-    background-image: -webkit-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
-    background-image:    -moz-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
-    background-image:     -ms-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
-    background-image:      -o-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
-    background-image:         linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,.05));
 }
 
 /* prevent the footer text from wrapping so that its non-wrapped width can be
@@ -121,6 +73,9 @@ footer {
  */
 #footerText {
   white-space: nowrap;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAATCAMAAAC9bj0JAAAA81BMVEVaWlpbW1tbW1tbW1teXl5gYGBhYWFhYWFcXFxhYWFhYWFgYGBgYGBhYWFgYGBhYWFhYWFbW1thYWFhYWFgYGBaWlphYWFhYWFhYWFgYGBaWlpbW1taWlpaWlpbW1teXl5gYGBdXV1fX19ZWVlhYWFhYWFgYGBgYGBhYWFgYGBhYWFhYWFgYGBaWlphYWFaWlphYWFfX19hYWFhYWFhYWFgYGBhYWFhYWFhYWFhYWFhYWFaWlpdXV1hYWFhYWFcXFxgYGBgYGBbW1tgYGBfX19hYWFhYWFcXFxhYWFhYWFbW1thYWFaWloAAABbW1tgYGBhYWHM3shCAAAATnRSTlP8/f39vBB0Ot6BCz8MPaolQvR3gkrvK09Tkffn/PvsuwXCqPkgUnymaCxuDIHsFuRDsI9gAS4IgCeYEPnGP4zOJ1rueKtnNuAhCe8m9gAf2tZNAAAA1klEQVR42l2RiVLCMBCG0xkRAQXlRkdFkNuLQ+VQDkVoq/9s3/9pbLKbdvSbZDLzf0m7mygn+APtdzAoIg4Cu67WLGRjOKybzVkI/nLrhEaP15dY0OIZ+CL56HgSnxgNADzyJqKnWPQR0rE/vO9Fol0HcB1Yc3NrxVUZOIm7oYay1RY8HHFPHCjJzw7TOPCDqM2mMkspn0wAbiZlc2qxqIE5zkre5arOKxBO+cSdZwRdVN1vQ65oLmX4ABakfoRLnb9NIUJPDd/xxztECLagjTzUf/MJwy9JhIDyvokPVAAAAABJRU5ErkJggg=='); /* source: dialog/i/persona_watermark_footer_sm.png */
+  background-repeat: no-repeat;
+  padding-left: 32px;
 }
 
 label {
@@ -186,7 +141,7 @@ label.selectable {
     overflow: hidden;
     left: 0;
     right: 0;
-    top: 61px;
+    top: 0;
     bottom: 61px;
     /* Fix for IE6 not displaying the unsupported dialog correctly. IE6 by
      * default sets the height and width of the element to 0 meaning nothing
@@ -338,14 +293,19 @@ section > .contents {
 }
 
 
+.rpBackground {
+  background-color: #ccc;
+}
+
 #signIn .table {
-    background-color: #eff0f2;
+    background-color: #fafafa;
+    box-shadow: 0px 0px 20px -11px #000;
     padding: 0 20px;
 }
 
 .arrowContainer {
     position: absolute;
-    width: 105px;
+    width: 136px;
     right:  0;
     top: 0;
     bottom: 0;
@@ -358,10 +318,9 @@ section > .contents {
     bottom: 0;
     left: 0;
     right: 0;
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGoAAAD5CAMAAAD4DVBIAAABSlBMVEXv8PL////v8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PLv8PK0tbbf4OK1trexsrTe3+Gys7W3uLixsrPCwsObnJ7x8vPk5eapqqzFxse5urvGxsesrKzn6On09favsLGdnZ7DxMXOzs/u7/DGyMnLy8zS09PExcaoqarw8fOam5vAwcKwsbO6u7y7vL2sra7T1NTKzM33+PjU1dbV1tfv8PHv8fLu8PHv8PKLr7NpAAAAQXRSTlMAAP4GDP0dKPpD/BJSc/fuM+eI+JxId5TpOGGn0YTv1q7d9OFlvsxX9fvEasm443zH66C08tmq1CMXAbuj7AjIgCcb4VYAAAN7SURBVHja3d3XUxNhGMXhZHs2PUBCSQgBRJEmNrB3wS5YQemoWM7/fyuDjBcLl5vf6Hvuws0zk8kws9++7/kycgqZbib7NxkpCjFKZQ+j1OYoXeUo1TnKyWGUogCjdMvFKDU5Sjc5SkWO8nMYpVKAUep3MUrTHKVejtI4R/kDGKVSHqNU5Sid5yg1OEqDHBVXMEqjeYzSGEfpBkepxlEqcFQcYpQuexilDkfpEkepxVFOAaMUhRilYQ+j1OYojXCU6hzl9GGUogCjVHYxSk2O0hBHqchRfg6j1BNglPpdjNI0R6mXozTOUf4ARqmUxyhVOUrnOUoNjtIgR8UVjNK5PEZpjKN0hqNU4yid5ag4xCiNehilDkdphqPU4iingFGaDDFKwx5Gqc1RGuEo1TnK6cMoRQFGqexilJocpSGOUpGj/BxGqSfAKPW7GKUJjlIvR2mKo/wBjFLpGkapylG6wFFqcJQGOcqvYJTO5TFKsxylMxylGkfpLEfFIUZp1MModThKMxylFkc5BYzSZIhRGvYwSlc4SiPdoH4mo6PMcZTTh1GKFjFKZRejtJCgupmhrlDP958+3X+uRIpdoO6/e7Gz8+Ldo8SfnVz61OPll6urL5cfnnx6TZ3a3/347NnH3X0lM++mTd3b25Q29x7oRCZSpt5uf97Y2tr4vP1WJ3IxPerHYVbWP7x+8uT1h/WVww9KZOp2mtTSpy9H+bR0CuXcuZ4itXtwnN3TqNk0qb3vx9k77Qv0silSrw7+SAevElS6P4tfh3m/9vUoa+8PPyR/7OlSb74d502SmnfTpJJJ/GOCKCeXpahilqKGshS1kKWosktR0WIWopy+DEXNZShqxOBDz7DHPaAafOxuGTwi6Rg8zopDg0ePNYPHxLMGj/T9isHXLw2Dr8qq4GtNgy9rpwy+WJ8AhyDsjXb4uX9yDOd/GS5qGhwEiwKDQ3t1gwOWbYPDsJOhwcHllsEh847BhYA4NLi8UTO4aDNmcCkqrhhcYGsYXDasgouhBtddxw2uJk8bXCPvCQyu/BcN1jM07VVpKAoM1p7UDVbUtA3WCUWhweqnlsGaro7BSrU4NFh/VzNYVThmsFYyrhisAG0YrGutgtW6BguDxw2WO08bLOIuBQZL04sGC+6bBi8jiAKDF0fU/4dLPv7Zq0vKnrVrZtDLc+5mIOo3f6TA3sIzTYgAAAAASUVORK5CYII='); /* source: /dialog/i/arrow_grey.png */
+    background-image: url('data:image/png;base64,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'); /* source: dialog/i/arrow_grey.png */
     background-repeat: no-repeat;
     background-position: center;
-    background-color: transparent;
 }
 
 .favicon {
@@ -390,6 +349,7 @@ section > .contents {
 .favicon h2, .favicon h3 {
     line-height: 1.2em;
     margin: 10px 0 0 0;
+    text-shadow: none;
 }
 
 .favicon h2 {

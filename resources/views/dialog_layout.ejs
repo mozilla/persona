@@ -40,9 +40,6 @@
       <% if (useJavascript !== false && enable_development_menu) { %>
         <a href="#" id="showDevelopment">&nbsp;</a>
       <% } %>
-      <header id="header">
-         <h1><a class="home" target="_blank" href="/">Mozilla Persona Home</a></h1>
-      </header>
 
       <div id="content">
         <%- body %>
@@ -64,7 +61,7 @@
 
 
       <footer>
-<span id="footerText"><%- format(gettext('<strong>Persona.</strong> Simplified sign-in, built by a non-profit. <a %s>Learn more&rarr;</a>'), [" href='/about' target='_blank'"]) %></span>
+<span id="footerText"><%- format(gettext('<strong>Mozilla Persona.</strong> Simplified sign-in by the non-profit behind Firefox. <a %s>Learn more&rarr;</a>'), [" href='/about' target='_blank'"]) %></span>
       </footer>
 
 

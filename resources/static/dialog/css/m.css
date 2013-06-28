@@ -36,7 +36,7 @@
     letter-spacing: normal;
   }
 
-  header, footer, .persona_intro {
+  footer, .persona_intro {
     display: none;
   }
 
@@ -259,7 +259,6 @@
    * formWrap is the section that holds the main content.
    */
   #formWrap {
-    background-color: transparent;
     position: static;
     display: block;
   }
@@ -335,9 +334,15 @@
       padding: 10px;
       text-align: center;
       left: 0;
-      background-color: #dcdcdc;
       border-bottom: 1px solid #bcbcbc;
       box-shadow: 0px -1px #fff inset;
+  }
+
+  /**
+   * This will be overridden by JS if the RP specifies a background color
+   */
+  .rpBackground {
+      background-color: #dcdcdc;
   }
 
   /**
@@ -384,6 +389,11 @@
     position: static;
     width: auto;
     padding: 0;
+  }
+
+  #signIn .table {
+    background-color: #eff0f2;
+    box-shadow: none;
   }
 
   #signIn .vertical {

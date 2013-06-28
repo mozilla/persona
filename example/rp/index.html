@@ -69,23 +69,28 @@ pre {
       <input type="checkbox" id="termsOfService">
       <label for="termsOfService">Supply a ToS</label>
     </li><li>
-      <input type="checkbox" id="siteName">
-      <label for="siteName">Supply Site Name</label><br />
+      <input type="checkbox" id="supplySiteName">
+      <label for="siteName">Supply Site Name:</label>
+      <input type="text" id="siteName" value="Persona Test Relying Party" />
     </li><li>
       <input type="checkbox" id="siteLogo">
-      <label for="siteLogo">Supply Site Logo</label><br />
+      <label for="siteLogo">Supply Site Logo</label>
+    </li><li>
+      <input type="checkbox" id="supplyBackgroundColor">
+      <label for="backgroundColor">Supply Background Color:</label>
+      <input type="text" id="backgroundColor" value="#008" />
     </li><li>
       <input type="checkbox" id="returnTo">
-      <label for="returnTo">Supply returnTo</label><br />
+      <label for="returnTo">Supply returnTo</label>
     </li><li>
       <input type="checkbox" id="forceAuthentication">
-      <label for="forceAuthentication">Force Authentication</label><br />
+      <label for="forceAuthentication">Force Authentication</label>
     </li><li>
       <input type="checkbox" id="forceIssuer">
-      <label for="forceIssuer">Force Issuer to issuer.domain</label><br />
+      <label for="forceIssuer">Force Issuer to issuer.domain</label>
     </li><li>
       <input type="checkbox" id="allowUnverified">
-      <label for="allowUnverified">Allow Unverified</label><br />
+      <label for="allowUnverified">Allow Unverified</label>
     </li>
   </ul>
     <button class="assertion">Get an assertion</button>
@@ -203,8 +208,11 @@ $(document).ready(function() {
     navigator.id.request({
       privacyPolicy: $('#privacyPolicy').attr('checked') ? "/privacy.html" : undefined,
       termsOfService: $('#termsOfService').attr('checked') ? "/TOS.html" : undefined,
-      siteName: $('#siteName').attr('checked') ? "Persona Test Relying Party" : undefined,
+      siteName: $('#supplySiteName').attr('checked')
+          ? $('#siteName').val() : undefined,
       siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined,
+      backgroundColor: $('#supplyBackgroundColor').attr('checked')
+          ? $('#backgroundColor').val() : undefined,
       returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,
       experimental_forceAuthentication: $('#forceAuthentication').attr('checked') ? true : false,
       experimental_forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined,
