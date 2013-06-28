@@ -19,6 +19,8 @@ train-2013.06.19:
   * UI tweaks: #3426
   * Upgrade to awsbox 0.4.5, with improved security and error handling: #3483
   * Show client local timestamp on dialog error screen: #3478
+  * (hotfix 2013.06.28) Support localization of TOS and PP, Polish: #3580, #3586
+  * (hotfix 2013.06.28) FirefoxOS primary idp support: #3567, #3592, #3601
 
 train-2013.06.05:
   * Fix primary IdP support on FirefoxOS: #3461
