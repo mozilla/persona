@@ -16,6 +16,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
       complete = helpers.complete,
+      storage = bid.Storage,
       CANCEL_SELECTOR = ".cancel";
 
   function submit(callback) {
@@ -27,8 +28,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     // if the user is not authenticated, results in an error.
     self.publish("primary_user_authenticating");
 
-    // set up some information about what we're doing
-    win.sessionStorage.primaryVerificationFlow = JSON.stringify({
+    storage.idpVerification.set({
       add: add,
       email: email,
       // native is used when the user returns from the primary to prevent

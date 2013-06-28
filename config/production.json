@@ -7,6 +7,7 @@
   },
   "use_minified_resources": true,
 	"public_static_url": "https://static.login.persona.org",
+	"firefoxos_url": "https://firefoxos.persona.org",
   "database": {
     "driver": "mysql",
     "user": "browserid",

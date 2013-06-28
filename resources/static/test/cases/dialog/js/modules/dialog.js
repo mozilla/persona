@@ -14,6 +14,7 @@
       screens = bid.Screens,
       xhr = bid.Mocks.xhr,
       user = bid.User,
+      storage = bid.Storage,
       HTTP_TEST_DOMAIN = "http://testdomain.org",
       HTTPS_TEST_DOMAIN = "https://testdomain.org",
       TESTEMAIL = "testuser@testuser.com",
@@ -47,9 +48,7 @@
     location: {
     },
 
-    navigator: {},
-
-    sessionStorage: {}
+    navigator: {}
   };
 
   function createController(config) {
@@ -197,7 +196,7 @@
 
   asyncTest("initialization with #AUTH_RETURN and add=false - trigger start with correct params", function() {
     winMock.location.hash = "#AUTH_RETURN";
-    winMock.sessionStorage.primaryVerificationFlow = JSON.stringify({
+    storage.idpVerification.set({
       add: false,
       email: TESTEMAIL
     });
@@ -224,7 +223,7 @@
 
   asyncTest("initialization with #AUTH_RETURN and add=true - trigger start with correct params", function() {
     winMock.location.hash = "#AUTH_RETURN";
-    winMock.sessionStorage.primaryVerificationFlow = JSON.stringify({
+    storage.idpVerification.set({
       add: true,
       email: TESTEMAIL
     });
@@ -252,7 +251,7 @@
 
   asyncTest("#AUTH_RETURN while authenticated should call usedAddressAsPrimary", function() {
     winMock.location.hash = "#AUTH_RETURN";
-    winMock.sessionStorage.primaryVerificationFlow = JSON.stringify({
+    storage.idpVerification.set({
       add: false,
       email: TESTEMAIL
     });
@@ -280,7 +279,7 @@
 
   asyncTest("#AUTH_RETURN with add=true should not call usedAddressAsPrimary", function() {
     winMock.location.hash = "#AUTH_RETURN";
-    winMock.sessionStorage.primaryVerificationFlow = JSON.stringify({
+    storage.idpVerification.set({
       add: true,
       email: TESTEMAIL
     });
