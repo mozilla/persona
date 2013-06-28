@@ -96,13 +96,15 @@ Configuration files are already included in the repo but some setup is necessary
 5. Find "browserid" in "Your Repositories"
 6. Move the switch from "OFF" to "ON"
 7. Open your fork of BrowserID on [GitHub][]
-8. Click the "Admin" button
-9. Click "Service Hooks"
-10. Ensure that "Travis" has a green radio button
-11. Push to your fork and return to [Travis-CI][]. Watch the tests run.
+8. Click the "Settings" button
+9. Click "Service Hooks" and find the "Travis" Service Hook
+10. Paste in your "Token" which you can find it on your [Travis-CI Profile][].
+11. Ensure that "Travis" has a green radio button
+12. Push to your fork and return to [Travis-CI][]. Watch the tests run.
 
 [Travis-CI]: http://travis-ci.org
 [GitHub]: https://github.com
+[Travis-CI Profile]: https://travis-ci.org/profile
 
 ## LICENSE
 
