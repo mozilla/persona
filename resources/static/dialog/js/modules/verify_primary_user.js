@@ -33,7 +33,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       email: email,
       // native is used when the user returns from the primary to prevent
       // WinChan from establishing the postMessage channel.
-      native: win.document.location.hash === "#NATIVE"
+      'native': win.document.location.hash === "#NATIVE"
     });
 
     var url = helpers.toURL(auth_url, { email: email });
