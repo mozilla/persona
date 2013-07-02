@@ -9,6 +9,9 @@
 (function() {
   "use strict";
 
+  // Define undefined in case the IdP has accidentally redefined undefined.
+  var undefined;
+
   // local embedded copy of jschannel: http://github.com/mozilla/jschannel
   /**
    * js_channel is a very lightweight abstraction on top of
