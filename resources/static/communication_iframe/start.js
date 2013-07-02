@@ -9,8 +9,6 @@
       storage = bid.Storage,
       interactionData = bid.Models.InteractionData;
 
-
-
   // Initialize all localstorage values to default values.  Neccesary for
   // proper sync of IE8 localStorage across multiple simultaneous
   // browser sessions.
@@ -45,6 +43,16 @@
   function checkAndEmit(oncomplete) {
     if (pause) return;
 
+    function onError() {
+      chan.notify({ method: 'logout' });
+      loggedInUser = null;
+      oncomplete && oncomplete();
+    }
+
+    // All XHR requests are aborted when the user browsers away from the RP.
+    // Outstanding calls to cookiesEnabled (which calls /wsapi/session_context)
+    // will be aborted, the onError callback will not be invoked. All other XHR
+    // errors will call onError. See issues #2423, #3619
     network.cookiesEnabled(function(enabled) {
       if (!enabled) {
         // cookies are disabled, call onready and do nothing more.
@@ -72,12 +80,8 @@
           loggedInUser = null;
         }
         oncomplete && oncomplete();
-      }, function(err) {
-        chan.notify({ method: 'logout' });
-        loggedInUser = null;
-        oncomplete && oncomplete();
-      });
-    });
+      }, onError);
+    }, onError);
   }
 
   function watchState() {

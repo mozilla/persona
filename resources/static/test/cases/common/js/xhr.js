@@ -177,4 +177,21 @@
     });
   });
 
+  asyncTest("xhrObj.abort aborts outstanding requests, triggers xhr_complete",
+      function() {
+    mediator.subscribe("xhr_complete", function(msg, info) {
+      equal(info.network.url, "/slow_request");
+      equal(info.resp.statusText, "aborted");
+      start();
+    });
+
+    xhr.get({
+      url: "/slow_request",
+      error: testHelpers.unexpectedXHRFailure,
+      success: function() { ok(false) }
+    });
+
+    xhr.abortAll();
+  });
+
 }());

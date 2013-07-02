@@ -254,7 +254,15 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/prolong_session ajaxError": undefined,
       "post /wsapi/interaction_data valid": { success: true },
       "post /wsapi/interaction_data throttle": 413,
-      "post /wsapi/interaction_data ajaxError": undefined
+      "post /wsapi/interaction_data ajaxError": undefined,
+      // request used to test the abortAll functionality of xhr.js
+      "get /slow_request valid": function(xhrObj) {
+        xhrObj._delayTimeout = setTimeout(function() {
+          if (xhrObj._request.success) {
+            xhrObj._request.success({ success: true });
+          }
+        }, 1000);
+      }
     },
 
     setContextInfo: function(field, value) {
@@ -281,6 +289,23 @@ BrowserID.Mocks.xhr = (function() {
     ajax: function(request) {
       //console.log("ajax request");
       var type = request.type ? request.type.toLowerCase() : "get";
+
+
+      var xhrObj = {
+        "_request": request,
+        "_response": response,
+        abort: function() {
+          if (this._delayTimeout) {
+            clearTimeout(this._delayTimeout);
+            this._delayTimeout = null;
+            delete this._delayTimeout;
+          }
+
+          if (this._request.error) {
+            this._request.error({ statusText: "aborted" }, 0, "");
+          }
+        }
+      };
 
       this.request = request = _.extend(request, {
         type: type
@@ -313,7 +338,7 @@ BrowserID.Mocks.xhr = (function() {
       }
 
       if (typeofResponse === "function") {
-        response(request.success);
+        response(xhrObj);
       }
       else if (!(typeofResponse === "number" || typeofResponse === "undefined")) {
         if (typeofResponse === "object") {
@@ -335,6 +360,8 @@ BrowserID.Mocks.xhr = (function() {
         // invalid responseName
         request.error({ status: response || 400, responseText: "response text" }, "errorStatus", "errorThrown");
       }
+
+      return xhrObj;
     }
   };
 
