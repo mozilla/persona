@@ -437,7 +437,7 @@ BrowserID.State = (function() {
           // the user's account is being upgraded, we know they do not have
           // a cert. They may be able to provision with their IdP, but we want
           // them to see a nice message. Make them verify with their primary.
-          startAction("doVerifyPrimaryUser", addressInfo);
+          redirectToState("primary_user_unauthenticated", addressInfo);
         }
         else if (addressInfo.type === "primary") {
           // If the email is a primary and the cert is not available,

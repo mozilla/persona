@@ -631,6 +631,27 @@
     });
   });
 
+  asyncTest("email_chosen with address in transition_to_primary state - " +
+                " call doVerifyPrimaryUser with correct info", function() {
+
+    mediator.publish("start", { siteName: "Unit Test Site" });
+
+    xhr.useResult("primaryTransition");
+    mediator.publish("email_chosen", {
+      email: TEST_EMAIL,
+      allow_new_record: true,
+      complete: function() {
+        testActionStarted("doVerifyPrimaryUser", {
+          email: TEST_EMAIL,
+          siteName: "Unit Test Site"
+        });
+        start();
+      }
+    });
+
+  });
+
+
   test("email_chosen with invalid email - throw exception", function() {
     var email = TEST_EMAIL,
         error;
