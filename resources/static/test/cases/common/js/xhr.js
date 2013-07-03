@@ -177,7 +177,7 @@
     });
   });
 
-  asyncTest("xhrObj.abort aborts outstanding requests, triggers xhr_complete",
+  asyncTest("abortAll aborts outstanding requests, triggers xhr_complete",
       function() {
     mediator.subscribe("xhr_complete", function(msg, info) {
       equal(info.network.url, "/slow_request");
