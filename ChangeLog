@@ -1,4 +1,18 @@
-current train:
+train-2013.07.03:
+  * [FXOS] Add support for primary IdPs to FirefoxOS: #3572, #3592, #3566, #3567
+  * w00t! Enable RP dialog custom branding with new parameter, 'backgroundColor': #3589
+  * Add Spanish translation of TOS/PP & infrastructure to support additional TOS/PP l10n: #3604
+  * Fix another occurrence of 'native' causing problems on old Android: #3595
+  * Display RP name, not 'undefined', in primary-upgrade dialog screen: #3621
+  * If reporting a custom error type to KPIs, use a meaningful field: #3584
+  * Redefine 'undefined' in case the underlying page broke it: #3598
+  * If a domain has transitioned between primary/secondary, don't reuse the old cert: #3515
+  * If a primary can't be reached, don't cache this result--let the user immediately retry: #3155
+  * Adjust caching headers on dynamically-generated pages to force revalidation: #3547, #3582
+  * Add 90 day future expires header to favicon.ico: #2482
+  * Redirect legacy endpoints /signin, /signup, /forgot to homepage: #3467
+  * Improve Travis-CI docs: #3599
+  * Add SIGINT handler, so interrupted Selenium tests immediately dump useful output on POSIX systems: #3570
 
 train-2013.06.19:
   * Correctly transition users from primary IdP-based to fallback IdP-based accounts: #3551
