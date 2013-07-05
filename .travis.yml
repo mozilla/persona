@@ -5,6 +5,10 @@ before_script:
 language: node_js
 
 before_install:
+ - "uname -a"
+ - "[ -e /etc/lsb-release ] && cat /etc/lsb-release"
+ - "phantomjs --version"
+ - "mysql -NBe 'select version()'"
  - sudo apt-get install libgmp3-dev
  - "mysql -e 'create database browserid;'"
 
