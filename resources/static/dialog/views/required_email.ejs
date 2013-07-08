@@ -15,7 +15,7 @@
               <label for="email"><%= gettext("Email") %></label>
               <input id="required_email" type="email" value="<%= email %>" disabled />
               <div id="could_not_add" class="tooltip" for="required_email">
-                <%= gettext("We just sent an email to that address! If you really want to send another, wait a minute or two and try again.") %>
+                <%= gettext('Initial confirmation sent &ndash; wait a few minutes before requesting another') %>
               </div>
           </li>
 
@@ -37,11 +37,11 @@
                   <input id="password" type="password" maxlength="80" tabindex="2" />
 
                   <div id="password_required" class="tooltip" for="password">
-                    <%= gettext("The password field is required.") %>
+                    <%= gettext("Password field required") %>
                   </div>
 
                   <div id="cannot_authenticate" class="tooltip" for="password">
-                    <%= gettext('This email address and password do not match.') %>
+                    <%= gettext('Password incorrect') %>
                   </div>
 
               </li>

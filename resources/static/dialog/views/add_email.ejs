@@ -12,19 +12,19 @@
               <input id="newEmail" name="newEmail" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="254" <% if (typeof email !== "undefined") { %> value="<%= email %>" <% } %> placeholder="<%= gettext("email address") %>"/>
 
               <div id="email_format" class="tooltip" for="newEmail">
-                <%= gettext('This field must be an email address.') %>
+                <%= gettext('Must be an email address') %>
               </div>
 
               <div id="email_required" class="tooltip" for="newEmail">
-                <%= gettext('The email field is required.') %>
+                <%= gettext('Email field required') %>
               </div>
 
               <div id="could_not_add" class="tooltip" for="newEmail">
-                <%= gettext('We just sent an email to that address! If you really want to send another, wait a minute or two and try again.') %>
+                <%= gettext('Initial confirmation sent &ndash; wait a few minutes before requesting another') %>
               </div>
 
               <div id="already_own_address" class="tooltip" for="newEmail">
-                <%= gettext('That address is already added to your account!') %>
+                <%= gettext('Already added!') %>
               </div>
           </li>
 

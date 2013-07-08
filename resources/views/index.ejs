@@ -68,11 +68,21 @@
                 </label>
                 <button id="changePassword"><%- gettext('done') %></button>
 
-                <div class="tooltip" for="old_password" id="tooltipOldRequired"><%- gettext('Old password is required.') %></div>
-                <div class="tooltip" for="old_password" id="tooltipInvalidPassword"><%- gettext('Incorrect old password, password not updated.') %></div>
-                <div class="tooltip" for="new_password" id="tooltipNewRequired"><%- gettext('New password is required.') %></div>
-                <div class="tooltip" for="new_password" id="tooltipPasswordsSame"><%- gettext('Old and new passwords are the same.') %></div>
-                <div class="tooltip" for="new_password" id="tooltipPasswordLength"><%- gettext('Password must be between 8 and 80 characters long.') %></div>
+                <div class="tooltip" for="old_password" id="tooltipOldRequired">
+                  <%- gettext('Old password required') %>
+                </div>
+                <div class="tooltip" for="old_password" id="tooltipInvalidPassword">
+                  <%- gettext('Old password incorrect') %>
+                </div>
+                <div class="tooltip" for="new_password" id="tooltipNewRequired">
+                  <%- gettext('New password required') %>
+                </div>
+                <div class="tooltip" for="new_password" id="tooltipPasswordsSame">
+                  <%- gettext('Passwords must be different') %>
+                </div>
+                <div class="tooltip" for="new_password" id="tooltipPasswordLength"><%-
+                  gettext('Password must be 8&ndash;80 characters long') %>
+                </div>
               </form>
             </section>
 

@@ -41,19 +41,19 @@
                             <input id="authentication_email" class="isDesktopOrStart" type="email" autocapitalize="off" autocorrect="off" spellcheck="false" value="" maxlength="254" placeholder="<%= gettext('enter email address') %>"/>
 
                             <div id="email_format" class="tooltip" for="authentication_email">
-                              <%= gettext('This field must be an email address.') %>
+                              <%= gettext('Must be an email address') %>
                             </div>
 
                             <div id="email_required" class="tooltip" for="authentication_email">
-                              <%= gettext('The email field is required.') %>
+                              <%= gettext('Email field required') %>
                             </div>
 
                             <div id="could_not_add" class="tooltip" for="authentication_email">
-                              <%= gettext('We just sent an email to that address! If you really want to send another, wait a minute or two and try again.') %>
+                              <%= gettext('Initial confirmation sent &ndash; wait a few minutes before requesting another') %>
                             </div>
 
                             <div id="cannot_authenticate" class="tooltip" for="authentication_email">
-                              <%= gettext('This email address and password do not match.') %>
+                              <%= gettext('Password incorrect') %>
                             </div>
                         </li>
 
@@ -67,7 +67,7 @@
                             <input id="authentication_password" type="password" maxlength="80" placeholder="<%= gettext('password') %>" />
 
                             <div id="password_required" class="tooltip" for="authentication_password">
-                              <%= gettext('The password field is required.') %>
+                              <%= gettext('Password field required') %>
                             </div>
 
                         </li>
