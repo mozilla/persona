@@ -10,7 +10,24 @@ BrowserID.XHR = (function() {
       BROWSERID_VERSION = BrowserID.CODE_VERSION,
       context,
       csrf_token,
-      time_until_delay;
+      time_until_delay,
+      outstandingRequests = {};
+
+  /**
+   * Abort any outstanding XHR requests if the user browses away or reloads.
+   * This prevents the onlogout message from being sent if XHR requests fail
+   * because the user browses away from the current page.
+   * See issue #2423.
+   *
+   * Note, we are using low level event handler functions here so that the
+   * entire DOM module does not have to be included into the
+   * communication_iframe.
+   */
+  if (window.addEventListener) {
+    window.addEventListener("beforeunload", abortAll, false);
+  } else if (window.attachEvent) {
+    window.attachEvent("onbeforeunload", abortAll);
+  }
 
   function clearContext() {
     csrf_token = context = undefined;
@@ -47,6 +64,9 @@ BrowserID.XHR = (function() {
   }
 
   function xhrComplete(reqInfo) {
+    outstandingRequests[reqInfo.eventTime] = null;
+    delete outstandingRequests[reqInfo.eventTime];
+
     reqInfo.duration = new Date() - reqInfo.eventTime;
     mediator.publish("xhr_complete", reqInfo);
   }
@@ -71,6 +91,7 @@ BrowserID.XHR = (function() {
             delayTimeout = null;
           }
 
+          reqInfo.resp = resp;
           xhrComplete(reqInfo);
           if(options.defer_success) {
             _.defer(successCB.curry(resp, jqXHR, textResponse));
@@ -85,7 +106,25 @@ BrowserID.XHR = (function() {
             delayTimeout = null;
           }
 
+          reqInfo.resp = resp;
           xhrComplete(reqInfo);
+
+          /**
+           * XHR request was aborted. Don't do anything. A request can be
+           * aborted when:
+           * 1. user shuts the dialog while an XHR request is in flight
+           * 2. user browses away from an RP while an XHR request in the
+           *        communication_iframe is in flight.
+           * We cannot prevent these from happening, we can only abort XHR
+           * requests when it does happen and clean up afterwards.
+           * See issues #3618, #2423, #2560.
+           *
+           * We differentiate aborted requests from other errors because
+           * a status code of 0 can be returned for other XHR issues like
+           * illegal cross domain requests or when the user has no
+           * connectivity.
+           */
+          if (resp.statusText === "aborted") return;
           _.defer(xhrError.curry(errorCB, reqInfo, resp, jqXHR, textResponse));
         };
 
@@ -102,7 +141,9 @@ BrowserID.XHR = (function() {
     }
 
     mediator.publish("xhr_start", reqInfo);
-    transport.ajax(req);
+    var xhrObj = transport.ajax(req);
+    outstandingRequests[reqInfo.eventTime] = xhrObj;
+    return xhrObj;
   }
 
   function get(options) {
@@ -147,6 +188,11 @@ BrowserID.XHR = (function() {
     }, options.error);
   }
 
+  function abortAll() {
+    for (var eventTime in outstandingRequests) {
+      outstandingRequests[eventTime].abort();
+    }
+  }
 
   return {
     /**
@@ -191,7 +237,13 @@ BrowserID.XHR = (function() {
      * Clear the current context
      * @method clearContext
      */
-    clearContext: clearContext
+    clearContext: clearContext,
+
+    /**
+     * Abort all outstanding XHR requests
+     * @method abortAll
+     */
+    abortAll: abortAll
   };
 }());
 
