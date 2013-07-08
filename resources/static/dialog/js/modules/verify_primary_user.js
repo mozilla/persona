@@ -68,7 +68,6 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
         view = {
           email: options.email,
           auth_url: auth_url,
-          requiredEmail: options.requiredEmail || false,
           siteName: options.siteName,
           idpName: options.idpName,
           transition_to_primary: options.transition_to_primary
