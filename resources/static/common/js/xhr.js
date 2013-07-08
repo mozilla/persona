@@ -17,9 +17,17 @@ BrowserID.XHR = (function() {
    * Abort any outstanding XHR requests if the user browses away or reloads.
    * This prevents the onlogout message from being sent if XHR requests fail
    * because the user browses away from the current page.
-   * See issue #2423
+   * See issue #2423.
+   *
+   * Note, we are using low level event handler functions here so that the
+   * entire DOM module does not have to be included into the
+   * communication_iframe.
    */
-  window.onbeforeunload = abortAll;
+  if (window.addEventListener) {
+    window.addEventListener("beforeunload", abortAll, false);
+  } else if (window.attachEvent) {
+    window.attachEvent("onbeforeunload", abortAll);
+  }
 
   function clearContext() {
     csrf_token = context = undefined;
