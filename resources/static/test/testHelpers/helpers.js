@@ -91,6 +91,9 @@ BrowserID.TestHelpers = (function() {
       screens.error.hide();
       screens.delay.hide();
       tooltip.reset();
+      tooltip.init({
+        animationTime: 0
+      });
       provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
       user.reset();
       user.init({
