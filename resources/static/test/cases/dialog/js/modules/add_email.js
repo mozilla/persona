@@ -52,6 +52,7 @@
     // simulate the email being already added.
     user.syncEmailKeypair(normalizedEmail, function() {
       controller.addEmail(function() {
+        testHelpers.testNotVisible(".addressInfo");
         testTooltipVisible();
         start();
       });
@@ -65,12 +66,16 @@
 
     $("#newEmail").val(typedEmail);
 
+    var stagedEmail;
     register("stage_email", function(msg, info) {
-      equal(info.email, normalizedEmail, "stage_email called with correct email");
-      start();
+      stagedEmail = info.email;
     });
 
-    controller.addEmail();
+    controller.addEmail(function() {
+      equal(stagedEmail, normalizedEmail, "stage_email called with correct email");
+      testHelpers.testNotVisible(".addressInfo");
+      start();
+    });
   }
 
 
