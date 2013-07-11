@@ -67,7 +67,7 @@ BrowserID.XHR = (function() {
     outstandingRequests[reqInfo.eventTime] = null;
     delete outstandingRequests[reqInfo.eventTime];
 
-    reqInfo.duration = new Date() - reqInfo.eventTime;
+    reqInfo.duration = new Date().getTime() - reqInfo.eventTime;
     mediator.publish("xhr_complete", reqInfo);
   }
 
@@ -79,11 +79,12 @@ BrowserID.XHR = (function() {
         errorCB = options.error,
         delayTimeout,
         reqInfo = {
+          debug_info: options.debug_info || "none",
           network: {
             type: options.type.toUpperCase(),
             url: options.url
           },
-          eventTime: new Date()
+          eventTime: new Date().getTime()
         },
         success = function(resp, jqXHR, textResponse) {
           if(delayTimeout) {
@@ -154,10 +155,11 @@ BrowserID.XHR = (function() {
     request(req);
   }
 
-  function withContext(cb, onFailure) {
+  function withContext(options, cb, onFailure) {
     if (typeof context !== 'undefined') cb(context);
     else {
       request({
+        debug_info: "session_context for " + options.debug_info,
         type: "GET",
         url: "/wsapi/session_context",
         success: function(result) {
@@ -174,7 +176,7 @@ BrowserID.XHR = (function() {
   }
 
   function post(options) {
-    withContext(function() {
+    withContext(options, function() {
       var data = options.data || {};
       data.csrf = data.csrf || csrf_token;
       var req = _.extend(options, {
@@ -185,12 +187,19 @@ BrowserID.XHR = (function() {
         defer_success: true
       });
       request(req);
-    }, options.error);
+    }, function() {
+      console.log("session context error");
+      options.error && options.error();
+    });
   }
 
   function abortAll() {
     for (var eventTime in outstandingRequests) {
       outstandingRequests[eventTime].abort();
+      /*
+      outstandingRequests[eventTime] = null;
+      delete outstandingRequests[eventTime];
+      */
     }
   }
 
