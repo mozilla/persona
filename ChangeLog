@@ -13,6 +13,7 @@ train-2013.07.03:
   * Redirect legacy endpoints /signin, /signup, /forgot to homepage: #3467
   * Improve Travis-CI docs: #3599
   * Add SIGINT handler, so interrupted Selenium tests immediately dump useful output on POSIX systems: #3570
+  * (hotfix 2013.07.11)  Fix the lockdown error with i18n-abide -- fixes #3639
 
 train-2013.06.19:
   * Correctly transition users from primary IdP-based to fallback IdP-based accounts: #3551
