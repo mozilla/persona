@@ -165,7 +165,7 @@
     "0.1.1": "d9d82735a5f85f950761ac3909ba9485ec0af4f1"
   },
   "i18n-abide": {
-    "0.0.8-beta4": "b106bdaa156f90652e04b75ef6a1079c271a1b45"
+    "0.0.8beta4": "*"
   },
   "iconv-lite": {
     "0.2.7": "45be2390d27af4b7613aac4ee4d957e3f4cbdb54"
