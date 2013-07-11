@@ -14,6 +14,7 @@ train-2013.07.03:
   * Improve Travis-CI docs: #3599
   * Add SIGINT handler, so interrupted Selenium tests immediately dump useful output on POSIX systems: #3570
   * (hotfix 2013.07.11)  Fix the lockdown error with i18n-abide -- fixes #3639
+  * (hotfix 2013.07.11)  Fix the lockdown error with i18n-abide@0.0.8
 
 train-2013.06.19:
   * Correctly transition users from primary IdP-based to fallback IdP-based accounts: #3551
