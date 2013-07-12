@@ -14,7 +14,6 @@ $(function() {
       pageHelpers = bid.PageHelpers,
       user = bid.User,
       dom = bid.DOM,
-      xhr = bid.XHR,
       network = bid.Network,
       token = pageHelpers.getParameterByName("token"),
       path = document.location.pathname || "/",
@@ -68,7 +67,6 @@ $(function() {
   }
 
 
-  xhr.init({ time_until_delay: 10 * 1000 });
   network.init();
   user.init();
 

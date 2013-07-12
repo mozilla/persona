@@ -11,7 +11,7 @@ BrowserID.TestHelpers = (function() {
       network = bid.Network,
       user = bid.User,
       storage = bid.Storage,
-      XHR = bid.XHR,
+      XHR = bid.Modules.XHR,
       xhr,
       transport = bid.Mocks.xhr,
       provisioning = bid.Mocks.Provisioning,
@@ -62,7 +62,7 @@ BrowserID.TestHelpers = (function() {
       if (options.xhr) {
         xhr = options.xhr;
       } else {
-        xhr = bid.XHR.create();
+        xhr = XHR.create();
         xhr.init({
           transport: transport,
           time_until_delay: TestHelpers.XHR_TIME_UNTIL_DELAY
@@ -218,7 +218,7 @@ BrowserID.TestHelpers = (function() {
 
     failureCheck: function failureCheck(expectedStatus, cb) {
       var argsToSlice = 2;
-      // expectedStatus is optional. If not specified, errorStatus is the
+      // expectedStatus is optional. If not specified, `errorStatus` is the
       // default expected status.
       if (typeof expectedStatus === "function") {
         cb = expectedStatus;

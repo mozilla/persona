@@ -7,7 +7,7 @@
  * module. It extends the Modules.Module interface and is created using
  * BrowserID.XHR.create();
  */
-BrowserID.XHR = (function() {
+BrowserID.Modules.XHR = (function() {
   "use strict";
 
   var bid = BrowserID,
@@ -21,9 +21,9 @@ BrowserID.XHR = (function() {
      * Initialize the XHR object.
      * @method init
      * @param {object} config
-     *    {object} [transport] - XHR transport to use
-     *    {number} [time_until_delay] - time until a request is considered
-     *    delayed.
+     *    {object} [config.transport] - XHR transport to use
+     *    {number} [config.time_until_delay] - time in ms until a request is
+     *                considered delayed.
      */
     init: init,
 
@@ -37,15 +37,15 @@ BrowserID.XHR = (function() {
      * Low level request
      * @method request
      */
-    request: request,
+    request: makeRequest,
 
     /**
      * GET request
      * @method get
      * @param {object} config
-     *   {string} url
-     *   {function} [success] - called on success
-     *   {function} [error] - called on XHR failure
+     *   {string} config.url
+     *   {function} [config.success]
+     *   {function} [config.error]
      */
     get: get,
 
@@ -53,9 +53,9 @@ BrowserID.XHR = (function() {
      * POST request
      * @method post
      * @param {object} config
-     *   {string} url
-     *   {function} [success] - called on success
-     *   {function} [error] - called on XHR failure
+     *   {string} config.url
+     *   {function} [config.success]
+     *   {function} [config.error]
      */
     post: post,
 
@@ -63,7 +63,7 @@ BrowserID.XHR = (function() {
      * Get the session context
      * @method getContext
      * @param {function} complete
-     * @param {function} error - called on XHR failure
+     * @param {function} error
      */
     getContext: getContext,
 
@@ -86,7 +86,7 @@ BrowserID.XHR = (function() {
 
   function clearContext() {
     /*jshint validthis: true*/
-    this.csrf_token = this.context = undefined;
+    this.context = undefined;
   }
 
   function init(config) {
@@ -131,59 +131,15 @@ BrowserID.XHR = (function() {
     sc.stop.call(this);
   }
 
-  function request(options) {
+  function makeRequest(options) {
     /*jshint validthis: true*/
     var self = this;
 
-    var reqInfo = {
-          network: {
-            type: options.type.toUpperCase(),
-            url: options.url
-          },
-          eventTime: new Date().getTime()
-        },
-        success = function(resp, textResponse, xhrObj) {
-          xhrComplete.call(self, reqInfo);
-          // We defer the responses because otherwise the transport eats any
-          // exceptions that are thrown in the response handlers and it
-          // becomes very difficult to debug.
-          if (options.defer_success) {
-            setTimeout(function() {
-              complete(options.success, resp, xhrObj, textResponse);
-            }, 0);
-          }
-          else {
-            options.success(resp, xhrObj, textResponse);
-          }
-        },
-        error = function(xhrObj, textStatus, errorThrown) {
-          xhrComplete.call(self, reqInfo);
-
-          /**
-           * XHR request was aborted. Don't do anything. A request can be
-           * aborted when:
-           * 1. user shuts the dialog while an XHR request is in flight
-           * 2. user browses away from an RP while an XHR request in the
-           *        communication_iframe is in flight.
-           * We cannot prevent these from happening, we can only abort XHR
-           * requests when it does happen and clean up afterwards.
-           * See issues #3618, #2423, #2560.
-           *
-           * We differentiate aborted requests from other errors because
-           * a status code of 0 can be returned for other XHR issues like
-           * illegal cross domain requests or when the user has no
-           * connectivity.
-           */
-          if (xhrObj.statusText === "aborted") return;
-
-          // See note in success about why we defer responses
-          setTimeout(function() {
-            var errorInfo = getErrorInfo(reqInfo, textStatus, errorThrown);
-            self.publish("xhr_error", errorInfo);
-            complete(options.error, errorInfo);
-          }, 0);
-        };
-
+    var request = getRequest(options);
+    // The request obj must be added to list of outstanding requests in
+    // case request is synchronous. This makes sure all housekeeping is kept in
+    // order.
+    self.outstandingRequests[request.eventTime] = request;
 
     /**
      * Start a timer that keeps track of whether the request is taking too
@@ -191,24 +147,24 @@ BrowserID.XHR = (function() {
      * the user informing them of the slowness.
      */
     if (self.time_until_delay) {
-      reqInfo.slowRequestTimeout = setTimeout(function() {
-        onSlowXHRRequest.call(self, reqInfo);
+      request.slowRequestTimeout = setTimeout(function() {
+        onXHRResponseDelayed.call(self, request);
       }, self.time_until_delay);
     }
 
-    self.publish("xhr_start", reqInfo);
+    self.publish("xhr_start", request);
 
-    var requestConfig = _.extend({}, options, {
-      success: success,
-      error: error,
+    var transportConfig = _.extend({}, options, {
+      success: onXHRSuccess.bind(self, request),
+      error: onXHRError.bind(self, request),
       headers: {
         'BrowserID-git-sha': BROWSERID_VERSION
       }
     });
 
-    var xhrObj = self.transport.ajax(requestConfig);
-    reqInfo.xhr = self.outstandingRequests[reqInfo.eventTime] = xhrObj;
-    return xhrObj;
+    request.xhr = self.transport.ajax(transportConfig);
+
+    return request;
   }
 
   function get(options) {
@@ -220,33 +176,12 @@ BrowserID.XHR = (function() {
     this.request(req);
   }
 
-  function getContext(done, onFailure) {
-    /*jshint validthis: true*/
-    var self = this;
-    if (typeof self.context !== 'undefined') complete(done, self.context);
-    else {
-      self.request({
-        type: "GET",
-        url: "/wsapi/session_context",
-        success: function(result) {
-          self.csrf_token = result.csrf_token;
-          self.context = result;
-
-          self.publish("context_info", result);
-
-          complete(done, result);
-        },
-        error: onFailure
-      });
-    }
-  }
-
   function post(options) {
     /*jshint validthis: true*/
-    var self=this;
-    self.getContext(function() {
+    var self = this;
+    self.getContext(function(context) {
       var data = options.data || {};
-      data.csrf = data.csrf || self.csrf_token;
+      data.csrf = data.csrf || context.csrf_token;
       var req = _.extend(options, {
         type: "POST",
         data: JSON.stringify(data),
@@ -258,46 +193,125 @@ BrowserID.XHR = (function() {
     }, options.error);
   }
 
+  function getContext(done, onFailure) {
+    /*jshint validthis: true*/
+    var self = this;
+    if (typeof self.context !== 'undefined') complete(done, self.context);
+    else {
+      self.request({
+        type: "GET",
+        url: "/wsapi/session_context",
+        success: function(result) {
+          self.context = result;
+
+          self.publish("context_info", result);
+
+          complete(done, result);
+        },
+        error: onFailure
+      });
+    }
+  }
+
+
   function abortAll() {
     /*jshint validthis: true*/
     var outstandingRequests = this.outstandingRequests;
     for (var eventTime in outstandingRequests) {
-      outstandingRequests[eventTime].abort();
+      outstandingRequests[eventTime].xhr.abort();
       outstandingRequests[eventTime] = null;
       delete outstandingRequests[eventTime];
     }
   }
 
-  function getErrorInfo(reqInfo, textStatus, errorThrown) {
-    var errorInfo = _.extend(reqInfo || {});
+  function getRequest(options) {
+    return _.extend({}, options, {
+      network: {
+        type: options.type.toUpperCase(),
+        url: options.url
+      },
+      eventTime: new Date().getTime()
+    });
+  }
+
+  function getErrorInfo(request, textStatus, errorThrown) {
+    var errorInfo = _.extend(request || {});
     errorInfo.network = _.extend(errorInfo.network || {}, {
-      status: reqInfo.xhr.status,
+      status: request.xhr.status,
       textStatus: textStatus,
       errorThrown: errorThrown,
-      responseText: reqInfo.xhr.responseText
+      responseText: request.xhr.responseText
     });
 
     return errorInfo;
   }
 
-  function onSlowXHRRequest(reqInfo) {
+  function onXHRSuccess(request, resp, textResponse, xhrObj) {
     /*jshint validthis: true*/
-    this.publish("xhr_delay", reqInfo);
+    var self = this;
+    xhrComplete.call(self, request);
+    // We defer the responses because otherwise the transport eats any
+    // exceptions that are thrown in the response handlers and it
+    // becomes very difficult to debug.
+    if (request.defer_success) {
+      setTimeout(function() {
+        complete(request.success, resp, xhrObj, textResponse);
+      }, 0);
+    }
+    else {
+      request.success(resp, xhrObj, textResponse);
+    }
   }
 
-  function xhrComplete(reqInfo) {
+  function onXHRError(request, xhrObj, textStatus, errorThrown) {
+    /*jshint validthis: true*/
+    var self = this;
+    xhrComplete.call(self, request);
+
+    /**
+     * XHR request was aborted. Don't do anything. A request can be
+     * aborted when:
+     * 1. user shuts the dialog while an XHR request is in flight
+     * 2. user browses away from an RP while an XHR request in the
+     *        communication_iframe is in flight.
+     * We cannot prevent these from happening, we can only abort XHR
+     * requests when it does happen and clean up afterwards.
+     * See issues #3618, #2423, #2560.
+     *
+     * We differentiate aborted requests from other errors because
+     * a status code of 0 can be returned for other XHR issues like
+     * illegal cross domain requests or when the user has no
+     * connectivity.
+     */
+    if (xhrObj.statusText === "aborted") return;
+
+    // See note in success about why we defer responses
+    setTimeout(function() {
+      var errorInfo = getErrorInfo(request, textStatus, errorThrown);
+      self.publish("xhr_error", errorInfo);
+      complete(request.error, errorInfo);
+    }, 0);
+  };
+
+
+  function onXHRResponseDelayed(request) {
+    /*jshint validthis: true*/
+    this.publish("xhr_delay", request);
+  }
+
+  function xhrComplete(request) {
     /*jshint validthis: true*/
     var outstandingRequests = this.outstandingRequests;
-    outstandingRequests[reqInfo.eventTime] = null;
-    delete outstandingRequests[reqInfo.eventTime];
+    outstandingRequests[request.eventTime] = null;
+    delete outstandingRequests[request.eventTime];
 
-    if (reqInfo.slowRequestTimeout) {
-      clearTimeout(reqInfo.slowRequestTimeout);
-      reqInfo.slowRequestTimeout = null;
+    if (request.slowRequestTimeout) {
+      clearTimeout(request.slowRequestTimeout);
+      request.slowRequestTimeout = null;
     }
 
-    reqInfo.duration = new Date().getTime() - reqInfo.eventTime;
-    this.publish("xhr_complete", reqInfo);
+    request.duration = new Date().getTime() - request.eventTime;
+    this.publish("xhr_complete", request);
   }
 
 

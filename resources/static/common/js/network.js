@@ -12,7 +12,7 @@ BrowserID.Network = (function() {
       domain_key_creation_time,
       code_version,
       mediator = bid.Mediator,
-      XHR = bid.XHR,
+      XHR = bid.Modules.XHR,
       xhr,
       // XXX get this out of here!
       storage = bid.Storage;
@@ -110,7 +110,8 @@ BrowserID.Network = (function() {
         xhr = config.xhr;
       } else {
         xhr = XHR.create();
-        xhr.init();
+        // A request that takes more than 10 seconds is considered delayed.
+        xhr.init({ time_until_delay: 10 * 1000 });
       }
 
       // BEGIN TEST API

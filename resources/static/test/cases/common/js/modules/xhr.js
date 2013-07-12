@@ -7,13 +7,13 @@
   "use strict";
 
   var bid = BrowserID,
-      XHR = bid.XHR,
+      XHR = bid.Modules.XHR,
       xhr,
       transport = bid.Mocks.xhr,
       mediator = bid.Mediator,
       testHelpers = bid.TestHelpers;
 
-  module("common/js/xhr", {
+  module("common/js/modules/xhr", {
     setup: function() {
       transport.setDelay(0);
       xhr = XHR.create();
