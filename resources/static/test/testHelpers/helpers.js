@@ -217,19 +217,23 @@ BrowserID.TestHelpers = (function() {
     },
 
     failureCheck: function failureCheck(expectedStatus, cb) {
-      var argsToSlice = 2;
+      var args;
+
       // expectedStatus is optional. If not specified, `errorStatus` is the
       // default expected status.
       if (typeof expectedStatus === "function") {
+        // only cb was specified, get rid of it before passing the rest of the
+        // argumetns on. Args has to be fetched before modifying cb and
+        // expectedStatus or else IE8 blows up.
+        args = [].slice.call(arguments, 1);
         cb = expectedStatus;
         expectedStatus = "errorStatus";
-        argsToSlice = 1;
       }
-
-      // Take the original arguments, take off the function.  Add any additional
-      // arguments that were passed in, and then tack on the onSuccess and
-      // onFailure to the end.  Then call the callback.
-      var args = [].slice.call(arguments, argsToSlice);
+      else {
+        // both expectedStatus and cb were given to us, get rid of them for the
+        // arguments to pass on.
+        args = [].slice.call(arguments, 2);
+      }
 
       var errorInfo;
 
