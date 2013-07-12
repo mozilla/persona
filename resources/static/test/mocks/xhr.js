@@ -302,7 +302,8 @@ BrowserID.Mocks.xhr = (function() {
           }
 
           if (this._request.error) {
-            this._request.error({ statusText: "aborted" }, 0, "");
+            xhrObj.statusText = "aborted";
+            this._request.error(xhrObj, 0, "");
           }
         }
       };
@@ -358,7 +359,9 @@ BrowserID.Mocks.xhr = (function() {
       else if (request.error) {
         // Invalid response - either invalid URL, invalid GET/POST or
         // invalid responseName
-        request.error({ status: response || 400, responseText: "response text" }, "errorStatus", "errorThrown");
+        xhrObj.status = response || "errorStatus";
+        xhrObj.responseText = "response text";
+        request.error(xhrObj, xhrObj.status, "errorThrown");
       }
 
       return xhrObj;

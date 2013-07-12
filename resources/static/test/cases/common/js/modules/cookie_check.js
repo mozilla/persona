@@ -27,9 +27,7 @@
   });
 
   asyncTest("create controller cookies disabled - ready returns with false status", function() {
-    network.init({
-      cookiesEnabledOverride: false
-    });
+    network.cookiesEnabledOverride = false;
 
     createController({
       ready: function(status) {
@@ -44,9 +42,7 @@
   });
 
   asyncTest("create controller with cookies enabled - ready returns with true status", function() {
-    network.init({
-      cookiesEnabledOverride: true
-    });
+    network.cookiesEnabledOverride = true;
 
     createController({
       ready: function(status) {

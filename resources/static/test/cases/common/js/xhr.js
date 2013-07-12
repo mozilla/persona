@@ -7,24 +7,24 @@
   "use strict";
 
   var bid = BrowserID,
-      xhr = bid.XHR,
+      XHR = bid.XHR,
+      xhr,
       transport = bid.Mocks.xhr,
       mediator = bid.Mediator,
       testHelpers = bid.TestHelpers;
 
   module("common/js/xhr", {
     setup: function() {
-      testHelpers.setup();
       transport.setDelay(0);
+      xhr = XHR.create();
       xhr.init({ transport: transport, time_until_delay: 50 });
+      testHelpers.setup({ xhr: xhr });
     },
 
     teardown: function() {
       testHelpers.teardown();
-      xhr.init({ transport: $, time_until_delay: 0 });
     }
   });
-/*
 
   asyncTest("get with delay", function() {
     transport.setDelay(100);
@@ -40,7 +40,6 @@
     });
 
     xhr.get({
-      debug_info: "get with delay",
       url: "/wsapi/session_context",
       error: testHelpers.unexpectedXHRFailure,
       success: function(info) {
@@ -68,7 +67,6 @@
     transport.useResult("contextAjaxError");
 
     xhr.get({
-      debug_info: "get with xhr error",
       url: "/wsapi/session_context",
       error: function(info) {
         ok(errorInfo, "xhr_error called with delay info");
@@ -93,7 +91,6 @@
     });
 
     xhr.get({
-      debug_info: "get_success",
       url: "/wsapi/session_context",
       error: testHelpers.unexpectedXHRFailure,
       success: function() {
@@ -118,7 +115,6 @@
     });
 
     xhr.post({
-      debug_info: "post with delay",
       url: "/wsapi/authenticate_user",
       success: function() {
         ok(delayInfo, "xhr_delay called with delay info");
@@ -132,7 +128,6 @@
       error: testHelpers.unexpectedXHRFailure
     });
   });
-*/
 
   asyncTest("post with xhr error", function() {
     var errorInfo;
@@ -148,7 +143,6 @@
     transport.useResult("ajaxError");
 
     xhr.post({
-      debug_info: "post with xhr error",
       url: "/wsapi/authenticate_user",
       error: function(info) {
         ok(errorInfo, "xhr_error called with delay info");
@@ -166,7 +160,6 @@
     });
 
   });
-/*
 
   asyncTest("post success", function() {
     var completeInfo;
@@ -175,7 +168,6 @@
     });
 
     xhr.post({
-      debug_info: "post success",
       url: "/wsapi/authenticate_user",
       error: testHelpers.unexpectedXHRFailure,
       success: function() {
@@ -185,21 +177,16 @@
       }
     });
   });
-*/
 
   asyncTest("abortAll aborts outstanding requests, triggers xhr_complete",
       function() {
     mediator.subscribe("xhr_complete", function(msg, info) {
-      if (info.network.url !== "/slow_request") {
-        equal(info.debug_info, false, "unexpected URL for");
-      }
       equal(info.network.url, "/slow_request");
-      equal(info.resp.statusText, "aborted");
+      equal(info.xhr.statusText, "aborted");
       start();
     });
 
     xhr.get({
-      debug_info: "abortAll",
       url: "/slow_request",
       error: testHelpers.unexpectedXHRFailure,
       success: function() { ok(false) }
