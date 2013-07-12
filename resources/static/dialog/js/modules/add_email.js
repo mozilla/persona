@@ -43,11 +43,16 @@ BrowserID.Modules.AddEmail = (function() {
 
     if (email) {
       showHint("addressInfo");
+
       dom.setAttr(EMAIL_SELECTOR, 'disabled', 'disabled');
       dom.addClass(BODY_SELECTOR, SUBMIT_DISABLED_CLASS);
+
       dialogHelpers.addEmail.call(self, email, function removeHint(status) {
+        hideHint("addressInfo");
+
+        // !status means there was a problem adding the email. Let the user
+        // modify the email address and try to re-add.
         if (!status) {
-          hideHint("addressInfo");
           dom.removeAttr(EMAIL_SELECTOR, 'disabled');
           dom.removeClass(BODY_SELECTOR, SUBMIT_DISABLED_CLASS);
         }
