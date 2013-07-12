@@ -291,7 +291,7 @@ BrowserID.Modules.XHR = (function() {
       self.publish("xhr_error", errorInfo);
       complete(request.error, errorInfo);
     }, 0);
-  };
+  }
 
 
   function onXHRResponseDelayed(request) {
