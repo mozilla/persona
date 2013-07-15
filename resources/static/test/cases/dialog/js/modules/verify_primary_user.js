@@ -72,7 +72,7 @@
   });
 
   asyncTest("Render dialog", function() {
-    var siteName = _.escape("a / b");
+    var siteName = "site name";
     var idpName = "testuser.com";
 
     xhr.useResult("primaryTransition");
@@ -84,7 +84,9 @@
       ready: function() {
         testHelpers.testElementExists("#upgrade_to_primary");
         testHelpers.testElementTextContains("#upgrade_to_primary",
-            "redirect you to testuser.com");
+            idpName);
+        testHelpers.testElementTextContains("#upgrade_to_primary",
+            siteName);
         start();
       }
     });
@@ -109,7 +111,6 @@
         // If there is double escaping going on, the indexOfs will all fail.
         equal(description.indexOf(_.escape(idpName)), -1);
         equal(description.indexOf(_.escape(siteName)), -1);
-        equal($("#postVerify").html().indexOf(_.escape(siteName)), -1);
         start();
       }
     });
@@ -210,5 +211,4 @@
       }
     });
   });
-
 }());

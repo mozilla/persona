@@ -214,8 +214,7 @@
     xhr.useResult("known_secondary");
 
     register("enter_password", function() {
-      testElementTextEquals(AUTHENTICATION_LABEL,
-          $(PASSWORD_LABEL).html(), "enter password message shown");
+      testElementHasClass("body", "returning");
       start();
     });
 
@@ -232,8 +231,7 @@
         $(EMAIL_SELECTOR).val("registered@testuser.com");
 
         register("enter_password", function() {
-          testElementTextEquals(AUTHENTICATION_LABEL,
-              $(PASSWORD_LABEL).html(), "enter password message shown");
+          testElementHasClass("body", "returning");
           start();
         });
 
@@ -325,7 +323,7 @@
     xhr.useResult("secondaryTransition");
 
     register("enter_password", function() {
-      equal($(AUTHENTICATION_LABEL).html(), $(TRANSITION_TO_SECONDARY_LABEL).html(), "transition message shown");
+      testElementHasClass("body", "transitionToSecondary");
       start();
     });
 
@@ -338,7 +336,7 @@
     xhr.useResult("secondaryTransition");
 
     register("enter_password", function(msg, info) {
-      equal($(AUTHENTICATION_LABEL).html(), $(TRANSITION_TO_SECONDARY_LABEL).html(), "transition message shown");
+      testElementHasClass("body", "transitionToSecondary");
       equal(info.email, "registered@testuser.com");
       start();
     });
