@@ -165,7 +165,7 @@
     "0.1.1": "d9d82735a5f85f950761ac3909ba9485ec0af4f1"
   },
   "i18n-abide": {
-    "0.0.8-beta4": "b106bdaa156f90652e04b75ef6a1079c271a1b45"
+    "0.0.8": "a7610465be083a21e1c2f52e2fd78503ee90dd29"
   },
   "iconv-lite": {
     "0.2.7": "45be2390d27af4b7613aac4ee4d957e3f4cbdb54"
@@ -180,7 +180,7 @@
     "0.9.1": "ff32ec7f09f84001f7498eeafd63c9e4fbb2dc0e"
   },
   "jsxgettext": {
-    "0.0.4": "7dc442c1102ba73edfaa7fd60703ab1d03234194"
+    "0.1.3": "db9dd0bedd531606cdd5fd978dd75d383fd99327"
   },
   "jwcrypto": {
     "0.4.3": "b48ef3db136b09df0933bfa09c717fd738b56038"
