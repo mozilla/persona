@@ -6,15 +6,11 @@ BrowserID.Tooltip = (function() {
   "use strict";
 
   var ANIMATION_TIME = 250,
-      TOOLTIP_MIN_DISPLAY = 2000,
-      TOOLTIP_OFFSET_TOP_PX = 5,
-      TOOLTIP_OFFSET_LEFT_PX = 0,
-      TOOLTIP_MARGIN_TO_SCREEN_EDGE_PX = 20,
-      READ_WPM = 200,
+      animationTime = ANIMATION_TIME,
       bid = BrowserID,
       dom = bid.DOM,
       renderer = bid.Renderer,
-      onlyAttachedTooltip;
+      visibleTooltip;
 
   // This file is made up of two parts, the first part is the Tooltip generic
   // object type, the second half is the BrowserID.Tooltip singleton logic.
@@ -26,147 +22,130 @@ BrowserID.Tooltip = (function() {
     start: function(options) {
       var self = this;
 
-      self.tooltipEl = renderer.append("body", "tooltip", {
-        contents: options.text
-      });
+      var tooltipEl = self.tooltipEl = options.tooltipEl;
+      var anchor = dom.getAttr(tooltipEl, "for");
 
-      anchorTooltip(self.tooltipEl, options.anchor);
+      if (anchor) {
+        anchor = "#" + anchor;
+        self.anchor = anchor;
+        self.lastVal = dom.getInner(anchor).trim() || "";
 
-      // return the displayTimeMS that animateTooltip returns - the
-      // unit tests expect them.
-      return this.animateTooltip(options.done);
-    },
+        self.onChange = onChange.bind(self);
 
-    stop: function() {
-      // stop any fadeIn animations that are occurring. This prevents
-      // the fadeIn completion callback from being invoked for the tooltip
-      // after stop is called.
-      var self = this;
-      dom.stopAnimations(self.tooltipEl);
-      dom.hide(self.tooltipEl);
-      dom.removeElement(self.tooltipEl);
-      self.tooltipEl = null;
+        // if the anchor input element changes or has a key pressed in it,
+        // clear the tooltip.
+        dom.bindEvent(anchor, "keyup", self.onChange);
+        dom.bindEvent(anchor, "change", self.onChange);
 
-      if (self.hideTimer) {
-        clearTimeout(self.hideTimer);
-        self.hideTimer = null;
+        dom.addClass(anchor, "invalid");
       }
+
+      self.show(options.done);
     },
 
-    animateTooltip: function(complete) {
+    stop: function(done) {
+      var self = this;
+
+      if (self.stopped) return done && done();
+      self.stopped = true;
+
+      var anchor = self.anchor;
+      if (anchor) {
+        dom.unbindEvent(anchor, "keyup", self.onChange);
+        dom.unbindEvent(anchor, "change", self.onChange);
+      }
+
+      self.hide(done);
+    },
+
+    show: function(done) {
+      dom.slideDown(this.tooltipEl, animationTime, done);
+    },
+
+    hide: function(done) {
       var self = this,
-          tooltip = self.tooltipEl,
-          displayTimeMS = calculateDisplayTime(tooltip.text());
+          anchor = self.anchor;
 
-      // The animation will be stopped for 'this' tooltip if stop is invoked.
-      dom.fadeIn(tooltip, ANIMATION_TIME, function() {
-        self.hideTimer = setTimeout(function() {
-          dom.fadeOut(tooltip, ANIMATION_TIME, complete);
-        }, displayTimeMS);
-      });
+      if (anchor) dom.removeClass(anchor, "invalid");
 
-      return displayTimeMS;
+      dom.slideUp(self.tooltipEl, animationTime, tooltipHidden);
+
+      function tooltipHidden() {
+        // Removing the reference to the visible tooltip is taken care of here
+        // because the tooltip can close itself, leaving dangling references.
+        // The dangling reference makes it impossible for the same tooltip to
+        // be shown, close itself, and then shown again.
+        // Maybe a better solution is to make this a module and trigger an event,
+        // but that will cause some circular dependencies that I'm not yet
+        // ready to untangle.
+        if (visibleTooltip === self) visibleTooltip = null;
+        if (done) done();
+      }
     }
   });
 
-  function anchorTooltip(tooltip, target) {
-    target = $(target);
-    var targetOffset = target.offset();
+  function onChange(event) {
+    /*jshint validthis: true*/
+    var self = this;
 
-    targetOffset.top -= (tooltip.outerHeight() + TOOLTIP_OFFSET_TOP_PX);
-
-    // make sure the tooltip does not run off the top
-    if (targetOffset.top < TOOLTIP_MARGIN_TO_SCREEN_EDGE_PX)
-      targetOffset.top = TOOLTIP_MARGIN_TO_SCREEN_EDGE_PX;
-
-    targetOffset.left += TOOLTIP_OFFSET_LEFT_PX;
-
-    // make sure the tooltip does not run off the right
-    var right = targetOffset.left + tooltip.outerWidth();
-    var rightLimit = $(window).innerWidth() - TOOLTIP_MARGIN_TO_SCREEN_EDGE_PX;
-    if (right > rightLimit) {
-      targetOffset.right = TOOLTIP_MARGIN_TO_SCREEN_EDGE_PX;
+    var val = dom.getInner(event.target).trim();
+    var lastVal = self.lastVal;
+    self.lastVal = val;
+    if (val !== lastVal) {
+      self.stop();
     }
-
-    tooltip.css(targetOffset);
   }
-
-  function calculateDisplayTime(text) {
-    // Calculate the amount of time a tooltip should display based on the
-    // number of words in the content divided by the number of words an average
-    // person can read per minute.
-    var contents = text.replace(/\s+/, ' ').trim(),
-        words = contents.split(' ').length,
-        // The average person can read ± 250 wpm.
-        wordTimeMS = (words / READ_WPM) * 60 * 1000,
-        displayTimeMS = Math.max(wordTimeMS, TOOLTIP_MIN_DISPLAY);
-
-        return displayTimeMS;
-  }
-
-
 
   // BrowserID.Tooltip singleton public interface.
 
   return {
-    // Interfaces:
-    // showTooltip(tooltipEl, [complete])
-    // showTooltip(tooltipText, tooltipAnchor, [complete])
+    // showTooltip(tooltipEl, [done])
     showTooltip: showTooltip
     // BEGIN TESTING API
     ,
     visible: isTooltipVisible,
-    reset: removeAttachedTooltip
+    init: function(options) {
+      animationTime = options.animationTime;
+    },
+    reset: function(done) {
+      removeVisibleTooltip(function() {
+        animationTime = ANIMATION_TIME;
+        if (done) done();
+      });
+    }
     // END TESTING API
   };
 
 
   // Interfaces:
-  // showTooltip(tooltipEl, [complete])
-  // showTooltip(tooltipText, tooltipAnchor, [complete])
-  function showTooltip(tooltipText, tooltipAnchor, complete) {
+  // showTooltip(tooltipEl, [done])
+  function showTooltip(tooltipEl, done) {
+    // showing the same tooltip? abort out now.
+    if (visibleTooltip && dom.is(visibleTooltip.tooltipEl, tooltipEl))
+      return done && done();
+
     // Only one tooltip can be shown at a time, see issue #1615
-    removeAttachedTooltip();
+    removeVisibleTooltip(function() {
+      visibleTooltip = new Tooltip();
+      visibleTooltip.start({
+        tooltipEl: tooltipEl,
+        done: done
+      });
+    });
 
-    onlyAttachedTooltip = new Tooltip();
-    var tooltipConfig = getTooltipConfig(tooltipText, tooltipAnchor, complete);
-    var displayTimeMS = onlyAttachedTooltip.start(tooltipConfig);
-
-    return displayTimeMS;
   }
 
-  function getTooltipConfig(tooltipText, tooltipAnchor, complete) {
-    // look at tooltipText because complete is optional
-    var getContentFromDOM = !complete && typeof tooltipAnchor !== "string";
-    if (getContentFromDOM) {
-      var tooltipEl = tooltipText;
-      complete = tooltipAnchor;
-
-      // By default, the element passed in is the tooltip element.  If it has
-      // a "for" attribute, that means this tooltip should be anchored to the
-      // element listed in the "for" attribute. If that is the case, create a new
-      // tooltip and anchor it to the other element.
-      tooltipAnchor = dom.hasAttr(tooltipEl, "for") ? "#" + dom.getAttr(tooltipEl, "for") : "body";
-      tooltipText = dom.getInner(tooltipEl);
+  function removeVisibleTooltip(done) {
+    if (visibleTooltip) {
+      visibleTooltip.stop(done);
     }
-
-    return {
-      text: tooltipText,
-      anchor: tooltipAnchor,
-      done: complete
-    };
-  }
-
-
-  function removeAttachedTooltip() {
-    if (onlyAttachedTooltip) {
-      onlyAttachedTooltip.stop();
-      onlyAttachedTooltip = null;
+    else if (done) {
+      done();
     }
   }
 
   function isTooltipVisible() {
-    return !!onlyAttachedTooltip;
+    return !!(visibleTooltip && !visibleTooltip.stopped);
   }
 
 }());

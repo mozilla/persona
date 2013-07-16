@@ -48,13 +48,6 @@
                               <%= gettext('Email field required') %>
                             </div>
 
-                            <div id="could_not_add" class="tooltip" for="authentication_email">
-                              <%= gettext('Initial confirmation sent &ndash; wait a few minutes before requesting another') %>
-                            </div>
-
-                            <div id="cannot_authenticate" class="tooltip" for="authentication_email">
-                              <%= gettext('Password incorrect') %>
-                            </div>
                         </li>
 
 
@@ -68,6 +61,14 @@
 
                             <div id="password_required" class="tooltip" for="authentication_password">
                               <%= gettext('Password field required') %>
+                            </div>
+
+                            <div id="could_not_add" class="tooltip" for="authentication_password">
+                              <%= gettext('Initial confirmation sent &ndash; wait a few minutes before requesting another') %>
+                            </div>
+
+                            <div id="cannot_authenticate" class="tooltip" for="authentication_password">
+                              <%= gettext('Password incorrect') %>
                             </div>
 
                         </li>
