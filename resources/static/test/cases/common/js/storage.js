@@ -240,27 +240,5 @@
     equal(typeof info, "undefined");
   });
 
-  // BEGIN TRANSITION CODE
-  test("upgradeLoggedInInfo upgrades old loggedInInfo and removes namespace",
-      function() {
-      localStorage.loggedIn = JSON.stringify({
-        'testrp.com': 'testuser@testuser.com'
-      });
-
-      storage.upgradeLoggedInInfo();
-      equal(storage.site.get("testrp.com", "logged_in"),
-          'testuser@testuser.com');
-
-      equal(localStorage.getItem('loggedIn'), null);
-
-      try {
-        // make sure re-invoking upgrade path does not cause an error.
-        storage.upgradeLoggedInInfo();
-      } catch(e) {
-        ok(false, "unexpected error");
-      }
-  });
-  // END TRANSITION CODE
-
 }());
 
