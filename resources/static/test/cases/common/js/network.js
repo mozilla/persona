@@ -318,7 +318,7 @@
   });
 
   asyncTest("logout with XHR failure", function() {
-    failureCheck(network.logout);
+    failureCheck(401, network.logout);
   });
 
 
@@ -528,7 +528,7 @@
   });
 
   asyncTest("cookiesEnabled with cookies enabled - return true status", function() {
-    network.init({ cookiesEnabledOverride: true });
+    network.cookiesEnabledOverride = true;
     network.cookiesEnabled(function(status) {
       equal(status, true, "cookies are enabled, correct status");
       start();
@@ -536,7 +536,7 @@
   });
 
   asyncTest("cookiesEnabled with cookies disabled - return true status", function() {
-    network.init({ cookiesEnabledOverride: false });
+    network.cookiesEnabledOverride = false;
     network.cookiesEnabled(function(status) {
       equal(status, false, "cookies are disabled, correct status");
       start();

@@ -790,7 +790,7 @@
 
   asyncTest("checkAuthentication with cookies disabled - localStorage is not cleared, user can enable their cookies and try again", function() {
     storage.addEmail(TEST_EMAIL);
-    network.init({ cookiesEnabledOverride: false });
+    network.cookiesEnabledOverride = false;
 
     lib.checkAuthentication(function(authenticated) {
       equal(authenticated, false, "We are not authenticated!");
@@ -829,7 +829,7 @@
 
   asyncTest("checkAuthenticationAndSync with cookies disabled - localStorage not cleared, user can enable their cookies and try again", function() {
     storage.addEmail(TEST_EMAIL);
-    network.init({ cookiesEnabledOverride: false });
+    network.cookiesEnabledOverride = false;
 
     lib.checkAuthenticationAndSync(function onComplete(authenticated) {
       equal(authenticated, false, "We are not authenticated!");
@@ -1209,7 +1209,7 @@
   asyncTest("logoutUser with XHR failure", function(onSuccess) {
     lib.authenticate(TEST_EMAIL, "testuser", function(authenticated) {
       lib.syncEmails(function() {
-        failureCheck(lib.logoutUser);
+        failureCheck(401, lib.logoutUser);
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
   });

@@ -7,21 +7,22 @@
   "use strict";
 
   var bid = BrowserID,
-      xhr = bid.XHR,
+      XHR = bid.Modules.XHR,
+      xhr,
       transport = bid.Mocks.xhr,
       mediator = bid.Mediator,
       testHelpers = bid.TestHelpers;
 
-  module("common/js/xhr", {
+  module("common/js/modules/xhr", {
     setup: function() {
-      testHelpers.setup();
       transport.setDelay(0);
+      xhr = XHR.create();
       xhr.init({ transport: transport, time_until_delay: 50 });
+      testHelpers.setup({ xhr: xhr });
     },
 
     teardown: function() {
       testHelpers.teardown();
-      xhr.init({ transport: $, time_until_delay: 0 });
     }
   });
 
@@ -181,7 +182,7 @@
       function() {
     mediator.subscribe("xhr_complete", function(msg, info) {
       equal(info.network.url, "/slow_request");
-      equal(info.resp.statusText, "aborted");
+      equal(info.xhr.statusText, "aborted");
       start();
     });
 

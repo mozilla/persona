@@ -12,11 +12,18 @@ BrowserID.Network = (function() {
       domain_key_creation_time,
       code_version,
       mediator = bid.Mediator,
-      xhr = bid.XHR,
-      post = xhr.post,
-      get = xhr.get,
+      XHR = bid.Modules.XHR,
+      xhr,
       // XXX get this out of here!
       storage = bid.Storage;
+
+  function post() {
+    xhr.post.apply(xhr, [].slice.call(arguments, 0));
+  }
+
+  function get() {
+    xhr.get.apply(xhr, [].slice.call(arguments, 0));
+  }
 
   function onContextChange(msg, result) {
     context = result;
@@ -44,12 +51,12 @@ BrowserID.Network = (function() {
         // If cookies are disabled, some browsers throw an exception. Ignore
         // this, the backend will see that cookies are disabled.
       }
-      xhr.withContext(cb, onFailure);
+      xhr.getContext(cb, onFailure);
     }
   }
 
   function clearContext() {
-    xhr.clearContext();
+    if (xhr) xhr.clearContext();
     var undef;
     context = server_time = undef;
   }
@@ -95,8 +102,16 @@ BrowserID.Network = (function() {
      * @method init
      */
     init: function(config) {
+      config = config || {};
+
       // Any time the context info changes, we want to know about it.
       mediator.subscribe('context_info', onContextChange);
+      if (config.xhr) {
+        xhr = config.xhr;
+      } else {
+        xhr = XHR.create();
+        xhr.init({ time_until_delay: bid.XHR_DELAY_MS });
+      }
 
       // BEGIN TEST API
       this.cookiesEnabledOverride = config && config.cookiesEnabledOverride;
