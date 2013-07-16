@@ -8,9 +8,6 @@ BrowserID.Network = (function() {
   var bid = BrowserID,
       complete = bid.Helpers.complete,
       context,
-      server_time,
-      domain_key_creation_time,
-      code_version,
       mediator = bid.Mediator,
       XHR = bid.Modules.XHR,
       xhr,
@@ -54,27 +51,23 @@ BrowserID.Network = (function() {
       url: "/wsapi/session_context",
       success: function(result) {
         setContext(result);
-        complete(done, result);
+        complete(done, context);
       },
       error: onFailure
     });
   }
 
   function setContext(newContext) {
-    context = newContext;
-    server_time = {
-      remote: newContext.server_time,
-      local: (new Date()).getTime()
-    };
-    domain_key_creation_time = newContext.domain_key_creation_time;
-    code_version = newContext.code_version;
+    context = _.extend({}, newContext, {
+      local_time: new Date().getTime()
+    });
 
     mediator.publish("context_info", newContext);
   }
 
   function clearContext() {
     var undef;
-    context = server_time = undef;
+    context = undef;
   }
 
   function stageAddressForVerification(data, wsapiName, onComplete, onFailure) {
@@ -599,13 +592,14 @@ BrowserID.Network = (function() {
      * @method serverTime
      */
     serverTime: function(onComplete, onFailure) {
-      withContext(function() {
+      withContext(function(context) {
+        var server_time = context.server_time;
         try {
           if (!server_time) throw new Error("can't get server time!");
-          var offset = (new Date()).getTime() - server_time.local;
-          complete(onComplete, new Date(offset + server_time.remote));
+          var offset = (new Date()).getTime() - context.local_time;
+          complete(onComplete, new Date(offset + server_time));
         } catch(e) {
-          complete(onFailure, e.toString());
+          complete(onFailure, String(e));
         }
       }, onFailure);
     },
@@ -620,12 +614,13 @@ BrowserID.Network = (function() {
      * @method domainKeyCreationTime
      */
     domainKeyCreationTime: function(onComplete, onFailure) {
-      withContext(function() {
+      withContext(function(context) {
+        var domain_key_creation_time = context.domain_key_creation_time;
         try {
           if (!domain_key_creation_time) throw new Error("can't get domain key creation time!");
           complete(onComplete, new Date(domain_key_creation_time));
         } catch(e) {
-          complete(onFailure, e.toString());
+          complete(onFailure, String(e));
         }
       }, onFailure);
     },
@@ -640,8 +635,8 @@ BrowserID.Network = (function() {
      * @method codeVersion
      */
     codeVersion: function(onComplete, onFailure) {
-      withContext(function() {
-        complete(onComplete, code_version);
+      withContext(function(context) {
+        complete(onComplete, context.code_version);
       }, onFailure);
     },
 
