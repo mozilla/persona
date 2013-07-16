@@ -97,7 +97,7 @@ BrowserID.Modules.XHR = (function() {
 
     self.outstandingRequests = {};
     self.transport = config.transport || XHRTransport;
-    self.time_until_delay = config.time_until_delay || 0;
+    self.time_until_delay = config.time_until_delay;
 
     /**
      * Abort any outstanding XHR requests if the user browses away or reloads.
@@ -135,7 +135,7 @@ BrowserID.Modules.XHR = (function() {
     /*jshint validthis: true*/
     var self = this;
 
-    var request = getRequest(options);
+    var request = getRequestInfo(options);
     // The request obj must be added to list of outstanding requests in
     // case request is synchronous. This makes sure all housekeeping is kept in
     // order.
@@ -224,7 +224,7 @@ BrowserID.Modules.XHR = (function() {
     }
   }
 
-  function getRequest(options) {
+  function getRequestInfo(options) {
     return _.extend({}, options, {
       network: {
         type: options.type.toUpperCase(),

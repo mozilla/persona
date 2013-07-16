@@ -110,8 +110,7 @@ BrowserID.Network = (function() {
         xhr = config.xhr;
       } else {
         xhr = XHR.create();
-        // A request that takes more than 10 seconds is considered delayed.
-        xhr.init({ time_until_delay: 10 * 1000 });
+        xhr.init({ time_until_delay: bid.XHR_DELAY_MS });
       }
 
       // BEGIN TEST API
