@@ -11,8 +11,10 @@ BrowserID.TestHelpers = (function() {
       network = bid.Network,
       user = bid.User,
       storage = bid.Storage,
-      xhr = bid.XHR,
+      XHR = bid.Modules.XHR,
+      xhr,
       transport = bid.Mocks.xhr,
+      dom = bid.DOM,
       provisioning = bid.Mocks.Provisioning,
       screens = bid.Screens,
       tooltip = bid.Tooltip,
@@ -53,20 +55,30 @@ BrowserID.TestHelpers = (function() {
 
   var TestHelpers = {
     XHR_TIME_UNTIL_DELAY: 100,
-    setup: function() {
+    setup: function(options) {
+      options = options || {};
+
       unregisterAll();
       mediator.reset();
-      xhr.init({
-        transport: transport,
-        time_until_delay: TestHelpers.XHR_TIME_UNTIL_DELAY
-      });
+      if (options.xhr) {
+        xhr = options.xhr;
+      } else {
+        xhr = XHR.create();
+        xhr.init({
+          transport: transport,
+          time_until_delay: TestHelpers.XHR_TIME_UNTIL_DELAY
+        });
+      }
 
       transport.setDelay(0);
       transport.setContextInfo("auth_level", undefined);
       transport.setContextInfo("has_password", false);
       transport.useResult("valid");
 
-      network.init({ cookiesEnabledOverride: true });
+      network.init({
+        xhr: xhr,
+        cookiesEnabledOverride: true
+      });
       clearStorage();
 
       $("body").stop().show();
@@ -80,6 +92,9 @@ BrowserID.TestHelpers = (function() {
       screens.error.hide();
       screens.delay.hide();
       tooltip.reset();
+      tooltip.init({
+        animationTime: 0
+      });
       provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
       user.reset();
       user.init({
@@ -92,11 +107,7 @@ BrowserID.TestHelpers = (function() {
     teardown: function() {
       unregisterAll();
       mediator.reset();
-      xhr.init({
-        transport: $,
-        time_until_delay: 10 * 1000
-      });
-      network.init();
+      xhr.stop();
       clearStorage();
       screens.wait.hide();
       screens.error.hide();
@@ -209,11 +220,24 @@ BrowserID.TestHelpers = (function() {
       equal(tooltip.visible(), false, "tooltip is not visible");
     },
 
-    failureCheck: function failureCheck(cb) {
-      // Take the original arguments, take off the function.  Add any additional
-      // arguments that were passed in, and then tack on the onSuccess and
-      // onFailure to the end.  Then call the callback.
-      var args = [].slice.call(arguments, 1);
+    failureCheck: function failureCheck(expectedStatus, cb) {
+      var args;
+
+      // expectedStatus is optional. If not specified, `errorStatus` is the
+      // default expected status.
+      if (typeof expectedStatus === "function") {
+        // only cb was specified, get rid of it before passing the rest of the
+        // argumetns on. Args has to be fetched before modifying cb and
+        // expectedStatus or else IE8 blows up.
+        args = [].slice.call(arguments, 1);
+        cb = expectedStatus;
+        expectedStatus = "errorStatus";
+      }
+      else {
+        // both expectedStatus and cb were given to us, get rid of them for the
+        // arguments to pass on.
+        args = [].slice.call(arguments, 2);
+      }
 
       var errorInfo;
 
@@ -221,8 +245,10 @@ BrowserID.TestHelpers = (function() {
         ok(true, "XHR failure should never pass");
         ok(info.network.url, "url is in network info");
         ok(info.network.type, "request type is in network info");
-        equal(info.network.textStatus, "errorStatus", "textStatus is in network info");
-        equal(info.network.errorThrown, "errorThrown", "errorThrown is in response info");
+        equal(info.network.textStatus, expectedStatus,
+            "textStatus is in network info");
+        equal(info.network.errorThrown, "errorThrown",
+            "errorThrown is in response info");
 
         start();
       });
@@ -290,7 +316,7 @@ BrowserID.TestHelpers = (function() {
     },
 
     testElementExists: function(selector, msg) {
-      ok($(selector).length, msg || ("element '" + selector + "' exists"));
+      ok(dom.exists(selector), msg || ("element '" + selector + "' exists"));
     },
 
     testElementDoesNotExist: function(selector, msg) {

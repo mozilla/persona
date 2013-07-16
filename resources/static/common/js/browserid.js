@@ -22,7 +22,10 @@
     // http://support.microsoft.com/kb/q208427
     // See issue #2080 - https://github.com/mozilla/browserid/issues/2080
     URL_MAX_LENGTH: 2083,
-    PATH_MAX_LENGTH: 2048
+    PATH_MAX_LENGTH: 2048,
+
+    // XHR requests are considered delayed after 10 seconds.
+    XHR_DELAY_MS: 10 * 1000
   };
 
   for (var key in constants) {

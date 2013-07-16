@@ -193,6 +193,14 @@
     box-shadow: 0 0 5px 0 #0096dc;
   }
 
+  input[type=text].invalid,
+  input[type=email].invalid,
+  input[type=password].invalid {
+      border: 1px solid #a50022;
+      box-shadow: none;
+  }
+
+
   /**
    * Android ICS (2.3.*) has an issue where the background image dissappears
    * when the user clicks in the input box. See

@@ -10,11 +10,8 @@
       modules = bid.Modules,
       user = bid.User,
       network = bid.Network,
-      mediator = bid.Mediator,
-      xhr = bid.XHR;
+      mediator = bid.Mediator;
 
-  // A request that takes more than 10 seconds is considered delayed.
-  xhr.init({ time_until_delay: 10 * 1000 });
   network.init();
   user.init();
 

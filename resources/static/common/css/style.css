@@ -68,40 +68,9 @@ strong {
 }
 
 .tooltip {
-  color: #fff;
-  font-weight: bold;
-  text-shadow: 0 1px #333;
-  line-height: 16px;
-  background-color: #aa1401;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(218, 81, 50, 0.9)), to(rgba(169, 19, 0, 1)));
-  background-image: -webkit-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
-  background-image:    -moz-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
-  background-image:     -ms-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
-  background-image:      -o-linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
-  background-image:         linear-gradient(top, rgba(218, 81, 50, 0.9), rgba(169, 19, 0, 1));
-  border-radius: 4px;
-  padding: 10px 15px;
-  box-shadow: 0 1px #666;
-
+  color: #a50022;
   display: none;
-  max-width: 275px;
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 5;
-}
-
-.tooltip .arrow-down {
-  /* This is an awesome CSS only arrow! */
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 10px solid #aa1401;
-  border-top: 10px solid rgba(169, 19, 0, 1);
-  position: absolute;
-  bottom: -10px;
-  left: 20px;
+  margin: .5em 0;
 }
 
 a {
@@ -136,6 +105,13 @@ input[type=email]:focus,
 input[type=password]:focus {
     border: 1px solid #42a4e0;
     box-shadow: 1px 1px 0 rgba(255,255,255,.5), 0 0 1px 3px rgba(73,173,227, .4);
+}
+
+input[type=text].invalid,
+input[type=email].invalid,
+input[type=password].invalid {
+    border: 1px solid #a50022;
+    box-shadow: none;
 }
 
 input[type=text]:disabled,
