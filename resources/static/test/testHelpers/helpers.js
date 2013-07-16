@@ -14,6 +14,7 @@ BrowserID.TestHelpers = (function() {
       XHR = bid.Modules.XHR,
       xhr,
       transport = bid.Mocks.xhr,
+      dom = bid.DOM,
       provisioning = bid.Mocks.Provisioning,
       screens = bid.Screens,
       tooltip = bid.Tooltip,
@@ -315,7 +316,7 @@ BrowserID.TestHelpers = (function() {
     },
 
     testElementExists: function(selector, msg) {
-      ok($(selector).length, msg || ("element '" + selector + "' exists"));
+      ok(dom.exists(selector), msg || ("element '" + selector + "' exists"));
     },
 
     testElementDoesNotExist: function(selector, msg) {

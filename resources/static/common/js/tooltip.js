@@ -46,7 +46,7 @@ BrowserID.Tooltip = (function() {
     stop: function(done) {
       var self = this;
 
-      if (self.stopped) return;
+      if (self.stopped) return done && done();
       self.stopped = true;
 
       var anchor = self.anchor;
@@ -59,42 +59,25 @@ BrowserID.Tooltip = (function() {
     },
 
     show: function(done) {
-      var tooltipEl = this.tooltipEl;
-
-      dom.stopAnimations(tooltipEl);
-      if (animationTime) {
-        // If tooltipEl does not exist in the DOM, jQuery never calls the
-        // slideDown done function. Avoid the blowup by using a setTimeout.
-        dom.slideDown(tooltipEl, animationTime);
-        if (done) setTimeout(done, animationTime);
-      }
-      else {
-        dom.show(tooltipEl);
-        if (done) done();
-      }
+      dom.slideDown(this.tooltipEl, animationTime, done);
     },
 
     hide: function(done) {
       var self = this,
-          tooltipEl = self.tooltipEl,
           anchor = self.anchor;
 
       if (anchor) dom.removeClass(anchor, "invalid");
 
-      dom.stopAnimations(tooltipEl);
+      dom.slideUp(self.tooltipEl, animationTime, tooltipHidden);
 
-      if (animationTime) {
-        dom.slideUp(tooltipEl, animationTime);
-        // If tooltipEl does not exist in the DOM, jQuery never calls the
-        // slideUp done function. Avoid the blowup by using a setTimeout.
-        setTimeout(animationComplete, animationTime);
-      }
-      else {
-        dom.hide(tooltipEl);
-        animationComplete();
-      }
-
-      function animationComplete() {
+      function tooltipHidden() {
+        // Removing the reference to the visible tooltip is taken care of here
+        // because the tooltip can close itself, leaving dangling references.
+        // The dangling reference makes it impossible for the same tooltip to
+        // be shown, close itself, and then shown again.
+        // Maybe a better solution is to make this a module and trigger an event,
+        // but that will cause some circular dependencies that I'm not yet
+        // ready to untangle.
         if (visibleTooltip === self) visibleTooltip = null;
         if (done) done();
       }
@@ -125,8 +108,10 @@ BrowserID.Tooltip = (function() {
       animationTime = options.animationTime;
     },
     reset: function(done) {
-      removeVisibleTooltip(done);
-      animationTime = ANIMATION_TIME;
+      removeVisibleTooltip(function() {
+        animationTime = ANIMATION_TIME;
+        if (done) done();
+      });
     }
     // END TESTING API
   };
@@ -136,27 +121,31 @@ BrowserID.Tooltip = (function() {
   // showTooltip(tooltipEl, [done])
   function showTooltip(tooltipEl, done) {
     // showing the same tooltip? abort out now.
-    if (visibleTooltip && $(visibleTooltip.tooltipEl).is(tooltipEl))
+    if (visibleTooltip && dom.is(visibleTooltip.tooltipEl, tooltipEl))
       return done && done();
 
     // Only one tooltip can be shown at a time, see issue #1615
-    removeVisibleTooltip();
-
-    visibleTooltip = new Tooltip();
-    visibleTooltip.start({
-      tooltipEl: tooltipEl,
-      done: done
+    removeVisibleTooltip(function() {
+      visibleTooltip = new Tooltip();
+      visibleTooltip.start({
+        tooltipEl: tooltipEl,
+        done: done
+      });
     });
+
   }
 
   function removeVisibleTooltip(done) {
     if (visibleTooltip) {
       visibleTooltip.stop(done);
     }
+    else if (done) {
+      done();
+    }
   }
 
   function isTooltipVisible() {
-    return !!visibleTooltip;
+    return !!(visibleTooltip && !visibleTooltip.stopped);
   }
 
 }());

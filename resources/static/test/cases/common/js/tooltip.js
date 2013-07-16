@@ -8,6 +8,8 @@
       tooltip = bid.Tooltip,
       testHelpers = bid.TestHelpers,
       testUndefined = testHelpers.testUndefined,
+      testVisible = testHelpers.testVisible,
+      testNotVisible = testHelpers.testNotVisible,
       testTooltipVisible = testHelpers.testTooltipVisible,
       testTooltipNotVisible = testHelpers.testTooltipNotVisible;
 
@@ -23,10 +25,10 @@
     tooltip.showTooltip("#shortTooltip", function() {
       testTooltipVisible();
       equal($('#needsTooltip').hasClass("invalid"), true);
-      equal($("#shortTooltip").is(":visible"), true);
+      testVisible("#shortTooltip");
 
       tooltip.reset(function() {
-        equal($("#shortTooltip").is(":visible"), false);
+        testNotVisible("#shortTooltip");
         equal($('#needsTooltip').hasClass("invalid"), false);
         testTooltipNotVisible();
 
@@ -43,14 +45,14 @@
 
       setTimeout(function() {
         equal($('#needsTooltip').hasClass("invalid"), true);
-        equal($("#shortTooltip").is(":visible"), true);
+        testVisible("#shortTooltip");
 
         // synthesize user adds a letter - hides the tooltip
         $("#needsTooltip").val("a");
         $("#needsTooltip").trigger("keyup");
 
         setTimeout(function() {
-          equal($("#shortTooltip").is(":visible"), false);
+          testNotVisible("#shortTooltip");
           equal($('#needsTooltip').hasClass("invalid"), false);
           testTooltipNotVisible();
 
@@ -63,8 +65,8 @@
   asyncTest("only one tooltip shown at a time", function() {
     tooltip.showTooltip("#shortTooltip", function() {
       tooltip.showTooltip("#secondTooltip", function() {
-        equal($("#shortTooltip").is(":visible"), false);
-        equal($("#secondTooltip").is(":visible"), true);
+        testNotVisible("#shortTooltip");
+        testVisible("#secondTooltip");
         equal($('#needsTooltip').hasClass("invalid"), true);
 
         testTooltipVisible();
