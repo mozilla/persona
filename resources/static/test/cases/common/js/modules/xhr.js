@@ -101,6 +101,41 @@
     });
   });
 
+  asyncTest("post with missing CSRF token", function() {
+    var errorInfo;
+    mediator.subscribe("xhr_error", function(msg, info) {
+      errorInfo = info;
+    });
+
+    var completeInfo;
+    mediator.subscribe("xhr_complete", function(msg, info) {
+      completeInfo = info;
+    });
+
+    xhr.post({
+      url: "/wsapi/authenticate_user",
+      success: testHelpers.unexpectedSuccess,
+      error: function(info) {
+        ok(errorInfo);
+        equal(errorInfo.network.url, "/wsapi/authenticate_user");
+        equal(errorInfo.network.errorThrown,
+            "missing csrf token from POST request");
+
+        ok(info);
+        equal(info.network.url, "/wsapi/authenticate_user");
+        equal(info.network.errorThrown,
+            "missing csrf token from POST request");
+
+        ok(completeInfo);
+        equal(completeInfo.network.url, "/wsapi/authenticate_user");
+        equal(completeInfo.network.errorThrown,
+            "missing csrf token from POST request");
+
+        start();
+      }
+    });
+  });
+
   asyncTest("post with delay", function() {
     transport.setDelay(100);
 
@@ -115,6 +150,7 @@
     });
 
     xhr.post({
+      data: { csrf: "csrf" },
       url: "/wsapi/authenticate_user",
       success: function() {
         ok(delayInfo, "xhr_delay called with delay info");
@@ -143,6 +179,7 @@
     transport.useResult("ajaxError");
 
     xhr.post({
+      data: { csrf: "csrf" },
       url: "/wsapi/authenticate_user",
       error: function(info) {
         ok(errorInfo, "xhr_error called with delay info");
@@ -168,6 +205,7 @@
     });
 
     xhr.post({
+      data: { csrf: "csrf" },
       url: "/wsapi/authenticate_user",
       error: testHelpers.unexpectedXHRFailure,
       success: function() {
@@ -189,7 +227,7 @@
     xhr.get({
       url: "/slow_request",
       error: testHelpers.unexpectedXHRFailure,
-      success: function() { ok(false) }
+      success: function() { ok(false); }
     });
 
     xhr.abortAll();

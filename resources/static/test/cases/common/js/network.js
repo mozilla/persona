@@ -553,18 +553,22 @@
   asyncTest("cookiesEnabled with onComplete exception thrown - should not call onComplete a second time", function() {
     // Since we are manually throwing an exception, it must be caught
     // below.
-    try {
-      network.cookiesEnabled(function(status) {
-        // if there is a problem, this callback will be called a second time
-        // with a false status.
-        equal(status, true, "cookies are enabled, correct status");
-        start();
+    network.withContext(function() {
+      var err;
+      try {
+        network.cookiesEnabled(function(status) {
+          // if there is a problem, this callback will be called a second time
+          // with a false status.
+          equal(status, true, "cookies are enabled, correct status");
+          start();
 
-        throw "callback exception";
-      }, testHelpers.unexpectedXHRFailure);
-    } catch(e) {
-      equal(e, "callback exception", "correct exception caught");
-    }
+          throw "callback exception";
+        }, testHelpers.unexpectedXHRFailure);
+      } catch(e) {
+        err = e;
+      }
+      equal(err, "callback exception", "correct exception caught");
+    }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("prolongSession with authenticated user, success - call complete", function() {

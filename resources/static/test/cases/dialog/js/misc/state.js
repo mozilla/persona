@@ -55,12 +55,19 @@
   }
 
   function testPasswordUsedForStaging(stagingMessage, stagingAction) {
-    mediator.publish(stagingMessage, { email: TEST_EMAIL });
-    testActionStarted("doSetPassword");
-    mediator.publish("password_set");
-
-    equal(actions.info[stagingAction].email, TEST_EMAIL,
-              "correct email sent to " + stagingAction);
+    mediator.publish(stagingMessage, {
+      email: TEST_EMAIL,
+      complete: function() {
+        testActionStarted("doSetPassword");
+        mediator.publish("password_set", {
+          complete: function() {
+            equal(actions.info[stagingAction].email, TEST_EMAIL,
+                      "correct email sent to " + stagingAction);
+            start();
+          }
+        });
+      }
+    });
   }
 
   function testStagingThrottledRetry(startMessage, expectedStagingAction) {
@@ -119,7 +126,7 @@
   function setContextInfo(auth_level) {
     // Make sure there is context info for network.
     var serverTime = (new Date().getTime()) - 10;
-    mediator.publish("context_info", {
+    network.setContext({
       server_time: serverTime,
       domain_key_creation_time: serverTime,
       code_version: "ABCDEF",
@@ -216,7 +223,7 @@
                        + stageAddressTest.stage_with_password
                        + " through password_set - call " + stageAddressTest.stageAction;
 
-        test(testName,
+        asyncTest(testName,
           testPasswordUsedForStaging.curry(stageAddressTest.stage_with_password,
               stageAddressTest.stageAction));
 

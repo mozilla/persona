@@ -60,20 +60,6 @@ BrowserID.Modules.XHR = (function() {
     post: post,
 
     /**
-     * Get the session context
-     * @method getContext
-     * @param {function} complete
-     * @param {function} error
-     */
-    getContext: getContext,
-
-    /**
-     * Clear the current context
-     * @method clearContext
-     */
-    clearContext: clearContext,
-
-    /**
      * Abort all outstanding XHR requests
      * @method abortAll
      */
@@ -83,11 +69,6 @@ BrowserID.Modules.XHR = (function() {
   sc = XHR.sc;
 
   return XHR;
-
-  function clearContext() {
-    /*jshint validthis: true*/
-    this.context = undefined;
-  }
 
   function init(config) {
     /*jshint validthis: true*/
@@ -136,6 +117,7 @@ BrowserID.Modules.XHR = (function() {
     var self = this;
 
     var request = getRequestInfo(options);
+
     // The request obj must be added to list of outstanding requests in
     // case request is synchronous. This makes sure all housekeeping is kept in
     // order.
@@ -169,50 +151,34 @@ BrowserID.Modules.XHR = (function() {
 
   function get(options) {
     /*jshint validthis: true*/
-    var req = _.extend(options, {
+    options = _.extend(options, {
       type: "GET",
       defer_success: true
     });
-    this.request(req);
+    this.request(options);
   }
 
   function post(options) {
     /*jshint validthis: true*/
-    var self = this;
-    self.getContext(function(context) {
-      var data = options.data || {};
-      data.csrf = data.csrf || context.csrf_token;
-      var req = _.extend(options, {
-        type: "POST",
-        data: JSON.stringify(data),
-        contentType: 'application/json',
-        processData: false,
-        defer_success: true
-      });
-      self.request(req);
-    }, options.error);
-  }
+    var data = options.data || {};
 
-  function getContext(done, onFailure) {
-    /*jshint validthis: true*/
-    var self = this;
-    if (typeof self.context !== 'undefined') complete(done, self.context);
-    else {
-      self.request({
-        type: "GET",
-        url: "/wsapi/session_context",
-        success: function(result) {
-          self.context = result;
+    options = _.extend(options, {
+      type: "POST",
+      data: JSON.stringify(data),
+      contentType: 'application/json',
+      processData: false,
+      defer_success: true
+    });
 
-          self.publish("context_info", result);
-
-          complete(done, result);
-        },
-        error: onFailure
-      });
+    // let no POST requests fly without a CSRF token.
+    if (!data.csrf) {
+      var request = getRequestInfo(options);
+      return onXHRError.call(this, request, null, null,
+                  "missing csrf token from POST request");
     }
-  }
 
+    this.request(options);
+  }
 
   function abortAll() {
     /*jshint validthis: true*/
@@ -236,11 +202,12 @@ BrowserID.Modules.XHR = (function() {
 
   function getErrorInfo(request, textStatus, errorThrown) {
     var errorInfo = _.extend(request || {});
+    var xhr = request.xhr || {};
     errorInfo.network = _.extend(errorInfo.network || {}, {
-      status: request.xhr.status,
+      status: xhr.status,
       textStatus: textStatus,
       errorThrown: errorThrown,
-      responseText: request.xhr.responseText
+      responseText: xhr.responseText
     });
 
     return errorInfo;
@@ -283,7 +250,7 @@ BrowserID.Modules.XHR = (function() {
      * illegal cross domain requests or when the user has no
      * connectivity.
      */
-    if (xhrObj.statusText === "aborted") return;
+    if (xhrObj && xhrObj.statusText === "aborted") return;
 
     // See note in success about why we defer responses
     setTimeout(function() {

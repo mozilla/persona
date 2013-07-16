@@ -261,6 +261,7 @@ BrowserID.State = (function() {
         startAction(false, "doStageUser", info);
 // TODO         startAction(false, "doStageResetPassword", info); ???
       }
+      complete(info.complete);
     });
 
     handleState("user_staged", handleEmailStaged.curry("doConfirmUser"));
