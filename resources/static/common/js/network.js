@@ -62,7 +62,7 @@ BrowserID.Network = (function() {
       local_time: new Date().getTime()
     });
 
-    mediator.publish("context_info", newContext);
+    mediator.publish("context_info", context);
   }
 
   function clearContext() {
