@@ -6,18 +6,14 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
   "use strict";
 
   var bid = BrowserID,
-      sc,
-      win,
-      add,
-      email,
-      auth_url,
       user = bid.User,
       errors = bid.Errors,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
       complete = helpers.complete,
       storage = bid.Storage,
-      CANCEL_SELECTOR = ".cancel";
+      CANCEL_SELECTOR = ".cancel",
+      sc;
 
   function submit(callback) {
     /*jshint validthis:true*/
@@ -29,15 +25,15 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     self.publish("primary_user_authenticating");
 
     storage.idpVerification.set({
-      add: add,
-      email: email,
+      add: self.add,
+      email: self.email,
       // native is used when the user returns from the primary to prevent
       // WinChan from establishing the postMessage channel.
-      'native': win.document.location.hash === "#NATIVE"
+      'native': self.window.document.location.hash === "#NATIVE"
     });
 
-    var url = helpers.toURL(auth_url, { email: email });
-    win.document.location = url;
+    var url = helpers.toURL(self.auth_url, { email: self.email });
+    self.window.document.location = url;
     complete(callback);
   }
 
@@ -49,33 +45,31 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
   }
 
   function showsPrimaryTransition(state) {
-    // we know the type is "primary", and they aren't verified to be at
-    // this module. We need to show the transition is we've never seen
-    // this email before, or we have, but last time it was a secondary.
-    // The state should be marked "known" when the verification returns.
-    return state === "unknown" || state === "transition_to_primary";
+    // we know the type is "primary", and the user is not verified with the IdP
+    // if they are at this module. Only show the user any text if the user
+    // previously used this address when it was vouched for by the fallback
+    // IdP.
+    return state === "transition_to_primary";
   }
 
 
-  function renderForm() {
+  function renderForm(options) {
     /*jshint validthis: true*/
-    var self = this,
-        options = self.options,
-        // major assumption:
-        // both siteName and idpName are escaped before they make it here.
-        // siteName is escaped in dialog/js/modules/dialog.js
-        // idpName is escaped in common/js/user.js->addressInfo
-        view = {
-          email: options.email,
-          auth_url: auth_url,
-          siteName: options.siteName,
-          idpName: options.idpName,
-          transition_to_primary: options.transition_to_primary
-        };
+    options = options || {};
+    var self = this;
 
-    self.renderForm("verify_primary_user", view);
+    // major assumption:
+    // both siteName and idpName are escaped before they make it here.
+    // siteName is escaped in dialog/js/modules/dialog.js
+    // idpName is escaped in common/js/user.js->addressInfo
+    self.renderForm("verify_primary_user", {
+      email: self.email,
+      auth_url: options.auth_url,
+      siteName: self.siteName,
+      idpName: self.idpName
+    });
 
-    if (options.siteTOSPP) {
+    if (self.siteTOSPP) {
       dialogHelpers.showRPTosPP.call(self);
     }
 
@@ -87,21 +81,18 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       var self = this;
       options = options || {};
 
-      win = options.window || window;
-      add = options.add;
-      email = options.email;
+      self.importFrom(options,
+          "window", "add", "email", "siteName", "idpName");
+
+      if (!self.window) self.window = window;
 
       sc.start.call(self, options);
 
-      user.addressInfo(email, function(info) {
-        auth_url = info.auth;
-
-        if ("transition_to_primary" === info.state) {
-          options.transition_to_primary = true;
-        }
+      user.addressInfo(self.email, function(info) {
+        self.auth_url = info.auth;
 
         if (showsPrimaryTransition(info.state)) {
-          renderForm.call(self);
+          renderForm.call(self, info);
           complete(options.ready);
         }
         else {

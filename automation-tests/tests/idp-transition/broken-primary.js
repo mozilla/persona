@@ -56,8 +56,6 @@ runner.run(module, {
       .wwin(CSS["persona.org"].windowName)
       .wtype(CSS['dialog'].emailInput, testidp.email)
       .wclick(CSS['dialog'].newEmailNextButton)
-      // first use of an email will cause messaging to be displayed
-      .wclick(CSS['dialog'].verifyWithPrimaryButton)
       .wclick(CSS['testidp.org'].loginButton)
       .wwin()
       // wait until the sign-in fully completes

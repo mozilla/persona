@@ -3,21 +3,10 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <div class="cf form_section">
-  <% if (! transition_to_primary) { %>
-    <h2>
-      <%- format(gettext("%s makes this easy"), [idpName]) %>
-    </h2>
-  <% } %>
-
-  <p class="description" <% if (transition_to_primary) { %> id="upgrade_to_primary"<% } %>>
-    <% if (transition_to_primary) { %>
+  <p class="description" id="upgrade_to_primary">
       <%- format(gettext("Your %(emailProvider)s account has been upgraded to work even better with Persona. We will redirect you to %(emailProvider)s."), {
         emailProvider: idpName
       })%>
-    <% } else { %>
-      <%- format(gettext("Persona lets you use your %(emailProvider)s account to sign into sites like %(aWebsite)s."),
-               { emailProvider: idpName, aWebsite: siteName }) %>
-    <% } %>
   </p>
 
   <p id="postVerify">

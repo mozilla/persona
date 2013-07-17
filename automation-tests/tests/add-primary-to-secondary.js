@@ -74,7 +74,6 @@ runner.run(module, {
       .wclick(CSS['dialog'].useNewEmail)
       .wtype(CSS['dialog'].newEmail, primaryEmail)
       .wclick(CSS['dialog'].addNewEmailButton)
-      .wclick(CSS['dialog'].verifyWithPrimaryButton)
       .wclick(CSS['testidp.org'].loginButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {

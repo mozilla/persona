@@ -57,9 +57,6 @@ var primaryTest = {
   "go to personaorg, click sign in, type testidp addy, click next": function(done) {
     startup(browser, primaryEmail, done)
   },
-  "click 'verify primary' to open testidp": function(done) {
-    browser.wclick(CSS['dialog'].verifyWithPrimaryButton, done);
-  },
   "switch to testidp dialog, submit password, click ok": function(done) {
     browser.chain({onError: done})
       .wclick(CSS['testidp.org'].loginButton, done);
