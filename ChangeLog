@@ -1,4 +1,12 @@
-current train:
+train-2013.07.17:
+  * Simplify tooltip copy and replace tooltips with inline notifications: #3154, #3607
+  * [FXOS] Make TOS/PP links same size as surrounding text: #3634
+  * Ensure dialog hides the 'checking with your email provider' screen after that check completes: #3638
+  * Remove eval() from i18n workflow by passing i18n-abide .js, not .json files: #3672, #2501
+  * Fix lockdown & rpm build errors by bumping i18n-abide version number to semver-compatible string: #3658, #3639
+  * Refactor xhr code into a module, removing global state, and squashing an intermittent unit testing bug: #3647
+  * Prevent Chrome from logging spurious KPI errors by aborting in-flight xhrs on page unload: #2423, #3618
+  * On each Travis-CI run, record linux, mysql, and phantomjs versions for future reference: #3626
 
 train-2013.07.03:
   * [FXOS] Add support for primary IdPs to FirefoxOS: #3572, #3592, #3566, #3567
