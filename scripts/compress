@@ -76,7 +76,7 @@ generate_version_js(function(err) {
 
       // remove translation files from default and debug languages.  #1905
       [ config.get('debug_lang'), config.get('default_lang') ].forEach(function(l) {
-        var file = '/i18n/' + i18n.localeFrom(l) + '/client.json';
+        var file = '/i18n/' + i18n.localeFrom(l) + '/client.js';
         var ix = all[resource].indexOf(file);
         if (-1 !== ix) all[resource].splice(ix, 1);
       });
