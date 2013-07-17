@@ -71,11 +71,10 @@
       _.each(args, function(arg, index) {
         if (index > 0) msg += ", ";
 
-        var type = Object.prototype.toString.apply(arg);
-        if (type === "[object String]") {
+        if (helpers.isString(arg)) {
           msg += arg;
         }
-        else if (type === "[object Object]") {
+        else if (helpers.isObject(arg)) {
           try {
             msg += JSON.stringify(arg, null, 2);
           } catch(err) {
@@ -83,7 +82,7 @@
             msg += "<<object>>";
           }
         }
-        else if (type === "[object Function]") {
+        else if (helpers.isFunction(arg)) {
           msg += "<<function>>";
         }
         else {
@@ -103,6 +102,22 @@
   }
 
   _.extend(helpers, {
+    isObject: function(arg) {
+      return Object.prototype.toString.apply(arg) === "[object Object]";
+    },
+
+    isString: function(arg) {
+      return Object.prototype.toString.apply(arg) === "[object String]";
+    },
+
+    isFunction: function(arg) {
+      return Object.prototype.toString.apply(arg) === "[object Function]";
+    },
+
+    isArray: function(arg) {
+      return Object.prototype.toString.apply(arg) === "[object Array]";
+    },
+
     /**
      * Get an email from a DOM element and validate it.
      * @method getAndValidateEmail

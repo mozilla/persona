@@ -6,7 +6,8 @@ BrowserID.Network = (function() {
   /*globals require:true*/
 
   var bid = BrowserID,
-      complete = bid.Helpers.complete,
+      helpers = bid.Helpers,
+      complete = helpers.complete,
       context,
       mediator = bid.Mediator,
       XHR = bid.Modules.XHR,
@@ -176,6 +177,8 @@ BrowserID.Network = (function() {
 
     setContext: function(field, value) {
       if (arguments.length === 1) {
+        if (!helpers.isObject(field)) throw new Error("invalid context");
+
         // an object was passed in for the context. Used for testing.
         setContext(field);
       }
