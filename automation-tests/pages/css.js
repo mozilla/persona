@@ -45,7 +45,7 @@ module.exports = {
     existingPassword: 'div#signIn input#authentication_password',
     // This is a bit of a hack Selenium does not deal well with both of the
     // .forgotPassword's being in the dom at once and we are testing
-    forgotPassword: 'a.isDesktop.isNotRequiredEmail.forgotPassword',
+    forgotPassword: 'a.isDesktop.isEmailMutable.forgotPassword',
     choosePassword: 'div#set_password input#password',
     verifyPassword: 'input#vpassword',
     confirmAddressScreen: "#confirm_address",
