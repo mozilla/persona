@@ -35,7 +35,7 @@ BrowserID.Modules.Authenticate = (function() {
       TRANSITION_TO_SECONDARY_LABEL = "#authentication_form .label.transition_to_secondary",
       PASSWORD_LABEL = "#authentication_form .label.password_state",
       CANCEL_PASSWORD_SELECTOR = ".cancelPassword",
-      REQUIRED_EMAIL_CLASS = "requiredEmail",
+      EMAIL_IMMUTABLE_CLASS = "emailImmutable",
       IDP_SELECTOR = "#authentication_form .authentication_idp_name",
       PERSONA_INTRO_SELECTOR = ".persona_intro",
       PERSONA_URL = "https://login.persona.org",
@@ -56,11 +56,11 @@ BrowserID.Modules.Authenticate = (function() {
     /*
      * If this is is a required email, we are making the assumption
      * that it is a secondary address and has a password. The only two ways to
-     * get here with requiredEmail are post-reset-password where the email
+     * get here with emailSpecified are post-reset-password where the email
      * verification occurs in a second browser and when signed in to the
      * assertion level and then choose a secondary backed address.
      */
-    return this.requiredEmail ||
+    return this.emailSpecified ||
               (info && info.email && info.type === "secondary" &&
                   (info.state === "known" ||
                    info.state === "transition_to_secondary" ||
@@ -259,12 +259,12 @@ BrowserID.Modules.Authenticate = (function() {
   function cancelPassword() {
     /*jshint validthis: true*/
     var self = this;
-    // If there is a requiredEmail, the user is coming to the authentication
+    // If there is a emailSpecified, the user is coming to the authentication
     // screen to authenticate with a specific email address. This is
     // probably a post-verification auth or an assertion->password level
     // authentication. If the user hits cancel, they go back one state
     // in the state machine.
-    if (self.requiredEmail) {
+    if (self.emailSpecified) {
       self.publish("cancel_state");
     }
     else {
@@ -312,12 +312,23 @@ BrowserID.Modules.Authenticate = (function() {
 
       lastEmail = options.email || "";
 
-      dom.removeClass(BODY_SELECTOR, REQUIRED_EMAIL_CLASS);
+      dom.removeClass(BODY_SELECTOR, EMAIL_IMMUTABLE_CLASS);
       dom.removeAttr(EMAIL_SELECTOR, "disabled");
 
-      self.requiredEmail = options.email;
-      if (self.requiredEmail) {
-        dom.addClass(BODY_SELECTOR, REQUIRED_EMAIL_CLASS);
+      /*
+       * If the email is specified, it means the user must enter the fallback
+       * password for the specified email. The user cannot modify the email
+       * address.
+       * Possible under the following circumstances:
+       * 1. post-reset-password where the email verification occurs in a second
+       *        browser.
+       * 2. user is signed in to Persona using an address backed by a primary
+       *        IdP and they have just chosen an email address backed by the
+       *        fallback IdP. (assertion->password level upgrade)
+       */
+      self.emailSpecified = options.email;
+      if (self.emailSpecified) {
+        dom.addClass(BODY_SELECTOR, EMAIL_IMMUTABLE_CLASS);
         dom.setAttr(EMAIL_SELECTOR, "disabled", "disabled");
       }
 
@@ -360,7 +371,7 @@ BrowserID.Modules.Authenticate = (function() {
     stop: function() {
       dom.removeClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
       dom.removeClass(BODY_SELECTOR, FORM_CLASS);
-      dom.removeClass(BODY_SELECTOR, REQUIRED_EMAIL_CLASS);
+      dom.removeClass(BODY_SELECTOR, EMAIL_IMMUTABLE_CLASS);
 
       _.each(hints, function(className) {
         dom.removeClass("body", className);

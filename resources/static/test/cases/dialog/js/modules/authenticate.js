@@ -140,15 +140,16 @@
     });
   });
 
-  asyncTest("email declared in options - required email, straight to password field", function() {
+  asyncTest("email declared in options - email cannot be changed, " +
+      "straight to password field", function() {
     controller.destroy();
     $(EMAIL_SELECTOR).val("");
 
     createController({ email: "registered@testuser.com",
       ready: function() {
         equal($(EMAIL_SELECTOR).val(), "registered@testuser.com", "email prefilled");
-        ok($("body").hasClass("returning"));
-        ok($("body").hasClass("requiredEmail"));
+        testElementHasClass("body", "returning");
+        testElementHasClass("body", "emailImmutable");
         start();
       }
     });
@@ -164,7 +165,7 @@
       allowUnverified: true,
       ready: function() {
         equal($(EMAIL_SELECTOR).val(), "unverified@testuser.com", "email prefilled");
-        ok($("body").hasClass("returning"));
+        testElementHasClass("body", "returning");
         start();
       }
     });
@@ -249,7 +250,7 @@
     $(EMAIL_SELECTOR).val("registered@testuser.com");
 
     controller.checkEmail(null, function() {
-      equal($("body").hasClass("submit_disabled"), false);
+      testElementNotHasClass("body", "submit_disabled");
       equal(typeof $("#authentication_email").attr("disabled"), "undefined");
 
       start();
