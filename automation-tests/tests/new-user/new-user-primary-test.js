@@ -23,7 +23,6 @@ function dialogTestIdpFlow(b, email, cb) {
     .wwin(CSS['persona.org'].windowName)
     .wtype(CSS['dialog'].emailInput, email)
     .wclick(CSS['dialog'].newEmailNextButton)
-    .wclick(CSS['dialog'].verifyWithPrimaryButton)
     .wclick(CSS['testidp.org'].loginButton, cb);
 }
 
@@ -111,7 +110,6 @@ var pcss = CSS['persona.org'],
         .wwin(CSS['dialog'].windowName)
         .wtype(CSS['dialog'].emailInput, porg_primaryEmail)
         .wclick(CSS['dialog'].newEmailNextButton)
-        .wclick(CSS['dialog'].verifyWithPrimaryButton)
         .wclick(CSS['testidp.org'].loginButton)
         .wwin()
         .wtext(pcss.accountEmail, function(err, text) {

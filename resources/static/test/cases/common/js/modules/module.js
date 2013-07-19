@@ -6,7 +6,8 @@
 
   var controller,
       bid = BrowserID,
-      mediator = bid.Mediator;
+      mediator = bid.Mediator,
+      testHelpers = bid.TestHelpers;
 
   function createController(options) {
     controller = bid.Modules.Module.create(options);
@@ -87,6 +88,15 @@
     }
 
     equal(error.message, "missing config option: requiredField");
+  });
+
+  test("importFrom", function() {
+    createController();
+
+    controller.importFrom({ field: "value" }, "field", "missing_field");
+
+    equal(controller.field, "value");
+    testHelpers.testUndefined(controller.missing_field);
   });
 
 }());

@@ -18,11 +18,36 @@ BrowserID.Modules.Module = (function() {
       this.subscriptions = [];
     },
 
+    /**
+     * Check for required options
+     * @method checkRequired
+     * @param {object} options list to check
+     * @param {string} name of required option. Every input parameter after
+     *              `options` is the name of a required option.
+     */
     checkRequired: function(options) {
       var list = [].slice.call(arguments, 1);
-      for(var item, index = 0; item = list[index]; ++index) {
-        if(!options.hasOwnProperty(item)) {
-          throw new Error("missing config option: " + item);
+      var optionName;
+      while (optionName = list.shift()) {
+        if (!options.hasOwnProperty(optionName)) {
+          throw new Error ("missing config option: " + optionName);
+        }
+      }
+    },
+
+    /**
+     * Import options from `options` into the current object.
+     * @method importFrom
+     * @param {string} name of option to import. Every input parameter after
+     *              `options` is the name of an option to import. If option
+     *              item is not on the options object, it is not imported.
+     */
+    importFrom: function(options) {
+      var list = [].slice.call(arguments, 1);
+      var optionName;
+      while (optionName = list.shift()) {
+        if (options.hasOwnProperty(optionName)) {
+          this[optionName] = options[optionName];
         }
       }
     },

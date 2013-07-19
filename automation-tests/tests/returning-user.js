@@ -50,7 +50,6 @@ runner.run(module, {
       .wwin(CSS['dialog'].windowName)
       .wtype(CSS['dialog'].emailInput, primary)
       .wclick(CSS['dialog'].newEmailNextButton)
-      .wclick(CSS['dialog'].verifyWithPrimaryButton)
       .wclick(CSS['testidp.org'].loginButton)
       .wwin()
       .wtext(CSS['persona.org'].accountEmail, function(err, text) {
