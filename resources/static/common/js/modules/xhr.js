@@ -77,6 +77,7 @@ BrowserID.Modules.XHR = (function() {
     var self = this;
 
     self.outstandingRequests = {};
+    self.outstandingTimers = [];
     self.transport = config.transport || XHRTransport;
     self.time_until_delay = config.time_until_delay;
 
@@ -102,7 +103,12 @@ BrowserID.Modules.XHR = (function() {
 
   function stop() {
     /*jshint validthis: true*/
-    var abortAllListener = this.abortAllListener;
+    var self = this;
+
+    // abort all requests
+    self.abortAll();
+
+    var abortAllListener = self.abortAllListener;
     if (window.removeEventListener) {
       window.removeEventListener("beforeunload", abortAllListener, false);
     } else if (window.detachEvent) {
@@ -129,9 +135,11 @@ BrowserID.Modules.XHR = (function() {
      * the user informing them of the slowness.
      */
     if (self.time_until_delay) {
-      request.slowRequestTimeout = setTimeout(function() {
+      var timer = request.slowRequestTimeout = setTimeout(function() {
+        removeTimer.call(self, timer);
         onXHRResponseDelayed.call(self, request);
       }, self.time_until_delay);
+      addTimer.call(self, timer);
     }
 
     self.publish("xhr_start", request);
@@ -182,11 +190,18 @@ BrowserID.Modules.XHR = (function() {
 
   function abortAll() {
     /*jshint validthis: true*/
-    var outstandingRequests = this.outstandingRequests;
+    var self = this;
+    var outstandingRequests = self.outstandingRequests;
     for (var eventTime in outstandingRequests) {
       outstandingRequests[eventTime].xhr.abort();
       outstandingRequests[eventTime] = null;
       delete outstandingRequests[eventTime];
+    }
+
+    // abort any outstanding response timers
+    var timer;
+    while (timer = self.outstandingTimers.pop()) {
+      clearTimeout(timer);
     }
   }
 
@@ -221,9 +236,11 @@ BrowserID.Modules.XHR = (function() {
     // exceptions that are thrown in the response handlers and it
     // becomes very difficult to debug.
     if (request.defer_success) {
-      setTimeout(function() {
+      var timer = setTimeout(function() {
+        removeTimer.call(self, timer);
         complete(request.success, resp, xhrObj, textResponse);
       }, 0);
+      addTimer.call(self, timer);
     }
     else {
       request.success(resp, xhrObj, textResponse);
@@ -253,11 +270,14 @@ BrowserID.Modules.XHR = (function() {
     if (xhrObj && xhrObj.statusText === "aborted") return;
 
     // See note in success about why we defer responses
-    setTimeout(function() {
+    var timer = setTimeout(function() {
+      removeTimer.call(self, timer);
       var errorInfo = getErrorInfo(request, textStatus, errorThrown);
       self.publish("xhr_error", errorInfo);
       complete(request.error, errorInfo);
     }, 0);
+
+    addTimer.call(self, timer);
   }
 
 
@@ -272,13 +292,30 @@ BrowserID.Modules.XHR = (function() {
     outstandingRequests[request.eventTime] = null;
     delete outstandingRequests[request.eventTime];
 
-    if (request.slowRequestTimeout) {
-      clearTimeout(request.slowRequestTimeout);
+    var timer = request.slowRequestTimeout;
+    if (timer) {
+      removeTimer.call(this, timer);
       request.slowRequestTimeout = null;
     }
 
     request.duration = new Date().getTime() - request.eventTime;
     this.publish("xhr_complete", request);
+  }
+
+  // Timers keep track of outstanding setTimeouts that must be cleared on
+  // abortAll or when the module stops to prevent interference between tests.
+  function removeTimer(timer) {
+    /*jshint validthis: true*/
+    var self=this;
+    var index = _.indexOf(self.outstandingTimers, timer);
+    if (index > -1) {
+      self.outstandingTimers.splice(index, 1);
+    }
+  }
+
+  function addTimer(timer) {
+    /*jshint validthis: true*/
+    this.outstandingTimers.push(timer);
   }
 
 

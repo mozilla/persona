@@ -233,4 +233,32 @@
     xhr.abortAll();
   });
 
+  asyncTest("success responses not called after module stops", function() {
+    xhr.get({
+      url: "/wsapi/session_context",
+      error: testHelpers.unexpectedXHRFailure,
+      // the module is stopped, this should not be called.
+      success: testHelpers.unexpectedSuccess
+    });
+
+    xhr.stop();
+
+    setTimeout(start, 100);
+  });
+
+  asyncTest("error responses not called after module stops", function() {
+    transport.useResult("contextAjaxError");
+    xhr.get({
+      url: "/wsapi/session_context",
+      error: testHelpers.unexpectedXHRFailure,
+      // the module is stopped, this should not be called.
+      success: testHelpers.unexpectedSuccess
+    });
+
+    xhr.stop();
+
+    setTimeout(start, 100);
+  });
+
+
 }());
