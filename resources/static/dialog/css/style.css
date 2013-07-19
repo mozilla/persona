@@ -367,12 +367,6 @@ section > .contents {
     max-width: 0;
 }
 
-div#required_email {
-    padding-top: .7em;
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
 .inputs > li {
   margin-top: 8px;
 }
@@ -459,20 +453,16 @@ a.emphasize:active {
 }
 
 
-#back {
-  color: #000;
-  border-bottom: 1px dotted;
-  font-weight: normal;
-}
-
 .submit > button {
     margin: 0 0 0 5px;
 }
 
 /**
- * Start off hiding all of the state specific elements
+ * Start off hiding all of the state specific elements.
+ * isEmailImmutable is used to display elements when the user must type their
+ * password but are unable to change the email address.
  */
-.isReturning, .isStart, .isAddressInfo, .isMobile {
+.isReturning, .isStart, .isAddressInfo, .isMobile, .isEmailImmutable {
   display: none;
 }
 
@@ -481,14 +471,16 @@ a.emphasize:active {
 * These handle the authentication page states, but do not take into account
 * any elements that have the .isMobile class.
 */
-.returning .isReturning, .start .isStart, .addressInfo .isAddressInfo {
+.returning .isReturning, .start .isStart, .addressInfo .isAddressInfo,
+.emailImmutable .isEmailImmutable {
   display: block;
 }
 
 /**
  * Re-disable any elements that have the .isMobile class.
  */
-.newuser, .isReturning.isMobile, .isStart.isMobile, .isAddressInfo.isMobile {
+.newuser, .isReturning.isMobile, .isStart.isMobile, .isAddressInfo.isMobile,
+.emailImmutable .isEmailMutable {
     display: none;
 }
 

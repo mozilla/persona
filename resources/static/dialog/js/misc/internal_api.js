@@ -71,16 +71,12 @@
   /**
    * Get an assertion.  Mimics the behavior of navigator.id.get.
    * options.silent defaults to false.  To get an assertion without using the
-   * dialog, set options.silent to true.  To specify a required email, set
-   * options.requiredEmail. By specifying both silent:true and requiredEmail:
-   * <email>, an assertion will be attempted to be retreived for the given
-   * email without showing the dialog.
+   * dialog, set options.silent to true.
    * @method get
    * @param {string} origin
    * @param {function} callback - called when complete.  Called with assertion
    * if success, null if the user cancels.  Other conditions causing null
-   * return value: silent is true and user is not authenticated.  silent is
-   * true, requiredEmail is specified but user does not control email.
+   * return value: silent is true and user is not authenticated.
    * @param {object} options.  See options block for navigator.id.get.
    * options.silent defaults to false.
    */
@@ -115,12 +111,11 @@
 
     var silent = !!options.silent;
     if(silent) {
-      // first, check the required email field, if that is not specified, go
       // check if an email is associated with this site. If that is not
       // available, there is not enough information to continue.
-      var requiredEmail = options.requiredEmail || storage.site.get(origin, "email");
-      if(requiredEmail) {
-        getSilent(origin, requiredEmail, complete);
+      var associatedEmail = storage.site.get(origin, "email");
+      if (associatedEmail) {
+        getSilent(origin, associatedEmail, complete);
       }
       else {
         complete();

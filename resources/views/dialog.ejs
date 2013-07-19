@@ -19,14 +19,19 @@
                      DOMContentLoaded or else the Firefox password manager does
                      not fill in passwords -->
                 <div id="authentication_form" class="form_section">
+
                     <div class="isDesktop">
-                      <h2 class="isStart persona_intro deemphasize">
+                      <h2 class="isEmailImmutable">
+                        <%= gettext("Sign in using") %>
+                      </h2>
+
+                      <h2 class="isStart isEmailMutable persona_intro deemphasize">
                           <%- format(gettext('%s uses Persona instead of usernames to sign you in.'), ['<strong id="start_rp_name"></strong>']) %>
 
                       </h2>
                     </div>
                     <div class="isMobile">
-                      <h2 class="isStart">
+                      <h2 class="isStart isEmailMutable">
                           <%- format(gettext('Sign in with Persona')) %>
                       </h2>
                     </div>
@@ -34,7 +39,7 @@
                     <ul class="inputs">
 
                         <li>
-                            <label for="authentication_email" class="isDesktopOrStart"></label>
+                            <label for="authentication_email" class="isDesktopOrStart isEmailMutable"></label>
                             <span class="label email_state"><%= gettext('Enter your email address') %></span>
                             <span class="label transition_to_secondary"><%- format(gettext('%(idp)s no longer allows you to log into Persona with your %(idp)s password. You must now use your existing Persona password to log in with this email address.'), { idp: '<strong class="authentication_idp_name"></strong>'}) %></span>
                             <span class="label password_state"><%= gettext('Now enter your Persona password.') %></span>
@@ -53,6 +58,12 @@
 
                         <li class="isReturning">
 
+
+                            <span class="isEmailImmutable right">
+                              <a class="isDesktop forgotPassword" href="#">
+                                <%= gettext('Forgot your password?') %>
+                              </a>
+                            </span>
 
                             <label for="authentication_password" class="hidden"><%= gettext('Password') %></label>
 
@@ -82,7 +93,7 @@
                     </p>
 
 
-                    <p class="submit tospp cf isDesktopOrStart">
+                    <p class="submit tospp cf isDesktopOrStart isEmailMutable">
                        <%- format(gettext("By proceeding, you agree to %(site)s's <a %(terms)s>Terms</a> and <a %(privacy)s>Privacy Policy</a>."),
                                   { site: "Persona",
                                     terms:
@@ -116,7 +127,11 @@
                         <%= gettext('cancel') %>
                       </a>
 
-                      <a class="isDesktop isReturning forgotPassword left" href="#">
+                      <a href="#" class="isDesktop isEmailImmutable cancelPassword right">
+                        <%= gettext('cancel') %>
+                      </a>
+
+                      <a class="isDesktop isReturning isEmailMutable forgotPassword left" href="#">
                         <%= gettext('Forgot your password?') %>
                       </a>
 

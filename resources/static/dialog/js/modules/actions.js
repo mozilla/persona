@@ -92,10 +92,6 @@ BrowserID.Modules.Actions = (function() {
       startService("authenticate", info);
     },
 
-    doAuthenticateWithRequiredEmail: function(info) {
-      startService("required_email", info);
-    },
-
     doAuthenticateWithUnverifiedEmail: function(info) {
       var self = this;
       dialogHelpers.authenticateUser.call(this, info.email, info.password,
@@ -166,10 +162,6 @@ BrowserID.Modules.Actions = (function() {
 
     doVerifyPrimaryUser: function(info) {
       startService("verify_primary_user", info);
-    },
-
-    doCannotVerifyRequiredPrimary: function(info) {
-      this.renderError("cannot_verify_required_email", info);
     },
 
     doPrimaryUserProvisioned: function(info) {

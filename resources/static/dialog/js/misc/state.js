@@ -101,10 +101,8 @@ BrowserID.State = (function() {
         // This is not a cancelable authentication.  mustAuth is set
         // after a user verifies an address but is not authenticated
         // to the password level.
-        redirectToState("authenticate_specified_email", {
-          email: self.stagedEmail,
-          mustAuth: info.mustAuth,
-          cancelable: !info.mustAuth
+        redirectToState("authenticate", {
+          email: self.stagedEmail
         });
       }
       else {
@@ -185,21 +183,6 @@ BrowserID.State = (function() {
       });
 
       startAction("doAuthenticate", info);
-    });
-
-    handleState("authenticate_specified_email", function(msg, info) {
-      // user must authenticate with their password, kick them over to
-      // the required email screen to enter the password.
-      startAction("doAuthenticateWithRequiredEmail", {
-        email: info.email,
-        secondary_auth: true,
-        cancelable: ("cancelable" in info) ? info.cancelable : true,
-        // This is a user is already authenticated to the assertion
-        // level who has chosen a secondary email address from the
-        // pick_email screen. They would have been shown the
-        // siteTOSPP there.
-        siteTOSPP: false
-      });
       complete(info.complete);
     });
 
@@ -473,8 +456,8 @@ BrowserID.State = (function() {
           return user.checkAuthentication(function(authentication) {
             if (authentication !== "password") {
               // user must authenticate with their password, kick them over to
-              // the required email screen to enter the password.
-              redirectToState("authenticate_specified_email", addressInfo);
+              // the authenticate screen to enter the password.
+              redirectToState("authenticate", addressInfo);
             }
             else {
               redirectToState("email_valid_and_ready", addressInfo);
