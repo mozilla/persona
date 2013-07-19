@@ -36,21 +36,6 @@ BrowserID.Storage = (function() {
   // issues do not become a factor. See issue #2206
   setDefaultValues();
 
-  // BEGIN TRANSITION CODE
-  /** Transition code is to handle the moving data from the .loggedIn
-   * namespace to the .site namespace. It can safely be removed one month after
-   * this is merged when people's Persona sessions have expired.
-   */
-  function upgradeLoggedInInfo() {
-    var allInfo = JSON.parse(storage.loggedIn || "{}");
-    for (var site in allInfo) {
-      siteSet(site, "logged_in", allInfo[site]);
-    }
-    storage.removeItem("loggedIn");
-  }
-  upgradeLoggedInInfo();
-  // END TRANSITION CODE
-
   function emailsStorageKey(issuer) {
     return issuer || "default";
   }
@@ -735,13 +720,5 @@ BrowserID.Storage = (function() {
       clear: clearIdpVerificationInfo,
       INFO_LIFESPAN_MS: IDP_INFO_LIFESPAN_MS
     }
-    // BEGIN TRANSITION CODE
-    /**
-     * Upgrade the site->user logged in info from the loggedIn namespace to be
-     * under the site namespace.
-     */
-    ,
-    upgradeLoggedInInfo: upgradeLoggedInInfo
-    // END TRANSITION CODE
   };
 }());
