@@ -3,10 +3,14 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <div class="cf form_section">
-  <h2 class="description deemphasize" id="upgrade_to_primary">
-      <%- format(gettext("Good news! %(email)s no longer requires an extra password. Verify your account and you will immediately be signed in to %(aWebsite)s"),
-               { email: escape(email), aWebsite: siteName })%>
+  <h2 id="upgrade_to_primary">
+      <%= gettext("Good news!") %>
   </h2>
+  <p>
+  <%- format(gettext("%(email)s no longer requires an extra password. Verify your account and you will immediately be signed in to %(aWebsite)s"),
+           { email: "<strong>" + escape(email) + "</strong>" ,
+           aWebsite: "<strong>" + siteName + "</strong>" })%>
+  <p>
 
   <p class="submit cf buttonrow">
       <button class="isDesktop verifyWithPrimary"><%- gettext("verify") %></button>
