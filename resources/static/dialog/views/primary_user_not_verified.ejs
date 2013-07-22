@@ -3,15 +3,15 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <h2 id="primary_user_not_verified">
-  <%-
+  <%=
   format(gettext("Cannot verify %(email)s"), {
-    email: _.escape(email)
+    email: email
   })
   %>
 </h2>
 
 <p>
-  <%-
+  <%=
   format(gettext("This may be due to your browser blocking third-party cookies.  Please ensure your browser\'s privacy preferences are set to accept third-party cookies for %(idpName)s and try again."), {
     idpName: idpName
   })
