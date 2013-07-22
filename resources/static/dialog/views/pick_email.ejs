@@ -7,9 +7,9 @@
   <div id="selectEmail" class="form_section">
       <h2 class="isMobile"><%= gettext('Sign in with Persona') %></h2>
 
-      <p>
-        <%= gettext('Sign in as...') %>
-      </p>
+      <h2 class="isDesktop">
+        <%- format(gettext('Sign in to %s as&hellip;'), [(siteName || hostname) ]) %>
+      </h2>
 
       <ul class="inputs" id="emailList">
           <% _.each(identities, function(item, index) { var emailAddress = item.address, id = "email_" + index; %>

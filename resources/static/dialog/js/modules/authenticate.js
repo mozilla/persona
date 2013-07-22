@@ -16,7 +16,7 @@ BrowserID.Modules.Authenticate = (function() {
       dom = bid.DOM,
       lastEmail = "",
       addressInfo,
-      hints = ["returning","start","addressInfo"],
+      hints = ["returning", "start", "transitionToSecondary", "addressInfo"],
       DISABLED_ATTRIBUTE = "disabled",
       SUBMIT_DISABLED_CLASS = "submit_disabled",
       CONTENTS_SELECTOR = "#formWrap .contents",
@@ -29,11 +29,6 @@ BrowserID.Modules.Authenticate = (function() {
       AUTHENTICATION_CLASS = "authentication",
       CONTINUE_BUTTON_SELECTOR = ".continue",
       FORM_CLASS = "form",
-      AUTHENTICATION_LABEL = "#authentication_form label[for=authentication_email]",
-      ENTER_EMAIL_LABEL = "#authentication_form .label.enter_email",
-      EMAIL_LABEL = "#authentication_form .label.email_state",
-      TRANSITION_TO_SECONDARY_LABEL = "#authentication_form .label.transition_to_secondary",
-      PASSWORD_LABEL = "#authentication_form .label.password_state",
       CANCEL_PASSWORD_SELECTOR = ".cancelPassword",
       EMAIL_IMMUTABLE_CLASS = "emailImmutable",
       IDP_SELECTOR = "#authentication_form .authentication_idp_name",
@@ -225,7 +220,6 @@ BrowserID.Modules.Authenticate = (function() {
       dom.hide(PERSONA_INTRO_SELECTOR);
     }
 
-    dom.setInner(AUTHENTICATION_LABEL, dom.getInner(EMAIL_LABEL));
     showHint("start");
     dom.focus(EMAIL_SELECTOR);
     self.publish("enter_email");
@@ -240,13 +234,14 @@ BrowserID.Modules.Authenticate = (function() {
     dom.setInner(PASSWORD_SELECTOR, "");
 
     self.submit = authenticate;
-    var labelSelector = (addressInfo.state === "transition_to_secondary") ? TRANSITION_TO_SECONDARY_LABEL : PASSWORD_LABEL;
-    if (labelSelector === TRANSITION_TO_SECONDARY_LABEL) {
+
+    var state = "returning";
+    if (addressInfo.state === "transition_to_secondary") {
+      state = "transitionToSecondary";
       dom.setInner(IDP_SELECTOR, helpers.getDomainFromEmail(addressInfo.email));
     }
-    dom.setInner(AUTHENTICATION_LABEL, dom.getInner(labelSelector));
 
-    showHint("returning", function() {
+    showHint(state, function() {
       dom.focus(PASSWORD_SELECTOR);
       self.publish("enter_password", addressInfo);
       // complete must be called after focus or else the front end unit tests

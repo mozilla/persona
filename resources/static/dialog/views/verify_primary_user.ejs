@@ -3,22 +3,19 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <div class="cf form_section">
-  <p class="description" id="upgrade_to_primary">
-      <%- format(gettext("Your %(emailProvider)s account has been upgraded to work even better with Persona. We will redirect you to %(emailProvider)s."), {
-        emailProvider: idpName
-      })%>
-  </p>
-
-  <p id="postVerify">
-    <%- format(gettext("Once you verify your account there, you will be signed in to %(aWebsite)s."),
-               {aWebsite : siteName}) %>
-  </p>
+  <h2>
+      <%= gettext("Good news!") %>
+  </h2>
+  <p id="upgrade_to_primary">
+  <%- format(gettext("%(email)s no longer requires an extra password. Verify your account and you will immediately be signed in to %(aWebsite)s"),
+           { email: "<strong>" + escape(email) + "</strong>" ,
+           aWebsite: "<strong>" + siteName + "</strong>" })%>
+  <p>
 
   <p class="submit cf buttonrow">
-      <button class="isDesktop verifyWithPrimary"><%- format(gettext("sign in with %s"), [idpName]) %></button>
-      <a href="#" class="cancel emphasize right isDesktop"><%= gettext("Use a different email address") %></a>
+      <button class="isDesktop verifyWithPrimary"><%- gettext("verify") %></button>
       <button class="isMobile verifyWithPrimary"><%- gettext("sign in") %></button>
-      <a href="#" class="cancel isMobile"><%= gettext("cancel") %></a>
+      <a href="#" class="cancel right"><%= gettext("cancel") %></a>
   </p>
 
 

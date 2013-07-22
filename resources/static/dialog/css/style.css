@@ -35,7 +35,8 @@ h2 {
 }
 
 .form_section h2 {
-  font-size: 18px;
+  font-size: 16px;
+  margin-bottom: 8px;
 }
 
 .form_section h2.deemphasize {
@@ -462,7 +463,7 @@ a.emphasize:active {
  * isEmailImmutable is used to display elements when the user must type their
  * password but are unable to change the email address.
  */
-.isReturning, .isStart, .isAddressInfo, .isMobile, .isEmailImmutable {
+.isReturning, .isStart, .isAddressInfo, .isMobile, .isEmailImmutable, .isTransitionToSecondary {
   display: none;
 }
 
@@ -472,7 +473,7 @@ a.emphasize:active {
 * any elements that have the .isMobile class.
 */
 .returning .isReturning, .start .isStart, .addressInfo .isAddressInfo,
-.emailImmutable .isEmailImmutable {
+.emailImmutable .isEmailImmutable, .transitionToSecondary .isTransitionToSecondary {
   display: block;
 }
 
@@ -482,11 +483,6 @@ a.emphasize:active {
 .newuser, .isReturning.isMobile, .isStart.isMobile, .isAddressInfo.isMobile,
 .emailImmutable .isEmailMutable {
     display: none;
-}
-
-#upgrade_to_primary {
-  max-width: 230px;
-  float: left;
 }
 
 #your_computer_content {
