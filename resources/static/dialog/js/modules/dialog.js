@@ -364,10 +364,11 @@ BrowserID.Modules.Dialog = (function() {
           params.email = primaryParams.email;
           params.add = primaryParams.add;
           params.type = "primary";
+          params.cancelled = false;
+        }
 
-          // FIXME: if it's AUTH_RETURN_CANCEL, we should short-circuit
-          // the attempt at provisioning. For now, we let provisioning
-          // be tried and fail.
+        if (hash.indexOf("#AUTH_RETURN_CANCEL") === 0) {
+          params.cancelled = true;
         }
 
         // no matter what, we clear the primary flow state for this window

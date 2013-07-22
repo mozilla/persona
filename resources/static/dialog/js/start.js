@@ -44,6 +44,7 @@
       moduleManager.register("verify_primary_user", modules.VerifyPrimaryUser);
       moduleManager.register("provision_primary_user", modules.ProvisionPrimaryUser);
       moduleManager.register("primary_user_provisioned", modules.PrimaryUserProvisioned);
+      moduleManager.register("primary_user_not_provisioned", modules.PrimaryUserNotProvisioned);
       moduleManager.register("primary_offline", modules.PrimaryOffline);
       moduleManager.register("generate_assertion", modules.GenerateAssertion);
       moduleManager.register("xhr_delay", modules.XHRDelay);

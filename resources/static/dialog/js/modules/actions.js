@@ -168,6 +168,10 @@ BrowserID.Modules.Actions = (function() {
       startService("primary_user_provisioned", info);
     },
 
+    doPrimaryUserNotProvisioned: function(info) {
+      startService("primary_user_not_provisioned", info);
+    },
+
     doPrimaryOffline: function(info) {
       startService("primary_offline", info);
     },
