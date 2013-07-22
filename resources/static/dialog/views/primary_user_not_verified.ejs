@@ -1,0 +1,20 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<h2 id="primary_user_not_verified">
+  <%=
+  format(gettext("Cannot verify %(email)s"), {
+    email: email
+  })
+  %>
+</h2>
+
+<p>
+  <%=
+  format(gettext("This may be due to your browser blocking third-party cookies.  Please ensure your browser\'s privacy preferences are set to accept third-party cookies for %(idpName)s and try again."), {
+    idpName: idpName
+  })
+  %>
+</p>
+

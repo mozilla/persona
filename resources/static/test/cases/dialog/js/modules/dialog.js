@@ -194,19 +194,13 @@
     });
   });
 
-  asyncTest("initialization with #AUTH_RETURN and add=false - trigger start with correct params", function() {
-    winMock.location.hash = "#AUTH_RETURN";
-    storage.idpVerification.set({
-      add: false,
-      email: TESTEMAIL
-    });
+  function testReturnFromIdP(verificationInfo, expectedParams) {
+    storage.idpVerification.set(verificationInfo);
 
     createController({
       ready: function() {
         mediator.subscribe("start", function(msg, info) {
-          equal(info.type, "primary", "correct type");
-          equal(info.email, TESTEMAIL, "email_chosen with correct email");
-          equal(info.add, false, "add is not specified with CREATE_EMAIL option");
+          testHelpers.testObjectValuesEqual(info, expectedParams);
           start();
         });
 
@@ -218,33 +212,44 @@
           // registered for the any services.
         }
       }
+    });
+  }
+
+  asyncTest("initialization with #AUTH_RETURN_CANCEL - " +
+      " trigger start with cancelled=true", function() {
+    winMock.location.hash = "#AUTH_RETURN_CANCEL";
+    testReturnFromIdP({
+      email: TESTEMAIL
+    }, {
+      cancelled: true,
+      type: "primary",
+      email: TESTEMAIL
+    });
+  });
+
+  asyncTest("initialization with #AUTH_RETURN and add=false - trigger start with correct params", function() {
+    winMock.location.hash = "#AUTH_RETURN";
+    testReturnFromIdP({
+      add: false,
+      email: TESTEMAIL
+    }, {
+      type: "primary",
+      email: TESTEMAIL,
+      add: false,
+      cancelled: false
     });
   });
 
   asyncTest("initialization with #AUTH_RETURN and add=true - trigger start with correct params", function() {
     winMock.location.hash = "#AUTH_RETURN";
-    storage.idpVerification.set({
+    testReturnFromIdP({
       add: true,
       email: TESTEMAIL
-    });
-
-    createController({
-      ready: function() {
-        mediator.subscribe("start", function(msg, info) {
-          equal(info.type, "primary", "correct type");
-          equal(info.email, TESTEMAIL, "email_chosen with correct email");
-          equal(info.add, true, "add is specified with ADD_EMAIL option");
-          start();
-        });
-
-        try {
-          controller.get(testHelpers.testOrigin, {}, function() {}, function() {});
-        }
-        catch(e) {
-          // do nothing, an exception will be thrown because no modules are
-          // registered for the any services.
-        }
-      }
+    }, {
+      type: "primary",
+      email: TESTEMAIL,
+      add: true,
+      cancelled: false
     });
   });
 

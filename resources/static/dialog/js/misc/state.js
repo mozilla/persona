@@ -149,11 +149,11 @@ BrowserID.State = (function() {
       if (info.email && info.type === "primary") {
         // this case is where a users is returning to the dialog from
         // authentication with a primary.  Elsewhere in
-        // code we key off of whether .primaryVerificationInfo is
+        // code we key off of whether .postIdPVerificationInfo is
         // set to behave differently the first time the dialog is
         // loaded vs. when a user returns to the dialog after auth with
         // primary.
-        self.primaryVerificationInfo = info;
+        self.postIdPVerificationInfo = info;
         redirectToState("primary_user", info);
       }
       else {
@@ -314,7 +314,7 @@ BrowserID.State = (function() {
     });
 
     handleState("primary_user_unauthenticated", function(msg, info) {
-      /*jshint newcap:false*/
+     /*jshint newcap:false*/
       _.extend(info, {
         add: !!self.addPrimaryUser,
         email: self.email,
@@ -322,19 +322,29 @@ BrowserID.State = (function() {
         idpName: info.idpName || URLParse(info.auth_url).host
       });
 
-      // If .primaryVerificationInfo is set, that means the user is
+      // If .postIdPVerificationInfo is set, that means the user is
       // returning to the dialog after authentication with their IdP.
       // When provisioning fails and:
-      // 1. it's the first provisioning attempt - we send the user to
+      // 1. the user did not cancel - Perhaps 3rd party
+      //    cookies are disabled. Show some messaging.
+      // 2. it's the first provisioning attempt - we send the user to
       //    authentication with their IdP
-      // 2. it's the second provisioning attempt - we sent the user back
+      // 3. it's the second provisioning attempt - we sent the user back
       //    to the proper screen to pick a new email address.
       // related to issue #2339
-      if (self.primaryVerificationInfo) {
-        self.primaryVerificationInfo = null;
-        if (info.add) {
-          // Add the pick_email in case the user cancels the add_email screen.
-          // The user needs something to go "back" to.
+      var postIdPVerificationInfo = self.postIdPVerificationInfo;
+      if (postIdPVerificationInfo) {
+
+        self.postIdPVerificationInfo = null;
+        if (!postIdPVerificationInfo.cancelled) {
+          // user did not cancel at the IdP, yet upon return, there was an
+          // error. Show some messaging.
+          startAction("doPrimaryUserNotProvisioned", info);
+          complete(info.complete);
+        }
+        else if (postIdPVerificationInfo.add) {
+          // Add the pick_email in case the user cancels the add_email
+          // screen. The user needs something to go "back" to.
           redirectToState("pick_email");
           redirectToState("add_email", info);
         }
@@ -346,6 +356,7 @@ BrowserID.State = (function() {
         startAction("doVerifyPrimaryUser", info);
         complete(info.complete);
       }
+
     });
 
     handleState("primary_user_authenticating", function(msg, info) {
@@ -572,6 +583,7 @@ BrowserID.State = (function() {
       // address is a primary address, #2 occurs if the address is a secondary
       // and the verification email has been sent.
       startAction("doAddEmail", info);
+      complete(info.complete);
     });
 
     handleState("stage_email", function(msg, info) {

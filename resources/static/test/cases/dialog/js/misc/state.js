@@ -330,17 +330,53 @@
     ok(actions.called.doVerifyPrimaryUser, "doVerifyPrimaryUser called");
   });
 
-  test("primary_user_unauthenticated after verification of new user - call doAuthenticate", function() {
-    mediator.publish("start", { email: TEST_EMAIL, type: "primary", add: false });
-    mediator.publish("primary_user_unauthenticated");
-    ok(actions.called.doAuthenticate, "doAuthenticate called");
+  asyncTest("primary_user_unauthenticated after user cancelled " +
+        "verification of new user - call doAuthenticate", function() {
+    mediator.publish("start", {
+      email: TEST_EMAIL,
+      type: "primary",
+      add: false,
+      cancelled: true
+    });
+    mediator.publish("primary_user_unauthenticated", {
+      complete: function() {
+        ok(actions.called.doAuthenticate, "doAuthenticate called");
+        start();
+      }
+    });
   });
 
-  test("primary_user_unauthenticated after verification of additional email to current user - call doPickEmail and doAddEmail", function() {
-    mediator.publish("start", { email: TEST_EMAIL, type: "primary", add: true });
-    mediator.publish("primary_user_unauthenticated");
-    ok(actions.called.doPickEmail, "doPickEmail called");
-    ok(actions.called.doAddEmail, "doAddEmail called");
+  asyncTest("primary_user_unauthenticated after user cancelled " +
+      "verification of additional email to current user - " +
+      "call doPickEmail and doAddEmail", function() {
+    mediator.publish("start", {
+      email: TEST_EMAIL,
+      type: "primary",
+      add: true,
+      cancelled: true
+    });
+    mediator.publish("primary_user_unauthenticated", {
+      complete: function() {
+        ok(actions.called.doPickEmail, "doPickEmail called");
+        ok(actions.called.doAddEmail, "doAddEmail called");
+        start();
+      }
+    });
+  });
+
+  asyncTest("primary_user_unauthenticated, no user cancel - " +
+      " - call doPrimaryUserNotProvisioned", function() {
+    mediator.publish("start", {
+      email: TEST_EMAIL,
+      type: "primary",
+      cancelled: false
+    });
+    mediator.publish("primary_user_unauthenticated", {
+      complete: function() {
+        ok(actions.called.doPrimaryUserNotProvisioned);
+        start();
+      }
+    });
   });
 
   test("primary_user_authenticating stops all modules", function() {
