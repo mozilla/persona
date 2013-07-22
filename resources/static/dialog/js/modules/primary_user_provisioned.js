@@ -21,7 +21,7 @@ BrowserID.Modules.PrimaryUserProvisioned = (function() {
           complete = function(status) {
             options.ready && options.ready(status || false);
           },
-          delay = options.complete_delay || 3000;
+          delay = options.complete_delay || 500;
 
       self.checkRequired(options, "email", "assertion");
 
