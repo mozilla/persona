@@ -107,7 +107,7 @@
       add: false,
       email: "registered@testuser.com",
       ready: function ready() {
-        var description = $(".description").html();
+        var description = $("#upgrade_to_primary").html();
         // If there is double escaping going on, the indexOfs will all fail.
         equal(description.indexOf(_.escape(idpName)), -1);
         equal(description.indexOf(_.escape(siteName)), -1);

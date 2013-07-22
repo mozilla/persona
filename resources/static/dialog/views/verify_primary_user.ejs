@@ -3,10 +3,10 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <div class="cf form_section">
-  <h2 id="upgrade_to_primary">
+  <h2>
       <%= gettext("Good news!") %>
   </h2>
-  <p>
+  <p id="upgrade_to_primary">
   <%- format(gettext("%(email)s no longer requires an extra password. Verify your account and you will immediately be signed in to %(aWebsite)s"),
            { email: "<strong>" + escape(email) + "</strong>" ,
            aWebsite: "<strong>" + siteName + "</strong>" })%>
