@@ -138,7 +138,8 @@
     // Windows Phone
     //    - http://stackoverflow.com/questions/11381673/javascript-solution-to-detect-mobile-browser
     var needsPopupFix = userAgent.match(/CriOS/) ||
-                        userAgent.match(/Windows Phone/);
+                        userAgent.match(/Windows Phone/) ||
+                        userAgent.match(/BlackBerry/);
 
     var w;
 
