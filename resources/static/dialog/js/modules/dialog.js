@@ -96,8 +96,8 @@ BrowserID.Modules.Dialog = (function() {
       // we have a workaround. lets try it first.
       // we let WinChan try first always, to prevent the redirect flow
       // happening in an environment where popups work just fine.
-      if (localStorage.rpRequest) {
-        var rpInfo = JSON.parse(localStorage.rpRequest);
+      if (sessionStorage.rpRequest) {
+        var rpInfo = JSON.parse(sessionStorage.rpRequest);
         var done = redirectFlowComplete.curry(fixupReturnTo(rpInfo.origin, rpInfo.params.returnTo));
         self.get(rpInfo.origin, rpInfo.params, done, done);
         return;
