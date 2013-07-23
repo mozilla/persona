@@ -1,4 +1,5 @@
   // local embedded copy of winchan: http://github.com/lloyd/winchan
+  // winchan git sha a3acb073
   // BEGIN WINCHAN
 
   ;WinChan = (function() {
