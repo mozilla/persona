@@ -1317,9 +1317,10 @@
     makeCert(emailAddr, startIssuer, function (cert) {
       storage.addEmail(emailAddr, { cert: cert, unverified: unverified });
       addressInfo.email = emailAddr;
-      var newInfo = lib.checkForInvalidCerts(emailAddr, addressInfo);
-      ok(!storage.getEmail(emailAddr).cert, "cert was cleared up");
-      start();
+      lib.checkForInvalidCerts(emailAddr, addressInfo, function(newInfo) {
+        ok(!storage.getEmail(emailAddr).cert, "cert was cleared up");
+        start();
+      });
     });
   }
 

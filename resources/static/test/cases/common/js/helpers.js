@@ -162,4 +162,36 @@
 
     window.console = nativeConsole;
   });
+
+  test("isObject", function() {
+    equal(helpers.isObject({}), true);
+    equal(helpers.isObject(new Object()), true);
+    equal(helpers.isObject(""), false);
+    equal(helpers.isObject([]), false);
+  });
+
+  test("isString", function() {
+    equal(helpers.isString(""), true);
+    equal(helpers.isString(new String()), true);
+    equal(helpers.isString({}), false);
+    equal(helpers.isString([]), false);
+  });
+
+  test("isFunction", function() {
+    var someFunc = function() {};
+    equal(helpers.isFunction(someFunc), true);
+    equal(helpers.isFunction(function named() {}), true);
+    equal(helpers.isFunction(new Function()), true);
+    equal(helpers.isFunction({}), false);
+    equal(helpers.isFunction([]), false);
+  });
+
+  test("isArray", function() {
+    var someFunc = function() {};
+    equal(helpers.isArray([]), true);
+    equal(helpers.isArray(new Array()), true);
+    equal(helpers.isArray({}), false);
+    equal(helpers.isArray(""), false);
+    equal(helpers.isArray(arguments), false);
+  });
 }());

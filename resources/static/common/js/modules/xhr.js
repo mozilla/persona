@@ -36,6 +36,13 @@ BrowserID.Modules.XHR = (function() {
     /**
      * Low level request
      * @method request
+     * @param {object} config
+     *   {string} config.url
+     *   {string} [config.type]
+     *   {object} [config.data]
+     *   {function} [config.success]
+     *   {function} [config.error]
+     * @returns {object} xhr object
      */
     request: makeRequest,
 
@@ -44,8 +51,10 @@ BrowserID.Modules.XHR = (function() {
      * @method get
      * @param {object} config
      *   {string} config.url
+     *   {object} [config.data]
      *   {function} [config.success]
      *   {function} [config.error]
+     * @returns {object} xhr object
      */
     get: get,
 
@@ -54,24 +63,13 @@ BrowserID.Modules.XHR = (function() {
      * @method post
      * @param {object} config
      *   {string} config.url
+     *   {object} config.data
+     *   {string} config.data.csrf
      *   {function} [config.success]
      *   {function} [config.error]
+     * @returns {object} xhr object
      */
     post: post,
-
-    /**
-     * Get the session context
-     * @method getContext
-     * @param {function} complete
-     * @param {function} error
-     */
-    getContext: getContext,
-
-    /**
-     * Clear the current context
-     * @method clearContext
-     */
-    clearContext: clearContext,
 
     /**
      * Abort all outstanding XHR requests
@@ -84,11 +82,6 @@ BrowserID.Modules.XHR = (function() {
 
   return XHR;
 
-  function clearContext() {
-    /*jshint validthis: true*/
-    this.context = undefined;
-  }
-
   function init(config) {
     /*jshint validthis: true*/
     config = config || {};
@@ -96,6 +89,7 @@ BrowserID.Modules.XHR = (function() {
     var self = this;
 
     self.outstandingRequests = {};
+    self.outstandingTimers = [];
     self.transport = config.transport || XHRTransport;
     self.time_until_delay = config.time_until_delay;
 
@@ -121,7 +115,12 @@ BrowserID.Modules.XHR = (function() {
 
   function stop() {
     /*jshint validthis: true*/
-    var abortAllListener = this.abortAllListener;
+    var self = this;
+
+    // abort all requests
+    self.abortAll();
+
+    var abortAllListener = self.abortAllListener;
     if (window.removeEventListener) {
       window.removeEventListener("beforeunload", abortAllListener, false);
     } else if (window.detachEvent) {
@@ -136,6 +135,7 @@ BrowserID.Modules.XHR = (function() {
     var self = this;
 
     var request = getRequestInfo(options);
+
     // The request obj must be added to list of outstanding requests in
     // case request is synchronous. This makes sure all housekeeping is kept in
     // order.
@@ -147,9 +147,11 @@ BrowserID.Modules.XHR = (function() {
      * the user informing them of the slowness.
      */
     if (self.time_until_delay) {
-      request.slowRequestTimeout = setTimeout(function() {
+      var timer = request.slowRequestTimeout = setTimeout(function() {
+        removeTimer.call(self, timer);
         onXHRResponseDelayed.call(self, request);
       }, self.time_until_delay);
+      addTimer.call(self, timer);
     }
 
     self.publish("xhr_start", request);
@@ -169,58 +171,49 @@ BrowserID.Modules.XHR = (function() {
 
   function get(options) {
     /*jshint validthis: true*/
-    var req = _.extend(options, {
+    options = _.extend(options, {
       type: "GET",
       defer_success: true
     });
-    this.request(req);
+    return this.request(options);
   }
 
   function post(options) {
     /*jshint validthis: true*/
-    var self = this;
-    self.getContext(function(context) {
-      var data = options.data || {};
-      data.csrf = data.csrf || context.csrf_token;
-      var req = _.extend(options, {
-        type: "POST",
-        data: JSON.stringify(data),
-        contentType: 'application/json',
-        processData: false,
-        defer_success: true
-      });
-      self.request(req);
-    }, options.error);
-  }
+    var data = options.data || {};
 
-  function getContext(done, onFailure) {
-    /*jshint validthis: true*/
-    var self = this;
-    if (typeof self.context !== 'undefined') complete(done, self.context);
-    else {
-      self.request({
-        type: "GET",
-        url: "/wsapi/session_context",
-        success: function(result) {
-          self.context = result;
+    options = _.extend(options, {
+      type: "POST",
+      data: JSON.stringify(data),
+      contentType: 'application/json',
+      processData: false,
+      defer_success: true
+    });
 
-          self.publish("context_info", result);
-
-          complete(done, result);
-        },
-        error: onFailure
-      });
+    // let no POST requests fly without a CSRF token.
+    if (!data.csrf) {
+      var request = getRequestInfo(options);
+      return onXHRError.call(this, request, null, null,
+                  "missing csrf token from POST request");
     }
-  }
 
+    return this.request(options);
+  }
 
   function abortAll() {
     /*jshint validthis: true*/
-    var outstandingRequests = this.outstandingRequests;
+    var self = this;
+    var outstandingRequests = self.outstandingRequests;
     for (var eventTime in outstandingRequests) {
       outstandingRequests[eventTime].xhr.abort();
       outstandingRequests[eventTime] = null;
       delete outstandingRequests[eventTime];
+    }
+
+    // abort any outstanding response timers
+    var timer;
+    while (timer = self.outstandingTimers.pop()) {
+      clearTimeout(timer);
     }
   }
 
@@ -236,11 +229,12 @@ BrowserID.Modules.XHR = (function() {
 
   function getErrorInfo(request, textStatus, errorThrown) {
     var errorInfo = _.extend(request || {});
+    var xhr = request.xhr || {};
     errorInfo.network = _.extend(errorInfo.network || {}, {
-      status: request.xhr.status,
+      status: xhr.status,
       textStatus: textStatus,
       errorThrown: errorThrown,
-      responseText: request.xhr.responseText
+      responseText: xhr.responseText
     });
 
     return errorInfo;
@@ -254,9 +248,11 @@ BrowserID.Modules.XHR = (function() {
     // exceptions that are thrown in the response handlers and it
     // becomes very difficult to debug.
     if (request.defer_success) {
-      setTimeout(function() {
+      var timer = setTimeout(function() {
+        removeTimer.call(self, timer);
         complete(request.success, resp, xhrObj, textResponse);
       }, 0);
+      addTimer.call(self, timer);
     }
     else {
       request.success(resp, xhrObj, textResponse);
@@ -283,14 +279,17 @@ BrowserID.Modules.XHR = (function() {
      * illegal cross domain requests or when the user has no
      * connectivity.
      */
-    if (xhrObj.statusText === "aborted") return;
+    if (xhrObj && xhrObj.statusText === "aborted") return;
 
     // See note in success about why we defer responses
-    setTimeout(function() {
+    var timer = setTimeout(function() {
+      removeTimer.call(self, timer);
       var errorInfo = getErrorInfo(request, textStatus, errorThrown);
       self.publish("xhr_error", errorInfo);
       complete(request.error, errorInfo);
     }, 0);
+
+    addTimer.call(self, timer);
   }
 
 
@@ -305,13 +304,30 @@ BrowserID.Modules.XHR = (function() {
     outstandingRequests[request.eventTime] = null;
     delete outstandingRequests[request.eventTime];
 
-    if (request.slowRequestTimeout) {
-      clearTimeout(request.slowRequestTimeout);
+    var timer = request.slowRequestTimeout;
+    if (timer) {
+      removeTimer.call(this, timer);
       request.slowRequestTimeout = null;
     }
 
     request.duration = new Date().getTime() - request.eventTime;
     this.publish("xhr_complete", request);
+  }
+
+  // Timers keep track of outstanding setTimeouts that must be cleared on
+  // abortAll or when the module stops to prevent interference between tests.
+  function removeTimer(timer) {
+    /*jshint validthis: true*/
+    var self=this;
+    var index = _.indexOf(self.outstandingTimers, timer);
+    if (index > -1) {
+      self.outstandingTimers.splice(index, 1);
+    }
+  }
+
+  function addTimer(timer) {
+    /*jshint validthis: true*/
+    this.outstandingTimers.push(timer);
   }
 
 

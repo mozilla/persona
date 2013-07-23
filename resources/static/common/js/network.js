@@ -6,59 +6,69 @@ BrowserID.Network = (function() {
   /*globals require:true*/
 
   var bid = BrowserID,
-      complete = bid.Helpers.complete,
+      helpers = bid.Helpers,
+      complete = helpers.complete,
       context,
-      server_time,
-      domain_key_creation_time,
-      code_version,
       mediator = bid.Mediator,
       XHR = bid.Modules.XHR,
       xhr,
       // XXX get this out of here!
       storage = bid.Storage;
 
-  function post() {
-    xhr.post.apply(xhr, [].slice.call(arguments, 0));
-  }
-
-  function get() {
-    xhr.get.apply(xhr, [].slice.call(arguments, 0));
-  }
-
-  function onContextChange(msg, result) {
-    context = result;
-    server_time = {
-      remote: result.server_time,
-      local: (new Date()).getTime()
-    };
-    domain_key_creation_time = result.domain_key_creation_time;
-    code_version = result.code_version;
-  }
-
-  function withContext(cb, onFailure) {
-    if(typeof context !== "undefined") complete(cb, context);
-    else {
-      // session_context always checks for a javascript readable cookie,
-      // this allows our javascript code in the dialog and communication iframe
-      // to determine whether cookies are (partially) disabled.  See #2999 for
-      // more context.
-      // NOTE - the cookie is set here instead of cookiesEnabled because
-      // session_context is only ever called once per context session. We have
-      // to ensure the cookie is set for that single call.
-      try {
-        document.cookie = "can_set_cookies=1";
-      } catch(e) {
-        // If cookies are disabled, some browsers throw an exception. Ignore
-        // this, the backend will see that cookies are disabled.
-      }
-      xhr.getContext(cb, onFailure);
+  function post(options) {
+    if (!context) {
+      // If there is no context, go fetch it and then call this function
+      // recursively.
+      return withContext(post.curry(options), options.error);
     }
+
+    options.data = options.data || {};
+    options.data.csrf = context.csrf_token;
+    xhr.post(options);
+  }
+
+  function get(options) {
+    xhr.get(options);
+  }
+
+  function withContext(done, onFailure) {
+    if (context) return complete(done, context);
+
+    // session_context always checks for a javascript readable cookie,
+    // this allows our javascript code in the dialog and communication iframe
+    // to determine whether cookies are (partially) disabled.  See #2999 for
+    // more context.
+    // NOTE - the cookie is set here instead of cookiesEnabled because
+    // session_context is only ever called once per context session. We have
+    // to ensure the cookie is set for that single call.
+    try {
+      document.cookie = "can_set_cookies=1";
+    } catch(e) {
+      // If cookies are disabled, some browsers throw an exception. Ignore
+      // this, the backend will see that cookies are disabled.
+    }
+
+    get({
+      url: "/wsapi/session_context",
+      success: function(result) {
+        setContext(result);
+        complete(done, context);
+      },
+      error: onFailure
+    });
+  }
+
+  function setContext(newContext) {
+    context = _.extend({}, newContext, {
+      local_time: new Date().getTime()
+    });
+
+    mediator.publish("context_info", context);
   }
 
   function clearContext() {
-    if (xhr) xhr.clearContext();
     var undef;
-    context = server_time = undef;
+    context = undef;
   }
 
   function stageAddressForVerification(data, wsapiName, onComplete, onFailure) {
@@ -104,8 +114,6 @@ BrowserID.Network = (function() {
     init: function(config) {
       config = config || {};
 
-      // Any time the context info changes, we want to know about it.
-      mediator.subscribe('context_info', onContextChange);
       if (config.xhr) {
         xhr = config.xhr;
       } else {
@@ -168,7 +176,15 @@ BrowserID.Network = (function() {
     withContext: withContext,
 
     setContext: function(field, value) {
-      if (context) context[field] = value;
+      if (arguments.length === 1) {
+        if (!helpers.isObject(field)) throw new Error("invalid context");
+
+        // an object was passed in for the context. Used for testing.
+        setContext(field);
+      }
+      else {
+        if (context) context[field] = value;
+      }
     },
 
     /**
@@ -579,13 +595,14 @@ BrowserID.Network = (function() {
      * @method serverTime
      */
     serverTime: function(onComplete, onFailure) {
-      withContext(function() {
+      withContext(function(context) {
+        var server_time = context.server_time;
         try {
           if (!server_time) throw new Error("can't get server time!");
-          var offset = (new Date()).getTime() - server_time.local;
-          complete(onComplete, new Date(offset + server_time.remote));
+          var offset = (new Date()).getTime() - context.local_time;
+          complete(onComplete, new Date(offset + server_time));
         } catch(e) {
-          complete(onFailure, e.toString());
+          complete(onFailure, String(e));
         }
       }, onFailure);
     },
@@ -600,12 +617,13 @@ BrowserID.Network = (function() {
      * @method domainKeyCreationTime
      */
     domainKeyCreationTime: function(onComplete, onFailure) {
-      withContext(function() {
+      withContext(function(context) {
+        var domain_key_creation_time = context.domain_key_creation_time;
         try {
           if (!domain_key_creation_time) throw new Error("can't get domain key creation time!");
           complete(onComplete, new Date(domain_key_creation_time));
         } catch(e) {
-          complete(onFailure, e.toString());
+          complete(onFailure, String(e));
         }
       }, onFailure);
     },
@@ -620,8 +638,8 @@ BrowserID.Network = (function() {
      * @method codeVersion
      */
     codeVersion: function(onComplete, onFailure) {
-      withContext(function() {
-        complete(onComplete, code_version);
+      withContext(function(context) {
+        complete(onComplete, context.code_version);
       }, onFailure);
     },
 
