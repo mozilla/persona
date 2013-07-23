@@ -29,9 +29,7 @@ addP3PHeader = require('../lib/p3p.js'),
 forward = require('../lib/http_forward.js'),
 toobusy = require('../lib/busy_middleware.js');
 
-var app = undefined;
-
-app = express.createServer();
+var app = express.createServer();
 
 logger.info("browserid server starting up");
 
