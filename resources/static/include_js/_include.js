@@ -135,7 +135,10 @@
 
     // Chrome for iOS
     //    - https://developers.google.com/chrome/mobile/docs/user-agent
-    var needsPopupFix = navigator.userAgent.match('CriOS');
+    // Windows Phone
+    //    - http://stackoverflow.com/questions/11381673/javascript-solution-to-detect-mobile-browser
+    var needsPopupFix = userAgent.match(/CriOS/) ||
+                        userAgent.match(/Windows Phone/);
 
     var w;
 
