@@ -319,6 +319,10 @@ BrowserID.Modules.XHR = (function() {
   function removeTimer(timer) {
     /*jshint validthis: true*/
     var self=this;
+
+    // clear the timeout whether it is in the list of outstandingTimers or not.
+    clearTimeout(timer);
+
     var index = _.indexOf(self.outstandingTimers, timer);
     if (index > -1) {
       self.outstandingTimers.splice(index, 1);

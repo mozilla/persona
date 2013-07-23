@@ -264,5 +264,34 @@
     setTimeout(start, 100);
   });
 
+  asyncTest("xhr_delay not called for completed request", function() {
+    transport.setDelay(25);
+
+    var delayInfo;
+    mediator.subscribe("xhr_delay", function(msg, info) {
+      delayInfo = info;
+    });
+
+    var completeInfo;
+    mediator.subscribe("xhr_complete", function(msg, info) {
+      completeInfo = info;
+    });
+
+    var req = xhr.get({
+      url: "/wsapi/session_context",
+      error: testHelpers.unexpectedXHRFailure,
+      success: function(info) {
+      }
+    });
+
+    // the delay timer fires after 50ms, wait for 100ms to check.
+    setTimeout(function() {
+      testHelpers.testUndefined(delayInfo);
+      testHelpers.testNotUndefined(completeInfo);
+      start();
+    }, 100);
+
+  });
+
 
 }());
