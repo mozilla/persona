@@ -25,9 +25,7 @@ addP3PHeader = require('../lib/p3p.js'),
 shutdown = require('../lib/shutdown'),
 toobusy = require('../lib/busy_middleware.js');
 
-var app = undefined;
-
-app = express.createServer();
+var app = express.createServer();
 
 logger.info("router server starting up");
 

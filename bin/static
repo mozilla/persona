@@ -33,9 +33,7 @@ toobusy = require('../lib/busy_middleware.js'),
 addP3PHeader = require('../lib/p3p.js'),
 shutdown = require('../lib/shutdown.js');
 
-var app = undefined;
-
-app = express.createServer();
+var app = express.createServer();
 
 logger.info("static starting up");
 

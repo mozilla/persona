@@ -35,9 +35,7 @@ cachify.setup(
     root: path.join(__dirname, "..", "resources", "static")
   });
 
-var app = undefined;
-
-app = express.createServer();
+var app = express.createServer();
 
 logger.info("dbwriter starting up");
 
