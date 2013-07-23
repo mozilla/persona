@@ -4,7 +4,7 @@
 
   <div class="form_section" id="primary_user_verified">
       <%- format(gettext("%(email)s verified!"), {
-        email: "<strong>" + email + "</strong>"
+        email: "<strong>" + escape(email) + "</strong>"
       }) %>
 
       <h2 class="large"><%= gettext("Signing you in&hellip;") %></h2>
