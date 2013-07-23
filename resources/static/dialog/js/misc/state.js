@@ -259,7 +259,6 @@ BrowserID.State = (function() {
       }
       else if(self.newFxAccountEmail) {
         startAction(false, "doStageUser", info);
-// TODO         startAction(false, "doStageResetPassword", info); ???
       }
       complete(info.complete);
     });

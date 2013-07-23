@@ -192,5 +192,6 @@
     equal(helpers.isArray(new Array()), true);
     equal(helpers.isArray({}), false);
     equal(helpers.isArray(""), false);
+    equal(helpers.isArray(arguments), false);
   });
 }());

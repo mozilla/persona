@@ -36,6 +36,13 @@ BrowserID.Modules.XHR = (function() {
     /**
      * Low level request
      * @method request
+     * @param {object} config
+     *   {string} config.url
+     *   {string} [config.type]
+     *   {object} [config.data]
+     *   {function} [config.success]
+     *   {function} [config.error]
+     * @returns {object} xhr object
      */
     request: makeRequest,
 
@@ -44,8 +51,10 @@ BrowserID.Modules.XHR = (function() {
      * @method get
      * @param {object} config
      *   {string} config.url
+     *   {object} [config.data]
      *   {function} [config.success]
      *   {function} [config.error]
+     * @returns {object} xhr object
      */
     get: get,
 
@@ -54,8 +63,11 @@ BrowserID.Modules.XHR = (function() {
      * @method post
      * @param {object} config
      *   {string} config.url
+     *   {object} config.data
+     *   {string} config.data.csrf
      *   {function} [config.success]
      *   {function} [config.error]
+     * @returns {object} xhr object
      */
     post: post,
 
@@ -163,7 +175,7 @@ BrowserID.Modules.XHR = (function() {
       type: "GET",
       defer_success: true
     });
-    this.request(options);
+    return this.request(options);
   }
 
   function post(options) {
@@ -185,7 +197,7 @@ BrowserID.Modules.XHR = (function() {
                   "missing csrf token from POST request");
     }
 
-    this.request(options);
+    return this.request(options);
   }
 
   function abortAll() {

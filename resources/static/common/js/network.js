@@ -32,7 +32,7 @@ BrowserID.Network = (function() {
   }
 
   function withContext(done, onFailure) {
-    if (typeof context !== "undefined") return complete(done, context);
+    if (context) return complete(done, context);
 
     // session_context always checks for a javascript readable cookie,
     // this allows our javascript code in the dialog and communication iframe

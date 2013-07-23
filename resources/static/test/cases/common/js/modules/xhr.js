@@ -39,7 +39,7 @@
       completeInfo = info;
     });
 
-    xhr.get({
+    var req = xhr.get({
       url: "/wsapi/session_context",
       error: testHelpers.unexpectedXHRFailure,
       success: function(info) {
@@ -51,6 +51,8 @@
         start();
       }
     });
+
+    ok(req);
   });
 
   asyncTest("get with xhr error", function() {
@@ -149,7 +151,7 @@
       completeInfo = info;
     });
 
-    xhr.post({
+    var req = xhr.post({
       data: { csrf: "csrf" },
       url: "/wsapi/authenticate_user",
       success: function() {
@@ -163,6 +165,8 @@
 
       error: testHelpers.unexpectedXHRFailure
     });
+
+    ok(req);
   });
 
   asyncTest("post with xhr error", function() {
