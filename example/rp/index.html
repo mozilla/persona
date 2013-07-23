@@ -91,6 +91,12 @@ pre {
     </li><li>
       <input type="checkbox" id="allowUnverified">
       <label for="allowUnverified">Allow Unverified</label>
+    </li><li>
+      <input type="checkbox" id="allowRedirect">
+      <label for="allowRedirect">Allow Persona via Redirect</label>
+    </li><li>
+      <input type="checkbox" id="forceRedirect">
+      <label for="forceRedirect">Force Persona via Redirect</label>
     </li>
   </ul>
     <button class="assertion">Get an assertion</button>
@@ -217,6 +223,8 @@ $(document).ready(function() {
       experimental_forceAuthentication: $('#forceAuthentication').attr('checked') ? true : false,
       experimental_forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined,
       experimental_allowUnverified: $('#allowUnverified').attr('checked') ? true : false,
+      allowRedirect: $('#allowRedirect').attr('checked') ? true : false,
+      forceRedirect: $('#forceRedirect').attr('checked') ? true : false,
       oncancel: function() {
         loggit("oncancel");
         $(".specify button.assertion").removeAttr('disabled');

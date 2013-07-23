@@ -133,7 +133,9 @@
       (isFennec ? undefined :
        "menubar=0,location=1,resizable=1,scrollbars=1,status=0,width=700,height=375");
 
-    var needsPopupFix = true;
+    // Chrome for iOS
+    //    - https://developers.google.com/chrome/mobile/docs/user-agent
+    var needsPopupFix = navigator.userAgent.match('CriOS');
 
     var w;
 
@@ -372,19 +374,26 @@
       // don't do duplicative work
       if (commChan) commChan.notify({ method: 'dialog_running' });
 
-      if (needsPopupFix) {
+      function doPopupFix() {
         if (commChan) {
-          commChan.notify({
-            method: 'popup_fix',
-            params: JSON.stringify(options)
+          return commChan.call({
+            method: 'redirect_flow',
+            params: JSON.stringify(options),
+            success: function() {
+              // use call/success so that we do not have to depend on
+              // the postMessage being synchronous.
+              window.location = ipServer + '/sign_in';
+            }
           });
-          window.location = ipServer + '/sign_in';
-          return;
         } else {
           //it's not ganna work on this browser without watch()!
           //XXX: warn the console? bail as an error?
           throw new Error("bonkers");
         }
+      }
+
+      if ((needsPopupFix && options.allowRedirect) || options.forceRedirect) {
+        return doPopupFix();
       }
 
       w = WinChan.open({

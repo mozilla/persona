@@ -24,6 +24,7 @@
   });
 
   var remoteOrigin;
+  localStorage.removeItem("rpRequest");
 
   function setRemoteOrigin(o) {
     if (!remoteOrigin) {
@@ -121,7 +122,11 @@
 
   chan.bind("redirect_flow", function(trans, params) {
     setRemoteOrigin(trans.origin);
-    localStorage.rpRequest = JSON.stringify({ origin: remoteOrigin, params: JSON.parse(params) });
+    localStorage.rpRequest = JSON.stringify({
+      origin: remoteOrigin,
+      params: JSON.parse(params)
+    });
+    return true;
   });
 
   chan.bind("dialog_running", function(trans, params) {
