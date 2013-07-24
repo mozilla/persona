@@ -390,10 +390,18 @@
           if (!err && r && r.email) {
             commChan.notify({ method: 'loggedInUser', params: r.email });
           }
-          // do not check the authentication status in the dialog if an
-          // assertion has been generated. onmatch is incorrectly called
-          // if an assertion has already been generated. See #3170
-          commChan.notify({ method: 'dialog_complete', params: !r.assertion });
+          // prevent the authentication status check if an assertion is
+          // generated in the dialog or the dialog returned with an error.
+          // This prevents .onmatch from being fired for:
+          // 1. assertion already generated in the dialog
+          // 2. user is signed in to the site, opens the dialog, then cancels
+          // the dialog without generating an assertion.
+          // See #3170 & #3701
+          var checkAuthStatus = !(err || r && r.assertion);
+          commChan.notify({
+            method: 'dialog_complete',
+            params: checkAuthStatus
+          });
         }
 
         // clear the window handle
