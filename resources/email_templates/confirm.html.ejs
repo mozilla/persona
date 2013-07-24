@@ -56,14 +56,14 @@
       <tr style="margin: 0;
         padding: 0;
         height: 100% !important;
-        width: 100% !important; 
+        width: 100% !important;
         background: #45505b;
         -webkit-text-size-adjust:none;
         font-family: Helvetica, Arial, sans-serif;
         font-size: 14px;
         color: #424f5a;">
         <td align="center" valign="top" style="border-collapse: collapse;">
-          
+
 
                 <table border="0" cellpadding="0" cellspacing="0" width="90%">
                   <tr class="spacer">
@@ -78,22 +78,32 @@
                     <td height="30px"></td>
                   </tr>
                 </table><!-- #header -->
-                <table id="content" border="0" cellpadding="0" cellspacing="0" width="90%" style="background-color: #fff; border-radius: 3px; margin-bottom: 60px;">
+                <table id="content" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #fff; border-radius: 3px; margin-bottom: 30px;">
                   <tr>
                     <td align="left" valign="top" class="email-content" style="border-collapse: collapse; padding: 30px;">
-                      <p><%= gettext('Thank you for using Persona.') %></p>
+                      <p>
+                        <%= format(gettext('Click this confirmation link to sign in to %(site)s:'), { site: site })%>
+                      </p>
 
-                      <p><a href="<%= link %>" style="color: #3b9bda; font-weight: bold;"><%= format(gettext('Click to confirm this email address and sign in to %s'), [site]) %>.</a></p>
+                      <p>
+                        <a href="<%= link %>" style="padding: 7px 10px 6px 10px; background-color: #4eb5e5; color: #fff; font-weight: bold; border-radius: 3px;"> <%= gettext('Confirm your address now') %></a>
+                      </p>
 
-                      <p><%= gettext('Note: If you are NOT trying to sign into this website, please ignore this email.') %></p>
+                      <p>
+                        <%= format(gettext('If you did NOT attempt to sign into %(site)s, please ignore this email.'), { site: site }) %>
+                      </p>
 
-                      <p><%= gettext('Thank you,') %><br />
-                      <%= gettext('The Persona team') %></p>
                     </td>
                   </tr>
                 </table><!-- #content -->
-              
 
+                <table border="0" cellpadding="0" cellspacing="0" width="600" style="margin-bottom: 60px;">
+                  <tr>
+                    <td align="left" valign="top" style="border-collapse: collapse; color: #d4d4d4; padding: 0">
+                      <%- format(gettext('<strong>Mozilla Persona.</strong> Simplified sign-in by the non-profit behind Firefox. <a %s>Learn more&rarr;</a>'), ["href='https://login.persona.org/about' target='_blank' style='color:#ffa274'"]) %>
+                    </td>
+                  </tr>
+                </table><!-- #footer-->
         </td>
       </tr>
     </table><!-- #container table -->
