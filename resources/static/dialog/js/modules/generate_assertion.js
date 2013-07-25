@@ -6,25 +6,36 @@ BrowserID.Modules.GenerateAssertion = (function() {
 
   var bid = BrowserID,
       dialogHelpers = bid.Helpers.Dialog,
-      sc,
-      user = bid.User,
-      storage = bid.Storage;
+      DELAY_BEFORE_ASSERTION_GENERATION = 750,
+      sc;
 
   var GenerateAssertion = bid.Modules.PageModule.extend({
     start: function(options) {
       var email = options.email,
+          delay = options.delay || DELAY_BEFORE_ASSERTION_GENERATION,
           self=this;
 
-      if(!email) {
-        throw new Error("email required");
-      }
+      self.checkRequired(options, "email");
 
+      // signing_in is rendered for desktop
+      self.renderForm("signing_in", {
+        email: email
+      });
+
+      // load is rendered for mobile
       self.renderLoad("load", {
         title: gettext("signing in")
       });
 
-      dialogHelpers.getAssertion.call(self, email, options.ready);
+      self.getAssertionTimeout = setTimeout(function() {
+        dialogHelpers.getAssertion.call(self, email, options.ready);
+      }, delay);
       sc.start.call(self, options);
+    },
+
+    stop: function() {
+      clearTimeout(this.getAssertionTimeout);
+      sc.stop.call(this);
     }
   });
 
