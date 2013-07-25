@@ -3,17 +3,9 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
   <div class="form_section" id="primary_user_verified">
-      <h2><%= gettext("Address Verified!") %></h2>
+      <%- format(gettext("%(email)s verified!"), {
+        email: "<strong>" + escape(email) + "</strong>"
+      }) %>
 
-      <ul class="inputs">
-
-          <li>
-              <label for="email" class="isDesktop"><%= gettext("Email") %></label>
-              <input id="email" type="email" disabled value="<%= email %>" />
-          </li>
-
-          <li>
-              <%= gettext("Signing you in&hellip;") %>
-          </li>
-      </ul>
+      <h2 class="large"><%= gettext("Signing you in&hellip;") %></h2>
   </div>

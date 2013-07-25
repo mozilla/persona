@@ -39,6 +39,12 @@ h2 {
   margin-bottom: 8px;
 }
 
+.form_section h2.large {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 300;
+}
+
 .form_section h2.deemphasize {
   font-size: 13px;
   font-weight: normal;
